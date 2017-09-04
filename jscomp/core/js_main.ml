@@ -172,7 +172,7 @@ let buckle_script_flags =
   ("-bs-package-output", 
    Arg.String 
     Js_packages_state.update_npm_package_path, 
-   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' and 'goog:lib/gjs'")
+   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
   ::
   
   ("-bs-no-warn-unused-bs-attribute",

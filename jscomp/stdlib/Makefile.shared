@@ -26,7 +26,7 @@ BS_COMMON_FLAGS= -bs-no-version-header -bs-no-builtin-ppx-ml -bs-no-builtin-ppx-
 include ../Makefile.shared
 
 # ifdef BS_RELEASE_BUILD
-# BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6
+# BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6
 # else
 # BS_FLAGS=  $(BS_COMMON_FLAGS) -bs-package-output commonjs:lib/js 
 # endif

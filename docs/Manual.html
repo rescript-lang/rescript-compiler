@@ -4232,15 +4232,15 @@ consistent with the <code>name</code> field in <code>package.json</code></p>
 <div class="paragraph">
 <p>The format is <code>module_system:oupt/path/relative/to/package.json</code>
 Currently supported module systesms are: <code>commonjs</code>, <code>amdjs</code> and
-<code>goog:&lt;namespace&gt;</code>.</p>
+<code>es6</code>.</p>
 </div>
 <div class="paragraph">
-<p>For example, when you want to use the <code>goog</code> module system, you can do
+<p>For example, when you want to use the <code>es6</code> module system, you can do
 things like this:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">bsc.exe -bs-package-name your_package -bs-package-output goog:lib/goog -c xx.ml</code></pre>
+<pre class="pygments highlight"><code data-lang="bash">bsc.exe -bs-package-name your_package -bs-package-output es6:lib/es6 -c xx.ml</code></pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -4260,11 +4260,11 @@ The user can supply multiple <code>-bs-package-output</code> at the same time.
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="pygments highlight"><code data-lang="bash">bsc.exe -bs-package-name name -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -c x.ml</code></pre>
+<pre class="pygments highlight"><code data-lang="bash">bsc.exe -bs-package-name name -bs-package-output commonjs:lib/js  -bs-package-output amdjs:lib/amdjs -c x.ml</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>It will generate <code>x.js</code> in <code>lib/js</code> as a commonjs module, <code>lib/goog</code> as a google module and <code>lib/amdjs</code> as an amdjs module at the same time.</p>
+<p>It will generate <code>x.js</code> in <code>lib/js</code> as a commonjs module, <code>lib/amdjs</code> as an amdjs module at the same time.</p>
 </div>
 <div class="paragraph">
 <p>You would then need a bundler for the different module systems:
@@ -4774,7 +4774,7 @@ and delegate the hard work to <code>ninja</code>.</p>
 │   ├── amdjs <b class="conum">(1)</b>
 │   │   ├── src
 │   │   └── test
-│   ├── goog  <b class="conum">(2)</b>
+│   ├── es6  <b class="conum">(2)</b>
 │   │   ├── src
 │   │   └── test
 │   └── ocaml
@@ -4786,10 +4786,10 @@ and delegate the hard work to <code>ninja</code>.</p>
 <div class="colist arabic">
 <ol>
 <li>
-<p>Will generate amdjs modules if flags are turned on</p>
+<p>Will generate AMDJS modules if flags are turned on</p>
 </li>
 <li>
-<p>Will generate goog modules if flags are turned on</p>
+<p>Will generate ES6 modules if flags are turned on</p>
 </li>
 </ol>
 </div>

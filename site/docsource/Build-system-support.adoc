@@ -82,7 +82,7 @@ The directory layout (after building) would be
 │   ├── amdjs // <1>
 │   │   ├── src
 │   │   └── test
-│   ├── goog  // <2>
+│   ├── es6  // <2>
 │   │   ├── src
 │   │   └── test
 │   └── ocaml
@@ -90,8 +90,8 @@ The directory layout (after building) would be
 ├── src
 └── test
 -----------
-<1> Will generate amdjs modules if flags are turned on
-<2> Will generate goog modules if flags are turned on
+<1> Will generate AMDJS modules if flags are turned on
+<2> Will generate ES6 modules if flags are turned on
 
 We wrap `bsb.exe` as `bsb` so that it will work across different platforms.
 

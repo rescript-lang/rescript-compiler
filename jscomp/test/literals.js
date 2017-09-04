@@ -119,8 +119,6 @@ var commonjs = "commonjs";
 
 var amdjs = "amdjs";
 
-var goog = "goog";
-
 var es6 = "es6";
 
 var es6_global = "es6-global";
@@ -206,7 +204,6 @@ exports.suffix_cmt             = suffix_cmt;
 exports.suffix_cmti            = suffix_cmti;
 exports.commonjs               = commonjs;
 exports.amdjs                  = amdjs;
-exports.goog                   = goog;
 exports.es6                    = es6;
 exports.es6_global             = es6_global;
 exports.amdjs_global           = amdjs_global;

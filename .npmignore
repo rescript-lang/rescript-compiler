@@ -10,6 +10,7 @@
 /*.annot
 jscomp/build_tests
 jscomp/cmd_tests
+jscomp/test
 .vscode/
 .github/
 node_modules

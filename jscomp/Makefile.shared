@@ -10,7 +10,7 @@ CAMLOPT=ocamlopt.opt
 
 
 ifdef BS_RELEASE_BUILD
-BS_PKG_FLAGS=   -bs-package-output commonjs:lib/js -bs-package-output goog:lib/goog -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6
+BS_PKG_FLAGS=   -bs-package-output commonjs:lib/js -bs-package-output amdjs:lib/amdjs -bs-package-output es6:lib/es6
 else
 BS_PKG_FLAGS=   -bs-package-output commonjs:lib/js -bs-package-output es6:lib/es6
 endif
