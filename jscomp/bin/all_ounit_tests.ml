@@ -11302,11 +11302,12 @@ type t =
 
 val sep_char : char 
 
-val relative_path : 
+val node_relative_path : 
   t -> 
   t -> 
   string
 
+val node_concat : dir:string -> string -> string 
 
 (**
    1. add some simplifications when concatenating
@@ -11414,7 +11415,7 @@ let sep_char = String.unsafe_get Filename.dir_sep 0
       /c/d
     ]}
 *)
-let relative_path (file_or_dir_1 : t) (file_or_dir_2 : t )= 
+let node_relative_path (file_or_dir_1 : t) (file_or_dir_2 : t )= 
   let relevant_dir1 = 
     match file_or_dir_1 with 
      | Dir x -> x 
@@ -11440,7 +11441,8 @@ let relative_path (file_or_dir_1 : t) (file_or_dir_2 : t )=
     @@ Literals.node_current :: ys
 
 
-
+let node_concat ~dir base =
+  dir ^ Literals.node_sep ^ base 
 
 
 (***

@@ -73,7 +73,7 @@ let node_relative_path node_modules_shorten (file1 : Ext_path.t)
     Ext_string.tail_from file2
       (skip (v + Literals.node_modules_length)) 
   else 
-    Ext_path.relative_path 
+    Ext_path.node_relative_path 
       (File (Ext_path.absolute_path cwd file2))
       (Ext_path.absolute cwd file1)
     ^ Literals.node_sep ^
