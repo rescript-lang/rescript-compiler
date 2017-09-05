@@ -203,7 +203,7 @@ func main() {
 	output, _ := cmd("which", "ocaml").CombinedOutput()
 	fmt.Println("OCaml:", string(output))
 	if !*noOunitTest {
-		btest := cmd("make", "-C", "jscomp", "test")
+		btest := cmd("make", "-C", "jscomp", "xtest")
 		btest.Stdout = os.Stdout
 		btest.Stderr = os.Stderr 
 		berror := btest.Run()

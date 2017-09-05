@@ -4247,30 +4247,6 @@ let (=~) = OUnit.assert_equal
     let in_chan = Unix.in_channel_of_descr readme *)
 
 
-let react = {|
-type u 
-
-external a : u = "react" [@@bs.module]
-
-external b : unit -> int = "bool" [@@bs.module "react"]
-
-let v = a
-let h = b ()
-
-|}        
-let foo_react = {|
-type bla
-
-
-external foo : bla = "foo.react" [@@bs.module]
-
-external bar : unit -> bla  = "bar" [@@bs.val] [@@bs.module "foo.react"]
-
-let c = foo 
-
-let d = bar ()
-
-|}
 
 let perform_bsc = Ounit_cmd_util.perform_bsc
 let bsc_check_eval = Ounit_cmd_util.bsc_check_eval 
@@ -4298,28 +4274,7 @@ let suites =
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring
                                    should_be_warning.stderr Literals.unused_attribute)
     end;
-    (* __LOC__ >:: begin fun _ -> 
-      let v_output = 
-        bsc_check_eval (react ^ foo_react) in 
-      Ounit_cmd_util.debug_output v_output ; 
-      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
-                                   v_output.stdout ~sub:"require" = 2
-                                )     
-    end; *)
-    (* __LOC__ >:: begin fun _ -> 
-      let dedupe_require = 
-        bsc_check_eval react in 
-      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
-                                   dedupe_require.stdout ~sub:"require" = 1
-                                )     
-    end; *)
-    (* __LOC__ >:: begin fun _ -> 
-      let dedupe_require = 
-        bsc_eval foo_react in 
-      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
-                                   dedupe_require.stdout ~sub:"require" = 1
-                                )     
-    end ; *)
+
     __LOC__ >:: begin fun _ -> 
       (* 1 *) let should_err = bsc_check_eval {|
 external ff : 
