@@ -486,7 +486,7 @@ let () =
                       *)
                       Filename.concat 
                         (Ext_path.rel_normalized_absolute_path
-                           cwd 
+                           ~from:cwd 
                            (Filename.dirname a)
                         ) (Filename.basename a)
 

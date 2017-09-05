@@ -11350,7 +11350,7 @@ val get_extension : string -> string
        (Filename.basename a)
    ]}
 *)
-val rel_normalized_absolute_path : string -> string -> string 
+val rel_normalized_absolute_path : from:string -> string -> string 
 
 
 val normalize_absolute_path : string -> string
@@ -11482,7 +11482,10 @@ let get_extension x =
   else Ext_string.tail_from x pos 
   
 
-let (//) = Filename.concat  
+let (//) x y =
+  if x = Filename.current_dir_name then y
+  else if y = Filename.current_dir_name then x 
+  else Filename.concat x y 
 
 (**
    {[
@@ -11528,7 +11531,7 @@ let split_aux p =
    TODO: optimization
    if [from] and [to] resolve to the same path, a zero-length string is returned 
 *)
-let rel_normalized_absolute_path from to_ =
+let rel_normalized_absolute_path ~from to_ =
   let root1, paths1 = split_aux from in 
   let root2, paths2 = split_aux to_ in 
   if root1 <> root2 then root2
@@ -11537,6 +11540,8 @@ let rel_normalized_absolute_path from to_ =
       match xss, yss with 
       | x::xs, y::ys -> 
         if Ext_string.equal x  y then go xs ys 
+        else if x = Filename.current_dir_name then go xs yss 
+        else if y = Filename.current_dir_name then go xss ys
         else 
           let start = 
             List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
@@ -11673,26 +11678,26 @@ let suites =
     end;
 
     __LOC__ >:: begin fun _ -> 
-    let aux a b result = 
-        
-         Ext_path.rel_normalized_absolute_path
-        a b =~ result ; 
-        
-        Ext_path.rel_normalized_absolute_path
-        (String.sub a 0 (String.length a - 1)) 
-        b  =~ result ;
-        
-        Ext_path.rel_normalized_absolute_path
-        a
-        (String.sub b 0 (String.length b - 1))  =~ result
-        ;
-        
+      let aux a b result = 
 
         Ext_path.rel_normalized_absolute_path
-        (String.sub a 0 (String.length a - 1 ))
-        (String.sub b 0 (String.length b - 1))
+          ~from:a b =~ result ; 
+
+        Ext_path.rel_normalized_absolute_path
+          ~from:(String.sub a 0 (String.length a - 1)) 
+          b  =~ result ;
+
+        Ext_path.rel_normalized_absolute_path
+          ~from:a
+          (String.sub b 0 (String.length b - 1))  =~ result
+        ;
+
+
+        Ext_path.rel_normalized_absolute_path
+          ~from:(String.sub a 0 (String.length a - 1 ))
+          (String.sub b 0 (String.length b - 1))
         =~ result  
-       in   
+      in   
       aux
         "/a/b/c/"
         "/a/b/c/d/"  "d";
@@ -11708,30 +11713,36 @@ let suites =
       aux
         "/a/b/c/d/"
         "/a/"  "../../.."  ;  
-       aux
+      aux
         "/a/b/c/d/"
         "//"  "../../../.."  ;  
-     
-     
+
+
     end;
     (* This is still correct just not optimal depends 
-      on user's perspective *)
+       on user's perspective *)
     __LOC__ >:: begin fun _ -> 
       Ext_path.rel_normalized_absolute_path 
-        "/a/b/c/d"
+        ~from:"/a/b/c/d"
         "/x/y" =~ "../../../../x/y"  
 
     end;
-    
+
     __LOC__ >:: begin fun _ -> 
-    Ext_path.rel_normalized_absolute_path
-    "/usr/local/lib/node_modules/"
-    "//" =~ "../../../..";
-    Ext_path.rel_normalized_absolute_path
-    "/usr/local/lib/node_modules/"
-    "/" =~ "../../../.."
+      Ext_path.rel_normalized_absolute_path
+        ~from:"/usr/local/lib/node_modules/"
+        "//" =~ "../../../..";
+      Ext_path.rel_normalized_absolute_path
+        ~from:"/usr/local/lib/node_modules/"
+        "/" =~ "../../../..";
+      Ext_path.rel_normalized_absolute_path
+        ~from:"./"
+        "./node_modules/xx/./xx.js" =~ "node_modules/xx/xx.js";
+      Ext_path.rel_normalized_absolute_path
+        ~from:"././"
+        "./node_modules/xx/./xx.js" =~ "node_modules/xx/xx.js"        
     end;
-    
+
   ]
 
 end

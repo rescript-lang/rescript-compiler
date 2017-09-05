@@ -32,10 +32,10 @@ let string_of_module_id_in_browser (x : Lam_module_ident.t) =
     match x.kind with
     | External name -> name
     | Runtime | Ml -> 
-      "stdlib" // String.uncapitalize x.id.name
+      "stdlib/" ^  String.uncapitalize x.id.name
 let string_of_module_id 
-    ~output_dir
-    module_system
+    ~output_dir:(_:string)
+    (_module_system : Js_packages_info.module_system)
     id = string_of_module_id_in_browser id
 #else
     

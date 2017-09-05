@@ -77,7 +77,7 @@ val get_extension : string -> string
        (Filename.basename a)
    ]}
 *)
-val rel_normalized_absolute_path : string -> string -> string 
+val rel_normalized_absolute_path : from:string -> string -> string 
 
 
 val normalize_absolute_path : string -> string
