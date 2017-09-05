@@ -4287,9 +4287,9 @@ let suites =
       (* Printf.printf "\n*>%s" v_output.stderr ; *)
     end; 
     __LOC__ >:: begin fun _ -> 
-      let simple_quote = 
+      let v_output = 
         perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
-      OUnit.assert_bool __LOC__ (simple_quote.exit_code = 0)
+      OUnit.assert_bool __LOC__ (v_output.exit_code = 0)
     end;
     __LOC__ >:: begin fun _ -> 
       let should_be_warning = 
