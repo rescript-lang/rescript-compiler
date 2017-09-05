@@ -41,9 +41,10 @@ let report_error ppf = Typemod.(function
       fprintf ppf "@[";
       if Super_reason_react.type_is_component_spec typ then begin
         fprintf ppf "@[<v>\
-          @[@{<info>Is this a ReasonReact component with state or retained props?@}@ If so, this error will disappear after:@]@,\
+          @[@{<info>Is this a ReasonReact component with state/reducer or retained props?@}@ If so, this error will disappear after:@]@,\
           @[- Defining the component's `make` function@]@,\
           @[- Using the state once or annotating it with a type where it's used (e.g. render)@]\
+          @[- Using the action once or annotating it with a type where it's used (e.g. reducer)@]\
           @[- Do the same for retained props, if any@]@,@,\
           @[@{<info>Here's the original error message@}@]\
         @]@,"
