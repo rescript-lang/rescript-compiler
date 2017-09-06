@@ -26,7 +26,7 @@ let bsdeps = ".bsdeps"
 
 let bsppx_exe = "bsppx.exe"
 
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 
 (** Regenerate ninja file by need based on [.bsdeps]
     return None if we dont need regenerate

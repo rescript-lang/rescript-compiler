@@ -164,7 +164,7 @@ let export_to_cmj
   let () =
     if !Js_config.default_gen_tds && not ( Ext_string.is_empty meta.filename) then
       Ext_pervasives.with_file_as_pp
-        (Ext_filename.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
+        (Ext_path.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
       @@ fun fmt ->
       pp fmt "@[<v>%a@]@." (dump meta) meta.exports in
   let effect = get_effect meta maybe_pure external_ids in

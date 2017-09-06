@@ -1,0 +1,11 @@
+{
+    "name" : "gg",
+    "bs-dependencies": [
+        "xx"
+    ],
+    "sources" : ".",
+    "package-specs" : [{
+        "module" : "es6-global"
+        ,"in-source": true
+    }]
+}

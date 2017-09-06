@@ -299,7 +299,7 @@ let dump env ext  lam =
         incr log_counter;
         Ext_log.dwarn __LOC__ "\n@[[TIME:]%s: %f@]@." ext (Sys.time () *. 1000.);
         Lam_print.seriaize env 
-          (Ext_filename.chop_extension 
+          (Ext_path.chop_extension 
              ~loc:__LOC__ 
              (Js_config.get_current_file ()) ^ 
            (Printf.sprintf ".%02d%s.lam" !log_counter ext)
