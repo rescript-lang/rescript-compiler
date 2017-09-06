@@ -3,6 +3,8 @@ BuckleScript vendors OCaml sourcetree and Ninja using git subtree
 https://www.atlassian.com/blog/git/alternatives-to-git-submodule-git-subtree
 
 
+`rollup` is vendored only for testing at this time.
+
 # Notes for changes to OCaml compiler
 
 Suppose you add ocaml as remote

@@ -291,7 +291,7 @@ let compile  ~filename output_prefix env _sigs
     Ext_log.dwarn __LOC__ "After coercion: %a@." Lam_stats.print meta ;
     if Js_config.is_same_file () then
       let f =
-        Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
+        Ext_path.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
       Ext_pervasives.with_file_as_pp f begin fun fmt ->
         Format.pp_print_list ~pp_sep:Format.pp_print_newline
           (Lam_group.pp_group env) fmt (coerced_input.groups) 
@@ -312,7 +312,7 @@ let compile  ~filename output_prefix env _sigs
   let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Post-compile: %f@]@."  (Sys.time () *. 1000.) in      
 #end    
   (* The file is not big at all compared with [cmo] *)
-  (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
+  (* Ext_marshal.to_file (Ext_path.chop_extension filename ^ ".mj")  js; *)
   let js : J.program = 
       { J.name = filename ; 
         exports = meta.exports ; 

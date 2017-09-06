@@ -27,7 +27,7 @@
 let cwd = Sys.getcwd ()
 let bsc_dir = Bsb_build_util.get_bsc_dir cwd 
 let () =  Bsb_log.setup () 
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 let force_regenerate = ref false
 let exec = ref false
 let node_lit = "node"

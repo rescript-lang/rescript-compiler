@@ -26,15 +26,31 @@ module P = Ext_pp
 module L = Js_dump_lit 
 
 
+
+#if BS_COMPILER_IN_BROWSER then   
+let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
+    match x.kind with
+    | External name -> name
+    | Runtime | Ml -> 
+      "stdlib/" ^  String.uncapitalize x.id.name
 let string_of_module_id 
+    ~output_dir:(_:string)
+    (_module_system : Js_packages_info.module_system)
+    id = string_of_module_id_in_browser id
+#else
+    
+let string_of_module_id 
+    ~output_dir
     module_system
     id
   = 
   Js_packages_info.string_of_module_id
+    ~output_dir
     module_system
     (Js_packages_state.get_packages_info ())
     Lam_compile_env.get_package_path_from_cmj
-    id
+    id    
+#end
 
 let program f cxt   ( x : J.program ) = 
   let () = P.force_newline f in
@@ -46,7 +62,7 @@ let dump_program (x : J.program) oc =
   ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
 
-let node_program ~output_prefix f ( x : J.deps_program) = 
+let node_program ~output_dir f ( x : J.deps_program) = 
   let cxt = 
     Js_dump_import_export.requires 
       L.require
@@ -55,7 +71,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            string_of_module_id
+            string_of_module_id ~output_dir
               NodeJS 
               x)
          x.modules)
@@ -63,7 +79,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
   program f cxt x.program  
 
 
-let amd_program ~output_prefix kind f (  x : J.deps_program) = 
+let amd_program ~output_dir kind f (  x : J.deps_program) = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
   P.vgroup f 1 @@ fun _ -> 
@@ -73,7 +89,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
 
   List.iter (fun x ->
       let s : string = 
-        string_of_module_id
+        string_of_module_id ~output_dir
           kind 
           x in
       P.string f L.comma ;
@@ -104,7 +120,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
   v
 
 
-let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
+let es6_program  ~output_dir fmt f (  x : J.deps_program) = 
   let cxt = 
     Js_dump_import_export.imports
       Ext_pp_scope.empty
@@ -112,7 +128,7 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            string_of_module_id
+            string_of_module_id ~output_dir
               fmt 
               x)
          x.modules)
@@ -143,13 +159,14 @@ let pp_deps_program
       end ; 
     P.string f L.strict_directive; 
     P.newline f ;    
+    let output_dir = Filename.dirname output_prefix in 
     ignore (match kind with 
         | Es6 | Es6_global -> 
-          es6_program ~output_prefix kind f program
+          es6_program ~output_dir kind f program
         | AmdJS | AmdJS_global -> 
-          amd_program ~output_prefix kind f program
+          amd_program ~output_dir kind f program
         | NodeJS -> 
-          node_program ~output_prefix f program
+          node_program ~output_dir f program
       ) ;
     P.newline f ;
     P.string f (

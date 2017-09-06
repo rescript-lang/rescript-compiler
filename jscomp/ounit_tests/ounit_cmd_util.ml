@@ -102,7 +102,7 @@ let perform_bsc args =
          stdlib_dir
        |] args)
 
-let bsc_eval str = 
+let bsc_check_eval str = 
   perform_bsc [|"-bs-eval"; str|]        
 
   let debug_output o = 
