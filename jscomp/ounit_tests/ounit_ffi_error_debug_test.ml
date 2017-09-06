@@ -11,7 +11,7 @@ let (=~) = OUnit.assert_equal
 
 
 
-let bsc_eval = Ounit_cmd_util.bsc_eval
+let bsc_eval = Ounit_cmd_util.bsc_check_eval
 
 let debug_output = Ounit_cmd_util.debug_output
 

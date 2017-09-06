@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 
 (* we need copy package.json into [_build] since it does affect build output
    it is a bad idea to copy package.json which requires to copy js files

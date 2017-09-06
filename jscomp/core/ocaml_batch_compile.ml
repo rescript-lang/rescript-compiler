@@ -81,7 +81,7 @@ let batch_compile ppf search_dirs files main_file =
   ;
   begin match main_file with
     | Main main_file -> 
-      let main_module = (Ext_filename.module_name_of_file main_file) in
+      let main_module = (Ext_modulename.module_name_of_file main_file) in
       let ast_table, result =
         Ast_extract.collect_from_main ppf 
           ~extra_dirs:(List.map

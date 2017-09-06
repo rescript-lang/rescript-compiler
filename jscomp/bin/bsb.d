@@ -16,6 +16,7 @@ bin/bsb.ml : bsb/bsb_unix.ml
 bin/bsb.ml : bsb/oCamlRes.ml
 bin/bsb.ml : ext/ext_json.ml
 bin/bsb.ml : ext/ext_list.ml
+bin/bsb.ml : ext/ext_path.ml
 bin/bsb.ml : ext/ext_sys.mli
 bin/bsb.ml : ext/ext_util.ml
 bin/bsb.ml : ext/literals.ml
@@ -33,6 +34,7 @@ bin/bsb.ml : ext/ext_bytes.ml
 bin/bsb.ml : ext/ext_color.ml
 bin/bsb.ml : ext/ext_json.mli
 bin/bsb.ml : ext/ext_list.mli
+bin/bsb.ml : ext/ext_path.mli
 bin/bsb.ml : ext/ext_util.mli
 bin/bsb.ml : ext/literals.mli
 bin/bsb.ml : bsb/bsb_bsdeps.ml
@@ -83,6 +85,7 @@ bin/bsb.ml : common/bs_version.mli
 bin/bsb.ml : ext/ext_json_noloc.ml
 bin/bsb.ml : ext/ext_json_parse.ml
 bin/bsb.ml : ext/ext_json_types.ml
+bin/bsb.ml : ext/ext_modulename.ml
 bin/bsb.ml : ext/ext_namespace.mli
 bin/bsb.ml : ext/ext_pervasives.ml
 bin/bsb.ml : ext/string_hashtbl.ml
@@ -95,6 +98,7 @@ bin/bsb.ml : bsb/bsb_pkg_map_gen.ml
 bin/bsb.ml : bsb/bsb_watcher_gen.ml
 bin/bsb.ml : ext/ext_json_noloc.mli
 bin/bsb.ml : ext/ext_json_parse.mli
+bin/bsb.ml : ext/ext_modulename.mli
 bin/bsb.ml : ext/ext_pervasives.mli
 bin/bsb.ml : ext/string_hash_set.ml
 bin/bsb.ml : ext/string_hashtbl.mli

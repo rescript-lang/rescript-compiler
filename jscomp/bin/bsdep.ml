@@ -25225,7 +25225,6 @@ val suffix_cmti : string
 
 val commonjs : string 
 val amdjs : string 
-val goog : string 
 val es6 : string 
 val es6_global : string
 val amdjs_global : string 
@@ -25243,6 +25242,9 @@ val native : string
 val bytecode : string
 val js : string
 
+val node_sep : string 
+val node_parent : string 
+val node_current : string 
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -25354,7 +25356,6 @@ let suffix_js = ".js"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
-let goog = "goog"
 let es6 = "es6"
 let es6_global = "es6-global"
 let amdjs_global = "amdjs-global"
@@ -25370,6 +25371,14 @@ let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
 let native = "native"
 let bytecode = "bytecode"
 let js = "js"
+
+
+
+(** Used when produce node compatible paths *)
+let node_sep = "/"
+let node_parent = ".."
+let node_current = "."
+
 
 end
 module Bs_warnings : sig 

@@ -22119,979 +22119,6 @@ and add_class_declaration bv decl =
   add_class_expr bv decl.pci_expr
 
 end
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
-val is_pos_pow : Int32.t -> int
-
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-val dump : 'a -> string 
-val pp_any : Format.formatter -> 'a -> unit 
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
-
-
-let rec dump r =
-  if Obj.is_int r then
-    string_of_int (Obj.magic r : int)
-  else (* Block. *)
-    let rec get_fields acc = function
-      | 0 -> acc
-      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
-    in
-    let rec is_list r =
-      if Obj.is_int r then
-        r = Obj.repr 0 (* [] *)
-      else
-        let s = Obj.size r and t = Obj.tag r in
-        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
-    in
-    let rec get_list r =
-      if Obj.is_int r then
-        []
-      else
-        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
-        h :: t
-    in
-    let opaque name =
-      (* XXX In future, print the address of value 'r'.  Not possible
-       * in pure OCaml at the moment.  *)
-      "<" ^ name ^ ">"
-    in
-    let s = Obj.size r and t = Obj.tag r in
-    (* From the tag, determine the type of block. *)
-    match t with
-    | _ when is_list r ->
-      let fields = get_list r in
-      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
-    | 0 ->
-      let fields = get_fields [] s in
-      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.lazy_tag ->
-      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
-         * clear if very large constructed values could have the same
-         * tag. XXX *)
-      opaque "lazy"
-    | x when x = Obj.closure_tag ->
-      opaque "closure"
-    | x when x = Obj.object_tag ->
-      let fields = get_fields [] s in
-      let _clasz, id, slots =
-        match fields with
-        | h::h'::t -> h, h', t
-        | _ -> assert false
-      in
-      (* No information on decoding the class (first field).  So just print
-         * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
-    | x when x = Obj.infix_tag ->
-      opaque "infix"
-    | x when x = Obj.forward_tag ->
-      opaque "forward"
-    | x when x < Obj.no_scan_tag ->
-      let fields = get_fields [] s in
-      "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
-    | x when x = Obj.string_tag ->
-      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
-    | x when x = Obj.double_tag ->
-      string_of_float (Obj.magic r : float)
-    | x when x = Obj.abstract_tag ->
-      opaque "abstract"
-    | x when x = Obj.custom_tag ->
-      opaque "custom"
-    | x when x = Obj.custom_tag ->
-      opaque "final"
-    | x when x = Obj.double_array_tag ->
-      "[|"^
-      String.concat ";"
-        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
-      "|]"
-    | _ ->
-      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
-
-let dump v = dump (Obj.repr v)
-
-let pp_any fmt v = 
-  Format.fprintf fmt "@[%s@]"
-  (dump v )
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
-
-end
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-
-val app : string
-val app_array : string
-
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val debugger : string
-val raw_expr : string
-val raw_stmt : string
-val unsafe_downgrade : string
-val fn_run : string
-val method_run : string
-val fn_method : string
-val fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-(* val js_fn_runmethod : string *)
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string
-val bsconfig_json : string
-val build_ninja : string
-
-(* Name of the library file created for each external dependency. *)
-val library_file : string
-
-val suffix_a : string
-val suffix_cmj : string
-val suffix_cmo : string
-val suffix_cma : string
-val suffix_cmi : string
-val suffix_cmx : string
-val suffix_cmxa : string
-val suffix_ml : string
-val suffix_mlast : string 
-val suffix_mlast_simple : string
-val suffix_mliast : string
-val suffix_mliast_simple : string
-val suffix_mlmap : string
-val suffix_mll : string
-val suffix_re : string
-val suffix_rei : string 
-
-val suffix_d : string
-val suffix_mlastd : string
-val suffix_mliastd : string
-val suffix_js : string
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
-
-val commonjs : string 
-val amdjs : string 
-val goog : string 
-val es6 : string 
-val es6_global : string
-val amdjs_global : string 
-val unused_attribute : string 
-val dash_nostdlib : string
-
-val reactjs_jsx_ppx_exe : string 
-val reactjs_jsx_ppx_2_exe : string 
-val unescaped_j_delimiter : string 
-val escaped_j_delimiter : string 
-
-val unescaped_js_delimiter : string 
-
-val native : string
-val bytecode : string
-val js : string
-
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let debugger = "debugger"
-let raw_expr = "raw_expr"
-let raw_stmt = "raw_stmt"
-let unsafe_downgrade = "unsafe_downgrade"
-let fn_run = "fn_run"
-let method_run = "method_run"
-
-let fn_method = "fn_method"
-let fn_mk = "fn_mk"
-(*let js_fn_runmethod = "js_fn_runmethod"*)
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-let bsconfig_json = "bsconfig.json"
-let build_ninja = "build.ninja"
-
-(* Name of the library file created for each external dependency. *)
-let library_file = "lib"
-
-let suffix_a = ".a"
-let suffix_cmj = ".cmj"
-let suffix_cmo = ".cmo"
-let suffix_cma = ".cma"
-let suffix_cmi = ".cmi"
-let suffix_cmx = ".cmx"
-let suffix_cmxa = ".cmxa"
-let suffix_mll = ".mll"
-let suffix_ml = ".ml"
-let suffix_mli = ".mli"
-let suffix_re = ".re"
-let suffix_rei = ".rei"
-let suffix_mlmap = ".mlmap"
-
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
-let suffix_mlast = ".mlast"
-let suffix_mlast_simple = ".mlast_simple"
-let suffix_mliast = ".mliast"
-let suffix_mliast_simple = ".mliast_simple"
-let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
-
-let commonjs = "commonjs" 
-let amdjs = "amdjs"
-let goog = "goog"
-let es6 = "es6"
-let es6_global = "es6-global"
-let amdjs_global = "amdjs-global"
-let unused_attribute = "Unused attribute " 
-let dash_nostdlib = "-nostdlib"
-
-let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
-let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
-let unescaped_j_delimiter = "j"
-let unescaped_js_delimiter = "js"
-let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
-
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
-
-end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
-type t = 
-  [ `File of string 
-  | `Dir of string ]
-
-val combine : string -> string -> string 
-val path_as_directory : string -> string
-
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
- *)
-
-(** Js_output is node style, which means 
-    separator is only '/'
-
-    if the path contains 'node_modules', 
-    [node_relative_path] will discard its prefix and 
-    just treat it as a library instead
- *)
-
-val node_relative_path : bool -> t -> [`File of string] -> string
-
-val chop_extension : ?loc:string -> string -> string
-
-
-
-
-
-
-val cwd : string Lazy.t
-
-(* It is lazy so that it will not hit errors when in script mode *)
-val package_dir : string Lazy.t
-
-
-
-val module_name_of_file : string -> string
-
-val chop_extension_if_any : string -> string
-
-val absolute_path : string -> string
-
-val module_name_of_file_if_any : string -> string
-
-(**
-   1. add some simplifications when concatenating
-   2. when the second one is absolute, drop the first one
-*)
-val combine : string -> string -> string
-
-val normalize_absolute_path : string -> string
-
-(** 
-TODO: could be highly optimized
-if [from] and [to] resolve to the same path, a zero-length string is returned 
-Given that two paths are directory
-
-A typical use case is 
-{[
-Filename.concat 
-  (rel_normalized_absolute_path cwd (Filename.dirname a))
-  (Filename.basename a)
-]}
-*)
-val rel_normalized_absolute_path : string -> string -> string 
-
-
-
-(**
-{[
-get_extension "a.txt" = ".txt"
-get_extension "a" = ""
-]}
-*)
-val get_extension : string -> string
-
-val simple_convert_node_path_to_os_path : string -> string
-
-
-end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Used when produce node compatible paths *)
-let node_sep = "/"
-let node_parent = ".."
-let node_current = "."
-
-type t = 
-  [ `File of string 
-  | `Dir of string ]
-
-let cwd = lazy (Sys.getcwd ())
-
-let (//) = Filename.concat 
-
-let combine path1 path2 =
-  if path1 = "" then
-    path2
-  else if path2 = "" then path1
-  else 
-  if Filename.is_relative path2 then
-    path1// path2 
-  else
-    path2
-
-(* Note that [.//] is the same as [./] *)
-let path_as_directory x =
-  if x = "" then x
-  else
-  if Ext_string.ends_with x  Filename.dir_sep then
-    x 
-  else 
-    x ^ Filename.dir_sep
-
-let absolute_path s = 
-  let process s = 
-    let s = 
-      if Filename.is_relative s then
-        Lazy.force cwd // s 
-      else s in
-    (* Now simplify . and .. components *)
-    let rec aux s =
-      let base,dir  = Filename.basename s, Filename.dirname s  in
-      if dir = s then dir
-      else if base = Filename.current_dir_name then aux dir
-      else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
-      else aux dir // base
-    in aux s  in 
-  process s 
-
-
-let chop_extension ?(loc="") name =
-  try Filename.chop_extension name 
-  with Invalid_argument _ -> 
-    Ext_pervasives.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
-
-let chop_extension_if_any fname =
-  try Filename.chop_extension fname with Invalid_argument _ -> fname
-
-
-
-
-
-let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
-
-
-(** example
-    {[
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-    ]}
-
-    The other way
-    {[
-
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
-        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
-    ]}
-    {[
-      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
-    ]}
-    {[
-      /a/b
-      /c/d
-    ]}
-*)
-let relative_path file_or_dir_1 file_or_dir_2 = 
-  let sep_char = os_path_separator_char in
-  let relevant_dir1 = 
-    (match file_or_dir_1 with 
-     | `Dir x -> x 
-     | `File file1 ->  Filename.dirname file1) in
-  let relevant_dir2 = 
-    (match file_or_dir_2 with 
-     |`Dir x -> x 
-     |`File file2 -> Filename.dirname file2 ) in
-  let dir1 = Ext_string.split relevant_dir1 sep_char   in
-  let dir2 = Ext_string.split relevant_dir2 sep_char  in
-  let rec go (dir1 : string list) (dir2 : string list) = 
-    match dir1, dir2 with 
-    | x::xs , y :: ys when x = y
-      -> go xs ys 
-    | _, _
-      -> 
-      List.map (fun _ -> node_parent) dir2 @ dir1 
-  in
-  match go dir1 dir2 with
-  | (x :: _ ) as ys when x = node_parent -> 
-    String.concat node_sep ys
-  | ys -> 
-    String.concat node_sep  @@ node_current :: ys
-
-
-(** path2: a/b 
-    path1: a 
-    result:  ./b 
-    TODO: [Filename.concat] with care
-
-    [file1] is currently compilation file 
-    [file2] is the dependency
-    
-    TODO: this is a hackish function: FIXME
-*)
-let node_relative_path node_modules_shorten (file1 : t) 
-    (`File file2 as dep_file : [`File of string]) = 
-  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
-  let len = String.length file2 in 
-  if node_modules_shorten && v >= 0 then
-    
-    let rec skip  i =       
-      if i >= len then
-        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
-      else 
-        (* https://en.wikipedia.org/wiki/Path_(computing))
-           most path separator are a single char 
-        *)
-        let curr_char = String.unsafe_get file2 i  in 
-        if curr_char = os_path_separator_char || curr_char = '.' then 
-          skip (i + 1) 
-        else i
-        (*
-          TODO: we need do more than this suppose user 
-          input can be
-           {[
-             "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
-           ]}
-           This seems weird though
-        *)
-    in 
-    Ext_string.tail_from file2
-      (skip (v + Literals.node_modules_length)) 
-  else 
-    relative_path 
-      (  match dep_file with 
-         | `File x -> `File (absolute_path x)
-         | `Dir x -> `Dir (absolute_path x))
-
-      (match file1 with 
-       | `File x -> `File (absolute_path x)
-       | `Dir x -> `Dir(absolute_path x))
-    ^ node_sep ^
-    (* chop_extension_if_any *) (Filename.basename file2)
-
-
-
-(* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  if Sys.file_exists (cwd // filename) then cwd
-  else 
-    let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      find_root_filename ~cwd:cwd'  filename 
-    else 
-      Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
-
-
-let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
-
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
-
-
-
-let module_name_of_file file =
-  String.capitalize 
-    (Filename.chop_extension @@ Filename.basename file)  
-
-let module_name_of_file_if_any file = 
-  String.capitalize 
-    (chop_extension_if_any @@ Filename.basename file)  
-
-
-(** For win32 or case insensitve OS 
-    [".cmj"] is the same as [".CMJ"]
-*)
-(* let has_exact_suffix_then_chop fname suf =  *)
-
-let combine p1 p2 = 
-  if p1 = "" || p1 = Filename.current_dir_name then p2 else 
-  if p2 = "" || p2 = Filename.current_dir_name then p1 
-  else 
-  if Filename.is_relative p2 then 
-    Filename.concat p1 p2 
-  else p2 
-
-
-
-(**
-   {[
-     split_aux "//ghosg//ghsogh/";;
-     - : string * string list = ("/", ["ghosg"; "ghsogh"])
-   ]}
-   Note that 
-   {[
-     Filename.dirname "/a/" = "/"
-       Filename.dirname "/a/b/" = Filename.dirname "/a/b" = "/a"
-   ]}
-   Special case:
-   {[
-     basename "//" = "/"
-       basename "///"  = "/"
-   ]}
-   {[
-     basename "" =  "."
-       basename "" = "."
-       dirname "" = "."
-       dirname "" =  "."
-   ]}  
-*)
-let split_aux p =
-  let rec go p acc =
-    let dir = Filename.dirname p in
-    if dir = p then dir, acc
-    else
-      let new_path = Filename.basename p in 
-      if Ext_string.equal new_path Filename.dir_sep then 
-        go dir acc 
-        (* We could do more path simplification here
-           leave to [rel_normalized_absolute_path]
-        *)
-      else 
-        go dir (new_path :: acc)
-
-  in go p []
-
-
-
-(** 
-   TODO: optimization
-   if [from] and [to] resolve to the same path, a zero-length string is returned 
-*)
-let rel_normalized_absolute_path from to_ =
-  let root1, paths1 = split_aux from in 
-  let root2, paths2 = split_aux to_ in 
-  if root1 <> root2 then root2
-  else
-    let rec go xss yss =
-      match xss, yss with 
-      | x::xs, y::ys -> 
-        if Ext_string.equal x  y then go xs ys 
-        else 
-          let start = 
-            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-              Ext_string.parent_dir_lit  xs in 
-          List.fold_left (fun acc v -> acc // v) start yss
-      | [], [] -> Ext_string.empty
-      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
-      | x::xs, [] ->
-        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
-          Ext_string.parent_dir_lit xs in
-    go paths1 paths2
-
-(*TODO: could be hgighly optimized later 
-  {[
-    normalize_absolute_path "/gsho/./..";;
-
-    normalize_absolute_path "/a/b/../c../d/e/f";;
-
-    normalize_absolute_path "/gsho/./..";;
-
-    normalize_absolute_path "/gsho/./../..";;
-
-    normalize_absolute_path "/a/b/c/d";;
-
-    normalize_absolute_path "/a/b/c/d/";;
-
-    normalize_absolute_path "/a/";;
-
-    normalize_absolute_path "/a";;
-  ]}
-*)
-(** See tests in {!Ounit_path_tests} *)
-let normalize_absolute_path x =
-  let drop_if_exist xs =
-    match xs with 
-    | [] -> []
-    | _ :: xs -> xs in 
-  let rec normalize_list acc paths =
-    match paths with 
-    | [] -> acc 
-    | x :: xs -> 
-      if Ext_string.equal x Ext_string.current_dir_lit then 
-        normalize_list acc xs 
-      else if Ext_string.equal x Ext_string.parent_dir_lit then 
-        normalize_list (drop_if_exist acc ) xs 
-      else   
-        normalize_list (x::acc) xs 
-  in
-  let root, paths = split_aux x in
-  let rev_paths =  normalize_list [] paths in 
-  let rec go acc rev_paths =
-    match rev_paths with 
-    | [] -> Filename.concat root acc 
-    | last::rest ->  go (Filename.concat last acc ) rest  in 
-  match rev_paths with 
-  | [] -> root 
-  | last :: rest -> go last rest 
-
-
-let get_extension x =
-  let pos = Ext_string.rindex_neg x '.' in 
-  if pos < 0 then ""
-  else Ext_string.tail_from x pos 
-
-
-let simple_convert_node_path_to_os_path =
-  if Sys.unix then fun x -> x 
-  else if Sys.win32 || Sys.cygwin then 
-    Ext_string.replace_slash_backward 
-  else failwith ("Unknown OS : " ^ Sys.os_type)
-
-
-
-end
 module Ext_format : sig 
 #1 "ext_format.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -23855,6 +22882,952 @@ let nth_opt l n =
     | [] -> None
     | a::l -> if n = 0 then Some a else nth_aux l (n-1)
   in nth_aux l n
+end
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
+
+external reraise: exn -> 'a = "%reraise"
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
+
+val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+val dump : 'a -> string 
+val pp_any : Format.formatter -> 'a -> unit 
+external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
+
+end = struct
+#1 "ext_pervasives.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+external reraise: exn -> 'a = "%reraise"
+
+let finally v action f   = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let with_file_as_chan filename f = 
+  finally (open_out_bin filename) close_out f 
+
+let with_file_as_pp filename f = 
+  finally (open_out_bin filename) close_out
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) 
+
+
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
+
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt
+
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
+
+let rec dump r =
+  if Obj.is_int r then
+    string_of_int (Obj.magic r : int)
+  else (* Block. *)
+    let rec get_fields acc = function
+      | 0 -> acc
+      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
+    in
+    let rec is_list r =
+      if Obj.is_int r then
+        r = Obj.repr 0 (* [] *)
+      else
+        let s = Obj.size r and t = Obj.tag r in
+        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
+    in
+    let rec get_list r =
+      if Obj.is_int r then
+        []
+      else
+        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
+        h :: t
+    in
+    let opaque name =
+      (* XXX In future, print the address of value 'r'.  Not possible
+       * in pure OCaml at the moment.  *)
+      "<" ^ name ^ ">"
+    in
+    let s = Obj.size r and t = Obj.tag r in
+    (* From the tag, determine the type of block. *)
+    match t with
+    | _ when is_list r ->
+      let fields = get_list r in
+      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
+    | 0 ->
+      let fields = get_fields [] s in
+      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.lazy_tag ->
+      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
+         * clear if very large constructed values could have the same
+         * tag. XXX *)
+      opaque "lazy"
+    | x when x = Obj.closure_tag ->
+      opaque "closure"
+    | x when x = Obj.object_tag ->
+      let fields = get_fields [] s in
+      let _clasz, id, slots =
+        match fields with
+        | h::h'::t -> h, h', t
+        | _ -> assert false
+      in
+      (* No information on decoding the class (first field).  So just print
+         * out the ID and the slots. *)
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
+    | x when x = Obj.infix_tag ->
+      opaque "infix"
+    | x when x = Obj.forward_tag ->
+      opaque "forward"
+    | x when x < Obj.no_scan_tag ->
+      let fields = get_fields [] s in
+      "Tag" ^ string_of_int t ^
+      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
+    | x when x = Obj.string_tag ->
+      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
+    | x when x = Obj.double_tag ->
+      string_of_float (Obj.magic r : float)
+    | x when x = Obj.abstract_tag ->
+      opaque "abstract"
+    | x when x = Obj.custom_tag ->
+      opaque "custom"
+    | x when x = Obj.custom_tag ->
+      opaque "final"
+    | x when x = Obj.double_array_tag ->
+      "[|"^
+      String.concat ";"
+        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
+      "|]"
+    | _ ->
+      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
+
+let dump v = dump (Obj.repr v)
+
+let pp_any fmt v = 
+  Format.fprintf fmt "@[%s@]"
+  (dump v )
+external id : 'a -> 'a = "%identity"
+
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
+
+end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val debugger : string
+val raw_expr : string
+val raw_stmt : string
+val unsafe_downgrade : string
+val fn_run : string
+val method_run : string
+val fn_method : string
+val fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+(* val js_fn_runmethod : string *)
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
+
+(* Name of the library file created for each external dependency. *)
+val library_file : string
+
+val suffix_a : string
+val suffix_cmj : string
+val suffix_cmo : string
+val suffix_cma : string
+val suffix_cmi : string
+val suffix_cmx : string
+val suffix_cmxa : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mlast_simple : string
+val suffix_mliast : string
+val suffix_mliast_simple : string
+val suffix_mlmap : string
+val suffix_mll : string
+val suffix_re : string
+val suffix_rei : string 
+
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string
+val suffix_js : string
+val suffix_mli : string 
+val suffix_cmt : string 
+val suffix_cmti : string 
+
+val commonjs : string 
+val amdjs : string 
+val es6 : string 
+val es6_global : string
+val amdjs_global : string 
+val unused_attribute : string 
+val dash_nostdlib : string
+
+val reactjs_jsx_ppx_exe : string 
+val reactjs_jsx_ppx_2_exe : string 
+val unescaped_j_delimiter : string 
+val escaped_j_delimiter : string 
+
+val unescaped_js_delimiter : string 
+
+val native : string
+val bytecode : string
+val js : string
+
+val node_sep : string 
+val node_parent : string 
+val node_current : string 
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let debugger = "debugger"
+let raw_expr = "raw_expr"
+let raw_stmt = "raw_stmt"
+let unsafe_downgrade = "unsafe_downgrade"
+let fn_run = "fn_run"
+let method_run = "method_run"
+
+let fn_method = "fn_method"
+let fn_mk = "fn_mk"
+(*let js_fn_runmethod = "js_fn_runmethod"*)
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
+
+(* Name of the library file created for each external dependency. *)
+let library_file = "lib"
+
+let suffix_a = ".a"
+let suffix_cmj = ".cmj"
+let suffix_cmo = ".cmo"
+let suffix_cma = ".cma"
+let suffix_cmi = ".cmi"
+let suffix_cmx = ".cmx"
+let suffix_cmxa = ".cmxa"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mli = ".mli"
+let suffix_re = ".re"
+let suffix_rei = ".rei"
+let suffix_mlmap = ".mlmap"
+
+let suffix_cmt = ".cmt" 
+let suffix_cmti = ".cmti" 
+let suffix_mlast = ".mlast"
+let suffix_mlast_simple = ".mlast_simple"
+let suffix_mliast = ".mliast"
+let suffix_mliast_simple = ".mliast_simple"
+let suffix_d = ".d"
+let suffix_mlastd = ".mlast.d"
+let suffix_mliastd = ".mliast.d"
+let suffix_js = ".js"
+
+let commonjs = "commonjs" 
+let amdjs = "amdjs"
+let es6 = "es6"
+let es6_global = "es6-global"
+let amdjs_global = "amdjs-global"
+let unused_attribute = "Unused attribute " 
+let dash_nostdlib = "-nostdlib"
+
+let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
+let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
+let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
+let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+
+let native = "native"
+let bytecode = "bytecode"
+let js = "js"
+
+
+
+(** Used when produce node compatible paths *)
+let node_sep = "/"
+let node_parent = ".."
+let node_current = "."
+
+
+end
+module Ext_path : sig 
+#1 "ext_path.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | File of string 
+  | Dir of string 
+
+val sep_char : char 
+
+val node_relative_path : 
+  from:t -> 
+  t -> 
+  string
+
+val node_concat : dir:string -> string -> string 
+
+(**
+   1. add some simplifications when concatenating
+   2. when the second one is absolute, drop the first one
+*)  
+val combine : 
+  string -> 
+  string -> 
+  string    
+
+
+
+val chop_extension : ?loc:string -> string -> string 
+
+
+val chop_extension_if_any : string -> string
+
+
+(**
+   {[
+     get_extension "a.txt" = ".txt"
+       get_extension "a" = ""
+   ]}
+*)
+val get_extension : string -> string
+
+
+
+
+
+(** 
+   TODO: could be highly optimized
+   if [from] and [to] resolve to the same path, a zero-length string is returned 
+   Given that two paths are directory
+
+   A typical use case is 
+   {[
+     Filename.concat 
+       (rel_normalized_absolute_path cwd (Filename.dirname a))
+       (Filename.basename a)
+   ]}
+*)
+val rel_normalized_absolute_path : from:string -> string -> string 
+
+
+val normalize_absolute_path : string -> string
+
+val absolute_path : string Lazy.t -> string -> string
+
+val absolute : string Lazy.t -> t -> t 
+end = struct
+#1 "ext_path.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = 
+  | File of string 
+  | Dir of string 
+
+
+
+
+
+let sep_char = String.unsafe_get Filename.dir_sep 0 
+
+
+(** example
+    {[
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+    ]}
+
+    The other way
+    {[
+
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+        "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+    ]}
+    {[
+      "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
+    ]}
+    {[
+      /a/b
+      /c/d
+    ]}
+*)
+let node_relative_path 
+    ~from:(file_or_dir_2 : t )
+    (file_or_dir_1 : t) 
+  = 
+  let relevant_dir1 = 
+    match file_or_dir_1 with 
+    | Dir x -> x 
+    | File file1 ->  Filename.dirname file1 in
+  let relevant_dir2 = 
+    match file_or_dir_2 with 
+    | Dir x -> x 
+    | File file2 -> Filename.dirname file2  in
+  let dir1 = Ext_string.split relevant_dir1 sep_char   in
+  let dir2 = Ext_string.split relevant_dir2 sep_char  in
+  let rec go (dir1 : string list) (dir2 : string list) = 
+    match dir1, dir2 with 
+    | "." :: xs, ys -> go xs ys 
+    | xs , "." :: ys -> go xs ys 
+    | x::xs , y :: ys when x = y
+      -> go xs ys 
+    | _, _ -> 
+      List.map (fun _ ->  Literals.node_parent) dir2 @ dir1 
+  in
+  match go dir1 dir2 with
+  | (x :: _ ) as ys when x = Literals.node_parent -> 
+    String.concat Literals.node_sep ys
+  | ys -> 
+    String.concat Literals.node_sep  
+    @@ Literals.node_current :: ys
+
+
+let node_concat ~dir base =
+  dir ^ Literals.node_sep ^ base 
+
+
+(***
+   {[
+     Filename.concat "." "";;
+     "./"
+   ]}
+*)
+let combine path1 path2 =  
+  if Filename.is_relative path2 then
+    if Ext_string.is_empty path2 then 
+      path1
+    else 
+    if path1 = Filename.current_dir_name then 
+      path2
+    else
+    if path2 = Filename.current_dir_name 
+    then path1
+    else
+      Filename.concat path1 path2 
+  else
+    path2
+
+
+let chop_extension ?(loc="") name =
+  try Filename.chop_extension name 
+  with Invalid_argument _ -> 
+    Ext_pervasives.invalid_argf 
+      "Filename.chop_extension ( %s : %s )"  loc name
+
+let chop_extension_if_any fname =
+  try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+let get_extension x =
+  let pos = Ext_string.rindex_neg x '.' in 
+  if pos < 0 then ""
+  else Ext_string.tail_from x pos 
+
+
+let (//) x y =
+  if x = Filename.current_dir_name then y
+  else if y = Filename.current_dir_name then x 
+  else Filename.concat x y 
+
+(**
+   {[
+     split_aux "//ghosg//ghsogh/";;
+     - : string * string list = ("/", ["ghosg"; "ghsogh"])
+   ]}
+   Note that 
+   {[
+     Filename.dirname "/a/" = "/"
+       Filename.dirname "/a/b/" = Filename.dirname "/a/b" = "/a"
+   ]}
+   Special case:
+   {[
+     basename "//" = "/"
+       basename "///"  = "/"
+   ]}
+   {[
+     basename "" =  "."
+       basename "" = "."
+       dirname "" = "."
+       dirname "" =  "."
+   ]}  
+*)
+let split_aux p =
+  let rec go p acc =
+    let dir = Filename.dirname p in
+    if dir = p then dir, acc
+    else
+      let new_path = Filename.basename p in 
+      if Ext_string.equal new_path Filename.dir_sep then 
+        go dir acc 
+        (* We could do more path simplification here
+           leave to [rel_normalized_absolute_path]
+        *)
+      else 
+        go dir (new_path :: acc)
+
+  in go p []
+
+
+
+
+
+(** 
+   TODO: optimization
+   if [from] and [to] resolve to the same path, a zero-length string is returned 
+
+   This function is useed in [es6-global] and 
+   [amdjs-global] format and tailored for `rollup`
+*)
+let rel_normalized_absolute_path ~from to_ =
+  let root1, paths1 = split_aux from in 
+  let root2, paths2 = split_aux to_ in 
+  if root1 <> root2 then root2
+  else
+    let rec go xss yss =
+      match xss, yss with 
+      | x::xs, y::ys -> 
+        if Ext_string.equal x  y then go xs ys 
+        else if x = Filename.current_dir_name then go xs yss 
+        else if y = Filename.current_dir_name then go xss ys
+        else 
+          let start = 
+            List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
+              Ext_string.parent_dir_lit  xs in 
+          List.fold_left (fun acc v -> acc // v) start yss
+      | [], [] -> Ext_string.empty
+      | [], y::ys -> List.fold_left (fun acc x -> acc // x) y ys
+      | x::xs, [] ->
+        List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
+          Ext_string.parent_dir_lit xs in
+    let v =  go paths1 paths2  in 
+    
+    if Ext_string.is_empty v then  Literals.node_current
+    else 
+    if
+      v = "."
+      || v = ".."
+      || Ext_string.starts_with v "./"  
+      || Ext_string.starts_with v "../" 
+    then v 
+    else "./" ^ v 
+
+(*TODO: could be hgighly optimized later 
+  {[
+    normalize_absolute_path "/gsho/./..";;
+
+    normalize_absolute_path "/a/b/../c../d/e/f";;
+
+    normalize_absolute_path "/gsho/./..";;
+
+    normalize_absolute_path "/gsho/./../..";;
+
+    normalize_absolute_path "/a/b/c/d";;
+
+    normalize_absolute_path "/a/b/c/d/";;
+
+    normalize_absolute_path "/a/";;
+
+    normalize_absolute_path "/a";;
+  ]}
+*)
+(** See tests in {!Ounit_path_tests} *)
+let normalize_absolute_path x =
+  let drop_if_exist xs =
+    match xs with 
+    | [] -> []
+    | _ :: xs -> xs in 
+  let rec normalize_list acc paths =
+    match paths with 
+    | [] -> acc 
+    | x :: xs -> 
+      if Ext_string.equal x Ext_string.current_dir_lit then 
+        normalize_list acc xs 
+      else if Ext_string.equal x Ext_string.parent_dir_lit then 
+        normalize_list (drop_if_exist acc ) xs 
+      else   
+        normalize_list (x::acc) xs 
+  in
+  let root, paths = split_aux x in
+  let rev_paths =  normalize_list [] paths in 
+  let rec go acc rev_paths =
+    match rev_paths with 
+    | [] -> Filename.concat root acc 
+    | last::rest ->  go (Filename.concat last acc ) rest  in 
+  match rev_paths with 
+  | [] -> root 
+  | last :: rest -> go last rest 
+
+
+
+
+let absolute_path cwd s = 
+  let process s = 
+    let s = 
+      if Filename.is_relative s then
+        Lazy.force cwd // s 
+      else s in
+    (* Now simplify . and .. components *)
+    let rec aux s =
+      let base,dir  = Filename.basename s, Filename.dirname s  in
+      if dir = s then dir
+      else if base = Filename.current_dir_name then aux dir
+      else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
+      else aux dir // base
+    in aux s  in 
+  process s 
+
+
+let absolute cwd s =   
+  match s with 
+  | File x -> File (absolute_path cwd x )
+  | Dir x -> Dir (absolute_path cwd x)
+
+end
+module Ext_modulename : sig 
+#1 "ext_modulename.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+val module_name_of_file : string -> string
+
+ val module_name_of_file_if_any : string -> string
+end = struct
+#1 "ext_modulename.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let module_name_of_file file =
+  String.capitalize 
+    (Filename.chop_extension @@ Filename.basename file)  
+
+let module_name_of_file_if_any file = 
+  String.capitalize 
+    (Ext_path.chop_extension_if_any @@ Filename.basename file)  
+
 end
 module Ml_binary : sig 
 #1 "ml_binary.mli"
@@ -25253,9 +25226,9 @@ let check_suffix  name  =
   if Filename.check_suffix name ".ml"
   || Filename.check_suffix name ".mlt" then 
     `Ml,
-    Ext_filename.chop_extension_if_any  name 
+    Ext_path.chop_extension_if_any  name 
   else if Filename.check_suffix name !Config.interface_suffix then 
-    `Mli,   Ext_filename.chop_extension_if_any  name 
+    `Mli,   Ext_path.chop_extension_if_any  name 
   else 
     raise(Arg.Bad("don't know what to do with " ^ name))
 
@@ -25266,7 +25239,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
       source_file ->
       match check_suffix source_file with
       | `Ml, opref ->
-        let module_name = Ext_filename.module_name_of_file source_file in
+        let module_name = Ext_modulename.module_name_of_file source_file in
         begin match String_map.find_exn module_name acc with
           | exception Not_found ->
             String_map.add module_name
@@ -25293,7 +25266,7 @@ let collect_ast_map ppf files parse_implementation parse_interface  =
                module_name} acc
         end
       | `Mli, opref ->
-        let module_name = Ext_filename.module_name_of_file source_file in
+        let module_name = Ext_modulename.module_name_of_file source_file in
         begin match String_map.find_exn module_name acc with
           | exception Not_found ->
             String_map.add module_name
@@ -59106,6 +59079,190 @@ let find_opt file =  find_in_path_uncap !Config.load_path file
 
 
 end
+module Ext_filename : sig 
+#1 "ext_filename.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
+
+
+
+
+
+(** An extension module to calculate relative path follow node/npm style. 
+    TODO : this short name will have to change upon renaming the file.
+*)
+
+(** Js_output is node style, which means 
+    separator is only '/'
+
+    if the path contains 'node_modules', 
+    [node_relative_path] will discard its prefix and 
+    just treat it as a library instead
+*)
+
+(* val node_relative_path : 
+  bool -> 
+  from:Ext_path.t -> 
+  string -> string *)
+val cwd : string Lazy.t
+
+(* It is lazy so that it will not hit errors when in script mode *)
+val package_dir : string Lazy.t
+
+
+val simple_convert_node_path_to_os_path : string -> string
+
+
+end = struct
+#1 "ext_filename.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+type t = Ext_path.t
+
+let cwd = lazy (Sys.getcwd ())
+
+
+(** path2: a/b 
+    path1: a 
+    result:  ./b 
+    TODO: [Filename.concat] with care
+
+    [file1] is currently compilation file 
+    [file2] is the dependency
+
+    TODO: this is a hackish function: FIXME
+*)
+let node_relative_path node_modules_shorten 
+    ~from:(file1 : Ext_path.t) 
+    (file2 : string) = 
+  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
+  let len = String.length file2 in 
+  if node_modules_shorten && v >= 0 then
+
+    let rec skip  i =       
+      if i >= len then
+        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
+      else 
+        (* https://en.wikipedia.org/wiki/Path_(computing))
+           most path separator are a single char 
+        *)
+        let curr_char = String.unsafe_get file2 i  in 
+        if curr_char = Ext_path.sep_char || curr_char = '.' then 
+          skip (i + 1) 
+        else i
+        (*
+          TODO: we need do more than this suppose user 
+          input can be
+           {[
+             "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
+           ]}
+           This seems weird though
+        *)
+    in 
+    Ext_string.tail_from file2
+      (skip (v + Literals.node_modules_length)) 
+  else 
+    Ext_path.node_relative_path 
+      (File (Ext_path.absolute_path cwd file2))
+      ~from:(Ext_path.absolute cwd file1)
+    ^ Literals.node_sep ^
+    (Filename.basename file2)
+
+
+
+(* Input must be absolute directory *)
+let rec find_root_filename ~cwd filename   = 
+  if Sys.file_exists ( Filename.concat cwd  filename) then cwd
+  else 
+    let cwd' = Filename.dirname cwd in 
+    if String.length cwd' < String.length cwd then  
+      find_root_filename ~cwd:cwd'  filename 
+    else 
+      Ext_pervasives.failwithf 
+        ~loc:__LOC__
+        "%s not found from %s" filename cwd
+
+
+let find_package_json_dir cwd  = 
+  find_root_filename ~cwd  Literals.bsconfig_json
+
+let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+
+
+
+
+
+
+
+
+let simple_convert_node_path_to_os_path =
+  if Sys.unix then fun x -> x 
+  else if Sys.win32 || Sys.cygwin then 
+    Ext_string.replace_slash_backward 
+  else failwith ("Unknown OS : " ^ Sys.os_type)
+
+
+
+end
 module Ext_sys : sig 
 #1 "ext_sys.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -63063,7 +63220,7 @@ val add_npm_package_path :
    Note that it has to be consistent to how it is generated
 *)  
 val string_of_module_id :
-  hint_output_dir:string ->
+  output_dir:string -> 
   module_system ->
   t ->
   (Lam_module_ident.t ->
@@ -63120,7 +63277,7 @@ let compatible (exist : module_system)
 
 
 type package_info =
-  ( module_system * string )
+  module_system * string 
 
 type package_name  = string
 type t =
@@ -63128,34 +63285,34 @@ type t =
     name : package_name ;
     module_systems: package_info  list
   }
-  (* we don't want force people to use package *) 
+(* we don't want force people to use package *) 
 
 (** 
-  TODO: not allowing user to provide such specific package name 
-  For empty package, [-bs-package-output] does not make sense
-  it is only allowed to generate commonjs file in the same directory
+   TODO: not allowing user to provide such specific package name 
+   For empty package, [-bs-package-output] does not make sense
+   it is only allowed to generate commonjs file in the same directory
 *)  
 let empty = 
   { name = "_";
     module_systems =  []
   }
 let from_name name =
-   {
-  name ;
-  module_systems = [] 
-}
+  {
+    name ;
+    module_systems = [] 
+  }
 let is_empty  (x : t) =
   match x with 
   | { name = "_" } -> true 
   | _ -> false 
 
 let string_of_module_system (ms : module_system) = 
-    match ms with 
-   | NodeJS -> "NodeJS"
-   | AmdJS -> "AmdJS"
-   | Es6 -> "Es6"
-   | Es6_global -> "Es6_global"
-   | AmdJS_global -> "AmdJS_globl"
+  match ms with 
+  | NodeJS -> "NodeJS"
+  | AmdJS -> "AmdJS"
+  | Es6 -> "Es6"
+  | Es6_global -> "Es6_global"
+  | AmdJS_global -> "AmdJS_globl"
 
 
 let module_system_of_string package_name : module_system option = 
@@ -63181,12 +63338,12 @@ let dump_package_info
 let dump_packages_info 
     (fmt : Format.formatter) 
     ({name ; module_systems = ls } : t) = 
-    Format.fprintf fmt "@[%s;@ @[%a@]@]"
-      name
-      (Format.pp_print_list
-         ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
-         dump_package_info 
-      ) ls
+  Format.fprintf fmt "@[%s;@ @[%a@]@]"
+    name
+    (Format.pp_print_list
+       ~pp_sep:(fun fmt () -> Format.pp_print_space fmt ())
+       dump_package_info 
+    ) ls
 
 type info_query =
   | Package_script 
@@ -63197,40 +63354,37 @@ type info_query =
 
 let query_package_infos 
     (package_info : t) module_system : info_query =
-    if is_empty package_info then Package_script 
-    else 
-     match List.find (fun (k, _) -> 
+  if is_empty package_info then Package_script 
+  else 
+    match List.find (fun (k, _) -> 
         compatible k  module_system) package_info.module_systems with
-      | (_, x) -> Package_found (package_info.name, x)
-      | exception _ -> Package_not_found
+    | (_, x) -> Package_found (package_info.name, x)
+    | exception _ -> Package_not_found
 
 
+
+let get_js_path module_system 
+    ({module_systems } : t ) = 
+  match List.find (fun (k,_) -> 
+      compatible k  module_system) module_systems with
+  | (_, path) ->  path
+  |  exception _ -> assert false
 
 (* for a single pass compilation, [output_dir]
    can be cached
 *)
-let get_output_dir ~pkg_dir module_system 
-    ~hint_output_dir 
-    ({module_systems } : t ) =
-  match module_systems with
-  | []->
-    if Filename.is_relative hint_output_dir then
-      Filename.concat (Lazy.force Ext_filename.cwd )
-        hint_output_dir
-    else
-      hint_output_dir
-  | _ ->
-    begin match List.find (fun (k,_) -> 
-        compatible k  module_system) module_systems with
-    | (_, path) -> Filename.concat pkg_dir  path
-    |  exception _ -> assert false
-    end
+let get_output_dir ~package_dir module_system 
+    (info: t ) =
+  Filename.concat package_dir 
+    (get_js_path module_system info)
+
+
 
 
 let add_npm_package_path s (packages_info : t)  : t =
-    if is_empty packages_info then 
-      Ext_pervasives.bad_argf "please set package name first using -bs-package-name "
-    else   
+  if is_empty packages_info then 
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name "
+  else   
     let env, path =
       match Ext_string.split ~keep_empty:false s ':' with
       | [ module_system; path]  ->
@@ -63244,126 +63398,126 @@ let add_npm_package_path s (packages_info : t)  : t =
         Ext_pervasives.bad_argf "invalid npm package path: %s" s
     in
     { packages_info with module_systems = (env,path)::packages_info.module_systems}
-    
+
 
 
 
 let (//) = Filename.concat 
 
 
-let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
-    match x.kind with
-    | External name -> name
-    | Runtime | Ml -> 
-      "stdlib" // String.uncapitalize x.id.name
-    
 
 
 let string_of_module_id 
-    ~hint_output_dir
-    (module_system : module_system)
+    ~output_dir:(output_dir : string )
+    (module_system : module_system)    
     (current_package_info : t)
     (get_package_path_from_cmj : 
-     Lam_module_ident.t -> (string * t) option
+       Lam_module_ident.t -> (string * t) option
     )
-    (x : Lam_module_ident.t) : string =
+    (dep_module_id : Lam_module_ident.t) : string =
+  let result = 
+    match dep_module_id.kind  with 
+    | External name -> name (* the literal string for external package *)
+    (** This may not be enough, 
+        1. For cross packages, we may need settle 
+        down a single js package
+        2. We may need es6 path for dead code elimination
+         But frankly, very few JS packages have no dependency, 
+         so having plugin may sound not that bad   
+    *)
+    | Runtime  
+    | Ml  -> 
+      let id = dep_module_id.id in
+      let js_file =  Ext_namespace.js_name_of_basename id.name in 
+      let current_pkg_info = 
+        query_package_infos current_package_info
+          module_system  
+      in
 
-    let result = 
-      match x.kind  with 
-      | External name -> name (* the literal string for external package *)
-        (** This may not be enough, 
-          1. For cross packages, we may need settle 
-            down a single js package
-          2. We may need es6 path for dead code elimination
-             But frankly, very few JS packages have no dependency, 
-             so having plugin may sound not that bad   
-        *)
-      | Runtime  
-      | Ml  -> 
-        let id = x.id in
-        let js_file =  Ext_namespace.js_name_of_basename id.name in 
-        let rebase  ~dependency  ~different_package package_dir=
-          let current_unit_dir =
-            `Dir (get_output_dir 
-                  ~pkg_dir:package_dir module_system 
-                  ~hint_output_dir
-                  current_package_info
-                  ) in
-          Ext_filename.node_relative_path  different_package current_unit_dir dependency 
+
+      match get_package_path_from_cmj dep_module_id with 
+      | None -> 
+        Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
+      | Some (cmj_path, package_info) -> 
+        let dependency_pkg_info =  
+          query_package_infos package_info module_system 
         in 
-        let cmj_path, dependency_pkg_info = 
-          match get_package_path_from_cmj x with 
-          | None -> Ext_string.empty, Package_not_found
-          | Some (cmj_path, package_info) -> 
-            cmj_path, query_package_infos package_info module_system
-        in
-        let current_pkg_info = 
-            query_package_infos current_package_info
-            module_system  
-        in
-        begin match module_system,  dependency_pkg_info, current_pkg_info with
-          | _, Package_not_found , _ 
-            -> 
-            Bs_exception.error (Missing_ml_dependency x.id.name)
-          | (AmdJS | NodeJS | Es6 | Es6_global | AmdJS_global),
-            Package_script ,
-            Package_found _  -> 
-            Bs_exception.error (Dependency_script_module_dependent_not js_file)
-          | (AmdJS | NodeJS| Es6 | Es6_global|AmdJS_global),
-           (Package_script  | Package_found _ ), Package_not_found -> assert false
-          | (AmdJS | NodeJS | Es6 | Es6_global|AmdJS_global), 
-            Package_found(package_name, x),
-            Package_found(current_package, path) -> 
-            if  current_package = package_name then 
-              let package_dir = Lazy.force Ext_filename.package_dir in
-              rebase ~different_package:false package_dir ~dependency:(`File (package_dir // x // js_file)) 
-            else 
-              begin match module_system with 
+        match dependency_pkg_info, current_pkg_info with
+        | Package_not_found , _  -> 
+          Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
+        | Package_script , Package_found _  -> 
+          Bs_exception.error (Dependency_script_module_dependent_not js_file)
+        | (Package_script  | Package_found _ ), Package_not_found -> assert false
+
+
+        | Package_found(dep_package_name, dep_path),
+          Package_found(cur_package_name, cur_path) -> 
+          if  cur_package_name = dep_package_name then 
+            Ext_path.node_concat 
+              ~dir:(Ext_path.node_relative_path 
+                      ~from:(Dir cur_path)
+                      (Dir dep_path )                       
+                   ) js_file 
+              (** TODO: we assume that both [x] and [path] could only be relative path
+                  which is guaranteed by [-bs-package-output]
+              *)
+          else  
+            begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
-                package_name // x // js_file
+                dep_package_name // dep_path // js_file
+              (** Note we did a post-processing when working on Windows *)
               | Es6_global 
               | AmdJS_global -> 
-               (** lib/ocaml/xx.cmj --               
-                HACKING: FIXME
-                maybe we can caching relative package path calculation or employ package map *)
+                (** lib/ocaml/xx.cmj --               
+                    HACKING: FIXME
+                    maybe we can caching relative package path calculation or employ package map *)
                 (* assert false  *)
-                
-                begin 
-                  Ext_filename.rel_normalized_absolute_path              
-                    (get_output_dir 
-                      ~pkg_dir:(Lazy.force Ext_filename.package_dir)
-                       module_system 
-                       ~hint_output_dir
-                       current_package_info
-                       )
-                    ((Filename.dirname 
-                        (Filename.dirname (Filename.dirname cmj_path))) // x // js_file)              
-                end
-              end
-          | (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), Package_found(package_name, x), 
-            Package_script 
-            ->    
-              package_name // x // js_file
-          |  (AmdJS | NodeJS | Es6 | AmdJS_global | Es6_global), 
-            Package_script , 
-             Package_script 
-            -> 
-            begin match Config_util.find_opt js_file with 
-              | Some file -> 
-                let package_dir = Lazy.force Ext_filename.package_dir in
-                rebase ~different_package:true package_dir ~dependency:(`File file) 
-              (* Code path: when dependency is commonjs 
-                 while depedent is Empty or PackageScript
-              *)
-              | None -> 
-                Bs_exception.error (Js_not_found js_file)
-            end
-          
-        end
 
-      in 
-    if Ext_sys.is_windows_or_cygwin then Ext_string.replace_backward_slash result 
-    else result 
+                begin 
+                  Ext_path.rel_normalized_absolute_path              
+                    ~from:(get_output_dir 
+                             ~package_dir:(Lazy.force Ext_filename.package_dir)
+                             module_system 
+                             current_package_info
+                          )
+                    ((Filename.dirname 
+                        (Filename.dirname (Filename.dirname cmj_path))) // dep_path // js_file)              
+                end
+            end
+        | Package_found(dep_package_name, dep_path), 
+          Package_script 
+          ->    
+          dep_package_name // dep_path // js_file
+        |
+          Package_script , 
+          Package_script 
+          -> 
+          begin match Config_util.find_opt js_file with 
+            | Some file -> 
+              (* let package_dir = Lazy.force Ext_filename.package_dir in *)
+              (* let rebase  ~dependency  ~different_package package_dir=                    
+                 Ext_filename.node_relative_path 
+                  different_package 
+                  ~from:(Dir output_dir) 
+                  dependency 
+                 in                  *)
+              (* rebase ~different_package:true package_dir ~dependency:file *)
+              Ext_path.node_concat
+                ~dir:(Ext_path.node_relative_path 
+                   ~from:(Ext_path.absolute 
+                            Ext_filename.cwd (Dir output_dir))
+                   (File(Ext_path.absolute_path Ext_filename.cwd file)))      
+                  (Filename.basename file)
+            (* Code path: when dependency is commonjs 
+               while depedent is Empty or PackageScript
+            *)
+            | None -> 
+              Bs_exception.error (Js_not_found js_file)
+          end
+  in 
+  if Ext_sys.is_windows_or_cygwin then 
+    Ext_string.replace_backward_slash result 
+  else result 
 
 
 
@@ -63379,7 +63533,7 @@ let string_of_module_id
    FIXME: the module order matters?
 *)
 
-    
+
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -85698,8 +85852,6 @@ let from = "from"
 let as_ = "as"
 let export = "export"
 let star = "*"
-let goog_require = "goog.require" 
-let goog_module = "goog.module"
 let lparen = "("
 let rparen = ")"
 let exports = "exports"
@@ -88062,16 +88214,21 @@ module P = Ext_pp
 module L = Js_dump_lit 
 
 
+
+
+    
 let string_of_module_id 
-    ~hint_output_dir 
+    ~output_dir
     module_system
     id
   = 
   Js_packages_info.string_of_module_id
-    ~hint_output_dir  module_system
+    ~output_dir
+    module_system
     (Js_packages_state.get_packages_info ())
     Lam_compile_env.get_package_path_from_cmj
-    id
+    id    
+
 
 let program f cxt   ( x : J.program ) = 
   let () = P.force_newline f in
@@ -88083,7 +88240,7 @@ let dump_program (x : J.program) oc =
   ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
 
 
-let node_program ~output_prefix f ( x : J.deps_program) = 
+let node_program ~output_dir f ( x : J.deps_program) = 
   let cxt = 
     Js_dump_import_export.requires 
       L.require
@@ -88092,8 +88249,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            string_of_module_id
-              ~hint_output_dir:(Filename.dirname output_prefix)
+            string_of_module_id ~output_dir
               NodeJS 
               x)
          x.modules)
@@ -88101,7 +88257,7 @@ let node_program ~output_prefix f ( x : J.deps_program) =
   program f cxt x.program  
 
 
-let amd_program ~output_prefix kind f (  x : J.deps_program) = 
+let amd_program ~output_dir kind f (  x : J.deps_program) = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
   P.vgroup f 1 @@ fun _ -> 
@@ -88111,8 +88267,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
 
   List.iter (fun x ->
       let s : string = 
-        string_of_module_id
-          ~hint_output_dir:(Filename.dirname output_prefix) 
+        string_of_module_id ~output_dir
           kind 
           x in
       P.string f L.comma ;
@@ -88143,7 +88298,7 @@ let amd_program ~output_prefix kind f (  x : J.deps_program) =
   v
 
 
-let es6_program  ~output_prefix fmt f (  x : J.deps_program) = 
+let es6_program  ~output_dir fmt f (  x : J.deps_program) = 
   let cxt = 
     Js_dump_import_export.imports
       Ext_pp_scope.empty
@@ -88151,8 +88306,7 @@ let es6_program  ~output_prefix fmt f (  x : J.deps_program) =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            string_of_module_id
-              ~hint_output_dir:(Filename.dirname output_prefix)
+            string_of_module_id ~output_dir
               fmt 
               x)
          x.modules)
@@ -88183,13 +88337,14 @@ let pp_deps_program
       end ; 
     P.string f L.strict_directive; 
     P.newline f ;    
+    let output_dir = Filename.dirname output_prefix in 
     ignore (match kind with 
         | Es6 | Es6_global -> 
-          es6_program ~output_prefix kind f program
+          es6_program ~output_dir kind f program
         | AmdJS | AmdJS_global -> 
-          amd_program ~output_prefix kind f program
+          amd_program ~output_dir kind f program
         | NodeJS -> 
-          node_program ~output_prefix f program
+          node_program ~output_dir f program
       ) ;
     P.newline f ;
     P.string f (
@@ -91275,7 +91430,7 @@ and all_lambdas meta (xs : Lam.t list) =
 let dump_exports_arities (meta : Lam_stats.t ) = 
   let fmt = 
     if meta.filename != "" then 
-      let cmj_file = Ext_filename.chop_extension meta.filename ^ Literals.suffix_cmj in
+      let cmj_file = Ext_path.chop_extension meta.filename ^ Literals.suffix_cmj in
       let out = open_out cmj_file in   
       Format.formatter_of_out_channel out
     else 
@@ -101632,7 +101787,7 @@ let export_to_cmj
   let () =
     if !Js_config.default_gen_tds && not ( Ext_string.is_empty meta.filename) then
       Ext_pervasives.with_file_as_pp
-        (Ext_filename.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
+        (Ext_path.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
       @@ fun fmt ->
       pp fmt "@[<v>%a@]@." (dump meta) meta.exports in
   let effect = get_effect meta maybe_pure external_ids in
@@ -101643,8 +101798,8 @@ let export_to_cmj
 
 
 end
-module Lam_compile_group : sig 
-#1 "lam_compile_group.mli"
+module Lam_compile_main : sig 
+#1 "lam_compile_main.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -101698,7 +101853,7 @@ val lambda_as_module :
   string  -> Lambda.lambda -> unit
 
 end = struct
-#1 "lam_compile_group.ml"
+#1 "lam_compile_main.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -101733,9 +101888,7 @@ end = struct
 module E = Js_exp_make 
 module S = Js_stmt_make  
 
-open Js_output.Ops
-
-exception Not_a_module
+ open Js_output.Ops 
 
 let compile_group ({filename = file_name; env;} as meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
@@ -101987,7 +102140,7 @@ let compile  ~filename output_prefix env _sigs
   in
     
   (* The file is not big at all compared with [cmo] *)
-  (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
+  (* Ext_marshal.to_file (Ext_path.chop_extension filename ^ ".mj")  js; *)
   let js : J.program = 
       { J.name = filename ; 
         exports = meta.exports ; 
@@ -102038,7 +102191,7 @@ let compile  ~filename output_prefix env _sigs
     )
 ;;
 
-
+let (//) = Filename.concat  
 
 let lambda_as_module 
     env 
@@ -102051,33 +102204,29 @@ let lambda_as_module
 
     
     let lambda_output = compile ~filename output_prefix env sigs lam in
-    let (//) = Filename.concat in 
     let basename =  
       (* #758, output_prefix is already chopped *)
        Ext_namespace.js_name_of_basename (Filename.basename
          output_prefix (* -o *)
          (* filename *) (* see #757  *)
       ) in
+      (* #913
+         only generate little-case js file
+      *)
+ 
     (* Not re-entrant *)
     let package_info = Js_packages_state.get_packages_info () in 
     if Js_packages_info.is_empty package_info  then 
     begin 
 
-      (* script mode *)
+    (* script mode *)
       let output_chan chan =         
         Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
       if not @@ !Clflags.dont_write_files then 
         Ext_pervasives.with_file_as_chan 
-          ((if Filename.is_relative filename then 
-              Lazy.force Ext_filename.cwd // 
-              Filename.dirname filename 
-            else 
-              Filename.dirname filename) //  basename
-          (* #913
-             only generate little-case js file
-          *)
-          ) output_chan
+          (Filename.dirname filename //  basename)
+           output_chan
     end
     else  begin 
       package_info.module_systems 
@@ -112046,7 +112195,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
           |> print_if ppf Clflags.dump_rawlambda Printlambda.lambda
           |> (fun lambda -> 
               match           
-                Lam_compile_group.lambda_as_module
+                Lam_compile_main.lambda_as_module
                   finalenv current_signature 
                   sourcefile  outputprefix lambda  with
               | e -> e 
@@ -112240,7 +112389,7 @@ let batch_compile ppf search_dirs files main_file =
   ;
   begin match main_file with
     | Main main_file -> 
-      let main_module = (Ext_filename.module_name_of_file main_file) in
+      let main_module = (Ext_modulename.module_name_of_file main_file) in
       let ast_table, result =
         Ast_extract.collect_from_main ppf 
           ~extra_dirs:(List.map
@@ -114759,7 +114908,7 @@ let buckle_script_flags =
   ("-bs-package-output", 
    Arg.String 
     Js_packages_state.update_npm_package_path, 
-   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' and 'goog:lib/gjs'")
+   " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
   ::
   
   ("-bs-no-warn-unused-bs-attribute",

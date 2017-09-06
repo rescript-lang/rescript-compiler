@@ -46,4 +46,12 @@ bspack.exe: bspack.mli bspack.ml
 bspack.js:	bspack.mli bspack.ml
 	$(BSC) $(BSC_FLAGS) $^
 
+test.exe:all_ounit_tests.mli all_ounit_tests.ml
+	$(NATIVE) $(OCAMLOPT_FLAGS) -I +compiler-libs ocamlcommon.cmxa unix.cmxa str.cmxa $^ -o $@
+
+test:test.exe
+	./test.exe	
+
 all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe refmt.exe reactjs_jsx_ppx.exe reactjs_jsx_ppx_2.exe
+
+.PHONY: test

@@ -70,7 +70,7 @@ type t =
     globbed_dirs : string list ; 
   }
 
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 
 let (|?)  m (key, cb) =
   m  |> Ext_json.test key cb 
