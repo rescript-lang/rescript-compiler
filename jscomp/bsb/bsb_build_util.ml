@@ -26,7 +26,7 @@ let flag_concat flag xs =
   xs 
   |> Ext_list.flat_map (fun x -> [flag ; x])
   |> String.concat Ext_string.single_space
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 
 
     
@@ -99,7 +99,7 @@ let resolve_bsb_magic_file ~cwd ~desc p =
 *)
 
 let get_bsc_dir cwd = 
-  Filename.dirname (Ext_filename.normalize_absolute_path (cwd // Sys.executable_name))
+  Filename.dirname (Ext_path.normalize_absolute_path (cwd // Sys.executable_name))
 let get_bsc_bsdep cwd = 
   let dir = get_bsc_dir cwd in    
   dir // "bsc.exe", dir // "bsb_helper.exe"

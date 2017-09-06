@@ -228,7 +228,7 @@ let set_prelude_str f = prelude_str := Some f
 let cwd = Sys.getcwd ()
 
 let normalize s = 
-  Ext_filename.normalize_absolute_path (Ext_filename.combine cwd s )
+  Ext_path.normalize_absolute_path (Ext_path.combine cwd s )
 
 let process_include s : Ast_extract.dir_spec = 
   let i = Ext_string.rindex_neg s '?'   in 
@@ -470,7 +470,7 @@ let () =
            match !output_file with
            | None -> ()
            | Some file ->
-             let output = (Ext_filename.chop_extension_if_any file ^ ".d") in
+             let output = (Ext_path.chop_extension_if_any file ^ ".d") in
              let sorted_queue = 
                Queue.fold (fun acc x -> String_set.add x acc) String_set.empty  collection_modules in 
              Ext_io.write_file 
@@ -485,8 +485,8 @@ let () =
                         The relative path should be also be normalized..
                       *)
                       Filename.concat 
-                        (Ext_filename.rel_normalized_absolute_path
-                           cwd 
+                        (Ext_path.rel_normalized_absolute_path
+                           ~from:cwd 
                            (Filename.dirname a)
                         ) (Filename.basename a)
 

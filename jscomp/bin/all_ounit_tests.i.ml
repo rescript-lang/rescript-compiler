@@ -75,7 +75,7 @@ open OUnitTypes
 
 (** Most simple heuristic, just pick the first test. *)
 let simple state =
-  (* 422 *) List.hd state.tests_planned
+  (* 208 *) List.hd state.tests_planned
 
 end
 module OUnitUtils
@@ -97,28 +97,28 @@ let is_success =
 
 let is_failure = 
   function
-    | RFailure _ -> (* 2 *) true
-    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 842 *) false
+    | RFailure _ -> (* 0 *) true
+    | RSuccess _ | RError _  | RSkip _ | RTodo _ -> (* 416 *) false
 
 let is_error = 
   function 
     | RError _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 844 *) false
+    | RSuccess _ | RFailure _ | RSkip _ | RTodo _ -> (* 416 *) false
 
 let is_skip = 
   function
     | RSkip _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 844 *) false
+    | RSuccess _ | RFailure _ | RError _  | RTodo _ -> (* 416 *) false
 
 let is_todo = 
   function
     | RTodo _ -> (* 0 *) true
-    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 844 *) false
+    | RSuccess _ | RFailure _ | RError _  | RSkip _ -> (* 416 *) false
 
 let result_flavour = 
   function
     | RError _ -> (* 0 *) "Error"
-    | RFailure _ -> (* 2 *) "Failure"
+    | RFailure _ -> (* 0 *) "Failure"
     | RSuccess _ -> (* 0 *) "Success"
     | RSkip _ -> (* 0 *) "Skip"
     | RTodo _ -> (* 0 *) "Todo"
@@ -129,7 +129,7 @@ let result_path =
     | RError (path, _)
     | RFailure (path, _)
     | RSkip (path, _)
-    | RTodo (path, _) -> (* 2 *) path
+    | RTodo (path, _) -> (* 0 *) path
 
 let result_msg = 
   function
@@ -137,7 +137,7 @@ let result_msg =
     | RError (_, msg)
     | RFailure (_, msg)
     | RSkip (_, msg)
-    | RTodo (_, msg) -> (* 2 *) msg
+    | RTodo (_, msg) -> (* 0 *) msg
 
 (* Returns true if the result list contains successes only. *)
 let rec was_successful = 
@@ -145,35 +145,35 @@ let rec was_successful =
     | [] -> (* 3 *) true
     | RSuccess _::t 
     | RSkip _::t -> 
-        (* 885 *) was_successful t
+        (* 624 *) was_successful t
 
     | RFailure _::_
     | RError _::_ 
     | RTodo _::_ -> 
-        (* 3 *) false
+        (* 0 *) false
 
 let string_of_node = 
   function
     | ListItem n -> 
-        (* 1692 *) string_of_int n
+        (* 832 *) string_of_int n
     | Label s -> 
-        (* 2538 *) s
+        (* 1248 *) s
 
 (* Return the number of available tests *)
 let rec test_case_count = 
   function
-    | TestCase _ -> (* 422 *) 1 
-    | TestLabel (_, t) -> (* 472 *) test_case_count t
+    | TestCase _ -> (* 208 *) 1 
+    | TestLabel (_, t) -> (* 233 *) test_case_count t
     | TestList l -> 
-        (* 50 *) List.fold_left 
-          (fun c t -> (* 470 *) c + test_case_count t) 
+        (* 25 *) List.fold_left 
+          (fun c t -> (* 232 *) c + test_case_count t) 
           0 l
 
 let string_of_path path =
-  (* 846 *) String.concat ":" (List.rev_map string_of_node path)
+  (* 416 *) String.concat ":" (List.rev_map string_of_node path)
 
 let buff_format_printf f = 
-  (* 1 *) let buff = Buffer.create 13 in
+  (* 0 *) let buff = Buffer.create 13 in
   let fmt = Format.formatter_of_buffer buff in
     f fmt;
     Format.pp_print_flush fmt ();
@@ -193,13 +193,13 @@ let mapi f l =
     rmapi 0 l
 
 let fold_lefti f accu l =
-  (* 50 *) let rec rfold_lefti cnt accup l = 
-    (* 520 *) match l with
+  (* 25 *) let rec rfold_lefti cnt accup l = 
+    (* 257 *) match l with
       | [] -> 
-          (* 50 *) accup
+          (* 25 *) accup
 
       | h::t -> 
-          (* 470 *) rfold_lefti (cnt + 1) (f accup h cnt) t
+          (* 232 *) rfold_lefti (cnt + 1) (f accup h cnt) t
   in
     rfold_lefti 0 accu l
 
@@ -217,23 +217,23 @@ open OUnitUtils
 type event_type = GlobalEvent of global_event | TestEvent of test_event
 
 let format_event verbose event_type =
-  (* 2536 *) match event_type with
+  (* 1250 *) match event_type with
     | GlobalEvent e ->
-        (* 4 *) begin
+        (* 2 *) begin
           match e with 
             | GStart ->
                 (* 0 *) ""
             | GEnd ->
                 (* 0 *) ""
             | GResults (running_time, results, test_case_count) -> 
-                (* 4 *) let separator1 = String.make (Format.get_margin ()) '=' in
+                (* 2 *) let separator1 = String.make (Format.get_margin ()) '=' in
                 let separator2 = String.make (Format.get_margin ()) '-' in
                 let buf = Buffer.create 1024 in
-                let bprintf fmt = (* 16 *) Printf.bprintf buf fmt in
+                let bprintf fmt = (* 7 *) Printf.bprintf buf fmt in
                 let print_results = 
                   List.iter 
                     (fun result -> 
-                       (* 2 *) bprintf "%s\n%s: %s\n\n%s\n%s\n" 
+                       (* 0 *) bprintf "%s\n%s: %s\n\n%s\n%s\n" 
                          separator1 
                          (result_flavour result) 
                          (string_of_path (result_path result)) 
@@ -246,7 +246,7 @@ let format_event verbose event_type =
                 let todos    = List.filter is_todo results in
 
                   if not verbose then
-                    (* 2 *) bprintf "\n";
+                    (* 1 *) bprintf "\n";
 
                   print_results errors;
                   print_results failures;
@@ -263,7 +263,7 @@ let format_event verbose event_type =
                           test_case_count (List.length skips)
                     end
                   else
-                    (* 2 *) begin
+                    (* 0 *) begin
                       bprintf
                         "FAILED: Cases: %d Tried: %d Errors: %d \
                               Failures: %d Skip:%d Todo:%d" 
@@ -276,31 +276,31 @@ let format_event verbose event_type =
         end
 
     | TestEvent e ->
-        (* 2532 *) begin
+        (* 1248 *) begin
           let string_of_result = 
             if verbose then
-              (* 1266 *) function
-                | RSuccess _      -> (* 421 *) "ok\n"
-                | RFailure (_, _) -> (* 1 *) "FAIL\n"
+              (* 624 *) function
+                | RSuccess _      -> (* 208 *) "ok\n"
+                | RFailure (_, _) -> (* 0 *) "FAIL\n"
                 | RError (_, _)   -> (* 0 *) "ERROR\n"
                 | RSkip (_, _)    -> (* 0 *) "SKIP\n"
                 | RTodo (_, _)    -> (* 0 *) "TODO\n"
             else
-              (* 1266 *) function
-                | RSuccess _      -> (* 421 *) "."
-                | RFailure (_, _) -> (* 1 *) "F"
+              (* 624 *) function
+                | RSuccess _      -> (* 208 *) "."
+                | RFailure (_, _) -> (* 0 *) "F"
                 | RError (_, _)   -> (* 0 *) "E"
                 | RSkip (_, _)    -> (* 0 *) "S"
                 | RTodo (_, _)    -> (* 0 *) "T"
           in
             if verbose then
-              (* 1266 *) match e with 
+              (* 624 *) match e with 
                 | EStart p -> 
-                    (* 422 *) Printf.sprintf "%s start\n" (string_of_path p)
+                    (* 208 *) Printf.sprintf "%s start\n" (string_of_path p)
                 | EEnd p -> 
-                    (* 422 *) Printf.sprintf "%s end\n" (string_of_path p)
+                    (* 208 *) Printf.sprintf "%s end\n" (string_of_path p)
                 | EResult result -> 
-                    (* 422 *) string_of_result result
+                    (* 208 *) string_of_result result
                 | ELog (lvl, str) ->
                     (* 0 *) let prefix = 
                       match lvl with 
@@ -312,40 +312,40 @@ let format_event verbose event_type =
                 | ELogRaw str ->
                     (* 0 *) str
             else 
-              (* 1266 *) match e with 
-                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 844 *) ""
-                | EResult result -> (* 422 *) string_of_result result
+              (* 624 *) match e with 
+                | EStart _ | EEnd _ | ELog _ | ELogRaw _ -> (* 416 *) ""
+                | EResult result -> (* 208 *) string_of_result result
         end
 
 let file_logger fn =
-  (* 2 *) let chn = open_out fn in
+  (* 1 *) let chn = open_out fn in
     (fun ev ->
-       (* 1268 *) output_string chn (format_event true ev);
+       (* 625 *) output_string chn (format_event true ev);
        flush chn),
-    (fun () -> (* 2 *) close_out chn)
+    (fun () -> (* 1 *) close_out chn)
 
 let std_logger verbose =
-  (* 2 *) (fun ev -> 
-     (* 1268 *) print_string (format_event verbose ev);
+  (* 1 *) (fun ev -> 
+     (* 625 *) print_string (format_event verbose ev);
      flush stdout),
-  (fun () -> (* 2 *) ())
+  (fun () -> (* 1 *) ())
 
 let null_logger =
   ignore, ignore
 
 let create output_file_opt verbose (log,close) =
-  (* 2 *) let std_log, std_close = std_logger verbose in
+  (* 1 *) let std_log, std_close = std_logger verbose in
   let file_log, file_close = 
     match output_file_opt with 
       | Some fn ->
-          (* 2 *) file_logger fn
+          (* 1 *) file_logger fn
       | None ->
           (* 0 *) null_logger
   in
     (fun ev ->
-       (* 1268 *) std_log ev; file_log ev; log ev),
+       (* 625 *) std_log ev; file_log ev; log ev),
     (fun () ->
-       (* 2 *) std_close (); file_close (); close ())
+       (* 1 *) std_close (); file_close (); close ())
 
 let printf log fmt =
   (* 0 *) Printf.ksprintf
@@ -649,7 +649,7 @@ let global_output_file =
     if Sys.file_exists ocamlbuild_dir && Sys.is_directory ocamlbuild_dir then
       (* 0 *) ocamlbuild_dir
     else 
-      (* 2 *) pwd
+      (* 1 *) pwd
   in
     ref (Some (Filename.concat dir "oUnit.log"))
 
@@ -702,20 +702,20 @@ let todo msg =
   (* 0 *) raise (Todo msg)
 
 let assert_failure msg = 
-  (* 1 *) failwith ("OUnit: " ^ msg)
+  (* 0 *) failwith ("OUnit: " ^ msg)
 
 let assert_bool msg b =
-  (* 4018914 *) if not b then (* 0 *) assert_failure msg
+  (* 2009454 *) if not b then (* 0 *) assert_failure msg
 
 let assert_string str =
   (* 0 *) if not (str = "") then (* 0 *) assert_failure str
 
 let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
-  (* 4003110 *) let get_error_string () =
-    (* 1 *) let res =
+  (* 2001557 *) let get_error_string () =
+    (* 0 *) let res =
       buff_format_printf
         (fun fmt ->
-           (* 1 *) Format.pp_open_vbox fmt 0;
+           (* 0 *) Format.pp_open_vbox fmt 0;
            begin
              match msg with 
                | Some s ->
@@ -724,7 +724,7 @@ let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
                    Format.pp_close_box fmt ();
                    Format.pp_print_cut fmt ()
                | None -> 
-                   (* 1 *) ()
+                   (* 0 *) ()
            end;
 
            begin
@@ -736,7 +736,7 @@ let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
                      (p actual)
 
                | None ->
-                   (* 1 *) Format.fprintf fmt "@[not equal@]@,"
+                   (* 0 *) Format.fprintf fmt "@[not equal@]@,"
            end;
 
            begin
@@ -747,7 +747,7 @@ let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
                       d (expected, actual)
 
                | None ->
-                   (* 1 *) ()
+                   (* 0 *) ()
            end;
            Format.pp_close_box fmt ())
     in
@@ -755,12 +755,12 @@ let assert_equal ?(cmp = ( = )) ?printer ?pp_diff ?msg expected actual =
       String.length res
     in
       if len > 0 && res.[len - 1] = '\n' then
-        (* 1 *) String.sub res 0 (len - 1)
+        (* 0 *) String.sub res 0 (len - 1)
       else
         (* 0 *) res
   in
     if not (cmp expected actual) then 
-      (* 1 *) assert_failure (get_error_string ())
+      (* 0 *) assert_failure (get_error_string ())
 
 let assert_command 
     ?(exit_code=Unix.WEXITED 0)
@@ -887,14 +887,14 @@ let assert_command
       ()
 
 let raises f =
-  (* 16 *) try
+  (* 8 *) try
     f ();
     None
   with e -> 
-    (* 16 *) Some e
+    (* 8 *) Some e
 
 let assert_raises ?msg exn (f: unit -> 'a) = 
-  (* 12 *) let pexn = 
+  (* 6 *) let pexn = 
     Printexc.to_string 
   in
   let get_error_string () =
@@ -915,11 +915,11 @@ let assert_raises ?msg exn (f: unit -> 'a) =
           (* 0 *) assert_failure (get_error_string ())
 
       | Some e -> 
-          (* 12 *) assert_equal ?msg ~printer:pexn exn e
+          (* 6 *) assert_equal ?msg ~printer:pexn exn e
 
 
 let assert_raise_any ?msg (f: unit -> 'a) = 
-  (* 4 *) let pexn = 
+  (* 2 *) let pexn = 
     Printexc.to_string 
   in
   let get_error_string () =
@@ -940,7 +940,7 @@ let assert_raise_any ?msg (f: unit -> 'a) =
           (* 0 *) assert_failure (get_error_string ())
 
       | Some exn -> 
-          (* 4 *) assert_bool (pexn exn) true
+          (* 2 *) assert_bool (pexn exn) true
 (* Compare floats up to a given relative error *)
 let cmp_float ?(epsilon = 0.00001) a b =
   (* 0 *) abs_float (a -. b) <= epsilon *. (abs_float a) ||
@@ -951,8 +951,8 @@ let (@?) = assert_bool
 
 (* Some shorthands which allows easy test construction *)
 let (>:) s t = (* 0 *) TestLabel(s, t)             (* infix *)
-let (>::) s f = (* 422 *) TestLabel(s, TestCase(f))  (* infix *)
-let (>:::) s l = (* 50 *) TestLabel(s, TestList(l)) (* infix *)
+let (>::) s f = (* 208 *) TestLabel(s, TestCase(f))  (* infix *)
+let (>:::) s l = (* 25 *) TestLabel(s, TestList(l)) (* infix *)
 
 (* Utility function to manipulate test *)
 let rec test_decorate g =
@@ -1086,13 +1086,13 @@ let maybe_backtrace = ""
 
 (* Run all tests, report starts, errors, failures, and return the results *)
 let perform_test report test =
-  (* 2 *) let run_test_case f path =
-    (* 422 *) try 
+  (* 1 *) let run_test_case f path =
+    (* 208 *) try 
       f ();
       RSuccess path
     with
       | Failure s -> 
-          (* 1 *) RFailure (path, s ^ maybe_backtrace)
+          (* 0 *) RFailure (path, s ^ maybe_backtrace)
 
       | Skip s -> 
           (* 0 *) RSkip (path, s)
@@ -1106,22 +1106,22 @@ let perform_test report test =
   let rec flatten_test path acc = 
     function
       | TestCase(f) -> 
-          (* 422 *) (path, f) :: acc
+          (* 208 *) (path, f) :: acc
 
       | TestList (tests) ->
-          (* 50 *) fold_lefti 
+          (* 25 *) fold_lefti 
             (fun acc t cnt -> 
-               (* 470 *) flatten_test 
+               (* 232 *) flatten_test 
                  ((ListItem cnt)::path) 
                  acc t)
             acc tests
       
       | TestLabel (label, t) -> 
-          (* 472 *) flatten_test ((Label label)::path) acc t
+          (* 233 *) flatten_test ((Label label)::path) acc t
   in
   let test_cases = List.rev (flatten_test [] [] test) in
   let runner (path, f) = 
-    (* 422 *) let result = 
+    (* 208 *) let result = 
       report (EStart path);
       run_test_case f path 
     in
@@ -1130,18 +1130,18 @@ let perform_test report test =
       result
   in
   let rec iter state = 
-    (* 424 *) match state.tests_planned with 
+    (* 209 *) match state.tests_planned with 
       | [] ->
-          (* 2 *) state.results
+          (* 1 *) state.results
       | _ ->
-          (* 422 *) let (path, f) = !global_chooser state in            
+          (* 208 *) let (path, f) = !global_chooser state in            
           let result = runner (path, f) in
             iter 
               {
                 results = result :: state.results;
                 tests_planned = 
                   List.filter 
-                    (fun (path', _) -> (* 44732 *) path <> path') state.tests_planned
+                    (fun (path', _) -> (* 21736 *) path <> path') state.tests_planned
               }
   in
     iter {results = []; tests_planned = test_cases}
@@ -1149,14 +1149,14 @@ let perform_test report test =
 (* Function which runs the given function and returns the running time
    of the function, and the original result in a tuple *)
 let time_fun f x y =
-  (* 2 *) let begin_time = Unix.gettimeofday () in
+  (* 1 *) let begin_time = Unix.gettimeofday () in
   let result = f x y in
   let end_time = Unix.gettimeofday () in
     (end_time -. begin_time, result)
 
 (* A simple (currently too simple) text based test runner *)
 let run_test_tt ?verbose test =
-  (* 2 *) let log, log_close = 
+  (* 1 *) let log, log_close = 
     OUnitLogger.create 
       !global_output_file 
       !global_verbose 
@@ -1171,7 +1171,7 @@ let run_test_tt ?verbose test =
     time_fun 
       perform_test 
       (fun ev ->
-         (* 1266 *) log (OUnitLogger.TestEvent ev))
+         (* 624 *) log (OUnitLogger.TestEvent ev))
       test 
   in
     
@@ -1187,7 +1187,7 @@ let run_test_tt ?verbose test =
       
 (* Call this one from you test suites *)
 let run_test_tt_main ?(arg_specs=[]) ?(set_verbose=ignore) suite = 
-  (* 2 *) let only_test = ref [] in
+  (* 1 *) let only_test = ref [] in
   let () = 
     Arg.parse
       (Arg.align
@@ -1224,7 +1224,7 @@ let run_test_tt_main ?(arg_specs=[]) ?(set_verbose=ignore) suite =
   in
   let nsuite = 
     if !only_test = [] then
-      (* 2 *) suite
+      (* 1 *) suite
     else
       (* 0 *) begin
         match test_filter ~skip:true !only_test suite with 
@@ -1242,7 +1242,7 @@ let run_test_tt_main ?(arg_specs=[]) ?(set_verbose=ignore) suite =
     run_test_tt ~verbose:!global_verbose nsuite 
   in
     if not (was_successful result) then
-      (* 1 *) exit 1
+      (* 0 *) exit 1
     else
       (* 1 *) result
 
@@ -1357,10 +1357,10 @@ end = struct
 
 
 let reverse_range a i len =
-  (* 2 *) if len = 0 then (* 0 *) ()
+  (* 1 *) if len = 0 then (* 0 *) ()
   else
-    (* 2 *) for k = 0 to (len-1)/2 do
-      (* 2 *) let t = Array.unsafe_get a (i+k) in
+    (* 1 *) for k = 0 to (len-1)/2 do
+      (* 1 *) let t = Array.unsafe_get a (i+k) in
       Array.unsafe_set a (i+k) ( Array.unsafe_get a (i+len-1-k));
       Array.unsafe_set a (i+len-1-k) t;
     done
@@ -1370,22 +1370,22 @@ let reverse_in_place a =
   (* 0 *) reverse_range a 0 (Array.length a)
 
 let reverse a =
-  (* 4 *) let b_len = Array.length a in
-  if b_len = 0 then (* 2 *) [||] else  
-  (* 2 *) let b = Array.copy a in  
+  (* 2 *) let b_len = Array.length a in
+  if b_len = 0 then (* 1 *) [||] else  
+  (* 1 *) let b = Array.copy a in  
   for i = 0 to  b_len - 1 do
-      (* 4 *) Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
+      (* 2 *) Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
   done;
   b  
 
 let reverse_of_list =  function
-  | [] -> (* 10 *) [||]
+  | [] -> (* 5 *) [||]
   | hd::tl as l ->
-    (* 28 *) let len = List.length l in
+    (* 14 *) let len = List.length l in
     let a = Array.make len hd in
     let rec fill i = function
-      | [] -> (* 28 *) a
-      | hd::tl -> (* 76 *) Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
+      | [] -> (* 14 *) a
+      | hd::tl -> (* 38 *) Array.unsafe_set a (len - i - 2) hd; fill (i+1) tl in
     fill 0 tl
 
 let filter f a =
@@ -1428,32 +1428,32 @@ let map2i f a b =
 
 
  let rec tolist_aux a f  i res =
-    (* 28 *) if i < 0 then (* 4 *) res else
-      (* 24 *) let v = Array.unsafe_get a i in
+    (* 14 *) if i < 0 then (* 2 *) res else
+      (* 12 *) let v = Array.unsafe_get a i in
       tolist_aux a f  (i - 1)
         (match f v with
-         | Some v -> (* 12 *) v :: res
-         | None -> (* 12 *) res) 
+         | Some v -> (* 6 *) v :: res
+         | None -> (* 6 *) res) 
 
 let to_list_map f a = 
   (* 0 *) tolist_aux a f (Array.length a - 1) []
 
 let to_list_map_acc f a acc = 
-  (* 4 *) tolist_aux a f (Array.length a - 1) acc
+  (* 2 *) tolist_aux a f (Array.length a - 1) acc
 
 
 (* TODO: What would happen if [f] raise, memory leak? *)
 let of_list_map f a = 
-  (* 6 *) match a with 
-  | [] -> (* 2 *) [||]
+  (* 3 *) match a with 
+  | [] -> (* 1 *) [||]
   | h::tl -> 
-    (* 4 *) let hd = f h in 
+    (* 2 *) let hd = f h in 
     let len = List.length tl + 1 in 
     let arr = Array.make len hd  in
     let rec fill i = function
-    | [] -> (* 4 *) arr 
+    | [] -> (* 2 *) arr 
     | hd :: tl -> 
-      (* 4 *) Array.unsafe_set arr i (f hd); 
+      (* 2 *) Array.unsafe_set arr i (f hd); 
       fill (i + 1) tl in 
     fill 1 tl
   
@@ -1487,19 +1487,19 @@ let rfind_and_split arr cmp v : _ split =
 
 
 let find_with_index arr cmp v = 
-  (* 8 *) let len  = Array.length arr in 
+  (* 4 *) let len  = Array.length arr in 
   let rec aux i len = 
-    (* 24 *) if i >= len then (* 2 *) -1 
-    else (* 22 *) if cmp (Array.unsafe_get arr i ) v then (* 6 *) i 
-    else (* 16 *) aux (i + 1) len in 
+    (* 12 *) if i >= len then (* 1 *) -1 
+    else (* 11 *) if cmp (Array.unsafe_get arr i ) v then (* 3 *) i 
+    else (* 8 *) aux (i + 1) len in 
   aux 0 len
 
 let find_and_split arr cmp v : _ split = 
-  (* 8 *) let i = find_with_index arr cmp v in 
+  (* 4 *) let i = find_with_index arr cmp v in 
   if i < 0 then 
-    (* 2 *) `No_split
+    (* 1 *) `No_split
   else
-    (* 6 *) `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
+    (* 3 *) `Split (Array.sub arr 0 i, Array.sub arr (i + 1 ) (Array.length arr - i - 1))        
 
 (** TODO: available since 4.03, use {!Array.exists} *)
 
@@ -1517,15 +1517,15 @@ let is_empty arr =
 
 
 let rec unsafe_loop index len p xs ys  = 
-  (* 48 *) if index >= len then (* 12 *) true
+  (* 24 *) if index >= len then (* 6 *) true
   else 
-    (* 36 *) p 
+    (* 18 *) p 
       (Array.unsafe_get xs index)
       (Array.unsafe_get ys index) &&
       unsafe_loop (succ index) len p xs ys 
    
 let for_all2_no_exn p xs ys = 
-  (* 16 *) let len_xs = Array.length xs in 
+  (* 8 *) let len_xs = Array.length xs in 
   let len_ys = Array.length ys in 
   len_xs = len_ys &&    
   unsafe_loop 0 len_xs p xs ys
@@ -1713,7 +1713,7 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
-(** the range is [start, finish) 
+(** the range is [start, finish]
 *)
 val for_all_range : 
   string -> start:int -> finish:int -> (char -> bool) -> bool 
@@ -1764,7 +1764,6 @@ val is_valid_source_name :
 *)
 val is_valid_npm_package_name : string -> bool 
 
-val module_name_of_package_name : string -> string
 
 
 val no_char : string -> char -> int -> int -> bool 
@@ -1837,59 +1836,59 @@ end = struct
    {[ split " test_unsafe_obj_ffi_ppx.cmi" ~keep_empty:false ' ']}
 *)
 let split_by ?(keep_empty=false) is_delim str =
-  (* 2172 *) let len = String.length str in
+  (* 1086 *) let len = String.length str in
   let rec loop acc last_pos pos =
-    (* 93864 *) if pos = -1 then
-      (* 2172 *) if last_pos = 0 && not keep_empty then
+    (* 46932 *) if pos = -1 then
+      (* 1086 *) if last_pos = 0 && not keep_empty then
 
-        (* 1930 *) acc
+        (* 965 *) acc
       else 
-        (* 242 *) String.sub str 0 last_pos :: acc
+        (* 121 *) String.sub str 0 last_pos :: acc
     else
-    (* 91692 *) if is_delim str.[pos] then
-      (* 35512 *) let new_len = (last_pos - pos - 1) in
+    (* 45846 *) if is_delim str.[pos] then
+      (* 17756 *) let new_len = (last_pos - pos - 1) in
       if new_len <> 0 || keep_empty then 
-        (* 6254 *) let v = String.sub str (pos + 1) new_len in
+        (* 3127 *) let v = String.sub str (pos + 1) new_len in
         loop ( v :: acc)
           pos (pos - 1)
-      else (* 29258 *) loop acc pos (pos - 1)
-    else (* 56180 *) loop acc last_pos (pos - 1)
+      else (* 14629 *) loop acc pos (pos - 1)
+    else (* 28090 *) loop acc last_pos (pos - 1)
   in
   loop [] len (len - 1)
 
 let trim s = 
-  (* 8 *) let i = ref 0  in
+  (* 4 *) let i = ref 0  in
   let j = String.length s in 
   while !i < j &&  
         let u = String.unsafe_get s !i in 
         u = '\t' || u = '\n' || u = ' ' 
   do 
-    (* 18 *) incr i;
+    (* 9 *) incr i;
   done;
   let k = ref (j - 1)  in 
   while !k >= !i && 
         let u = String.unsafe_get s !k in 
         u = '\t' || u = '\n' || u = ' ' do 
-    (* 12 *) decr k ;
+    (* 6 *) decr k ;
   done;
   String.sub s !i (!k - !i + 1)
 
 let split ?keep_empty  str on = 
-  (* 346 *) if str = "" then (* 0 *) [] else 
-    (* 346 *) split_by ?keep_empty (fun x -> (* 48640 *) (x : char) = on) str  ;;
+  (* 173 *) if str = "" then (* 0 *) [] else 
+    (* 173 *) split_by ?keep_empty (fun x -> (* 24320 *) (x : char) = on) str  ;;
 
 let quick_split_by_ws str : string list = 
-  (* 1826 *) split_by ~keep_empty:false (fun x -> (* 43052 *) x = '\t' || x = '\n' || x = ' ') str
+  (* 913 *) split_by ~keep_empty:false (fun x -> (* 21526 *) x = '\t' || x = '\n' || x = ' ') str
 
 let starts_with s beg = 
-  (* 8 *) let beg_len = String.length beg in
+  (* 4 *) let beg_len = String.length beg in
   let s_len = String.length s in
   beg_len <=  s_len &&
   (let i = ref 0 in
    while !i <  beg_len 
          && String.unsafe_get s !i =
             String.unsafe_get beg !i do 
-     (* 8 *) incr i 
+     (* 4 *) incr i 
    done;
    !i = beg_len
   )
@@ -1899,23 +1898,23 @@ let starts_with s beg =
     end with [beg]
 *)
 let ends_with_index s end_ = 
-  (* 106 *) let s_finish = String.length s - 1 in
+  (* 53 *) let s_finish = String.length s - 1 in
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then (* 0 *) -1
   else
-    (* 106 *) let rec aux j k = 
-      (* 288 *) if k < 0 then (* 52 *) (j + 1)
-      else (* 236 *) if String.unsafe_get s j = String.unsafe_get end_ k then 
-        (* 182 *) aux (j - 1) (k - 1)
-      else  (* 54 *) -1 in 
+    (* 53 *) let rec aux j k = 
+      (* 144 *) if k < 0 then (* 26 *) (j + 1)
+      else (* 118 *) if String.unsafe_get s j = String.unsafe_get end_ k then 
+        (* 91 *) aux (j - 1) (k - 1)
+      else  (* 27 *) -1 in 
     aux s_finish s_beg
 
 let ends_with s end_ = (* 0 *) ends_with_index s end_ >= 0 
 
 let ends_with_then_chop s beg = 
-  (* 4 *) let i =  ends_with_index s beg in 
-  if i >= 0 then (* 2 *) Some (String.sub s 0 i) 
-  else (* 2 *) None
+  (* 2 *) let i =  ends_with_index s beg in 
+  if i >= 0 then (* 1 *) Some (String.sub s 0 i) 
+  else (* 1 *) None
 
 let check_suffix_case = ends_with 
 let check_suffix_case_then_chop = ends_with_then_chop
@@ -1924,13 +1923,13 @@ let check_any_suffix_case s suffixes =
   (* 0 *) List.exists (fun x -> (* 0 *) check_suffix_case s x) suffixes
 
 let check_any_suffix_case_then_chop s suffixes = 
-  (* 52 *) let rec aux suffixes = 
-    (* 104 *) match suffixes with 
-    | [] -> (* 2 *) None 
+  (* 26 *) let rec aux suffixes = 
+    (* 52 *) match suffixes with 
+    | [] -> (* 1 *) None 
     | x::xs -> 
-      (* 102 *) let id = ends_with_index s x in 
-      if id >= 0 then (* 50 *) Some (String.sub s 0 id)
-      else (* 52 *) aux xs in 
+      (* 51 *) let id = ends_with_index s x in 
+      if id >= 0 then (* 25 *) Some (String.sub s 0 id)
+      else (* 26 *) aux xs in 
   aux suffixes    
 
 
@@ -1957,19 +1956,19 @@ let escaped s =
 
 *)
 let rec unsafe_for_all_range s ~start ~finish p =     
-  (* 306 *) start > finish ||
+  (* 153 *) start > finish ||
   p (String.unsafe_get s start) && 
   unsafe_for_all_range s ~start:(start + 1) ~finish p
 
 let for_all_range s ~start ~finish p = 
-  (* 56 *) let len = String.length s in 
-  if start < 0 || finish >= len then (* 2 *) invalid_arg "Ext_string.for_all_range"
-  else (* 54 *) unsafe_for_all_range s ~start ~finish p 
+  (* 28 *) let len = String.length s in 
+  if start < 0 || finish >= len then (* 1 *) invalid_arg "Ext_string.for_all_range"
+  else (* 27 *) unsafe_for_all_range s ~start ~finish p 
 
 let for_all (p : char -> bool) s =   
-  (* 6 *) unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
+  (* 3 *) unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
 
-let is_empty s = (* 140 *) String.length s = 0
+let is_empty s = (* 70 *) String.length s = 0
 
 
 let repeat n s  =
@@ -1985,11 +1984,11 @@ let equal (x : string) y  = (* 0 *) x = y
 
 
 let unsafe_is_sub ~sub i s j ~len =
-  (* 2152 *) let rec check k =
-    (* 2758 *) if k = len
-    then (* 86 *) true
+  (* 624 *) let rec check k =
+    (* 860 *) if k = len
+    then (* 39 *) true
     else 
-      (* 2672 *) String.unsafe_get sub (i+k) = 
+      (* 821 *) String.unsafe_get sub (i+k) = 
       String.unsafe_get s (j+k) && check (k+1)
   in
   j+len <= String.length s && check 0
@@ -1997,53 +1996,53 @@ let unsafe_is_sub ~sub i s j ~len =
 
 exception Local_exit 
 let find ?(start=0) ~sub s =
-  (* 98 *) let n = String.length sub in
+  (* 42 *) let n = String.length sub in
   let s_len = String.length s in 
   let i = ref start in  
   try
     while !i + n <= s_len do
-      (* 2136 *) if unsafe_is_sub ~sub 0 s !i ~len:n then
-        (* 82 *) raise_notrace Local_exit;
+      (* 616 *) if unsafe_is_sub ~sub 0 s !i ~len:n then
+        (* 37 *) raise_notrace Local_exit;
       incr i
     done;
     -1
   with Local_exit ->
-    (* 82 *) !i
+    (* 37 *) !i
 
 let contain_substring s sub = 
-  (* 38 *) find s ~sub >= 0 
+  (* 19 *) find s ~sub >= 0 
 
 (** TODO: optimize 
     avoid nonterminating when string is empty 
 *)
 let non_overlap_count ~sub s = 
-  (* 14 *) let sub_len = String.length sub in 
+  (* 4 *) let sub_len = String.length sub in 
   let rec aux  acc off = 
-    (* 56 *) let i = find ~start:off ~sub s  in 
-    if i < 0 then (* 14 *) acc 
-    else (* 42 *) aux (acc + 1) (i + sub_len) in
+    (* 21 *) let i = find ~start:off ~sub s  in 
+    if i < 0 then (* 4 *) acc 
+    else (* 17 *) aux (acc + 1) (i + sub_len) in
   if String.length sub = 0 then (* 0 *) invalid_arg "Ext_string.non_overlap_count"
-  else (* 14 *) aux 0 0  
+  else (* 4 *) aux 0 0  
 
 
 let rfind ~sub s =
-  (* 4 *) let n = String.length sub in
+  (* 2 *) let n = String.length sub in
   let i = ref (String.length s - n) in
   let module M = struct exception Exit end in 
   try
     while !i >= 0 do
-      (* 16 *) if unsafe_is_sub ~sub 0 s !i ~len:n then 
-        (* 4 *) raise_notrace Local_exit;
+      (* 8 *) if unsafe_is_sub ~sub 0 s !i ~len:n then 
+        (* 2 *) raise_notrace Local_exit;
       decr i
     done;
     -1
   with Local_exit ->
-    (* 4 *) !i
+    (* 2 *) !i
 
 let tail_from s x = 
-  (* 4 *) let len = String.length s  in 
+  (* 2 *) let len = String.length s  in 
   if  x > len then (* 0 *) invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
-  else (* 4 *) String.sub s x (len - x)
+  else (* 2 *) String.sub s x (len - x)
 
 
 (**
@@ -2052,9 +2051,9 @@ let tail_from s x =
    ]}
 *)
 let digits_of_str s ~offset x = 
-  (* 10 *) let rec aux i acc s x  = 
-    (* 30 *) if i >= x then (* 10 *) acc 
-    else (* 20 *) aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
+  (* 5 *) let rec aux i acc s x  = 
+    (* 15 *) if i >= x then (* 5 *) acc 
+    else (* 10 *) aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
   aux 0 0 s x 
 
 
@@ -2070,24 +2069,24 @@ let digits_of_str s ~offset x =
    ]}
 *)
 let starts_with_and_number s ~offset beg =
-  (* 12 *) let beg_len = String.length beg in
+  (* 6 *) let beg_len = String.length beg in
   let s_len = String.length s in
   let finish_delim = offset + beg_len in 
 
   if finish_delim >  s_len  then (* 0 *) -1 
   else 
-    (* 12 *) let i = ref offset  in
+    (* 6 *) let i = ref offset  in
     while !i <  finish_delim
           && String.unsafe_get s !i =
              String.unsafe_get beg (!i - offset) do 
-      (* 52 *) incr i 
+      (* 26 *) incr i 
     done;
     if !i = finish_delim then 
-      (* 8 *) digits_of_str ~offset:finish_delim s 2 
+      (* 4 *) digits_of_str ~offset:finish_delim s 2 
     else 
-      (* 4 *) -1 
+      (* 2 *) -1 
 
-let equal (x : string) y  = (* 17659950 *) x = y
+let equal (x : string) y  = (* 8829989 *) x = y
 
 let unsafe_concat_with_length len sep l =
   (* 0 *) match l with 
@@ -2110,31 +2109,31 @@ let unsafe_concat_with_length len sep l =
 
 
 let rec rindex_rec s i c =
-  (* 42 *) if i < 0 then (* 4 *) i else
-  (* 38 *) if String.unsafe_get s i = c then (* 10 *) i else (* 28 *) rindex_rec s (i - 1) c;;
+  (* 21 *) if i < 0 then (* 2 *) i else
+  (* 19 *) if String.unsafe_get s i = c then (* 5 *) i else (* 14 *) rindex_rec s (i - 1) c;;
 
 let rec rindex_rec_opt s i c =
   (* 0 *) if i < 0 then (* 0 *) None else
   (* 0 *) if String.unsafe_get s i = c then (* 0 *) Some i else (* 0 *) rindex_rec_opt s (i - 1) c;;
 
 let rindex_neg s c = 
-  (* 14 *) rindex_rec s (String.length s - 1) c;;
+  (* 7 *) rindex_rec s (String.length s - 1) c;;
 
 let rindex_opt s c = 
   (* 0 *) rindex_rec_opt s (String.length s - 1) c;;
 
 let is_valid_module_file (s : string) = 
-  (* 50 *) let len = String.length s in 
+  (* 25 *) let len = String.length s in 
   len > 0 &&
   match String.unsafe_get s 0 with 
   | 'A' .. 'Z'
   | 'a' .. 'z' -> 
-    (* 22 *) unsafe_for_all_range s ~start:1 ~finish:(len - 1)
+    (* 11 *) unsafe_for_all_range s ~start:1 ~finish:(len - 1)
       (fun x -> 
-         (* 18 *) match x with 
-         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> (* 14 *) true
-         | _ -> (* 4 *) false )
-  | _ -> (* 24 *) false 
+         (* 9 *) match x with 
+         | 'A'..'Z' | 'a'..'z' | '0'..'9' | '_' | '\'' -> (* 7 *) true
+         | _ -> (* 2 *) false )
+  | _ -> (* 12 *) false 
 
 
 (* https://docs.npmjs.com/files/package.json 
@@ -2145,43 +2144,18 @@ let is_valid_module_file (s : string) =
   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
 *)
 let is_valid_npm_package_name (s : string) = 
-  (* 18 *) let len = String.length s in 
+  (* 9 *) let len = String.length s in 
   len <= 214 && (* magic number forced by npm *)
   len > 0 &&
   match String.unsafe_get s 0 with 
   | 'a' .. 'z' | '@' -> 
-    (* 16 *) unsafe_for_all_range s ~start:1 ~finish:(len - 1)
+    (* 8 *) unsafe_for_all_range s ~start:1 ~finish:(len - 1)
       (fun x -> 
-         (* 36 *) match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> (* 30 *) true
-         | _ -> (* 6 *) false )
-  | _ -> (* 2 *) false 
+         (* 18 *) match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> (* 15 *) true
+         | _ -> (* 3 *) false )
+  | _ -> (* 1 *) false 
 
-let module_name_of_package_name (s : string) : string = 
-  (* 6 *) let len = String.length s in 
-  let buf = Buffer.create len in 
-  let add capital ch = 
-    (* 46 *) Buffer.add_char buf 
-      (if capital then 
-        (* 10 *) (Char.uppercase ch)
-      else (* 36 *) ch) in    
-  let rec aux capital off len =     
-      (* 56 *) if off >= len then (* 6 *) ()
-      else 
-        (* 50 *) let ch = String.unsafe_get s off in
-        match ch with 
-        | 'a' .. 'z' 
-        | 'A' .. 'Z' 
-        | '0' .. '9'
-          ->
-          (* 46 *) add capital ch ; 
-          aux false (off + 1) len 
-        | '-' -> 
-          (* 4 *) aux true (off + 1) len 
-        | _ -> (* 0 *) aux capital (off+1) len
-         in 
-   aux true 0 len ;
-   Buffer.contents buf 
 
 type check_result = 
   | Good 
@@ -2192,29 +2166,29 @@ type check_result =
    Make {!Ext_filename} not stateful
 *)
 let is_valid_source_name name : check_result =
-  (* 52 *) match check_any_suffix_case_then_chop name [
+  (* 26 *) match check_any_suffix_case_then_chop name [
       ".ml"; 
       ".re";
       ".mli"; 
       ".rei"
     ] with 
-  | None -> (* 2 *) Suffix_mismatch
+  | None -> (* 1 *) Suffix_mismatch
   | Some x -> 
-    (* 50 *) if is_valid_module_file  x then
-      (* 18 *) Good
-    else (* 32 *) Invalid_module_name  
+    (* 25 *) if is_valid_module_file  x then
+      (* 9 *) Good
+    else (* 16 *) Invalid_module_name  
 
 (** TODO: can be improved to return a positive integer instead *)
 let rec unsafe_no_char x ch i  last_idx = 
-  (* 68 *) i > last_idx  || 
+  (* 34 *) i > last_idx  || 
   (String.unsafe_get x i <> ch && unsafe_no_char x ch (i + 1)  last_idx)
 
 let rec unsafe_no_char_idx x ch i last_idx = 
-  (* 26 *) if i > last_idx  then (* 2 *) -1 
+  (* 13 *) if i > last_idx  then (* 1 *) -1 
   else 
-    (* 24 *) if String.unsafe_get x i <> ch then 
-      (* 18 *) unsafe_no_char_idx x ch (i + 1)  last_idx
-    else (* 6 *) i
+    (* 12 *) if String.unsafe_get x i <> ch then 
+      (* 9 *) unsafe_no_char_idx x ch (i + 1)  last_idx
+    else (* 3 *) i
 
 let no_char x ch i len  : bool =
   (* 0 *) let str_len = String.length x in 
@@ -2223,26 +2197,26 @@ let no_char x ch i len  : bool =
 
 
 let no_slash x = 
-  (* 10 *) unsafe_no_char x '/' 0 (String.length x - 1)
+  (* 5 *) unsafe_no_char x '/' 0 (String.length x - 1)
 
 let no_slash_idx x = 
-  (* 8 *) unsafe_no_char_idx x '/' 0 (String.length x - 1)
+  (* 4 *) unsafe_no_char_idx x '/' 0 (String.length x - 1)
 
 let replace_slash_backward (x : string ) = 
-  (* 2 *) let len = String.length x in 
+  (* 1 *) let len = String.length x in 
   if unsafe_no_char x '/' 0  (len - 1) then (* 0 *) x 
   else 
-    (* 2 *) String.map (function 
-        | '/' -> (* 6 *) '\\'
-        | x -> (* 8 *) x ) x 
+    (* 1 *) String.map (function 
+        | '/' -> (* 3 *) '\\'
+        | x -> (* 4 *) x ) x 
 
 let replace_backward_slash (x : string)=
-  (* 8 *) let len = String.length x in
-  if unsafe_no_char x '\\' 0  (len -1) then (* 4 *) x 
+  (* 4 *) let len = String.length x in
+  if unsafe_no_char x '\\' 0  (len -1) then (* 2 *) x 
   else  
-    (* 4 *) String.map (function 
-        |'\\'-> (* 10 *) '/'
-        | x -> (* 16 *) x) x
+    (* 2 *) String.map (function 
+        |'\\'-> (* 5 *) '/'
+        | x -> (* 8 *) x) x
 
 let empty = ""
 
@@ -2254,15 +2228,15 @@ let single_space = " "
 let single_colon = ":"
 
 let concat_array sep (s : string array) =   
-  (* 18 *) let s_len = Array.length s in 
+  (* 9 *) let s_len = Array.length s in 
   match s_len with 
-  | 0 -> (* 2 *) empty 
-  | 1 -> (* 2 *) Array.unsafe_get s 0
+  | 0 -> (* 1 *) empty 
+  | 1 -> (* 1 *) Array.unsafe_get s 0
   | _ ->     
-    (* 14 *) let sep_len = String.length sep in 
+    (* 7 *) let sep_len = String.length sep in 
     let len = ref 0 in 
     for i = 0 to  s_len - 1 do 
-      (* 64 *) len := !len + String.length (Array.unsafe_get s i)
+      (* 32 *) len := !len + String.length (Array.unsafe_get s i)
     done;
     let target = 
       Bytes.create 
@@ -2272,7 +2246,7 @@ let concat_array sep (s : string array) =
     String.unsafe_blit hd  0  target 0 hd_len;   
     let current_offset = ref hd_len in     
     for i = 1 to s_len - 1 do 
-      (* 50 *) String.unsafe_blit sep 0 target  !current_offset sep_len;
+      (* 25 *) String.unsafe_blit sep 0 target  !current_offset sep_len;
       let cur = Array.unsafe_get s i in 
       let cur_len = String.length cur in     
       let new_off_set = (!current_offset + sep_len ) in
@@ -2283,7 +2257,7 @@ let concat_array sep (s : string array) =
     Bytes.unsafe_to_string target   
 
 let concat3 a b c = 
-  (* 6 *) let a_len = String.length a in 
+  (* 3 *) let a_len = String.length a in 
   let b_len = String.length b in 
   let c_len = String.length c in 
   let len = a_len + b_len + c_len in 
@@ -2294,7 +2268,7 @@ let concat3 a b c =
   Bytes.unsafe_to_string target
 
 let concat4 a b c d =
-  (* 4 *) let a_len = String.length a in 
+  (* 2 *) let a_len = String.length a in 
   let b_len = String.length b in 
   let c_len = String.length c in 
   let d_len = String.length d in 
@@ -2309,7 +2283,7 @@ let concat4 a b c d =
 
 
 let concat5 a b c d e =
-  (* 2 *) let a_len = String.length a in 
+  (* 1 *) let a_len = String.length a in 
   let b_len = String.length b in 
   let c_len = String.length c in 
   let d_len = String.length d in 
@@ -2327,18 +2301,18 @@ let concat5 a b c d e =
 
 
 let inter2 a b = 
-    (* 2 *) concat3 a single_space b 
+    (* 1 *) concat3 a single_space b 
 
 
 let inter3 a b c = 
-  (* 2 *) concat5 a  single_space  b  single_space  c 
+  (* 1 *) concat5 a  single_space  b  single_space  c 
 
 
 
 
 
 let inter4 a b c d =
-  (* 2 *) concat_array single_space [| a; b ; c; d|]
+  (* 1 *) concat_array single_space [| a; b ; c; d|]
   
     
 let parent_dir_lit = ".."    
@@ -2357,49 +2331,49 @@ let suites =
     >:::
     [
      __LOC__ >:: begin fun _ ->
-        (* 2 *) Ext_array.find_and_split 
+        (* 1 *) Ext_array.find_and_split 
             [|"a"; "b";"c"|]
             Ext_string.equal "--" =~ `No_split
      end;
     __LOC__ >:: begin fun _ ->
-        (* 2 *) Ext_array.find_and_split 
+        (* 1 *) Ext_array.find_and_split 
             [|"a"; "b";"c";"--"|]
             Ext_string.equal "--" =~ `Split ([|"a";"b";"c"|],[||])
      end;
      __LOC__ >:: begin fun _ ->
-        (* 2 *) Ext_array.find_and_split 
+        (* 1 *) Ext_array.find_and_split 
             [|"--"; "a"; "b";"c";"--"|]
             Ext_string.equal "--" =~ `Split ([||], [|"a";"b";"c";"--"|])
      end;
     __LOC__ >:: begin fun _ ->
-        (* 2 *) Ext_array.find_and_split 
+        (* 1 *) Ext_array.find_and_split 
             [| "u"; "g"; "--"; "a"; "b";"c";"--"|]
             Ext_string.equal "--" =~ `Split ([|"u";"g"|], [|"a";"b";"c";"--"|])
      end;
     __LOC__ >:: begin fun _ ->
-        (* 2 *) Ext_array.reverse [|1;2|] =~ [|2;1|];
+        (* 1 *) Ext_array.reverse [|1;2|] =~ [|2;1|];
         Ext_array.reverse [||] =~ [||]  
     end     ;
     __LOC__ >:: begin fun _ -> 
-        (* 2 *) Ext_array.of_list_map succ [] =~ [||];
+        (* 1 *) Ext_array.of_list_map succ [] =~ [||];
         Ext_array.of_list_map succ [1]  =~ [|2|];
         Ext_array.of_list_map succ [1;2;3]  =~ [|2;3;4|];
     end; 
     __LOC__ >:: begin fun _ -> 
-        (* 2 *) Ext_array.to_list_map_acc
-        (fun x -> (* 12 *) if x mod 2 = 0 then (* 6 *) Some x else (* 6 *) None )
+        (* 1 *) Ext_array.to_list_map_acc
+        (fun x -> (* 6 *) if x mod 2 = 0 then (* 3 *) Some x else (* 3 *) None )
         [|1;2;3;4;5;6|] [1;2;3]
         =~ [2;4;6;1;2;3]
     end;
     __LOC__ >:: begin fun _ -> 
-        (* 2 *) Ext_array.to_list_map_acc
-        (fun x -> (* 12 *) if x mod 2 = 0 then (* 6 *) Some x else (* 6 *) None )
+        (* 1 *) Ext_array.to_list_map_acc
+        (fun x -> (* 6 *) if x mod 2 = 0 then (* 3 *) Some x else (* 3 *) None )
         [|1;2;3;4;5;6|] []
         =~ [2;4;6]
     end;
 
     __LOC__ >:: begin fun _ -> 
-    (* 2 *) OUnit.assert_bool __LOC__ 
+    (* 1 *) OUnit.assert_bool __LOC__ 
         (Ext_array.for_all2_no_exn
         (=)
         [|1;2;3|]
@@ -2407,7 +2381,7 @@ let suites =
         )
     end;
     __LOC__ >:: begin fun _ -> 
-    (* 2 *) OUnit.assert_bool __LOC__
+    (* 1 *) OUnit.assert_bool __LOC__
     (Ext_array.for_all2_no_exn
     (=) [||] [||]
     );
@@ -2418,7 +2392,7 @@ let suites =
     end
     ;
     __LOC__ >:: begin fun _ -> 
-    (* 2 *) OUnit.assert_bool __LOC__
+    (* 1 *) OUnit.assert_bool __LOC__
     (not (Ext_array.for_all2_no_exn
         (=)
         [|1;2;3|]
@@ -2488,8 +2462,8 @@ let rec cons_enum s e =
   | Node(l,v,r,_) -> (* 0 *) cons_enum l (More(v,r,e))
 
 let rec height = function
-  | Empty -> (* 23876 *) 0 
-  | Node(_,_,_,h) -> (* 72128 *) h   
+  | Empty -> (* 11938 *) 0 
+  | Node(_,_,_,h) -> (* 36064 *) h   
 
 (* Smallest and greatest element of a set *)
 
@@ -2508,21 +2482,21 @@ let rec max_elt = function
 
 let empty = Empty
 
-let is_empty = function Empty -> (* 6 *) true | _ -> (* 24 *) false
+let is_empty = function Empty -> (* 3 *) true | _ -> (* 12 *) false
 
 let rec cardinal_aux acc  = function
-  | Empty -> (* 42604 *) acc 
+  | Empty -> (* 21302 *) acc 
   | Node (l,_,r, _) -> 
-    (* 42200 *) cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+    (* 21100 *) cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
 
-let cardinal s = (* 404 *) cardinal_aux 0 s 
+let cardinal s = (* 202 *) cardinal_aux 0 s 
 
 let rec elements_aux accu = function
-  | Empty -> (* 1066 *) accu
-  | Node(l, v, r, _) -> (* 1040 *) elements_aux (v :: elements_aux accu r) l
+  | Empty -> (* 533 *) accu
+  | Node(l, v, r, _) -> (* 520 *) elements_aux (v :: elements_aux accu r) l
 
 let elements s =
-  (* 26 *) elements_aux [] s
+  (* 13 *) elements_aux [] s
 
 let choose = min_elt
 
@@ -2552,7 +2526,7 @@ let max_int3 (a : int) b c =
   (* 0 *) if b >=c then (* 0 *) b
   else (* 0 *) c     
 let max_int_2 (a : int) b =  
-  (* 251430 *) if a >= b then (* 202148 *) a else (* 49282 *) b 
+  (* 125715 *) if a >= b then (* 101074 *) a else (* 24641 *) b 
 
 
 
@@ -2561,18 +2535,18 @@ exception Height_diff_borken
 
 let rec check_height_and_diff = 
   function 
-  | Empty -> (* 251846 *) 0
+  | Empty -> (* 125923 *) 0
   | Node(l,_,r,h) -> 
-    (* 251430 *) let hl = check_height_and_diff l in
+    (* 125715 *) let hl = check_height_and_diff l in
     let hr = check_height_and_diff r in
     if h <>  max_int_2 hl hr + 1 then (* 0 *) raise Height_invariant_broken
     else  
-      (* 251430 *) let diff = (abs (hl - hr)) in  
+      (* 125715 *) let diff = (abs (hl - hr)) in  
       if  diff > 2 then (* 0 *) raise Height_diff_borken 
-      else (* 251430 *) h     
+      else (* 125715 *) h     
 
 let check tree = 
-  (* 416 *) ignore (check_height_and_diff tree)
+  (* 208 *) ignore (check_height_and_diff tree)
 (* 
     Invariants: 
     1. {[ l < v < r]}
@@ -2580,9 +2554,9 @@ let check tree =
     3. [height l] - [height r] <= 2
 *)
 let create l v r = 
-  (* 365592 *) let hl = match l with Empty -> (* 36234 *) 0 | Node (_,_,_,h) -> (* 329358 *) h in
-  let hr = match r with Empty -> (* 36392 *) 0 | Node (_,_,_,h) -> (* 329200 *) h in
-  Node(l,v,r, if hl >= hr then (* 281338 *) hl + 1 else (* 84254 *) hr + 1)         
+  (* 182796 *) let hl = match l with Empty -> (* 18117 *) 0 | Node (_,_,_,h) -> (* 164679 *) h in
+  let hr = match r with Empty -> (* 18196 *) 0 | Node (_,_,_,h) -> (* 164600 *) h in
+  Node(l,v,r, if hl >= hr then (* 140669 *) hl + 1 else (* 42127 *) hr + 1)         
 
 (* Same as create, but performs one step of rebalancing if necessary.
     Invariants:
@@ -2679,19 +2653,19 @@ let internal_bal l v r =
     end
 *)
 let internal_bal l v r =
-  (* 3351694 *) let hl = match l with Empty -> (* 182262 *) 0 | Node(_,_,_,h) -> (* 3169432 *) h in
-  let hr = match r with Empty -> (* 196988 *) 0 | Node(_,_,_,h) -> (* 3154706 *) h in
-  if hl > hr + 2 then (* 23670 *) begin
+  (* 1675847 *) let hl = match l with Empty -> (* 91131 *) 0 | Node(_,_,_,h) -> (* 1584716 *) h in
+  let hr = match r with Empty -> (* 98494 *) 0 | Node(_,_,_,h) -> (* 1577353 *) h in
+  if hl > hr + 2 then (* 11835 *) begin
     match l with
       Empty -> (* 0 *) assert false
     | Node(ll, lv, lr, _) ->   
-      (* 23670 *) if height ll >= height lr then
+      (* 11835 *) if height ll >= height lr then
         (* [ll] >~ [lr] 
            [ll] >~ [r] 
            [ll] ~~ [ lr ^ r]  
         *)
-        (* 12666 *) create ll lv (create lr v r)
-      else (* 11004 *) begin
+        (* 6333 *) create ll lv (create lr v r)
+      else (* 5502 *) begin
         match lr with
           Empty -> (* 0 *) assert false
         | Node(lrl, lrv, lrr, _)->
@@ -2699,29 +2673,29 @@ let internal_bal l v r =
              [lr] >~ [r]
              [ll ^ lrl] ~~ [lrr ^ r]   
           *)
-          (* 11004 *) create (create ll lv lrl) lrv (create lrr v r)
+          (* 5502 *) create (create ll lv lrl) lrv (create lrr v r)
       end
-  end else (* 3328024 *) if hr > hl + 2 then (* 24332 *) begin
+  end else (* 1664012 *) if hr > hl + 2 then (* 12166 *) begin
     match r with
       Empty -> (* 0 *) assert false
     | Node(rl, rv, rr, _) ->
-      (* 24332 *) if height rr >= height rl then
-        (* 13260 *) create (create l v rl) rv rr
-      else (* 11072 *) begin
+      (* 12166 *) if height rr >= height rl then
+        (* 6630 *) create (create l v rl) rv rr
+      else (* 5536 *) begin
         match rl with
           Empty -> (* 0 *) assert false
         | Node(rll, rlv, rlr, _) ->
-          (* 11072 *) create (create l v rll) rlv (create rlr rv rr)
+          (* 5536 *) create (create l v rll) rlv (create rlr rv rr)
       end
   end else
-    (* 3303692 *) Node(l, v, r, (if hl >= hr then (* 2263560 *) hl + 1 else (* 1040132 *) hr + 1))    
+    (* 1651846 *) Node(l, v, r, (if hl >= hr then (* 1131780 *) hl + 1 else (* 520066 *) hr + 1))    
 
 let rec remove_min_elt = function
     Empty -> (* 0 *) invalid_arg "Set.remove_min_elt"
   | Node(Empty, v, r, _) -> (* 0 *) r
   | Node(l, v, r, _) -> (* 0 *) internal_bal (remove_min_elt l) v r
 
-let singleton x = (* 132580 *) Node(Empty, x, Empty, 1)    
+let singleton x = (* 66290 *) Node(Empty, x, Empty, 1)    
 
 (* 
    All elements of l must precede the elements of r.
@@ -2743,14 +2717,14 @@ let internal_merge l r =
 *)
 
 let rec add_min_element v = function
-  | Empty -> (* 80294 *) singleton v
+  | Empty -> (* 40147 *) singleton v
   | Node (l, x, r, h) ->
-    (* 69164 *) internal_bal (add_min_element v l) x r
+    (* 34582 *) internal_bal (add_min_element v l) x r
 
 let rec add_max_element v = function
-  | Empty -> (* 52286 *) singleton v
+  | Empty -> (* 26143 *) singleton v
   | Node (l, x, r, h) ->
-    (* 68448 *) internal_bal l x (add_max_element v r)
+    (* 34224 *) internal_bal l x (add_max_element v r)
 
 (** 
     Invariants:
@@ -2762,18 +2736,18 @@ let rec add_max_element v = function
     Also use the lemma from [bal]
 *)
 let rec internal_join l v r =
-  (* 309196 *) match (l, r) with
-    (Empty, _) -> (* 80294 *) add_min_element v r
-  | (_, Empty) -> (* 52286 *) add_max_element v l
+  (* 154598 *) match (l, r) with
+    (Empty, _) -> (* 40147 *) add_min_element v r
+  | (_, Empty) -> (* 26143 *) add_max_element v l
   | (Node(ll, lv, lr, lh), Node(rl, rv, rr, rh)) ->
-    (* 176616 *) if lh > rh + 2 then 
+    (* 88308 *) if lh > rh + 2 then 
       (* proof by induction:
          now [height of ll] is [lh - 1] 
       *)
-      (* 4206 *) internal_bal ll lv (internal_join lr v r) 
+      (* 2103 *) internal_bal ll lv (internal_join lr v r) 
     else
-    (* 172410 *) if rh > lh + 2 then (* 3460 *) internal_bal (internal_join l v rl) rv rr 
-    else (* 168950 *) create l v r
+    (* 86205 *) if rh > lh + 2 then (* 1730 *) internal_bal (internal_join l v rl) rv rr 
+    else (* 84475 *) create l v r
 
 
 (*
@@ -2808,41 +2782,41 @@ let rec partition p = function
     else (* 0 *) (internal_concat lt rt, internal_join lf v rf)
 
 let of_sorted_list l =
-  (* 2 *) let rec sub n l =
-    (* 1022 *) match n, l with
+  (* 1 *) let rec sub n l =
+    (* 511 *) match n, l with
     | 0, l -> (* 0 *) Empty, l
     | 1, x0 :: l -> (* 0 *) Node (Empty, x0, Empty, 1), l
-    | 2, x0 :: x1 :: l -> (* 46 *) Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
+    | 2, x0 :: x1 :: l -> (* 23 *) Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
     | 3, x0 :: x1 :: x2 :: l ->
-      (* 466 *) Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
+      (* 233 *) Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
     | n, l ->
-      (* 510 *) let nl = n / 2 in
+      (* 255 *) let nl = n / 2 in
       let left, l = sub nl l in
       match l with
       | [] -> (* 0 *) assert false
       | mid :: l ->
-        (* 510 *) let right, l = sub (n - nl - 1) l in
+        (* 255 *) let right, l = sub (n - nl - 1) l in
         create left mid right, l
   in
   fst (sub (List.length l) l)
 
 let of_sorted_array l =   
-  (* 804 *) let rec sub start n l  =
-    (* 156908 *) if n = 0 then (* 2 *) Empty else 
-    (* 156906 *) if n = 1 then 
-      (* 11036 *) let x0 = Array.unsafe_get l start in
+  (* 402 *) let rec sub start n l  =
+    (* 78454 *) if n = 0 then (* 1 *) Empty else 
+    (* 78453 *) if n = 1 then 
+      (* 5518 *) let x0 = Array.unsafe_get l start in
       Node (Empty, x0, Empty, 1)
-    else (* 145870 *) if n = 2 then     
-      (* 44246 *) let x0 = Array.unsafe_get l start in 
+    else (* 72935 *) if n = 2 then     
+      (* 22123 *) let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in 
       Node (Node(Empty, x0, Empty, 1), x1, Empty, 2) else
-    (* 101624 *) if n = 3 then 
-      (* 23572 *) let x0 = Array.unsafe_get l start in 
+    (* 50812 *) if n = 3 then 
+      (* 11786 *) let x0 = Array.unsafe_get l start in 
       let x1 = Array.unsafe_get l (start + 1) in
       let x2 = Array.unsafe_get l (start + 2) in
       Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2)
     else 
-      (* 78052 *) let nl = n / 2 in
+      (* 39026 *) let nl = n / 2 in
       let left = sub start nl l in
       let mid = start + nl in 
       let v = Array.unsafe_get l mid in 
@@ -2852,33 +2826,33 @@ let of_sorted_array l =
   sub 0 (Array.length l) l 
 
 let is_ordered cmp tree =
-  (* 416 *) let rec is_ordered_min_max tree =
-    (* 503276 *) match tree with
-    | Empty -> (* 251846 *) `Empty
+  (* 208 *) let rec is_ordered_min_max tree =
+    (* 251638 *) match tree with
+    | Empty -> (* 125923 *) `Empty
     | Node(l,v,r,_) -> 
-      (* 251430 *) begin match is_ordered_min_max l with
+      (* 125715 *) begin match is_ordered_min_max l with
         | `No -> (* 0 *) `No 
         | `Empty ->
-          (* 121864 *) begin match is_ordered_min_max r with
+          (* 60932 *) begin match is_ordered_min_max r with
             | `No  -> (* 0 *) `No
-            | `Empty -> (* 96144 *) `V (v,v)
+            | `Empty -> (* 48072 *) `V (v,v)
             | `V(l,r) ->
-              (* 25720 *) if cmp v l < 0 then
-                (* 25720 *) `V(v,r)
+              (* 12860 *) if cmp v l < 0 then
+                (* 12860 *) `V(v,r)
               else
                 (* 0 *) `No
           end
         | `V(min_v,max_v)->
-          (* 129566 *) begin match is_ordered_min_max r with
+          (* 64783 *) begin match is_ordered_min_max r with
             | `No -> (* 0 *) `No
             | `Empty -> 
-              (* 33836 *) if cmp max_v v < 0 then 
-                (* 33836 *) `V(min_v,v)
+              (* 16918 *) if cmp max_v v < 0 then 
+                (* 16918 *) `V(min_v,v)
               else
                 (* 0 *) `No 
             | `V(min_v_r, max_v_r) ->
-              (* 95730 *) if cmp max_v min_v_r < 0 then
-                (* 95730 *) `V(min_v,max_v_r)
+              (* 47865 *) if cmp max_v min_v_r < 0 then
+                (* 47865 *) `V(min_v,max_v_r)
               else (* 0 *) `No
           end
       end  in 
@@ -3002,7 +2976,7 @@ end = struct
 
 type t = int
 
-let compare (x : t) (y : t) = (* 3334238 *) Pervasives.compare x y 
+let compare (x : t) (y : t) = (* 1667119 *) Pervasives.compare x y 
 
 let equal (x : t) (y : t) = (* 0 *) x = y
 
@@ -3076,12 +3050,12 @@ let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  (* 0 
       (* 0 *) let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
     else
       (* 0 *) let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
-let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  (* 3351850 *) match tree with 
-  | Empty -> (* 201032 *) Node(Empty, x, Empty, 1)
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  (* 1675925 *) match tree with 
+  | Empty -> (* 100516 *) Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
-    (* 3150818 *) let c = compare_elt x v in
-    if c = 0 then (* 8 *) t else
-    (* 3150810 *) if c < 0 then (* 1569704 *) Set_gen.internal_bal (add x l) v r else (* 1581106 *) Set_gen.internal_bal l v (add x r)
+    (* 1575409 *) let c = compare_elt x v in
+    if c = 0 then (* 4 *) t else
+    (* 1575405 *) if c < 0 then (* 784852 *) Set_gen.internal_bal (add x l) v r else (* 790553 *) Set_gen.internal_bal l v (add x r)
 
 let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
   (* 0 *) match (s1, s2) with
@@ -3124,11 +3098,11 @@ let rec diff (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
     end
 
 
-let rec mem x (tree : _ Set_gen.t) =  (* 184 *) match tree with 
-  | Empty -> (* 36 *) false
+let rec mem x (tree : _ Set_gen.t) =  (* 92 *) match tree with 
+  | Empty -> (* 18 *) false
   | Node(l, v, r, _) ->
-    (* 148 *) let c = compare_elt x v in
-    c = 0 || mem x (if c < 0 then (* 38 *) l else (* 46 *) r)
+    (* 74 *) let c = compare_elt x v in
+    c = 0 || mem x (if c < 0 then (* 19 *) l else (* 23 *) r)
 
 let rec remove x (tree : _ Set_gen.t) : _ Set_gen.t = (* 0 *) match tree with 
   | Empty -> (* 0 *) Empty
@@ -3185,7 +3159,7 @@ let of_array l =
 
 (* also check order *)
 let invariant t =
-  (* 2 *) Set_gen.check t ;
+  (* 1 *) Set_gen.check t ;
   Set_gen.is_ordered compare_elt t          
 
 
@@ -3327,35 +3301,35 @@ let filter = Set_gen.filter
 let of_sorted_list = Set_gen.of_sorted_list
 let of_sorted_array = Set_gen.of_sorted_array
 
-let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  (* 301530 *) match tree with 
+let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  (* 150765 *) match tree with 
   | Empty ->
-    (* 1412 *) (Empty, false, Empty)
+    (* 706 *) (Empty, false, Empty)
   | Node(l, v, r, _) ->
-    (* 300118 *) let c = compare_elt x v in
-    if c = 0 then (* 123024 *) (l, true, r)
-    else (* 177094 *) if c < 0 then
-      (* 90030 *) let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
+    (* 150059 *) let c = compare_elt x v in
+    if c = 0 then (* 61512 *) (l, true, r)
+    else (* 88547 *) if c < 0 then
+      (* 45015 *) let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
     else
-      (* 87064 *) let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
-let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  (* 142680 *) match tree with 
-  | Empty -> (* 5240 *) Node(Empty, x, Empty, 1)
+      (* 43532 *) let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
+let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  (* 71340 *) match tree with 
+  | Empty -> (* 2620 *) Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
-    (* 137440 *) let c = compare_elt x v in
-    if c = 0 then (* 81834 *) t else
-    (* 55606 *) if c < 0 then (* 27314 *) Set_gen.internal_bal (add x l) v r else (* 28292 *) Set_gen.internal_bal l v (add x r)
+    (* 68720 *) let c = compare_elt x v in
+    if c = 0 then (* 40917 *) t else
+    (* 27803 *) if c < 0 then (* 13657 *) Set_gen.internal_bal (add x l) v r else (* 14146 *) Set_gen.internal_bal l v (add x r)
 
 let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
-  (* 249272 *) match (s1, s2) with
-  | (Empty, t2) -> (* 42230 *) t2
-  | (t1, Empty) -> (* 1532 *) t1
+  (* 124636 *) match (s1, s2) with
+  | (Empty, t2) -> (* 21115 *) t2
+  | (t1, Empty) -> (* 766 *) t1
   | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
-    (* 205510 *) if h1 >= h2 then
-      (* 201740 *) if h2 = 1 then (* 81074 *) add v2 s1 else (* 120666 *) begin
+    (* 102755 *) if h1 >= h2 then
+      (* 100870 *) if h2 = 1 then (* 40537 *) add v2 s1 else (* 60333 *) begin
         let (l2, _, r2) = split v1 s2 in
         Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
       end
     else
-    (* 3770 *) if h1 = 1 then (* 0 *) add v1 s2 else (* 3770 *) begin
+    (* 1885 *) if h1 = 1 then (* 0 *) add v1 s2 else (* 1885 *) begin
       let (l1, _, r1) = split v2 s1 in
       Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
     end    
@@ -3442,11 +3416,11 @@ let of_list l =
   | _ -> (* 0 *) of_sorted_list (List.sort_uniq compare_elt l)
 
 let of_array l = 
-  (* 6 *) Array.fold_left (fun  acc x -> (* 6000 *) add x acc) empty l
+  (* 3 *) Array.fold_left (fun  acc x -> (* 3000 *) add x acc) empty l
 
 (* also check order *)
 let invariant t =
-  (* 414 *) Set_gen.check t ;
+  (* 207 *) Set_gen.check t ;
   Set_gen.is_ordered compare_elt t          
 
 
@@ -3468,35 +3442,35 @@ let suites =
   __FILE__ >:::
   [
     __LOC__ >:: begin fun _ ->
-      (* 2 *) OUnit.assert_bool __LOC__
+      (* 1 *) OUnit.assert_bool __LOC__
         (Set_poly.invariant 
-           (Set_poly.of_array (Array.init 1000 (fun n -> (* 2000 *) n))))
+           (Set_poly.of_array (Array.init 1000 (fun n -> (* 1000 *) n))))
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) OUnit.assert_bool __LOC__
+      (* 1 *) OUnit.assert_bool __LOC__
         (Set_poly.invariant 
-           (Set_poly.of_array (Array.init 1000 (fun n -> (* 2000 *) 1000-n))))
+           (Set_poly.of_array (Array.init 1000 (fun n -> (* 1000 *) 1000-n))))
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) OUnit.assert_bool __LOC__
+      (* 1 *) OUnit.assert_bool __LOC__
         (Set_poly.invariant 
-           (Set_poly.of_array (Array.init 1000 (fun n -> (* 2000 *) Random.int 1000))))
+           (Set_poly.of_array (Array.init 1000 (fun n -> (* 1000 *) Random.int 1000))))
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) OUnit.assert_bool __LOC__
+      (* 1 *) OUnit.assert_bool __LOC__
         (Set_poly.invariant 
-           (Set_poly.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> (* 2000 *) n)))))
+           (Set_poly.of_sorted_list (Array.to_list (Array.init 1000 (fun n -> (* 1000 *) n)))))
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let arr = Array.init 1000 (fun n -> (* 2000 *) n) in
+      (* 1 *) let arr = Array.init 1000 (fun n -> (* 1000 *) n) in
       let set = (Set_poly.of_sorted_array arr) in
       OUnit.assert_bool __LOC__
         (Set_poly.invariant set );
       OUnit.assert_equal 1000 (Set_poly.cardinal set)    
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) for i = 0 to 200 do 
-        (* 402 *) let arr = Array.init i (fun n -> (* 40200 *) n) in
+      (* 1 *) for i = 0 to 200 do 
+        (* 201 *) let arr = Array.init i (fun n -> (* 20100 *) n) in
         let set = (Set_poly.of_sorted_array arr) in
         OUnit.assert_bool __LOC__
           (Set_poly.invariant set );
@@ -3504,11 +3478,11 @@ let suites =
       done    
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let arr_size = 200 in
+      (* 1 *) let arr_size = 200 in
       let arr_sets = Array.make 200 Set_poly.empty in  
       for i = 0 to arr_size - 1 do
-        (* 400 *) let size = Random.int 1000 in  
-        let arr = Array.init size (fun n -> (* 206096 *) n) in
+        (* 200 *) let size = Random.int 1000 in  
+        let arr = Array.init size (fun n -> (* 103048 *) n) in
         arr_sets.(i)<- (Set_poly.of_sorted_array arr)            
       done;
       let large = Array.fold_left Set_poly.union Set_poly.empty arr_sets in 
@@ -3516,10 +3490,10 @@ let suites =
     end;
 
      __LOC__ >:: begin fun _ ->
-      (* 2 *) let arr_size = 1_00_000 in
+      (* 1 *) let arr_size = 1_00_000 in
       let v = ref Set_int.empty in 
       for i = 0 to arr_size - 1 do
-        (* 200000 *) let size = Random.int 0x3FFFFFFF in  
+        (* 100000 *) let size = Random.int 0x3FFFFFFF in  
          v := Set_int.add size !v                      
       done;       
       OUnit.assert_bool __LOC__ (Set_int.invariant !v)
@@ -3613,7 +3587,7 @@ val global_substitute:
   -> string -> string
 end = struct
 #1 "bsb_regex.ml"
-let string_after s n = (* 16 *) String.sub s n (String.length s - n)
+let string_after s n = (* 8 *) String.sub s n (String.length s - n)
 
 
 
@@ -3626,25 +3600,25 @@ Str.global_substitute (Str.regexp "\\${bsb:\\([-a-zA-Z0-9]+\\)}") (fun x -> (x^"
 *)
 
 let global_substitute expr repl_fun text =
-  (* 16 *) let text_len = String.length text in 
+  (* 8 *) let text_len = String.length text in 
   let expr = Str.regexp expr in  
   let rec replace accu start last_was_empty =
-    (* 40 *) let startpos = if last_was_empty then (* 0 *) start + 1 else (* 40 *) start in
+    (* 20 *) let startpos = if last_was_empty then (* 0 *) start + 1 else (* 20 *) start in
     if startpos > text_len then
       (* 0 *) string_after text start :: accu
     else
-      (* 40 *) match Str.search_forward expr text startpos with
+      (* 20 *) match Str.search_forward expr text startpos with
       | exception Not_found -> 
-        (* 16 *) string_after text start :: accu
+        (* 8 *) string_after text start :: accu
       |  pos ->
-        (* 24 *) let end_pos = Str.match_end() in
+        (* 12 *) let end_pos = Str.match_end() in
         let matched = (Str.matched_string text) in 
         let  groups = 
             let rec aux n  acc = 
-                (* 48 *) match Str.matched_group n text with 
+                (* 24 *) match Str.matched_group n text with 
                 | exception (Not_found | Invalid_argument _ ) 
-                    -> (* 24 *) acc 
-                | v -> (* 24 *) aux (succ n) (v::acc) in 
+                    -> (* 12 *) acc 
+                | v -> (* 12 *) aux (succ n) (v::acc) in 
              aux 1 []  in 
         let repl_text = repl_fun matched groups  in
         replace (repl_text :: String.sub text start (pos-start) :: accu)
@@ -3665,10 +3639,10 @@ let (=~) = OUnit.assert_equal
 
 
 let test_eq x y  = 
-    (* 16 *) Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+    (* 8 *) Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
         (fun _ groups -> 
-            (* 24 *) match groups with 
-            | x::xs -> (* 24 *) x 
+            (* 12 *) match groups with 
+            | x::xs -> (* 12 *) x 
             | _ -> (* 0 *) assert false 
         ) x =~ y 
 
@@ -3678,7 +3652,7 @@ let suites =
     >:::
     [
         __LOC__ >:: begin fun _ -> 
-        (* 2 *) test_eq 
+        (* 1 *) test_eq 
         {| hi hi hi ${bsb:name}
         ${bsb:x}
         ${bsb:u}
@@ -3689,18 +3663,18 @@ let suites =
         |}
     end;
     __LOC__ >:: begin  fun _ ->
-    (* 2 *) test_eq  "xx" "xx";
+    (* 1 *) test_eq  "xx" "xx";
     test_eq "${bsb:x}" "x";
     test_eq "a${bsb:x}" "ax";
     
     end;
 
     __LOC__ >:: begin fun _ ->
-        (* 2 *) test_eq "${bsb:x}x" "xx"
+        (* 1 *) test_eq "${bsb:x}x" "xx"
     end;
 
     __LOC__ >:: begin fun _ -> 
-        (* 2 *) test_eq {|
+        (* 1 *) test_eq {|
 {
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
@@ -3729,7 +3703,7 @@ let suites =
 
     ;
     __LOC__ >:: begin fun _ -> 
-    (* 2 *) test_eq {|
+    (* 1 *) test_eq {|
 {
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
@@ -3770,7 +3744,7 @@ let suites =
 |}
     end;
     __LOC__ >:: begin fun _ -> 
-    (* 2 *) test_eq {|
+    (* 1 *) test_eq {|
 {
     "version": "0.1.0",
     "command": "${bsb:bsb}",
@@ -3947,6 +3921,7 @@ val suffix_mlast : string
 val suffix_mlast_simple : string
 val suffix_mliast : string
 val suffix_mliast_simple : string
+val suffix_mlmap : string
 val suffix_mll : string
 val suffix_re : string
 val suffix_rei : string 
@@ -3961,7 +3936,6 @@ val suffix_cmti : string
 
 val commonjs : string 
 val amdjs : string 
-val goog : string 
 val es6 : string 
 val es6_global : string
 val amdjs_global : string 
@@ -3979,6 +3953,9 @@ val native : string
 val bytecode : string
 val js : string
 
+val node_sep : string 
+val node_parent : string 
+val node_current : string 
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4075,6 +4052,7 @@ let suffix_ml = ".ml"
 let suffix_mli = ".mli"
 let suffix_re = ".re"
 let suffix_rei = ".rei"
+let suffix_mlmap = ".mlmap"
 
 let suffix_cmt = ".cmt" 
 let suffix_cmti = ".cmti" 
@@ -4089,7 +4067,6 @@ let suffix_js = ".js"
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
-let goog = "goog"
 let es6 = "es6"
 let es6_global = "es6-global"
 let amdjs_global = "amdjs-global"
@@ -4105,6 +4082,14 @@ let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
 let native = "native"
 let bytecode = "bytecode"
 let js = "js"
+
+
+
+(** Used when produce node compatible paths *)
+let node_sep = "/"
+let node_parent = ".."
+let node_current = "."
+
 
 end
 module Ounit_cmd_util : sig 
@@ -4122,7 +4107,7 @@ val perform : string -> string array -> output
 val perform_bsc : string array -> output 
 
 
-val bsc_eval : string -> output 
+ val bsc_check_eval : string -> output  
 
 val debug_output : output -> unit 
 end = struct
@@ -4131,8 +4116,8 @@ let (//) = Filename.concat
 
 (** may nonterminate when [cwd] is '.' *)
 let rec unsafe_root_dir_aux cwd  = 
-  (* 4 *) if Sys.file_exists (cwd//Literals.bsconfig_json) then (* 2 *) cwd 
-  else (* 2 *) unsafe_root_dir_aux (Filename.dirname cwd)     
+  (* 2 *) if Sys.file_exists (cwd//Literals.bsconfig_json) then (* 1 *) cwd 
+  else (* 1 *) unsafe_root_dir_aux (Filename.dirname cwd)     
 
 let project_root = unsafe_root_dir_aux (Sys.getcwd ())
 let jscomp = project_root // "jscomp"
@@ -4154,7 +4139,7 @@ let rec safe_dup fd =
   end
 
 let safe_close fd =
-  (* 112 *) try Unix.close fd with Unix.Unix_error(_,_,_) -> (* 0 *) ()
+  (* 50 *) try Unix.close fd with Unix.Unix_error(_,_,_) -> (* 0 *) ()
 
 
 type output = {
@@ -4164,7 +4149,7 @@ type output = {
 }
 
 let perform command args = 
-  (* 56 *) let new_fd_in, new_fd_out = Unix.pipe () in 
+  (* 25 *) let new_fd_in, new_fd_out = Unix.pipe () in 
   let err_fd_in, err_fd_out = Unix.pipe () in 
   match Unix.fork () with 
   | 0 -> 
@@ -4183,7 +4168,7 @@ let perform command args =
        when all the descriptiors on a pipe's output are closed, a call to 
        [write] on its input kills the writing process (EPIPE).
     *)
-    (* 56 *) safe_close new_fd_out ; 
+    (* 25 *) safe_close new_fd_out ; 
     safe_close err_fd_out ; 
     let in_chan = Unix.in_channel_of_descr new_fd_in in 
     let err_in_chan = Unix.in_channel_of_descr err_fd_in in 
@@ -4191,20 +4176,20 @@ let perform command args =
     let err_buf = Buffer.create 1024 in 
     (try 
        while true do 
-         (* 194 *) Buffer.add_string buf (input_line in_chan );             
+         (* 27 *) Buffer.add_string buf (input_line in_chan );             
          Buffer.add_char buf '\n'
        done;
      with
-       End_of_file -> (* 56 *) ()) ; 
+       End_of_file -> (* 25 *) ()) ; 
     (try 
        while true do 
-         (* 350 *) Buffer.add_string err_buf (input_line err_in_chan );
+         (* 174 *) Buffer.add_string err_buf (input_line err_in_chan );
          Buffer.add_char err_buf '\n'
        done;
      with
-       End_of_file -> (* 56 *) ()) ; 
+       End_of_file -> (* 25 *) ()) ; 
     let exit_code = match snd @@ Unix.waitpid [] pid with 
-      | Unix.WEXITED exit_code -> (* 56 *) exit_code 
+      | Unix.WEXITED exit_code -> (* 25 *) exit_code 
       | Unix.WSIGNALED _signal_number 
       | Unix.WSTOPPED _signal_number  -> (* 0 *) 127 in 
     {
@@ -4215,7 +4200,7 @@ let perform command args =
 
 
 let perform_bsc args = 
-  (* 56 *) perform bsc_exe 
+  (* 25 *) perform bsc_exe 
     (Array.append 
        [|bsc_exe ; 
          "-bs-package-name" ; "bs-platform"; 
@@ -4231,8 +4216,8 @@ let perform_bsc args =
          stdlib_dir
        |] args)
 
-let bsc_eval str = 
-  (* 50 *) perform_bsc [|"-bs-eval"; str|]        
+let bsc_check_eval str = 
+  (* 22 *) perform_bsc [|"-bs-eval"; str|]        
 
   let debug_output o = 
   (* 0 *) Printf.printf "\nexit_code:%d\nstdout:%s\nstderr:%s\n"
@@ -4262,136 +4247,92 @@ let (=~) = OUnit.assert_equal
     let in_chan = Unix.in_channel_of_descr readme *)
 
 
-let react = {|
-type u 
-
-external a : u = "react" [@@bs.module]
-
-external b : unit -> int = "bool" [@@bs.module "react"]
-
-let v = a
-let h = b ()
-
-|}        
-let foo_react = {|
-type bla
-
-
-external foo : bla = "foo.react" [@@bs.module]
-
-external bar : unit -> bla  = "bar" [@@bs.val] [@@bs.module "foo.react"]
-
-let c = foo 
-
-let d = bar ()
-
-|}
 
 let perform_bsc = Ounit_cmd_util.perform_bsc
-let bsc_eval = Ounit_cmd_util.bsc_eval
+let bsc_check_eval = Ounit_cmd_util.bsc_check_eval 
 
 
 let suites = 
   __FILE__
   >::: [
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v_output = perform_bsc  [| "-v" |] in 
+      (* 1 *) let v_output = perform_bsc  [| "-v" |] in 
       OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
       OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
       (* Printf.printf "\n*>%s" v_output.stdout; *)
       (* Printf.printf "\n*>%s" v_output.stderr ; *)
     end; 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let simple_quote = 
+      (* 1 *) let v_output = 
         perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
-      OUnit.assert_bool __LOC__ (simple_quote.exit_code = 0)
+      OUnit.assert_bool __LOC__ (v_output.exit_code = 0)
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_be_warning = 
-        bsc_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in 
+      (* 1 *) let should_be_warning = 
+        bsc_check_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in 
       (* debug_output should_be_warning; *)
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring
                                    should_be_warning.stderr Literals.unused_attribute)
     end;
+
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let dedupe_require = 
-        bsc_eval (react ^ foo_react) in 
-      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
-                                   dedupe_require.stdout ~sub:"require" = 2
-                                )     
-    end;
-    __LOC__ >:: begin fun _ -> 
-      (* 2 *) let dedupe_require = 
-        bsc_eval react in 
-      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
-                                   dedupe_require.stdout ~sub:"require" = 1
-                                )     
-    end;
-    __LOC__ >:: begin fun _ -> 
-      (* 2 *) let dedupe_require = 
-        bsc_eval foo_react in 
-      OUnit.assert_bool __LOC__ (Ext_string.non_overlap_count
-                                   dedupe_require.stdout ~sub:"require" = 1
-                                )     
-    end;
-    __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
 external ff : 
     resp -> (_ [@bs.as "x"]) -> int -> unit = 
     "x" [@@bs.set]      
       |} in 
       OUnit.assert_bool __LOC__ 
-      (Ext_string.contain_substring should_err.stderr
-      "Ill defined"
-      )
+        (Ext_string.contain_substring should_err.stderr
+           "Ill defined"
+        )
     end;
 
     __LOC__ >:: begin fun _ -> 
-(** used in return value 
-    This should fail, we did not 
-    support uncurry return value yet
-*)
-    (* 2 *) let should_err = bsc_eval {|
+      (** used in return value 
+          This should fail, we did not 
+          support uncurry return value yet
+      *)
+      (* 1 *) let should_err = bsc_check_eval {|
     external v3 :
     int -> int -> (int -> int -> int [@bs.uncurry])
     = ""[@@bs.val]
 
     |} in 
-    (* Ounit_cmd_util.debug_output should_err;*)
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring 
-    should_err.stderr "bs.uncurry")
+      (* Ounit_cmd_util.debug_output should_err;*)
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring 
+           should_err.stderr "bs.uncurry")
     end ;
 
     __LOC__ >:: begin fun _ -> 
-    (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
     external v4 :  
     (int -> int -> int [@bs.uncurry]) = ""
     [@@bs.val]
 
     |} in 
-    (* Ounit_cmd_util.debug_output should_err ; *)
-    OUnit.assert_bool __LOC__
-    (Ext_string.contain_substring 
-    should_err.stderr "bs.uncurry")
-  end ;
+      (* Ounit_cmd_util.debug_output should_err ; *)
+      OUnit.assert_bool __LOC__
+        (Ext_string.contain_substring 
+           should_err.stderr "bs.uncurry")
+    end ;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
       {js| \uFFF|js}
       |} in 
       OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
       external mk : int -> ([`a|`b] [@bs.string]) = "" [@@bs.val]
       |} in 
       OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
     end;
-    
+
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
       external mk : int -> ([`a|`b] ) = "" [@@bs.val]
       |} in 
       OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
@@ -4402,7 +4343,7 @@ external ff :
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
       type t 
       external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "" [@@bs.val]
       |} in 
@@ -4410,7 +4351,7 @@ external ff :
     end
     ;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
       type t 
       external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "" [@@bs.val]
       |} in 
@@ -4419,7 +4360,7 @@ external ff :
     ;
     (* #1510 *)
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
        let should_fail = fun [@bs.this] (Some x) y u -> y + u 
       |} in 
       OUnit.assert_bool __LOC__ 
@@ -4427,7 +4368,7 @@ external ff :
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
        let should_fail = fun [@bs.this] (Some x as v) y u -> y + u 
       |} in 
       (* Ounit_cmd_util.debug_output should_err; *)
@@ -4436,7 +4377,7 @@ external ff :
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
      external f : string -> unit -> unit = "x.y" [@@bs.send]
      |} in 
       OUnit.assert_bool __LOC__ 
@@ -4447,7 +4388,7 @@ external ff :
 
 
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
           external f : int = "%identity"
 |} in
       OUnit.assert_bool __LOC__
@@ -4455,21 +4396,21 @@ external ff :
     end;
 
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
           external f : int -> int = "%identity"
 |} in
       OUnit.assert_bool __LOC__
-         (Ext_string.is_empty should_err.stderr)
+        (Ext_string.is_empty should_err.stderr)
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
           external f : int -> int -> int = "%identity"
 |} in
       OUnit.assert_bool __LOC__
-         (not (Ext_string.is_empty should_err.stderr))
+        (not (Ext_string.is_empty should_err.stderr))
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
           external f : (int -> int) -> int = "%identity"
 |} in
       OUnit.assert_bool __LOC__
@@ -4478,7 +4419,7 @@ external ff :
     end;
 
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let should_err = bsc_eval {|
+      (* 1 *) let should_err = bsc_check_eval {|
           external f : int -> (int-> int) = "%identity"
 |} in
       OUnit.assert_bool __LOC__
@@ -4521,7 +4462,7 @@ let (=~) = OUnit.assert_equal
 
 
 
-let bsc_eval = Ounit_cmd_util.bsc_eval
+let bsc_eval = Ounit_cmd_util.bsc_check_eval
 
 let debug_output = Ounit_cmd_util.debug_output
 
@@ -4530,7 +4471,7 @@ let suites =
     __FILE__ 
     >::: [
         __LOC__ >:: begin fun _ -> 
-        (* 2 *) let output = bsc_eval {|
+        (* 1 *) let output = bsc_eval {|
 external err : 
    hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
    unit -> _ = "" [@@bs.obj]
@@ -4539,7 +4480,7 @@ external err :
             (Ext_string.contain_substring output.stderr "hi_should_error")
         end;
         __LOC__ >:: begin fun _ -> 
-(* 2 *) let output = bsc_eval {|
+(* 1 *) let output = bsc_eval {|
     external err : 
    ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
    unit -> _ = "" [@@bs.obj]
@@ -4548,7 +4489,7 @@ external err :
             (Ext_string.contain_substring output.stderr "hi_should_error")        
         end;
         __LOC__ >:: begin fun _ -> 
-        (* 2 *) let output = bsc_eval {|
+        (* 1 *) let output = bsc_eval {|
     external err : 
    ?hi_should_error:([`a of int | `b of string ] [@bs.string]) ->         
    unit -> unit = "" [@@bs.val]
@@ -4561,7 +4502,7 @@ external err :
           (**
              Each [@bs.unwrap] variant constructor requires an argument
           *)
-          (* 2 *) let output =
+          (* 1 *) let output =
             bsc_eval {|
               external err :
               ?hi_should_error:([`a of int | `b] [@bs.unwrap]) -> unit -> unit = "" [@@bs.val]
@@ -4575,7 +4516,7 @@ external err :
           (**
              [@bs.unwrap] args are not supported in [@@bs.obj] functions
           *)
-          (* 2 *) let output =
+          (* 1 *) let output =
             bsc_eval {|
               external err :
               ?hi_should_error:([`a of int] [@bs.unwrap]) -> unit -> _ = "" [@@bs.obj]
@@ -4653,13 +4594,13 @@ end = struct
    ]}
 *)
 let rec power_2_above x n =
-  (* 184 *) if x >= n then (* 70 *) x
-  else (* 114 *) if x * 2 > Sys.max_array_length then (* 0 *) x
-  else (* 114 *) power_2_above (x * 2) n
+  (* 92 *) if x >= n then (* 35 *) x
+  else (* 57 *) if x * 2 > Sys.max_array_length then (* 0 *) x
+  else (* 57 *) power_2_above (x * 2) n
 
 
 let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
-  (* 8 *) Printf.sprintf 
+  (* 4 *) Printf.sprintf 
     "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
     num_bindings 
     num_buckets 
@@ -4707,7 +4648,7 @@ type 'a t =
 
 
 let create  initial_size =
-  (* 16 *) let s = Ext_util.power_2_above 16 initial_size in
+  (* 8 *) let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; data = Array.make s [] }
 
 let clear h =
@@ -4724,7 +4665,7 @@ let reset h =
 
 let copy h = (* 0 *) { h with data = Array.copy h.data }
 
-let length h = (* 22 *) h.size
+let length h = (* 11 *) h.size
 
 let iter f h =
   (* 0 *) let rec do_bucket = function
@@ -4752,21 +4693,21 @@ let fold f h init =
   !accu
 
 let resize indexfun h =
-  (* 28 *) let odata = h.data in
+  (* 14 *) let odata = h.data in
   let osize = Array.length odata in
   let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then (* 28 *) begin
+  if nsize < Sys.max_array_length then (* 14 *) begin
     let ndata = Array.make nsize [ ] in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
-        [ ] -> (* 4928 *) ()
+        [ ] -> (* 2464 *) ()
       | key :: rest ->
-        (* 9884 *) let nidx = indexfun h key in
+        (* 4942 *) let nidx = indexfun h key in
         ndata.(nidx) <- key :: ndata.(nidx);
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
-      (* 4928 *) insert_bucket (Array.unsafe_get odata i)
+      (* 2464 *) insert_bucket (Array.unsafe_get odata i)
     done
   end
 
@@ -4791,28 +4732,28 @@ let stats h =
    bucket_histogram = histo }
 
 let rec small_bucket_mem eq_key key lst =
-  (* 52406 *) match lst with 
-  | [] -> (* 4064 *) false 
+  (* 26203 *) match lst with 
+  | [] -> (* 2032 *) false 
   | key1::rest -> 
-    (* 48342 *) eq_key key   key1 ||
+    (* 24171 *) eq_key key   key1 ||
     match rest with 
-    | [] -> (* 3930 *) false 
+    | [] -> (* 1965 *) false 
     | key2 :: rest -> 
-      (* 14796 *) eq_key key   key2 ||
+      (* 7398 *) eq_key key   key2 ||
       match rest with 
-      | [] -> (* 2658 *) false 
+      | [] -> (* 1329 *) false 
       | key3 :: rest -> 
-        (* 6394 *) eq_key key   key3 ||
+        (* 3197 *) eq_key key   key3 ||
         small_bucket_mem eq_key key rest 
 
 let rec remove_bucket eq_key key (h : _ t) buckets = 
-  (* 22702 *) match buckets with 
+  (* 11351 *) match buckets with 
   | [ ] ->
-    (* 8004 *) [ ]
+    (* 4002 *) [ ]
   | k :: next ->
-    (* 14698 *) if  eq_key k   key
-    then (* 2026 *) begin h.size <- h.size - 1; next end
-    else (* 12672 *) k :: remove_bucket eq_key key h next    
+    (* 7349 *) if  eq_key k   key
+    then (* 1013 *) begin h.size <- h.size - 1; next end
+    else (* 6336 *) k :: remove_bucket eq_key key h next    
 
 module type S =
 sig
@@ -4906,7 +4847,7 @@ module Make (H: Hashtbl.HashedType) : (Hash_set_gen.S with type key = H.t) = str
 type key = H.t 
 let eq_key = H.equal
 let key_index (h :  _ Hash_set_gen.t ) key =
-  (* 26392 *) (H.hash  key) land (Array.length h.data - 1)
+  (* 13196 *) (H.hash  key) land (Array.length h.data - 1)
 type t = key Hash_set_gen.t
 
 
@@ -4925,24 +4866,24 @@ let elements = Hash_set_gen.elements
 
 
 let remove (h : _ Hash_set_gen.t) key =  
-  (* 8004 *) let i = key_index h key in
+  (* 4002 *) let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
   let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
   if old_h_size <> h.size then  
-    (* 2002 *) Array.unsafe_set h_data i new_bucket
+    (* 1001 *) Array.unsafe_set h_data i new_bucket
 
 
 
 let add (h : _ Hash_set_gen.t) key =
-  (* 8206 *) let i = key_index h key  in 
+  (* 4103 *) let i = key_index h key  in 
   let h_data = h.data in 
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    (* 4204 *) begin 
+    (* 2102 *) begin 
       Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then (* 10 *) Hash_set_gen.resize key_index h
+      if h.size > Array.length h_data lsl 1 then (* 5 *) Hash_set_gen.resize key_index h
     end
 
 let of_array arr = 
@@ -4969,7 +4910,7 @@ let check_add (h : _ Hash_set_gen.t) key =
 
 
 let mem (h :  _ Hash_set_gen.t) key =
-  (* 6204 *) Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+  (* 3102 *) Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
 # 122
 end
@@ -5056,7 +4997,7 @@ end = struct
 external seeded_hash_param :
   int -> int -> int -> 'a -> int = "caml_hash" "noalloc"
 let key_index (h :  _ Hash_set_gen.t ) (key : 'a) =
-  (* 41938 *) seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
+  (* 20969 *) seeded_hash_param 10 100 0 key land (Array.length h.data - 1)
 let eq_key = (=)
 type  'a t = 'a Hash_set_gen.t 
 
@@ -5075,24 +5016,24 @@ let elements = Hash_set_gen.elements
 
 
 let remove (h : _ Hash_set_gen.t) key =  
-  (* 2022 *) let i = key_index h key in
+  (* 1011 *) let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
   let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
   if old_h_size <> h.size then  
-    (* 22 *) Array.unsafe_set h_data i new_bucket
+    (* 11 *) Array.unsafe_set h_data i new_bucket
 
 
 
 let add (h : _ Hash_set_gen.t) key =
-  (* 30008 *) let i = key_index h key  in 
+  (* 15004 *) let i = key_index h key  in 
   let h_data = h.data in 
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    (* 6006 *) begin 
+    (* 3003 *) begin 
       Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then (* 18 *) Hash_set_gen.resize key_index h
+      if h.size > Array.length h_data lsl 1 then (* 9 *) Hash_set_gen.resize key_index h
     end
 
 let of_array arr = 
@@ -5119,7 +5060,7 @@ let check_add (h : _ Hash_set_gen.t) key =
 
 
 let mem (h :  _ Hash_set_gen.t) key =
-  (* 4002 *) Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
+  (* 2001 *) Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
   
 
@@ -5226,7 +5167,7 @@ type 'a t =
 
 
 let create  initial_size =
-  (* 26 *) let initial_size = Ext_util.power_2_above 16 initial_size in
+  (* 13 *) let initial_size = Ext_util.power_2_above 16 initial_size in
   { initial_size ; 
     size = 0; 
     data = Array.make initial_size Empty;
@@ -5234,10 +5175,10 @@ let create  initial_size =
   }
 
 let clear h =
-  (* 4 *) h.size <- 0;
+  (* 2 *) h.size <- 0;
   let h_data = h.data in 
   for i = 0 to h.data_mask  do 
-    (* 3145728 *) Array.unsafe_set h_data i  Empty
+    (* 1572864 *) Array.unsafe_set h_data i  Empty
   done
 
 (** Note this function is only used internally, make sure [h_initial_size] 
@@ -5253,30 +5194,30 @@ let reset h  =
 
 let copy h = (* 0 *) { h with data = Array.copy h.data }
 
-let length h = (* 10 *) h.size
+let length h = (* 5 *) h.size
 
 
 let rec insert_bucket nmask ndata hash = function
-  | Empty -> (* 909828 *) ()
+  | Empty -> (* 454914 *) ()
   | Cons(key,info,rest) ->
-    (* 1195628 *) let nidx = hash key land nmask in (* so that indexfun sees the new bucket count *)
+    (* 597814 *) let nidx = hash key land nmask in (* so that indexfun sees the new bucket count *)
     Array.unsafe_set ndata nidx  (Cons(key,info, (Array.unsafe_get ndata nidx)));
     insert_bucket nmask ndata hash rest
 
 let resize hash h =
-  (* 48 *) let odata = h.data in
+  (* 24 *) let odata = h.data in
   let odata_mask = h.data_mask in 
   let nsize = (odata_mask + 1) * 2 in
-  if nsize < Sys.max_array_length then (* 48 *) begin
+  if nsize < Sys.max_array_length then (* 24 *) begin
     let ndata = Array.make nsize Empty in
     h.data <- ndata;          
     let nmask = nsize - 1 in
     h.data_mask <- nmask ; 
     for i = 0 to odata_mask do
-      (* 1052704 *) match Array.unsafe_get odata i with 
-      | Empty -> (* 142876 *) ()
+      (* 526352 *) match Array.unsafe_get odata i with 
+      | Empty -> (* 71438 *) ()
       | Cons(key,info,rest) -> 
-        (* 909828 *) let nidx = hash key land nmask in 
+        (* 454914 *) let nidx = hash key land nmask in 
         Array.unsafe_set ndata nidx  (Cons(key,info, (Array.unsafe_get ndata nidx)));
         insert_bucket nmask ndata hash rest 
     done
@@ -5285,58 +5226,58 @@ let resize hash h =
 
 let rec do_bucket f = function
   | Empty ->
-    (* 3145728 *) ()
+    (* 1572864 *) ()
   | Cons(k ,i,  rest) ->
-    (* 4000000 *) f k i ; do_bucket f rest 
+    (* 2000000 *) f k i ; do_bucket f rest 
 
 let iter f h =
-  (* 4 *) let d = h.data in
+  (* 2 *) let d = h.data in
   for i = 0 to h.data_mask do
-    (* 3145728 *) do_bucket f (Array.unsafe_get d i)
+    (* 1572864 *) do_bucket f (Array.unsafe_get d i)
   done
 
 (* find one element *)
 let choose_exn h = 
-  (* 20 *) let rec aux arr offset last_index = 
-    (* 98 *) if offset > last_index then 
-      (* 2 *) raise Not_found (* This happens when size is 0, otherwise it is never called *)
+  (* 10 *) let rec aux arr offset last_index = 
+    (* 49 *) if offset > last_index then 
+      (* 1 *) raise Not_found (* This happens when size is 0, otherwise it is never called *)
     else 
-      (* 96 *) match Array.unsafe_get arr offset with 
-      | Empty -> (* 78 *) aux arr (offset + 1) last_index 
-      | Cons (k,_,rest) -> (* 18 *) k 
+      (* 48 *) match Array.unsafe_get arr offset with 
+      | Empty -> (* 39 *) aux arr (offset + 1) last_index 
+      | Cons (k,_,rest) -> (* 9 *) k 
   in
   let h_data = h.data in 
   aux h_data 0 h.data_mask
 
 let fold f h init =
-  (* 4 *) let rec do_bucket b accu =
-    (* 7145728 *) match b with
+  (* 2 *) let rec do_bucket b accu =
+    (* 3572864 *) match b with
       Empty ->
-      (* 3145728 *) accu
+      (* 1572864 *) accu
     | Cons( k , i,  rest) ->
-      (* 4000000 *) do_bucket rest (f k i  accu) in
+      (* 2000000 *) do_bucket rest (f k i  accu) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to h.data_mask do
-    (* 3145728 *) accu := do_bucket (Array.unsafe_get d i) !accu
+    (* 1572864 *) accu := do_bucket (Array.unsafe_get d i) !accu
   done;
   !accu
 
 
 let rec set_bucket arr = function 
-  | Empty -> (* 10496 *) ()
+  | Empty -> (* 5248 *) ()
   | Cons(k,i,rest) ->
-    (* 11220 *) Array.unsafe_set arr i k;
+    (* 5610 *) Array.unsafe_set arr i k;
     set_bucket arr rest 
 
 let to_sorted_array h = 
-  (* 22 *) if h.size = 0 then (* 4 *) [||]
+  (* 11 *) if h.size = 0 then (* 2 *) [||]
   else 
-    (* 18 *) let v = choose_exn h in 
+    (* 9 *) let v = choose_exn h in 
     let arr = Array.make h.size v in
     let d = h.data in 
     for i = 0 to h.data_mask do 
-      (* 10496 *) set_bucket  arr (Array.unsafe_get d i)
+      (* 5248 *) set_bucket  arr (Array.unsafe_get d i)
     done;
     arr 
 
@@ -5344,17 +5285,17 @@ let to_sorted_array h =
 
 
 let rec bucket_length acc (x : _ bucket) = 
-  (* 14311716 *) match x with 
-  | Empty -> (* 6299712 *) acc
-  | Cons(_,_,rest) -> (* 8012004 *) bucket_length (acc + 1) rest  
+  (* 7155858 *) match x with 
+  | Empty -> (* 3149856 *) acc
+  | Cons(_,_,rest) -> (* 4006002 *) bucket_length (acc + 1) rest  
 
 let stats h =
-  (* 8 *) let mbl =
-    Array.fold_left (fun m (b : _ bucket) -> (* 3149856 *) max m (bucket_length 0 b)) 0 h.data in
+  (* 4 *) let mbl =
+    Array.fold_left (fun m (b : _ bucket) -> (* 1574928 *) max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
   Array.iter
     (fun b ->
-       (* 3149856 *) let l = bucket_length 0 b in
+       (* 1574928 *) let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
     h.data;
   { Hashtbl.num_bindings = h.size;
@@ -5397,68 +5338,68 @@ let to_sorted_array = to_sorted_array
 
 
 let rec small_bucket_mem key lst =
-  (* 8691996 *) match lst with 
-  | Empty -> (* 2055550 *) false 
+  (* 4345998 *) match lst with 
+  | Empty -> (* 1027775 *) false 
   | Cons(key1,_, rest) -> 
-    (* 6636446 *) equal_key key key1 ||
+    (* 3318223 *) equal_key key key1 ||
     match rest with 
-    | Empty -> (* 1289762 *) false 
+    | Empty -> (* 644881 *) false 
     | Cons(key2 , _, rest) -> 
-      (* 2993294 *) equal_key key  key2 ||
+      (* 1496647 *) equal_key key  key2 ||
       match rest with 
-      | Empty -> (* 667908 *) false 
+      | Empty -> (* 333954 *) false 
       | Cons(key3,_,  rest) -> 
-        (* 1156750 *) equal_key key  key3 ||
+        (* 578375 *) equal_key key  key3 ||
         small_bucket_mem key rest 
 
 let rec small_bucket_rank key lst =
-  (* 4244994 *) match lst with 
+  (* 2122497 *) match lst with 
   | Empty -> (* 0 *) -1
   | Cons(key1,i,rest) -> 
-    (* 4244994 *) if equal_key key key1 then (* 2352592 *) i 
-    else (* 1892402 *) match rest with 
+    (* 2122497 *) if equal_key key key1 then (* 1176296 *) i 
+    else (* 946201 *) match rest with 
       | Empty -> (* 0 *) -1 
       | Cons(key2,i2,  rest) -> 
-        (* 1892402 *) if equal_key key  key2 then (* 1168450 *) i2 else
-          (* 723952 *) match rest with 
+        (* 946201 *) if equal_key key  key2 then (* 584225 *) i2 else
+          (* 361976 *) match rest with 
           | Empty -> (* 0 *) -1 
           | Cons(key3,i3, rest) -> 
-            (* 723952 *) if equal_key key  key3 then (* 478958 *) i3 else
-              (* 244994 *) small_bucket_rank key rest 
+            (* 361976 *) if equal_key key  key3 then (* 239479 *) i3 else
+              (* 122497 *) small_bucket_rank key rest 
 
 let add h key =
-  (* 4012240 *) let h_data_mask = h.data_mask in 
+  (* 2006120 *) let h_data_mask = h.data_mask in 
   let i = hash key land h_data_mask in 
   if not (small_bucket_mem key  h.data.(i)) then 
-    (* 4011220 *) begin 
+    (* 2005610 *) begin 
       Array.unsafe_set h.data i (Cons(key,h.size, Array.unsafe_get h.data i));
       h.size <- h.size + 1 ;
-      if h.size > Array.length h.data lsl 1 then (* 48 *) resize hash h
+      if h.size > Array.length h.data lsl 1 then (* 24 *) resize hash h
     end
 
 let old_key_not_exist = Replace_failure false 
 let new_key_already_exist = Replace_failure true 
 
 let rec small_bucket_rank_and_delete key lst =
-  (* 2136 *) match lst with 
+  (* 1068 *) match lst with 
   | Empty -> (* 0 *) raise old_key_not_exist
   | Cons(key1,i,rest) -> 
-    (* 2136 *) if equal_key key key1 then (* 858 *) i, rest  
-    else (* 1278 *) match rest with 
+    (* 1068 *) if equal_key key key1 then (* 429 *) i, rest  
+    else (* 639 *) match rest with 
       | Empty -> (* 0 *) raise old_key_not_exist
       | Cons(key2,i2,  rest) -> 
-        (* 1278 *) if equal_key key  key2 then (* 794 *) i2, (Cons (key1,i,rest)) else
-          (* 484 *) match rest with 
+        (* 639 *) if equal_key key  key2 then (* 397 *) i2, (Cons (key1,i,rest)) else
+          (* 242 *) match rest with 
           | Empty -> (* 0 *) raise old_key_not_exist
           | Cons(key3,i3, rest) -> 
-            (* 484 *) if equal_key key  key3 then (* 348 *) i3, (Cons (key1,i,Cons(key2,i2,rest))) else
-              (* 136 *) let (rank, rest ) = small_bucket_rank_and_delete key rest in 
+            (* 242 *) if equal_key key  key3 then (* 174 *) i3, (Cons (key1,i,Cons(key2,i2,rest))) else
+              (* 68 *) let (rank, rest ) = small_bucket_rank_and_delete key rest in 
               rank, Cons (key1,i, 
                     Cons (key2,i2, 
                           Cons(key3,i3,rest))) 
 
 let replace h old_key new_key =
-  (* 2000 *) let h_data_mask = h.data_mask in 
+  (* 1000 *) let h_data_mask = h.data_mask in 
   let i = hash old_key land h_data_mask in
   let h_data = h.data in 
   let bucket = Array.unsafe_get h_data  i in 
@@ -5470,13 +5411,13 @@ let replace h old_key new_key =
   let mem = small_bucket_mem new_key insert_bucket in 
   if mem then (* 0 *) raise new_key_already_exist
   else 
-    (* 2000 *) Array.unsafe_set h_data j (Cons (new_key,rank, insert_bucket))
+    (* 1000 *) Array.unsafe_set h_data j (Cons (new_key,rank, insert_bucket))
 
 let of_array arr =
-  (* 16 *) let len = Array.length arr in 
+  (* 8 *) let len = Array.length arr in 
   let h = create len in 
   for i = 0 to len - 1 do 
-    (* 6018 *) add h (Array.unsafe_get arr i)
+    (* 3009 *) add h (Array.unsafe_get arr i)
   done;
   h
 
@@ -5487,10 +5428,10 @@ let reset_to_list h lst =
   List.iter (fun x -> (* 0 *) add h x ) lst 
 
 let mem h key =
-  (* 4000000 *) small_bucket_mem key (Array.unsafe_get h.data (hash  key land h.data_mask)) 
+  (* 2000000 *) small_bucket_mem key (Array.unsafe_get h.data (hash  key land h.data_mask)) 
 
 let rank h key = 
-  (* 4000000 *) small_bucket_rank key (Array.unsafe_get h.data (hash  key land h.data_mask))  
+  (* 2000000 *) small_bucket_rank key (Array.unsafe_get h.data (hash  key land h.data_mask))  
 
 
 
@@ -5563,7 +5504,7 @@ end = struct
 # 31
 type key = string 
 let key_index (h :  _ Hash_set_gen.t ) (key : key) =
-  (* 452 *) (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
+  (* 226 *) (Bs_hash_stubs.hash_string  key) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
 type  t = key  Hash_set_gen.t 
 
@@ -5582,21 +5523,21 @@ let elements = Hash_set_gen.elements
 
 
 let remove (h : _ Hash_set_gen.t) key =  
-  (* 4 *) let i = key_index h key in
+  (* 2 *) let i = key_index h key in
   let h_data = h.data in
   let old_h_size = h.size in 
   let new_bucket = Hash_set_gen.remove_bucket eq_key key h (Array.unsafe_get h_data i) in
   if old_h_size <> h.size then  
-    (* 2 *) Array.unsafe_set h_data i new_bucket
+    (* 1 *) Array.unsafe_set h_data i new_bucket
 
 
 
 let add (h : _ Hash_set_gen.t) key =
-  (* 432 *) let i = key_index h key  in 
+  (* 216 *) let i = key_index h key  in 
   let h_data = h.data in 
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    (* 428 *) begin 
+    (* 214 *) begin 
       Array.unsafe_set h_data i (key :: old_bucket);
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then (* 0 *) Hash_set_gen.resize key_index h
@@ -5612,17 +5553,17 @@ let of_array arr =
   
     
 let check_add (h : _ Hash_set_gen.t) key =
-  (* 16 *) let i = key_index h key  in 
+  (* 8 *) let i = key_index h key  in 
   let h_data = h.data in  
   let old_bucket = (Array.unsafe_get h_data i) in
   if not (Hash_set_gen.small_bucket_mem eq_key key old_bucket) then 
-    (* 14 *) begin 
+    (* 7 *) begin 
       Array.unsafe_set h_data i  (key :: old_bucket);
       h.size <- h.size + 1 ;
       if h.size > Array.length h_data lsl 1 then (* 0 *) Hash_set_gen.resize key_index h;
       true 
     end
-  else (* 2 *) false 
+  else (* 1 *) false 
 
 
 let mem (h :  _ Hash_set_gen.t) key =
@@ -5643,8 +5584,8 @@ type id = { name : string ; stamp : int }
 
 module Id_hash_set = Hash_set.Make(struct 
     type t = id 
-    let equal x y = (* 35746 *) x.stamp = y.stamp && x.name = y.name 
-    let hash x = (* 26392 *) Hashtbl.hash x.stamp
+    let equal x y = (* 17873 *) x.stamp = y.stamp && x.name = y.name 
+    let hash x = (* 13196 *) Hashtbl.hash x.stamp
   end
   )
 
@@ -5661,33 +5602,33 @@ let suites =
   >:::
   [
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let v = Hash_set_poly.create 31 in
+      (* 1 *) let v = Hash_set_poly.create 31 in
       for i = 0 to 1000 do
-        (* 2002 *) Hash_set_poly.add v i  
+        (* 1001 *) Hash_set_poly.add v i  
       done  ;
       OUnit.assert_equal (Hash_set_poly.length v) 1001
     end ;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let v = Hash_set_poly.create 31 in
+      (* 1 *) let v = Hash_set_poly.create 31 in
       for i = 0 to 1_0_000 do
-        (* 20002 *) Hash_set_poly.add v 0
+        (* 10001 *) Hash_set_poly.add v 0
       done  ;
       OUnit.assert_equal (Hash_set_poly.length v) 1
     end ;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v = Hash_set_poly.create 30 in 
+      (* 1 *) let v = Hash_set_poly.create 30 in 
       for i = 0 to 2_000 do 
-        (* 4002 *) Hash_set_poly.add v {name = "x" ; stamp = i}
+        (* 2001 *) Hash_set_poly.add v {name = "x" ; stamp = i}
       done ;
       for i = 0 to 2_000 do 
-        (* 4002 *) Hash_set_poly.add v {name = "x" ; stamp = i}
+        (* 2001 *) Hash_set_poly.add v {name = "x" ; stamp = i}
       done  ; 
       for i = 0 to 2_000 do 
-        (* 4002 *) assert (Hash_set_poly.mem v {name = "x"; stamp = i})
+        (* 2001 *) assert (Hash_set_poly.mem v {name = "x"; stamp = i})
       done;  
       OUnit.assert_equal (Hash_set_poly.length v)  2_001;
       for i =  1990 to 3_000 do 
-        (* 2022 *) Hash_set_poly.remove v {name = "x"; stamp = i}
+        (* 1011 *) Hash_set_poly.remove v {name = "x"; stamp = i}
       done ;
       OUnit.assert_equal (Hash_set_poly.length v) 1990;
       (* OUnit.assert_equal (Hash_set.stats v) *)
@@ -5695,31 +5636,31 @@ let suites =
       (*    bucket_histogram = [|139; 303; 264; 178; 93; 32; 12; 3|]} *)
     end ;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v = Id_hash_set.create 30 in 
+      (* 1 *) let v = Id_hash_set.create 30 in 
       for i = 0 to 2_000 do 
-        (* 4002 *) Id_hash_set.add v {name = "x" ; stamp = i}
+        (* 2001 *) Id_hash_set.add v {name = "x" ; stamp = i}
       done ;
       for i = 0 to 2_000 do 
-        (* 4002 *) Id_hash_set.add v {name = "x" ; stamp = i}
+        (* 2001 *) Id_hash_set.add v {name = "x" ; stamp = i}
       done  ; 
       for i = 0 to 2_000 do 
-        (* 4002 *) assert (Id_hash_set.mem v {name = "x"; stamp = i})
+        (* 2001 *) assert (Id_hash_set.mem v {name = "x"; stamp = i})
       done;  
       OUnit.assert_equal (Id_hash_set.length v)  2_001;
       for i =  1990 to 3_000 do 
-        (* 2022 *) Id_hash_set.remove v {name = "x"; stamp = i}
+        (* 1011 *) Id_hash_set.remove v {name = "x"; stamp = i}
       done ;
       OUnit.assert_equal (Id_hash_set.length v) 1990;
       for i = 1000 to 3990 do 
-        (* 5982 *) Id_hash_set.remove v { name = "x"; stamp = i }
+        (* 2991 *) Id_hash_set.remove v { name = "x"; stamp = i }
       done;
       OUnit.assert_equal (Id_hash_set.length v) 1000;
       for i = 1000 to 1100 do 
-        (* 202 *) Id_hash_set.add v { name = "x"; stamp = i};
+        (* 101 *) Id_hash_set.add v { name = "x"; stamp = i};
       done;
       OUnit.assert_equal (Id_hash_set.length v ) 1101;
       for i = 0 to 1100 do 
-        (* 2202 *) OUnit.assert_bool "exist" (Id_hash_set.mem v {name = "x"; stamp = i})
+        (* 1101 *) OUnit.assert_bool "exist" (Id_hash_set.mem v {name = "x"; stamp = i})
       done  
       (* OUnit.assert_equal (Hash_set.stats v) *)
       (*   {num_bindings = 1990; num_buckets = 1024; max_bucket_length = 8; *)
@@ -5728,34 +5669,34 @@ let suites =
     end 
     ;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let v = Ordered_hash_set_string.create 3 in 
+      (* 1 *) let v = Ordered_hash_set_string.create 3 in 
       for i =  0 to 10 do
-        (* 22 *) Ordered_hash_set_string.add v (string_of_int i) 
+        (* 11 *) Ordered_hash_set_string.add v (string_of_int i) 
       done; 
       for i = 100 downto 2 do
-        (* 198 *) Ordered_hash_set_string.add v (string_of_int i)
+        (* 99 *) Ordered_hash_set_string.add v (string_of_int i)
       done;
       OUnit.assert_equal (Ordered_hash_set_string.to_sorted_array v )
         const_tbl
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let duplicate arr = 
-        (* 4 *) let len = Array.length arr in 
+      (* 1 *) let duplicate arr = 
+        (* 2 *) let len = Array.length arr in 
         let rec aux tbl off = 
-          (* 18 *) if off >= len  then (* 2 *) None
+          (* 9 *) if off >= len  then (* 1 *) None
           else 
-            (* 16 *) let curr = (Array.unsafe_get arr off) in
+            (* 8 *) let curr = (Array.unsafe_get arr off) in
             if String_hash_set.check_add tbl curr then 
-              (* 14 *) aux tbl (off + 1)
-            else   (* 2 *) Some curr in 
+              (* 7 *) aux tbl (off + 1)
+            else   (* 1 *) Some curr in 
         aux (String_hash_set.create len) 0 in 
       let v = [| "if"; "a"; "b"; "c" |] in 
       OUnit.assert_equal (duplicate v) None;
       OUnit.assert_equal (duplicate [|"if"; "a"; "b"; "b"; "c"|]) (Some "b")
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let of_array lst =
-        (* 2 *) let len = Array.length lst in 
+      (* 1 *) let of_array lst =
+        (* 1 *) let len = Array.length lst in 
         let tbl = String_hash_set.create len in 
         Array.iter (String_hash_set.add tbl ) lst; tbl  in 
       let hash = of_array const_tbl  in 
@@ -5930,45 +5871,45 @@ let bench () =
 
 
 type id (* = Ident.t *) = { stamp : int; name : string; mutable flags : int; }
-let hash id = (* 8 *) Bs_hash_stubs.hash_stamp_and_name id.stamp id.name 
+let hash id = (* 4 *) Bs_hash_stubs.hash_stamp_and_name id.stamp id.name 
 let suites = 
     __FILE__
     >:::
     [
       __LOC__ >:: begin fun _ -> 
-        (* 2 *) Bs_hash_stubs.hash_int 0 =~ Hashtbl.hash 0
+        (* 1 *) Bs_hash_stubs.hash_int 0 =~ Hashtbl.hash 0
       end;
       __LOC__ >:: begin fun _ -> 
-        (* 2 *) Bs_hash_stubs.hash_int max_int =~ Hashtbl.hash max_int
+        (* 1 *) Bs_hash_stubs.hash_int max_int =~ Hashtbl.hash max_int
       end;
       __LOC__ >:: begin fun _ -> 
-        (* 2 *) Bs_hash_stubs.hash_int max_int =~ Hashtbl.hash max_int
+        (* 1 *) Bs_hash_stubs.hash_int max_int =~ Hashtbl.hash max_int
       end;
       __LOC__ >:: begin fun _ -> 
-        (* 2 *) Bs_hash_stubs.hash_string "The quick brown fox jumps over the lazy dog"  =~ 
+        (* 1 *) Bs_hash_stubs.hash_string "The quick brown fox jumps over the lazy dog"  =~ 
         Hashtbl.hash "The quick brown fox jumps over the lazy dog"
       end;
       __LOC__ >:: begin fun _ ->
-        (* 2 *) Array.init 100 (fun i -> (* 200 *) String.make i 'a' )
+        (* 1 *) Array.init 100 (fun i -> (* 100 *) String.make i 'a' )
         |> Array.iter (fun x -> 
-          (* 200 *) Bs_hash_stubs.hash_string x =~ Hashtbl.hash x) 
+          (* 100 *) Bs_hash_stubs.hash_string x =~ Hashtbl.hash x) 
       end;
       __LOC__ >:: begin fun _ ->
         (** only stamp matters here *)
-        (* 2 *) hash {stamp = 1 ; name = "xx"; flags = 0} =~ Bs_hash_stubs.hash_small_int 1 ;
+        (* 1 *) hash {stamp = 1 ; name = "xx"; flags = 0} =~ Bs_hash_stubs.hash_small_int 1 ;
         hash {stamp = 11 ; name = "xx"; flags = 0} =~ Bs_hash_stubs.hash_small_int 11;
       end;
       __LOC__ >:: begin fun _ ->
         (* only string matters here *)
-        (* 2 *) hash {stamp = 0 ; name = "Pervasives"; flags = 0} =~ Bs_hash_stubs.hash_string "Pervasives";
+        (* 1 *) hash {stamp = 0 ; name = "Pervasives"; flags = 0} =~ Bs_hash_stubs.hash_string "Pervasives";
         hash {stamp = 0 ; name = "UU"; flags = 0} =~ Bs_hash_stubs.hash_string "UU";
       end;
       __LOC__ >:: begin fun _ -> 
-        (* 2 *) let v = Array.init 20 (fun i -> (* 40 *) i) in 
-        let u = Array.init 30 (fun i ->   (* 60 *) (0-i)  ) in  
+        (* 1 *) let v = Array.init 20 (fun i -> (* 20 *) i) in 
+        let u = Array.init 30 (fun i ->   (* 30 *) (0-i)  ) in  
         Bs_hash_stubs.int_unsafe_blit 
          v 0 u 10 20 ; 
-        OUnit.assert_equal u (Array.init 30 (fun i -> (* 60 *) if i < 10 then (* 20 *) -i else (* 40 *) i - 10)) 
+        OUnit.assert_equal u (Array.init 30 (fun i -> (* 30 *) if i < 10 then (* 10 *) -i else (* 20 *) i - 10)) 
       end
     ]
 
@@ -6041,7 +5982,7 @@ and ('a, 'b) bucketlist =
 
 
 let create  initial_size =
-  (* 24 *) let s = Ext_util.power_2_above 16 initial_size in
+  (* 12 *) let s = Ext_util.power_2_above 16 initial_size in
   { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
 
 let clear h =
@@ -6058,37 +5999,37 @@ let reset h =
 
 let copy h = (* 0 *) { h with data = Array.copy h.data }
 
-let length h = (* 22 *) h.size
+let length h = (* 11 *) h.size
 
 let resize indexfun h =
-  (* 22 *) let odata = h.data in
+  (* 11 *) let odata = h.data in
   let osize = Array.length odata in
   let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then (* 22 *) begin
+  if nsize < Sys.max_array_length then (* 11 *) begin
     let ndata = Array.make nsize Empty in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
-        Empty -> (* 3008 *) ()
+        Empty -> (* 1504 *) ()
       | Cons(key, data, rest) ->
-        (* 6038 *) insert_bucket rest; (* preserve original order of elements *)
+        (* 3019 *) insert_bucket rest; (* preserve original order of elements *)
         let nidx = indexfun h key in
         ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
     for i = 0 to osize - 1 do
-      (* 3008 *) insert_bucket (Array.unsafe_get odata i)
+      (* 1504 *) insert_bucket (Array.unsafe_get odata i)
     done
   end
 
 
 
 let iter f h =
-  (* 4 *) let rec do_bucket = function
+  (* 2 *) let rec do_bucket = function
     | Empty ->
-      (* 128 *) ()
+      (* 64 *) ()
     | Cons(k, d, rest) ->
-      (* 18 *) f k d; do_bucket rest in
+      (* 9 *) f k d; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    (* 128 *) do_bucket (Array.unsafe_get d i)
+    (* 64 *) do_bucket (Array.unsafe_get d i)
   done
 
 let fold f h init =
@@ -6228,7 +6169,7 @@ end = struct
 type key = string
 type 'a t = (key, 'a)  Hashtbl_gen.t 
 let key_index (h : _ t ) (key : key) =
-  (* 14480 *) (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
+  (* 7240 *) (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
 let eq_key = Ext_string.equal 
 
 # 33
@@ -6245,11 +6186,11 @@ let stats = Hashtbl_gen.stats
 
 
 let add (h : _ t) key info =
-  (* 4086 *) let i = key_index h key in
+  (* 2043 *) let i = key_index h key in
   let h_data = h.data in   
   Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
   h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then (* 12 *) Hashtbl_gen.resize key_index h
+  if h.size > Array.length h_data lsl 1 then (* 6 *) Hashtbl_gen.resize key_index h
 
 (* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
 let modify_or_init (h : _ t) key modf default =
@@ -6293,14 +6234,14 @@ let rec find_rec key (bucketlist : _ bucketlist) = (* 0 *) match bucketlist with
     (* 0 *) if eq_key key k then (* 0 *) d else (* 0 *) find_rec key rest
 
 let find_exn (h : _ t) key =
-  (* 178 *) match Array.unsafe_get h.data (key_index h key) with
+  (* 89 *) match Array.unsafe_get h.data (key_index h key) with
   | Empty -> (* 0 *) raise Not_found
   | Cons(k1, d1, rest1) ->
-    (* 178 *) if eq_key key k1 then (* 174 *) d1 else
-      (* 4 *) match rest1 with
+    (* 89 *) if eq_key key k1 then (* 87 *) d1 else
+      (* 2 *) match rest1 with
       | Empty -> (* 0 *) raise Not_found
       | Cons(k2, d2, rest2) ->
-        (* 4 *) if eq_key key k2 then (* 4 *) d2 else
+        (* 2 *) if eq_key key k2 then (* 2 *) d2 else
           (* 0 *) match rest2 with
           | Empty -> (* 0 *) raise Not_found
           | Cons(k3, d3, rest3) ->
@@ -6325,31 +6266,31 @@ let find_all (h : _ t) key =
   find_in_bucket (Array.unsafe_get h.data (key_index h key))
 
 let replace h key info =
-  (* 4000 *) let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = (* 8924 *) match bucketlist with 
+  (* 2000 *) let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = (* 4462 *) match bucketlist with 
     | Empty ->
-      (* 2000 *) raise_notrace Not_found
+      (* 1000 *) raise_notrace Not_found
     | Cons(k, i, next) ->
-      (* 6924 *) if eq_key k key
-      then (* 2000 *) Cons(key, info, next)
-      else (* 4924 *) Cons(k, i, replace_bucket next) in
+      (* 3462 *) if eq_key k key
+      then (* 1000 *) Cons(key, info, next)
+      else (* 2462 *) Cons(k, i, replace_bucket next) in
   let i = key_index h key in
   let h_data = h.data in 
   let l = Array.unsafe_get h_data i in
   try
     Array.unsafe_set h_data i  (replace_bucket l)
   with Not_found ->
-    (* 2000 *) begin 
+    (* 1000 *) begin 
       Array.unsafe_set h_data i (Cons(key, info, l));
       h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then (* 10 *) Hashtbl_gen.resize key_index h;
+      if h.size > Array.length h_data lsl 1 then (* 5 *) Hashtbl_gen.resize key_index h;
     end 
 
 let mem (h : _ t) key =
-  (* 178 *) let rec mem_in_bucket (bucketlist : _ bucketlist) = (* 182 *) match bucketlist with 
+  (* 89 *) let rec mem_in_bucket (bucketlist : _ bucketlist) = (* 91 *) match bucketlist with 
     | Empty ->
-      (* 86 *) false
+      (* 43 *) false
     | Cons(k, d, rest) ->
-      (* 96 *) eq_key k key  || mem_in_bucket rest in
+      (* 48 *) eq_key k key  || mem_in_bucket rest in
   mem_in_bucket (Array.unsafe_get h.data (key_index h key))
 
 
@@ -6386,21 +6327,21 @@ let suites =
     (* end; *)
 
     "add semantics " >:: begin fun _ -> 
-      (* 2 *) let h = String_hashtbl.create 0 in 
+      (* 1 *) let h = String_hashtbl.create 0 in 
       let count = 1000 in 
       for j = 0 to 1 do  
-        (* 4 *) for i = 0 to count - 1 do                 
-          (* 4000 *) String_hashtbl.add h (string_of_int i) i 
+        (* 2 *) for i = 0 to count - 1 do                 
+          (* 2000 *) String_hashtbl.add h (string_of_int i) i 
         done
       done ;
       String_hashtbl.length h =~ 2 * count 
     end; 
     "replace semantics" >:: begin fun _ -> 
-      (* 2 *) let h = String_hashtbl.create 0 in 
+      (* 1 *) let h = String_hashtbl.create 0 in 
       let count = 1000 in 
       for j = 0 to 1 do  
-        (* 4 *) for i = 0 to count - 1 do                 
-          (* 4000 *) String_hashtbl.replace h (string_of_int i) i 
+        (* 2 *) for i = 0 to count - 1 do                 
+          (* 2000 *) String_hashtbl.replace h (string_of_int i) i 
         done
       done ;
       String_hashtbl.length h =~  count 
@@ -6467,7 +6408,7 @@ val make_unused : unit -> Ident.t
    Invariant: if name is not converted, the reference should be equal
 *)
 val convert : string -> string
-val property_no_need_convert : string -> bool 
+
 
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
@@ -6539,7 +6480,7 @@ let make_js_object (i : Ident.t) =
    it should preserve the name 
 *)
 let create_js (name : string) : Ident.t  = 
-  (* 4 *) { name = name; flags = js_flag ; stamp = 0}
+  (* 2 *) { name = name; flags = js_flag ; stamp = 0}
 
 let create = Ident.create
 
@@ -6687,7 +6628,7 @@ let reserved_map =
   let len = Array.length reserved_words in 
   let set =  String_hash_set.create 1024 in (* large hash set for perfect hashing *)
   for i = 0 to len - 1 do 
-    (* 230 *) String_hash_set.add set reserved_words.(i);
+    (* 115 *) String_hash_set.add set reserved_words.(i);
   done ;
   set 
 
@@ -6777,8 +6718,6 @@ let convert (name : string) =
   else (* 0 *) name_mangle name 
 
 (** keyword could be used in property *)
-let property_no_need_convert s = 
-  (* 0 *) s == name_mangle s 
 
 (* It is currently made a persistent ident to avoid fresh ids 
     which would result in different signature files
@@ -6806,7 +6745,7 @@ let compare (x : Ident.t ) ( y : Ident.t) =
   else (* 0 *) u 
 
 let equal ( x : Ident.t) ( y : Ident.t) = 
-  (* 18996 *) if x.stamp <> 0 then (* 18996 *) x.stamp = y.stamp
+  (* 9498 *) if x.stamp <> 0 then (* 9498 *) x.stamp = y.stamp
   else (* 0 *) y.stamp = 0 && x.name = y.name
 
 
@@ -6886,25 +6825,25 @@ type t = {
 
 
 let key_index_by_ident (h : t) (key : Ident.t) =    
-  (* 12038 *) (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
+  (* 6019 *) (Bs_hash_stubs.hash_string_int  key.name key.stamp) land (Array.length h.data - 1)
 
 let key_index (h :  t ) ({ident = key} : key) =
-  (* 2028 *) key_index_by_ident h key 
+  (* 1014 *) key_index_by_ident h key 
 
 
 let create  initial_size =
-  (* 4 *) let s = Ext_util.power_2_above 8 initial_size in
+  (* 2 *) let s = Ext_util.power_2_above 8 initial_size in
   { initial_size = s; size = 0; data = Array.make s [] ; mask_size = 0}
 
 let iter_and_unmask f h =
-  (* 4 *) let rec do_bucket buckets = 
-    (* 3044 *) match buckets with 
+  (* 2 *) let rec do_bucket buckets = 
+    (* 1522 *) match buckets with 
     | [ ] ->
-      (* 1040 *) ()
+      (* 520 *) ()
     | k ::  rest ->    
-      (* 2004 *) f k.ident k.mask ;
+      (* 1002 *) f k.ident k.mask ;
       if k.mask then 
-        (* 2004 *) begin 
+        (* 1002 *) begin 
           k.mask <- false ;
           (* we can set [h.mask_size] to zero,
              however, it would result inconsistent state
@@ -6916,84 +6855,84 @@ let iter_and_unmask f h =
   in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    (* 1040 *) do_bucket (Array.unsafe_get d i)
+    (* 520 *) do_bucket (Array.unsafe_get d i)
   done
   
 
 let rec small_bucket_mem key lst =
-  (* 2400 *) match lst with 
-  | [] -> (* 678 *) false 
+  (* 1200 *) match lst with 
+  | [] -> (* 339 *) false 
   | {ident = key1 }::rest -> 
-    (* 1722 *) Ext_ident.equal key   key1 ||
+    (* 861 *) Ext_ident.equal key   key1 ||
     match rest with 
-    | [] -> (* 804 *) false 
+    | [] -> (* 402 *) false 
     | {ident = key2} :: rest -> 
-      (* 916 *) Ext_ident.equal key   key2 ||
+      (* 458 *) Ext_ident.equal key   key2 ||
       match rest with 
-      | [] -> (* 522 *) false 
+      | [] -> (* 261 *) false 
       | {ident = key3; _} :: rest -> 
-        (* 394 *) Ext_ident.equal key   key3 ||
+        (* 197 *) Ext_ident.equal key   key3 ||
         small_bucket_mem key rest 
 
 let resize indexfun h =
-  (* 12 *) let odata = h.data in
+  (* 6 *) let odata = h.data in
   let osize = Array.length odata in
   let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then (* 12 *) begin
+  if nsize < Sys.max_array_length then (* 6 *) begin
     let ndata = Array.make nsize [ ] in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
     let rec insert_bucket = function
-        [ ] -> (* 1008 *) ()
+        [ ] -> (* 504 *) ()
       | key :: rest ->
-        (* 2028 *) let nidx = indexfun h key in
+        (* 1014 *) let nidx = indexfun h key in
         ndata.(nidx) <- key :: ndata.(nidx);
         insert_bucket rest
     in
     for i = 0 to osize - 1 do
-      (* 1008 *) insert_bucket (Array.unsafe_get odata i)
+      (* 504 *) insert_bucket (Array.unsafe_get odata i)
     done
   end
 
 let add_unmask (h : t) (key : Ident.t) =
-  (* 2006 *) let i = key_index_by_ident h key  in 
+  (* 1003 *) let i = key_index_by_ident h key  in 
   let h_data = h.data in 
   let old_bucket = Array.unsafe_get h_data i in
   if not (small_bucket_mem key old_bucket) then 
-    (* 2004 *) begin 
+    (* 1002 *) begin 
       Array.unsafe_set h_data i ({ident = key; mask = false} :: old_bucket);
       h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then (* 12 *) resize key_index h
+      if h.size > Array.length h_data lsl 1 then (* 6 *) resize key_index h
     end
 
 
 
 
 let rec small_bucket_mask  key lst =
-  (* 8924 *) match lst with 
+  (* 4462 *) match lst with 
   | [] -> (* 0 *) false 
   | key1::rest -> 
-    (* 8924 *) if Ext_ident.equal key   key1.ident  then 
-      (* 4108 *) if key1.mask then (* 2048 *) false else (* 2060 *) (key1.mask <- true ; true) 
+    (* 4462 *) if Ext_ident.equal key   key1.ident  then 
+      (* 2054 *) if key1.mask then (* 1024 *) false else (* 1030 *) (key1.mask <- true ; true) 
     else 
-      (* 4816 *) match rest with 
+      (* 2408 *) match rest with 
       | [] -> (* 0 *) false
       | key2 :: rest -> 
-        (* 4816 *) if Ext_ident.equal key key2.ident  then 
-          (* 2592 *) if key2.mask then (* 1296 *) false else (* 1296 *) (key2.mask <- true ; true)
+        (* 2408 *) if Ext_ident.equal key key2.ident  then 
+          (* 1296 *) if key2.mask then (* 648 *) false else (* 648 *) (key2.mask <- true ; true)
         else 
-          (* 2224 *) match rest with 
+          (* 1112 *) match rest with 
           | [] -> (* 0 *) false
           | key3 :: rest -> 
-            (* 2224 *) if Ext_ident.equal key key3.ident then 
-              (* 1304 *) if key3.mask then (* 652 *) false else (* 652 *) (key3.mask <- true ; true)
+            (* 1112 *) if Ext_ident.equal key key3.ident then 
+              (* 652 *) if key3.mask then (* 326 *) false else (* 326 *) (key3.mask <- true ; true)
             else 
-              (* 920 *) small_bucket_mask  key rest 
+              (* 460 *) small_bucket_mask  key rest 
 
 let mask_check_all_hit (key : Ident.t) (h : t)  =     
-  (* 8004 *) if 
+  (* 4002 *) if 
     small_bucket_mask key 
       (Array.unsafe_get h.data (key_index_by_ident h key )) then 
-    (* 4008 *) begin 
+    (* 2004 *) begin 
       h.mask_size <- h.mask_size + 1 
     end;
   h.size = h.mask_size 
@@ -7014,7 +6953,7 @@ let suites =
   >:::
   [
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let set = Hash_set_ident_mask.create 0  in
+      (* 1 *) let set = Hash_set_ident_mask.create 0  in
       let a,b,c,d = 
         Ident.create "a", 
         Ident.create "b", 
@@ -7026,33 +6965,33 @@ let suites =
       OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit a set );
       OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit b set );
       Hash_set_ident_mask.iter_and_unmask (fun id mask -> 
-          (* 4 *) if id.Ident.name = "a" then
-            (* 2 *) OUnit.assert_bool __LOC__ mask 
-          else (* 2 *) if id.Ident.name = "b" then 
-            (* 2 *) OUnit.assert_bool __LOC__ mask 
+          (* 2 *) if id.Ident.name = "a" then
+            (* 1 *) OUnit.assert_bool __LOC__ mask 
+          else (* 1 *) if id.Ident.name = "b" then 
+            (* 1 *) OUnit.assert_bool __LOC__ mask 
           else (* 0 *) ()        
         ) set ;
       OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit a set );
       OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit b set );
     end;
     __LOC__ >:: begin fun _ -> 
-        (* 2 *) let len = 1000 in 
-        let idents = Array.init len (fun i -> (* 2000 *) Ident.create (string_of_int i)) in 
+        (* 1 *) let len = 1000 in 
+        let idents = Array.init len (fun i -> (* 1000 *) Ident.create (string_of_int i)) in 
         let set = Hash_set_ident_mask.create 0 in 
-        Array.iter (fun i -> (* 2000 *) Hash_set_ident_mask.add_unmask set i) idents;
+        Array.iter (fun i -> (* 1000 *) Hash_set_ident_mask.add_unmask set i) idents;
         for i = 0 to len - 2 do 
-                (* 1998 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+                (* 999 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
         done ;
          for i = 0 to len - 2 do 
-                (* 1998 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+                (* 999 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
         done ; 
          OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit idents.(len - 1) set) ;
-         Hash_set_ident_mask.iter_and_unmask (fun id mask -> (* 2000 *) ()) set;
+         Hash_set_ident_mask.iter_and_unmask (fun id mask -> (* 1000 *) ()) set;
         for i = 0 to len - 2 do 
-                (* 1998 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+                (* 999 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
         done ;
          for i = 0 to len - 2 do 
-                (* 1998 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
+                (* 999 *) OUnit.assert_bool __LOC__ (not @@ Hash_set_ident_mask.mask_check_all_hit idents.(i) set);
         done ; 
          OUnit.assert_bool __LOC__ (Hash_set_ident_mask.mask_check_all_hit idents.(len - 1) set) ;
          
@@ -7219,12 +7158,12 @@ type  t = {
   mutable len : int ;  
 }
 
-let length d = (* 180 *) d.len
+let length d = (* 90 *) d.len
 
 let compact d =
-  (* 4 *) let d_arr = d.arr in 
+  (* 2 *) let d_arr = d.arr in 
   if d.len <> Array.length d_arr then 
-    (* 4 *) begin
+    (* 2 *) begin
       let newarr = unsafe_sub d_arr 0 d.len in 
       d.arr <- newarr
     end
@@ -7235,13 +7174,13 @@ let singleton v =
   }
 
 let empty () =
-  (* 242 *) {
+  (* 121 *) {
     len = 0;
     arr = [||];
   }
 
 let is_empty d =
-  (* 100 *) d.len = 0
+  (* 50 *) d.len = 0
 
 let reset d = 
   (* 0 *) d.len <- 0; 
@@ -7259,7 +7198,7 @@ let to_list d =
 
 
 let of_list lst =
-  (* 46 *) let arr = Array.of_list lst in 
+  (* 23 *) let arr = Array.of_list lst in 
   { arr ; len = Array.length arr}
 
 
@@ -7267,7 +7206,7 @@ let to_array d =
   (* 0 *) unsafe_sub d.arr 0 d.len
 
 let of_array src =
-  (* 56 *) {
+  (* 28 *) {
     len = Array.length src;
     arr = Array.copy src;
     (* okay to call {!Array.copy}*)
@@ -7277,10 +7216,10 @@ let of_sub_array arr off len =
     len = len ; 
     arr = Array.sub arr off len  
   }  
-let unsafe_internal_array v = (* 12 *) v.arr  
+let unsafe_internal_array v = (* 6 *) v.arr  
 (* we can not call {!Array.copy} *)
 let copy src =
-  (* 2 *) let len = src.len in
+  (* 1 *) let len = src.len in
   {
     len ;
     arr = unsafe_sub src.arr 0 len ;
@@ -7288,7 +7227,7 @@ let copy src =
 
 (* FIXME *)
 let reverse_in_place src = 
-  (* 2 *) Ext_array.reverse_range src.arr 0 src.len 
+  (* 1 *) Ext_array.reverse_range src.arr 0 src.len 
 
 
 
@@ -7297,16 +7236,16 @@ let reverse_in_place src =
    may contain some garbage
  *)
 let sub (src : t) start len =
-  (* 6 *) let src_len = src.len in 
-  if len < 0 || start > src_len - len then (* 4 *) invalid_arg "Vec.sub"
+  (* 3 *) let src_len = src.len in 
+  if len < 0 || start > src_len - len then (* 2 *) invalid_arg "Vec.sub"
   else 
-  (* 2 *) { len ; 
+  (* 1 *) { len ; 
     arr = unsafe_sub src.arr start len }
 
 let iter f d = 
-  (* 212 *) let arr = d.arr in 
+  (* 106 *) let arr = d.arr in 
   for i = 0 to d.len - 1 do
-    (* 430 *) f (Array.unsafe_get arr i)
+    (* 215 *) f (Array.unsafe_get arr i)
   done
 
 let iteri f d =
@@ -7332,24 +7271,24 @@ let iteri_range ~from ~to_ f d =
     done
 
 let map_into_array f src =
-  (* 16 *) let src_len = src.len in 
+  (* 8 *) let src_len = src.len in 
   let src_arr = src.arr in 
   if src_len = 0 then (* 0 *) [||]
   else 
-    (* 16 *) let first_one = f (Array.unsafe_get src_arr 0) in 
+    (* 8 *) let first_one = f (Array.unsafe_get src_arr 0) in 
     let arr = Array.make  src_len  first_one in
     for i = 1 to src_len - 1 do
-      (* 2 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+      (* 1 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
     done;
     arr 
 let map_into_list f src = 
-  (* 2 *) let src_len = src.len in 
+  (* 1 *) let src_len = src.len in 
   let src_arr = src.arr in 
   if src_len = 0 then (* 0 *) []
   else 
-    (* 2 *) let acc = ref [] in         
+    (* 1 *) let acc = ref [] in         
     for i =  src_len - 1 downto 0 do
-      (* 8 *) acc := f (Array.unsafe_get src_arr i) :: !acc
+      (* 4 *) acc := f (Array.unsafe_get src_arr i) :: !acc
     done;
     !acc
 
@@ -7385,15 +7324,15 @@ let fold_right f a x =
    [filter] and [inplace_filter]
 *)
 let filter f d =
-  (* 2 *) let new_d = copy d in 
+  (* 1 *) let new_d = copy d in 
   let new_d_arr = new_d.arr in 
   let d_arr = d.arr in
   let p = ref 0 in
   for i = 0 to d.len  - 1 do
-    (* 12 *) let x = Array.unsafe_get d_arr i in
+    (* 6 *) let x = Array.unsafe_get d_arr i in
     (* TODO: can be optimized for segments blit *)
     if f x  then
-      (* 4 *) begin
+      (* 2 *) begin
         Array.unsafe_set new_d_arr !p x;
         incr p;
       end;
@@ -7402,37 +7341,37 @@ let filter f d =
   new_d 
 
 let equal eq x y : bool = 
-  (* 44 *) if x.len <> y.len then (* 0 *) false 
+  (* 22 *) if x.len <> y.len then (* 0 *) false 
   else 
-    (* 44 *) let rec aux x_arr y_arr i =
-      (* 3254 *) if i < 0 then (* 44 *) true else  
-      (* 3210 *) if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
-        (* 3210 *) aux x_arr y_arr (i - 1)
+    (* 22 *) let rec aux x_arr y_arr i =
+      (* 1627 *) if i < 0 then (* 22 *) true else  
+      (* 1605 *) if eq (Array.unsafe_get x_arr i) (Array.unsafe_get y_arr i) then 
+        (* 1605 *) aux x_arr y_arr (i - 1)
       else (* 0 *) false in 
     aux x.arr y.arr (x.len - 1)
 
 let get d i = 
   (* 0 *) if i < 0 || i >= d.len then (* 0 *) invalid_arg "Resize_array.get"
   else (* 0 *) Array.unsafe_get d.arr i
-let unsafe_get d i = (* 212 *) Array.unsafe_get d.arr i 
+let unsafe_get d i = (* 106 *) Array.unsafe_get d.arr i 
 let last d = 
-  (* 2 *) if d.len <= 0 then (* 0 *) invalid_arg   "Resize_array.last"
-  else (* 2 *) Array.unsafe_get d.arr (d.len - 1)
+  (* 1 *) if d.len <= 0 then (* 0 *) invalid_arg   "Resize_array.last"
+  else (* 1 *) Array.unsafe_get d.arr (d.len - 1)
 
-let capacity d = (* 14 *) Array.length d.arr
+let capacity d = (* 7 *) Array.length d.arr
 
 (* Attention can not use {!Array.exists} since the bound is not the same *)  
 let exists p d = 
-  (* 4 *) let a = d.arr in 
+  (* 2 *) let a = d.arr in 
   let n = d.len in   
   let rec loop i =
-    (* 4002 *) if i = n then (* 2 *) false
-    else (* 4000 *) if p (Array.unsafe_get a i) then (* 2 *) true
-    else (* 3998 *) loop (succ i) in
+    (* 2001 *) if i = n then (* 1 *) false
+    else (* 2000 *) if p (Array.unsafe_get a i) then (* 1 *) true
+    else (* 1999 *) loop (succ i) in
   loop 0
 
 let map f src =
-  (* 2 *) let src_len = src.len in 
+  (* 1 *) let src_len = src.len in 
   if src_len = 0 then (* 0 *) { len = 0 ; arr = [||]}
   (* TODO: we may share the empty array 
      but sharing mutable state is very challenging, 
@@ -7445,11 +7384,11 @@ let map f src =
      ]}
   *)
   else 
-    (* 2 *) let src_arr = src.arr in 
+    (* 1 *) let src_arr = src.arr in 
     let first = f (Array.unsafe_get src_arr 0 ) in 
     let arr = Array.make  src_len first in
     for i = 1 to src_len - 1 do
-      (* 1998 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+      (* 999 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
     done;
     {
       len = src_len;
@@ -7457,13 +7396,13 @@ let map f src =
     }
 
 let init len f =
-  (* 2 *) if len < 0 then (* 0 *) invalid_arg  "Resize_array.init"
-  else (* 2 *) if len = 0 then (* 0 *) { len = 0 ; arr = [||] }
+  (* 1 *) if len < 0 then (* 0 *) invalid_arg  "Resize_array.init"
+  else (* 1 *) if len = 0 then (* 0 *) { len = 0 ; arr = [||] }
   else 
-    (* 2 *) let first = f 0 in 
+    (* 1 *) let first = f 0 in 
     let arr = Array.make len first in
     for i = 1 to len - 1 do
-      (* 18 *) Array.unsafe_set arr i (f i)
+      (* 9 *) Array.unsafe_set arr i (f i)
     done;
     {
 
@@ -7474,7 +7413,7 @@ let init len f =
 
 
   let make initsize : t =
-    (* 8 *) if initsize < 0 then (* 0 *) invalid_arg  "Resize_array.make" ;
+    (* 4 *) if initsize < 0 then (* 0 *) invalid_arg  "Resize_array.make" ;
     {
 
       len = 0;
@@ -7484,28 +7423,28 @@ let init len f =
 
 
   let reserve (d : t ) s = 
-    (* 4 *) let d_len = d.len in 
+    (* 2 *) let d_len = d.len in 
     let d_arr = d.arr in 
     if s < d_len || s < Array.length d_arr then (* 0 *) ()
     else 
-      (* 4 *) let new_capacity = min Sys.max_array_length s in 
+      (* 2 *) let new_capacity = min Sys.max_array_length s in 
       let new_d_arr = Array.make new_capacity null in 
        unsafe_blit d_arr 0 new_d_arr 0 d_len;
       d.arr <- new_d_arr 
 
   let push v (d : t) =
-    (* 2484 *) let d_len = d.len in
+    (* 1242 *) let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
     if d_arr_len = 0 then
-      (* 212 *) begin 
+      (* 106 *) begin 
         d.len <- 1 ;
         d.arr <- [| v |]
       end
     else  
-      (* 2272 *) begin 
+      (* 1136 *) begin 
         if d_len = d_arr_len then 
-          (* 272 *) begin
+          (* 136 *) begin
             if d_len >= Sys.max_array_length then 
               (* 0 *) failwith "exceeds max_array_length";
             let new_capacity = min Sys.max_array_length d_len * 2 
@@ -7521,8 +7460,8 @@ let init len f =
 
 (** delete element at offset [idx], will raise exception when have invalid input *)
   let delete (d : t) idx =
-    (* 182 *) let d_len = d.len in 
-    if idx < 0 || idx >= d_len then (* 2 *) invalid_arg "Resize_array.delete" ;
+    (* 91 *) let d_len = d.len in 
+    if idx < 0 || idx >= d_len then (* 1 *) invalid_arg "Resize_array.delete" ;
     let arr = d.arr in 
      unsafe_blit arr (idx + 1) arr idx  (d_len - idx - 1);
     let idx = d_len - 1 in 
@@ -7531,7 +7470,7 @@ let init len f =
 # 362
 (** pop the last element, a specialized version of [delete] *)
   let pop (d : t) = 
-    (* 12 *) let idx  = d.len - 1  in
+    (* 6 *) let idx  = d.len - 1  in
     if idx < 0 then (* 0 *) invalid_arg "Resize_array.pop";
     d.len <- idx
   
@@ -7558,7 +7497,7 @@ let init len f =
 # 402
 (** delete elements from [idx] with length [len] return the deleted elements as a new vec*)
   let get_and_delete_range (d : t) idx len : t = 
-    (* 90 *) let d_len = d.len in 
+    (* 45 *) let d_len = d.len in 
     if len < 0 || idx < 0 || idx + len > d_len then (* 0 *) invalid_arg  "Resize_array.get_and_delete_range"  ;
     let arr = d.arr in 
     let value =  unsafe_sub arr idx len in
@@ -7579,16 +7518,16 @@ let init len f =
 
 
   let inplace_filter f (d : t) : unit = 
-    (* 56 *) let d_arr = d.arr in     
+    (* 28 *) let d_arr = d.arr in     
     let d_len = d.len in
     let p = ref 0 in
     for i = 0 to d_len - 1 do 
-      (* 146 *) let x = Array.unsafe_get d_arr i in 
+      (* 73 *) let x = Array.unsafe_get d_arr i in 
       if f x then 
-        (* 54 *) begin 
+        (* 27 *) begin 
           let curr_p = !p in 
           (if curr_p <> i then 
-             (* 14 *) Array.unsafe_set d_arr curr_p x) ;
+             (* 7 *) Array.unsafe_set d_arr curr_p x) ;
           incr p
         end
     done ;
@@ -7601,17 +7540,17 @@ let init len f =
   
 # 454
   let inplace_filter_from start f (d : t) : unit = 
-    (* 4 *) if start < 0 then (* 0 *) invalid_arg "Vec.inplace_filter_from"; 
+    (* 2 *) if start < 0 then (* 0 *) invalid_arg "Vec.inplace_filter_from"; 
     let d_arr = d.arr in     
     let d_len = d.len in
     let p = ref start in    
     for i = start to d_len - 1 do 
-      (* 28 *) let x = Array.unsafe_get d_arr i in 
+      (* 14 *) let x = Array.unsafe_get d_arr i in 
       if f x then 
-        (* 14 *) begin 
+        (* 7 *) begin 
           let curr_p = !p in 
           (if curr_p <> i then 
-             (* 12 *) Array.unsafe_set d_arr curr_p x) ;
+             (* 6 *) Array.unsafe_set d_arr curr_p x) ;
           incr p
         end
     done ;
@@ -7624,21 +7563,21 @@ let init len f =
 # 477
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : t)  = 
-    (* 2 *) let d_arr = d.arr in     
+    (* 1 *) let d_arr = d.arr in     
     let p = ref 0 in
     let d_len = d.len in
     let acc = ref acc in 
     for i = 0 to d_len - 1 do 
-      (* 2000 *) let x = Array.unsafe_get d_arr i in 
+      (* 1000 *) let x = Array.unsafe_get d_arr i in 
       if f x then 
-        (* 1000 *) begin 
+        (* 500 *) begin 
           let curr_p = !p in 
           (if curr_p <> i then 
-             (* 998 *) Array.unsafe_set d_arr curr_p x) ;
+             (* 499 *) Array.unsafe_set d_arr curr_p x) ;
           incr p
         end
       else 
-        (* 1000 *) acc := cb_no  x  !acc
+        (* 500 *) acc := cb_no  x  !acc
     done ;
     let last = !p  in 
     
@@ -7709,16 +7648,16 @@ end = struct
 
 
 let rec unsafe_mem_aux arr  i (key : int) bound = 
-    (* 24 *) if i <= bound then 
-        (* 18 *) if Array.unsafe_get arr i = (key : int) then 
-            (* 6 *) true 
-         else (* 12 *) unsafe_mem_aux arr (i + 1) key bound    
-    else (* 6 *) false 
+    (* 12 *) if i <= bound then 
+        (* 9 *) if Array.unsafe_get arr i = (key : int) then 
+            (* 3 *) true 
+         else (* 6 *) unsafe_mem_aux arr (i + 1) key bound    
+    else (* 3 *) false 
     
 
 
 let mem key (x : Int_vec.t) =
-    (* 12 *) let internal_array = Int_vec.unsafe_internal_array x in 
+    (* 6 *) let internal_array = Int_vec.unsafe_internal_array x in 
     let len = Int_vec.length x in 
     unsafe_mem_aux internal_array 0 key (len - 1)
     
@@ -7735,7 +7674,7 @@ let suites =
     >:::
     [
         __LOC__ >:: begin fun _ -> 
-            (* 2 *) OUnit.assert_bool __LOC__
+            (* 1 *) OUnit.assert_bool __LOC__
              (Int_vec_util.mem 3 (Int_vec.of_list [1;2;3]))
              ;
             OUnit.assert_bool __LOC__ 
@@ -7750,7 +7689,7 @@ let suites =
         end;
 
         __LOC__ >:: begin fun _ -> 
-            (* 2 *) let u = Int_vec.make 100 in 
+            (* 1 *) let u = Int_vec.make 100 in 
             Int_vec.push 1 u ;
             OUnit.assert_bool __LOC__
             (not @@ Int_vec_util.mem 0 u );
@@ -7847,17 +7786,17 @@ type byte =
 
 (** [classify chr] returns the {!byte} corresponding to [chr] *)
 let classify chr =
-  (* 560 *) let c = int_of_char chr in
+  (* 280 *) let c = int_of_char chr in
   (* Classify byte according to leftmost 0 bit *)
-  if c land 0b1000_0000 = 0 then (* 342 *) Single c else
+  if c land 0b1000_0000 = 0 then (* 171 *) Single c else
     (* c 0b0____*)
-  (* 218 *) if c land 0b0100_0000 = 0 then (* 146 *) Cont (c land 0b0011_1111) else
+  (* 109 *) if c land 0b0100_0000 = 0 then (* 73 *) Cont (c land 0b0011_1111) else
     (* c 0b10___*)
-  (* 72 *) if c land 0b0010_0000 = 0 then (* 0 *) Leading (1, c land 0b0001_1111) else
+  (* 36 *) if c land 0b0010_0000 = 0 then (* 0 *) Leading (1, c land 0b0001_1111) else
     (* c 0b110__*)
-  (* 72 *) if c land 0b0001_0000 = 0 then (* 70 *) Leading (2, c land 0b0000_1111) else
+  (* 36 *) if c land 0b0001_0000 = 0 then (* 35 *) Leading (2, c land 0b0000_1111) else
     (* c 0b1110_ *)
-  (* 2 *) if c land 0b0000_1000 = 0 then (* 2 *) Leading (3, c land 0b0000_0111) else
+  (* 1 *) if c land 0b0000_1000 = 0 then (* 1 *) Leading (3, c land 0b0000_0111) else
     (* c 0b1111_0___*)
   (* 0 *) if c land 0b0000_0100 = 0 then (* 0 *) Leading (4, c land 0b0000_0011) else
     (* c 0b1111_10__*)
@@ -7872,19 +7811,19 @@ exception Invalid_utf8 of string
   when out of bond
  *)
 let rec follow s n (c : int) offset = 
-  (* 50 *) if n = 0 then (* 16 *) (c, offset)
+  (* 25 *) if n = 0 then (* 8 *) (c, offset)
   else 
-    (* 34 *) begin match classify s.[offset+1] with
-      | Cont cc -> (* 34 *) follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
+    (* 17 *) begin match classify s.[offset+1] with
+      | Cont cc -> (* 17 *) follow s (n-1) ((c lsl 6) lor (cc land 0x3f)) (offset+1)
       | _ -> (* 0 *) raise (Invalid_utf8 "Continuation byte expected")
     end
 
 
 let rec next s ~remaining  offset = 
-  (* 168 *) if remaining = 0 then (* 56 *) offset 
+  (* 84 *) if remaining = 0 then (* 28 *) offset 
   else 
-    (* 112 *) begin match classify s.[offset+1] with
-      | Cont cc -> (* 112 *) next s ~remaining:(remaining-1) (offset+1)
+    (* 56 *) begin match classify s.[offset+1] with
+      | Cont cc -> (* 56 *) next s ~remaining:(remaining-1) (offset+1)
       | _ ->  (* 0 *) -1 
       | exception _ ->  (* 0 *) -1 (* it can happen when out of bound *)
     end
@@ -7893,18 +7832,18 @@ let rec next s ~remaining  offset =
 
 
 let decode_utf8_string s =
-  (* 22 *) let lst = ref [] in
-  let add elem = (* 108 *) lst := elem :: !lst in
+  (* 11 *) let lst = ref [] in
+  let add elem = (* 54 *) lst := elem :: !lst in
   let rec  decode_utf8_cont s i s_len =
-    (* 130 *) if i = s_len  then (* 22 *) ()
+    (* 65 *) if i = s_len  then (* 11 *) ()
     else 
-      (* 108 *) begin 
+      (* 54 *) begin 
         match classify s.[i] with
         | Single c -> 
-          (* 92 *) add c; decode_utf8_cont s (i+1) s_len
+          (* 46 *) add c; decode_utf8_cont s (i+1) s_len
         | Cont _ -> (* 0 *) raise (Invalid_utf8 "Unexpected continuation byte")
         | Leading (n, c) ->
-          (* 16 *) let (c', i') = follow s n c i in add c';
+          (* 8 *) let (c', i') = follow s n c i in add c';
           decode_utf8_cont s (i' + 1) s_len
         | Invalid -> (* 0 *) raise (Invalid_utf8 "Invalid byte")
       end
@@ -7976,24 +7915,24 @@ end = struct
 
 
 let check_from_end al =
-  (* 14 *) let rec aux l seen =
-    (* 20 *) match l with
+  (* 7 *) let rec aux l seen =
+    (* 10 *) match l with
     | [] -> (* 0 *) false
     | (e::r) ->
-      (* 20 *) if e < 0 || e > 255 then (* 0 *) false
-      else (* 20 *) (let c = Char.chr e in
-            if c = '/' then (* 8 *) true
-            else (* 12 *) (if List.exists (fun x -> (* 4 *) x = c) seen then (* 2 *) false (* flag should not be repeated *)
-                  else (* 10 *) (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then (* 6 *) aux r (c::seen) 
-                        else (* 4 *) false)))
+      (* 10 *) if e < 0 || e > 255 then (* 0 *) false
+      else (* 10 *) (let c = Char.chr e in
+            if c = '/' then (* 4 *) true
+            else (* 6 *) (if List.exists (fun x -> (* 2 *) x = c) seen then (* 1 *) false (* flag should not be repeated *)
+                  else (* 5 *) (if c = 'i' || c = 'g' || c = 'm' || c = 'y' || c ='u' then (* 3 *) aux r (c::seen) 
+                        else (* 2 *) false)))
   in aux al []
 
 let js_regex_checker s =
-  (* 18 *) match Ext_utf8.decode_utf8_string s with 
-  | [] -> (* 2 *) false 
+  (* 9 *) match Ext_utf8.decode_utf8_string s with 
+  | [] -> (* 1 *) false 
   | 47 (* [Char.code '/' = 47 ]*)::tail -> 
-    (* 14 *) check_from_end (List.rev tail)       
-  | _ :: _ -> (* 2 *) false 
+    (* 7 *) check_from_end (List.rev tail)       
+  | _ :: _ -> (* 1 *) false 
   | exception Ext_utf8.Invalid_utf8 _ -> (* 0 *) false 
 
 end
@@ -8010,39 +7949,39 @@ let suites =
     >:::
     [
         "test_empty_string" >:: begin fun _ ->
-        (* 2 *) let b = js_regex_checker "" in
+        (* 1 *) let b = js_regex_checker "" in
         OUnit.assert_equal b false
         end;
         "test_normal_regex" >:: begin fun _ ->
-        (* 2 *) let b = js_regex_checker "/abc/" in
+        (* 1 *) let b = js_regex_checker "/abc/" in
         OUnit.assert_equal b true
         end;
         "test_wrong_regex_last" >:: begin fun _ ->
-        (* 2 *) let b = js_regex_checker "/abc" in 
+        (* 1 *) let b = js_regex_checker "/abc" in 
         OUnit.assert_equal b false
         end;
         "test_regex_with_flag" >:: begin fun _ ->
-        (* 2 *) let b = js_regex_checker "/ss/ig" in
+        (* 1 *) let b = js_regex_checker "/ss/ig" in
         OUnit.assert_equal b true
         end;
         "test_regex_with_invalid_flag" >:: begin fun _ ->
-        (* 2 *) let b = js_regex_checker "/ss/j" in
+        (* 1 *) let b = js_regex_checker "/ss/j" in
         OUnit.assert_equal b false
         end;
         "test_regex_invalid_regex" >:: begin fun _ ->
-        (* 2 *) let b = js_regex_checker "abc/i" in 
+        (* 1 *) let b = js_regex_checker "abc/i" in 
         OUnit.assert_equal b false
         end;
         "test_regex_empty_pattern" >:: begin fun _  ->
-        (* 2 *) let b = js_regex_checker "//" in 
+        (* 1 *) let b = js_regex_checker "//" in 
         OUnit.assert_equal b true
         end;
         "test_regex_with_utf8" >:: begin fun _ ->
-        (* 2 *) let b = js_regex_checker "/😃/" in
+        (* 1 *) let b = js_regex_checker "/😃/" in
         OUnit.assert_equal b true
         end;
         "test_regex_repeated_flags" >:: begin fun _ ->
-        (* 2 *) let b = js_regex_checker "/abc/gg" in
+        (* 1 *) let b = js_regex_checker "/abc/gg" in
         OUnit.assert_equal b false
         end;
     ]
@@ -8073,11 +8012,11 @@ type ('key,'a) enumeration =
   | More of 'key * 'a * ('key,'a) t * ('key, 'a) enumeration
 
 let rec cardinal_aux acc  = function
-  | Empty -> (* 4016 *) acc 
+  | Empty -> (* 2008 *) acc 
   | Node (l,_,_,r, _) -> 
-    (* 4008 *) cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
+    (* 2004 *) cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
 
-let cardinal s = (* 8 *) cardinal_aux 0 s 
+let cardinal s = (* 4 *) cardinal_aux 0 s 
 
 let rec bindings_aux accu = function
   | Empty -> (* 0 *) accu
@@ -8087,32 +8026,32 @@ let bindings s =
   (* 0 *) bindings_aux [] s
 
 let rec keys_aux accu = function
-    Empty -> (* 10 *) accu
-  | Node(l, v, _, r, _) -> (* 8 *) keys_aux (v :: keys_aux accu r) l
+    Empty -> (* 5 *) accu
+  | Node(l, v, _, r, _) -> (* 4 *) keys_aux (v :: keys_aux accu r) l
 
-let keys s = (* 2 *) keys_aux [] s
+let keys s = (* 1 *) keys_aux [] s
 
 
 
 let rec cons_enum m e =
-  (* 60 *) match m with
-    Empty -> (* 36 *) e
-  | Node(l, v, d, r, _) -> (* 24 *) cons_enum l (More(v, d, r, e))
+  (* 30 *) match m with
+    Empty -> (* 18 *) e
+  | Node(l, v, d, r, _) -> (* 12 *) cons_enum l (More(v, d, r, e))
 
 
 let height = function
-  | Empty -> (* 6000 *) 0
-  | Node(_,_,_,_,h) -> (* 17760 *) h
+  | Empty -> (* 3000 *) 0
+  | Node(_,_,_,_,h) -> (* 8880 *) h
 
 let create l x d r =
-  (* 7920 *) let hl = height l and hr = height r in
-  Node(l, x, d, r, (if hl >= hr then (* 3960 *) hl + 1 else (* 3960 *) hr + 1))
+  (* 3960 *) let hl = height l and hr = height r in
+  Node(l, x, d, r, (if hl >= hr then (* 1980 *) hl + 1 else (* 1980 *) hr + 1))
 
 let singleton x d = (* 0 *) Node(Empty, x, d, Empty, 1)
 
 let bal l x d r =
-  (* 55908 *) let hl = match l with Empty -> (* 10042 *) 0 | Node(_,_,_,_,h) -> (* 45866 *) h in
-  let hr = match r with Empty -> (* 8 *) 0 | Node(_,_,_,_,h) -> (* 55900 *) h in
+  (* 27954 *) let hl = match l with Empty -> (* 5021 *) 0 | Node(_,_,_,_,h) -> (* 22933 *) h in
+  let hr = match r with Empty -> (* 4 *) 0 | Node(_,_,_,_,h) -> (* 27950 *) h in
   if hl > hr + 2 then (* 0 *) begin
     match l with
       Empty -> (* 0 *) invalid_arg "Map.bal"
@@ -8125,12 +8064,12 @@ let bal l x d r =
         | Node(lrl, lrv, lrd, lrr, _)->
           (* 0 *) create (create ll lv ld lrl) lrv lrd (create lrr x d r)
       end
-  end else (* 55908 *) if hr > hl + 2 then (* 3960 *) begin
+  end else (* 27954 *) if hr > hl + 2 then (* 1980 *) begin
     match r with
       Empty -> (* 0 *) invalid_arg "Map.bal"
     | Node(rl, rv, rd, rr, _) ->
-      (* 3960 *) if height rr >= height rl then
-        (* 3960 *) create (create l x d rl) rv rd rr
+      (* 1980 *) if height rr >= height rl then
+        (* 1980 *) create (create l x d rl) rv rd rr
       else (* 0 *) begin
         match rl with
           Empty -> (* 0 *) invalid_arg "Map.bal"
@@ -8138,11 +8077,11 @@ let bal l x d r =
           (* 0 *) create (create l x d rll) rlv rld (create rlr rv rd rr)
       end
   end else
-    (* 51948 *) Node(l, x, d, r, (if hl >= hr then (* 12172 *) hl + 1 else (* 39776 *) hr + 1))
+    (* 25974 *) Node(l, x, d, r, (if hl >= hr then (* 6086 *) hl + 1 else (* 19888 *) hr + 1))
 
 let empty = Empty
 
-let is_empty = function Empty -> (* 8 *) true | _ -> (* 12 *) false
+let is_empty = function Empty -> (* 4 *) true | _ -> (* 6 *) false
 
 let rec min_binding_exn = function
     Empty -> (* 0 *) raise Not_found
@@ -8171,15 +8110,15 @@ let merge t1 t2 =
 
 
 let rec iter f = function
-    Empty -> (* 2002 *) ()
+    Empty -> (* 1001 *) ()
   | Node(l, v, d, r, _) ->
-    (* 2000 *) iter f l; f v d; iter f r
+    (* 1000 *) iter f l; f v d; iter f r
 
 let rec map f = function
     Empty ->
-    (* 72 *) Empty
+    (* 36 *) Empty
   | Node(l, v, d, r, h) ->
-    (* 48 *) let l' = map f l in
+    (* 24 *) let l' = map f l in
     let d' = f d in
     let r' = map f r in
     Node(l', v, d', r', h)
@@ -8194,10 +8133,10 @@ let rec mapi f = function
     Node(l', v, d', r', h)
 
 let rec fold f m accu =
-  (* 84 *) match m with
-    Empty -> (* 48 *) accu
+  (* 42 *) match m with
+    Empty -> (* 24 *) accu
   | Node(l, v, d, r, _) ->
-    (* 36 *) fold f r (f v d (fold f l accu))
+    (* 18 *) fold f r (f v d (fold f l accu))
 
 let rec for_all p = function
     Empty -> (* 0 *) true
@@ -8289,13 +8228,13 @@ let compare compare_key cmp_val m1 m2 =
   in compare_aux (cons_enum m1 End) (cons_enum m2 End)
 
 let equal compare_key cmp m1 m2 =
-  (* 6 *) let rec equal_aux e1 e2 =
-    (* 18 *) match (e1, e2) with
-      (End, End) -> (* 6 *) true
+  (* 3 *) let rec equal_aux e1 e2 =
+    (* 9 *) match (e1, e2) with
+      (End, End) -> (* 3 *) true
     | (End, _)  -> (* 0 *) false
     | (_, End) -> (* 0 *) false
     | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      (* 12 *) compare_key v1 v2 = 0 && cmp d1 d2 &&
+      (* 6 *) compare_key v1 v2 = 0 && cmp d1 d2 &&
       equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
   in equal_aux (cons_enum m1 End) (cons_enum m2 End)
 
@@ -8494,17 +8433,17 @@ let max_binding_exn = Map_gen.max_binding_exn
 let min_binding_exn = Map_gen.min_binding_exn
 
 
-let rec add x data (tree : _ Map_gen.t as 'a) : 'a = (* 100 *) match tree with 
+let rec add x data (tree : _ Map_gen.t as 'a) : 'a = (* 50 *) match tree with 
   | Empty ->
-    (* 56 *) Node(Empty, x, data, Empty, 1)
+    (* 28 *) Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
-    (* 44 *) let c = compare_key x v in
+    (* 22 *) let c = compare_key x v in
     if c = 0 then
       (* 0 *) Node(l, x, data, r, h)
-    else (* 44 *) if c < 0 then
-      (* 4 *) bal (add x data l) v d r
+    else (* 22 *) if c < 0 then
+      (* 2 *) bal (add x data l) v d r
     else
-      (* 40 *) bal l v d (add x data r)
+      (* 20 *) bal l v d (add x data r)
 
 
 let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
@@ -8521,12 +8460,12 @@ let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a =
       (* 0 *) bal l v d (adjust x data replace r)
 
 
-let rec find_exn x (tree : _ Map_gen.t )  = (* 4 *) match tree with 
+let rec find_exn x (tree : _ Map_gen.t )  = (* 2 *) match tree with 
   | Empty ->
     (* 0 *) raise Not_found
   | Node(l, v, d, r, _) ->
-    (* 4 *) let c = compare_key x v in
-    if c = 0 then (* 4 *) d
+    (* 2 *) let c = compare_key x v in
+    if c = 0 then (* 2 *) d
     else (* 0 *) find_exn x (if c < 0 then (* 0 *) l else (* 0 *) r)
 
 let rec find_opt x (tree : _ Map_gen.t )  = (* 0 *) match tree with 
@@ -8610,7 +8549,7 @@ let rec disjoint_merge  (s1 : _ Map_gen.t) (s2  : _ Map_gen.t) : _ Map_gen.t =
 
 let compare cmp m1 m2 = (* 0 *) Map_gen.compare compare_key cmp m1 m2
 
-let equal cmp m1 m2 = (* 6 *) Map_gen.equal compare_key cmp m1 m2 
+let equal cmp m1 m2 = (* 3 *) Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
   (* 0 *) List.fold_left (fun acc (k,v) -> (* 0 *) add k v acc) init xs 
@@ -8864,14 +8803,14 @@ type status =
 let test   ?(fail=(fun () -> ())) key 
     (cb : callback) (m  : Ext_json_types.t String_map.t)
   =
-  (* 4 *) begin match String_map.find_exn key m, cb with 
+  (* 2 *) begin match String_map.find_exn key m, cb with 
     | exception Not_found  ->
       (* 0 *) begin match cb with `Not_found f ->  (* 0 *) f ()
                         | _ -> (* 0 *) fail ()
       end      
     | True _, `Bool cb -> (* 0 *) cb true
     | False _, `Bool cb  -> (* 0 *) cb false 
-    | Flo {flo = s} , `Flo cb  -> (* 4 *) cb s 
+    | Flo {flo = s} , `Flo cb  -> (* 2 *) cb s 
     | Obj {map = b} , `Obj cb -> (* 0 *) cb b 
     | Arr {content}, `Arr cb -> (* 0 *) cb content 
     | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
@@ -9037,100 +8976,100 @@ type t =
 (** poor man's serialization *)
 
 let quot x = 
-    (* 60 *) "\"" ^ String.escaped x ^ "\""
+    (* 30 *) "\"" ^ String.escaped x ^ "\""
 
 let true_ = True
 let false_ = False
 let null = Null 
-let str s  = (* 32 *) Str s 
-let flo s = (* 88 *) Flo s 
-let arr s = (* 32 *) Arr s 
-let obj s = (* 24 *) Obj s 
+let str s  = (* 16 *) Str s 
+let flo s = (* 44 *) Flo s 
+let arr s = (* 16 *) Arr s 
+let obj s = (* 12 *) Obj s 
 let kvs s = 
   (* 0 *) Obj (String_map.of_list s)
   
 let rec equal 
     (x : t)
     (y : t) = 
-  (* 48 *) match x with 
+  (* 24 *) match x with 
   | Null  -> (* [%p? Null _ ] *)
     (* 0 *) begin match y with
       | Null  -> (* 0 *) true
       | _ -> (* 0 *) false end
   | Str str  -> 
-    (* 8 *) begin match y with 
-      | Str str2 -> (* 8 *) str = str2
+    (* 4 *) begin match y with 
+      | Str str2 -> (* 4 *) str = str2
       | _ -> (* 0 *) false end
   | Flo flo 
     ->
-    (* 22 *) begin match y with
+    (* 11 *) begin match y with
       |  Flo flo2 -> 
-        (* 22 *) flo = flo2 
+        (* 11 *) flo = flo2 
       | _ -> (* 0 *) false
     end
   | True  -> 
-    (* 2 *) begin match y with 
-      | True  -> (* 2 *) true 
+    (* 1 *) begin match y with 
+      | True  -> (* 1 *) true 
       | _ -> (* 0 *) false 
     end
   | False  -> 
-    (* 2 *) begin match y with 
-      | False  -> (* 2 *) true 
+    (* 1 *) begin match y with 
+      | False  -> (* 1 *) true 
       | _ -> (* 0 *) false 
     end     
   | Arr content 
     -> 
-    (* 8 *) begin match y with 
+    (* 4 *) begin match y with 
       | Arr content2
         ->
-        (* 8 *) Ext_array.for_all2_no_exn equal content content2
+        (* 4 *) Ext_array.for_all2_no_exn equal content content2
       | _ -> (* 0 *) false 
     end
 
   | Obj map -> 
-    (* 6 *) begin match y with 
+    (* 3 *) begin match y with 
       | Obj map2 -> 
-        (* 6 *) String_map.equal equal map map2
+        (* 3 *) String_map.equal equal map map2
       | _ -> (* 0 *) false 
     end 
 
 let rec encode_aux (x : t ) 
     (buf : Buffer.t) : unit =  
-  (* 144 *) let a str = (* 324 *) Buffer.add_string buf str in 
+  (* 72 *) let a str = (* 162 *) Buffer.add_string buf str in 
   match x with 
   | Null  -> (* 0 *) a "null"
-  | Str s   -> (* 24 *) a (quot s)
+  | Str s   -> (* 12 *) a (quot s)
   | Flo  s -> 
-    (* 66 *) a s (* 
+    (* 33 *) a s (* 
     since our parsing keep the original float representation, we just dump it as is, there is no cases like [nan] *)
   | Arr  content -> 
-    (* 24 *) begin match content with 
-      | [||] -> (* 6 *) a "[]"
+    (* 12 *) begin match content with 
+      | [||] -> (* 3 *) a "[]"
       | _ -> 
-        (* 18 *) a "[ ";
+        (* 9 *) a "[ ";
         encode_aux
           (Array.unsafe_get content 0)
           buf ; 
         for i = 1 to Array.length content - 1 do 
-          (* 54 *) a " , ";
+          (* 27 *) a " , ";
           encode_aux 
             (Array.unsafe_get content i)
             buf
         done;    
         a " ]"
     end
-  | True  -> (* 6 *) a "true"
-  | False  -> (* 6 *) a "false"
+  | True  -> (* 3 *) a "true"
+  | False  -> (* 3 *) a "false"
   | Obj map -> 
-    (* 18 *) if String_map.is_empty map then 
-      (* 6 *) a "{}"
+    (* 9 *) if String_map.is_empty map then 
+      (* 3 *) a "{}"
     else 
-      (* 12 *) begin  
+      (* 6 *) begin  
         (*prerr_endline "WEIRD";
         prerr_endline (string_of_int @@ String_map.cardinal map );   *)
         a "{ ";
         let _ : int =  String_map.fold (fun  k v i -> 
-            (* 36 *) if i <> 0 then (* 24 *) begin
+            (* 18 *) if i <> 0 then (* 12 *) begin
               a " , " 
             end; 
             a (quot k);
@@ -9143,7 +9082,7 @@ let rec encode_aux (x : t )
 
 
 let to_string x  = 
-    (* 36 *) let buf = Buffer.create 1024 in 
+    (* 18 *) let buf = Buffer.create 1024 in 
     encode_aux x buf ;
     Buffer.contents buf 
 
@@ -9259,11 +9198,11 @@ exception Error of error_info
 let () = 
   Printexc.register_printer
     (function x -> 
-     (* 4 *) match x with 
+     (* 2 *) match x with 
      | Error error_info -> 
        (* 0 *) Some (Format.asprintf "%a" pp_error error_info)
 
-     | _ -> (* 4 *) None
+     | _ -> (* 2 *) None
     )
 
 
@@ -9285,7 +9224,7 @@ type token =
   | True   
   
 let error  (lexbuf : Lexing.lexbuf) e = 
-  (* 10 *) raise (Error { error =  e; 
+  (* 5 *) raise (Error { error =  e; 
                  loc_start =  lexbuf.lex_start_p; 
                  loc_end = lexbuf.lex_curr_p})
 
@@ -9294,7 +9233,7 @@ let lexeme_len (x : Lexing.lexbuf) =
   (* 0 *) x.lex_curr_pos - x.lex_start_pos
 
 let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
-  (* 8 *) lexbuf.lex_curr_p <-
+  (* 4 *) lexbuf.lex_curr_p <-
     {
       lex_curr_p with
       pos_lnum = lex_curr_p.pos_lnum + 1;
@@ -9306,7 +9245,7 @@ let char_for_backslash = function
   | 'r' -> (* 0 *) '\013'
   | 'b' -> (* 0 *) '\008'
   | 't' -> (* 0 *) '\009'
-  | c -> (* 8 *) c
+  | c -> (* 4 *) c
 
 let dec_code c1 c2 c3 =
   (* 0 *) 100 * (Char.code c1 - 48) + 10 * (Char.code c2 - 48) + (Char.code c3 - 48)
@@ -9510,17 +9449,17 @@ let __ocaml_lex_tables = {
 }
 
 let rec lex_json buf lexbuf =
-    (* 1000 *) __ocaml_lex_lex_json_rec buf lexbuf 0
+    (* 500 *) __ocaml_lex_lex_json_rec buf lexbuf 0
 and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
-  (* 1000 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+  (* 500 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
 # 152 "ext/ext_json_parse.mll"
-          (* 386 *) ( lex_json buf lexbuf)
+          (* 193 *) ( lex_json buf lexbuf)
 # 324 "ext/ext_json_parse.ml"
 
   | 1 ->
 # 153 "ext/ext_json_parse.mll"
-                   (* 8 *) ( 
+                   (* 4 *) ( 
     update_loc lexbuf 0;
     lex_json buf  lexbuf
   )
@@ -9533,12 +9472,12 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
 
   | 3 ->
 # 158 "ext/ext_json_parse.mll"
-         (* 8 *) ( True)
+         (* 4 *) ( True)
 # 342 "ext/ext_json_parse.ml"
 
   | 4 ->
 # 159 "ext/ext_json_parse.mll"
-          (* 8 *) (False)
+          (* 4 *) (False)
 # 347 "ext/ext_json_parse.ml"
 
   | 5 ->
@@ -9548,32 +9487,32 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
 
   | 6 ->
 # 161 "ext/ext_json_parse.mll"
-       (* 42 *) (Lbracket)
+       (* 21 *) (Lbracket)
 # 357 "ext/ext_json_parse.ml"
 
   | 7 ->
 # 162 "ext/ext_json_parse.mll"
-       (* 38 *) (Rbracket)
+       (* 19 *) (Rbracket)
 # 362 "ext/ext_json_parse.ml"
 
   | 8 ->
 # 163 "ext/ext_json_parse.mll"
-       (* 36 *) (Lbrace)
+       (* 18 *) (Lbrace)
 # 367 "ext/ext_json_parse.ml"
 
   | 9 ->
 # 164 "ext/ext_json_parse.mll"
-       (* 30 *) (Rbrace)
+       (* 15 *) (Rbrace)
 # 372 "ext/ext_json_parse.ml"
 
   | 10 ->
 # 165 "ext/ext_json_parse.mll"
-       (* 130 *) (Comma)
+       (* 65 *) (Comma)
 # 377 "ext/ext_json_parse.ml"
 
   | 11 ->
 # 166 "ext/ext_json_parse.mll"
-        (* 56 *) (Colon)
+        (* 28 *) (Colon)
 # 382 "ext/ext_json_parse.ml"
 
   | 12 ->
@@ -9583,12 +9522,12 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
 
   | 13 ->
 # 169 "ext/ext_json_parse.mll"
-         (* 110 *) ( Number (Lexing.lexeme lexbuf))
+         (* 55 *) ( Number (Lexing.lexeme lexbuf))
 # 392 "ext/ext_json_parse.ml"
 
   | 14 ->
 # 171 "ext/ext_json_parse.mll"
-      (* 88 *) (
+      (* 44 *) (
   let pos = Lexing.lexeme_start_p lexbuf in
   scan_string buf pos lexbuf;
   let content = (Buffer.contents  buf) in 
@@ -9599,7 +9538,7 @@ and __ocaml_lex_lex_json_rec buf lexbuf __ocaml_lex_state =
 
   | 15 ->
 # 178 "ext/ext_json_parse.mll"
-       (* 60 *) (Eof )
+       (* 30 *) (Eof )
 # 408 "ext/ext_json_parse.ml"
 
   | 16 ->
@@ -9638,12 +9577,12 @@ and __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state =
       __ocaml_lex_comment_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-    (* 184 *) __ocaml_lex_scan_string_rec buf start lexbuf 45
+    (* 92 *) __ocaml_lex_scan_string_rec buf start lexbuf 45
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
-  (* 184 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+  (* 92 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
 # 187 "ext/ext_json_parse.mll"
-      (* 88 *) ( () )
+      (* 44 *) ( () )
 # 452 "ext/ext_json_parse.ml"
 
   | 1 ->
@@ -9666,7 +9605,7 @@ and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
 # 471 "ext/ext_json_parse.ml"
 
   | 3 ->
-(* 8 *) let
+(* 4 *) let
 # 201 "ext/ext_json_parse.mll"
                                                c
 # 477 "ext/ext_json_parse.ml"
@@ -9757,7 +9696,7 @@ and
 
   | 8 ->
 # 237 "ext/ext_json_parse.mll"
-      (* 88 *) (
+      (* 44 *) (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
         Buffer.add_substring buf lexbuf.lex_buffer ofs len;
@@ -9787,27 +9726,27 @@ and
 
 
 let rec parse_json lexbuf =
-  (* 70 *) let buf = Buffer.create 64 in 
+  (* 35 *) let buf = Buffer.create 64 in 
   let look_ahead = ref None in
   let token () : token = 
-    (* 718 *) match !look_ahead with 
+    (* 359 *) match !look_ahead with 
     | None ->  
-      (* 606 *) lex_json buf lexbuf 
+      (* 303 *) lex_json buf lexbuf 
     | Some x -> 
-      (* 112 *) look_ahead := None ;
+      (* 56 *) look_ahead := None ;
       x 
   in
-  let push e = (* 112 *) look_ahead := Some e in 
+  let push e = (* 56 *) look_ahead := Some e in 
   let rec json (lexbuf : Lexing.lexbuf) : Ext_json_types.t = 
-    (* 238 *) match token () with 
-    | True -> (* 8 *) True lexbuf.lex_start_p
-    | False -> (* 8 *) False lexbuf.lex_start_p
+    (* 119 *) match token () with 
+    | True -> (* 4 *) True lexbuf.lex_start_p
+    | False -> (* 4 *) False lexbuf.lex_start_p
     | Null -> (* 0 *) Null lexbuf.lex_start_p
-    | Number s ->  (* 108 *) Flo {flo = s; loc = lexbuf.lex_start_p}  
-    | String s -> (* 32 *) Str { str = s; loc =    lexbuf.lex_start_p}
-    | Lbracket -> (* 42 *) parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
-    | Lbrace -> (* 36 *) parse_map lexbuf.lex_start_p String_map.empty lexbuf
-    |  _ -> (* 4 *) error lexbuf Unexpected_token
+    | Number s ->  (* 54 *) Flo {flo = s; loc = lexbuf.lex_start_p}  
+    | String s -> (* 16 *) Str { str = s; loc =    lexbuf.lex_start_p}
+    | Lbracket -> (* 21 *) parse_array  lexbuf.lex_start_p lexbuf.lex_curr_p [] lexbuf
+    | Lbrace -> (* 18 *) parse_map lexbuf.lex_start_p String_map.empty lexbuf
+    |  _ -> (* 2 *) error lexbuf Unexpected_token
 (** Note if we remove [trailing_comma] support 
     we should report errors (actually more work), for example 
     {[
@@ -9828,48 +9767,48 @@ let rec parse_json lexbuf =
  *)
   and parse_array   loc_start loc_finish acc lexbuf 
     : Ext_json_types.t =
-    (* 124 *) match token () with 
+    (* 62 *) match token () with 
     | Rbracket ->
-        (* 12 *) Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
+        (* 6 *) Arr {loc_start ; content = Ext_array.reverse_of_list acc ; 
               loc_end = lexbuf.lex_curr_p }
     | x -> 
-      (* 112 *) push x ;
+      (* 56 *) push x ;
       let new_one = json lexbuf in 
       begin match token ()  with 
       | Comma -> 
-          (* 82 *) parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
+          (* 41 *) parse_array  loc_start loc_finish (new_one :: acc) lexbuf 
       | Rbracket 
-        -> (* 26 *) Arr {content = (Ext_array.reverse_of_list (new_one::acc));
+        -> (* 13 *) Arr {content = (Ext_array.reverse_of_list (new_one::acc));
                      loc_start ; 
                      loc_end = lexbuf.lex_curr_p }
       | _ -> 
         (* 0 *) error lexbuf Expect_comma_or_rbracket
       end
   and parse_map loc_start  acc lexbuf : Ext_json_types.t = 
-    (* 76 *) match token () with 
+    (* 38 *) match token () with 
     | Rbrace -> 
-        (* 14 *) Obj { map = acc ; loc = loc_start}
+        (* 7 *) Obj { map = acc ; loc = loc_start}
     | String key -> 
-      (* 56 *) begin match token () with 
+      (* 28 *) begin match token () with 
       | Colon ->
-        (* 56 *) let value = json lexbuf in
+        (* 28 *) let value = json lexbuf in
         begin match token () with 
-        | Rbrace -> (* 16 *) Obj {map = String_map.add key value acc ; loc = loc_start}
+        | Rbrace -> (* 8 *) Obj {map = String_map.add key value acc ; loc = loc_start}
         | Comma -> 
-          (* 40 *) parse_map loc_start  (String_map.add key value acc) lexbuf 
+          (* 20 *) parse_map loc_start  (String_map.add key value acc) lexbuf 
         | _ -> (* 0 *) error lexbuf Expect_comma_or_rbrace
         end
       | _ -> (* 0 *) error lexbuf Expect_colon
       end
-    | _ -> (* 6 *) error lexbuf Expect_string_or_rbrace
+    | _ -> (* 3 *) error lexbuf Expect_string_or_rbrace
   in 
   let v = json lexbuf in 
   match token () with 
-  | Eof -> (* 60 *) v 
+  | Eof -> (* 30 *) v 
   | _ -> (* 0 *) error lexbuf Expect_eof
 
 let parse_json_from_string s = 
-  (* 70 *) parse_json (Lexing.from_string s )
+  (* 35 *) parse_json (Lexing.from_string s )
 
 let parse_json_from_chan in_chan = 
   (* 0 *) let lexbuf = Lexing.from_channel in_chan in 
@@ -10131,22 +10070,22 @@ let ((>::),
 
 open Ext_json_parse
 let (|?)  m (key, cb) =
-  (* 4 *) m  |> Ext_json.test key cb 
+  (* 2 *) m  |> Ext_json.test key cb 
 
 let rec strip (x : Ext_json_types.t) : Ext_json_noloc.t = 
-  (* 192 *) let open Ext_json_noloc in 
+  (* 96 *) let open Ext_json_noloc in 
   match x with 
-  | True _ -> (* 8 *) true_
-  | False _ -> (* 8 *) false_
+  | True _ -> (* 4 *) true_
+  | False _ -> (* 4 *) false_
   | Null _ -> (* 0 *) null
-  | Flo {flo = s} -> (* 88 *) flo s 
-  | Str {str = s} -> (* 32 *) str s 
-  | Arr {content } -> (* 32 *) arr (Array.map strip content)
+  | Flo {flo = s} -> (* 44 *) flo s 
+  | Str {str = s} -> (* 16 *) str s 
+  | Arr {content } -> (* 16 *) arr (Array.map strip content)
   | Obj {map} -> 
-    (* 24 *) obj (String_map.map strip map)
+    (* 12 *) obj (String_map.map strip map)
 
 let id_parsing_serializing x = 
-  (* 12 *) let normal_s = 
+  (* 6 *) let normal_s = 
     Ext_json_noloc.to_string 
       @@ strip 
       @@ Ext_json_parse.parse_json_from_string x  
@@ -10162,14 +10101,14 @@ let id_parsing_serializing x =
       prerr_endline normal_s ;
       prerr_endline normal_ss ;
     end;
-  OUnit.assert_equal ~cmp:(fun (x:string) y -> (* 12 *) x = y) normal_s normal_ss
+  OUnit.assert_equal ~cmp:(fun (x:string) y -> (* 6 *) x = y) normal_s normal_ss
 
 let id_parsing_x2 x = 
-  (* 12 *) let stru = Ext_json_parse.parse_json_from_string x |> strip in 
+  (* 6 *) let stru = Ext_json_parse.parse_json_from_string x |> strip in 
   let normal_s = Ext_json_noloc.to_string stru in 
   let normal_ss = strip (Ext_json_parse.parse_json_from_string normal_s) in 
   if Ext_json_noloc.equal stru normal_ss then 
-    (* 12 *) true
+    (* 6 *) true
   else (* 0 *) begin 
     prerr_endline "ERROR";
     prerr_endline normal_s;
@@ -10197,52 +10136,52 @@ let suites =
   [
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) List.iter id_parsing_serializing test_data
+      (* 1 *) List.iter id_parsing_serializing test_data
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) List.iteri (fun i x -> (* 12 *) OUnit.assert_bool (__LOC__ ^ string_of_int i ) (id_parsing_x2 x)) test_data
+      (* 1 *) List.iteri (fun i x -> (* 6 *) OUnit.assert_bool (__LOC__ ^ string_of_int i ) (id_parsing_x2 x)) test_data
     end;
     "empty_json" >:: begin fun _ -> 
-      (* 2 *) let v =parse_json_from_string "{}" in
+      (* 1 *) let v =parse_json_from_string "{}" in
       match v with 
-      | Obj {map = v} -> (* 2 *) OUnit.assert_equal (String_map.is_empty v ) true
+      | Obj {map = v} -> (* 1 *) OUnit.assert_equal (String_map.is_empty v ) true
       | _ -> (* 0 *) OUnit.assert_failure "should be empty"
     end
     ;
     "empty_arr" >:: begin fun _ -> 
-      (* 2 *) let v =parse_json_from_string "[]" in
+      (* 1 *) let v =parse_json_from_string "[]" in
       match v with 
-      | Arr {content = [||]} -> (* 2 *) ()
+      | Arr {content = [||]} -> (* 1 *) ()
       | _ -> (* 0 *) OUnit.assert_failure "should be empty"
     end
     ;
     "empty trails" >:: begin fun _ -> 
-      (* 2 *) (OUnit.assert_raises Parse_error @@ fun _ -> 
-       (* 2 *) try parse_json_from_string {| [,]|} with _ -> (* 2 *) raise Parse_error);
+      (* 1 *) (OUnit.assert_raises Parse_error @@ fun _ -> 
+       (* 1 *) try parse_json_from_string {| [,]|} with _ -> (* 1 *) raise Parse_error);
       OUnit.assert_raises Parse_error @@ fun _ -> 
-      (* 2 *) try parse_json_from_string {| {,}|} with _ -> (* 2 *) raise Parse_error
+      (* 1 *) try parse_json_from_string {| {,}|} with _ -> (* 1 *) raise Parse_error
     end;
     "two trails" >:: begin fun _ -> 
-      (* 2 *) (OUnit.assert_raises Parse_error @@ fun _ -> 
-       (* 2 *) try parse_json_from_string {| [1,2,,]|} with _ -> (* 2 *) raise Parse_error);
+      (* 1 *) (OUnit.assert_raises Parse_error @@ fun _ -> 
+       (* 1 *) try parse_json_from_string {| [1,2,,]|} with _ -> (* 1 *) raise Parse_error);
       (OUnit.assert_raises Parse_error @@ fun _ -> 
-       (* 2 *) try parse_json_from_string {| { "x": 3, ,}|} with _ -> (* 2 *) raise Parse_error)
+       (* 1 *) try parse_json_from_string {| { "x": 3, ,}|} with _ -> (* 1 *) raise Parse_error)
     end;
 
     "two trails fail" >:: begin fun _ -> 
-      (* 2 *) (OUnit.assert_raises Parse_error @@ fun _ -> 
-       (* 2 *) try parse_json_from_string {| { "x": 3, 2 ,}|} with _ -> (* 2 *) raise Parse_error)
+      (* 1 *) (OUnit.assert_raises Parse_error @@ fun _ -> 
+       (* 1 *) try parse_json_from_string {| { "x": 3, 2 ,}|} with _ -> (* 1 *) raise Parse_error)
     end;
 
     "trail comma obj" >:: begin fun _ -> 
-      (* 2 *) let v =  parse_json_from_string {| { "x" : 3 , }|} in 
+      (* 1 *) let v =  parse_json_from_string {| { "x" : 3 , }|} in 
       let v1 =  parse_json_from_string {| { "x" : 3 , }|} in 
       let test (v : Ext_json_types.t)  = 
-        (* 4 *) match v with 
+        (* 2 *) match v with 
         | Obj {map = v} -> 
-          (* 4 *) v
-          |? ("x" , `Flo (fun x -> (* 4 *) OUnit.assert_equal x "3"))
+          (* 2 *) v
+          |? ("x" , `Flo (fun x -> (* 2 *) OUnit.assert_equal x "3"))
           |> ignore 
         | _ -> (* 0 *) OUnit.assert_failure "trail comma" in 
       test v ;
@@ -10250,11 +10189,11 @@ let suites =
     end
     ;
     "trail comma arr" >:: begin fun _ -> 
-      (* 2 *) let v = parse_json_from_string {| [ 1, 3, ]|} in
+      (* 1 *) let v = parse_json_from_string {| [ 1, 3, ]|} in
       let v1 = parse_json_from_string {| [ 1, 3 ]|} in
       let test (v : Ext_json_types.t) = 
-        (* 4 *) match v with 
-        | Arr { content = [| Flo {flo = "1"} ; Flo { flo = "3"} |] } -> (* 4 *) ()
+        (* 2 *) match v with 
+        | Arr { content = [| Flo {flo = "1"} ; Flo { flo = "3"} |] } -> (* 2 *) ()
         | _ -> (* 0 *) OUnit.assert_failure "trailing comma array" in 
       test v ;
       test v1
@@ -10562,14 +10501,14 @@ let flat_map2 f lx ly =
   aux [] lx ly
 
 let rec flat_map_aux f acc append lx =
-  (* 18 *) match lx with
-  | [] -> (* 6 *) List.rev_append acc append
-  | y::ys -> (* 12 *) flat_map_aux f (List.rev_append ( f y)  acc ) append ys 
+  (* 9 *) match lx with
+  | [] -> (* 3 *) List.rev_append acc append
+  | y::ys -> (* 6 *) flat_map_aux f (List.rev_append ( f y)  acc ) append ys 
 
 let flat_map f lx =
-  (* 2 *) flat_map_aux f [] [] lx
+  (* 1 *) flat_map_aux f [] [] lx
 
-let flat_map_acc f append lx = (* 4 *) flat_map_aux f [] append lx  
+let flat_map_acc f append lx = (* 2 *) flat_map_aux f [] append lx  
 
 let rec map2_last f l1 l2 =
   (* 0 *) match (l1, l2) with
@@ -10597,10 +10536,10 @@ let init n f =
   (* 0 *) Array.to_list (Array.init n f)
 
 let take n l = 
-  (* 4 *) let arr = Array.of_list l in 
+  (* 2 *) let arr = Array.of_list l in 
   let arr_length =  Array.length arr in
   if arr_length  < n then (* 0 *) invalid_arg "Ext_list.take"
-  else (* 4 *) (Array.to_list (Array.sub arr 0 n ), 
+  else (* 2 *) (Array.to_list (Array.sub arr 0 n ), 
         Array.to_list (Array.sub arr n (arr_length - n)))
 
 let try_take n l = 
@@ -10612,23 +10551,23 @@ let try_take n l =
 
 
 let rec length_compare l n = 
-  (* 38 *) if n < 0 then (* 4 *) `Gt 
+  (* 19 *) if n < 0 then (* 2 *) `Gt 
   else 
-  (* 34 *) begin match l with 
-    | _ ::xs -> (* 22 *) length_compare xs (n - 1)
+  (* 17 *) begin match l with 
+    | _ ::xs -> (* 11 *) length_compare xs (n - 1)
     | [] ->  
-      (* 12 *) if n = 0 then (* 10 *) `Eq 
-      else (* 2 *) `Lt 
+      (* 6 *) if n = 0 then (* 5 *) `Eq 
+      else (* 1 *) `Lt 
   end
 (**
 
   {[length xs = length ys + n ]}
 *)
 let rec length_larger_than_n n xs ys =
-  (* 12 *) match xs, ys with 
-  | _, [] -> (* 6 *) length_compare xs n = `Eq   
+  (* 6 *) match xs, ys with 
+  | _, [] -> (* 3 *) length_compare xs n = `Eq   
   | _::xs, _::ys -> 
-    (* 6 *) length_larger_than_n n xs ys
+    (* 3 *) length_larger_than_n n xs ys
   | [], _ -> (* 0 *) false 
   
 
@@ -10699,9 +10638,9 @@ let rev_map_acc  acc f l =
   rmap_f acc l
 
 let rec map_acc acc f l =   
-  (* 8 *) match l with 
-  | [] -> (* 2 *) acc 
-  | h::hs -> (* 6 *) f h :: map_acc  acc  f hs 
+  (* 4 *) match l with 
+  | [] -> (* 1 *) acc 
+  | h::hs -> (* 3 *) f h :: map_acc  acc  f hs 
 
 
 
@@ -10820,14 +10759,14 @@ let rec assoc_by_string def (k : string) lst =
     (* 0 *) assoc_by_string def k rest 
 
 let rec assoc_by_int def (k : int) lst = 
-  (* 14 *) match lst with 
+  (* 7 *) match lst with 
   | [] -> 
-    (* 2 *) begin match def with
-    | None -> (* 2 *) assert false 
+    (* 1 *) begin match def with
+    | None -> (* 1 *) assert false 
     | Some x -> (* 0 *) x end
   | (k1,v1)::rest -> 
-    (* 12 *) if k1 = k then (* 2 *) v1 else 
-    (* 10 *) assoc_by_int def k rest     
+    (* 6 *) if k1 = k then (* 1 *) v1 else 
+    (* 5 *) assoc_by_int def k rest     
 
 (** `modulo [1;2;3;4] [1;2;3]` => [1;2;3], Some [4] `
   modulo [1;2;3] [1;2;3;4] => [1;2;3] None 
@@ -10855,29 +10794,29 @@ let suites =
   >:::
   [
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_equal
-        (Ext_list.flat_map (fun x -> (* 4 *) [x;x]) [1;2]) [1;1;2;2] 
+      (* 1 *) OUnit.assert_equal
+        (Ext_list.flat_map (fun x -> (* 2 *) [x;x]) [1;2]) [1;1;2;2] 
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_equal
-        (Ext_list.flat_map_acc (fun x -> (* 4 *) [x;x]) [3;4] [1;2]) [1;1;2;2;3;4] 
+      (* 1 *) OUnit.assert_equal
+        (Ext_list.flat_map_acc (fun x -> (* 2 *) [x;x]) [3;4] [1;2]) [1;1;2;2;3;4] 
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) OUnit.assert_equal (
-        Ext_list.flat_map_acc (fun x -> (* 4 *) if x mod 2 = 0 then (* 2 *) [true] else (* 2 *) [])
+      (* 1 *) OUnit.assert_equal (
+        Ext_list.flat_map_acc (fun x -> (* 2 *) if x mod 2 = 0 then (* 1 *) [true] else (* 1 *) [])
           [false;false] [1;2]
       )  [true;false;false]
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_equal (
-        Ext_list.map_acc ["1";"2";"3"] (fun x -> (* 6 *) string_of_int x) [0;1;2] 
+      (* 1 *) OUnit.assert_equal (
+        Ext_list.map_acc ["1";"2";"3"] (fun x -> (* 3 *) string_of_int x) [0;1;2] 
 
       )
         ["0";"1";"2"; "1";"2";"3"]
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let (a,b) = Ext_list.take 3 [1;2;3;4;5;6] in 
+      (* 1 *) let (a,b) = Ext_list.take 3 [1;2;3;4;5;6] in 
       OUnit.assert_equal (a,b)
         ([1;2;3],[4;5;6]);
       OUnit.assert_equal (Ext_list.take 1 [1])
@@ -10885,14 +10824,14 @@ let suites =
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_equal (Ext_list.assoc_by_int None 1 [2,"x"; 3,"y"; 1, "z"]) "z"
+      (* 1 *) OUnit.assert_equal (Ext_list.assoc_by_int None 1 [2,"x"; 3,"y"; 1, "z"]) "z"
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_raise_any
-        (fun _ -> (* 2 *) Ext_list.assoc_by_int None 11 [2,"x"; 3,"y"; 1, "z"])
+      (* 1 *) OUnit.assert_raise_any
+        (fun _ -> (* 1 *) Ext_list.assoc_by_int None 11 [2,"x"; 3,"y"; 1, "z"])
     end ;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_equal
+      (* 1 *) OUnit.assert_equal
        (Ext_list.length_compare [0;0;0] 3) `Eq ;
       OUnit.assert_equal
        (Ext_list.length_compare [0;0;0] 1) `Gt ;   
@@ -10904,7 +10843,7 @@ let suites =
        (Ext_list.length_compare [] (0)) `Eq ;          
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ 
+      (* 1 *) OUnit.assert_bool __LOC__ 
       (Ext_list.length_larger_than_n 1 [1;2] [1]);
       OUnit.assert_bool __LOC__ 
       (Ext_list.length_larger_than_n 0 [1;2] [1;2]);
@@ -10987,31 +10926,31 @@ let max_binding_exn = Map_gen.max_binding_exn
 let min_binding_exn = Map_gen.min_binding_exn
 
 
-let rec add x data (tree : _ Map_gen.t as 'a) : 'a = (* 21972 *) match tree with 
+let rec add x data (tree : _ Map_gen.t as 'a) : 'a = (* 10986 *) match tree with 
   | Empty ->
-    (* 2016 *) Node(Empty, x, data, Empty, 1)
+    (* 1008 *) Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
-    (* 19956 *) let c = compare_key x v in
+    (* 9978 *) let c = compare_key x v in
     if c = 0 then
       (* 0 *) Node(l, x, data, r, h)
-    else (* 19956 *) if c < 0 then
-      (* 4 *) bal (add x data l) v d r
+    else (* 9978 *) if c < 0 then
+      (* 2 *) bal (add x data l) v d r
     else
-      (* 19952 *) bal l v d (add x data r)
+      (* 9976 *) bal l v d (add x data r)
 
 
 let rec adjust x data replace (tree : _ Map_gen.t as 'a) : 'a = 
-  (* 39908 *) match tree with 
+  (* 19954 *) match tree with 
   | Empty ->
-    (* 2000 *) Node(Empty, x, data (), Empty, 1)
+    (* 1000 *) Node(Empty, x, data (), Empty, 1)
   | Node(l, v, d, r, h) ->
-    (* 37908 *) let c = compare_key x v in
+    (* 18954 *) let c = compare_key x v in
     if c = 0 then
-      (* 2000 *) Node(l, x, replace  d , r, h)
-    else (* 35908 *) if c < 0 then
-      (* 8058 *) bal (adjust x data replace l) v d r
+      (* 1000 *) Node(l, x, replace  d , r, h)
+    else (* 17954 *) if c < 0 then
+      (* 4029 *) bal (adjust x data replace l) v d r
     else
-      (* 27850 *) bal l v d (adjust x data replace r)
+      (* 13925 *) bal l v d (adjust x data replace r)
 
 
 let rec find_exn x (tree : _ Map_gen.t )  = (* 0 *) match tree with 
@@ -11106,12 +11045,12 @@ let compare cmp m1 m2 = (* 0 *) Map_gen.compare compare_key cmp m1 m2
 let equal cmp m1 m2 = (* 0 *) Map_gen.equal compare_key cmp m1 m2 
 
 let add_list (xs : _ list ) init = 
-  (* 4 *) List.fold_left (fun acc (k,v) -> (* 16 *) add k v acc) init xs 
+  (* 2 *) List.fold_left (fun acc (k,v) -> (* 8 *) add k v acc) init xs 
 
-let of_list xs = (* 4 *) add_list xs empty
+let of_list xs = (* 2 *) add_list xs empty
 
 let of_array xs = 
-  (* 2 *) Array.fold_left (fun acc (k,v) -> (* 2000 *) add k v acc) empty xs
+  (* 1 *) Array.fold_left (fun acc (k,v) -> (* 1000 *) add k v acc) empty xs
 
 end
 module Ounit_map_tests
@@ -11126,33 +11065,33 @@ let suites =
   __MODULE__ >:::
   [
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) [1,"1"; 2,"2"; 12,"12"; 3, "3"]
+      (* 1 *) [1,"1"; 2,"2"; 12,"12"; 3, "3"]
       |> Int_map.of_list 
       |> Int_map.keys 
       |> OUnit.assert_equal [1;2;3;12]
     end
     ;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_equal (Int_map.cardinal Int_map.empty) 0 ;
+      (* 1 *) OUnit.assert_equal (Int_map.cardinal Int_map.empty) 0 ;
       OUnit.assert_equal ([1,"1"; 2,"2"; 12,"12"; 3, "3"]
       |> Int_map.of_list|>Int_map.cardinal )  4
       
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) Int_map.cardinal (Int_map.of_array (Array.init 1000 (fun i -> (* 2000 *) (i,i))))
+      (* 1 *) Int_map.cardinal (Int_map.of_array (Array.init 1000 (fun i -> (* 1000 *) (i,i))))
       =~ 1000
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let count = 1000 in 
-      let a = Array.init count (fun x -> (* 2000 *) x ) in 
+      (* 1 *) let count = 1000 in 
+      let a = Array.init count (fun x -> (* 1000 *) x ) in 
       let v = Int_map.empty in
       let u = 
         begin 
-          let v = Array.fold_left (fun acc key -> (* 2000 *) Int_map.adjust key (fun _ -> (* 2000 *) 1) (succ) acc ) v a   in 
-          Array.fold_left (fun acc key -> (* 2000 *) Int_map.adjust key (fun _ -> (* 0 *) 1) (succ) acc ) v a  
+          let v = Array.fold_left (fun acc key -> (* 1000 *) Int_map.adjust key (fun _ -> (* 1000 *) 1) (succ) acc ) v a   in 
+          Array.fold_left (fun acc key -> (* 1000 *) Int_map.adjust key (fun _ -> (* 0 *) 1) (succ) acc ) v a  
           end
         in  
-       Int_map.iter (fun _ v -> (* 2000 *) v =~ 2 ) u   ;
+       Int_map.iter (fun _ v -> (* 1000 *) v =~ 2 ) u   ;
        Int_map.cardinal u =~ count
     end
   ]
@@ -11171,32 +11110,32 @@ let suites =
   __FILE__
   >::: [
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let a = [|"a";"b";"c"|] in 
+      (* 1 *) let a = [|"a";"b";"c"|] in 
       Ordered_hash_set_string.(to_sorted_array (of_array a))
       =~ a 
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let a = Array.init 1000 (fun i -> (* 2000 *) string_of_int i) in 
+      (* 1 *) let a = Array.init 1000 (fun i -> (* 1000 *) string_of_int i) in 
       Ordered_hash_set_string.(to_sorted_array (of_array a))
       =~ a
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let a = [|"a";"b";"c"; "a"; "d"|] in 
+      (* 1 *) let a = [|"a";"b";"c"; "a"; "d"|] in 
       Ordered_hash_set_string.(to_sorted_array (of_array a))
       =~ [| "a" ; "b"; "c"; "d" |]
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let b = Array.init 500 (fun i -> (* 1000 *) string_of_int i) in
+      (* 1 *) let b = Array.init 500 (fun i -> (* 500 *) string_of_int i) in
       let a = Array.append b b in 
       Ordered_hash_set_string.(to_sorted_array (of_array a))
       =~ b
     end;
 
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let h = Ordered_hash_set_string.create 1 in
+      (* 1 *) let h = Ordered_hash_set_string.create 1 in
       Ordered_hash_set_string.(to_sorted_array h)
       =~ [||];
       Ordered_hash_set_string.add h "1";
@@ -11207,88 +11146,88 @@ let suites =
     end;
 
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let h = Ordered_hash_set_string.create 1 in
+      (* 1 *) let h = Ordered_hash_set_string.create 1 in
       let count = 3000 in
       for i = 0 to count - 1 do
-        (* 6000 *) Ordered_hash_set_string.add  h (string_of_int i) ;
+        (* 3000 *) Ordered_hash_set_string.add  h (string_of_int i) ;
       done ;
       print_endline ("\n"^__LOC__ ^ "\n" ^ Ext_util.stats_to_string (Ordered_hash_set_string.stats h));
       Ordered_hash_set_string.(to_sorted_array h)
-      =~ (Array.init count (fun i -> (* 6000 *) string_of_int i ))
+      =~ (Array.init count (fun i -> (* 3000 *) string_of_int i ))
     end;
 
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let h = Ordered_hash_set_string.create 1 in
+      (* 1 *) let h = Ordered_hash_set_string.create 1 in
       let count = 1000_000 in
       for i = 0 to count - 1 do
-        (* 2000000 *) Ordered_hash_set_string.add  h (string_of_int i) ;
+        (* 1000000 *) Ordered_hash_set_string.add  h (string_of_int i) ;
       done ;
       for i = 0 to count - 1 do
-        (* 2000000 *) OUnit.assert_bool "exists" (Ordered_hash_set_string.mem h (string_of_int i))
+        (* 1000000 *) OUnit.assert_bool "exists" (Ordered_hash_set_string.mem h (string_of_int i))
       done;
       for i = 0 to count - 1 do 
-        (* 2000000 *) OUnit.assert_equal (Ordered_hash_set_string.rank h (string_of_int i)) i 
+        (* 1000000 *) OUnit.assert_equal (Ordered_hash_set_string.rank h (string_of_int i)) i 
       done;  
       OUnit.assert_equal 
-        (Ordered_hash_set_string.fold(fun key rank acc -> (* 2000000 *) assert (string_of_int rank = key); (acc + 1) ) h 0)
+        (Ordered_hash_set_string.fold(fun key rank acc -> (* 1000000 *) assert (string_of_int rank = key); (acc + 1) ) h 0)
         count
       ;         
-      Ordered_hash_set_string.iter (fun key rank -> (* 2000000 *) assert (string_of_int rank = key))  h ; 
+      Ordered_hash_set_string.iter (fun key rank -> (* 1000000 *) assert (string_of_int rank = key))  h ; 
       OUnit.assert_equal (Ordered_hash_set_string.length h) count;
       print_endline ("\n"^__LOC__ ^ "\n" ^ Ext_util.stats_to_string (Ordered_hash_set_string.stats h));
       Ordered_hash_set_string.clear h ; 
       OUnit.assert_equal (Ordered_hash_set_string.length h) 0;
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let count = 1000_000 in
+      (* 1 *) let count = 1000_000 in
       let h = Ordered_hash_set_string.create ( count) in      
       for i = 0 to count - 1 do
-        (* 2000000 *) Ordered_hash_set_string.add  h (string_of_int i) ;
+        (* 1000000 *) Ordered_hash_set_string.add  h (string_of_int i) ;
       done ;
       for i = 0 to count - 1 do
-        (* 2000000 *) OUnit.assert_bool "exists" (Ordered_hash_set_string.mem h (string_of_int i))
+        (* 1000000 *) OUnit.assert_bool "exists" (Ordered_hash_set_string.mem h (string_of_int i))
       done;
       for i = 0 to count - 1 do 
-        (* 2000000 *) OUnit.assert_equal (Ordered_hash_set_string.rank h (string_of_int i)) i 
+        (* 1000000 *) OUnit.assert_equal (Ordered_hash_set_string.rank h (string_of_int i)) i 
       done;  
       OUnit.assert_equal 
-        (Ordered_hash_set_string.fold(fun key rank acc -> (* 2000000 *) assert (string_of_int rank = key); (acc + 1) ) h 0)
+        (Ordered_hash_set_string.fold(fun key rank acc -> (* 1000000 *) assert (string_of_int rank = key); (acc + 1) ) h 0)
         count
       ;         
-      Ordered_hash_set_string.iter (fun key rank -> (* 2000000 *) assert (string_of_int rank = key))  h ; 
+      Ordered_hash_set_string.iter (fun key rank -> (* 1000000 *) assert (string_of_int rank = key))  h ; 
       OUnit.assert_equal (Ordered_hash_set_string.length h) count;
       print_endline ("\n"^__LOC__ ^ "\n" ^ Ext_util.stats_to_string (Ordered_hash_set_string.stats h));
       Ordered_hash_set_string.clear h ; 
       OUnit.assert_equal (Ordered_hash_set_string.length h) 0;
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ordered_hash_set_string.to_sorted_array (Ordered_hash_set_string.of_array [||]) =~ [||];
+      (* 1 *) Ordered_hash_set_string.to_sorted_array (Ordered_hash_set_string.of_array [||]) =~ [||];
       Ordered_hash_set_string.to_sorted_array (Ordered_hash_set_string.of_array [|"1"|]) =~ [|"1"|]
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_raises Not_found (fun _ -> (* 2 *) Ordered_hash_set_string.choose_exn (Ordered_hash_set_string.of_array [||]))
+      (* 1 *) OUnit.assert_raises Not_found (fun _ -> (* 1 *) Ordered_hash_set_string.choose_exn (Ordered_hash_set_string.of_array [||]))
     end;
 
 
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let count = 1000 in 
-      let v = Ordered_hash_set_string.of_array (Array.init count (fun i -> (* 2000 *) string_of_int i) ) in
+      (* 1 *) let count = 1000 in 
+      let v = Ordered_hash_set_string.of_array (Array.init count (fun i -> (* 1000 *) string_of_int i) ) in
       for i = 0 to count - 1 do 
-        (* 2000 *) Ordered_hash_set_string.replace v (string_of_int i) (string_of_int i ^ Ext_string.single_colon)
+        (* 1000 *) Ordered_hash_set_string.replace v (string_of_int i) (string_of_int i ^ Ext_string.single_colon)
       done ;
       OUnit.assert_equal (Ordered_hash_set_string.length v) count;
       OUnit.assert_equal 
         (Ordered_hash_set_string.to_sorted_array v )
-        (Array.init count (fun i -> (* 2000 *) string_of_int i ^ Ext_string.single_colon))
+        (Array.init count (fun i -> (* 1000 *) string_of_int i ^ Ext_string.single_colon))
       
     end
   ]
 
 end
-module Ext_filename : sig 
-#1 "ext_filename.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+module Ext_path : sig 
+#1 "ext_path.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11313,95 +11252,71 @@ module Ext_filename : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-(* TODO:
-   Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-*)
-
 type t = 
-  [ `File of string 
-  | `Dir of string ]
+  | File of string 
+  | Dir of string 
 
-val combine : string -> string -> string 
-val path_as_directory : string -> string
+val sep_char : char 
 
-(** An extension module to calculate relative path follow node/npm style. 
-    TODO : this short name will have to change upon renaming the file.
- *)
+val node_relative_path : 
+  t -> 
+  t -> 
+  string
 
-(** Js_output is node style, which means 
-    separator is only '/'
-
-    if the path contains 'node_modules', 
-    [node_relative_path] will discard its prefix and 
-    just treat it as a library instead
- *)
-
-val node_relative_path : bool -> t -> [`File of string] -> string
-
-val chop_extension : ?loc:string -> string -> string
-
-
-
-
-
-
-val cwd : string Lazy.t
-
-(* It is lazy so that it will not hit errors when in script mode *)
-val package_dir : string Lazy.t
-
-
-
-val module_name_of_file : string -> string
-
-val chop_extension_if_any : string -> string
-
-val absolute_path : string -> string
-
-val module_name_of_file_if_any : string -> string
+val node_concat : dir:string -> string -> string 
 
 (**
    1. add some simplifications when concatenating
    2. when the second one is absolute, drop the first one
-*)
-val combine : string -> string -> string
+*)  
+val combine : 
+  string -> 
+  string -> 
+  string    
 
-val normalize_absolute_path : string -> string
 
-(** 
-TODO: could be highly optimized
-if [from] and [to] resolve to the same path, a zero-length string is returned 
-Given that two paths are directory
 
-A typical use case is 
-{[
-Filename.concat 
-  (rel_normalized_absolute_path cwd (Filename.dirname a))
-  (Filename.basename a)
-]}
-*)
-val rel_normalized_absolute_path : string -> string -> string 
+val chop_extension : ?loc:string -> string -> string 
 
+
+val chop_extension_if_any : string -> string
 
 
 (**
-{[
-get_extension "a.txt" = ".txt"
-get_extension "a" = ""
-]}
+   {[
+     get_extension "a.txt" = ".txt"
+       get_extension "a" = ""
+   ]}
 *)
 val get_extension : string -> string
 
-val simple_convert_node_path_to_os_path : string -> string
 
 
+
+
+(** 
+   TODO: could be highly optimized
+   if [from] and [to] resolve to the same path, a zero-length string is returned 
+   Given that two paths are directory
+
+   A typical use case is 
+   {[
+     Filename.concat 
+       (rel_normalized_absolute_path cwd (Filename.dirname a))
+       (Filename.basename a)
+   ]}
+*)
+val rel_normalized_absolute_path : from:string -> string -> string 
+
+
+val normalize_absolute_path : string -> string
+
+val absolute_path : string Lazy.t -> string -> string
+
+val absolute : string Lazy.t -> t -> t 
 end = struct
-#1 "ext_filename.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+#1 "ext_path.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -11425,76 +11340,15 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** Used when produce node compatible paths *)
-let node_sep = "/"
-let node_parent = ".."
-let node_current = "."
-
 type t = 
-  [ `File of string 
-  | `Dir of string ]
-
-let cwd = lazy (Sys.getcwd ())
-
-let (//) = Filename.concat 
-
-let combine path1 path2 =
-  (* 0 *) if path1 = "" then
-    (* 0 *) path2
-  else (* 0 *) if path2 = "" then (* 0 *) path1
-  else 
-  (* 0 *) if Filename.is_relative path2 then
-    (* 0 *) path1// path2 
-  else
-    (* 0 *) path2
-
-(* Note that [.//] is the same as [./] *)
-let path_as_directory x =
-  (* 0 *) if x = "" then (* 0 *) x
-  else
-  (* 0 *) if Ext_string.ends_with x  Filename.dir_sep then
-    (* 0 *) x 
-  else 
-    (* 0 *) x ^ Filename.dir_sep
-
-let absolute_path s = 
-  (* 0 *) let process s = 
-    (* 0 *) let s = 
-      if Filename.is_relative s then
-        (* 0 *) Lazy.force cwd // s 
-      else (* 0 *) s in
-    (* Now simplify . and .. components *)
-    let rec aux s =
-      (* 0 *) let base,dir  = Filename.basename s, Filename.dirname s  in
-      if dir = s then (* 0 *) dir
-      else (* 0 *) if base = Filename.current_dir_name then (* 0 *) aux dir
-      else (* 0 *) if base = Filename.parent_dir_name then (* 0 *) Filename.dirname (aux dir)
-      else (* 0 *) aux dir // base
-    in aux s  in 
-  process s 
-
-
-let chop_extension ?(loc="") name =
-  (* 0 *) try Filename.chop_extension name 
-  with Invalid_argument _ -> 
-    (* 0 *) Ext_pervasives.invalid_argf 
-      "Filename.chop_extension ( %s : %s )"  loc name
-
-let chop_extension_if_any fname =
-  (* 0 *) try Filename.chop_extension fname with Invalid_argument _ -> (* 0 *) fname
+  | File of string 
+  | Dir of string 
 
 
 
 
 
-let os_path_separator_char = String.unsafe_get Filename.dir_sep 0 
+let sep_char = String.unsafe_get Filename.dir_sep 0 
 
 
 (** example
@@ -11517,128 +11371,77 @@ let os_path_separator_char = String.unsafe_get Filename.dir_sep 0
       /c/d
     ]}
 *)
-let relative_path file_or_dir_1 file_or_dir_2 = 
-  (* 0 *) let sep_char = os_path_separator_char in
-  let relevant_dir1 = 
-    (match file_or_dir_1 with 
-     | `Dir x -> (* 0 *) x 
-     | `File file1 ->  (* 0 *) Filename.dirname file1) in
+let node_relative_path (file_or_dir_1 : t) (file_or_dir_2 : t )= 
+  (* 0 *) let relevant_dir1 = 
+    match file_or_dir_1 with 
+     | Dir x -> (* 0 *) x 
+     | File file1 ->  (* 0 *) Filename.dirname file1 in
   let relevant_dir2 = 
-    (match file_or_dir_2 with 
-     |`Dir x -> (* 0 *) x 
-     |`File file2 -> (* 0 *) Filename.dirname file2 ) in
+    match file_or_dir_2 with 
+     | Dir x -> (* 0 *) x 
+     | File file2 -> (* 0 *) Filename.dirname file2  in
   let dir1 = Ext_string.split relevant_dir1 sep_char   in
   let dir2 = Ext_string.split relevant_dir2 sep_char  in
   let rec go (dir1 : string list) (dir2 : string list) = 
     (* 0 *) match dir1, dir2 with 
     | x::xs , y :: ys when (* 0 *) x = y
       -> (* 0 *) go xs ys 
-    | _, _
-      -> 
-      (* 0 *) List.map (fun _ -> (* 0 *) node_parent) dir2 @ dir1 
+    | _, _ -> 
+      (* 0 *) List.map (fun _ ->  (* 0 *) Literals.node_parent) dir2 @ dir1 
   in
   match go dir1 dir2 with
-  | (x :: _ ) as ys when (* 0 *) x = node_parent -> 
-    (* 0 *) String.concat node_sep ys
+  | (x :: _ ) as ys when (* 0 *) x = Literals.node_parent -> 
+    (* 0 *) String.concat Literals.node_sep ys
   | ys -> 
-    (* 0 *) String.concat node_sep  @@ node_current :: ys
+    (* 0 *) String.concat Literals.node_sep  
+    @@ Literals.node_current :: ys
 
 
-(** path2: a/b 
-    path1: a 
-    result:  ./b 
-    TODO: [Filename.concat] with care
+let node_concat ~dir base =
+  (* 0 *) dir ^ Literals.node_sep ^ base 
 
-    [file1] is currently compilation file 
-    [file2] is the dependency
-    
-    TODO: this is a hackish function: FIXME
+
+(***
+   {[
+     Filename.concat "." "";;
+     "./"
+   ]}
 *)
-let node_relative_path node_modules_shorten (file1 : t) 
-    (`File file2 as dep_file : [`File of string]) = 
-  (* 0 *) let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
-  let len = String.length file2 in 
-  if node_modules_shorten && v >= 0 then
-    
-    (* 0 *) let rec skip  i =       
-      (* 0 *) if i >= len then
-        (* 0 *) Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
-      else 
-        (* https://en.wikipedia.org/wiki/Path_(computing))
-           most path separator are a single char 
-        *)
-        (* 0 *) let curr_char = String.unsafe_get file2 i  in 
-        if curr_char = os_path_separator_char || curr_char = '.' then 
-          (* 0 *) skip (i + 1) 
-        else (* 0 *) i
-        (*
-          TODO: we need do more than this suppose user 
-          input can be
-           {[
-             "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
-           ]}
-           This seems weird though
-        *)
-    in 
-    Ext_string.tail_from file2
-      (skip (v + Literals.node_modules_length)) 
-  else 
-    (* 0 *) relative_path 
-      (  match dep_file with 
-         | `File x -> (* 0 *) `File (absolute_path x)
-         | `Dir x -> (* 0 *) `Dir (absolute_path x))
-
-      (match file1 with 
-       | `File x -> (* 0 *) `File (absolute_path x)
-       | `Dir x -> (* 0 *) `Dir(absolute_path x))
-    ^ node_sep ^
-    (* chop_extension_if_any *) (Filename.basename file2)
-
-
-
-(* Input must be absolute directory *)
-let rec find_root_filename ~cwd filename   = 
-  (* 0 *) if Sys.file_exists (cwd // filename) then (* 0 *) cwd
-  else 
-    (* 0 *) let cwd' = Filename.dirname cwd in 
-    if String.length cwd' < String.length cwd then  
-      (* 0 *) find_root_filename ~cwd:cwd'  filename 
+let combine path1 path2 =  
+  (* 0 *) if Filename.is_relative path2 then
+    (* 0 *) if Ext_string.is_empty path2 then 
+      (* 0 *) path1
     else 
-      (* 0 *) Ext_pervasives.failwithf 
-        ~loc:__LOC__
-        "%s not found from %s" filename cwd
+    (* 0 *) if path1 = Filename.current_dir_name then 
+      (* 0 *) path2
+    else
+    (* 0 *) if path2 = Filename.current_dir_name 
+    then (* 0 *) path1
+    else
+      (* 0 *) Filename.concat path1 path2 
+  else
+    (* 0 *) path2
 
 
-let find_package_json_dir cwd  = 
-  (* 0 *) find_root_filename ~cwd  Literals.bsconfig_json
+let chop_extension ?(loc="") name =
+  (* 0 *) try Filename.chop_extension name 
+  with Invalid_argument _ -> 
+    (* 0 *) Ext_pervasives.invalid_argf 
+      "Filename.chop_extension ( %s : %s )"  loc name
 
-let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
+let chop_extension_if_any fname =
+  (* 0 *) try Filename.chop_extension fname with Invalid_argument _ -> (* 0 *) fname
+    
+let get_extension x =
+  (* 0 *) let pos = Ext_string.rindex_neg x '.' in 
+  if pos < 0 then (* 0 *) ""
+  else (* 0 *) Ext_string.tail_from x pos 
+  
 
-
-
-let module_name_of_file file =
-  (* 0 *) String.capitalize 
-    (Filename.chop_extension @@ Filename.basename file)  
-
-let module_name_of_file_if_any file = 
-  (* 0 *) String.capitalize 
-    (chop_extension_if_any @@ Filename.basename file)  
-
-
-(** For win32 or case insensitve OS 
-    [".cmj"] is the same as [".CMJ"]
-*)
-(* let has_exact_suffix_then_chop fname suf =  *)
-
-let combine p1 p2 = 
-  (* 0 *) if p1 = "" || p1 = Filename.current_dir_name then (* 0 *) p2 else 
-  (* 0 *) if p2 = "" || p2 = Filename.current_dir_name then (* 0 *) p1 
-  else 
-  (* 0 *) if Filename.is_relative p2 then 
-    (* 0 *) Filename.concat p1 p2 
-  else (* 0 *) p2 
-
-
+let (//) x y =
+  (* 49 *) if x = Filename.current_dir_name then (* 0 *) y
+  else (* 49 *) if y = Filename.current_dir_name then (* 2 *) x 
+  else (* 47 *) Filename.concat x y 
 
 (**
    {[
@@ -11663,18 +11466,18 @@ let combine p1 p2 =
    ]}  
 *)
 let split_aux p =
-  (* 132 *) let rec go p acc =
-    (* 600 *) let dir = Filename.dirname p in
-    if dir = p then (* 132 *) dir, acc
+  (* 70 *) let rec go p acc =
+    (* 314 *) let dir = Filename.dirname p in
+    if dir = p then (* 70 *) dir, acc
     else
-      (* 468 *) let new_path = Filename.basename p in 
+      (* 244 *) let new_path = Filename.basename p in 
       if Ext_string.equal new_path Filename.dir_sep then 
-        (* 6 *) go dir acc 
+        (* 3 *) go dir acc 
         (* We could do more path simplification here
            leave to [rel_normalized_absolute_path]
         *)
       else 
-        (* 462 *) go dir (new_path :: acc)
+        (* 241 *) go dir (new_path :: acc)
 
   in go p []
 
@@ -11684,26 +11487,28 @@ let split_aux p =
    TODO: optimization
    if [from] and [to] resolve to the same path, a zero-length string is returned 
 *)
-let rel_normalized_absolute_path from to_ =
-  (* 54 *) let root1, paths1 = split_aux from in 
+let rel_normalized_absolute_path ~from to_ =
+  (* 29 *) let root1, paths1 = split_aux from in 
   let root2, paths2 = split_aux to_ in 
   if root1 <> root2 then (* 0 *) root2
   else
-    (* 54 *) let rec go xss yss =
-      (* 150 *) match xss, yss with 
+    (* 29 *) let rec go xss yss =
+      (* 79 *) match xss, yss with 
       | x::xs, y::ys -> 
-        (* 98 *) if Ext_string.equal x  y then (* 96 *) go xs ys 
+        (* 51 *) if Ext_string.equal x  y then (* 48 *) go xs ys 
+        else (* 3 *) if x = Filename.current_dir_name then (* 2 *) go xs yss 
+        else (* 1 *) if y = Filename.current_dir_name then (* 0 *) go xss ys
         else 
-          (* 2 *) let start = 
-            List.fold_left (fun acc _ -> (* 6 *) acc // Ext_string.parent_dir_lit )
+          (* 1 *) let start = 
+            List.fold_left (fun acc _ -> (* 3 *) acc // Ext_string.parent_dir_lit )
               Ext_string.parent_dir_lit  xs in 
-          List.fold_left (fun acc v -> (* 4 *) acc // v) start yss
+          List.fold_left (fun acc v -> (* 2 *) acc // v) start yss
       | [], [] -> (* 0 *) Ext_string.empty
-      | [], y::ys -> (* 16 *) List.fold_left (fun acc x -> (* 16 *) acc // x) y ys
+      | [], y::ys -> (* 10 *) List.fold_left (fun acc x -> (* 14 *) acc // x) y ys
       | x::xs, [] ->
-        (* 36 *) List.fold_left (fun acc _ -> (* 60 *) acc // Ext_string.parent_dir_lit )
+        (* 18 *) List.fold_left (fun acc _ -> (* 30 *) acc // Ext_string.parent_dir_lit )
           Ext_string.parent_dir_lit xs in
-    go paths1 paths2
+    go paths1 paths2  
 
 (*TODO: could be hgighly optimized later 
   {[
@@ -11726,45 +11531,55 @@ let rel_normalized_absolute_path from to_ =
 *)
 (** See tests in {!Ounit_path_tests} *)
 let normalize_absolute_path x =
-  (* 24 *) let drop_if_exist xs =
-    (* 22 *) match xs with 
-    | [] -> (* 2 *) []
-    | _ :: xs -> (* 20 *) xs in 
+  (* 12 *) let drop_if_exist xs =
+    (* 11 *) match xs with 
+    | [] -> (* 1 *) []
+    | _ :: xs -> (* 10 *) xs in 
   let rec normalize_list acc paths =
-    (* 154 *) match paths with 
-    | [] -> (* 24 *) acc 
+    (* 77 *) match paths with 
+    | [] -> (* 12 *) acc 
     | x :: xs -> 
-      (* 130 *) if Ext_string.equal x Ext_string.current_dir_lit then 
-        (* 32 *) normalize_list acc xs 
-      else (* 98 *) if Ext_string.equal x Ext_string.parent_dir_lit then 
-        (* 22 *) normalize_list (drop_if_exist acc ) xs 
+      (* 65 *) if Ext_string.equal x Ext_string.current_dir_lit then 
+        (* 16 *) normalize_list acc xs 
+      else (* 49 *) if Ext_string.equal x Ext_string.parent_dir_lit then 
+        (* 11 *) normalize_list (drop_if_exist acc ) xs 
       else   
-        (* 76 *) normalize_list (x::acc) xs 
+        (* 38 *) normalize_list (x::acc) xs 
   in
   let root, paths = split_aux x in
   let rev_paths =  normalize_list [] paths in 
   let rec go acc rev_paths =
-    (* 56 *) match rev_paths with 
-    | [] -> (* 20 *) Filename.concat root acc 
-    | last::rest ->  (* 36 *) go (Filename.concat last acc ) rest  in 
+    (* 28 *) match rev_paths with 
+    | [] -> (* 10 *) Filename.concat root acc 
+    | last::rest ->  (* 18 *) go (Filename.concat last acc ) rest  in 
   match rev_paths with 
-  | [] -> (* 4 *) root 
-  | last :: rest -> (* 20 *) go last rest 
+  | [] -> (* 2 *) root 
+  | last :: rest -> (* 10 *) go last rest 
 
 
-let get_extension x =
-  (* 0 *) let pos = Ext_string.rindex_neg x '.' in 
-  if pos < 0 then (* 0 *) ""
-  else (* 0 *) Ext_string.tail_from x pos 
+ 
+  
+let absolute_path cwd s = 
+  (* 0 *) let process s = 
+    (* 0 *) let s = 
+      if Filename.is_relative s then
+        (* 0 *) Lazy.force cwd // s 
+      else (* 0 *) s in
+    (* Now simplify . and .. components *)
+    let rec aux s =
+      (* 0 *) let base,dir  = Filename.basename s, Filename.dirname s  in
+      if dir = s then (* 0 *) dir
+      else (* 0 *) if base = Filename.current_dir_name then (* 0 *) aux dir
+      else (* 0 *) if base = Filename.parent_dir_name then (* 0 *) Filename.dirname (aux dir)
+      else (* 0 *) aux dir // base
+    in aux s  in 
+  process s 
 
-
-let simple_convert_node_path_to_os_path =
-  if Sys.unix then (* 2 *) fun x -> (* 0 *) x 
-  else (* 0 *) if Sys.win32 || Sys.cygwin then 
-    (* 0 *) Ext_string.replace_slash_backward 
-  else (* 0 *) failwith ("Unknown OS : " ^ Sys.os_type)
-
-
+  
+let absolute cwd s =   
+  (* 0 *) match s with 
+  | File x -> (* 0 *) File (absolute_path cwd x )
+  | Dir x -> (* 0 *) Dir (absolute_path cwd x)
 
 end
 module Ounit_path_tests
@@ -11774,16 +11589,16 @@ let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
 
-let normalize = Ext_filename.normalize_absolute_path
+let normalize = Ext_path.normalize_absolute_path
 let (=~) x y = 
-  (* 58 *) OUnit.assert_equal ~cmp:(fun x y ->   (* 58 *) Ext_string.equal x y ) x y
+  (* 31 *) OUnit.assert_equal ~cmp:(fun x y ->   (* 31 *) Ext_string.equal x y ) x y
 
 let suites = 
   __FILE__ 
   >:::
   [
     "linux path tests" >:: begin fun _ -> 
-      (* 2 *) let norm = 
+      (* 1 *) let norm = 
         Array.map normalize
           [|
             "/gsho/./..";
@@ -11812,33 +11627,33 @@ let suites =
         |]
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) normalize "/./a/.////////j/k//../////..///././b/./c/d/./." =~ "/a/b/c/d"
+      (* 1 *) normalize "/./a/.////////j/k//../////..///././b/./c/d/./." =~ "/a/b/c/d"
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) normalize "/./a/.////////j/k//../////..///././b/./c/d/././../" =~ "/a/b/c"
+      (* 1 *) normalize "/./a/.////////j/k//../////..///././b/./c/d/././../" =~ "/a/b/c"
     end;
 
     __LOC__ >:: begin fun _ -> 
-    (* 2 *) let aux a b result = 
-        
-         (* 12 *) Ext_filename.rel_normalized_absolute_path
-        a b =~ result ; 
-        
-        Ext_filename.rel_normalized_absolute_path
-        (String.sub a 0 (String.length a - 1)) 
-        b  =~ result ;
-        
-        Ext_filename.rel_normalized_absolute_path
-        a
-        (String.sub b 0 (String.length b - 1))  =~ result
+      (* 1 *) let aux a b result = 
+
+        (* 6 *) Ext_path.rel_normalized_absolute_path
+          ~from:a b =~ result ; 
+
+        Ext_path.rel_normalized_absolute_path
+          ~from:(String.sub a 0 (String.length a - 1)) 
+          b  =~ result ;
+
+        Ext_path.rel_normalized_absolute_path
+          ~from:a
+          (String.sub b 0 (String.length b - 1))  =~ result
         ;
-        
 
-        Ext_filename.rel_normalized_absolute_path
-        (String.sub a 0 (String.length a - 1 ))
-        (String.sub b 0 (String.length b - 1))
+
+        Ext_path.rel_normalized_absolute_path
+          ~from:(String.sub a 0 (String.length a - 1 ))
+          (String.sub b 0 (String.length b - 1))
         =~ result  
-       in   
+      in   
       aux
         "/a/b/c/"
         "/a/b/c/d/"  "d";
@@ -11854,30 +11669,36 @@ let suites =
       aux
         "/a/b/c/d/"
         "/a/"  "../../.."  ;  
-       aux
+      aux
         "/a/b/c/d/"
         "//"  "../../../.."  ;  
-     
-     
+
+
     end;
     (* This is still correct just not optimal depends 
-      on user's perspective *)
+       on user's perspective *)
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_filename.rel_normalized_absolute_path 
-        "/a/b/c/d"
+      (* 1 *) Ext_path.rel_normalized_absolute_path 
+        ~from:"/a/b/c/d"
         "/x/y" =~ "../../../../x/y"  
 
     end;
-    
+
     __LOC__ >:: begin fun _ -> 
-    (* 2 *) Ext_filename.rel_normalized_absolute_path
-    "/usr/local/lib/node_modules/"
-    "//" =~ "../../../..";
-    Ext_filename.rel_normalized_absolute_path
-    "/usr/local/lib/node_modules/"
-    "/" =~ "../../../.."
+      (* 1 *) Ext_path.rel_normalized_absolute_path
+        ~from:"/usr/local/lib/node_modules/"
+        "//" =~ "../../../..";
+      Ext_path.rel_normalized_absolute_path
+        ~from:"/usr/local/lib/node_modules/"
+        "/" =~ "../../../..";
+      Ext_path.rel_normalized_absolute_path
+        ~from:"./"
+        "./node_modules/xx/./xx.js" =~ "node_modules/xx/xx.js";
+      Ext_path.rel_normalized_absolute_path
+        ~from:"././"
+        "./node_modules/xx/./xx.js" =~ "node_modules/xx/xx.js"        
     end;
-    
+
   ]
 
 end
@@ -11954,7 +11775,7 @@ type  t = {
   mutable len : int ;  
 }
 
-let length d = (* 18 *) d.len
+let length d = (* 9 *) d.len
 
 let compact d =
   (* 0 *) let d_arr = d.arr in 
@@ -11970,7 +11791,7 @@ let singleton v =
   }
 
 let empty () =
-  (* 22 *) {
+  (* 11 *) {
     len = 0;
     arr = [||];
   }
@@ -12039,9 +11860,9 @@ let sub (src : t) start len =
     arr = unsafe_sub src.arr start len }
 
 let iter f d = 
-  (* 24 *) let arr = d.arr in 
+  (* 12 *) let arr = d.arr in 
   for i = 0 to d.len - 1 do
-    (* 48 *) f (Array.unsafe_get arr i)
+    (* 24 *) f (Array.unsafe_get arr i)
   done
 
 let iteri f d =
@@ -12067,14 +11888,14 @@ let iteri_range ~from ~to_ f d =
     done
 
 let map_into_array f src =
-  (* 4 *) let src_len = src.len in 
+  (* 2 *) let src_len = src.len in 
   let src_arr = src.arr in 
   if src_len = 0 then (* 0 *) [||]
   else 
-    (* 4 *) let first_one = f (Array.unsafe_get src_arr 0) in 
+    (* 2 *) let first_one = f (Array.unsafe_get src_arr 0) in 
     let arr = Array.make  src_len  first_one in
     for i = 1 to src_len - 1 do
-      (* 12 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
+      (* 6 *) Array.unsafe_set arr i (f (Array.unsafe_get src_arr i))
     done;
     arr 
 let map_into_list f src = 
@@ -12103,9 +11924,9 @@ let mapi f src =
     }
 
 let fold_left f x a =
-  (* 18 *) let rec loop a_len (a_arr : elt array) idx x =
-    (* 92 *) if idx >= a_len then (* 18 *) x else 
-      (* 74 *) loop a_len a_arr (idx + 1) (f x (Array.unsafe_get a_arr idx))
+  (* 9 *) let rec loop a_len (a_arr : elt array) idx x =
+    (* 46 *) if idx >= a_len then (* 9 *) x else 
+      (* 37 *) loop a_len a_arr (idx + 1) (f x (Array.unsafe_get a_arr idx))
   in
   loop a.len a.arr 0 x
 
@@ -12192,13 +12013,13 @@ let map f src =
     }
 
 let init len f =
-  (* 2 *) if len < 0 then (* 0 *) invalid_arg  "Resize_array.init"
-  else (* 2 *) if len = 0 then (* 0 *) { len = 0 ; arr = [||] }
+  (* 1 *) if len < 0 then (* 0 *) invalid_arg  "Resize_array.init"
+  else (* 1 *) if len = 0 then (* 0 *) { len = 0 ; arr = [||] }
   else 
-    (* 2 *) let first = f 0 in 
+    (* 1 *) let first = f 0 in 
     let arr = Array.make len first in
     for i = 1 to len - 1 do
-      (* 18 *) Array.unsafe_set arr i (f i)
+      (* 9 *) Array.unsafe_set arr i (f i)
     done;
     {
 
@@ -12209,7 +12030,7 @@ let init len f =
 
 
   let make initsize : t =
-    (* 6 *) if initsize < 0 then (* 0 *) invalid_arg  "Resize_array.make" ;
+    (* 3 *) if initsize < 0 then (* 0 *) invalid_arg  "Resize_array.make" ;
     {
 
       len = 0;
@@ -12229,18 +12050,18 @@ let init len f =
       d.arr <- new_d_arr 
 
   let push v (d : t) =
-    (* 130 *) let d_len = d.len in
+    (* 65 *) let d_len = d.len in
     let d_arr = d.arr in 
     let d_arr_len = Array.length d_arr in
     if d_arr_len = 0 then
-      (* 22 *) begin 
+      (* 11 *) begin 
         d.len <- 1 ;
         d.arr <- [| v |]
       end
     else  
-      (* 108 *) begin 
+      (* 54 *) begin 
         if d_len = d_arr_len then 
-          (* 48 *) begin
+          (* 24 *) begin
             if d_len >= Sys.max_array_length then 
               (* 0 *) failwith "exceeds max_array_length";
             let new_capacity = min Sys.max_array_length d_len * 2 
@@ -12296,7 +12117,7 @@ let init len f =
 
 (** delete elements start from [idx] with length [len] *)
   let delete_range (d : t) idx len =
-    (* 30 *) let d_len = d.len in 
+    (* 15 *) let d_len = d.len in 
     if len < 0 || idx < 0 || idx + len > d_len then (* 0 *) invalid_arg  "Resize_array.delete_range"  ;
     let arr = d.arr in 
      unsafe_blit arr (idx + len) arr idx (d_len  - idx - len);
@@ -12305,7 +12126,7 @@ let init len f =
 # 396
     ;
     for i = d_len - len to d_len - 1 do
-      (* 40 *) Array.unsafe_set arr i null
+      (* 20 *) Array.unsafe_set arr i null
     done
 
 # 402
@@ -12386,21 +12207,21 @@ let init len f =
 # 477
 (** inplace filter the elements and accumulate the non-filtered elements *)
   let inplace_filter_with  f ~cb_no acc (d : t)  = 
-    (* 30 *) let d_arr = d.arr in     
+    (* 15 *) let d_arr = d.arr in     
     let p = ref 0 in
     let d_len = d.len in
     let acc = ref acc in 
     for i = 0 to d_len - 1 do 
-      (* 88 *) let x = Array.unsafe_get d_arr i in 
+      (* 44 *) let x = Array.unsafe_get d_arr i in 
       if f x then 
-        (* 48 *) begin 
+        (* 24 *) begin 
           let curr_p = !p in 
           (if curr_p <> i then 
              (* 0 *) Array.unsafe_set d_arr curr_p x) ;
           incr p
         end
       else 
-        (* 40 *) acc := cb_no  x  !acc
+        (* 20 *) acc := cb_no  x  !acc
     done ;
     let last = !p  in 
     
@@ -12559,11 +12380,11 @@ type node = Int_vec.t
    Cons:
    1. post processing input data  
  *)
-let min_int (x : int) y = (* 328 *) if x < y then (* 90 *) x else (* 238 *) y  
+let min_int (x : int) y = (* 164 *) if x < y then (* 45 *) x else (* 119 *) y  
 
 
 let graph  e =
-  (* 22 *) let index = ref 0 in 
+  (* 11 *) let index = ref 0 in 
   let s = Int_vec.empty () in
 
   let output = Int_vec_vec.empty () in (* collect output *)
@@ -12574,7 +12395,7 @@ let graph  e =
   let lowlink_array = Array.make node_numes (-1) in
   
   let rec scc v_data  =
-    (* 212 *) let new_index = !index + 1 in 
+    (* 106 *) let new_index = !index + 1 in 
     index := new_index ;
     Int_vec.push  v_data s ; 
 
@@ -12585,15 +12406,15 @@ let graph  e =
     let v = e.(v_data) in 
     v
     |> Int_vec.iter (fun w_data  ->
-        (* 430 *) if Array.unsafe_get index_array w_data < 0 then (* not processed *)
-          (* 174 *) begin  
+        (* 215 *) if Array.unsafe_get index_array w_data < 0 then (* not processed *)
+          (* 87 *) begin  
             scc w_data;
             Array.unsafe_set lowlink_array v_data  
               (min_int (Array.unsafe_get lowlink_array v_data) (Array.unsafe_get lowlink_array w_data))
           end  
-        else (* 256 *) if Array.unsafe_get on_stack_array w_data then 
+        else (* 128 *) if Array.unsafe_get on_stack_array w_data then 
           (* successor is in stack and hence in current scc *)
-          (* 154 *) begin 
+          (* 77 *) begin 
             Array.unsafe_set lowlink_array v_data  
               (min_int (Array.unsafe_get lowlink_array v_data) (Array.unsafe_get lowlink_array w_data))
           end
@@ -12601,12 +12422,12 @@ let graph  e =
 
     if Array.unsafe_get lowlink_array v_data = Array.unsafe_get index_array v_data then
       (* start a new scc *)
-      (* 90 *) begin
+      (* 45 *) begin
         let s_len = Int_vec.length s in
         let last_index = ref (s_len - 1) in 
         let u = ref (Int_vec.unsafe_get s !last_index) in
         while  !u <> v_data do 
-          (* 122 *) Array.unsafe_set on_stack_array (!u)  false ; 
+          (* 61 *) Array.unsafe_set on_stack_array (!u)  false ; 
           last_index := !last_index - 1;
           u := Int_vec.unsafe_get s !last_index
         done ;
@@ -12615,14 +12436,14 @@ let graph  e =
       end   
   in
   for i = 0 to node_numes - 1 do 
-    (* 212 *) if Array.unsafe_get index_array i < 0 then (* 38 *) scc i
+    (* 106 *) if Array.unsafe_get index_array i < 0 then (* 19 *) scc i
   done ;
   output 
 
 let graph_check v = 
-  (* 18 *) let v = graph v in 
+  (* 9 *) let v = graph v in 
   Int_vec_vec.length v, 
-  Int_vec_vec.fold_left (fun acc x -> (* 74 *) Int_vec.length x :: acc ) [] v  
+  Int_vec_vec.fold_left (fun acc x -> (* 37 *) Int_vec.length x :: acc ) [] v  
 
 end
 module Ounit_scc_tests
@@ -12817,18 +12638,18 @@ http://algs4.cs.princeton.edu/42digraph/KosarajuSharirSCC.java.html
 *)
 
 let handle_lines tiny_test_cases = 
-  (* 4 *) match Ext_string.split  tiny_test_cases '\n' with 
+  (* 2 *) match Ext_string.split  tiny_test_cases '\n' with 
   | nodes :: edges :: rest -> 
-    (* 4 *) let nodes_num = int_of_string nodes in 
+    (* 2 *) let nodes_num = int_of_string nodes in 
     let node_array = 
       Array.init nodes_num
-        (fun i -> (* 126 *) Int_vec.empty () )
+        (fun i -> (* 63 *) Int_vec.empty () )
     in 
     begin 
       rest |> List.iter (fun x ->
-          (* 338 *) match Ext_string.split x ' ' with 
+          (* 169 *) match Ext_string.split x ' ' with 
           | [ a ; b] -> 
-            (* 338 *) let a , b = int_of_string a , int_of_string b in 
+            (* 169 *) let a , b = int_of_string a , int_of_string b in 
             Int_vec.push  b node_array.(a) 
           | _ -> (* 0 *) assert false 
         );
@@ -12859,69 +12680,69 @@ let read_file file =
 let test  (input : (string * string list) list) = 
   (* string -> int mapping 
   *)
-  (* 14 *) let tbl = String_hashtbl.create 32 in
+  (* 7 *) let tbl = String_hashtbl.create 32 in
   let idx = ref 0 in 
   let add x =
-    (* 142 *) if not (String_hashtbl.mem tbl x ) then 
-      (* 68 *) begin 
+    (* 71 *) if not (String_hashtbl.mem tbl x ) then 
+      (* 34 *) begin 
         String_hashtbl.add  tbl x !idx ;
         incr idx 
       end in
   input |> List.iter 
-    (fun (x,others) -> (* 68 *) List.iter add (x::others));
+    (fun (x,others) -> (* 34 *) List.iter add (x::others));
   let nodes_num = String_hashtbl.length tbl in
   let node_array = 
       Array.init nodes_num
-        (fun i -> (* 68 *) Int_vec.empty () ) in 
+        (fun i -> (* 34 *) Int_vec.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
-      (* 68 *) let idx = String_hashtbl.find_exn tbl  x  in 
+      (* 34 *) let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> (* 74 *) Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
+      List.iter (fun y -> (* 37 *) Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
     ) ; 
   Ext_scc.graph_check node_array 
 
 let test2  (input : (string * string list) list) = 
   (* string -> int mapping 
   *)
-  (* 4 *) let tbl = String_hashtbl.create 32 in
+  (* 2 *) let tbl = String_hashtbl.create 32 in
   let idx = ref 0 in 
   let add x =
-    (* 36 *) if not (String_hashtbl.mem tbl x ) then 
-      (* 18 *) begin 
+    (* 18 *) if not (String_hashtbl.mem tbl x ) then 
+      (* 9 *) begin 
         String_hashtbl.add  tbl x !idx ;
         incr idx 
       end in
   input |> List.iter 
-    (fun (x,others) -> (* 18 *) List.iter add (x::others));
+    (fun (x,others) -> (* 9 *) List.iter add (x::others));
   let nodes_num = String_hashtbl.length tbl in
   let other_mapping = Array.make nodes_num "" in 
-  String_hashtbl.iter (fun k v  -> (* 18 *) other_mapping.(v) <- k ) tbl ;
+  String_hashtbl.iter (fun k v  -> (* 9 *) other_mapping.(v) <- k ) tbl ;
   
   let node_array = 
       Array.init nodes_num
-        (fun i -> (* 18 *) Int_vec.empty () ) in 
+        (fun i -> (* 9 *) Int_vec.empty () ) in 
   input |> 
   List.iter (fun (x,others) -> 
-      (* 18 *) let idx = String_hashtbl.find_exn tbl  x  in 
+      (* 9 *) let idx = String_hashtbl.find_exn tbl  x  in 
       others |> 
-      List.iter (fun y -> (* 18 *) Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
+      List.iter (fun y -> (* 9 *) Int_vec.push (String_hashtbl.find_exn tbl y ) node_array.(idx) )
     )  ;
   let output = Ext_scc.graph node_array in 
-  output |> Int_vec_vec.map_into_array (fun int_vec -> (* 16 *) Int_vec.map_into_array (fun i -> (* 18 *) other_mapping.(i)) int_vec )
+  output |> Int_vec_vec.map_into_array (fun int_vec -> (* 8 *) Int_vec.map_into_array (fun i -> (* 9 *) other_mapping.(i)) int_vec )
 
 
 let suites = 
     __FILE__
     >::: [
       __LOC__ >:: begin fun _ -> 
-        (* 2 *) OUnit.assert_equal (fst @@ Ext_scc.graph_check (handle_lines tiny_test_cases))  5
+        (* 1 *) OUnit.assert_equal (fst @@ Ext_scc.graph_check (handle_lines tiny_test_cases))  5
       end       ;
       __LOC__ >:: begin fun _ -> 
-        (* 2 *) OUnit.assert_equal (fst @@ Ext_scc.graph_check (handle_lines medium_test_cases))  10
+        (* 1 *) OUnit.assert_equal (fst @@ Ext_scc.graph_check (handle_lines medium_test_cases))  10
       end       ;
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test [
+        (* 1 *) OUnit.assert_equal (test [
             "a", ["b" ; "c"];
             "b" , ["c" ; "d"];
             "c", [ "b"];
@@ -12929,7 +12750,7 @@ let suites =
           ]) (3 , [1;2;1])
       end ; 
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test [
+        (* 1 *) OUnit.assert_equal (test [
             "a", ["b" ; "c"];
             "b" , ["c" ; "d"];
             "c", [ "b"];
@@ -12951,7 +12772,7 @@ let suites =
           *)
       end ;
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test [
+        (* 1 *) OUnit.assert_equal (test [
             "a", ["b" ; "c"];
             "b" , ["c" ; "d"];
             "c", [ "b"];
@@ -12960,7 +12781,7 @@ let suites =
           ]) (4 , [1;2;1;1])
       end ; 
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test [
+        (* 1 *) OUnit.assert_equal (test [
             "a", ["b" ; "c"];
             "b" , ["c" ; "d"];
             "c", [ "b"];
@@ -12969,7 +12790,7 @@ let suites =
           ]) (2, [1;4])
       end ;
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test [
+        (* 1 *) OUnit.assert_equal (test [
             "a", ["b" ; "c"];
             "b" , ["c" ; "d"];
             "c", [ "b"];
@@ -12978,7 +12799,7 @@ let suites =
           ]) (1, [5])
       end ; 
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test [
+        (* 1 *) OUnit.assert_equal (test [
             "a", ["b"];
             "b" , ["c" ];
             "c", [ ];
@@ -12987,7 +12808,7 @@ let suites =
           ]) (5, [1;1;1;1;1])
       end ; 
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test [
+        (* 1 *) OUnit.assert_equal (test [
             "1", ["0"];
             "0" , ["2" ];
             "2", ["1" ];
@@ -13001,7 +12822,7 @@ let suites =
       (* end *)
       (* ; *)
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test2 [
+        (* 1 *) OUnit.assert_equal (test2 [
             "a", ["b" ; "c"];
             "b" , ["c" ; "d"];
             "c", [ "b"];
@@ -13010,7 +12831,7 @@ let suites =
       end ;
 
       __LOC__ >:: begin fun _ ->
-        (* 2 *) OUnit.assert_equal (test2 [
+        (* 1 *) OUnit.assert_equal (test2 [
             "a", ["b"];
             "b" , ["c" ];
             "c", ["d" ];
@@ -13051,7 +12872,7 @@ type error =
 exception Error of error * Lexing.position * Lexing.position;;
 
 let error  (lexbuf : Lexing.lexbuf) e = 
-  (* 2 *) raise (Error (e, lexbuf.lex_start_p, lexbuf.lex_curr_p))
+  (* 1 *) raise (Error (e, lexbuf.lex_start_p, lexbuf.lex_curr_p))
 
 
 let char_for_backslash = function
@@ -13080,7 +12901,7 @@ let hex_code c1 c2 =
   val1 * 16 + val2
 
 let update_loc ({ lex_curr_p; _ } as lexbuf : Lexing.lexbuf) diff =
-  (* 24 *) lexbuf.lex_curr_p <-
+  (* 12 *) lexbuf.lex_curr_p <-
     {
       lex_curr_p with
       pos_lnum = lex_curr_p.pos_lnum + 1;
@@ -13109,32 +12930,32 @@ type st =
   }
 
 let push_atom lexbuf atom (buf : st ) = 
-  (* 110 *) buf.top <- atom:: buf.top
+  (* 55 *) buf.top <- atom:: buf.top
 
 (** entering the new stack *)
 let new_lparen has_prime buf = 
-  (* 36 *) buf.paren_depth <- buf.paren_depth + 1 ;
+  (* 18 *) buf.paren_depth <- buf.paren_depth + 1 ;
   Stack.push (buf.top, buf.has_prime) buf.sexps ;
   buf.top <- [];
   buf.has_prime <- has_prime
 
 (** exit the stack *)
 let new_rparen  buf lexbuf = 
-  (* 34 *) buf.paren_depth <- buf.paren_depth - 1 ; 
+  (* 17 *) buf.paren_depth <- buf.paren_depth - 1 ; 
   if buf.paren_depth < 0  then
     (* 0 *) error lexbuf Unbalanced_paren
   else 
-    (* 34 *) let new_sexp =
+    (* 17 *) let new_sexp =
       if buf.has_prime then 
-        (* 4 *) Data (List.rev   buf.top)
-      else (* 30 *) List (List.rev   buf.top) 
+        (* 2 *) Data (List.rev   buf.top)
+      else (* 15 *) List (List.rev   buf.top) 
     in 
     let top, has_prime =  Stack.pop buf.sexps in
     buf.top<- top;
     buf.has_prime<-has_prime;
     push_atom lexbuf new_sexp buf 
 
-let get_data buf = (* 12 *) buf.top
+let get_data buf = (* 6 *) buf.top
 
 
 # 101 "ext/ext_sexp.ml"
@@ -13309,19 +13130,19 @@ let __ocaml_lex_tables = {
 }
 
 let rec main buf lexbuf =
-    (* 272 *) __ocaml_lex_main_rec buf lexbuf 0
+    (* 136 *) __ocaml_lex_main_rec buf lexbuf 0
 and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
-  (* 272 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+  (* 136 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
 # 111 "ext/ext_sexp.mll"
-                     (* 24 *) ( 
+                     (* 12 *) ( 
     update_loc lexbuf 0;
     main (buf : st ) lexbuf  )
 # 281 "ext/ext_sexp.ml"
 
   | 1 ->
 # 114 "ext/ext_sexp.mll"
-           (* 88 *) ( main buf lexbuf  )
+           (* 44 *) ( main buf lexbuf  )
 # 286 "ext/ext_sexp.ml"
 
   | 2 ->
@@ -13331,7 +13152,7 @@ and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
 
   | 3 ->
 # 116 "ext/ext_sexp.mll"
-         (* 4 *) (
+         (* 2 *) (
     new_lparen true buf; 
     main buf lexbuf
   )
@@ -13339,7 +13160,7 @@ and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
 
   | 4 ->
 # 120 "ext/ext_sexp.mll"
-        (* 32 *) ( 
+        (* 16 *) ( 
     new_lparen false buf ; 
     main buf lexbuf 
   )
@@ -13347,7 +13168,7 @@ and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
 
   | 5 ->
 # 124 "ext/ext_sexp.mll"
-        (* 34 *) ( 
+        (* 17 *) ( 
       new_rparen  buf lexbuf; 
       main buf lexbuf 
   )
@@ -13355,7 +13176,7 @@ and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
 
   | 6 ->
 # 129 "ext/ext_sexp.mll"
-      (* 20 *) (
+      (* 10 *) (
         let pos = Lexing.lexeme_start_p lexbuf in
         scan_string buf.buf pos lexbuf;
         push_atom lexbuf  ( Lit (Buffer.contents  buf.buf)) buf;
@@ -13365,7 +13186,7 @@ and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
 # 326 "ext/ext_sexp.ml"
 
   | 7 ->
-(* 56 *) let
+(* 28 *) let
 # 136 "ext/ext_sexp.mll"
                     s
 # 332 "ext/ext_sexp.ml"
@@ -13388,23 +13209,23 @@ and __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state =
 
   | 9 ->
 # 143 "ext/ext_sexp.mll"
-        (* 14 *) (
+        (* 7 *) (
     if buf.paren_depth > 0 then 
-      (* 2 *) error lexbuf Unterminated_paren
+      (* 1 *) error lexbuf Unterminated_paren
     else 
-      (* 12 *) get_data buf )
+      (* 6 *) get_data buf )
 # 357 "ext/ext_sexp.ml"
 
   | __ocaml_lex_state -> (* 0 *) lexbuf.Lexing.refill_buff lexbuf; 
       __ocaml_lex_main_rec buf lexbuf __ocaml_lex_state
 
 and scan_string buf start lexbuf =
-    (* 40 *) __ocaml_lex_scan_string_rec buf start lexbuf 13
+    (* 20 *) __ocaml_lex_scan_string_rec buf start lexbuf 13
 and __ocaml_lex_scan_string_rec buf start lexbuf __ocaml_lex_state =
-  (* 40 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
+  (* 20 *) match Lexing.engine __ocaml_lex_tables __ocaml_lex_state lexbuf with
       | 0 ->
 # 150 "ext/ext_sexp.mll"
-        (* 20 *) ( () )
+        (* 10 *) ( () )
 # 369 "ext/ext_sexp.ml"
 
   | 1 ->
@@ -13518,7 +13339,7 @@ and
 
   | 8 ->
 # 200 "ext/ext_sexp.mll"
-      (* 20 *) (
+      (* 10 *) (
         let ofs = lexbuf.lex_start_pos in
         let len = lexbuf.lex_curr_pos - ofs in
         Buffer.add_substring buf lexbuf.lex_buffer ofs len;
@@ -13543,14 +13364,14 @@ and
   
 
     let token  lexbuf  =
-      (* 14 *) List.rev @@ main { 
+      (* 7 *) List.rev @@ main { 
         buf = Buffer.create 256 ;
         sexps = Stack.create () ; 
         paren_depth = 0; 
         top = [];
         has_prime = false } lexbuf
     let from_string str = 
-      (* 14 *) token (Lexing.from_string str)    
+      (* 7 *) token (Lexing.from_string str)    
     let from_file file = 
       (* 0 *) let in_channel =  open_in file in 
       match  token (Lexing.from_channel in_channel) with 
@@ -13572,32 +13393,32 @@ let suites =
     __FILE__
     >::: [
         __LOC__ >:: begin fun _ -> 
-             (* 2 *) Ext_sexp.from_string "( a)" =~ 
+             (* 1 *) Ext_sexp.from_string "( a)" =~ 
              [ List [ Atom "a"]]
         end;
         __LOC__ >:: begin fun _ -> 
-             (* 2 *) Ext_sexp.from_string "( a ())" =~ 
+             (* 1 *) Ext_sexp.from_string "( a ())" =~ 
              [ List [ Atom "a"; List []]]
         end;
         __LOC__ >:: begin fun _ -> 
-             (* 2 *) Ext_sexp.from_string "( a (b))" =~ 
+             (* 1 *) Ext_sexp.from_string "( a (b))" =~ 
              [ List [ Atom "a"; List [Atom "b"]]]
         end;
         __LOC__ >:: begin fun _ -> 
-             (* 2 *) Ext_sexp.from_string "( a (b)) (c d)" =~ 
+             (* 1 *) Ext_sexp.from_string "( a (b)) (c d)" =~ 
              [ List [ Atom "a"; List [Atom "b"]];
                 List [ Atom "c"; Atom "d"]
              ]
         end;
         __LOC__ >:: begin fun _ -> 
-             (* 2 *) Ext_sexp.from_string "( a (b 1 2 3)  c  d) (c d)" =~ 
+             (* 1 *) Ext_sexp.from_string "( a (b 1 2 3)  c  d) (c d)" =~ 
              [ List [ Atom "a"; List [Atom "b"; Atom "1"; Atom "2"; Atom "3"] ; Atom "c"; Atom "d"];
                 List [ Atom "c"; Atom "d"]
              ];
         end;
         __LOC__ ^ "raise" >:: begin fun _ -> 
-            (* 2 *) (try ignore @@ Ext_sexp.from_string  {|  (1 2 3  ( a (b) ) |}; false
-            with e -> (* 2 *) true) =~ true ;
+            (* 1 *) (try ignore @@ Ext_sexp.from_string  {|  (1 2 3  ( a (b) ) |}; false
+            with e -> (* 1 *) true) =~ true ;
 
             match Ext_sexp.from_string {|
 (setq 
@@ -13612,13 +13433,13 @@ let suites =
  bsc-flags '("-w" "-40" "-bs-no-version-header " "-bs-diagnose" "-bs-cross-module-opt"))
 
 |}       with 
-        | _ -> (* 2 *) ()
+        | _ -> (* 1 *) ()
         | exception _ -> (* 0 *) OUnit.assert_failure __LOC__
         end;
     ]
 end
-module Ext_package_name : sig 
-#1 "ext_package_name.mli"
+module Ext_namespace : sig 
+#1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -13644,17 +13465,23 @@ module Ext_package_name : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-val make : pkg:string -> string -> string 
+val make : ns:string -> string -> string 
 
-val remove_package_suffix: string -> string 
+
 
 (* Note  we have to output uncapitalized file Name, 
   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-  relevant issues: #1609, #913 
+  relevant issues: #1609, #913  
+  
+  #1933 when removing ns suffix, don't pass the bound
+  of basename
 *)
 val js_name_of_basename :  string -> string 
+
+val namespace_of_package_name : string -> string
+
 end = struct
-#1 "ext_package_name.ml"
+#1 "ext_namespace.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -13681,30 +13508,60 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- (* Note the build system should check the validity of filenames
-    espeically, it should not contain '-'
- *)
- let package_sep_char = '-'
- let package_sep = "-"
+(* Note the build system should check the validity of filenames
+   espeically, it should not contain '-'
+*)
+let ns_sep_char = '-'
+let ns_sep = "-"
 
- let make ~pkg cunit  = 
-    (* 0 *) cunit ^ package_sep ^ pkg 
-    
+let make ~ns cunit  = 
+  (* 0 *) cunit ^ ns_sep ^ ns
 
-let rec rindex_rec s i c =
-  (* 12 *) if i < 0 then (* 0 *) i else
-  (* 12 *) if String.unsafe_get s i = c then (* 8 *) i else (* 4 *) rindex_rec s (i - 1) c;;
-    
-let remove_package_suffix name =
-    (* 8 *) let i = rindex_rec name (String.length name - 1) package_sep_char in 
-    if i < 0 then (* 0 *) name 
-    else (* 8 *) String.sub name 0 i 
+let path_char = Filename.dir_sep.[0]
+
+let rec rindex_rec s i  =
+  (* 6 *) if i < 0 then (* 0 *) i else
+    (* 6 *) let char = String.unsafe_get s i in
+    if char = path_char then (* 0 *) -1 
+    else (* 6 *) if char = ns_sep_char then (* 4 *) i 
+    else
+      (* 2 *) rindex_rec s (i - 1) 
+
+let remove_ns_suffix name =
+  (* 4 *) let i = rindex_rec name (String.length name - 1)  in 
+  if i < 0 then (* 0 *) name 
+  else (* 4 *) String.sub name 0 i 
 
 
 let js_name_of_basename s = 
-  (* 8 *) remove_package_suffix (String.uncapitalize s) ^ Literals.suffix_js
-  
-  
+  (* 4 *) remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
+
+
+let namespace_of_package_name (s : string) : string = 
+  (* 3 *) let len = String.length s in 
+  let buf = Buffer.create len in 
+  let add capital ch = 
+    (* 23 *) Buffer.add_char buf 
+      (if capital then 
+         (* 5 *) (Char.uppercase ch)
+       else (* 18 *) ch) in    
+  let rec aux capital off len =     
+    (* 28 *) if off >= len then (* 3 *) ()
+    else 
+      (* 25 *) let ch = String.unsafe_get s off in
+      match ch with 
+      | 'a' .. 'z' 
+      | 'A' .. 'Z' 
+      | '0' .. '9'
+        ->
+        (* 23 *) add capital ch ; 
+        aux false (off + 1) len 
+      | '-' -> 
+        (* 2 *) aux true (off + 1) len 
+      | _ -> (* 0 *) aux capital (off+1) len
+  in 
+  aux true 0 len ;
+  Buffer.contents buf 
 
 end
 module Ounit_data_random
@@ -13713,12 +13570,12 @@ module Ounit_data_random
 
 
 let min_int x y = 
-    (* 12004 *) if x < y then (* 0 *) x else (* 12004 *) y
+    (* 6002 *) if x < y then (* 0 *) x else (* 6002 *) y
 
 let random_string chars upper = 
-    (* 12004 *) let len = Array.length chars in 
+    (* 6002 *) let len = Array.length chars in 
     let string_len = (Random.int (min_int upper len)) in
-    String.init string_len (fun i -> (* 17764 *) chars.(Random.int len ))
+    String.init string_len (fun i -> (* 8882 *) chars.(Random.int len ))
 end
 module Ounit_string_tests
 = struct
@@ -13735,11 +13592,11 @@ let suites =
   __FILE__ >::: 
   [
     __LOC__ >:: begin fun _ ->
-      (* 2 *) OUnit.assert_bool "not found " (Ext_string.rindex_neg "hello" 'x' < 0 )
+      (* 1 *) OUnit.assert_bool "not found " (Ext_string.rindex_neg "hello" 'x' < 0 )
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.rindex_neg "hello" 'h' =~ 0 ;
+      (* 1 *) Ext_string.rindex_neg "hello" 'h' =~ 0 ;
       Ext_string.rindex_neg "hello" 'e' =~ 1 ;
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
       Ext_string.rindex_neg "hello" 'l' =~ 3 ;
@@ -13747,39 +13604,39 @@ let suites =
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
+      (* 1 *) OUnit.assert_bool "empty string" (Ext_string.rindex_neg "" 'x' < 0 )
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__
+      (* 1 *) OUnit.assert_bool __LOC__
         (Ext_string.for_all_range "xABc"~start:1
-           ~finish:2 (function 'A' .. 'Z' -> (* 4 *) true | _ -> (* 0 *) false));
+           ~finish:2 (function 'A' .. 'Z' -> (* 2 *) true | _ -> (* 0 *) false));
       OUnit.assert_bool __LOC__
         (not (Ext_string.for_all_range "xABc"~start:1
-                ~finish:3(function 'A' .. 'Z' -> (* 4 *) true | _ -> (* 2 *) false)));
+                ~finish:3(function 'A' .. 'Z' -> (* 2 *) true | _ -> (* 1 *) false)));
       OUnit.assert_bool __LOC__
         ( (Ext_string.for_all_range "xABc"~start:1
-             ~finish:2 (function 'A' .. 'Z' -> (* 4 *) true | _ -> (* 0 *) false)));
+             ~finish:2 (function 'A' .. 'Z' -> (* 2 *) true | _ -> (* 0 *) false)));
       OUnit.assert_bool __LOC__
         ( (Ext_string.for_all_range "xABc"~start:1
-             ~finish:1 (function 'A' .. 'Z' -> (* 2 *) true | _ -> (* 0 *) false)));
+             ~finish:1 (function 'A' .. 'Z' -> (* 1 *) true | _ -> (* 0 *) false)));
       OUnit.assert_bool __LOC__
         ( (Ext_string.for_all_range "xABc"~start:1
              ~finish:0 (function 'A' .. 'Z' -> (* 0 *) true | _ -> (* 0 *) false)));    
       OUnit.assert_raise_any       
-        (fun _ ->  (* 2 *) (Ext_string.for_all_range "xABc"~start:1
+        (fun _ ->  (* 1 *) (Ext_string.for_all_range "xABc"~start:1
                       ~finish:4 (function 'A' .. 'Z' -> (* 0 *) true | _ -> (* 0 *) false)));    
 
     end;
 
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ @@
-      List.for_all (fun x -> (* 18 *) Ext_string.is_valid_source_name x = Good)
+      (* 1 *) OUnit.assert_bool __LOC__ @@
+      List.for_all (fun x -> (* 9 *) Ext_string.is_valid_source_name x = Good)
         ["x.ml"; "x.mli"; "x.re"; "x.rei"; 
          "A_x.ml"; "ab.ml"; "a_.ml"; "a__.ml";
          "ax.ml"];
       OUnit.assert_bool __LOC__ @@ not @@
-      List.exists (fun x -> (* 34 *) Ext_string.is_valid_source_name x = Good)
+      List.exists (fun x -> (* 17 *) Ext_string.is_valid_source_name x = Good)
         [".re"; ".rei";"..re"; "..rei"; "..ml"; ".mll~"; 
          "...ml"; "_.mli"; "_x.ml"; "__.ml"; "__.rei"; 
          ".#hello.ml"; ".#hello.rei"; "a-.ml"; "a-b.ml"; "-a-.ml"
@@ -13787,30 +13644,30 @@ let suites =
         ]
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ @@
+      (* 1 *) OUnit.assert_bool __LOC__ @@
       List.for_all Ext_string.is_valid_npm_package_name
         ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
       ;
       OUnit.assert_bool __LOC__ @@
       List.for_all 
-        (fun x -> (* 8 *) not (Ext_string.is_valid_npm_package_name x))
+        (fun x -> (* 4 *) not (Ext_string.is_valid_npm_package_name x))
         ["x "; "x'"; "Test"; "hI"]
       ;
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
+      (* 1 *) Ext_string.find ~sub:"hello" "xx hello xx" =~ 3 ;
       Ext_string.rfind ~sub:"hello" "xx hello xx" =~ 3 ;
       Ext_string.find ~sub:"hello" "xx hello hello xx" =~ 3 ;
       Ext_string.rfind ~sub:"hello" "xx hello hello xx" =~ 9 ;
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.non_overlap_count ~sub:"0" "1000,000" =~ 6;
+      (* 1 *) Ext_string.non_overlap_count ~sub:"0" "1000,000" =~ 6;
       Ext_string.non_overlap_count ~sub:"0" "000000" =~ 6;
       Ext_string.non_overlap_count ~sub:"00" "000000" =~ 3;
       Ext_string.non_overlap_count ~sub:"00" "00000" =~ 2
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");
+      (* 1 *) OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "abc");
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "a");
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "b");
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring "abc" "c");
@@ -13818,23 +13675,23 @@ let suites =
       OUnit.assert_bool __LOC__ (not @@ Ext_string.contain_substring "abc" "abcc");
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.trim " \t\n" =~ "";
+      (* 1 *) Ext_string.trim " \t\n" =~ "";
       Ext_string.trim " \t\nb" =~ "b";
       Ext_string.trim "b \t\n" =~ "b";
       Ext_string.trim "\t\n b \t\n" =~ "b";            
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.starts_with "ab" "a" =~ true;
+      (* 1 *) Ext_string.starts_with "ab" "a" =~ true;
       Ext_string.starts_with "ab" "" =~ true;
       Ext_string.starts_with "abb" "abb" =~ true;
       Ext_string.starts_with "abb" "abbc" =~ false;
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.ends_with_then_chop "xx.ml"  ".ml" =~ Some "xx";
+      (* 1 *) Ext_string.ends_with_then_chop "xx.ml"  ".ml" =~ Some "xx";
       Ext_string.ends_with_then_chop "xx.ml" ".mll" =~ None
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.starts_with_and_number "js_fn_mk_01" ~offset:0 "js_fn_mk_" =~ 1 ;
+      (* 1 *) Ext_string.starts_with_and_number "js_fn_mk_01" ~offset:0 "js_fn_mk_" =~ 1 ;
       Ext_string.starts_with_and_number "js_fn_run_02" ~offset:0 "js_fn_mk_" =~ -1 ;
       Ext_string.starts_with_and_number "js_fn_mk_03" ~offset:6 "mk_" =~ 3 ;
       Ext_string.starts_with_and_number "js_fn_mk_04" ~offset:6 "run_" =~ -1;
@@ -13842,22 +13699,22 @@ let suites =
       Ext_string.(starts_with_and_number "js_fn_run_04" ~offset:6 "run_" = 3) =~ false 
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.for_all (function '_' -> (* 8 *) true | _ -> (* 0 *) false)
+      (* 1 *) Ext_string.for_all (function '_' -> (* 4 *) true | _ -> (* 0 *) false)
         "____" =~ true;
-      Ext_string.for_all (function '_' -> (* 6 *) true | _ -> (* 2 *) false)
+      Ext_string.for_all (function '_' -> (* 3 *) true | _ -> (* 1 *) false)
         "___-" =~ false;
       Ext_string.for_all (function '_' -> (* 0 *) true | _ -> (* 0 *) false)        
         "" =~ true
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
+      (* 1 *) Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
       Ext_string.tail_from "ghsogh" 0 =~ "ghsogh"
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
+      (* 1 *) Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ 
+      (* 1 *) OUnit.assert_bool __LOC__ 
         (Ext_string.replace_backward_slash "a:\\b\\d" = 
          "a:/b/d"
         ) ;
@@ -13882,7 +13739,7 @@ let suites =
 
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ 
+      (* 1 *) OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash "ahgoh" );
       OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash "" );            
@@ -13894,48 +13751,48 @@ let suites =
         (not (Ext_string.no_slash "/ahgoh/" ));            
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ (Ext_string.compare "" ""  = 0);
+      (* 1 *) OUnit.assert_bool __LOC__ (Ext_string.compare "" ""  = 0);
       OUnit.assert_bool __LOC__ (Ext_string.compare "0" "0"  = 0);
       OUnit.assert_bool __LOC__ (Ext_string.compare "" "acd" < 0);
       OUnit.assert_bool __LOC__ (Ext_string.compare  "acd" "" > 0);
       for i = 0 to 256 do 
-        (* 514 *) let a = String.init i (fun _ -> (* 65792 *) '0') in 
-        let b = String.init i (fun _ -> (* 65792 *) '0') in 
+        (* 257 *) let a = String.init i (fun _ -> (* 32896 *) '0') in 
+        let b = String.init i (fun _ -> (* 32896 *) '0') in 
         OUnit.assert_bool __LOC__ (Ext_string.compare  b a = 0);
         OUnit.assert_bool __LOC__ (Ext_string.compare a b = 0)
       done ;
       for i = 0 to 256 do 
-        (* 514 *) let a = String.init i (fun _ -> (* 65792 *) '0') in 
-        let b = String.init i (fun _ -> (* 65792 *) '0') ^ "\000"in 
+        (* 257 *) let a = String.init i (fun _ -> (* 32896 *) '0') in 
+        let b = String.init i (fun _ -> (* 32896 *) '0') ^ "\000"in 
         OUnit.assert_bool __LOC__ (Ext_string.compare a b < 0);
         OUnit.assert_bool __LOC__ (Ext_string.compare  b a  > 0)
       done ;
 
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let slow_compare x y  = 
-        (* 6002 *) let x_len = String.length x  in 
+      (* 1 *) let slow_compare x y  = 
+        (* 3001 *) let x_len = String.length x  in 
         let y_len = String.length y in 
         if x_len = y_len then 
-          (* 1546 *) String.compare x y 
+          (* 773 *) String.compare x y 
         else 
-          (* 4456 *) Pervasives.compare x_len y_len  in 
+          (* 2228 *) Pervasives.compare x_len y_len  in 
       let same_sign x y =
-        (* 6002 *) if x = 0 then (* 520 *) y = 0 
-        else (* 5482 *) if x < 0 then (* 2828 *) y < 0 
-        else (* 2654 *) y > 0 in 
+        (* 3001 *) if x = 0 then (* 260 *) y = 0 
+        else (* 2741 *) if x < 0 then (* 1414 *) y < 0 
+        else (* 1327 *) y > 0 in 
       for i = 0 to 3000 do
-        (* 6002 *) let chars = [|'a';'b';'c';'d'|] in 
+        (* 3001 *) let chars = [|'a';'b';'c';'d'|] in 
         let x = Ounit_data_random.random_string chars 129 in 
         let y = Ounit_data_random.random_string chars 129 in 
         let a = Ext_string.compare  x y  in 
         let b = slow_compare x y in 
-        if same_sign a b then (* 6002 *) OUnit.assert_bool __LOC__ true 
+        if same_sign a b then (* 3001 *) OUnit.assert_bool __LOC__ true 
         else (* 0 *) failwith ("incosistent " ^ x ^ " " ^ y ^ " " ^ string_of_int a ^ " " ^ string_of_int b)
       done 
     end ;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ 
+      (* 1 *) OUnit.assert_bool __LOC__ 
         (Ext_string.equal
            (Ext_string.concat3 "a0" "a1" "a2") "a0a1a2"
         );
@@ -13954,7 +13811,7 @@ let suites =
         );   
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ 
+      (* 1 *) OUnit.assert_bool __LOC__ 
         (Ext_string.equal
            (Ext_string.inter2 "a0" "a1") "a0 a1"
         );
@@ -13968,7 +13825,7 @@ let suites =
         );
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__ 
+      (* 1 *) OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash_idx "xxx" < 0);
       OUnit.assert_bool __LOC__ 
         (Ext_string.no_slash_idx "xxx/" = 3);
@@ -13978,7 +13835,7 @@ let suites =
         (Ext_string.no_slash_idx "/xxx/g/" = 0)
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) OUnit.assert_bool __LOC__
+      (* 1 *) OUnit.assert_bool __LOC__
         (Ext_string.equal 
            (Ext_string.concat_array Ext_string.single_space [||])
            Ext_string.empty
@@ -14022,25 +13879,25 @@ let suites =
     end;
 
     __LOC__ >:: begin fun _ ->
-      (* 2 *) Ext_string.module_name_of_package_name "bs-json"
+      (* 1 *) Ext_namespace.namespace_of_package_name "bs-json"
       =~ "BsJson"
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) Ext_string.module_name_of_package_name
+      (* 1 *) Ext_namespace.namespace_of_package_name
         "reason-react"
       =~ "ReasonReact";
-      Ext_string.module_name_of_package_name
+      Ext_namespace.namespace_of_package_name
         "reason"
       =~ "Reason"
     end;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) Ext_package_name.js_name_of_basename "a-b"
+      (* 1 *) Ext_namespace.js_name_of_basename "a-b"
       =~ "a.js";
-      Ext_package_name.js_name_of_basename "a-"
+      Ext_namespace.js_name_of_basename "a-"
       =~ "a.js";
-      Ext_package_name.js_name_of_basename "a--"
+      Ext_namespace.js_name_of_basename "a--"
       =~ "a-.js";
-      Ext_package_name.js_name_of_basename "AA-b"
+      Ext_namespace.js_name_of_basename "AA-b"
       =~ "aA.js";
     end
   ]
@@ -14128,19 +13985,19 @@ type t = Edge_vec.t
 *)
 
 let layered_dfs (g : t) =
-   (* 6 *) let queue = Queue.create () in 
+   (* 3 *) let queue = Queue.create () in 
    let rec aux g = 
-        (* 30 *) let new_entries = 
+        (* 15 *) let new_entries = 
         Edge_vec.inplace_filter_with 
-        (fun (x : edges) -> (* 88 *) not (Int_vec.is_empty x.deps) ) 
-        ~cb_no:(fun x acc -> (* 40 *) Set_int.add x.id acc) Set_int.empty  g in 
+        (fun (x : edges) -> (* 44 *) not (Int_vec.is_empty x.deps) ) 
+        ~cb_no:(fun x acc -> (* 20 *) Set_int.add x.id acc) Set_int.empty  g in 
         if not (Set_int.is_empty new_entries) 
         then 
-        (* 24 *) begin 
+        (* 12 *) begin 
             Queue.push new_entries queue ; 
             Edge_vec.iter 
-            (fun edges -> (* 48 *) Int_vec.inplace_filter  
-                (fun x -> (* 100 *) not (Set_int.mem x new_entries)) edges.deps ) g ;
+            (fun edges -> (* 24 *) Int_vec.inplace_filter  
+                (fun x -> (* 50 *) not (Set_int.mem x new_entries)) edges.deps ) g ;
             aux g 
         end
   in aux  g ; queue      
@@ -14154,10 +14011,10 @@ let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
 let handle graph = 
-  (* 6 *) let len = List.length graph in 
+  (* 3 *) let len = List.length graph in 
   let result = Ext_topsort.Edge_vec.make len in 
   List.iter (fun (id,deps) -> 
-      (* 40 *) Ext_topsort.Edge_vec.push {id ; deps = Int_vec.of_list deps } result 
+      (* 20 *) Ext_topsort.Edge_vec.push {id ; deps = Int_vec.of_list deps } result 
     ) graph; 
   result 
 
@@ -14198,10 +14055,10 @@ let graph3 =
 
 
 let expect loc (graph1, v) = 
-  (* 6 *) let graph = handle graph1  in 
+  (* 3 *) let graph = handle graph1  in 
   let queue = Ext_topsort.layered_dfs graph  in 
   OUnit.assert_bool loc
-    (Queue.fold (fun acc x -> (* 24 *) Set_int.elements x::acc) [] queue =
+    (Queue.fold (fun acc x -> (* 12 *) Set_int.elements x::acc) [] queue =
      v)
 
 
@@ -14214,7 +14071,7 @@ let suites =
   >:::
   [
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) expect __LOC__ graph1;
+      (* 1 *) expect __LOC__ graph1;
       expect __LOC__ graph2 ;
       expect __LOC__ graph3
     end
@@ -14322,10 +14179,10 @@ let escaped = function
 
 
 let valid_hex x = 
-    (* 24 *) match x with 
+    (* 12 *) match x with 
     | '0' .. '9'
     | 'a' .. 'f'
-    | 'A' .. 'F' -> (* 24 *) true
+    | 'A' .. 'F' -> (* 12 *) true
     | _ -> (* 0 *) false 
 end
 module Ast_utf8_string : sig 
@@ -14425,7 +14282,7 @@ type exn += Error of int  (* offset *) * error
 
 
 let error ~loc error = 
-  (* 6 *) raise (Error (loc, error))
+  (* 3 *) raise (Error (loc, error))
 
 (** Note the [loc] really should be the utf8-offset, it has nothing to do with our 
     escaping mechanism
@@ -14439,12 +14296,12 @@ let error ~loc error =
    does not*)
 
 let rec check_and_transform (loc : int ) buf s byte_offset s_len =
-  (* 78 *) if byte_offset = s_len then (* 8 *) ()
+  (* 39 *) if byte_offset = s_len then (* 4 *) ()
   else 
-    (* 70 *) let current_char = s.[byte_offset] in 
+    (* 35 *) let current_char = s.[byte_offset] in 
     match Ext_utf8.classify current_char with 
     | Single 92 (* '\\' *) -> 
-      (* 28 *) escape_code (loc + 1) buf s (byte_offset+1) s_len
+      (* 14 *) escape_code (loc + 1) buf s (byte_offset+1) s_len
     | Single 34 ->
       (* 0 *) Buffer.add_string buf "\\\"";
       check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
@@ -14452,34 +14309,34 @@ let rec check_and_transform (loc : int ) buf s byte_offset s_len =
       (* 0 *) Buffer.add_string buf "\\'";
       check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
     | Single 10 ->          
-      (* 2 *) Buffer.add_string buf "\\n";
+      (* 1 *) Buffer.add_string buf "\\n";
       check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
     | Single 13 -> 
       (* 0 *) Buffer.add_string buf "\\r";
       check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
     | Single _ -> 
-      (* 32 *) Buffer.add_char buf current_char;
+      (* 16 *) Buffer.add_char buf current_char;
       check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
 
     | Invalid 
     | Cont _ -> (* 0 *) error ~loc Invalid_code_point
     | Leading (n,_) -> 
-      (* 8 *) let i' = Ext_utf8.next s ~remaining:n  byte_offset in
+      (* 4 *) let i' = Ext_utf8.next s ~remaining:n  byte_offset in
       if i' < 0 then 
         (* 0 *) error ~loc Invalid_code_point
       else 
-        (* 8 *) begin 
+        (* 4 *) begin 
           for k = byte_offset to i' do 
-            (* 24 *) Buffer.add_char buf s.[k]; 
+            (* 12 *) Buffer.add_char buf s.[k]; 
           done;   
           check_and_transform (loc + 1 ) buf s (i' + 1) s_len 
         end
 (* we share the same escape sequence with js *)        
 and escape_code loc buf s offset s_len = 
-  (* 28 *) if offset >= s_len then 
-    (* 6 *) error ~loc Unterminated_backslash
+  (* 14 *) if offset >= s_len then 
+    (* 3 *) error ~loc Unterminated_backslash
   else
-    (* 22 *) Buffer.add_char buf '\\'; 
+    (* 11 *) Buffer.add_char buf '\\'; 
   let cur_char = s.[offset] in
   match cur_char with 
   | '\\'
@@ -14492,12 +14349,12 @@ and escape_code loc buf s offset s_len =
   | '0' 
   | '$'
     -> 
-    (* 20 *) begin 
+    (* 10 *) begin 
       Buffer.add_char buf cur_char ;
       check_and_transform (loc + 1) buf s (offset + 1) s_len 
     end 
   | 'u' -> 
-    (* 2 *) begin 
+    (* 1 *) begin 
       Buffer.add_char buf cur_char;
       unicode (loc + 1) buf s (offset + 1) s_len 
     end 
@@ -14522,7 +14379,7 @@ and two_hex loc buf s offset s_len =
 (*Location.raise_errorf ~loc "%c%c is not a valid hex code" a b*)
 
 and unicode loc buf s offset s_len = 
-  (* 2 *) if offset + 3 >= s_len then 
+  (* 1 *) if offset + 3 >= s_len then 
     (* 0 *) error ~loc Invalid_unicode_escape
   (*Location.raise_errorf ~loc "\\u need at least four chars"*)
   ;
@@ -14532,7 +14389,7 @@ and unicode loc buf s offset s_len =
     Ext_char.valid_hex a1 &&
     Ext_char.valid_hex a2 &&
     Ext_char.valid_hex a3 then 
-    (* 2 *) begin 
+    (* 1 *) begin 
       Buffer.add_char buf a0;
       Buffer.add_char buf a1;
       Buffer.add_char buf a2;
@@ -14557,7 +14414,7 @@ and unicode loc buf s offset s_len =
 
 
 let transform_test s =
-  (* 14 *) let s_len = String.length s in 
+  (* 7 *) let s_len = String.length s in 
   let buf = Buffer.create (s_len * 2) in
   check_and_transform 0 buf s 0 s_len;
   Buffer.contents buf
@@ -14810,24 +14667,24 @@ let pp_error fmt err =
   | Unmatched_paren -> (* 0 *) "Unmatched paren"
   | Invalid_syntax_of_var s -> (* 0 *) "`" ^s ^ "' is not a valid syntax of interpolated identifer"
 let valid_lead_identifier_char x = 
-  (* 86 *) match x with
-  | 'a'..'z' | '_' -> (* 80 *) true
-  | _ -> (* 6 *) false
+  (* 43 *) match x with
+  | 'a'..'z' | '_' -> (* 40 *) true
+  | _ -> (* 3 *) false
 
 let valid_identifier_char x = 
-  (* 228 *) match x with
+  (* 114 *) match x with
   | 'a'..'z' 
   | 'A'..'Z'
   | '0'..'9'
-  | '_' | '\''-> (* 200 *) true
-  | _ -> (* 28 *) false
+  | '_' | '\''-> (* 100 *) true
+  | _ -> (* 14 *) false
 (** Invariant: [valid_lead_identifier] has to be [valid_identifier] *)
 
 let valid_identifier s =
-  (* 52 *) let s_len = String.length s in 
-  if s_len = 0 then (* 4 *) false 
+  (* 26 *) let s_len = String.length s in 
+  if s_len = 0 then (* 2 *) false 
   else
-    (* 48 *) valid_lead_identifier_char s.[0] &&
+    (* 24 *) valid_lead_identifier_char s.[0] &&
     Ext_string.for_all_range s ~start:0 ~finish:(s_len - 1) valid_identifier_char
 
       
@@ -14870,28 +14727,28 @@ let update border
 
 (** Note [Var] kind can not be mpty  *)
 let empty_segment {content } =
-  (* 122 *) Ext_string.is_empty content
+  (* 61 *) Ext_string.is_empty content
 
 
 
 let update_newline ~byte_bol loc  cxt = 
-  (* 10 *) cxt.pos_lnum <- cxt.pos_lnum + 1 ; 
+  (* 5 *) cxt.pos_lnum <- cxt.pos_lnum + 1 ; 
   cxt.pos_bol <- loc;
   cxt.byte_bol <- byte_bol  
 
 let pos_error cxt ~loc error = 
-  (* 16 *) raise (Error 
+  (* 8 *) raise (Error 
            (cxt.segment_start,
             { lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; byte_bol = cxt.byte_bol}, error))
 
 let add_var_segment cxt loc  = 
-  (* 52 *) let content =  Buffer.contents cxt.buf in
+  (* 26 *) let content =  Buffer.contents cxt.buf in
   Buffer.clear cxt.buf ;
   let next_loc = {
     lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
     byte_bol = cxt.byte_bol } in
   if valid_identifier content then 
-    (* 42 *) begin 
+    (* 21 *) begin 
       cxt.segments <- 
         { start = cxt.segment_start; 
           finish =  next_loc ;
@@ -14899,10 +14756,10 @@ let add_var_segment cxt loc  =
           content} :: cxt.segments ;
       cxt.segment_start <- next_loc
     end
-  else (* 10 *) pos_error cxt ~loc (Invalid_syntax_of_var content)
+  else (* 5 *) pos_error cxt ~loc (Invalid_syntax_of_var content)
 
 let add_str_segment cxt loc   =
-  (* 96 *) let content =  Buffer.contents cxt.buf in
+  (* 48 *) let content =  Buffer.contents cxt.buf in
   Buffer.clear cxt.buf ;
   let next_loc = {
     lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
@@ -14919,13 +14776,13 @@ let add_str_segment cxt loc   =
 
 
 let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : cxt) =
-  (* 274 *) if byte_offset = s_len then
-    (* 38 *) add_str_segment cxt loc 
+  (* 137 *) if byte_offset = s_len then
+    (* 19 *) add_str_segment cxt loc 
   else 
-    (* 236 *) let current_char = s.[byte_offset] in 
+    (* 118 *) let current_char = s.[byte_offset] in 
     match Ext_utf8.classify current_char with 
     | Single 92 (* '\\' *) -> 
-      (* 10 *) escape_code (loc + 1)  s (byte_offset+1) cxt
+      (* 5 *) escape_code (loc + 1)  s (byte_offset+1) cxt
     | Single 34 ->
       (* 0 *) Buffer.add_string buf "\\\"";
       check_and_transform (loc + 1)  s (byte_offset + 1) cxt
@@ -14934,7 +14791,7 @@ let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : c
       check_and_transform (loc + 1)  s (byte_offset + 1) cxt
     | Single 10 ->          
 
-      (* 10 *) Buffer.add_string buf "\\n";
+      (* 5 *) Buffer.add_string buf "\\n";
       let loc = loc + 1 in 
       let byte_offset = byte_offset + 1 in 
       update_newline ~byte_bol:byte_offset loc cxt ; (* Note variable could not have new-line *)
@@ -14943,30 +14800,30 @@ let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : c
       (* 0 *) Buffer.add_string buf "\\r";
       check_and_transform (loc + 1)  s (byte_offset + 1) cxt
     | Single 36 -> (* $ *)
-      (* 58 *) add_str_segment cxt loc  ; 
+      (* 29 *) add_str_segment cxt loc  ; 
       let offset = byte_offset + 1 in
       if offset >= s_len then
-        (* 2 *) pos_error ~loc cxt  Unterminated_variable
+        (* 1 *) pos_error ~loc cxt  Unterminated_variable
       else
-        (* 56 *) let cur_char = s.[offset] in
+        (* 28 *) let cur_char = s.[offset] in
         if cur_char = '(' then
-          (* 18 *) expect_var_paren  (loc + 2)  s (offset + 1) cxt
+          (* 9 *) expect_var_paren  (loc + 2)  s (offset + 1) cxt
         else
-          (* 38 *) expect_simple_var (loc + 1)  s offset cxt
+          (* 19 *) expect_simple_var (loc + 1)  s offset cxt
     | Single _ -> 
-      (* 110 *) Buffer.add_char buf current_char;
+      (* 55 *) Buffer.add_char buf current_char;
       check_and_transform (loc + 1)  s (byte_offset + 1) cxt
 
     | Invalid 
     | Cont _ -> (* 0 *) pos_error ~loc cxt Invalid_code_point
     | Leading (n,_) -> 
-      (* 48 *) let i' = Ext_utf8.next s ~remaining:n  byte_offset in
+      (* 24 *) let i' = Ext_utf8.next s ~remaining:n  byte_offset in
       if i' < 0 then 
         (* 0 *) pos_error cxt ~loc Invalid_code_point
       else 
-        (* 48 *) begin 
+        (* 24 *) begin 
           for k = byte_offset to i' do 
-            (* 144 *) Buffer.add_char buf s.[k]; 
+            (* 72 *) Buffer.add_char buf s.[k]; 
           done;   
           check_and_transform (loc + 1 )  s (i' + 1) cxt
         end
@@ -14975,14 +14832,14 @@ let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : c
    let f = [%fn{| $x + $y = $x_add_y |}]
 *)
 and expect_simple_var  loc  s offset ({buf; s_len} as cxt) =
-  (* 38 *) let v = ref offset in
+  (* 19 *) let v = ref offset in
   (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
   if not (offset < s_len  && valid_lead_identifier_char s.[offset]) then 
-    (* 2 *) pos_error cxt ~loc (Invalid_syntax_of_var Ext_string.empty)
+    (* 1 *) pos_error cxt ~loc (Invalid_syntax_of_var Ext_string.empty)
   else 
-    (* 36 *) begin 
+    (* 18 *) begin 
       while !v < s_len && valid_identifier_char s.[!v]  do (* TODO*)
-        (* 64 *) let cur_char = s.[!v] in
+        (* 32 *) let cur_char = s.[!v] in
         Buffer.add_char buf cur_char;
         incr v ;
       done;
@@ -14992,22 +14849,22 @@ and expect_simple_var  loc  s offset ({buf; s_len} as cxt) =
       check_and_transform loc  s (added_length + offset) cxt
     end
 and expect_var_paren  loc  s offset ({buf; s_len} as cxt) =
-  (* 18 *) let v = ref offset in
+  (* 9 *) let v = ref offset in
   (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
   while !v < s_len &&  s.[!v] <> ')' do 
-    (* 108 *) let cur_char = s.[!v] in
+    (* 54 *) let cur_char = s.[!v] in
     Buffer.add_char buf cur_char;
     incr v ;
   done;
   let added_length = !v - offset in
   let loc = added_length +  1 + loc  in
   if !v < s_len && s.[!v] = ')' then
-    (* 16 *) begin 
+    (* 8 *) begin 
       add_var_segment cxt loc ; 
       check_and_transform loc  s (added_length + 1 + offset) cxt 
     end
   else
-    (* 2 *) pos_error cxt ~loc Unmatched_paren
+    (* 1 *) pos_error cxt ~loc Unmatched_paren
 
 
 
@@ -15015,10 +14872,10 @@ and expect_var_paren  loc  s offset ({buf; s_len} as cxt) =
 
 (* we share the same escape sequence with js *)        
 and escape_code loc  s offset ({ buf; s_len} as cxt) = 
-  (* 10 *) if offset >= s_len then 
+  (* 5 *) if offset >= s_len then 
     (* 0 *) pos_error cxt ~loc Unterminated_backslash
   else
-    (* 10 *) Buffer.add_char buf '\\'; 
+    (* 5 *) Buffer.add_char buf '\\'; 
   let cur_char = s.[offset] in
   match cur_char with 
   | '\\'
@@ -15031,7 +14888,7 @@ and escape_code loc  s offset ({ buf; s_len} as cxt) =
   | '0' 
   | '$'
     -> 
-    (* 2 *) begin 
+    (* 1 *) begin 
       Buffer.add_char buf cur_char ;
       check_and_transform (loc + 1)  s (offset + 1) cxt
     end 
@@ -15040,17 +14897,17 @@ and escape_code loc  s offset ({ buf; s_len} as cxt) =
       Buffer.add_char buf cur_char;
       unicode (loc + 1) s (offset + 1) cxt
     end 
-  | 'x' -> (* 8 *) begin 
+  | 'x' -> (* 4 *) begin 
       Buffer.add_char buf cur_char ; 
       two_hex (loc + 1)  s (offset + 1) cxt
     end 
   | _ -> (* 0 *) pos_error cxt ~loc (Invalid_escape_code cur_char)
 and two_hex loc  s offset ({buf ; s_len} as cxt) = 
-  (* 8 *) if offset + 1 >= s_len then 
+  (* 4 *) if offset + 1 >= s_len then 
     (* 0 *) pos_error cxt ~loc Invalid_hex_escape;
   let a, b = s.[offset], s.[offset + 1] in 
   if Ext_char.valid_hex a && Ext_char.valid_hex b then 
-    (* 8 *) begin 
+    (* 4 *) begin 
       Buffer.add_char buf a ; 
       Buffer.add_char buf b ; 
       check_and_transform (loc + 2)  s (offset + 2) cxt
@@ -15079,7 +14936,7 @@ and unicode loc  s offset ({buf ; s_len} as cxt) =
   else
     (* 0 *) pos_error cxt ~loc Invalid_unicode_escape 
 let transform_test s =
-  (* 54 *) let s_len = String.length s in
+  (* 27 *) let s_len = String.length s in
   let buf = Buffer.create (s_len * 2) in
   let cxt = 
     { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
@@ -15187,29 +15044,29 @@ let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
 let (=~) a b = 
-    (* 8 *) OUnit.assert_equal ~cmp:Ext_string.equal a b 
+    (* 4 *) OUnit.assert_equal ~cmp:Ext_string.equal a b 
 
 (** Test for single line *)
 let (==~) a b =
-  (* 22 *) OUnit.assert_equal
+  (* 11 *) OUnit.assert_equal
     (Ast_utf8_string_interp.transform_test a
-     |> List.filter (fun x -> (* 66 *) not @@ Ast_utf8_string_interp.empty_segment x)
+     |> List.filter (fun x -> (* 33 *) not @@ Ast_utf8_string_interp.empty_segment x)
      |> List.map (fun 
       ({start = {offset = a}; finish = {offset = b}; kind ; content }
        : Ast_utf8_string_interp.segment) -> 
-      (* 56 *) a,b,kind,content
+      (* 28 *) a,b,kind,content
       )
     )
     b 
 
 let (==*) a b =
-  (* 16 *) let segments = 
+  (* 8 *) let segments = 
     Ast_utf8_string_interp.transform_test a
-     |> List.filter (fun x -> (* 56 *) not @@ Ast_utf8_string_interp.empty_segment x)
+     |> List.filter (fun x -> (* 28 *) not @@ Ast_utf8_string_interp.empty_segment x)
      |> List.map (fun 
       ({start = {lnum=la; offset = a}; finish = {lnum = lb; offset = b}; kind ; content } 
         : Ast_utf8_string_interp.segment) -> 
-      (* 48 *) la,a,lb,b,kind,content
+      (* 24 *) la,a,lb,b,kind,content
       )
    in 
    OUnit.assert_equal segments b 
@@ -15218,45 +15075,45 @@ let suites =
     >:::
     [
         __LOC__ >:: begin fun _ ->
-            (* 2 *) Ast_utf8_string.transform_test {|x|} =~ {|x|}
+            (* 1 *) Ast_utf8_string.transform_test {|x|} =~ {|x|}
         end;
         __LOC__ >:: begin fun _ ->
-            (* 2 *) Ast_utf8_string.transform_test "a\nb" =~ {|a\nb|}
+            (* 1 *) Ast_utf8_string.transform_test "a\nb" =~ {|a\nb|}
         end;
         __LOC__ >:: begin fun _ ->
-            (* 2 *) Ast_utf8_string.transform_test
+            (* 1 *) Ast_utf8_string.transform_test
             "\\n" =~ "\\n"
         end;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) Ast_utf8_string.transform_test
+          (* 1 *) Ast_utf8_string.transform_test
             "\\\\\\b\\t\\n\\v\\f\\r\\0\\$" =~
           "\\\\\\b\\t\\n\\v\\f\\r\\0\\$"
         end;
 
         __LOC__ >:: begin fun _ ->
-           (* 2 *) match Ast_utf8_string.transform_test
+           (* 1 *) match Ast_utf8_string.transform_test
              {|\|} with
            | exception Ast_utf8_string.Error(offset,_) ->
-            (* 2 *) OUnit.assert_equal offset 1
+            (* 1 *) OUnit.assert_equal offset 1
            | _ -> (* 0 *) OUnit.assert_failure __LOC__
         end ;
          __LOC__ >:: begin fun _ ->
-           (* 2 *) match Ast_utf8_string.transform_test
+           (* 1 *) match Ast_utf8_string.transform_test
              {|你\|} with
            | exception Ast_utf8_string.Error(offset,_) ->
-            (* 2 *) OUnit.assert_equal offset 2
+            (* 1 *) OUnit.assert_equal offset 2
            | _ -> (* 0 *) OUnit.assert_failure __LOC__
         end ;
          __LOC__ >:: begin fun _ ->
-           (* 2 *) match Ast_utf8_string.transform_test
+           (* 1 *) match Ast_utf8_string.transform_test
              {|你BuckleScript,好啊\uffff\|} with
            | exception Ast_utf8_string.Error(offset,_) ->
-            (* 2 *) OUnit.assert_equal offset 23
+            (* 1 *) OUnit.assert_equal offset 23
            | _ -> (* 0 *) OUnit.assert_failure __LOC__
         end ;
 
         __LOC__ >:: begin fun _ ->
-          (* 2 *) "hie $x hi 你好" ==~
+          (* 1 *) "hie $x hi 你好" ==~
             [
               0,4, String, "hie ";
               4,6, Var, "x";
@@ -15264,20 +15121,20 @@ let suites =
             ]
         end;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) "x" ==~
+          (* 1 *) "x" ==~
           [0,1, String, "x"]
         end;
 
         __LOC__ >:: begin fun _ ->
-          (* 2 *) "" ==~
+          (* 1 *) "" ==~
           []
         end;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) "你好" ==~
+          (* 1 *) "你好" ==~
           [0,2,String, "你好"]
         end;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) "你好$x" ==~
+          (* 1 *) "你好$x" ==~
           [0,2,String, "你好";
            2,4,Var, "x";
 
@@ -15285,7 +15142,7 @@ let suites =
         end
         ;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) "你好$this" ==~
+          (* 1 *) "你好$this" ==~
           [
             0,2,String, "你好";
             2,7,Var, "this";
@@ -15293,7 +15150,7 @@ let suites =
         end
         ;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) "你好$(this)" ==~
+          (* 1 *) "你好$(this)" ==~
           [
             0,2,String, "你好";
             2,9,Var, "this"
@@ -15325,7 +15182,7 @@ let suites =
         end
         ;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) "你好 $(this_is_a_var)  x" ==~
+          (* 1 *) "你好 $(this_is_a_var)  x" ==~
           [
             0,3,String, "你好 ";
             3,19,Var, "this_is_a_var";
@@ -15335,7 +15192,7 @@ let suites =
         ;
 
         __LOC__ >:: begin fun _ ->
-        (* 2 *) "hi\n$x\n" ==*
+        (* 1 *) "hi\n$x\n" ==*
         [
           0,0,1,0,String, "hi\\n";
           1,0,1,2,Var, "x" ;
@@ -15354,7 +15211,7 @@ let suites =
         end;
 
         __LOC__ >:: begin fun _ -> 
-        (* 2 *) "\n$(x_this_is_cool) " ==*
+        (* 1 *) "\n$(x_this_is_cool) " ==*
         [
           0,0,1,0,String, "\\n";
           1,0,1,17,Var, "x_this_is_cool";
@@ -15362,7 +15219,7 @@ let suites =
         ]
         end;
         __LOC__ >:: begin fun _ -> 
-        (* 2 *) " $x + $y = $sum " ==*
+        (* 1 *) " $x + $y = $sum " ==*
         [
           0,0,0,1,String , " ";
           0,1,0,3,Var, "x";
@@ -15374,7 +15231,7 @@ let suites =
         ]
         end;
         __LOC__ >:: begin fun _ -> 
-        (* 2 *) "中文 | $a " ==*
+        (* 1 *) "中文 | $a " ==*
         [
           0,0,0,5,String, "中文 | ";
           0,5,0,7,Var, "a";
@@ -15383,7 +15240,7 @@ let suites =
         end
         ;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) {|Hello \\$world|} ==*
+          (* 1 *) {|Hello \\$world|} ==*
           [
             0,0,0,8,String,"Hello \\\\";
             0,8,0,14,Var, "world"
@@ -15391,86 +15248,86 @@ let suites =
         end
         ;
         __LOC__ >:: begin fun _ -> 
-          (* 2 *) {|$x)|} ==*
+          (* 1 *) {|$x)|} ==*
           [
             0,0,0,2,Var,"x";
             0,2,0,3,String,")"
           ]
         end;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) match Ast_utf8_string_interp.transform_test {j| $( ()) |j}
+          (* 1 *) match Ast_utf8_string_interp.transform_test {j| $( ()) |j}
           with 
           |exception Ast_utf8_string_interp.Error
               ({lnum = 0; offset = 1; byte_bol = 0},
                {lnum = 0; offset = 6; byte_bol = 0}, Invalid_syntax_of_var " (")
-            -> (* 2 *) OUnit.assert_bool __LOC__ true 
+            -> (* 1 *) OUnit.assert_bool __LOC__ true 
           | _ -> (* 0 *) OUnit.assert_bool __LOC__ false 
         end
         ;
         __LOC__ >:: begin fun _ -> 
-          (* 2 *) match Ast_utf8_string_interp.transform_test {|$()|}
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$()|}
           with 
           | exception Ast_utf8_string_interp.Error ({lnum = 0; offset = 0; byte_bol = 0},
                              {lnum = 0; offset = 3; byte_bol = 0}, Invalid_syntax_of_var "")
-            -> (* 2 *) OUnit.assert_bool __LOC__ true 
+            -> (* 1 *) OUnit.assert_bool __LOC__ true 
           | _ -> (* 0 *) OUnit.assert_bool __LOC__ false
         end
         ;
         __LOC__ >:: begin fun _ ->
-          (* 2 *) match Ast_utf8_string_interp.transform_test {|$ ()|}
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$ ()|}
           with 
           | exception Ast_utf8_string_interp.Error 
               ({lnum = 0; offset = 0; byte_bol = 0},
                {lnum = 0; offset = 1; byte_bol = 0}, Invalid_syntax_of_var "")
-            -> (* 2 *) OUnit.assert_bool __LOC__ true 
+            -> (* 1 *) OUnit.assert_bool __LOC__ true 
           | _ -> (* 0 *) OUnit.assert_bool __LOC__ false
         end ;
         __LOC__ >:: begin fun _ -> 
-          (* 2 *) match Ast_utf8_string_interp.transform_test {|$()|} with 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$()|} with 
           | exception Ast_utf8_string_interp.Error 
               ({lnum = 0; offset = 0; byte_bol = 0},
                {lnum = 0; offset = 3; byte_bol = 0}, Invalid_syntax_of_var "")
-            -> (* 2 *) OUnit.assert_bool __LOC__ true
+            -> (* 1 *) OUnit.assert_bool __LOC__ true
           | _ -> (* 0 *) OUnit.assert_bool __LOC__ false 
         end
         ;
         __LOC__ >:: begin fun _ -> 
-          (* 2 *) match Ast_utf8_string_interp.transform_test {|$(hello world)|} with 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$(hello world)|} with 
           | exception Ast_utf8_string_interp.Error 
               ({lnum = 0; offset = 0; byte_bol = 0},
                {lnum = 0; offset = 14; byte_bol = 0}, Invalid_syntax_of_var "hello world")
-            -> (* 2 *) OUnit.assert_bool __LOC__ true
+            -> (* 1 *) OUnit.assert_bool __LOC__ true
           | _ -> (* 0 *) OUnit.assert_bool __LOC__ false 
         end
 
 
         ;
         __LOC__ >:: begin fun _ -> 
-          (* 2 *) match Ast_utf8_string_interp.transform_test {|$( hi*) |} with 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$( hi*) |} with 
           | exception Ast_utf8_string_interp.Error 
               ({lnum = 0; offset = 0; byte_bol = 0},
                {lnum = 0; offset = 7; byte_bol = 0}, Invalid_syntax_of_var " hi*")
             -> 
-            (* 2 *) OUnit.assert_bool __LOC__ true
+            (* 1 *) OUnit.assert_bool __LOC__ true
           | _ -> (* 0 *) OUnit.assert_bool __LOC__ false 
         end;
         __LOC__ >:: begin fun _ -> 
-          (* 2 *) match Ast_utf8_string_interp.transform_test {|xx $|} with 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|xx $|} with 
           | exception Ast_utf8_string_interp.Error 
               ({lnum = 0; offset = 3; byte_bol = 0},
                {lnum = 0; offset = 3; byte_bol = 0}, Unterminated_variable)
             -> 
-            (* 2 *) OUnit.assert_bool __LOC__ true 
+            (* 1 *) OUnit.assert_bool __LOC__ true 
           | _ -> (* 0 *) OUnit.assert_bool __LOC__ false
         end ;
 
         __LOC__ >:: begin fun _ ->
-          (* 2 *) match Ast_utf8_string_interp.transform_test {|$(world |}; with 
+          (* 1 *) match Ast_utf8_string_interp.transform_test {|$(world |}; with 
           | exception Ast_utf8_string_interp.Error 
               ({lnum = 0; offset = 0; byte_bol = 0},
                {lnum = 0; offset = 9; byte_bol = 0}, Unmatched_paren)
             -> 
-            (* 2 *) OUnit.assert_bool __LOC__ true 
+            (* 1 *) OUnit.assert_bool __LOC__ true 
           | _ -> (* 0 *) OUnit.assert_bool __LOC__ false
         end
     ]
@@ -15548,9 +15405,9 @@ type t = {
 } 
 
 let init n = 
-  (* 4 *) let id = Array.make n 0 in 
+  (* 2 *) let id = Array.make n 0 in 
   for i = 0 to  n - 1 do
-    (* 1270 *) Array.unsafe_set id i i  
+    (* 635 *) Array.unsafe_set id i i  
   done  ;
   {
     id ; 
@@ -15559,19 +15416,19 @@ let init n =
   }
 
 let rec find_aux id_store p = 
-  (* 7372 *) let parent = Array.unsafe_get id_store p in 
+  (* 3686 *) let parent = Array.unsafe_get id_store p in 
   if p <> parent then 
-    (* 3728 *) find_aux id_store parent 
-  else (* 3644 *) p       
+    (* 1864 *) find_aux id_store parent 
+  else (* 1822 *) p       
 
 let find store p = (* 0 *) find_aux store.id p 
 
 let union store p q =
-  (* 1822 *) let id_store = store.id in 
+  (* 911 *) let id_store = store.id in 
   let p_root = find_aux id_store p in 
   let q_root = find_aux id_store q in 
   if p_root <> q_root then 
-    (* 1260 *) begin
+    (* 630 *) begin
       let () = store.components <- store.components - 1 in
       let sz_store = store.sz in
       let sz_p_root = Array.unsafe_get sz_store p_root in 
@@ -15583,14 +15440,14 @@ let union store p q =
          but major will not be impacted 
       *) 
       if  sz_p_root < sz_q_root  then
-        (* 404 *) begin
+        (* 202 *) begin
           Array.unsafe_set id_store p q_root;   
           Array.unsafe_set id_store p_root q_root;
           Array.unsafe_set sz_store q_root bigger;            
           (* little optimization *) 
         end 
       else   
-        (* 856 *) begin
+        (* 428 *) begin
           Array.unsafe_set id_store q  p_root ;
           Array.unsafe_set id_store q_root p_root;   
           Array.unsafe_set sz_store p_root bigger;          
@@ -15598,7 +15455,7 @@ let union store p q =
         end
     end 
 
-let count store = (* 4 *) store.components    
+let count store = (* 2 *) store.components    
 
 
 end
@@ -16527,16 +16384,16 @@ let mediumUF = {|625
 
 
 let process_str tinyUF = 
-  (* 4 *) match Ext_string.split tinyUF '\n' with 
+  (* 2 *) match Ext_string.split tinyUF '\n' with 
   | number :: rest ->
-    (* 4 *) let n = int_of_string number in
+    (* 2 *) let n = int_of_string number in
     let store = Union_find.init n in
     List.iter (fun x ->
-        (* 1826 *) match Ext_string.quick_split_by_ws x with 
+        (* 913 *) match Ext_string.quick_split_by_ws x with 
         | [a;b] ->
-          (* 1822 *) let a,b = int_of_string a , int_of_string b in 
+          (* 911 *) let a,b = int_of_string a , int_of_string b in 
           Union_find.union store a b 
-        | _ -> (* 4 *) ()) rest;
+        | _ -> (* 2 *) ()) rest;
     Union_find.count store
   | _ -> (* 0 *) assert false
 ;;        
@@ -16577,10 +16434,10 @@ let suites =
   >:::
   [
     __LOC__ >:: begin fun _ ->
-      (* 2 *) OUnit.assert_equal (process_str tinyUF) 2
+      (* 1 *) OUnit.assert_equal (process_str tinyUF) 2
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) OUnit.assert_equal (process_str mediumUF) 3
+      (* 1 *) OUnit.assert_equal (process_str mediumUF) 3
     end;
 (*
    __LOC__ >:: begin fun _ ->
@@ -16607,12 +16464,12 @@ let suites =
     >:::
     [
         __LOC__ >:: begin fun _ -> 
-            (* 2 *) Ext_utf8.decode_utf8_string
+            (* 1 *) Ext_utf8.decode_utf8_string
             "hello 你好，中华民族 hei" =~
             [104; 101; 108; 108; 111; 32; 20320; 22909; 65292; 20013; 21326; 27665; 26063; 32; 104; 101; 105]
         end ;
         __LOC__ >:: begin fun _ -> 
-            (* 2 *) Ext_utf8.decode_utf8_string
+            (* 1 *) Ext_utf8.decode_utf8_string
             "" =~ []
         end
     ]
@@ -16625,11 +16482,11 @@ let ((>::),
 
 open Ext_json
 
-let v = Int_vec.init 10 (fun i -> (* 20 *) i);;
+let v = Int_vec.init 10 (fun i -> (* 10 *) i);;
 let (=~) x y = (* 0 *) OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> (* 0 *) x=y)) x y
 let (=~~) x y 
   = 
-  (* 44 *) OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> (* 3210 *) x=y)) 
+  (* 22 *) OUnit.assert_equal ~cmp:(Int_vec.equal  (fun (x: int) y -> (* 1605 *) x=y)) 
   x (Int_vec.of_array y) 
 
 let suites = 
@@ -16641,16 +16498,16 @@ let suites =
       or "inplace filter" [@bs.loc]
     *)
     "inplace_filter " ^ __LOC__ >:: begin fun _ -> 
-      (* 2 *) v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
+      (* 1 *) v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|];
       
       ignore @@ Int_vec.push  32 v;
       let capacity = Int_vec.capacity v  in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 32|];
-      Int_vec.inplace_filter (fun x -> (* 22 *) x mod 2 = 0) v ;
+      Int_vec.inplace_filter (fun x -> (* 11 *) x mod 2 = 0) v ;
       v =~~ [|0; 2; 4; 6; 8; 32|];
-      Int_vec.inplace_filter (fun x -> (* 12 *) x mod 3 = 0) v ;
+      Int_vec.inplace_filter (fun x -> (* 6 *) x mod 3 = 0) v ;
       v =~~ [|0;6|];
-      Int_vec.inplace_filter (fun x -> (* 4 *) x mod 3 <> 0) v ;
+      Int_vec.inplace_filter (fun x -> (* 2 *) x mod 3 <> 0) v ;
       v =~~ [||];
       OUnit.assert_equal (Int_vec.capacity v ) capacity ;
       Int_vec.compact v ; 
@@ -16658,82 +16515,82 @@ let suites =
     end
     ;
     "inplace_filter_from " ^ __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v = Int_vec.of_array (Array.init 10 (fun i -> (* 20 *) i)) in 
+      (* 1 *) let v = Int_vec.of_array (Array.init 10 (fun i -> (* 10 *) i)) in 
       v =~~ [|0; 1; 2; 3; 4; 5; 6; 7; 8; 9|]; 
       Int_vec.push 96 v  ;      
-      Int_vec.inplace_filter_from 2 (fun x -> (* 18 *) x mod 2 = 0) v ;
+      Int_vec.inplace_filter_from 2 (fun x -> (* 9 *) x mod 2 = 0) v ;
       v =~~ [|0; 1; 2; 4; 6; 8; 96|];
-      Int_vec.inplace_filter_from 2 (fun x -> (* 10 *) x mod 3 = 0) v ;
+      Int_vec.inplace_filter_from 2 (fun x -> (* 5 *) x mod 3 = 0) v ;
       v =~~ [|0; 1; 6; 96|];
-      Int_vec.inplace_filter (fun x -> (* 8 *) x mod 3 <> 0) v ;
+      Int_vec.inplace_filter (fun x -> (* 4 *) x mod 3 <> 0) v ;
       v =~~ [|1|];      
       Int_vec.compact v ; 
       OUnit.assert_equal (Int_vec.capacity v ) 1
     end
     ;
     "map " ^ __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v = Int_vec.of_array (Array.init 1000 (fun i -> (* 2000 *) i )) in 
+      (* 1 *) let v = Int_vec.of_array (Array.init 1000 (fun i -> (* 1000 *) i )) in 
       Int_vec.map succ v =~~ (Array.init 1000 succ) ;
-      OUnit.assert_bool __LOC__ (Int_vec.exists (fun x -> (* 2000 *) x >= 999) v );
-      OUnit.assert_bool __LOC__ (not (Int_vec.exists (fun x -> (* 2000 *) x > 1000) v ));
+      OUnit.assert_bool __LOC__ (Int_vec.exists (fun x -> (* 1000 *) x >= 999) v );
+      OUnit.assert_bool __LOC__ (not (Int_vec.exists (fun x -> (* 1000 *) x > 1000) v ));
       OUnit.assert_equal (Int_vec.last v ) 999
     end ;  
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let count = 1000 in 
-      let init_array = (Array.init count (fun i -> (* 2000 *) i)) in 
+      (* 1 *) let count = 1000 in 
+      let init_array = (Array.init count (fun i -> (* 1000 *) i)) in 
       let u = Int_vec.of_array  init_array in 
-      let v = Int_vec.inplace_filter_with (fun x -> (* 2000 *) x mod 2 = 0) ~cb_no:Set_int.add Set_int.empty u  in
-      let (even,odd) = init_array |> Array.to_list |> List.partition (fun x -> (* 2000 *) x mod 2 = 0) in 
+      let v = Int_vec.inplace_filter_with (fun x -> (* 1000 *) x mod 2 = 0) ~cb_no:Set_int.add Set_int.empty u  in
+      let (even,odd) = init_array |> Array.to_list |> List.partition (fun x -> (* 1000 *) x mod 2 = 0) in 
       OUnit.assert_equal 
       (Set_int.elements v) odd ;
       u =~~ Array.of_list even 
     end ;
     "filter" ^ __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v = Int_vec.of_array [|1;2;3;4;5;6|] in 
-      v |> Int_vec.filter (fun x -> (* 12 *) x mod 3 = 0) |> (fun x -> (* 2 *) x =~~ [|3;6|]);
+      (* 1 *) let v = Int_vec.of_array [|1;2;3;4;5;6|] in 
+      v |> Int_vec.filter (fun x -> (* 6 *) x mod 3 = 0) |> (fun x -> (* 1 *) x =~~ [|3;6|]);
       v =~~ [|1;2;3;4;5;6|];
       Int_vec.pop v ; 
       v =~~ [|1;2;3;4;5|];
       let count = ref 0 in 
       let len = Int_vec.length v  in 
       while not (Int_vec.is_empty v ) do 
-        (* 10 *) Int_vec.pop v ;
+        (* 5 *) Int_vec.pop v ;
         incr count
       done;
       OUnit.assert_equal len !count
     end
     ;
     __LOC__ >:: begin fun _ -> 
-      (* 2 *) let count = 100 in 
-      let v = Int_vec.of_array (Array.init count (fun i -> (* 200 *) i)) in 
+      (* 1 *) let count = 100 in 
+      let v = Int_vec.of_array (Array.init count (fun i -> (* 100 *) i)) in 
       OUnit.assert_bool __LOC__ 
-        (try Int_vec.delete v count; false with _ -> (* 2 *) true );
+        (try Int_vec.delete v count; false with _ -> (* 1 *) true );
       for i = count - 1 downto 10 do 
-        (* 180 *) Int_vec.delete v i ;
+        (* 90 *) Int_vec.delete v i ;
       done ;
       v =~~ [|0;1;2;3;4;5;6;7;8;9|] 
     end; 
     "sub" ^ __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v = Int_vec.make 5 in 
+      (* 1 *) let v = Int_vec.make 5 in 
       OUnit.assert_bool __LOC__
-        (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> (* 2 *) true);
+        (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> (* 1 *) true);
       Int_vec.push 1 v;
       OUnit.assert_bool __LOC__
-        (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> (* 2 *) true);
+        (try ignore @@ Int_vec.sub v 0 2 ; false with Invalid_argument _  -> (* 1 *) true);
       Int_vec.push 2 v ;  
       ( Int_vec.sub v 0 2 =~~ [|1;2|])
     end;
     "reserve" ^ __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v = Int_vec.empty () in 
+      (* 1 *) let v = Int_vec.empty () in 
       Int_vec.reserve v  1000 ;
       for i = 0 to 900 do
-        (* 1802 *) Int_vec.push i v 
+        (* 901 *) Int_vec.push i v 
       done ;
       OUnit.assert_equal (Int_vec.length v) 901 ;
       OUnit.assert_equal (Int_vec.capacity v) 1000
     end ; 
     "capacity"  ^ __LOC__ >:: begin fun _ -> 
-      (* 2 *) let v = Int_vec.of_array [|3|] in 
+      (* 1 *) let v = Int_vec.of_array [|3|] in 
       Int_vec.reserve v 10 ;
       v =~~ [|3 |];
       Int_vec.push 1 v ;
@@ -16742,7 +16599,7 @@ let suites =
       v=~~ [|3;1;2;5|];
       OUnit.assert_equal (Int_vec.capacity v  ) 10 ;
       for i = 0 to 5 do
-        (* 12 *) Int_vec.push i  v
+        (* 6 *) Int_vec.push i  v
       done;
       v=~~ [|3;1;2;5;0;1;2;3;4;5|];
       Int_vec.push   100 v;
@@ -16751,21 +16608,21 @@ let suites =
     end
     ;
     __LOC__  >:: begin fun _ -> 
-      (* 2 *) let empty = Int_vec.empty () in 
+      (* 1 *) let empty = Int_vec.empty () in 
       Int_vec.push   3 empty;
       empty =~~ [|3|];
 
     end
     ;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let lst = [1;2;3;4] in 
+      (* 1 *) let lst = [1;2;3;4] in 
       let v = Int_vec.of_list lst in 
       OUnit.assert_equal 
-        (Int_vec.map_into_list (fun x -> (* 8 *) x + 1) v)
-        (List.map (fun x -> (* 8 *) x + 1) lst)  
+        (Int_vec.map_into_list (fun x -> (* 4 *) x + 1) v)
+        (List.map (fun x -> (* 4 *) x + 1) lst)  
     end;
     __LOC__ >:: begin fun _ ->
-      (* 2 *) let v = Int_vec.make 4 in 
+      (* 1 *) let v = Int_vec.make 4 in 
       Int_vec.push 1 v;
       Int_vec.push 2 v;
       Int_vec.reverse_in_place v;
@@ -16785,7 +16642,7 @@ end = struct
 
 
 module Int_array = Resize_array.Make(struct type t = int let null = 0 end);;
-let v = Int_array.init 10 (fun i -> (* 20 *) i);;
+let v = Int_array.init 10 (fun i -> (* 10 *) i);;
 
 let ((>::),
     (>:::)) = OUnit.((>::),(>:::))

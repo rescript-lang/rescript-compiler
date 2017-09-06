@@ -24,7 +24,7 @@
 
 let config_file_bak = "bsconfig.json.bak"
 let get_list_string = Bsb_build_util.get_list_string
-let (//) = Ext_filename.combine
+let (//) = Ext_path.combine
 
 let resolve_package cwd  package_name = 
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
@@ -255,9 +255,15 @@ let interpret_json
         end;
         let package_name =       
           match !package_name with
-          | Some name -> name
-          | None ->
+          | None 
+            ->
             failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
+          | Some "_" 
+            -> 
+            failwith "_ is a reserved package name"
+          | Some name -> 
+            name
+          
         in 
         let namespace =     
           if !namespace then 

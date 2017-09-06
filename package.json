@@ -32,6 +32,7 @@
     "test": "go build -o test.exe scripts/test.go && ./test.exe",
     "test-theme" : "go run scripts/test.go -no-install-global -no-ounit -no-mocha -no-bsb",
     "test-bsb" : "go run scripts/test.go -no-install-global -no-ounit -no-mocha -no-theme",
+    "test-ocaml" : "go run scripts/test.go -no-install-global  -no-mocha -no-theme -no-bsb",
     "wtest": "mocha './jscomp/test/**/*test.js'  -R spec -w",
     "cover": "istanbul cover --report html ./node_modules/.bin/_mocha --   ./jscomp/test/**/*test.js && open coverage/index.html",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './jscomp/test/*test.js' -R spec",

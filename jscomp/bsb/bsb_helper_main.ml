@@ -31,7 +31,7 @@ let includes :  _ list ref = ref []
 
 let add_include =
   let normalize cwd s =
-    Ext_filename.normalize_absolute_path (Ext_filename.combine cwd s) in
+    Ext_path.normalize_absolute_path (Ext_path.combine cwd s) in
   fun dir ->
     includes := (normalize (Sys.getcwd ()) dir) :: !includes
 

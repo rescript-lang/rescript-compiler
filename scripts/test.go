@@ -1,6 +1,7 @@
 package main
 
 import (
+	"path"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -167,10 +168,15 @@ func fatalError(err error) {
 	}
 }
 func bsbInDir(builddir, dir string) {
-
+	script:= "input.js"
 	destDir := filepath.Join(builddir, dir)
-	c := cmd("node", "input.js")
-	c.Dir = destDir
+
+	if _, err := os.Stat(path.Join(destDir,script)); os.IsNotExist(err){
+		fmt.Println("Warn:", dir, "does not have input.js")
+		return
+	}
+	c := cmd("node", script)	
+	c.Dir = destDir	
 	out, err := c.CombinedOutput()
 
 	if err != nil {
@@ -197,7 +203,13 @@ func main() {
 	output, _ := cmd("which", "ocaml").CombinedOutput()
 	fmt.Println("OCaml:", string(output))
 	if !*noOunitTest {
-		cmd("make", "-C", "jscomp", "test")
+		btest := cmd("make", "-C", "jscomp/bin", "test")
+		btest.Stdout = os.Stdout
+		btest.Stderr = os.Stderr 
+		berror := btest.Run()
+		if berror != nil {
+			os.Exit(2)
+		}
 	}
 	if !*noMochaTest {
 		make := cmd("make", "-C", "jscomp", "travis-world-test")
@@ -222,9 +234,10 @@ func main() {
 
 			fmt.Println("install finished takes", time.Since(start))
 		}
+		bsbDir, _ := cmd("bsb", "-where").CombinedOutput()
+		fmt.Println("BSBDIR:", string(bsbDir))
 	}
-	bsbDir, _ := cmd("bsb", "-where").CombinedOutput()
-	fmt.Println("BSBDIR:", string(bsbDir))
+	
 	if !*noThemeTest {
 		var wg sync.WaitGroup
 		for _, theme := range []string{
