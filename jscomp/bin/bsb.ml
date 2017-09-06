@@ -4748,12 +4748,18 @@ type t =
 
 val sep_char : char 
 
-val node_relative_path : 
+(* val node_relative_path : 
   from:t -> 
   t -> 
-  string
+  string *)
 
-val node_concat : dir:string -> string -> string 
+(* val node_concat : dir:string -> string -> string  *)
+
+val node_rebase_file :
+  from:string -> 
+  to_:string ->
+  string -> 
+  string 
 
 (**
    1. add some simplifications when concatenating
@@ -4895,7 +4901,12 @@ let node_relative_path
 let node_concat ~dir base =
   dir ^ Literals.node_sep ^ base 
 
-
+let node_rebase_file ~from ~to_ file = 
+  node_concat
+    ~dir:(node_relative_path ~from:(Dir from) (Dir to_)) 
+    file
+    
+    
 (***
    {[
      Filename.concat "." "";;
@@ -5009,7 +5020,7 @@ let rel_normalized_absolute_path ~from to_ =
         List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
           Ext_string.parent_dir_lit xs in
     let v =  go paths1 paths2  in 
-    
+
     if Ext_string.is_empty v then  Literals.node_current
     else 
     if
@@ -8986,10 +8997,6 @@ module Ext_filename : sig
     just treat it as a library instead
 *)
 
-(* val node_relative_path : 
-  bool -> 
-  from:Ext_path.t -> 
-  string -> string *)
 val cwd : string Lazy.t
 
 (* It is lazy so that it will not hit errors when in script mode *)
@@ -9036,52 +9043,6 @@ type t = Ext_path.t
 
 let cwd = lazy (Sys.getcwd ())
 
-
-(** path2: a/b 
-    path1: a 
-    result:  ./b 
-    TODO: [Filename.concat] with care
-
-    [file1] is currently compilation file 
-    [file2] is the dependency
-
-    TODO: this is a hackish function: FIXME
-*)
-let node_relative_path node_modules_shorten 
-    ~from:(file1 : Ext_path.t) 
-    (file2 : string) = 
-  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
-  let len = String.length file2 in 
-  if node_modules_shorten && v >= 0 then
-
-    let rec skip  i =       
-      if i >= len then
-        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
-      else 
-        (* https://en.wikipedia.org/wiki/Path_(computing))
-           most path separator are a single char 
-        *)
-        let curr_char = String.unsafe_get file2 i  in 
-        if curr_char = Ext_path.sep_char || curr_char = '.' then 
-          skip (i + 1) 
-        else i
-        (*
-          TODO: we need do more than this suppose user 
-          input can be
-           {[
-             "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
-           ]}
-           This seems weird though
-        *)
-    in 
-    Ext_string.tail_from file2
-      (skip (v + Literals.node_modules_length)) 
-  else 
-    Ext_path.node_relative_path 
-      (File (Ext_path.absolute_path cwd file2))
-      ~from:(Ext_path.absolute cwd file1)
-    ^ Literals.node_sep ^
-    (Filename.basename file2)
 
 
 

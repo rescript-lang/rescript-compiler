@@ -219,15 +219,18 @@ let string_of_module_id
           Bs_exception.error (Dependency_script_module_dependent_not js_file)
         | (Package_script  | Package_found _ ), Package_not_found -> assert false
 
+        | Package_found(dep_package_name, dep_path), 
+          Package_script 
+          ->    
+          dep_package_name // dep_path // js_file
 
         | Package_found(dep_package_name, dep_path),
           Package_found(cur_package_name, cur_path) -> 
           if  cur_package_name = dep_package_name then 
-            Ext_path.node_concat 
-              ~dir:(Ext_path.node_relative_path 
-                      ~from:(Dir cur_path)
-                      (Dir dep_path )                       
-                   ) js_file 
+            Ext_path.node_rebase_file
+              ~from:cur_path
+              ~to_:dep_path 
+              js_file
               (** TODO: we assume that both [x] and [path] could only be relative path
                   which is guaranteed by [-bs-package-output]
               *)
@@ -254,33 +257,23 @@ let string_of_module_id
                         (Filename.dirname (Filename.dirname cmj_path))) // dep_path // js_file)              
                 end
             end
-        | Package_found(dep_package_name, dep_path), 
-          Package_script 
-          ->    
-          dep_package_name // dep_path // js_file
-        |
-          Package_script , 
+        | Package_script , 
           Package_script 
           -> 
           begin match Config_util.find_opt js_file with 
             | Some file -> 
-              (* let package_dir = Lazy.force Ext_filename.package_dir in *)
-              (* let rebase  ~dependency  ~different_package package_dir=                    
-                 Ext_filename.node_relative_path 
-                  different_package 
-                  ~from:(Dir output_dir) 
-                  dependency 
-                 in                  *)
-              (* rebase ~different_package:true package_dir ~dependency:file *)
-              Ext_path.node_concat
-                ~dir:(Ext_path.node_relative_path 
-                   ~from:(Ext_path.absolute 
-                            Ext_filename.cwd (Dir output_dir))
-                   (File(Ext_path.absolute_path Ext_filename.cwd file)))      
-                  (Filename.basename file)
-            (* Code path: when dependency is commonjs 
-               while depedent is Empty or PackageScript
-            *)
+              let basename = Filename.basename file in 
+              let dirname = Filename.dirname file in 
+              Ext_path.node_rebase_file
+                ~from:(
+                  Ext_path.absolute_path 
+                  Ext_filename.cwd output_dir)
+                ~to_:(
+                  Ext_path.absolute_path 
+                  Ext_filename.cwd
+                  dirname
+                )
+                basename  
             | None -> 
               Bs_exception.error (Js_not_found js_file)
           end

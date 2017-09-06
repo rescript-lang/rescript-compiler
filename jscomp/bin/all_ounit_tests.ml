@@ -11258,12 +11258,18 @@ type t =
 
 val sep_char : char 
 
-val node_relative_path : 
+(* val node_relative_path : 
   from:t -> 
   t -> 
-  string
+  string *)
 
-val node_concat : dir:string -> string -> string 
+(* val node_concat : dir:string -> string -> string  *)
+
+val node_rebase_file :
+  from:string -> 
+  to_:string ->
+  string -> 
+  string 
 
 (**
    1. add some simplifications when concatenating
@@ -11405,7 +11411,12 @@ let node_relative_path
 let node_concat ~dir base =
   dir ^ Literals.node_sep ^ base 
 
-
+let node_rebase_file ~from ~to_ file = 
+  node_concat
+    ~dir:(node_relative_path ~from:(Dir from) (Dir to_)) 
+    file
+    
+    
 (***
    {[
      Filename.concat "." "";;
@@ -11519,7 +11530,7 @@ let rel_normalized_absolute_path ~from to_ =
         List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
           Ext_string.parent_dir_lit xs in
     let v =  go paths1 paths2  in 
-    
+
     if Ext_string.is_empty v then  Literals.node_current
     else 
     if
@@ -11722,7 +11733,7 @@ let suites =
         "./node_modules/xx/./xx.js" =~ "./node_modules/xx/xx.js"        
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    (* __LOC__ >:: begin fun _ -> 
       Ext_path.node_relative_path 
         (Dir "lib/js/src/a")
         ~from:(Dir "lib/js/src") =~ "./a" ;
@@ -11748,7 +11759,7 @@ let suites =
         (Dir "lib/js/src/a/") 
         ~from:(Dir "lib/js/src/a/")
       =~ "."
-    end    
+    end     *)
   ]
 
 end

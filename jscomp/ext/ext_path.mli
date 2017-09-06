@@ -29,12 +29,18 @@ type t =
 
 val sep_char : char 
 
-val node_relative_path : 
+(* val node_relative_path : 
   from:t -> 
   t -> 
-  string
+  string *)
 
-val node_concat : dir:string -> string -> string 
+(* val node_concat : dir:string -> string -> string  *)
+
+val node_rebase_file :
+  from:string -> 
+  to_:string ->
+  string -> 
+  string 
 
 (**
    1. add some simplifications when concatenating
