@@ -234,9 +234,10 @@ func main() {
 
 			fmt.Println("install finished takes", time.Since(start))
 		}
+		bsbDir, _ := cmd("bsb", "-where").CombinedOutput()
+		fmt.Println("BSBDIR:", string(bsbDir))
 	}
-	bsbDir, _ := cmd("bsb", "-where").CombinedOutput()
-	fmt.Println("BSBDIR:", string(bsbDir))
+	
 	if !*noThemeTest {
 		var wg sync.WaitGroup
 		for _, theme := range []string{
