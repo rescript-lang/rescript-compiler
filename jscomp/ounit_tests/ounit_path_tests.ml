@@ -115,7 +115,7 @@ let suites =
         "./node_modules/xx/./xx.js" =~ "./node_modules/xx/xx.js"        
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    (* __LOC__ >:: begin fun _ -> 
       Ext_path.node_relative_path 
         (Dir "lib/js/src/a")
         ~from:(Dir "lib/js/src") =~ "./a" ;
@@ -141,5 +141,5 @@ let suites =
         (Dir "lib/js/src/a/") 
         ~from:(Dir "lib/js/src/a/")
       =~ "."
-    end    
+    end     *)
   ]

@@ -47,10 +47,6 @@
     just treat it as a library instead
 *)
 
-(* val node_relative_path : 
-  bool -> 
-  from:Ext_path.t -> 
-  string -> string *)
 val cwd : string Lazy.t
 
 (* It is lazy so that it will not hit errors when in script mode *)

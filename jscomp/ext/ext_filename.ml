@@ -34,52 +34,6 @@ type t = Ext_path.t
 let cwd = lazy (Sys.getcwd ())
 
 
-(** path2: a/b 
-    path1: a 
-    result:  ./b 
-    TODO: [Filename.concat] with care
-
-    [file1] is currently compilation file 
-    [file2] is the dependency
-
-    TODO: this is a hackish function: FIXME
-*)
-let node_relative_path node_modules_shorten 
-    ~from:(file1 : Ext_path.t) 
-    (file2 : string) = 
-  let v = Ext_string.find  file2 ~sub:Literals.node_modules in 
-  let len = String.length file2 in 
-  if node_modules_shorten && v >= 0 then
-
-    let rec skip  i =       
-      if i >= len then
-        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
-      else 
-        (* https://en.wikipedia.org/wiki/Path_(computing))
-           most path separator are a single char 
-        *)
-        let curr_char = String.unsafe_get file2 i  in 
-        if curr_char = Ext_path.sep_char || curr_char = '.' then 
-          skip (i + 1) 
-        else i
-        (*
-          TODO: we need do more than this suppose user 
-          input can be
-           {[
-             "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
-           ]}
-           This seems weird though
-        *)
-    in 
-    Ext_string.tail_from file2
-      (skip (v + Literals.node_modules_length)) 
-  else 
-    Ext_path.node_relative_path 
-      (File (Ext_path.absolute_path cwd file2))
-      ~from:(Ext_path.absolute cwd file1)
-    ^ Literals.node_sep ^
-    (Filename.basename file2)
-
 
 
 (* Input must be absolute directory *)
