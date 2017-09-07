@@ -186,9 +186,9 @@ let root = OCamlRes.Res.([
       \  \"name\": \"${bsb:name}\",\n\
       \  \"version\": \"${bsb:proj-version}\",\n\
       \  \"scripts\": {\n\
-      \    \"clean\": \"bsb -clean-world\",\n\
       \    \"build\": \"bsb -make-world\",\n\
-      \    \"watch\": \"bsb -make-world -w\"\n\
+      \    \"start\": \"bsb -make-world -w\",\n\
+      \    \"clean\": \"bsb -clean-world\"\n\
       \  },\n\
       \  \"keywords\": [\n\
       \    \"BuckleScript\"\n\
@@ -197,7 +197,8 @@ let root = OCamlRes.Res.([
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"${bsb:bs-version}\"\n\
       \  }\n\
-       }") ;
+       }\n\
+       ") ;
     File ("bsconfig.json",
       "// This is the configuration file used by BuckleScript's build system bsb. Its documentation lives here: http://bucklescript.github.io/bucklescript/docson/#build-schema.json\n\
        // BuckleScript comes with its own parser for bsconfig.json, which is normal JSON, with the extra support of comments and trailing commas.\n\
@@ -465,6 +466,7 @@ let root = OCamlRes.Res.([
        \n\
        module.exports = {\n\
       \  entry: {\n\
+      \    async: './lib/js/src/async/counterRoot.js',\n\
       \    simple: './lib/js/src/simple/simpleRoot.js',\n\
       \    interop: './src/interop/interopRoot.js',\n\
       \  },\n\
@@ -477,21 +479,29 @@ let root = OCamlRes.Res.([
     Dir ("src", [
       Dir ("simple", [
         File ("simpleRoot.re",
-          "ReactDOMRe.renderToElementWithId <Page name=\"Lil' Reason\" /> \"index\";\n\
+          "ReactDOMRe.renderToElementWithId <Page message=\"Hello!\" /> \"index\";\n\
            ") ;
         File ("page.re",
-          "let component = ReasonReact.statefulComponent \"Greeting\";\n\
+          "/* This is the basic component. */\n\
+           let component = ReasonReact.statelessComponent \"Page\";\n\
            \n\
-           let make ::name _children => {\n\
-          \  let click _event {ReasonReact.state} => ReasonReact.Update (state + 1);\n\
-          \  {\n\
-          \    ...component,\n\
-          \    initialState: fun () => 0,\n\
-          \    render: fun {state, update} => {\n\
-          \      let greeting = {j|Hello $name, You've clicked the button $state times(s)!|j};\n\
-          \      <button onClick=(update click)> (ReasonReact.stringToElement greeting) </button>\n\
-          \    }\n\
-          \  }\n\
+           /* Your familiar handleClick from ReactJS. This mandatorily takes the payload,\n\
+          \   then the `self` record, which contains state (none here), `handle`, `reduce`\n\
+          \   and other utilities */\n\
+           let handleClick _event _self => Js.log \"clicked!\";\n\
+           \n\
+           /* `make` is the function that mandatorily takes `children` (if you want to use\n\
+          \   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:\n\
+           \n\
+          \   `<Page message=\"hello\" />`\n\
+           \n\
+          \   Which desugars to\n\
+           \n\
+          \   `ReasonReact.element (Page.make message::\"hello\" [||])` */\n\
+           let make ::message _children => {\n\
+          \  ...component,\n\
+          \  render: fun self =>\n\
+          \    <div onClick=(self.handle handleClick)> (ReasonReact.stringToElement message) </div>\n\
            };\n\
            ") ;
         File ("index.html",
@@ -513,41 +523,20 @@ let root = OCamlRes.Res.([
            \n\
            This subdirectory demonstrate the ReasonReact <-> ReactJS interop APIs.\n\
            \n\
-           The entry point, `interopRoot.js`, illustrates ReactJS requiring a ReasonReact component, `PageReason`.\n\
+           The entry point, `interopRoot.js`, illustrates ReactJS requiring a ReasonReact component, `GreetingRe`.\n\
            \n\
-           `PageReason` itself illustrates ReasonReact requiring a ReactJS component, `myBanner.js`, through the Reason file `myBannerRe.re`.\n\
-           ") ;
-        File ("pageReason.re",
-          "let component = ReasonReact.statelessComponent \"PageReason\";\n\
-           \n\
-           let make ::message ::extraGreeting=? _children => {\n\
-          \  ...component,\n\
-          \  render: fun _self => {\n\
-          \    let greeting =\n\
-          \      switch extraGreeting {\n\
-          \      | None => \"How are you?\"\n\
-          \      | Some g => g\n\
-          \      };\n\
-          \    <div> <MyBannerRe show=true message=(message ^ \" \" ^ greeting) /> </div>\n\
-          \  }\n\
-           };\n\
-           \n\
-           let comp =\n\
-          \  ReasonReact.wrapReasonForJs\n\
-          \    ::component\n\
-          \    (\n\
-          \      fun jsProps =>\n\
-          \        make\n\
-          \          message::jsProps##message\n\
-          \          extraGreeting::?(Js.Null_undefined.to_opt jsProps##extraGreeting)\n\
-          \          [||]\n\
-          \    );\n\
+           `GreetingRe` itself illustrates ReasonReact requiring a ReactJS component, `myBanner.js`, through the Reason file `myBannerRe.re`.\n\
            ") ;
         File ("myBannerRe.re",
-          "/* Typing the myBanner.js component's output as a `reactClass`. */\n\
+          "/* ReactJS used by ReasonReact */\n\
+           \n\
+           /* This component wraps a ReactJS one, so that ReasonReact components can consume it */\n\
+           \n\
+           /* Typing the myBanner.js component's output as a `reactClass`. */\n\
            /* Note that this file's JS output is located at reason-react-example/lib/js/src/interop/myBannerRe.js; we're specifying the relative path to myBanner.js in the string below */\n\
            external myBanner : ReasonReact.reactClass = \"../../../../src/interop/myBanner\" [@@bs.module];\n\
            \n\
+           /* This is like declaring a normal ReasonReact component's `make` function, except the body is a the interop hook wrapJsForReason */\n\
            let make ::show ::message children =>\n\
           \  ReasonReact.wrapJsForReason\n\
           \    reactClass::myBanner\n\
@@ -558,14 +547,18 @@ let root = OCamlRes.Res.([
           \    children;\n\
            ") ;
         File ("myBanner.js",
-          "var ReactDOM = require('react-dom');\n\
+          "// This file isn't used directly by JS; it's used to myBanner.re, which is then\n\
+           // used by the ReasonReact component GreetingRe.\n\
+           \n\
+           var ReactDOM = require('react-dom');\n\
            var React = require('react');\n\
            \n\
            var App = React.createClass({\n\
+          \  displayName: \"MyBanner\",\n\
           \  render: function() {\n\
           \    if (this.props.show) {\n\
           \      return React.createElement('div', null,\n\
-          \        this.props.message\n\
+          \        'Here\\'s the message from the owner: ' + this.props.message\n\
           \      );\n\
           \    } else {\n\
           \      return null;\n\
@@ -580,9 +573,10 @@ let root = OCamlRes.Res.([
            var React = require('react');\n\
            \n\
            // Import a ReasonReact component! `comp` is the exposed, underlying ReactJS class\n\
-           var PageReason = require('../../lib/js/src/interop/pageReason').comp;\n\
+           var PageReason = require('../../lib/js/src/interop/greetingRe').jsComponent;\n\
            \n\
            var App = React.createClass({\n\
+          \  displayName: 'exampleInteropRoot',\n\
           \  render: function() {\n\
           \    return React.createElement('div', null,\n\
           \      React.createElement(PageReason, {message: 'Hello!'})\n\
@@ -606,6 +600,93 @@ let root = OCamlRes.Res.([
           \  <script src=\"../../bundledOutputs/interop.js\"></script>\n\
            </body>\n\
            </html>\n\
+           ") ;
+        File ("greetingRe.re",
+          "/* ReasonReact used by ReactJS */\n\
+           \n\
+           /* This is just a normal stateless component. The only change you need to turn\n\
+          \   it into a ReactJS-compatible component is the wrapReasonForJs call below */\n\
+           let component = ReasonReact.statelessComponent \"PageReason\";\n\
+           \n\
+           let make ::message ::extraGreeting=? _children => {\n\
+          \  ...component,\n\
+          \  render: fun _self => {\n\
+          \    let greeting =\n\
+          \      switch extraGreeting {\n\
+          \      | None => \"How are you?\"\n\
+          \      | Some g => g\n\
+          \      };\n\
+          \    <div> <MyBannerRe show=true message=(message ^ \" \" ^ greeting) /> </div>\n\
+          \  }\n\
+           };\n\
+           \n\
+           /* This exposes a `jsComponent` that the ReactJS side can use as\n\
+          \   require('greetingRe.js').jsComponent\n\
+           \n\
+          \   if **you know what you're doing** and have\n\
+          \   the correct babel/webpack setup, you can also do `let default = ...` and use it\n\
+          \   on the JS side as a default export. */\n\
+           let jsComponent =\n\
+          \  ReasonReact.wrapReasonForJs\n\
+          \    ::component\n\
+          \    (\n\
+          \      fun jsProps =>\n\
+          \        make\n\
+          \          message::jsProps##message\n\
+          \          extraGreeting::?(Js.Null_undefined.to_opt jsProps##extraGreeting)\n\
+          \          [||]\n\
+          \    );\n\
+           ")]) ;
+      Dir ("async", [
+        File ("index.html",
+          "<!DOCTYPE html>\n\
+           <html lang=\"en\">\n\
+           <head>\n\
+          \  <meta charset=\"UTF-8\">\n\
+          \  <title>Counter</title>\n\
+           </head>\n\
+           <body>\n\
+          \  <div id=\"index\"></div>\n\
+          \  <script src=\"../../bundledOutputs/async.js\"></script>\n\
+           </body>\n\
+           </html>\n\
+           ") ;
+        File ("counterRoot.re",
+          "ReactDOMRe.renderToElementWithId <Counter /> \"index\";\n\
+           ") ;
+        File ("counter.re",
+          "/* This is a stateful component. In ReasonReact, we call them reducer components */\n\
+           \n\
+           /* A list of state transitions, to be used in self.reduce and reducer */\n\
+           type action =\n\
+          \  | Tick;\n\
+           \n\
+           /* The component's state type. It can be anything, including, commonly, being a record type */\n\
+           type state = {\n\
+          \  count: int,\n\
+          \  timerId: ref (option Js.Global.intervalId)\n\
+           };\n\
+           \n\
+           let component = ReasonReact.reducerComponent \"Counter\";\n\
+           \n\
+           let make _children => {\n\
+          \  ...component,\n\
+          \  initialState: fun () => {count: 0, timerId: ref None},\n\
+          \  reducer: fun action state =>\n\
+          \    switch action {\n\
+          \    | Tick => ReasonReact.Update {...state, count: state.count + 1}\n\
+          \    },\n\
+          \  didMount: fun self => {\n\
+          \    /* this will call `reduce` every second */\n\
+          \    self.state.timerId := Some (Js.Global.setInterval (self.reduce (fun _ => Tick)) 1000);\n\
+          \    ReasonReact.NoUpdate\n\
+          \  },\n\
+          \  render: fun {state: {count}} => {\n\
+          \    let timesMessage = count == 1 ? \"second\" : \"seconds\";\n\
+          \    let greeting = {j|You've spent $count $timesMessage on this page!|j};\n\
+          \    <div> (ReasonReact.stringToElement greeting) </div>\n\
+          \  }\n\
+           };\n\
            ")])]) ;
     File ("README.md",
       "This is a repo with examples usages of [ReasonReact](https://github.com/reasonml/reason-react).\n\
@@ -630,11 +711,11 @@ let root = OCamlRes.Res.([
       \  \"description\": \"\",\n\
       \  \"main\": \"index.js\",\n\
       \  \"scripts\": {\n\
-      \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
       \    \"start\": \"bsb -make-world -w\",\n\
-      \    \"build\": \"bsb -make-world\" ,\n\
-      \    \"webpack\": \"webpack -w\",\n\
-      \    \"clean\": \"bsb -clean-world\"\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
+      \    \"webpack\": \"webpack -w\"\n\
       \  },\n\
       \  \"keywords\": [],\n\
       \  \"author\": \"\",\n\
@@ -663,7 +744,7 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    {\n\
       \      \"dir\": \"src\",\n\
-      \      \"subdirs\": [\"interop\", \"simple\"]\n\
+      \      \"subdirs\": [\"async\", \"interop\", \"simple\"]\n\
       \    }\n\
       \  ]\n\
        }\n\
