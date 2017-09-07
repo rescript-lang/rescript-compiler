@@ -1,13 +1,21 @@
-let component = ReasonReact.statefulComponent "Greeting";
+/* This is the basic component. */
+let component = ReasonReact.statelessComponent "Page";
 
-let make ::name _children => {
-  let click _event {ReasonReact.state} => ReasonReact.Update (state + 1);
-  {
-    ...component,
-    initialState: fun () => 0,
-    render: fun {state, update} => {
-      let greeting = {j|Hello $name, You've clicked the button $state times(s)!|j};
-      <button onClick=(update click)> (ReasonReact.stringToElement greeting) </button>
-    }
-  }
+/* Your familiar handleClick from ReactJS. This mandatorily takes the payload,
+   then the `self` record, which contains state (none here), `handle`, `reduce`
+   and other utilities */
+let handleClick _event _self => Js.log "clicked!";
+
+/* `make` is the function that mandatorily takes `children` (if you want to use
+   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:
+
+   `<Page message="hello" />`
+
+   Which desugars to
+
+   `ReasonReact.element (Page.make message::"hello" [||])` */
+let make ::message _children => {
+  ...component,
+  render: fun self =>
+    <div onClick=(self.handle handleClick)> (ReasonReact.stringToElement message) </div>
 };

@@ -2,6 +2,6 @@
 
 This subdirectory demonstrate the ReasonReact <-> ReactJS interop APIs.
 
-The entry point, `interopRoot.js`, illustrates ReactJS requiring a ReasonReact component, `PageReason`.
+The entry point, `interopRoot.js`, illustrates ReactJS requiring a ReasonReact component, `GreetingRe`.
 
-`PageReason` itself illustrates ReasonReact requiring a ReactJS component, `myBanner.js`, through the Reason file `myBannerRe.re`.
+`GreetingRe` itself illustrates ReasonReact requiring a ReactJS component, `myBanner.js`, through the Reason file `myBannerRe.re`.
