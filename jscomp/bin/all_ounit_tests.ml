@@ -11256,14 +11256,9 @@ type t =
   | File of string 
   | Dir of string 
 
-val sep_char : char 
 
-val node_relative_path : 
-  from:t -> 
-  t -> 
-  string
 
-val node_concat : dir:string -> string -> string 
+
 
 (**
    1. add some simplifications when concatenating
@@ -11293,6 +11288,11 @@ val get_extension : string -> string
 
 
 
+val node_rebase_file :
+  from:string -> 
+  to_:string ->
+  string -> 
+  string 
 
 (** 
    TODO: could be highly optimized
@@ -11309,11 +11309,11 @@ val get_extension : string -> string
 val rel_normalized_absolute_path : from:string -> string -> string 
 
 
-val normalize_absolute_path : string -> string
+val normalize_absolute_path : string -> string 
 
 val absolute_path : string Lazy.t -> string -> string
 
-val absolute : string Lazy.t -> t -> t 
+
 end = struct
 #1 "ext_path.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -11405,7 +11405,12 @@ let node_relative_path
 let node_concat ~dir base =
   dir ^ Literals.node_sep ^ base 
 
-
+let node_rebase_file ~from ~to_ file = 
+  node_concat
+    ~dir:(node_relative_path ~from:(Dir from) (Dir to_)) 
+    file
+    
+    
 (***
    {[
      Filename.concat "." "";;
@@ -11519,7 +11524,7 @@ let rel_normalized_absolute_path ~from to_ =
         List.fold_left (fun acc _ -> acc // Ext_string.parent_dir_lit )
           Ext_string.parent_dir_lit xs in
     let v =  go paths1 paths2  in 
-    
+
     if Ext_string.is_empty v then  Literals.node_current
     else 
     if
@@ -11722,33 +11727,33 @@ let suites =
         "./node_modules/xx/./xx.js" =~ "./node_modules/xx/xx.js"        
     end;
 
-    __LOC__ >:: begin fun _ -> 
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/a")
-        ~from:(Dir "lib/js/src") =~ "./a" ;
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/")
-        ~from:(Dir "lib/js/src") =~ "." ;          
-      Ext_path.node_relative_path  
-        (Dir "lib/js/src")
-        ~from:(Dir "lib/js/src/a") =~ "..";
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/a")
-        ~from:(Dir "lib/js/") =~ "./src/a" ;
-      Ext_path.node_relative_path 
-        (Dir "lib/js/./src/a") 
-        ~from:(Dir "lib/js/src/a/")
-      =~ ".";
+     __LOC__ >:: begin fun _ -> 
+      Ext_path.node_rebase_file
+        ~to_:( "lib/js/src/a")
+        ~from:( "lib/js/src") "b" =~ "./a/b" ;
+      Ext_path.node_rebase_file
+        ~to_:( "lib/js/src/")
+        ~from:( "lib/js/src") "b" =~ "./b" ;          
+      Ext_path.node_rebase_file
+        ~to_:( "lib/js/src")
+        ~from:("lib/js/src/a") "b" =~ "../b";
+      Ext_path.node_rebase_file
+        ~to_:( "lib/js/src/a")
+        ~from:("lib/js/") "b" =~ "./src/a/b" ;
+      Ext_path.node_rebase_file
+        ~to_:("lib/js/./src/a") 
+        ~from:("lib/js/src/a/") "b"
+        =~ "./b";
 
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/a") 
-        ~from:(Dir "lib/js/src/a/")
-      =~ ".";
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/a/") 
-        ~from:(Dir "lib/js/src/a/")
-      =~ "."
-    end    
+      Ext_path.node_rebase_file
+        ~to_:"lib/js/src/a"
+        ~from: "lib/js/src/a/" "b"
+      =~ "./b";
+      Ext_path.node_rebase_file
+        ~to_:"lib/js/src/a/"
+        ~from:"lib/js/src/a/" "b"
+      =~ "./b"
+    end     
   ]
 
 end
