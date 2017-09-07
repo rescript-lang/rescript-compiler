@@ -264,7 +264,7 @@ let jsxMapper () =
        | e -> default_mapper.expr mapper e) in
 
 #if defined BS_NO_COMPILER_PATCH then
-  Jsx_ppx_to_current.To_current.copy_mapper { default_mapper with structure; expr }
+  To_current.copy_mapper { default_mapper with structure; expr }
 #else
   { default_mapper with structure; expr }
 #end
