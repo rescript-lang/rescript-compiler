@@ -22,62 +22,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t 
 
 
+#if BS_COMPILER_IN_BROWSER then   
+let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
+   match x.kind with
+   | External name -> name
+   | Runtime | Ml -> 
+                   "stdlib/" ^  String.uncapitalize x.id.name
+let string_of_module_id 
+    ~output_dir:(_:string)
+    (_module_system : Js_packages_info.module_system)
+    id = string_of_module_id_in_browser id
+#else
 
-
-
-(**
-   1. add some simplifications when concatenating
-   2. when the second one is absolute, drop the first one
-*)  
-val combine : 
-  string -> 
-  string -> 
-  string    
-
-
-
-val chop_extension : ?loc:string -> string -> string 
-
-
-val chop_extension_if_any : string -> string
-
-
-(**
-   {[
-     get_extension "a.txt" = ".txt"
-       get_extension "a" = ""
-   ]}
-*)
-val get_extension : string -> string
-
-
-
-
-val node_rebase_file :
-  from:string -> 
-  to_:string ->
-  string -> 
-  string 
-
-(** 
-   TODO: could be highly optimized
-   if [from] and [to] resolve to the same path, a zero-length string is returned 
-   Given that two paths are directory
-
-   A typical use case is 
-   {[
-     Filename.concat 
-       (rel_normalized_absolute_path cwd (Filename.dirname a))
-       (Filename.basename a)
-   ]}
-*)
-val rel_normalized_absolute_path : from:string -> string -> string 
-
-
-val normalize_absolute_path : string -> string 
-
-val absolute_path : string Lazy.t -> string -> string
-
+  let string_of_module_id 
+      ~output_dir
+      module_system
+      id
+    = 
+    Js_packages_info.string_of_module_id
+      ~output_dir
+      module_system
+      (Js_packages_state.get_packages_info ())
+      Lam_compile_env.get_package_path_from_cmj
+      id    
+#end

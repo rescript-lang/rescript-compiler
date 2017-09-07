@@ -22,62 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t 
 
-
-
-
-
-(**
-   1. add some simplifications when concatenating
-   2. when the second one is absolute, drop the first one
-*)  
-val combine : 
-  string -> 
-  string -> 
-  string    
-
-
-
-val chop_extension : ?loc:string -> string -> string 
-
-
-val chop_extension_if_any : string -> string
-
-
-(**
-   {[
-     get_extension "a.txt" = ".txt"
-       get_extension "a" = ""
-   ]}
-*)
-val get_extension : string -> string
-
-
-
-
-val node_rebase_file :
-  from:string -> 
-  to_:string ->
-  string -> 
-  string 
-
-(** 
-   TODO: could be highly optimized
-   if [from] and [to] resolve to the same path, a zero-length string is returned 
-   Given that two paths are directory
-
-   A typical use case is 
-   {[
-     Filename.concat 
-       (rel_normalized_absolute_path cwd (Filename.dirname a))
-       (Filename.basename a)
-   ]}
-*)
-val rel_normalized_absolute_path : from:string -> string -> string 
-
-
-val normalize_absolute_path : string -> string 
-
-val absolute_path : string Lazy.t -> string -> string
-
+val string_of_module_id : 
+  output_dir:string ->
+  Js_packages_info.module_system -> 
+  Lam_module_ident.t ->
+  string

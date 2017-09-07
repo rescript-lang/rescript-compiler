@@ -88,8 +88,11 @@ let node_concat ~dir base =
   dir ^ Literals.node_sep ^ base 
 
 let node_rebase_file ~from ~to_ file = 
+  
   node_concat
-    ~dir:(node_relative_path ~from:(Dir from) (Dir to_)) 
+    ~dir:(
+      if from = to_ then Literals.node_current
+      else node_relative_path ~from:(Dir from) (Dir to_)) 
     file
     
     

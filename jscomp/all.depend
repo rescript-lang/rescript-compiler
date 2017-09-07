@@ -345,6 +345,8 @@ core/js_dump_string.cmi : ext/ext_pp.cmi
 core/js_dump_property.cmi : ext/ext_pp.cmi
 core/js_dump_import_export.cmi : ext/ext_pp_scope.cmi ext/ext_pp.cmi
 core/js_dump.cmi : core/j.cmx ext/ext_pp_scope.cmi ext/ext_pp.cmi
+core/js_name_of_module_id.cmi : core/lam_module_ident.cmi \
+    core/js_packages_info.cmi
 core/js_dump_program.cmi : core/js_packages_info.cmi core/j.cmx \
     ext/ext_pp.cmi
 core/js_pass_debug.cmi : core/j.cmx
@@ -538,9 +540,12 @@ core/js_dump.cmx : core/js_stmt_make.cmx core/js_runtime_modules.cmx \
     core/js_dump_lit.cmx core/js_dump_import_export.cmx core/js_closure.cmx \
     core/j.cmx ext/ident_set.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx \
     ext/ext_list.cmx ext/ext_ident.cmx core/js_dump.cmi
+core/js_name_of_module_id.cmx : core/lam_compile_env.cmx \
+    core/js_packages_state.cmx core/js_packages_info.cmx \
+    core/js_name_of_module_id.cmi
 core/js_dump_program.cmx : core/lam_module_ident.cmx \
-    core/lam_compile_env.cmx core/js_packages_state.cmx \
-    core/js_packages_info.cmx core/js_dump_string.cmx core/js_dump_lit.cmx \
+    core/js_packages_info.cmx core/js_name_of_module_id.cmx \
+    core/js_dump_string.cmx core/js_dump_lit.cmx \
     core/js_dump_import_export.cmx core/js_dump.cmx common/js_config.cmx \
     core/j.cmx ext/ext_pp_scope.cmx ext/ext_pp.cmx common/bs_version.cmx \
     core/js_dump_program.cmi

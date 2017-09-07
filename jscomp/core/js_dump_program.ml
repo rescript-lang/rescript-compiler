@@ -27,35 +27,32 @@ module L = Js_dump_lit
 
 
 
-#if BS_COMPILER_IN_BROWSER then   
-let string_of_module_id_in_browser (x : Lam_module_ident.t) =  
-    match x.kind with
-    | External name -> name
-    | Runtime | Ml -> 
-      "stdlib/" ^  String.uncapitalize x.id.name
-let string_of_module_id 
-    ~output_dir:(_:string)
-    (_module_system : Js_packages_info.module_system)
-    id = string_of_module_id_in_browser id
-#else
-    
-let string_of_module_id 
-    ~output_dir
-    module_system
-    id
-  = 
-  Js_packages_info.string_of_module_id
-    ~output_dir
-    module_system
-    (Js_packages_state.get_packages_info ())
-    Lam_compile_env.get_package_path_from_cmj
-    id    
-#end
+
+let empty_explanation = 
+  "/* Empty output due to either pure type definitions or unused code removed*/"
+
+let program_is_empty (x : J.program) = 
+  match x with 
+  | {
+    block = [];
+    exports = [];
+    name = _ ;
+    export_set = _
+  }  -> true 
+  | _  -> false  
+
+let deps_program_is_empty (x : J.deps_program) = 
+  match x with 
+  | { modules = [];
+      program ;
+      side_effect = None
+    } -> program_is_empty program
+  | _ -> false 
 
 let program f cxt   ( x : J.program ) = 
-  let () = P.force_newline f in
+  P.force_newline f;
   let cxt =  Js_dump.statement_list true cxt f x.block  in
-  let () = P.force_newline f in
+  P.force_newline f;
   Js_dump_import_export.exports cxt f x.exports
 
 let dump_program (x : J.program) oc = 
@@ -71,7 +68,7 @@ let node_program ~output_dir f ( x : J.deps_program) =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            string_of_module_id ~output_dir
+            Js_name_of_module_id.string_of_module_id ~output_dir
               NodeJS 
               x)
          x.modules)
@@ -80,7 +77,6 @@ let node_program ~output_dir f ( x : J.deps_program) =
 
 
 let amd_program ~output_dir kind f (  x : J.deps_program) = 
-  P.newline f ; 
   let cxt = Ext_pp_scope.empty in
   P.vgroup f 1 @@ fun _ -> 
   P.string f L.define;
@@ -89,7 +85,7 @@ let amd_program ~output_dir kind f (  x : J.deps_program) =
 
   List.iter (fun x ->
       let s : string = 
-        string_of_module_id ~output_dir
+        Js_name_of_module_id.string_of_module_id ~output_dir
           kind 
           x in
       P.string f L.comma ;
@@ -128,7 +124,7 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
       (List.map 
          (fun x -> 
             Lam_module_ident.id x,
-            string_of_module_id ~output_dir
+            Js_name_of_module_id.string_of_module_id ~output_dir
               fmt 
               x)
          x.modules)
@@ -151,31 +147,36 @@ let pp_deps_program
     ~output_prefix
     (kind : Js_packages_info.module_system )
     (program  : J.deps_program) (f : Ext_pp.t) = 
-  begin
-    if not !Js_config.no_version_header then 
-      begin 
-        P.string f Bs_version.header;
-        P.newline f
-      end ; 
+  if not !Js_config.no_version_header then 
+    begin 
+      P.string f Bs_version.header;
+      P.newline f
+    end ; 
+  if deps_program_is_empty program then 
+    P.string f empty_explanation 
+    (* This is empty module, it won't be referred anywhere *)
+  else 
+    let output_dir = Filename.dirname output_prefix in 
     P.string f L.strict_directive; 
     P.newline f ;    
-    let output_dir = Filename.dirname output_prefix in 
-    ignore (match kind with 
-        | Es6 | Es6_global -> 
-          es6_program ~output_dir kind f program
-        | AmdJS | AmdJS_global -> 
-          amd_program ~output_dir kind f program
-        | NodeJS -> 
-          node_program ~output_dir f program
-      ) ;
-    P.newline f ;
-    P.string f (
-      match program.side_effect with
-      | None -> "/* No side effect */"
-      | Some v -> Printf.sprintf "/* %s Not a pure module */" v );
-    P.newline f;
-    P.flush f ()
-  end
+    begin 
+      ignore (match kind with 
+          | Es6 | Es6_global -> 
+            es6_program ~output_dir kind f program
+          | AmdJS | AmdJS_global -> 
+            amd_program ~output_dir kind f program
+          | NodeJS -> 
+            node_program ~output_dir f program
+        ) ;
+      P.newline f ;
+      P.string f (
+        match program.side_effect with
+        | None -> "/* No side effect */"
+        | Some v -> Printf.sprintf "/* %s Not a pure module */" v );
+      P.newline f;
+      P.flush f ()
+    end
+
 
 
 let dump_deps_program
@@ -184,4 +185,3 @@ let dump_deps_program
     x 
     (oc : out_channel) = 
   pp_deps_program ~output_prefix  kind x (P.from_channel oc)
-  
