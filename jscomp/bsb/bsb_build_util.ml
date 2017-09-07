@@ -29,7 +29,7 @@ let flag_concat flag xs =
 let (//) = Ext_path.combine
 
 
-    
+
 (* we use lazy $src_root_dir *)
 
 
@@ -38,10 +38,10 @@ let (//) = Ext_path.combine
 let convert_and_resolve_path =
   if Sys.unix then (//)
   else fun cwd path ->
-  if Ext_sys.is_windows_or_cygwin then 
-    let p = Ext_string.replace_slash_backward path in
+    if Ext_sys.is_windows_or_cygwin then 
+      let p = Ext_string.replace_slash_backward path in
       cwd // p
-  else failwith ("Unknown OS :" ^ Sys.os_type)
+    else failwith ("Unknown OS :" ^ Sys.os_type)
 (* we only need convert the path in the beginning *)
 
 
@@ -99,16 +99,21 @@ let resolve_bsb_magic_file ~cwd ~desc p =
 *)
 
 let get_bsc_dir cwd = 
-  Filename.dirname (Ext_path.normalize_absolute_path (cwd // Sys.executable_name))
+  Filename.dirname 
+    (Ext_path.normalize_absolute_path 
+       (Ext_path.combine cwd  Sys.executable_name))
+
+
 let get_bsc_bsdep cwd = 
   let dir = get_bsc_dir cwd in    
-  dir // "bsc.exe", dir // "bsb_helper.exe"
+  Filename.concat dir  "bsc.exe", 
+  Filename.concat dir  "bsb_helper.exe"
 
 (** 
-{[
-mkp "a/b/c/d";;
-mkp "/a/b/c/d"
-]}
+   {[
+     mkp "a/b/c/d";;
+     mkp "/a/b/c/d"
+   ]}
 *)
 let rec mkp dir = 
   if not (Sys.file_exists dir) then 
@@ -145,7 +150,7 @@ type package_context = {
 }
 
 (**
-  TODO: check duplicate package name
+   TODO: check duplicate package name
    ?use path as identity?
 
    Basic requirements
@@ -227,7 +232,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
       end
   | _ -> ()
   | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
-    
+
 let walk_all_deps dir cb = 
   let visited = String_hashtbl.create 0 in 
   walk_all_deps_aux visited [] true dir cb 

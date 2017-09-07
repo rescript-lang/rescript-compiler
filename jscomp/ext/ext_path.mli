@@ -27,20 +27,9 @@ type t =
   | File of string 
   | Dir of string 
 
-val sep_char : char 
 
-(* val node_relative_path : 
-  from:t -> 
-  t -> 
-  string *)
 
-(* val node_concat : dir:string -> string -> string  *)
 
-val node_rebase_file :
-  from:string -> 
-  to_:string ->
-  string -> 
-  string 
 
 (**
    1. add some simplifications when concatenating
@@ -70,6 +59,11 @@ val get_extension : string -> string
 
 
 
+val node_rebase_file :
+  from:string -> 
+  to_:string ->
+  string -> 
+  string 
 
 (** 
    TODO: could be highly optimized
@@ -86,8 +80,7 @@ val get_extension : string -> string
 val rel_normalized_absolute_path : from:string -> string -> string 
 
 
-val normalize_absolute_path : string -> string
+val normalize_absolute_path : string -> string 
 
 val absolute_path : string Lazy.t -> string -> string
 
-val absolute : string Lazy.t -> t -> t 
