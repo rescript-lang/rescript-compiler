@@ -115,31 +115,31 @@ let suites =
         "./node_modules/xx/./xx.js" =~ "./node_modules/xx/xx.js"        
     end;
 
-    (* __LOC__ >:: begin fun _ -> 
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/a")
-        ~from:(Dir "lib/js/src") =~ "./a" ;
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/")
-        ~from:(Dir "lib/js/src") =~ "." ;          
-      Ext_path.node_relative_path  
-        (Dir "lib/js/src")
-        ~from:(Dir "lib/js/src/a") =~ "..";
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/a")
-        ~from:(Dir "lib/js/") =~ "./src/a" ;
-      Ext_path.node_relative_path 
-        (Dir "lib/js/./src/a") 
-        ~from:(Dir "lib/js/src/a/")
-      =~ ".";
+     __LOC__ >:: begin fun _ -> 
+      Ext_path.node_rebase_file
+        ~to_:( "lib/js/src/a")
+        ~from:( "lib/js/src") "b" =~ "./a/b" ;
+      Ext_path.node_rebase_file
+        ~to_:( "lib/js/src/")
+        ~from:( "lib/js/src") "b" =~ "./b" ;          
+      Ext_path.node_rebase_file
+        ~to_:( "lib/js/src")
+        ~from:("lib/js/src/a") "b" =~ "../b";
+      Ext_path.node_rebase_file
+        ~to_:( "lib/js/src/a")
+        ~from:("lib/js/") "b" =~ "./src/a/b" ;
+      Ext_path.node_rebase_file
+        ~to_:("lib/js/./src/a") 
+        ~from:("lib/js/src/a/") "b"
+        =~ "./b";
 
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/a") 
-        ~from:(Dir "lib/js/src/a/")
-      =~ ".";
-      Ext_path.node_relative_path 
-        (Dir "lib/js/src/a/") 
-        ~from:(Dir "lib/js/src/a/")
-      =~ "."
-    end     *)
+      Ext_path.node_rebase_file
+        ~to_:"lib/js/src/a"
+        ~from: "lib/js/src/a/" "b"
+      =~ "./b";
+      Ext_path.node_rebase_file
+        ~to_:"lib/js/src/a/"
+        ~from:"lib/js/src/a/" "b"
+      =~ "./b"
+    end     
   ]
