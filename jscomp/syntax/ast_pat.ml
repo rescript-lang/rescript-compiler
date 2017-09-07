@@ -45,7 +45,7 @@ let arity_of_fun
       1 + aux e       
     | Pexp_fun _
       -> Location.raise_errorf
-           ~loc:e.pexp_loc "Lable is not allowed in JS object"
+           ~loc:e.pexp_loc "Label is not allowed in JS object"
     | _ -> 0 in
   is_unit_cont ~yes:0 ~no:1 pat + aux e 
 
