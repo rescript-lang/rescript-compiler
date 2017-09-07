@@ -5,11 +5,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "bsb -make-world",
     "start": "bsb -make-world -w",
-    "build": "bsb -make-world" ,
-    "webpack": "webpack -w",
-    "clean": "bsb -clean-world"
+    "clean": "bsb -clean-world",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack -w"
   },
   "keywords": [],
   "author": "",

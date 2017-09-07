@@ -2,9 +2,9 @@
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
   "scripts": {
-    "clean": "bsb -clean-world",
     "build": "bsb -make-world",
-    "watch": "bsb -make-world -w"
+    "start": "bsb -make-world -w",
+    "clean": "bsb -clean-world"
   },
   "keywords": [
     "BuckleScript"
