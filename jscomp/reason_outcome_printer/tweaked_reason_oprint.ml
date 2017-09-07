@@ -1,16 +1,40 @@
-(* This file's copied over from
-  https://github.com/facebook/reason/blob/4bfb7a4dde697f069c541654eabafd9c05a7dcae/src/reason_oprint.ml
-  and tweaked to adapt for BuckleScript. For terminology explanations, please
-  see that file's comments near the beginning. The tweaked parts are marked by
-  the
-  #if cppo macros. As you might have seen in reason's src/README.md,
-  #reason_oprint uses the OCaml AST from 4.04, while BS targets 4.02. If we just
-  #manually tweak the few differing parts of 4.04 vs 4.02, we can avoid dragging
-  #in a dependency on the AST converter (migrate-parsetree)
+(* Hello! Welcome to the Reason "outcome printer" logic. This logic takes the
+  AST nodes and turn them into text, for Merlin, rtop and terminal errors
+  reporting to be in Reason syntax.
 
-  Everything else stayed the same.
+  If you've navigated around in the Reason codebase, you might have seen the
+  other printer called reason_pprint_ast, our actual, main pretty-printer. Why
+  is this one separated from reason_pprint_ast? Because the outcome printer's
+  use-case is a bit different and needs different entry points blablabla...
+  These are mostly excuses. But for example, currently, `Js.t {. foo: bar}` by
+  itself is *invalid syntax* for a pretty printer (the correct, minimal valid
+  code would be `type myObject = Js.t {. foo: bar}`), but the terminal error
+  report do want to provide just that snippet and have you print it. Hopefully
+  OCaml can unify actual code pretty-printing and terminal type info pretty-
+  printing one day.
 
-  This is used by reason_outcome_printer_main.ml
+  This also means the outcome printer doesn't use the normal Parsetree,
+  Ast_helper and others you might have seen in other files. It has its own
+  small AST definition here:
+  https://github.com/ocaml/ocaml/blob/4.04/typing/outcometree.mli
+
+  The rest of this file's logic is just pattern-matching on these tree node
+  variants & using Format to pretty-print them nicely.
+  *)
+
+(*
+  This file's shared between the Reason repo and the BuckleScript repo. In
+  Reason, it's in src/reason_oprint.ml. In BuckleScript, it's in
+  jscomp/reason_outcome_printer/tweaked_reason_oprint.ml. We periodically copy
+  this file from Reason (the source of truth) to BuckleScript, then uncomment
+  the #if #else #end cppo macros you see in the file. That's because
+  BuckleScript's on OCaml 4.02 while Reason's on 4.04; so the #if macros
+  surround the pieces of code that are different between the two compilers.
+
+  When you modify this file, please make sure you're not dragging in too many
+  things. You don't necessarily have to test the file on both Reason and
+  BuckleScript; ping @chenglou and a few others and we'll keep them synced up by
+  patching the right parts, through the power of types(tm)
 *)
 
 #if defined BS_NO_COMPILER_PATCH then
