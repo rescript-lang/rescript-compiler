@@ -4741,10 +4741,7 @@ module Ext_path : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-type t = 
-  | File of string 
-  | Dir of string 
+type t 
 
 
 
@@ -4896,8 +4893,11 @@ let node_concat ~dir base =
   dir ^ Literals.node_sep ^ base 
 
 let node_rebase_file ~from ~to_ file = 
+  
   node_concat
-    ~dir:(node_relative_path ~from:(Dir from) (Dir to_)) 
+    ~dir:(
+      if from = to_ then Literals.node_current
+      else node_relative_path ~from:(Dir from) (Dir to_)) 
     file
     
     
