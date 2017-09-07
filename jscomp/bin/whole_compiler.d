@@ -407,6 +407,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/cmt_format.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/includecore.ml
 bin/whole_compiler.ml : ../vendor/ocaml/typing/includemod.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/printtyped.mli
+bin/whole_compiler.ml : core/js_name_of_module_id.ml
 bin/whole_compiler.ml : core/js_of_lam_exception.mli
 bin/whole_compiler.ml : core/lam_beta_reduce_util.ml
 bin/whole_compiler.ml : core/ocaml_batch_compile.mli
@@ -421,6 +422,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/includecore.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/outcometree.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typedtreeMap.ml
 bin/whole_compiler.ml : core/js_dump_import_export.ml
+bin/whole_compiler.ml : core/js_name_of_module_id.mli
 bin/whole_compiler.ml : core/lam_beta_reduce_util.mli
 bin/whole_compiler.ml : core/lam_compile_primitive.ml
 bin/whole_compiler.ml : core/lam_pass_deep_flatten.ml
