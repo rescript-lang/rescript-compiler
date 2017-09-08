@@ -138,7 +138,7 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	gpr_1484\
 	gpr_1481\
 	custom_error_test\
-	exception_rebound_err\
+	exception_rebound_err_test\
 	js_exception_catch_test\
 	gpr_1503_test\
 	gpr_1501_test\
