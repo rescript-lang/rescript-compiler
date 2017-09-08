@@ -37,20 +37,20 @@ type set_field_dbg_info = Lambda.set_field_dbg_info
 type ident = Ident.t
 
 type function_kind
-   = Curried 
-   (* | Tupled *)
+  = Curried 
+(* | Tupled *)
 
 
 type let_kind = Lambda.let_kind
-    = Strict
-    | Alias
-    | StrictOpt
-    | Variable
+= Strict
+| Alias
+| StrictOpt
+| Variable
 
 type meth_kind = Lambda.meth_kind 
-  = Self 
-  | Public of string option 
-  | Cached 
+= Self 
+| Public of string option 
+| Cached 
 
 type constant = 
   | Const_int of int
@@ -83,12 +83,9 @@ type primitive =
   (* External call *)
   | Pccall of  Primitive.description
   | Pjs_call of
-      (* Location.t *  [loc] is passed down *)
       string *  (* prim_name *)
       Ast_arg.kind list * (* arg_types *)
       Ast_ffi_types.ffi  (* ffi *)
-
-  (* Ast_ffi_types.arg_kind list * bool * Ast_ffi_types.ffi  *)
   | Pjs_object_create of Ast_ffi_types.obj_create
   (* Exceptions *)
   | Praise
@@ -210,6 +207,8 @@ type apply_status =
   | App_na
   | App_ml_full
   | App_js_full    
+
+
 module Types = struct 
   type switch = 
     { sw_numconsts: int;
@@ -534,6 +533,16 @@ let free_variables l =
   in free Ident_set.empty Ident_set.empty l
 *)  
 
+(**
+        [hit_any_variables fv l]
+        check the lambda expression [l] if has some free 
+        variables captured by [fv].
+        Note it does not do any checking like below
+        [Llet(str,id,arg,body)]
+        it only check [arg] or [body] is hit or not, there
+        is an case that [id] is hit in [arg] but also exists 
+        in [fv], this is ignored.
+*)
 let hit_any_variables (fv : Ident_set.t) l : bool  =
   let rec hit (l : t) =
     begin
@@ -591,11 +600,39 @@ let hit_any_variables (fv : Ident_set.t) l : bool  =
     end;
   in hit l
 
-(** A conservative approach to avoid packing exceptions *)
-let exception_id_destructed (fv : Ident.t) l : bool  =
+(** A conservative approach to avoid packing exceptions 
+    for lambda expression like {[
+      try { ... }catch(id){body}
+    ]}    
+    we approximate that if [id] is destructed or not.
+    If it is destructed, we need pack it in case it is JS exception.
+    Note it is not guaranteed that exception raised(or re-raised) is a structured 
+    ocaml exception but it is guaranteed that if such exception is processed it would
+    still be an ocaml exception.
+    for example {[
+      match x with 
+      | exception e -> raise e 
+    ]}
+    it will re-raise an exception as it is (we are not packing it anywhere)
+
+    It is hard to judge an exception is destructed or escaped, any potential 
+    alias(or if it is passed as an argument) would cause it to be leaked
+*)
+let exception_id_escaped (fv : Ident.t) l : bool  =
   let rec hit (l : t) =
     begin
       match (l : t) with 
+      | Lprim {primitive = Pintcomp _ ; 
+               args = ([x;y ])  } ->    
+        begin match x,y with 
+          | Lvar _, Lvar _ -> false 
+          | Lvar _, _ -> hit y 
+          | _, Lvar _ -> hit x 
+          | _, _  -> hit x || hit y 
+        end      
+      | Lprim {primitive = Praise ; args = [Lvar _]} -> false 
+      | Lprim {primitive ; args; _} ->
+        List.exists hit args
       | Lvar id ->
         Ext_log.dwarn __LOC__ "[HIT]%s/%d@." id.name id.stamp ; 
         Ident.same id fv       
@@ -619,19 +656,6 @@ let exception_id_destructed (fv : Ident.t) l : bool  =
         hit fn || List.exists hit args
       | Lglobal_module _  (* global persistent module, play safe *)
         -> false        
-      | Lprim {primitive = Pintcomp _ ; 
-        args = ([x;y ])  } ->    
-        begin match x,y with 
-        | Lvar _, Lvar _ -> false 
-        | Lvar _, _ -> hit y 
-        | _, Lvar _ -> hit x 
-        | _, _  -> hit x || hit y 
-        end      
-      | Lprim {primitive = Praise ; args = [Lvar _]} -> false 
-      | Lprim {primitive ; args; _} ->
-        (*Ext_log.dwarn __LOC__ "[FUCKPRIMITIVE]%a@." 
-        Ext_pervasives.pp_any primitive; *)
-        List.exists hit args
       | Lswitch(arg, sw) ->
         hit arg ||
         List.exists (fun (key, case) -> hit case) sw.sw_consts ||
@@ -662,13 +686,20 @@ let exception_id_destructed (fv : Ident.t) l : bool  =
     end;
   in hit l  
 
-let hit_mask (fv : Hash_set_ident_mask.t) l =
+
+(**
+    [hit_mask mask lambda] iters through the lambda
+    set the bit of corresponding [id] if [id] is hit.
+    As an optimization step if [mask_check_all_hit], 
+    there is no need to iter such lambda any more
+*)  
+let hit_mask ( mask : Hash_set_ident_mask.t) l =
   let rec hit (l : t) =
     begin
       match (l : t) with 
-      | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id fv 
+      | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id mask 
       | Lassign(id, e) ->
-        Hash_set_ident_mask.mask_check_all_hit id fv || hit e
+        Hash_set_ident_mask.mask_check_all_hit id mask || hit e
       | Lstaticcatch(e1, (_,vars), e2) ->
         hit e1 || hit e2
       | Ltrywith(e1, exn, e2) ->
@@ -788,11 +819,17 @@ let free_variables l =
   !fv
 
 
-
+(**
+        [no_bounded_varaibles lambda]
+        checks if [lambda] contains bounded variable, for 
+        example [Llet (str,id,arg,body) ] will fail such check.
+        This is used to indicate such lambda expression if it is okay
+        to inline directly since if it contains bounded variables it 
+        must be rebounded before inlining
+*)
 let rec no_bounded_variables (l : t) =
-  begin
     match (l : t) with 
-    | Lvar id -> true 
+    | Lvar _ -> true 
     | Lconst _ -> true
     | Lassign(_id, e) ->
       no_bounded_variables e
@@ -833,15 +870,13 @@ let rec no_bounded_variables (l : t) =
 
 
     | Lstaticcatch(e1, (_,vars), e2) ->
-      vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2
-    | Ltrywith(e1, exn, e2) -> false
+      vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2    
     | Lfunction{body;params} ->
       params = [] && no_bounded_variables body;
-    | Llet(str, id, arg, body) ->false
+    | Lfor _  -> false   
+    | Ltrywith _ -> false      
+    | Llet _ ->false
     | Lletrec(decl, body) -> decl = [] && no_bounded_variables body 
-    | Lfor(v, e1, e2, dir, e3) -> false 
-
-  end
 
 
 
@@ -1574,12 +1609,12 @@ let sort_single_binding_group (group : bindings) =
   if List.for_all is_function_bind group then group
   else 
     List.sort (fun (_,lama) (_,lamb) -> 
-      match lama,lamb with 
-      | Lfunction _, Lfunction _ ->  0 
-      | Lfunction _ , _ -> -1 
-      | _, Lfunction _ -> 1 
-      | _,_ -> 0
-    ) group
+        match lama,lamb with 
+        | Lfunction _, Lfunction _ ->  0 
+        | Lfunction _ , _ -> -1 
+        | _, Lfunction _ -> 1 
+        | _,_ -> 0
+      ) group
 
 (** TODO: even for a singleton recursive function, tell whehter it is recursive or not ? *)
 let scc_bindings (groups : bindings) : bindings list = 
@@ -1597,7 +1632,7 @@ let scc_bindings (groups : bindings) : bindings list =
                 let lam  = Ordered_hash_map_local_ident.find_value domain  id in  
                 (id,lam)
               ) v  in 
-            sort_single_binding_group bindings :: acc 
+          sort_single_binding_group bindings :: acc 
         )  clusters []
 (* single binding, it does not make sense to do scc,
    we can eliminate {[ let rec f x = x + x  ]}, but it happens rarely in real world 
@@ -1920,44 +1955,44 @@ let convert exports lam : _ * _  =
     | Lprim(Pccall a, args, loc)  -> 
       let prim_name = a.prim_name in    
       let prim_name_len  = String.length prim_name in 
-        begin match Ast_ffi_types.from_string a.prim_native_name with 
-          | Ffi_normal ->
-            if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
-              aux_js_primitive a args loc 
-            else 
-              (* COMPILER CHECK *)
-              (* Here the invariant we should keep is that all exception 
-                 created should be captured
-              *)
-              if a.prim_name = "caml_set_oo_id" then (**)
-                begin match  args with 
-                  | [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
-                             Lconst (Const_base(Const_string(name,_))) :: _,
-                             loc
-                            )] 
-                    -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
-                  | _ -> 
-                    let args = List.map aux args in 
-                    prim ~primitive:(Pccall a) ~args loc
-                end
-              else  
+      begin match Ast_ffi_types.from_string a.prim_native_name with 
+        | Ffi_normal ->
+          if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
+            aux_js_primitive a args loc 
+          else 
+            (* COMPILER CHECK *)
+            (* Here the invariant we should keep is that all exception 
+               created should be captured
+            *)
+          if a.prim_name = "caml_set_oo_id" then (**)
+            begin match  args with 
+              | [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
+                         Lconst (Const_base(Const_string(name,_))) :: _,
+                         loc
+                        )] 
+                -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
+              | _ -> 
                 let args = List.map aux args in 
                 prim ~primitive:(Pccall a) ~args loc
-          | Ffi_obj_create labels ->
+            end
+          else  
             let args = List.map aux args in 
-            prim ~primitive:(Pjs_object_create labels) ~args loc 
-          | Ffi_bs(arg_types, result_type, ffi) ->
-            let args = List.map aux args in 
-            if no_auto_uncurried_arg_types arg_types then   
-              result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
-                ~args loc 
-            else 
-              let n_arg_types, n_args = 
-                transform_uncurried_arg_type loc  arg_types args in 
-              result_wrap loc result_type @@
-              prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
-                ~args:n_args loc 
-        end
+            prim ~primitive:(Pccall a) ~args loc
+        | Ffi_obj_create labels ->
+          let args = List.map aux args in 
+          prim ~primitive:(Pjs_object_create labels) ~args loc 
+        | Ffi_bs(arg_types, result_type, ffi) ->
+          let args = List.map aux args in 
+          if no_auto_uncurried_arg_types arg_types then   
+            result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
+              ~args loc 
+          else 
+            let n_arg_types, n_args = 
+              transform_uncurried_arg_type loc  arg_types args in 
+            result_wrap loc result_type @@
+            prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
+              ~args:n_args loc 
+      end
     | Lprim (Pgetglobal id, args, loc) ->   
       let args = List.map aux args in 
       if Ident.is_predef_exn id then 
@@ -1982,31 +2017,31 @@ let convert exports lam : _ * _  =
                     )    
     | Lstaticraise (id,[]) ->
       begin match Int_hashtbl.find_opt exit_map id  with
-      | None -> Lstaticraise (id,[])
-      | Some new_id -> Lstaticraise (new_id,[])
+        | None -> Lstaticraise (id,[])
+        | Some new_id -> Lstaticraise (new_id,[])
       end               
     | Lstaticraise (id, args) -> 
       Lstaticraise (id, List.map aux args)
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) ) 
       -> (* peep-hole [i] aliased to [j] *)
 
-        let new_i = Int_hashtbl.find_default exit_map j j in 
-        Int_hashtbl.add exit_map i new_i ; 
-        aux b
+      let new_i = Int_hashtbl.find_default exit_map j j in 
+      Int_hashtbl.add exit_map i new_i ; 
+      aux b
     | Lstaticcatch (b, (i, ids), handler) -> 
       Lstaticcatch (aux b, (i,ids), aux handler)
     | Ltrywith (b, id, handler) ->
       let body = aux b in 
       let handler = aux handler in 
-      if exception_id_destructed id handler then 
-       let newId = Ident.create ("raw_" ^ id.name) in 
+      if exception_id_escaped id handler then 
+        let newId = Ident.create ("raw_" ^ id.name) in 
         Ltrywith (body, newId, 
-                let_ StrictOpt id 
-                  (prim ~primitive:Pwrap_exn ~args:[var newId] Location.none)
-                  handler
-               ) 
+                  let_ StrictOpt id 
+                    (prim ~primitive:Pwrap_exn ~args:[var newId] Location.none)
+                    handler
+                 ) 
       else 
-       Ltrywith( body, id, handler)
+        Ltrywith( body, id, handler)
     | Lifthenelse (b,then_,else_) -> 
       Lifthenelse (aux b, aux then_, aux else_)
     | Lsequence (a,b) 
