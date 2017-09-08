@@ -225,7 +225,10 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
               does not need patch from the compiler
 
               FIXME:   when inlining, need refresh local bound identifiers
-          *)
+              #1438 when the action containes bounded variable 
+                to keep the invariant, everytime, we do an inlining,
+                we need refresh, just refreshing once is not enough
+            *)
           let l2 = simplif l2 in 
           (** We need to decide whether inline or not based on post-simplification
             code, since when we do the substitution 
@@ -242,14 +245,14 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
             *)             
           in 
           if ok_to_inline (* && false *)
-             (* #1438 when the action containes bounded variable 
-                to keep the invariant, everytime, we do an inlining,
-                we need refresh, just refreshing once is not enough
-             *)
+
           then 
-            begin 
-              Int_hashtbl.add subst i (xs,  Refresh l2) ;
-              simplif l1 (** l1 will inline *)
+            begin  
+              (* we only inline when [l2] does not contain bound variables
+                no need to refresh
+               *)
+              Int_hashtbl.add subst i (xs,  Id l2) ;
+              simplif l1 
             end
           else Lam.staticcatch (simplif l1) (i,xs) l2
       end
