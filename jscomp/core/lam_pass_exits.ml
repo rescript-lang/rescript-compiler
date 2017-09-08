@@ -217,7 +217,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
         | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
           Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
-        | j,_ ->
+        |  _ ->
 
           (** TODO: better heuristics, also if we can group same exit code [j] 
               in a very early stage -- maybe we can define our enhanced [Lambda] 
@@ -225,29 +225,36 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
               does not need patch from the compiler
 
               FIXME:   when inlining, need refresh local bound identifiers
+              #1438 when the action containes bounded variable 
+                to keep the invariant, everytime, we do an inlining,
+                we need refresh, just refreshing once is not enough
+            *)
+          let l2 = simplif l2 in 
+          (** We need to decide whether inline or not based on post-simplification
+            code, since when we do the substitution 
+            we use the post-simplified expression, it is more consistent
           *)
-
           let ok_to_inline = 
             i >=0 && 
             (Lam.no_bounded_variables l2) &&
             (let lam_size = Lam_analysis.size l2 in
-             (j <= 2 && lam_size < Lam_analysis.exit_inline_size   )
+             (i_occur <= 2 && lam_size < Lam_analysis.exit_inline_size   )
              || lam_size < 5)
             (*TODO: when we do the case merging on the js side, 
               the j is not very indicative                
             *)             
           in 
           if ok_to_inline (* && false *)
-             (* #1438 when the action containes bounded variable 
-                to keep the invariant, everytime, we do an inlining,
-                we need refresh, just refreshing once is not enough
-             *)
+
           then 
-            begin 
-              Int_hashtbl.add subst i (xs,  Refresh(simplif l2)) ;
-              simplif l1 (** l1 will inline *)
+            begin  
+              (* we only inline when [l2] does not contain bound variables
+                no need to refresh
+               *)
+              Int_hashtbl.add subst i (xs,  Id l2) ;
+              simplif l1 
             end
-          else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)
+          else Lam.staticcatch (simplif l1) (i,xs) l2
       end
 
     | Lvar _|Lconst _  -> lam

@@ -152,7 +152,7 @@ exception_alias.cmj : ../stdlib/list.cmj
 exception_def.cmj : test_other_exn.cmj ../stdlib/printexc.cmj
 exception_raise_test.cmj : ../stdlib/obj.cmj mt.cmj ../runtime/js.cmj
 exception_rebind_test.cmj : exception_def.cmj
-exception_rebound_err.cmj : ../runtime/js.cmj
+exception_rebound_err_test.cmj : mt.cmj ../runtime/js.cmj
 exception_repr_test.cmj : ../stdlib/printexc.cmj mt.cmj ../stdlib/format.cmj \
     exception_def.cmj
 exception_value_test.cmj : ../runtime/js.cmj
