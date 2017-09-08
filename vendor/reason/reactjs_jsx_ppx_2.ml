@@ -22,12 +22,11 @@
 
 (*
   This file's shared between the Reason repo and the BuckleScript repo. In
-  Reason, it's in src/reactjs_jsx_ppx_2.ml. In BuckleScript, it's in
-  vendor/reason We periodically copy this file from Reason (the source of truth)
-  to BuckleScript, then uncomment the #if #else #end cppo macros you see in the
-  file. That's because BuckleScript's on OCaml 4.02 while Reason's on 4.04; so
-  the #if macros surround the pieces of code that are different between the two
-  compilers.
+  Reason, it's in src. In BuckleScript, it's in vendor/reason We periodically
+  copy this file from Reason (the source of truth) to BuckleScript, then
+  uncomment the #if #else #end cppo macros you see in the file. That's because
+  BuckleScript's on OCaml 4.02 while Reason's on 4.04; so the #if macros
+  surround the pieces of code that are different between the two compilers.
 
   When you modify this file, please make sure you're not dragging in too many
   things. You don't necessarily have to test the file on both Reason and
