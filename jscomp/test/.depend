@@ -48,6 +48,7 @@ a_recursive_type.cmj : a_recursive_type.cmi
 a_scope_bug.cmj :
 a_string_test.cmj : mt.cmj ../stdlib/list.cmj ext_string_test.cmj
 abstract_type.cmj : abstract_type.cmi
+adt_optimize_test.cmj :
 alias_test.cmj : ../stdlib/string.cmj alias_test.cmi
 and_or_tailcall_test.cmj : mt.cmj
 app_root_finder.cmj : ../others/node.cmj ../runtime/js.cmj
@@ -367,6 +368,7 @@ module_missing_conversion.cmj : ../stdlib/string.cmj \
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 module_splice_test.cmj : mt.cmj ../runtime/js.cmj
 more_uncurry.cmj :
+mpr_6033_test.cmj : mt.cmj ../stdlib/lazy.cmj
 mt.cmj : ../others/node.cmj ../stdlib/list.cmj ../runtime/js.cmj \
     ../stdlib/array.cmj mt.cmi
 mt_global.cmj : mt.cmj mt_global.cmi

@@ -63,6 +63,16 @@ let suites =
             OUnit.assert_bool __LOC__ 
       (Ext_list.length_larger_than_n 2 [1;2] [])
 
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_bool __LOC__
+      (Ext_list.length_ge [1;2;3] 3 );
+      OUnit.assert_bool __LOC__
+      (Ext_list.length_ge [] 0 );
+      OUnit.assert_bool __LOC__
+      (not (Ext_list.length_ge [] 1 ));
+      
     end
 
   ]
