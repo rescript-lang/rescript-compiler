@@ -219,8 +219,8 @@ module Types = struct
   (* Note that failaction would appear in both
      {[
        match x with 
-       | A | B -> 0
-       | C _ | D _ -> 1 
+       | ..
+       | ..
        | _ -> 2 
      ]}
      since compiler would first test [x] is a const pointer
