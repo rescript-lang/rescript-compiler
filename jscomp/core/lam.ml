@@ -216,6 +216,32 @@ module Types = struct
       sw_numblocks: int;
       sw_blocks: (int * t) list;
       sw_failaction : t option}
+  (* Note that failaction would appear in both
+     {[
+       match x with 
+       | A | B -> 0
+       | C _ | D _ -> 1 
+       | _ -> 2 
+     ]}
+     since compiler would first test [x] is a const pointer
+     or not then the [default] applies to each branch.
+
+     In most cases: {[
+       let sw =
+         {sw_numconsts = cstr.cstr_consts; sw_consts = consts;
+          sw_numblocks = cstr.cstr_nonconsts; sw_blocks = nonconsts;
+          sw_failaction = None} in
+     ]}
+
+     but there are some edge cases (see MPR#6033)
+     one predicate used is 
+     {[
+       (sw.sw_numconsts - List.length sw.sw_consts) +
+       (sw.sw_numblocks - List.length sw.sw_blocks) > 1
+     ]}
+     if [= 1] with [some fail] -- called once
+     if [= 0] could not have [some fail]
+  *)   
   and prim_info = 
     { primitive : primitive ; 
       args : t list ;
@@ -828,55 +854,55 @@ let free_variables l =
         must be rebounded before inlining
 *)
 let rec no_bounded_variables (l : t) =
-    match (l : t) with 
-    | Lvar _ -> true 
-    | Lconst _ -> true
-    | Lassign(_id, e) ->
-      no_bounded_variables e
-    | Lapply{fn; args; _} ->
-      no_bounded_variables fn && List.for_all no_bounded_variables args
-    | Lglobal_module _ -> true
-    | Lprim {args; primitive = _ ; } ->
-      List.for_all no_bounded_variables args
-    | Lswitch(arg, sw) ->
-      no_bounded_variables arg &&
-      List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_consts &&
-      List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_blocks &&
-      begin match sw.sw_failaction with 
-        | None -> true
-        | Some a -> no_bounded_variables a 
-      end
-    | Lstringswitch (arg,cases,default) ->
-      no_bounded_variables arg &&
-      List.for_all (fun (_,act) -> no_bounded_variables act) cases &&
-      begin match default with 
-        | None -> true
-        | Some a -> no_bounded_variables a 
-      end
-    | Lstaticraise (_,args) ->
-      List.for_all no_bounded_variables args
-    | Lifthenelse(e1, e2, e3) ->
-      no_bounded_variables e1 && no_bounded_variables e2 && no_bounded_variables e3
-    | Lsequence(e1, e2) ->
-      no_bounded_variables e1 && no_bounded_variables e2
-    | Lwhile(e1, e2) ->
-      no_bounded_variables e1 && no_bounded_variables e2
-    | Lsend (k, met, obj, args, _) ->
-      no_bounded_variables met  &&
-      no_bounded_variables obj &&
-      List.for_all no_bounded_variables args 
-    | Lifused (v, e) ->
-      no_bounded_variables e
+  match (l : t) with 
+  | Lvar _ -> true 
+  | Lconst _ -> true
+  | Lassign(_id, e) ->
+    no_bounded_variables e
+  | Lapply{fn; args; _} ->
+    no_bounded_variables fn && List.for_all no_bounded_variables args
+  | Lglobal_module _ -> true
+  | Lprim {args; primitive = _ ; } ->
+    List.for_all no_bounded_variables args
+  | Lswitch(arg, sw) ->
+    no_bounded_variables arg &&
+    List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_consts &&
+    List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_blocks &&
+    begin match sw.sw_failaction with 
+      | None -> true
+      | Some a -> no_bounded_variables a 
+    end
+  | Lstringswitch (arg,cases,default) ->
+    no_bounded_variables arg &&
+    List.for_all (fun (_,act) -> no_bounded_variables act) cases &&
+    begin match default with 
+      | None -> true
+      | Some a -> no_bounded_variables a 
+    end
+  | Lstaticraise (_,args) ->
+    List.for_all no_bounded_variables args
+  | Lifthenelse(e1, e2, e3) ->
+    no_bounded_variables e1 && no_bounded_variables e2 && no_bounded_variables e3
+  | Lsequence(e1, e2) ->
+    no_bounded_variables e1 && no_bounded_variables e2
+  | Lwhile(e1, e2) ->
+    no_bounded_variables e1 && no_bounded_variables e2
+  | Lsend (k, met, obj, args, _) ->
+    no_bounded_variables met  &&
+    no_bounded_variables obj &&
+    List.for_all no_bounded_variables args 
+  | Lifused (v, e) ->
+    no_bounded_variables e
 
 
-    | Lstaticcatch(e1, (_,vars), e2) ->
-      vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2    
-    | Lfunction{body;params} ->
-      params = [] && no_bounded_variables body;
-    | Lfor _  -> false   
-    | Ltrywith _ -> false      
-    | Llet _ ->false
-    | Lletrec(decl, body) -> decl = [] && no_bounded_variables body 
+  | Lstaticcatch(e1, (_,vars), e2) ->
+    vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2    
+  | Lfunction{body;params} ->
+    params = [] && no_bounded_variables body;
+  | Lfor _  -> false   
+  | Ltrywith _ -> false      
+  | Llet _ ->false
+  | Lletrec(decl, body) -> decl = [] && no_bounded_variables body 
 
 
 
@@ -1100,6 +1126,28 @@ let if_ (a : t) (b : t) c =
       | Const_immstring _ -> b
     end
   | _ ->  Lifthenelse (a,b,c)
+
+let happens_to_be_diff 
+    (sw_consts :
+       (int * Lambda.lambda) list) : int option =   
+  match sw_consts with 
+  | (a, Lconst (Const_pointer (a0,_)| Const_base (Const_int a0)))::
+    (b, Lconst (Const_pointer (b0,_)| Const_base (Const_int b0)))::
+    rest ->
+    let diff = a0 - a in 
+    if b0 - b = diff then 
+      if List.for_all (fun (x, (lam : Lambda.lambda )) -> 
+          match lam with 
+          | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0)) ->
+            x0 - x = diff 
+          | _ -> false
+        ) rest  then 
+        Some diff 
+      else 
+        None
+    else None 
+  | _ -> None
+
 
 let switch lam (lam_switch : switch) : t =
   match lam with
@@ -2008,7 +2056,30 @@ let convert exports lam : _ * _  =
       let args = List.map aux args in
       lam_prim ~primitive ~args loc 
     | Lswitch (e,s) -> 
-      Lswitch (aux e, aux_switch s)
+      let  e = aux e in 
+      begin match s with 
+        | {
+          sw_failaction = None ;
+          sw_blocks = [];
+          sw_numblocks = 0;
+          sw_consts ; 
+          sw_numconsts ;
+        } ->
+          begin match happens_to_be_diff sw_consts with 
+            | Some 0 -> e
+            | Some _ 
+            | None ->
+              Lswitch(e,  
+                      {sw_failaction = None; 
+                       sw_blocks = []; 
+                       sw_numblocks = 0;
+                       sw_consts =
+                         List.map (fun (i,lam) -> i, aux lam) sw_consts;
+                       sw_numconsts
+                      })
+          end
+        | _ -> Lswitch ( e, aux_switch s)
+      end
     | Lstringswitch (e, cases, default,_) -> 
       Lstringswitch (aux e, List.map (fun (x, b) -> x, aux b ) cases, 
                      match default with 

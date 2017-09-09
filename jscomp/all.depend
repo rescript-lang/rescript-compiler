@@ -410,7 +410,7 @@ core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
 core/lam_inline_util.cmx : core/lam.cmx core/lam_inline_util.cmi
 core/lam_analysis.cmx : core/lam.cmx ext/ext_list.cmx core/lam_analysis.cmi
 core/lam_closure.cmx : core/lam_analysis.cmx core/lam.cmx ext/ident_set.cmx \
-    ext/ident_map.cmx core/lam_closure.cmi
+    ext/ident_map.cmx ext/ext_list.cmx core/lam_closure.cmi
 core/js_cmj_format.cmx : ext/string_map.cmx core/lam_arity.cmx core/lam.cmx \
     core/js_packages_info.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
     core/js_cmj_format.cmi

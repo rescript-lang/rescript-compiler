@@ -22356,6 +22356,7 @@ val exclude_tail : 'a list -> 'a * 'a list
 
 val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
 
+val length_ge : 'a list -> int -> bool
 (**
 
   {[length xs = length ys + n ]}
@@ -22654,15 +22655,22 @@ let try_take n l =
 let rec length_compare l n = 
   if n < 0 then `Gt 
   else 
-  begin match l with 
-    | _ ::xs -> length_compare xs (n - 1)
-    | [] ->  
-      if n = 0 then `Eq 
-      else `Lt 
-  end
+    begin match l with 
+      | _ ::xs -> length_compare xs (n - 1)
+      | [] ->  
+        if n = 0 then `Eq 
+        else `Lt 
+    end
+
+let rec length_ge l n =   
+  if n > 0 then
+    match l with 
+    | _ :: tl -> length_ge tl (n - 1)
+    | [] -> false
+  else true
 (**
 
-  {[length xs = length ys + n ]}
+   {[length xs = length ys + n ]}
 *)
 let rec length_larger_than_n n xs ys =
   match xs, ys with 
@@ -22670,7 +22678,7 @@ let rec length_larger_than_n n xs ys =
   | _::xs, _::ys -> 
     length_larger_than_n n xs ys
   | [], _ -> false 
-  
+
 
 
 let exclude_tail (x : 'a list) = 
@@ -22853,35 +22861,35 @@ let rec assoc_by_string def (k : string) lst =
   match lst with 
   | [] -> 
     begin match def with 
-    | None -> assert false 
-    | Some x -> x end
+      | None -> assert false 
+      | Some x -> x end
   | (k1,v1)::rest -> 
     if Ext_string.equal k1 k then v1 else 
-    assoc_by_string def k rest 
+      assoc_by_string def k rest 
 
 let rec assoc_by_int def (k : int) lst = 
   match lst with 
   | [] -> 
     begin match def with
-    | None -> assert false 
-    | Some x -> x end
+      | None -> assert false 
+      | Some x -> x end
   | (k1,v1)::rest -> 
     if k1 = k then v1 else 
-    assoc_by_int def k rest     
+      assoc_by_int def k rest     
 
 (** `modulo [1;2;3;4] [1;2;3]` => [1;2;3], Some [4] `
-  modulo [1;2;3] [1;2;3;4] => [1;2;3] None 
-  modulo [1;2;3] [1;2;3] => [1;2;3] Some []
- *)
+    modulo [1;2;3] [1;2;3;4] => [1;2;3] None 
+    modulo [1;2;3] [1;2;3] => [1;2;3] Some []
+*)
 
 
 let nth_opt l n =
   if n < 0 then None else
-  let rec nth_aux l n =
-    match l with
-    | [] -> None
-    | a::l -> if n = 0 then Some a else nth_aux l (n-1)
-  in nth_aux l n
+    let rec nth_aux l n =
+      match l with
+      | [] -> None
+      | a::l -> if n = 0 then Some a else nth_aux l (n-1)
+    in nth_aux l n
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -68204,6 +68212,32 @@ module Types = struct
       sw_numblocks: int;
       sw_blocks: (int * t) list;
       sw_failaction : t option}
+  (* Note that failaction would appear in both
+     {[
+       match x with 
+       | A | B -> 0
+       | C _ | D _ -> 1 
+       | _ -> 2 
+     ]}
+     since compiler would first test [x] is a const pointer
+     or not then the [default] applies to each branch.
+
+     In most cases: {[
+       let sw =
+         {sw_numconsts = cstr.cstr_consts; sw_consts = consts;
+          sw_numblocks = cstr.cstr_nonconsts; sw_blocks = nonconsts;
+          sw_failaction = None} in
+     ]}
+
+     but there are some edge cases (see MPR#6033)
+     one predicate used is 
+     {[
+       (sw.sw_numconsts - List.length sw.sw_consts) +
+       (sw.sw_numblocks - List.length sw.sw_blocks) > 1
+     ]}
+     if [= 1] with [some fail] -- called once
+     if [= 0] could not have [some fail]
+  *)   
   and prim_info = 
     { primitive : primitive ; 
       args : t list ;
@@ -68816,55 +68850,55 @@ let free_variables l =
         must be rebounded before inlining
 *)
 let rec no_bounded_variables (l : t) =
-    match (l : t) with 
-    | Lvar _ -> true 
-    | Lconst _ -> true
-    | Lassign(_id, e) ->
-      no_bounded_variables e
-    | Lapply{fn; args; _} ->
-      no_bounded_variables fn && List.for_all no_bounded_variables args
-    | Lglobal_module _ -> true
-    | Lprim {args; primitive = _ ; } ->
-      List.for_all no_bounded_variables args
-    | Lswitch(arg, sw) ->
-      no_bounded_variables arg &&
-      List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_consts &&
-      List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_blocks &&
-      begin match sw.sw_failaction with 
-        | None -> true
-        | Some a -> no_bounded_variables a 
-      end
-    | Lstringswitch (arg,cases,default) ->
-      no_bounded_variables arg &&
-      List.for_all (fun (_,act) -> no_bounded_variables act) cases &&
-      begin match default with 
-        | None -> true
-        | Some a -> no_bounded_variables a 
-      end
-    | Lstaticraise (_,args) ->
-      List.for_all no_bounded_variables args
-    | Lifthenelse(e1, e2, e3) ->
-      no_bounded_variables e1 && no_bounded_variables e2 && no_bounded_variables e3
-    | Lsequence(e1, e2) ->
-      no_bounded_variables e1 && no_bounded_variables e2
-    | Lwhile(e1, e2) ->
-      no_bounded_variables e1 && no_bounded_variables e2
-    | Lsend (k, met, obj, args, _) ->
-      no_bounded_variables met  &&
-      no_bounded_variables obj &&
-      List.for_all no_bounded_variables args 
-    | Lifused (v, e) ->
-      no_bounded_variables e
+  match (l : t) with 
+  | Lvar _ -> true 
+  | Lconst _ -> true
+  | Lassign(_id, e) ->
+    no_bounded_variables e
+  | Lapply{fn; args; _} ->
+    no_bounded_variables fn && List.for_all no_bounded_variables args
+  | Lglobal_module _ -> true
+  | Lprim {args; primitive = _ ; } ->
+    List.for_all no_bounded_variables args
+  | Lswitch(arg, sw) ->
+    no_bounded_variables arg &&
+    List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_consts &&
+    List.for_all (fun (key, case) -> no_bounded_variables case) sw.sw_blocks &&
+    begin match sw.sw_failaction with 
+      | None -> true
+      | Some a -> no_bounded_variables a 
+    end
+  | Lstringswitch (arg,cases,default) ->
+    no_bounded_variables arg &&
+    List.for_all (fun (_,act) -> no_bounded_variables act) cases &&
+    begin match default with 
+      | None -> true
+      | Some a -> no_bounded_variables a 
+    end
+  | Lstaticraise (_,args) ->
+    List.for_all no_bounded_variables args
+  | Lifthenelse(e1, e2, e3) ->
+    no_bounded_variables e1 && no_bounded_variables e2 && no_bounded_variables e3
+  | Lsequence(e1, e2) ->
+    no_bounded_variables e1 && no_bounded_variables e2
+  | Lwhile(e1, e2) ->
+    no_bounded_variables e1 && no_bounded_variables e2
+  | Lsend (k, met, obj, args, _) ->
+    no_bounded_variables met  &&
+    no_bounded_variables obj &&
+    List.for_all no_bounded_variables args 
+  | Lifused (v, e) ->
+    no_bounded_variables e
 
 
-    | Lstaticcatch(e1, (_,vars), e2) ->
-      vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2    
-    | Lfunction{body;params} ->
-      params = [] && no_bounded_variables body;
-    | Lfor _  -> false   
-    | Ltrywith _ -> false      
-    | Llet _ ->false
-    | Lletrec(decl, body) -> decl = [] && no_bounded_variables body 
+  | Lstaticcatch(e1, (_,vars), e2) ->
+    vars = [] && no_bounded_variables e1 &&  no_bounded_variables e2    
+  | Lfunction{body;params} ->
+    params = [] && no_bounded_variables body;
+  | Lfor _  -> false   
+  | Ltrywith _ -> false      
+  | Llet _ ->false
+  | Lletrec(decl, body) -> decl = [] && no_bounded_variables body 
 
 
 
@@ -69088,6 +69122,28 @@ let if_ (a : t) (b : t) c =
       | Const_immstring _ -> b
     end
   | _ ->  Lifthenelse (a,b,c)
+
+let happens_to_be_diff 
+    (sw_consts :
+       (int * Lambda.lambda) list) : int option =   
+  match sw_consts with 
+  | (a, Lconst (Const_pointer (a0,_)| Const_base (Const_int a0)))::
+    (b, Lconst (Const_pointer (b0,_)| Const_base (Const_int b0)))::
+    rest ->
+    let diff = a0 - a in 
+    if b0 - b = diff then 
+      if List.for_all (fun (x, (lam : Lambda.lambda )) -> 
+          match lam with 
+          | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0)) ->
+            x0 - x = diff 
+          | _ -> false
+        ) rest  then 
+        Some diff 
+      else 
+        None
+    else None 
+  | _ -> None
+
 
 let switch lam (lam_switch : switch) : t =
   match lam with
@@ -69996,7 +70052,30 @@ let convert exports lam : _ * _  =
       let args = List.map aux args in
       lam_prim ~primitive ~args loc 
     | Lswitch (e,s) -> 
-      Lswitch (aux e, aux_switch s)
+      let  e = aux e in 
+      begin match s with 
+        | {
+          sw_failaction = None ;
+          sw_blocks = [];
+          sw_numblocks = 0;
+          sw_consts ; 
+          sw_numconsts ;
+        } ->
+          begin match happens_to_be_diff sw_consts with 
+            | Some 0 -> e
+            | Some _ 
+            | None ->
+              Lswitch(e,  
+                      {sw_failaction = None; 
+                       sw_blocks = []; 
+                       sw_numblocks = 0;
+                       sw_consts =
+                         List.map (fun (i,lam) -> i, aux lam) sw_consts;
+                       sw_numconsts
+                      })
+          end
+        | _ -> Lswitch ( e, aux_switch s)
+      end
     | Lstringswitch (e, cases, default,_) -> 
       Lstringswitch (aux e, List.map (fun (x, b) -> x, aux b ) cases, 
                      match default with 
@@ -92579,6 +92658,31 @@ val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_ma
 
 end = struct
 #1 "lam_closure.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
 
 
 
@@ -92633,10 +92737,10 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     (* relies on [identifier] uniquely bound *)    
     if not (Ident_set.mem v !local_set) then 
       fv := Ident_map.adjust 
-        v
-        (fun _ -> {top; times = if loop then loop_use else 1})
-        (fun v -> {times = if loop then loop_use else v.times + 1 ; top = v.top && top})
-        !fv 
+          v
+          (fun _ -> {top; times = if loop then loop_use else 1})
+          (fun v -> {times = if loop then loop_use else v.times + 1 ; top = v.top && top})
+          !fv 
   in
   let new_env lam (env : env) : env = 
     if env.top then 
@@ -92669,22 +92773,29 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
           Ident_set.add id acc) !local_set decl;        
       List.iter (fun (_, exp) -> iter no_substitute exp) decl;
       iter no_substitute body
-    | Lswitch(arg, sw) ->
+    | Lswitch(arg, 
+              ({sw_consts; 
+                sw_blocks; 
+                sw_failaction;
+                sw_numconsts;
+                sw_numblocks
+               })) ->
       iter top arg; 
       let top = new_env arg top  in       
-      List.iter (fun (key, case) -> iter top case) sw.sw_consts;
-      List.iter (fun (key, case) -> iter top  case) sw.sw_blocks;
-  
-      begin match sw.sw_failaction with 
+      List.iter (fun (_, case) -> iter top case) sw_consts;
+      List.iter (fun (_, case) -> iter top  case) sw_blocks;
+
+      begin match sw_failaction with 
         | None -> ()
         | Some x ->
-          let nconsts = List.length sw.sw_consts in
-          let nblocks = List.length sw.sw_blocks in
-
-          if nconsts < sw.sw_numconsts  && nblocks < sw.sw_numblocks then
-            iter no_substitute x
+          if  
+            Ext_list.length_ge sw_consts sw_numconsts
+            ||
+            Ext_list.length_ge sw_blocks sw_numblocks
+          then
+            iter top x 
           else
-            iter top x
+            iter no_substitute x
       end
 
     | Lstringswitch (arg,cases,default) ->
@@ -92692,8 +92803,8 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       let top = new_env arg top  in       
       List.iter (fun (_,act) -> iter top  act) cases ;
       begin match default with 
-      | None -> ()
-      | Some x -> iter top x 
+        | None -> ()
+        | Some x -> iter top x 
       end
     | Lstaticraise (_,args) ->
       List.iter (iter no_substitute ) args
@@ -92743,7 +92854,7 @@ let is_closed_with_map exports params body =
   (old_count  = new_count, param_map)
 
 
-  
+
 
 end
 module Js_of_lam_module : sig 
@@ -97675,9 +97786,9 @@ let rec flat_catches acc (x : Lam.t)
   match x with 
   | Lstaticcatch(l, (code, bindings), handler) 
     when 
-    acc = [] ||
-    (not @@ Lam_exit_code.has_exit_code 
-      (fun exit -> List.exists (fun (c,_,_) -> c = exit) acc) handler)
+      acc = [] ||
+      (not @@ Lam_exit_code.has_exit_code 
+         (fun exit -> List.exists (fun (c,_,_) -> c = exit) acc) handler)
     -> (* #1698 should not crush exit code here without checking *)
     flat_catches ((code,handler,bindings)::acc) l
   | _ -> acc, x
@@ -97766,9 +97877,9 @@ let rec
 *)
 (** This can not happen since this id should be already consulted by type checker 
           Worst case 
-          {[
-            E.index m (pos + 1)
-          ]}
+    {[
+      E.index m (pos + 1)
+    ]}
           shift by one (due to module encoding)
 *)
 (* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
@@ -97853,8 +97964,8 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                  E.call ~info:Js_call_info.dummy acc args
              in
              aux (E.ml_var_dot id name) 
-             (match arity with Single x -> x | Submodule _ -> NA)
-            args (List.length args ))
+               (match arity with Single x -> x | Submodule _ -> NA)
+               args (List.length args ))
       )
 
 and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
@@ -97929,11 +98040,11 @@ and compile_recursive_let ~all_bindings
       ), [] 
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
     when List.for_all (fun (x : Lam.t) -> 
-      match x with 
-      | Lvar pid -> 
-        Ident.same pid id  || 
-        (not @@ List.exists (fun (other,_) -> Ident.same other pid ) all_bindings)
-      | _ -> false) ls 
+        match x with 
+        | Lvar pid -> 
+          Ident.same pid id  || 
+          (not @@ List.exists (fun (other,_) -> Ident.same other pid ) all_bindings)
+        | _ -> false) ls 
     ->
     (* capture cases like for {!Queue}
        {[let rec cell = { content = x; next = cell} ]}
@@ -98029,7 +98140,7 @@ and compile_recursive_lets cxt id_args : Js_output.t  =
     end  
 and compile_general_cases : 
   'a . 
-    ('a -> J.expression) ->
+  ('a -> J.expression) ->
   (J.expression -> J.expression -> J.expression) -> 
   Lam_compile_defs.cxt -> 
   (?default:J.block ->
@@ -98503,10 +98614,10 @@ and
 
 
     | Lprim {primitive = Pjs_fn_make arity;  args = [fn]; loc } -> 
-          compile_lambda cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
+      compile_lambda cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
 
     | Lprim {primitive = Pjs_fn_make arity;  
-      args = [] | _::_::_ } -> 
+             args = [] | _::_::_ } -> 
       assert false 
     | Lglobal_module i -> 
       (* introduced by 
@@ -98517,7 +98628,7 @@ and
       Js_output.handle_block_return st should_return lam [] exp 
     | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
       ->   
-       let args_block, args_expr =
+      let args_block, args_expr =
         Ext_list.split_map (fun (x : Lam.t) ->
             match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x 
             with 
@@ -98603,7 +98714,7 @@ and
                 {block = []; value =  Some out2} ->  
                 (* Invariant: should_return is false*)
                 Js_output.make @@ (b @ [
-                  S.define ~kind id (E.econd e out1 out2) ])
+                    S.define ~kind id (E.econd e out1 out2) ])
               | _, _ -> 
                 Js_output.make 
                   ( b @ [
@@ -98651,7 +98762,7 @@ and
                   match Js_exp_make.extract_non_pure out1 ,
                         Js_exp_make.extract_non_pure out2 with
                   | None, None -> Js_output.make (b @ [ S.exp e]) 
-                    (* FIX #1762 *)
+                  (* FIX #1762 *)
                   | Some out1, Some out2 -> 
                     Js_output.make b  ~value:(E.econd e  out1 out2)
                   | Some out1, None -> 
@@ -98768,38 +98879,50 @@ and
                 also if last statement is throw -- should we drop remaining
                 statement?
       *)
-      let default : default_case  = 
+      let  sw_num_default  =      
         match default with 
         | None -> Complete 
-        | Some x -> Default x in
+        | Some x -> 
+          if Ext_list.length_ge sw_consts sw_numconsts 
+          then Complete
+          else Default x in 
+      let sw_blocks_default = 
+        match default  with      
+        | None -> Complete 
+        | Some x -> 
+          if Ext_list.length_ge sw_blocks sw_numblocks
+          then Complete
+          else Default x in 
       let compile_whole  ({st; _} as cxt  : Lam_compile_defs.cxt ) =
-        begin
-          match sw_numconsts, sw_numblocks, 
-                compile_lambda {cxt with should_return = ReturnFalse; st = NeedValue}
-                  lam with 
-          | 0 , _ , {block; value =  Some e}  ->
-            compile_cases cxt (E.tag e )  sw_blocks default
-          | _, 0, {block; value =  Some e} ->  
-            compile_cases cxt e  sw_consts default
-          | _, _,  { block; value =  Some e} -> (* [e] will be used twice  *)
-            let dispatch e = 
-              [
-                S.if_ 
-                  (E.is_type_number e )
-                  (compile_cases cxt e sw_consts default)
-                  (* default still needed, could simplified*)
-                  ~else_:(
-                    (compile_cases  cxt (E.tag e ) sw_blocks default ))] in 
-            begin
-              match e.expression_desc with 
-              | J.Var _  -> dispatch e  
-              | _ -> 
-                let v = Ext_ident.create_tmp () in  
-                (* Necessary avoid duplicated computation*)
-                (S.define ~kind:Variable v e ) ::  dispatch (E.var v)
-            end
-          | _, _, {value =  None; _}  -> assert false 
-        end in
+        match sw_numconsts, sw_numblocks, 
+              compile_lambda {cxt with should_return = ReturnFalse; st = NeedValue}
+                lam with 
+        | 0 , _ , {block; value =  Some e}  ->
+          compile_cases cxt (E.tag e )  sw_blocks sw_blocks_default
+        | _, 0, {block; value =  Some e} ->  
+          compile_cases cxt e  sw_consts sw_num_default
+        | _, _,  { block; value =  Some e} -> (* [e] will be used twice  *)
+          let dispatch e = 
+            [
+              S.if_ 
+                (E.is_type_number e )
+                (compile_cases cxt e sw_consts sw_num_default
+                )
+                (* default still needed, could simplified*)
+                ~else_:
+                  (compile_cases  cxt (E.tag e ) sw_blocks 
+                     sw_blocks_default)
+            ] in 
+          begin
+            match e.expression_desc with 
+            | J.Var _  -> dispatch e  
+            | _ -> 
+              let v = Ext_ident.create_tmp () in  
+              (* Necessary avoid duplicated computation*)
+              (S.define ~kind:Variable v e ) ::  dispatch (E.var v)
+          end
+        | _, _, {value =  None; _}  -> assert false 
+      in
       begin
         match st with  (* Needs declare first *)
         | NeedValue -> 
@@ -99136,9 +99259,9 @@ and
         (* #1701 *)
         [ S.try_ 
             (Js_output.to_block (compile_lambda 
-            (match should_return with 
-            | ReturnTrue (Some _ ) -> {cxt with st = st; should_return = ReturnTrue None}
-            | ReturnTrue None | ReturnFalse -> {cxt with st = st}) lam))
+                                   (match should_return with 
+                                    | ReturnTrue (Some _ ) -> {cxt with st = st; should_return = ReturnTrue None}
+                                    | ReturnTrue None | ReturnFalse -> {cxt with st = st}) lam))
             ~with_:(id, 
                     Js_output.to_block @@ 
                     compile_lambda {cxt with st = st} catch )

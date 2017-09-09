@@ -44,9 +44,9 @@ let rec flat_catches acc (x : Lam.t)
   match x with 
   | Lstaticcatch(l, (code, bindings), handler) 
     when 
-    acc = [] ||
-    (not @@ Lam_exit_code.has_exit_code 
-      (fun exit -> List.exists (fun (c,_,_) -> c = exit) acc) handler)
+      acc = [] ||
+      (not @@ Lam_exit_code.has_exit_code 
+         (fun exit -> List.exists (fun (c,_,_) -> c = exit) acc) handler)
     -> (* #1698 should not crush exit code here without checking *)
     flat_catches ((code,handler,bindings)::acc) l
   | _ -> acc, x
@@ -135,9 +135,9 @@ let rec
 *)
 (** This can not happen since this id should be already consulted by type checker 
           Worst case 
-          {[
-            E.index m (pos + 1)
-          ]}
+    {[
+      E.index m (pos + 1)
+    ]}
           shift by one (due to module encoding)
 *)
 (* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
@@ -222,8 +222,8 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                  E.call ~info:Js_call_info.dummy acc args
              in
              aux (E.ml_var_dot id name) 
-             (match arity with Single x -> x | Submodule _ -> NA)
-            args (List.length args ))
+               (match arity with Single x -> x | Submodule _ -> NA)
+               args (List.length args ))
       )
 
 and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
@@ -298,11 +298,11 @@ and compile_recursive_let ~all_bindings
       ), [] 
   | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
     when List.for_all (fun (x : Lam.t) -> 
-      match x with 
-      | Lvar pid -> 
-        Ident.same pid id  || 
-        (not @@ List.exists (fun (other,_) -> Ident.same other pid ) all_bindings)
-      | _ -> false) ls 
+        match x with 
+        | Lvar pid -> 
+          Ident.same pid id  || 
+          (not @@ List.exists (fun (other,_) -> Ident.same other pid ) all_bindings)
+        | _ -> false) ls 
     ->
     (* capture cases like for {!Queue}
        {[let rec cell = { content = x; next = cell} ]}
@@ -398,7 +398,7 @@ and compile_recursive_lets cxt id_args : Js_output.t  =
     end  
 and compile_general_cases : 
   'a . 
-    ('a -> J.expression) ->
+  ('a -> J.expression) ->
   (J.expression -> J.expression -> J.expression) -> 
   Lam_compile_defs.cxt -> 
   (?default:J.block ->
@@ -872,10 +872,10 @@ and
 
 
     | Lprim {primitive = Pjs_fn_make arity;  args = [fn]; loc } -> 
-          compile_lambda cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
+      compile_lambda cxt (Lam_eta_conversion.unsafe_adjust_to_arity loc ~to_:arity ?from:None fn)
 
     | Lprim {primitive = Pjs_fn_make arity;  
-      args = [] | _::_::_ } -> 
+             args = [] | _::_::_ } -> 
       assert false 
     | Lglobal_module i -> 
       (* introduced by 
@@ -886,7 +886,7 @@ and
       Js_output.handle_block_return st should_return lam [] exp 
     | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
       ->   
-       let args_block, args_expr =
+      let args_block, args_expr =
         Ext_list.split_map (fun (x : Lam.t) ->
             match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x 
             with 
@@ -972,7 +972,7 @@ and
                 {block = []; value =  Some out2} ->  
                 (* Invariant: should_return is false*)
                 Js_output.make @@ (b @ [
-                  S.define ~kind id (E.econd e out1 out2) ])
+                    S.define ~kind id (E.econd e out1 out2) ])
               | _, _ -> 
                 Js_output.make 
                   ( b @ [
@@ -1020,7 +1020,7 @@ and
                   match Js_exp_make.extract_non_pure out1 ,
                         Js_exp_make.extract_non_pure out2 with
                   | None, None -> Js_output.make (b @ [ S.exp e]) 
-                    (* FIX #1762 *)
+                  (* FIX #1762 *)
                   | Some out1, Some out2 -> 
                     Js_output.make b  ~value:(E.econd e  out1 out2)
                   | Some out1, None -> 
@@ -1137,38 +1137,50 @@ and
                 also if last statement is throw -- should we drop remaining
                 statement?
       *)
-      let default : default_case  = 
+      let  sw_num_default  =      
         match default with 
         | None -> Complete 
-        | Some x -> Default x in
+        | Some x -> 
+          if Ext_list.length_ge sw_consts sw_numconsts 
+          then Complete
+          else Default x in 
+      let sw_blocks_default = 
+        match default  with      
+        | None -> Complete 
+        | Some x -> 
+          if Ext_list.length_ge sw_blocks sw_numblocks
+          then Complete
+          else Default x in 
       let compile_whole  ({st; _} as cxt  : Lam_compile_defs.cxt ) =
-        begin
-          match sw_numconsts, sw_numblocks, 
-                compile_lambda {cxt with should_return = ReturnFalse; st = NeedValue}
-                  lam with 
-          | 0 , _ , {block; value =  Some e}  ->
-            compile_cases cxt (E.tag e )  sw_blocks default
-          | _, 0, {block; value =  Some e} ->  
-            compile_cases cxt e  sw_consts default
-          | _, _,  { block; value =  Some e} -> (* [e] will be used twice  *)
-            let dispatch e = 
-              [
-                S.if_ 
-                  (E.is_type_number e )
-                  (compile_cases cxt e sw_consts default)
-                  (* default still needed, could simplified*)
-                  ~else_:(
-                    (compile_cases  cxt (E.tag e ) sw_blocks default ))] in 
-            begin
-              match e.expression_desc with 
-              | J.Var _  -> dispatch e  
-              | _ -> 
-                let v = Ext_ident.create_tmp () in  
-                (* Necessary avoid duplicated computation*)
-                (S.define ~kind:Variable v e ) ::  dispatch (E.var v)
-            end
-          | _, _, {value =  None; _}  -> assert false 
-        end in
+        match sw_numconsts, sw_numblocks, 
+              compile_lambda {cxt with should_return = ReturnFalse; st = NeedValue}
+                lam with 
+        | 0 , _ , {block; value =  Some e}  ->
+          compile_cases cxt (E.tag e )  sw_blocks sw_blocks_default
+        | _, 0, {block; value =  Some e} ->  
+          compile_cases cxt e  sw_consts sw_num_default
+        | _, _,  { block; value =  Some e} -> (* [e] will be used twice  *)
+          let dispatch e = 
+            [
+              S.if_ 
+                (E.is_type_number e )
+                (compile_cases cxt e sw_consts sw_num_default
+                )
+                (* default still needed, could simplified*)
+                ~else_:
+                  (compile_cases  cxt (E.tag e ) sw_blocks 
+                     sw_blocks_default)
+            ] in 
+          begin
+            match e.expression_desc with 
+            | J.Var _  -> dispatch e  
+            | _ -> 
+              let v = Ext_ident.create_tmp () in  
+              (* Necessary avoid duplicated computation*)
+              (S.define ~kind:Variable v e ) ::  dispatch (E.var v)
+          end
+        | _, _, {value =  None; _}  -> assert false 
+      in
       begin
         match st with  (* Needs declare first *)
         | NeedValue -> 
@@ -1505,9 +1517,9 @@ and
         (* #1701 *)
         [ S.try_ 
             (Js_output.to_block (compile_lambda 
-            (match should_return with 
-            | ReturnTrue (Some _ ) -> {cxt with st = st; should_return = ReturnTrue None}
-            | ReturnTrue None | ReturnFalse -> {cxt with st = st}) lam))
+                                   (match should_return with 
+                                    | ReturnTrue (Some _ ) -> {cxt with st = st; should_return = ReturnTrue None}
+                                    | ReturnTrue None | ReturnFalse -> {cxt with st = st}) lam))
             ~with_:(id, 
                     Js_output.to_block @@ 
                     compile_lambda {cxt with st = st} catch )
