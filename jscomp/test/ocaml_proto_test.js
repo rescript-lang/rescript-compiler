@@ -4510,39 +4510,7 @@ function compile_message_p2(types, param, message) {
     if (typeof field_type === "number") {
       var param = field_type;
       if (typeof param === "number") {
-        switch (param) {
-          case 0 : 
-              return /* Field_type_double */0;
-          case 1 : 
-              return /* Field_type_float */1;
-          case 2 : 
-              return /* Field_type_int32 */2;
-          case 3 : 
-              return /* Field_type_int64 */3;
-          case 4 : 
-              return /* Field_type_uint32 */4;
-          case 5 : 
-              return /* Field_type_uint64 */5;
-          case 6 : 
-              return /* Field_type_sint32 */6;
-          case 7 : 
-              return /* Field_type_sint64 */7;
-          case 8 : 
-              return /* Field_type_fixed32 */8;
-          case 9 : 
-              return /* Field_type_fixed64 */9;
-          case 10 : 
-              return /* Field_type_sfixed32 */10;
-          case 11 : 
-              return /* Field_type_sfixed64 */11;
-          case 12 : 
-              return /* Field_type_bool */12;
-          case 13 : 
-              return /* Field_type_string */13;
-          case 14 : 
-              return /* Field_type_bytes */14;
-          
-        }
+        return param;
       } else {
         throw [
               Compilation_error,

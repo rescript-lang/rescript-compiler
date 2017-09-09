@@ -110,22 +110,17 @@ function u() {
 function f(x) {
   if (typeof x === "number") {
     return 2;
+  } else if (x.tag) {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "test_trywith.ml",
+            51,
+            9
+          ]
+        ];
   } else {
-    switch (x.tag | 0) {
-      case 0 : 
-          return 1;
-      case 1 : 
-          throw [
-                Caml_builtin_exceptions.assert_failure,
-                [
-                  "test_trywith.ml",
-                  51,
-                  9
-                ]
-              ];
-      default:
-        return 2;
-    }
+    return 1;
   }
 }
 

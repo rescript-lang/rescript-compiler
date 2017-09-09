@@ -50,6 +50,7 @@ val exclude_tail : 'a list -> 'a * 'a list
 
 val length_compare : 'a list -> int -> [`Gt | `Eq | `Lt ]
 
+val length_ge : 'a list -> int -> bool
 (**
 
   {[length xs = length ys + n ]}

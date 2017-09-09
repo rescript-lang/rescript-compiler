@@ -1,3 +1,28 @@
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
 
 
 
@@ -52,10 +77,10 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     (* relies on [identifier] uniquely bound *)    
     if not (Ident_set.mem v !local_set) then 
       fv := Ident_map.adjust 
-        v
-        (fun _ -> {top; times = if loop then loop_use else 1})
-        (fun v -> {times = if loop then loop_use else v.times + 1 ; top = v.top && top})
-        !fv 
+          v
+          (fun _ -> {top; times = if loop then loop_use else 1})
+          (fun v -> {times = if loop then loop_use else v.times + 1 ; top = v.top && top})
+          !fv 
   in
   let new_env lam (env : env) : env = 
     if env.top then 
@@ -88,22 +113,29 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
           Ident_set.add id acc) !local_set decl;        
       List.iter (fun (_, exp) -> iter no_substitute exp) decl;
       iter no_substitute body
-    | Lswitch(arg, sw) ->
+    | Lswitch(arg, 
+              ({sw_consts; 
+                sw_blocks; 
+                sw_failaction;
+                sw_numconsts;
+                sw_numblocks
+               })) ->
       iter top arg; 
       let top = new_env arg top  in       
-      List.iter (fun (key, case) -> iter top case) sw.sw_consts;
-      List.iter (fun (key, case) -> iter top  case) sw.sw_blocks;
-  
-      begin match sw.sw_failaction with 
+      List.iter (fun (_, case) -> iter top case) sw_consts;
+      List.iter (fun (_, case) -> iter top  case) sw_blocks;
+
+      begin match sw_failaction with 
         | None -> ()
         | Some x ->
-          let nconsts = List.length sw.sw_consts in
-          let nblocks = List.length sw.sw_blocks in
-
-          if nconsts < sw.sw_numconsts  && nblocks < sw.sw_numblocks then
-            iter no_substitute x
+          if  
+            Ext_list.length_ge sw_consts sw_numconsts
+            ||
+            Ext_list.length_ge sw_blocks sw_numblocks
+          then
+            iter top x 
           else
-            iter top x
+            iter no_substitute x
       end
 
     | Lstringswitch (arg,cases,default) ->
@@ -111,8 +143,8 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       let top = new_env arg top  in       
       List.iter (fun (_,act) -> iter top  act) cases ;
       begin match default with 
-      | None -> ()
-      | Some x -> iter top x 
+        | None -> ()
+        | Some x -> iter top x 
       end
     | Lstaticraise (_,args) ->
       List.iter (iter no_substitute ) args
@@ -162,4 +194,4 @@ let is_closed_with_map exports params body =
   (old_count  = new_count, param_map)
 
 
-  
+

@@ -2,31 +2,11 @@
 
 
 function f(x) {
-  switch (x) {
-    case 0 : 
-        return /* X1 */0;
-    case 1 : 
-        return /* X2 */1;
-    case 2 : 
-        return /* X3 */2;
-    case 3 : 
-        return /* X4 */3;
-    
-  }
+  return x;
 }
 
 function f2(x) {
-  switch (x) {
-    case 0 : 
-        return /* X1 */0;
-    case 1 : 
-        return /* X2 */1;
-    case 2 : 
-        return /* X3 */2;
-    case 3 : 
-        return /* X4 */3;
-    
-  }
+  return x;
 }
 
 exports.f  = f;
