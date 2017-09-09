@@ -368,7 +368,7 @@ module_missing_conversion.cmj : ../stdlib/string.cmj \
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 module_splice_test.cmj : mt.cmj ../runtime/js.cmj
 more_uncurry.cmj :
-mpr_6033_test.cmj : ../stdlib/lazy.cmj
+mpr_6033_test.cmj : mt.cmj ../stdlib/lazy.cmj
 mt.cmj : ../others/node.cmj ../stdlib/list.cmj ../runtime/js.cmj \
     ../stdlib/array.cmj mt.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
