@@ -703,7 +703,7 @@ let rewrite_signature :
         | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
           -> 
           begin 
-            Ast_payload.as_config_record_and_process loc payload 
+            Ast_payload.ident_or_record_as_config loc payload 
             |> List.iter (Ast_payload.table_dispatch signature_config_table) ; 
             unsafe_mapper.signature unsafe_mapper rest
           end
@@ -719,7 +719,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
         | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
           -> 
           begin 
-            Ast_payload.as_config_record_and_process loc payload 
+            Ast_payload.ident_or_record_as_config loc payload 
             |> List.iter (Ast_payload.table_dispatch structural_config_table) ; 
             let rest = unsafe_mapper.structure unsafe_mapper rest in
             if !no_export then

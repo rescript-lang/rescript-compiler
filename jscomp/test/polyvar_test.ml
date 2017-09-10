@@ -1,9 +1,9 @@
 
-[@@@bs.config {no_export }]
+[@@@bs.config no_export ]
 
 let f x =
   match x with
-  | `A -> "A"
+  | `A -> "A" 
   | `B -> "B"
 
 let f1 x = match x with `A -> "A"

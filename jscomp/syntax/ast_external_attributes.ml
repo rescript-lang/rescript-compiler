@@ -356,14 +356,8 @@ let process_external_attributes
                   | _ ->
                     Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end in
-              begin match Ast_payload.as_ident payload with
-                | Some {loc ; txt = Lident txt} -> 
-                  {st with return_wrapper = aux loc txt  }
-                | Some {loc ; txt = _ } ->
-                  Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
-                | None ->  
                   let actions = 
-                    Ast_payload.as_config_record_and_process loc payload 
+                    Ast_payload.ident_or_record_as_config loc payload 
                   in
                   begin match actions with 
                     | [ ({txt; _ },None) ] -> 
@@ -371,7 +365,6 @@ let process_external_attributes
                     | _ ->
                       Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end
-              end 
             | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
           end, attrs
         else (st , attr :: attrs)
