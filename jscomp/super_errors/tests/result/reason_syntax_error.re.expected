@@ -1,0 +1,14 @@
+File "./tests/source/reason_syntax_error.re", line 1, characters 10-12:
+Error: 1742: Incomplete statement. Did you forget a ";"?
+
+
+  [1;31mWe've found a bug for you![0m
+  [36m./tests/source/reason_syntax_error.re[0m
+  
+  [1;33mThere's been an error running Reason's refmt parser on a file.[0m
+  This was the command:
+  
+  refmt --print binary './tests/source/reason_syntax_error.re' > /var/folders/r0/dg6dl1qn2l91cq_2k1lg11v501nwsp/T/ocamlppac9de8
+  
+  Please file an issue on github.com/facebook/reason. Thanks!
+  

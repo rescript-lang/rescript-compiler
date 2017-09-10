@@ -1,0 +1,9 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m./tests/source/syntax_error_5.ml[0m [2m2:3-7[0m
+  
+  1 [2m│[0m type fruits =
+  [1;31m2[0m [2m│[0m | [1;31mapple[0m of string
+  
+  Syntax error
+  

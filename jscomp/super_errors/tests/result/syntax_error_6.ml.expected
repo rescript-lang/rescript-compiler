@@ -1,0 +1,11 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m./tests/source/syntax_error_6.ml[0m [2m4:1-4[0m
+  
+  2 [2m│[0m   print_endline "gosh";
+  3 [2m│[0m   print_endline "so much functional purity"
+  [1;31m4[0m [2m│[0m [1;31melse[0m
+  5 [2m│[0m   print_endline "that I cant even"
+  
+  Syntax error
+  

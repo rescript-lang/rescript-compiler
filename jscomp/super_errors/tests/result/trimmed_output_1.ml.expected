@@ -1,0 +1,19 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m./tests/source/trimmed_output_1.ml[0m [2m4:13-20:3[0m
+  
+   2 [2m│[0m (* *)
+   3 [2m│[0m (* *)
+  [1;31m 4[0m [2m│[0m let a:int = [1;31m"asdaaaaaaaaaaaaaaaaaaaaa[0m
+  [1;31m 5[0m [2m│[0m [1;31maa[0m
+  [2m .[0m [2m│[0m [2m...[0m
+  [1;31m19[0m [2m│[0m [1;31maa[0m
+  [1;31m20[0m [2m│[0m [1;31maa"[0m
+  21 [2m│[0m (* *)
+  22 [2m│[0m (* *)
+  
+  This is:
+    [1;31mstring[0m
+  But somewhere wanted:
+    [1;33mint[0m
+  

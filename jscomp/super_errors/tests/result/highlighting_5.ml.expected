@@ -1,0 +1,15 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m./tests/source/highlighting_5.ml[0m [2m2:14-4:26[0m
+  
+  1 [2m│[0m 
+  [1;31m2[0m [2m│[0m let a: int = [1;31m"helllllll[0m
+  [1;31m3[0m [2m│[0m 
+  [1;31m4[0m [2m│[0m [1;31mloooooooooooooooooooooooo"[0m
+  5 [2m│[0m (*  *)
+  
+  This is:
+    [1;31mstring[0m
+  But somewhere wanted:
+    [1;33mint[0m
+  

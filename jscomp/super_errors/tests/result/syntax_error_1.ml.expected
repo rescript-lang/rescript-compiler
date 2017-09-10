@@ -1,0 +1,15 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m./tests/source/syntax_error_1.ml[0m [2m2:1[0m
+  
+  1 [2m│[0m let a = (1, 2
+  
+  Syntax error: ')' expected
+  
+    [1;31mWe've found a bug for you![0m
+    [36m./tests/source/syntax_error_1.ml[0m [2m1:9[0m
+    
+    [1;31m1[0m [2m│[0m let a = [1;31m([0m1, 2
+    
+    This '(' might be unmatched
+    

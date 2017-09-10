@@ -1,0 +1,13 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m./tests/source/highlighting_7.ml[0m [2m2:14-100[0m
+  
+  1 [2m│[0m (* overflows in the terminal *)
+  [1;31m2[0m [2m│[0m let a: int = [1;31m"helllllllllllllllllllllllllllllllllllllllllllllllllllllll
+      llllllllllllllllllllllllllll"[0m
+  
+  This is:
+    [1;31mstring[0m
+  But somewhere wanted:
+    [1;33mint[0m
+  

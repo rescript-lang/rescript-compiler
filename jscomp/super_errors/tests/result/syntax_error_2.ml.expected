@@ -1,0 +1,9 @@
+
+  [1;31mWe've found a bug for you![0m
+  [36m./tests/source/syntax_error_2.ml[0m [2m2:12-17[0m
+  
+  1 [2m│[0m let () =
+  [1;31m2[0m [2m│[0m   I'm glad [1;31myou're[0m looking at this file =)
+  
+  Syntax error
+  
