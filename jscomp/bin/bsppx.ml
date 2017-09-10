@@ -6442,6 +6442,10 @@ val as_config_record_and_process :
   Location.t ->
   t -> action list 
 
+val ident_or_record_as_config : 
+  Location.t ->
+  t -> action list 
+
 val assert_bool_lit : Parsetree.expression -> bool
 
 val empty : t 
@@ -6518,7 +6522,7 @@ let as_core_type loc x =
   match  x with
   | Parsetree.PTyp x -> x
   | _ -> Location.raise_errorf ~loc "except a core type"
-           
+
 let as_ident (x : t ) =
   match x with
   | PStr [
@@ -6527,7 +6531,7 @@ let as_ident (x : t ) =
            {
              pexp_desc =
                Pexp_ident ident 
-                 
+
            } , _)
       }
     ] -> Some ident
@@ -6536,7 +6540,7 @@ open Ast_helper
 
 let raw_string_payload loc (s : string) : t =
   PStr [ Str.eval ~loc (Exp.constant ~loc (Const_string (s,None)  ))]
-    
+
 let as_empty_structure (x : t ) = 
   match x with 
   | PStr ([]) -> true
@@ -6546,7 +6550,7 @@ type lid = string Asttypes.loc
 type label_expr = lid  * Parsetree.expression
 
 type action = 
-   lid * Parsetree.expression option 
+  lid * Parsetree.expression option 
 (** None means punning is hit 
     {[ { x } ]}
     otherwise it comes with a payload 
@@ -6556,6 +6560,7 @@ type action =
 let as_config_record_and_process 
     loc
     (x : Parsetree.payload) 
+  : ( string Location.loc * Parsetree.expression option) list 
   = 
   match  x with 
   | PStr 
@@ -6565,32 +6570,77 @@ let as_config_record_and_process
         }]
     -> 
     begin match with_obj with
-    | None ->
-      List.map
-        (fun (x,y) -> 
-           match (x,y) with 
-           | ({Asttypes.txt = Longident.Lident name; loc} ) , 
-             ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
-             when name2 = name -> 
-              ({Asttypes.txt = name ; loc}, None)
-           | ({Asttypes.txt = Longident.Lident name; loc} ), y 
-             -> 
-             ({Asttypes.txt = name ; loc}, Some y)
-           | _ -> 
-             Location.raise_errorf ~loc "Qualified label is not allood"
-        )
-        label_exprs
-    | Some _ -> 
-      Location.raise_errorf ~loc "with is not supported"
+      | None ->
+        List.map
+          (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
+             match (x,y) with 
+             | ({txt = Lident name; loc} ) , 
+               ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
+               when name2 = name -> 
+               ({Asttypes.txt = name ; loc}, None)
+             | ({txt = Lident name; loc} ), y 
+               -> 
+               ({Asttypes.txt = name ; loc}, Some y)
+             | _ -> 
+               Location.raise_errorf ~loc "Qualified label is not allood"
+          )
+          label_exprs
+      | Some _ -> 
+        Location.raise_errorf ~loc "with is not supported"
     end
   | Parsetree.PStr [] -> []
+  | _ -> 
+    Location.raise_errorf ~loc "this is not a valid record config"
+
+let ident_or_record_as_config     
+    loc
+    (x : Parsetree.payload) 
+  : ( string Location.loc * Parsetree.expression option) list 
+  = 
+  match  x with 
+  | PStr 
+      [ {pstr_desc = Pstr_eval
+             ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
+         _
+        }]
+    -> 
+    begin match with_obj with
+      | None ->
+        List.map
+          (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
+             match (x,y) with 
+             | ({txt = Lident name; loc} ) , 
+               ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
+               when name2 = name -> 
+               ({Asttypes.txt = name ; loc}, None)
+             | ({txt = Lident name; loc} ), y 
+               -> 
+               ({Asttypes.txt = name ; loc}, Some y)
+             | _ -> 
+               Location.raise_errorf ~loc "Qualified label is not allood"
+          )
+          label_exprs
+      | Some _ -> 
+        Location.raise_errorf ~loc "with is not supported"
+    end
+  | PStr [
+      {pstr_desc =
+         Pstr_eval (
+           {
+             pexp_desc =
+               Pexp_ident ({loc = lloc; txt = Lident txt});
+
+           } , _)
+      }
+    ] -> [ {Asttypes.txt ; loc = lloc}, None] 
+  | PStr [] -> []
   | _ -> 
     Location.raise_errorf ~loc "this is not a valid record config"
 
 
 
 let assert_strings loc (x : t) : string list
-   = 
+  = 
   let module M = struct exception Not_str end  in 
   match x with 
   | PStr [ {pstr_desc =  
@@ -6601,7 +6651,7 @@ let assert_strings loc (x : t) : string list
             pstr_loc = loc ;            
             _}] ->
     (try 
-        strs |> List.map (fun e ->
+       strs |> List.map (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
              name
@@ -6636,7 +6686,7 @@ let empty : t = Parsetree.PStr []
 
 
 let table_dispatch table (action : action)
-     = 
+  = 
   match action with 
   | {txt =  name; loc  }, y -> 
     begin match String_map.find_exn name table with 
@@ -7623,24 +7673,25 @@ let process_method_attributes_rev (attrs : t) =
         -> 
         let result = 
           List.fold_left 
-          (fun 
-            (null, undefined)
-            (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-            if txt =  "null" then 
-              (match opt_expr with 
-              | None -> true
-              | Some e -> 
-                Ast_payload.assert_bool_lit e), undefined
+            (fun 
+              (null, undefined)
+              (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
+              if txt =  "null" then 
+                (match opt_expr with 
+                 | None -> true
+                 | Some e -> 
+                   Ast_payload.assert_bool_lit e), undefined
 
-            else if txt = "undefined" then 
-              null, 
-              (match opt_expr with
-               | None ->  true
-               | Some e -> 
-                 Ast_payload.assert_bool_lit e)
+              else if txt = "undefined" then 
+                null, 
+                (match opt_expr with
+                 | None ->  true
+                 | Some e -> 
+                   Ast_payload.assert_bool_lit e)
 
-            else Bs_syntaxerr.err loc Unsupported_predicates
-          ) (false, false) (Ast_payload.as_config_record_and_process loc payload)  in 
+              else Bs_syntaxerr.err loc Unsupported_predicates
+            ) (false, false) 
+            (Ast_payload.as_config_record_and_process loc payload)  in 
 
         ({st with get = Some result}, acc  )
 
@@ -7648,19 +7699,19 @@ let process_method_attributes_rev (attrs : t) =
         -> 
         let result = 
           List.fold_left 
-          (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-            if txt =  "no_get" then 
-              match opt_expr with 
-              | None -> `No_get 
-              | Some e -> 
-                if Ast_payload.assert_bool_lit e then 
-                  `No_get
-                else `Get
-            else Bs_syntaxerr.err loc Unsupported_predicates
-          ) `Get (Ast_payload.as_config_record_and_process loc payload)  in 
+            (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
+               if txt =  "no_get" then 
+                 match opt_expr with 
+                 | None -> `No_get 
+                 | Some e -> 
+                   if Ast_payload.assert_bool_lit e then 
+                     `No_get
+                   else `Get
+               else Bs_syntaxerr.err loc Unsupported_predicates
+            ) `Get (Ast_payload.as_config_record_and_process loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
-           *)
+        *)
         {st with set = Some result }, acc
       | _ -> 
         (st, attr::acc  )
@@ -7726,7 +7777,7 @@ let process_derive_type attrs =
         ->
         {st with
          bs_deriving = `Has_deriving 
-             (Ast_payload.as_config_record_and_process loc payload)}, acc 
+             (Ast_payload.ident_or_record_as_config loc payload)}, acc 
       | {bs_deriving = `Has_deriving _}, "bs.deriving"
         -> 
         Bs_syntaxerr.err loc Duplicated_bs_deriving
@@ -7756,10 +7807,10 @@ let process_bs_string_int_unwrap_uncurry attrs =
         -> `Unwrap, attrs
       | "bs.uncurry", `Nothing
         ->
-          `Uncurry (Ast_payload.is_single_int payload), attrs 
-        (* Don't allow duplicated [bs.uncurry] since
-           it may introduce inconsistency in arity
-        *)  
+        `Uncurry (Ast_payload.is_single_int payload), attrs 
+      (* Don't allow duplicated [bs.uncurry] since
+         it may introduce inconsistency in arity
+      *)  
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
@@ -7783,7 +7834,7 @@ let process_bs_string_as  attrs =
         end
       | "bs.as",  _ 
         -> 
-          Bs_syntaxerr.err loc Duplicated_bs_as 
+        Bs_syntaxerr.err loc Duplicated_bs_as 
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 
@@ -7815,10 +7866,10 @@ let process_bs_string_or_int_as attrs =
         begin match Ast_payload.is_single_int payload with 
           | None -> 
             begin match Ast_payload.is_single_string payload with 
-            | Some (s,None) -> (Some (`Str (s)), attrs)
-            | Some (s, Some "json") -> (Some (`Json_str s ), attrs)
-            | None | Some (_, Some _) -> 
-              Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
+              | Some (s,None) -> (Some (`Str (s)), attrs)
+              | Some (s, Some "json") -> (Some (`Json_str s ), attrs)
+              | None | Some (_, Some _) -> 
+                Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
 
             end
           | Some   v->  (Some (`Int v), attrs)  
