@@ -63,6 +63,10 @@ val as_config_record_and_process :
   Location.t ->
   t -> action list 
 
+val ident_or_record_as_config : 
+  Location.t ->
+  t -> action list 
+
 val assert_bool_lit : Parsetree.expression -> bool
 
 val empty : t 
