@@ -100,7 +100,7 @@ type action =
     {[ { x = exp }]}
 *)
 
-let as_config_record_and_process 
+let record_as_config_and_process 
     loc
     (x : Parsetree.payload) 
   : ( string Location.loc * Parsetree.expression option) list 

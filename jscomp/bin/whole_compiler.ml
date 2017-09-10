@@ -103271,7 +103271,7 @@ val assert_strings :
       {M.flat_property}
     ]}
 *)
-val as_config_record_and_process : 
+val record_as_config_and_process : 
   Location.t ->
   t -> action list 
 
@@ -103390,7 +103390,7 @@ type action =
     {[ { x = exp }]}
 *)
 
-let as_config_record_and_process 
+let record_as_config_and_process 
     loc
     (x : Parsetree.payload) 
   : ( string Location.loc * Parsetree.expression option) list 
@@ -103666,7 +103666,7 @@ let process_method_attributes_rev (attrs : t) =
 
               else Bs_syntaxerr.err loc Unsupported_predicates
             ) (false, false) 
-            (Ast_payload.as_config_record_and_process loc payload)  in 
+            (Ast_payload.record_as_config_and_process loc payload)  in 
 
         ({st with get = Some result}, acc  )
 
@@ -103683,7 +103683,7 @@ let process_method_attributes_rev (attrs : t) =
                      `No_get
                    else `Get
                else Bs_syntaxerr.err loc Unsupported_predicates
-            ) `Get (Ast_payload.as_config_record_and_process loc payload)  in 
+            ) `Get (Ast_payload.record_as_config_and_process loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
         *)
@@ -105202,14 +105202,8 @@ let process_external_attributes
                   | _ ->
                     Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end in
-              begin match Ast_payload.as_ident payload with
-                | Some {loc ; txt = Lident txt} -> 
-                  {st with return_wrapper = aux loc txt  }
-                | Some {loc ; txt = _ } ->
-                  Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
-                | None ->  
                   let actions = 
-                    Ast_payload.as_config_record_and_process loc payload 
+                    Ast_payload.ident_or_record_as_config loc payload 
                   in
                   begin match actions with 
                     | [ ({txt; _ },None) ] -> 
@@ -105217,7 +105211,6 @@ let process_external_attributes
                     | _ ->
                       Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end
-              end 
             | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
           end, attrs
         else (st , attr :: attrs)
@@ -108750,7 +108743,7 @@ let rewrite_signature :
         | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
           -> 
           begin 
-            Ast_payload.as_config_record_and_process loc payload 
+            Ast_payload.ident_or_record_as_config loc payload 
             |> List.iter (Ast_payload.table_dispatch signature_config_table) ; 
             unsafe_mapper.signature unsafe_mapper rest
           end
@@ -108766,7 +108759,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
         | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
           -> 
           begin 
-            Ast_payload.as_config_record_and_process loc payload 
+            Ast_payload.ident_or_record_as_config loc payload 
             |> List.iter (Ast_payload.table_dispatch structural_config_table) ; 
             let rest = unsafe_mapper.structure unsafe_mapper rest in
             if !no_export then

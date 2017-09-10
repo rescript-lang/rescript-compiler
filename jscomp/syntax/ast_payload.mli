@@ -59,7 +59,7 @@ val assert_strings :
       {M.flat_property}
     ]}
 *)
-val as_config_record_and_process : 
+val record_as_config_and_process : 
   Location.t ->
   t -> action list 
 

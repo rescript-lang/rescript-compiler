@@ -56,7 +56,7 @@ let process_method_attributes_rev (attrs : t) =
 
               else Bs_syntaxerr.err loc Unsupported_predicates
             ) (false, false) 
-            (Ast_payload.as_config_record_and_process loc payload)  in 
+            (Ast_payload.record_as_config_and_process loc payload)  in 
 
         ({st with get = Some result}, acc  )
 
@@ -73,7 +73,7 @@ let process_method_attributes_rev (attrs : t) =
                      `No_get
                    else `Get
                else Bs_syntaxerr.err loc Unsupported_predicates
-            ) `Get (Ast_payload.as_config_record_and_process loc payload)  in 
+            ) `Get (Ast_payload.record_as_config_and_process loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
         *)
