@@ -117,7 +117,8 @@ ppf
     let offset_current_line = current_line |> string_slice ~start:columns_to_cut in
     let offset_current_line_length = String.length offset_current_line in
     let offset_start_line_start_char = start_line_start_char - columns_to_cut in
-    let offset_end_line_end_char = end_line_end_char - columns_to_cut in
+    (* end_line_end_char is exclusive *)
+    let offset_end_line_end_char = end_line_end_char - 1 - columns_to_cut in
     (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
     for j = 1 to offset_current_line_length do
       let current_char = offset_current_line.[j - 1] in
@@ -128,6 +129,10 @@ ppf
           ~end_highlight_line:(j = offset_current_line_length)
           current_char 
       | Only_error_line ->
+        (* in some errors, starting char and ending char can be the same. But
+           since ending char was supposed to be exclusive and had a -1, here it 
+           might end up smaller than the starting char *)
+        let offset_end_line_end_char = max offset_end_line_end_char offset_start_line_start_char in
         print_char_maybe_highlight 
           ~begin_highlight_line:(j = offset_start_line_start_char) 
           ~end_highlight_line:(j = offset_end_line_end_char)

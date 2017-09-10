@@ -71,8 +71,11 @@ let print ~is_warning intro ppf loc =
           ~is_warning
           ~lines
           ~range:(
-            (start_line, start_char + 1), (* make everything 1-index based. See justifications in Super_mic.print_file *)
-            (end_line, end_char)
+            (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
+            (* start_char is inclusive *)
+            (start_line, start_char + 1),
+            (* start_char is exclusive *)
+            (end_line, end_char + 1)
           ))
           ()
       with
