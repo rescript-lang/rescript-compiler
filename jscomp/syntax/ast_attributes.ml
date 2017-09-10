@@ -38,24 +38,25 @@ let process_method_attributes_rev (attrs : t) =
         -> 
         let result = 
           List.fold_left 
-          (fun 
-            (null, undefined)
-            (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-            if txt =  "null" then 
-              (match opt_expr with 
-              | None -> true
-              | Some e -> 
-                Ast_payload.assert_bool_lit e), undefined
+            (fun 
+              (null, undefined)
+              (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
+              if txt =  "null" then 
+                (match opt_expr with 
+                 | None -> true
+                 | Some e -> 
+                   Ast_payload.assert_bool_lit e), undefined
 
-            else if txt = "undefined" then 
-              null, 
-              (match opt_expr with
-               | None ->  true
-               | Some e -> 
-                 Ast_payload.assert_bool_lit e)
+              else if txt = "undefined" then 
+                null, 
+                (match opt_expr with
+                 | None ->  true
+                 | Some e -> 
+                   Ast_payload.assert_bool_lit e)
 
-            else Bs_syntaxerr.err loc Unsupported_predicates
-          ) (false, false) (Ast_payload.as_config_record_and_process loc payload)  in 
+              else Bs_syntaxerr.err loc Unsupported_predicates
+            ) (false, false) 
+            (Ast_payload.record_as_config_and_process loc payload)  in 
 
         ({st with get = Some result}, acc  )
 
@@ -63,19 +64,19 @@ let process_method_attributes_rev (attrs : t) =
         -> 
         let result = 
           List.fold_left 
-          (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-            if txt =  "no_get" then 
-              match opt_expr with 
-              | None -> `No_get 
-              | Some e -> 
-                if Ast_payload.assert_bool_lit e then 
-                  `No_get
-                else `Get
-            else Bs_syntaxerr.err loc Unsupported_predicates
-          ) `Get (Ast_payload.as_config_record_and_process loc payload)  in 
+            (fun st (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
+               if txt =  "no_get" then 
+                 match opt_expr with 
+                 | None -> `No_get 
+                 | Some e -> 
+                   if Ast_payload.assert_bool_lit e then 
+                     `No_get
+                   else `Get
+               else Bs_syntaxerr.err loc Unsupported_predicates
+            ) `Get (Ast_payload.record_as_config_and_process loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
-           *)
+        *)
         {st with set = Some result }, acc
       | _ -> 
         (st, attr::acc  )
@@ -141,7 +142,7 @@ let process_derive_type attrs =
         ->
         {st with
          bs_deriving = `Has_deriving 
-             (Ast_payload.as_config_record_and_process loc payload)}, acc 
+             (Ast_payload.ident_or_record_as_config loc payload)}, acc 
       | {bs_deriving = `Has_deriving _}, "bs.deriving"
         -> 
         Bs_syntaxerr.err loc Duplicated_bs_deriving
@@ -171,10 +172,10 @@ let process_bs_string_int_unwrap_uncurry attrs =
         -> `Unwrap, attrs
       | "bs.uncurry", `Nothing
         ->
-          `Uncurry (Ast_payload.is_single_int payload), attrs 
-        (* Don't allow duplicated [bs.uncurry] since
-           it may introduce inconsistency in arity
-        *)  
+        `Uncurry (Ast_payload.is_single_int payload), attrs 
+      (* Don't allow duplicated [bs.uncurry] since
+         it may introduce inconsistency in arity
+      *)  
       | "bs.int", _
       | "bs.string", _
       | "bs.ignore", _
@@ -198,7 +199,7 @@ let process_bs_string_as  attrs =
         end
       | "bs.as",  _ 
         -> 
-          Bs_syntaxerr.err loc Duplicated_bs_as 
+        Bs_syntaxerr.err loc Duplicated_bs_as 
       | _ , _ -> (st, attr::attrs) 
     ) (None, []) attrs
 
@@ -230,10 +231,10 @@ let process_bs_string_or_int_as attrs =
         begin match Ast_payload.is_single_int payload with 
           | None -> 
             begin match Ast_payload.is_single_string payload with 
-            | Some (s,None) -> (Some (`Str (s)), attrs)
-            | Some (s, Some "json") -> (Some (`Json_str s ), attrs)
-            | None | Some (_, Some _) -> 
-              Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
+              | Some (s,None) -> (Some (`Str (s)), attrs)
+              | Some (s, Some "json") -> (Some (`Json_str s ), attrs)
+              | None | Some (_, Some _) -> 
+                Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
 
             end
           | Some   v->  (Some (`Int v), attrs)  

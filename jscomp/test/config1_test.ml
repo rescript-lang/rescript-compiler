@@ -1,8 +1,5 @@
 
-;;[@@@bs.config{
-  
-  no_export ;
-}]
+;;[@@@bs.config  no_export ]
 ;;
 
 

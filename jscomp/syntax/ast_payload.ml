@@ -65,7 +65,7 @@ let as_core_type loc x =
   match  x with
   | Parsetree.PTyp x -> x
   | _ -> Location.raise_errorf ~loc "except a core type"
-           
+
 let as_ident (x : t ) =
   match x with
   | PStr [
@@ -74,7 +74,7 @@ let as_ident (x : t ) =
            {
              pexp_desc =
                Pexp_ident ident 
-                 
+
            } , _)
       }
     ] -> Some ident
@@ -83,7 +83,7 @@ open Ast_helper
 
 let raw_string_payload loc (s : string) : t =
   PStr [ Str.eval ~loc (Exp.constant ~loc (Const_string (s,None)  ))]
-    
+
 let as_empty_structure (x : t ) = 
   match x with 
   | PStr ([]) -> true
@@ -93,16 +93,17 @@ type lid = string Asttypes.loc
 type label_expr = lid  * Parsetree.expression
 
 type action = 
-   lid * Parsetree.expression option 
+  lid * Parsetree.expression option 
 (** None means punning is hit 
     {[ { x } ]}
     otherwise it comes with a payload 
     {[ { x = exp }]}
 *)
 
-let as_config_record_and_process 
+let record_as_config_and_process 
     loc
     (x : Parsetree.payload) 
+  : ( string Location.loc * Parsetree.expression option) list 
   = 
   match  x with 
   | PStr 
@@ -112,32 +113,77 @@ let as_config_record_and_process
         }]
     -> 
     begin match with_obj with
-    | None ->
-      List.map
-        (fun (x,y) -> 
-           match (x,y) with 
-           | ({Asttypes.txt = Longident.Lident name; loc} ) , 
-             ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
-             when name2 = name -> 
-              ({Asttypes.txt = name ; loc}, None)
-           | ({Asttypes.txt = Longident.Lident name; loc} ), y 
-             -> 
-             ({Asttypes.txt = name ; loc}, Some y)
-           | _ -> 
-             Location.raise_errorf ~loc "Qualified label is not allood"
-        )
-        label_exprs
-    | Some _ -> 
-      Location.raise_errorf ~loc "with is not supported"
+      | None ->
+        List.map
+          (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
+             match (x,y) with 
+             | ({txt = Lident name; loc} ) , 
+               ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
+               when name2 = name -> 
+               ({Asttypes.txt = name ; loc}, None)
+             | ({txt = Lident name; loc} ), y 
+               -> 
+               ({Asttypes.txt = name ; loc}, Some y)
+             | _ -> 
+               Location.raise_errorf ~loc "Qualified label is not allood"
+          )
+          label_exprs
+      | Some _ -> 
+        Location.raise_errorf ~loc "with is not supported"
     end
   | Parsetree.PStr [] -> []
+  | _ -> 
+    Location.raise_errorf ~loc "this is not a valid record config"
+
+let ident_or_record_as_config     
+    loc
+    (x : Parsetree.payload) 
+  : ( string Location.loc * Parsetree.expression option) list 
+  = 
+  match  x with 
+  | PStr 
+      [ {pstr_desc = Pstr_eval
+             ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
+         _
+        }]
+    -> 
+    begin match with_obj with
+      | None ->
+        List.map
+          (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
+             match (x,y) with 
+             | ({txt = Lident name; loc} ) , 
+               ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
+               when name2 = name -> 
+               ({Asttypes.txt = name ; loc}, None)
+             | ({txt = Lident name; loc} ), y 
+               -> 
+               ({Asttypes.txt = name ; loc}, Some y)
+             | _ -> 
+               Location.raise_errorf ~loc "Qualified label is not allood"
+          )
+          label_exprs
+      | Some _ -> 
+        Location.raise_errorf ~loc "with is not supported"
+    end
+  | PStr [
+      {pstr_desc =
+         Pstr_eval (
+           {
+             pexp_desc =
+               Pexp_ident ({loc = lloc; txt = Lident txt});
+
+           } , _)
+      }
+    ] -> [ {Asttypes.txt ; loc = lloc}, None] 
+  | PStr [] -> []
   | _ -> 
     Location.raise_errorf ~loc "this is not a valid record config"
 
 
 
 let assert_strings loc (x : t) : string list
-   = 
+  = 
   let module M = struct exception Not_str end  in 
   match x with 
   | PStr [ {pstr_desc =  
@@ -148,7 +194,7 @@ let assert_strings loc (x : t) : string list
             pstr_loc = loc ;            
             _}] ->
     (try 
-        strs |> List.map (fun e ->
+       strs |> List.map (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
              name
@@ -183,7 +229,7 @@ let empty : t = Parsetree.PStr []
 
 
 let table_dispatch table (action : action)
-     = 
+  = 
   match action with 
   | {txt =  name; loc  }, y -> 
     begin match String_map.find_exn name table with 

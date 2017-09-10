@@ -68,6 +68,10 @@ var h = /* :: */[
   h_001
 ];
 
+function xx(param_0) {
+  return /* Xx */[param_0];
+}
+
 var d_empty = /* D_empty */0;
 
 var hei = /* Hei */0;
@@ -85,4 +89,5 @@ exports.u_X        = u_X;
 exports.d          = d;
 exports.v          = v;
 exports.h          = h;
+exports.xx         = xx;
 /* No side effect */

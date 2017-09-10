@@ -29,3 +29,6 @@ and e = { d : d }
 
 val v : d
 val h : d list 
+
+type hh = Xx of int 
+[@@bs.deriving accessors]

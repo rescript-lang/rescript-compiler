@@ -9,7 +9,7 @@ type 'a b = {
 and 'a c = {
   c_x : int 
 }
-[@@bs.deriving {accessors}]
+[@@bs.deriving accessors]
 
 type d =
   | D_empty
@@ -39,3 +39,5 @@ let h = [
   newContent "3"
 ]
 
+type hh = Xx of int 
+[@@bs.deriving accessors]
