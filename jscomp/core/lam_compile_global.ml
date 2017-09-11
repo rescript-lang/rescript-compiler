@@ -36,7 +36,7 @@ open Js_output.Ops
 
 (* TODO: used in functor inlining, so that it can not be an exception
    Make(S), S can not be an exception
- *)
+*)
 
 
 
@@ -56,27 +56,18 @@ let query_lambda id env =
                      sigs) Location.none (* FIXME*))
 
 
-(* Given an module name and position, find its corresponding name  *)  
-let get_exp (key : Lam_compile_env.key) : J.expression = 
-  match key with 
-   (id, env, expand) -> 
-    Lam_compile_env.query_and_add_if_not_exist 
-        (Lam_module_ident.of_ml id) 
-        (Has_env env)
-        ~not_found:(fun id -> assert false)
-        ~found:(fun   {signature = sigs; _} -> 
-            if expand 
-            then 
-              (** TODO: add module into taginfo*)
-              let len = List.length sigs in (** TODO: could be optimized *) 
-              Js_of_lam_module.make ~comment:id.name 
-                (Ext_list.init len (fun i -> 
-                     E.ml_var_dot id
-                       (Type_util.get_name sigs i )))
-                               
+(* Given an module name,  find its expanded structure  *)  
+let expand_global_module  id env  : J.expression = 
+  Lam_compile_env.query_and_add_if_not_exist 
+    (Lam_module_ident.of_ml id) 
+    (Has_env env)
+    ~not_found:(fun _ -> assert false)
+    ~found:(fun   {signature = sigs; _} -> 
+          let len = List.length sigs in (** TODO: could be optimized *) 
+          Js_of_lam_module.make ~comment:id.name 
+            (Ext_list.init len (fun i -> 
+                 E.ml_var_dot id
+                   (Type_util.get_name sigs i ))))
 
-            else 
-              E.ml_var id)
 
-  
 
