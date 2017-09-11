@@ -26154,7 +26154,7 @@ val init : int -> (int -> 'a) -> 'a list
 
 val take : int -> 'a list -> 'a list * 'a list
 
-val try_take : int -> 'a list -> 'a list * int * 'a list 
+(* val try_take : int -> 'a list -> 'a list * int * 'a list  *)
 
 val exclude_tail : 'a list -> 'a * 'a list
 
@@ -26185,7 +26185,7 @@ val flat_map : ('a -> 'b list) -> 'a list -> 'b list
 
 (** for the last element the first element will be passed [true] *)
 
-val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+(* val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c *)
 
 val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
 
@@ -26438,12 +26438,12 @@ let rec map_last f l1 =
   | a1::l1 -> let r = f false  a1 in r :: map_last f l1
 
 
-let rec fold_right2_last f l1 l2 accu  = 
+(* let rec fold_right2_last f l1 l2 accu  = 
   match (l1, l2) with
   | ([], []) -> accu
   | [last1], [last2] -> f true  last1 last2 accu
   | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-  | (_, _) -> invalid_arg "List.fold_right2"
+  | (_, _) -> invalid_arg "List.fold_right2" *)
 
 
 let init n f = 
@@ -26456,12 +26456,12 @@ let take n l =
   else (Array.to_list (Array.sub arr 0 n ), 
         Array.to_list (Array.sub arr n (arr_length - n)))
 
-let try_take n l = 
+(* let try_take n l = 
   let arr = Array.of_list l in 
   let arr_length =  Array.length arr in
   if arr_length  <= n then 
     l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
 
 
 let rec length_compare l n = 

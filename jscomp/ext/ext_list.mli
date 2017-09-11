@@ -48,7 +48,7 @@ val init : int -> (int -> 'a) -> 'a list
 
 val take : int -> 'a list -> 'a list * 'a list
 
-val try_take : int -> 'a list -> 'a list * int * 'a list 
+(* val try_take : int -> 'a list -> 'a list * int * 'a list  *)
 
 val exclude_tail : 'a list -> 'a * 'a list
 
@@ -79,7 +79,7 @@ val flat_map : ('a -> 'b list) -> 'a list -> 'b list
 
 (** for the last element the first element will be passed [true] *)
 
-val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+(* val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c *)
 
 val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
 
