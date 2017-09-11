@@ -173,7 +173,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
  (** Also need analyze its depenency is pure or not *)
 let no_side_effects (rest : Lam_group.t list) : string option = 
-    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
+    Ext_list.find_opt (fun (x : Lam_group.t) -> 
         match x with 
         | Single(kind,id,body) -> 
           begin 
@@ -185,7 +185,7 @@ let no_side_effects (rest : Lam_group.t list) : string option =
             | _ -> None
           end
         | Recursive bindings -> 
-          Ext_list.for_all_opt (fun (id,lam) -> 
+          Ext_list.find_opt (fun (id,lam) -> 
               if not @@ Lam_analysis.no_side_effects lam 
               then Some (Printf.sprintf "%s" id.Ident.name )
               else None

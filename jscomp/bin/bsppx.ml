@@ -8091,15 +8091,19 @@ module Ext_list : sig
 val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
 
 val excludes : ('a -> bool) -> 'a list -> bool * 'a list
+
 val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
+
 val exclude_with_fact2 : 
   ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
+
 val same_length : 'a list -> 'b list -> bool
 
 val init : int -> (int -> 'a) -> 'a list
 
 val take : int -> 'a list -> 'a list * 'a list
-val try_take : int -> 'a list -> 'a list * int * 'a list 
+
+(* val try_take : int -> 'a list -> 'a list * int * 'a list  *)
 
 val exclude_tail : 'a list -> 'a * 'a list
 
@@ -8130,25 +8134,31 @@ val flat_map : ('a -> 'b list) -> 'a list -> 'b list
 
 (** for the last element the first element will be passed [true] *)
 
-val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+(* val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c *)
 
 val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
 
-val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
+val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list 
 
 val drop : int -> 'a list -> 'a list 
 
-val for_all_ret : ('a -> bool) -> 'a list -> 'a option
+(** [for_all_ret p lst ]
+    if all elements in [lst] pass, return [None] 
+    otherwise return the first element [e] as [Some e] which
+    fails the predicate
+*)
+val for_all_ret : ('a -> bool) -> 'a list -> 'a option 
 
-val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
-(** [for_all_opt f l] returns [None] if all return [None],  
+(** [find_opt f l] returns [None] if all return [None],  
     otherwise returns the first one. 
  *)
 
-val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-(** same as [List.fold_left]. 
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
+(** same as [List.fold_left] except the argument order
     Provide an api so that list can be easily swapped by other containers  
  *)
+val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
@@ -8160,7 +8170,7 @@ val rev_iter : ('a -> unit) -> 'a list -> unit
 
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
 
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
 
 (** [f] is applied follow the list order *)
 val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
@@ -8192,11 +8202,13 @@ val sort_via_array :
 val last : 'a list -> 'a
 
 
-(** When [key] is not found unbox the default, 
-  if it is found return that, otherwise [assert false ]
+(** [assoc_by_string default key lst]
+  if  [key] is found in the list  return that val,
+  other unbox the [default], 
+  otherwise [assert false ]
  *)
-val assoc_by_string : 
-  'a  option -> string -> (string * 'a) list -> 'a 
+ val assoc_by_string : 
+  'a  option -> string -> (string * 'a) list -> 'a  
 
 val assoc_by_int : 
   'a  option -> int -> (int * 'a) list -> 'a   
@@ -8375,12 +8387,12 @@ let rec map_last f l1 =
   | a1::l1 -> let r = f false  a1 in r :: map_last f l1
 
 
-let rec fold_right2_last f l1 l2 accu  = 
+(* let rec fold_right2_last f l1 l2 accu  = 
   match (l1, l2) with
   | ([], []) -> accu
   | [last1], [last2] -> f true  last1 last2 accu
   | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-  | (_, _) -> invalid_arg "List.fold_right2"
+  | (_, _) -> invalid_arg "List.fold_right2" *)
 
 
 let init n f = 
@@ -8393,12 +8405,12 @@ let take n l =
   else (Array.to_list (Array.sub arr 0 n ), 
         Array.to_list (Array.sub arr n (arr_length - n)))
 
-let try_take n l = 
+(* let try_take n l = 
   let arr = Array.of_list l in 
   let arr_length =  Array.length arr in
   if arr_length  <= n then 
     l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
 
 
 let rec length_compare l n = 
@@ -8462,7 +8474,7 @@ and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list =
     else
       y :: aux cmp x ys                                 
 
-let stable_group cmp lst =  group cmp lst |> List.rev 
+ let stable_group cmp lst =  group cmp lst |> List.rev  
 
 let rec drop n h = 
   if n < 0 then invalid_arg "Ext_list.drop"
@@ -8478,12 +8490,7 @@ let rec for_all_ret  p = function
     then for_all_ret p l
     else Some a 
 
-let rec for_all_opt  p = function
-  | [] -> None
-  | a::l -> 
-    match p a with
-    | None -> for_all_opt p l
-    | v -> v 
+
 
 let fold f l init = 
   List.fold_left (fun acc i -> f  i init) init l 

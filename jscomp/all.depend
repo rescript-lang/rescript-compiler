@@ -352,8 +352,7 @@ core/js_dump_program.cmi : core/js_packages_info.cmi core/j.cmx \
 core/js_pass_debug.cmi : core/j.cmx
 core/js_of_lam_option.cmi : core/j.cmx
 core/js_output.cmi : core/lam_compile_defs.cmi core/lam.cmi core/j.cmx
-core/lam_compile_global.cmi : core/lam_compile_env.cmi core/lam.cmi \
-    core/j.cmx
+core/lam_compile_global.cmi : core/lam.cmi core/j.cmx
 core/lam_dispatch_primitive.cmi : core/j.cmx
 core/lam_bounded_vars.cmi : core/lam.cmi ext/ident_hashtbl.cmi
 core/lam_beta_reduce.cmi : core/lam_stats.cmi core/lam_closure.cmi \

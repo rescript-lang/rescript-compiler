@@ -168,12 +168,12 @@ let rec map_last f l1 =
   | a1::l1 -> let r = f false  a1 in r :: map_last f l1
 
 
-let rec fold_right2_last f l1 l2 accu  = 
+(* let rec fold_right2_last f l1 l2 accu  = 
   match (l1, l2) with
   | ([], []) -> accu
   | [last1], [last2] -> f true  last1 last2 accu
   | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-  | (_, _) -> invalid_arg "List.fold_right2"
+  | (_, _) -> invalid_arg "List.fold_right2" *)
 
 
 let init n f = 
@@ -186,12 +186,12 @@ let take n l =
   else (Array.to_list (Array.sub arr 0 n ), 
         Array.to_list (Array.sub arr n (arr_length - n)))
 
-let try_take n l = 
+(* let try_take n l = 
   let arr = Array.of_list l in 
   let arr_length =  Array.length arr in
   if arr_length  <= n then 
     l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
 
 
 let rec length_compare l n = 
@@ -255,7 +255,7 @@ and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list =
     else
       y :: aux cmp x ys                                 
 
-let stable_group cmp lst =  group cmp lst |> List.rev 
+ let stable_group cmp lst =  group cmp lst |> List.rev  
 
 let rec drop n h = 
   if n < 0 then invalid_arg "Ext_list.drop"
@@ -271,12 +271,7 @@ let rec for_all_ret  p = function
     then for_all_ret p l
     else Some a 
 
-let rec for_all_opt  p = function
-  | [] -> None
-  | a::l -> 
-    match p a with
-    | None -> for_all_opt p l
-    | v -> v 
+
 
 let fold f l init = 
   List.fold_left (fun acc i -> f  i init) init l 

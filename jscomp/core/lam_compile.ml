@@ -53,65 +53,84 @@ let rec flat_catches acc (x : Lam.t)
 
 let flatten_caches  x = flat_catches [] x 
 
-(* exception Not_an_expression *)
+
 
 (* TODO:
     for expression generation, 
     name, should_return  is not needed,
     only jmp_table and env needed
 *)
-let translate_dispatch = ref (fun _ -> assert false)
+
 
 type default_case = 
   | Default of Lam.t
   | Complete
   | NonComplete
 
+(* let lam_of_pos ( (id : Ident.t), pos ) env = 
+   Lam_compile_env.find_and_add_if_not_exist (id,pos) env
+   ~not_found:(fun _ -> assert false)
+   ~found:(fun x ->
+    match x with 
+    | {id = {name = "Sys"; }; name = "os_type"} -> 
+      Lam.const (Const_string (Sys.os_type))
+    | {closed_lambda = Some lam} when Lam_util.not_function lam 
+      -> lam
+    | { id ; name } ->   
 
+   ) *)
+
+(* f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos)) *)
+(* E.index m (pos + 1) *) (** shift by one *)
+(** This can not happen since this id should be already consulted by type checker *)
+(** We drop the ability of cross-compiling
+        the compiler has to be the same running 
+*)      
+(* since it's only for alias, there is no arguments, 
+   we should not inline function definition here, even though
+   it is very small             
+   TODO: add comment here, we should try to add comment for 
+   cross module inlining             
+
+   if we do too agressive inlining here: 
+
+   if we inline {!List.length} which will call {!A_list.length}, 
+   then we if we try inline {!A_list.length}, this means if {!A_list} 
+   is rebuilt, this module should also be rebuilt,
+
+   But if the build system is content-based, suppose {!A_list} 
+   is changed, cmj files in {!List} is unchnaged, however, 
+   {!List.length} call {!A_list.length} which is changed, since
+   [ocamldep] only detect that we depend on {!List}, it will not 
+   get re-built, then we are screwed.                   
+
+   This is okay for stamp based build system.
+
+   Another solution is that we add dependencies in the compiler
+
+   -: we should not do functor application inlining in a 
+      non-toplevel, it will explode code very quickly              
+*)    
 let rec  
-  get_exp_with_index (cxt : Lam_compile_defs.cxt) lam 
-    ((id : Ident.t), (pos : int),env) : Js_output.t = 
+  compile_external_field 
+    (cxt : Lam_compile_defs.cxt) 
+    lam 
+    (id : Ident.t)
+    (pos : int)
+    env : Js_output.t = 
   let f =   Js_output.handle_name_tail cxt.st cxt.should_return lam in    
   Lam_compile_env.find_and_add_if_not_exist (id,pos) env 
     ~not_found:(fun id -> 
-        f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos))
-        (* E.index m (pos + 1) *) (** shift by one *)
-        (** This can not happen since this id should be already consulted by type checker *)
+        assert false
       )
     ~found:(fun {id; name; closed_lambda } ->
         match id, name, closed_lambda with 
         | {name = "Sys"; _}, "os_type" , _
-          (** We drop the ability of cross-compiling
-              the compiler has to be the same running 
-          *)
-          ->  f (E.str Sys.os_type)
+
+          ->  f (E.str Sys.os_type) 
         | _, _, Some lam 
           when Lam_util.not_function lam
-          (* since it's only for alias, there is no arguments, 
-             we should not inline function definition here, even though
-             it is very small             
-             TODO: add comment here, we should try to add comment for 
-             cross module inlining             
 
-             if we do too agressive inlining here: 
-
-             if we inline {!List.length} which will call {!A_list.length}, 
-             then we if we try inline {!A_list.length}, this means if {!A_list} 
-             is rebuilt, this module should also be rebuilt,
-
-             But if the build system is content-based, suppose {!A_list} 
-             is changed, cmj files in {!List} is unchnaged, however, 
-             {!List.length} call {!A_list.length} which is changed, since
-             [ocamldep] only detect that we depend on {!List}, it will not 
-             get re-built, then we are screwed.                   
-
-             This is okay for stamp based build system.
-
-             Another solution is that we add dependencies in the compiler
-
-             -: we should not do functor application inlining in a 
-                non-toplevel, it will explode code very quickly              
-          *)               
           ->  
           compile_lambda cxt lam
         | _ -> 
@@ -136,21 +155,18 @@ let rec
 (** This can not happen since this id should be already consulted by type checker 
           Worst case 
     {[
-      E.index m (pos + 1)
+      E.index m pos 
     ]}
-          shift by one (due to module encoding)
 *)
-(* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
-(* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
-(*                       id.name *)
-(*                       id.flags *)
-(*                       pos *)
-(*                    ) *)
-and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
-    (id : Ident.t) (pos : int) env : Js_output.t = 
-  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
-      assert false 
-    )
+
+and compile_external_field_apply 
+    (cxt : Lam_compile_defs.cxt) 
+    lam 
+    args_lambda
+    (id : Ident.t)
+    (pos : int) env : Js_output.t = 
+  Lam_compile_env.find_and_add_if_not_exist 
+    (id,pos) env ~not_found:(fun _ -> assert false)
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
         let args_code, args = 
           List.fold_right 
@@ -162,7 +178,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                      however it can not be global -- global can only module
                  *)
 
-                 args_code, (Lam_compile_global.get_exp (i, env, true) :: args)
+                 args_code, (Lam_compile_global.expand_global_module i env  :: args)
                | _ -> 
                  begin match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
                    | {block = a; value = Some b} -> 
@@ -200,7 +216,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                    else x in (* Relax when x = 0 *)
                  if  len >= x 
                  then
-                   let first_part, continue =  (Ext_list.take x args) in
+                   let first_part, continue =  Ext_list.take x args in
                    aux
                      (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
                      (Determin (a, rest, b))
@@ -226,12 +242,8 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                args (List.length args ))
       )
 
-and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
-
-
-  match flag, arg  with 
-  |  let_kind, _  -> 
-    compile_lambda {cxt with st = Declare (let_kind, id); should_return = ReturnFalse } arg 
+and  compile_let let_kind (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
+  compile_lambda {cxt with st = Declare (let_kind, id); should_return = ReturnFalse } arg 
 (** 
     The second return values are values which need to be wrapped using 
    [caml_update_dummy] 
@@ -524,7 +536,7 @@ and
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry 
          this information, we should fix [get_exp_with_args]
       *)
-      get_exp_with_args cxt lam  args_lambda id n  env
+      compile_external_field_apply cxt lam  args_lambda id n  env
 
 
     | Lapply{ fn; args = args_lambda;   status} -> 
@@ -541,7 +553,7 @@ and
                     for the function, generative module or functor can be a function, 
                     however it can not be global -- global can only module 
                 *)
-                args_code, Lam_compile_global.get_exp  (ident, env,true) :: fn_code
+                args_code, Lam_compile_global.expand_global_module  ident env :: fn_code
               | _ ->
                 begin
                   match compile_lambda 
@@ -669,7 +681,7 @@ and
     | Lprim {primitive = Pfield (n,_); 
              args = [ Lglobal_module id ]; _} 
       -> (* should be before Lglobal_global *)
-      get_exp_with_index cxt lam  (id,n, env)
+      compile_external_field cxt lam  id n env
 
     | Lprim {primitive = Praise ; args =  [ e ]; _} -> 
       begin
@@ -882,7 +894,7 @@ and
          1. {[ include Array --> let include  = Array  ]}
          2. inline functor application
       *)
-      let exp = Lam_compile_global.get_exp (i,env,true) in 
+      let exp = Lam_compile_global.expand_global_module i env  in 
       Js_output.handle_block_return st should_return lam [] exp 
     | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
       ->   
@@ -1591,7 +1603,7 @@ and
               match x with 
               | Lglobal_module i 
                 -> 
-                [], Lam_compile_global.get_exp  (i, env, true)
+                [], Lam_compile_global.expand_global_module  i env 
               | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
                 (* nullary external call*)
                 -> 

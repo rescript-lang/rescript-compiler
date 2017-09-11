@@ -22342,15 +22342,19 @@ module Ext_list : sig
 val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
 
 val excludes : ('a -> bool) -> 'a list -> bool * 'a list
+
 val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
+
 val exclude_with_fact2 : 
   ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
+
 val same_length : 'a list -> 'b list -> bool
 
 val init : int -> (int -> 'a) -> 'a list
 
 val take : int -> 'a list -> 'a list * 'a list
-val try_take : int -> 'a list -> 'a list * int * 'a list 
+
+(* val try_take : int -> 'a list -> 'a list * int * 'a list  *)
 
 val exclude_tail : 'a list -> 'a * 'a list
 
@@ -22381,25 +22385,31 @@ val flat_map : ('a -> 'b list) -> 'a list -> 'b list
 
 (** for the last element the first element will be passed [true] *)
 
-val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+(* val fold_right2_last : (bool -> 'a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c *)
 
 val map_last : (bool -> 'a -> 'b) -> 'a list -> 'b list
 
-val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list
+val stable_group : ('a -> 'a -> bool) -> 'a list -> 'a list list 
 
 val drop : int -> 'a list -> 'a list 
 
-val for_all_ret : ('a -> bool) -> 'a list -> 'a option
+(** [for_all_ret p lst ]
+    if all elements in [lst] pass, return [None] 
+    otherwise return the first element [e] as [Some e] which
+    fails the predicate
+*)
+val for_all_ret : ('a -> bool) -> 'a list -> 'a option 
 
-val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
-(** [for_all_opt f l] returns [None] if all return [None],  
+(** [find_opt f l] returns [None] if all return [None],  
     otherwise returns the first one. 
  *)
 
-val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
-(** same as [List.fold_left]. 
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
+(** same as [List.fold_left] except the argument order
     Provide an api so that list can be easily swapped by other containers  
  *)
+val fold : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
@@ -22411,7 +22421,7 @@ val rev_iter : ('a -> unit) -> 'a list -> unit
 
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
 
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
 
 (** [f] is applied follow the list order *)
 val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
@@ -22443,11 +22453,13 @@ val sort_via_array :
 val last : 'a list -> 'a
 
 
-(** When [key] is not found unbox the default, 
-  if it is found return that, otherwise [assert false ]
+(** [assoc_by_string default key lst]
+  if  [key] is found in the list  return that val,
+  other unbox the [default], 
+  otherwise [assert false ]
  *)
-val assoc_by_string : 
-  'a  option -> string -> (string * 'a) list -> 'a 
+ val assoc_by_string : 
+  'a  option -> string -> (string * 'a) list -> 'a  
 
 val assoc_by_int : 
   'a  option -> int -> (int * 'a) list -> 'a   
@@ -22626,12 +22638,12 @@ let rec map_last f l1 =
   | a1::l1 -> let r = f false  a1 in r :: map_last f l1
 
 
-let rec fold_right2_last f l1 l2 accu  = 
+(* let rec fold_right2_last f l1 l2 accu  = 
   match (l1, l2) with
   | ([], []) -> accu
   | [last1], [last2] -> f true  last1 last2 accu
   | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-  | (_, _) -> invalid_arg "List.fold_right2"
+  | (_, _) -> invalid_arg "List.fold_right2" *)
 
 
 let init n f = 
@@ -22644,12 +22656,12 @@ let take n l =
   else (Array.to_list (Array.sub arr 0 n ), 
         Array.to_list (Array.sub arr n (arr_length - n)))
 
-let try_take n l = 
+(* let try_take n l = 
   let arr = Array.of_list l in 
   let arr_length =  Array.length arr in
   if arr_length  <= n then 
     l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
 
 
 let rec length_compare l n = 
@@ -22713,7 +22725,7 @@ and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list =
     else
       y :: aux cmp x ys                                 
 
-let stable_group cmp lst =  group cmp lst |> List.rev 
+ let stable_group cmp lst =  group cmp lst |> List.rev  
 
 let rec drop n h = 
   if n < 0 then invalid_arg "Ext_list.drop"
@@ -22729,12 +22741,7 @@ let rec for_all_ret  p = function
     then for_all_ret p l
     else Some a 
 
-let rec for_all_opt  p = function
-  | [] -> None
-  | a::l -> 
-    match p a with
-    | None -> for_all_opt p l
-    | v -> v 
+
 
 let fold f l init = 
   List.fold_left (fun acc i -> f  i init) init l 
@@ -92968,7 +92975,7 @@ module Lam_compile_global : sig
 
 (** Compile ocaml external module call , e.g [List.length] to  JS IR *)
 
-val get_exp : Lam_compile_env.key  -> J.expression
+val expand_global_module :  Ident.t -> Env.t   -> J.expression
 
 
 
@@ -93014,7 +93021,7 @@ open Js_output.Ops
 
 (* TODO: used in functor inlining, so that it can not be an exception
    Make(S), S can not be an exception
- *)
+*)
 
 
 
@@ -93034,29 +93041,20 @@ let query_lambda id env =
                      sigs) Location.none (* FIXME*))
 
 
-(* Given an module name and position, find its corresponding name  *)  
-let get_exp (key : Lam_compile_env.key) : J.expression = 
-  match key with 
-   (id, env, expand) -> 
-    Lam_compile_env.query_and_add_if_not_exist 
-        (Lam_module_ident.of_ml id) 
-        (Has_env env)
-        ~not_found:(fun id -> assert false)
-        ~found:(fun   {signature = sigs; _} -> 
-            if expand 
-            then 
-              (** TODO: add module into taginfo*)
-              let len = List.length sigs in (** TODO: could be optimized *) 
-              Js_of_lam_module.make ~comment:id.name 
-                (Ext_list.init len (fun i -> 
-                     E.ml_var_dot id
-                       (Type_util.get_name sigs i )))
-                               
+(* Given an module name,  find its expanded structure  *)  
+let expand_global_module  id env  : J.expression = 
+  Lam_compile_env.query_and_add_if_not_exist 
+    (Lam_module_ident.of_ml id) 
+    (Has_env env)
+    ~not_found:(fun _ -> assert false)
+    ~found:(fun   {signature = sigs; _} -> 
+          let len = List.length sigs in (** TODO: could be optimized *) 
+          Js_of_lam_module.make ~comment:id.name 
+            (Ext_list.init len (fun i -> 
+                 E.ml_var_dot id
+                   (Type_util.get_name sigs i ))))
 
-            else 
-              E.ml_var id)
 
-  
 
 
 end
@@ -97795,65 +97793,84 @@ let rec flat_catches acc (x : Lam.t)
 
 let flatten_caches  x = flat_catches [] x 
 
-(* exception Not_an_expression *)
+
 
 (* TODO:
     for expression generation, 
     name, should_return  is not needed,
     only jmp_table and env needed
 *)
-let translate_dispatch = ref (fun _ -> assert false)
+
 
 type default_case = 
   | Default of Lam.t
   | Complete
   | NonComplete
 
+(* let lam_of_pos ( (id : Ident.t), pos ) env = 
+   Lam_compile_env.find_and_add_if_not_exist (id,pos) env
+   ~not_found:(fun _ -> assert false)
+   ~found:(fun x ->
+    match x with 
+    | {id = {name = "Sys"; }; name = "os_type"} -> 
+      Lam.const (Const_string (Sys.os_type))
+    | {closed_lambda = Some lam} when Lam_util.not_function lam 
+      -> lam
+    | { id ; name } ->   
 
+   ) *)
+
+(* f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos)) *)
+(* E.index m (pos + 1) *) (** shift by one *)
+(** This can not happen since this id should be already consulted by type checker *)
+(** We drop the ability of cross-compiling
+        the compiler has to be the same running 
+*)      
+(* since it's only for alias, there is no arguments, 
+   we should not inline function definition here, even though
+   it is very small             
+   TODO: add comment here, we should try to add comment for 
+   cross module inlining             
+
+   if we do too agressive inlining here: 
+
+   if we inline {!List.length} which will call {!A_list.length}, 
+   then we if we try inline {!A_list.length}, this means if {!A_list} 
+   is rebuilt, this module should also be rebuilt,
+
+   But if the build system is content-based, suppose {!A_list} 
+   is changed, cmj files in {!List} is unchnaged, however, 
+   {!List.length} call {!A_list.length} which is changed, since
+   [ocamldep] only detect that we depend on {!List}, it will not 
+   get re-built, then we are screwed.                   
+
+   This is okay for stamp based build system.
+
+   Another solution is that we add dependencies in the compiler
+
+   -: we should not do functor application inlining in a 
+      non-toplevel, it will explode code very quickly              
+*)    
 let rec  
-  get_exp_with_index (cxt : Lam_compile_defs.cxt) lam 
-    ((id : Ident.t), (pos : int),env) : Js_output.t = 
+  compile_external_field 
+    (cxt : Lam_compile_defs.cxt) 
+    lam 
+    (id : Ident.t)
+    (pos : int)
+    env : Js_output.t = 
   let f =   Js_output.handle_name_tail cxt.st cxt.should_return lam in    
   Lam_compile_env.find_and_add_if_not_exist (id,pos) env 
     ~not_found:(fun id -> 
-        f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos))
-        (* E.index m (pos + 1) *) (** shift by one *)
-        (** This can not happen since this id should be already consulted by type checker *)
+        assert false
       )
     ~found:(fun {id; name; closed_lambda } ->
         match id, name, closed_lambda with 
         | {name = "Sys"; _}, "os_type" , _
-          (** We drop the ability of cross-compiling
-              the compiler has to be the same running 
-          *)
-          ->  f (E.str Sys.os_type)
+
+          ->  f (E.str Sys.os_type) 
         | _, _, Some lam 
           when Lam_util.not_function lam
-          (* since it's only for alias, there is no arguments, 
-             we should not inline function definition here, even though
-             it is very small             
-             TODO: add comment here, we should try to add comment for 
-             cross module inlining             
 
-             if we do too agressive inlining here: 
-
-             if we inline {!List.length} which will call {!A_list.length}, 
-             then we if we try inline {!A_list.length}, this means if {!A_list} 
-             is rebuilt, this module should also be rebuilt,
-
-             But if the build system is content-based, suppose {!A_list} 
-             is changed, cmj files in {!List} is unchnaged, however, 
-             {!List.length} call {!A_list.length} which is changed, since
-             [ocamldep] only detect that we depend on {!List}, it will not 
-             get re-built, then we are screwed.                   
-
-             This is okay for stamp based build system.
-
-             Another solution is that we add dependencies in the compiler
-
-             -: we should not do functor application inlining in a 
-                non-toplevel, it will explode code very quickly              
-          *)               
           ->  
           compile_lambda cxt lam
         | _ -> 
@@ -97878,21 +97895,18 @@ let rec
 (** This can not happen since this id should be already consulted by type checker 
           Worst case 
     {[
-      E.index m (pos + 1)
+      E.index m pos 
     ]}
-          shift by one (due to module encoding)
 *)
-(* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
-(* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
-(*                       id.name *)
-(*                       id.flags *)
-(*                       pos *)
-(*                    ) *)
-and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
-    (id : Ident.t) (pos : int) env : Js_output.t = 
-  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
-      assert false 
-    )
+
+and compile_external_field_apply 
+    (cxt : Lam_compile_defs.cxt) 
+    lam 
+    args_lambda
+    (id : Ident.t)
+    (pos : int) env : Js_output.t = 
+  Lam_compile_env.find_and_add_if_not_exist 
+    (id,pos) env ~not_found:(fun _ -> assert false)
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
         let args_code, args = 
           List.fold_right 
@@ -97904,7 +97918,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                      however it can not be global -- global can only module
                  *)
 
-                 args_code, (Lam_compile_global.get_exp (i, env, true) :: args)
+                 args_code, (Lam_compile_global.expand_global_module i env  :: args)
                | _ -> 
                  begin match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
                    | {block = a; value = Some b} -> 
@@ -97942,7 +97956,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                    else x in (* Relax when x = 0 *)
                  if  len >= x 
                  then
-                   let first_part, continue =  (Ext_list.take x args) in
+                   let first_part, continue =  Ext_list.take x args in
                    aux
                      (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
                      (Determin (a, rest, b))
@@ -97968,12 +97982,8 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                args (List.length args ))
       )
 
-and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
-
-
-  match flag, arg  with 
-  |  let_kind, _  -> 
-    compile_lambda {cxt with st = Declare (let_kind, id); should_return = ReturnFalse } arg 
+and  compile_let let_kind (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
+  compile_lambda {cxt with st = Declare (let_kind, id); should_return = ReturnFalse } arg 
 (** 
     The second return values are values which need to be wrapped using 
    [caml_update_dummy] 
@@ -98266,7 +98276,7 @@ and
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry 
          this information, we should fix [get_exp_with_args]
       *)
-      get_exp_with_args cxt lam  args_lambda id n  env
+      compile_external_field_apply cxt lam  args_lambda id n  env
 
 
     | Lapply{ fn; args = args_lambda;   status} -> 
@@ -98283,7 +98293,7 @@ and
                     for the function, generative module or functor can be a function, 
                     however it can not be global -- global can only module 
                 *)
-                args_code, Lam_compile_global.get_exp  (ident, env,true) :: fn_code
+                args_code, Lam_compile_global.expand_global_module  ident env :: fn_code
               | _ ->
                 begin
                   match compile_lambda 
@@ -98411,7 +98421,7 @@ and
     | Lprim {primitive = Pfield (n,_); 
              args = [ Lglobal_module id ]; _} 
       -> (* should be before Lglobal_global *)
-      get_exp_with_index cxt lam  (id,n, env)
+      compile_external_field cxt lam  id n env
 
     | Lprim {primitive = Praise ; args =  [ e ]; _} -> 
       begin
@@ -98624,7 +98634,7 @@ and
          1. {[ include Array --> let include  = Array  ]}
          2. inline functor application
       *)
-      let exp = Lam_compile_global.get_exp (i,env,true) in 
+      let exp = Lam_compile_global.expand_global_module i env  in 
       Js_output.handle_block_return st should_return lam [] exp 
     | Lprim{ primitive = Pjs_object_create labels ; args ; loc}
       ->   
@@ -99333,7 +99343,7 @@ and
               match x with 
               | Lglobal_module i 
                 -> 
-                [], Lam_compile_global.get_exp  (i, env, true)
+                [], Lam_compile_global.expand_global_module  i env 
               | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
                 (* nullary external call*)
                 -> 
@@ -102229,7 +102239,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
  (** Also need analyze its depenency is pure or not *)
 let no_side_effects (rest : Lam_group.t list) : string option = 
-    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
+    Ext_list.find_opt (fun (x : Lam_group.t) -> 
         match x with 
         | Single(kind,id,body) -> 
           begin 
@@ -102241,7 +102251,7 @@ let no_side_effects (rest : Lam_group.t list) : string option =
             | _ -> None
           end
         | Recursive bindings -> 
-          Ext_list.for_all_opt (fun (id,lam) -> 
+          Ext_list.find_opt (fun (id,lam) -> 
               if not @@ Lam_analysis.no_side_effects lam 
               then Some (Printf.sprintf "%s" id.Ident.name )
               else None
