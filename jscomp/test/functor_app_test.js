@@ -33,7 +33,7 @@ var Y1 = Functor_def.Make(/* Functor_inst */[Functor_inst.say]);
 
 eq("File \"functor_app_test.ml\", line 23, characters 6-13", Curry._2(Y0[/* h */0], 1, 2), 4);
 
-Curry._2(Y1[/* h */0], 2, 3);
+eq("File \"functor_app_test.ml\", line 24, characters 6-13", Curry._2(Y1[/* h */0], 2, 3), 6);
 
 var v = Functor_def.$$return(/* () */0);
 
