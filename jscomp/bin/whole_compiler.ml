@@ -97802,14 +97802,14 @@ let rec flat_catches acc (x : Lam.t)
 
 let flatten_caches  x = flat_catches [] x 
 
-(* exception Not_an_expression *)
+
 
 (* TODO:
     for expression generation, 
     name, should_return  is not needed,
     only jmp_table and env needed
 *)
-let translate_dispatch = ref (fun _ -> assert false)
+
 
 type default_case = 
   | Default of Lam.t
@@ -97823,16 +97823,18 @@ let rec
   let f =   Js_output.handle_name_tail cxt.st cxt.should_return lam in    
   Lam_compile_env.find_and_add_if_not_exist (id,pos) env 
     ~not_found:(fun id -> 
-        f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos))
+        assert false
+        (* f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos)) *)
         (* E.index m (pos + 1) *) (** shift by one *)
         (** This can not happen since this id should be already consulted by type checker *)
       )
+      (** We drop the ability of cross-compiling
+              the compiler has to be the same running 
+       *)      
     ~found:(fun {id; name; closed_lambda } ->
         match id, name, closed_lambda with 
         | {name = "Sys"; _}, "os_type" , _
-          (** We drop the ability of cross-compiling
-              the compiler has to be the same running 
-          *)
+          
           ->  f (E.str Sys.os_type)
         | _, _, Some lam 
           when Lam_util.not_function lam
@@ -97949,7 +97951,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                    else x in (* Relax when x = 0 *)
                  if  len >= x 
                  then
-                   let first_part, continue =  (Ext_list.take x args) in
+                   let first_part, continue =  Ext_list.take x args in
                    aux
                      (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
                      (Determin (a, rest, b))
@@ -97975,11 +97977,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                args (List.length args ))
       )
 
-and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
-
-
-  match flag, arg  with 
-  |  let_kind, _  -> 
+and  compile_let let_kind (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
     compile_lambda {cxt with st = Declare (let_kind, id); should_return = ReturnFalse } arg 
 (** 
     The second return values are values which need to be wrapped using 
