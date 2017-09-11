@@ -22400,11 +22400,11 @@ val drop : int -> 'a list -> 'a list
 *)
 val for_all_ret : ('a -> bool) -> 'a list -> 'a option 
 
-(** [for_all_opt f l] returns [None] if all return [None],  
+(** [find_opt f l] returns [None] if all return [None],  
     otherwise returns the first one. 
  *)
-val for_all_opt : ('a -> 'b option) -> 'a list -> 'b option
 
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option
 
 (** same as [List.fold_left] except the argument order
     Provide an api so that list can be easily swapped by other containers  
@@ -22421,7 +22421,7 @@ val rev_iter : ('a -> unit) -> 'a list -> unit
 
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
 
-val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
 
 (** [f] is applied follow the list order *)
 val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       
@@ -22741,12 +22741,7 @@ let rec for_all_ret  p = function
     then for_all_ret p l
     else Some a 
 
-let rec for_all_opt  p = function
-  | [] -> None
-  | a::l -> 
-    match p a with
-    | None -> for_all_opt p l
-    | v -> v 
+
 
 let fold f l init = 
   List.fold_left (fun acc i -> f  i init) init l 
@@ -102241,7 +102236,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
 
  (** Also need analyze its depenency is pure or not *)
 let no_side_effects (rest : Lam_group.t list) : string option = 
-    Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
+    Ext_list.find_opt (fun (x : Lam_group.t) -> 
         match x with 
         | Single(kind,id,body) -> 
           begin 
@@ -102253,7 +102248,7 @@ let no_side_effects (rest : Lam_group.t list) : string option =
             | _ -> None
           end
         | Recursive bindings -> 
-          Ext_list.for_all_opt (fun (id,lam) -> 
+          Ext_list.find_opt (fun (id,lam) -> 
               if not @@ Lam_analysis.no_side_effects lam 
               then Some (Printf.sprintf "%s" id.Ident.name )
               else None
