@@ -1241,7 +1241,7 @@ function instead, so it is still sound and type safe.
 
 
 
-##### getter/setter annotation to JS properties
+##### getter/setter annotation to JS properties (simplified @since 1.9.2)
 
 Since OCaml's object system does not have getters/setters, we introduced two
 attributes `bs.get` and `bs.set` to help inform BuckleScript to compile
@@ -1250,27 +1250,27 @@ them as property getters/setters.
 [source,ocaml]
 --------------------------------------------------------------
 type y = <
-  height : int [@bs.set {no_get}] // <1>
+  height : int [@bs.set no_get] // <1>
 > Js.t
 type y0 = <
-  height : int [@bs.set] [@bs.get {null}] // <2>
+  height : int [@bs.set] [@bs.get null] // <2>
 > Js.t
 type y1 = <
-  height : int [@bs.set] [@bs.get {undefined}] // <3>
+  height : int [@bs.set] [@bs.get undefined] // <3>
 > Js.t
 type y2 = <
-  height : int [@bs.set] [@bs.get {undefined; null}] // <4>
+  height : int [@bs.set] [@bs.get nullable ] // <4>
 > Js.t
 type y3 = <
-  height : int [@bs.get {undefined ; null}] // <5>
+  height : int [@bs.get nullable] // <5>
 > Js.t
 
 --------------------------------------------------------------
 <1>  `height` is setter only
 <2>  getter return `int Js.null`
 <3>  getter return `int Js.undefined`
-<4>  getter return `int Js.null_undefined`
-<5>  getter only, return `int Js.null_undefined`
+<4>  getter return `int Js.nullable`
+<5>  getter only, return `int Js.nullable`
 
 NOTE: Getter/Setter also applies to class type label
 
