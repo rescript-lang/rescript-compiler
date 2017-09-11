@@ -578,7 +578,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_complex_object_type">Complex object type</a></li>
 <li><a href="#_how_to_consume_js_property_and_methods">How to consume JS property and methods</a>
 <ul class="sectlevel4">
-<li><a href="#_getter_setter_annotation_to_js_properties">getter/setter annotation to JS properties</a></li>
+<li><a href="#_getter_setter_annotation_to_js_properties_simplified_since_1_9_2">getter/setter annotation to JS properties (simplified @since 1.9.2)</a></li>
 </ul>
 </li>
 <li><a href="#_create_js_objects_using_bs_obj">Create JS objects using bs.obj</a></li>
@@ -3090,7 +3090,7 @@ function instead, so it is still sound and type safe.</p>
 </table>
 </div>
 <div class="sect4">
-<h5 id="_getter_setter_annotation_to_js_properties"><a class="anchor" href="#_getter_setter_annotation_to_js_properties"></a>getter/setter annotation to JS properties</h5>
+<h5 id="_getter_setter_annotation_to_js_properties_simplified_since_1_9_2"><a class="anchor" href="#_getter_setter_annotation_to_js_properties_simplified_since_1_9_2"></a>getter/setter annotation to JS properties (simplified @since 1.9.2)</h5>
 <div class="paragraph">
 <p>Since OCaml&#8217;s object system does not have getters/setters, we introduced two
 attributes <code>bs.get</code> and <code>bs.set</code> to help inform BuckleScript to compile
@@ -3099,19 +3099,19 @@ them as property getters/setters.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">y</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span> <span class="tok-o">{</span><span class="tok-n">no_get</span><span class="tok-o">}]</span> <b class="conum">(1)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span> <span class="tok-n">no_get</span><span class="tok-o">]</span> <b class="conum">(1)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">type</span> <span class="tok-n">y0</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(2)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-n">null</span><span class="tok-o">]</span> <b class="conum">(2)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">type</span> <span class="tok-n">y1</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">}]</span> <b class="conum">(3)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-n">undefined</span><span class="tok-o">]</span> <b class="conum">(3)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">type</span> <span class="tok-n">y2</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span><span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(4)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-n">nullable</span> <span class="tok-o">]</span> <b class="conum">(4)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span>
 <span class="tok-k">type</span> <span class="tok-n">y3</span> <span class="tok-o">=</span> <span class="tok-o">&lt;</span>
-  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-o">{</span><span class="tok-n">undefined</span> <span class="tok-o">;</span> <span class="tok-n">null</span><span class="tok-o">}]</span> <b class="conum">(5)</b>
+  <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">get</span> <span class="tok-n">nullable</span><span class="tok-o">]</span> <b class="conum">(5)</b>
 <span class="tok-o">&gt;</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
 </div>
 </div>
@@ -3127,10 +3127,10 @@ them as property getters/setters.</p>
 <p>getter return <code>int Js.undefined</code></p>
 </li>
 <li>
-<p>getter return <code>int Js.null_undefined</code></p>
+<p>getter return <code>int Js.nullable</code></p>
 </li>
 <li>
-<p>getter only, return <code>int Js.null_undefined</code></p>
+<p>getter only, return <code>int Js.nullable</code></p>
 </li>
 </ol>
 </div>
