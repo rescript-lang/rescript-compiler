@@ -100,40 +100,6 @@ type action =
     {[ { x = exp }]}
 *)
 
-let record_as_config_and_process 
-    loc
-    (x : Parsetree.payload) 
-  : ( string Location.loc * Parsetree.expression option) list 
-  = 
-  match  x with 
-  | PStr 
-      [ {pstr_desc = Pstr_eval
-             ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
-         _
-        }]
-    -> 
-    begin match with_obj with
-      | None ->
-        List.map
-          (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
-             match (x,y) with 
-             | ({txt = Lident name; loc} ) , 
-               ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
-               when name2 = name -> 
-               ({Asttypes.txt = name ; loc}, None)
-             | ({txt = Lident name; loc} ), y 
-               -> 
-               ({Asttypes.txt = name ; loc}, Some y)
-             | _ -> 
-               Location.raise_errorf ~loc "Qualified label is not allood"
-          )
-          label_exprs
-      | Some _ -> 
-        Location.raise_errorf ~loc "with is not supported"
-    end
-  | Parsetree.PStr [] -> []
-  | _ -> 
-    Location.raise_errorf ~loc "this is not a valid record config"
 
 let ident_or_record_as_config     
     loc

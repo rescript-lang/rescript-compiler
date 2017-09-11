@@ -41,22 +41,29 @@ let process_method_attributes_rev (attrs : t) =
             (fun 
               (null, undefined)
               (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-              if txt =  "null" then 
+              match txt with 
+              | "null" ->
                 (match opt_expr with 
                  | None -> true
                  | Some e -> 
                    Ast_payload.assert_bool_lit e), undefined
 
-              else if txt = "undefined" then 
+              |  "undefined" ->
                 null, 
                 (match opt_expr with
                  | None ->  true
                  | Some e -> 
                    Ast_payload.assert_bool_lit e)
-
-              else Bs_syntaxerr.err loc Unsupported_predicates
+              | "nullable" -> 
+                begin match opt_expr with 
+                | None -> true, true 
+                | Some e ->
+                  let v = Ast_payload.assert_bool_lit e in 
+                  v,v
+                end
+              | _ -> Bs_syntaxerr.err loc Unsupported_predicates
             ) (false, false) 
-            (Ast_payload.record_as_config_and_process loc payload)  in 
+            (Ast_payload.ident_or_record_as_config loc payload)  in 
 
         ({st with get = Some result}, acc  )
 
@@ -73,7 +80,7 @@ let process_method_attributes_rev (attrs : t) =
                      `No_get
                    else `Get
                else Bs_syntaxerr.err loc Unsupported_predicates
-            ) `Get (Ast_payload.record_as_config_and_process loc payload)  in 
+            ) `Get (Ast_payload.ident_or_record_as_config loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
         *)

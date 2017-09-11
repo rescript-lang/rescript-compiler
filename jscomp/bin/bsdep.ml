@@ -24477,7 +24477,10 @@ val assert_strings :
 
 (** as a record or empty 
     it will accept 
+
     {[ [@@@bs.config ]]}
+    or 
+    {[ [@@@bs.config no_export ] ]}
     or 
     {[ [@@@bs.config { property  .. } ]]}    
     Note that we only 
@@ -24489,9 +24492,6 @@ val assert_strings :
       {M.flat_property}
     ]}
 *)
-val record_as_config_and_process : 
-  Location.t ->
-  t -> action list 
 
 val ident_or_record_as_config : 
   Location.t ->
@@ -24608,40 +24608,6 @@ type action =
     {[ { x = exp }]}
 *)
 
-let record_as_config_and_process 
-    loc
-    (x : Parsetree.payload) 
-  : ( string Location.loc * Parsetree.expression option) list 
-  = 
-  match  x with 
-  | PStr 
-      [ {pstr_desc = Pstr_eval
-             ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
-         _
-        }]
-    -> 
-    begin match with_obj with
-      | None ->
-        List.map
-          (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
-             match (x,y) with 
-             | ({txt = Lident name; loc} ) , 
-               ({Parsetree.pexp_desc = Pexp_ident{txt = Lident name2}} )
-               when name2 = name -> 
-               ({Asttypes.txt = name ; loc}, None)
-             | ({txt = Lident name; loc} ), y 
-               -> 
-               ({Asttypes.txt = name ; loc}, Some y)
-             | _ -> 
-               Location.raise_errorf ~loc "Qualified label is not allood"
-          )
-          label_exprs
-      | Some _ -> 
-        Location.raise_errorf ~loc "with is not supported"
-    end
-  | Parsetree.PStr [] -> []
-  | _ -> 
-    Location.raise_errorf ~loc "this is not a valid record config"
 
 let ident_or_record_as_config     
     loc
@@ -25727,22 +25693,29 @@ let process_method_attributes_rev (attrs : t) =
             (fun 
               (null, undefined)
               (({txt ; loc}, opt_expr) : Ast_payload.action) -> 
-              if txt =  "null" then 
+              match txt with 
+              | "null" ->
                 (match opt_expr with 
                  | None -> true
                  | Some e -> 
                    Ast_payload.assert_bool_lit e), undefined
 
-              else if txt = "undefined" then 
+              |  "undefined" ->
                 null, 
                 (match opt_expr with
                  | None ->  true
                  | Some e -> 
                    Ast_payload.assert_bool_lit e)
-
-              else Bs_syntaxerr.err loc Unsupported_predicates
+              | "nullable" -> 
+                begin match opt_expr with 
+                | None -> true, true 
+                | Some e ->
+                  let v = Ast_payload.assert_bool_lit e in 
+                  v,v
+                end
+              | _ -> Bs_syntaxerr.err loc Unsupported_predicates
             ) (false, false) 
-            (Ast_payload.record_as_config_and_process loc payload)  in 
+            (Ast_payload.ident_or_record_as_config loc payload)  in 
 
         ({st with get = Some result}, acc  )
 
@@ -25759,7 +25732,7 @@ let process_method_attributes_rev (attrs : t) =
                      `No_get
                    else `Get
                else Bs_syntaxerr.err loc Unsupported_predicates
-            ) `Get (Ast_payload.record_as_config_and_process loc payload)  in 
+            ) `Get (Ast_payload.ident_or_record_as_config loc payload)  in 
         (* properties -- void 
               [@@bs.set{only}]
         *)
