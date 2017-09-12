@@ -56,17 +56,20 @@ let print ~is_warning intro ppf loc =
     else begin
       fprintf ppf "@[@{<error>%s@}@]@," intro
     end;
-    fprintf ppf "@[%a@]@,@," print_loc loc;
+    fprintf ppf "@[%a@]@," print_loc loc;
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
     (* things to special-case: startchar & endchar2 both -1  *)
     if start_char == -1 || end_char == -1 then
-      (* happens sometimes. Syntax error for example *)
-      fprintf ppf "Is there an error before this one? If so, it's likely a syntax error.@ The more relevant message should be just above!@ If it's not, please file an issue here:@ github.com/facebook/reason/issues@,"
+      (* happens sometimes. Syntax error for example. Just show the file and do nothing for now *)
+      ()
     else begin
       try
         let lines = file_lines file in
-        fprintf ppf "%a"
+        (* we're putting a line break here rather than above, because this
+           branch might not be reached (aka no inline file content display) so 
+           we don't wanna end up with two line breaks in the the consequent *)
+        fprintf ppf "@,%a"
           (Super_misc.print_file
           ~is_warning
           ~lines
