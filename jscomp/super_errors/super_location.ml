@@ -135,6 +135,9 @@ let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
 let error_of_printer loc print x =
   errorf ~loc "%a@?" print x
 
+let error_of_printer_file print x =
+  error_of_printer (in_file !input_name) print x
+
 (* This will be called in super_main. This is how you override the default error and warning printers *)
 let setup () =
   Location.error_reporter := super_error_reporter;
