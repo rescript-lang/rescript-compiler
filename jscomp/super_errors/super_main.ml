@@ -5,3 +5,4 @@ let setup () =
   Super_typemod.setup ();
   Super_typecore.setup ();
   Super_env.setup ();
+  Super_pparse.setup ();
