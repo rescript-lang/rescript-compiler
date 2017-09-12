@@ -64,10 +64,12 @@ let map f x =
   | None -> None
   | Some x -> Some (f x [@bs])
 
-let default a x =
+let getWithDefault a x =
   match x with
   | None -> a
   | Some x -> x
+
+let default = getWithDefault  
 
 let filter f x =
   match x with

@@ -25,7 +25,7 @@
 module P = Ext_pp
 module L = Js_dump_lit
 let default_export = "default"
-
+let esModule  = "__esModule", "true"
 (** Exports printer *)
 (** Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) = 
@@ -36,7 +36,8 @@ let exports cxt f (idents : Ident.t list) =
         let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
         cxt, ( 
           if id_name = default_export then 
-            (default_export, str) :: (s,str)::acc 
+            (* TODO check how it will affect AMDJS*)
+            esModule :: (default_export, str) :: (s,str)::acc 
           else (s,str) :: acc ) , max len (String.length s)   )
       (cxt, [], 0)  idents in    
   P.newline f ;

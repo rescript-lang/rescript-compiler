@@ -147,6 +147,8 @@ epsilon_test.cmj : mt.cmj
 equal_exception_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj
 equal_test.cmj :
 es6_module_test.cmj : mt.cmj ../stdlib/list.cmj
+escape_esmodule.cmj :
+esmodule_ref.cmj : ../runtime/js.cmj escape_esmodule.cmj
 event_ffi.cmj : ../stdlib/list.cmj ../runtime/js_unsafe.cmj \
     ../runtime/js.cmj
 exception_alias.cmj : ../stdlib/list.cmj
