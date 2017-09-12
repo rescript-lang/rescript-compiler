@@ -158,6 +158,10 @@ let rec
       E.index m pos 
     ]}
 *)
+(* when module is passed as an argument - unpack to an array
+    for the function, generative module or functor can be a function,
+    however it can not be global -- global can only module
+*)
 
 and compile_external_field_apply 
     (cxt : Lam_compile_defs.cxt) 
@@ -171,20 +175,10 @@ and compile_external_field_apply
         let args_code, args = 
           List.fold_right 
             (fun (x : Lam.t) (args_code, args)  ->
-               match x with 
-               | Lglobal_module i -> 
-                 (* when module is passed as an argument - unpack to an array
-                     for the function, generative module or functor can be a function,
-                     however it can not be global -- global can only module
-                 *)
-
-                 args_code, (Lam_compile_global.expand_global_module i env  :: args)
-               | _ -> 
-                 begin match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
-                   | {block = a; value = Some b} -> 
-                     (a @ args_code), (b :: args )
-                   | _ -> assert false
-                 end
+               match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
+               | {block = a; value = Some b} -> 
+                 (a @ args_code), (b :: args )
+               | _ -> assert false
             ) args_lambda ([], []) in
 
         match closed_lambda with 
@@ -547,20 +541,10 @@ and
       begin 
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
           List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
-              match x with             
-              | Lglobal_module ident -> 
-                (* when module is passed as an argument - unpack to an array
-                    for the function, generative module or functor can be a function, 
-                    however it can not be global -- global can only module 
-                *)
-                args_code, Lam_compile_global.expand_global_module  ident env :: fn_code
-              | _ ->
-                begin
-                  match compile_lambda 
-                          {cxt with st = NeedValue ; should_return =  ReturnFalse} x with
-                  | {block = a; value =  Some b} -> a @ args_code , b:: fn_code 
-                  | _ -> assert false
-                end
+              match compile_lambda 
+                      {cxt with st = NeedValue ; should_return =  ReturnFalse} x with
+              | {block = a; value =  Some b} -> a @ args_code , b:: fn_code 
+              | _ -> assert false
             ) (fn::args_lambda) ([],[]) in
 
 
@@ -1601,9 +1585,6 @@ and
           (met :: obj :: args) 
           |> Ext_list.split_map (fun (x : Lam.t) -> 
               match x with 
-              | Lglobal_module i 
-                -> 
-                [], Lam_compile_global.expand_global_module  i env 
               | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
                 (* nullary external call*)
                 -> 
