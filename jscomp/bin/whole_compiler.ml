@@ -97898,6 +97898,10 @@ let rec
       E.index m pos 
     ]}
 *)
+(* when module is passed as an argument - unpack to an array
+    for the function, generative module or functor can be a function,
+    however it can not be global -- global can only module
+*)
 
 and compile_external_field_apply 
     (cxt : Lam_compile_defs.cxt) 
@@ -97911,20 +97915,10 @@ and compile_external_field_apply
         let args_code, args = 
           List.fold_right 
             (fun (x : Lam.t) (args_code, args)  ->
-               match x with 
-               | Lglobal_module i -> 
-                 (* when module is passed as an argument - unpack to an array
-                     for the function, generative module or functor can be a function,
-                     however it can not be global -- global can only module
-                 *)
-
-                 args_code, (Lam_compile_global.expand_global_module i env  :: args)
-               | _ -> 
-                 begin match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
-                   | {block = a; value = Some b} -> 
-                     (a @ args_code), (b :: args )
-                   | _ -> assert false
-                 end
+               match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
+               | {block = a; value = Some b} -> 
+                 (a @ args_code), (b :: args )
+               | _ -> assert false
             ) args_lambda ([], []) in
 
         match closed_lambda with 
@@ -98287,20 +98281,10 @@ and
       begin 
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
           List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
-              match x with             
-              | Lglobal_module ident -> 
-                (* when module is passed as an argument - unpack to an array
-                    for the function, generative module or functor can be a function, 
-                    however it can not be global -- global can only module 
-                *)
-                args_code, Lam_compile_global.expand_global_module  ident env :: fn_code
-              | _ ->
-                begin
-                  match compile_lambda 
-                          {cxt with st = NeedValue ; should_return =  ReturnFalse} x with
-                  | {block = a; value =  Some b} -> a @ args_code , b:: fn_code 
-                  | _ -> assert false
-                end
+              match compile_lambda 
+                      {cxt with st = NeedValue ; should_return =  ReturnFalse} x with
+              | {block = a; value =  Some b} -> a @ args_code , b:: fn_code 
+              | _ -> assert false
             ) (fn::args_lambda) ([],[]) in
 
 
@@ -99341,9 +99325,6 @@ and
           (met :: obj :: args) 
           |> Ext_list.split_map (fun (x : Lam.t) -> 
               match x with 
-              | Lglobal_module i 
-                -> 
-                [], Lam_compile_global.expand_global_module  i env 
               | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
                 (* nullary external call*)
                 -> 
@@ -113922,7 +113903,8 @@ ppf
     let offset_current_line = current_line |> string_slice ~start:columns_to_cut in
     let offset_current_line_length = String.length offset_current_line in
     let offset_start_line_start_char = start_line_start_char - columns_to_cut in
-    let offset_end_line_end_char = end_line_end_char - columns_to_cut in
+    (* end_line_end_char is exclusive *)
+    let offset_end_line_end_char = end_line_end_char - 1 - columns_to_cut in
     (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
     for j = 1 to offset_current_line_length do
       let current_char = offset_current_line.[j - 1] in
@@ -113933,6 +113915,10 @@ ppf
           ~end_highlight_line:(j = offset_current_line_length)
           current_char 
       | Only_error_line ->
+        (* in some errors, starting char and ending char can be the same. But
+           since ending char was supposed to be exclusive and had a -1, here it 
+           might end up smaller than the starting char *)
+        let offset_end_line_end_char = max offset_end_line_end_char offset_start_line_start_char in
         print_char_maybe_highlight 
           ~begin_highlight_line:(j = offset_start_line_start_char) 
           ~end_highlight_line:(j = offset_end_line_end_char)
@@ -114265,8 +114251,11 @@ let print ~is_warning intro ppf loc =
           ~is_warning
           ~lines
           ~range:(
-            (start_line, start_char + 1), (* make everything 1-index based. See justifications in Super_mic.print_file *)
-            (end_line, end_char)
+            (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
+            (* start_char is inclusive *)
+            (start_line, start_char + 1),
+            (* start_char is exclusive *)
+            (end_line, end_char + 1)
           ))
           ()
       with
