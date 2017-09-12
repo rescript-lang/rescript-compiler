@@ -4,3 +4,4 @@ let setup () =
   Super_typetexp.setup ();
   Super_typemod.setup ();
   Super_typecore.setup ();
+  Super_env.setup ();

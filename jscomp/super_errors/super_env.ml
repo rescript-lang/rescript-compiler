@@ -38,7 +38,7 @@ let report_error ppf = function
         name
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
-let () =
+let setup () =
   Location.register_error_of_exn
     (function
       | Env.Error (Missing_module (loc, _, _)
