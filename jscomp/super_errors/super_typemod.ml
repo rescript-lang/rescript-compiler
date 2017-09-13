@@ -2,6 +2,22 @@ open Printtyp
 
 let fprintf = Format.fprintf
 
+let pp_component_type_not_generalizable_pre ppf =
+  fprintf ppf "@[<v>\
+    @[@{<info>Is this a ReasonReact component with state/reducer or retained props?@}@ If so, this error will disappear after:@]@,\
+    @[- Defining the component's `make` function@]@,\
+    @[- Using the state once or annotating it with a type where it's used (e.g. render)@]\
+    @[- Using the action once or annotating it with a type where it's used (e.g. reducer)@]\
+    @[- Do the same for retained props, if any@]@,@,\
+    @[@{<info>Here's the original error message@}@]\
+  @]@,"
+
+let pp_component_type_not_generalizable_post ppf () =
+  fprintf ppf
+  "@[This happens when the type system senses there's a mutation/side-effect, in combination with a polymorphic value.@,\
+  Using or annotating that value usually solves it.@ \
+  More info:@ https://realworldocaml.org/v1/en/html/imperative-programming-1.html#side-effects-and-weak-polymorphism@]"
+
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typemod.ml#L1754 *)
 (* modified branches are commented *)
 let report_error ppf = Typemod.(function
@@ -38,24 +54,15 @@ let report_error ppf = Typemod.(function
            Names must be unique in a given structure or signature.@]" kind name
   | Non_generalizable typ ->
       (* modified *)
-      fprintf ppf "@[";
+      fprintf ppf "@[<v>";
       if Super_reason_react.type_is_component_spec typ then begin
-        fprintf ppf "@[<v>\
-          @[@{<info>Is this a ReasonReact component with state/reducer or retained props?@}@ If so, this error will disappear after:@]@,\
-          @[- Defining the component's `make` function@]@,\
-          @[- Using the state once or annotating it with a type where it's used (e.g. render)@]\
-          @[- Using the action once or annotating it with a type where it's used (e.g. reducer)@]\
-          @[- Do the same for retained props, if any@]@,@,\
-          @[@{<info>Here's the original error message@}@]\
-        @]@,"
+        pp_component_type_not_generalizable_pre ppf
       end;
       fprintf ppf
-        "@[<v>@[This expression's type contains type variables that can't be generalized:@,@{<error>%a@}@]@,@,\
-        @[This happens when the type system senses there's a mutation/side-effect, in combination with a polymorphic value.@,\
-        Using or annotating that value usually solves it.@ \
-        More info:@ https://realworldocaml.org/v1/en/html/imperative-programming-1.html#side-effects-and-weak-polymorphism@]@]"
-        type_scheme
-        typ;
+        "@[This expression's type contains type variables that can't be generalized:@,@{<error>%a@}@]@,@,\
+         %a"        
+        type_scheme typ
+        pp_component_type_not_generalizable_post ();
       fprintf ppf "@]"
   | Non_generalizable_class (id, desc) ->
       fprintf ppf
@@ -63,9 +70,17 @@ let report_error ppf = Typemod.(function
            contains type variables that cannot be generalized@]"
         (class_declaration id) desc
   | Non_generalizable_module mty ->
+      (* modified *)
+      fprintf ppf "@[<v>";
+      if Super_reason_react.module_type_is_component_spec mty then begin
+        pp_component_type_not_generalizable_pre ppf
+      end;
       fprintf ppf
-        "@[The type of this module,@ %a,@ \
-           contains type variables that cannot be generalized@]" modtype mty;
+        "@[The type of this module contains type variables that cannot be generalized:@,@{<error>%a@}@]@,@,\
+         %a"        
+        modtype mty
+        pp_component_type_not_generalizable_post ();
+      fprintf ppf "@]"           
   | Implementation_is_required intf_name ->
       fprintf ppf
         "@[The interface %a@ declares values, not just types.@ \
