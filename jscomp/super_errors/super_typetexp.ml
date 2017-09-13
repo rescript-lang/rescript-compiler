@@ -9,7 +9,7 @@ open Ctype
 open Format
 open Printtyp
 
-(* this function is staying exactly the same. We copy paste it here because typetexp.mli doesn't expose it *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typetexp.ml#L869 *)
 let spellcheck ppf fold env lid =
   let cutoff =
     match String.length (Longident.last lid) with
@@ -34,7 +34,8 @@ let spellcheck ppf fold env lid =
     match List.rev choice with
       | [] -> ()
       | last :: rev_rest ->
-        fprintf ppf "@\nHint: Did you mean %s%s%s?"
+        (* the modified part *)
+        fprintf ppf "@[<v 2>@,@,@{<info>Hint: Did you mean %s%s%s?@}@]"
           (String.concat ", " (List.rev rev_rest))
           (if rev_rest = [] then "" else " or ")
           last
@@ -129,8 +130,17 @@ let report_error env ppf = function
       fprintf ppf "Unbound value %a" longident lid;
       spellcheck ppf Env.fold_values env lid;
   | Unbound_module lid ->
-      fprintf ppf "Unbound module %a" longident lid;
-      spellcheck ppf Env.fold_modules env lid;
+      (* modified *)
+      fprintf ppf "@[<v>\
+          @{<info>The module or file %a can't be found.@}@,@,\
+          @[<v 2>- If it's a third-party dependency:@,\
+            - Did you list it in bsconfig.json?@,\
+            - @[Did you run `bsb` instead of `bsb -make-world`@ (latter builds third-parties)@]?\
+            @]@,\
+          - Did you include the file's directory in bsconfig.json?@]\
+        @]"
+        longident lid;
+      spellcheck ppf Env.fold_modules env lid
   | Unbound_constructor lid ->
       fprintf ppf "Unbound constructor %a" longident lid;
       Typetexp.spellcheck_simple ppf Env.fold_constructors (fun d -> d.cstr_name)
