@@ -111,7 +111,7 @@
                     }
                 }
             },
-            "description": "(WIP) Note that we will add the directory path accordingly"
+            "description": "Note that we will add the directory path accordingly"
         },
         "sourceItem": {
             "title": "sourceItem",
@@ -193,8 +193,17 @@
                             }
                         },
                         "subdirs": {
-                            "$ref": "#/definitions/sources",
-                            "description": "More source directories"
+                            "title" : "Sub directories",
+                            "oneOf" : [
+                                {
+                                    "$ref": "#/definitions/sources",
+                                    "description": "More source directories"
+                                },
+                                {
+                                    "type" : "boolean",
+                                    "description": "true means traverse to all subdirs"
+                                }
+                            ]                                                        
                         },
                         "group": {
                             "oneOf": [

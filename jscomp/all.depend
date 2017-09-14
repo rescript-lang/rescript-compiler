@@ -694,6 +694,9 @@ super_errors/super_misc.cmx : super_errors/super_misc.cmi
 super_errors/super_warnings.cmx :
 super_errors/super_location.cmx : super_errors/super_warnings.cmx \
     super_errors/super_misc.cmx
+super_errors/super_env.cmx : super_errors/super_location.cmx
+super_errors/super_pparse.cmx : super_errors/super_location.cmx \
+    ext/ext_string.cmx
 super_errors/super_typecore.cmx : super_errors/super_reason_react.cmx \
     super_errors/super_location.cmx
 super_errors/super_typemod.cmx : super_errors/super_reason_react.cmx \
@@ -701,7 +704,8 @@ super_errors/super_typemod.cmx : super_errors/super_reason_react.cmx \
 super_errors/super_typetexp.cmx : super_errors/super_location.cmx
 super_errors/super_main.cmx : super_errors/super_typetexp.cmx \
     super_errors/super_typemod.cmx super_errors/super_typecore.cmx \
-    super_errors/super_location.cmx
+    super_errors/super_pparse.cmx super_errors/super_location.cmx \
+    super_errors/super_env.cmx
 super_errors/super_reason_react.cmi :
 super_errors/super_misc.cmi :
 reason_outcome_printer/tweaked_reason_oprint.cmx :
@@ -861,11 +865,12 @@ bsb/bsb_package_specs.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_json_types.cmx ext/ext_json.cmx bsb/bsb_exception.cmx \
     bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx bsb/bsb_package_specs.cmi
 bsb/bsb_parse_sources.cmx : ext/string_vec.cmx ext/string_set.cmx \
-    ext/string_map.cmx ext/ext_string.cmx ext/ext_path.cmx \
-    ext/ext_json_types.cmx ext/ext_json.cmx ext/ext_filename.cmx \
-    ext/ext_file_pp.cmx ext/ext_array.cmx bsb/bsb_exception.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
-    bsb/bsb_build_cache.cmx bsb/bsb_parse_sources.cmi
+    ext/string_map.cmx ext/string_hashtbl.cmx ext/ext_string.cmx \
+    ext/ext_path.cmx ext/ext_json_types.cmx ext/ext_json.cmx \
+    ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
+    bsb/bsb_exception.cmx bsb/bsb_dir_index.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_schemas.cmx bsb/bsb_build_cache.cmx \
+    bsb/bsb_parse_sources.cmi
 bsb/bsb_pkg.cmx : ext/string_hashtbl.cmx ext/literals.cmx \
     bsb/bsb_exception.cmx bsb/bsb_pkg.cmi
 bsb/bsb_pkg_cmi_create.cmx :
@@ -916,8 +921,9 @@ bsb/bsb_ninja_gen.cmi : bsb/bsb_config_types.cmx
 bsb/bsb_ninja_regen.cmi : bsb/bsb_package_specs.cmi bsb/bsb_config_types.cmx
 bsb/bsb_ninja_util.cmi : bsb/bsb_rule.cmi
 bsb/bsb_package_specs.cmi : ext/ext_json_types.cmx
-bsb/bsb_parse_sources.cmi : ext/string_set.cmi ext/ext_json_types.cmx \
-    ext/ext_file_pp.cmi bsb/bsb_dir_index.cmi bsb/bsb_build_cache.cmi
+bsb/bsb_parse_sources.cmi : ext/string_set.cmi ext/string_map.cmi \
+    ext/ext_json_types.cmx ext/ext_file_pp.cmi bsb/bsb_dir_index.cmi \
+    bsb/bsb_build_cache.cmi
 bsb/bsb_pkg.cmi :
 bsb/bsb_pkg_map_gen.cmi : bsb/bsb_parse_sources.cmi
 bsb/bsb_query.cmi :
