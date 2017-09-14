@@ -25,11 +25,12 @@
 let p = Format.fprintf 
 
 let pp_cmj fmt 
-    ({ values ; effect; npm_package_path } :Js_cmj_format.t) = 
+    ({ values ; effect; npm_package_path ; case} :Js_cmj_format.t) = 
   p fmt "@[package info: %a@]@."  
     Js_packages_info.dump_packages_info
     npm_package_path
     ;
+  p fmt "@[case:%b@]@." case ; 
   p fmt "@[effect: %a@]@."
     (fun fmt o ->
        match o with None -> ()

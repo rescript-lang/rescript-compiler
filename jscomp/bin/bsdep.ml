@@ -31671,6 +31671,8 @@ val escaped : char -> string
 
 
 val valid_hex : char -> bool
+
+val is_lower_case : char -> bool
 end = struct
 #1 "ext_char.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -31740,6 +31742,13 @@ let valid_hex x =
     | 'a' .. 'f'
     | 'A' .. 'F' -> true
     | _ -> false 
+
+
+
+let is_lower_case c =
+  (c >= 'a' && c <= 'z')
+  || (c >= '\224' && c <= '\246')
+  || (c >= '\248' && c <= '\254')    
 end
 module Ast_utf8_string : sig 
 #1 "ast_utf8_string.mli"

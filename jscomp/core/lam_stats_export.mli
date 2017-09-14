@@ -32,5 +32,6 @@ val export_to_cmj :
   Js_cmj_format.effect ->
   Lam_module_ident.t list ->
   Lam.t Ident_map.t ->
+  bool ->
   Js_cmj_format.t
 

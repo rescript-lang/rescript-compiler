@@ -95,7 +95,7 @@ val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.t -> 
-  (string * Js_packages_info.t) option
+  (string * Js_packages_info.t * bool) option
 
 
 

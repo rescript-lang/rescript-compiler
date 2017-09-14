@@ -70,6 +70,7 @@ type t = {
   values : cmj_value String_map.t;
   effect : effect;
   npm_package_path : Js_packages_info.t;
+  case : bool;
 }
 
 val single_na : arity

@@ -67,5 +67,5 @@ val string_of_module_id :
   module_system ->
   t ->
   (Lam_module_ident.t ->
-   (string * t) option ) -> 
+   (string * t * bool ) option ) -> 
   Lam_module_ident.t -> string
