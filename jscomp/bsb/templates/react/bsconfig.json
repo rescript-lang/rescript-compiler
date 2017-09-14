@@ -12,5 +12,6 @@
       "dir": "src",
       "subdirs": ["async", "interop", "simple"]
     }
-  ]
+  ],
+  "namespace": true,
 }
