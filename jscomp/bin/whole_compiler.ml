@@ -114238,17 +114238,20 @@ let print ~is_warning intro ppf loc =
     else begin
       fprintf ppf "@[@{<error>%s@}@]@," intro
     end;
-    fprintf ppf "@[%a@]@,@," print_loc loc;
+    fprintf ppf "@[%a@]@," print_loc loc;
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
     (* things to special-case: startchar & endchar2 both -1  *)
     if start_char == -1 || end_char == -1 then
-      (* happens sometimes. Syntax error for example *)
-      fprintf ppf "Is there an error before this one? If so, it's likely a syntax error.@ The more relevant message should be just above!@ If it's not, please file an issue here:@ github.com/facebook/reason/issues@,"
+      (* happens sometimes. Syntax error for example. Just show the file and do nothing for now *)
+      ()
     else begin
       try
         let lines = file_lines file in
-        fprintf ppf "%a"
+        (* we're putting a line break here rather than above, because this
+           branch might not be reached (aka no inline file content display) so 
+           we don't wanna end up with two line breaks in the the consequent *)
+        fprintf ppf "@,%a"
           (Super_misc.print_file
           ~is_warning
           ~lines
@@ -114317,10 +114320,98 @@ let errorf ?(loc = none) ?(sub = []) ?(if_highlight = "") fmt =
 let error_of_printer loc print x =
   errorf ~loc "%a@?" print x
 
+let error_of_printer_file print x =
+  error_of_printer (in_file !input_name) print x
+
 (* This will be called in super_main. This is how you override the default error and warning printers *)
 let setup () =
   Location.error_reporter := super_error_reporter;
   Location.warning_printer := super_warning_printer;
+
+end
+module Super_env
+= struct
+#1 "super_env.ml"
+let fprintf = Format.fprintf
+
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/env.ml#L1842 *)
+(* modified branches are commented *)
+let report_error ppf = function
+  | Env.Illegal_renaming(name, modname, filename) -> 
+      (* modified *)
+      fprintf ppf
+        "@[You referred to the module %s, but we've found one called %s instead.@ \
+          Is the name's casing right?@]"
+        name modname
+  | Inconsistent_import(name, source1, source2) -> 
+      (* modified *)
+     fprintf ppf "@[<v>\
+        @[@{<info>It's possible that your build is stale.@}@ Try to clean the artifacts and build again?@]@,@,\
+        @[@{<info>Here's the original error message@}@]@,\
+      @]";
+      fprintf ppf
+        "@[<hov>The files %a@ and %a@ \
+              make inconsistent assumptions@ over interface %s@]"
+      Location.print_filename source1 Location.print_filename source2 name
+  | Need_recursive_types(import, export) ->
+      fprintf ppf
+        "@[<hov>Unit %s imports from %s, which uses recursive types.@ %s@]"
+        export import "The compilation flag -rectypes is required"
+  | Missing_module(_, path1, path2) ->
+      fprintf ppf "@[@[<hov>";
+      if Path.same path1 path2 then
+        fprintf ppf "Internal path@ %s@ is dangling." (Path.name path1)
+      else
+        fprintf ppf "Internal path@ %s@ expands to@ %s@ which is dangling."
+          (Path.name path1) (Path.name path2);
+      fprintf ppf "@]@ @[%s@ %s@ %s.@]@]"
+        "The compiled interface for module" (Ident.name (Path.head path2))
+        "was not found"
+  | Illegal_value_name(_loc, name) ->
+      fprintf ppf "'%s' is not a valid value identifier."
+        name
+
+(* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
+let setup () =
+  Location.register_error_of_exn
+    (function
+      | Env.Error (Missing_module (loc, _, _)
+              | Illegal_value_name (loc, _)
+               as err) when loc <> Location.none ->
+          Some (Super_location.error_of_printer loc report_error err)
+      | Env.Error err -> Some (Super_location.error_of_printer_file report_error err)
+      | _ -> None
+    )
+
+end
+module Super_pparse
+= struct
+#1 "super_pparse.ml"
+let fprintf = Format.fprintf
+
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/driver/pparse.ml#L170 *)
+(* modified branches are commented *)
+let report_error ppf = function
+  | Pparse.CannotRun cmd ->
+    (* modified *)
+    if Ext_string.contain_substring cmd "refmt" then
+      fprintf ppf 
+        "@[<v>@{<info>There's been an error running Reason's refmt parser on a file.@}@,\
+          This was the command:@,@,%s@,@,\
+          @[Please file an issue on@ github.com/facebook/reason.@ Thanks!@]@]" cmd
+    else 
+      fprintf ppf "@[<v>@{<info>There's been an error running a preprocessor before the compilation of a file.@}@,\
+                   This was the command:@,@,%s@]" cmd
+  | WrongMagic cmd ->
+      fprintf ppf "External preprocessor does not produce a valid file@.\
+                   Command line: %s@." cmd
+
+let setup () =
+  Location.register_error_of_exn
+    (function
+      | Pparse.Error err -> Some (Super_location.error_of_printer_file report_error err)
+      | _ -> None
+    )
 
 end
 module Super_reason_react : sig 
@@ -114946,6 +115037,8 @@ let setup () =
   Super_typetexp.setup ();
   Super_typemod.setup ();
   Super_typecore.setup ();
+  Super_env.setup ();
+  Super_pparse.setup ();
 
 end
 module Js_main : sig 

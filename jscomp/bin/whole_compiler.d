@@ -332,6 +332,7 @@ bin/whole_compiler.ml : core/lam_module_ident.mli
 bin/whole_compiler.ml : core/lam_pass_collect.mli
 bin/whole_compiler.ml : core/lam_pass_lets_dce.ml
 bin/whole_compiler.ml : core/lam_stats_export.mli
+bin/whole_compiler.ml : super_errors/super_env.ml
 bin/whole_compiler.ml : syntax/ast_attributes.mli
 bin/whole_compiler.ml : syntax/ast_derive_dyn.mli
 bin/whole_compiler.ml : syntax/ast_derive_util.ml
@@ -411,6 +412,7 @@ bin/whole_compiler.ml : core/js_name_of_module_id.ml
 bin/whole_compiler.ml : core/js_of_lam_exception.mli
 bin/whole_compiler.ml : core/lam_beta_reduce_util.ml
 bin/whole_compiler.ml : core/ocaml_batch_compile.mli
+bin/whole_compiler.ml : super_errors/super_pparse.ml
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/translcore.ml
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/translmod.mli
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/translobj.mli
