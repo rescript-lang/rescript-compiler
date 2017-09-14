@@ -4,13 +4,29 @@
   and related comments *)
 open Types
 
-let deconstruct_component_type t =
+let rec deconstruct_component_type t =
   match t.desc with
   | Tconstr (p, types, _) when Path.last p = "componentSpec" -> Some types
+  | Tlink t
+  | Tsubst t -> deconstruct_component_type t
   | _ -> None
 
 let type_is_component_spec t =
   deconstruct_component_type t <> None
+
+let sig_item_is_component_spec (si: Types.signature_item) = match si with
+  | Sig_value (_id, value_desc) ->
+      let typ = value_desc.val_type in
+      type_is_component_spec typ
+  | _ ->
+      false
+
+let module_type_is_component_spec (mty : Types.module_type) = match mty with
+  | Mty_signature sg ->
+      List.exists sig_item_is_component_spec sg
+  |  _ ->
+      false
+
 
 (* recursively drill down the types (first item is the type alias, if any. Second is the content of the alias) *)
 let rec get_to_bottom_of_aliases f = function
