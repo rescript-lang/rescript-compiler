@@ -35,5 +35,5 @@ val make : ns:string -> string -> string
   of basename
 *)
 val js_name_of_basename :  string -> string 
-
+val js_name_of_modulename : little:bool -> string -> string
 val namespace_of_package_name : string -> string

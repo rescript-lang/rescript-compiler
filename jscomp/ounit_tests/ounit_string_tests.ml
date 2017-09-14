@@ -316,6 +316,10 @@ let suites =
       Ext_namespace.js_name_of_basename "a--"
       =~ "a-.js";
       Ext_namespace.js_name_of_basename "AA-b"
+      =~ "AA.js";
+      Ext_namespace.js_name_of_modulename ~little:true "AA-b"
       =~ "aA.js";
+      Ext_namespace.js_name_of_modulename ~little:false "AA-b"
+      =~ "AA.js";
     end
   ]

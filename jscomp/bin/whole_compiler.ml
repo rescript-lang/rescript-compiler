@@ -58916,7 +58916,7 @@ val make : ns:string -> string -> string
   of basename
 *)
 val js_name_of_basename :  string -> string 
-
+val js_name_of_modulename : little:bool -> string -> string
 val namespace_of_package_name : string -> string
 
 end = struct
@@ -58973,9 +58973,15 @@ let remove_ns_suffix name =
 
 
 let js_name_of_basename s = 
-  remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  remove_ns_suffix  s ^ Literals.suffix_js
 
+let js_name_of_modulename ~little s = 
+  if little then 
+    remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  else 
+    remove_ns_suffix s ^ Literals.suffix_js
 
+    
 let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
   let buf = Buffer.create len in 
@@ -63195,7 +63201,7 @@ val string_of_module_id :
   module_system ->
   t ->
   (Lam_module_ident.t ->
-   (string * t) option ) -> 
+   (string * t * bool ) option ) -> 
   Lam_module_ident.t -> string
 end = struct
 #1 "js_packages_info.ml"
@@ -63383,7 +63389,7 @@ let string_of_module_id
     (module_system : module_system)    
     (current_package_info : t)
     (get_package_path_from_cmj : 
-       Lam_module_ident.t -> (string * t) option
+       Lam_module_ident.t -> (string * t * bool) option
     )
     (dep_module_id : Lam_module_ident.t) : string =
   let result = 
@@ -63399,7 +63405,7 @@ let string_of_module_id
     | Runtime  
     | Ml  -> 
       let id = dep_module_id.id in
-      let js_file =  Ext_namespace.js_name_of_basename id.name in 
+      
       let current_pkg_info = 
         query_package_infos current_package_info
           module_system  
@@ -63409,7 +63415,8 @@ let string_of_module_id
       match get_package_path_from_cmj dep_module_id with 
       | None -> 
         Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
-      | Some (cmj_path, package_info) -> 
+      | Some (cmj_path, package_info, little) -> 
+        let js_file =  Ext_namespace.js_name_of_modulename ~little id.name in 
         let dependency_pkg_info =  
           query_package_infos package_info module_system 
         in 
@@ -70345,6 +70352,7 @@ type t = {
   values : cmj_value String_map.t;
   effect : effect;
   npm_package_path : Js_packages_info.t;
+  case : bool;
 }
 
 val single_na : arity
@@ -70410,9 +70418,10 @@ type t = {
   values : cmj_value String_map.t;
   effect : effect;
   npm_package_path : Js_packages_info.t ;
+  case : bool; (* little case -> true *)
 }
 
-let cmj_magic_number =  "BUCKLE20170901"
+let cmj_magic_number =  "BUCKLE20170907"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 
@@ -70421,6 +70430,7 @@ let pure_dummy =
     values = String_map.empty;
     effect = None;
     npm_package_path = Js_packages_info.empty;
+    case = true;
   }
 
 let no_pure_dummy = 
@@ -70428,6 +70438,7 @@ let no_pure_dummy =
     values = String_map.empty;
     effect = Some Ext_string.empty;
     npm_package_path = Js_packages_info.empty;  
+    case = true;
   }
 
 
@@ -84897,7 +84908,7 @@ val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.t -> 
-  (string * Js_packages_info.t) option
+  (string * Js_packages_info.t * bool) option
 
 
 
@@ -85198,7 +85209,7 @@ let is_pure_module id  =
 
 let get_package_path_from_cmj 
     ( id : Lam_module_ident.t) 
-  : (path * Js_packages_info.t) option = 
+  : _ option = 
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ ->
       None
@@ -85209,7 +85220,7 @@ let get_package_path_from_cmj
         ) 
     ~found:(fun (cmj_path,x) -> 
         Some (cmj_path, 
-        x.npm_package_path)
+        x.npm_package_path, x.case )
         )
 
     
@@ -85232,6 +85243,122 @@ let get_required_modules
     ) extras;
   Lam_module_ident.Hash_set.elements hard_dependencies
 
+end
+module Ext_char : sig 
+#1 "ext_char.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Extension to Standard char module, avoid locale sensitivity *)
+
+val escaped : char -> string
+
+
+val valid_hex : char -> bool
+
+val is_lower_case : char -> bool
+end = struct
+#1 "ext_char.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+external string_unsafe_set : string -> int -> char -> unit
+                           = "%string_unsafe_set"
+
+external string_create: int -> string = "caml_create_string"
+
+external unsafe_chr: int -> char = "%identity"
+
+(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
+    backport it here
+ *)
+let escaped = function
+  | '\'' -> "\\'"
+  | '\\' -> "\\\\"
+  | '\n' -> "\\n"
+  | '\t' -> "\\t"
+  | '\r' -> "\\r"
+  | '\b' -> "\\b"
+  | ' ' .. '~' as c ->
+      let s = string_create 1 in
+      string_unsafe_set s 0 c;
+      s
+  | c ->
+      let n = Char.code c in
+      let s = string_create 4 in
+      string_unsafe_set s 0 '\\';
+      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
+      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
+      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
+      s
+
+
+let valid_hex x = 
+    match x with 
+    | '0' .. '9'
+    | 'a' .. 'f'
+    | 'A' .. 'F' -> true
+    | _ -> false 
+
+
+
+let is_lower_case c =
+  (c >= 'a' && c <= 'z')
+  || (c >= '\224' && c <= '\246')
+  || (c >= '\248' && c <= '\254')    
 end
 module Ext_pp : sig 
 #1 "ext_pp.mli"
@@ -101809,6 +101936,7 @@ val export_to_cmj :
   Js_cmj_format.effect ->
   Lam_module_ident.t list ->
   Lam.t Ident_map.t ->
+  bool ->
   Js_cmj_format.t
 
 
@@ -101975,6 +102103,7 @@ let export_to_cmj
     maybe_pure
     external_ids 
     export_map
+    case
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
   let () =
@@ -101987,6 +102116,10 @@ let export_to_cmj
   {values; 
    effect ; 
    npm_package_path = Js_packages_state.get_packages_info ();
+   case ;
+    (* FIXME: make sure [-o] would not change its case 
+      add test for ns/non-ns
+    *)
   }
 
 
@@ -102252,7 +102385,7 @@ let no_side_effects (rest : Lam_group.t list) : string option =
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
 *)
-let compile  ~filename output_prefix env _sigs 
+let compile  ~filename (output_prefix : string) env _sigs 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
   let export_ident_sets = Ident_set.of_list export_idents in 
@@ -102376,6 +102509,7 @@ let compile  ~filename output_prefix env _sigs
           maybe_pure 
           external_module_ids
           coerced_input.export_map
+          (Ext_char.is_lower_case (Filename.basename output_prefix).[0])
       in
       (if not @@ !Clflags.dont_write_files then
          Js_cmj_format.to_file 
@@ -105818,113 +105952,6 @@ let pval_prim_of_labels labels =
   [""; encoding]
 
 
-end
-module Ext_char : sig 
-#1 "ext_char.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Extension to Standard char module, avoid locale sensitivity *)
-
-val escaped : char -> string
-
-
-val valid_hex : char -> bool
-end = struct
-#1 "ext_char.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-external string_unsafe_set : string -> int -> char -> unit
-                           = "%string_unsafe_set"
-
-external string_create: int -> string = "caml_create_string"
-
-external unsafe_chr: int -> char = "%identity"
-
-(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
-    backport it here
- *)
-let escaped = function
-  | '\'' -> "\\'"
-  | '\\' -> "\\\\"
-  | '\n' -> "\\n"
-  | '\t' -> "\\t"
-  | '\r' -> "\\r"
-  | '\b' -> "\\b"
-  | ' ' .. '~' as c ->
-      let s = string_create 1 in
-      string_unsafe_set s 0 c;
-      s
-  | c ->
-      let n = Char.code c in
-      let s = string_create 4 in
-      string_unsafe_set s 0 '\\';
-      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
-      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
-      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
-      s
-
-
-let valid_hex x = 
-    match x with 
-    | '0' .. '9'
-    | 'a' .. 'f'
-    | 'A' .. 'F' -> true
-    | _ -> false 
 end
 module Ast_utf8_string : sig 
 #1 "ast_utf8_string.mli"
@@ -114419,6 +114446,9 @@ module Super_reason_react : sig
 val type_is_component_spec: Types.type_expr -> bool
 (** Used by super_typemod when we detect the message "... contains type variables that cannot be generalized" *)
 
+val module_type_is_component_spec: Types.module_type -> bool
+(** Used by super_typemod when we detect the message "... contains type variables that cannot be generalized" *)
+
 val state_escape_scope: (Types.type_expr * Types.type_expr) list -> bool
 (** Used by super_typecore when we detect the message "The type constructor state would escape its scope" *)
 
@@ -114433,13 +114463,29 @@ end = struct
   and related comments *)
 open Types
 
-let deconstruct_component_type t =
+let rec deconstruct_component_type t =
   match t.desc with
   | Tconstr (p, types, _) when Path.last p = "componentSpec" -> Some types
+  | Tlink t
+  | Tsubst t -> deconstruct_component_type t
   | _ -> None
 
 let type_is_component_spec t =
   deconstruct_component_type t <> None
+
+let sig_item_is_component_spec (si: Types.signature_item) = match si with
+  | Sig_value (_id, value_desc) ->
+      let typ = value_desc.val_type in
+      type_is_component_spec typ
+  | _ ->
+      false
+
+let module_type_is_component_spec (mty : Types.module_type) = match mty with
+  | Mty_signature sg ->
+      List.exists sig_item_is_component_spec sg
+  |  _ ->
+      false
+
 
 (* recursively drill down the types (first item is the type alias, if any. Second is the content of the alias) *)
 let rec get_to_bottom_of_aliases f = function
@@ -114740,6 +114786,22 @@ open Printtyp
 
 let fprintf = Format.fprintf
 
+let pp_component_type_not_generalizable_pre ppf =
+  fprintf ppf "@[<v>\
+    @[@{<info>Is this a ReasonReact component with state/reducer or retained props?@}@ If so, this error will disappear after:@]@,\
+    @[- Defining the component's `make` function@]@,\
+    @[- Using the state once or annotating it with a type where it's used (e.g. render)@]\
+    @[- Using the action once or annotating it with a type where it's used (e.g. reducer)@]\
+    @[- Do the same for retained props, if any@]@,@,\
+    @[@{<info>Here's the original error message@}@]\
+  @]@,"
+
+let pp_component_type_not_generalizable_post ppf () =
+  fprintf ppf
+  "@[This happens when the type system senses there's a mutation/side-effect, in combination with a polymorphic value.@,\
+  Using or annotating that value usually solves it.@ \
+  More info:@ https://realworldocaml.org/v1/en/html/imperative-programming-1.html#side-effects-and-weak-polymorphism@]"
+
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typemod.ml#L1754 *)
 (* modified branches are commented *)
 let report_error ppf = Typemod.(function
@@ -114776,24 +114838,15 @@ let report_error ppf = Typemod.(function
            Names must be unique in a given structure or signature.@]" kind name
   | Non_generalizable typ ->
       (* modified *)
-      fprintf ppf "@[";
+      fprintf ppf "@[<v>";
       if Super_reason_react.type_is_component_spec typ then begin
-        fprintf ppf "@[<v>\
-          @[@{<info>Is this a ReasonReact component with state/reducer or retained props?@}@ If so, this error will disappear after:@]@,\
-          @[- Defining the component's `make` function@]@,\
-          @[- Using the state once or annotating it with a type where it's used (e.g. render)@]\
-          @[- Using the action once or annotating it with a type where it's used (e.g. reducer)@]\
-          @[- Do the same for retained props, if any@]@,@,\
-          @[@{<info>Here's the original error message@}@]\
-        @]@,"
+        pp_component_type_not_generalizable_pre ppf
       end;
       fprintf ppf
-        "@[<v>@[This expression's type contains type variables that can't be generalized:@,@{<error>%a@}@]@,@,\
-        @[This happens when the type system senses there's a mutation/side-effect, in combination with a polymorphic value.@,\
-        Using or annotating that value usually solves it.@ \
-        More info:@ https://realworldocaml.org/v1/en/html/imperative-programming-1.html#side-effects-and-weak-polymorphism@]@]"
-        type_scheme
-        typ;
+        "@[This expression's type contains type variables that can't be generalized:@,@{<error>%a@}@]@,@,\
+         %a"        
+        type_scheme typ
+        pp_component_type_not_generalizable_post ();
       fprintf ppf "@]"
   | Non_generalizable_class (id, desc) ->
       fprintf ppf
@@ -114801,9 +114854,17 @@ let report_error ppf = Typemod.(function
            contains type variables that cannot be generalized@]"
         (class_declaration id) desc
   | Non_generalizable_module mty ->
+      (* modified *)
+      fprintf ppf "@[<v>";
+      if Super_reason_react.module_type_is_component_spec mty then begin
+        pp_component_type_not_generalizable_pre ppf
+      end;
       fprintf ppf
-        "@[The type of this module,@ %a,@ \
-           contains type variables that cannot be generalized@]" modtype mty;
+        "@[The type of this module contains type variables that cannot be generalized:@,@{<error>%a@}@]@,@,\
+         %a"        
+        modtype mty
+        pp_component_type_not_generalizable_post ();
+      fprintf ppf "@]"           
   | Implementation_is_required intf_name ->
       fprintf ppf
         "@[The interface %a@ declares values, not just types.@ \
@@ -114869,7 +114930,7 @@ open Ctype
 open Format
 open Printtyp
 
-(* this function is staying exactly the same. We copy paste it here because typetexp.mli doesn't expose it *)
+(* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typetexp.ml#L869 *)
 let spellcheck ppf fold env lid =
   let cutoff =
     match String.length (Longident.last lid) with
@@ -114894,7 +114955,8 @@ let spellcheck ppf fold env lid =
     match List.rev choice with
       | [] -> ()
       | last :: rev_rest ->
-        fprintf ppf "@\nHint: Did you mean %s%s%s?"
+        (* the modified part *)
+        fprintf ppf "@[<v 2>@,@,@{<info>Hint: Did you mean %s%s%s?@}@]"
           (String.concat ", " (List.rev rev_rest))
           (if rev_rest = [] then "" else " or ")
           last
@@ -114989,8 +115051,17 @@ let report_error env ppf = function
       fprintf ppf "Unbound value %a" longident lid;
       spellcheck ppf Env.fold_values env lid;
   | Unbound_module lid ->
-      fprintf ppf "Unbound module %a" longident lid;
-      spellcheck ppf Env.fold_modules env lid;
+      (* modified *)
+      fprintf ppf "@[<v>\
+          @{<info>The module or file %a can't be found.@}@,@,\
+          @[<v 2>- If it's a third-party dependency:@,\
+            - Did you list it in bsconfig.json?@,\
+            - @[Did you run `bsb` instead of `bsb -make-world`@ (latter builds third-parties)@]?\
+            @]@,\
+          - Did you include the file's directory in bsconfig.json?@]\
+        @]"
+        longident lid;
+      spellcheck ppf Env.fold_modules env lid
   | Unbound_constructor lid ->
       fprintf ppf "Unbound constructor %a" longident lid;
       Typetexp.spellcheck_simple ppf Env.fold_constructors (fun d -> d.cstr_name)

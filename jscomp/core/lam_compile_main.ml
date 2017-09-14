@@ -203,7 +203,7 @@ let no_side_effects (rest : Lam_group.t list) : string option =
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
 *)
-let compile  ~filename output_prefix env _sigs 
+let compile  ~filename (output_prefix : string) env _sigs 
     (lam : Lambda.lambda)   = 
   let export_idents = Translmod.get_export_identifiers() in
   let export_ident_sets = Ident_set.of_list export_idents in 
@@ -355,6 +355,7 @@ let compile  ~filename output_prefix env _sigs
           maybe_pure 
           external_module_ids
           coerced_input.export_map
+          (Ext_char.is_lower_case (Filename.basename output_prefix).[0])
       in
       (if not @@ !Clflags.dont_write_files then
          Js_cmj_format.to_file 

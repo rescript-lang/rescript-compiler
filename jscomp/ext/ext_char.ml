@@ -65,3 +65,10 @@ let valid_hex x =
     | 'a' .. 'f'
     | 'A' .. 'F' -> true
     | _ -> false 
+
+
+
+let is_lower_case c =
+  (c >= 'a' && c <= 'z')
+  || (c >= '\224' && c <= '\246')
+  || (c >= '\248' && c <= '\254')    

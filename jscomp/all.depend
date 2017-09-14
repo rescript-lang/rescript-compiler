@@ -504,9 +504,9 @@ core/lam_dce.cmx : core/lam_group.cmx core/lam_analysis.cmx core/lam.cmx \
 core/lam_group_pass.cmx : core/lam.cmx
 core/lam_compile_env.cmx : core/type_util.cmx ext/string_map.cmx \
     ext/literals.cmx core/lam_module_ident.cmx core/lam.cmx \
-    core/js_stmt_make.cmx core/js_packages_info.cmx core/js_exp_make.cmx \
-    common/js_config.cmx core/js_cmj_load.cmx core/js_cmj_format.cmx \
-    ext/ext_string.cmx core/lam_compile_env.cmi
+    core/js_stmt_make.cmx core/js_exp_make.cmx common/js_config.cmx \
+    core/js_cmj_load.cmx core/js_cmj_format.cmx ext/ext_string.cmx \
+    core/lam_compile_env.cmi
 core/lam_stats_util.cmx : core/lam_stats.cmx core/lam_compile_env.cmx \
     core/lam_arity.cmx core/lam.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
     core/lam_stats_util.cmi
@@ -645,7 +645,7 @@ core/lam_compile_main.cmx : ext/literals.cmx core/lam_util.cmx \
     core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
     common/ext_log.cmx ext/ext_list.cmx ext/ext_ident.cmx \
-    ext/ext_filename.cmx core/lam_compile_main.cmi
+    ext/ext_filename.cmx ext/ext_char.cmx core/lam_compile_main.cmi
 core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
     core/lam_compile_main.cmx core/lam_compile_env.cmx common/js_config.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \

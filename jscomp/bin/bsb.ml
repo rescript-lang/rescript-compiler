@@ -7441,7 +7441,7 @@ val make : ns:string -> string -> string
   of basename
 *)
 val js_name_of_basename :  string -> string 
-
+val js_name_of_modulename : little:bool -> string -> string
 val namespace_of_package_name : string -> string
 
 end = struct
@@ -7498,9 +7498,15 @@ let remove_ns_suffix name =
 
 
 let js_name_of_basename s = 
-  remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  remove_ns_suffix  s ^ Literals.suffix_js
 
+let js_name_of_modulename ~little s = 
+  if little then 
+    remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
+  else 
+    remove_ns_suffix s ^ Literals.suffix_js
 
+    
 let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
   let buf = Buffer.create len in 
