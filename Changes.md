@@ -16,7 +16,7 @@ Features:
 - #1991, Accept `bs.deriving accessors` applies to `bs.config` as well for single field
 - #2001, improve global module compilation
 - #2006, "subdirs" : true will traverse the directory recursively
-- #1964, for `Captial_file.ml` generate `Capital_file.js` instead of `capital_file.js`
+- #1964, for `Capital_file.ml` generate `Capital_file.js` instead of `capital_file.js`
 
 Deprecations:
 - #1968, remove support for google module system
