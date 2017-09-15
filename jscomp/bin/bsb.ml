@@ -6148,35 +6148,17 @@ let root = OCamlRes.Res.([
       \  ],\n\
       \  \"bs-dependencies\" : [\n\
       \      // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.\n\
-      \  ]\n\
+      \  ],\n\
+      \  \"namespace\": true,\n\
        }\n\
        ") ;
     File (".gitignore",
-      "*.exe\n\
-       *.obj\n\
-       *.out\n\
-       *.compile\n\
-       *.native\n\
-       *.byte\n\
-       *.cmo\n\
-       *.annot\n\
-       *.cmi\n\
-       *.cmx\n\
-       *.cmt\n\
-       *.cmti\n\
-       *.cma\n\
-       *.a\n\
-       *.cmxa\n\
-       *.obj\n\
-       *~\n\
-       *.annot\n\
-       *.cmj\n\
-       *.bak\n\
-       lib/bs\n\
-       *.mlast\n\
-       *.mliast\n\
-       .vscode\n\
-       .merlin")]) ;
+      ".DS_Store\n\
+       .merlin\n\
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/\n\
+       ")]) ;
   Dir ("generator", [
     Dir ("src", [
       File ("test.cpp.ml",
@@ -6683,14 +6665,17 @@ let root = OCamlRes.Res.([
       \      \"dir\": \"src\",\n\
       \      \"subdirs\": [\"async\", \"interop\", \"simple\"]\n\
       \    }\n\
-      \  ]\n\
+      \  ],\n\
+      \  \"namespace\": true,\n\
        }\n\
        ") ;
     File (".gitignore",
-      "lib\n\
-       node_modules\n\
+      ".DS_Store\n\
        .merlin\n\
-       npm-debug.log")])
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/\n\
+       ")])
 ])
 
 end
