@@ -9,6 +9,7 @@ Fixes:
 - #1989, fix a bug for exit inlining
 - #2002, make default exports work with transpiled babel es6 import
 - A bunch of improvements for better error message by Cheng Lou and Cristiano Calcagno
+
 Features:
 - #1944, bspack support -main-export
 - #1990, better optimizations for pattern match compilation
@@ -16,6 +17,7 @@ Features:
 - #2001, improve global module compilation
 - #2006, "subdirs" : true will traverse the directory recursively
 - #1964, for `Captial_file.ml` generate `Capital_file.js` instead of `capital_file.js`
+
 Deprecations:
 - #1968, remove support for google module system
 # 1.9.1 (Recovery 1.9.0)
