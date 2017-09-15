@@ -1,4 +1,23 @@
+# 1.9.2
 
+Fixes:
+- #1943, Wrong name mangling for properties "_50"
+- #1029, tree shaking in playground
+- #1946, Fix invalid JS output
+- #1965, more JS modules exported in playground
+- #1559, add a comment when no js output produced
+- #1989, fix a bug for exit inlining
+- #2002, make default exports work with transpiled babel es6 import
+- A bunch of improvements for better error message by Cheng Lou and Cristiano Calcagno
+Features:
+- #1944, bspack support -main-export
+- #1990, better optimizations for pattern match compilation
+- #1991, Accept `bs.deriving accessors` applies to `bs.config` as well for single field
+- #2001, improve global module compilation
+- #2006, "subdirs" : true will traverse the directory recursively
+- #1964, for `Captial_file.ml` generate `Capital_file.js` instead of `capital_file.js`
+Deprecations:
+- #1968, remove support for google module system
 # 1.9.1 (Recovery 1.9.0)
 Fixes
 - #1933 hyphen directory name fixes
