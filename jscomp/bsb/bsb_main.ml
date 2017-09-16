@@ -39,11 +39,19 @@ let separator = "--"
 let watch_mode = ref false
 let make_world = ref false 
 let set_make_world () = make_world := true
+let bs_version_string = Bs_version.version
 
-
+let print_version_string () = 
+  print_string bs_version_string;
+  print_newline (); 
+  exit 0 
 
 let bsb_main_flags : (string * Arg.spec * string) list=
   [
+    "-v", Arg.Unit print_version_string, 
+    " Print version and exit";
+    "-version", Arg.Unit print_version_string, 
+    " Print version and exit";
     "-color", Arg.Set Bsb_log.color_enabled,
     " forced color output";
     "-no-color", Arg.Clear Bsb_log.color_enabled,
@@ -54,10 +62,10 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " (internal) Always regenerate build.ninja no matter bsconfig.json is changed or not (for debugging purpose)"
     ;
     "-clean-world", Arg.Unit (fun _ -> 
-      Bsb_clean.clean_bs_deps bsc_dir cwd),
+        Bsb_clean.clean_bs_deps bsc_dir cwd),
     " Clean all bs dependencies";
     "-clean", Arg.Unit (fun _ -> 
-      Bsb_clean.clean_self bsc_dir cwd),
+        Bsb_clean.clean_self bsc_dir cwd),
     " Clean only current project";
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
@@ -70,7 +78,7 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-themes", Arg.Unit Bsb_init.list_themes,
     " List all available themes";
     "-where",
-       Arg.Unit (fun _ -> 
+    Arg.Unit (fun _ -> 
         print_endline (Filename.dirname Sys.executable_name)),
     " Show where bsb.exe is located"
   ]
@@ -141,7 +149,7 @@ let watch_exit () =
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
-  
+
   let vendor_ninja = bsc_dir // "ninja.exe" in  
   match Sys.argv with 
   | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
