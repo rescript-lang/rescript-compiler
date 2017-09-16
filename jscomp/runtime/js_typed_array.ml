@@ -112,6 +112,8 @@ module type S =  sig
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
 
+  external subarray : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
+
   external toString : string = "" [@@bs.send.pipe: t]
   external toLocaleString : string = "" [@@bs.send.pipe: t]
 
