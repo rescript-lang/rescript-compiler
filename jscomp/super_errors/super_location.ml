@@ -56,14 +56,14 @@ let print ~is_warning intro ppf loc =
     else begin
       fprintf ppf "@[@{<error>%s@}@]@," intro
     end;
-    fprintf ppf "@[%a@]@," print_loc loc;
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
     (* things to special-case: startchar & endchar2 both -1  *)
     if start_char == -1 || end_char == -1 then
       (* happens sometimes. Syntax error for example. Just show the file and do nothing for now *)
-      ()
+      fprintf ppf "@[%a@]@," print_loc loc
     else begin
+      fprintf ppf "@[%a@], from l%d-c%d to l%d-c%d@," print_loc loc start_line start_char end_line end_char;
       try
         let lines = file_lines file in
         (* we're putting a line break here rather than above, because this
