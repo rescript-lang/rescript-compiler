@@ -4,11 +4,12 @@ let fprintf = Format.fprintf
 
 let pp_component_type_not_generalizable_pre ppf =
   fprintf ppf "@[<v>\
-    @[@{<info>Is this a ReasonReact component with state/reducer or retained props?@}@ If so, this error will disappear after:@]@,\
+    @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
+    If so, this error will disappear after:@]@,\
     @[- Defining the component's `make` function@]@,\
-    @[- Using the state once or annotating it with a type where it's used (e.g. render)@]\
-    @[- Using the action once or annotating it with a type where it's used (e.g. reducer)@]\
-    @[- Do the same for retained props, if any@]@,@,\
+    @[- Using the state once or annotating it with a type where it's used (e.g. render)@]@,\
+    @[- Doing the same for action (in e.g. reducer)@]@,\
+    @[- Doing the same for retained props, if any@]@,@,\
     @[@{<info>Here's the original error message@}@]\
   @]@,"
 
