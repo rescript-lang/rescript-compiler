@@ -173,6 +173,15 @@ let suites = Mt.[
          mkI8 [| 1; 2; 3; 4; 5 |] |> Int8Array.sliceFrom 2)
     );
 
+    "typed_array - subarray", (fun _ ->
+      Eq(mkI8 [| 2; 3; |],
+         mkI8 [| 1; 2; 3; 4; 5 |] |> Int8Array.subarray ~start:1 ~end_:3)
+    );
+    "typed_array - subarrayFrom", (fun _ ->
+      Eq(mkI8 [| 3; 4; 5 |],
+         mkI8 [| 1; 2; 3; 4; 5 |] |> Int8Array.subarrayFrom 2)
+    );
+
     "typed_array - toString", (fun _ ->
       Eq("1,2,3", mkI8 [| 1; 2; 3 |] |> Int8Array.toString)
     );
