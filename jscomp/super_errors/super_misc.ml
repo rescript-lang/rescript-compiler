@@ -41,6 +41,7 @@ type current_printed_line_status =
   would have way too many off-by-one errors *)
 let print_file 
 ~is_warning 
+(* start_line_start_char inclusive, end_line_end_char exclusive *)
 ~range:((start_line, start_line_start_char), (end_line, end_line_end_char)) 
 ~lines
 ppf 
@@ -118,7 +119,7 @@ ppf
     let offset_current_line_length = String.length offset_current_line in
     let offset_start_line_start_char = start_line_start_char - columns_to_cut in
     (* end_line_end_char is exclusive *)
-    let offset_end_line_end_char = end_line_end_char - 1 - columns_to_cut in
+    let offset_end_line_end_char = end_line_end_char - columns_to_cut in
     (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
     for j = 1 to offset_current_line_length do
       let current_char = offset_current_line.[j - 1] in
