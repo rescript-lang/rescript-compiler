@@ -73,7 +73,7 @@ Users can parenthesize the interpreted variable as below:
 let hello_world = {j|你好，$(world)|j}
 --------------
 
-Note the syntax of interporated variable is intentionally designed to be simple.
+Note the syntax of interpolated variable is intentionally designed to be simple.
 Its lexical convention is as below:
 
 [source,bnf]
@@ -159,7 +159,7 @@ external imul : int -> int -> int =
 In JS library, it is quite common to use a name as namespace,
 for example, if the user want to write a binding to
 `vscode.commands.executeCommand`, assume `vscode` is a module name,
-the user needs needs to type `commands` properly before typing `executeCommand`, and in practice, it is rarely useful to call `vscode.commands` alone, for this reason, we introduce a convient sugar: `bs.scope`
+the user needs to type `commands` properly before typing `executeCommand`, and in practice, it is rarely useful to call `vscode.commands` alone, for this reason, we introduce a convient sugar: `bs.scope`
 
 .Example
 [source,ocaml]
