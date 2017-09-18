@@ -130,10 +130,6 @@ ppf
           ~end_highlight_line:(j = offset_current_line_length)
           current_char 
       | Only_error_line ->
-        (* in some errors, starting char and ending char can be the same. But
-           since ending char was supposed to be exclusive and had a -1, here it 
-           might end up smaller than the starting char *)
-        let offset_end_line_end_char = max offset_end_line_end_char offset_start_line_start_char in
         print_char_maybe_highlight 
           ~begin_highlight_line:(j = offset_start_line_start_char) 
           ~end_highlight_line:(j = offset_end_line_end_char)

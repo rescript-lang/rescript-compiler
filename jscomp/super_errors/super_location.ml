@@ -45,7 +45,10 @@ let print_loc ~normalizedRange ppf loc =
     | None -> ()
     | Some ((start_line, start_line_start_char), (end_line, end_line_end_char)) ->
       if start_line = end_line then 
-        fprintf ppf " @{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
+        if start_line_start_char = end_line_end_char then
+          fprintf ppf " @{<dim>%i:%i@}" start_line start_line_start_char
+        else
+          fprintf ppf " @{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
       else
         fprintf ppf " @{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
     in
@@ -73,7 +76,14 @@ let print ~is_warning intro ppf loc =
       if start_char == -1 || end_char == -1 then
         (* happens sometimes. Syntax error for example *)
         None
-      else 
+      else if start_line = end_line && start_char >= end_char then
+        (* in some errors, starting char and ending char can be the same. But
+           since ending char was supposed to be exclusive, here it might end up 
+           smaller than the starting char if we naively did start_char + 1 to 
+           just the starting char and forget ending char *)
+        let same_char = start_char + 1 in
+        Some ((start_line, same_char), (end_line, same_char))
+      else
         Some ((start_line, start_char + 1), (end_line, end_char))
     in
     fprintf ppf "@[%a@]@," (print_loc ~normalizedRange) loc;
