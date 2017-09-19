@@ -171,7 +171,7 @@ let implementation_map ppf sourcefile outputprefix =
   let list_of_modules = Ext_io.rev_lines_of_file sourcefile 
   in 
   let ns = 
-    String.capitalize
+    Ext_string.capitalize_ascii
       (Filename.chop_extension (Filename.basename sourcefile)) in
   let ml_ast = List.fold_left (fun acc module_name -> 
       if Ext_string.is_empty module_name then acc 

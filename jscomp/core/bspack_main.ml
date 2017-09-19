@@ -135,7 +135,7 @@ let decorate_module
     ?(module_bound=true)
     out_chan base mli_name ml_name mli_content ml_content =
   if module_bound then begin 
-    let base = String.capitalize base in
+    let base = Ext_string.capitalize_ascii base in
     output_string out_chan "module ";
     output_string out_chan base ;
     output_string out_chan " : sig \n";
@@ -161,7 +161,7 @@ let decorate_module_only
     ?(module_bound=true) 
     out_chan base ml_name ml_content =
   if module_bound then begin 
-    let base = String.capitalize base in
+    let base = Ext_string.capitalize_ascii base in
     output_string out_chan "module ";
     output_string out_chan base ;
     output_string out_chan "\n= struct\n"
@@ -422,7 +422,7 @@ let () =
                 Queue.add ml_name collection_modules; 
               let module_bound = not  export || task_length > !count  in 
               decorate_module_only ~module_bound out_chan base ml_name ml_content;
-              let aliased = String.capitalize base in 
+              let aliased = Ext_string.capitalize_ascii base in 
               String_hashtbl.find_all alias_map_rev aliased
               |> List.iter 
                 (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
@@ -434,7 +434,7 @@ let () =
                 Queue.add mli_name collection_modules;                 
 
               decorate_interface_only out_chan base mli_name mli_content;
-              let aliased = String.capitalize base in 
+              let aliased = Ext_string.capitalize_ascii base in 
               String_hashtbl.find_all alias_map_rev aliased
               |> List.iter 
                 (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))
@@ -457,7 +457,7 @@ let () =
                *)   
                let module_bound = not export || task_length > !count in 
                decorate_module ~module_bound out_chan base mli_name ml_name mli_content ml_content;
-               let aliased = (String.capitalize base) in 
+               let aliased = (Ext_string.capitalize_ascii base) in 
                String_hashtbl.find_all alias_map_rev aliased
                |> List.iter 
                  (fun s -> output_string out_chan (Printf.sprintf "module %s = %s \n"  s aliased))

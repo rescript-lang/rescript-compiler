@@ -229,8 +229,8 @@ let handle_module_info
     namespace
   : info =
   match module_info.ml, module_info.mli with
-  | Ml_source (input_impl,impl_is_re), 
-    Mli_source(input_intf, intf_is_re) ->
+  | Ml_source (input_impl,impl_is_re,_), 
+    Mli_source(input_intf, intf_is_re,_) ->
     emit_impl_build 
       package_specs
       group_dir_index
@@ -247,7 +247,7 @@ let handle_module_info
       ~is_re:intf_is_re
       namespace
       input_intf 
-  | Ml_source(input,is_re), Mli_empty ->
+  | Ml_source(input,is_re,_), Mli_empty ->
     emit_impl_build 
       package_specs
       group_dir_index
@@ -257,7 +257,7 @@ let handle_module_info
       ~is_re
       namespace
       input 
-  | Ml_empty, Mli_source(input,is_re) ->    
+  | Ml_empty, Mli_source(input,is_re,_) ->    
     emit_intf_build 
       package_specs
       group_dir_index

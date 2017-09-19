@@ -23,12 +23,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type case = bool
+(** true means upper case*)
 
 type ml_kind =
-  | Ml_source of string  * bool (*  Ml_source(name, is_re) default to false  *)
+  | Ml_source of string  * bool  * case (*  Ml_source(name, is_re) default to false  *)
   | Ml_empty
 type mli_kind = 
-  | Mli_source of string * bool   
+  | Mli_source of string * bool  * case  
   | Mli_empty
 
 type module_info = 
@@ -49,11 +51,11 @@ let dir_of_module_info (x : module_info)
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-      | Mli_source (s,_) -> 
+      | Mli_source (s,_,_) -> 
         Filename.dirname s 
       | Mli_empty -> 
         begin match ml with 
-          | Ml_source (s,_) -> 
+          | Ml_source (s,_,_) -> 
             Filename.dirname s 
           | Ml_empty -> Ext_string.empty
         end
@@ -63,12 +65,12 @@ let filename_sans_suffix_of_module_info (x : module_info) =
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-      | Mli_source (s,_) -> 
-         s 
+      | Mli_source (s,_,_) -> 
+        s 
       | Mli_empty -> 
         begin match ml with 
-          | Ml_source (s,_)  -> 
-             s 
+          | Ml_source (s,_,_)  -> 
+            s 
           | Ml_empty -> assert false
         end
     end
@@ -95,32 +97,46 @@ let read_build_cache ~dir  : t array =
 let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
 
 
-let adjust_module_info x suffix name_sans_extension =
+let adjust_module_info x suffix name_sans_extension upper =
   match suffix with 
-  | ".ml" -> {x with ml = Ml_source  (name_sans_extension, false)}
-  | ".re" -> {x with ml = Ml_source  (name_sans_extension, true)}
-  | ".mli" ->  {x with mli = Mli_source (name_sans_extension,false) }
-  | ".rei" -> { x with mli = Mli_source (name_sans_extension,true) }
+  | ".ml" -> {x with ml = Ml_source  (name_sans_extension, false, upper)}
+  | ".re" -> {x with ml = Ml_source  (name_sans_extension, true, upper)}
+  | ".mli" ->  {x with mli = Mli_source (name_sans_extension,false, upper) }
+  | ".rei" -> { x with mli = Mli_source (name_sans_extension,true, upper) }
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "don't know what to do with %s%s" 
-       name_sans_extension suffix
+      name_sans_extension suffix
 
 let map_update ~dir (map : t)  
     file_name : t  = 
-  
-  let module_name = Ext_modulename.module_name_of_file_if_any file_name in 
+
+  let module_name, upper = 
+    Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
-  let file_name_sans_extension = 
-      Ext_path.chop_extension (Filename.concat dir file_name) in 
+  let name_sans_extension = 
+    Ext_path.chop_extension (Filename.concat dir file_name) in 
   String_map.adjust 
     module_name 
-    (fun _ -> 
+    (fun () -> 
        adjust_module_info 
          empty_module_info 
          suffix 
-         file_name_sans_extension )
+         name_sans_extension upper )
     (fun v -> 
-       adjust_module_info v suffix file_name_sans_extension
+       adjust_module_info v suffix name_sans_extension upper
     )
     map
+
+let sanity_check (map  : t ) = 
+  String_map.iter (fun k module_info ->
+      match module_info with 
+      |  { ml = Ml_source(file1,_,ml_case); 
+          mli = Mli_source(file2,_,mli_case) } ->
+          if ml_case != mli_case then 
+            Ext_pervasives.failwithf 
+              ~loc:__LOC__
+              "%S and %S have different cases"
+              file1 file2
+      | _ -> ()
+    )  map

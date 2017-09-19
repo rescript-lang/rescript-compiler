@@ -93,7 +93,8 @@ ext/ext_path.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmi
 ext/ext_filename.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_filename.cmi
-ext/ext_modulename.cmx : ext/ext_path.cmx ext/ext_modulename.cmi
+ext/ext_modulename.cmx : ext/ext_string.cmx ext/ext_path.cmx \
+    ext/ext_modulename.cmi
 ext/ext_namespace.cmx : ext/literals.cmx ext/ext_namespace.cmi
 ext/literals.cmi :
 ext/ext_util.cmi :

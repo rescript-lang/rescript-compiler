@@ -214,11 +214,11 @@ let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
 
 let module_name_of_file file =
-  String.capitalize 
+  String.capitalize
     (Filename.chop_extension @@ Filename.basename file)  
 
 let module_name_of_file_if_any file = 
-  String.capitalize 
+  String.capitalize
     (chop_extension_if_any @@ Filename.basename file)  
 
 

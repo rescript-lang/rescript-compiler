@@ -23,6 +23,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type case = bool 
 
 (** Store a file called [.bsbuild] that can be communicated 
   between [bsb.exe] and [bsb_helper.exe]. 
@@ -30,7 +31,7 @@
   [bsb_helper.exe]
 *) 
 type ml_kind =
-  | Ml_source of string * bool 
+  | Ml_source of string * bool  * bool
      (* No extension stored
       Ml_source(name,is_re)
       [is_re] default to false
@@ -38,7 +39,7 @@ type ml_kind =
   
   | Ml_empty
 type mli_kind = 
-  | Mli_source of string  * bool
+  | Mli_source of string  * bool * bool
   | Mli_empty
 
 type module_info = 
@@ -79,3 +80,5 @@ val read_build_cache : dir:string -> t array
 *)
 val map_update : 
   dir:string -> t ->  string -> t
+
+val sanity_check : t -> unit   
