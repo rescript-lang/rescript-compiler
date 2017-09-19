@@ -28,8 +28,8 @@ let (//) = Ext_path.combine
    it is a bad idea to copy package.json which requires to copy js files
 *)
 
-let merge_module_info_map acc sources =
-  String_map.merge (fun modname k1 k2 ->
+let merge_module_info_map acc sources : Bsb_build_cache.t =
+  let v = String_map.merge (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
@@ -39,7 +39,9 @@ let merge_module_info_map acc sources =
                   ^ ". File names need to be unique in a project.")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
-    ) acc  sources
+    ) acc  sources in 
+   Bsb_build_cache.sanity_check v ;   
+   v
 
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"

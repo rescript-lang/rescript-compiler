@@ -695,6 +695,10 @@ val single_colon : string
 val parent_dir_lit : string
 val current_dir_lit : string
 
+val capitalize_ascii : string -> string
+
+(** return [Some xx] means the original *)
+(* val capitalize_ascii_opt : string -> string option *)
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1032,11 +1036,11 @@ let is_valid_module_file (s : string) =
 
 
 (* https://docs.npmjs.com/files/package.json 
-  Some rules:
-  The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-  The name can't start with a dot or an underscore.
-  New packages must not have uppercase letters in the name.
-  The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+   Some rules:
+   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+   The name can't start with a dot or an underscore.
+   New packages must not have uppercase letters in the name.
+   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
 *)
 let is_valid_npm_package_name (s : string) = 
   let len = String.length s in 
@@ -1056,10 +1060,10 @@ type check_result =
   | Good 
   | Invalid_module_name 
   | Suffix_mismatch
-(** 
-   TODO: move to another module 
-   Make {!Ext_filename} not stateful
-*)
+  (** 
+     TODO: move to another module 
+     Make {!Ext_filename} not stateful
+  *)
 let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
@@ -1081,9 +1085,9 @@ let rec unsafe_no_char x ch i  last_idx =
 let rec unsafe_no_char_idx x ch i last_idx = 
   if i > last_idx  then -1 
   else 
-    if String.unsafe_get x i <> ch then 
-      unsafe_no_char_idx x ch (i + 1)  last_idx
-    else i
+  if String.unsafe_get x i <> ch then 
+    unsafe_no_char_idx x ch (i + 1)  last_idx
+  else i
 
 let no_char x ch i len  : bool =
   let str_len = String.length x in 
@@ -1117,7 +1121,6 @@ let empty = ""
 
     
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
-
 
 let single_space = " "
 let single_colon = ":"
@@ -1168,7 +1171,7 @@ let concat4 a b c d =
   let c_len = String.length c in 
   let d_len = String.length d in 
   let len = a_len + b_len + c_len + d_len in 
-  
+
   let target = Bytes.create len in 
   String.unsafe_blit a 0 target 0 a_len ; 
   String.unsafe_blit b 0 target a_len b_len;
@@ -1184,7 +1187,7 @@ let concat5 a b c d e =
   let d_len = String.length d in 
   let e_len = String.length e in 
   let len = a_len + b_len + c_len + d_len + e_len in 
-  
+
   let target = Bytes.create len in 
   String.unsafe_blit a 0 target 0 a_len ; 
   String.unsafe_blit b 0 target a_len b_len;
@@ -1196,7 +1199,7 @@ let concat5 a b c d e =
 
 
 let inter2 a b = 
-    concat3 a single_space b 
+  concat3 a single_space b 
 
 
 let inter3 a b c = 
@@ -1208,10 +1211,45 @@ let inter3 a b c =
 
 let inter4 a b c d =
   concat_array single_space [| a; b ; c; d|]
-  
-    
+
+
 let parent_dir_lit = ".."    
 let current_dir_lit = "."
+
+
+(* reference {!Bytes.unppercase} *)
+let capitalize_ascii (s : string) : string = 
+  if String.length s = 0 then s 
+  else 
+    begin
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        let uc = Char.unsafe_chr (Char.code c - 32) in 
+        let bytes = Bytes.of_string s in
+        Bytes.unsafe_set bytes 0 uc;
+        Bytes.unsafe_to_string bytes 
+      else s 
+    end
+
+let capitalize_ascii_opt (s : string) : string option = 
+  if String.length s = 0 then None
+  else 
+    begin
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        let uc = Char.unsafe_chr (Char.code c - 32) in 
+        let bytes = Bytes.of_string s in
+        Bytes.unsafe_set bytes 0 uc;
+        Some (Bytes.unsafe_to_string bytes)
+      else None
+    end
+    
+
+
 
 end
 module Map_gen
@@ -7787,7 +7825,13 @@ module Ext_modulename : sig
 
 val module_name_of_file : string -> string
 
- val module_name_of_file_if_any : string -> string
+
+val module_name_of_file_if_any : string -> string
+
+(** [modulename, upper]
+  if [upper = true] then it means it is indeed uppercase
+*)
+val module_name_of_file_if_any_with_upper : string -> string * bool
 end = struct
 #1 "ext_modulename.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -7816,12 +7860,17 @@ end = struct
 
 
  let module_name_of_file file =
-  String.capitalize 
+  Ext_string.capitalize_ascii 
     (Filename.chop_extension @@ Filename.basename file)  
 
 let module_name_of_file_if_any file = 
-  String.capitalize 
-    (Ext_path.chop_extension_if_any @@ Filename.basename file)  
+  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
+  Ext_string.capitalize_ascii v 
+    
+let module_name_of_file_if_any_with_upper file = 
+  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
+  let res = Ext_string.capitalize_ascii v in 
+  res, res == v 
 
 end
 module Bsb_build_cache : sig 
@@ -7851,6 +7900,7 @@ module Bsb_build_cache : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type case = bool 
 
 (** Store a file called [.bsbuild] that can be communicated 
   between [bsb.exe] and [bsb_helper.exe]. 
@@ -7858,7 +7908,7 @@ module Bsb_build_cache : sig
   [bsb_helper.exe]
 *) 
 type ml_kind =
-  | Ml_source of string * bool 
+  | Ml_source of string * bool  * bool
      (* No extension stored
       Ml_source(name,is_re)
       [is_re] default to false
@@ -7866,7 +7916,7 @@ type ml_kind =
   
   | Ml_empty
 type mli_kind = 
-  | Mli_source of string  * bool
+  | Mli_source of string  * bool * bool
   | Mli_empty
 
 type module_info = 
@@ -7908,6 +7958,7 @@ val read_build_cache : dir:string -> t array
 val map_update : 
   dir:string -> t ->  string -> t
 
+val sanity_check : t -> unit   
 end = struct
 #1 "bsb_build_cache.ml"
 
@@ -7935,12 +7986,14 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type case = bool
+(** true means upper case*)
 
 type ml_kind =
-  | Ml_source of string  * bool (*  Ml_source(name, is_re) default to false  *)
+  | Ml_source of string  * bool  * case (*  Ml_source(name, is_re) default to false  *)
   | Ml_empty
 type mli_kind = 
-  | Mli_source of string * bool   
+  | Mli_source of string * bool  * case  
   | Mli_empty
 
 type module_info = 
@@ -7961,11 +8014,11 @@ let dir_of_module_info (x : module_info)
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-      | Mli_source (s,_) -> 
+      | Mli_source (s,_,_) -> 
         Filename.dirname s 
       | Mli_empty -> 
         begin match ml with 
-          | Ml_source (s,_) -> 
+          | Ml_source (s,_,_) -> 
             Filename.dirname s 
           | Ml_empty -> Ext_string.empty
         end
@@ -7975,12 +8028,12 @@ let filename_sans_suffix_of_module_info (x : module_info) =
   match x with 
   | { mli; ml;  } -> 
     begin match mli with 
-      | Mli_source (s,_) -> 
-         s 
+      | Mli_source (s,_,_) -> 
+        s 
       | Mli_empty -> 
         begin match ml with 
-          | Ml_source (s,_)  -> 
-             s 
+          | Ml_source (s,_,_)  -> 
+            s 
           | Ml_empty -> assert false
         end
     end
@@ -8007,35 +8060,49 @@ let read_build_cache ~dir  : t array =
 let empty_module_info = {mli = Mli_empty ;  ml = Ml_empty}
 
 
-let adjust_module_info x suffix name_sans_extension =
+let adjust_module_info x suffix name_sans_extension upper =
   match suffix with 
-  | ".ml" -> {x with ml = Ml_source  (name_sans_extension, false)}
-  | ".re" -> {x with ml = Ml_source  (name_sans_extension, true)}
-  | ".mli" ->  {x with mli = Mli_source (name_sans_extension,false) }
-  | ".rei" -> { x with mli = Mli_source (name_sans_extension,true) }
+  | ".ml" -> {x with ml = Ml_source  (name_sans_extension, false, upper)}
+  | ".re" -> {x with ml = Ml_source  (name_sans_extension, true, upper)}
+  | ".mli" ->  {x with mli = Mli_source (name_sans_extension,false, upper) }
+  | ".rei" -> { x with mli = Mli_source (name_sans_extension,true, upper) }
   | _ -> 
     Ext_pervasives.failwithf ~loc:__LOC__ 
       "don't know what to do with %s%s" 
-       name_sans_extension suffix
+      name_sans_extension suffix
 
 let map_update ~dir (map : t)  
     file_name : t  = 
-  
-  let module_name = Ext_modulename.module_name_of_file_if_any file_name in 
+
+  let module_name, upper = 
+    Ext_modulename.module_name_of_file_if_any_with_upper file_name in 
   let suffix = Ext_path.get_extension file_name in 
-  let file_name_sans_extension = 
-      Ext_path.chop_extension (Filename.concat dir file_name) in 
+  let name_sans_extension = 
+    Ext_path.chop_extension (Filename.concat dir file_name) in 
   String_map.adjust 
     module_name 
-    (fun _ -> 
+    (fun () -> 
        adjust_module_info 
          empty_module_info 
          suffix 
-         file_name_sans_extension )
+         name_sans_extension upper )
     (fun v -> 
-       adjust_module_info v suffix file_name_sans_extension
+       adjust_module_info v suffix name_sans_extension upper
     )
     map
+
+let sanity_check (map  : t ) = 
+  String_map.iter (fun k module_info ->
+      match module_info with 
+      |  { ml = Ml_source(file1,_,ml_case); 
+          mli = Mli_source(file2,_,mli_case) } ->
+          if ml_case != mli_case then 
+            Ext_pervasives.failwithf 
+              ~loc:__LOC__
+              "%S and %S have different cases"
+              file1 file2
+      | _ -> ()
+    )  map
 
 end
 module Bsb_dir_index : sig 
@@ -12569,8 +12636,8 @@ let handle_module_info
     namespace
   : info =
   match module_info.ml, module_info.mli with
-  | Ml_source (input_impl,impl_is_re), 
-    Mli_source(input_intf, intf_is_re) ->
+  | Ml_source (input_impl,impl_is_re,_), 
+    Mli_source(input_intf, intf_is_re,_) ->
     emit_impl_build 
       package_specs
       group_dir_index
@@ -12587,7 +12654,7 @@ let handle_module_info
       ~is_re:intf_is_re
       namespace
       input_intf 
-  | Ml_source(input,is_re), Mli_empty ->
+  | Ml_source(input,is_re,_), Mli_empty ->
     emit_impl_build 
       package_specs
       group_dir_index
@@ -12597,7 +12664,7 @@ let handle_module_info
       ~is_re
       namespace
       input 
-  | Ml_empty, Mli_source(input,is_re) ->    
+  | Ml_empty, Mli_source(input,is_re,_) ->    
     emit_intf_build 
       package_specs
       group_dir_index
@@ -12799,8 +12866,8 @@ let (//) = Ext_path.combine
    it is a bad idea to copy package.json which requires to copy js files
 *)
 
-let merge_module_info_map acc sources =
-  String_map.merge (fun modname k1 k2 ->
+let merge_module_info_map acc sources : Bsb_build_cache.t =
+  let v = String_map.merge (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
@@ -12810,7 +12877,9 @@ let merge_module_info_map acc sources =
                   ^ ". File names need to be unique in a project.")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
-    ) acc  sources
+    ) acc  sources in 
+   Bsb_build_cache.sanity_check v ;   
+   v
 
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"

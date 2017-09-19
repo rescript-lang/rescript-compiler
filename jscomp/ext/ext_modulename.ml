@@ -24,9 +24,14 @@
 
 
  let module_name_of_file file =
-  String.capitalize 
+  Ext_string.capitalize_ascii 
     (Filename.chop_extension @@ Filename.basename file)  
 
 let module_name_of_file_if_any file = 
-  String.capitalize 
-    (Ext_path.chop_extension_if_any @@ Filename.basename file)  
+  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
+  Ext_string.capitalize_ascii v 
+    
+let module_name_of_file_if_any_with_upper file = 
+  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
+  let res = Ext_string.capitalize_ascii v in 
+  res, res == v 

@@ -80,12 +80,12 @@ let oc_impl set input_file lhs_suffix rhs_suffix
   for i = 0 to Array.length set - 1 do
     let k = Array.unsafe_get set i in 
     match String_map.find_opt k data.(0) with
-    | Some {ml = Ml_source (source,_) }  
+    | Some {ml = Ml_source (source,_,_) }  
       -> 
       output_string oc Ext_string.single_space ;  
       output_file oc source namespace;
       output_string oc rhs_suffix 
-    | Some {mli = Mli_source (source,_)  } -> 
+    | Some {mli = Mli_source (source,_,_)  } -> 
       output_string oc Ext_string.single_space ;  
       output_file oc source namespace;
       output_string oc Literals.suffix_cmi 
@@ -94,12 +94,12 @@ let oc_impl set input_file lhs_suffix rhs_suffix
       if Bsb_dir_index.is_lib_dir index  then () 
       else 
         begin match String_map.find_opt k data.((index  :> int)) with 
-          | Some {ml = Ml_source (source,_) }
+          | Some {ml = Ml_source (source,_,_) }
             -> 
             output_string oc Ext_string.single_space ;  
             output_file oc source namespace;
             output_string oc rhs_suffix
-          | Some {mli = Mli_source (source,_) } -> 
+          | Some {mli = Mli_source (source,_,_) } -> 
             output_string oc Ext_string.single_space ;  
             output_file oc source namespace;
             output_string oc Literals.suffix_cmi 
@@ -126,8 +126,8 @@ let oc_intf
   for i = 0 to Array.length set - 1 do               
     let k = Array.unsafe_get set i in 
     match String_map.find_opt k data.(0) with 
-    | Some ({ ml = Ml_source (source,_)  }
-           | { mli = Mli_source (source,_) }) -> 
+    | Some ({ ml = Ml_source (source,_,_)  }
+           | { mli = Mli_source (source,_,_) }) -> 
       output_string oc Ext_string.single_space ; 
       output_file oc source namespace ; 
       output_string oc Literals.suffix_cmi 
@@ -136,8 +136,8 @@ let oc_intf
       if Bsb_dir_index.is_lib_dir index  then () 
       else 
         match String_map.find_opt k data.((index :> int)) with 
-        | Some ({ ml = Ml_source (source,_)  }
-               | { mli = Mli_source (source,_)  }) -> 
+        | Some ({ ml = Ml_source (source,_,_)  }
+               | { mli = Mli_source (source,_,_)  }) -> 
           output_string oc Ext_string.single_space ; 
           output_file oc source namespace;
           output_string oc Literals.suffix_cmi

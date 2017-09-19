@@ -20839,6 +20839,10 @@ val single_colon : string
 val parent_dir_lit : string
 val current_dir_lit : string
 
+val capitalize_ascii : string -> string
+
+(** return [Some xx] means the original *)
+(* val capitalize_ascii_opt : string -> string option *)
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -21176,11 +21180,11 @@ let is_valid_module_file (s : string) =
 
 
 (* https://docs.npmjs.com/files/package.json 
-  Some rules:
-  The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-  The name can't start with a dot or an underscore.
-  New packages must not have uppercase letters in the name.
-  The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+   Some rules:
+   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+   The name can't start with a dot or an underscore.
+   New packages must not have uppercase letters in the name.
+   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
 *)
 let is_valid_npm_package_name (s : string) = 
   let len = String.length s in 
@@ -21200,10 +21204,10 @@ type check_result =
   | Good 
   | Invalid_module_name 
   | Suffix_mismatch
-(** 
-   TODO: move to another module 
-   Make {!Ext_filename} not stateful
-*)
+  (** 
+     TODO: move to another module 
+     Make {!Ext_filename} not stateful
+  *)
 let is_valid_source_name name : check_result =
   match check_any_suffix_case_then_chop name [
       ".ml"; 
@@ -21225,9 +21229,9 @@ let rec unsafe_no_char x ch i  last_idx =
 let rec unsafe_no_char_idx x ch i last_idx = 
   if i > last_idx  then -1 
   else 
-    if String.unsafe_get x i <> ch then 
-      unsafe_no_char_idx x ch (i + 1)  last_idx
-    else i
+  if String.unsafe_get x i <> ch then 
+    unsafe_no_char_idx x ch (i + 1)  last_idx
+  else i
 
 let no_char x ch i len  : bool =
   let str_len = String.length x in 
@@ -21261,7 +21265,6 @@ let empty = ""
 
     
 external compare : string -> string -> int = "caml_string_length_based_compare" "noalloc";;
-
 
 let single_space = " "
 let single_colon = ":"
@@ -21312,7 +21315,7 @@ let concat4 a b c d =
   let c_len = String.length c in 
   let d_len = String.length d in 
   let len = a_len + b_len + c_len + d_len in 
-  
+
   let target = Bytes.create len in 
   String.unsafe_blit a 0 target 0 a_len ; 
   String.unsafe_blit b 0 target a_len b_len;
@@ -21328,7 +21331,7 @@ let concat5 a b c d e =
   let d_len = String.length d in 
   let e_len = String.length e in 
   let len = a_len + b_len + c_len + d_len + e_len in 
-  
+
   let target = Bytes.create len in 
   String.unsafe_blit a 0 target 0 a_len ; 
   String.unsafe_blit b 0 target a_len b_len;
@@ -21340,7 +21343,7 @@ let concat5 a b c d e =
 
 
 let inter2 a b = 
-    concat3 a single_space b 
+  concat3 a single_space b 
 
 
 let inter3 a b c = 
@@ -21352,10 +21355,45 @@ let inter3 a b c =
 
 let inter4 a b c d =
   concat_array single_space [| a; b ; c; d|]
-  
-    
+
+
 let parent_dir_lit = ".."    
 let current_dir_lit = "."
+
+
+(* reference {!Bytes.unppercase} *)
+let capitalize_ascii (s : string) : string = 
+  if String.length s = 0 then s 
+  else 
+    begin
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        let uc = Char.unsafe_chr (Char.code c - 32) in 
+        let bytes = Bytes.of_string s in
+        Bytes.unsafe_set bytes 0 uc;
+        Bytes.unsafe_to_string bytes 
+      else s 
+    end
+
+let capitalize_ascii_opt (s : string) : string option = 
+  if String.length s = 0 then None
+  else 
+    begin
+      let c = String.unsafe_get s 0 in 
+      if (c >= 'a' && c <= 'z')
+      || (c >= '\224' && c <= '\246')
+      || (c >= '\248' && c <= '\254') then 
+        let uc = Char.unsafe_chr (Char.code c - 32) in 
+        let bytes = Bytes.of_string s in
+        Bytes.unsafe_set bytes 0 uc;
+        Some (Bytes.unsafe_to_string bytes)
+      else None
+    end
+    
+
+
 
 end
 module Js_config : sig 
@@ -23812,7 +23850,13 @@ module Ext_modulename : sig
 
 val module_name_of_file : string -> string
 
- val module_name_of_file_if_any : string -> string
+
+val module_name_of_file_if_any : string -> string
+
+(** [modulename, upper]
+  if [upper = true] then it means it is indeed uppercase
+*)
+val module_name_of_file_if_any_with_upper : string -> string * bool
 end = struct
 #1 "ext_modulename.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -23841,12 +23885,17 @@ end = struct
 
 
  let module_name_of_file file =
-  String.capitalize 
+  Ext_string.capitalize_ascii 
     (Filename.chop_extension @@ Filename.basename file)  
 
 let module_name_of_file_if_any file = 
-  String.capitalize 
-    (Ext_path.chop_extension_if_any @@ Filename.basename file)  
+  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
+  Ext_string.capitalize_ascii v 
+    
+let module_name_of_file_if_any_with_upper file = 
+  let v = Ext_path.chop_extension_if_any @@ Filename.basename file in
+  let res = Ext_string.capitalize_ascii v in 
+  res, res == v 
 
 end
 module Ml_binary : sig 
@@ -59750,7 +59799,7 @@ let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 *)
 let create_js_module (name : string) : Ident.t = 
   let name = 
-    String.concat "" @@ List.map (String.capitalize ) @@ 
+    String.concat "" @@ List.map (Ext_string.capitalize_ascii ) @@ 
     Ext_string.split name '-' in
   (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom 
@@ -85026,7 +85075,7 @@ let reset () =
 
 let create_js_module (hint_name : string) : Ident.t = 
   let hint_name = 
-    String.concat "" @@ List.map (String.capitalize ) @@ 
+    String.concat "" @@ List.map (Ext_string.capitalize_ascii ) @@ 
     Ext_string.split hint_name '-' in
   Ident.create hint_name
 
@@ -112493,7 +112542,7 @@ let implementation_map ppf sourcefile outputprefix =
   let list_of_modules = Ext_io.rev_lines_of_file sourcefile 
   in 
   let ns = 
-    String.capitalize
+    Ext_string.capitalize_ascii
       (Filename.chop_extension (Filename.basename sourcefile)) in
   let ml_ast = List.fold_left (fun acc module_name -> 
       if Ext_string.is_empty module_name then acc 
@@ -113856,6 +113905,7 @@ type current_printed_line_status =
   would have way too many off-by-one errors *)
 let print_file 
 ~is_warning 
+(* start_line_start_char inclusive, end_line_end_char exclusive *)
 ~range:((start_line, start_line_start_char), (end_line, end_line_end_char)) 
 ~lines
 ppf 
@@ -113933,7 +113983,7 @@ ppf
     let offset_current_line_length = String.length offset_current_line in
     let offset_start_line_start_char = start_line_start_char - columns_to_cut in
     (* end_line_end_char is exclusive *)
-    let offset_end_line_end_char = end_line_end_char - 1 - columns_to_cut in
+    let offset_end_line_end_char = end_line_end_char - columns_to_cut in
     (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
     for j = 1 to offset_current_line_length do
       let current_char = offset_current_line.[j - 1] in
@@ -113944,10 +113994,6 @@ ppf
           ~end_highlight_line:(j = offset_current_line_length)
           current_char 
       | Only_error_line ->
-        (* in some errors, starting char and ending char can be the same. But
-           since ending char was supposed to be exclusive and had a -1, here it 
-           might end up smaller than the starting char *)
-        let offset_end_line_end_char = max offset_end_line_end_char offset_start_line_start_char in
         print_char_maybe_highlight 
           ~begin_highlight_line:(j = offset_start_line_start_char) 
           ~end_highlight_line:(j = offset_end_line_end_char)
@@ -114242,16 +114288,26 @@ let setup_colors () =
 let print_filename ppf file =
   Format.fprintf ppf "%s" (Location.show_filename file)
 
-let print_loc ppf loc =
+let print_loc ~normalizedRange ppf loc =
   setup_colors ();
   let (file, _, _) = Location.get_pos_info loc.loc_start in
   if file = "//toplevel//" then begin
     if highlight_locations ppf [loc] then () else
       fprintf ppf "Characters %i-%i"
               loc.loc_start.pos_cnum loc.loc_end.pos_cnum
-  end else begin
-    fprintf ppf "@{<filename>%a@}" print_filename file;
-  end
+  end else 
+    let dim_loc ppf = function
+    | None -> ()
+    | Some ((start_line, start_line_start_char), (end_line, end_line_end_char)) ->
+      if start_line = end_line then 
+        if start_line_start_char = end_line_end_char then
+          fprintf ppf " @{<dim>%i:%i@}" start_line start_line_start_char
+        else
+          fprintf ppf " @{<dim>%i:%i-%i@}" start_line start_line_start_char end_line_end_char
+      else
+        fprintf ppf " @{<dim>%i:%i-%i:%i@}" start_line start_line_start_char end_line end_line_end_char
+    in
+    fprintf ppf "@{<filename>%a@}%a" print_filename file dim_loc normalizedRange
 ;;
 
 let print ~is_warning intro ppf loc =
@@ -114265,30 +114321,37 @@ let print ~is_warning intro ppf loc =
     else begin
       fprintf ppf "@[@{<error>%s@}@]@," intro
     end;
-    fprintf ppf "@[%a@]@," print_loc loc;
+
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
-    (* things to special-case: startchar & endchar2 both -1  *)
-    if start_char == -1 || end_char == -1 then
-      (* happens sometimes. Syntax error for example. Just show the file and do nothing for now *)
-      ()
-    else begin
+    (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
+    (* start_char is inclusive, end_char is exclusive *)
+    let normalizedRange = 
+      if start_char == -1 || end_char == -1 then
+        (* happens sometimes. Syntax error for example *)
+        None
+      else if start_line = end_line && start_char >= end_char then
+        (* in some errors, starting char and ending char can be the same. But
+           since ending char was supposed to be exclusive, here it might end up 
+           smaller than the starting char if we naively did start_char + 1 to 
+           just the starting char and forget ending char *)
+        let same_char = start_char + 1 in
+        Some ((start_line, same_char), (end_line, same_char))
+      else
+        (* again: end_char is exclusive, so +1-1=0 *)
+        Some ((start_line, start_char + 1), (end_line, end_char))
+    in
+    fprintf ppf "@[%a@]@," (print_loc ~normalizedRange) loc;
+    match normalizedRange with
+    | None -> ()
+    | Some range -> begin
       try
         let lines = file_lines file in
-        (* we're putting a line break here rather than above, because this
+        (* we're putting the line break `@,` here rather than above, because this
            branch might not be reached (aka no inline file content display) so 
            we don't wanna end up with two line breaks in the the consequent *)
         fprintf ppf "@,%a"
-          (Super_misc.print_file
-          ~is_warning
-          ~lines
-          ~range:(
-            (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
-            (* start_char is inclusive *)
-            (start_line, start_char + 1),
-            (* start_char is exclusive *)
-            (end_line, end_char + 1)
-          ))
+          (Super_misc.print_file ~is_warning ~lines ~range)
           ()
       with
       (* this shouldn't happen, but gracefully fall back to the default reporter just in case *)
@@ -114568,8 +114631,8 @@ let report_error env ppf = function
       (* modified *)
       if Super_reason_react.state_escape_scope trace then
         fprintf ppf "@[<v>\
-          @[@{<info>Is this a ReasonReact component with state/reducer?@}@ If so, is the state or action type declared _after_ the component declaration?@ \
-          Moving the state and action types before the component declaration should resolve this!@]@,@,\
+          @[@{<info>Is this a ReasonReact component with state/reducer?@}@ If so, is the state or retained props or action type declared _after_ the component declaration?@ \
+          Moving the state and retaied props and action types before the component declaration should resolve this!@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]"
       else if Super_reason_react.is_array_wanted_reactElement trace then

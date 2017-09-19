@@ -321,5 +321,18 @@ let suites =
       =~ "aA.js";
       Ext_namespace.js_name_of_modulename ~little:false "AA-b"
       =~ "AA.js";
+    end;
+
+    __LOC__ >:: begin fun _ ->
+      let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  
+      let f = Ext_string.capitalize_ascii in
+      f "x" =~ "X";
+      f "X" =~ "X";
+      f "" =~ "";
+      f "abc" =~ "Abc";
+      f "_bc" =~ "_bc";
+      let v = "bc" in
+      f v =~ "Bc";
+      v =~ "bc"
     end
   ]
