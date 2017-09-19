@@ -70,8 +70,7 @@ let print ~is_warning intro ppf loc =
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
     (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
-    (* start_char is inclusive *)
-    (* end_char is exclusive, so +1-1=0 *)
+    (* start_char is inclusive, end_char is exclusive *)
     let normalizedRange = 
       if start_char == -1 || end_char == -1 then
         (* happens sometimes. Syntax error for example *)
@@ -84,6 +83,7 @@ let print ~is_warning intro ppf loc =
         let same_char = start_char + 1 in
         Some ((start_line, same_char), (end_line, same_char))
       else
+        (* again: end_char is exclusive, so +1-1=0 *)
         Some ((start_line, start_char + 1), (end_line, end_char))
     in
     fprintf ppf "@[%a@]@," (print_loc ~normalizedRange) loc;
