@@ -1,0 +1,6 @@
+var u = require("./examples/test.js")
+var assert = require('assert')
+var path = require('path')
+var p = require('child_process')
+p.execSync(`bsb`)
+assert.ok(path.basename(u.v)==='demo.ml')
