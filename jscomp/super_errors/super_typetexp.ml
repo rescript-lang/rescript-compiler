@@ -126,8 +126,16 @@ let report_error env ppf = function
   | Repeated_method_label s ->
       fprintf ppf "@[This is the second method `%s' of this object type.@ %s@]"
         s "Multiple occurences are not allowed."
-  | Unbound_value lid ->
-      fprintf ppf "Unbound value %a" longident lid;
+  | Unbound_value lid -> 
+      (* modified *)
+      begin
+        match lid with
+        | Ldot (outer, inner) ->
+          fprintf ppf "The value %s can't be found in %a"
+            inner 
+            Printtyp.longident outer;
+        | other_ident -> fprintf ppf "The value %a can't be found" Printtyp.longident other_ident
+      end;
       spellcheck ppf Env.fold_values env lid;
   | Unbound_module lid ->
       (* modified *)
