@@ -7,6 +7,7 @@
     "module": "commonjs",
     "in-source": true
   },
+  "bsc-flags" : ["-bs-no-version-header"],
   "bs-dependencies": [
     "liba",
     "libb"

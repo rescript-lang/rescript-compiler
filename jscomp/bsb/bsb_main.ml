@@ -52,6 +52,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Print version and exit";
     "-version", Arg.Unit print_version_string, 
     " Print version and exit";
+    "-verbose", Arg.Unit Bsb_log.verbose,
+    " Set the output(from bsb) to be verbose";
     "-color", Arg.Set Bsb_log.color_enabled,
     " forced color output";
     "-no-color", Arg.Clear Bsb_log.color_enabled,

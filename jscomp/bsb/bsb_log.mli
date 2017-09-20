@@ -30,6 +30,7 @@ type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
 
 type 'a log = ('a, Format.formatter, unit) format -> 'a
 
+val verbose : unit -> unit 
 val debug  : 'a log
 val info : 'a log 
 val warn : 'a log 

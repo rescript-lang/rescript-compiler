@@ -2463,6 +2463,7 @@ type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
 
 type 'a log = ('a, Format.formatter, unit) format -> 'a
 
+val verbose : unit -> unit 
 val debug  : 'a log
 val info : 'a log 
 val warn : 'a log 
@@ -2533,9 +2534,8 @@ let int_of_level (x : level) =
 
 let log_level = ref Warn
 
-let set_log level = 
-  log_level := level
-
+let verbose () =
+   log_level := Debug
 let dfprintf level fmt = 
   if int_of_level level >= int_of_level  !log_level then 
     Format.fprintf fmt 
@@ -2562,14 +2562,7 @@ let info_args (args : string array) =
       Format.pp_print_newline Format.std_formatter ()
     end
   else ()
-
-  (* let print_string_args (args : string array) =
-  for i  = 0 to Array.length args - 1 do
-    print_string (Array.unsafe_get args i) ;
-    print_string Ext_string.single_space;
-  done ;
-  print_newline ()
- *)
+  
 
 end
 module Literals : sig 
@@ -13645,6 +13638,8 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " Print version and exit";
     "-version", Arg.Unit print_version_string, 
     " Print version and exit";
+    "-verbose", Arg.Unit Bsb_log.verbose,
+    " Set the output(from bsb) to be verbose";
     "-color", Arg.Set Bsb_log.color_enabled,
     " forced color output";
     "-no-color", Arg.Clear Bsb_log.color_enabled,
