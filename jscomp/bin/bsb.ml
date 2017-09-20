@@ -7940,10 +7940,11 @@ val dir_of_module_info : module_info -> string
 
 
 val filename_sans_suffix_of_module_info : module_info -> string 
+type ts = t array 
 
-val write_build_cache : dir:string -> t array -> unit
+val write_build_cache : dir:string -> ts -> unit
 
-val read_build_cache : dir:string -> t array
+val read_build_cache : dir:string -> ts
 
 
 
@@ -8004,7 +8005,7 @@ type module_info =
 
 
 type t = module_info String_map.t 
-
+type ts = t array 
 (** indexed by the group *)
 
 let module_info_magic_number = "BSBUILD20170802"
@@ -8040,17 +8041,17 @@ let filename_sans_suffix_of_module_info (x : module_info) =
 
 let bsbuild_cache = ".bsbuild"    
 
-let write_build_cache ~dir (bs_files : t array)  = 
+let write_build_cache ~dir (bs_files : ts)  = 
   let oc = open_out_bin (Filename.concat dir bsbuild_cache) in 
   output_string oc module_info_magic_number ;
   output_value oc bs_files ;
   close_out oc 
 
-let read_build_cache ~dir  : t array = 
+let read_build_cache ~dir  : ts = 
   let ic = open_in_bin (Filename.concat dir bsbuild_cache) in 
   let buffer = really_input_string ic (String.length module_info_magic_number) in
   assert(buffer = module_info_magic_number); 
-  let data : t array = input_value ic in 
+  let data : ts = input_value ic in 
   close_in ic ;
   data 
 
@@ -8091,16 +8092,17 @@ let map_update ~dir (map : t)
     )
     map
 
+
 let sanity_check (map  : t ) = 
   String_map.iter (fun k module_info ->
       match module_info with 
       |  { ml = Ml_source(file1,_,ml_case); 
-          mli = Mli_source(file2,_,mli_case) } ->
-          if ml_case != mli_case then 
-            Ext_pervasives.failwithf 
-              ~loc:__LOC__
-              "%S and %S have different cases"
-              file1 file2
+           mli = Mli_source(file2,_,mli_case) } ->
+        if ml_case != mli_case then 
+          Ext_pervasives.failwithf 
+            ~loc:__LOC__
+            "%S and %S have different cases"
+            file1 file2
       | _ -> ()
     )  map
 
@@ -12867,7 +12869,7 @@ let (//) = Ext_path.combine
 *)
 
 let merge_module_info_map acc sources : Bsb_build_cache.t =
-  let v = String_map.merge (fun modname k1 k2 ->
+  String_map.merge (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
@@ -12877,9 +12879,8 @@ let merge_module_info_map acc sources : Bsb_build_cache.t =
                   ^ ". File names need to be unique in a project.")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
-    ) acc  sources in 
-   Bsb_build_cache.sanity_check v ;   
-   v
+    ) acc  sources 
+
 
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
@@ -12950,7 +12951,7 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-      
+
 
       Bsb_ninja_util.output_kvs
         [|
@@ -12986,21 +12987,23 @@ let output_ninja_and_namespace_map
           (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
           external_includes
     in 
-
-
     let  static_resources =
       let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
-        let bs_groups, source_dirs,static_resources  =
+        let bs_group, source_dirs,static_resources  =
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
-              merge_module_info_map  acc  sources ,  dir::dirs , (List.map (fun x -> dir // x ) resources) @ acc_resources
+              merge_module_info_map  acc  sources ,  
+              dir::dirs , 
+              (List.map (fun x -> dir // x ) resources) @ acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
+        Bsb_build_cache.sanity_check bs_group;    
         Bsb_build_cache.write_build_cache 
-          ~dir:(cwd // Bsb_config.lib_bs) [|bs_groups|] ;
+          ~dir:(cwd // Bsb_config.lib_bs) [|bs_group|] ;
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes 
           (Bsb_build_util.flag_concat dash_i @@ 
-           (all_includes (if namespace = None then source_dirs else Filename.current_dir_name :: source_dirs) ))  oc ;
+           (all_includes 
+              (if namespace = None then source_dirs else Filename.current_dir_name :: source_dirs) ))  oc ;
         static_resources
       else
         let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
@@ -13013,13 +13016,18 @@ let output_ninja_and_namespace_map
               (List.map (fun x -> dir//x) resources) @ resources
             ) [] bs_file_groups in
         (* Make sure [sources] does not have files in [lib] we have to check later *)
-        let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in
+
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes 
           (Bsb_build_util.flag_concat dash_i @@
-           (all_includes (if namespace = None then source_dirs.(0) else Filename.current_dir_name::source_dirs.(0)))) oc ;
+           (all_includes 
+              (if namespace = None then source_dirs.(0) 
+               else Filename.current_dir_name::source_dirs.(0)))) oc ;
+        let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
+        Bsb_build_cache.sanity_check lib;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
+          Bsb_build_cache.sanity_check c ;
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
           Bsb_ninja_util.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc

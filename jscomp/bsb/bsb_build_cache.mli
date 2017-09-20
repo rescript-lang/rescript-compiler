@@ -63,10 +63,11 @@ val dir_of_module_info : module_info -> string
 
 
 val filename_sans_suffix_of_module_info : module_info -> string 
+type ts = t array 
 
-val write_build_cache : dir:string -> t array -> unit
+val write_build_cache : dir:string -> ts -> unit
 
-val read_build_cache : dir:string -> t array
+val read_build_cache : dir:string -> ts
 
 
 
