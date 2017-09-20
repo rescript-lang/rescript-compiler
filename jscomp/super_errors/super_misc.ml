@@ -69,18 +69,15 @@ ppf
   | Some n -> n
   in
   (* coloring *)
-  let (highlighted_line_number, highlighted_open_tag): 
-    (string -> (Format.formatter -> unit -> unit) -> unit -> unit, Format.formatter, unit) format * (unit, Format.formatter, unit) format 
-    = 
-    if is_warning then ("@{<info>%s@}%a", "@{<info>")
-    else ("@{<error>%s@}%a", "@{<error>")
-  in
+  let highlighted_line_number : _ format = if is_warning then "@{<info>%s@}%a" else "@{<error>%s@}%a" in
+
   let print_char_maybe_highlight ~begin_highlight_line ~end_highlight_line ch =
+    let highlighted_open_tag: _ format = if is_warning then "@{<info>" else "@{<error>" in
     if begin_highlight_line then fprintf ppf highlighted_open_tag;
     fprintf ppf "%c@," ch;
     if end_highlight_line then fprintf ppf "@}"
   in
-  
+
   let print_separator ppf () = 
     (* these are unicode chars. They're not of length 1. Careful; we need to
       explicitly tell Format to treat them as length 1 *)
