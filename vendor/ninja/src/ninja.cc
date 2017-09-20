@@ -70,6 +70,9 @@ struct Options {
 
   /// Whether duplicate rules for one target should warn or print an error.
   bool dupe_edges_should_err;
+
+  /// Whether phony cycles should warn or print an error.
+  bool phony_cycle_should_err;
 };
 
 /// The Ninja main() loads up a series of data structures; various tools need
@@ -233,7 +236,7 @@ int GuessParallelism() {
 /// Returns true if the manifest was rebuilt.
 bool NinjaMain::RebuildManifest(const char* input_file, string* err) {
   string path = input_file;
-  unsigned int slash_bits;  // Unused because this path is only used for lookup.
+  uint64_t slash_bits;  // Unused because this path is only used for lookup.
   if (!CanonicalizePath(&path, &slash_bits, err))
     return false;
   Node* node = state_.LookupNode(path);
@@ -247,15 +250,24 @@ bool NinjaMain::RebuildManifest(const char* input_file, string* err) {
   if (builder.AlreadyUpToDate())
     return false;  // Not an error, but we didn't rebuild.
 
-  // Even if the manifest was cleaned by a restat rule, claim that it was
-  // rebuilt.  Not doing so can lead to crashes, see
-  // https://github.com/ninja-build/ninja/issues/874
-  return builder.Build(err);
+  if (!builder.Build(err))
+    return false;
+
+  // The manifest was only rebuilt if it is now dirty (it may have been cleaned
+  // by a restat).
+  if (!node->dirty()) {
+    // Reset the state to prevent problems like
+    // https://github.com/ninja-build/ninja/issues/874
+    state_.Reset();
+    return false;
+  }
+
+  return true;
 }
 
 Node* NinjaMain::CollectTarget(const char* cpath, string* err) {
   string path = cpath;
-  unsigned int slash_bits;
+  uint64_t slash_bits;
   if (!CanonicalizePath(&path, &slash_bits, err))
     return NULL;
 
@@ -533,21 +545,51 @@ int NinjaMain::ToolTargets(const Options* options, int argc, char* argv[]) {
   }
 }
 
-void PrintCommands(Edge* edge, set<Edge*>* seen) {
+enum PrintCommandMode { PCM_Single, PCM_All };
+void PrintCommands(Edge* edge, set<Edge*>* seen, PrintCommandMode mode) {
   if (!edge)
     return;
   if (!seen->insert(edge).second)
     return;
 
-  for (vector<Node*>::iterator in = edge->inputs_.begin();
-       in != edge->inputs_.end(); ++in)
-    PrintCommands((*in)->in_edge(), seen);
+  if (mode == PCM_All) {
+    for (vector<Node*>::iterator in = edge->inputs_.begin();
+         in != edge->inputs_.end(); ++in)
+      PrintCommands((*in)->in_edge(), seen, mode);
+  }
 
   if (!edge->is_phony())
     puts(edge->EvaluateCommand().c_str());
 }
 
 int NinjaMain::ToolCommands(const Options* options, int argc, char* argv[]) {
+  // The clean tool uses getopt, and expects argv[0] to contain the name of
+  // the tool, i.e. "commands".
+  ++argc;
+  --argv;
+
+  PrintCommandMode mode = PCM_All;
+
+  optind = 1;
+  int opt;
+  while ((opt = getopt(argc, argv, const_cast<char*>("hs"))) != -1) {
+    switch (opt) {
+    case 's':
+      mode = PCM_Single;
+      break;
+    case 'h':
+    default:
+      printf("usage: ninja -t commands [options] [targets]\n"
+"\n"
+"options:\n"
+"  -s     only print the final command to build [target], not the whole chain\n"
+             );
+    return 1;
+    }
+  }
+  argv += optind;
+  argc -= optind;
+
   vector<Node*> nodes;
   string err;
   if (!CollectTargetsFromArgs(argc, argv, &nodes, &err)) {
@@ -557,7 +599,7 @@ int NinjaMain::ToolCommands(const Options* options, int argc, char* argv[]) {
 
   set<Edge*> seen;
   for (vector<Node*>::iterator in = nodes.begin(); in != nodes.end(); ++in)
-    PrintCommands((*in)->in_edge(), &seen);
+    PrintCommands((*in)->in_edge(), &seen, mode);
 
   return 0;
 }
@@ -806,7 +848,8 @@ bool DebugEnable(const string& name) {
 bool WarningEnable(const string& name, Options* options) {
   if (name == "list") {
     printf("warning flags:\n"
-"  dupbuild={err,warn}  multiple build lines for one target\n");
+"  dupbuild={err,warn}  multiple build lines for one target\n"
+"  phonycycle={err,warn}  phony build statement references itself\n");
     return false;
   } else if (name == "dupbuild=err") {
     options->dupe_edges_should_err = true;
@@ -814,9 +857,16 @@ bool WarningEnable(const string& name, Options* options) {
   } else if (name == "dupbuild=warn") {
     options->dupe_edges_should_err = false;
     return true;
+  } else if (name == "phonycycle=err") {
+    options->phony_cycle_should_err = true;
+    return true;
+  } else if (name == "phonycycle=warn") {
+    options->phony_cycle_should_err = false;
+    return true;
   } else {
     const char* suggestion =
-        SpellcheckString(name.c_str(), "dupbuild=err", "dupbuild=warn", NULL);
+        SpellcheckString(name.c_str(), "dupbuild=err", "dupbuild=warn",
+                         "phonycycle=err", "phonycycle=warn", NULL);
     if (suggestion) {
       Error("unknown warning flag '%s', did you mean '%s'?",
             name.c_str(), suggestion);
@@ -1105,10 +1155,14 @@ int real_main(int argc, char** argv) {
   for (int cycle = 1; cycle <= kCycleLimit; ++cycle) {
     NinjaMain ninja(ninja_command, config);
 
-    ManifestParser parser(&ninja.state_, &ninja.disk_interface_,
-                          options.dupe_edges_should_err
-                              ? kDupeEdgeActionError
-                              : kDupeEdgeActionWarn);
+    ManifestParserOptions parser_opts;
+    if (options.dupe_edges_should_err) {
+      parser_opts.dupe_edge_action_ = kDupeEdgeActionError;
+    }
+    if (options.phony_cycle_should_err) {
+      parser_opts.phony_cycle_action_ = kPhonyCycleActionError;
+    }
+    ManifestParser parser(&ninja.state_, &ninja.disk_interface_, parser_opts);
     string err;
     if (!parser.Load(options.input_file, &err)) {
       Error("%s", err.c_str());
