@@ -34,8 +34,12 @@ let (//) = Ext_path.combine
 
 
 
+(* It does several conversion:
+   First, it will convert unix path to windows backward on windows platform.
+   Then if it is absolute path, it will do thing
+   Else if it is relative path, it will be rebased on project's root directory  *)
 
-let convert_and_resolve_path =
+let convert_and_resolve_path : string -> string -> string =
   if Sys.unix then (//)
   else fun cwd path ->
     if Ext_sys.is_windows_or_cygwin then 

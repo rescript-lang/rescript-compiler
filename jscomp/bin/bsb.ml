@@ -2187,18 +2187,20 @@ module Bsb_exception : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(**
+    This module is used for fatal errros
+*)
+type error 
 
-type error = 
-    | Package_not_found of string * string option (* json file *)
+
+val package_not_found : pkg:string -> json:string option -> 'a
 
 
-val error : error -> 'a
+val failf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 
-val failf : ?loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
+val config_error : Ext_json_types.t -> string -> 'a 
 
-val failwith_config : Ext_json_types.t -> ('a, unit, string, 'b) format4 -> 'a
 
-(* val expect_an_array_fmt : (string -> 'a, 'b, 'a) format *)
 
 end = struct
 #1 "bsb_exception.ml"
@@ -2229,47 +2231,51 @@ end = struct
 
 
 type error = 
-    | Package_not_found of string * string option (* json file *)
-
+  | Package_not_found of string * string option (* json file *)
+  | Json_config of Ext_position.t * string
 
 exception Error of error 
 
 let error err = raise (Error err)
+let package_not_found ~pkg ~json = 
+  error (Package_not_found(pkg,json))
 
 let to_string (x : error) = 
-    match x with     
-    | Package_not_found (name,json_opt) -> 
-        let in_json = match json_opt with None -> Ext_string.empty | Some x -> " in " ^ x in 
-        if Ext_string.equal name Bs_version.package_name then 
-            Printf.sprintf "Package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
-            Please run 'npm link bs-platform' to make it available " in_json
-        else 
-        Printf.sprintf 
-            "BuckleScript package %s not found or built %s, if it is not built\n\
-            Please run 'bsb -make-world', otherwise please install it " name in_json
+  match x with     
+  | Package_not_found (name,json_opt) -> 
+    let in_json = match json_opt with None -> Ext_string.empty | Some x -> " in " ^ x in 
+    if Ext_string.equal name Bs_version.package_name then 
+      Printf.sprintf "Package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
+                      Please run 'npm link bs-platform' to make it available " in_json
+    else 
+      Printf.sprintf 
+        "BuckleScript package %s not found or built %s, if it is not built\n\
+         Please run 'bsb -make-world', otherwise please install it " name in_json
+
+  | Json_config (pos,s) ->
+    Format.asprintf "File bsconfig.json (%a) : %s \n\
+                     For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json 
+        " Ext_position.print pos s 
+
+
+let failf ~loc fmt =
+  let prefix =
+    Format.asprintf "bsconfig.json %a: " Ext_position.print loc  in
+  Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt
+
+
+let config_error config fmt =
+  let loc = Ext_json.loc_of config in
+
+  error (Json_config (loc,fmt))
 
 let () = 
-    Printexc.register_printer (fun x ->
-        match x with 
-        | Error x -> 
-            Some (to_string x )
-        | _ -> None
-     )
-
-
-
-let failf ?loc fmt =
-    let prefix =
-        match loc with
-        | None -> "bsconfig.json"
-        | Some x  ->
-            Format.asprintf "bsconfig.json %a: " Ext_position.print x  in
-    Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt
-
-let expect_an_array_fmt : _ format = "%s expect an array"
-let failwith_config config fmt =
-  let loc = Ext_json.loc_of config in
-  failf ~loc fmt
+  Printexc.register_printer (fun x ->
+      match x with 
+      | Error x -> 
+        Some (to_string x )
+      | _ -> None
+    )
 
 end
 module Literals : sig 
@@ -3112,9 +3118,9 @@ let (//) = Filename.concat
 *)
 let  resolve_bs_package  
     ~cwd
-    name = 
+    pkg = 
   let marker = Literals.bsconfig_json in 
-  let sub_path = name // marker  in
+  let sub_path = pkg // marker  in
   let rec aux  cwd  = 
     let abs_marker =  cwd // Literals.node_modules // sub_path in 
     if Sys.file_exists abs_marker then (* Some *) (Filename.dirname abs_marker)
@@ -3133,15 +3139,15 @@ let  resolve_bs_package
           else
             begin 
               Format.fprintf Format.err_formatter 
-                "@{<error>Package not found: resolving package %s in %s  @}@." name cwd ;             
-              Bsb_exception.error (Package_not_found (name, None))
+                "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
+              Bsb_exception.package_not_found ~pkg ~json:None
             end
         with 
           Not_found -> 
           begin 
             Format.fprintf Format.err_formatter 
-              "@{<error>Package not found: resolving package %s in %s  @}@." name cwd ;             
-            Bsb_exception.error (Package_not_found (name,None))
+              "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
+            Bsb_exception.package_not_found ~pkg ~json:None
           end
   in
   aux cwd 
@@ -5250,20 +5256,7 @@ flag_concat "-ppx" [ppxs]
 val flag_concat : string -> string list -> string
 
 
-(**
-    It does several conversion:
-    First, it will convert unix path to windows backward on windows platform.
-    Then if it is absolute path, it will do thing
-    Else if it is relative path, it will be rebased on project's root directory 
 
-val convert_and_resolve_path : string -> string -> string
-*)
-
-(**
-   The difference between [convert_path] is that if the file is [ocamlc.opt] 
-   it will not do any conversion to it (maybe environment variable will help it get picked up)
-*)
-(* val convert_and_resolve_file : string -> string *)
 
 val mkp : string -> unit
 
@@ -5340,8 +5333,12 @@ let (//) = Ext_path.combine
 
 
 
+(* It does several conversion:
+   First, it will convert unix path to windows backward on windows platform.
+   Then if it is absolute path, it will do thing
+   Else if it is relative path, it will be rebased on project's root directory  *)
 
-let convert_and_resolve_path =
+let convert_and_resolve_path : string -> string -> string =
   if Sys.unix then (//)
   else fun cwd path ->
     if Ext_sys.is_windows_or_cygwin then 
@@ -7900,13 +7897,16 @@ module Bsb_build_cache : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** Store a file called [.bsbuild] that can be communicated 
+    between [bsb.exe] and [bsb_helper.exe]. 
+    [bsb.exe] stores such data which would be retrieved by 
+    [bsb_helper.exe]. It is currently used to combine with 
+    ocamldep to figure out which module->file it depends on
+*) 
+
 type case = bool 
 
-(** Store a file called [.bsbuild] that can be communicated 
-  between [bsb.exe] and [bsb_helper.exe]. 
-  [bsb.exe] stores such data which would be retrieved by 
-  [bsb_helper.exe]
-*) 
+
 type ml_kind =
   | Ml_source of string * bool  * bool
      (* No extension stored
@@ -7927,6 +7927,8 @@ type module_info =
 
 type t = module_info String_map.t 
 
+type ts = t array 
+
 (** store  the meta data indexed by {!Bsb_dir_index}
   {[
     0 --> lib group
@@ -7940,7 +7942,9 @@ val dir_of_module_info : module_info -> string
 
 
 val filename_sans_suffix_of_module_info : module_info -> string 
-type ts = t array 
+
+
+
 
 val write_build_cache : dir:string -> ts -> unit
 
@@ -8133,7 +8137,9 @@ module Bsb_dir_index : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(** Used to index [.bsbuildcache] may not be needed if we flatten dev 
+  into  a single group
+*)
 type t = private int
 
 val lib_dir_index : t 
@@ -10382,7 +10388,7 @@ and parsing_source_dir_map
         match String_map.find_opt Bsb_build_schemas.excludes m with 
         | None -> []   
         | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
-        | Some x -> Bsb_exception.failwith_config x  "excludes expect array "in 
+        | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
       let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
       let predicate = 
         match slow_re, excludes with 
@@ -10402,7 +10408,7 @@ and parsing_source_dir_map
         ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
 
-    | Some x -> Bsb_exception.failwith_config x "files field expect array or object "
+    | Some x -> Bsb_exception.config_error x "files field expect array or object "
 
   end;
   let cur_sources = !cur_sources in 
@@ -10474,7 +10480,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
       | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
-      | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
+      | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
     if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
@@ -10482,11 +10488,12 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
         match String_map.find_opt Bsb_build_schemas.dir map with 
         | Some (Str{str}) -> 
           Ext_filename.simple_convert_node_path_to_os_path str 
-        | Some x -> Bsb_exception.failwith_config x "dir expected to be a string"
+        | Some x -> Bsb_exception.config_error x "dir expected to be a string"
         | None -> 
-          Bsb_exception.failwith_config x
-            {|required field %S  missing, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json |} 
-            Bsb_build_schemas.dir
+          Bsb_exception.config_error x
+            (
+            "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
+            
       in
       parsing_source_dir_map {cxt with dir_index = current_dir_index; cwd= cwd // dir} map
   | _ -> empty 

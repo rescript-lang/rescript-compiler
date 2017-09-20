@@ -312,7 +312,7 @@ and parsing_source_dir_map
         match String_map.find_opt Bsb_build_schemas.excludes m with 
         | None -> []   
         | Some (Arr {content = arr}) -> Bsb_build_util.get_list_string arr 
-        | Some x -> Bsb_exception.failwith_config x  "excludes expect array "in 
+        | Some x -> Bsb_exception.config_error x  "excludes expect array "in 
       let slow_re = String_map.find_opt Bsb_build_schemas.slow_re m in 
       let predicate = 
         match slow_re, excludes with 
@@ -332,7 +332,7 @@ and parsing_source_dir_map
         ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
 
-    | Some x -> Bsb_exception.failwith_config x "files field expect array or object "
+    | Some x -> Bsb_exception.config_error x "files field expect array or object "
 
   end;
   let cur_sources = !cur_sources in 
@@ -404,7 +404,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
       | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
-      | Some _ -> Bsb_exception.failwith_config x {|type field expect "dev" literal |}
+      | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
     if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
@@ -412,11 +412,12 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
         match String_map.find_opt Bsb_build_schemas.dir map with 
         | Some (Str{str}) -> 
           Ext_filename.simple_convert_node_path_to_os_path str 
-        | Some x -> Bsb_exception.failwith_config x "dir expected to be a string"
+        | Some x -> Bsb_exception.config_error x "dir expected to be a string"
         | None -> 
-          Bsb_exception.failwith_config x
-            {|required field %S  missing, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json |} 
-            Bsb_build_schemas.dir
+          Bsb_exception.config_error x
+            (
+            "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
+            
       in
       parsing_source_dir_map {cxt with dir_index = current_dir_index; cwd= cwd // dir} map
   | _ -> empty 
