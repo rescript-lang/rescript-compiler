@@ -7,7 +7,6 @@ bin/bsb.ml : ext/map_gen.ml
 bin/bsb.ml : ext/set_gen.ml
 bin/bsb.ml : ext/vec_gen.ml
 bin/bsb.ml : bsb/bsb_file.ml
-bin/bsb.ml : bsb/bsb_init.ml
 bin/bsb.ml : bsb/bsb_log.mli
 bin/bsb.ml : bsb/bsb_main.ml
 bin/bsb.ml : bsb/bsb_pkg.mli
@@ -22,7 +21,6 @@ bin/bsb.ml : ext/ext_util.ml
 bin/bsb.ml : ext/literals.ml
 bin/bsb.ml : bsb/bsb_clean.ml
 bin/bsb.ml : bsb/bsb_file.mli
-bin/bsb.ml : bsb/bsb_init.mli
 bin/bsb.ml : bsb/bsb_main.mli
 bin/bsb.ml : bsb/bsb_query.ml
 bin/bsb.ml : bsb/bsb_regex.ml
@@ -81,6 +79,7 @@ bin/bsb.ml : bsb/bsb_merlin_gen.ml
 bin/bsb.ml : bsb/bsb_ninja_gen.mli
 bin/bsb.ml : bsb/bsb_ninja_util.ml
 bin/bsb.ml : bsb/bsb_templates.mli
+bin/bsb.ml : bsb/bsb_theme_init.ml
 bin/bsb.ml : common/bs_version.mli
 bin/bsb.ml : ext/ext_json_noloc.ml
 bin/bsb.ml : ext/ext_json_parse.ml
@@ -95,6 +94,7 @@ bin/bsb.ml : bsb/bsb_merlin_gen.mli
 bin/bsb.ml : bsb/bsb_ninja_regen.ml
 bin/bsb.ml : bsb/bsb_ninja_util.mli
 bin/bsb.ml : bsb/bsb_pkg_map_gen.ml
+bin/bsb.ml : bsb/bsb_theme_init.mli
 bin/bsb.ml : bsb/bsb_watcher_gen.ml
 bin/bsb.ml : ext/ext_json_noloc.mli
 bin/bsb.ml : ext/ext_json_parse.mli

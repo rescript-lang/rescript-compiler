@@ -63,7 +63,7 @@ let log_level = ref Warn
 let set_log level = 
   log_level := level
 
-let fprintf level fmt = 
+let dfprintf level fmt = 
   if int_of_level level >= int_of_level  !log_level then 
     Format.fprintf fmt 
   else Format.ifprintf fmt  
@@ -73,10 +73,10 @@ type 'a fmt =
 type 'a log = 
   ('a, Format.formatter, unit) format -> 'a
 
-let debug fmt = fprintf  Debug Format.std_formatter fmt 
-let info fmt = fprintf Info Format.std_formatter fmt
-let warn fmt = fprintf Warn Format.err_formatter fmt 
-let error fmt = fprintf Error Format.err_formatter fmt
+let debug fmt = dfprintf  Debug Format.std_formatter fmt 
+let info fmt = dfprintf Info Format.std_formatter fmt
+let warn fmt = dfprintf Warn Format.err_formatter fmt 
+let error fmt = dfprintf Error Format.err_formatter fmt
 
 
 let info_args (args : string array) = 
