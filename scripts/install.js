@@ -30,7 +30,7 @@ console.log("Working dir", working_dir)
 var working_config = { cwd: jscomp, stdio: [0, 1, 2] }
 
 var build_util = require('./build_util')
-var vendor_ninja_version = '1.7.2'
+var vendor_ninja_version = '1.8.2'
 
 var ninja_bin_output = path.join(root_dir, 'bin', 'ninja.exe')
 var ninja_source_dir = path.join(root_dir,'vendor','ninja')
