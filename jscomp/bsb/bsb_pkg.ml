@@ -33,9 +33,9 @@ let (//) = Filename.concat
 *)
 let  resolve_bs_package  
     ~cwd
-    name = 
+    pkg = 
   let marker = Literals.bsconfig_json in 
-  let sub_path = name // marker  in
+  let sub_path = pkg // marker  in
   let rec aux  cwd  = 
     let abs_marker =  cwd // Literals.node_modules // sub_path in 
     if Sys.file_exists abs_marker then (* Some *) (Filename.dirname abs_marker)
@@ -54,15 +54,15 @@ let  resolve_bs_package
           else
             begin 
               Format.fprintf Format.err_formatter 
-                "@{<error>Package not found: resolving package %s in %s  @}@." name cwd ;             
-              Bsb_exception.error (Package_not_found (name, None))
+                "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
+              Bsb_exception.package_not_found ~pkg ~json:None
             end
         with 
           Not_found -> 
           begin 
             Format.fprintf Format.err_formatter 
-              "@{<error>Package not found: resolving package %s in %s  @}@." name cwd ;             
-            Bsb_exception.error (Package_not_found (name,None))
+              "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
+            Bsb_exception.package_not_found ~pkg ~json:None
           end
   in
   aux cwd 

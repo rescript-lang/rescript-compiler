@@ -167,13 +167,13 @@ let interpret_json
               reason_react_jsx := 
                 Some (Filename.quote 
                         (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
-            | _ -> Bsb_exception.failf ~loc "Unsupported jsx version %s" flo
+            | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end
         | Some (True _) -> 
           reason_react_jsx := 
             Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) 
                  )
-        | Some x -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
+        | Some x -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) 
                       "Unexpected input for jsx"
       end)
 
@@ -222,7 +222,7 @@ let interpret_json
                 | Some (Str {str = name}), Some ( Str {str = command}) -> 
                   String_map.add name command acc 
                 | _, _ -> 
-                  Bsb_exception.failf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
+                  Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 end
               | _ -> acc ) String_map.empty  s  ))
     |? (Bsb_build_schemas.refmt, `Str (fun s -> 
@@ -261,10 +261,12 @@ let interpret_json
           match !package_name with
           | None 
             ->
-            failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
+              Bsb_exception.config_error global_data
+              "Field name is required"
           | Some "_" 
             -> 
-            failwith "_ is a reserved package name"
+            Bsb_exception.config_error global_data
+            "_ is a reserved package name"
           | Some name -> 
             name
 

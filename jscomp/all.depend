@@ -827,13 +827,10 @@ bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/literals.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
     bsb/bsb_helper_extract.cmx bsb/bsb_helper_dep_graph.cmx \
     bsb/bsb_helper_packer.cmi
-bsb/bsb_init.cmx : ext/string_hashtbl.cmx bsb/oCamlRes.cmx \
-    ext/ext_string.cmx ext/ext_io.cmx bsb/bsb_templates.cmx bsb/bsb_regex.cmx \
-    common/bs_version.cmx bsb/bsb_init.cmi
 bsb/bsb_log.cmx : ext/ext_string.cmx ext/ext_color.cmx bsb/bsb_log.cmi
 bsb/bsb_main.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_path.cmx \
-    ext/ext_array.cmx bsb/bsb_world.cmx bsb/bsb_query.cmx \
-    bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx bsb/bsb_init.cmx \
+    ext/ext_array.cmx bsb/bsb_world.cmx bsb/bsb_theme_init.cmx \
+    bsb/bsb_query.cmx bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx \
     bsb/bsb_config.cmx bsb/bsb_clean.cmx bsb/bsb_build_util.cmx \
     common/bs_version.cmx bsb/bsb_main.cmi
 bsb/bsb_merlin_gen.cmx : ext/literals.cmx ext/ext_string.cmx \
@@ -884,6 +881,9 @@ bsb/bsb_regex.cmx : bsb/bsb_regex.cmi
 bsb/bsb_rule.cmx : ext/string_set.cmx ext/string_map.cmx ext/ext_sys.cmx \
     bsb/bsb_rule.cmi
 bsb/bsb_templates.cmx : bsb/oCamlRes.cmx bsb/bsb_templates.cmi
+bsb/bsb_theme_init.cmx : ext/string_hashtbl.cmx bsb/oCamlRes.cmx \
+    ext/ext_string.cmx ext/ext_io.cmx bsb/bsb_templates.cmx bsb/bsb_regex.cmx \
+    common/bs_version.cmx bsb/bsb_theme_init.cmi
 bsb/bsb_unix.cmx : ext/ext_sys.cmx ext/ext_string.cmx bsb/bsb_unix.cmi
 bsb/bsb_watcher_gen.cmx : ext/ext_path.cmx ext/ext_list.cmx \
     ext/ext_json_noloc.cmx ext/ext_array.cmx bsb/bsb_parse_sources.cmx \
@@ -912,7 +912,6 @@ bsb/bsb_helper_extract.cmi : ext/string_set.cmi
 bsb/bsb_helper_linker.cmi :
 bsb/bsb_helper_main.cmi :
 bsb/bsb_helper_packer.cmi :
-bsb/bsb_init.cmi :
 bsb/bsb_log.cmi :
 bsb/bsb_main.cmi :
 bsb/bsb_merlin_gen.cmi : bsb/bsb_config_types.cmx
@@ -931,6 +930,7 @@ bsb/bsb_query.cmi :
 bsb/bsb_regex.cmi :
 bsb/bsb_rule.cmi : ext/string_map.cmi
 bsb/bsb_templates.cmi : bsb/oCamlRes.cmx
+bsb/bsb_theme_init.cmi :
 bsb/bsb_unix.cmi :
 bsb/bsb_watcher_gen.cmi : bsb/bsb_parse_sources.cmi
 bsb/bsb_world.cmi : bsb/bsb_config_types.cmx

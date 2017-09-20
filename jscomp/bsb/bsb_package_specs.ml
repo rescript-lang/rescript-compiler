@@ -52,7 +52,7 @@ let supported_format x =
   x = Literals.amdjs_global
 
 let bad_module_format_message_exn ~loc format =
-  Bsb_exception.failf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s or %s"
+  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s or %s"
     format
     Literals.amdjs
     Literals.commonjs
@@ -72,7 +72,7 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
           if not !has_in_source then
             has_in_source:= true
           else 
-            Bsb_exception.failf 
+            Bsb_exception.errorf 
               ~loc:(Ext_json.loc_of x) 
               "package-specs: we've detected two module formats that are both configured to be in-source." 
         );
@@ -102,16 +102,16 @@ and from_json_single (x : Ext_json_types.t) : spec =
         else
           bad_module_format_message_exn ~loc format
       | Arr _ ->
-        Bsb_exception.failf ~loc
+        Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
       | _ ->
-        Bsb_exception.failf ~loc
+        Bsb_exception.errorf ~loc
           "package-specs: the `module` field of the configuration object should be a string."
       | exception _ ->
-        Bsb_exception.failf ~loc
+        Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, the `module` field is mandatory."
     end
-  | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x)
+  | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
            "package-specs: we expect either a string or an object."
 
 let  from_json (x : Ext_json_types.t) : Spec_set.t =

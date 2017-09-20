@@ -34,8 +34,12 @@ let (//) = Ext_path.combine
 
 
 
+(* It does several conversion:
+   First, it will convert unix path to windows backward on windows platform.
+   Then if it is absolute path, it will do thing
+   Else if it is relative path, it will be rebased on project's root directory  *)
 
-let convert_and_resolve_path =
+let convert_and_resolve_path : string -> string -> string =
   if Sys.unix then (//)
   else fun cwd path ->
     if Ext_sys.is_windows_or_cygwin then 
@@ -171,7 +175,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
       match String_map.find_opt Bsb_build_schemas.name map  with 
       | Some (Str {str }) -> str
       | Some _ 
-      | None -> Bsb_exception.failf ~loc "package name missing in %s/bsconfig.json" dir 
+      | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
     in 
     let package_stacks = cur_package_name :: paths in 
     let () = 
@@ -200,9 +204,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
                        Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
                      walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                    | _ -> 
-                     Bsb_exception.(failf ~loc 
-                                      "%s expect an array"
-                                      Bsb_build_schemas.bs_dependencies)
+                     Bsb_exception.errorf ~loc 
+                       "%s expect an array"
+                       Bsb_build_schemas.bs_dependencies
                  end
                )))
         |> ignore ;
@@ -213,16 +217,16 @@ let rec walk_all_deps_aux visited paths top dir cb =
            `Arr (fun (new_packages : Ext_json_types.t array) ->
                new_packages
                |> Array.iter (fun (js : Ext_json_types.t) ->
-                   begin match js with
-                     | Str {str = new_package} ->
-                       let package_dir = 
-                         Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
-                       walk_all_deps_aux visited package_stacks  false package_dir cb  ;
-                     | _ -> 
-                       Bsb_exception.(failf ~loc 
-                                        "%s expect an array"
-                                        Bsb_build_schemas.bs_dev_dependencies)
-                   end
+                   match js with
+                   | Str {str = new_package} ->
+                     let package_dir = 
+                       Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
+                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
+                   | _ -> 
+                     Bsb_exception.errorf ~loc 
+                       "%s expect an array"
+                       Bsb_build_schemas.bs_dev_dependencies
+
                  )))
           |> ignore ;
         end
@@ -231,7 +235,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
         String_hashtbl.add visited cur_package_name dir;
       end
   | _ -> ()
-  | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
+  | exception _ -> 
+    Bsb_exception.invalid_json bsconfig_json
+    
 
 let walk_all_deps dir cb = 
   let visited = String_hashtbl.create 0 in 

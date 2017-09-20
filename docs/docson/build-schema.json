@@ -383,18 +383,6 @@
             "$ref": "#/definitions/package-specs",
             "description": "BuckleScript can currently output to [Commonjs](https://en.wikipedia.org/wiki/CommonJS), [AMD](http://requirejs.org/docs/whyamd.html),  and [ES6 modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)"
         },
-        "ocamllex": {
-            "type": "string",
-            "description": "Path to [OCamllex](https://realworldocaml.org/v1/en/html/parsing-with-ocamllex-and-menhir.html)"
-        },
-        "ocamlyacc": {
-            "type": "string",
-            "description": "TODO path to ocamlyacc, mly"
-        },
-        "menhir": {
-            "type": "string",
-            "description": "TODO"
-        },
         "entries": {
             "$ref": "#/definitions/entries",
             "description": "(internal) Used by bsb to build to different targets: native (ocamlopt), bytecode (ocamlc) or JS (bsc)"

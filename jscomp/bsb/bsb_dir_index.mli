@@ -22,7 +22,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(** Used to index [.bsbuildcache] may not be needed if we flatten dev 
+  into  a single group
+*)
 type t = private int
 
 val lib_dir_index : t 
