@@ -67,6 +67,10 @@ let print ~is_warning intro ppf loc =
       fprintf ppf "@[@{<error>%s@}@]@," intro
     end;
 
+    (* ocaml's reported line/col numbering is horrible and super error-prone 
+      when being handled programmatically (or humanly for that matter. If you're 
+      an ocaml contributor reading this: who the heck reads the character count
+      starting from the first erroring character?) *)
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
     (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
