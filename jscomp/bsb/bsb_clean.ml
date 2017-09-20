@@ -33,10 +33,10 @@ let ninja_clean bsc_dir proj_dir =
     if Sys.file_exists cwd then 
       Bsb_unix.run_command_execv { cmd ; args = [|cmd; "-t"; "clean"|] ; cwd  };
   with  e -> 
-    Format.fprintf Format.err_formatter "@{<info>ninja clean failed : %s @." (Printexc.to_string e)
+    Bsb_log.warn "@{<warning>ninja clean failed : %s @." (Printexc.to_string e)
 
 let clean_bs_garbage bsc_dir proj_dir =
-  Format.fprintf Format.std_formatter "@{<info>Cleaning:@} in %s@." proj_dir ; 
+  Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ; 
   let aux x =
     let x = (proj_dir // x)  in
     if Sys.file_exists x then
@@ -46,7 +46,7 @@ let clean_bs_garbage bsc_dir proj_dir =
     List.iter aux Bsb_config.all_lib_artifacts;    
   with
     e ->
-    Format.fprintf Format.err_formatter "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
+    Bsb_log.warn "@{<warning>Failed@} to clean due to %s" (Printexc.to_string e)
 
 
 let clean_bs_deps bsc_dir proj_dir =

@@ -78,7 +78,7 @@ let resolve_bsb_magic_file ~cwd ~desc p =
     if Sys.file_exists path then path
     else 
       begin 
-        Format.fprintf Format.err_formatter "@{<error>Could not resolve @} %s in %s" p cwd ; 
+        Bsb_log.error "@{<error>Could not resolve @} %s in %s@." p cwd ; 
         failwith (p ^ " not found when resolving " ^ desc)
       end
 
@@ -179,16 +179,16 @@ let rec walk_all_deps_aux visited paths top dir cb =
     in 
     let package_stacks = cur_package_name :: paths in 
     let () = 
-      Format.fprintf Format.std_formatter "@{<info>Package stack:@} %a @." pp_packages_rev
+      Bsb_log.info "@{<info>Package stack:@} %a @." pp_packages_rev
         package_stacks 
     in 
     if List.mem cur_package_name paths then
       begin
-        Format.fprintf Format.err_formatter "@{<error>Cyclc dependencies in package stack@}@.";
+        Bsb_log.error "@{<error>Cyclc dependencies in package stack@}@.";
         exit 2 
       end;
     if String_hashtbl.mem visited cur_package_name then 
-      Format.fprintf Format.std_formatter
+      Bsb_log.info
         "@{<info>Visited before@} %s@." cur_package_name
     else 
       begin 

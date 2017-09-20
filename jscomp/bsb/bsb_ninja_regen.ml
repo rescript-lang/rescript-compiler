@@ -44,7 +44,7 @@ let regenerate_ninja
       ~cwd  
       ~forced ~file:output_deps in
   let () = 
-    Format.fprintf Format.std_formatter  
+    Bsb_log.info
       "@{<info>BSB check@} build spec : %a @." Bsb_bsdeps.pp_check_result check_result in 
   begin match check_result  with 
     | Good ->

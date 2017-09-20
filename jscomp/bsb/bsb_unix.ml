@@ -33,15 +33,13 @@ type command =
 
 
 let log cmd = 
-    Format.fprintf Format.std_formatter "@{<info>Entering@} %s @." cmd.cwd ;  
-    Format.fprintf Format.std_formatter "@{<info>Cmd:@} " ; 
-    for i = 0 to Array.length cmd.args - 1 do
-      Format.print_string cmd.args.(i);
-      Format.print_string Ext_string.single_space
-    done;
-    Format.print_newline ()
+  Bsb_log.info "@{<info>Entering@} %s @." cmd.cwd ;  
+  Bsb_log.info "@{<info>Cmd:@} " ; 
+  Bsb_log.info_args cmd.args
+  
 let fail cmd =
-  Format.fprintf Format.err_formatter "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd
+  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd
+
 let run_command_execv_unix  cmd =
   match Unix.fork () with 
   | 0 -> 
@@ -60,14 +58,14 @@ let run_command_execv_unix  cmd =
           end;
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
         begin 
-          Format.fprintf Format.err_formatter "@{<error>Interrupted:@} %s@." cmd.cmd;
+          Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
           exit 2 
         end        
 
 
 (** TODO: the args are not quoted, here 
-  we are calling a very limited set of `bsb` commands, so that 
-  we are safe
+    we are calling a very limited set of `bsb` commands, so that 
+    we are safe
 *)
 let run_command_execv_win (cmd : command) =
   let old_cwd = Unix.getcwd () in 
@@ -76,22 +74,22 @@ let run_command_execv_win (cmd : command) =
   let eid =
     Sys.command 
       (String.concat Ext_string.single_space 
-                           ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
+         ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
   if eid <> 0 then 
     begin 
       fail cmd;
       exit eid    
     end
   else  begin 
-    print_endline ("* Leaving " ^ cmd.cwd ^ " into " ^ old_cwd );
+    Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd  old_cwd;
     Unix.chdir old_cwd
   end
 
 
 let run_command_execv = 
-    if Ext_sys.is_windows_or_cygwin then 
-      run_command_execv_win
-    else run_command_execv_unix  
+  if Ext_sys.is_windows_or_cygwin then 
+    run_command_execv_win
+  else run_command_execv_unix  
 (** it assume you have permissions, so always catch it to fail 
     gracefully
 *)

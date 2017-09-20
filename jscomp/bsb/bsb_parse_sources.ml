@@ -110,7 +110,7 @@ let collect_pub_modules
         set := String_set.add str !set
       else 
         begin 
-          Format.fprintf Format.err_formatter
+          Bsb_log.warn
             "@{<warning>IGNORED@} %S in public is ignored since it is not\
              an existing module@." str
         end  
@@ -141,7 +141,7 @@ let  handle_list_files acc
               new_acc 
             end 
           | Invalid_module_name ->
-            Format.fprintf Format.err_formatter
+            Bsb_log.warn
               warning_unused_file name dir ;
             acc 
           | Suffix_mismatch -> acc 
@@ -251,7 +251,7 @@ and parsing_source_dir_map
                     | Good ->
                       cur_sources := Bsb_build_cache.map_update ~dir !cur_sources output
                     | Invalid_module_name ->                  
-                      Format.fprintf Format.err_formatter warning_unused_file output dir 
+                      Bsb_log.warn warning_unused_file output dir 
                     | Suffix_mismatch -> ()
                   end
                 end
@@ -280,7 +280,7 @@ and parsing_source_dir_map
               | Good -> 
                 Bsb_build_cache.map_update  ~dir acc name 
               | Invalid_module_name ->
-                Format.fprintf Format.err_formatter
+                Bsb_log.warn
                   warning_unused_file
                   name dir 
                 ; 

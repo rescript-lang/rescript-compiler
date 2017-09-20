@@ -32,7 +32,7 @@ let sort_files_by_dependencies ~domain dependency_graph =
   let result = Queue.create () in
   let rec visit visiting path current =
     if String_set.mem current visiting then
-      Format.fprintf Format.err_formatter "Cyclic depends : @[%a@]"
+      Bsb_log.error "@{<error>Cyclic depends@} : @[%a@]"
         (Format.pp_print_list ~pp_sep:Format.pp_print_space
            Format.pp_print_string)
         (current::path)
@@ -73,7 +73,7 @@ let simple_collect_from_main ?alias_map ast_table main_module =
   in
   let rec visit visiting path current =
     if String_set.mem current visiting  then
-      Format.fprintf Format.err_formatter "Cyclic depends : @[%a@]"
+      Bsb_log.error "@{<error>Cyclic depends@} : @[%a@]"
         (Format.pp_print_list ~pp_sep:Format.pp_print_space
            Format.pp_print_string)
         (current::path)

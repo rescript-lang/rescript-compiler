@@ -25,18 +25,16 @@
 
 let (//) = Ext_path.combine
 
+(** TODO: create the animation effect 
+    logging installed files
+*)
 let install_targets cwd (config : Bsb_config_types.t option) =
-  (** TODO: create the animation effect *)
+  
   let install ~destdir file = 
     if Bsb_file.install_if_exists ~destdir file  then 
       begin 
         ()
-        (*Format.pp_print_string Format.std_formatter "=> "; 
-          Format.pp_print_string Format.std_formatter destdir;
-          Format.pp_print_string Format.std_formatter "<= ";
-          Format.pp_print_string Format.std_formatter file ;
-          Format.pp_print_string Format.std_formatter "\r"; 
-          Format.pp_print_flush Format.std_formatter ();*)
+
       end
   in
   let install_filename_sans_extension destdir namespace x = 
@@ -60,16 +58,14 @@ let install_targets cwd (config : Bsb_config_types.t option) =
     let destdir = cwd // Bsb_config.lib_ocaml in (* lib is already there after building, so just mkdir [lib/ocaml] *)
     if not @@ Sys.file_exists destdir then begin Unix.mkdir destdir 0o777  end;
     begin
-      Format.fprintf Format.std_formatter "@{<info>Installing started@}@.";
-      (*Format.pp_print_flush Format.std_formatter ();*)
-      (* Format.fprintf Format.std_formatter "@{<info>%s@} Installed @." x;  *)
+      Bsb_log.info "@{<info>Installing started@}@.";
       begin match namespace with 
         | None -> ()
         | Some x -> 
           install_filename_sans_extension destdir None  x
       end;
       String_hash_set.iter (install_filename_sans_extension destdir namespace) files_to_install;
-      Format.fprintf Format.std_formatter "@{<info>Installing finished@} @.";
+      Bsb_log.info "@{<info>Installing finished@} @.";
     end
 
 
@@ -103,7 +99,7 @@ let build_bs_deps cwd deps =
 
 
 let make_world_deps cwd (config : Bsb_config_types.t option) =
-  print_endline "\nMaking the dependency world!";
+  Bsb_log.info "Making the dependency world!@.";
   let deps =
     match config with
     | None ->
