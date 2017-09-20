@@ -115,7 +115,7 @@ let collect_pub_modules
              an existing module@." str
         end  
     | _ -> 
-      Bsb_exception.failf 
+      Bsb_exception.errorf 
         ~loc:(Ext_json.loc_of v)
         "public excpect a list of strings"
   done  ;
@@ -174,7 +174,7 @@ let get_input_output
     loc_start 
     (content : Ext_json_types.t array) : string list * string list = 
   let error () = 
-    Bsb_exception.failf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
+    Bsb_exception.errorf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
   in  
   match Ext_array.find_and_split content 
           (fun x () -> match x with Str { str =":"} -> true | _ -> false )
@@ -256,11 +256,11 @@ and parsing_source_dir_map
                   end
                 end
               | _ ->
-                Bsb_exception.failf ~loc "Invalid generator format"
+                Bsb_exception.errorf ~loc "Invalid generator format"
             end
-          | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+          | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
         )
-    | Some x  -> Bsb_exception.failf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
+    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
     | None -> ()
   end
   ;
@@ -322,8 +322,8 @@ and parsing_source_dir_map
         | Some (Str {str = s}) , _::_ -> 
           let re = Str.regexp s in   
           fun name -> Str.string_match re name 0 && not (List.mem name excludes)
-        | Some x, _ -> Bsb_exception.failf ~loc "slow-re expect a string literal"
-        | None , _ -> Bsb_exception.failf ~loc  "missing field: slow-re"  in 
+        | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
+        | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
       let file_array = readdir (Filename.concat cxt.root dir) in 
       cur_sources := Array.fold_left (fun acc name -> 
           if is_input_or_output generators name || not (predicate name) then acc 
@@ -344,7 +344,7 @@ and parsing_source_dir_map
   |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
       if s = Bsb_build_schemas.export_all then public := Export_all else 
       if s = Bsb_build_schemas.export_none then public := Export_none else 
-        Bsb_exception.failf ~loc "invalid str for %s "  s 
+        Bsb_exception.errorf ~loc "invalid str for %s "  s 
     ))
   |? (Bsb_build_schemas.public, `Arr (fun s -> 
       public := Export_set (collect_pub_modules s cur_sources)

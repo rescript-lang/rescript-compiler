@@ -52,10 +52,8 @@ let to_string (x : error) =
         " Ext_position.print pos s 
 
 
-let failf ~loc fmt =
-  let prefix =
-    Format.asprintf "bsconfig.json %a: " Ext_position.print loc  in
-  Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt
+let errorf ~loc fmt =
+  Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
 
 let config_error config fmt =

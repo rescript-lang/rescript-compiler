@@ -2196,7 +2196,7 @@ type error
 val package_not_found : pkg:string -> json:string option -> 'a
 
 
-val failf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
+val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 
 val config_error : Ext_json_types.t -> string -> 'a 
 
@@ -2258,10 +2258,8 @@ let to_string (x : error) =
         " Ext_position.print pos s 
 
 
-let failf ~loc fmt =
-  let prefix =
-    Format.asprintf "bsconfig.json %a: " Ext_position.print loc  in
-  Format.ksprintf (fun s -> failwith (prefix ^ s)) fmt
+let errorf ~loc fmt =
+  Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
 
 let config_error config fmt =
@@ -5474,7 +5472,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
       match String_map.find_opt Bsb_build_schemas.name map  with 
       | Some (Str {str }) -> str
       | Some _ 
-      | None -> Bsb_exception.failf ~loc "package name missing in %s/bsconfig.json" dir 
+      | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
     in 
     let package_stacks = cur_package_name :: paths in 
     let () = 
@@ -5503,9 +5501,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
                        Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
                      walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                    | _ -> 
-                     Bsb_exception.(failf ~loc 
+                     Bsb_exception.errorf ~loc 
                                       "%s expect an array"
-                                      Bsb_build_schemas.bs_dependencies)
+                                      Bsb_build_schemas.bs_dependencies
                  end
                )))
         |> ignore ;
@@ -5522,9 +5520,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
                          Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
                        walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                      | _ -> 
-                       Bsb_exception.(failf ~loc 
+                       Bsb_exception.errorf ~loc 
                                         "%s expect an array"
-                                        Bsb_build_schemas.bs_dev_dependencies)
+                                        Bsb_build_schemas.bs_dev_dependencies
                    end
                  )))
           |> ignore ;
@@ -7654,7 +7652,7 @@ let supported_format x =
   x = Literals.amdjs_global
 
 let bad_module_format_message_exn ~loc format =
-  Bsb_exception.failf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s or %s"
+  Bsb_exception.errorf ~loc "package-specs: `%s` isn't a valid output module format. It has to be one of: %s, %s, %s, %s or %s"
     format
     Literals.amdjs
     Literals.commonjs
@@ -7674,7 +7672,7 @@ let rec from_array (arr : Ext_json_types.t array) : Spec_set.t =
           if not !has_in_source then
             has_in_source:= true
           else 
-            Bsb_exception.failf 
+            Bsb_exception.errorf 
               ~loc:(Ext_json.loc_of x) 
               "package-specs: we've detected two module formats that are both configured to be in-source." 
         );
@@ -7704,16 +7702,16 @@ and from_json_single (x : Ext_json_types.t) : spec =
         else
           bad_module_format_message_exn ~loc format
       | Arr _ ->
-        Bsb_exception.failf ~loc
+        Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, `module` field should be a string, not an array. If you want to pass multiple module specs, try turning package-specs into an array of objects (or strings) instead."
       | _ ->
-        Bsb_exception.failf ~loc
+        Bsb_exception.errorf ~loc
           "package-specs: the `module` field of the configuration object should be a string."
       | exception _ ->
-        Bsb_exception.failf ~loc
+        Bsb_exception.errorf ~loc
           "package-specs: when the configuration is an object, the `module` field is mandatory."
     end
-  | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x)
+  | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x)
            "package-specs: we expect either a string or an object."
 
 let  from_json (x : Ext_json_types.t) : Spec_set.t =
@@ -10191,7 +10189,7 @@ let collect_pub_modules
              an existing module@." str
         end  
     | _ -> 
-      Bsb_exception.failf 
+      Bsb_exception.errorf 
         ~loc:(Ext_json.loc_of v)
         "public excpect a list of strings"
   done  ;
@@ -10250,7 +10248,7 @@ let get_input_output
     loc_start 
     (content : Ext_json_types.t array) : string list * string list = 
   let error () = 
-    Bsb_exception.failf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
+    Bsb_exception.errorf ~loc:loc_start {| invalid edge format, expect  ["output" , ":", "input" ]|}
   in  
   match Ext_array.find_and_split content 
           (fun x () -> match x with Str { str =":"} -> true | _ -> false )
@@ -10332,11 +10330,11 @@ and parsing_source_dir_map
                   end
                 end
               | _ ->
-                Bsb_exception.failf ~loc "Invalid generator format"
+                Bsb_exception.errorf ~loc "Invalid generator format"
             end
-          | _ -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+          | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
         )
-    | Some x  -> Bsb_exception.failf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
+    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
     | None -> ()
   end
   ;
@@ -10398,8 +10396,8 @@ and parsing_source_dir_map
         | Some (Str {str = s}) , _::_ -> 
           let re = Str.regexp s in   
           fun name -> Str.string_match re name 0 && not (List.mem name excludes)
-        | Some x, _ -> Bsb_exception.failf ~loc "slow-re expect a string literal"
-        | None , _ -> Bsb_exception.failf ~loc  "missing field: slow-re"  in 
+        | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
+        | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
       let file_array = readdir (Filename.concat cxt.root dir) in 
       cur_sources := Array.fold_left (fun acc name -> 
           if is_input_or_output generators name || not (predicate name) then acc 
@@ -10420,7 +10418,7 @@ and parsing_source_dir_map
   |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
       if s = Bsb_build_schemas.export_all then public := Export_all else 
       if s = Bsb_build_schemas.export_none then public := Export_none else 
-        Bsb_exception.failf ~loc "invalid str for %s "  s 
+        Bsb_exception.errorf ~loc "invalid str for %s "  s 
     ))
   |? (Bsb_build_schemas.public, `Arr (fun s -> 
       public := Export_set (collect_pub_modules s cur_sources)
@@ -11477,13 +11475,13 @@ let interpret_json
               reason_react_jsx := 
                 Some (Filename.quote 
                         (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
-            | _ -> Bsb_exception.failf ~loc "Unsupported jsx version %s" flo
+            | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end
         | Some (True _) -> 
           reason_react_jsx := 
             Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) 
                  )
-        | Some x -> Bsb_exception.failf ~loc:(Ext_json.loc_of x) 
+        | Some x -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) 
                       "Unexpected input for jsx"
       end)
 
@@ -11532,7 +11530,7 @@ let interpret_json
                 | Some (Str {str = name}), Some ( Str {str = command}) -> 
                   String_map.add name command acc 
                 | _, _ -> 
-                  Bsb_exception.failf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
+                  Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 end
               | _ -> acc ) String_map.empty  s  ))
     |? (Bsb_build_schemas.refmt, `Str (fun s -> 
@@ -11571,10 +11569,12 @@ let interpret_json
           match !package_name with
           | None 
             ->
-            failwith "Error: Package name is required. Please specify a `name` in `bsconfig.json`"
+              Bsb_exception.config_error global_data
+              "Field name is required"
           | Some "_" 
             -> 
-            failwith "_ is a reserved package name"
+            Bsb_exception.config_error global_data
+            "_ is a reserved package name"
           | Some name -> 
             name
 

@@ -175,7 +175,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
       match String_map.find_opt Bsb_build_schemas.name map  with 
       | Some (Str {str }) -> str
       | Some _ 
-      | None -> Bsb_exception.failf ~loc "package name missing in %s/bsconfig.json" dir 
+      | None -> Bsb_exception.errorf ~loc "package name missing in %s/bsconfig.json" dir 
     in 
     let package_stacks = cur_package_name :: paths in 
     let () = 
@@ -204,9 +204,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
                        Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
                      walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                    | _ -> 
-                     Bsb_exception.(failf ~loc 
+                     Bsb_exception.errorf ~loc 
                                       "%s expect an array"
-                                      Bsb_build_schemas.bs_dependencies)
+                                      Bsb_build_schemas.bs_dependencies
                  end
                )))
         |> ignore ;
@@ -223,9 +223,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
                          Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
                        walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                      | _ -> 
-                       Bsb_exception.(failf ~loc 
+                       Bsb_exception.errorf ~loc 
                                         "%s expect an array"
-                                        Bsb_build_schemas.bs_dev_dependencies)
+                                        Bsb_build_schemas.bs_dev_dependencies
                    end
                  )))
           |> ignore ;
