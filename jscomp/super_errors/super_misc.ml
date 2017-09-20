@@ -89,7 +89,7 @@ ppf
   (* inclusive *)
   for i = first_shown_line to last_shown_line do
     (* should some lines be ellipsed from the output? If we're showing more than 5 lines, then yes *)
-    if last_shown_line - first_shown_line >= 5 && i >= start_line + 2 && i <= end_line - 2 then begin
+    if end_line - start_line >= 5 && i >= start_line + 2 && i <= end_line - 2 then begin
       if i = start_line + 2 then
         (* Insert one line that's just a dimmed "..." *)
         let padded_line_number = pad "." max_line_number_number_of_digits in
