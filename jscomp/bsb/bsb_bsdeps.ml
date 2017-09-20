@@ -112,8 +112,7 @@ let check ~cwd ~forced ~file =
         check_aux cwd xs  0 (Array.length xs)
       with e ->
         begin
-          Format.fprintf
-            Format.std_formatter
+          Bsb_log.info
             "@{<info>Stat miss %s@}@."
             (Printexc.to_string e);
           Bsb_file_not_exist

@@ -88,7 +88,7 @@ let bsb_main_flags : (string * Arg.spec * string) list=
 
 (**  Invariant: it has to be the last command of [bsb] *)
 let exec_command_then_exit  command =
-  Format.fprintf Format.std_formatter "@{<info>CMD:@} %s@." command;
+  Bsb_log.info "@{<info>CMD:@} %s@." command;
   exit (Sys.command command ) 
 
 (* Execute the underlying ninja build call, then exit (as opposed to keep watching) *)
@@ -111,7 +111,7 @@ let ninja_command_exit  vendor_ninja ninja_args  =
     let args = 
       if ninja_args_len = 0 then ninja_common_args else 
         Array.append ninja_common_args ninja_args in 
-    Bsb_log.print_string_args args ;      
+    Bsb_log.info_args args ;      
     Unix.execvp vendor_ninja args      
 
 
@@ -135,7 +135,7 @@ let handle_anonymous_arg arg =
 
 
 let watch_exit () =
-  print_endline "\nStart Watching now ";
+  Bsb_log.info "@{<info>Watching@}... @.";
   let bsb_watcher =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
   if Ext_sys.is_windows_or_cygwin then

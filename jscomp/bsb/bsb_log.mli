@@ -26,4 +26,13 @@ val color_enabled : bool ref
 
 val setup : unit -> unit 
 
-val print_string_args : string array -> unit
+type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
+
+type 'a log = ('a, Format.formatter, unit) format -> 'a
+
+val debug  : 'a log
+val info : 'a log 
+val warn : 'a log 
+val error : 'a log
+
+val info_args : string array -> unit
