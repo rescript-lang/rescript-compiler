@@ -112,6 +112,9 @@ module type S =  sig
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
 
+  external subarray : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
+  external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
+
   external toString : string = "" [@@bs.send.pipe: t]
   external toLocaleString : string = "" [@@bs.send.pipe: t]
 
@@ -213,8 +216,13 @@ module TypedArray (Type: Type) : S with type elt = Type.t  = struct
   external lastIndexOfFrom : elt -> from:int -> int = "lastIndexOf" [@@bs.send.pipe: t]
 
   external slice : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
+  (** [start] is inclusive, [end_] exclusive *)
   external copy : t = "slice" [@@bs.send.pipe: t]
   external sliceFrom : int -> t = "slice" [@@bs.send.pipe: t]
+
+  external subarray : start:int -> end_:int -> t = "" [@@bs.send.pipe: t]
+  (** [start] is inclusive, [end_] exclusive *)
+  external subarrayFrom : int -> t = "subarray" [@@bs.send.pipe: t]
 
   external toString : string = "" [@@bs.send.pipe: t]
   external toLocaleString : string = "" [@@bs.send.pipe: t]

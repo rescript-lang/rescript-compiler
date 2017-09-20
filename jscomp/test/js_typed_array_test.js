@@ -566,110 +566,104 @@ var suites_001 = /* :: */[
                                                             ],
                                                             /* :: */[
                                                               /* tuple */[
-                                                                "typed_array - toString",
+                                                                "typed_array - subarray",
                                                                 (function () {
                                                                     return /* Eq */Block.__(0, [
-                                                                              "1,2,3",
                                                                               new Int8Array(/* int array */[
+                                                                                    2,
+                                                                                    3
+                                                                                  ]),
+                                                                              new Int8Array(/* array */[
                                                                                       1,
                                                                                       2,
-                                                                                      3
-                                                                                    ]).toString()
+                                                                                      3,
+                                                                                      4,
+                                                                                      5
+                                                                                    ]).subarray(1, 3)
                                                                             ]);
                                                                   })
                                                               ],
                                                               /* :: */[
                                                                 /* tuple */[
-                                                                  "typed_array - toLocaleString",
+                                                                  "typed_array - subarrayFrom",
                                                                   (function () {
                                                                       return /* Eq */Block.__(0, [
-                                                                                "1,2,3",
                                                                                 new Int8Array(/* int array */[
+                                                                                      3,
+                                                                                      4,
+                                                                                      5
+                                                                                    ]),
+                                                                                new Int8Array(/* array */[
                                                                                         1,
                                                                                         2,
-                                                                                        3
-                                                                                      ]).toLocaleString()
+                                                                                        3,
+                                                                                        4,
+                                                                                        5
+                                                                                      ]).subarray(2)
                                                                               ]);
                                                                     })
                                                                 ],
                                                                 /* :: */[
                                                                   /* tuple */[
-                                                                    "typed_array - every",
+                                                                    "typed_array - toString",
                                                                     (function () {
                                                                         return /* Eq */Block.__(0, [
-                                                                                  true,
+                                                                                  "1,2,3",
                                                                                   new Int8Array(/* int array */[
                                                                                           1,
                                                                                           2,
                                                                                           3
-                                                                                        ]).every((function (n) {
-                                                                                          var b = +(n > 0);
-                                                                                          if (b) {
-                                                                                            return true;
-                                                                                          } else {
-                                                                                            return false;
-                                                                                          }
-                                                                                        }))
+                                                                                        ]).toString()
                                                                                 ]);
                                                                       })
                                                                   ],
                                                                   /* :: */[
                                                                     /* tuple */[
-                                                                      "typed_array - everyi",
+                                                                      "typed_array - toLocaleString",
                                                                       (function () {
                                                                           return /* Eq */Block.__(0, [
-                                                                                    false,
+                                                                                    "1,2,3",
                                                                                     new Int8Array(/* int array */[
                                                                                             1,
                                                                                             2,
                                                                                             3
-                                                                                          ]).every((function (_, i) {
-                                                                                            var b = +(i > 0);
-                                                                                            if (b) {
-                                                                                              return true;
-                                                                                            } else {
-                                                                                              return false;
-                                                                                            }
-                                                                                          }))
+                                                                                          ]).toLocaleString()
                                                                                   ]);
                                                                         })
                                                                     ],
                                                                     /* :: */[
                                                                       /* tuple */[
-                                                                        "typed_array - filter",
+                                                                        "typed_array - every",
                                                                         (function () {
                                                                             return /* Eq */Block.__(0, [
-                                                                                      new Int8Array(/* int array */[
-                                                                                            2,
-                                                                                            4
-                                                                                          ]),
+                                                                                      true,
                                                                                       new Int8Array(/* int array */[
                                                                                               1,
                                                                                               2,
-                                                                                              3,
-                                                                                              4
-                                                                                            ]).filter((function (n) {
-                                                                                              return +(n % 2 === 0);
+                                                                                              3
+                                                                                            ]).every((function (n) {
+                                                                                              var b = +(n > 0);
+                                                                                              if (b) {
+                                                                                                return true;
+                                                                                              } else {
+                                                                                                return false;
+                                                                                              }
                                                                                             }))
                                                                                     ]);
                                                                           })
                                                                       ],
                                                                       /* :: */[
                                                                         /* tuple */[
-                                                                          "typed_array - filteri",
+                                                                          "typed_array - everyi",
                                                                           (function () {
                                                                               return /* Eq */Block.__(0, [
-                                                                                        new Int8Array(/* int array */[
-                                                                                              1,
-                                                                                              3
-                                                                                            ]),
+                                                                                        false,
                                                                                         new Int8Array(/* int array */[
                                                                                                 1,
                                                                                                 2,
-                                                                                                3,
-                                                                                                4
-                                                                                              ]).filter((function (_, i) {
-                                                                                                var b = +(i % 2 === 0);
+                                                                                                3
+                                                                                              ]).every((function (_, i) {
+                                                                                                var b = +(i > 0);
                                                                                                 if (b) {
                                                                                                   return true;
                                                                                                 } else {
@@ -681,16 +675,19 @@ var suites_001 = /* :: */[
                                                                         ],
                                                                         /* :: */[
                                                                           /* tuple */[
-                                                                            "typed_array - find",
+                                                                            "typed_array - filter",
                                                                             (function () {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          2,
+                                                                                          new Int8Array(/* int array */[
+                                                                                                2,
+                                                                                                4
+                                                                                              ]),
                                                                                           new Int8Array(/* int array */[
                                                                                                   1,
                                                                                                   2,
                                                                                                   3,
                                                                                                   4
-                                                                                                ]).find((function (n) {
+                                                                                                ]).filter((function (n) {
                                                                                                   return +(n % 2 === 0);
                                                                                                 }))
                                                                                         ]);
@@ -698,33 +695,41 @@ var suites_001 = /* :: */[
                                                                           ],
                                                                           /* :: */[
                                                                             /* tuple */[
-                                                                              "typed_array - findi",
+                                                                              "typed_array - filteri",
                                                                               (function () {
                                                                                   return /* Eq */Block.__(0, [
-                                                                                            1,
+                                                                                            new Int8Array(/* int array */[
+                                                                                                  1,
+                                                                                                  3
+                                                                                                ]),
                                                                                             new Int8Array(/* int array */[
                                                                                                     1,
                                                                                                     2,
                                                                                                     3,
                                                                                                     4
-                                                                                                  ]).find((function (_, i) {
-                                                                                                    return +(i % 2 === 0);
+                                                                                                  ]).filter((function (_, i) {
+                                                                                                    var b = +(i % 2 === 0);
+                                                                                                    if (b) {
+                                                                                                      return true;
+                                                                                                    } else {
+                                                                                                      return false;
+                                                                                                    }
                                                                                                   }))
                                                                                           ]);
                                                                                 })
                                                                             ],
                                                                             /* :: */[
                                                                               /* tuple */[
-                                                                                "typed_array - findIndex",
+                                                                                "typed_array - find",
                                                                                 (function () {
                                                                                     return /* Eq */Block.__(0, [
-                                                                                              1,
+                                                                                              2,
                                                                                               new Int8Array(/* int array */[
                                                                                                       1,
                                                                                                       2,
                                                                                                       3,
                                                                                                       4
-                                                                                                    ]).findIndex((function (n) {
+                                                                                                    ]).find((function (n) {
                                                                                                       return +(n % 2 === 0);
                                                                                                     }))
                                                                                             ]);
@@ -732,16 +737,16 @@ var suites_001 = /* :: */[
                                                                               ],
                                                                               /* :: */[
                                                                                 /* tuple */[
-                                                                                  "typed_array - findIndexi",
+                                                                                  "typed_array - findi",
                                                                                   (function () {
                                                                                       return /* Eq */Block.__(0, [
-                                                                                                0,
+                                                                                                1,
                                                                                                 new Int8Array(/* int array */[
                                                                                                         1,
                                                                                                         2,
                                                                                                         3,
                                                                                                         4
-                                                                                                      ]).findIndex((function (_, i) {
+                                                                                                      ]).find((function (_, i) {
                                                                                                         return +(i % 2 === 0);
                                                                                                       }))
                                                                                               ]);
@@ -749,123 +754,123 @@ var suites_001 = /* :: */[
                                                                                 ],
                                                                                 /* :: */[
                                                                                   /* tuple */[
-                                                                                    "typed_array - forEach",
+                                                                                    "typed_array - findIndex",
                                                                                     (function () {
-                                                                                        var sum = [0];
-                                                                                        new Int8Array(/* int array */[
-                                                                                                1,
-                                                                                                2,
-                                                                                                3
-                                                                                              ]).forEach((function (n) {
-                                                                                                sum[0] = sum[0] + n | 0;
-                                                                                                return /* () */0;
-                                                                                              }));
                                                                                         return /* Eq */Block.__(0, [
-                                                                                                  6,
-                                                                                                  sum[0]
+                                                                                                  1,
+                                                                                                  new Int8Array(/* int array */[
+                                                                                                          1,
+                                                                                                          2,
+                                                                                                          3,
+                                                                                                          4
+                                                                                                        ]).findIndex((function (n) {
+                                                                                                          return +(n % 2 === 0);
+                                                                                                        }))
                                                                                                 ]);
                                                                                       })
                                                                                   ],
                                                                                   /* :: */[
                                                                                     /* tuple */[
-                                                                                      "typed_array - forEachi",
+                                                                                      "typed_array - findIndexi",
                                                                                       (function () {
-                                                                                          var sum = [0];
-                                                                                          new Int8Array(/* int array */[
-                                                                                                  1,
-                                                                                                  2,
-                                                                                                  3
-                                                                                                ]).forEach((function (_, i) {
-                                                                                                  sum[0] = sum[0] + i | 0;
-                                                                                                  return /* () */0;
-                                                                                                }));
                                                                                           return /* Eq */Block.__(0, [
-                                                                                                    3,
-                                                                                                    sum[0]
+                                                                                                    0,
+                                                                                                    new Int8Array(/* int array */[
+                                                                                                            1,
+                                                                                                            2,
+                                                                                                            3,
+                                                                                                            4
+                                                                                                          ]).findIndex((function (_, i) {
+                                                                                                            return +(i % 2 === 0);
+                                                                                                          }))
                                                                                                   ]);
                                                                                         })
                                                                                     ],
                                                                                     /* :: */[
                                                                                       /* tuple */[
-                                                                                        "typed_array - map",
+                                                                                        "typed_array - forEach",
                                                                                         (function () {
+                                                                                            var sum = [0];
+                                                                                            new Int8Array(/* int array */[
+                                                                                                    1,
+                                                                                                    2,
+                                                                                                    3
+                                                                                                  ]).forEach((function (n) {
+                                                                                                    sum[0] = sum[0] + n | 0;
+                                                                                                    return /* () */0;
+                                                                                                  }));
                                                                                             return /* Eq */Block.__(0, [
-                                                                                                      new Int8Array(/* int array */[
-                                                                                                            2,
-                                                                                                            4,
-                                                                                                            6,
-                                                                                                            8
-                                                                                                          ]),
-                                                                                                      new Int8Array(/* int array */[
-                                                                                                              1,
-                                                                                                              2,
-                                                                                                              3,
-                                                                                                              4
-                                                                                                            ]).map((function (n) {
-                                                                                                              return (n << 1);
-                                                                                                            }))
+                                                                                                      6,
+                                                                                                      sum[0]
                                                                                                     ]);
                                                                                           })
                                                                                       ],
                                                                                       /* :: */[
                                                                                         /* tuple */[
-                                                                                          "typed_array - map",
+                                                                                          "typed_array - forEachi",
                                                                                           (function () {
+                                                                                              var sum = [0];
+                                                                                              new Int8Array(/* int array */[
+                                                                                                      1,
+                                                                                                      2,
+                                                                                                      3
+                                                                                                    ]).forEach((function (_, i) {
+                                                                                                      sum[0] = sum[0] + i | 0;
+                                                                                                      return /* () */0;
+                                                                                                    }));
                                                                                               return /* Eq */Block.__(0, [
-                                                                                                        new Int8Array(/* int array */[
-                                                                                                              0,
-                                                                                                              2,
-                                                                                                              4,
-                                                                                                              6
-                                                                                                            ]),
-                                                                                                        new Int8Array(/* int array */[
-                                                                                                                1,
-                                                                                                                2,
-                                                                                                                3,
-                                                                                                                4
-                                                                                                              ]).map((function (_, i) {
-                                                                                                                return (i << 1);
-                                                                                                              }))
+                                                                                                        3,
+                                                                                                        sum[0]
                                                                                                       ]);
                                                                                             })
                                                                                         ],
                                                                                         /* :: */[
                                                                                           /* tuple */[
-                                                                                            "typed_array - reduce",
+                                                                                            "typed_array - map",
                                                                                             (function () {
                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                          -10,
+                                                                                                          new Int8Array(/* int array */[
+                                                                                                                2,
+                                                                                                                4,
+                                                                                                                6,
+                                                                                                                8
+                                                                                                              ]),
                                                                                                           new Int8Array(/* int array */[
                                                                                                                   1,
                                                                                                                   2,
                                                                                                                   3,
                                                                                                                   4
-                                                                                                                ]).reduce((function (acc, n) {
-                                                                                                                  return acc - n | 0;
-                                                                                                                }), 0)
+                                                                                                                ]).map((function (n) {
+                                                                                                                  return (n << 1);
+                                                                                                                }))
                                                                                                         ]);
                                                                                               })
                                                                                           ],
                                                                                           /* :: */[
                                                                                             /* tuple */[
-                                                                                              "typed_array - reducei",
+                                                                                              "typed_array - map",
                                                                                               (function () {
                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                            -6,
+                                                                                                            new Int8Array(/* int array */[
+                                                                                                                  0,
+                                                                                                                  2,
+                                                                                                                  4,
+                                                                                                                  6
+                                                                                                                ]),
                                                                                                             new Int8Array(/* int array */[
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
                                                                                                                     4
-                                                                                                                  ]).reduce((function (acc, _, i) {
-                                                                                                                    return acc - i | 0;
-                                                                                                                  }), 0)
+                                                                                                                  ]).map((function (_, i) {
+                                                                                                                    return (i << 1);
+                                                                                                                  }))
                                                                                                           ]);
                                                                                                 })
                                                                                             ],
                                                                                             /* :: */[
                                                                                               /* tuple */[
-                                                                                                "typed_array - reduceRight",
+                                                                                                "typed_array - reduce",
                                                                                                 (function () {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               -10,
@@ -874,7 +879,7 @@ var suites_001 = /* :: */[
                                                                                                                       2,
                                                                                                                       3,
                                                                                                                       4
-                                                                                                                    ]).reduceRight((function (acc, n) {
+                                                                                                                    ]).reduce((function (acc, n) {
                                                                                                                       return acc - n | 0;
                                                                                                                     }), 0)
                                                                                                             ]);
@@ -882,7 +887,7 @@ var suites_001 = /* :: */[
                                                                                               ],
                                                                                               /* :: */[
                                                                                                 /* tuple */[
-                                                                                                  "typed_array - reduceRighti",
+                                                                                                  "typed_array - reducei",
                                                                                                   (function () {
                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                 -6,
@@ -891,7 +896,7 @@ var suites_001 = /* :: */[
                                                                                                                         2,
                                                                                                                         3,
                                                                                                                         4
-                                                                                                                      ]).reduceRight((function (acc, _, i) {
+                                                                                                                      ]).reduce((function (acc, _, i) {
                                                                                                                         return acc - i | 0;
                                                                                                                       }), 0)
                                                                                                               ]);
@@ -899,1133 +904,1169 @@ var suites_001 = /* :: */[
                                                                                                 ],
                                                                                                 /* :: */[
                                                                                                   /* tuple */[
-                                                                                                    "typed_array - some",
+                                                                                                    "typed_array - reduceRight",
                                                                                                     (function () {
                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                  false,
+                                                                                                                  -10,
                                                                                                                   new Int8Array(/* int array */[
                                                                                                                           1,
                                                                                                                           2,
                                                                                                                           3,
                                                                                                                           4
-                                                                                                                        ]).some((function (n) {
-                                                                                                                          var b = +(n <= 0);
-                                                                                                                          if (b) {
-                                                                                                                            return true;
-                                                                                                                          } else {
-                                                                                                                            return false;
-                                                                                                                          }
-                                                                                                                        }))
+                                                                                                                        ]).reduceRight((function (acc, n) {
+                                                                                                                          return acc - n | 0;
+                                                                                                                        }), 0)
                                                                                                                 ]);
                                                                                                       })
                                                                                                   ],
                                                                                                   /* :: */[
                                                                                                     /* tuple */[
-                                                                                                      "typed_array - somei",
+                                                                                                      "typed_array - reduceRighti",
                                                                                                       (function () {
                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                    true,
+                                                                                                                    -6,
                                                                                                                     new Int8Array(/* int array */[
                                                                                                                             1,
                                                                                                                             2,
                                                                                                                             3,
                                                                                                                             4
-                                                                                                                          ]).some((function (_, i) {
-                                                                                                                            var b = +(i <= 0);
-                                                                                                                            if (b) {
-                                                                                                                              return true;
-                                                                                                                            } else {
-                                                                                                                              return false;
-                                                                                                                            }
-                                                                                                                          }))
+                                                                                                                          ]).reduceRight((function (acc, _, i) {
+                                                                                                                            return acc - i | 0;
+                                                                                                                          }), 0)
                                                                                                                   ]);
                                                                                                         })
                                                                                                     ],
                                                                                                     /* :: */[
                                                                                                       /* tuple */[
-                                                                                                        "int8_array - _BYTES_PER_ELEMENT",
+                                                                                                        "typed_array - some",
                                                                                                         (function () {
                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                      1,
-                                                                                                                      Int8Array.BYTES_PER_ELEMENT
+                                                                                                                      false,
+                                                                                                                      new Int8Array(/* int array */[
+                                                                                                                              1,
+                                                                                                                              2,
+                                                                                                                              3,
+                                                                                                                              4
+                                                                                                                            ]).some((function (n) {
+                                                                                                                              var b = +(n <= 0);
+                                                                                                                              if (b) {
+                                                                                                                                return true;
+                                                                                                                              } else {
+                                                                                                                                return false;
+                                                                                                                              }
+                                                                                                                            }))
                                                                                                                     ]);
                                                                                                           })
                                                                                                       ],
                                                                                                       /* :: */[
                                                                                                         /* tuple */[
-                                                                                                          "int8_array - make",
+                                                                                                          "typed_array - somei",
                                                                                                           (function () {
                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                        3,
+                                                                                                                        true,
                                                                                                                         new Int8Array(/* int array */[
-                                                                                                                              1,
-                                                                                                                              2,
-                                                                                                                              3
-                                                                                                                            ]).byteLength
+                                                                                                                                1,
+                                                                                                                                2,
+                                                                                                                                3,
+                                                                                                                                4
+                                                                                                                              ]).some((function (_, i) {
+                                                                                                                                var b = +(i <= 0);
+                                                                                                                                if (b) {
+                                                                                                                                  return true;
+                                                                                                                                } else {
+                                                                                                                                  return false;
+                                                                                                                                }
+                                                                                                                              }))
                                                                                                                       ]);
                                                                                                             })
                                                                                                         ],
                                                                                                         /* :: */[
                                                                                                           /* tuple */[
-                                                                                                            "int8_array - fromBuffer",
+                                                                                                            "int8_array - _BYTES_PER_ELEMENT",
                                                                                                             (function () {
                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                          32,
-                                                                                                                          new Int8Array(new ArrayBuffer(32)).byteLength
+                                                                                                                          1,
+                                                                                                                          Int8Array.BYTES_PER_ELEMENT
                                                                                                                         ]);
                                                                                                               })
                                                                                                           ],
                                                                                                           /* :: */[
                                                                                                             /* tuple */[
-                                                                                                              "int8_array - fromBufferOffset",
+                                                                                                              "int8_array - make",
                                                                                                               (function () {
-                                                                                                                  var buffer = new ArrayBuffer(32);
                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                            24,
-                                                                                                                            new Int8Array(buffer, 8).byteLength
+                                                                                                                            3,
+                                                                                                                            new Int8Array(/* int array */[
+                                                                                                                                  1,
+                                                                                                                                  2,
+                                                                                                                                  3
+                                                                                                                                ]).byteLength
                                                                                                                           ]);
                                                                                                                 })
                                                                                                             ],
                                                                                                             /* :: */[
                                                                                                               /* tuple */[
-                                                                                                                "int8_array - fromBufferRange",
+                                                                                                                "int8_array - fromBuffer",
                                                                                                                 (function () {
-                                                                                                                    var buffer = new ArrayBuffer(32);
                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                              2,
-                                                                                                                              new Int8Array(buffer, 8, 2).byteLength
+                                                                                                                              32,
+                                                                                                                              new Int8Array(new ArrayBuffer(32)).byteLength
                                                                                                                             ]);
                                                                                                                   })
                                                                                                               ],
                                                                                                               /* :: */[
                                                                                                                 /* tuple */[
-                                                                                                                  "int8_array - fromLength",
+                                                                                                                  "int8_array - fromBufferOffset",
                                                                                                                   (function () {
+                                                                                                                      var buffer = new ArrayBuffer(32);
                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                3,
-                                                                                                                                new Int8Array(3).byteLength
+                                                                                                                                24,
+                                                                                                                                new Int8Array(buffer, 8).byteLength
                                                                                                                               ]);
                                                                                                                     })
                                                                                                                 ],
                                                                                                                 /* :: */[
                                                                                                                   /* tuple */[
-                                                                                                                    "int8_array - unsafe_set - typed_array sanity check",
+                                                                                                                    "int8_array - fromBufferRange",
                                                                                                                     (function () {
-                                                                                                                        var a = new Int8Array(/* array */[
-                                                                                                                              1,
-                                                                                                                              2,
-                                                                                                                              3,
-                                                                                                                              4,
-                                                                                                                              5
-                                                                                                                            ]);
-                                                                                                                        a[3] = 14;
+                                                                                                                        var buffer = new ArrayBuffer(32);
                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                  14,
-                                                                                                                                  a[3]
+                                                                                                                                  2,
+                                                                                                                                  new Int8Array(buffer, 8, 2).byteLength
                                                                                                                                 ]);
                                                                                                                       })
                                                                                                                   ],
                                                                                                                   /* :: */[
                                                                                                                     /* tuple */[
-                                                                                                                      "uint8_array - _BYTES_PER_ELEMENT",
+                                                                                                                      "int8_array - fromLength",
                                                                                                                       (function () {
                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                    1,
-                                                                                                                                    Uint8Array.BYTES_PER_ELEMENT
+                                                                                                                                    3,
+                                                                                                                                    new Int8Array(3).byteLength
                                                                                                                                   ]);
                                                                                                                         })
                                                                                                                     ],
                                                                                                                     /* :: */[
                                                                                                                       /* tuple */[
-                                                                                                                        "uint8_array - make",
+                                                                                                                        "int8_array - unsafe_set - typed_array sanity check",
                                                                                                                         (function () {
+                                                                                                                            var a = new Int8Array(/* array */[
+                                                                                                                                  1,
+                                                                                                                                  2,
+                                                                                                                                  3,
+                                                                                                                                  4,
+                                                                                                                                  5
+                                                                                                                                ]);
+                                                                                                                            a[3] = 14;
                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                      3,
-                                                                                                                                      new Uint8Array(/* int array */[
-                                                                                                                                            1,
-                                                                                                                                            2,
-                                                                                                                                            3
-                                                                                                                                          ]).byteLength
+                                                                                                                                      14,
+                                                                                                                                      a[3]
                                                                                                                                     ]);
                                                                                                                           })
                                                                                                                       ],
                                                                                                                       /* :: */[
                                                                                                                         /* tuple */[
-                                                                                                                          "uint8_array - fromBuffer",
+                                                                                                                          "uint8_array - _BYTES_PER_ELEMENT",
                                                                                                                           (function () {
                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                        32,
-                                                                                                                                        new Uint8Array(new ArrayBuffer(32)).byteLength
+                                                                                                                                        1,
+                                                                                                                                        Uint8Array.BYTES_PER_ELEMENT
                                                                                                                                       ]);
                                                                                                                             })
                                                                                                                         ],
                                                                                                                         /* :: */[
                                                                                                                           /* tuple */[
-                                                                                                                            "uint8_array - fromBufferOffset",
+                                                                                                                            "uint8_array - make",
                                                                                                                             (function () {
-                                                                                                                                var buffer = new ArrayBuffer(32);
                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                          24,
-                                                                                                                                          new Uint8Array(buffer, 8).byteLength
+                                                                                                                                          3,
+                                                                                                                                          new Uint8Array(/* int array */[
+                                                                                                                                                1,
+                                                                                                                                                2,
+                                                                                                                                                3
+                                                                                                                                              ]).byteLength
                                                                                                                                         ]);
                                                                                                                               })
                                                                                                                           ],
                                                                                                                           /* :: */[
                                                                                                                             /* tuple */[
-                                                                                                                              "uint8_array - fromBufferRange",
+                                                                                                                              "uint8_array - fromBuffer",
                                                                                                                               (function () {
-                                                                                                                                  var buffer = new ArrayBuffer(32);
                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                            2,
-                                                                                                                                            new Uint8Array(buffer, 8, 2).byteLength
+                                                                                                                                            32,
+                                                                                                                                            new Uint8Array(new ArrayBuffer(32)).byteLength
                                                                                                                                           ]);
                                                                                                                                 })
                                                                                                                             ],
                                                                                                                             /* :: */[
                                                                                                                               /* tuple */[
-                                                                                                                                "uint8_array - fromLength",
+                                                                                                                                "uint8_array - fromBufferOffset",
                                                                                                                                 (function () {
+                                                                                                                                    var buffer = new ArrayBuffer(32);
                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                              3,
-                                                                                                                                              new Uint8Array(3).byteLength
+                                                                                                                                              24,
+                                                                                                                                              new Uint8Array(buffer, 8).byteLength
                                                                                                                                             ]);
                                                                                                                                   })
                                                                                                                               ],
                                                                                                                               /* :: */[
                                                                                                                                 /* tuple */[
-                                                                                                                                  "uint8_array - unsafe_set - typed_array sanity check",
+                                                                                                                                  "uint8_array - fromBufferRange",
                                                                                                                                   (function () {
-                                                                                                                                      var a = new Uint8Array(/* array */[
-                                                                                                                                            1,
-                                                                                                                                            2,
-                                                                                                                                            3,
-                                                                                                                                            4,
-                                                                                                                                            5
-                                                                                                                                          ]);
-                                                                                                                                      a[3] = 14;
+                                                                                                                                      var buffer = new ArrayBuffer(32);
                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                14,
-                                                                                                                                                a[3]
+                                                                                                                                                2,
+                                                                                                                                                new Uint8Array(buffer, 8, 2).byteLength
                                                                                                                                               ]);
                                                                                                                                     })
                                                                                                                                 ],
                                                                                                                                 /* :: */[
                                                                                                                                   /* tuple */[
-                                                                                                                                    "uint8clamped_array - _BYTES_PER_ELEMENT",
+                                                                                                                                    "uint8_array - fromLength",
                                                                                                                                     (function () {
                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                  1,
-                                                                                                                                                  Uint8ClampedArray.BYTES_PER_ELEMENT
+                                                                                                                                                  3,
+                                                                                                                                                  new Uint8Array(3).byteLength
                                                                                                                                                 ]);
                                                                                                                                       })
                                                                                                                                   ],
                                                                                                                                   /* :: */[
                                                                                                                                     /* tuple */[
-                                                                                                                                      "uint8clamped_array - make",
+                                                                                                                                      "uint8_array - unsafe_set - typed_array sanity check",
                                                                                                                                       (function () {
+                                                                                                                                          var a = new Uint8Array(/* array */[
+                                                                                                                                                1,
+                                                                                                                                                2,
+                                                                                                                                                3,
+                                                                                                                                                4,
+                                                                                                                                                5
+                                                                                                                                              ]);
+                                                                                                                                          a[3] = 14;
                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                    3,
-                                                                                                                                                    new Uint8ClampedArray(/* int array */[
-                                                                                                                                                          1,
-                                                                                                                                                          2,
-                                                                                                                                                          3
-                                                                                                                                                        ]).byteLength
+                                                                                                                                                    14,
+                                                                                                                                                    a[3]
                                                                                                                                                   ]);
                                                                                                                                         })
                                                                                                                                     ],
                                                                                                                                     /* :: */[
                                                                                                                                       /* tuple */[
-                                                                                                                                        "uint8clamped_array - fromBuffer",
+                                                                                                                                        "uint8clamped_array - _BYTES_PER_ELEMENT",
                                                                                                                                         (function () {
                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                      32,
-                                                                                                                                                      new Uint8ClampedArray(new ArrayBuffer(32)).byteLength
+                                                                                                                                                      1,
+                                                                                                                                                      Uint8ClampedArray.BYTES_PER_ELEMENT
                                                                                                                                                     ]);
                                                                                                                                           })
                                                                                                                                       ],
                                                                                                                                       /* :: */[
                                                                                                                                         /* tuple */[
-                                                                                                                                          "uint8clamped_array - fromBufferOffset",
+                                                                                                                                          "uint8clamped_array - make",
                                                                                                                                           (function () {
-                                                                                                                                              var buffer = new ArrayBuffer(32);
                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                        24,
-                                                                                                                                                        new Uint8ClampedArray(buffer, 8).byteLength
+                                                                                                                                                        3,
+                                                                                                                                                        new Uint8ClampedArray(/* int array */[
+                                                                                                                                                              1,
+                                                                                                                                                              2,
+                                                                                                                                                              3
+                                                                                                                                                            ]).byteLength
                                                                                                                                                       ]);
                                                                                                                                             })
                                                                                                                                         ],
                                                                                                                                         /* :: */[
                                                                                                                                           /* tuple */[
-                                                                                                                                            "uint8clamped_array - fromBufferRange",
+                                                                                                                                            "uint8clamped_array - fromBuffer",
                                                                                                                                             (function () {
-                                                                                                                                                var buffer = new ArrayBuffer(32);
                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                          2,
-                                                                                                                                                          new Uint8ClampedArray(buffer, 8, 2).byteLength
+                                                                                                                                                          32,
+                                                                                                                                                          new Uint8ClampedArray(new ArrayBuffer(32)).byteLength
                                                                                                                                                         ]);
                                                                                                                                               })
                                                                                                                                           ],
                                                                                                                                           /* :: */[
                                                                                                                                             /* tuple */[
-                                                                                                                                              "uint8clamped_array - fromLength",
+                                                                                                                                              "uint8clamped_array - fromBufferOffset",
                                                                                                                                               (function () {
+                                                                                                                                                  var buffer = new ArrayBuffer(32);
                                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                                            3,
-                                                                                                                                                            new Uint8ClampedArray(3).byteLength
+                                                                                                                                                            24,
+                                                                                                                                                            new Uint8ClampedArray(buffer, 8).byteLength
                                                                                                                                                           ]);
                                                                                                                                                 })
                                                                                                                                             ],
                                                                                                                                             /* :: */[
                                                                                                                                               /* tuple */[
-                                                                                                                                                "uint8clamped_array - unsafe_set - typed_array sanity check",
+                                                                                                                                                "uint8clamped_array - fromBufferRange",
                                                                                                                                                 (function () {
-                                                                                                                                                    var a = new Uint8ClampedArray(/* array */[
-                                                                                                                                                          1,
-                                                                                                                                                          2,
-                                                                                                                                                          3,
-                                                                                                                                                          4,
-                                                                                                                                                          5
-                                                                                                                                                        ]);
-                                                                                                                                                    a[3] = 14;
+                                                                                                                                                    var buffer = new ArrayBuffer(32);
                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                              14,
-                                                                                                                                                              a[3]
+                                                                                                                                                              2,
+                                                                                                                                                              new Uint8ClampedArray(buffer, 8, 2).byteLength
                                                                                                                                                             ]);
                                                                                                                                                   })
                                                                                                                                               ],
                                                                                                                                               /* :: */[
                                                                                                                                                 /* tuple */[
-                                                                                                                                                  "int16_array - _BYTES_PER_ELEMENT",
+                                                                                                                                                  "uint8clamped_array - fromLength",
                                                                                                                                                   (function () {
                                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                                2,
-                                                                                                                                                                Int16Array.BYTES_PER_ELEMENT
+                                                                                                                                                                3,
+                                                                                                                                                                new Uint8ClampedArray(3).byteLength
                                                                                                                                                               ]);
                                                                                                                                                     })
                                                                                                                                                 ],
                                                                                                                                                 /* :: */[
                                                                                                                                                   /* tuple */[
-                                                                                                                                                    "int16_array - make",
+                                                                                                                                                    "uint8clamped_array - unsafe_set - typed_array sanity check",
                                                                                                                                                     (function () {
+                                                                                                                                                        var a = new Uint8ClampedArray(/* array */[
+                                                                                                                                                              1,
+                                                                                                                                                              2,
+                                                                                                                                                              3,
+                                                                                                                                                              4,
+                                                                                                                                                              5
+                                                                                                                                                            ]);
+                                                                                                                                                        a[3] = 14;
                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                  6,
-                                                                                                                                                                  new Int16Array(/* int array */[
-                                                                                                                                                                        1,
-                                                                                                                                                                        2,
-                                                                                                                                                                        3
-                                                                                                                                                                      ]).byteLength
+                                                                                                                                                                  14,
+                                                                                                                                                                  a[3]
                                                                                                                                                                 ]);
                                                                                                                                                       })
                                                                                                                                                   ],
                                                                                                                                                   /* :: */[
                                                                                                                                                     /* tuple */[
-                                                                                                                                                      "int16_array - fromBuffer",
+                                                                                                                                                      "int16_array - _BYTES_PER_ELEMENT",
                                                                                                                                                       (function () {
                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                    32,
-                                                                                                                                                                    new Int16Array(new ArrayBuffer(32)).byteLength
+                                                                                                                                                                    2,
+                                                                                                                                                                    Int16Array.BYTES_PER_ELEMENT
                                                                                                                                                                   ]);
                                                                                                                                                         })
                                                                                                                                                     ],
                                                                                                                                                     /* :: */[
                                                                                                                                                       /* tuple */[
-                                                                                                                                                        "int16_array - fromBufferOffset",
+                                                                                                                                                        "int16_array - make",
                                                                                                                                                         (function () {
-                                                                                                                                                            var buffer = new ArrayBuffer(32);
                                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                                      24,
-                                                                                                                                                                      new Int16Array(buffer, 8).byteLength
+                                                                                                                                                                      6,
+                                                                                                                                                                      new Int16Array(/* int array */[
+                                                                                                                                                                            1,
+                                                                                                                                                                            2,
+                                                                                                                                                                            3
+                                                                                                                                                                          ]).byteLength
                                                                                                                                                                     ]);
                                                                                                                                                           })
                                                                                                                                                       ],
                                                                                                                                                       /* :: */[
                                                                                                                                                         /* tuple */[
-                                                                                                                                                          "int16_array - fromBufferRange",
+                                                                                                                                                          "int16_array - fromBuffer",
                                                                                                                                                           (function () {
-                                                                                                                                                              var buffer = new ArrayBuffer(32);
                                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                                        4,
-                                                                                                                                                                        new Int16Array(buffer, 8, 2).byteLength
+                                                                                                                                                                        32,
+                                                                                                                                                                        new Int16Array(new ArrayBuffer(32)).byteLength
                                                                                                                                                                       ]);
                                                                                                                                                             })
                                                                                                                                                         ],
                                                                                                                                                         /* :: */[
                                                                                                                                                           /* tuple */[
-                                                                                                                                                            "int16_array - fromLength",
+                                                                                                                                                            "int16_array - fromBufferOffset",
                                                                                                                                                             (function () {
+                                                                                                                                                                var buffer = new ArrayBuffer(32);
                                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                                          6,
-                                                                                                                                                                          new Int16Array(3).byteLength
+                                                                                                                                                                          24,
+                                                                                                                                                                          new Int16Array(buffer, 8).byteLength
                                                                                                                                                                         ]);
                                                                                                                                                               })
                                                                                                                                                           ],
                                                                                                                                                           /* :: */[
                                                                                                                                                             /* tuple */[
-                                                                                                                                                              "int16_array - unsafe_set - typed_array sanity check",
+                                                                                                                                                              "int16_array - fromBufferRange",
                                                                                                                                                               (function () {
-                                                                                                                                                                  var a = new Int16Array(/* array */[
-                                                                                                                                                                        1,
-                                                                                                                                                                        2,
-                                                                                                                                                                        3,
-                                                                                                                                                                        4,
-                                                                                                                                                                        5
-                                                                                                                                                                      ]);
-                                                                                                                                                                  a[3] = 14;
+                                                                                                                                                                  var buffer = new ArrayBuffer(32);
                                                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                                                            14,
-                                                                                                                                                                            a[3]
+                                                                                                                                                                            4,
+                                                                                                                                                                            new Int16Array(buffer, 8, 2).byteLength
                                                                                                                                                                           ]);
                                                                                                                                                                 })
                                                                                                                                                             ],
                                                                                                                                                             /* :: */[
                                                                                                                                                               /* tuple */[
-                                                                                                                                                                "uint16_array - _BYTES_PER_ELEMENT",
+                                                                                                                                                                "int16_array - fromLength",
                                                                                                                                                                 (function () {
                                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                                              2,
-                                                                                                                                                                              Uint16Array.BYTES_PER_ELEMENT
+                                                                                                                                                                              6,
+                                                                                                                                                                              new Int16Array(3).byteLength
                                                                                                                                                                             ]);
                                                                                                                                                                   })
                                                                                                                                                               ],
                                                                                                                                                               /* :: */[
                                                                                                                                                                 /* tuple */[
-                                                                                                                                                                  "uint16_array - make",
+                                                                                                                                                                  "int16_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                   (function () {
+                                                                                                                                                                      var a = new Int16Array(/* array */[
+                                                                                                                                                                            1,
+                                                                                                                                                                            2,
+                                                                                                                                                                            3,
+                                                                                                                                                                            4,
+                                                                                                                                                                            5
+                                                                                                                                                                          ]);
+                                                                                                                                                                      a[3] = 14;
                                                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                                                6,
-                                                                                                                                                                                new Uint16Array(/* int array */[
-                                                                                                                                                                                      1,
-                                                                                                                                                                                      2,
-                                                                                                                                                                                      3
-                                                                                                                                                                                    ]).byteLength
+                                                                                                                                                                                14,
+                                                                                                                                                                                a[3]
                                                                                                                                                                               ]);
                                                                                                                                                                     })
                                                                                                                                                                 ],
                                                                                                                                                                 /* :: */[
                                                                                                                                                                   /* tuple */[
-                                                                                                                                                                    "uint16_array - fromBuffer",
+                                                                                                                                                                    "uint16_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                     (function () {
                                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                                  32,
-                                                                                                                                                                                  new Uint16Array(new ArrayBuffer(32)).byteLength
+                                                                                                                                                                                  2,
+                                                                                                                                                                                  Uint16Array.BYTES_PER_ELEMENT
                                                                                                                                                                                 ]);
                                                                                                                                                                       })
                                                                                                                                                                   ],
                                                                                                                                                                   /* :: */[
                                                                                                                                                                     /* tuple */[
-                                                                                                                                                                      "uint16_array - fromBufferOffset",
+                                                                                                                                                                      "uint16_array - make",
                                                                                                                                                                       (function () {
-                                                                                                                                                                          var buffer = new ArrayBuffer(32);
                                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                                    24,
-                                                                                                                                                                                    new Uint16Array(buffer, 8).byteLength
+                                                                                                                                                                                    6,
+                                                                                                                                                                                    new Uint16Array(/* int array */[
+                                                                                                                                                                                          1,
+                                                                                                                                                                                          2,
+                                                                                                                                                                                          3
+                                                                                                                                                                                        ]).byteLength
                                                                                                                                                                                   ]);
                                                                                                                                                                         })
                                                                                                                                                                     ],
                                                                                                                                                                     /* :: */[
                                                                                                                                                                       /* tuple */[
-                                                                                                                                                                        "uint16_array - fromBufferRange",
+                                                                                                                                                                        "uint16_array - fromBuffer",
                                                                                                                                                                         (function () {
-                                                                                                                                                                            var buffer = new ArrayBuffer(32);
                                                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                                                      4,
-                                                                                                                                                                                      new Uint16Array(buffer, 8, 2).byteLength
+                                                                                                                                                                                      32,
+                                                                                                                                                                                      new Uint16Array(new ArrayBuffer(32)).byteLength
                                                                                                                                                                                     ]);
                                                                                                                                                                           })
                                                                                                                                                                       ],
                                                                                                                                                                       /* :: */[
                                                                                                                                                                         /* tuple */[
-                                                                                                                                                                          "uint16_array - fromLength",
+                                                                                                                                                                          "uint16_array - fromBufferOffset",
                                                                                                                                                                           (function () {
+                                                                                                                                                                              var buffer = new ArrayBuffer(32);
                                                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                                                        6,
-                                                                                                                                                                                        new Uint16Array(3).byteLength
+                                                                                                                                                                                        24,
+                                                                                                                                                                                        new Uint16Array(buffer, 8).byteLength
                                                                                                                                                                                       ]);
                                                                                                                                                                             })
                                                                                                                                                                         ],
                                                                                                                                                                         /* :: */[
                                                                                                                                                                           /* tuple */[
-                                                                                                                                                                            "uint16_array - unsafe_set - typed_array sanity check",
+                                                                                                                                                                            "uint16_array - fromBufferRange",
                                                                                                                                                                             (function () {
-                                                                                                                                                                                var a = new Uint16Array(/* array */[
-                                                                                                                                                                                      1,
-                                                                                                                                                                                      2,
-                                                                                                                                                                                      3,
-                                                                                                                                                                                      4,
-                                                                                                                                                                                      5
-                                                                                                                                                                                    ]);
-                                                                                                                                                                                a[3] = 14;
+                                                                                                                                                                                var buffer = new ArrayBuffer(32);
                                                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                                                          14,
-                                                                                                                                                                                          a[3]
+                                                                                                                                                                                          4,
+                                                                                                                                                                                          new Uint16Array(buffer, 8, 2).byteLength
                                                                                                                                                                                         ]);
                                                                                                                                                                               })
                                                                                                                                                                           ],
                                                                                                                                                                           /* :: */[
                                                                                                                                                                             /* tuple */[
-                                                                                                                                                                              "int32_array - _BYTES_PER_ELEMENT",
+                                                                                                                                                                              "uint16_array - fromLength",
                                                                                                                                                                               (function () {
                                                                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                                                                            4,
-                                                                                                                                                                                            Int32Array.BYTES_PER_ELEMENT
+                                                                                                                                                                                            6,
+                                                                                                                                                                                            new Uint16Array(3).byteLength
                                                                                                                                                                                           ]);
                                                                                                                                                                                 })
                                                                                                                                                                             ],
                                                                                                                                                                             /* :: */[
                                                                                                                                                                               /* tuple */[
-                                                                                                                                                                                "int32_array - make",
+                                                                                                                                                                                "uint16_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                 (function () {
+                                                                                                                                                                                    var a = new Uint16Array(/* array */[
+                                                                                                                                                                                          1,
+                                                                                                                                                                                          2,
+                                                                                                                                                                                          3,
+                                                                                                                                                                                          4,
+                                                                                                                                                                                          5
+                                                                                                                                                                                        ]);
+                                                                                                                                                                                    a[3] = 14;
                                                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                                                              12,
-                                                                                                                                                                                              new Int32Array($$Array.map((function (prim) {
-                                                                                                                                                                                                          return prim;
-                                                                                                                                                                                                        }), /* int array */[
-                                                                                                                                                                                                        1,
-                                                                                                                                                                                                        2,
-                                                                                                                                                                                                        3
-                                                                                                                                                                                                      ])).byteLength
+                                                                                                                                                                                              14,
+                                                                                                                                                                                              a[3]
                                                                                                                                                                                             ]);
                                                                                                                                                                                   })
                                                                                                                                                                               ],
                                                                                                                                                                               /* :: */[
                                                                                                                                                                                 /* tuple */[
-                                                                                                                                                                                  "int32_array - fromBuffer",
+                                                                                                                                                                                  "int32_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                                   (function () {
                                                                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                                                                32,
-                                                                                                                                                                                                new Int32Array(new ArrayBuffer(32)).byteLength
+                                                                                                                                                                                                4,
+                                                                                                                                                                                                Int32Array.BYTES_PER_ELEMENT
                                                                                                                                                                                               ]);
                                                                                                                                                                                     })
                                                                                                                                                                                 ],
                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                   /* tuple */[
-                                                                                                                                                                                    "int32_array - fromBufferOffset",
+                                                                                                                                                                                    "int32_array - make",
                                                                                                                                                                                     (function () {
-                                                                                                                                                                                        var buffer = new ArrayBuffer(32);
                                                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                                                  24,
-                                                                                                                                                                                                  new Int32Array(buffer, 8).byteLength
+                                                                                                                                                                                                  12,
+                                                                                                                                                                                                  new Int32Array($$Array.map((function (prim) {
+                                                                                                                                                                                                              return prim;
+                                                                                                                                                                                                            }), /* int array */[
+                                                                                                                                                                                                            1,
+                                                                                                                                                                                                            2,
+                                                                                                                                                                                                            3
+                                                                                                                                                                                                          ])).byteLength
                                                                                                                                                                                                 ]);
                                                                                                                                                                                       })
                                                                                                                                                                                   ],
                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                     /* tuple */[
-                                                                                                                                                                                      "int32_array - fromBufferRange",
+                                                                                                                                                                                      "int32_array - fromBuffer",
                                                                                                                                                                                       (function () {
-                                                                                                                                                                                          var buffer = new ArrayBuffer(32);
                                                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                                                    8,
-                                                                                                                                                                                                    new Int32Array(buffer, 8, 2).byteLength
+                                                                                                                                                                                                    32,
+                                                                                                                                                                                                    new Int32Array(new ArrayBuffer(32)).byteLength
                                                                                                                                                                                                   ]);
                                                                                                                                                                                         })
                                                                                                                                                                                     ],
                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                       /* tuple */[
-                                                                                                                                                                                        "int32_array - fromLength",
+                                                                                                                                                                                        "int32_array - fromBufferOffset",
                                                                                                                                                                                         (function () {
+                                                                                                                                                                                            var buffer = new ArrayBuffer(32);
                                                                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                                                                      12,
-                                                                                                                                                                                                      new Int32Array(3).byteLength
+                                                                                                                                                                                                      24,
+                                                                                                                                                                                                      new Int32Array(buffer, 8).byteLength
                                                                                                                                                                                                     ]);
                                                                                                                                                                                           })
                                                                                                                                                                                       ],
                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                         /* tuple */[
-                                                                                                                                                                                          "int32_array - unsafe_set - typed_array sanity check",
+                                                                                                                                                                                          "int32_array - fromBufferRange",
                                                                                                                                                                                           (function () {
-                                                                                                                                                                                              var a = new Int32Array($$Array.map((function (prim) {
-                                                                                                                                                                                                          return prim;
-                                                                                                                                                                                                        }), /* array */[
-                                                                                                                                                                                                        1,
-                                                                                                                                                                                                        2,
-                                                                                                                                                                                                        3,
-                                                                                                                                                                                                        4,
-                                                                                                                                                                                                        5
-                                                                                                                                                                                                      ]));
-                                                                                                                                                                                              a[3] = 14;
+                                                                                                                                                                                              var buffer = new ArrayBuffer(32);
                                                                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                                                                        14,
-                                                                                                                                                                                                        a[3]
+                                                                                                                                                                                                        8,
+                                                                                                                                                                                                        new Int32Array(buffer, 8, 2).byteLength
                                                                                                                                                                                                       ]);
                                                                                                                                                                                             })
                                                                                                                                                                                         ],
                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                           /* tuple */[
-                                                                                                                                                                                            "uint32_array - _BYTES_PER_ELEMENT",
+                                                                                                                                                                                            "int32_array - fromLength",
                                                                                                                                                                                             (function () {
                                                                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                                                                          4,
-                                                                                                                                                                                                          Uint32Array.BYTES_PER_ELEMENT
+                                                                                                                                                                                                          12,
+                                                                                                                                                                                                          new Int32Array(3).byteLength
                                                                                                                                                                                                         ]);
                                                                                                                                                                                               })
                                                                                                                                                                                           ],
                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                             /* tuple */[
-                                                                                                                                                                                              "uint32_array - make",
+                                                                                                                                                                                              "int32_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                               (function () {
+                                                                                                                                                                                                  var a = new Int32Array($$Array.map((function (prim) {
+                                                                                                                                                                                                              return prim;
+                                                                                                                                                                                                            }), /* array */[
+                                                                                                                                                                                                            1,
+                                                                                                                                                                                                            2,
+                                                                                                                                                                                                            3,
+                                                                                                                                                                                                            4,
+                                                                                                                                                                                                            5
+                                                                                                                                                                                                          ]));
+                                                                                                                                                                                                  a[3] = 14;
                                                                                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                                                                                            12,
-                                                                                                                                                                                                            new Uint32Array(/* int array */[
-                                                                                                                                                                                                                  1,
-                                                                                                                                                                                                                  2,
-                                                                                                                                                                                                                  3
-                                                                                                                                                                                                                ]).byteLength
+                                                                                                                                                                                                            14,
+                                                                                                                                                                                                            a[3]
                                                                                                                                                                                                           ]);
                                                                                                                                                                                                 })
                                                                                                                                                                                             ],
                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                               /* tuple */[
-                                                                                                                                                                                                "uint32_array - fromBuffer",
+                                                                                                                                                                                                "uint32_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                                                 (function () {
                                                                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                                                                              32,
-                                                                                                                                                                                                              new Uint32Array(new ArrayBuffer(32)).byteLength
+                                                                                                                                                                                                              4,
+                                                                                                                                                                                                              Uint32Array.BYTES_PER_ELEMENT
                                                                                                                                                                                                             ]);
                                                                                                                                                                                                   })
                                                                                                                                                                                               ],
                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                 /* tuple */[
-                                                                                                                                                                                                  "uint32_array - fromBufferOffset",
+                                                                                                                                                                                                  "uint32_array - make",
                                                                                                                                                                                                   (function () {
-                                                                                                                                                                                                      var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                24,
-                                                                                                                                                                                                                new Uint32Array(buffer, 8).byteLength
+                                                                                                                                                                                                                12,
+                                                                                                                                                                                                                new Uint32Array(/* int array */[
+                                                                                                                                                                                                                      1,
+                                                                                                                                                                                                                      2,
+                                                                                                                                                                                                                      3
+                                                                                                                                                                                                                    ]).byteLength
                                                                                                                                                                                                               ]);
                                                                                                                                                                                                     })
                                                                                                                                                                                                 ],
                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                   /* tuple */[
-                                                                                                                                                                                                    "uint32_array - fromBufferRange",
+                                                                                                                                                                                                    "uint32_array - fromBuffer",
                                                                                                                                                                                                     (function () {
-                                                                                                                                                                                                        var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                  8,
-                                                                                                                                                                                                                  new Uint32Array(buffer, 8, 2).byteLength
+                                                                                                                                                                                                                  32,
+                                                                                                                                                                                                                  new Uint32Array(new ArrayBuffer(32)).byteLength
                                                                                                                                                                                                                 ]);
                                                                                                                                                                                                       })
                                                                                                                                                                                                   ],
                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                     /* tuple */[
-                                                                                                                                                                                                      "uint32_array - fromLength",
+                                                                                                                                                                                                      "uint32_array - fromBufferOffset",
                                                                                                                                                                                                       (function () {
+                                                                                                                                                                                                          var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                    12,
-                                                                                                                                                                                                                    new Uint32Array(3).byteLength
+                                                                                                                                                                                                                    24,
+                                                                                                                                                                                                                    new Uint32Array(buffer, 8).byteLength
                                                                                                                                                                                                                   ]);
                                                                                                                                                                                                         })
                                                                                                                                                                                                     ],
                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                       /* tuple */[
-                                                                                                                                                                                                        "uint32_array - unsafe_set - typed_array sanity check",
+                                                                                                                                                                                                        "uint32_array - fromBufferRange",
                                                                                                                                                                                                         (function () {
-                                                                                                                                                                                                            var a = new Uint32Array(/* array */[
-                                                                                                                                                                                                                  1,
-                                                                                                                                                                                                                  2,
-                                                                                                                                                                                                                  3,
-                                                                                                                                                                                                                  4,
-                                                                                                                                                                                                                  5
-                                                                                                                                                                                                                ]);
-                                                                                                                                                                                                            a[3] = 14;
+                                                                                                                                                                                                            var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                      14,
-                                                                                                                                                                                                                      a[3]
+                                                                                                                                                                                                                      8,
+                                                                                                                                                                                                                      new Uint32Array(buffer, 8, 2).byteLength
                                                                                                                                                                                                                     ]);
                                                                                                                                                                                                           })
                                                                                                                                                                                                       ],
                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                         /* tuple */[
-                                                                                                                                                                                                          "float32_array - _BYTES_PER_ELEMENT",
+                                                                                                                                                                                                          "uint32_array - fromLength",
                                                                                                                                                                                                           (function () {
                                                                                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                        4,
-                                                                                                                                                                                                                        Float32Array.BYTES_PER_ELEMENT
+                                                                                                                                                                                                                        12,
+                                                                                                                                                                                                                        new Uint32Array(3).byteLength
                                                                                                                                                                                                                       ]);
                                                                                                                                                                                                             })
                                                                                                                                                                                                         ],
                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                           /* tuple */[
-                                                                                                                                                                                                            "float32_array - make",
+                                                                                                                                                                                                            "uint32_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                             (function () {
+                                                                                                                                                                                                                var a = new Uint32Array(/* array */[
+                                                                                                                                                                                                                      1,
+                                                                                                                                                                                                                      2,
+                                                                                                                                                                                                                      3,
+                                                                                                                                                                                                                      4,
+                                                                                                                                                                                                                      5
+                                                                                                                                                                                                                    ]);
+                                                                                                                                                                                                                a[3] = 14;
                                                                                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                          12,
-                                                                                                                                                                                                                          new Float32Array(/* float array */[
-                                                                                                                                                                                                                                1,
-                                                                                                                                                                                                                                2,
-                                                                                                                                                                                                                                3
-                                                                                                                                                                                                                              ]).byteLength
+                                                                                                                                                                                                                          14,
+                                                                                                                                                                                                                          a[3]
                                                                                                                                                                                                                         ]);
                                                                                                                                                                                                               })
                                                                                                                                                                                                           ],
                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                             /* tuple */[
-                                                                                                                                                                                                              "float32_array - fromBuffer",
+                                                                                                                                                                                                              "float32_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                                                               (function () {
                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                            32,
-                                                                                                                                                                                                                            new Float32Array(new ArrayBuffer(32)).byteLength
+                                                                                                                                                                                                                            4,
+                                                                                                                                                                                                                            Float32Array.BYTES_PER_ELEMENT
                                                                                                                                                                                                                           ]);
                                                                                                                                                                                                                 })
                                                                                                                                                                                                             ],
                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                               /* tuple */[
-                                                                                                                                                                                                                "float32_array - fromBufferOffset",
+                                                                                                                                                                                                                "float32_array - make",
                                                                                                                                                                                                                 (function () {
-                                                                                                                                                                                                                    var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                              24,
-                                                                                                                                                                                                                              new Float32Array(buffer, 8).byteLength
+                                                                                                                                                                                                                              12,
+                                                                                                                                                                                                                              new Float32Array(/* float array */[
+                                                                                                                                                                                                                                    1,
+                                                                                                                                                                                                                                    2,
+                                                                                                                                                                                                                                    3
+                                                                                                                                                                                                                                  ]).byteLength
                                                                                                                                                                                                                             ]);
                                                                                                                                                                                                                   })
                                                                                                                                                                                                               ],
                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                 /* tuple */[
-                                                                                                                                                                                                                  "float32_array - fromBufferRange",
+                                                                                                                                                                                                                  "float32_array - fromBuffer",
                                                                                                                                                                                                                   (function () {
-                                                                                                                                                                                                                      var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                8,
-                                                                                                                                                                                                                                new Float32Array(buffer, 8, 2).byteLength
+                                                                                                                                                                                                                                32,
+                                                                                                                                                                                                                                new Float32Array(new ArrayBuffer(32)).byteLength
                                                                                                                                                                                                                               ]);
                                                                                                                                                                                                                     })
                                                                                                                                                                                                                 ],
                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                   /* tuple */[
-                                                                                                                                                                                                                    "float32_array - fromLength",
+                                                                                                                                                                                                                    "float32_array - fromBufferOffset",
                                                                                                                                                                                                                     (function () {
+                                                                                                                                                                                                                        var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                  12,
-                                                                                                                                                                                                                                  new Float32Array(3).byteLength
+                                                                                                                                                                                                                                  24,
+                                                                                                                                                                                                                                  new Float32Array(buffer, 8).byteLength
                                                                                                                                                                                                                                 ]);
                                                                                                                                                                                                                       })
                                                                                                                                                                                                                   ],
                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                     /* tuple */[
-                                                                                                                                                                                                                      "float32_array - unsafe_set - typed_array sanity check",
+                                                                                                                                                                                                                      "float32_array - fromBufferRange",
                                                                                                                                                                                                                       (function () {
-                                                                                                                                                                                                                          var a = new Float32Array(/* float array */[
-                                                                                                                                                                                                                                1,
-                                                                                                                                                                                                                                2,
-                                                                                                                                                                                                                                3,
-                                                                                                                                                                                                                                4,
-                                                                                                                                                                                                                                5
-                                                                                                                                                                                                                              ]);
-                                                                                                                                                                                                                          a[3] = 14;
+                                                                                                                                                                                                                          var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                    14,
-                                                                                                                                                                                                                                    a[3]
+                                                                                                                                                                                                                                    8,
+                                                                                                                                                                                                                                    new Float32Array(buffer, 8, 2).byteLength
                                                                                                                                                                                                                                   ]);
                                                                                                                                                                                                                         })
                                                                                                                                                                                                                     ],
                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                       /* tuple */[
-                                                                                                                                                                                                                        "float64_array - _BYTES_PER_ELEMENT",
+                                                                                                                                                                                                                        "float32_array - fromLength",
                                                                                                                                                                                                                         (function () {
                                                                                                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                      8,
-                                                                                                                                                                                                                                      Float64Array.BYTES_PER_ELEMENT
+                                                                                                                                                                                                                                      12,
+                                                                                                                                                                                                                                      new Float32Array(3).byteLength
                                                                                                                                                                                                                                     ]);
                                                                                                                                                                                                                           })
                                                                                                                                                                                                                       ],
                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                         /* tuple */[
-                                                                                                                                                                                                                          "float64_array - make",
+                                                                                                                                                                                                                          "float32_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                                           (function () {
+                                                                                                                                                                                                                              var a = new Float32Array(/* float array */[
+                                                                                                                                                                                                                                    1,
+                                                                                                                                                                                                                                    2,
+                                                                                                                                                                                                                                    3,
+                                                                                                                                                                                                                                    4,
+                                                                                                                                                                                                                                    5
+                                                                                                                                                                                                                                  ]);
+                                                                                                                                                                                                                              a[3] = 14;
                                                                                                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                        24,
-                                                                                                                                                                                                                                        new Float64Array(/* float array */[
-                                                                                                                                                                                                                                              1,
-                                                                                                                                                                                                                                              2,
-                                                                                                                                                                                                                                              3
-                                                                                                                                                                                                                                            ]).byteLength
+                                                                                                                                                                                                                                        14,
+                                                                                                                                                                                                                                        a[3]
                                                                                                                                                                                                                                       ]);
                                                                                                                                                                                                                             })
                                                                                                                                                                                                                         ],
                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                           /* tuple */[
-                                                                                                                                                                                                                            "float64_array - fromBuffer",
+                                                                                                                                                                                                                            "float64_array - _BYTES_PER_ELEMENT",
                                                                                                                                                                                                                             (function () {
                                                                                                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                          32,
-                                                                                                                                                                                                                                          new Float64Array(new ArrayBuffer(32)).byteLength
+                                                                                                                                                                                                                                          8,
+                                                                                                                                                                                                                                          Float64Array.BYTES_PER_ELEMENT
                                                                                                                                                                                                                                         ]);
                                                                                                                                                                                                                               })
                                                                                                                                                                                                                           ],
                                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                                             /* tuple */[
-                                                                                                                                                                                                                              "float64_array - fromBufferOffset",
+                                                                                                                                                                                                                              "float64_array - make",
                                                                                                                                                                                                                               (function () {
-                                                                                                                                                                                                                                  var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                             24,
-                                                                                                                                                                                                                                            new Float64Array(buffer, 8).byteLength
+                                                                                                                                                                                                                                            new Float64Array(/* float array */[
+                                                                                                                                                                                                                                                  1,
+                                                                                                                                                                                                                                                  2,
+                                                                                                                                                                                                                                                  3
+                                                                                                                                                                                                                                                ]).byteLength
                                                                                                                                                                                                                                           ]);
                                                                                                                                                                                                                                 })
                                                                                                                                                                                                                             ],
                                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                                               /* tuple */[
-                                                                                                                                                                                                                                "float64_array - fromBufferRange",
+                                                                                                                                                                                                                                "float64_array - fromBuffer",
                                                                                                                                                                                                                                 (function () {
-                                                                                                                                                                                                                                    var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                              16,
-                                                                                                                                                                                                                                              new Float64Array(buffer, 8, 2).byteLength
+                                                                                                                                                                                                                                              32,
+                                                                                                                                                                                                                                              new Float64Array(new ArrayBuffer(32)).byteLength
                                                                                                                                                                                                                                             ]);
                                                                                                                                                                                                                                   })
                                                                                                                                                                                                                               ],
                                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                                 /* tuple */[
-                                                                                                                                                                                                                                  "float64_array - fromLength",
+                                                                                                                                                                                                                                  "float64_array - fromBufferOffset",
                                                                                                                                                                                                                                   (function () {
+                                                                                                                                                                                                                                      var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                 24,
-                                                                                                                                                                                                                                                new Float64Array(3).byteLength
+                                                                                                                                                                                                                                                new Float64Array(buffer, 8).byteLength
                                                                                                                                                                                                                                               ]);
                                                                                                                                                                                                                                     })
                                                                                                                                                                                                                                 ],
                                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                                   /* tuple */[
-                                                                                                                                                                                                                                    "float64_array - unsafe_set - typed_array sanity check",
+                                                                                                                                                                                                                                    "float64_array - fromBufferRange",
                                                                                                                                                                                                                                     (function () {
-                                                                                                                                                                                                                                        var a = new Float64Array(/* float array */[
-                                                                                                                                                                                                                                              1,
-                                                                                                                                                                                                                                              2,
-                                                                                                                                                                                                                                              3,
-                                                                                                                                                                                                                                              4,
-                                                                                                                                                                                                                                              5
-                                                                                                                                                                                                                                            ]);
-                                                                                                                                                                                                                                        a[3] = 14;
+                                                                                                                                                                                                                                        var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                  14,
-                                                                                                                                                                                                                                                  a[3]
+                                                                                                                                                                                                                                                  16,
+                                                                                                                                                                                                                                                  new Float64Array(buffer, 8, 2).byteLength
                                                                                                                                                                                                                                                 ]);
                                                                                                                                                                                                                                       })
                                                                                                                                                                                                                                   ],
                                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                                     /* tuple */[
-                                                                                                                                                                                                                                      "DataView - make, byteLength",
+                                                                                                                                                                                                                                      "float64_array - fromLength",
                                                                                                                                                                                                                                       (function () {
                                                                                                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                    32,
-                                                                                                                                                                                                                                                    new DataView(new ArrayBuffer(32)).byteLength
+                                                                                                                                                                                                                                                    24,
+                                                                                                                                                                                                                                                    new Float64Array(3).byteLength
                                                                                                                                                                                                                                                   ]);
                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                     ],
                                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                                       /* tuple */[
-                                                                                                                                                                                                                                        "DataView - fromBuffer",
+                                                                                                                                                                                                                                        "float64_array - unsafe_set - typed_array sanity check",
                                                                                                                                                                                                                                         (function () {
+                                                                                                                                                                                                                                            var a = new Float64Array(/* float array */[
+                                                                                                                                                                                                                                                  1,
+                                                                                                                                                                                                                                                  2,
+                                                                                                                                                                                                                                                  3,
+                                                                                                                                                                                                                                                  4,
+                                                                                                                                                                                                                                                  5
+                                                                                                                                                                                                                                                ]);
+                                                                                                                                                                                                                                            a[3] = 14;
                                                                                                                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                      32,
-                                                                                                                                                                                                                                                      new DataView(new ArrayBuffer(32)).byteLength
+                                                                                                                                                                                                                                                      14,
+                                                                                                                                                                                                                                                      a[3]
                                                                                                                                                                                                                                                     ]);
                                                                                                                                                                                                                                           })
                                                                                                                                                                                                                                       ],
                                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                                         /* tuple */[
-                                                                                                                                                                                                                                          "DataView - fromBufferOffset",
+                                                                                                                                                                                                                                          "DataView - make, byteLength",
                                                                                                                                                                                                                                           (function () {
-                                                                                                                                                                                                                                              var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                        24,
-                                                                                                                                                                                                                                                        new DataView(buffer, 8).byteLength
+                                                                                                                                                                                                                                                        32,
+                                                                                                                                                                                                                                                        new DataView(new ArrayBuffer(32)).byteLength
                                                                                                                                                                                                                                                       ]);
                                                                                                                                                                                                                                             })
                                                                                                                                                                                                                                         ],
                                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                                           /* tuple */[
-                                                                                                                                                                                                                                            "DataView - fromBufferRange",
+                                                                                                                                                                                                                                            "DataView - fromBuffer",
                                                                                                                                                                                                                                             (function () {
-                                                                                                                                                                                                                                                var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                          4,
-                                                                                                                                                                                                                                                          new DataView(buffer, 8, 4).byteLength
+                                                                                                                                                                                                                                                          32,
+                                                                                                                                                                                                                                                          new DataView(new ArrayBuffer(32)).byteLength
                                                                                                                                                                                                                                                         ]);
                                                                                                                                                                                                                                               })
                                                                                                                                                                                                                                           ],
                                                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                                                             /* tuple */[
-                                                                                                                                                                                                                                              "DataView - buffer",
+                                                                                                                                                                                                                                              "DataView - fromBufferOffset",
                                                                                                                                                                                                                                               (function () {
                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                            buffer,
-                                                                                                                                                                                                                                                            new DataView(buffer).buffer
+                                                                                                                                                                                                                                                            24,
+                                                                                                                                                                                                                                                            new DataView(buffer, 8).byteLength
                                                                                                                                                                                                                                                           ]);
                                                                                                                                                                                                                                                 })
                                                                                                                                                                                                                                             ],
                                                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                                                               /* tuple */[
-                                                                                                                                                                                                                                                "DataView - byteOffset",
+                                                                                                                                                                                                                                                "DataView - fromBufferRange",
                                                                                                                                                                                                                                                 (function () {
                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                              8,
-                                                                                                                                                                                                                                                              new DataView(buffer, 8).byteOffset
+                                                                                                                                                                                                                                                              4,
+                                                                                                                                                                                                                                                              new DataView(buffer, 8, 4).byteLength
                                                                                                                                                                                                                                                             ]);
                                                                                                                                                                                                                                                   })
                                                                                                                                                                                                                                               ],
                                                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                                                 /* tuple */[
-                                                                                                                                                                                                                                                  "DataView - setInt8, getInt8",
+                                                                                                                                                                                                                                                  "DataView - buffer",
                                                                                                                                                                                                                                                   (function () {
-                                                                                                                                                                                                                                                      var buffer = new ArrayBuffer(8);
-                                                                                                                                                                                                                                                      var view = new DataView(buffer);
-                                                                                                                                                                                                                                                      view.setInt8(0, 1);
+                                                                                                                                                                                                                                                      var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                1,
-                                                                                                                                                                                                                                                                view.getInt8(0)
+                                                                                                                                                                                                                                                                buffer,
+                                                                                                                                                                                                                                                                new DataView(buffer).buffer
                                                                                                                                                                                                                                                               ]);
                                                                                                                                                                                                                                                     })
                                                                                                                                                                                                                                                 ],
                                                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                                                   /* tuple */[
-                                                                                                                                                                                                                                                    "DataView - setUint8, getUint8",
+                                                                                                                                                                                                                                                    "DataView - byteOffset",
                                                                                                                                                                                                                                                     (function () {
-                                                                                                                                                                                                                                                        var buffer = new ArrayBuffer(8);
-                                                                                                                                                                                                                                                        var view = new DataView(buffer);
-                                                                                                                                                                                                                                                        view.setUint8(0, 128);
+                                                                                                                                                                                                                                                        var buffer = new ArrayBuffer(32);
                                                                                                                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                  128,
-                                                                                                                                                                                                                                                                  view.getUint8(0)
+                                                                                                                                                                                                                                                                  8,
+                                                                                                                                                                                                                                                                  new DataView(buffer, 8).byteOffset
                                                                                                                                                                                                                                                                 ]);
                                                                                                                                                                                                                                                       })
                                                                                                                                                                                                                                                   ],
                                                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                                                     /* tuple */[
-                                                                                                                                                                                                                                                      "DataView - setInt16, getInt16",
+                                                                                                                                                                                                                                                      "DataView - setInt8, getInt8",
                                                                                                                                                                                                                                                       (function () {
                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                           var view = new DataView(buffer);
-                                                                                                                                                                                                                                                          view.setInt16(0, 257);
+                                                                                                                                                                                                                                                          view.setInt8(0, 1);
                                                                                                                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                    257,
-                                                                                                                                                                                                                                                                    view.getInt16(0)
+                                                                                                                                                                                                                                                                    1,
+                                                                                                                                                                                                                                                                    view.getInt8(0)
                                                                                                                                                                                                                                                                   ]);
                                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                                     ],
                                                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                                                       /* tuple */[
-                                                                                                                                                                                                                                                        "DataView - getInt16LittleEndian",
+                                                                                                                                                                                                                                                        "DataView - setUint8, getUint8",
                                                                                                                                                                                                                                                         (function () {
                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                             var view = new DataView(buffer);
-                                                                                                                                                                                                                                                            view.setInt16(0, 25000, 1);
+                                                                                                                                                                                                                                                            view.setUint8(0, 128);
                                                                                                                                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                      25000,
-                                                                                                                                                                                                                                                                      view.getInt16(0, 1)
+                                                                                                                                                                                                                                                                      128,
+                                                                                                                                                                                                                                                                      view.getUint8(0)
                                                                                                                                                                                                                                                                     ]);
                                                                                                                                                                                                                                                           })
                                                                                                                                                                                                                                                       ],
                                                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                                                         /* tuple */[
-                                                                                                                                                                                                                                                          "DataView - setInt16LittleEndian",
+                                                                                                                                                                                                                                                          "DataView - setInt16, getInt16",
                                                                                                                                                                                                                                                           (function () {
                                                                                                                                                                                                                                                               var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                               var view = new DataView(buffer);
-                                                                                                                                                                                                                                                              view.setInt16(0, 25000, 1);
+                                                                                                                                                                                                                                                              view.setInt16(0, 257);
                                                                                                                                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                        -22431,
+                                                                                                                                                                                                                                                                        257,
                                                                                                                                                                                                                                                                         view.getInt16(0)
                                                                                                                                                                                                                                                                       ]);
                                                                                                                                                                                                                                                             })
                                                                                                                                                                                                                                                         ],
                                                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                                                           /* tuple */[
-                                                                                                                                                                                                                                                            "DataView - setUint16, getUint16",
+                                                                                                                                                                                                                                                            "DataView - getInt16LittleEndian",
                                                                                                                                                                                                                                                             (function () {
                                                                                                                                                                                                                                                                 var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                 var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                view.setUint16(0, 32768);
+                                                                                                                                                                                                                                                                view.setInt16(0, 25000, 1);
                                                                                                                                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                          32768,
-                                                                                                                                                                                                                                                                          view.getUint16(0)
+                                                                                                                                                                                                                                                                          25000,
+                                                                                                                                                                                                                                                                          view.getInt16(0, 1)
                                                                                                                                                                                                                                                                         ]);
                                                                                                                                                                                                                                                               })
                                                                                                                                                                                                                                                           ],
                                                                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                                                                             /* tuple */[
-                                                                                                                                                                                                                                                              "DataView - getUint16LittleEndian",
+                                                                                                                                                                                                                                                              "DataView - setInt16LittleEndian",
                                                                                                                                                                                                                                                               (function () {
                                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                   var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                  view.setUint16(0, 32768, 1);
+                                                                                                                                                                                                                                                                  view.setInt16(0, 25000, 1);
                                                                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                            32768,
-                                                                                                                                                                                                                                                                            view.getUint16(0, 1)
+                                                                                                                                                                                                                                                                            -22431,
+                                                                                                                                                                                                                                                                            view.getInt16(0)
                                                                                                                                                                                                                                                                           ]);
                                                                                                                                                                                                                                                                 })
                                                                                                                                                                                                                                                             ],
                                                                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                                                                               /* tuple */[
-                                                                                                                                                                                                                                                                "DataView - setUint16LittleEndian",
+                                                                                                                                                                                                                                                                "DataView - setUint16, getUint16",
                                                                                                                                                                                                                                                                 (function () {
                                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                     var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                    view.setUint16(0, 32768, 1);
+                                                                                                                                                                                                                                                                    view.setUint16(0, 32768);
                                                                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                              128,
+                                                                                                                                                                                                                                                                              32768,
                                                                                                                                                                                                                                                                               view.getUint16(0)
                                                                                                                                                                                                                                                                             ]);
                                                                                                                                                                                                                                                                   })
                                                                                                                                                                                                                                                               ],
                                                                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                                                                 /* tuple */[
-                                                                                                                                                                                                                                                                  "DataView - setInt32, getInt32",
+                                                                                                                                                                                                                                                                  "DataView - getUint16LittleEndian",
                                                                                                                                                                                                                                                                   (function () {
                                                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                       var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                      view.setInt32(0, 65537);
+                                                                                                                                                                                                                                                                      view.setUint16(0, 32768, 1);
                                                                                                                                                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                65537,
-                                                                                                                                                                                                                                                                                view.getInt32(0)
+                                                                                                                                                                                                                                                                                32768,
+                                                                                                                                                                                                                                                                                view.getUint16(0, 1)
                                                                                                                                                                                                                                                                               ]);
                                                                                                                                                                                                                                                                     })
                                                                                                                                                                                                                                                                 ],
                                                                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                                                                   /* tuple */[
-                                                                                                                                                                                                                                                                    "DataView - getInt32LittleEndian",
+                                                                                                                                                                                                                                                                    "DataView - setUint16LittleEndian",
                                                                                                                                                                                                                                                                     (function () {
                                                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                         var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                        view.setInt32(0, 65537, 1);
+                                                                                                                                                                                                                                                                        view.setUint16(0, 32768, 1);
                                                                                                                                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                  65537,
-                                                                                                                                                                                                                                                                                  view.getInt32(0, 1)
+                                                                                                                                                                                                                                                                                  128,
+                                                                                                                                                                                                                                                                                  view.getUint16(0)
                                                                                                                                                                                                                                                                                 ]);
                                                                                                                                                                                                                                                                       })
                                                                                                                                                                                                                                                                   ],
                                                                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                                                                     /* tuple */[
-                                                                                                                                                                                                                                                                      "DataView - setInt32LittleEndian",
+                                                                                                                                                                                                                                                                      "DataView - setInt32, getInt32",
                                                                                                                                                                                                                                                                       (function () {
                                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                           var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                          view.setInt32(0, 65537, 1);
+                                                                                                                                                                                                                                                                          view.setInt32(0, 65537);
                                                                                                                                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                    16777472,
+                                                                                                                                                                                                                                                                                    65537,
                                                                                                                                                                                                                                                                                     view.getInt32(0)
                                                                                                                                                                                                                                                                                   ]);
                                                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                                                     ],
                                                                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                                                                       /* tuple */[
-                                                                                                                                                                                                                                                                        "DataView - setUint32, getUint32",
+                                                                                                                                                                                                                                                                        "DataView - getInt32LittleEndian",
                                                                                                                                                                                                                                                                         (function () {
                                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                             var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                            view.setUint32(0, 65537);
+                                                                                                                                                                                                                                                                            view.setInt32(0, 65537, 1);
                                                                                                                                                                                                                                                                             return /* Eq */Block.__(0, [
                                                                                                                                                                                                                                                                                       65537,
-                                                                                                                                                                                                                                                                                      view.getUint32(0)
+                                                                                                                                                                                                                                                                                      view.getInt32(0, 1)
                                                                                                                                                                                                                                                                                     ]);
                                                                                                                                                                                                                                                                           })
                                                                                                                                                                                                                                                                       ],
                                                                                                                                                                                                                                                                       /* :: */[
                                                                                                                                                                                                                                                                         /* tuple */[
-                                                                                                                                                                                                                                                                          "DataView - getUint32LittleEndian",
+                                                                                                                                                                                                                                                                          "DataView - setInt32LittleEndian",
                                                                                                                                                                                                                                                                           (function () {
                                                                                                                                                                                                                                                                               var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                               var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                              view.setUint32(0, 65537, 1);
+                                                                                                                                                                                                                                                                              view.setInt32(0, 65537, 1);
                                                                                                                                                                                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                        65537,
-                                                                                                                                                                                                                                                                                        view.getUint32(0, 1)
+                                                                                                                                                                                                                                                                                        16777472,
+                                                                                                                                                                                                                                                                                        view.getInt32(0)
                                                                                                                                                                                                                                                                                       ]);
                                                                                                                                                                                                                                                                             })
                                                                                                                                                                                                                                                                         ],
                                                                                                                                                                                                                                                                         /* :: */[
                                                                                                                                                                                                                                                                           /* tuple */[
-                                                                                                                                                                                                                                                                            "DataView - setUint32LittleEndian",
+                                                                                                                                                                                                                                                                            "DataView - setUint32, getUint32",
                                                                                                                                                                                                                                                                             (function () {
                                                                                                                                                                                                                                                                                 var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                 var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                                view.setUint32(0, 65537, 1);
+                                                                                                                                                                                                                                                                                view.setUint32(0, 65537);
                                                                                                                                                                                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                          16777472,
+                                                                                                                                                                                                                                                                                          65537,
                                                                                                                                                                                                                                                                                           view.getUint32(0)
                                                                                                                                                                                                                                                                                         ]);
                                                                                                                                                                                                                                                                               })
                                                                                                                                                                                                                                                                           ],
                                                                                                                                                                                                                                                                           /* :: */[
                                                                                                                                                                                                                                                                             /* tuple */[
-                                                                                                                                                                                                                                                                              "DataView - setFloat32, getFloat32",
+                                                                                                                                                                                                                                                                              "DataView - getUint32LittleEndian",
                                                                                                                                                                                                                                                                               (function () {
                                                                                                                                                                                                                                                                                   var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                   var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                                  view.setFloat32(0, 65537.0);
+                                                                                                                                                                                                                                                                                  view.setUint32(0, 65537, 1);
                                                                                                                                                                                                                                                                                   return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                            65537.0,
-                                                                                                                                                                                                                                                                                            view.getFloat32(0)
+                                                                                                                                                                                                                                                                                            65537,
+                                                                                                                                                                                                                                                                                            view.getUint32(0, 1)
                                                                                                                                                                                                                                                                                           ]);
                                                                                                                                                                                                                                                                                 })
                                                                                                                                                                                                                                                                             ],
                                                                                                                                                                                                                                                                             /* :: */[
                                                                                                                                                                                                                                                                               /* tuple */[
-                                                                                                                                                                                                                                                                                "DataView - getFloat32LittleEndian",
+                                                                                                                                                                                                                                                                                "DataView - setUint32LittleEndian",
                                                                                                                                                                                                                                                                                 (function () {
                                                                                                                                                                                                                                                                                     var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                     var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                                    view.setFloat32(0, 65537.0, 1);
+                                                                                                                                                                                                                                                                                    view.setUint32(0, 65537, 1);
                                                                                                                                                                                                                                                                                     return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                              65537.0,
-                                                                                                                                                                                                                                                                                              view.getFloat32(0, 1)
+                                                                                                                                                                                                                                                                                              16777472,
+                                                                                                                                                                                                                                                                                              view.getUint32(0)
                                                                                                                                                                                                                                                                                             ]);
                                                                                                                                                                                                                                                                                   })
                                                                                                                                                                                                                                                                               ],
                                                                                                                                                                                                                                                                               /* :: */[
                                                                                                                                                                                                                                                                                 /* tuple */[
-                                                                                                                                                                                                                                                                                  "DataView - setFloat32LittleEndian",
+                                                                                                                                                                                                                                                                                  "DataView - setFloat32, getFloat32",
                                                                                                                                                                                                                                                                                   (function () {
                                                                                                                                                                                                                                                                                       var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                       var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                                      view.setFloat32(0, 1.0, 1);
+                                                                                                                                                                                                                                                                                      view.setFloat32(0, 65537.0);
                                                                                                                                                                                                                                                                                       return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                                4.600602988224807e-41,
+                                                                                                                                                                                                                                                                                                65537.0,
                                                                                                                                                                                                                                                                                                 view.getFloat32(0)
                                                                                                                                                                                                                                                                                               ]);
                                                                                                                                                                                                                                                                                     })
                                                                                                                                                                                                                                                                                 ],
                                                                                                                                                                                                                                                                                 /* :: */[
                                                                                                                                                                                                                                                                                   /* tuple */[
-                                                                                                                                                                                                                                                                                    "DataView - setFloat64, getFloat64",
+                                                                                                                                                                                                                                                                                    "DataView - getFloat32LittleEndian",
                                                                                                                                                                                                                                                                                     (function () {
                                                                                                                                                                                                                                                                                         var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                         var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                                        view.setFloat64(0, 1e200);
+                                                                                                                                                                                                                                                                                        view.setFloat32(0, 65537.0, 1);
                                                                                                                                                                                                                                                                                         return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                                  1e200,
-                                                                                                                                                                                                                                                                                                  view.getFloat64(0)
+                                                                                                                                                                                                                                                                                                  65537.0,
+                                                                                                                                                                                                                                                                                                  view.getFloat32(0, 1)
                                                                                                                                                                                                                                                                                                 ]);
                                                                                                                                                                                                                                                                                       })
                                                                                                                                                                                                                                                                                   ],
                                                                                                                                                                                                                                                                                   /* :: */[
                                                                                                                                                                                                                                                                                     /* tuple */[
-                                                                                                                                                                                                                                                                                      "DataView - getFloat64LittleEndian",
+                                                                                                                                                                                                                                                                                      "DataView - setFloat32LittleEndian",
                                                                                                                                                                                                                                                                                       (function () {
                                                                                                                                                                                                                                                                                           var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                           var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                                          view.setFloat64(0, 1e200, 1);
+                                                                                                                                                                                                                                                                                          view.setFloat32(0, 1.0, 1);
                                                                                                                                                                                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                                    1e200,
-                                                                                                                                                                                                                                                                                                    view.getFloat64(0, 1)
+                                                                                                                                                                                                                                                                                                    4.600602988224807e-41,
+                                                                                                                                                                                                                                                                                                    view.getFloat32(0)
                                                                                                                                                                                                                                                                                                   ]);
                                                                                                                                                                                                                                                                                         })
                                                                                                                                                                                                                                                                                     ],
                                                                                                                                                                                                                                                                                     /* :: */[
                                                                                                                                                                                                                                                                                       /* tuple */[
-                                                                                                                                                                                                                                                                                        "DataView - setFloat64LittleEndian",
+                                                                                                                                                                                                                                                                                        "DataView - setFloat64, getFloat64",
                                                                                                                                                                                                                                                                                         (function () {
                                                                                                                                                                                                                                                                                             var buffer = new ArrayBuffer(8);
                                                                                                                                                                                                                                                                                             var view = new DataView(buffer);
-                                                                                                                                                                                                                                                                                            view.setFloat64(0, 1.0, 1);
+                                                                                                                                                                                                                                                                                            view.setFloat64(0, 1e200);
                                                                                                                                                                                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                                                                                                                                                                                      3.03865e-319,
+                                                                                                                                                                                                                                                                                                      1e200,
                                                                                                                                                                                                                                                                                                       view.getFloat64(0)
                                                                                                                                                                                                                                                                                                     ]);
                                                                                                                                                                                                                                                                                           })
                                                                                                                                                                                                                                                                                       ],
-                                                                                                                                                                                                                                                                                      /* [] */0
+                                                                                                                                                                                                                                                                                      /* :: */[
+                                                                                                                                                                                                                                                                                        /* tuple */[
+                                                                                                                                                                                                                                                                                          "DataView - getFloat64LittleEndian",
+                                                                                                                                                                                                                                                                                          (function () {
+                                                                                                                                                                                                                                                                                              var buffer = new ArrayBuffer(8);
+                                                                                                                                                                                                                                                                                              var view = new DataView(buffer);
+                                                                                                                                                                                                                                                                                              view.setFloat64(0, 1e200, 1);
+                                                                                                                                                                                                                                                                                              return /* Eq */Block.__(0, [
+                                                                                                                                                                                                                                                                                                        1e200,
+                                                                                                                                                                                                                                                                                                        view.getFloat64(0, 1)
+                                                                                                                                                                                                                                                                                                      ]);
+                                                                                                                                                                                                                                                                                            })
+                                                                                                                                                                                                                                                                                        ],
+                                                                                                                                                                                                                                                                                        /* :: */[
+                                                                                                                                                                                                                                                                                          /* tuple */[
+                                                                                                                                                                                                                                                                                            "DataView - setFloat64LittleEndian",
+                                                                                                                                                                                                                                                                                            (function () {
+                                                                                                                                                                                                                                                                                                var buffer = new ArrayBuffer(8);
+                                                                                                                                                                                                                                                                                                var view = new DataView(buffer);
+                                                                                                                                                                                                                                                                                                view.setFloat64(0, 1.0, 1);
+                                                                                                                                                                                                                                                                                                return /* Eq */Block.__(0, [
+                                                                                                                                                                                                                                                                                                          3.03865e-319,
+                                                                                                                                                                                                                                                                                                          view.getFloat64(0)
+                                                                                                                                                                                                                                                                                                        ]);
+                                                                                                                                                                                                                                                                                              })
+                                                                                                                                                                                                                                                                                          ],
+                                                                                                                                                                                                                                                                                          /* [] */0
+                                                                                                                                                                                                                                                                                        ]
+                                                                                                                                                                                                                                                                                      ]
                                                                                                                                                                                                                                                                                     ]
                                                                                                                                                                                                                                                                                   ]
                                                                                                                                                                                                                                                                                 ]
