@@ -2201,7 +2201,7 @@ val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 val config_error : Ext_json_types.t -> string -> 'a 
 
 
-
+val invalid_json : string -> 'a
 end = struct
 #1 "bsb_exception.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2233,7 +2233,7 @@ end = struct
 type error = 
   | Package_not_found of string * string option (* json file *)
   | Json_config of Ext_position.t * string
-
+  | Invalid_json of string
 exception Error of error 
 
 let error err = raise (Error err)
@@ -2257,7 +2257,8 @@ let to_string (x : error) =
                      For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json 
         " Ext_position.print pos s 
 
-
+  | Invalid_json s ->
+    "Invalid json format: " ^ s
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -2266,6 +2267,8 @@ let config_error config fmt =
   let loc = Ext_json.loc_of config in
 
   error (Json_config (loc,fmt))
+
+let invalid_json s = error (Invalid_json s)
 
 let () = 
   Printexc.register_printer (fun x ->
@@ -5502,8 +5505,8 @@ let rec walk_all_deps_aux visited paths top dir cb =
                      walk_all_deps_aux visited package_stacks  false package_dir cb  ;
                    | _ -> 
                      Bsb_exception.errorf ~loc 
-                                      "%s expect an array"
-                                      Bsb_build_schemas.bs_dependencies
+                       "%s expect an array"
+                       Bsb_build_schemas.bs_dependencies
                  end
                )))
         |> ignore ;
@@ -5514,16 +5517,16 @@ let rec walk_all_deps_aux visited paths top dir cb =
            `Arr (fun (new_packages : Ext_json_types.t array) ->
                new_packages
                |> Array.iter (fun (js : Ext_json_types.t) ->
-                   begin match js with
-                     | Str {str = new_package} ->
-                       let package_dir = 
-                         Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
-                       walk_all_deps_aux visited package_stacks  false package_dir cb  ;
-                     | _ -> 
-                       Bsb_exception.errorf ~loc 
-                                        "%s expect an array"
-                                        Bsb_build_schemas.bs_dev_dependencies
-                   end
+                   match js with
+                   | Str {str = new_package} ->
+                     let package_dir = 
+                       Bsb_pkg.resolve_bs_package ~cwd:dir new_package in 
+                     walk_all_deps_aux visited package_stacks  false package_dir cb  ;
+                   | _ -> 
+                     Bsb_exception.errorf ~loc 
+                       "%s expect an array"
+                       Bsb_build_schemas.bs_dev_dependencies
+
                  )))
           |> ignore ;
         end
@@ -5532,7 +5535,9 @@ let rec walk_all_deps_aux visited paths top dir cb =
         String_hashtbl.add visited cur_package_name dir;
       end
   | _ -> ()
-  | exception _ -> failwith ( "failed to parse" ^ bsconfig_json ^ " properly")
+  | exception _ -> 
+    Bsb_exception.invalid_json bsconfig_json
+    
 
 let walk_all_deps dir cb = 
   let visited = String_hashtbl.create 0 in 
@@ -5829,7 +5834,9 @@ module Bsb_clean : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(** clean bsc generated artifacts. 
+  TODO: clean staled in source js artifacts
+*)
 
 val clean_bs_deps : string -> string -> unit 
 
@@ -10906,7 +10913,7 @@ module Bsb_default : sig
 
 val bsc_flags : string list 
 
-val refmt_flags : string list 
+ val refmt_flags : string list  
 
 
 
@@ -10940,24 +10947,24 @@ end = struct
 
 
 (**
-   6
+   - 6
    Label omitted in function application.
-   7
+   - 7
    Method overridden.
-   9
+   - 9
    Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)      
-        27
-        Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.      
-        29
-        Unescaped end-of-line in a string constant (non-portable code).
-        32 .. 39 Unused  blabla
-        44
-        Open statement shadows an already defined identifier.
-        45
-        Open statement shadows an already defined label or constructor.
-        48
-        Implicit elimination of optional arguments.
-        https://caml.inria.fr/mantis/view.php?id=6352
+   - 27
+   Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.      
+   - 29
+   Unescaped end-of-line in a string constant (non-portable code).
+   - 32 .. 39 Unused  blabla
+   - 44
+   Open statement shadows an already defined identifier.
+   - 45
+   Open statement shadows an already defined label or constructor.
+   - 48
+   Implicit elimination of optional arguments.
+   https://caml.inria.fr/mantis/view.php?id=6352
 
 *)  
 let bsc_flags = 

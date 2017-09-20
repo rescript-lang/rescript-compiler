@@ -355,7 +355,7 @@ BSB_SRCS= bsb_config\
 	bsb_world\
 	oCamlRes\
 	bsb_templates\
-	bsb_init
+	bsb_theme_init
 SUPER_ERRORS_SRCS=super_reason_react super_misc super_warnings super_location super_env super_pparse super_typecore super_typemod super_typetexp super_main
 REASON_OUTCOME_PRINTER_SRCS=tweaked_reason_oprint reason_outcome_printer_main
 

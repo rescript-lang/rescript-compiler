@@ -27,7 +27,7 @@
 type error = 
   | Package_not_found of string * string option (* json file *)
   | Json_config of Ext_position.t * string
-
+  | Invalid_json of string
 exception Error of error 
 
 let error err = raise (Error err)
@@ -51,7 +51,8 @@ let to_string (x : error) =
                      For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json 
         " Ext_position.print pos s 
 
-
+  | Invalid_json s ->
+    "Invalid json format: " ^ s
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -60,6 +61,8 @@ let config_error config fmt =
   let loc = Ext_json.loc_of config in
 
   error (Json_config (loc,fmt))
+
+let invalid_json s = error (Invalid_json s)
 
 let () = 
   Printexc.register_printer (fun x ->

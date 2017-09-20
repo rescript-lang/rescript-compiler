@@ -75,7 +75,7 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
     "-query", Arg.String (fun s -> Bsb_query.query ~cwd ~bsc_dir s ),
     " (internal)Query metadata about the build";
-    "-themes", Arg.Unit Bsb_init.list_themes,
+    "-themes", Arg.Unit Bsb_theme_init.list_themes,
     " List all available themes";
     "-where",
     Arg.Unit (fun _ -> 
@@ -171,7 +171,7 @@ let () =
           Arg.parse bsb_main_flags handle_anonymous_arg usage;
           (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
           match !generate_theme_with_path with
-          | Some path -> Bsb_init.init_sample_project ~cwd ~theme:!current_theme path
+          | Some path -> Bsb_theme_init.init_sample_project ~cwd ~theme:!current_theme path
           | None -> 
             (* [-make-world] should never be combined with [-package-specs] *)
             let make_world = !make_world in 
