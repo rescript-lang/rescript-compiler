@@ -34,25 +34,34 @@ let error err = raise (Error err)
 let package_not_found ~pkg ~json = 
   error (Package_not_found(pkg,json))
 
-let to_string (x : error) = 
+let print (fmt : Format.formatter) (x : error) = 
   match x with     
   | Package_not_found (name,json_opt) -> 
-    let in_json = match json_opt with None -> Ext_string.empty | Some x -> " in " ^ x in 
+    let in_json = match json_opt with 
+    | None -> Ext_string.empty 
+    | Some x -> " in " ^ x in 
     if Ext_string.equal name Bs_version.package_name then 
-      Printf.sprintf "Package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
-                      Please run 'npm link bs-platform' to make it available " in_json
+      Format.fprintf fmt 
+      "File \"bsconfig.json\", line 1\n\
+       @{<error>Error:@} package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
+       Please run 'npm link bs-platform' to make it available" in_json
     else 
-      Printf.sprintf 
-        "BuckleScript package %s not found or built %s, if it is not built\n\
-         Please run 'bsb -make-world', otherwise please install it " name in_json
+      Format.fprintf fmt
+        "File \"bsconfig.json\", line 1\n\
+         @{<error>Error:@} package %s not found or built %s, if it is not built\n\
+         Please run 'bsb -make-world', otherwise please install it" name in_json
 
   | Json_config (pos,s) ->
-    Format.asprintf "File bsconfig.json (%a) : %s \n\
-                     For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json 
-        " Ext_position.print pos s 
+    Format.fprintf fmt "File \"bsconfig.json\", line %d:\n\
+                        @{<error>Error:@} %s \n\
+                        For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json" 
+                        pos.pos_lnum s 
 
   | Invalid_json s ->
-    "Invalid json format: " ^ s
+    Format.fprintf fmt 
+    "File %S, line 1\n\
+    @{<error>Error: Invalid json format@}" s 
+    
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -68,6 +77,6 @@ let () =
   Printexc.register_printer (fun x ->
       match x with 
       | Error x -> 
-        Some (to_string x )
+        Some (Format.asprintf "%a" print x )
       | _ -> None
     )
