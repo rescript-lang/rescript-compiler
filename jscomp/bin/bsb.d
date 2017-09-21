@@ -51,6 +51,7 @@ bin/bsb.ml : ext/string_vec.ml
 bin/bsb.ml : bsb/bsb_bsdeps.mli
 bin/bsb.ml : bsb/bsb_config.mli
 bin/bsb.ml : bsb/bsb_default.ml
+bin/bsb.ml : bsb/bsb_warning.ml
 bin/bsb.ml : ext/ext_file_pp.ml
 bin/bsb.ml : ext/ext_string.mli
 bin/bsb.ml : ext/hashtbl_gen.ml
@@ -58,6 +59,7 @@ bin/bsb.ml : ext/string_map.mli
 bin/bsb.ml : ext/string_set.mli
 bin/bsb.ml : ext/string_vec.mli
 bin/bsb.ml : bsb/bsb_default.mli
+bin/bsb.ml : bsb/bsb_warning.mli
 bin/bsb.ml : ext/ext_file_pp.mli
 bin/bsb.ml : ext/ext_filename.ml
 bin/bsb.ml : ext/ext_position.ml

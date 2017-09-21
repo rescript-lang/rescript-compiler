@@ -70,7 +70,7 @@ let regenerate_ninja
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;       
         Bsb_ninja_gen.output_ninja_and_namespace_map 
-          ~cwd ~bsc_dir config ; 
+          ~cwd ~bsc_dir ~no_dev config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->

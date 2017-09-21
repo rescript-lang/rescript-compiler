@@ -97,3 +97,4 @@ jscomp/build_tests/*/lib/
 *.goog.js
 *.jsoo.js
 *.so
+bin/ninja.exe

@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,12 +22,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** 
-  generate ninja file based on [cwd] and [bsc_dir]
-*)
-val 
-  output_ninja_and_namespace_map :
-  cwd:string ->  
-  bsc_dir:string ->  
-  no_dev:bool -> 
-  Bsb_config_types.t -> unit 
+
+(* type warning_error = private
+  | Warn_error_false 
+  (* default [false] to make our changes non-intrusive *)
+  | Warn_error_true
+  | Warn_error_number of string  *)
+type warning_error 
+
+type t = private {
+  number : string option;
+  error : warning_error
+}
+
+val default_warning_flag : string
+
+val opt_warning_to_string : bool -> t option -> string 
+
+val from_map : Ext_json_types.t String_map.t -> t option

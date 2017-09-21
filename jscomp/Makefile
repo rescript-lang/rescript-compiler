@@ -342,6 +342,7 @@ BSB_SRCS= bsb_config\
 	bsb_default\
 	bsb_bsdeps\
 	bsb_watcher_gen\
+	bsb_warning\
 	bsb_merlin_gen\
 	bsb_ninja_gen\
 	bsb_file\

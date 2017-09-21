@@ -800,12 +800,13 @@ bsb/bsb_config_parse.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
     ext/literals.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
     ext/ext_json_types.cmx ext/ext_json_parse.cmx ext/ext_json.cmx \
     ext/ext_file_pp.cmx ext/ext_array.cmx bsb/bsb_watcher_gen.cmx \
-    bsb/bsb_pkg.cmx bsb/bsb_parse_sources.cmx bsb/bsb_package_specs.cmx \
-    bsb/bsb_exception.cmx bsb/bsb_dir_index.cmx bsb/bsb_default.cmx \
-    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
-    bsb/bsb_build_schemas.cmx common/bs_version.cmx bsb/bsb_config_parse.cmi
+    bsb/bsb_warning.cmx bsb/bsb_pkg.cmx bsb/bsb_parse_sources.cmx \
+    bsb/bsb_package_specs.cmx bsb/bsb_exception.cmx bsb/bsb_dir_index.cmx \
+    bsb/bsb_default.cmx bsb/bsb_config_types.cmx bsb/bsb_config.cmx \
+    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx common/bs_version.cmx \
+    bsb/bsb_config_parse.cmi
 bsb/bsb_config_types.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
-    bsb/bsb_parse_sources.cmx bsb/bsb_package_specs.cmx
+    bsb/bsb_warning.cmx bsb/bsb_parse_sources.cmx bsb/bsb_package_specs.cmx
 bsb/bsb_default.cmx : bsb/bsb_config_types.cmx bsb/bsb_default.cmi
 bsb/bsb_depfile_gen.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
@@ -836,8 +837,8 @@ bsb/bsb_main.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
     bsb/bsb_clean.cmx bsb/bsb_build_util.cmx common/bs_version.cmx \
     bsb/bsb_main.cmi
 bsb/bsb_merlin_gen.cmx : ext/literals.cmx ext/ext_string.cmx \
-    ext/ext_path.cmx bsb/bsb_parse_sources.cmx bsb/bsb_config_types.cmx \
-    bsb/bsb_config.cmx bsb/bsb_merlin_gen.cmi
+    ext/ext_path.cmx bsb/bsb_warning.cmx bsb/bsb_parse_sources.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_merlin_gen.cmi
 bsb/bsb_ninja_file_groups.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/string_hash_set.cmx ext/literals.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
@@ -846,12 +847,12 @@ bsb/bsb_ninja_file_groups.cmx : ext/string_set.cmx ext/string_map.cmx \
     bsb/bsb_dir_index.cmx bsb/bsb_config.cmx bsb/bsb_build_schemas.cmx \
     bsb/bsb_build_cache.cmx bsb/bsb_ninja_file_groups.cmi
 bsb/bsb_ninja_gen.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_path.cmx ext/ext_list.cmx bsb/bsb_rule.cmx \
-    bsb/bsb_pkg_map_gen.cmx bsb/bsb_parse_sources.cmx bsb/bsb_ninja_util.cmx \
-    bsb/bsb_ninja_global_vars.cmx bsb/bsb_ninja_file_groups.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_config_types.cmx bsb/bsb_config.cmx \
-    bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx bsb/bsb_build_cache.cmx \
-    bsb/bsb_ninja_gen.cmi
+    ext/ext_string.cmx ext/ext_path.cmx ext/ext_list.cmx bsb/bsb_warning.cmx \
+    bsb/bsb_rule.cmx bsb/bsb_pkg_map_gen.cmx bsb/bsb_parse_sources.cmx \
+    bsb/bsb_ninja_util.cmx bsb/bsb_ninja_global_vars.cmx \
+    bsb/bsb_ninja_file_groups.cmx bsb/bsb_dir_index.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_schemas.cmx bsb/bsb_build_cache.cmx bsb/bsb_ninja_gen.cmi
 bsb/bsb_ninja_global_vars.cmx :
 bsb/bsb_ninja_regen.cmx : ext/literals.cmx ext/ext_path.cmx \
     bsb/bsb_ninja_gen.cmx bsb/bsb_merlin_gen.cmx bsb/bsb_log.cmx \
@@ -887,6 +888,9 @@ bsb/bsb_theme_init.cmx : ext/string_hashtbl.cmx bsb/oCamlRes.cmx \
     common/bs_version.cmx bsb/bsb_theme_init.cmi
 bsb/bsb_unix.cmx : ext/ext_sys.cmx ext/ext_string.cmx bsb/bsb_log.cmx \
     bsb/bsb_unix.cmi
+bsb/bsb_warning.cmx : ext/string_map.cmx ext/ext_string.cmx \
+    ext/ext_json_types.cmx bsb/bsb_exception.cmx bsb/bsb_build_schemas.cmx \
+    bsb/bsb_warning.cmi
 bsb/bsb_watcher_gen.cmx : ext/ext_path.cmx ext/ext_list.cmx \
     ext/ext_json_noloc.cmx ext/ext_array.cmx bsb/bsb_parse_sources.cmx \
     bsb/bsb_config.cmx bsb/bsb_watcher_gen.cmi
@@ -934,6 +938,7 @@ bsb/bsb_rule.cmi : ext/string_map.cmi
 bsb/bsb_templates.cmi : bsb/oCamlRes.cmx
 bsb/bsb_theme_init.cmi :
 bsb/bsb_unix.cmi :
+bsb/bsb_warning.cmi : ext/string_map.cmi ext/ext_json_types.cmx
 bsb/bsb_watcher_gen.cmi : bsb/bsb_parse_sources.cmi
 bsb/bsb_world.cmi : bsb/bsb_config_types.cmx
 jscmj_main.cmx : ext/literals.cmx core/js_cmj_format.cmx ext/ext_string.cmx \

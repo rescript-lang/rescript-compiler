@@ -1,4 +1,4 @@
-
+// @ts-check
 
 var p = require('child_process')
 var assert = require('assert')
@@ -17,3 +17,12 @@ assert.ok(content.match(/b0_main/g).length === 1)
 
 
 assert.ok(require('./src/demo.js').v === 4,'nested')
+
+var testWarnError = /warnings\s*=\s*[^\r\n]*-warn-error/
+
+function hasWarnError(file){
+    var content = fs.readFileSync(file,'utf8')
+    return testWarnError.test(content)
+}
+
+assert.ok(hasWarnError(path.join(__dirname,'lib','bs','build.ninja')))

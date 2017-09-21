@@ -17,3 +17,5 @@ assert.ok(content.match(/b0_main/g).length === 1)
 
 
 assert.ok(require('./src/demo.js').v === 4,'nested')
+
+
