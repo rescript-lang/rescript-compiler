@@ -177,6 +177,7 @@ let () =
 ;; two |> Js.Promise.thenDo Js.log
 ;; three |> Js.Promise.thenIgnore Js.log
 
+let unit_val = three |> Js.Promise.thenIgnore Js.log
 ;; Js.log (List.length !suites)     
      
 ;; Js.log "hey"

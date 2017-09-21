@@ -292,11 +292,18 @@ three.then((function (prim) {
         return /* () */0;
       }));
 
+three.then((function (prim) {
+        console.log(prim);
+        return /* () */0;
+      }));
+
 console.log(List.length(suites[0]));
 
 console.log("hey");
 
 Mt.from_pair_suites("js_promise_basic_test.ml", suites[0]);
+
+var unit_val = /* () */0;
 
 exports.suites                     = suites;
 exports.test_id                    = test_id;
@@ -324,4 +331,5 @@ exports.createPromiseRejectTest    = createPromiseRejectTest;
 exports.createPromiseFulfillTest   = createPromiseFulfillTest;
 exports.two                        = two;
 exports.three                      = three;
+exports.unit_val                   = unit_val;
 /* h Not a pure module */
