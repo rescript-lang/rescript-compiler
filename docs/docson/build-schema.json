@@ -300,7 +300,7 @@
                     "items": {
                         "type": "string"
                     },
-                    "description": "Default: `[\"-no-alias-deps\", \"-w\", \"-40+6+7+27+32..39+44+45\"]`. [Here](https://github.com/bucklescript/bucklescript/blob/0db762aea73fc9f28ebd08e9eb92f1e072f44c2d/jscomp/bsb/bsb_default.ml#L26) are the meanings of the warning flags"
+                    "description": "Default: `[\"-no-alias-deps\"]`"
                 },
                 {
                     "type": "object",
@@ -370,6 +370,28 @@
         "bsc-flags": {
             "$ref": "#/definitions/bsc-flags",
             "description": "Flags passed to bsc.exe"
+        },
+        "warnings" : {
+            "type" : "object",
+            "properties": {
+                "number" : {
+                    "type" : "string",
+                    "description": "Default: -40+6+7+27+32..39+44+45 [Here](https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec270) for the meanings of the warning flags"
+                },
+                "error" : {
+                    "oneOf" : [
+                        {
+                            "type" : "boolean",
+                            "description" : "True means warn is error(default)"
+                        },
+                        {
+                            "type" : "string",
+                            "description": "Same as warning number but different set"
+                        }
+                    ]
+                }
+            },
+            "description": "warning numbers and whether to turn it into error or not"
         },
         "ppx-flags": {
             "$ref": "#/definitions/ppx-specs",

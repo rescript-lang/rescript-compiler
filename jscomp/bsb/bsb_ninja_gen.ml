@@ -48,9 +48,12 @@ let dash_i = "-I"
 let refmt_exe = "refmt.exe"
 let dash_ppx = "-ppx"
 
+
+
 let output_ninja_and_namespace_map
     ~cwd 
-    ~bsc_dir           
+    ~bsc_dir
+    ~no_dev           
     ({
       package_name;
       external_includes;
@@ -68,6 +71,7 @@ let output_ninja_and_namespace_map
       reason_react_jsx;
       generators ;
       namespace ; 
+      warning;
     } : Bsb_config_types.t)
   =
   let custom_rules = Bsb_rule.reset generators in 
@@ -111,14 +115,15 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-
-
+      let warnings = Bsb_warning.opt_warning_to_string no_dev warning in
+        
       Bsb_ninja_util.output_kvs
         [|
           Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
           Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
           Bsb_ninja_global_vars.bsc, bsc ;
           Bsb_ninja_global_vars.bsdep, bsdep;
+          Bsb_ninja_global_vars.warnings, warnings;
           Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
           Bsb_ninja_global_vars.ppx_flags, ppx_flags;
           Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;

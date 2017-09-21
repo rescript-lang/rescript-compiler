@@ -95,6 +95,15 @@ let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
     (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
      Literals.dash_nostdlib::bsc_flags) 
 
+(* No need for [-warn-error] in merlin  *)     
+let warning_to_merlin_flg (warning: Bsb_warning.t option) : string= 
+    merlin_flg ^ 
+    ( match warning with 
+    | None  
+    | Some {number = None}
+      -> Bsb_warning.default_warning_flag
+    | Some {number = Some x } -> "-w " ^ x)
+
 
 let merlin_file_gen ~cwd
     built_in_ppx
@@ -108,7 +117,8 @@ let merlin_file_gen ~cwd
       external_includes; 
       reason_react_jsx ; 
       namespace;
-      package_name
+      package_name;
+      warning; 
      } : Bsb_config_types.t)
   =
   if generate_merlin then begin     
@@ -150,7 +160,7 @@ let merlin_file_gen ~cwd
 
     let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
     Buffer.add_string buffer bsc_string_flag ;
-
+    Buffer.add_string buffer (warning_to_merlin_flg  warning); 
     bs_dependencies 
     |> List.iter (fun package ->
         let path = package.Bsb_config_types.package_install_path in

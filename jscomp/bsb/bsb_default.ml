@@ -47,11 +47,8 @@
 let bsc_flags = 
   [
     "-no-alias-deps";
-    "-color"; "always" ;
-    "-w"; "-40+6+7+27+32..39+44+45"
-
+    "-color"; "always" 
   ]
-
 
 
 let refmt_flags = ["--print"; "binary"]

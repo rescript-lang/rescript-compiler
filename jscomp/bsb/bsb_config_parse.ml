@@ -275,9 +275,16 @@ let interpret_json
           if !namespace then 
             Some (Ext_namespace.namespace_of_package_name package_name)
           else   None  in  
+        let warning : Bsb_warning.t option  = 
+          match String_map.find_opt Bsb_build_schemas.warnings map with 
+          | None -> None 
+          | Some (Obj {map }) -> Bsb_warning.from_map map 
+          | Some config -> Bsb_exception.config_error config "expect an object"
+        in 
         {
           package_name ;
           namespace ;    
+          warning = warning;
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;

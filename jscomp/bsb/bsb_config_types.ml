@@ -35,6 +35,7 @@ type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of
 
 type reason_react_jsx = string option 
 
+
 type t = 
   {
     package_name : string ; 
@@ -47,6 +48,7 @@ type t =
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 
+    warning : Bsb_warning.t option;
     (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
       [.merlin]

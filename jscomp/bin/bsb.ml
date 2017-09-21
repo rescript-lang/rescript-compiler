@@ -141,6 +141,9 @@ let command = "command"
 let edge = "edge"
 let namespace = "namespace"
 let in_source = "in-source"
+let warnings = "warnings"
+let number = "number"
+let error = "error"
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -9490,6 +9493,153 @@ and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  =
 
 
 end
+module Bsb_warning : sig 
+#1 "bsb_warning.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(* type warning_error = private
+  | Warn_error_false 
+  (* default [false] to make our changes non-intrusive *)
+  | Warn_error_true
+  | Warn_error_number of string  *)
+type warning_error 
+
+type t = private {
+  number : string option;
+  error : warning_error
+}
+
+val default_warning_flag : string
+
+val opt_warning_to_string : bool -> t option -> string 
+
+val from_map : Ext_json_types.t String_map.t -> t option
+end = struct
+#1 "bsb_warning.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type warning_error = 
+  | Warn_error_false 
+  (* default [false] to make our changes non-intrusive *)
+  | Warn_error_true
+  | Warn_error_number of string 
+
+type t = {
+  number : string option;
+  error : warning_error
+}
+
+
+
+let warning_number =  "-40+6+7+27+32..39+44+45"
+
+let default_warning_flag = 
+  "-w -40+6+7+27+32..39+44+45"
+
+let warn_error = " -warn-error A"
+let warning_to_string no_dev 
+    (warning ) : string = 
+  if no_dev then 
+    match warning.number with 
+    | None ->
+      default_warning_flag      
+    | Some x -> 
+      "-w " ^ x 
+  else 
+    match warning.number with 
+    | None -> 
+      (match warning.error with 
+       | Warn_error_true -> default_warning_flag ^ warn_error
+       | Warn_error_number x -> 
+         default_warning_flag ^ " -warn-error " ^ x
+       | Warn_error_false -> default_warning_flag
+      )
+    | Some x -> 
+      "-w " ^ x ^
+      (match warning.error with 
+       | Warn_error_true -> 
+         warn_error
+       | Warn_error_false -> 
+         Ext_string.empty
+       | Warn_error_number y -> 
+         " -warn-error " ^ y
+      )
+
+let opt_warning_to_string no_dev warning =       
+  match warning with 
+  | None -> default_warning_flag
+  | Some w -> warning_to_string no_dev w 
+
+let from_map (m : Ext_json_types.t String_map.t) = 
+  let number_opt = String_map.find_opt Bsb_build_schemas.number m  in 
+  let error_opt = String_map.find_opt Bsb_build_schemas.error m  in 
+  match number_opt, error_opt  with 
+  | None, None -> None
+  | _, _ -> 
+    let error  = 
+      match error_opt with 
+      | Some (True _) -> Warn_error_true
+      | Some (False _) -> Warn_error_false
+      | Some (Str {str ; }) 
+        -> Warn_error_number str 
+      | Some x -> Bsb_exception.config_error x "expect true/false or string"
+      | None -> Warn_error_false
+      (** To make it less intrusive : warning error has to be enabled*)  
+    in
+    let number = 
+      match number_opt with   
+      | Some (Str { str = number}) -> Some number
+      | None -> None 
+      | Some x -> Bsb_exception.config_error x "expect a string" 
+    in 
+    Some {number; error }
+end
 module Hash_set_gen
 = struct
 #1 "hash_set_gen.ml"
@@ -9825,6 +9975,7 @@ type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of
 
 type reason_react_jsx = string option 
 
+
 type t = 
   {
     package_name : string ; 
@@ -9837,6 +9988,7 @@ type t =
     bs_dependencies : dependencies;
     bs_dev_dependencies : dependencies;
     built_in_dependency : dependency option; 
+    warning : Bsb_warning.t option;
     (*TODO: maybe we should always resolve bs-platform 
       so that we can calculate correct relative path in 
       [.merlin]
@@ -9943,11 +10095,8 @@ end = struct
 let bsc_flags = 
   [
     "-no-alias-deps";
-    "-color"; "always" ;
-    "-w"; "-40+6+7+27+32..39+44+45"
-
+    "-color"; "always" 
   ]
-
 
 
 let refmt_flags = ["--print"; "binary"]
@@ -10563,9 +10712,16 @@ let interpret_json
           if !namespace then 
             Some (Ext_namespace.namespace_of_package_name package_name)
           else   None  in  
+        let warning : Bsb_warning.t option  = 
+          match String_map.find_opt Bsb_build_schemas.warnings map with 
+          | None -> None 
+          | Some (Obj {map }) -> Bsb_warning.from_map map 
+          | Some config -> Bsb_exception.config_error config "expect an object"
+        in 
         {
           package_name ;
           namespace ;    
+          warning = warning;
           external_includes = !bs_external_includes;
           bsc_flags = !bsc_flags ;
           ppx_flags = !ppx_flags ;
@@ -10723,6 +10879,15 @@ let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
     (List.filter (fun x -> not (Ext_string.starts_with x bs_flg_prefix )) @@ 
      Literals.dash_nostdlib::bsc_flags) 
 
+(* No need for [-warn-error] in merlin  *)     
+let warning_to_merlin_flg (warning: Bsb_warning.t option) : string= 
+    merlin_flg ^ 
+    ( match warning with 
+    | None  
+    | Some {number = None}
+      -> Bsb_warning.default_warning_flag
+    | Some {number = Some x } -> "-w " ^ x)
+
 
 let merlin_file_gen ~cwd
     built_in_ppx
@@ -10736,7 +10901,8 @@ let merlin_file_gen ~cwd
       external_includes; 
       reason_react_jsx ; 
       namespace;
-      package_name
+      package_name;
+      warning; 
      } : Bsb_config_types.t)
   =
   if generate_merlin then begin     
@@ -10778,7 +10944,7 @@ let merlin_file_gen ~cwd
 
     let bsc_string_flag = bsc_flg_to_merlin_ocamlc_flg bsc_flags in 
     Buffer.add_string buffer bsc_string_flag ;
-
+    Buffer.add_string buffer (warning_to_merlin_flg  warning); 
     bs_dependencies 
     |> List.iter (fun package ->
         let path = package.Bsb_config_types.package_install_path in
@@ -10864,7 +11030,7 @@ let postbuild = "postbuild"
 let namespace = "namespace" 
 
 
-
+let warnings = "warnings"
 end
 module Bsb_rule : sig 
 #1 "bsb_rule.mli"
@@ -11023,18 +11189,18 @@ let define
     since the default is already good -- it does not*)
 let build_ast_and_module_sets =
   define
-    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
+    ~command:"${bsc}  ${pp_flags} ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast ${in}"
     "build_ast_and_module_sets"
 
 
 let build_ast_and_module_sets_from_re =
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx}  ${ppx_flags} ${warnings} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -impl ${in}"
     "build_ast_and_module_sets_from_re"
 
 let build_ast_and_module_sets_from_rei =
   define
-    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${bsc_flags} -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
+    ~command:"${bsc} -pp \"${refmt} ${refmt_flags}\" ${reason_react_jsx} ${ppx_flags} ${warnings} ${bsc_flags}  -c -o ${out} -bs-syntax-only -bs-binary-ast -intf ${in}"
     "build_ast_and_module_sets_from_rei"
 
 
@@ -11071,7 +11237,7 @@ let copy_resources =
 let build_cmj_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-has-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include  \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes}  ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
 
     ~depfile:"${in}.d"
     "build_cmj_only"
@@ -11079,13 +11245,13 @@ let build_cmj_js =
 let build_cmj_cmi_js =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-assume-no-mli -bs-no-builtin-ppx-ml -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes}  ${bsc_flags} -o ${out} -c  ${in} $postbuild"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in} $postbuild"
     ~depfile:"${in}.d"
     "build_cmj_cmi" (* the compiler should never consult [.cmi] when [.mli] does not exist *)
 let build_cmi =
   define
     ~command:"${bsc} ${bs_package_flags} -bs-no-builtin-ppx-mli -bs-no-implicit-include \
-              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${bsc_flags} -o ${out} -c  ${in}"
+              ${bs_package_includes} ${bsc_lib_includes} ${bsc_extra_includes} ${warnings} ${bsc_flags} -o ${out} -c  ${in}"
     ~depfile:"${in}.d"
     "build_cmi" (* the compiler should always consult [.cmi], current the vanilla ocaml compiler only consult [.cmi] when [.mli] found*)
 
@@ -11831,6 +11997,7 @@ val
   output_ninja_and_namespace_map :
   cwd:string ->  
   bsc_dir:string ->  
+  no_dev:bool -> 
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -11885,9 +12052,12 @@ let dash_i = "-I"
 let refmt_exe = "refmt.exe"
 let dash_ppx = "-ppx"
 
+
+
 let output_ninja_and_namespace_map
     ~cwd 
-    ~bsc_dir           
+    ~bsc_dir
+    ~no_dev           
     ({
       package_name;
       external_includes;
@@ -11905,6 +12075,7 @@ let output_ninja_and_namespace_map
       reason_react_jsx;
       generators ;
       namespace ; 
+      warning;
     } : Bsb_config_types.t)
   =
   let custom_rules = Bsb_rule.reset generators in 
@@ -11948,14 +12119,15 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-
-
+      let warnings = Bsb_warning.opt_warning_to_string no_dev warning in
+        
       Bsb_ninja_util.output_kvs
         [|
           Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 
           Bsb_ninja_global_vars.src_root_dir, cwd (* TODO: need check its integrity -- allow relocate or not? *);
           Bsb_ninja_global_vars.bsc, bsc ;
           Bsb_ninja_global_vars.bsdep, bsdep;
+          Bsb_ninja_global_vars.warnings, warnings;
           Bsb_ninja_global_vars.bsc_flags, bsc_flags ;
           Bsb_ninja_global_vars.ppx_flags, ppx_flags;
           Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
@@ -12188,7 +12360,7 @@ let regenerate_ninja
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;       
         Bsb_ninja_gen.output_ninja_and_namespace_map 
-          ~cwd ~bsc_dir config ; 
+          ~cwd ~bsc_dir ~no_dev config ; 
         Literals.bsconfig_json :: config.globbed_dirs
         |> List.map
           (fun x ->

@@ -11,6 +11,10 @@
   "bs-dependencies": [
     "liba",
     "libb"
-  ]
+  ],
+  "warnings": {
+    "number" : "-40+6+7",
+    "error" : true
+  }
   
 }

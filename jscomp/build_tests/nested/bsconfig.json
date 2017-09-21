@@ -9,5 +9,8 @@
   "package-specs" : {
     "module": "commonjs",
     "in-source": true
+  },
+  "warnings": {
+    "error" : true
   }
 }
