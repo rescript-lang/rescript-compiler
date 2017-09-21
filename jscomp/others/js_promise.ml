@@ -49,7 +49,9 @@ external race : 'a t array -> 'a t = "race" [@@bs.val] [@@bs.scope "Promise"]
 
 external then_ : ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send.pipe: 'a t]
 
+external thenDo : ('a -> unit [@bs.uncurry]) -> unit t = "then" [@@bs.send.pipe: 'a t] 
 
+external thenIgnore : ('a -> 'b [@bs.uncurry]) -> unit = "then" [@@bs.send.pipe: 'a t]
 
 external catch : (error -> 'a t [@bs.uncurry]) -> 'a t = "catch" [@@bs.send.pipe: 'a t]
 (* [ p|> catch handler]

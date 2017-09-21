@@ -264,11 +264,15 @@ createPromiseRejectTest(/* () */0);
 
 createPromiseFulfillTest(/* () */0);
 
+var two = Promise.resolve(2);
+
+var three = Promise.resolve(3);
+
 Promise.all(/* tuple */[
-        Promise.resolve(2),
-        Promise.resolve(3)
+        two,
+        three
       ]).then((function (param) {
-        eq("File \"js_promise_basic_test.ml\", line 169, characters 7-14", /* tuple */[
+        eq("File \"js_promise_basic_test.ml\", line 171, characters 7-14", /* tuple */[
               param[0],
               param[1]
             ], /* tuple */[
@@ -276,6 +280,16 @@ Promise.all(/* tuple */[
               3
             ]);
         return Promise.resolve(/* () */0);
+      }));
+
+two.then((function (prim) {
+        console.log(prim);
+        return /* () */0;
+      }));
+
+three.then((function (prim) {
+        console.log(prim);
+        return /* () */0;
       }));
 
 console.log(List.length(suites[0]));
@@ -308,4 +322,6 @@ exports.allRejectTest              = allRejectTest;
 exports.raceTest                   = raceTest;
 exports.createPromiseRejectTest    = createPromiseRejectTest;
 exports.createPromiseFulfillTest   = createPromiseFulfillTest;
+exports.two                        = two;
+exports.three                      = three;
 /* h Not a pure module */
