@@ -27,15 +27,16 @@
 
 type override = 
   | Append of string 
-    (* Append s 
-      s
-    *)
+  | AppendList of string list
+  (* Append s 
+     s
+  *)
   | AppendVar of string 
-    (* AppendVar s 
-      $s
-    *)
+  (* AppendVar s 
+     $s
+  *)
   | Overwrite of string 
-  
+
   | OverwriteVar of string 
     (*
       OverwriteVar s 
@@ -107,6 +108,15 @@ let output_build
           | OverwriteVar s ->
             output_string oc "$";
             output_string oc s ; 
+            output_string oc "\n"
+          | AppendList ls -> 
+            output_string oc "$" ;
+            output_string oc k;
+            List.iter 
+              (fun s ->
+                 output_string oc Ext_string.single_space;
+                 output_string oc s 
+                 ) ls;
             output_string oc "\n"
           | Append s ->
             output_string oc "$" ;

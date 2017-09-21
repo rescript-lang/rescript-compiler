@@ -91,7 +91,7 @@ let make_common_shadows
   in 
   if is_re then 
     { key = Bsb_ninja_global_vars.bsc_flags; 
-      op = Append("-bs-re-error")
+      op = AppendList ["-bs-re-error"; "-bs-super-errors"]
     } :: shadows
   else shadows
 
