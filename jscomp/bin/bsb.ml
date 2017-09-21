@@ -11152,7 +11152,7 @@ module Bsb_ninja_util : sig
 
 type override = 
   | Append of string 
-  
+  | AppendList of string list 
   | AppendVar of string
   
   | Overwrite of string 
@@ -11216,15 +11216,16 @@ end = struct
 
 type override = 
   | Append of string 
-    (* Append s 
-      s
-    *)
+  | AppendList of string list
+  (* Append s 
+     s
+  *)
   | AppendVar of string 
-    (* AppendVar s 
-      $s
-    *)
+  (* AppendVar s 
+     $s
+  *)
   | Overwrite of string 
-  
+
   | OverwriteVar of string 
     (*
       OverwriteVar s 
@@ -11296,6 +11297,15 @@ let output_build
           | OverwriteVar s ->
             output_string oc "$";
             output_string oc s ; 
+            output_string oc "\n"
+          | AppendList ls -> 
+            output_string oc "$" ;
+            output_string oc k;
+            List.iter 
+              (fun s ->
+                 output_string oc Ext_string.single_space;
+                 output_string oc s 
+                 ) ls;
             output_string oc "\n"
           | Append s ->
             output_string oc "$" ;
@@ -11487,7 +11497,7 @@ let make_common_shadows
   in 
   if is_re then 
     { key = Bsb_ninja_global_vars.bsc_flags; 
-      op = Append("-bs-re-error")
+      op = AppendList ["-bs-re-error"; "-bs-super-errors"]
     } :: shadows
   else shadows
 
@@ -12575,14 +12585,13 @@ let root = OCamlRes.Res.([
        {\n\
       \  \"name\": \"${bsb:name}\",\n\
       \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"bsc-flags\": [\"-bs-super-errors\"],\n\
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
       \  \"bs-dependencies\" : [\n\
       \      // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.\n\
       \  ],\n\
-      \  \"namespace\": true,\n\
+      \  \"namespace\": true\n\
        }\n\
        ") ;
     File (".gitignore",
@@ -13091,7 +13100,6 @@ let root = OCamlRes.Res.([
        {\n\
       \  \"name\" : \"${bsb:name}\",\n\
       \  \"reason\" : {\"react-jsx\" : 2},\n\
-      \  \"bsc-flags\": [\"-bs-super-errors\"],\n\
       \  \"bs-dependencies\": [\"reason-react\"],\n\
       \  \"sources\": [\n\
       \    {\n\
@@ -13099,7 +13107,7 @@ let root = OCamlRes.Res.([
       \      \"subdirs\": [\"async\", \"interop\", \"simple\"]\n\
       \    }\n\
       \  ],\n\
-      \  \"namespace\": true,\n\
+      \  \"namespace\": true\n\
        }\n\
        ") ;
     File (".gitignore",

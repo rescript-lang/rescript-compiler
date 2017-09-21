@@ -205,14 +205,13 @@ let root = OCamlRes.Res.([
        {\n\
       \  \"name\": \"${bsb:name}\",\n\
       \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"bsc-flags\": [\"-bs-super-errors\"],\n\
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
       \  \"bs-dependencies\" : [\n\
       \      // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.\n\
       \  ],\n\
-      \  \"namespace\": true,\n\
+      \  \"namespace\": true\n\
        }\n\
        ") ;
     File (".gitignore",
@@ -721,7 +720,6 @@ let root = OCamlRes.Res.([
        {\n\
       \  \"name\" : \"${bsb:name}\",\n\
       \  \"reason\" : {\"react-jsx\" : 2},\n\
-      \  \"bsc-flags\": [\"-bs-super-errors\"],\n\
       \  \"bs-dependencies\": [\"reason-react\"],\n\
       \  \"sources\": [\n\
       \    {\n\
@@ -729,7 +727,7 @@ let root = OCamlRes.Res.([
       \      \"subdirs\": [\"async\", \"interop\", \"simple\"]\n\
       \    }\n\
       \  ],\n\
-      \  \"namespace\": true,\n\
+      \  \"namespace\": true\n\
        }\n\
        ") ;
     File (".gitignore",

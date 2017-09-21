@@ -113897,10 +113897,6 @@ type current_printed_line_status =
   | Only_error_line
   | Not_error_line
 
-(* ocaml's reported line/col numbering is horrible and super error-prone when
-  being handled programmatically (or humanly for that matter. If you're an
-  ocaml contributor reading this: who the heck reads the character count
-  starting from the first erroring character?) *)
 (* Range coordinates all 1-indexed, like for editors. Otherwise this code
   would have way too many off-by-one errors *)
 let print_file 
@@ -113910,7 +113906,7 @@ let print_file
 ~lines
 ppf 
 () =
-  (* show 2 lines before & after the erroring lines *)
+  (* show 2 lines before & after the erroring lines. if there are too many lines, trim the middle *)
   let first_shown_line = max 1 (start_line - 2) in
   let last_shown_line = min (Array.length lines) (end_line + 2) in
   let max_line_number_number_of_digits = number_of_digits last_shown_line in
@@ -113937,82 +113933,93 @@ ppf
   | Some n -> n
   in
   (* coloring *)
-  let (highlighted_line_number, highlighted_open_tag): (string -> string -> unit, Format.formatter, unit) format * (unit, Format.formatter, unit) format = 
-    if is_warning then ("@{<info>%s@}@{<dim> @<1>%s @}", "@{<info>")
-    else ("@{<error>%s@}@{<dim> @<1>%s @}", "@{<error>")
-  in
+  let highlighted_line_number : _ format = if is_warning then "@{<info>%s@}%a" else "@{<error>%s@}%a" in
+
   let print_char_maybe_highlight ~begin_highlight_line ~end_highlight_line ch =
+    let highlighted_open_tag: _ format = if is_warning then "@{<info>" else "@{<error>" in
     if begin_highlight_line then fprintf ppf highlighted_open_tag;
     fprintf ppf "%c@," ch;
     if end_highlight_line then fprintf ppf "@}"
   in
-  
+
+  let print_separator ppf () = 
+    (* these are unicode chars. They're not of length 1. Careful; we need to
+      explicitly tell Format to treat them as length 1 *)
+    if columns_to_cut = 0 then fprintf ppf " @{<dim>@<1>│@} "
+    else fprintf ppf " @{<dim>@<1>┆@} "
+  in
+
   fprintf ppf "@[<v 0>";
   (* inclusive *)
   for i = first_shown_line to last_shown_line do
-    let current_line = lines.(i - 1) in
-    let padded_line_number = pad (string_of_int i) max_line_number_number_of_digits in
+    (* should some lines be ellipsed from the output? If we're showing more than 5 lines, then yes *)
+    if end_line - start_line >= 5 && i >= start_line + 2 && i <= end_line - 2 then begin
+      if i = start_line + 2 then
+        (* Insert one line that's just a dimmed "..." *)
+        let padded_line_number = pad "." max_line_number_number_of_digits in
+        fprintf ppf "@{<dim>%s@}%a@{<dim>...@}@," padded_line_number print_separator ()
+      end
+    else
+      let current_line = lines.(i - 1) in
+      let padded_line_number = pad (string_of_int i) max_line_number_number_of_digits in
 
-    fprintf ppf "@[<h 0>";
+      fprintf ppf "@[<h 0>";
 
-    fprintf ppf "@[<h 0>";
+      fprintf ppf "@[<h 0>";
 
-  (* btw, these are unicode chars. They're not of length 1. Careful; we need to
-    explicitly tell Format to treat them as length 1 right below *)
-  let separator = if columns_to_cut = 0 then "│" else "┆" in
-    if i < start_line || i > end_line then begin
-      (* normal, non-highlighted line *)
-      fprintf ppf "%s@{<dim> @<1>%s @}" padded_line_number separator
-    end else begin
-      (* highlighted  *)
-      fprintf ppf highlighted_line_number padded_line_number separator
-    end;
+      if i < start_line || i > end_line then begin
+        (* normal, non-highlighted line *)
+        fprintf ppf "%s%a" padded_line_number print_separator ()
+      end else begin
+        (* highlighted *)
+        fprintf ppf highlighted_line_number padded_line_number print_separator ()
+      end;
 
-    fprintf ppf "@]"; (* h *)
+      fprintf ppf "@]"; (* h *)
 
-    fprintf ppf "@[<hov 0>";
+      fprintf ppf "@[<hov 0>";
 
-    let current_line_status = 
-      if i > start_line && i < end_line then Strictly_between_start_and_end
-      else if i = start_line && i = end_line then Only_error_line
-      else if i = start_line then Is_error_start_line
-      else if i = end_line then Is_error_end_line
-      else Not_error_line
-    in
-    let offset_current_line = current_line |> string_slice ~start:columns_to_cut in
-    let offset_current_line_length = String.length offset_current_line in
-    let offset_start_line_start_char = start_line_start_char - columns_to_cut in
-    (* end_line_end_char is exclusive *)
-    let offset_end_line_end_char = end_line_end_char - columns_to_cut in
-    (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
-    for j = 1 to offset_current_line_length do
-      let current_char = offset_current_line.[j - 1] in
-      match current_line_status with
-      | Strictly_between_start_and_end -> 
-        print_char_maybe_highlight 
-          ~begin_highlight_line:(j = 1) 
-          ~end_highlight_line:(j = offset_current_line_length)
-          current_char 
-      | Only_error_line ->
-        print_char_maybe_highlight 
-          ~begin_highlight_line:(j = offset_start_line_start_char) 
-          ~end_highlight_line:(j = offset_end_line_end_char)
-          current_char 
-      | Is_error_start_line ->
-        print_char_maybe_highlight 
-          ~begin_highlight_line:(j = offset_start_line_start_char) 
-          ~end_highlight_line:(j = offset_current_line_length)
-          current_char 
-      | Is_error_end_line ->
-        print_char_maybe_highlight 
-          ~begin_highlight_line:(j = 1) 
-          ~end_highlight_line:(j = offset_end_line_end_char)
-          current_char 
-      | Not_error_line ->
-        print_char_maybe_highlight 
-          ~begin_highlight_line:false 
-          ~end_highlight_line:false
-          current_char 
+      let current_line_status = 
+        if i > start_line && i < end_line then Strictly_between_start_and_end
+        else if i = start_line && i = end_line then Only_error_line
+        else if i = start_line then Is_error_start_line
+        else if i = end_line then Is_error_end_line
+        else Not_error_line
+      in
+      let offset_current_line = current_line |> string_slice ~start:columns_to_cut in
+      let offset_current_line_length = String.length offset_current_line in
+      let offset_start_line_start_char = start_line_start_char - columns_to_cut in
+      (* end_line_end_char is exclusive *)
+      let offset_end_line_end_char = end_line_end_char - columns_to_cut in
+      (* inclusive. To be consistent with using 1-indexed indices and count and i, j will be 1-indexed too *)
+      for j = 1 to offset_current_line_length do
+        let current_char = offset_current_line.[j - 1] in
+        match current_line_status with
+        | Strictly_between_start_and_end -> 
+          print_char_maybe_highlight 
+            ~begin_highlight_line:(j = 1) 
+            ~end_highlight_line:(j = offset_current_line_length)
+            current_char 
+        | Only_error_line ->
+          print_char_maybe_highlight 
+            ~begin_highlight_line:(j = offset_start_line_start_char) 
+            ~end_highlight_line:(j = offset_end_line_end_char)
+            current_char 
+        | Is_error_start_line ->
+          print_char_maybe_highlight 
+            ~begin_highlight_line:(j = offset_start_line_start_char) 
+            ~end_highlight_line:(j = offset_current_line_length)
+            current_char 
+        | Is_error_end_line ->
+          print_char_maybe_highlight 
+            ~begin_highlight_line:(j = 1) 
+            ~end_highlight_line:(j = offset_end_line_end_char)
+            current_char 
+        | Not_error_line ->
+          print_char_maybe_highlight 
+            ~begin_highlight_line:false 
+            ~end_highlight_line:false
+            current_char 
     done;
 
     fprintf ppf "@]"; (* hov *)
@@ -114322,6 +114329,10 @@ let print ~is_warning intro ppf loc =
       fprintf ppf "@[@{<error>%s@}@]@," intro
     end;
 
+    (* ocaml's reported line/col numbering is horrible and super error-prone 
+      when being handled programmatically (or humanly for that matter. If you're 
+      an ocaml contributor reading this: who the heck reads the character count
+      starting from the first erroring character?) *)
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
     (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
@@ -114560,7 +114571,7 @@ let rec get_to_bottom_of_aliases f = function
   | _ -> false
 
 let state_escape_scope = get_to_bottom_of_aliases (function
-  (* https://github.com/BuckleScript/ocaml/blob/ddf5a739cc0978dab5e553443825791ba7b0cef9/typing/printtyp.ml?utf8=✓#L1348 *)
+  (* https://github.com/BuckleScript/ocaml/blob/ddf5a739cc0978dab5e553443825791ba7b0cef9/typing/printtyp.ml?#L1348 *)
   (* so apparently that's the logic for detecting "the constructor out of scope" error *)
   | ({desc = Tconstr (p, _, _)}, {desc = Tvar _; level}) 
     when level < Path.binding_time p -> true
@@ -114631,8 +114642,9 @@ let report_error env ppf = function
       (* modified *)
       if Super_reason_react.state_escape_scope trace then
         fprintf ppf "@[<v>\
-          @[@{<info>Is this a ReasonReact component with state/reducer?@}@ If so, is the state or retained props or action type declared _after_ the component declaration?@ \
-          Moving the state and retaied props and action types before the component declaration should resolve this!@]@,@,\
+          @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
+          If so, is the type for state, retained props or action declared _after_ the component declaration?@ \
+          Moving these types above the component declaration should resolve this!@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]"
       else if Super_reason_react.is_array_wanted_reactElement trace then
@@ -114851,11 +114863,12 @@ let fprintf = Format.fprintf
 
 let pp_component_type_not_generalizable_pre ppf =
   fprintf ppf "@[<v>\
-    @[@{<info>Is this a ReasonReact component with state/reducer or retained props?@}@ If so, this error will disappear after:@]@,\
+    @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
+    If so, this error will disappear after:@]@,\
     @[- Defining the component's `make` function@]@,\
-    @[- Using the state once or annotating it with a type where it's used (e.g. render)@]\
-    @[- Using the action once or annotating it with a type where it's used (e.g. reducer)@]\
-    @[- Do the same for retained props, if any@]@,@,\
+    @[- Using the state once or annotating it with a type where it's used (e.g. render)@]@,\
+    @[- Doing the same for action (in e.g. reducer)@]@,\
+    @[- Doing the same for retained props, if any@]@,@,\
     @[@{<info>Here's the original error message@}@]\
   @]@,"
 

@@ -5,7 +5,6 @@
 {
   "name" : "${bsb:name}",
   "reason" : {"react-jsx" : 2},
-  "bsc-flags": ["-bs-super-errors"],
   "bs-dependencies": ["reason-react"],
   "sources": [
     {
@@ -13,5 +12,5 @@
       "subdirs": ["async", "interop", "simple"]
     }
   ],
-  "namespace": true,
+  "namespace": true
 }

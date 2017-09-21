@@ -27,7 +27,7 @@
 
 type override = 
   | Append of string 
-  
+  | AppendList of string list 
   | AppendVar of string
   
   | Overwrite of string 
