@@ -153,66 +153,75 @@ let watch_exit () =
 let () =
 
   let vendor_ninja = bsc_dir // "ninja.exe" in  
-  match Sys.argv with 
-  | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-    begin
-      let _config_opt =  
-        Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
-          ~generate_watch_metadata:true
-          ~forced:false 
-          cwd bsc_dir 
-      in 
-      ninja_command_exit  vendor_ninja [||] 
-    end
-  | argv -> 
-    begin
-      match Ext_array.find_and_split argv Ext_string.equal separator with
-      | `No_split
-        ->
-        begin
-          Arg.parse bsb_main_flags handle_anonymous_arg usage;
-          (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
-          match !generate_theme_with_path with
-          | Some path -> Bsb_theme_init.init_sample_project ~cwd ~theme:!current_theme path
-          | None -> 
-            (* [-make-world] should never be combined with [-package-specs] *)
-            let make_world = !make_world in 
-            begin match make_world, !force_regenerate with
-              | false, false -> 
-                (* [regenerate_ninja] is not triggered in this case
-                   There are several cases we wish ninja will not be triggered.
-                   [bsb -clean-world]
-                   [bsb -regen ]
-                *)
-                if !watch_mode then begin
-                  watch_exit ()
-                end 
-              | make_world, force_regenerate ->
-                let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
-                if make_world then begin
-                  Bsb_world.make_world_deps cwd config_opt
-                end;
-                if !watch_mode then begin
-                  watch_exit ()
-                  (* ninja is not triggered in this case
+  try begin 
+    match Sys.argv with 
+    | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
+      begin
+        let _config_opt =  
+          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
+            ~generate_watch_metadata:true
+            ~forced:false 
+            cwd bsc_dir 
+        in 
+        ninja_command_exit  vendor_ninja [||] 
+      end
+    | argv -> 
+      begin
+        match Ext_array.find_and_split argv Ext_string.equal separator with
+        | `No_split
+          ->
+          begin
+            Arg.parse bsb_main_flags handle_anonymous_arg usage;
+            (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
+            match !generate_theme_with_path with
+            | Some path -> Bsb_theme_init.init_sample_project ~cwd ~theme:!current_theme path
+            | None -> 
+              (* [-make-world] should never be combined with [-package-specs] *)
+              let make_world = !make_world in 
+              begin match make_world, !force_regenerate with
+                | false, false -> 
+                  (* [regenerate_ninja] is not triggered in this case
                      There are several cases we wish ninja will not be triggered.
                      [bsb -clean-world]
                      [bsb -regen ]
                   *)
-                end else if make_world then begin
-                  ninja_command_exit  vendor_ninja [||] 
-                end
-            end;
-        end
-      | `Split (bsb_args,ninja_args)
-        -> (* -make-world all dependencies fall into this category *)
-        begin
-          Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-          let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
-          (* [-make-world] should never be combined with [-package-specs] *)
-          if !make_world then
-            Bsb_world.make_world_deps cwd config_opt ;
-          if !watch_mode then watch_exit ()
-          else ninja_command_exit  vendor_ninja ninja_args 
-        end
-    end
+                  if !watch_mode then begin
+                    watch_exit ()
+                  end 
+                | make_world, force_regenerate ->
+                  let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
+                  if make_world then begin
+                    Bsb_world.make_world_deps cwd config_opt
+                  end;
+                  if !watch_mode then begin
+                    watch_exit ()
+                    (* ninja is not triggered in this case
+                       There are several cases we wish ninja will not be triggered.
+                       [bsb -clean-world]
+                       [bsb -regen ]
+                    *)
+                  end else if make_world then begin
+                    ninja_command_exit  vendor_ninja [||] 
+                  end
+              end;
+          end
+        | `Split (bsb_args,ninja_args)
+          -> (* -make-world all dependencies fall into this category *)
+          begin
+            Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
+            let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
+            (* [-make-world] should never be combined with [-package-specs] *)
+            if !make_world then
+              Bsb_world.make_world_deps cwd config_opt ;
+            if !watch_mode then watch_exit ()
+            else ninja_command_exit  vendor_ninja ninja_args 
+          end
+      end
+  end
+  with 
+    | Bsb_exception.Error e ->
+      Bsb_exception.print Format.err_formatter e ;
+      Format.pp_print_newline Format.err_formatter ();
+      exit 2 
+    | e -> Ext_pervasives.reraise e 
+    

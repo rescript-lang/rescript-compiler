@@ -26,9 +26,10 @@
 (**
     This module is used for fatal errros
 *)
-type error 
+type error  
+exception Error of error
 
-
+val print : Format.formatter -> error -> unit 
 val package_not_found : pkg:string -> json:string option -> 'a
 
 

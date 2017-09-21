@@ -6,17 +6,22 @@ var fs = require('fs')
 var bsconfig = 'bsconfig.json'
 var bsb_exe = __filename + ".exe"
 var delegate_args = process.argv.slice(2)
+try {
+    child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit' })
+} catch (e) {
+    if (e.code === "ENOENT") {
+        // when bsb is actually not found
+        console.log(String(e))
+        console.error('Error happened when running command', bsb_exe, 'with args', delegate_args)
+    }
+
+    process.exit(2)
+}
+
 // if (fs.existsSync(bsconfig)) {
 // Note we make `bsb` behaves more similar to `bsb.exe`
 // Since it does not make sense that `bsb -h` will raise (here it would check bsconfig.json)
 // also `bsb -init project-name` should not break
-try {
-    child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit' })
-} catch (e) {
-    console.log(String(e))
-    console.error('Error happened when running command', bsb_exe, 'with args', delegate_args)
-    process.exit(2)
-}
 // } else {
 //     var path = require('path')
 //     var last_dir = process.cwd()

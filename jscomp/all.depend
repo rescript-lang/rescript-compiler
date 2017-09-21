@@ -829,11 +829,12 @@ bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
     bsb/bsb_helper_extract.cmx bsb/bsb_helper_dep_graph.cmx \
     bsb/bsb_helper_packer.cmi
 bsb/bsb_log.cmx : ext/ext_string.cmx ext/ext_color.cmx bsb/bsb_log.cmi
-bsb/bsb_main.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_path.cmx \
-    ext/ext_array.cmx bsb/bsb_world.cmx bsb/bsb_theme_init.cmx \
-    bsb/bsb_query.cmx bsb/bsb_ninja_regen.cmx bsb/bsb_log.cmx \
-    bsb/bsb_config.cmx bsb/bsb_clean.cmx bsb/bsb_build_util.cmx \
-    common/bs_version.cmx bsb/bsb_main.cmi
+bsb/bsb_main.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
+    ext/ext_path.cmx ext/ext_array.cmx bsb/bsb_world.cmx \
+    bsb/bsb_theme_init.cmx bsb/bsb_query.cmx bsb/bsb_ninja_regen.cmx \
+    bsb/bsb_log.cmx bsb/bsb_exception.cmx bsb/bsb_config.cmx \
+    bsb/bsb_clean.cmx bsb/bsb_build_util.cmx common/bs_version.cmx \
+    bsb/bsb_main.cmi
 bsb/bsb_merlin_gen.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_path.cmx bsb/bsb_parse_sources.cmx bsb/bsb_config_types.cmx \
     bsb/bsb_config.cmx bsb/bsb_merlin_gen.cmi

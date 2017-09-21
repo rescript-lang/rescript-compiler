@@ -2190,9 +2190,10 @@ module Bsb_exception : sig
 (**
     This module is used for fatal errros
 *)
-type error 
+type error  
+exception Error of error
 
-
+val print : Format.formatter -> error -> unit 
 val package_not_found : pkg:string -> json:string option -> 'a
 
 
@@ -2240,25 +2241,34 @@ let error err = raise (Error err)
 let package_not_found ~pkg ~json = 
   error (Package_not_found(pkg,json))
 
-let to_string (x : error) = 
+let print (fmt : Format.formatter) (x : error) = 
   match x with     
   | Package_not_found (name,json_opt) -> 
-    let in_json = match json_opt with None -> Ext_string.empty | Some x -> " in " ^ x in 
+    let in_json = match json_opt with 
+    | None -> Ext_string.empty 
+    | Some x -> " in " ^ x in 
     if Ext_string.equal name Bs_version.package_name then 
-      Printf.sprintf "Package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
-                      Please run 'npm link bs-platform' to make it available " in_json
+      Format.fprintf fmt 
+      "File \"bsconfig.json\", line 1\n\
+       @{<error>Error:@} package bs-platform is not found %s , it is the basic package required, if you have it installed globally\n\
+       Please run 'npm link bs-platform' to make it available" in_json
     else 
-      Printf.sprintf 
-        "BuckleScript package %s not found or built %s, if it is not built\n\
-         Please run 'bsb -make-world', otherwise please install it " name in_json
+      Format.fprintf fmt
+        "File \"bsconfig.json\", line 1\n\
+         @{<error>Error:@} package %s not found or built %s, if it is not built\n\
+         Please run 'bsb -make-world', otherwise please install it" name in_json
 
   | Json_config (pos,s) ->
-    Format.asprintf "File bsconfig.json (%a) : %s \n\
-                     For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json 
-        " Ext_position.print pos s 
+    Format.fprintf fmt "File \"bsconfig.json\", line %d:\n\
+                        @{<error>Error:@} %s \n\
+                        For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json" 
+                        pos.pos_lnum s 
 
   | Invalid_json s ->
-    "Invalid json format: " ^ s
+    Format.fprintf fmt 
+    "File %S, line 1\n\
+    @{<error>Error: Invalid json format@}" s 
+    
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -2274,7 +2284,7 @@ let () =
   Printexc.register_printer (fun x ->
       match x with 
       | Error x -> 
-        Some (to_string x )
+        Some (Format.asprintf "%a" print x )
       | _ -> None
     )
 
@@ -13739,68 +13749,76 @@ let watch_exit () =
 let () =
 
   let vendor_ninja = bsc_dir // "ninja.exe" in  
-  match Sys.argv with 
-  | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
-    begin
-      let _config_opt =  
-        Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
-          ~generate_watch_metadata:true
-          ~forced:false 
-          cwd bsc_dir 
-      in 
-      ninja_command_exit  vendor_ninja [||] 
-    end
-  | argv -> 
-    begin
-      match Ext_array.find_and_split argv Ext_string.equal separator with
-      | `No_split
-        ->
-        begin
-          Arg.parse bsb_main_flags handle_anonymous_arg usage;
-          (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
-          match !generate_theme_with_path with
-          | Some path -> Bsb_theme_init.init_sample_project ~cwd ~theme:!current_theme path
-          | None -> 
-            (* [-make-world] should never be combined with [-package-specs] *)
-            let make_world = !make_world in 
-            begin match make_world, !force_regenerate with
-              | false, false -> 
-                (* [regenerate_ninja] is not triggered in this case
-                   There are several cases we wish ninja will not be triggered.
-                   [bsb -clean-world]
-                   [bsb -regen ]
-                *)
-                if !watch_mode then begin
-                  watch_exit ()
-                end 
-              | make_world, force_regenerate ->
-                let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
-                if make_world then begin
-                  Bsb_world.make_world_deps cwd config_opt
-                end;
-                if !watch_mode then begin
-                  watch_exit ()
-                  (* ninja is not triggered in this case
+  try begin 
+    match Sys.argv with 
+    | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
+      begin
+        let _config_opt =  
+          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
+            ~generate_watch_metadata:true
+            ~forced:false 
+            cwd bsc_dir 
+        in 
+        ninja_command_exit  vendor_ninja [||] 
+      end
+    | argv -> 
+      begin
+        match Ext_array.find_and_split argv Ext_string.equal separator with
+        | `No_split
+          ->
+          begin
+            Arg.parse bsb_main_flags handle_anonymous_arg usage;
+            (* first, check whether we're in boilerplate generation mode, aka -init foo -theme bar *)
+            match !generate_theme_with_path with
+            | Some path -> Bsb_theme_init.init_sample_project ~cwd ~theme:!current_theme path
+            | None -> 
+              (* [-make-world] should never be combined with [-package-specs] *)
+              let make_world = !make_world in 
+              begin match make_world, !force_regenerate with
+                | false, false -> 
+                  (* [regenerate_ninja] is not triggered in this case
                      There are several cases we wish ninja will not be triggered.
                      [bsb -clean-world]
                      [bsb -regen ]
                   *)
-                end else if make_world then begin
-                  ninja_command_exit  vendor_ninja [||] 
-                end
-            end;
-        end
-      | `Split (bsb_args,ninja_args)
-        -> (* -make-world all dependencies fall into this category *)
-        begin
-          Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-          let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
-          (* [-make-world] should never be combined with [-package-specs] *)
-          if !make_world then
-            Bsb_world.make_world_deps cwd config_opt ;
-          if !watch_mode then watch_exit ()
-          else ninja_command_exit  vendor_ninja ninja_args 
-        end
-    end
-
+                  if !watch_mode then begin
+                    watch_exit ()
+                  end 
+                | make_world, force_regenerate ->
+                  let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
+                  if make_world then begin
+                    Bsb_world.make_world_deps cwd config_opt
+                  end;
+                  if !watch_mode then begin
+                    watch_exit ()
+                    (* ninja is not triggered in this case
+                       There are several cases we wish ninja will not be triggered.
+                       [bsb -clean-world]
+                       [bsb -regen ]
+                    *)
+                  end else if make_world then begin
+                    ninja_command_exit  vendor_ninja [||] 
+                  end
+              end;
+          end
+        | `Split (bsb_args,ninja_args)
+          -> (* -make-world all dependencies fall into this category *)
+          begin
+            Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
+            let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
+            (* [-make-world] should never be combined with [-package-specs] *)
+            if !make_world then
+              Bsb_world.make_world_deps cwd config_opt ;
+            if !watch_mode then watch_exit ()
+            else ninja_command_exit  vendor_ninja ninja_args 
+          end
+      end
+  end
+  with 
+    | Bsb_exception.Error e ->
+      Bsb_exception.print Format.err_formatter e ;
+      Format.pp_print_newline Format.err_formatter ();
+      exit 2 
+    | e -> Ext_pervasives.reraise e 
+    
 end
