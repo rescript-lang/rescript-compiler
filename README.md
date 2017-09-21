@@ -194,20 +194,20 @@ Refer to its copyright and license notices for information about its licensing.
 
 BuckleScript builds on parts of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml):
 
-* [`jscomp/js_dump.ml`](jscomp/js_dump.ml) (pretty printer)
+* [`jscomp/core/js_dump.ml`](jscomp/core/js_dump.ml) (pretty printer)
 * [`jscomp/runtime`](jscomp/runtime)
 
 BuckleScript builds on parts of OCaml:
 
-* [`jscomp/lam_pass_exits.ml`](jscomp/lam_pass_exits.ml)
-* [`jscomp/lam_pass_lets_dce.ml`](jscomp/lam_pass_lets_dce.ml)
+* [`jscomp/core/lam_pass_exits.ml`](jscomp/core/lam_pass_exits.ml)
+* [`jscomp/core/lam_pass_lets_dce.ml`](jscomp/core/lam_pass_lets_dce.ml)
 
 These modules were adapted from [`ocaml/bytecomp/simplif.ml`](ocaml/bytecomp/simplif.ml) for
 JavaScript specific optimization purposes.
 
-* [`jscomp/js_main.ml`](jscomp/js_main.ml)
+* [`jscomp/core/js_main.ml`](jscomp/core/js_main.ml)
 
-`jscomp/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is not
+`jscomp/core/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is not
 actively used but demonstrates that it is easy to assemble a whole compiler using the OCaml compiler
 libraries. It also shows how to add more compilation flags to a JS backend.
 

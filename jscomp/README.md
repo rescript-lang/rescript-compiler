@@ -132,8 +132,8 @@ which js_of_ocaml # symlink this into your $PATH, maybe /usr/local/bin or someth
 opam switch 4.02.3+buckle-master
 eval `opam config env`
 opam install camlp4 ocp-ocamlres
-(cd ocaml && make world)
-(cd jscomp && ./js.sh)
+(cd vendor/ocaml && make world)
+(cd jscomp && node repl.js)
 ```
 
 # Sub directories
