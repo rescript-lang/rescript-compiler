@@ -3,7 +3,6 @@
 {
   "name": "rerror",
   "version": "0.1.0",
-  "bsc-flags": ["-bs-super-errors"],
   "sources": [
     "src"
   ],
