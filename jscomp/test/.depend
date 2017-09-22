@@ -20,7 +20,7 @@ inline_map_test.cmi :
 inner_define.cmi :
 literals.cmi :
 map_test.cmi :
-mt.cmi :
+mt.cmi : ../runtime/js.cmi
 mt_global.cmi : mt.cmi
 ocaml_parsetree_test.cmi :
 ocaml_proto_test.cmi :
