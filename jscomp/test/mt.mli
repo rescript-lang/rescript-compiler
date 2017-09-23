@@ -13,3 +13,10 @@ type  pair_suites = (string * (unit ->  eq)) list
 
 val from_suites : string -> (string * (unit -> unit)) list -> unit
 val from_pair_suites : string ->  pair_suites -> unit
+
+type promise_suites = (string * eq Js.Promise.t) list 
+
+val from_promise_suites : 
+  string ->
+  promise_suites -> 
+  unit

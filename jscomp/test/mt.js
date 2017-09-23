@@ -36,7 +36,10 @@ function from_suites(name, suite) {
   if (match && is_mocha(/* () */0)) {
     describe(name, (function () {
             return List.iter((function (param) {
-                          it(param[0], param[1]);
+                          var partial_arg = param[1];
+                          it(param[0], (function () {
+                                  return Curry._1(partial_arg, /* () */0);
+                                }));
                           return /* () */0;
                         }), suite);
           }));
@@ -51,6 +54,53 @@ function close_enough($staropt$star, a, b) {
   return +(Math.abs(a - b) < threshold);
 }
 
+function handleCode(spec) {
+  switch (spec.tag | 0) {
+    case 0 : 
+        Assert.deepEqual(spec[0], spec[1]);
+        return /* () */0;
+    case 1 : 
+        Assert.notDeepEqual(spec[0], spec[1]);
+        return /* () */0;
+    case 2 : 
+        Assert.strictEqual(spec[0], spec[1]);
+        return /* () */0;
+    case 3 : 
+        Assert.notStrictEqual(spec[0], spec[1]);
+        return /* () */0;
+    case 4 : 
+        var b = spec[0];
+        Assert.ok(b ? true : false);
+        return /* () */0;
+    case 5 : 
+        var b$1 = spec[1];
+        var a = spec[0];
+        if (close_enough(/* None */0, a, b$1)) {
+          return 0;
+        } else {
+          Assert.deepEqual(a, b$1);
+          return /* () */0;
+        }
+    case 6 : 
+        var b$2 = spec[2];
+        var a$1 = spec[1];
+        if (close_enough(/* Some */[spec[0]], a$1, b$2)) {
+          return 0;
+        } else {
+          Assert.deepEqual(a$1, b$2);
+          return /* () */0;
+        }
+    case 7 : 
+        Assert.throws(spec[0]);
+        return /* () */0;
+    case 8 : 
+        return assert_fail("failed");
+    case 9 : 
+        return assert_fail(spec[0]);
+    
+  }
+}
+
 function from_pair_suites(name, suites) {
   var match = $$Array.to_list(Process.argv);
   if (match) {
@@ -59,51 +109,7 @@ function from_pair_suites(name, suites) {
               return List.iter((function (param) {
                             var code = param[1];
                             it(param[0], (function () {
-                                    var match = Curry._1(code, /* () */0);
-                                    switch (match.tag | 0) {
-                                      case 0 : 
-                                          Assert.deepEqual(match[0], match[1]);
-                                          return /* () */0;
-                                      case 1 : 
-                                          Assert.notDeepEqual(match[0], match[1]);
-                                          return /* () */0;
-                                      case 2 : 
-                                          Assert.strictEqual(match[0], match[1]);
-                                          return /* () */0;
-                                      case 3 : 
-                                          Assert.notStrictEqual(match[0], match[1]);
-                                          return /* () */0;
-                                      case 4 : 
-                                          var b = match[0];
-                                          Assert.ok(b ? true : false);
-                                          return /* () */0;
-                                      case 5 : 
-                                          var b$1 = match[1];
-                                          var a = match[0];
-                                          if (close_enough(/* None */0, a, b$1)) {
-                                            return 0;
-                                          } else {
-                                            Assert.deepEqual(a, b$1);
-                                            return /* () */0;
-                                          }
-                                      case 6 : 
-                                          var b$2 = match[2];
-                                          var a$1 = match[1];
-                                          if (close_enough(/* Some */[match[0]], a$1, b$2)) {
-                                            return 0;
-                                          } else {
-                                            Assert.deepEqual(a$1, b$2);
-                                            return /* () */0;
-                                          }
-                                      case 7 : 
-                                          Assert.throws(match[0]);
-                                          return /* () */0;
-                                      case 8 : 
-                                          return assert_fail("failed");
-                                      case 9 : 
-                                          return assert_fail(match[0]);
-                                      
-                                    }
+                                    return handleCode(Curry._1(code, /* () */0));
                                   }));
                             return /* () */0;
                           }), suites);
@@ -195,6 +201,35 @@ function from_pair_suites(name, suites) {
   }
 }
 
-exports.from_suites      = from_suites;
-exports.from_pair_suites = from_pair_suites;
-/* path Not a pure module */
+var val_unit = Promise.resolve(/* () */0);
+
+function from_promise_suites(name, suites) {
+  var match = $$Array.to_list(Process.argv);
+  if (match) {
+    if (is_mocha(/* () */0)) {
+      describe(name, (function () {
+              return List.iter((function (param) {
+                            var code = param[1];
+                            it(param[0], (function () {
+                                    return code.then((function (x) {
+                                                  handleCode(x);
+                                                  return val_unit;
+                                                }));
+                                  }));
+                            return /* () */0;
+                          }), suites);
+            }));
+      return /* () */0;
+    } else {
+      console.log("promise suites");
+      return /* () */0;
+    }
+  } else {
+    return /* () */0;
+  }
+}
+
+exports.from_suites         = from_suites;
+exports.from_pair_suites    = from_pair_suites;
+exports.from_promise_suites = from_promise_suites;
+/* val_unit Not a pure module */

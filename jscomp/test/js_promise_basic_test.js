@@ -3,6 +3,7 @@
 var Mt                      = require("./mt.js");
 var List                    = require("../../lib/js/list.js");
 var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
 var Caml_array              = require("../../lib/js/caml_array.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
@@ -284,6 +285,40 @@ console.log("hey");
 
 Mt.from_pair_suites("js_promise_basic_test.ml", suites[0]);
 
+var twop = Promise.resolve(2);
+
+function then_(prim, prim$1) {
+  return prim$1.then(Curry.__1(prim));
+}
+
+function re(prim) {
+  return Promise.resolve(prim);
+}
+
+Mt.from_promise_suites("js_promise_basic_test.ml", /* :: */[
+      /* tuple */[
+        "File \"js_promise_basic_test.ml\", line 187, characters 4-11",
+        twop.then((function (x) {
+                return Promise.resolve(/* Eq */Block.__(0, [
+                              x,
+                              2
+                            ]));
+              }))
+      ],
+      /* :: */[
+        /* tuple */[
+          "File \"js_promise_basic_test.ml\", line 190, characters 4-11",
+          twop.then((function (x) {
+                  return Promise.resolve(/* Neq */Block.__(1, [
+                                x,
+                                3
+                              ]));
+                }))
+        ],
+        /* [] */0
+      ]
+    ]);
+
 exports.suites                     = suites;
 exports.test_id                    = test_id;
 exports.eq                         = eq;
@@ -308,4 +343,7 @@ exports.allRejectTest              = allRejectTest;
 exports.raceTest                   = raceTest;
 exports.createPromiseRejectTest    = createPromiseRejectTest;
 exports.createPromiseFulfillTest   = createPromiseFulfillTest;
+exports.twop                       = twop;
+exports.then_                      = then_;
+exports.re                         = re;
 /* h Not a pure module */
