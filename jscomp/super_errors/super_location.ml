@@ -31,7 +31,11 @@ let setup_colors () =
   Misc.Color.setup !Clflags.color
 
 let print_filename ppf file =
-  Format.fprintf ppf "%s" (Location.show_filename file)
+  match file with
+  (* modified *)
+  | "_none_"
+  | "" -> Format.fprintf ppf "(No file name)"
+  | real_file -> Format.fprintf ppf "%s" (Location.show_filename real_file)
 
 let print_loc ~normalizedRange ppf loc =
   setup_colors ();
@@ -57,7 +61,6 @@ let print_loc ~normalizedRange ppf loc =
 
 let print ~is_warning intro ppf loc =
   setup_colors ();
-  (* TODO: handle locations such as _none_ and "" *)
   if loc.loc_start.pos_fname = "//toplevel//"
   && highlight_locations ppf [loc] then ()
   else
