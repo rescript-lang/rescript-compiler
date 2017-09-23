@@ -35,9 +35,9 @@ do
   expected=$(cat $expectedFile)
   actualFile=$testPath/result/$base.actual
 
-  ../../bin/bsc.exe -bs-super-errors -pp "refmt --print binary" -color always -w -40+6+7+27+32..39+44+45 -o test -impl ${sourceFile} 2> $actualFile
+  ../../bin/bsc.exe -bs-super-errors -pp "../../bin/refmt.exe --print binary" -color always -w -40+6+7+27+32..39+44+45 -o test -impl ${sourceFile} 2> $actualFile
   # uncomment this next line to override the old tests
-  # ../../bin/bsc.exe -bs-super-errors -pp "refmt --print binary" -color always -w -40+6+7+27+32..39+44+45 -o test -impl ${sourceFile} 2> $expectedFile
+  # ../../bin/bsc.exe -bs-super-errors -pp "../../bin/refmt.exe --print binary" -color always -w -40+6+7+27+32..39+44+45 -o test -impl ${sourceFile} 2> $expectedFile
 
   actual=$(cat $actualFile)
 
