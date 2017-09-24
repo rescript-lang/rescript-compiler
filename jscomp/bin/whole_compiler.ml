@@ -87289,7 +87289,7 @@ and
      It seems the optimizer already did work to make sure
      {[
        Call (Raw_js_code (s, Exp i), el, {Full})
-       when List.length el = i
+       when Ext_list.length_equal el i
      ]}
   *)
 
