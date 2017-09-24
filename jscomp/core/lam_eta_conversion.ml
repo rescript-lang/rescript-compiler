@@ -39,7 +39,7 @@ let transform_under_supply n loc status fn args =
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
   let extra_lambdas = Ext_list.map (fun x -> Lam.var x) extra_args in
-  begin match List.fold_right (fun (lam : Lam.t) (acc, bind) ->
+  begin match Ext_list.fold_right (fun (lam : Lam.t) (acc, bind) ->
       match lam with
       | Lvar _
       | Lconst (Const_int _  

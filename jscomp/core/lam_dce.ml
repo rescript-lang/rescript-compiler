@@ -90,7 +90,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
       | Nop _ -> x :: acc  
       | Recursive bindings ->
         let b = 
-          List.fold_right (fun ((id,_) as v) acc ->
+          Ext_list.fold_right (fun ((id,_) as v) acc ->
               if Ident_hash_set.mem visited id then 
                 v :: acc 
               else

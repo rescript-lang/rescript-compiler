@@ -104,7 +104,7 @@ let shake_program (program : J.program) =
       else first_iteration in
 
     let really_set = loop block export_set in 
-    List.fold_right
+    Ext_list.fold_right
       (fun  (st : J.statement) acc -> 
         match st.statement_desc with
         | Variable {ident; value ; _} -> 

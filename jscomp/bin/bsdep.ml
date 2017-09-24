@@ -23921,7 +23921,7 @@ val map : ('a -> 'b) -> 'a list -> 'b list
 
 val append : 'a list -> 'a list -> 'a list 
 
-
+val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 (** Extension to the standard library [List] module *)
     
@@ -24113,17 +24113,29 @@ let rec map f l =
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map f tail)
 
+
 let rec append l1 l2 = 
   match l1 with
-  | a0::a1::a2::a3::a4::a5 -> a0::a1::a2::a3::a4::(append a5 l2)
-  | a0::a1::a2::a3::a4 -> a0::a1::a2::a3::(append a4 l2)
-  | a0::a1::a2::a3 -> a0::a1::a2::(append a3 l2)
-  | a0::a1::a2-> a0::a1::(append a2 l2)
-  | a0::a1 -> a0::(append a1 l2)    
   | [] -> l2
+  | [a0] -> a0::l2
+  | [a0;a1] -> a0::a1::l2
+  | [a0;a1;a2] -> a0::a1::a2::l2
+  | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
+  | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
+  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append rest l2
 
 
-
+let rec fold_right f l acc = 
+   match l with  
+   | [] -> acc 
+   | [a0] -> f a0 acc 
+   | [a0;a1] -> f a0 (f a1 acc)
+   | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
+   | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
+   | [a0;a1;a2;a3;a4] -> 
+    f a0 (f a1 (f a2 (f a3 (f a4 acc))))
+   | a0::a1::a2::a3::a4::rest -> 
+   f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
 
 let rec filter_map (f: 'a -> 'b option) xs = 
   match xs with 
@@ -24265,11 +24277,11 @@ let rec map_last f l1 =
 
 
 (* let rec fold_right2_last f l1 l2 accu  = 
-  match (l1, l2) with
-  | ([], []) -> accu
-  | [last1], [last2] -> f true  last1 last2 accu
-  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-  | (_, _) -> invalid_arg "List.fold_right2" *)
+   match (l1, l2) with
+   | ([], []) -> accu
+   | [last1], [last2] -> f true  last1 last2 accu
+   | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
+   | (_, _) -> invalid_arg "List.fold_right2" *)
 
 
 let init n f = 
@@ -24283,11 +24295,11 @@ let take n l =
         Array.to_list (Array.sub arr n (arr_length - n)))
 
 (* let try_take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  <= n then 
+   let arr = Array.of_list l in 
+   let arr_length =  Array.length arr in
+   if arr_length  <= n then 
     l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
+   else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
 
 
 let rec length_compare l n = 
@@ -24351,7 +24363,7 @@ and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list =
     else
       y :: aux cmp x ys                                 
 
- let stable_group cmp lst =  group cmp lst |> List.rev  
+let stable_group cmp lst =  group cmp lst |> List.rev  
 
 let rec drop n h = 
   if n < 0 then invalid_arg "Ext_list.drop"
@@ -27526,7 +27538,7 @@ let destruct_label_declarations ~loc
     (labels : Parsetree.label_declaration list) : 
   (Parsetree.core_type * Parsetree.expression) list * string list 
   =
-  List.fold_right
+  Ext_list.fold_right
     (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
       (core_type_exps, labels) -> 
       ((pld_type, 
@@ -27707,7 +27719,7 @@ let exp_of_core_type_exprs
     (core_type_exprs : (Parsetree.core_type * Parsetree.expression) list) 
   : Parsetree.expression  = 
     Exp.array 
-      (List.fold_right (fun (core_type, exp) acc -> 
+      (Ext_list.fold_right (fun (core_type, exp) acc -> 
            bs_apply1
              (exp_of_core_type to_value  core_type) exp
 
@@ -27823,7 +27835,7 @@ let init ()  =
                      } -> 
                      if explict_nonrec then 
                        let names, arities = 
-                         List.fold_right 
+                         Ext_list.fold_right 
                            (fun (ctdcl : Parsetree.constructor_declaration) 
                              (names,arities) -> 
                              ctdcl.pcd_name.txt :: names, 
@@ -27973,7 +27985,7 @@ let init () =
                                                   ) )) core_type
                             in 
                             let fun_ = 
-                              List.fold_right  (fun var b -> 
+                              Ext_list.fold_right  (fun var b -> 
                                   Exp.fun_ "" None  (Pat.var {loc ; txt = var}) b 
                                 ) vars exp  in 
 
@@ -28021,7 +28033,7 @@ let init () =
                         Sig.value 
                           (Val.mk {loc ; txt = (String.uncapitalize con_name)}
                              
-                           (List.fold_right 
+                           (Ext_list.fold_right 
                               (fun x acc -> Typ.arrow "" x acc) 
                               pcd_args
                               core_type)
@@ -30791,7 +30803,7 @@ let get_arg_type ~nolabel optional
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
       let case, result, row_fields  = 
-        (List.fold_right (fun tag (nullary, acc, row_fields) -> 
+        (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
              match nullary, tag with 
              | (`Nothing | `Null), 
                Parsetree.Rtag (label, attrs, true,  [])
@@ -31170,7 +31182,7 @@ let handle_attributes
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
         let arg_kinds, new_arg_types_ty, result_types = 
-          List.fold_right 
+          Ext_list.fold_right 
             (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) -> 
                let arg_label = Ast_core_type.label_name label in 
                let new_arg_label, new_arg_types,  output_tys = 
@@ -31276,7 +31288,7 @@ let handle_attributes
         in
         begin 
           (             
-            List.fold_right (fun (label,ty,attrs,loc) acc -> 
+            Ext_list.fold_right (fun (label,ty,attrs,loc) acc -> 
                 Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
               ) new_arg_types_ty result
           ) ,
@@ -31292,7 +31304,7 @@ let handle_attributes
   else   
     let splice = st.splice in 
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   = 
-      List.fold_right 
+      Ext_list.fold_right 
         (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) -> 
            let arg_label = Ast_core_type.label_name label in 
            let arg_label, arg_type, new_arg_types = 
@@ -31674,7 +31686,7 @@ let handle_attributes
         check_return_wrapper loc st.return_wrapper new_result_type
       in 
       (
-        List.fold_right (fun (label,ty,attrs,loc) acc -> 
+        Ext_list.fold_right (fun (label,ty,attrs,loc) acc -> 
             Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
           ) new_arg_types_ty new_result_type
       ) ,
@@ -31696,7 +31708,7 @@ let handle_attributes_as_string
 let pval_prim_of_labels labels = 
   let encoding = 
     let arg_kinds = 
-      List.fold_right 
+      Ext_list.fold_right 
         (fun {Asttypes.loc ; txt } arg_kinds
           ->
             let arg_label =  Ast_arg.label (Lam_methname.translate ~loc txt) None in
@@ -33446,7 +33458,7 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+            Ext_list.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
               rest result in         
           to_method_type loc mapper "" x method_rest
         | _ -> assert false
@@ -33473,7 +33485,7 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+            Ext_list.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
               rest result in         
           (to_method_callback_type loc mapper  "" self_type
              (Typ.arrow ~loc "" x method_rest))
@@ -33488,7 +33500,7 @@ let ocaml_obj_as_js_object
       while for label argument it is [@bs.this] which depends internal object
   *)
   let internal_label_attr_types, public_label_attr_types  = 
-    List.fold_right
+    Ext_list.fold_right
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
         match x.pcf_desc with
@@ -33548,7 +33560,7 @@ let ocaml_obj_as_js_object
   let internal_obj_type = Ast_core_type.make_obj ~loc internal_label_attr_types in
   let public_obj_type = Ast_core_type.make_obj ~loc public_label_attr_types in
   let (labels,  label_types, exprs, _) =
-    List.fold_right
+    Ext_list.fold_right
       (fun (x  : Parsetree.class_field)
         (labels,
          label_types,
@@ -33646,7 +33658,7 @@ let record_as_js_object
   : Parsetree.expression_desc = 
 
   let labels,args, arity =
-    List.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
+    Ext_list.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
         match txt with
         | Longident.Lident x ->
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
@@ -34111,7 +34123,7 @@ let handle_core_type
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
-      List.fold_right (fun (label, ptyp_attrs, core_type) acc ->
+      Ext_list.fold_right (fun (label, ptyp_attrs, core_type) acc ->
           let get ty name attrs =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev attrs with
@@ -34433,7 +34445,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                {ctd with
                 pcty_desc = Pcty_signature {
                     pcsig_self ;
-                    pcsig_fields = List.fold_right (handle_class_type_field self)  pcsig_fields []
+                    pcsig_fields = Ext_list.fold_right (handle_class_type_field self)  pcsig_fields []
                   };
                 pcty_attributes                    
                }                    

@@ -69,7 +69,7 @@ let propogate_beta_reduce
            (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
   let new_body = Lam_bounded_vars.rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
-  List.fold_right
+  Ext_list.fold_right
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
@@ -130,7 +130,7 @@ let propogate_beta_reduce_with_map
              (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
   let new_body = Lam_bounded_vars.rewrite (Ident_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
-  List.fold_right
+  Ext_list.fold_right
     (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 

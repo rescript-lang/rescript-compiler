@@ -53,7 +53,7 @@ let destruct_label_declarations ~loc
     (labels : Parsetree.label_declaration list) : 
   (Parsetree.core_type * Parsetree.expression) list * string list 
   =
-  List.fold_right
+  Ext_list.fold_right
     (fun   ({pld_name = {txt}; pld_type} : Parsetree.label_declaration) 
       (core_type_exps, labels) -> 
       ((pld_type, 

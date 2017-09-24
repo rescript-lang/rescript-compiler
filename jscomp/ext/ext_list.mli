@@ -27,7 +27,7 @@ val map : ('a -> 'b) -> 'a list -> 'b list
 
 val append : 'a list -> 'a list -> 'a list 
 
-
+val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 (** Extension to the standard library [List] module *)
     
