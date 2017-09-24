@@ -47,6 +47,6 @@ let () =
        output_string chan 
          (Printf.sprintf "function start(gist){require([%s], function(){loadGist(gist)})}" 
             (String.concat "," 
-               (List.map (Printf.sprintf "%S" )
+               (Ext_list.map (Printf.sprintf "%S" )
                   (get_files "../lib/amdjs")
                ))))  

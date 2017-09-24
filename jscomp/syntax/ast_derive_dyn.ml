@@ -137,7 +137,7 @@ let rec exp_of_core_type prefix
   | Ptyp_constr (lid, params)
     -> 
     Exp.apply (Exp.ident (fn_of_lid prefix lid))
-      (List.map (fun x -> "",exp_of_core_type prefix x ) params) 
+      (Ext_list.map (fun x -> "",exp_of_core_type prefix x ) params) 
   | Ptyp_tuple lst -> 
     begin match lst with 
     | [x] -> exp_of_core_type prefix x 
@@ -148,7 +148,7 @@ let rec exp_of_core_type prefix
         Location.raise_errorf ~loc "tuple arity > 6 not supported yet"
       else 
         let fn = js_dyn_tuple_to_value len in 
-        let args = List.map (fun x -> "", exp_of_core_type prefix x) lst in 
+        let args = Ext_list.map (fun x -> "", exp_of_core_type prefix x) lst in 
         Exp.apply fn args 
     end
 
@@ -342,7 +342,7 @@ let init ()  =
                  let loc = tdcl.ptype_loc in 
                  Sig.value ~loc (Val.mk {txt = name ^ to_value  ; loc}
                                    (js_dyn_to_value_uncurry_type core_type)) in 
-               List.map handle_tdcl tdcls 
+               Ext_list.map handle_tdcl tdcls 
 
              end
 

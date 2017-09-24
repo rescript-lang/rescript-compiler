@@ -140,7 +140,7 @@ let suites =
       let v = Int_vec.of_list lst in 
       OUnit.assert_equal 
         (Int_vec.map_into_list (fun x -> x + 1) v)
-        (List.map (fun x -> x + 1) lst)  
+        (Ext_list.map (fun x -> x + 1) lst)  
     end;
     __LOC__ >:: begin fun _ ->
       let v = Int_vec.make 4 in 

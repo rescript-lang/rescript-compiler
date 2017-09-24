@@ -84,7 +84,7 @@ and read_lines (cwd : string) (file : string) : string list =
   |> List.fold_left (fun acc f ->
       let filedir  =   Filename.dirname file in
       let extras = process_line  cwd filedir f in
-      extras  @ acc
+      Ext_list.append extras   acc
     ) []
 
 let implementation sourcefile =
@@ -373,10 +373,10 @@ let () =
      let close_out_chan out_chan = 
        (if  out_chan != stdout then close_out out_chan) in
      let files =
-       (match mllib with
+       Ext_list.append (match mllib with
         | Some s
           -> read_lines (Sys.getcwd ()) s
-        | None -> []) @ command_files in
+        | None -> []) command_files in
 
      match !main_module, files with
      | Some _ , _ :: _

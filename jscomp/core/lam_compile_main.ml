@@ -304,7 +304,7 @@ let compile  ~filename (output_prefix : string) env _sigs
 #end  
   let body  = 
     groups
-    |> List.map (fun group -> compile_group meta group)
+    |> Ext_list.map (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.to_block
   in

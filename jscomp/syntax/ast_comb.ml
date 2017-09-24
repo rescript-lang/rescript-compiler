@@ -26,7 +26,7 @@
 open Ast_helper 
 
 let exp_apply_no_label ?loc ?attrs a b = 
-  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
+  Exp.apply ?loc ?attrs a (Ext_list.map (fun x -> "", x) b)
 
 let fun_no_label ?loc ?attrs  pat body = 
   Exp.fun_ ?loc ?attrs "" None pat body

@@ -70,7 +70,7 @@ let rec translate (x : Lam.constant ) : J.expression =
 
   | Const_block(tag, tag_info, xs ) -> 
     Js_of_lam_block.make_block NA tag_info 
-      (E.small_int  tag) (List.map translate xs)
+      (E.small_int  tag) (Ext_list.map translate xs)
 
   | Const_float_array ars -> 
     (* according to the compiler 
@@ -85,9 +85,9 @@ let rec translate (x : Lam.constant ) : J.expression =
     *)
     (* TODO-- *)
     Js_of_lam_array.make_array Mutable Pfloatarray 
-      (List.map (fun x ->  E.float  x ) ars)
+      (Ext_list.map (fun x ->  E.float  x ) ars)
   (* E.arr Mutable ~comment:"float array" *)
-  (*   (List.map (fun x ->  E.float  x ) ars) *)
+  (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)
 
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)

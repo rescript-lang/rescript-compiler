@@ -37,7 +37,7 @@ let empty_record_info = Lambda.Blk_record [||] (* careful to share*)
 (* TODO: add label to the comment *)
 (* let make  mutable_flag (args : (string * J.expression) list) = *)
 (*   E.make_block ~comment:"record"  *)
-(*     E.zero_int_literal empty_record_info (List.map snd args) mutable_flag *)
+(*     E.zero_int_literal empty_record_info (Ext_list.map snd args) mutable_flag *)
 
 
 

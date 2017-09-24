@@ -87,7 +87,7 @@ let style_of_tag s = match s with
 
 let ansi_of_tag s = 
   let l = style_of_tag s in
-  let s =  String.concat ";" (List.map code_of_style l) in
+  let s =  String.concat ";" (Ext_list.map code_of_style l) in
   "\x1b[" ^ s ^ "m"
 
 

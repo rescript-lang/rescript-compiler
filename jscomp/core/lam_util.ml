@@ -57,26 +57,26 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
       Ident_map.find_default id s l
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
-      Lam.apply (subst fn) (List.map subst args) loc status
+      Lam.apply (subst fn) (Ext_list.map subst args) loc status
     | Lfunction {arity; function_kind; params; body} -> 
       Lam.function_ ~arity ~function_kind  ~params ~body:(subst body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
-      Lam.letrec (List.map subst_decl decl) (subst body)
+      Lam.letrec (Ext_list.map subst_decl decl) (subst body)
     | Lprim { primitive ; args; loc} -> 
-      Lam.prim ~primitive ~args:(List.map subst args) loc
+      Lam.prim ~primitive ~args:(Ext_list.map subst args) loc
     | Lam.Lglobal_module _ -> x  
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
-        {sw with sw_consts = List.map subst_case sw.sw_consts;
-                 sw_blocks = List.map subst_case sw.sw_blocks;
+        {sw with sw_consts = Ext_list.map subst_case sw.sw_consts;
+                 sw_blocks = Ext_list.map subst_case sw.sw_blocks;
                  sw_failaction = subst_opt  sw.sw_failaction; }
     | Lstringswitch (arg,cases,default) ->
       Lam.stringswitch
-        (subst arg) (List.map subst_strcase cases) (subst_opt default)
+        (subst arg) (Ext_list.map subst_strcase cases) (subst_opt default)
     | Lstaticraise (i,args)
-      ->  Lam.staticraise i (List.map subst args)
+      ->  Lam.staticraise i (Ext_list.map subst args)
     | Lstaticcatch(e1, io, e2)
       -> Lam.staticcatch (subst e1) io (subst e2)
     | Ltrywith(e1, exn, e2)
@@ -92,7 +92,7 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
     | Lassign(id, e) -> 
       Lam.assign id (subst e)
     | Lsend (k, met, obj, args, loc) ->
-      Lam.send k (subst met) (subst obj) (List.map subst args) loc
+      Lam.send k (subst met) (subst obj) (Ext_list.map subst args) loc
     | Lifused (v, e) -> Lam.ifused v (subst e)
   and subst_decl (id, exp) = (id, subst exp)
   and subst_case (key, case) = (key, subst case)

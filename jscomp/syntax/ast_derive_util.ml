@@ -28,16 +28,16 @@ let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) =
   match tdcl with 
   | {ptype_name = {txt ; loc};
      ptype_params ;
-    } -> Typ.constr {txt = Lident txt ; loc} (List.map fst ptype_params)
+    } -> Typ.constr {txt = Lident txt ; loc} (Ext_list.map fst ptype_params)
 
 let lift_string_list_to_array (labels : string list) = 
   Exp.array
-    (List.map (fun s -> Exp.constant (Const_string (s, None)))
+    (Ext_list.map (fun s -> Exp.constant (Const_string (s, None)))
        labels)
 
 let lift_int i = Exp.constant (Const_int i)
 let lift_int_list_to_array (labels : int list) = 
-  Exp.array (List.map lift_int labels)
+  Exp.array (Ext_list.map lift_int labels)
 
 
 let mk_fun ~loc (typ : Parsetree.core_type) 

@@ -62,7 +62,7 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
       begin match acc with 
         | [ ] -> assert false
         | x::xs -> 
-          (Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff , assign
+          (Key label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
       end (* evaluation order is undefined *)
 
     | ({arg_label = Optional label; arg_type } as arg_kind)::labels, arg::args 
@@ -78,7 +78,7 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
           begin match acc with 
           | [] -> assert false 
           | x::xs -> 
-            (Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff , assign
+            (Key label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
           end   
         | _ ->                 
           accs, eff , (arg_kind,arg)::assign 

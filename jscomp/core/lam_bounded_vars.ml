@@ -87,17 +87,17 @@ let rewrite (map :   _ Ident_hashtbl.t)
       Lam.let_ str v  l1  l2 
     | Lletrec(bindings, body) ->
       (*order matters see GPR #405*)
-      let vars = List.map (fun (k, _) -> rebind k) bindings in 
+      let vars = Ext_list.map (fun (k, _) -> rebind k) bindings in 
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lam.letrec bindings body
     | Lfunction{arity; function_kind; params; body} -> 
-      let params =  List.map rebind params in
+      let params =  Ext_list.map rebind params in
       let body = aux body in      
       Lam.function_ ~arity ~function_kind ~params ~body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
-      let xs = List.map rebind xs in
+      let xs = Ext_list.map rebind xs in
       let l2 = aux l2 in
       Lam.staticcatch l1 (i,xs) l2
     | Lfor(ident, l1, l2, dir, l3) ->
@@ -109,11 +109,11 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lconst _ -> lam
     | Lprim {primitive; args ; loc} ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam.prim ~primitive ~args:(List.map aux  args) loc
+      Lam.prim ~primitive ~args:(Ext_list.map aux  args) loc
     | Lglobal_module _ -> lam 
     | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
-      let args = List.map aux  args in 
+      let args = Ext_list.map aux  args in 
       Lam.apply fn  args loc status
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
@@ -124,8 +124,8 @@ let rewrite (map :   _ Ident_hashtbl.t)
       let l = aux l in
       Lam.switch l
               {sw_consts = 
-                 List.map (fun (v, l) -> v, aux  l) sw_consts;
-               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
+                 Ext_list.map (fun (v, l) -> v, aux  l) sw_consts;
+               sw_blocks = Ext_list.map (fun (v, l) -> v, aux  l) sw_blocks;
                sw_numconsts = sw_numconsts;
                sw_numblocks = sw_numblocks;
                sw_failaction =  option_map sw_failaction
@@ -133,10 +133,10 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
       Lam.stringswitch l 
-                     (List.map (fun (i, l) -> i,aux  l) sw)
+                     (Ext_list.map (fun (i, l) -> i,aux  l) sw)
                      (option_map d)
     | Lstaticraise (i,ls) 
-      -> Lam.staticraise i (List.map aux  ls)
+      -> Lam.staticraise i (Ext_list.map aux  ls)
     | Ltrywith(l1, v, l2) -> 
       let l1 = aux l1 in
       let v = rebind v in
@@ -160,7 +160,7 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lsend(u, m, o, ll, v) ->
       let m = aux m in 
       let o = aux o in 
-      let ll = List.map aux ll in
+      let ll = Ext_list.map aux ll in
       Lam.send u  m  o  ll v
     | Lifused(v, l) -> 
       let l = aux l in 

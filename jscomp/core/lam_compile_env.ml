@@ -100,7 +100,7 @@ let reset () =
 
 let create_js_module (hint_name : string) : Ident.t = 
   let hint_name = 
-    String.concat "" @@ List.map (Ext_string.capitalize_ascii ) @@ 
+    String.concat "" @@ Ext_list.map (Ext_string.capitalize_ascii ) @@ 
     Ext_string.split hint_name '-' in
   Ident.create hint_name
 

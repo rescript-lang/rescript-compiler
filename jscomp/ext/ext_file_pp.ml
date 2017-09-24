@@ -126,6 +126,6 @@ let patch_action file_array
   let ic = open_in_bin fname in
   let file_size = in_channel_length ic in 
   process_wholes ~line_directive:fname 
-    (List.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = Skip}) whole_intervals)
+    (Ext_list.map (fun (x,y) -> {loc_start = x ; loc_end = y; action = Skip}) whole_intervals)
     file_size   ic oc ;
   close_in ic *)

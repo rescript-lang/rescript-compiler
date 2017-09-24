@@ -59,25 +59,25 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lapply{fn = e1; args =  el;  loc; status} ->
     Lam.apply 
       (eliminate_ref id e1)
-      (List.map (eliminate_ref id) el)
+      (Ext_list.map (eliminate_ref id) el)
       loc status
   | Llet(str, v, e1, e2) ->
     Lam.let_ str v (eliminate_ref id e1) (eliminate_ref id e2)
   | Lletrec(idel, e2) ->
     Lam.letrec
-      (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
+      (Ext_list.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
       (eliminate_ref id e2)
   | Lam.Lglobal_module _ -> lam     
   | Lprim {primitive ; args ; loc} ->
-    Lam.prim  ~primitive ~args:(List.map (eliminate_ref id) args) loc
+    Lam.prim  ~primitive ~args:(Ext_list.map (eliminate_ref id) args) loc
   | Lswitch(e, sw) ->
     Lam.switch(eliminate_ref id e)
       {sw_numconsts = sw.sw_numconsts;
        sw_consts =
-         List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_consts;
+         Ext_list.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_consts;
        sw_numblocks = sw.sw_numblocks;
        sw_blocks =
-         List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_blocks;
+         Ext_list.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_blocks;
        sw_failaction =
          match sw.sw_failaction with 
          | None -> None 
@@ -86,12 +86,12 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lstringswitch(e, sw, default) ->
     Lam.stringswitch
       (eliminate_ref id e)
-      (List.map (fun (s, e) -> (s, eliminate_ref id e)) sw)
+      (Ext_list.map (fun (s, e) -> (s, eliminate_ref id e)) sw)
       (match default with 
       | None -> None 
       | Some x ->  Some (eliminate_ref id x))
   | Lstaticraise (i,args) ->
-    Lam.staticraise i (List.map (eliminate_ref id) args)
+    Lam.staticraise i (Ext_list.map (eliminate_ref id) args)
   | Lstaticcatch(e1, i, e2) ->
     Lam.staticcatch (eliminate_ref id e1) i (eliminate_ref id e2)
   | Ltrywith(e1, v, e2) ->
@@ -113,7 +113,7 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lsend(k, m, o, el, loc) ->
     Lam.send k 
       (eliminate_ref id m) (eliminate_ref id o)
-      (List.map (eliminate_ref id) el) loc
+      (Ext_list.map (eliminate_ref id) el) loc
   | Lifused(v, e) ->
     Lam.ifused v (eliminate_ref id e)
 

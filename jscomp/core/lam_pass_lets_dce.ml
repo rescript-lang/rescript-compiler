@@ -166,13 +166,13 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     (*   simplif (Lam_beta_reduce.beta_reduce params body args) *)
 
     | Lapply{fn = l1;args =  ll; loc; status} -> 
-      Lam.apply (simplif l1) (List.map simplif ll) loc status
+      Lam.apply (simplif l1) (Ext_list.map simplif ll) loc status
     | Lfunction{arity; function_kind; params; body = l} ->
       Lam.function_ ~arity ~function_kind ~params ~body:(simplif l)
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
       Lam.letrec 
-        (List.map (fun (v, l) -> (v, simplif l)) bindings) 
+        (Ext_list.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
     | Lprim {primitive=Pstringadd; args = [l;r]; loc } -> 
       begin
@@ -223,11 +223,11 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       end    
     | Lglobal_module _ -> lam    
     | Lprim {primitive; args; loc} 
-      -> Lam.prim ~primitive ~args:(List.map simplif args) loc
+      -> Lam.prim ~primitive ~args:(Ext_list.map simplif args) loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
-      and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
-      and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
+      and new_consts =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
+      and new_blocks =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
       and new_fail = 
         match sw.sw_failaction with 
         | None -> None 
@@ -239,10 +239,10 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
                  sw_failaction = new_fail}
     | Lstringswitch (l,sw,d) ->
       Lam.stringswitch
-        (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
+        (simplif l) (Ext_list.map (fun (s,l) -> s,simplif l) sw)
         (match d with None -> None | Some d -> Some (simplif d))
     | Lstaticraise (i,ls) ->
-      Lam.staticraise i (List.map simplif ls)
+      Lam.staticraise i (Ext_list.map simplif ls)
     | Lstaticcatch(l1, (i,args), l2) ->
       Lam.staticcatch (simplif l1) (i,args) (simplif l2)
     | Ltrywith(l1, v, l2) -> Lam.try_ (simplif l1) v (simplif l2)
@@ -255,7 +255,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
     | Lassign(v, l) -> Lam.assign v (simplif l)
     | Lsend(k, m, o, ll, loc) ->
-      Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
+      Lam.send k (simplif m) (simplif o) (Ext_list.map simplif ll) loc
   in simplif lam ;;
 
 

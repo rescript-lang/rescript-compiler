@@ -193,20 +193,20 @@ let interpret_json
         |> ignore
       end)
 
-    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> List.map (resolve_package cwd)))
+    |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> Ext_list.map (resolve_package cwd)))
     |? (Bsb_build_schemas.bs_dev_dependencies,
         `Arr (fun s ->
             if not  no_dev then 
               bs_dev_dependencies
               := Bsb_build_util.get_list_string s
-                 |> List.map (resolve_package cwd))
+                 |> Ext_list.map (resolve_package cwd))
        )
 
     (* More design *)
     |? (Bsb_build_schemas.bs_external_includes, `Arr (fun s -> bs_external_includes := get_list_string s))
     |? (Bsb_build_schemas.bsc_flags, `Arr (fun s -> bsc_flags := Bsb_build_util.get_list_string_acc s !bsc_flags))
     |? (Bsb_build_schemas.ppx_flags, `Arr (fun s -> 
-        ppx_flags := s |> get_list_string |> List.map (fun p ->
+        ppx_flags := s |> get_list_string |> Ext_list.map (fun p ->
             if p = "" then failwith "invalid ppx, empty string found"
             else Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.ppx_flags p
           )

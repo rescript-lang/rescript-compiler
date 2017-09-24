@@ -65,7 +65,7 @@ let node_program ~output_dir f ( x : J.deps_program) =
       L.require
       Ext_pp_scope.empty
       f
-      (List.map 
+      (Ext_list.map 
          (fun x -> 
             Lam_module_ident.id x,
             Js_name_of_module_id.string_of_module_id ~output_dir
@@ -121,7 +121,7 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
     Js_dump_import_export.imports
       Ext_pp_scope.empty
       f
-      (List.map 
+      (Ext_list.map 
          (fun x -> 
             Lam_module_ident.id x,
             Js_name_of_module_id.string_of_module_id ~output_dir
