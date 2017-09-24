@@ -148,9 +148,11 @@ let output_ninja_and_namespace_map
            for relative path './xx', we need '../.././x' since we are in 
            [lib/bs], [build] is different from merlin though
         *)
-        Ext_list.map_acc acc 
+        Ext_list.map_append 
           (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
           external_includes
+          acc 
+
     in 
     let  static_resources =
       let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in

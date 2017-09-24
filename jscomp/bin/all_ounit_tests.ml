@@ -6419,6 +6419,8 @@ val map : ('a -> 'b) -> 'a list -> 'b list
 
 val append : 'a list -> 'a list -> 'a list 
 
+val map_acc :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
+
 val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 (** Extension to the standard library [List] module *)
@@ -6501,7 +6503,7 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
 
-val map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
 
 val rev_iter : ('a -> unit) -> 'a list -> unit
 
@@ -6621,6 +6623,11 @@ let rec append l1 l2 =
   | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
   | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
   | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append rest l2
+
+let rec map_acc  f l acc =   
+  match l with 
+  | [] -> acc 
+  | h::hs -> f h :: map_acc   f hs acc
 
 
 let rec fold_right f l acc = 
@@ -6889,10 +6896,7 @@ let rev_map_acc  acc f l =
   in
   rmap_f acc l
 
-let rec map_acc acc f l =   
-  match l with 
-  | [] -> acc 
-  | h::hs -> f h :: map_acc  acc  f hs 
+
 
 
 
@@ -10913,7 +10917,10 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal (
-        Ext_list.map_acc ["1";"2";"3"] (fun x -> string_of_int x) [0;1;2] 
+        Ext_list.map_acc  
+          (fun x -> string_of_int x) 
+          [0;1;2] 
+          ["1";"2";"3"]
 
       )
         ["0";"1";"2"; "1";"2";"3"]
@@ -10924,7 +10931,7 @@ let suites =
       OUnit.assert_equal (a,b)
         ([1;2;3],[4;5;6]);
       OUnit.assert_equal (Ext_list.take 1 [1])
-      ([1],[])  
+        ([1],[])  
     end;
 
     __LOC__ >:: begin fun _ -> 
@@ -10936,34 +10943,34 @@ let suites =
     end ;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal
-       (Ext_list.length_compare [0;0;0] 3) `Eq ;
+        (Ext_list.length_compare [0;0;0] 3) `Eq ;
       OUnit.assert_equal
-       (Ext_list.length_compare [0;0;0] 1) `Gt ;   
-     OUnit.assert_equal
-       (Ext_list.length_compare [0;0;0] 4) `Lt ;   
-     OUnit.assert_equal
-       (Ext_list.length_compare [] (-1)) `Gt ;   
+        (Ext_list.length_compare [0;0;0] 1) `Gt ;   
       OUnit.assert_equal
-       (Ext_list.length_compare [] (0)) `Eq ;          
+        (Ext_list.length_compare [0;0;0] 4) `Lt ;   
+      OUnit.assert_equal
+        (Ext_list.length_compare [] (-1)) `Gt ;   
+      OUnit.assert_equal
+        (Ext_list.length_compare [] (0)) `Eq ;          
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ 
-      (Ext_list.length_larger_than_n 1 [1;2] [1]);
+        (Ext_list.length_larger_than_n 1 [1;2] [1]);
       OUnit.assert_bool __LOC__ 
-      (Ext_list.length_larger_than_n 0 [1;2] [1;2]);
-            OUnit.assert_bool __LOC__ 
-      (Ext_list.length_larger_than_n 2 [1;2] [])
+        (Ext_list.length_larger_than_n 0 [1;2] [1;2]);
+      OUnit.assert_bool __LOC__ 
+        (Ext_list.length_larger_than_n 2 [1;2] [])
 
     end;
 
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-      (Ext_list.length_ge [1;2;3] 3 );
+        (Ext_list.length_ge [1;2;3] 3 );
       OUnit.assert_bool __LOC__
-      (Ext_list.length_ge [] 0 );
+        (Ext_list.length_ge [] 0 );
       OUnit.assert_bool __LOC__
-      (not (Ext_list.length_ge [] 1 ));
-      
+        (not (Ext_list.length_ge [] 1 ));
+
     end
 
   ]

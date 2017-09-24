@@ -2323,6 +2323,8 @@ val map : ('a -> 'b) -> 'a list -> 'b list
 
 val append : 'a list -> 'a list -> 'a list 
 
+val map_acc :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
+
 val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 (** Extension to the standard library [List] module *)
@@ -2405,7 +2407,7 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
 
-val map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
 
 val rev_iter : ('a -> unit) -> 'a list -> unit
 
@@ -2525,6 +2527,11 @@ let rec append l1 l2 =
   | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
   | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
   | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append rest l2
+
+let rec map_acc  f l acc =   
+  match l with 
+  | [] -> acc 
+  | h::hs -> f h :: map_acc   f hs acc
 
 
 let rec fold_right f l acc = 
@@ -2793,10 +2800,7 @@ let rev_map_acc  acc f l =
   in
   rmap_f acc l
 
-let rec map_acc acc f l =   
-  match l with 
-  | [] -> acc 
-  | h::hs -> f h :: map_acc  acc  f hs 
+
 
 
 
@@ -12202,9 +12206,11 @@ let output_ninja_and_namespace_map
            for relative path './xx', we need '../.././x' since we are in 
            [lib/bs], [build] is different from merlin though
         *)
-        Ext_list.map_acc acc 
+        Ext_list.map_acc 
           (fun x -> if Filename.is_relative x then Bsb_config.rev_lib_bs_prefix  x else x) 
           external_includes
+          acc 
+
     in 
     let  static_resources =
       let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
