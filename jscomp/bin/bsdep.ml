@@ -24161,9 +24161,6 @@ let rec map_append  f l1 l2 =
     let b4 = f a4 in 
     b0::b1::b2::b3::b4::map_append f rest l2 
 
-(* match l with 
-   | [] -> acc 
-   | h::hs -> f h :: map_append   f hs acc *)
 
 
 let rec fold_right f l acc = 
@@ -33740,7 +33737,7 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
           (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
           (Ast_literal.type_exn ~loc ())
        )
-      (Ext_list.append (Ext_list.map (fun (x :Parsetree.case ) ->
+      (Ext_list.map_append (fun (x :Parsetree.case ) ->
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
@@ -33750,7 +33747,7 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
                         (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
            }
 
-         ) cases) 
+         ) cases 
       [
        Exp.case  (Pat.any ~loc ()) none
      ])

@@ -74,7 +74,7 @@ let node_relative_path
     | x::xs , y :: ys when x = y
       -> go xs ys 
     | _, _ -> 
-      Ext_list.append (Ext_list.map (fun _ ->  Literals.node_parent) dir2)  dir1 
+      Ext_list.map_append (fun _ ->  Literals.node_parent) dir2  dir1 
   in
   match go dir1 dir2 with
   | (x :: _ ) as ys when x = Literals.node_parent -> 

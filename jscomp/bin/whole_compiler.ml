@@ -22611,9 +22611,6 @@ let rec map_append  f l1 l2 =
     let b4 = f a4 in 
     b0::b1::b2::b3::b4::map_append f rest l2 
 
-(* match l with 
-   | [] -> acc 
-   | h::hs -> f h :: map_append   f hs acc *)
 
 
 let rec fold_right f l acc = 
@@ -23689,7 +23686,7 @@ let node_relative_path
     | x::xs , y :: ys when x = y
       -> go xs ys 
     | _, _ -> 
-      Ext_list.append (Ext_list.map (fun _ ->  Literals.node_parent) dir2)  dir1 
+      Ext_list.map_append (fun _ ->  Literals.node_parent) dir2  dir1 
   in
   match go dir1 dir2 with
   | (x :: _ ) as ys when x = Literals.node_parent -> 
@@ -75069,8 +75066,8 @@ let rec aux (acc : (print_kind * Ident.t * Lam.t ) list) (lam : Lam.t) =
     aux ((to_print_kind str3,id3, arg3)::acc) body3
   | Lletrec (bind_args, body) ->
     aux 
-      (Ext_list.append (Ext_list.map (fun (id,l) -> (Recursive,id,l)) bind_args)
-       @@ acc) body
+      (Ext_list.map_append (fun (id,l) -> (Recursive,id,l)) bind_args
+       acc) body
   | e ->  (acc , e) 
 
 type left_var = 
@@ -75287,8 +75284,8 @@ let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) =
     flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
   | Lletrec (bind_args, body) ->
     flat 
-      (Ext_list.append 
-        (Ext_list.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args) @@ acc) 
+      (Ext_list.map_append
+        (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args  acc) 
       body 
   | Lsequence (l,r) -> 
     flat (flat acc l) r
@@ -91806,7 +91803,8 @@ let rec get_arity
                }) -> 
     all_lambdas meta (
       let rest = 
-        Ext_list.append (sw_consts |> Ext_list.map snd)  (sw_blocks |> Ext_list.map snd ) in
+        Ext_list.map_append snd sw_consts
+        (Ext_list.map snd sw_blocks) in
       match sw_failaction with None -> rest | Some x -> x::rest )
   | Lstringswitch(l, sw, d) -> 
     begin match d with 
@@ -107926,7 +107924,7 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
           (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
           (Ast_literal.type_exn ~loc ())
        )
-      (Ext_list.append (Ext_list.map (fun (x :Parsetree.case ) ->
+      (Ext_list.map_append (fun (x :Parsetree.case ) ->
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
@@ -107936,7 +107934,7 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
                         (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
            }
 
-         ) cases) 
+         ) cases 
       [
        Exp.case  (Pat.any ~loc ()) none
      ])

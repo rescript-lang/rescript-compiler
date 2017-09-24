@@ -6659,9 +6659,6 @@ let rec map_append  f l1 l2 =
     let b4 = f a4 in 
     b0::b1::b2::b3::b4::map_append f rest l2 
 
-(* match l with 
-   | [] -> acc 
-   | h::hs -> f h :: map_append   f hs acc *)
 
 
 let rec fold_right f l acc = 
@@ -11544,7 +11541,7 @@ let node_relative_path
     | x::xs , y :: ys when x = y
       -> go xs ys 
     | _, _ -> 
-      Ext_list.append (Ext_list.map (fun _ ->  Literals.node_parent) dir2)  dir1 
+      Ext_list.map_append (fun _ ->  Literals.node_parent) dir2  dir1 
   in
   match go dir1 dir2 with
   | (x :: _ ) as ys when x = Literals.node_parent -> 

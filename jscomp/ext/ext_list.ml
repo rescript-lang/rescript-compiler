@@ -101,9 +101,6 @@ let rec map_append  f l1 l2 =
     let b4 = f a4 in 
     b0::b1::b2::b3::b4::map_append f rest l2 
 
-(* match l with 
-   | [] -> acc 
-   | h::hs -> f h :: map_append   f hs acc *)
 
 
 let rec fold_right f l acc = 

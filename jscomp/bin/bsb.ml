@@ -2563,9 +2563,6 @@ let rec map_append  f l1 l2 =
     let b4 = f a4 in 
     b0::b1::b2::b3::b4::map_append f rest l2 
 
-(* match l with 
-   | [] -> acc 
-   | h::hs -> f h :: map_append   f hs acc *)
 
 
 let rec fold_right f l acc = 
@@ -5326,7 +5323,7 @@ let node_relative_path
     | x::xs , y :: ys when x = y
       -> go xs ys 
     | _, _ -> 
-      Ext_list.append (Ext_list.map (fun _ ->  Literals.node_parent) dir2)  dir1 
+      Ext_list.map_append (fun _ ->  Literals.node_parent) dir2  dir1 
   in
   match go dir1 dir2 with
   | (x :: _ ) as ys when x = Literals.node_parent -> 
@@ -12253,7 +12250,7 @@ let output_ninja_and_namespace_map
           List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
               merge_module_info_map  acc  sources ,  
               dir::dirs , 
-              Ext_list.append (Ext_list.map (fun x -> dir // x ) resources)  acc_resources
+              Ext_list.map_append (fun x -> dir // x ) resources  acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
         Bsb_build_cache.sanity_check bs_group;    
         Bsb_build_cache.write_build_cache 
@@ -12272,7 +12269,7 @@ let output_ninja_and_namespace_map
               let dir_index = (dir_index :> int) in 
               bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
               source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
-              Ext_list.append (Ext_list.map (fun x -> dir//x) resources)  resources
+              Ext_list.map_append (fun x -> dir//x) resources  resources
             ) [] bs_file_groups in
         (* Make sure [sources] does not have files in [lib] we have to check later *)
 
