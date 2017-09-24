@@ -24126,23 +24126,57 @@ let rec append l1 l2 =
   | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
   | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append rest l2
 
-let rec map_append  f l acc =   
-  match l with 
-  | [] -> acc 
-  | h::hs -> f h :: map_append   f hs acc
+let rec map_append  f l1 l2 =   
+  match l1 with
+  | [] -> l2
+  | [a0] -> f a0::l2
+  | [a0;a1] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    b0::b1::l2
+  | [a0;a1;a2] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in  
+    let b2 = f a2 in 
+    b0::b1::b2::l2
+  | [a0;a1;a2;a3] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    b0::b1::b2::b3::l2
+  | [a0;a1;a2;a3;a4] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    b0::b1::b2::b3::b4::l2
+
+  | a0::a1::a2::a3::a4::rest ->
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    b0::b1::b2::b3::b4::map_append f rest l2 
+
+(* match l with 
+   | [] -> acc 
+   | h::hs -> f h :: map_append   f hs acc *)
 
 
 let rec fold_right f l acc = 
-   match l with  
-   | [] -> acc 
-   | [a0] -> f a0 acc 
-   | [a0;a1] -> f a0 (f a1 acc)
-   | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
-   | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
-   | [a0;a1;a2;a3;a4] -> 
+  match l with  
+  | [] -> acc 
+  | [a0] -> f a0 acc 
+  | [a0;a1] -> f a0 (f a1 acc)
+  | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
+  | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
+  | [a0;a1;a2;a3;a4] -> 
     f a0 (f a1 (f a2 (f a3 (f a4 acc))))
-   | a0::a1::a2::a3::a4::rest -> 
-   f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
+  | a0::a1::a2::a3::a4::rest -> 
+    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
 
 let rec filter_map (f: 'a -> 'b option) xs = 
   match xs with 
