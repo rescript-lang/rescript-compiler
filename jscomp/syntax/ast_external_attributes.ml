@@ -88,7 +88,7 @@ let get_arg_type ~nolabel optional
     | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
       -> 
       let case, result, row_fields  = 
-        (List.fold_right (fun tag (nullary, acc, row_fields) -> 
+        (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
              match nullary, tag with 
              | (`Nothing | `Null), 
                Parsetree.Rtag (label, attrs, true,  [])
@@ -467,7 +467,7 @@ let handle_attributes
         if String.length prim_name <> 0 then 
           Location.raise_errorf ~loc "[@@bs.obj] expect external names to be empty string";
         let arg_kinds, new_arg_types_ty, result_types = 
-          List.fold_right 
+          Ext_list.fold_right 
             (fun (label,ty,attr,loc) ( arg_labels, arg_types, result_types) -> 
                let arg_label = Ast_core_type.label_name label in 
                let new_arg_label, new_arg_types,  output_tys = 
@@ -573,7 +573,7 @@ let handle_attributes
         in
         begin 
           (             
-            List.fold_right (fun (label,ty,attrs,loc) acc -> 
+            Ext_list.fold_right (fun (label,ty,attrs,loc) acc -> 
                 Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
               ) new_arg_types_ty result
           ) ,
@@ -589,7 +589,7 @@ let handle_attributes
   else   
     let splice = st.splice in 
     let arg_type_specs, new_arg_types_ty, arg_type_specs_length   = 
-      List.fold_right 
+      Ext_list.fold_right 
         (fun (label,ty,attr,loc) (arg_type_specs, arg_types, i) -> 
            let arg_label = Ast_core_type.label_name label in 
            let arg_label, arg_type, new_arg_types = 
@@ -971,7 +971,7 @@ let handle_attributes
         check_return_wrapper loc st.return_wrapper new_result_type
       in 
       (
-        List.fold_right (fun (label,ty,attrs,loc) acc -> 
+        Ext_list.fold_right (fun (label,ty,attrs,loc) acc -> 
             Ast_helper.Typ.arrow ~loc  ~attrs label ty acc 
           ) new_arg_types_ty new_result_type
       ) ,
@@ -993,7 +993,7 @@ let handle_attributes_as_string
 let pval_prim_of_labels labels = 
   let encoding = 
     let arg_kinds = 
-      List.fold_right 
+      Ext_list.fold_right 
         (fun {Asttypes.loc ; txt } arg_kinds
           ->
             let arg_label =  Ast_arg.label (Lam_methname.translate ~loc txt) None in

@@ -162,7 +162,7 @@ let exp_of_core_type_exprs
     (core_type_exprs : (Parsetree.core_type * Parsetree.expression) list) 
   : Parsetree.expression  = 
     Exp.array 
-      (List.fold_right (fun (core_type, exp) acc -> 
+      (Ext_list.fold_right (fun (core_type, exp) acc -> 
            bs_apply1
              (exp_of_core_type to_value  core_type) exp
 
@@ -278,7 +278,7 @@ let init ()  =
                      } -> 
                      if explict_nonrec then 
                        let names, arities = 
-                         List.fold_right 
+                         Ext_list.fold_right 
                            (fun (ctdcl : Parsetree.constructor_declaration) 
                              (names,arities) -> 
                              ctdcl.pcd_name.txt :: names, 

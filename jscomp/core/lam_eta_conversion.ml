@@ -39,7 +39,7 @@ let transform_under_supply n loc status fn args =
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
   let extra_lambdas = Ext_list.map (fun x -> Lam.var x) extra_args in
-  begin match List.fold_right (fun (lam : Lam.t) (acc, bind) ->
+  begin match Ext_list.fold_right (fun (lam : Lam.t) (acc, bind) ->
       match lam with
       | Lvar _
       | Lconst (Const_int _  
@@ -308,7 +308,10 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
                     Ext_list.init arity (fun _ -> Ident.create Literals.param ) in 
                   Lam.function_ ~arity ~function_kind:Curried ~params:extra_inner_args 
                     ~body:(Lam.apply new_fn 
-                             (Ext_list.map_acc (Ext_list.map Lam.var extra_inner_args) Lam.var extra_outer_args )      
+                             (Ext_list.map_append 
+                             Lam.var extra_outer_args 
+                             (Ext_list.map Lam.var extra_inner_args) 
+                             )      
                              loc App_ml_full)
                 )  in 
             begin match wrapper with 

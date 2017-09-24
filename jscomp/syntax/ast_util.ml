@@ -418,7 +418,7 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+            Ext_list.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
               rest result in         
           to_method_type loc mapper "" x method_rest
         | _ -> assert false
@@ -445,7 +445,7 @@ let ocaml_obj_as_js_object
       begin match tyvars with
         | x :: rest ->
           let method_rest =
-            List.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
+            Ext_list.fold_right (fun v acc -> Typ.arrow ~loc "" v acc)
               rest result in         
           (to_method_callback_type loc mapper  "" self_type
              (Typ.arrow ~loc "" x method_rest))
@@ -460,7 +460,7 @@ let ocaml_obj_as_js_object
       while for label argument it is [@bs.this] which depends internal object
   *)
   let internal_label_attr_types, public_label_attr_types  = 
-    List.fold_right
+    Ext_list.fold_right
       (fun ({pcf_loc  = loc} as x  : Parsetree.class_field) 
         (label_attr_types, public_label_attr_types) ->
         match x.pcf_desc with
@@ -520,7 +520,7 @@ let ocaml_obj_as_js_object
   let internal_obj_type = Ast_core_type.make_obj ~loc internal_label_attr_types in
   let public_obj_type = Ast_core_type.make_obj ~loc public_label_attr_types in
   let (labels,  label_types, exprs, _) =
-    List.fold_right
+    Ext_list.fold_right
       (fun (x  : Parsetree.class_field)
         (labels,
          label_types,
@@ -618,7 +618,7 @@ let record_as_js_object
   : Parsetree.expression_desc = 
 
   let labels,args, arity =
-    List.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
+    Ext_list.fold_right (fun ({Location.txt ; loc}, e) (labels,args,i) -> 
         match txt with
         | Longident.Lident x ->
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
@@ -662,7 +662,7 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
           (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
           (Ast_literal.type_exn ~loc ())
        )
-      (Ext_list.append (Ext_list.map (fun (x :Parsetree.case ) ->
+      (Ext_list.map_append (fun (x :Parsetree.case ) ->
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
@@ -672,7 +672,7 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
                         (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
            }
 
-         ) cases) 
+         ) cases 
       [
        Exp.case  (Pat.any ~loc ()) none
      ])

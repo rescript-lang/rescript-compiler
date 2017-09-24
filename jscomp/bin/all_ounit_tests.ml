@@ -6419,7 +6419,9 @@ val map : ('a -> 'b) -> 'a list -> 'b list
 
 val append : 'a list -> 'a list -> 'a list 
 
+val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
+val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 (** Extension to the standard library [List] module *)
     
@@ -6501,7 +6503,7 @@ val rev_map_append : ('a -> 'b) -> 'a list -> 'b list -> 'b list
 
 val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
 
-val map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
+
 
 val rev_iter : ('a -> unit) -> 'a list -> unit
 
@@ -6611,17 +6613,65 @@ let rec map f l =
     let y5 = f x5 in
     y1::y2::y3::y4::y5::(map f tail)
 
+
 let rec append l1 l2 = 
   match l1 with
-  | a0::a1::a2::a3::a4::a5 -> a0::a1::a2::a3::a4::(append a5 l2)
-  | a0::a1::a2::a3::a4 -> a0::a1::a2::a3::(append a4 l2)
-  | a0::a1::a2::a3 -> a0::a1::a2::(append a3 l2)
-  | a0::a1::a2-> a0::a1::(append a2 l2)
-  | a0::a1 -> a0::(append a1 l2)    
   | [] -> l2
+  | [a0] -> a0::l2
+  | [a0;a1] -> a0::a1::l2
+  | [a0;a1;a2] -> a0::a1::a2::l2
+  | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
+  | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
+  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append rest l2
+
+let rec map_append  f l1 l2 =   
+  match l1 with
+  | [] -> l2
+  | [a0] -> f a0::l2
+  | [a0;a1] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    b0::b1::l2
+  | [a0;a1;a2] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in  
+    let b2 = f a2 in 
+    b0::b1::b2::l2
+  | [a0;a1;a2;a3] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    b0::b1::b2::b3::l2
+  | [a0;a1;a2;a3;a4] -> 
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    b0::b1::b2::b3::b4::l2
+
+  | a0::a1::a2::a3::a4::rest ->
+    let b0 = f a0 in 
+    let b1 = f a1 in 
+    let b2 = f a2 in 
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    b0::b1::b2::b3::b4::map_append f rest l2 
 
 
 
+let rec fold_right f l acc = 
+  match l with  
+  | [] -> acc 
+  | [a0] -> f a0 acc 
+  | [a0;a1] -> f a0 (f a1 acc)
+  | [a0;a1;a2] -> f a0 (f a1 (f a2 acc))
+  | [a0;a1;a2;a3] -> f a0 (f a1 (f a2 (f a3 acc))) 
+  | [a0;a1;a2;a3;a4] -> 
+    f a0 (f a1 (f a2 (f a3 (f a4 acc))))
+  | a0::a1::a2::a3::a4::rest -> 
+    f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
 
 let rec filter_map (f: 'a -> 'b option) xs = 
   match xs with 
@@ -6763,11 +6813,11 @@ let rec map_last f l1 =
 
 
 (* let rec fold_right2_last f l1 l2 accu  = 
-  match (l1, l2) with
-  | ([], []) -> accu
-  | [last1], [last2] -> f true  last1 last2 accu
-  | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-  | (_, _) -> invalid_arg "List.fold_right2" *)
+   match (l1, l2) with
+   | ([], []) -> accu
+   | [last1], [last2] -> f true  last1 last2 accu
+   | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
+   | (_, _) -> invalid_arg "List.fold_right2" *)
 
 
 let init n f = 
@@ -6781,11 +6831,11 @@ let take n l =
         Array.to_list (Array.sub arr n (arr_length - n)))
 
 (* let try_take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  <= n then 
+   let arr = Array.of_list l in 
+   let arr_length =  Array.length arr in
+   if arr_length  <= n then 
     l,  arr_length, []
-  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
+   else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
 
 
 let rec length_compare l n = 
@@ -6849,7 +6899,7 @@ and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list =
     else
       y :: aux cmp x ys                                 
 
- let stable_group cmp lst =  group cmp lst |> List.rev  
+let stable_group cmp lst =  group cmp lst |> List.rev  
 
 let rec drop n h = 
   if n < 0 then invalid_arg "Ext_list.drop"
@@ -6877,10 +6927,7 @@ let rev_map_acc  acc f l =
   in
   rmap_f acc l
 
-let rec map_acc acc f l =   
-  match l with 
-  | [] -> acc 
-  | h::hs -> f h :: map_acc  acc  f hs 
+
 
 
 
@@ -10901,7 +10948,10 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal (
-        Ext_list.map_acc ["1";"2";"3"] (fun x -> string_of_int x) [0;1;2] 
+        Ext_list.map_append  
+          (fun x -> string_of_int x) 
+          [0;1;2] 
+          ["1";"2";"3"]
 
       )
         ["0";"1";"2"; "1";"2";"3"]
@@ -10912,7 +10962,7 @@ let suites =
       OUnit.assert_equal (a,b)
         ([1;2;3],[4;5;6]);
       OUnit.assert_equal (Ext_list.take 1 [1])
-      ([1],[])  
+        ([1],[])  
     end;
 
     __LOC__ >:: begin fun _ -> 
@@ -10924,34 +10974,34 @@ let suites =
     end ;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal
-       (Ext_list.length_compare [0;0;0] 3) `Eq ;
+        (Ext_list.length_compare [0;0;0] 3) `Eq ;
       OUnit.assert_equal
-       (Ext_list.length_compare [0;0;0] 1) `Gt ;   
-     OUnit.assert_equal
-       (Ext_list.length_compare [0;0;0] 4) `Lt ;   
-     OUnit.assert_equal
-       (Ext_list.length_compare [] (-1)) `Gt ;   
+        (Ext_list.length_compare [0;0;0] 1) `Gt ;   
       OUnit.assert_equal
-       (Ext_list.length_compare [] (0)) `Eq ;          
+        (Ext_list.length_compare [0;0;0] 4) `Lt ;   
+      OUnit.assert_equal
+        (Ext_list.length_compare [] (-1)) `Gt ;   
+      OUnit.assert_equal
+        (Ext_list.length_compare [] (0)) `Eq ;          
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ 
-      (Ext_list.length_larger_than_n 1 [1;2] [1]);
+        (Ext_list.length_larger_than_n 1 [1;2] [1]);
       OUnit.assert_bool __LOC__ 
-      (Ext_list.length_larger_than_n 0 [1;2] [1;2]);
-            OUnit.assert_bool __LOC__ 
-      (Ext_list.length_larger_than_n 2 [1;2] [])
+        (Ext_list.length_larger_than_n 0 [1;2] [1;2]);
+      OUnit.assert_bool __LOC__ 
+        (Ext_list.length_larger_than_n 2 [1;2] [])
 
     end;
 
     __LOC__ >:: begin fun _ ->
       OUnit.assert_bool __LOC__
-      (Ext_list.length_ge [1;2;3] 3 );
+        (Ext_list.length_ge [1;2;3] 3 );
       OUnit.assert_bool __LOC__
-      (Ext_list.length_ge [] 0 );
+        (Ext_list.length_ge [] 0 );
       OUnit.assert_bool __LOC__
-      (not (Ext_list.length_ge [] 1 ));
-      
+        (not (Ext_list.length_ge [] 1 ));
+
     end
 
   ]
@@ -11491,7 +11541,7 @@ let node_relative_path
     | x::xs , y :: ys when x = y
       -> go xs ys 
     | _, _ -> 
-      Ext_list.append (Ext_list.map (fun _ ->  Literals.node_parent) dir2)  dir1 
+      Ext_list.map_append (fun _ ->  Literals.node_parent) dir2  dir1 
   in
   match go dir1 dir2 with
   | (x :: _ ) as ys when x = Literals.node_parent -> 

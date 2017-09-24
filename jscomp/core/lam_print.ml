@@ -315,8 +315,8 @@ let rec aux (acc : (print_kind * Ident.t * Lam.t ) list) (lam : Lam.t) =
     aux ((to_print_kind str3,id3, arg3)::acc) body3
   | Lletrec (bind_args, body) ->
     aux 
-      (Ext_list.append (Ext_list.map (fun (id,l) -> (Recursive,id,l)) bind_args)
-       @@ acc) body
+      (Ext_list.map_append (fun (id,l) -> (Recursive,id,l)) bind_args
+       acc) body
   | e ->  (acc , e) 
 
 type left_var = 
@@ -533,8 +533,8 @@ let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) =
     flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
   | Lletrec (bind_args, body) ->
     flat 
-      (Ext_list.append 
-        (Ext_list.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args) @@ acc) 
+      (Ext_list.map_append
+        (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args  acc) 
       body 
   | Lsequence (l,r) -> 
     flat (flat acc l) r

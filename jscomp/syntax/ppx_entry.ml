@@ -205,7 +205,7 @@ let handle_core_type
     let (+>) attr (typ : Parsetree.core_type) =
       {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
     let new_methods =
-      List.fold_right (fun (label, ptyp_attrs, core_type) acc ->
+      Ext_list.fold_right (fun (label, ptyp_attrs, core_type) acc ->
           let get ty name attrs =
             let attrs, core_type =
               match Ast_attributes.process_attributes_rev attrs with
@@ -527,7 +527,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                {ctd with
                 pcty_desc = Pcty_signature {
                     pcsig_self ;
-                    pcsig_fields = List.fold_right (handle_class_type_field self)  pcsig_fields []
+                    pcsig_fields = Ext_list.fold_right (handle_class_type_field self)  pcsig_fields []
                   };
                 pcty_attributes                    
                }                    

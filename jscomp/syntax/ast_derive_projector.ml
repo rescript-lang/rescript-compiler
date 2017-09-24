@@ -70,7 +70,7 @@ let init () =
                                                   ) )) core_type
                             in 
                             let fun_ = 
-                              List.fold_right  (fun var b -> 
+                              Ext_list.fold_right  (fun var b -> 
                                   Exp.fun_ "" None  (Pat.var {loc ; txt = var}) b 
                                 ) vars exp  in 
 
@@ -118,7 +118,7 @@ let init () =
                         Sig.value 
                           (Val.mk {loc ; txt = (String.uncapitalize con_name)}
                              
-                           (List.fold_right 
+                           (Ext_list.fold_right 
                               (fun x acc -> Typ.arrow "" x acc) 
                               pcd_args
                               core_type)

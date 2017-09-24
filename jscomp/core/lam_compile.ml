@@ -173,7 +173,7 @@ and compile_external_field_apply
     (id,pos) env ~not_found:(fun _ -> assert false)
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
         let args_code, args = 
-          List.fold_right 
+          Ext_list.fold_right 
             (fun (x : Lam.t) (args_code, args)  ->
                match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
                | {block = a; value = Some b} -> 
@@ -379,7 +379,7 @@ and compile_recursive_let ~all_bindings
 
 and compile_recursive_lets_aux cxt id_args : Js_output.t = 
   (* #1716 *)
-  let output_code, ids  = List.fold_right
+  let output_code, ids  = Ext_list.fold_right
       (fun (ident,arg) (acc, ids) -> 
          let code, declare_ids  = compile_recursive_let ~all_bindings:id_args cxt ident arg in
          (code ++ acc, Ext_list.append declare_ids  ids )
@@ -541,7 +541,7 @@ and
       *)
       begin 
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
-          List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
+          Ext_list.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
               match compile_lambda 
                       {cxt with st = NeedValue ; should_return =  ReturnFalse} x with
               | {block = a; value =  Some b} -> Ext_list.append a  args_code , b:: fn_code 
