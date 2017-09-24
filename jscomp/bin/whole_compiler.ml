@@ -22371,7 +22371,7 @@ val map : ('a -> 'b) -> 'a list -> 'b list
 
 val append : 'a list -> 'a list -> 'a list 
 
-val map_acc :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
+val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
 val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
@@ -22576,10 +22576,10 @@ let rec append l1 l2 =
   | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
   | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append rest l2
 
-let rec map_acc  f l acc =   
+let rec map_append  f l acc =   
   match l with 
   | [] -> acc 
-  | h::hs -> f h :: map_acc   f hs acc
+  | h::hs -> f h :: map_append   f hs acc
 
 
 let rec fold_right f l acc = 
@@ -97559,7 +97559,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
                     Ext_list.init arity (fun _ -> Ident.create Literals.param ) in 
                   Lam.function_ ~arity ~function_kind:Curried ~params:extra_inner_args 
                     ~body:(Lam.apply new_fn 
-                             (Ext_list.map_acc 
+                             (Ext_list.map_append 
                              Lam.var extra_outer_args 
                              (Ext_list.map Lam.var extra_inner_args) 
                              )      

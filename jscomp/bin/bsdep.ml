@@ -23921,7 +23921,7 @@ val map : ('a -> 'b) -> 'a list -> 'b list
 
 val append : 'a list -> 'a list -> 'a list 
 
-val map_acc :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
+val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
 val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
@@ -24126,10 +24126,10 @@ let rec append l1 l2 =
   | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
   | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append rest l2
 
-let rec map_acc  f l acc =   
+let rec map_append  f l acc =   
   match l with 
   | [] -> acc 
-  | h::hs -> f h :: map_acc   f hs acc
+  | h::hs -> f h :: map_append   f hs acc
 
 
 let rec fold_right f l acc = 
