@@ -99,10 +99,10 @@ let rec dump r =
     match t with
     | _ when is_list r ->
       let fields = get_list r in
-      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
+      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
     | 0 ->
       let fields = get_fields [] s in
-      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
+      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
     | x when x = Obj.lazy_tag ->
       (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
          * clear if very large constructed values could have the same
@@ -119,7 +119,7 @@ let rec dump r =
       in
       (* No information on decoding the class (first field).  So just print
          * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
     | x when x = Obj.infix_tag ->
       opaque "infix"
     | x when x = Obj.forward_tag ->
@@ -127,7 +127,7 @@ let rec dump r =
     | x when x < Obj.no_scan_tag ->
       let fields = get_fields [] s in
       "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
+      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
     | x when x = Obj.string_tag ->
       "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
     | x when x = Obj.double_tag ->

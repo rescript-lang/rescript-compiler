@@ -30,7 +30,7 @@ let make package_name cunits =
   let cmi_name = package_name in (* capital *)
   let cmi_sign : Types.signature = 
     cunits |> 
-    List.map (fun (cunit : string) -> 
+    Ext_list.map (fun (cunit : string) -> 
       Types.Sig_module(
         (Ident.create_persistent cunit),
         {md_type = 
@@ -45,7 +45,7 @@ let make package_name cunits =
     let _digest : Digest.t = Cmi_format.output_cmi 
     fname ochan 
     {cmi_name ; cmi_sign;
-     cmi_crcs = List.map (fun x -> x, None) cunits ; 
+     cmi_crcs = Ext_list.map (fun x -> x, None) cunits ; 
     cmi_flags = []} in
     close_out ochan
 

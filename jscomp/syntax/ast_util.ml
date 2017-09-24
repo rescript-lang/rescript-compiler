@@ -109,7 +109,7 @@ let generic_apply  kind loc
     (args : args ) cb   =
   let obj = self.expr self obj in
   let args =
-    List.map (fun (label,e) ->
+    Ext_list.map (fun (label,e) ->
         if label <> "" then
           Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
         self.expr self e
@@ -133,7 +133,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: Ext_list.map (fun x -> "",x) args)
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -147,7 +147,7 @@ let generic_apply  kind loc
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
     Ast_external.create_local_external loc ~pval_prim ~pval_type 
-      (("", fn) :: List.map (fun x -> "",x) args )
+      (("", fn) :: Ext_list.map (fun x -> "",x) args )
 
 
 let uncurry_fn_apply loc self fn args = 
@@ -497,7 +497,7 @@ let ocaml_obj_as_js_object
             generate_val_method_pair x.pcf_loc mapper label.txt  
               (mutable_flag = Mutable )
           in
-          (label_attr @ label_attr_types, public_label_attr_types)
+          (Ext_list.append label_attr  label_attr_types, public_label_attr_types)
         | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
           Location.raise_errorf ~loc "override flag not support currently"
         | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
@@ -662,7 +662,7 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
           (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
           (Ast_literal.type_exn ~loc ())
        )
-      (List.map (fun (x :Parsetree.case ) ->
+      (Ext_list.append (Ext_list.map (fun (x :Parsetree.case ) ->
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
@@ -672,8 +672,8 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
                         (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
            }
 
-         ) cases 
-     @ [
+         ) cases) 
+      [
        Exp.case  (Pat.any ~loc ()) none
      ])
     )

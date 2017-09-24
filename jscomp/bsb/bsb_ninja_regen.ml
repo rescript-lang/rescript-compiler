@@ -72,7 +72,7 @@ let regenerate_ninja
         Bsb_ninja_gen.output_ninja_and_namespace_map 
           ~cwd ~bsc_dir ~no_dev config ; 
         Literals.bsconfig_json :: config.globbed_dirs
-        |> List.map
+        |> Ext_list.map
           (fun x ->
              { Bsb_bsdeps.dir_or_file = x ;
                stamp = (Unix.stat (cwd // x)).st_mtime

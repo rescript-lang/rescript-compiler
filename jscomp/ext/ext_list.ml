@@ -25,6 +25,44 @@
 
 
 
+let rec map f l =
+  match l with
+  | [] ->
+    []
+  | [x1] ->
+    let y1 = f x1 in
+    [y1]
+  | [x1; x2] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    [y1; y2]
+  | [x1; x2; x3] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    [y1; y2; y3]
+  | [x1; x2; x3; x4] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    [y1; y2; y3; y4]
+  | x1::x2::x3::x4::x5::tail ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    let y5 = f x5 in
+    y1::y2::y3::y4::y5::(map f tail)
+
+let rec append l1 l2 = 
+  match l1 with
+  | a0::a1::a2::a3::a4::a5 -> a0::a1::a2::a3::a4::(append a5 l2)
+  | a0::a1::a2::a3::a4 -> a0::a1::a2::a3::(append a4 l2)
+  | a0::a1::a2::a3 -> a0::a1::a2::(append a3 l2)
+  | a0::a1::a2-> a0::a1::(append a2 l2)
+  | a0::a1 -> a0::(append a1 l2)    
+  | [] -> l2
 
 
 
@@ -159,7 +197,7 @@ let rec map2_last f l1 l2 =
   | ([], []) -> []
   | [u], [v] -> [f true u v ]
   | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
-  | (_, _) -> invalid_arg "List.map2_last"
+  | (_, _) -> invalid_arg "Ext_list.map2_last"
 
 let rec map_last f l1 =
   match l1 with

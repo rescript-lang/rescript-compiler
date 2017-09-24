@@ -119,7 +119,7 @@ let expect_string_list_unordered
 (*   | exception Not_found -> [] *)
 (*   | Atom _ | Lit _  *)
 (*   | Data _ -> error (key, List Any) *)
-(*   | List ls -> List.map expect_file_group  ls  *)
+(*   | List ls -> Ext_list.map expect_file_group  ls  *)
 
 (* and expect_file_group (x : Sexp_lexer.t)  = *)
 (*   match x with  *)

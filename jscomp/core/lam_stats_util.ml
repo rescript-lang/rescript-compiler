@@ -145,12 +145,13 @@ let rec get_arity
                 sw_numconsts = _;
                }) -> 
     all_lambdas meta (
-      let rest = (sw_consts |> List.map snd) @ (sw_blocks |> List.map snd ) in
+      let rest = 
+        Ext_list.append (sw_consts |> Ext_list.map snd)  (sw_blocks |> Ext_list.map snd ) in
       match sw_failaction with None -> rest | Some x -> x::rest )
   | Lstringswitch(l, sw, d) -> 
     begin match d with 
-      | None -> all_lambdas meta (List.map snd  sw )
-      | Some v -> all_lambdas meta (v:: List.map snd  sw)
+      | None -> all_lambdas meta (Ext_list.map snd  sw )
+      | Some v -> all_lambdas meta (v:: Ext_list.map snd  sw)
     end
   | Lstaticraise _ -> NA (* since it will not be in tail position *)
   | Lstaticcatch(_, _, handler) -> get_arity meta handler

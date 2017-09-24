@@ -80,7 +80,7 @@ let get_length t = Array.length t.used_mask
 
 let to_string env =  
   String.concat "," 
-    (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
+    (Ext_list.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
        (Ident_set.elements  env.unbounded ))
 
 let get_mutable_params (params : Ident.t list) (x : t ) = 

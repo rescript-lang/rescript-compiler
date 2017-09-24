@@ -348,7 +348,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     ( (* Obj.magic *) l : X.t)
   | Lapply ({fn; args; loc; status} )  ->
     let fn = f fn in
-    let args = List.map f args in 
+    let args = Ext_list.map f args in 
     Lapply { fn ; args; loc; status }
   | Lfunction({body; arity; function_kind; params } ) ->
     let body = f body in 
@@ -358,17 +358,17 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     Llet(str,id,arg,body)
   | Lletrec(decl, body) ->
     let body = f body in 
-    let decl = List.map (fun (id, exp) -> id, f exp) decl in 
+    let decl = Ext_list.map (fun (id, exp) -> id, f exp) decl in 
     Lletrec(decl,body)
   | Lglobal_module _ -> (l : X.t)      
   | Lprim {args; primitive ; loc}  ->
-    let args = List.map f args in 
+    let args = Ext_list.map f args in 
     Lprim { args; primitive; loc}
 
   | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
     let arg = f arg in 
-    let sw_consts = List.map (fun (key, case) -> key , f case) sw_consts in 
-    let sw_blocks = List.map (fun (key, case) -> key, f case) sw_blocks in 
+    let sw_consts = Ext_list.map (fun (key, case) -> key , f case) sw_consts in 
+    let sw_blocks = Ext_list.map (fun (key, case) -> key, f case) sw_blocks in 
     let sw_failaction = begin match sw_failaction with
       | None -> None
       | Some a -> Some (f a)
@@ -376,14 +376,14 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts})
   | Lstringswitch (arg,cases,default) ->
     let arg = f arg  in 
-    let cases = List.map (fun (k,act) -> k,f act) cases  in
+    let cases = Ext_list.map (fun (k,act) -> k,f act) cases  in
     let default = begin match default with 
       | None -> None
       | Some a -> Some (f a) 
     end in 
     Lstringswitch(arg,cases,default)
   | Lstaticraise (id,args) ->
-    let args = List.map f args in 
+    let args = Ext_list.map f args in 
     Lstaticraise(id,args)
   | Lstaticcatch(e1, vars , e2) ->
     let e1 = f e1 in 
@@ -411,7 +411,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
   | Lsend (k, met, obj, args, loc) ->
     let met = f met in 
     let obj = f obj in 
-    let args = List.map f args in 
+    let args = Ext_list.map f args in 
     Lsend(k,met,obj,args,loc)
 
   | Lifused (v, e) ->
@@ -1746,7 +1746,7 @@ let convert exports lam : _ * _  =
       (* ATT: Currently, the arity is one due to PPX *)
       prim ~primitive:Pdebugger ~args:[] loc 
     else 
-      let args = List.map aux args in 
+      let args = Ext_list.map aux args in 
       let primitive = match s with 
         | "#apply" -> Pjs_runtime_apply
         | "#apply1"
@@ -1812,7 +1812,7 @@ let convert exports lam : _ * _  =
     | Const_float_array (s) -> Const_float_array(s)
     | Const_immstring s -> Const_immstring s 
     | Const_block (i,t,xs) -> 
-      Const_block (i,t, List.map aux_constant xs)
+      Const_block (i,t, Ext_list.map aux_constant xs)
   and aux (lam : Lambda.lambda) : t = 
     match lam with 
     | Lvar x -> 
@@ -1835,7 +1835,7 @@ let convert exports lam : _ * _  =
               )
             ],loc
           ) -> (* replace all {!CamlinternalMod} function *)
-          let args = List.map aux args in
+          let args = Ext_list.map aux args in
           begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
             | "init_mod" ,  [_loc ; shape]  -> 
               begin match shape with 
@@ -1857,7 +1857,7 @@ let convert exports lam : _ * _  =
                   [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
                 )
           ->
-          let args = List.map aux args in
+          let args = Ext_list.map aux args in
           begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
             | "^", [ l; r ] 
               ->
@@ -1932,7 +1932,7 @@ let convert exports lam : _ * _  =
         | _ -> 
 
           (** we need do this eargly in case [aux fn] add some wrapper *)
-          apply (aux fn) (List.map aux args) 
+          apply (aux fn) (Ext_list.map aux args) 
             loc App_na
       end
     | Lfunction (Tupled,_,_) -> assert false
@@ -1963,7 +1963,7 @@ let convert exports lam : _ * _  =
       end
     | Lletrec (bindings,body)
       -> 
-      let bindings = List.map (fun (id, e) -> id, aux e) bindings in
+      let bindings = Ext_list.map (fun (id, e) -> id, aux e) bindings in
       let body = aux body in 
       let lam = Lletrec (bindings, body) in 
       scc bindings lam body  
@@ -1987,7 +1987,7 @@ let convert exports lam : _ * _  =
                Ext_list.length_larger_than_n 1 inner_args args
           -> 
 
-          aux (Lprim(external_fn, args @ [x], outer_loc))
+          aux (Lprim(external_fn, Ext_list.append args [x], outer_loc))
         | _ -> 
           let x  = aux x in 
           let f =  aux f in 
@@ -2020,17 +2020,17 @@ let convert exports lam : _ * _  =
                         )] 
                 -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
               | _ -> 
-                let args = List.map aux args in 
+                let args = Ext_list.map aux args in 
                 prim ~primitive:(Pccall a) ~args loc
             end
           else  
-            let args = List.map aux args in 
+            let args = Ext_list.map aux args in 
             prim ~primitive:(Pccall a) ~args loc
         | Ffi_obj_create labels ->
-          let args = List.map aux args in 
+          let args = Ext_list.map aux args in 
           prim ~primitive:(Pjs_object_create labels) ~args loc 
         | Ffi_bs(arg_types, result_type, ffi) ->
-          let args = List.map aux args in 
+          let args = Ext_list.map aux args in 
           if no_auto_uncurried_arg_types arg_types then   
             result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
               ~args loc 
@@ -2042,7 +2042,7 @@ let convert exports lam : _ * _  =
               ~args:n_args loc 
       end
     | Lprim (Pgetglobal id, args, loc) ->   
-      let args = List.map aux args in 
+      let args = Ext_list.map aux args in 
       if Ident.is_predef_exn id then 
         Lprim {primitive = Pglobal_exception id; args ; loc}
       else 
@@ -2053,7 +2053,7 @@ let convert exports lam : _ * _  =
         end  
     | Lprim (primitive,args, loc) 
       -> 
-      let args = List.map aux args in
+      let args = Ext_list.map aux args in
       lam_prim ~primitive ~args loc 
     | Lswitch (e,s) -> 
       let  e = aux e in 
@@ -2074,14 +2074,14 @@ let convert exports lam : _ * _  =
                        sw_blocks = []; 
                        sw_numblocks = 0;
                        sw_consts =
-                         List.map (fun (i,lam) -> i, aux lam) sw_consts;
+                         Ext_list.map (fun (i,lam) -> i, aux lam) sw_consts;
                        sw_numconsts
                       })
           end
         | _ -> Lswitch ( e, aux_switch s)
       end
     | Lstringswitch (e, cases, default,_) -> 
-      Lstringswitch (aux e, List.map (fun (x, b) -> x, aux b ) cases, 
+      Lstringswitch (aux e, Ext_list.map (fun (x, b) -> x, aux b ) cases, 
                      match default with 
                      | None -> None
                      | Some x -> Some (aux x)
@@ -2092,7 +2092,7 @@ let convert exports lam : _ * _  =
         | Some new_id -> Lstaticraise (new_id,[])
       end               
     | Lstaticraise (id, args) -> 
-      Lstaticraise (id, List.map aux args)
+      Lstaticraise (id, Ext_list.map aux args)
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) ) 
       -> (* peep-hole [i] aliased to [j] *)
 
@@ -2135,7 +2135,7 @@ let convert exports lam : _ * _  =
             | _ -> assert false 
           end
         | b ->     
-          Lsend(kind, aux a,  b, List.map aux ls, loc )
+          Lsend(kind, aux a,  b, Ext_list.map aux ls, loc )
       end
     | Levent (e, event) ->
       (* disabled by upstream*)
@@ -2144,9 +2144,9 @@ let convert exports lam : _ * _  =
       Lifused(id, aux e) (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : switch = 
     { sw_numconsts = s.sw_numconsts ; 
-      sw_consts = List.map (fun (i, lam) -> i, aux lam) s.sw_consts;
+      sw_consts = Ext_list.map (fun (i, lam) -> i, aux lam) s.sw_consts;
       sw_numblocks = s.sw_numblocks;
-      sw_blocks = List.map (fun (i,lam) -> i, aux lam ) s.sw_blocks;
+      sw_blocks = Ext_list.map (fun (i,lam) -> i, aux lam ) s.sw_blocks;
       sw_failaction = 
         match s.sw_failaction with 
         | None -> None 

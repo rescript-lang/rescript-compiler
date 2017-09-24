@@ -172,7 +172,7 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
           | Array -> 
             begin match (arg : E.t) with 
               | {expression_desc = Array (ls,_mutable_flag) ;_ } -> 
-                ls @ accs, eff 
+                Ext_list.append ls accs, eff 
               | _ -> 
                 Location.raise_errorf ~loc:call_loc
                   {|@{<error>Error:@} function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
@@ -183,7 +183,7 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
       else 
         let accs, eff = aux labels args in 
         let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-        acc @ accs, new_eff @ eff
+        Ext_list.append acc  accs, Ext_list.append new_eff  eff
     | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false      
 
@@ -206,7 +206,7 @@ let translate_scoped_module_val module_name fn  scopes =
       | x :: rest -> 
         (* let start = E.dot (E.var id )  x in  *)
         let start = E.external_var_dot ~external_name ~dot:x id in 
-        List.fold_left (fun acc x -> E.dot  acc x) start (rest @ [fn])
+        List.fold_left (fun acc x -> E.dot  acc x) start (Ext_list.append rest  [fn])
     end
   | None ->  
     (*  no [@@bs.module], assume it's global *)
@@ -216,7 +216,7 @@ let translate_scoped_module_val module_name fn  scopes =
         E.js_var fn
       | x::rest -> 
         let start = E.js_var x  in 
-        List.fold_left (fun acc x -> E.dot acc x) start (rest @ [fn])
+        List.fold_left (fun acc x -> E.dot acc x) start (Ext_list.append rest  [fn])
     end
 
 

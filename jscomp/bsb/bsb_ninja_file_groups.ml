@@ -50,8 +50,8 @@ let handle_generators oc
           begin match output, input with
             | output::outputs, input::inputs -> 
               Bsb_ninja_util.output_build oc 
-                ~outputs:(List.map map_to_source_dir  outputs)
-                ~inputs:(List.map map_to_source_dir inputs) 
+                ~outputs:(Ext_list.map map_to_source_dir  outputs)
+                ~inputs:(Ext_list.map map_to_source_dir inputs) 
                 ~output:(map_to_source_dir output)
                 ~input:(map_to_source_dir input)
                 ~rule

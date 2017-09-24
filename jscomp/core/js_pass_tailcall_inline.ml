@@ -218,7 +218,7 @@ let subst name export_set stats  =
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function
             *)
-            block @ self#block rest
+            Ext_list.append block @@ self#block rest
           | (None | Some _) ->
             self#statement st :: self#block rest
         end

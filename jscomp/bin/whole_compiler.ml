@@ -22367,9 +22367,9 @@ module Ext_list : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+val map : ('a -> 'b) -> 'a list -> 'b list 
 
-
-
+val append : 'a list -> 'a list -> 'a list 
 
 
 
@@ -22533,6 +22533,44 @@ end = struct
 
 
 
+let rec map f l =
+  match l with
+  | [] ->
+    []
+  | [x1] ->
+    let y1 = f x1 in
+    [y1]
+  | [x1; x2] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    [y1; y2]
+  | [x1; x2; x3] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    [y1; y2; y3]
+  | [x1; x2; x3; x4] ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    [y1; y2; y3; y4]
+  | x1::x2::x3::x4::x5::tail ->
+    let y1 = f x1 in
+    let y2 = f x2 in
+    let y3 = f x3 in
+    let y4 = f x4 in
+    let y5 = f x5 in
+    y1::y2::y3::y4::y5::(map f tail)
+
+let rec append l1 l2 = 
+  match l1 with
+  | a0::a1::a2::a3::a4::a5 -> a0::a1::a2::a3::a4::(append a5 l2)
+  | a0::a1::a2::a3::a4 -> a0::a1::a2::a3::(append a4 l2)
+  | a0::a1::a2::a3 -> a0::a1::a2::(append a3 l2)
+  | a0::a1::a2-> a0::a1::(append a2 l2)
+  | a0::a1 -> a0::(append a1 l2)    
+  | [] -> l2
 
 
 
@@ -22667,7 +22705,7 @@ let rec map2_last f l1 l2 =
   | ([], []) -> []
   | [u], [v] -> [f true u v ]
   | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
-  | (_, _) -> invalid_arg "List.map2_last"
+  | (_, _) -> invalid_arg "Ext_list.map2_last"
 
 let rec map_last f l1 =
   match l1 with
@@ -23102,10 +23140,10 @@ let rec dump r =
     match t with
     | _ when is_list r ->
       let fields = get_list r in
-      "[" ^ String.concat "; " (List.map dump fields) ^ "]"
+      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
     | 0 ->
       let fields = get_fields [] s in
-      "(" ^ String.concat ", " (List.map dump fields) ^ ")"
+      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
     | x when x = Obj.lazy_tag ->
       (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
          * clear if very large constructed values could have the same
@@ -23122,7 +23160,7 @@ let rec dump r =
       in
       (* No information on decoding the class (first field).  So just print
          * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (List.map dump slots) ^ ")"
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
     | x when x = Obj.infix_tag ->
       opaque "infix"
     | x when x = Obj.forward_tag ->
@@ -23130,7 +23168,7 @@ let rec dump r =
     | x when x < Obj.no_scan_tag ->
       let fields = get_fields [] s in
       "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (List.map dump fields) ^ ")"
+      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
     | x when x = Obj.string_tag ->
       "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
     | x when x = Obj.double_tag ->
@@ -23601,7 +23639,7 @@ let node_relative_path
     | x::xs , y :: ys when x = y
       -> go xs ys 
     | _, _ -> 
-      List.map (fun _ ->  Literals.node_parent) dir2 @ dir1 
+      Ext_list.append (Ext_list.map (fun _ ->  Literals.node_parent) dir2)  dir1 
   in
   match go dir1 dir2 with
   | (x :: _ ) as ys when x = Literals.node_parent -> 
@@ -25386,9 +25424,9 @@ let collect_from_main
             (*   dirname, excludes *)
             (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
             dirname,
-            Ext_list.flat_map 
+            Ext_list.append (Ext_list.flat_map 
               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
-              dir_excludes @ excludes
+              dir_excludes)  excludes
         in 
         Array.fold_left (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
@@ -25906,7 +25944,7 @@ end = struct
 open Ast_helper 
 
 let exp_apply_no_label ?loc ?attrs a b = 
-  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
+  Exp.apply ?loc ?attrs a (Ext_list.map (fun x -> "", x) b)
 
 let fun_no_label ?loc ?attrs  pat body = 
   Exp.fun_ ?loc ?attrs "" None pat body
@@ -59799,7 +59837,7 @@ let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 *)
 let create_js_module (name : string) : Ident.t = 
   let name = 
-    String.concat "" @@ List.map (Ext_string.capitalize_ascii ) @@ 
+    String.concat "" @@ Ext_list.map (Ext_string.capitalize_ascii ) @@ 
     Ext_string.split name '-' in
   (* TODO: if we do such transformation, we should avoid       collision for example:
       react-dom 
@@ -61407,7 +61445,7 @@ let get_length t = Array.length t.used_mask
 
 let to_string env =  
   String.concat "," 
-    (List.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
+    (Ext_list.map (fun (id : Ident.t) -> Printf.sprintf "%s/%d" id.name id.stamp)
        (Ident_set.elements  env.unbounded ))
 
 let get_mutable_params (params : Ident.t list) (x : t ) = 
@@ -68408,7 +68446,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     ( (* Obj.magic *) l : X.t)
   | Lapply ({fn; args; loc; status} )  ->
     let fn = f fn in
-    let args = List.map f args in 
+    let args = Ext_list.map f args in 
     Lapply { fn ; args; loc; status }
   | Lfunction({body; arity; function_kind; params } ) ->
     let body = f body in 
@@ -68418,17 +68456,17 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     Llet(str,id,arg,body)
   | Lletrec(decl, body) ->
     let body = f body in 
-    let decl = List.map (fun (id, exp) -> id, f exp) decl in 
+    let decl = Ext_list.map (fun (id, exp) -> id, f exp) decl in 
     Lletrec(decl,body)
   | Lglobal_module _ -> (l : X.t)      
   | Lprim {args; primitive ; loc}  ->
-    let args = List.map f args in 
+    let args = Ext_list.map f args in 
     Lprim { args; primitive; loc}
 
   | Lswitch(arg, {sw_consts; sw_numconsts; sw_blocks; sw_numblocks; sw_failaction}) ->
     let arg = f arg in 
-    let sw_consts = List.map (fun (key, case) -> key , f case) sw_consts in 
-    let sw_blocks = List.map (fun (key, case) -> key, f case) sw_blocks in 
+    let sw_consts = Ext_list.map (fun (key, case) -> key , f case) sw_consts in 
+    let sw_blocks = Ext_list.map (fun (key, case) -> key, f case) sw_blocks in 
     let sw_failaction = begin match sw_failaction with
       | None -> None
       | Some a -> Some (f a)
@@ -68436,14 +68474,14 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
     Lswitch(arg, { sw_consts; sw_blocks; sw_failaction; sw_numblocks; sw_numconsts})
   | Lstringswitch (arg,cases,default) ->
     let arg = f arg  in 
-    let cases = List.map (fun (k,act) -> k,f act) cases  in
+    let cases = Ext_list.map (fun (k,act) -> k,f act) cases  in
     let default = begin match default with 
       | None -> None
       | Some a -> Some (f a) 
     end in 
     Lstringswitch(arg,cases,default)
   | Lstaticraise (id,args) ->
-    let args = List.map f args in 
+    let args = Ext_list.map f args in 
     Lstaticraise(id,args)
   | Lstaticcatch(e1, vars , e2) ->
     let e1 = f e1 in 
@@ -68471,7 +68509,7 @@ let inner_map (f : t -> X.t ) (l : t) : X.t =
   | Lsend (k, met, obj, args, loc) ->
     let met = f met in 
     let obj = f obj in 
-    let args = List.map f args in 
+    let args = Ext_list.map f args in 
     Lsend(k,met,obj,args,loc)
 
   | Lifused (v, e) ->
@@ -69806,7 +69844,7 @@ let convert exports lam : _ * _  =
       (* ATT: Currently, the arity is one due to PPX *)
       prim ~primitive:Pdebugger ~args:[] loc 
     else 
-      let args = List.map aux args in 
+      let args = Ext_list.map aux args in 
       let primitive = match s with 
         | "#apply" -> Pjs_runtime_apply
         | "#apply1"
@@ -69872,7 +69910,7 @@ let convert exports lam : _ * _  =
     | Const_float_array (s) -> Const_float_array(s)
     | Const_immstring s -> Const_immstring s 
     | Const_block (i,t,xs) -> 
-      Const_block (i,t, List.map aux_constant xs)
+      Const_block (i,t, Ext_list.map aux_constant xs)
   and aux (lam : Lambda.lambda) : t = 
     match lam with 
     | Lvar x -> 
@@ -69895,7 +69933,7 @@ let convert exports lam : _ * _  =
               )
             ],loc
           ) -> (* replace all {!CamlinternalMod} function *)
-          let args = List.map aux args in
+          let args = Ext_list.map aux args in
           begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
             | "init_mod" ,  [_loc ; shape]  -> 
               begin match shape with 
@@ -69917,7 +69955,7 @@ let convert exports lam : _ * _  =
                   [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
                 )
           ->
-          let args = List.map aux args in
+          let args = Ext_list.map aux args in
           begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
             | "^", [ l; r ] 
               ->
@@ -69992,7 +70030,7 @@ let convert exports lam : _ * _  =
         | _ -> 
 
           (** we need do this eargly in case [aux fn] add some wrapper *)
-          apply (aux fn) (List.map aux args) 
+          apply (aux fn) (Ext_list.map aux args) 
             loc App_na
       end
     | Lfunction (Tupled,_,_) -> assert false
@@ -70023,7 +70061,7 @@ let convert exports lam : _ * _  =
       end
     | Lletrec (bindings,body)
       -> 
-      let bindings = List.map (fun (id, e) -> id, aux e) bindings in
+      let bindings = Ext_list.map (fun (id, e) -> id, aux e) bindings in
       let body = aux body in 
       let lam = Lletrec (bindings, body) in 
       scc bindings lam body  
@@ -70047,7 +70085,7 @@ let convert exports lam : _ * _  =
                Ext_list.length_larger_than_n 1 inner_args args
           -> 
 
-          aux (Lprim(external_fn, args @ [x], outer_loc))
+          aux (Lprim(external_fn, Ext_list.append args [x], outer_loc))
         | _ -> 
           let x  = aux x in 
           let f =  aux f in 
@@ -70080,17 +70118,17 @@ let convert exports lam : _ * _  =
                         )] 
                 -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
               | _ -> 
-                let args = List.map aux args in 
+                let args = Ext_list.map aux args in 
                 prim ~primitive:(Pccall a) ~args loc
             end
           else  
-            let args = List.map aux args in 
+            let args = Ext_list.map aux args in 
             prim ~primitive:(Pccall a) ~args loc
         | Ffi_obj_create labels ->
-          let args = List.map aux args in 
+          let args = Ext_list.map aux args in 
           prim ~primitive:(Pjs_object_create labels) ~args loc 
         | Ffi_bs(arg_types, result_type, ffi) ->
-          let args = List.map aux args in 
+          let args = Ext_list.map aux args in 
           if no_auto_uncurried_arg_types arg_types then   
             result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
               ~args loc 
@@ -70102,7 +70140,7 @@ let convert exports lam : _ * _  =
               ~args:n_args loc 
       end
     | Lprim (Pgetglobal id, args, loc) ->   
-      let args = List.map aux args in 
+      let args = Ext_list.map aux args in 
       if Ident.is_predef_exn id then 
         Lprim {primitive = Pglobal_exception id; args ; loc}
       else 
@@ -70113,7 +70151,7 @@ let convert exports lam : _ * _  =
         end  
     | Lprim (primitive,args, loc) 
       -> 
-      let args = List.map aux args in
+      let args = Ext_list.map aux args in
       lam_prim ~primitive ~args loc 
     | Lswitch (e,s) -> 
       let  e = aux e in 
@@ -70134,14 +70172,14 @@ let convert exports lam : _ * _  =
                        sw_blocks = []; 
                        sw_numblocks = 0;
                        sw_consts =
-                         List.map (fun (i,lam) -> i, aux lam) sw_consts;
+                         Ext_list.map (fun (i,lam) -> i, aux lam) sw_consts;
                        sw_numconsts
                       })
           end
         | _ -> Lswitch ( e, aux_switch s)
       end
     | Lstringswitch (e, cases, default,_) -> 
-      Lstringswitch (aux e, List.map (fun (x, b) -> x, aux b ) cases, 
+      Lstringswitch (aux e, Ext_list.map (fun (x, b) -> x, aux b ) cases, 
                      match default with 
                      | None -> None
                      | Some x -> Some (aux x)
@@ -70152,7 +70190,7 @@ let convert exports lam : _ * _  =
         | Some new_id -> Lstaticraise (new_id,[])
       end               
     | Lstaticraise (id, args) -> 
-      Lstaticraise (id, List.map aux args)
+      Lstaticraise (id, Ext_list.map aux args)
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) ) 
       -> (* peep-hole [i] aliased to [j] *)
 
@@ -70195,7 +70233,7 @@ let convert exports lam : _ * _  =
             | _ -> assert false 
           end
         | b ->     
-          Lsend(kind, aux a,  b, List.map aux ls, loc )
+          Lsend(kind, aux a,  b, Ext_list.map aux ls, loc )
       end
     | Levent (e, event) ->
       (* disabled by upstream*)
@@ -70204,9 +70242,9 @@ let convert exports lam : _ * _  =
       Lifused(id, aux e) (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : switch = 
     { sw_numconsts = s.sw_numconsts ; 
-      sw_consts = List.map (fun (i, lam) -> i, aux lam) s.sw_consts;
+      sw_consts = Ext_list.map (fun (i, lam) -> i, aux lam) s.sw_consts;
       sw_numblocks = s.sw_numblocks;
-      sw_blocks = List.map (fun (i,lam) -> i, aux lam ) s.sw_blocks;
+      sw_blocks = Ext_list.map (fun (i,lam) -> i, aux lam ) s.sw_blocks;
       sw_failaction = 
         match s.sw_failaction with 
         | None -> None 
@@ -73539,8 +73577,9 @@ let of_block ?comment ?e block : t =
              begin match e with 
                | None -> block 
                | Some e -> 
-                 block @ [{J.statement_desc = Return {return_value = e } ;
-                           comment}]
+                 Ext_list.append block  
+                   [{J.statement_desc = Return {return_value = e } ;
+                     comment}]
              end
             , Js_fun_env.empty 0)
     } []
@@ -73562,9 +73601,9 @@ let is_null_undefined ?comment (x: t) : t =
   | Number _ | Array _ | Caml_block _ -> caml_false
   | _ -> 
     bool_of_boolean
-    { comment ; 
-      expression_desc = Is_null_undefined_to_boolean x 
-    }
+      { comment ; 
+        expression_desc = Is_null_undefined_to_boolean x 
+      }
 let not_implemented ?comment (s : string) : t =  
   runtime_call
     Js_runtime_modules.missing_polyfill
@@ -74695,17 +74734,17 @@ let rec struct_const ppf (cst : Lam.constant) =
   |  (Const_nativeint n) -> fprintf ppf "%nin" n
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
   | Const_block(tag,_, []) ->
-      fprintf ppf "[%i]" tag
+    fprintf ppf "[%i]" tag
   | Const_block(tag,_, sc1::scl) ->
-      let sconsts ppf scl =
-        List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl in
-      fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
+    let sconsts ppf scl =
+      List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl in
+    fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
   | Const_float_array [] ->
-      fprintf ppf "[| |]"
+    fprintf ppf "[| |]"
   | Const_float_array (f1 :: fl) ->
-      let floats ppf fl =
-        List.iter (fun f -> fprintf ppf "@ %s" f) fl in
-      fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
+    let floats ppf fl =
+      List.iter (fun f -> fprintf ppf "@ %s" f) fl in
+    fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
 
 let boxed_integer_name (i : Lambda.boxed_integer) =
   match i with 
@@ -74804,15 +74843,15 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
   | Pfield (n,_) -> fprintf ppf "field %i" n
   | Psetfield(n, ptr, _) ->
-      let instr = if ptr then "setfield_ptr " else "setfield_imm " in
-      fprintf ppf "%s%i" instr n
+    let instr = if ptr then "setfield_ptr " else "setfield_imm " in
+    fprintf ppf "%s%i" instr n
   | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
   | Psetfloatfield (n,_) -> fprintf ppf "setfloatfield %i" n
   | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
   | Plazyforce -> fprintf ppf "force"
   | Pccall p -> fprintf ppf "%s" p.prim_name
-   | Pjs_call (prim_name, _, _) -> 
-      fprintf ppf  "%s[js]" prim_name 
+  | Pjs_call (prim_name, _, _) -> 
+    fprintf ppf  "%s[js]" prim_name 
   | Pjs_object_create obj_create -> 
     fprintf ppf "[js.obj]"
   | Praise  -> fprintf ppf "raise"
@@ -74877,13 +74916,13 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Parrayrefs _ -> fprintf ppf "array.get"
   | Parraysets _ -> fprintf ppf "array.set"
   | Pctconst c ->
-     let const_name = match c with
-       | Big_endian -> "big_endian"
-       | Word_size -> "word_size"
-       | Ostype_unix -> "ostype_unix"
-       | Ostype_win32 -> "ostype_win32"
-       | Ostype_cygwin -> "ostype_cygwin" in
-     fprintf ppf "sys.constant_%s" const_name
+    let const_name = match c with
+      | Big_endian -> "big_endian"
+      | Word_size -> "word_size"
+      | Ostype_unix -> "ostype_unix"
+      | Ostype_win32 -> "ostype_win32"
+      | Ostype_cygwin -> "ostype_cygwin" in
+    fprintf ppf "sys.constant_%s" const_name
   | Pisint -> fprintf ppf "isint"
   | Pisout -> fprintf ppf "isout"
   | Pbittest -> fprintf ppf "testbit"
@@ -74909,49 +74948,49 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
   | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
   | Pbigarrayref(unsafe, n, kind, layout) ->
-      print_bigarray "get" unsafe kind ppf layout
+    print_bigarray "get" unsafe kind ppf layout
   | Pbigarrayset(unsafe, n, kind, layout) ->
-      print_bigarray "set" unsafe kind ppf layout
+    print_bigarray "set" unsafe kind ppf layout
   | Pbigarraydim(n) -> fprintf ppf "Bigarray.dim_%i" n
   | Pstring_load_16(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get16"
-     else fprintf ppf "string.get16"
+    if unsafe then fprintf ppf "string.unsafe_get16"
+    else fprintf ppf "string.get16"
   | Pstring_load_32(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get32"
-     else fprintf ppf "string.get32"
+    if unsafe then fprintf ppf "string.unsafe_get32"
+    else fprintf ppf "string.get32"
   | Pstring_load_64(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_get64"
-     else fprintf ppf "string.get64"
+    if unsafe then fprintf ppf "string.unsafe_get64"
+    else fprintf ppf "string.get64"
   | Pstring_set_16(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set16"
-     else fprintf ppf "string.set16"
+    if unsafe then fprintf ppf "string.unsafe_set16"
+    else fprintf ppf "string.set16"
   | Pstring_set_32(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set32"
-     else fprintf ppf "string.set32"
+    if unsafe then fprintf ppf "string.unsafe_set32"
+    else fprintf ppf "string.set32"
   | Pstring_set_64(unsafe) ->
-     if unsafe then fprintf ppf "string.unsafe_set64"
-     else fprintf ppf "string.set64"
+    if unsafe then fprintf ppf "string.unsafe_set64"
+    else fprintf ppf "string.set64"
   | Pbigstring_load_16(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
-     else fprintf ppf "bigarray.array1.get16"
+    if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
+    else fprintf ppf "bigarray.array1.get16"
   | Pbigstring_load_32(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get32"
-     else fprintf ppf "bigarray.array1.get32"
+    if unsafe then fprintf ppf "bigarray.array1.unsafe_get32"
+    else fprintf ppf "bigarray.array1.get32"
   | Pbigstring_load_64(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_get64"
-     else fprintf ppf "bigarray.array1.get64"
+    if unsafe then fprintf ppf "bigarray.array1.unsafe_get64"
+    else fprintf ppf "bigarray.array1.get64"
   | Pbigstring_set_16(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set16"
-     else fprintf ppf "bigarray.array1.set16"
+    if unsafe then fprintf ppf "bigarray.array1.unsafe_set16"
+    else fprintf ppf "bigarray.array1.set16"
   | Pbigstring_set_32(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set32"
-     else fprintf ppf "bigarray.array1.set32"
+    if unsafe then fprintf ppf "bigarray.array1.unsafe_set32"
+    else fprintf ppf "bigarray.array1.set32"
   | Pbigstring_set_64(unsafe) ->
-     if unsafe then fprintf ppf "bigarray.array1.unsafe_set64"
-     else fprintf ppf "bigarray.array1.set64"
+    if unsafe then fprintf ppf "bigarray.array1.unsafe_set64"
+    else fprintf ppf "bigarray.array1.set64"
   | Pbswap16 -> fprintf ppf "bswap16"
   | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
-  
+
 
 type print_kind = 
   | Alias 
@@ -74973,22 +75012,22 @@ let to_print_kind (k : Lam.let_kind) : print_kind =
   | Strict -> Strict
   | StrictOpt -> StrictOpt
   | Variable -> Variable
-  
+
 let rec aux (acc : (print_kind * Ident.t * Lam.t ) list) (lam : Lam.t) = 
   match lam with 
   | Llet (str3, id3, arg3, body3) ->
-      aux ((to_print_kind str3,id3, arg3)::acc) body3
+    aux ((to_print_kind str3,id3, arg3)::acc) body3
   | Lletrec (bind_args, body) ->
-      aux 
-        (List.map (fun (id,l) -> (Recursive,id,l)) bind_args 
-         @ acc) body
+    aux 
+      (Ext_list.append (Ext_list.map (fun (id,l) -> (Recursive,id,l)) bind_args)
+       @@ acc) body
   | e ->  (acc , e) 
 
 type left_var = 
-    {
-     kind : print_kind ;
-     id : Ident.t
-   }
+  {
+    kind : print_kind ;
+    id : Ident.t
+  }
 
 type left = 
   | Id of left_var
@@ -75000,181 +75039,181 @@ type left =
 let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t = 
   match lam with 
   | Llet(str,id, arg, body) ->
-      aux [to_print_kind str, id, arg] body
+    aux [to_print_kind str, id, arg] body
   | Lletrec(bind_args, body) ->
-      aux 
-        (List.map (fun (id,l) -> (Recursive, id,l)) bind_args) 
-        body
+    aux 
+      (Ext_list.map (fun (id,l) -> (Recursive, id,l)) bind_args) 
+      body
   | _ -> assert false
 
-        
+
 let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
   match  Env.find_module (Pident id) env with 
   | {md_type = Mty_signature signature  ; _ } -> 
-      (* Env.prefix_idents, could be cached  *)
-      let serializable_sigs = 
-        List.filter (fun x ->
-            match x with 
-            | Sig_typext _ 
-            | Sig_module _
-            | Sig_class _ -> true
-            | Sig_value(_, {val_kind = Val_prim _}) -> false
-            | Sig_value _ -> true
-            | _ -> false
-                    ) signature  in
-      (begin match List.nth  serializable_sigs  pos  with 
-      | Sig_value (i,_) 
-      | Sig_module (i,_,_) -> i 
-      | Sig_typext (i,_,_) -> i 
-      | Sig_modtype(i,_) -> i 
-      | Sig_class (i,_,_) -> i 
-      | Sig_class_type(i,_,_) -> i 
-      | Sig_type(i,_,_) -> i 
-      end).name
+    (* Env.prefix_idents, could be cached  *)
+    let serializable_sigs = 
+      List.filter (fun x ->
+          match x with 
+          | Sig_typext _ 
+          | Sig_module _
+          | Sig_class _ -> true
+          | Sig_value(_, {val_kind = Val_prim _}) -> false
+          | Sig_value _ -> true
+          | _ -> false
+        ) signature  in
+    (begin match List.nth  serializable_sigs  pos  with 
+       | Sig_value (i,_) 
+       | Sig_module (i,_,_) -> i 
+       | Sig_typext (i,_,_) -> i 
+       | Sig_modtype(i,_) -> i 
+       | Sig_class (i,_,_) -> i 
+       | Sig_class_type(i,_,_) -> i 
+       | Sig_type(i,_,_) -> i 
+     end).name
   | _ -> assert false
 
 
 
 let lambda use_env env ppf v  =
   let rec lam ppf (l : Lam.t) = match l with 
-  | Lvar id ->
+    | Lvar id ->
       Ident.print ppf id
-  | Lam.Lglobal_module id -> 
-    fprintf ppf "global %a" Ident.print id
-  | Lconst cst ->
+    | Lam.Lglobal_module id -> 
+      fprintf ppf "global %a" Ident.print id
+    | Lconst cst ->
       struct_const ppf cst
-  | Lapply { fn; args; } ->
+    | Lapply { fn; args; } ->
       let lams ppf args =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
       fprintf ppf "@[<2>(apply@ %a%a)@]" lam fn lams args
-  | Lfunction{ function_kind; params; body; _} ->
+    | Lfunction{ function_kind; params; body; _} ->
       let pr_params ppf params =
         match function_kind with
         | Curried ->
-            List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
-        (* | Tupled -> *)
-        (*     fprintf ppf " ("; *)
-        (*     let first = ref true in *)
-        (*     List.iter *)
-        (*       (fun param -> *)
-        (*         if !first then first := false else fprintf ppf ",@ "; *)
-        (*         Ident.print ppf param) *)
-        (*       params; *)
-        (*     fprintf ppf ")"  *)
+          List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
+          (* | Tupled -> *)
+          (*     fprintf ppf " ("; *)
+          (*     let first = ref true in *)
+          (*     List.iter *)
+          (*       (fun param -> *)
+          (*         if !first then first := false else fprintf ppf ",@ "; *)
+          (*         Ident.print ppf param) *)
+          (*       params; *)
+          (*     fprintf ppf ")"  *)
       in
       fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
-  | Llet _ | Lletrec _ as x ->
+    | Llet _ | Lletrec _ as x ->
       let args, body =   flatten x  in
       let bindings ppf id_arg_list =
         let spc = ref false in
         List.iter
           (fun (k, id, l) ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
+             if !spc then fprintf ppf "@ " else spc := true;
+             fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
           id_arg_list in
       fprintf ppf
         "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
       fprintf ppf ")@ %a)@]"  lam body
-  | Lprim { 
-      primitive = Pfield (n,_); 
-      args = [ Lglobal_module id ]
-      ;  _} when use_env ->
+    | Lprim { 
+        primitive = Pfield (n,_); 
+        args = [ Lglobal_module id ]
+        ;  _} when use_env ->
       fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
 
-  | Lprim { 
-      primitive  = Psetfield (n,_,_); 
-      args = [ Lglobal_module id  ;
-               e ]
-      ;  _} when use_env  ->
+    | Lprim { 
+        primitive  = Psetfield (n,_,_); 
+        args = [ Lglobal_module id  ;
+                 e ]
+        ;  _} when use_env  ->
       fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
         lam e
-  | Lprim{primitive = prim; args = largs;  _} ->
+    | Lprim{primitive = prim; args = largs;  _} ->
       let lams ppf largs =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
       fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
-  | Lswitch(larg, sw) ->
+    | Lswitch(larg, sw) ->
       let switch ppf (sw : Lam.switch) =
         let spc = ref false in
         List.iter
-         (fun (n, l) ->
-           if !spc then fprintf ppf "@ " else spc := true;
-           fprintf ppf "@[<hv 1>case int %i:@ %a@]" n lam l)
-         sw.sw_consts;
+          (fun (n, l) ->
+             if !spc then fprintf ppf "@ " else spc := true;
+             fprintf ppf "@[<hv 1>case int %i:@ %a@]" n lam l)
+          sw.sw_consts;
         List.iter
           (fun (n, l) ->
-            if !spc then fprintf ppf "@ " else spc := true;
-            fprintf ppf "@[<hv 1>case tag %i:@ %a@]" n lam l)
+             if !spc then fprintf ppf "@ " else spc := true;
+             fprintf ppf "@[<hv 1>case tag %i:@ %a@]" n lam l)
           sw.sw_blocks ;
         begin match sw.sw_failaction with
-        | None  -> ()
-        | Some l ->
+          | None  -> ()
+          | Some l ->
             if !spc then fprintf ppf "@ " else spc := true;
             fprintf ppf "@[<hv 1>default:@ %a@]" lam l
         end in
       fprintf ppf
-       "@[<1>(%s %a@ @[<v 0>%a@])@]"
-       (match sw.sw_failaction with None -> "switch*" | _ -> "switch")
-       lam larg switch sw
-  | Lstringswitch(arg, cases, default) ->
+        "@[<1>(%s %a@ @[<v 0>%a@])@]"
+        (match sw.sw_failaction with None -> "switch*" | _ -> "switch")
+        lam larg switch sw
+    | Lstringswitch(arg, cases, default) ->
       let switch ppf cases =
         let spc = ref false in
         List.iter
-         (fun (s, l) ->
-           if !spc then fprintf ppf "@ " else spc := true;
-           fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
+          (fun (s, l) ->
+             if !spc then fprintf ppf "@ " else spc := true;
+             fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
           cases;
         begin match default with
-        | Some default ->
+          | Some default ->
             if !spc then fprintf ppf "@ " else spc := true;
             fprintf ppf "@[<hv 1>default:@ %a@]" lam default
-        | None -> ()
+          | None -> ()
         end in
       fprintf ppf
-       "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
-  | Lstaticraise (i, ls)  ->
+        "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
+    | Lstaticraise (i, ls)  ->
       let lams ppf largs =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
       fprintf ppf "@[<2>(exit@ %d%a)@]" i lams ls;
-  | Lstaticcatch(lbody, (i, vars), lhandler) ->
+    | Lstaticcatch(lbody, (i, vars), lhandler) ->
       fprintf ppf "@[<2>(catch@ %a@;<1 -1>with (%d%a)@ %a)@]"
         lam lbody i
         (fun ppf vars -> match vars with
-          | [] -> ()
-          | _ ->
-              List.iter
-                (fun x -> fprintf ppf " %a" Ident.print x)
-                vars)
+           | [] -> ()
+           | _ ->
+             List.iter
+               (fun x -> fprintf ppf " %a" Ident.print x)
+               vars)
         vars
         lam lhandler
-  | Ltrywith(lbody, param, lhandler) ->
+    | Ltrywith(lbody, param, lhandler) ->
       fprintf ppf "@[<2>(try@ %a@;<1 -1>with %a@ %a)@]"
         lam lbody Ident.print param lam lhandler
-  | Lifthenelse(lcond, lif, lelse) ->
+    | Lifthenelse(lcond, lif, lelse) ->
       fprintf ppf "@[<2>(if@ %a@ %a@ %a)@]" lam lcond lam lif lam lelse
-  | Lsequence(l1, l2) ->
+    | Lsequence(l1, l2) ->
       fprintf ppf "@[<2>(seq@ %a@ %a)@]" lam l1 sequence l2
-  | Lwhile(lcond, lbody) ->
+    | Lwhile(lcond, lbody) ->
       fprintf ppf "@[<2>(while@ %a@ %a)@]" lam lcond lam lbody
-  | Lfor(param, lo, hi, dir, body) ->
+    | Lfor(param, lo, hi, dir, body) ->
       fprintf ppf "@[<2>(for %a@ %a@ %s@ %a@ %a)@]"
-       Ident.print param lam lo
-       (match dir with Upto -> "to" | Downto -> "downto")
-       lam hi lam body
-  | Lassign(id, expr) ->
+        Ident.print param lam lo
+        (match dir with Upto -> "to" | Downto -> "downto")
+        lam hi lam body
+    | Lassign(id, expr) ->
       fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
-  | Lsend (k, met, obj, largs, _) ->
+    | Lsend (k, met, obj, largs, _) ->
       let args ppf largs =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
       let kind =
         if k = Self then "self" else if k = Cached then "cache" else "" in
       fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
-  | Lifused(id, expr) ->
+    | Lifused(id, expr) ->
       fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
 
-and sequence ppf = function
-  | Lsequence(l1, l2) ->
+  and sequence ppf = function
+    | Lsequence(l1, l2) ->
       fprintf ppf "%a@ %a" sequence l1 sequence l2
-  | l ->
+    | l ->
       lam ppf l
   in 
   lam ppf v
@@ -75187,7 +75226,7 @@ let lambda = lambda false Env.empty
 let rec flatten_seq acc (lam : Lam.t) =
   match lam with 
   | Lsequence(l1,l2) -> 
-      flatten_seq (flatten_seq acc l1) l2
+    flatten_seq (flatten_seq acc l1) l2
   | x -> x :: acc 
 
 exception Not_a_module
@@ -75195,39 +75234,42 @@ exception Not_a_module
 let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) = 
   match lam with 
   | Llet (str,id,arg,body) ->
-      flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
+    flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
   | Lletrec (bind_args, body) ->
-      flat ( List.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args @ acc) body 
+    flat 
+      (Ext_list.append 
+        (Ext_list.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args) @@ acc) 
+      body 
   | Lsequence (l,r) -> 
-      flat (flat acc l) r
+    flat (flat acc l) r
   | x -> (Nop, x) :: acc 
 
 let lambda_as_module env  ppf (lam : Lam.t) = 
   try
-  (* match lam with *)
-  (* | Lprim {primitive = Psetglobal id ; args =  [biglambda]; _} *)
-  (* might be wrong in toplevel *) 
-  (* -> *)
-      
-      begin match flat [] lam  with 
+    (* match lam with *)
+    (* | Lprim {primitive = Psetglobal id ; args =  [biglambda]; _} *)
+    (* might be wrong in toplevel *) 
+    (* -> *)
+
+    begin match flat [] lam  with 
       | (Nop, Lprim {primitive = Pmakeblock (_, _, _); args =  toplevels; _})
         :: rest ->
-          (* let spc = ref false in *)
-          List.iter
-            (fun (left, l) ->
-              match left with 
-              | Id { kind = k; id } ->
-                  fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) (env_lambda env) l
-              | Nop -> 
+        (* let spc = ref false in *)
+        List.iter
+          (fun (left, l) ->
+             match left with 
+             | Id { kind = k; id } ->
+               fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) (env_lambda env) l
+             | Nop -> 
 
-                  fprintf ppf "@[<2>%a@]@."   (env_lambda env) l
-            )
+               fprintf ppf "@[<2>%a@]@."   (env_lambda env) l
+          )
 
-            @@ List.rev rest
-          
-          
+        @@ List.rev rest
+
+
       | _ -> raise Not_a_module
-      end
+    end
   (* | _ -> raise Not_a_module *)
   with _ -> 
     env_lambda env ppf lam;
@@ -75569,26 +75611,26 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
       Ident_map.find_default id s l
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
-      Lam.apply (subst fn) (List.map subst args) loc status
+      Lam.apply (subst fn) (Ext_list.map subst args) loc status
     | Lfunction {arity; function_kind; params; body} -> 
       Lam.function_ ~arity ~function_kind  ~params ~body:(subst body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
-      Lam.letrec (List.map subst_decl decl) (subst body)
+      Lam.letrec (Ext_list.map subst_decl decl) (subst body)
     | Lprim { primitive ; args; loc} -> 
-      Lam.prim ~primitive ~args:(List.map subst args) loc
+      Lam.prim ~primitive ~args:(Ext_list.map subst args) loc
     | Lam.Lglobal_module _ -> x  
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
-        {sw with sw_consts = List.map subst_case sw.sw_consts;
-                 sw_blocks = List.map subst_case sw.sw_blocks;
+        {sw with sw_consts = Ext_list.map subst_case sw.sw_consts;
+                 sw_blocks = Ext_list.map subst_case sw.sw_blocks;
                  sw_failaction = subst_opt  sw.sw_failaction; }
     | Lstringswitch (arg,cases,default) ->
       Lam.stringswitch
-        (subst arg) (List.map subst_strcase cases) (subst_opt default)
+        (subst arg) (Ext_list.map subst_strcase cases) (subst_opt default)
     | Lstaticraise (i,args)
-      ->  Lam.staticraise i (List.map subst args)
+      ->  Lam.staticraise i (Ext_list.map subst args)
     | Lstaticcatch(e1, io, e2)
       -> Lam.staticcatch (subst e1) io (subst e2)
     | Ltrywith(e1, exn, e2)
@@ -75604,7 +75646,7 @@ let subst_lambda (s : Lam.t Ident_map.t) lam =
     | Lassign(id, e) -> 
       Lam.assign id (subst e)
     | Lsend (k, met, obj, args, loc) ->
-      Lam.send k (subst met) (subst obj) (List.map subst args) loc
+      Lam.send k (subst met) (subst obj) (Ext_list.map subst args) loc
     | Lifused (v, e) -> Lam.ifused v (subst e)
   and subst_decl (id, exp) = (id, subst exp)
   and subst_case (key, case) = (key, subst case)
@@ -85075,7 +85117,7 @@ let reset () =
 
 let create_js_module (hint_name : string) : Ident.t = 
   let hint_name = 
-    String.concat "" @@ List.map (Ext_string.capitalize_ascii ) @@ 
+    String.concat "" @@ Ext_list.map (Ext_string.capitalize_ascii ) @@ 
     Ext_string.split hint_name '-' in
   Ident.create hint_name
 
@@ -88576,7 +88618,7 @@ let node_program ~output_dir f ( x : J.deps_program) =
       L.require
       Ext_pp_scope.empty
       f
-      (List.map 
+      (Ext_list.map 
          (fun x -> 
             Lam_module_ident.id x,
             Js_name_of_module_id.string_of_module_id ~output_dir
@@ -88632,7 +88674,7 @@ let es6_program  ~output_dir fmt f (  x : J.deps_program) =
     Js_dump_import_export.imports
       Ext_pp_scope.empty
       f
-      (List.map 
+      (Ext_list.map 
          (fun x -> 
             Lam_module_ident.id x,
             Js_name_of_module_id.string_of_module_id ~output_dir
@@ -90510,7 +90552,7 @@ end = struct
 
 let _l idents = 
   Ext_log.err __LOC__ "hey .. %s@." 
-    (String.concat "," @@ List.map (fun  i -> i.Ident.name ) idents) 
+    (String.concat "," @@ Ext_list.map (fun  i -> i.Ident.name ) idents) 
 
 (* 
 
@@ -91070,7 +91112,7 @@ let subst name export_set stats  =
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function
             *)
-            block @ self#block rest
+            Ext_list.append block @@ self#block rest
           | (None | Some _) ->
             self#statement st :: self#block rest
         end
@@ -91713,12 +91755,13 @@ let rec get_arity
                 sw_numconsts = _;
                }) -> 
     all_lambdas meta (
-      let rest = (sw_consts |> List.map snd) @ (sw_blocks |> List.map snd ) in
+      let rest = 
+        Ext_list.append (sw_consts |> Ext_list.map snd)  (sw_blocks |> Ext_list.map snd ) in
       match sw_failaction with None -> rest | Some x -> x::rest )
   | Lstringswitch(l, sw, d) -> 
     begin match d with 
-      | None -> all_lambdas meta (List.map snd  sw )
-      | Some v -> all_lambdas meta (v:: List.map snd  sw)
+      | None -> all_lambdas meta (Ext_list.map snd  sw )
+      | Some v -> all_lambdas meta (v:: Ext_list.map snd  sw)
     end
   | Lstaticraise _ -> NA (* since it will not be in tail position *)
   | Lstaticcatch(_, _, handler) -> get_arity meta handler
@@ -92391,7 +92434,7 @@ let empty_record_info = Lambda.Blk_record [||] (* careful to share*)
 (* TODO: add label to the comment *)
 (* let make  mutable_flag (args : (string * J.expression) list) = *)
 (*   E.make_block ~comment:"record"  *)
-(*     E.zero_int_literal empty_record_info (List.map snd args) mutable_flag *)
+(*     E.zero_int_literal empty_record_info (Ext_list.map snd args) mutable_flag *)
 
 
 
@@ -92695,17 +92738,17 @@ let rewrite (map :   _ Ident_hashtbl.t)
       Lam.let_ str v  l1  l2 
     | Lletrec(bindings, body) ->
       (*order matters see GPR #405*)
-      let vars = List.map (fun (k, _) -> rebind k) bindings in 
+      let vars = Ext_list.map (fun (k, _) -> rebind k) bindings in 
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lam.letrec bindings body
     | Lfunction{arity; function_kind; params; body} -> 
-      let params =  List.map rebind params in
+      let params =  Ext_list.map rebind params in
       let body = aux body in      
       Lam.function_ ~arity ~function_kind ~params ~body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
-      let xs = List.map rebind xs in
+      let xs = Ext_list.map rebind xs in
       let l2 = aux l2 in
       Lam.staticcatch l1 (i,xs) l2
     | Lfor(ident, l1, l2, dir, l3) ->
@@ -92717,11 +92760,11 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lconst _ -> lam
     | Lprim {primitive; args ; loc} ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam.prim ~primitive ~args:(List.map aux  args) loc
+      Lam.prim ~primitive ~args:(Ext_list.map aux  args) loc
     | Lglobal_module _ -> lam 
     | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
-      let args = List.map aux  args in 
+      let args = Ext_list.map aux  args in 
       Lam.apply fn  args loc status
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
@@ -92732,8 +92775,8 @@ let rewrite (map :   _ Ident_hashtbl.t)
       let l = aux l in
       Lam.switch l
               {sw_consts = 
-                 List.map (fun (v, l) -> v, aux  l) sw_consts;
-               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
+                 Ext_list.map (fun (v, l) -> v, aux  l) sw_consts;
+               sw_blocks = Ext_list.map (fun (v, l) -> v, aux  l) sw_blocks;
                sw_numconsts = sw_numconsts;
                sw_numblocks = sw_numblocks;
                sw_failaction =  option_map sw_failaction
@@ -92741,10 +92784,10 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
       Lam.stringswitch l 
-                     (List.map (fun (i, l) -> i,aux  l) sw)
+                     (Ext_list.map (fun (i, l) -> i,aux  l) sw)
                      (option_map d)
     | Lstaticraise (i,ls) 
-      -> Lam.staticraise i (List.map aux  ls)
+      -> Lam.staticraise i (Ext_list.map aux  ls)
     | Ltrywith(l1, v, l2) -> 
       let l1 = aux l1 in
       let v = rebind v in
@@ -92768,7 +92811,7 @@ let rewrite (map :   _ Ident_hashtbl.t)
     | Lsend(u, m, o, ll, v) ->
       let m = aux m in 
       let o = aux o in 
-      let ll = List.map aux ll in
+      let ll = Ext_list.map aux ll in
       Lam.send u  m  o  ll v
     | Lifused(v, l) -> 
       let l = aux l in 
@@ -94184,7 +94227,7 @@ let rec translate (x : Lam.constant ) : J.expression =
 
   | Const_block(tag, tag_info, xs ) -> 
     Js_of_lam_block.make_block NA tag_info 
-      (E.small_int  tag) (List.map translate xs)
+      (E.small_int  tag) (Ext_list.map translate xs)
 
   | Const_float_array ars -> 
     (* according to the compiler 
@@ -94199,9 +94242,9 @@ let rec translate (x : Lam.constant ) : J.expression =
     *)
     (* TODO-- *)
     Js_of_lam_array.make_array Mutable Pfloatarray 
-      (List.map (fun x ->  E.float  x ) ars)
+      (Ext_list.map (fun x ->  E.float  x ) ars)
   (* E.arr Mutable ~comment:"float array" *)
-  (*   (List.map (fun x ->  E.float  x ) ars) *)
+  (*   (Ext_list.map (fun x ->  E.float  x ) ars) *)
 
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)
@@ -94420,7 +94463,7 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
   | _ ->  
     E.of_block
       [(S.int_switch arg
-      (List.map (fun (i,r) -> 
+      (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
                body = [S.return (E.str r)],
                       false (* FIXME: if true, still print break*)
@@ -94438,7 +94481,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) : E.t
     [
       E.ocaml_fun [event]
       [(S.int_switch arg
-      (List.map (fun (i,r) -> 
+      (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
                body = [S.return (E.index (E.var event) 0l)],
                       false (* FIXME: if true, still print break*)
@@ -94449,7 +94492,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) : E.t
         *)
       E.ocaml_fun [event]
       [(S.int_switch arg
-      (List.map (fun (i,r) -> 
+      (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
                body = [S.return (E.index (E.var event) 1l)],
                       false (* FIXME: if true, still print break*)
@@ -94465,7 +94508,7 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
   | _ ->  
     E.of_block
       [(S.int_switch arg
-      (List.map (fun (i,r) -> 
+      (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
                body = [S.return (E.int (Int32.of_int  r))],
                       false (* FIXME: if true, still print break*)
@@ -94709,7 +94752,7 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
           | Array -> 
             begin match (arg : E.t) with 
               | {expression_desc = Array (ls,_mutable_flag) ;_ } -> 
-                ls @ accs, eff 
+                Ext_list.append ls accs, eff 
               | _ -> 
                 Location.raise_errorf ~loc:call_loc
                   {|@{<error>Error:@} function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
@@ -94720,7 +94763,7 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
       else 
         let accs, eff = aux labels args in 
         let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-        acc @ accs, new_eff @ eff
+        Ext_list.append acc  accs, Ext_list.append new_eff  eff
     | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] -> assert false 
     | [],  _ :: _  -> assert false      
 
@@ -94743,7 +94786,7 @@ let translate_scoped_module_val module_name fn  scopes =
       | x :: rest -> 
         (* let start = E.dot (E.var id )  x in  *)
         let start = E.external_var_dot ~external_name ~dot:x id in 
-        List.fold_left (fun acc x -> E.dot  acc x) start (rest @ [fn])
+        List.fold_left (fun acc x -> E.dot  acc x) start (Ext_list.append rest  [fn])
     end
   | None ->  
     (*  no [@@bs.module], assume it's global *)
@@ -94753,7 +94796,7 @@ let translate_scoped_module_val module_name fn  scopes =
         E.js_var fn
       | x::rest -> 
         let start = E.js_var x  in 
-        List.fold_left (fun acc x -> E.dot acc x) start (rest @ [fn])
+        List.fold_left (fun acc x -> E.dot acc x) start (Ext_list.append rest  [fn])
     end
 
 
@@ -95036,7 +95079,7 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
       begin match acc with 
         | [ ] -> assert false
         | x::xs -> 
-          (Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff , assign
+          (Key label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
       end (* evaluation order is undefined *)
 
     | ({arg_label = Optional label; arg_type } as arg_kind)::labels, arg::args 
@@ -95052,7 +95095,7 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
           begin match acc with 
           | [] -> assert false 
           | x::xs -> 
-            (Key label, E.fuse_to_seq x xs ) :: accs , new_eff @ eff , assign
+            (Key label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
           end   
         | _ ->                 
           accs, eff , (arg_kind,arg)::assign 
@@ -97230,7 +97273,7 @@ end = struct
 let transform_under_supply n loc status fn args = 
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
-  let extra_lambdas = List.map (fun x -> Lam.var x) extra_args in
+  let extra_lambdas = Ext_list.map (fun x -> Lam.var x) extra_args in
   begin match List.fold_right (fun (lam : Lam.t) (acc, bind) ->
       match lam with
       | Lvar _
@@ -97258,7 +97301,7 @@ let transform_under_supply n loc status fn args =
        of an existing function which may cause inconsistency
     *)
     Lam.function_ ~arity:n ~function_kind:Curried ~params:extra_args
-      ~body:(Lam.apply fn (args @ extra_lambdas) 
+      ~body:(Lam.apply fn (Ext_list.append args  extra_lambdas) 
                loc 
                status
             ) 
@@ -97266,7 +97309,7 @@ let transform_under_supply n loc status fn args =
 
     let rest : Lam.t = 
       Lam.function_ ~arity:n ~function_kind:Curried ~params:extra_args
-        ~body:(Lam.apply fn (args @ extra_lambdas) 
+        ~body:(Lam.apply fn (Ext_list.append args  extra_lambdas) 
                  loc 
                  status
               ) in
@@ -97362,8 +97405,8 @@ let transform_under_supply n loc status fn args =
                        Location.none App_na
                        fn  [] )
               (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
-              (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
-              (* Lambda.Lfunction (kind, extra_args @ args , body ) *)
+              (* let extra_lambdas = Ext_list.map (fun x -> Lambda.Lvar x) extra_args in *)
+              (* Lambda.Lfunction (kind, Ext_list.append extra_args  args , body ) *)
 
                                 | _ -> 
                                 compile_lambda cxt 
@@ -97429,8 +97472,8 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
           Lam.function_
             ~arity:to_ 
             ~function_kind:Curried
-            ~params:(params @ extra_args )
-            ~body:(Lam.apply body (List.map Lam.var extra_args) loc App_na)
+            ~params:(Ext_list.append params  extra_args )
+            ~body:(Lam.apply body (Ext_list.map Lam.var extra_args) loc App_na)
         | _ -> 
           let arity = to_ in 
           let extra_args = Ext_list.init to_  (fun _ -> Ident.create Literals.param ) in 
@@ -97450,7 +97493,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
               ~params:extra_args 
               ~body:(
                 let first_args, rest_args = Ext_list.take from extra_args in 
-                Lam.apply (Lam.apply new_fn (List.map Lam.var first_args) loc App_ml_full) (List.map Lam.var rest_args) loc App_na ) in 
+                Lam.apply (Lam.apply new_fn (Ext_list.map Lam.var first_args) loc App_ml_full) (Ext_list.map Lam.var rest_args) loc App_na ) in 
           begin match wrapper with 
             | None -> cont 
             | Some partial_arg -> 
@@ -97500,7 +97543,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
                     Ext_list.init arity (fun _ -> Ident.create Literals.param ) in 
                   Lam.function_ ~arity ~function_kind:Curried ~params:extra_inner_args 
                     ~body:(Lam.apply new_fn 
-                             (Ext_list.map_acc (List.map Lam.var extra_inner_args) Lam.var extra_outer_args )      
+                             (Ext_list.map_acc (Ext_list.map Lam.var extra_inner_args) Lam.var extra_outer_args )      
                              loc App_ml_full)
                 )  in 
             begin match wrapper with 
@@ -97544,7 +97587,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
     (let arity = to_ in 
      let extra_args = Ext_list.init arity (fun _ -> Ident.create Literals.param) in 
      Lam.function_ ~arity ~kind:Curried ~params:extra_args 
-       ~body:(Lam.apply fn (List.map Lam.var extra_args ) loc Lam.App_na )
+       ~body:(Lam.apply fn (Ext_list.map Lam.var extra_args ) loc Lam.App_na )
     ) *)
 
 end
@@ -98095,7 +98138,7 @@ and compile_external_field_apply
             (fun (x : Lam.t) (args_code, args)  ->
                match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
                | {block = a; value = Some b} -> 
-                 (a @ args_code), (b :: args )
+                 (Ext_list.append a args_code), (b :: args )
                | _ -> assert false
             ) args_lambda ([], []) in
 
@@ -98138,7 +98181,8 @@ and compile_external_field_apply
                    let params = Ext_list.init (x - len)
                        (fun _ -> Ext_ident.create "param") in
                    E.ocaml_fun params 
-                     [S.return (E.call ~info:{arity=Full; call_info=Call_ml} acc (args @ List.map E.var params))]
+                     [S.return (E.call ~info:{arity=Full; call_info=Call_ml}
+                       acc (Ext_list.append args @@ Ext_list.map E.var params))]
                  else E.call ~info:Js_call_info.dummy acc args
                (* alpha conversion now? --
                   Since we did an alpha conversion before so it is not here
@@ -98203,7 +98247,7 @@ and compile_recursive_let ~all_bindings
                when it is detected by a primitive
             *)
             ~immutable_mask:ret.immutable_mask
-            (List.map (fun x -> 
+            (Ext_list.map (fun x -> 
                  Ident_map.find_default x ret.new_params x )
                 params)
             [
@@ -98259,8 +98303,8 @@ and compile_recursive_let ~all_bindings
             could be improved for simple cases
         *)
         Js_output.of_block  
-          (
-            b  @ 
+          (Ext_list.append
+            b   
             [S.exp
                (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy" 
                   [ E.var id;  v])]),
@@ -98299,14 +98343,14 @@ and compile_recursive_lets_aux cxt id_args : Js_output.t =
   let output_code, ids  = List.fold_right
       (fun (ident,arg) (acc, ids) -> 
          let code, declare_ids  = compile_recursive_let ~all_bindings:id_args cxt ident arg in
-         (code ++ acc, declare_ids @ ids )
+         (code ++ acc, Ext_list.append declare_ids  ids )
       )  id_args (Js_output.dummy, [])
   in
   match ids with 
   | [] -> output_code
   | _ ->  
     (Js_output.of_block  @@
-     List.map (fun id -> S.define ~kind:Variable id (E.dummy_obj ())) ids ) 
+     Ext_list.map (fun id -> S.define ~kind:Variable id (E.dummy_obj ())) ids ) 
     ++  output_code
 and compile_recursive_lets cxt id_args : Js_output.t  = 
 
@@ -98438,7 +98482,7 @@ and
          see {!Ari_regress_test}         
       *)      
       compile_lambda  cxt  
-        (Lam.apply an (args' @ args)  loc  App_na )
+        (Lam.apply an (Ext_list.append args'  args)  loc  App_na )
     (* External function calll *)
     | Lapply{ fn = 
                 Lprim{primitive = Pfield (n,_); 
@@ -98461,7 +98505,7 @@ and
           List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
               match compile_lambda 
                       {cxt with st = NeedValue ; should_return =  ReturnFalse} x with
-              | {block = a; value =  Some b} -> a @ args_code , b:: fn_code 
+              | {block = a; value =  Some b} -> Ext_list.append a  args_code , b:: fn_code 
               | _ -> assert false
             ) (fn::args_lambda) ([],[]) in
 
@@ -98506,7 +98550,7 @@ and
                                    (i+1, (new_param, arg) :: assigns, m)
                                ) (0, [], Ident_map.empty) params args  in 
                            let () = ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params in
-                           assigned_params |> List.map (fun (param, arg) -> S.assign param arg))
+                           assigned_params |> Ext_list.map (fun (param, arg) -> S.assign param arg))
                          @
                          [S.continue ()(* label *)]
                          (* Note true and continue needed to be handled together*)
@@ -98515,31 +98559,6 @@ and
               (* Ext_log.dwarn __LOC__ "size : %d" (List.length block); *)
               Js_output.of_block  ~finished:True block 
             end
-
-
-
-          (* match assigned_params with *)
-          (* | [] ->  [] *)
-          (* | [param,arg] -> [S.assign param arg ] *)
-          (* | _ -> *)
-          (*    let arg_map = Ident_map.of_list assigned_params in *)
-          (*    match Lam_util.sort_dag_args arg_map with *)
-          (*    | Some args -> *)
-          (*        List.map (fun a -> S.assign a (Ident_map.find a arg_map )) args *)
-          (*    | None -> *)
-          (*        let renamed_params_args = *)
-          (*          assigned_params |> *)
-          (*          List.map (fun (param, arg) -> (param, Ident.rename param, arg )) *)
-          (*        in *)
-          (*        List.map (fun (param, param2, arg) -> *)
-          (*          S.declare param2 arg *)
-          (*                 ) renamed_params_args *)
-          (*        @ *)
-          (*          List.map (fun (param, param2, _) -> *)
-          (*            S.assign param (E.var param2) *)
-          (*                   )  renamed_params_args *)
-          (*  Js_output.handle_block_return st should_return lam   *)
-          (* (E.call fn_code args)  *)
           | _ -> 
 
             Js_output.handle_block_return st should_return lam args_code 
@@ -98591,7 +98610,7 @@ and
             cxt with should_return = ReturnFalse; st = NeedValue} e with 
         | {block = b; value =  Some v} -> 
 
-          Js_output.make (b @ [S.throw v])
+          Js_output.make (Ext_list.append b  [S.throw v])
             ~value:E.undefined ~finished:True
         (* FIXME -- breaks invariant when NeedValue, reason is that js [throw] is statement 
            while ocaml it's an expression, we should remove such things in lambda optimizations
@@ -98616,7 +98635,7 @@ and
             | {block = a; value = Some b} -> a, b
             | _ -> assert false 
           in
-          let args_code =  l_block @ r_block  in
+          let args_code =  Ext_list.append l_block  r_block  in
           let exp =  E.and_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp           
       end
@@ -98639,7 +98658,7 @@ and
             | {block = a; value = Some b} -> a, b
             | _ -> assert false
           in
-          let args_code =  l_block @ r_block  in
+          let args_code =  Ext_list.append l_block r_block  in
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
@@ -98674,7 +98693,7 @@ and
               (match Js_ast_util.named_expression b  with 
                | None -> block,  E.dot b property
                | Some (x, b) ->  
-                 (block @ [x]),  E.dot (E.var b) property
+                 (Ext_list.append block  [x]),  E.dot (E.var b) property
               )
           in 
           Js_output.handle_block_return st should_return lam 
@@ -98708,8 +98727,8 @@ and
               Js_output.handle_block_return st should_return lam 
                 (
                   match obj_code with
-                  | None -> block0 @ block1
-                  | Some obj_code -> block0 @ obj_code :: block1
+                  | None -> Ext_list.append block0  block1
+                  | Some obj_code -> Ext_list.append block0 @@ obj_code :: block1
                 )
             in 
             match obj_block, value_block with 
@@ -98811,7 +98830,8 @@ and
       let block, exp  =  
         Lam_compile_external_obj.assemble_args_obj labels args_expr
       in
-      Js_output.handle_block_return st should_return lam (args_code @ block) exp  
+      Js_output.handle_block_return st should_return lam 
+      (Ext_list.append args_code block) exp  
 
     | Lprim{primitive = prim; args =  args_lambda; loc} -> 
       let args_block, args_expr =
@@ -98870,7 +98890,8 @@ and
                  with
                  | out1 , out2 -> 
                    Js_output.make 
-                     (S.declare_variable ~kind:Variable id :: b @ [
+                     (Ext_list.append 
+                      (S.declare_variable ~kind:Variable id :: b)  [
                          S.if_ e 
                            (Js_output.to_block out1) 
                            ~else_:(Js_output.to_block out2 )
@@ -98885,11 +98906,12 @@ and
               | {block = []; value =  Some out1},
                 {block = []; value =  Some out2} ->  
                 (* Invariant: should_return is false*)
-                Js_output.make @@ (b @ [
-                    S.define ~kind id (E.econd e out1 out2) ])
+                Js_output.make @@ 
+                Ext_list.append b  [
+                    S.define ~kind id (E.econd e out1 out2) ]
               | _, _ -> 
                 Js_output.make 
-                  ( b @ [
+                  ( Ext_list.append b [
                         S.if_ ~declaration:(kind,id) e 
                           (Js_output.to_block @@ 
                            compile_lambda {cxt with st = Assign id}  t_br)
@@ -98917,7 +98939,7 @@ and
               let else_output = 
                 Js_output.to_block @@ 
                 (compile_lambda cxt f_br) in
-              Js_output.make (b @ [
+              Js_output.make (Ext_list.append b  [
                   S.if_ e 
                     then_output
                     ~else_:else_output
@@ -98933,17 +98955,17 @@ and
                 begin
                   match Js_exp_make.extract_non_pure out1 ,
                         Js_exp_make.extract_non_pure out2 with
-                  | None, None -> Js_output.make (b @ [ S.exp e]) 
+                  | None, None -> Js_output.make (Ext_list.append b  [ S.exp e]) 
                   (* FIX #1762 *)
                   | Some out1, Some out2 -> 
                     Js_output.make b  ~value:(E.econd e  out1 out2)
                   | Some out1, None -> 
-                    Js_output.make (b @ [S.if_ e  [S.exp out1]])
+                    Js_output.make (Ext_list.append b  [S.if_ e  [S.exp out1]])
                   | None, Some out2 -> 
                     Js_output.make @@
-                    b @ [S.if_ (E.not e)
+                    (Ext_list.append b  [S.if_ (E.not e)
                            [S.exp out2]
-                        ]
+                        ])
                 end
               |  ReturnFalse , {block = []; value = Some out1}, _ -> 
                 (* assert branch 
@@ -98952,12 +98974,12 @@ and
                 *)
                 if Js_analyzer.no_side_effect_expression out1 then 
                   Js_output.make
-                    (b @[ S.if_ (E.not e)
+                    (Ext_list.append b [ S.if_ (E.not e)
                             (Js_output.to_block @@
                              (compile_lambda cxt f_br))])
                 else 
                   Js_output.make 
-                    (b @[S.if_ e 
+                    (Ext_list.append b [S.if_ e 
                            (Js_output.to_block 
                             @@ compile_lambda cxt t_br)
                            ~else_:(Js_output.to_block @@  
@@ -98973,7 +98995,7 @@ and
                       Js_output.to_block @@
                       compile_lambda cxt f_br) in 
                 Js_output.make 
-                  (b @[S.if_ e 
+                  (Ext_list.append b [S.if_ e 
                          (Js_output.to_block @@
                           compile_lambda cxt t_br)
                          ?else_])
@@ -98985,7 +99007,8 @@ and
             let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Lifthenelse: %f@]@."  (Sys.time () *. 1000.) in      
 #end                 
 *)
-                Js_output.make (b @ [S.return  (E.econd e  out1 out2)]) ~finished:True                         
+                Js_output.make 
+                (Ext_list.append b  [S.return  (E.econd e  out1 out2)]) ~finished:True                         
               |   _, _, _  ->
                 (*              
 #if BS_DEBUG then 
@@ -98998,7 +99021,7 @@ and
                 let else_output = 
                   Js_output.to_block @@ 
                   (compile_lambda cxt f_br) in
-                Js_output.make (b @ [
+                Js_output.make (Ext_list.append b  [
                     S.if_ e 
                       then_output
                       ~else_:else_output
@@ -99028,12 +99051,13 @@ and
             (* TODO: can be avoided when cases are less than 3 *)
             | NeedValue -> 
               let v = Ext_ident.create_tmp () in 
-              Js_output.make (block @ 
+              Js_output.make (Ext_list.append block @@
                               compile_string_cases 
                                 {cxt with st = Declare (Variable, v)}
                                 e cases default) ~value:(E.var v)
             | _ -> 
-              Js_output.make (block @ compile_string_cases  cxt e cases default)  end
+              Js_output.make 
+                (Ext_list.append block @@ compile_string_cases  cxt e cases default)  end
 
         | _ -> assert false 
       end
@@ -99187,7 +99211,7 @@ and
         S.define ~kind:Variable exit_id
           E.zero_int_literal :: 
         (* we should always make it zero here, since [zero] is reserved in our mapping*)
-        List.map (fun x -> S.declare_variable ~kind:Variable x ) bindings in
+        Ext_list.map (fun x -> S.declare_variable ~kind:Variable x ) bindings in
 
       begin match  st with 
         (* could be optimized when cases are less than 3 *)
@@ -99256,11 +99280,11 @@ and
          begin
            match st, should_return  with 
            | Declare (_kind, x), _  ->  (* FIXME _kind not used *)
-             Js_output.make (block @ [S.declare_unit x ])
+             Js_output.make (Ext_list.append block  [S.declare_unit x ])
            | Assign x, _  ->
-             Js_output.make (block @ [S.assign_unit x ])
+             Js_output.make (Ext_list.append block  [S.assign_unit x ])
            | EffectCall, ReturnTrue _  -> 
-             Js_output.make (block @ [S.return_unit ()]) ~finished:True
+             Js_output.make (Ext_list.append block  [S.return_unit ()]) ~finished:True
            | EffectCall, _ -> Js_output.make block
            | NeedValue, _ -> Js_output.make block ~value:E.unit end
        | _ -> assert false )
@@ -99297,7 +99321,7 @@ and
             begin 
               match b1,b2 with
               | _,[] -> 
-                b1 @  [S.for_ (Some e1) e2  id direction 
+                Ext_list.append b1 [S.for_ (Some e1) e2  id direction 
                          (Js_output.to_block @@ 
                           compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
                             body) ]
@@ -99308,37 +99332,19 @@ and
                      b2 > e1 > e2
                    *)
                 -> 
-                b1 @ b2 @ [S.for_ (Some e1) e2  id direction 
+                Ext_list.append b1 
+                  (Ext_list.append b2  [S.for_ (Some e1) e2  id direction 
                              (Js_output.to_block @@ 
                               compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
-                                body) ]
+                                body) ])
               | _ , _
                 -> 
-                (*       let b2, e2 =  *)
-                (*   (\* e2 is of type [int]*\) *)
-                (*   match e2.expression_desc with *)
-                (*   | Number v  -> b2, J.Const v *)
-                (*   | Var v -> b2, J.Finish v *)
-
-                (*   | Array_length e  *)
-                (*   | Bytes_length e  *)
-                (*   | Function_length e  *)
-                (*   | String_length e  *)
-                (*     ->  *)
-                (*       let len = Ext_ident.create "_length" in *)
-                (*       b2 @ [ S.alias_variable len ~exp:e2 ],  J.Finish (Id len ) *)
-                (*   | _ ->  *)
-                (*       (\* TODO: guess a better name when possible*\) *)
-                (*       let len = Ext_ident.create "_finish" in *)
-                (*       b2 @ [S.alias_variable len ~exp:e2],  J.Finish (Id len) *)
-                (* in  *)
-
-                b1 @ (S.define ~kind:Variable id e1 :: b2 ) @ ([
+                Ext_list.append b1 (S.define ~kind:Variable id e1 :: (Ext_list.append b2   [
                     S.for_ None e2 id direction 
                       (Js_output.to_block @@ 
                        compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
                          body) 
-                  ])
+                  ]))
 
             end
 
@@ -99348,13 +99354,14 @@ and
         match st, should_return with 
         | EffectCall, ReturnFalse  -> Js_output.make block
         | EffectCall, ReturnTrue _  -> 
-          Js_output.make (block @ [S.return_unit()]) ~finished:True
+          Js_output.make (Ext_list.append block  [S.return_unit()]) ~finished:True
         (* unit -> 0, order does not matter *)
         | (Declare _ | Assign _), ReturnTrue _ -> Js_output.make [S.unknown_lambda lam]
         | Declare (_kind, x), ReturnFalse  ->   
           (* FIXME _kind unused *)
-          Js_output.make (block @   [S.declare_unit x ])
-        | Assign x, ReturnFalse  -> Js_output.make (block @ [S.assign_unit x ])
+          Js_output.make (Ext_list.append block    [S.declare_unit x ])
+        | Assign x, ReturnFalse  -> 
+          Js_output.make (Ext_list.append block  [S.assign_unit x ])
         | NeedValue, _ 
           ->  
           Js_output.make block ~value:E.unit
@@ -99372,7 +99379,7 @@ and
           begin 
             match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} lambda with 
             | {block = b; value =  Some v}  -> 
-              (b @ [S.assign id v ])
+              (Ext_list.append b  [S.assign id v ])
             | _ -> assert false  
           end
       in
@@ -99380,14 +99387,14 @@ and
         match st, should_return with 
         | EffectCall, ReturnFalse -> Js_output.make block
         | EffectCall, ReturnTrue _ -> 
-          Js_output.make (block @ [S.return_unit ()]) ~finished:True
+          Js_output.make (Ext_list.append block  [S.return_unit ()]) ~finished:True
         | (Declare _ | Assign _ ) , ReturnTrue _ -> 
           Js_output.make [S.unknown_lambda lam]
         (* bound by a name, while in a tail position, this can not happen  *)
         | Declare (_kind, x) , ReturnFalse ->
           (* FIXME: unused *)
-          Js_output.make (block @ [ S.declare_unit x ])
-        | Assign x, ReturnFalse  -> Js_output.make (block @ [S.assign_unit x ])
+          Js_output.make (Ext_list.append block  [ S.declare_unit x ])
+        | Assign x, ReturnFalse  -> Js_output.make (Ext_list.append block  [S.assign_unit x ])
         | NeedValue, _ -> 
           Js_output.make block ~value:E.unit
       end
@@ -99660,7 +99667,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       begin 
         match Lam_stats_util.get_arity meta l1 with 
         | NA -> 
-          Lam.apply (simpl  l1) (List.map simpl  ll) loc status
+          Lam.apply (simpl  l1) (Ext_list.map simpl  ll) loc status
         | Determin (b, args, tail) -> 
           let len = List.length ll in 
           let rec take args = 
@@ -99669,29 +99676,29 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
               if x = len 
               then 
                 Lam.apply (simpl l1)
-                  (List.map simpl ll) loc App_ml_full
+                  (Ext_list.map simpl ll) loc App_ml_full
               else if x > len  
               then 
                 let fn = simpl l1 in
-                let args = List.map simpl ll in
+                let args = Ext_list.map simpl ll in
                 Lam_eta_conversion.transform_under_supply (x - len) loc App_ml_full
                   fn args 
               else 
                 let first,rest = Ext_list.take x ll in 
                 Lam.apply (
                   Lam.apply (simpl l1) 
-                         (List.map simpl first) 
+                         (Ext_list.map simpl first) 
                          loc App_ml_full
                 )
-                  (List.map simpl rest) loc status (* TODO refien *)
-            | _ -> Lam.apply (simpl l1) (List.map simpl ll)  loc status
+                  (Ext_list.map simpl rest) loc status (* TODO refien *)
+            | _ -> Lam.apply (simpl l1) (Ext_list.map simpl ll)  loc status
           in take args
       end
 
     | Llet (str, v, l1, l2) ->
       Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec (bindings, body) ->
-      let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
+      let bindings = Ext_list.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lam.letrec bindings (simpl body) 
     | Lglobal_module _ -> lam 
     | Lprim {primitive = (Lam.Pjs_fn_make len) as primitive ; args = [arg] 
@@ -99708,7 +99715,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       | _  -> Lam.prim ~primitive ~args:[simpl arg] loc
       end
     | Lprim {primitive; args ; loc} -> 
-      Lam.prim ~primitive ~args:(List.map simpl  args) loc
+      Lam.prim ~primitive ~args:(Ext_list.map simpl  args) loc
     | Lfunction {arity; function_kind; params; body = l} ->
       (* Lam_mk.lfunction kind params (simpl l) *)
       Lam.function_ ~arity ~function_kind ~params  ~body:(simpl  l)
@@ -99720,8 +99727,8 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
                  }) ->
       Lam.switch (simpl  l)
               {sw_consts = 
-                 List.map (fun (v, l) -> v, simpl  l) sw_consts;
-               sw_blocks = List.map (fun (v, l) -> v, simpl  l) sw_blocks;
+                 Ext_list.map (fun (v, l) -> v, simpl  l) sw_consts;
+               sw_blocks = Ext_list.map (fun (v, l) -> v, simpl  l) sw_blocks;
                sw_numconsts = sw_numconsts;
                sw_numblocks = sw_numblocks;
                sw_failaction = 
@@ -99732,13 +99739,13 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
                  end}
     | Lstringswitch (l, sw, d) ->
       Lam.stringswitch (simpl  l)
-                    (List.map (fun (i, l) -> i,simpl  l) sw)
+                    (Ext_list.map (fun (i, l) -> i,simpl  l) sw)
                     (match d with
                       | Some d -> Some (simpl d )
                       | None -> None)
                     
     | Lstaticraise (i,ls) ->
-      Lam.staticraise i (List.map simpl  ls)
+      Lam.staticraise i (Ext_list.map simpl  ls)
     | Lstaticcatch (l1, ids, l2) 
       -> 
       Lam.staticcatch (simpl  l1) ids (simpl  l2)
@@ -99758,7 +99765,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
          v's refsimpl *)
       Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) -> 
-      Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
+      Lam.send u (simpl m) (simpl o) (Ext_list.map simpl ll) v
     | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
 
@@ -100222,7 +100229,7 @@ let deep_flatten
       flatten
         (
           Recursive
-            (List.map (fun (id, arg ) -> (id, aux arg)) bind_args)
+            (Ext_list.map (fun (id, arg ) -> (id, aux arg)) bind_args)
           :: acc
         )
         body
@@ -100278,7 +100285,7 @@ let deep_flatten
     (*       aux (beta_reduce params body args) *)
 
     | Lapply{fn = l1; args  = ll; loc; status} -> 
-      Lam.apply (aux l1) (List.map aux ll) loc status
+      Lam.apply (aux l1) (Ext_list.map aux ll) loc status
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
@@ -100297,7 +100304,7 @@ let deep_flatten
     | Lglobal_module _ -> lam 
     | Lprim {primitive ; args; loc }
       -> 
-      let args = List.map aux args in
+      let args = Ext_list.map aux args in
       Lam.prim ~primitive ~args loc
 
     | Lfunction{arity; function_kind; params;  body = l} -> 
@@ -100310,8 +100317,8 @@ let deep_flatten
                  }) ->
       Lam.switch (aux  l)
               {sw_consts = 
-                 List.map (fun (v, l) -> v, aux  l) sw_consts;
-               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
+                 Ext_list.map (fun (v, l) -> v, aux  l) sw_consts;
+               sw_blocks = Ext_list.map (fun (v, l) -> v, aux  l) sw_blocks;
                sw_numconsts = sw_numconsts;
                sw_numblocks = sw_numblocks;
                sw_failaction = 
@@ -100322,13 +100329,13 @@ let deep_flatten
                  end}
     | Lstringswitch(l, sw, d) ->
       Lam.stringswitch (aux  l) 
-                    (List.map (fun (i, l) -> i,aux  l) sw)
+                    (Ext_list.map (fun (i, l) -> i,aux  l) sw)
                     (match d with
                      | Some d -> Some (aux d )
                      | None -> None)
 
     | Lstaticraise (i,ls) 
-      -> Lam.staticraise i (List.map aux  ls)
+      -> Lam.staticraise i (Ext_list.map aux  ls)
     | Lstaticcatch(l1, ids, l2) 
       -> 
       Lam.staticcatch (aux  l1) ids (aux  l2)
@@ -100348,7 +100355,7 @@ let deep_flatten
          v's refaux *)
       Lam.assign v (aux  l)
     | Lsend(u, m, o, ll, v) -> 
-      Lam.send u (aux m) (aux o) (List.map aux ll) v
+      Lam.send u (aux m) (aux o) (Ext_list.map aux ll) v
 
     | Lifused(v, l) -> Lam.ifused v (aux  l)
   in aux lam
@@ -100570,12 +100577,12 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
         | None -> lam
       end
     | Lstaticraise (i,ls) ->
-      let ls = List.map simplif ls in
+      let ls = Ext_list.map simplif ls in
       begin 
         match Int_hashtbl.find_opt subst i with
         | Some (xs, handler) -> 
           let handler = to_lam handler in 
-          let ys = List.map Ident.rename xs in
+          let ys = Ext_list.map Ident.rename xs in
           let env =
             List.fold_right2
               (fun x y t -> Ident_map.add x (Lam.var y) t)
@@ -100641,23 +100648,23 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
 
     | Lvar _|Lconst _  -> lam
     | Lapply {fn = l1; args =  ll;  loc; status } -> 
-      Lam.apply (simplif l1) (List.map simplif ll) loc status
+      Lam.apply (simplif l1) (Ext_list.map simplif ll) loc status
     | Lfunction {arity; function_kind; params; body =  l} -> 
       Lam.function_ ~arity ~function_kind ~params ~body:(simplif l)
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
       Lam.letrec
-        ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
+        ( Ext_list.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
     | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc} -> 
-      let args = List.map simplif args in
+      let args = Ext_list.map simplif args in
       Lam.prim ~primitive ~args loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
-      and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
-      and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
+      and new_consts =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
+      and new_blocks =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
       and new_fail = 
         begin match sw.sw_failaction with 
           | None   -> None
@@ -100671,7 +100678,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
           sw_failaction = new_fail}
     | Lstringswitch(l,sw,d) ->
       Lam.stringswitch
-        (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
+        (simplif l) (Ext_list.map (fun (s,l) -> s,simplif l) sw)
         (begin match d with None -> None | Some d -> Some (simplif d) end)
     | Ltrywith (l1, v, l2) -> 
       Lam.try_ (simplif l1) v (simplif l2)
@@ -100684,7 +100691,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
     | Lassign (v, l) -> 
       Lam.assign v (simplif l)
     | Lsend (k, m, o, ll, loc) ->
-      Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
+      Lam.send k (simplif m) (simplif o) (Ext_list.map simplif ll) loc
     | Lifused (v, l) -> 
       Lam.ifused v (simplif l)
   in 
@@ -101041,25 +101048,25 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lapply{fn = e1; args =  el;  loc; status} ->
     Lam.apply 
       (eliminate_ref id e1)
-      (List.map (eliminate_ref id) el)
+      (Ext_list.map (eliminate_ref id) el)
       loc status
   | Llet(str, v, e1, e2) ->
     Lam.let_ str v (eliminate_ref id e1) (eliminate_ref id e2)
   | Lletrec(idel, e2) ->
     Lam.letrec
-      (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
+      (Ext_list.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
       (eliminate_ref id e2)
   | Lam.Lglobal_module _ -> lam     
   | Lprim {primitive ; args ; loc} ->
-    Lam.prim  ~primitive ~args:(List.map (eliminate_ref id) args) loc
+    Lam.prim  ~primitive ~args:(Ext_list.map (eliminate_ref id) args) loc
   | Lswitch(e, sw) ->
     Lam.switch(eliminate_ref id e)
       {sw_numconsts = sw.sw_numconsts;
        sw_consts =
-         List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_consts;
+         Ext_list.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_consts;
        sw_numblocks = sw.sw_numblocks;
        sw_blocks =
-         List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_blocks;
+         Ext_list.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_blocks;
        sw_failaction =
          match sw.sw_failaction with 
          | None -> None 
@@ -101068,12 +101075,12 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lstringswitch(e, sw, default) ->
     Lam.stringswitch
       (eliminate_ref id e)
-      (List.map (fun (s, e) -> (s, eliminate_ref id e)) sw)
+      (Ext_list.map (fun (s, e) -> (s, eliminate_ref id e)) sw)
       (match default with 
       | None -> None 
       | Some x ->  Some (eliminate_ref id x))
   | Lstaticraise (i,args) ->
-    Lam.staticraise i (List.map (eliminate_ref id) args)
+    Lam.staticraise i (Ext_list.map (eliminate_ref id) args)
   | Lstaticcatch(e1, i, e2) ->
     Lam.staticcatch (eliminate_ref id e1) i (eliminate_ref id e2)
   | Ltrywith(e1, v, e2) ->
@@ -101095,7 +101102,7 @@ let rec eliminate_ref id (lam : Lam.t) =
   | Lsend(k, m, o, el, loc) ->
     Lam.send k 
       (eliminate_ref id m) (eliminate_ref id o)
-      (List.map (eliminate_ref id) el) loc
+      (Ext_list.map (eliminate_ref id) el) loc
   | Lifused(v, e) ->
     Lam.ifused v (eliminate_ref id e)
 
@@ -101310,13 +101317,13 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
     (*   simplif (Lam_beta_reduce.beta_reduce params body args) *)
 
     | Lapply{fn = l1;args =  ll; loc; status} -> 
-      Lam.apply (simplif l1) (List.map simplif ll) loc status
+      Lam.apply (simplif l1) (Ext_list.map simplif ll) loc status
     | Lfunction{arity; function_kind; params; body = l} ->
       Lam.function_ ~arity ~function_kind ~params ~body:(simplif l)
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
       Lam.letrec 
-        (List.map (fun (v, l) -> (v, simplif l)) bindings) 
+        (Ext_list.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
     | Lprim {primitive=Pstringadd; args = [l;r]; loc } -> 
       begin
@@ -101367,11 +101374,11 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       end    
     | Lglobal_module _ -> lam    
     | Lprim {primitive; args; loc} 
-      -> Lam.prim ~primitive ~args:(List.map simplif args) loc
+      -> Lam.prim ~primitive ~args:(Ext_list.map simplif args) loc
     | Lswitch(l, sw) ->
       let new_l = simplif l
-      and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
-      and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
+      and new_consts =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
+      and new_blocks =  Ext_list.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
       and new_fail = 
         match sw.sw_failaction with 
         | None -> None 
@@ -101383,10 +101390,10 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
                  sw_failaction = new_fail}
     | Lstringswitch (l,sw,d) ->
       Lam.stringswitch
-        (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
+        (simplif l) (Ext_list.map (fun (s,l) -> s,simplif l) sw)
         (match d with None -> None | Some d -> Some (simplif d))
     | Lstaticraise (i,ls) ->
-      Lam.staticraise i (List.map simplif ls)
+      Lam.staticraise i (Ext_list.map simplif ls)
     | Lstaticcatch(l1, (i,args), l2) ->
       Lam.staticcatch (simplif l1) (i,args) (simplif l2)
     | Ltrywith(l1, v, l2) -> Lam.try_ (simplif l1) v (simplif l2)
@@ -101399,7 +101406,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
       Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
     | Lassign(v, l) -> Lam.assign v (simplif l)
     | Lsend(k, m, o, ll, loc) ->
-      Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
+      Lam.send k (simplif m) (simplif o) (Ext_list.map simplif ll) loc
   in simplif lam ;;
 
 
@@ -101654,7 +101661,7 @@ let simplify_alias
       end
     | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc } 
-      -> Lam.prim ~primitive ~args:(List.map simpl  args) loc
+      -> Lam.prim ~primitive ~args:(Ext_list.map simpl  args) loc
       
     | Lifthenelse(Lvar id as l1, l2, l3) 
       -> 
@@ -101690,7 +101697,7 @@ let simplify_alias
     | Llet(str, v, l1, l2) ->
       Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec(bindings, body) ->
-      let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
+      let bindings = Ext_list.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lam.letrec bindings (simpl body) 
  
     (* complicated 
@@ -101729,7 +101736,7 @@ let simplify_alias
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
               | _ -> 
-                Lam.apply (simpl l1) (List.map simpl args) loc status
+                Lam.apply (simpl l1) (Ext_list.map simpl args) loc status
             )
 
       end
@@ -101743,7 +101750,7 @@ let simplify_alias
       (* Check info for always inlining *)
 
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
-      let normal () = Lam.apply ( simpl fn) (List.map simpl args) loc status in
+      let normal () = Lam.apply ( simpl fn) (Ext_list.map simpl args) loc status in
       begin 
         match Ident_hashtbl.find_opt meta.ident_tbl v with
         | Some (FunctionId {lambda = Lfunction {params; body} as _m;
@@ -101820,7 +101827,7 @@ let simplify_alias
     (*   simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) *)
 
     | Lapply {fn = l1; args =  ll;  loc ; status} ->
-      Lam.apply (simpl  l1) (List.map simpl  ll) loc status
+      Lam.apply (simpl  l1) (Ext_list.map simpl  ll) loc status
     | Lfunction {arity; function_kind; params; body = l}
       -> Lam.function_ ~arity ~function_kind ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
@@ -101831,8 +101838,8 @@ let simplify_alias
                   }) ->
       Lam.switch (simpl  l)
                {sw_consts = 
-                  List.map (fun (v, l) -> v, simpl  l) sw_consts;
-                sw_blocks = List.map (fun (v, l) -> v, simpl  l) sw_blocks;
+                  Ext_list.map (fun (v, l) -> v, simpl  l) sw_consts;
+                sw_blocks = Ext_list.map (fun (v, l) -> v, simpl  l) sw_blocks;
                 sw_numconsts = sw_numconsts;
                 sw_numblocks = sw_numblocks;
                 sw_failaction = 
@@ -101843,12 +101850,12 @@ let simplify_alias
                   end}
     | Lstringswitch(l, sw, d) ->
       Lam.stringswitch (simpl  l )
-                    (List.map (fun (i, l) -> i,simpl  l) sw)
+                    (Ext_list.map (fun (i, l) -> i,simpl  l) sw)
                     (match d with
                      | Some d -> Some (simpl d )
                      | None -> None)
     | Lstaticraise (i,ls) -> 
-      Lam.staticraise i (List.map simpl  ls)
+      Lam.staticraise i (Ext_list.map simpl  ls)
     | Lstaticcatch (l1, ids, l2) -> 
       Lam.staticcatch (simpl  l1) ids (simpl  l2)
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
@@ -101865,7 +101872,7 @@ let simplify_alias
       Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) 
       -> 
-      Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
+      Lam.send u (simpl m) (simpl o) (Ext_list.map simpl ll) v
     | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
   simpl lam
@@ -102509,7 +102516,7 @@ let compile  ~filename (output_prefix : string) env _sigs
   
   let body  = 
     groups
-    |> List.map (fun group -> compile_group meta group)
+    |> Ext_list.map (fun group -> compile_group meta group)
     |> Js_output.concat
     |> Js_output.to_block
   in
@@ -103581,7 +103588,7 @@ let ident_or_record_as_config
     -> 
     begin match with_obj with
       | None ->
-        List.map
+        Ext_list.map
           (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
              match (x,y) with 
              | ({txt = Lident name; loc} ) , 
@@ -103626,7 +103633,7 @@ let assert_strings loc (x : t) : string list
             pstr_loc = loc ;            
             _}] ->
     (try 
-       strs |> List.map (fun e ->
+       strs |> Ext_list.map (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
              name
@@ -104322,16 +104329,16 @@ let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) =
   match tdcl with 
   | {ptype_name = {txt ; loc};
      ptype_params ;
-    } -> Typ.constr {txt = Lident txt ; loc} (List.map fst ptype_params)
+    } -> Typ.constr {txt = Lident txt ; loc} (Ext_list.map fst ptype_params)
 
 let lift_string_list_to_array (labels : string list) = 
   Exp.array
-    (List.map (fun s -> Exp.constant (Const_string (s, None)))
+    (Ext_list.map (fun s -> Exp.constant (Const_string (s, None)))
        labels)
 
 let lift_int i = Exp.constant (Const_int i)
 let lift_int_list_to_array (labels : int list) = 
-  Exp.array (List.map lift_int labels)
+  Exp.array (Ext_list.map lift_int labels)
 
 
 let mk_fun ~loc (typ : Parsetree.core_type) 
@@ -104503,7 +104510,7 @@ let rec exp_of_core_type prefix
   | Ptyp_constr (lid, params)
     -> 
     Exp.apply (Exp.ident (fn_of_lid prefix lid))
-      (List.map (fun x -> "",exp_of_core_type prefix x ) params) 
+      (Ext_list.map (fun x -> "",exp_of_core_type prefix x ) params) 
   | Ptyp_tuple lst -> 
     begin match lst with 
     | [x] -> exp_of_core_type prefix x 
@@ -104514,7 +104521,7 @@ let rec exp_of_core_type prefix
         Location.raise_errorf ~loc "tuple arity > 6 not supported yet"
       else 
         let fn = js_dyn_tuple_to_value len in 
-        let args = List.map (fun x -> "", exp_of_core_type prefix x) lst in 
+        let args = Ext_list.map (fun x -> "", exp_of_core_type prefix x) lst in 
         Exp.apply fn args 
     end
 
@@ -104708,7 +104715,7 @@ let init ()  =
                  let loc = tdcl.ptype_loc in 
                  Sig.value ~loc (Val.mk {txt = name ^ to_value  ; loc}
                                    (js_dyn_to_value_uncurry_type core_type)) in 
-               List.map handle_tdcl tdcls 
+               Ext_list.map handle_tdcl tdcls 
 
              end
 
@@ -104743,7 +104750,7 @@ let init () =
                   -> 
                   label_declarations 
                   |> 
-                  List.map (fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
+                  Ext_list.map (fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
                       let txt = "param" in
                       Str.value Nonrecursive
 
@@ -104759,7 +104766,7 @@ let init () =
                   -> 
                   constructor_declarations
                   |> 
-                  List.map 
+                  Ext_list.map 
                     (fun
                       ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                           Parsetree.constructor_declaration)
@@ -104788,7 +104795,7 @@ let init () =
                                       if  arity = 1 then 
                                         Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
                                       else 
-                                        Exp.tuple (List.map 
+                                        Exp.tuple (Ext_list.map 
                                                      (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
                                                      vars 
                                                   ) )) core_type
@@ -104822,7 +104829,7 @@ let init () =
                   -> 
                   label_declarations 
                   |> 
-                  List.map (fun 
+                  Ext_list.map (fun 
                              ({pld_name = {loc; txt = pld_label} as pld_name;
                                pld_type
                               } : 
@@ -104835,7 +104842,7 @@ let init () =
                   } -> 
                   constructor_declarations
                   |>
-                  List.map
+                  Ext_list.map
                     (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                              Parsetree.constructor_declaration)
                       -> 
@@ -107313,7 +107320,7 @@ let generic_apply  kind loc
     (args : args ) cb   =
   let obj = self.expr self obj in
   let args =
-    List.map (fun (label,e) ->
+    Ext_list.map (fun (label,e) ->
         if label <> "" then
           Bs_syntaxerr.err loc Label_in_uncurried_bs_attribute;
         self.expr self e
@@ -107337,7 +107344,7 @@ let generic_apply  kind loc
         Longident.Ldot(Ast_literal.Lid.js_unsafe,
                        Literals.method_run ^ string_of_int arity
                       ) in 
-    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: List.map (fun x -> "",x) args)
+    Parsetree.Pexp_apply (Exp.ident {txt ; loc}, ("",fn) :: Ext_list.map (fun x -> "",x) args)
   else 
     let fn_type, args_type, result_type = Ast_comb.tuple_type_pair ~loc `Run arity  in 
     let string_arity = string_of_int arity in
@@ -107351,7 +107358,7 @@ let generic_apply  kind loc
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
     Ast_external.create_local_external loc ~pval_prim ~pval_type 
-      (("", fn) :: List.map (fun x -> "",x) args )
+      (("", fn) :: Ext_list.map (fun x -> "",x) args )
 
 
 let uncurry_fn_apply loc self fn args = 
@@ -107701,7 +107708,7 @@ let ocaml_obj_as_js_object
             generate_val_method_pair x.pcf_loc mapper label.txt  
               (mutable_flag = Mutable )
           in
-          (label_attr @ label_attr_types, public_label_attr_types)
+          (Ext_list.append label_attr  label_attr_types, public_label_attr_types)
         | Pcf_val (label, mutable_flag, Cfk_concrete(Override, val_exp)) -> 
           Location.raise_errorf ~loc "override flag not support currently"
         | Pcf_val (label, mutable_flag, Cfk_virtual _) -> 
@@ -107866,7 +107873,7 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
           (Exp.apply  ~loc (Exp.ident ~loc {txt =  obj_magic; loc}) ["", txt_expr])
           (Ast_literal.type_exn ~loc ())
        )
-      (List.map (fun (x :Parsetree.case ) ->
+      (Ext_list.append (Ext_list.map (fun (x :Parsetree.case ) ->
            let pc_rhs = x.pc_rhs in 
            let  loc  = pc_rhs.pexp_loc in
            {
@@ -107876,8 +107883,8 @@ let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parset
                         (Ast_core_type.lift_option_type (Typ.any ~loc ())  )
            }
 
-         ) cases 
-     @ [
+         ) cases) 
+      [
        Exp.case  (Pat.any ~loc ()) none
      ])
     )
@@ -107998,7 +108005,7 @@ let protect2 r1 r2 v1 v2 body =
     raise x
 
 let protect_list rvs body = 
-  let olds =  List.map (fun (x,y) -> !x)  rvs in 
+  let olds =  Ext_list.map (fun (x,y) -> !x)  rvs in 
   let () = List.iter (fun (x,y) -> x:=y) rvs in 
   try 
     let res = body () in 
@@ -112678,7 +112685,7 @@ let batch_compile ppf search_dirs files main_file =
       let main_module = (Ext_modulename.module_name_of_file main_file) in
       let ast_table, result =
         Ast_extract.collect_from_main ppf 
-          ~extra_dirs:(List.map
+          ~extra_dirs:(Ext_list.map
                          (fun x -> 
                             ({ dir = x ; excludes = [] } : Ast_extract.dir_spec)) search_dirs)
           Ocaml_parse.lazy_parse_implementation
@@ -114293,7 +114300,11 @@ let setup_colors () =
   Misc.Color.setup !Clflags.color
 
 let print_filename ppf file =
-  Format.fprintf ppf "%s" (Location.show_filename file)
+  match file with
+  (* modified *)
+  | "_none_"
+  | "" -> Format.fprintf ppf "(No file name)"
+  | real_file -> Format.fprintf ppf "%s" (Location.show_filename real_file)
 
 let print_loc ~normalizedRange ppf loc =
   setup_colors ();
@@ -114319,7 +114330,6 @@ let print_loc ~normalizedRange ppf loc =
 
 let print ~is_warning intro ppf loc =
   setup_colors ();
-  (* TODO: handle locations such as _none_ and "" *)
   if loc.loc_start.pos_fname = "//toplevel//"
   && highlight_locations ppf [loc] then ()
   else

@@ -176,12 +176,12 @@ EXT_SRCS = 	literals \
 	ext_file_pp ext_format \
 	hashtbl_gen \
 	ext_string \
-	ext_color \
 	ext_utf8\
 	ext_js_regex\
 	string_hashtbl\
-	ext_list \
-	ext_map \
+	ext_list\
+	ext_color\
+	ext_map\
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set \

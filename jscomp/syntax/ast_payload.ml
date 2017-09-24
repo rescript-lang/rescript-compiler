@@ -115,7 +115,7 @@ let ident_or_record_as_config
     -> 
     begin match with_obj with
       | None ->
-        List.map
+        Ext_list.map
           (fun ((x,y) : (Longident.t Asttypes.loc * _) ) -> 
              match (x,y) with 
              | ({txt = Lident name; loc} ) , 
@@ -160,7 +160,7 @@ let assert_strings loc (x : t) : string list
             pstr_loc = loc ;            
             _}] ->
     (try 
-       strs |> List.map (fun e ->
+       strs |> Ext_list.map (fun e ->
            match (e : Parsetree.expression) with
            | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
              name

@@ -2,11 +2,13 @@ bin/bsb_helper.ml : bsb/bsb_log.ml
 bin/bsb_helper.ml : ext/map_gen.ml
 bin/bsb_helper.ml : ext/set_gen.ml
 bin/bsb_helper.ml : bsb/bsb_log.mli
+bin/bsb_helper.ml : ext/ext_list.ml
 bin/bsb_helper.ml : ext/ext_path.ml
 bin/bsb_helper.ml : ext/ext_util.ml
 bin/bsb_helper.ml : ext/literals.ml
 bin/bsb_helper.ml : ext/ext_bytes.ml
 bin/bsb_helper.ml : ext/ext_color.ml
+bin/bsb_helper.ml : ext/ext_list.mli
 bin/bsb_helper.ml : ext/ext_path.mli
 bin/bsb_helper.ml : ext/ext_util.mli
 bin/bsb_helper.ml : ext/literals.mli

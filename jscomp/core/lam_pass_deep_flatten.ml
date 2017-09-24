@@ -140,7 +140,7 @@ let deep_flatten
       flatten
         (
           Recursive
-            (List.map (fun (id, arg ) -> (id, aux arg)) bind_args)
+            (Ext_list.map (fun (id, arg ) -> (id, aux arg)) bind_args)
           :: acc
         )
         body
@@ -196,7 +196,7 @@ let deep_flatten
     (*       aux (beta_reduce params body args) *)
 
     | Lapply{fn = l1; args  = ll; loc; status} -> 
-      Lam.apply (aux l1) (List.map aux ll) loc status
+      Lam.apply (aux l1) (Ext_list.map aux ll) loc status
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
@@ -215,7 +215,7 @@ let deep_flatten
     | Lglobal_module _ -> lam 
     | Lprim {primitive ; args; loc }
       -> 
-      let args = List.map aux args in
+      let args = Ext_list.map aux args in
       Lam.prim ~primitive ~args loc
 
     | Lfunction{arity; function_kind; params;  body = l} -> 
@@ -228,8 +228,8 @@ let deep_flatten
                  }) ->
       Lam.switch (aux  l)
               {sw_consts = 
-                 List.map (fun (v, l) -> v, aux  l) sw_consts;
-               sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
+                 Ext_list.map (fun (v, l) -> v, aux  l) sw_consts;
+               sw_blocks = Ext_list.map (fun (v, l) -> v, aux  l) sw_blocks;
                sw_numconsts = sw_numconsts;
                sw_numblocks = sw_numblocks;
                sw_failaction = 
@@ -240,13 +240,13 @@ let deep_flatten
                  end}
     | Lstringswitch(l, sw, d) ->
       Lam.stringswitch (aux  l) 
-                    (List.map (fun (i, l) -> i,aux  l) sw)
+                    (Ext_list.map (fun (i, l) -> i,aux  l) sw)
                     (match d with
                      | Some d -> Some (aux d )
                      | None -> None)
 
     | Lstaticraise (i,ls) 
-      -> Lam.staticraise i (List.map aux  ls)
+      -> Lam.staticraise i (Ext_list.map aux  ls)
     | Lstaticcatch(l1, ids, l2) 
       -> 
       Lam.staticcatch (aux  l1) ids (aux  l2)
@@ -266,7 +266,7 @@ let deep_flatten
          v's refaux *)
       Lam.assign v (aux  l)
     | Lsend(u, m, o, ll, v) -> 
-      Lam.send u (aux m) (aux o) (List.map aux ll) v
+      Lam.send u (aux m) (aux o) (Ext_list.map aux ll) v
 
     | Lifused(v, l) -> Lam.ifused v (aux  l)
   in aux lam

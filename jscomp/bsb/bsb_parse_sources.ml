@@ -165,9 +165,9 @@ let (++) (u : t)  (v : t)  =
   else if v == empty then u 
   else 
     {
-      files = u.files @ v.files ; 
-      intervals = u.intervals @ v.intervals ; 
-      globbed_dirs = u.globbed_dirs @ v.globbed_dirs ; 
+      files = Ext_list.append u.files  v.files ; 
+      intervals = Ext_list.append u.intervals  v.intervals ; 
+      globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
     }
 
 let get_input_output 

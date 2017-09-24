@@ -66,7 +66,7 @@ let protect2 r1 r2 v1 v2 body =
     raise x
 
 let protect_list rvs body = 
-  let olds =  List.map (fun (x,y) -> !x)  rvs in 
+  let olds =  Ext_list.map (fun (x,y) -> !x)  rvs in 
   let () = List.iter (fun (x,y) -> x:=y) rvs in 
   try 
     let res = body () in 

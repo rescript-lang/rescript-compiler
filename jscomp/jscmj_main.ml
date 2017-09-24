@@ -118,11 +118,11 @@ let from_cmi (files : string list) (output_file : string) =
 
 
 let () = 
-  from_cmj (get_files Literals.suffix_cmj "stdlib"
-            @ get_files Literals.suffix_cmj "runtime"
-            @ get_files Literals.suffix_cmj "others") 
+  from_cmj ( Ext_list.append (get_files Literals.suffix_cmj "stdlib")
+             (Ext_list.append (get_files Literals.suffix_cmj "runtime")
+             (get_files Literals.suffix_cmj "others"))) 
     (Filename.concat "core" "js_cmj_datasets.ml");
-  from_cmi (get_files ".cmi" "stdlib"
-            @ get_files ".cmi" "others") 
+  from_cmi (Ext_list.append (get_files ".cmi" "stdlib")
+              (get_files ".cmi" "others"))
     (Filename.concat "core" "js_cmi_datasets.ml")
 

@@ -1285,8 +1285,9 @@ let of_block ?comment ?e block : t =
              begin match e with 
                | None -> block 
                | Some e -> 
-                 block @ [{J.statement_desc = Return {return_value = e } ;
-                           comment}]
+                 Ext_list.append block  
+                   [{J.statement_desc = Return {return_value = e } ;
+                     comment}]
              end
             , Js_fun_env.empty 0)
     } []
@@ -1308,9 +1309,9 @@ let is_null_undefined ?comment (x: t) : t =
   | Number _ | Array _ | Caml_block _ -> caml_false
   | _ -> 
     bool_of_boolean
-    { comment ; 
-      expression_desc = Is_null_undefined_to_boolean x 
-    }
+      { comment ; 
+        expression_desc = Is_null_undefined_to_boolean x 
+      }
 let not_implemented ?comment (s : string) : t =  
   runtime_call
     Js_runtime_modules.missing_polyfill

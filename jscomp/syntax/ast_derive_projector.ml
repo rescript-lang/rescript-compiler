@@ -19,7 +19,7 @@ let init () =
                   -> 
                   label_declarations 
                   |> 
-                  List.map (fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
+                  Ext_list.map (fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
                       let txt = "param" in
                       Str.value Nonrecursive
 
@@ -35,7 +35,7 @@ let init () =
                   -> 
                   constructor_declarations
                   |> 
-                  List.map 
+                  Ext_list.map 
                     (fun
                       ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                           Parsetree.constructor_declaration)
@@ -64,7 +64,7 @@ let init () =
                                       if  arity = 1 then 
                                         Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
                                       else 
-                                        Exp.tuple (List.map 
+                                        Exp.tuple (Ext_list.map 
                                                      (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
                                                      vars 
                                                   ) )) core_type
@@ -98,7 +98,7 @@ let init () =
                   -> 
                   label_declarations 
                   |> 
-                  List.map (fun 
+                  Ext_list.map (fun 
                              ({pld_name = {loc; txt = pld_label} as pld_name;
                                pld_type
                               } : 
@@ -111,7 +111,7 @@ let init () =
                   } -> 
                   constructor_declarations
                   |>
-                  List.map
+                  Ext_list.map
                     (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
                              Parsetree.constructor_declaration)
                       -> 
