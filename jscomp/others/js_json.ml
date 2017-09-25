@@ -34,23 +34,6 @@ type _ kind =
   | Boolean : Js.boolean kind
   | Null : Js_types.null_val kind
 
-let reifyType (type a) (x : t) : (a kind * a ) = 
-  (if Js.typeof x = "string" then 
-     Obj.magic String else
-   if Js.typeof x = "number" then 
-     Obj.magic Number  else 
-   if Js.typeof x = "boolean" then
-     (* which one is faster, save [Js.typeof] or not *)
-     Obj.magic Boolean else
-   if (Obj.magic x) == Js.null then
-     (* providing a universal function *)
-     Obj.magic Null else 
-   if Js_array.isArray x  then 
-     Obj.magic Array 
-   else 
-     Obj.magic Object ), Obj.magic x
-
-let reify_type = reifyType 
 
 type tagged_t = 
   | JSONFalse
