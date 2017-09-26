@@ -57,7 +57,7 @@ let () =
   eq __LOC__  (copysign (3.) (0.)) 3.;
   eq __LOC__ (log10 10.) 1.;
   eq __LOC__ (expm1 0.) 0. ;
-  eq __LOC__ (Js_float.of_any "3.0") 3.0;
+  eq __LOC__ (Js.Float.fromString "3.0") 3.0;
   approx __LOC__ (expm1 2.) 6.38905609893065
 ;;
 

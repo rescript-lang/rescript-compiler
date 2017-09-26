@@ -81,7 +81,7 @@ function install(){
     files = fs.readdirSync(jscomp_runtime)
     files.forEach(function(file){
 	var format_file = path.parse(file)
-	var special_files = ['js', 'js_unsafe', 'js_internal',  'js_null', 'js_undefined', 'js_typed_array', 'caml_exceptions']
+	var special_files = ['js', 'js_unsafe', 'js_internal',  'js_null', 'js_undefined', 'js_typed_array', 'caml_exceptions', 'js_float']
 	var installed_fmt = ['.cmt','.cmti', '.cmj']
 	if( 
 	    format_file &&
