@@ -114,6 +114,7 @@ let shake_compile impl : string -> string =
   string_of_fmt (implementation true impl )
 
 
+
 (** *)
 module Js = struct
   module Unsafe = struct
@@ -133,7 +134,12 @@ module Js = struct
   type js_string
   external string : string -> js_string t = "caml_js_from_string"
   external to_string : js_string t -> string = "caml_js_to_string"
+  external fs_register : js_string t -> js_string t -> unit = "caml_fs_register"
 end
+
+
+let load_module module_path cmi =
+  Js.fs_register module_path cmi
 
 
 let export (field : string) v = 
@@ -165,6 +171,11 @@ let make_compiler name impl =
                       (fun _ code ->
                          Js.string (shake_compile impl (Js.to_string code)));
                     "version", Js.Unsafe.inject (Js.string (Bs_version.version));
+                    "load_module",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ module_path cmi ->
+                        load_module module_path cmi);
                   |]))
 let () = make_compiler "ocaml" Parse.implementation
 
