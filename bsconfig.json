@@ -463,7 +463,6 @@
     }  
     // , "bsc-flags" : ["-w -40-30", "-w +a"]
     , "generate-merlin" : true
-    // "ppx-flags": ["reason/bin/reactjs_jsx_ppx"]
     // ,
     // "bs-dependencies" : ["mocha"]
     // , "generate-merlin" : true
