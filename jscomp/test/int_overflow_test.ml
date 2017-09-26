@@ -41,7 +41,7 @@ let rec fib = function
   "int_literal_flow2", (fun _ -> Eq(-1l, Int32.of_int 0xffffffff) );
   "int_literal_flow3", (fun _ -> Eq(-1l, Int32.of_int 0xfffffffff));
    "int32_mul", (fun _ -> Eq(-33554431l, Int32.mul 0xffffffl 0xffffffl )) ;
-   __LOC__ , (fun _ -> Eq(int_of_float @@ Js_float.of_any "3", 3)) ;
+   __LOC__ , (fun _ -> Eq(int_of_float @@ Js.Float.fromString "3", 3)) ;
     (* FIXME *)
-   __LOC__, (fun _ -> Eq (int_of_float @@ Js_float.of_any "3.2", 3  ))
+   __LOC__, (fun _ -> Eq (int_of_float @@ Js.Float.fromString "3.2", 3  ))
 ]

@@ -194,7 +194,8 @@ float_of_bits_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/array.cmj
 float_record.cmj : float_record.cmi
 float_test.cmj : ../stdlib/printf.cmj ../stdlib/pervasives.cmj mt_global.cmj \
-    mt.cmj ../runtime/js_float.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
+    mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj ../stdlib/int64.cmj \
+    ../stdlib/array.cmj
 flow_parser_reg_test.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj \
     ../stdlib/set.cmj ../stdlib/queue.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/obj.cmj ../others/node.cmj mt.cmj \
@@ -303,7 +304,7 @@ int64_test.cmj : ../stdlib/pervasives.cmj ../stdlib/nativeint.cmj mt.cmj \
 int_hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
     ../stdlib/array.cmj
 int_map.cmj : ../stdlib/map.cmj
-int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../runtime/js_float.cmj \
+int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../runtime/js.cmj \
     ../stdlib/int32.cmj ../stdlib/char.cmj
 io_test.cmj : ../runtime/js.cmj
 js_array_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
