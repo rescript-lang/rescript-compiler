@@ -220,8 +220,8 @@ module Types = struct
      {[
        match x with 
        | ..
-       | ..
-       | _ -> 2 
+         | ..
+           | _ -> 2 
      ]}
      since compiler would first test [x] is a const pointer
      or not then the [default] applies to each branch.
@@ -566,7 +566,7 @@ let free_variables l =
         Note it does not do any checking like below
         [Llet(str,id,arg,body)]
         it only check [arg] or [body] is hit or not, there
-        is an case that [id] is hit in [arg] but also exists 
+        is a case that [id] is hit in [arg] but also exists 
         in [fv], this is ignored.
 *)
 let hit_any_variables (fv : Ident_set.t) l : bool  =
@@ -721,59 +721,59 @@ let exception_id_escaped (fv : Ident.t) l : bool  =
 *)  
 let hit_mask ( mask : Hash_set_ident_mask.t) l =
   let rec hit (l : t) =
-    begin
-      match (l : t) with 
-      | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id mask 
-      | Lassign(id, e) ->
-        Hash_set_ident_mask.mask_check_all_hit id mask || hit e
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        hit e1 || hit e2
-      | Ltrywith(e1, exn, e2) ->
-        hit e1 || hit e2
-      | Lfunction{body;params} ->
-        hit body;
-      | Llet(str, id, arg, body) ->
-        hit arg || hit body
-      | Lletrec(decl, body) ->
-        hit body ||
-        List.exists (fun (id, exp) -> hit exp) decl
-      | Lfor(v, e1, e2, dir, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lconst _ -> false 
-      | Lapply{fn; args; _} ->
-        hit fn || List.exists hit args
-      | Lglobal_module id (* playsafe *)        
-        -> false
-      | Lprim {args; _} ->
-        List.exists hit args
-      | Lswitch(arg, sw) ->
-        hit arg ||
-        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
-        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
-        begin match sw.sw_failaction with 
-          | None -> false
-          | Some a -> hit a 
-        end
-      | Lstringswitch (arg,cases,default) ->
-        hit arg ||
-        List.exists (fun (_,act) -> hit act) cases ||
-        begin match default with 
-          | None -> false
-          | Some a -> hit a 
-        end
-      | Lstaticraise (_,args) ->
-        List.exists hit args
-      | Lifthenelse(e1, e2, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lsequence(e1, e2) ->
-        hit e1 || hit e2
-      | Lwhile(e1, e2) ->
-        hit e1 || hit e2
-      | Lsend (k, met, obj, args, _) ->
-        hit met || hit obj || List.exists hit args 
-      | Lifused (v, e) ->
-        hit e
-    end;
+    match (l : t) with 
+    | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id mask 
+    | Lassign(id, e) ->
+      Hash_set_ident_mask.mask_check_all_hit id mask || hit e
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      hit e1 || hit e2
+    | Ltrywith(e1, exn, e2) ->
+      hit e1 || hit e2
+    | Lfunction{body;params} ->
+      hit body;
+    | Llet(str, id, arg, body) ->
+      hit arg || hit body
+    | Lletrec(decl, body) ->
+      hit body ||
+      List.exists (fun (id, exp) -> hit exp) decl
+    | Lfor(v, e1, e2, dir, e3) ->
+      hit e1 || hit e2 || hit e3
+    | Lconst _ -> false 
+    | Lapply{fn; args; _} ->
+      hit fn || List.exists hit args
+    | Lglobal_module id (* playsafe *)        
+      -> false
+    | Lprim {args; _} ->
+      List.exists hit args
+    | Lswitch(arg, sw) ->
+      hit arg ||
+      List.exists hit_case sw.sw_consts ||
+      List.exists hit_case sw.sw_blocks ||
+      begin match sw.sw_failaction with 
+        | None -> false
+        | Some a -> hit a 
+      end
+    | Lstringswitch (arg,cases,default) ->
+      hit arg ||
+      List.exists hit_case cases ||
+      begin match default with 
+        | None -> false
+        | Some a -> hit a 
+      end
+    | Lstaticraise (_,args) ->
+      List.exists hit args
+    | Lifthenelse(e1, e2, e3) ->
+      hit e1 || hit e2 || hit e3
+    | Lsequence(e1, e2) ->
+      hit e1 || hit e2
+    | Lwhile(e1, e2) ->
+      hit e1 || hit e2
+    | Lsend (k, met, obj, args, _) ->
+      hit met || hit obj || List.exists hit args 
+    | Lifused (v, e) ->
+      hit e
+
+  and hit_case : 'a. 'a * _ -> bool = fun  (_,case) -> hit case  
   in hit l
 
 let free_variables l =
@@ -1011,14 +1011,28 @@ type unop = t -> t
 
 
 
+
+
+
+let var id : t = Lvar id
+let global_module id = Lglobal_module id 
+let const ct : t = Lconst ct 
+
+
 exception Not_simple_form 
 
-(** Simplfiy such behavior
-    {[ 
-      (apply
-         (function prim/1024 prim/1023 prim/1022
-                     ([js] (js_fn_make_2 prim/1024) prim/1023 prim/1022)) .. )
-    ]}
+(**
+
+
+   [is_eta_conversion_exn params inner_args outer_args]
+   case 1:
+   {{
+    (fun params -> wrap (primitive (inner_args)) args
+   }}  
+   when [inner_args] are the same as [params], it can be simplified as 
+   [wrap (primitive args)]
+
+    where [wrap] used to be simple instructions
     Note that [external] functions are forced to do eta-conversion
     when combined with [|>] operator, we need to make sure beta-reduction 
     is applied though since `[@bs.splice]` needs such guarantee.
@@ -1039,19 +1053,19 @@ let rec is_eta_conversion_exn
   | [], [], [] -> []
   | _, _, _ -> raise_notrace Not_simple_form
 
-
-let var id : t = Lvar id
-let global_module id = Lglobal_module id 
-let const ct : t = Lconst ct 
-
-
-(** FIXME: more robust inlining check later, we should inline it before we add stub code
-*)
+(** FIXME: more robust inlining check later, we should inline it before we add stub code*)
 let apply fn args loc status : t = 
   match fn with 
-  | Lfunction {function_kind ; params ;  
+  | Lfunction {function_kind;
+               params;  
                body = Lprim {primitive = 
-                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
+                               (Pundefined_to_opt | 
+                                Pnull_to_opt |
+                                Pnull_undefined_to_opt |
+                                Pis_null | 
+                                Pis_null_undefined | 
+                                Pjs_boolean_to_bool | 
+                                Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
                             } 
               } ->
@@ -1059,10 +1073,22 @@ let apply fn args loc status : t =
       | args 
         -> 
         Lprim {primitive = wrap ; args = [Lprim { primitive_call with args ; loc = loc }] ; loc }
-      | exception _ -> 
+      | exception Not_simple_form -> 
         Lapply { fn; args; loc; status }
     end  
-  | Lfunction {function_kind ; params; 
+  | Lfunction {function_kind; 
+               params; 
+               body =Lprim ({primitive; args = inner_args}as primitive_call) } 
+    ->
+    begin match is_eta_conversion_exn params inner_args args with
+      | args 
+        -> 
+        Lprim { primitive_call with args ; loc = loc }
+      | exception _ -> 
+        Lapply { fn; args;  loc;    status }
+    end 
+  | Lfunction {function_kind ; 
+               params; 
                body = Lsequence (Lprim ({primitive; args = inner_args}as primitive_call), (Lconst _ as const )) }
     ->  
     begin match is_eta_conversion_exn params inner_args args with
@@ -1072,27 +1098,8 @@ let apply fn args loc status : t =
       | exception _ -> 
         Lapply { fn; args;  loc;    status }
     end 
-  | Lfunction {function_kind ; params; 
-               body =Lprim ({primitive; args = inner_args}as primitive_call) } 
-
-    ->
-    begin match is_eta_conversion_exn params inner_args args with
-      | args 
-        -> 
-        Lprim { primitive_call with args ; loc = loc }
-      | exception _ -> 
-        Lapply { fn; args;  loc;    status }
-    end 
-
-  (*  | Lfunction {kind; params ; 
-                 body = Lapply {fn = new_fn ; args = inner_args; status }
-                } when is_eta_conversion params inner_args args ->
-      Lapply {fn = new_fn ; args ; loc = loc; status } 
-  *)
-  (* same as previous App status*)
   | _ -> 
-    Lapply { fn; args;  loc  ;
-             status }
+    Lapply { fn; args;  loc  ; status }
 
 
 let function_ ~arity ~function_kind ~params ~body : t = 
@@ -1252,9 +1259,9 @@ module Lift = struct
     Lconst ((Const_char b))    
 end
 
-let prim ~primitive:(prim : primitive) ~args:(ll : t list) loc  : t = 
-  let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
-  match ll with 
+let prim ~primitive:(prim : primitive) ~args loc  : t = 
+  let default () : t = Lprim { primitive = prim ;args; loc} in 
+  match args with 
   | [Lconst a] -> 
     begin match prim, a  with 
       | Pnegint, ((Const_int a))
@@ -1407,13 +1414,17 @@ let prim ~primitive:(prim : primitive) ~args:(ll : t list) loc  : t =
 
   | _ -> default ()
 
-
 let not_ loc x  : t = 
-  prim ~primitive:Pnot ~args:[x] loc
+  prim ~primitive:Pnot ~args:[x] loc 
+
 
 let may_depend = Lam_module_ident.Hash_set.add 
 
-
+(**
+   [no_auto_uncurried_arg_types xs]
+   check if the FFI have [@@bs.uncurry] attribute.
+   if it does not we wrap it in a nomral way otherwise
+*)
 let rec no_auto_uncurried_arg_types 
     (xs : Ast_arg.kind list)  = 
   match xs with 
@@ -1424,19 +1435,17 @@ let rec no_auto_uncurried_arg_types
 
 
 let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  = 
-  begin match result_type with 
-    | Return_replaced_with_unit  
-      -> append_unit result              
-    | Ast_ffi_types.Return_null_to_opt -> prim ~primitive:(Pnull_to_opt) ~args:[result] loc 
-    | Ast_ffi_types.Return_null_undefined_to_opt -> prim ~primitive:(Pnull_undefined_to_opt) ~args:[result] loc 
-    | Ast_ffi_types.Return_undefined_to_opt -> prim ~primitive:(Pundefined_to_opt) ~args:[result] loc 
-    | Ast_ffi_types.Return_to_ocaml_bool ->
-      prim ~primitive:(Pjs_boolean_to_bool) ~args:[result] loc 
-    | Return_unset
-    | Return_identity -> 
-      result 
-
-  end 
+  match result_type with 
+  | Return_replaced_with_unit  
+    -> append_unit result              
+  | Return_null_to_opt -> prim ~primitive:Pnull_to_opt ~args:[result] loc 
+  | Return_null_undefined_to_opt -> prim ~primitive:Pnull_undefined_to_opt ~args:[result] loc 
+  | Return_undefined_to_opt -> prim ~primitive:Pundefined_to_opt ~args:[result] loc 
+  | Return_to_ocaml_bool ->
+    prim ~primitive:Pjs_boolean_to_bool ~args:[result] loc 
+  | Return_unset
+  | Return_identity -> 
+    result 
 (* TODO: sort out the order here
    consolidate {!Lam_compile_external_call.assemble_args_splice}
 *)
@@ -1461,6 +1470,7 @@ let rec transform_uncurried_arg_type loc (arg_types : Ast_arg.kind list)
   | [] , [] 
   | _::_, [] 
   | [], _::_ as ok -> ok    
+
 
 
 (** drop Lseq (List! ) etc *)
@@ -1726,7 +1736,49 @@ let convert exports lam : _ * _  =
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
 
   let rec
-    aux_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
+    convert_ccall (a : Primitive.description)  (args : Lambda.lambda list) loc : t= 
+    let prim_name = a.prim_name in    
+    let prim_name_len  = String.length prim_name in 
+    begin match Ast_ffi_types.from_string a.prim_native_name with 
+      | Ffi_normal ->
+        if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
+          aux_js_primitive a args loc 
+        else 
+          (* COMPILER CHECK *)
+          (* Here the invariant we should keep is that all exception 
+             created should be captured
+          *)
+        if prim_name = "caml_set_oo_id" then (**)
+          begin match  args with 
+            | [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
+                       Lconst (Const_base(Const_string(name,_))) :: _,
+                       loc
+                      )] 
+              -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
+            | _ -> 
+              let args = Ext_list.map aux args in 
+              prim ~primitive:(Pccall a) ~args loc
+          end
+        else  
+          let args = Ext_list.map aux args in 
+          prim ~primitive:(Pccall a) ~args loc
+      | Ffi_obj_create labels ->
+        let args = Ext_list.map aux args in 
+        prim ~primitive:(Pjs_object_create labels) ~args loc 
+      | Ffi_bs(arg_types, result_type, ffi) ->
+        let args = Ext_list.map aux args in 
+        if no_auto_uncurried_arg_types arg_types then   
+          result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
+            ~args loc 
+        else 
+          let n_arg_types, n_args = 
+            transform_uncurried_arg_type loc  arg_types args in 
+          result_wrap loc result_type @@
+          prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
+            ~args:n_args loc 
+    end
+
+  and aux_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
     if s = "#raw_expr" then 
       begin match args with 
@@ -2001,46 +2053,7 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false   
     | Lprim(Pccall a, args, loc)  -> 
-      let prim_name = a.prim_name in    
-      let prim_name_len  = String.length prim_name in 
-      begin match Ast_ffi_types.from_string a.prim_native_name with 
-        | Ffi_normal ->
-          if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
-            aux_js_primitive a args loc 
-          else 
-            (* COMPILER CHECK *)
-            (* Here the invariant we should keep is that all exception 
-               created should be captured
-            *)
-          if a.prim_name = "caml_set_oo_id" then (**)
-            begin match  args with 
-              | [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
-                         Lconst (Const_base(Const_string(name,_))) :: _,
-                         loc
-                        )] 
-                -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
-              | _ -> 
-                let args = Ext_list.map aux args in 
-                prim ~primitive:(Pccall a) ~args loc
-            end
-          else  
-            let args = Ext_list.map aux args in 
-            prim ~primitive:(Pccall a) ~args loc
-        | Ffi_obj_create labels ->
-          let args = Ext_list.map aux args in 
-          prim ~primitive:(Pjs_object_create labels) ~args loc 
-        | Ffi_bs(arg_types, result_type, ffi) ->
-          let args = Ext_list.map aux args in 
-          if no_auto_uncurried_arg_types arg_types then   
-            result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
-              ~args loc 
-          else 
-            let n_arg_types, n_args = 
-              transform_uncurried_arg_type loc  arg_types args in 
-            result_wrap loc result_type @@
-            prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
-              ~args:n_args loc 
-      end
+      convert_ccall a args loc 
     | Lprim (Pgetglobal id, args, loc) ->   
       let args = Ext_list.map aux args in 
       if Ident.is_predef_exn id then 
