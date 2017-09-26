@@ -3388,8 +3388,8 @@ val amdjs_global : string
 val unused_attribute : string 
 val dash_nostdlib : string
 
-val reactjs_jsx_ppx_exe : string 
 val reactjs_jsx_ppx_2_exe : string 
+val reactjs_jsx_ppx_3_exe : string 
 val unescaped_j_delimiter : string 
 val escaped_j_delimiter : string 
 
@@ -3402,6 +3402,7 @@ val js : string
 val node_sep : string 
 val node_parent : string 
 val node_current : string 
+
 end = struct
 #1 "literals.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3519,8 +3520,8 @@ let amdjs_global = "amdjs-global"
 let unused_attribute = "Unused attribute " 
 let dash_nostdlib = "-nostdlib"
 
-let reactjs_jsx_ppx_exe  = "reactjs_jsx_ppx.exe"
 let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
+let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
 let unescaped_j_delimiter = "j"
 let unescaped_js_delimiter = "js"
 let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
@@ -10704,19 +10705,16 @@ let interpret_json
         | None -> ()
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
-            | "1" -> 
-              reason_react_jsx := 
-                Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) )
             | "2" -> 
               reason_react_jsx := 
                 Some (Filename.quote 
                         (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
+            | "3" -> 
+              reason_react_jsx := 
+                Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_3_exe) )
             | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end
-        | Some (True _) -> 
-          reason_react_jsx := 
-            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) 
-                 )
+        | Some ((True _) as x) -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "`\"react-jsx\": true` is no longer supported. Please use either `2` or `3`"
         | Some x -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) 
                       "Unexpected input for jsx"
       end)
