@@ -68121,7 +68121,10 @@ val for_ :
 
 
 
-(** In this pass we also synchronized aliases so that 
+(** 
+  [convert exports lam]
+  it also collect [exit_map] and a collection of potential depended modules [may_depends]
+  In this pass we also synchronized aliases so that 
     {[
       let a1 = a0 in 
       let a2 = a1 in 
@@ -68367,8 +68370,8 @@ module Types = struct
      {[
        match x with 
        | ..
-       | ..
-       | _ -> 2 
+         | ..
+           | _ -> 2 
      ]}
      since compiler would first test [x] is a const pointer
      or not then the [default] applies to each branch.
@@ -68713,7 +68716,7 @@ let free_variables l =
         Note it does not do any checking like below
         [Llet(str,id,arg,body)]
         it only check [arg] or [body] is hit or not, there
-        is an case that [id] is hit in [arg] but also exists 
+        is a case that [id] is hit in [arg] but also exists 
         in [fv], this is ignored.
 *)
 let hit_any_variables (fv : Ident_set.t) l : bool  =
@@ -68868,59 +68871,59 @@ let exception_id_escaped (fv : Ident.t) l : bool  =
 *)  
 let hit_mask ( mask : Hash_set_ident_mask.t) l =
   let rec hit (l : t) =
-    begin
-      match (l : t) with 
-      | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id mask 
-      | Lassign(id, e) ->
-        Hash_set_ident_mask.mask_check_all_hit id mask || hit e
-      | Lstaticcatch(e1, (_,vars), e2) ->
-        hit e1 || hit e2
-      | Ltrywith(e1, exn, e2) ->
-        hit e1 || hit e2
-      | Lfunction{body;params} ->
-        hit body;
-      | Llet(str, id, arg, body) ->
-        hit arg || hit body
-      | Lletrec(decl, body) ->
-        hit body ||
-        List.exists (fun (id, exp) -> hit exp) decl
-      | Lfor(v, e1, e2, dir, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lconst _ -> false 
-      | Lapply{fn; args; _} ->
-        hit fn || List.exists hit args
-      | Lglobal_module id (* playsafe *)        
-        -> false
-      | Lprim {args; _} ->
-        List.exists hit args
-      | Lswitch(arg, sw) ->
-        hit arg ||
-        List.exists (fun (key, case) -> hit case) sw.sw_consts ||
-        List.exists (fun (key, case) -> hit case) sw.sw_blocks ||
-        begin match sw.sw_failaction with 
-          | None -> false
-          | Some a -> hit a 
-        end
-      | Lstringswitch (arg,cases,default) ->
-        hit arg ||
-        List.exists (fun (_,act) -> hit act) cases ||
-        begin match default with 
-          | None -> false
-          | Some a -> hit a 
-        end
-      | Lstaticraise (_,args) ->
-        List.exists hit args
-      | Lifthenelse(e1, e2, e3) ->
-        hit e1 || hit e2 || hit e3
-      | Lsequence(e1, e2) ->
-        hit e1 || hit e2
-      | Lwhile(e1, e2) ->
-        hit e1 || hit e2
-      | Lsend (k, met, obj, args, _) ->
-        hit met || hit obj || List.exists hit args 
-      | Lifused (v, e) ->
-        hit e
-    end;
+    match (l : t) with 
+    | Lvar id -> Hash_set_ident_mask.mask_check_all_hit id mask 
+    | Lassign(id, e) ->
+      Hash_set_ident_mask.mask_check_all_hit id mask || hit e
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      hit e1 || hit e2
+    | Ltrywith(e1, exn, e2) ->
+      hit e1 || hit e2
+    | Lfunction{body;params} ->
+      hit body;
+    | Llet(str, id, arg, body) ->
+      hit arg || hit body
+    | Lletrec(decl, body) ->
+      hit body ||
+      List.exists (fun (id, exp) -> hit exp) decl
+    | Lfor(v, e1, e2, dir, e3) ->
+      hit e1 || hit e2 || hit e3
+    | Lconst _ -> false 
+    | Lapply{fn; args; _} ->
+      hit fn || List.exists hit args
+    | Lglobal_module id (* playsafe *)        
+      -> false
+    | Lprim {args; _} ->
+      List.exists hit args
+    | Lswitch(arg, sw) ->
+      hit arg ||
+      List.exists hit_case sw.sw_consts ||
+      List.exists hit_case sw.sw_blocks ||
+      begin match sw.sw_failaction with 
+        | None -> false
+        | Some a -> hit a 
+      end
+    | Lstringswitch (arg,cases,default) ->
+      hit arg ||
+      List.exists hit_case cases ||
+      begin match default with 
+        | None -> false
+        | Some a -> hit a 
+      end
+    | Lstaticraise (_,args) ->
+      List.exists hit args
+    | Lifthenelse(e1, e2, e3) ->
+      hit e1 || hit e2 || hit e3
+    | Lsequence(e1, e2) ->
+      hit e1 || hit e2
+    | Lwhile(e1, e2) ->
+      hit e1 || hit e2
+    | Lsend (k, met, obj, args, _) ->
+      hit met || hit obj || List.exists hit args 
+    | Lifused (v, e) ->
+      hit e
+
+  and hit_case : 'a. 'a * _ -> bool = fun  (_,case) -> hit case  
   in hit l
 
 let free_variables l =
@@ -69158,14 +69161,28 @@ type unop = t -> t
 
 
 
+
+
+
+let var id : t = Lvar id
+let global_module id = Lglobal_module id 
+let const ct : t = Lconst ct 
+
+
 exception Not_simple_form 
 
-(** Simplfiy such behavior
-    {[ 
-      (apply
-         (function prim/1024 prim/1023 prim/1022
-                     ([js] (js_fn_make_2 prim/1024) prim/1023 prim/1022)) .. )
-    ]}
+(**
+
+
+   [is_eta_conversion_exn params inner_args outer_args]
+   case 1:
+   {{
+    (fun params -> wrap (primitive (inner_args)) args
+   }}  
+   when [inner_args] are the same as [params], it can be simplified as 
+   [wrap (primitive args)]
+
+    where [wrap] used to be simple instructions
     Note that [external] functions are forced to do eta-conversion
     when combined with [|>] operator, we need to make sure beta-reduction 
     is applied though since `[@bs.splice]` needs such guarantee.
@@ -69186,19 +69203,19 @@ let rec is_eta_conversion_exn
   | [], [], [] -> []
   | _, _, _ -> raise_notrace Not_simple_form
 
-
-let var id : t = Lvar id
-let global_module id = Lglobal_module id 
-let const ct : t = Lconst ct 
-
-
-(** FIXME: more robust inlining check later, we should inline it before we add stub code
-*)
+(** FIXME: more robust inlining check later, we should inline it before we add stub code*)
 let apply fn args loc status : t = 
   match fn with 
-  | Lfunction {function_kind ; params ;  
+  | Lfunction {function_kind;
+               params;  
                body = Lprim {primitive = 
-                               (Pundefined_to_opt | Pnull_to_opt | Pnull_undefined_to_opt | Pis_null | Pis_null_undefined | Pjs_boolean_to_bool | Pjs_typeof ) as wrap;
+                               (Pundefined_to_opt | 
+                                Pnull_to_opt |
+                                Pnull_undefined_to_opt |
+                                Pis_null | 
+                                Pis_null_undefined | 
+                                Pjs_boolean_to_bool | 
+                                Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
                             } 
               } ->
@@ -69206,10 +69223,22 @@ let apply fn args loc status : t =
       | args 
         -> 
         Lprim {primitive = wrap ; args = [Lprim { primitive_call with args ; loc = loc }] ; loc }
-      | exception _ -> 
+      | exception Not_simple_form -> 
         Lapply { fn; args; loc; status }
     end  
-  | Lfunction {function_kind ; params; 
+  | Lfunction {function_kind; 
+               params; 
+               body =Lprim ({primitive; args = inner_args}as primitive_call) } 
+    ->
+    begin match is_eta_conversion_exn params inner_args args with
+      | args 
+        -> 
+        Lprim { primitive_call with args ; loc = loc }
+      | exception _ -> 
+        Lapply { fn; args;  loc;    status }
+    end 
+  | Lfunction {function_kind ; 
+               params; 
                body = Lsequence (Lprim ({primitive; args = inner_args}as primitive_call), (Lconst _ as const )) }
     ->  
     begin match is_eta_conversion_exn params inner_args args with
@@ -69219,27 +69248,8 @@ let apply fn args loc status : t =
       | exception _ -> 
         Lapply { fn; args;  loc;    status }
     end 
-  | Lfunction {function_kind ; params; 
-               body =Lprim ({primitive; args = inner_args}as primitive_call) } 
-
-    ->
-    begin match is_eta_conversion_exn params inner_args args with
-      | args 
-        -> 
-        Lprim { primitive_call with args ; loc = loc }
-      | exception _ -> 
-        Lapply { fn; args;  loc;    status }
-    end 
-
-  (*  | Lfunction {kind; params ; 
-                 body = Lapply {fn = new_fn ; args = inner_args; status }
-                } when is_eta_conversion params inner_args args ->
-      Lapply {fn = new_fn ; args ; loc = loc; status } 
-  *)
-  (* same as previous App status*)
   | _ -> 
-    Lapply { fn; args;  loc  ;
-             status }
+    Lapply { fn; args;  loc  ; status }
 
 
 let function_ ~arity ~function_kind ~params ~body : t = 
@@ -69399,9 +69409,9 @@ module Lift = struct
     Lconst ((Const_char b))    
 end
 
-let prim ~primitive:(prim : primitive) ~args:(ll : t list) loc  : t = 
-  let default () : t = Lprim { primitive = prim ;args =  ll ; loc} in 
-  match ll with 
+let prim ~primitive:(prim : primitive) ~args loc  : t = 
+  let default () : t = Lprim { primitive = prim ;args; loc} in 
+  match args with 
   | [Lconst a] -> 
     begin match prim, a  with 
       | Pnegint, ((Const_int a))
@@ -69554,13 +69564,19 @@ let prim ~primitive:(prim : primitive) ~args:(ll : t list) loc  : t =
 
   | _ -> default ()
 
-
 let not_ loc x  : t = 
-  prim ~primitive:Pnot ~args:[x] loc
-
-let may_depend = Lam_module_ident.Hash_set.add 
+  prim ~primitive:Pnot ~args:[x] loc 
 
 
+
+
+(******************************************************************)
+(** only [handle_bs_non_obj_ffi] will be used outside *)
+(**
+   [no_auto_uncurried_arg_types xs]
+   check if the FFI have [@@bs.uncurry] attribute.
+   if it does not we wrap it in a nomral way otherwise
+*)
 let rec no_auto_uncurried_arg_types 
     (xs : Ast_arg.kind list)  = 
   match xs with 
@@ -69571,19 +69587,17 @@ let rec no_auto_uncurried_arg_types
 
 
 let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  = 
-  begin match result_type with 
-    | Return_replaced_with_unit  
-      -> append_unit result              
-    | Ast_ffi_types.Return_null_to_opt -> prim ~primitive:(Pnull_to_opt) ~args:[result] loc 
-    | Ast_ffi_types.Return_null_undefined_to_opt -> prim ~primitive:(Pnull_undefined_to_opt) ~args:[result] loc 
-    | Ast_ffi_types.Return_undefined_to_opt -> prim ~primitive:(Pundefined_to_opt) ~args:[result] loc 
-    | Ast_ffi_types.Return_to_ocaml_bool ->
-      prim ~primitive:(Pjs_boolean_to_bool) ~args:[result] loc 
-    | Return_unset
-    | Return_identity -> 
-      result 
-
-  end 
+  match result_type with 
+  | Return_replaced_with_unit  
+    -> append_unit result              
+  | Return_null_to_opt -> prim ~primitive:Pnull_to_opt ~args:[result] loc 
+  | Return_null_undefined_to_opt -> prim ~primitive:Pnull_undefined_to_opt ~args:[result] loc 
+  | Return_undefined_to_opt -> prim ~primitive:Pundefined_to_opt ~args:[result] loc 
+  | Return_to_ocaml_bool ->
+    prim ~primitive:Pjs_boolean_to_bool ~args:[result] loc 
+  | Return_unset
+  | Return_identity -> 
+    result 
 (* TODO: sort out the order here
    consolidate {!Lam_compile_external_call.assemble_args_splice}
 *)
@@ -69608,6 +69622,25 @@ let rec transform_uncurried_arg_type loc (arg_types : Ast_arg.kind list)
   | [] , [] 
   | _::_, [] 
   | [], _::_ as ok -> ok    
+
+
+let handle_bs_non_obj_ffi 
+    (arg_types : Ast_arg.kind list) 
+    (result_type : Ast_ffi_types.return_wrapper) 
+    ffi 
+    args 
+    loc 
+    prim_name =
+  if no_auto_uncurried_arg_types arg_types then   
+    result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
+      ~args loc 
+  else 
+    let n_arg_types, n_args = 
+      transform_uncurried_arg_type loc  arg_types args in 
+    result_wrap loc result_type @@
+    prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
+      ~args:n_args loc 
+(******************************************************************)
 
 
 (** drop Lseq (List! ) etc *)
@@ -69765,6 +69798,9 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
 
 
 
+
+(******************************************************************)
+
 type bindings = (Ident.t * t) list
 
 
@@ -69863,17 +69899,50 @@ let scc  (groups :  bindings)  ( lam : t) ( body : t)
           )  clusters body 
   end
 
+(******************************************************************)
+
 
 type required_modules = Lam_module_ident.Hash_set.t
 
-
+let may_depend = Lam_module_ident.Hash_set.add 
 let convert exports lam : _ * _  = 
   let alias_tbl = Ident_hashtbl.create 64 in 
   let exit_map = Int_hashtbl.create 0 in 
   let may_depends = Lam_module_ident.Hash_set.create 0 in 
 
   let rec
-    aux_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
+    convert_ccall (a : Primitive.description)  (args : Lambda.lambda list) loc : t= 
+    let prim_name = a.prim_name in    
+    let prim_name_len  = String.length prim_name in 
+    match Ast_ffi_types.from_string a.prim_native_name with 
+    | Ffi_normal ->
+      if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
+        convert_js_primitive a args loc 
+      else 
+        (* COMPILER CHECK *)
+        (* Here the invariant we should keep is that all exception 
+           created should be captured
+        *)
+        begin match prim_name  ,  args with 
+          | "caml_set_oo_id" , 
+            [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
+                     Lconst (Const_base(Const_string(name,_))) :: _,
+                     loc
+                    )] 
+            -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
+          | _ , _-> 
+            let args = Ext_list.map convert_aux args in 
+            prim ~primitive:(Pccall a) ~args loc
+        end     
+    | Ffi_obj_create labels ->
+      let args = Ext_list.map convert_aux args in 
+      prim ~primitive:(Pjs_object_create labels) ~args loc 
+    | Ffi_bs(arg_types, result_type, ffi) ->
+      let args = Ext_list.map convert_aux args in 
+      handle_bs_non_obj_ffi arg_types result_type ffi args loc prim_name
+
+
+  and convert_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
     if s = "#raw_expr" then 
       begin match args with 
@@ -69892,9 +69961,9 @@ let convert exports lam : _ * _  =
     else if s =  "#debugger"  then 
       (* ATT: Currently, the arity is one due to PPX *)
       prim ~primitive:Pdebugger ~args:[] loc 
-    else 
-      let args = Ext_list.map aux args in 
-      let primitive = match s with 
+    else      
+      let primitive = 
+        match s with 
         | "#apply" -> Pjs_runtime_apply
         | "#apply1"
         | "#apply2"
@@ -69938,8 +70007,9 @@ let convert exports lam : _ * _  =
         | _ -> Location.raise_errorf ~loc
                  "@{<error>Error:@} internal error, using unrecorgnized primitive %s" s 
       in
+      let args = Ext_list.map convert_aux args in 
       prim ~primitive ~args loc 
-  and aux_constant ( const : Lambda.structured_constant) : constant = 
+  and convert_constant ( const : Lambda.structured_constant) : constant = 
     match const with 
     | Const_base (Const_int i) -> (Const_int i)
     | Const_base (Const_char i) -> (Const_char i)
@@ -69959,8 +70029,8 @@ let convert exports lam : _ * _  =
     | Const_float_array (s) -> Const_float_array(s)
     | Const_immstring s -> Const_immstring s 
     | Const_block (i,t,xs) -> 
-      Const_block (i,t, Ext_list.map aux_constant xs)
-  and aux (lam : Lambda.lambda) : t = 
+      Const_block (i,t, Ext_list.map convert_constant xs)
+  and convert_aux (lam : Lambda.lambda) : t = 
     match lam with 
     | Lvar x -> 
       let var = Ident_hashtbl.find_default alias_tbl x x in
@@ -69969,7 +70039,7 @@ let convert exports lam : _ * _  =
       else       
         Lvar var       
     | Lconst x -> 
-      Lconst (aux_constant x )
+      Lconst (convert_constant x )
     | Lapply (fn,args,loc) 
       ->  
       begin match fn with 
@@ -69982,7 +70052,7 @@ let convert exports lam : _ * _  =
               )
             ],loc
           ) -> (* replace all {!CamlinternalMod} function *)
-          let args = Ext_list.map aux args in
+          let args = Ext_list.map convert_aux args in
           begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
             | "init_mod" ,  [_loc ; shape]  -> 
               begin match shape with 
@@ -70004,12 +70074,12 @@ let convert exports lam : _ * _  =
                   [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
                 )
           ->
-          let args = Ext_list.map aux args in
+          let args = Ext_list.map convert_aux args in
           begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
             | "^", [ l; r ] 
               ->
               prim ~primitive:Pstringadd ~args:[l;r] loc 
-            | _ ->  apply (aux fn) args loc  App_na
+            | _ ->  apply (convert_aux fn) args loc  App_na
           end
         (*  
         | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
@@ -70079,14 +70149,14 @@ let convert exports lam : _ * _  =
         | _ -> 
 
           (** we need do this eargly in case [aux fn] add some wrapper *)
-          apply (aux fn) (Ext_list.map aux args) 
+          apply (convert_aux fn) (Ext_list.map convert_aux args) 
             loc App_na
       end
     | Lfunction (Tupled,_,_) -> assert false
     | Lfunction (Curried,  params,body)
       ->  function_ 
             ~arity:(List.length params) ~function_kind:Curried ~params 
-            ~body:(aux body)
+            ~body:(convert_aux body)
     | Llet (kind,id,e,body) 
       ->
 
@@ -70095,23 +70165,23 @@ let convert exports lam : _ * _  =
           let new_u = (Ident_hashtbl.find_default alias_tbl u u) in
           Ident_hashtbl.add alias_tbl id new_u ;
           if Ident_set.mem id exports then 
-            Llet(kind, id, Lvar new_u, aux body)
-          else aux body   
+            Llet(kind, id, Lvar new_u, convert_aux body)
+          else convert_aux body   
         | Alias ,  Lprim (Pgetglobal u,[], _) when not (Ident.is_predef_exn u)
           ->         
           Ident_hashtbl.add alias_tbl id u;          
           may_depend may_depends (Lam_module_ident.of_ml u);
 
           if Ident_set.mem id exports then 
-            Llet(kind, id, Lvar u, aux body)
-          else aux body   
+            Llet(kind, id, Lvar u, convert_aux body)
+          else convert_aux body   
 
-        | _, _ -> Llet(kind,id,aux e, aux body)
+        | _, _ -> Llet(kind,id,convert_aux e, convert_aux body)
       end
     | Lletrec (bindings,body)
       -> 
-      let bindings = Ext_list.map (fun (id, e) -> id, aux e) bindings in
-      let body = aux body in 
+      let bindings = Ext_list.map (fun (id, e) -> id, convert_aux e) bindings in
+      let body = convert_aux body in 
       let lam = Lletrec (bindings, body) in 
       scc bindings lam body  
     (* inlining will affect how mututal recursive behave *)
@@ -70125,7 +70195,7 @@ let convert exports lam : _ * _  =
         | Lfunction(kind, [param],Lprim(external_fn,[Lvar inner_arg],inner_loc))
           when Ident.same param inner_arg 
           -> 
-          aux  (Lprim(external_fn,  [x], outer_loc))
+          convert_aux  (Lprim(external_fn,  [x], outer_loc))
 
         |  Lapply(Lfunction(kind, params,Lprim(external_fn,inner_args,inner_loc)), args, outer_loc ) (* x |> f a *) 
 
@@ -70134,10 +70204,10 @@ let convert exports lam : _ * _  =
                Ext_list.length_larger_than_n 1 inner_args args
           -> 
 
-          aux (Lprim(external_fn, Ext_list.append args [x], outer_loc))
+          convert_aux (Lprim(external_fn, Ext_list.append args [x], outer_loc))
         | _ -> 
-          let x  = aux x in 
-          let f =  aux f in 
+          let x  = convert_aux x in 
+          let f =  convert_aux f in 
           begin match  f with 
             | Lapply{fn;args} ->
               apply fn (args @[x]) outer_loc App_na 
@@ -70148,48 +70218,9 @@ let convert exports lam : _ * _  =
     | Lprim (Prevapply, _, _ ) -> assert false       
     | Lprim(Pdirapply, _, _) -> assert false   
     | Lprim(Pccall a, args, loc)  -> 
-      let prim_name = a.prim_name in    
-      let prim_name_len  = String.length prim_name in 
-      begin match Ast_ffi_types.from_string a.prim_native_name with 
-        | Ffi_normal ->
-          if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
-            aux_js_primitive a args loc 
-          else 
-            (* COMPILER CHECK *)
-            (* Here the invariant we should keep is that all exception 
-               created should be captured
-            *)
-          if a.prim_name = "caml_set_oo_id" then (**)
-            begin match  args with 
-              | [ Lprim (Pmakeblock(tag,( Blk_exception| Blk_extension), _),
-                         Lconst (Const_base(Const_string(name,_))) :: _,
-                         loc
-                        )] 
-                -> prim ~primitive:(Pcreate_extension name) ~args:[] loc 
-              | _ -> 
-                let args = Ext_list.map aux args in 
-                prim ~primitive:(Pccall a) ~args loc
-            end
-          else  
-            let args = Ext_list.map aux args in 
-            prim ~primitive:(Pccall a) ~args loc
-        | Ffi_obj_create labels ->
-          let args = Ext_list.map aux args in 
-          prim ~primitive:(Pjs_object_create labels) ~args loc 
-        | Ffi_bs(arg_types, result_type, ffi) ->
-          let args = Ext_list.map aux args in 
-          if no_auto_uncurried_arg_types arg_types then   
-            result_wrap loc result_type @@ prim ~primitive:(Pjs_call(prim_name, arg_types, ffi)) 
-              ~args loc 
-          else 
-            let n_arg_types, n_args = 
-              transform_uncurried_arg_type loc  arg_types args in 
-            result_wrap loc result_type @@
-            prim ~primitive:(Pjs_call (prim_name, n_arg_types, ffi))
-              ~args:n_args loc 
-      end
+      convert_ccall a args loc 
     | Lprim (Pgetglobal id, args, loc) ->   
-      let args = Ext_list.map aux args in 
+      let args = Ext_list.map convert_aux args in 
       if Ident.is_predef_exn id then 
         Lprim {primitive = Pglobal_exception id; args ; loc}
       else 
@@ -70200,10 +70231,10 @@ let convert exports lam : _ * _  =
         end  
     | Lprim (primitive,args, loc) 
       -> 
-      let args = Ext_list.map aux args in
+      let args = Ext_list.map convert_aux args in
       lam_prim ~primitive ~args loc 
     | Lswitch (e,s) -> 
-      let  e = aux e in 
+      let  e = convert_aux e in 
       begin match s with 
         | {
           sw_failaction = None ;
@@ -70221,17 +70252,17 @@ let convert exports lam : _ * _  =
                        sw_blocks = []; 
                        sw_numblocks = 0;
                        sw_consts =
-                         Ext_list.map (fun (i,lam) -> i, aux lam) sw_consts;
+                         Ext_list.map (fun (i,lam) -> i, convert_aux lam) sw_consts;
                        sw_numconsts
                       })
           end
         | _ -> Lswitch ( e, aux_switch s)
       end
     | Lstringswitch (e, cases, default,_) -> 
-      Lstringswitch (aux e, Ext_list.map (fun (x, b) -> x, aux b ) cases, 
+      Lstringswitch (convert_aux e, Ext_list.map (fun (x, b) -> x, convert_aux b ) cases, 
                      match default with 
                      | None -> None
-                     | Some x -> Some (aux x)
+                     | Some x -> Some (convert_aux x)
                     )    
     | Lstaticraise (id,[]) ->
       begin match Int_hashtbl.find_opt exit_map id  with
@@ -70239,18 +70270,18 @@ let convert exports lam : _ * _  =
         | Some new_id -> Lstaticraise (new_id,[])
       end               
     | Lstaticraise (id, args) -> 
-      Lstaticraise (id, Ext_list.map aux args)
+      Lstaticraise (id, Ext_list.map convert_aux args)
     | Lstaticcatch (b, (i,[]), Lstaticraise (j,[]) ) 
       -> (* peep-hole [i] aliased to [j] *)
 
       let new_i = Int_hashtbl.find_default exit_map j j in 
       Int_hashtbl.add exit_map i new_i ; 
-      aux b
+      convert_aux b
     | Lstaticcatch (b, (i, ids), handler) -> 
-      Lstaticcatch (aux b, (i,ids), aux handler)
+      Lstaticcatch (convert_aux b, (i,ids), convert_aux handler)
     | Ltrywith (b, id, handler) ->
-      let body = aux b in 
-      let handler = aux handler in 
+      let body = convert_aux b in 
+      let handler = convert_aux handler in 
       if exception_id_escaped id handler then 
         let newId = Ident.create ("raw_" ^ id.name) in 
         Ltrywith (body, newId, 
@@ -70261,18 +70292,18 @@ let convert exports lam : _ * _  =
       else 
         Ltrywith( body, id, handler)
     | Lifthenelse (b,then_,else_) -> 
-      Lifthenelse (aux b, aux then_, aux else_)
+      Lifthenelse (convert_aux b, convert_aux then_, convert_aux else_)
     | Lsequence (a,b) 
-      -> Lsequence (aux a, aux b)
+      -> Lsequence (convert_aux a, convert_aux b)
     | Lwhile (b,body) -> 
-      Lwhile (aux b, aux body)
+      Lwhile (convert_aux b, convert_aux body)
     | Lfor (id, from_, to_, dir, loop) -> 
-      Lfor (id, aux from_, aux to_, dir, aux loop)
+      Lfor (id, convert_aux from_, convert_aux to_, dir, convert_aux loop)
     | Lassign (id, body) -> 
-      Lassign (id, aux body)    
+      Lassign (id, convert_aux body)    
     | Lsend (kind, a,b,ls, loc) -> 
       (* Format.fprintf Format.err_formatter "%a@." Printlambda.lambda b ; *)
-      begin match aux b with 
+      begin match convert_aux b with 
         | Lprim {primitive =  Pjs_unsafe_downgrade(_,loc);  args} 
           -> 
           begin match kind, ls with 
@@ -70282,24 +70313,24 @@ let convert exports lam : _ * _  =
             | _ -> assert false 
           end
         | b ->     
-          Lsend(kind, aux a,  b, Ext_list.map aux ls, loc )
+          Lsend(kind, convert_aux a,  b, Ext_list.map convert_aux ls, loc )
       end
     | Levent (e, event) ->
       (* disabled by upstream*)
       assert false
     | Lifused (id, e) -> 
-      Lifused(id, aux e) (* TODO: remove it ASAP *)
+      Lifused(id, convert_aux e) (* TODO: remove it ASAP *)
   and aux_switch (s : Lambda.lambda_switch) : switch = 
     { sw_numconsts = s.sw_numconsts ; 
-      sw_consts = Ext_list.map (fun (i, lam) -> i, aux lam) s.sw_consts;
+      sw_consts = Ext_list.map (fun (i, lam) -> i, convert_aux lam) s.sw_consts;
       sw_numblocks = s.sw_numblocks;
-      sw_blocks = Ext_list.map (fun (i,lam) -> i, aux lam ) s.sw_blocks;
+      sw_blocks = Ext_list.map (fun (i,lam) -> i, convert_aux lam ) s.sw_blocks;
       sw_failaction = 
         match s.sw_failaction with 
         | None -> None 
-        | Some a -> Some (aux a)
+        | Some a -> Some (convert_aux a)
     }  in 
-  aux lam , may_depends
+  convert_aux lam , may_depends
 
 
 
@@ -102637,7 +102668,6 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-
     
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let basename =  

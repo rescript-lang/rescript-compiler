@@ -226,6 +226,7 @@ gpr_1150.cmj :
 gpr_1154_test.cmj : mt.cmj ../stdlib/int64.cmj
 gpr_1170.cmj :
 gpr_1240_missing_unbox.cmj :
+gpr_1245_test.cmj : ../runtime/js.cmj
 gpr_1268.cmj : ../runtime/js.cmj
 gpr_1409_test.cmj : string_set.cmj mt.cmj ../runtime/js.cmj \
     ../stdlib/array.cmj

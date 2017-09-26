@@ -374,9 +374,8 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-
 #if BS_DEBUG then    
-    Js_config.set_debug_file "demo.ml";
+    Js_config.set_debug_file "gpr_1245_test.ml";
 #end    
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let basename =  

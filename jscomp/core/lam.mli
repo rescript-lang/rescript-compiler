@@ -327,7 +327,10 @@ val for_ :
 
 
 
-(** In this pass we also synchronized aliases so that 
+(** 
+  [convert exports lam]
+  it also collect [exit_map] and a collection of potential depended modules [may_depends]
+  In this pass we also synchronized aliases so that 
     {[
       let a1 = a0 in 
       let a2 = a1 in 
