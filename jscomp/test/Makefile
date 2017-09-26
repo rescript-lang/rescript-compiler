@@ -196,7 +196,8 @@ OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi t
 	functor_app_test\
 	module_alias_test\
 	escape_esmodule\
-	esmodule_ref
+	esmodule_ref\
+	miss_colon_test
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 

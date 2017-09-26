@@ -249,6 +249,7 @@ let name_mangle name =
       | '%' -> Buffer.add_string buffer "$percent"
       | '~' -> Buffer.add_string buffer "$tilde"
       | '#' -> Buffer.add_string buffer "$hash"
+      | ':' -> Buffer.add_string buffer "$colon"
       | 'a'..'z' | 'A'..'Z'| '_' 
       | '$'
       | '0'..'9'-> Buffer.add_char buffer  c
@@ -277,6 +278,7 @@ let name_mangle name =
        | '%' -> Buffer.add_string buffer "$percent"
        | '~' -> Buffer.add_string buffer "$tilde"
        | '#' -> Buffer.add_string buffer "$hash"
+       | ':' -> Buffer.add_string buffer "$colon"
        | '$' -> Buffer.add_string buffer "$dollar"
        | 'a'..'z' | 'A'..'Z'| '_'        
        | '0'..'9'-> Buffer.add_char buffer  c

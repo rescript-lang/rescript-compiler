@@ -363,6 +363,7 @@ mario_game.cmj : ../stdlib/random.cmj ../stdlib/printf.cmj \
 method_chain.cmj :
 method_name_test.cmj : mt.cmj
 minimal_test.cmj :
+miss_colon_test.cmj :
 mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj
 module_alias_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../runtime/js.cmj
