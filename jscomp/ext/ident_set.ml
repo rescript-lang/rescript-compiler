@@ -24,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 31
+# 32
 type elt = Ident.t
 let compare_elt (x : elt) (y : elt) = 
   let a =  Pervasives.compare (x.stamp : int) y.stamp in 
@@ -34,9 +34,10 @@ let compare_elt (x : elt) (y : elt) =
     if b <> 0 then b 
     else Pervasives.compare (x.flags : int) y.flags     
 type  t = elt Set_gen.t 
+let print_elt = Ident.print
 
 
-# 57
+# 67
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
@@ -178,6 +179,15 @@ let invariant t =
   Set_gen.check t ;
   Set_gen.is_ordered compare_elt t          
 
+let print fmt s = 
+  Format.fprintf 
+   fmt   "@[<v>{%a}@]@."
+    (fun fmt s   -> 
+       iter 
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
+         print_elt e) s
+    )
+    s     
 
 
 

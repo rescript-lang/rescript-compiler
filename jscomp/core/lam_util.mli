@@ -74,10 +74,6 @@ val generate_label : ?name:string -> unit -> J.label
 val dump : Env.t   -> string -> Lam.t -> Lam.t
 
 
-val print_ident_set : Format.formatter -> Ident_set.t -> unit
-
-
-
 val not_function : Lam.t -> bool 
 val is_function : Lam.t -> bool 
 

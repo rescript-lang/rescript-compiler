@@ -65,7 +65,7 @@ ext/int_map.cmx : ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
 ext/string_map.cmx : ext/map_gen.cmx ext/ext_string.cmx ext/string_map.cmi
 ext/string_set.cmx : ext/set_gen.cmx ext/ext_string.cmx ext/string_set.cmi
 ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx ext/set_int.cmi
-ext/set_poly.cmx : ext/set_gen.cmx ext/set_poly.cmi
+ext/set_poly.cmx : ext/set_gen.cmx ext/ext_pervasives.cmx ext/set_poly.cmi
 ext/ext_scc.cmx : ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_scc.cmi
 ext/ext_topsort.cmx : ext/set_int.cmx ext/resize_array.cmx ext/int_vec.cmx \
     ext/ext_topsort.cmi
@@ -324,7 +324,7 @@ core/lam_compile_const.cmi : core/lam.cmi core/j.cmx syntax/ast_arg.cmi
 core/lam_inner.cmi : core/lam.cmi
 core/lam_subst.cmi : core/lam.cmi ext/ident_map.cmi
 core/lam_util.cmi : core/lam_stats.cmi core/lam_id_kind.cmi core/lam.cmi \
-    core/j.cmx ext/ident_set.cmi
+    core/j.cmx
 core/lam_eta_conversion.cmi : core/lam.cmi
 core/lam_group.cmi : core/lam.cmi
 core/lam_pass_deep_flatten.cmi : core/lam.cmi

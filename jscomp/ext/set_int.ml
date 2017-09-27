@@ -24,13 +24,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 41
+# 43
 type elt = int 
 let compare_elt = Ext_int.compare 
 type t = elt Set_gen.t
+let print_elt = Format.pp_print_int
 
 
-# 57
+# 67
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
@@ -172,6 +173,15 @@ let invariant t =
   Set_gen.check t ;
   Set_gen.is_ordered compare_elt t          
 
+let print fmt s = 
+  Format.fprintf 
+   fmt   "@[<v>{%a}@]@."
+    (fun fmt s   -> 
+       iter 
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
+         print_elt e) s
+    )
+    s     
 
 
 

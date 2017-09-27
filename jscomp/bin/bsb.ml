@@ -8790,6 +8790,7 @@ module type S = sig
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
   val invariant : t -> bool 
+  val print : Format.formatter -> t -> unit 
 end 
 
 end
@@ -8882,9 +8883,10 @@ end = struct
 type elt = string
 let compare_elt = Ext_string.compare 
 type  t = elt Set_gen.t 
+let print_elt = Format.pp_print_string
 
 
-# 57
+# 67
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
@@ -9026,6 +9028,15 @@ let invariant t =
   Set_gen.check t ;
   Set_gen.is_ordered compare_elt t          
 
+let print fmt s = 
+  Format.fprintf 
+   fmt   "@[<v>{%a}@]@."
+    (fun fmt s   -> 
+       iter 
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
+         print_elt e) s
+    )
+    s     
 
 
 

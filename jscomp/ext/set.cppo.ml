@@ -27,6 +27,7 @@
 type elt = string
 let compare_elt = Ext_string.compare 
 type  t = elt Set_gen.t 
+let print_elt = Format.pp_print_string
 #elif defined TYPE_IDENT
 type elt = Ident.t
 let compare_elt (x : elt) (y : elt) = 
@@ -37,18 +38,27 @@ let compare_elt (x : elt) (y : elt) =
     if b <> 0 then b 
     else Pervasives.compare (x.flags : int) y.flags     
 type  t = elt Set_gen.t 
+let print_elt = Ident.print
 #elif defined TYPE_INT
 type elt = int 
 let compare_elt = Ext_int.compare 
 type t = elt Set_gen.t
+let print_elt = Format.pp_print_int
 #elif defined TYPE_FUNCTOR 
-module Make ( S : Set.OrderedType) = struct
+module Make ( S : sig 
+    type t 
+    val compare : t -> t -> bool
+    val print : Format.formatter -> t -> unit 
+  end
+  ) = struct
   type elt = S.t
   type nonrec t = elt Set_gen.t 
   let compare_elt = S.compare 
+  let print_elt = S.print
 #elif defined TYPE_POLY
 type 'a t = 'a Set_gen.t
 let compare_elt = Pervasives.compare
+let print_elt = Ext_pervasives.pp_any
 #else 
 [%error "unknown type" ]
 #endif
@@ -195,6 +205,15 @@ let invariant t =
   Set_gen.check t ;
   Set_gen.is_ordered compare_elt t          
 
+let print fmt s = 
+  Format.fprintf 
+   fmt   "@[<v>{%a}@]@."
+    (fun fmt s   -> 
+       iter 
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
+         print_elt e) s
+    )
+    s     
 #if defined TYPE_FUNCTOR 
 end
 #endif

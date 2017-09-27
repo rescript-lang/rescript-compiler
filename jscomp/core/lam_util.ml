@@ -248,17 +248,6 @@ let dump env ext  lam =
 
 
 
-let print_ident_set fmt s = 
-  Format.fprintf fmt   "@[<v>{%a}@]@."
-    (fun fmt s   -> 
-       Ident_set.iter 
-         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e) s
-    )
-    s     
-
-
-
-
 let is_function (lam : Lam.t) = 
   match lam with 
   | Lfunction _ -> true | _ -> false
