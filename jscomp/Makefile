@@ -283,6 +283,7 @@ CORE_SRCS= js_runtime_modules \
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\
 	js_of_lam_tuple js_of_lam_record js_of_lam_float_record js_arr lam_compile_const \
 	lam_inner \
+	lam_subst\
 	lam_util \
 	lam_eta_conversion\
 	lam_group \

@@ -805,7 +805,7 @@ let translate  loc
   | Pbigstring_set_64 _
     -> 
     let comment = "Missing primitive" in       
-    let s = Lam_util.string_of_primitive prim in
+    let s = Lam_print.primitive_to_string prim in
     let warn = Printf.sprintf  "%s: %s\n" comment s in
     Ext_log.warn __LOC__ "%s"  warn;
     (*we dont use [throw] here, since [throw] is an statement  *)        

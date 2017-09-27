@@ -350,7 +350,8 @@ let try_ ?comment   ?with_ ?finally body : t =
   }
 
 let unknown_lambda ?(comment="unknown")  (lam : Lam.t ) : t = 
-  exp @@ E.str ~comment ~pure:false (Lam_util.string_of_lambda lam) 
+  exp @@ E.str ~comment ~pure:false 
+    (Lam_print.lambda_to_string lam) 
 
 (* TODO: 
     actually, only loops can be labelled

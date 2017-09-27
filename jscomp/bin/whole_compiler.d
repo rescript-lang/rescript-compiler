@@ -64,6 +64,7 @@ bin/whole_compiler.ml : core/lam_arity.ml
 bin/whole_compiler.ml : core/lam_group.ml
 bin/whole_compiler.ml : core/lam_print.ml
 bin/whole_compiler.ml : core/lam_stats.ml
+bin/whole_compiler.ml : core/lam_subst.ml
 bin/whole_compiler.ml : core/lam_util.mli
 bin/whole_compiler.ml : core/type_util.ml
 bin/whole_compiler.ml : ext/ext_array.mli
@@ -88,6 +89,7 @@ bin/whole_compiler.ml : core/lam_arity.mli
 bin/whole_compiler.ml : core/lam_group.mli
 bin/whole_compiler.ml : core/lam_print.mli
 bin/whole_compiler.ml : core/lam_stats.mli
+bin/whole_compiler.ml : core/lam_subst.mli
 bin/whole_compiler.ml : core/type_util.mli
 bin/whole_compiler.ml : ext/ext_format.mli
 bin/whole_compiler.ml : ext/ext_option.mli
