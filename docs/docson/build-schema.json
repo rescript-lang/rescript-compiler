@@ -51,16 +51,8 @@
         },
         "react-jsx-version": {
             "title": "jsx-version",
-            "oneOf": [
-                {
-                    "type": "boolean",
-                    "description": "backward compatible mode, true means on with the default to be version 1 (the default value is subject to change)"
-                },
-                {
-                    "type": "number",
-                    "description": "jsx version number, current recommend version number is 2"
-                }
-            ]
+            "type": "number",
+            "description": "backward compatible mode, true means on with the default to be version 1 (the default value is subject to change)"
         },
         "ppx-specs": {
             "type": "array",
@@ -193,17 +185,17 @@
                             }
                         },
                         "subdirs": {
-                            "title" : "Sub directories",
-                            "oneOf" : [
+                            "title": "Sub directories",
+                            "oneOf": [
                                 {
                                     "$ref": "#/definitions/sources",
                                     "description": "More source directories"
                                 },
                                 {
-                                    "type" : "boolean",
+                                    "type": "boolean",
                                     "description": "true means traverse to all subdirs"
                                 }
-                            ]                                                        
+                            ]
                         },
                         "group": {
                             "oneOf": [
@@ -336,8 +328,8 @@
             "type": "string",
             "description": "Package name"
         },
-        "namespace" : {
-            "type" : "boolean",
+        "namespace": {
+            "type": "boolean",
             "description": "(WIP)whether use namespace or not, the name of namespace is automatically converted from name"
         },
         "sources": {
@@ -371,21 +363,21 @@
             "$ref": "#/definitions/bsc-flags",
             "description": "Flags passed to bsc.exe"
         },
-        "warnings" : {
-            "type" : "object",
+        "warnings": {
+            "type": "object",
             "properties": {
-                "number" : {
-                    "type" : "string",
+                "number": {
+                    "type": "string",
                     "description": "Default: -40+6+7+27+32..39+44+45 [Here](https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec270) for the meanings of the warning flags"
                 },
-                "error" : {
-                    "oneOf" : [
+                "error": {
+                    "oneOf": [
                         {
-                            "type" : "boolean",
-                            "description" : "True means warn is error(default)"
+                            "type": "boolean",
+                            "description": "True means warn is error(default)"
                         },
                         {
-                            "type" : "string",
+                            "type": "string",
                             "description": "Same as warning number but different set"
                         }
                     ]

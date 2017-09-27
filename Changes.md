@@ -4,7 +4,8 @@ Features:
 - React JSX PPX V3 is in. This allows a custom component's `children` to be of any type. When the child's a single non-jsx item, it's not wrapped in an array anymore.
 
 Deprecations:
-- React JSX PPX V1 has been removed, and the bsconfig `"react-jsx": true` is removed too (use `2` or `3`)
+- React JSX PPX V1 has been removed, and the bsconfig `"react-jsx": true` is removed too (use `2` or `3`). Jsx only accept a version number
+
 
 # 1.9.2
 

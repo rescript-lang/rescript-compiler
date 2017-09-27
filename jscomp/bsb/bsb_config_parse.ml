@@ -155,9 +155,6 @@ let interpret_json
     map
     |? (Bsb_build_schemas.reason, `Obj begin fun m -> 
         match String_map.find_opt Bsb_build_schemas.react_jsx m with 
-
-        | Some (False _)
-        | None -> ()
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
             | "2" -> 
@@ -168,10 +165,10 @@ let interpret_json
               reason_react_jsx := 
                 Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_3_exe) )
             | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
-          end
-        | Some ((True _) as x) -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "`\"react-jsx\": true` is no longer supported. Please use either `2` or `3`"
-        | Some x -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) 
-                      "Unexpected input for jsx"
+          end        
+        | Some x -> Bsb_exception.config_error x 
+                      "Unexpected input (expect a version number) for jsx, note boolean is no longer allowed"
+        | None -> ()
       end)
 
     |? (Bsb_build_schemas.generate_merlin, `Bool (fun b ->

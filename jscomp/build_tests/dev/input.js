@@ -1,4 +1,4 @@
-
+//@ts-check
 var assert = require('assert')
 var path = require('path')
 var p = require('child_process')

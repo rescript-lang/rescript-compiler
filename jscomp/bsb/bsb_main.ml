@@ -223,5 +223,9 @@ let () =
       Bsb_exception.print Format.err_formatter e ;
       Format.pp_print_newline Format.err_formatter ();
       exit 2 
+    | Arg.Bad s ->   
+      Format.pp_print_string Format.err_formatter s ;
+      Format.pp_print_newline Format.err_formatter () ;
+      exit 3
     | e -> Ext_pervasives.reraise e 
     
