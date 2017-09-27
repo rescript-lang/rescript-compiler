@@ -160,19 +160,16 @@ let interpret_json
         | None -> ()
         | Some (Flo{loc; flo}) -> 
           begin match flo with 
-            | "1" -> 
-              reason_react_jsx := 
-                Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) )
             | "2" -> 
               reason_react_jsx := 
                 Some (Filename.quote 
                         (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_2_exe) )
+            | "3" -> 
+              reason_react_jsx := 
+                Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_3_exe) )
             | _ -> Bsb_exception.errorf ~loc "Unsupported jsx version %s" flo
           end
-        | Some (True _) -> 
-          reason_react_jsx := 
-            Some (Filename.quote (Filename.concat bsc_dir Literals.reactjs_jsx_ppx_exe) 
-                 )
+        | Some ((True _) as x) -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "`\"react-jsx\": true` is no longer supported. Please use either `2` or `3`"
         | Some x -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) 
                       "Unexpected input for jsx"
       end)

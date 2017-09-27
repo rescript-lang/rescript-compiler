@@ -395,7 +395,7 @@
         },
         "ppx-flags": {
             "$ref": "#/definitions/ppx-specs",
-            "description": "PPX macros to pass to compiler. The syntax is package_name/binary, for example: `reason/reactjs_jsx_ppx.native`. Currenly searches in `node_modules`"
+            "description": "PPX macros to pass to compiler. The syntax is package_name/binary, for example: `reason/reactjs_jsx_ppx_3.native`. Currenly searches in `node_modules`"
         },
         "js-post-build": {
             "$ref": "#/definitions/js-post-build",

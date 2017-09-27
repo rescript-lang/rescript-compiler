@@ -1,3 +1,11 @@
+# 1.9.3
+
+Features:
+- React JSX PPX V3 is in. This allows a custom component's `children` to be of any type. When the child's a single non-jsx item, it's not wrapped in an array anymore.
+
+Deprecations:
+- React JSX PPX V1 has been removed, and the bsconfig `"react-jsx": true` is removed too (use `2` or `3`)
+
 # 1.9.2
 
 Fixes:
@@ -118,7 +126,7 @@ Fixes:
 # 1.7.3:
 
 Fixes:
-- #1556, fix duplicated requires of runtime (report by Chenglou) 
+- #1556, fix duplicated requires of runtime (report by Chenglou)
 
 - #1568, internal compiler error
 
