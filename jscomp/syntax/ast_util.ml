@@ -595,7 +595,7 @@ let ocaml_obj_as_js_object
           Location.raise_errorf ~loc "Only method support currently"
       ) clfs  ([], [], [], false) in
   let pval_type =
-    List.fold_right2
+    Ext_list.fold_right2
       (fun label label_type acc ->
          Typ.arrow
            ~loc:label.Asttypes.loc

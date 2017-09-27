@@ -633,7 +633,8 @@ core/lam_pass_remove_alias.cmx : core/lam_util.cmx core/lam_stats.cmx \
 core/lam_coercion.cmx : ext/string_hash_set.cmx core/lam_util.cmx \
     core/lam_stats_util.cmx core/lam_stats.cmx core/lam_group.cmx \
     core/lam_dce.cmx core/lam.cmx ext/ident_set.cmx ext/ident_map.cmx \
-    ext/ident_hashtbl.cmx depends/bs_exception.cmx core/lam_coercion.cmi
+    ext/ident_hashtbl.cmx ext/ext_list.cmx depends/bs_exception.cmx \
+    core/lam_coercion.cmi
 core/lam_compile_main.cmx : ext/literals.cmx core/lam_util.cmx \
     core/lam_stats_export.cmx core/lam_stats.cmx \
     core/lam_pass_remove_alias.cmx core/lam_pass_lets_dce.cmx \
