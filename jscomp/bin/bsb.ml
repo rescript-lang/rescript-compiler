@@ -2327,6 +2327,8 @@ val map_append :  ('b -> 'a) -> 'b list -> 'a list -> 'a list
 
 val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
+val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+
 (** Extension to the standard library [List] module *)
     
 (** TODO some function are no efficiently implemented. *) 
@@ -2577,6 +2579,22 @@ let rec fold_right f l acc =
   | a0::a1::a2::a3::a4::rest -> 
     f a0 (f a1 (f a2 (f a3 (f a4 (fold_right f rest acc)))))  
 
+let rec fold_right2 f l r acc = 
+  match l,r  with  
+  | [],[] -> acc 
+  | [a0],[b0] -> f a0 b0 acc 
+  | [a0;a1],[b0;b1] -> f a0 b0 (f a1 b1 acc)
+  | [a0;a1;a2],[b0;b1;b2] -> f a0 b0 (f a1 b1 (f a2 b2 acc))
+  | [a0;a1;a2;a3],[b0;b1;b2;b3] ->
+     f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 acc))) 
+  | [a0;a1;a2;a3;a4], [b0;b1;b2;b3;b4] -> 
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 acc))))
+  | a0::a1::a2::a3::a4::arest, b0::b1::b2::b3::b4::brest -> 
+    f a0 b0 (f a1 b1 (f a2 b2 (f a3 b3 (f a4 b4 (fold_right2 f arest brest acc)))))  
+  | _, _ -> invalid_arg "Ext_list.fold_right2"
+
+
+    
 let rec filter_map (f: 'a -> 'b option) xs = 
   match xs with 
   | [] -> []
@@ -2715,13 +2733,6 @@ let rec map_last f l1 =
   | [u]-> [f true u ]
   | a1::l1 -> let r = f false  a1 in r :: map_last f l1
 
-
-(* let rec fold_right2_last f l1 l2 accu  = 
-   match (l1, l2) with
-   | ([], []) -> accu
-   | [last1], [last2] -> f true  last1 last2 accu
-   | (a1::l1, a2::l2) -> f false a1 a2 (fold_right2_last f l1 l2 accu)
-   | (_, _) -> invalid_arg "List.fold_right2" *)
 
 
 let init n f = 
@@ -8790,6 +8801,7 @@ module type S = sig
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
   val invariant : t -> bool 
+  val print : Format.formatter -> t -> unit 
 end 
 
 end
@@ -8882,9 +8894,10 @@ end = struct
 type elt = string
 let compare_elt = Ext_string.compare 
 type  t = elt Set_gen.t 
+let print_elt = Format.pp_print_string
 
 
-# 57
+# 67
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
@@ -9026,6 +9039,15 @@ let invariant t =
   Set_gen.check t ;
   Set_gen.is_ordered compare_elt t          
 
+let print fmt s = 
+  Format.fprintf 
+   fmt   "@[<v>{%a}@]@."
+    (fun fmt s   -> 
+       iter 
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
+         print_elt e) s
+    )
+    s     
 
 
 

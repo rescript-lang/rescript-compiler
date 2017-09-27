@@ -29,33 +29,25 @@
 
 
 
-val string_of_lambda : Lam.t -> string 
-
-val string_of_primitive : Lam.primitive -> string
-
 val kind_of_lambda_block : Lam_id_kind.boxed_nullable -> Lam.t list -> Lam_id_kind.t
 
 
 (** [field_flattern_get cb v i tbl]
-    try to remove the indirection of [v.(i)], if not 
-    call [cb ()].
+    try to remove the indirection of [v.(i)] by inlining when [v]
+    is a known block, 
+    if not, it will call [cb ()].
+    
     Note due to different control flow, a constant block
-    may result in out-of bound access.
-    {[
-      (let
-  (myShape/1011 =a [0: 10]
-    area/1012 =
-      (switch* myShape/1011
-       case tag 0:
-        (let (r/1013 =a (field 0 myShape/1011))
-          ( *. (float_of_int ( * r/1013 r/1013)) 3.14))
-       case tag 1:
-        (let
-          (h/1015 =a (field 1 myShape/1011) w/1014 =a (field 0 myShape/1011))
-          (float_of_int ( * w/1014 h/1015)))))
-  (makeblock 0 myShape/1011 area/1012))
-    ]}
-    Here [(field 1 myShape]) is out of bounds
+    may result in out-of bound access, in that case, we should
+    just ignore it. This does not mean our
+    optimization is wrong, it means we hit an unreachable branch.
+    for example
+    {{
+      let myShape = A 10 in 
+      match myShape with 
+      | A x -> x  (* only access field [0]*)
+      | B (x,y) -> x + y (* Here it will try to access field [1] *)
+    }}
 *)
 val field_flatten_get : 
   (unit -> Lam.t) -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
@@ -73,21 +65,13 @@ val refine_let :
       Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 
-val generate_label : ?name:string -> unit -> J.label
 
-(* val sort_dag_args : J.expression Ident_map.t -> Ident.t list option *)
-(** if [a] depends on [b] a is ahead of [b] as [a::b]
+val generate_label : ?name:string -> unit -> J.label 
 
-    TODO: make it a stable sort 
- *)
 
 
 (** [dump] when {!Js_config.is_same_file}*)
 val dump : Env.t   -> string -> Lam.t -> Lam.t
-
-
-val print_ident_set : Format.formatter -> Ident_set.t -> unit
-
 
 
 val not_function : Lam.t -> bool 
@@ -96,7 +80,7 @@ val is_function : Lam.t -> bool
 
 
 
-val subst_lambda : Lam.t Ident_map.t -> Lam.t -> Lam.t
+
 
 
 

@@ -71,7 +71,7 @@ let pass_beta =
           args, _info) ; _ }) ; _ } :: rest (* TODO: don't inline tailcall for method yet*)
            when Ext_list.same_length args  params ->
              let body = self#block body in
-             (List.fold_right2
+             (Ext_list.fold_right2
               (fun p a acc ->
                 S.define ~kind:Variable p a :: acc) params args
                  ((self#with_inline_state (Inline_ignore (Js_fun_env.is_tailcalled env))) #block  body) ) @
@@ -85,7 +85,7 @@ let pass_beta =
         }) ; _ } :: rest when Ext_list.same_length args params ->
 
           let body = self#block body  in
-              (List.fold_right2
+              (Ext_list.fold_right2
               (fun p a acc ->
                 S.define ~kind:Variable p a :: acc) params args
                  ((self#with_inline_state (Inline_ret (e, Js_fun_env.is_tailcalled env))) #block body) ) @
@@ -97,7 +97,7 @@ let pass_beta =
           args, _info) ; _ }}) ; _ } :: rest 
         when Ext_list.same_length args  params -> 
           let body = self#block body in
-          (List.fold_right2 
+          (Ext_list.fold_right2 
                  (fun p a acc -> 
                    S.define ~kind:Variable p a :: acc) params args 
                  ((self#with_inline_state Inline_return) #block body))  @ 

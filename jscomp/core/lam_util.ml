@@ -29,13 +29,6 @@
 
 
 
-let string_of_lambda = Format.asprintf "%a" Lam_print.lambda 
-
-let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
-
-
-
-
 
 
 (*
@@ -44,63 +37,6 @@ let add_required_modules ( x : Ident.t list) (meta : Lam_stats.t) =
   List.iter (fun x -> add meta_require_modules (Lam_module_ident.of_ml x)) x 
 *)
   
-(* Apply a substitution to a lambda-term.
-   Assumes that the bound variables of the lambda-term do not
-   belong to the domain of the substitution.
-   Assumes that the image of the substitution is out of reach
-   of the bound variables of the lambda-term (no capture). *)
-
-let subst_lambda (s : Lam.t Ident_map.t) lam =
-  let rec subst (x : Lam.t) : Lam.t =
-    match x with 
-    | Lvar id as l ->
-      Ident_map.find_default id s l
-    | Lconst sc as l -> l
-    | Lapply{fn; args; loc; status} -> 
-      Lam.apply (subst fn) (Ext_list.map subst args) loc status
-    | Lfunction {arity; function_kind; params; body} -> 
-      Lam.function_ ~arity ~function_kind  ~params ~body:(subst body)
-    | Llet(str, id, arg, body) -> 
-      Lam.let_ str id (subst arg) (subst body)
-    | Lletrec(decl, body) -> 
-      Lam.letrec (Ext_list.map subst_decl decl) (subst body)
-    | Lprim { primitive ; args; loc} -> 
-      Lam.prim ~primitive ~args:(Ext_list.map subst args) loc
-    | Lam.Lglobal_module _ -> x  
-    | Lswitch(arg, sw) ->
-      Lam.switch (subst arg)
-        {sw with sw_consts = Ext_list.map subst_case sw.sw_consts;
-                 sw_blocks = Ext_list.map subst_case sw.sw_blocks;
-                 sw_failaction = subst_opt  sw.sw_failaction; }
-    | Lstringswitch (arg,cases,default) ->
-      Lam.stringswitch
-        (subst arg) (Ext_list.map subst_strcase cases) (subst_opt default)
-    | Lstaticraise (i,args)
-      ->  Lam.staticraise i (Ext_list.map subst args)
-    | Lstaticcatch(e1, io, e2)
-      -> Lam.staticcatch (subst e1) io (subst e2)
-    | Ltrywith(e1, exn, e2)
-      -> Lam.try_ (subst e1) exn (subst e2)
-    | Lifthenelse(e1, e2, e3)
-      -> Lam.if_ (subst e1) (subst e2) (subst e3)
-    | Lsequence(e1, e2)
-      -> Lam.seq (subst e1) (subst e2)
-    | Lwhile(e1, e2) 
-      -> Lam.while_ (subst e1) (subst e2)
-    | Lfor(v, e1, e2, dir, e3) 
-      -> Lam.for_ v (subst e1) (subst e2) dir (subst e3)
-    | Lassign(id, e) -> 
-      Lam.assign id (subst e)
-    | Lsend (k, met, obj, args, loc) ->
-      Lam.send k (subst met) (subst obj) (Ext_list.map subst args) loc
-    | Lifused (v, e) -> Lam.ifused v (subst e)
-  and subst_decl (id, exp) = (id, subst exp)
-  and subst_case (key, case) = (key, subst case)
-  and subst_strcase (key, case) = (key, subst case)
-  and subst_opt = function
-    | None -> None
-    | Some e -> Some (subst e)
-  in subst lam
 
 (* 
     It's impossible to have a case like below:
@@ -308,17 +244,6 @@ let dump env ext  lam =
   lam
 #end      
   
-
-
-
-
-let print_ident_set fmt s = 
-  Format.fprintf fmt   "@[<v>{%a}@]@."
-    (fun fmt s   -> 
-       Ident_set.iter 
-         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e) s
-    )
-    s     
 
 
 

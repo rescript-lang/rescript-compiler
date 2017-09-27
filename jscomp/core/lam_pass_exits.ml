@@ -195,13 +195,13 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
           let handler = to_lam handler in 
           let ys = Ext_list.map Ident.rename xs in
           let env =
-            List.fold_right2
+            Ext_list.fold_right2
               (fun x y t -> Ident_map.add x (Lam.var y) t)
               xs ys Ident_map.empty in
-          List.fold_right2
+          Ext_list.fold_right2
             (fun y l r -> Lam.let_ Alias y l r)
             ys ls 
-            (Lam_util.subst_lambda  env  handler)
+            (Lam_subst.subst  env  handler)
         | None -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,xs),l2) ->
