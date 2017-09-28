@@ -1178,7 +1178,7 @@ and
     | Lstaticraise(i, largs) ->  (* TODO handlding *largs*)
       (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
       begin
-        match Lam_compile_defs.HandlerMap.find i cxt.jmp_table  with 
+        match Lam_compile_defs.find_exn i cxt  with 
         | {exit_id; args ; order_id} -> 
           let args_code  =
             (Js_output.concat @@ List.map2 (

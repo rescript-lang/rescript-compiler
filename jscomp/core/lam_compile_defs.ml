@@ -31,11 +31,12 @@
 
 type jbl_label = int 
 
-module HandlerMap = Map.Make(struct 
+(* module HandlerMap = Map.Make(struct 
     type t = jbl_label
-    let compare x y= compare (x:t) y 
+    let compare x y= compare (x : int) y 
   end )
-
+ *)
+module HandlerMap = Int_map
 type value = {
   exit_id : Ident.t ;
   args : Ident.t list ;
@@ -74,10 +75,11 @@ type st =
   | NeedValue 
   | Assign of J.ident (* when use [Assign], var is not needed, since it's already declared  *)
 
+type jmp_table =   value  HandlerMap.t
 type cxt = {
   st : st ;
   should_return : return_type;
-  jmp_table : value  HandlerMap.t ;
+  jmp_table : jmp_table;
   meta : Lam_stats.t ;
   (* include_alias :  *)
   (*   (\** It's correct to add more, we can do this in lambda optimization pass *)
@@ -104,3 +106,7 @@ let add_jmps (exit_id, code_table)
           (order_id,lam)::handlers
       ) (HandlerMap.cardinal m + 1 )  (m,[]) code_table in 
   map, List.rev handlers
+
+
+let find_exn i cxt = 
+  Int_map.find_exn i cxt.jmp_table  

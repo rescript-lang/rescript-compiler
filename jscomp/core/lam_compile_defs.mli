@@ -74,18 +74,20 @@ type return_type =
       Invariant: [output] should return a trailing expression
   *)
 
-module HandlerMap : Map.S with type key = jbl_label
+
+type jmp_table 
 
 type cxt = {
   st : st ;
   should_return : return_type;
-  jmp_table : value  HandlerMap.t ;
+  jmp_table : jmp_table;
   meta : Lam_stats.t ;
 }
 
-val empty_handler_map : value HandlerMap.t 
+val empty_handler_map : jmp_table 
 
 val add_jmps :
-    Ident.t * (HandlerMap.key * 'a * Ident.t list) list ->
-    value HandlerMap.t -> value HandlerMap.t * (int * 'a) list
+    Ident.t * (jbl_label * 'a * Ident.t list) list ->
+    jmp_table -> jmp_table * (int * 'a) list
 
+val find_exn : jbl_label -> cxt -> value
