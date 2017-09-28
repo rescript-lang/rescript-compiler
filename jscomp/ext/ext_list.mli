@@ -33,6 +33,12 @@ val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
 
+val fold_left_with_offset : 
+  (int -> 'acc -> 'a -> 'acc) -> 
+  int -> 
+  'acc -> 
+  'a list -> 'acc 
+
 (** Extension to the standard library [List] module *)
     
 (** TODO some function are no efficiently implemented. *) 

@@ -48,7 +48,7 @@ type value = {
 
 type let_kind = Lam.let_kind
 
-type st = 
+type cont = 
   | EffectCall
   | Declare of let_kind * J.ident (* bound value *)
   | NeedValue 
@@ -74,18 +74,21 @@ type return_type =
       Invariant: [output] should return a trailing expression
   *)
 
-module HandlerMap : Map.S with type key = jbl_label
 
-type cxt = {
-  st : st ;
+type jmp_table 
+
+type t = {
+  st : cont ;
   should_return : return_type;
-  jmp_table : value  HandlerMap.t ;
+  jmp_table : jmp_table;
   meta : Lam_stats.t ;
 }
 
-val empty_handler_map : value HandlerMap.t 
+ val empty_handler_map : jmp_table  
 
 val add_jmps :
-    Ident.t * (HandlerMap.key * 'a * Ident.t list) list ->
-    value HandlerMap.t -> value HandlerMap.t * (int * 'a) list
+    Ident.t ->
+    (jbl_label * Lam.t * Ident.t list) list ->
+    jmp_table -> jmp_table * (jbl_label * Lam.t) list
 
+val find_exn : jbl_label -> t -> value

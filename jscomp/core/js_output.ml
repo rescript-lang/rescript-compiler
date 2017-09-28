@@ -46,7 +46,7 @@ type t  =  {
      *)
 }
 
-type st = Lam_compile_defs.st 
+type cont = Lam_compile_context.cont
 
 let make ?value ?(finished=False) block = {block ; value ; finished }
 
@@ -58,8 +58,8 @@ let of_block ?value ?(finished = False) block =
 let dummy = {value = None; block = []; finished = Dummy }
 
 let handle_name_tail 
-    (name : st)
-    (should_return : Lam_compile_defs.return_type)
+    (name : cont)
+    (should_return : Lam_compile_context.return_type)
     lam (exp : J.expression) : t =
   begin match name, should_return with 
   | EffectCall, ReturnFalse -> 
@@ -78,8 +78,8 @@ let handle_name_tail
   end
 
 let handle_block_return 
-    (st : st) 
-    (should_return : Lam_compile_defs.return_type)
+    (st : cont) 
+    (should_return : Lam_compile_context.return_type)
     (lam : Lam.t) (block : J.block) exp : t = 
   match st, should_return with 
   | Declare (kind,n), ReturnFalse -> 
