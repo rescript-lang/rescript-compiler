@@ -34,7 +34,7 @@ module E = Js_exp_make
 (* If it is the return value, since it is a side-effect call,
    we return unit, otherwise just return it
 *)
-let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t = 
+let decorate_side_effect ({st; should_return;_} : Lam_compile_context.cxt) e : E.t = 
   match st, should_return with 
   | _, ReturnTrue _ 
   | (Assign _ | Declare _ | NeedValue), _  -> E.seq e E.unit
@@ -42,7 +42,7 @@ let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t 
 (* NeedValue should return a meaningful expression*)
 
 let translate  loc
-    ({ meta = { env; _}; _} as cxt : Lam_compile_defs.cxt) 
+    ({ meta = { env; _}; _} as cxt : Lam_compile_context.cxt) 
     (prim : Lam.primitive)
     (args : J.expression list) : J.expression = 
   match prim with

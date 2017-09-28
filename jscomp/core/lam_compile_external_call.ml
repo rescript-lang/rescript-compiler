@@ -230,7 +230,7 @@ let translate_scoped_access scopes obj =
 let translate_ffi 
     call_loc (ffi : Ast_ffi_types.ffi ) 
     (* prim_name *)
-    (cxt  : Lam_compile_defs.cxt)
+    (cxt  : Lam_compile_context.cxt)
     arg_types 
     (args : J.expression list) = 
   match ffi with 

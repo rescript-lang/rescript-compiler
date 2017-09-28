@@ -113,7 +113,7 @@ type default_case =
 *)    
 let rec  
   compile_external_field 
-    (cxt : Lam_compile_defs.cxt) 
+    (cxt : Lam_compile_context.cxt) 
     lam 
     (id : Ident.t)
     (pos : int)
@@ -164,7 +164,7 @@ let rec
 *)
 
 and compile_external_field_apply 
-    (cxt : Lam_compile_defs.cxt) 
+    (cxt : Lam_compile_context.cxt) 
     lam 
     args_lambda
     (id : Ident.t)
@@ -237,7 +237,7 @@ and compile_external_field_apply
                args (List.length args ))
       )
 
-and  compile_let let_kind (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
+and  compile_let let_kind (cxt : Lam_compile_context.cxt) id (arg : Lam.t) : Js_output.t =
   compile_lambda {cxt with st = Declare (let_kind, id); should_return = ReturnFalse } arg 
 (** 
     The second return values are values which need to be wrapped using 
@@ -248,7 +248,7 @@ and  compile_let let_kind (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_out
 
 *)
 and compile_recursive_let ~all_bindings
-    (cxt : Lam_compile_defs.cxt)
+    (cxt : Lam_compile_context.cxt)
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
@@ -264,7 +264,7 @@ and compile_recursive_let ~all_bindings
     *)
     Js_output.handle_name_tail (Declare (Alias, id)) ReturnFalse arg
       (
-        let ret : Lam_compile_defs.return_label = 
+        let ret : Lam_compile_context.return_label = 
           {id; 
            label = continue_label; 
            params;
@@ -276,7 +276,7 @@ and compile_recursive_let ~all_bindings
             { cxt with 
               st = EffectCall;  
               should_return = ReturnTrue (Some ret );
-              jmp_table = Lam_compile_defs.empty_handler_map}  body in
+              jmp_table = Lam_compile_context.empty_handler_map}  body in
         if ret.triggered then 
           let body_block = Js_output.to_block output in
           E.ocaml_fun
@@ -407,14 +407,14 @@ and compile_general_cases :
   'a . 
   ('a -> J.expression) ->
   (J.expression -> J.expression -> J.expression) -> 
-  Lam_compile_defs.cxt -> 
+  Lam_compile_context.cxt -> 
   (?default:J.block ->
    ?declaration:Lam.let_kind * Ident.t  -> 
    _ -> 'a J.case_clause list ->  J.statement) -> 
   _ -> 
   ('a * Lam.t) list -> default_case -> J.block 
   = fun f eq cxt switch v table default -> 
-    let wrap (cxt : Lam_compile_defs.cxt) k =
+    let wrap (cxt : Lam_compile_context.cxt) k =
       let cxt, define =
         match cxt.st with 
         | Declare (kind, did)
@@ -494,7 +494,7 @@ and compile_string_cases cxt = compile_general_cases E.str E.string_equal cxt
     for high order currying *)
 and
   compile_lambda
-    ({st ; should_return; jmp_table; meta = {env ; _} } as cxt : Lam_compile_defs.cxt)
+    ({st ; should_return; jmp_table; meta = {env ; _} } as cxt : Lam_compile_context.cxt)
     (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
@@ -509,7 +509,7 @@ and
               ( compile_lambda
                   { cxt with st = EffectCall;  
                              should_return = ReturnTrue None; (* Refine*)
-                             jmp_table = Lam_compile_defs.empty_handler_map}  body)))
+                             jmp_table = Lam_compile_context.empty_handler_map}  body)))
 
 
     | Lapply{
@@ -837,7 +837,7 @@ and
                   ( compile_lambda
                       { cxt with st = EffectCall;  
                                  should_return = ReturnTrue None; 
-                                 jmp_table = Lam_compile_defs.empty_handler_map} 
+                                 jmp_table = Lam_compile_context.empty_handler_map} 
                       body)))
         | _ -> assert false 
       end
@@ -1128,7 +1128,7 @@ and
           if Ext_list.length_ge sw_blocks sw_numblocks
           then Complete
           else Default x in 
-      let compile_whole  ({st; _} as cxt  : Lam_compile_defs.cxt ) =
+      let compile_whole  ({st; _} as cxt  : Lam_compile_context.cxt ) =
         match sw_numconsts, sw_numblocks, 
               compile_lambda {cxt with should_return = ReturnFalse; st = NeedValue}
                 lam with 
@@ -1178,7 +1178,7 @@ and
     | Lstaticraise(i, largs) ->  (* TODO handlding *largs*)
       (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
       begin
-        match Lam_compile_defs.find_exn i cxt  with 
+        match Lam_compile_context.find_exn i cxt  with 
         | {exit_id; args ; order_id} -> 
           let args_code  =
             (Js_output.concat @@ List.map2 (
@@ -1240,7 +1240,7 @@ and
       (* TODO: handle NeedValue *)
       let exit_id =   Ext_ident.create_tmp ~name:"exit" () in
       let exit_expr = E.var exit_id in
-      let jmp_table, handlers =  Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
+      let jmp_table, handlers =  Lam_compile_context.add_jmps (exit_id, code_table) jmp_table in
 
       (* Declaration First, body and handler have the same value *)
       (* There is a bug in google closure compiler:

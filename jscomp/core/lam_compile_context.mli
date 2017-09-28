@@ -84,10 +84,10 @@ type cxt = {
   meta : Lam_stats.t ;
 }
 
-val empty_handler_map : jmp_table 
+ val empty_handler_map : jmp_table  
 
 val add_jmps :
     Ident.t * (jbl_label * 'a * Ident.t list) list ->
-    jmp_table -> jmp_table * (int * 'a) list
+    jmp_table -> jmp_table * (jbl_label * 'a) list
 
 val find_exn : jbl_label -> cxt -> value

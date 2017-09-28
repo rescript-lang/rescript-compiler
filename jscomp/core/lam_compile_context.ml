@@ -25,17 +25,8 @@
 
 
 
-
-
-
-
 type jbl_label = int 
 
-(* module HandlerMap = Map.Make(struct 
-    type t = jbl_label
-    let compare x y= compare (x : int) y 
-  end )
- *)
 module HandlerMap = Int_map
 type value = {
   exit_id : Ident.t ;
@@ -81,20 +72,13 @@ type cxt = {
   should_return : return_type;
   jmp_table : jmp_table;
   meta : Lam_stats.t ;
-  (* include_alias :  *)
-  (*   (\** It's correct to add more, we can do this in lambda optimization pass *)
-  (*    *\) *)
-  (*   (Ident.t , Ident.t) Hashtbl.t *)
-  (* Used when compiling [Lstaticraise]  *)
 }
 
 let empty_handler_map = HandlerMap.empty
 
 
 
-(* 
-always keep key id positive, specifically no [0] generated
-   *)
+(* always keep key id positive, specifically no [0] generated *)
 let add_jmps (exit_id, code_table)   
     (m : value HandlerMap.t) = 
   let map, handlers = 

@@ -35,7 +35,7 @@
    containing that step
  *)
 
-type st = Lam_compile_defs.st 
+type st = Lam_compile_context.st 
 
 type finished = 
   | True 
@@ -66,13 +66,13 @@ val dummy : t
 
 
 val handle_name_tail :
-    Lam_compile_defs.st ->
-    Lam_compile_defs.return_type ->
+    Lam_compile_context.st ->
+    Lam_compile_context.return_type ->
     Lam.t ->  J.expression -> t
 
 val handle_block_return : 
-    Lam_compile_defs.st ->
-    Lam_compile_defs.return_type ->
+    Lam_compile_context.st ->
+    Lam_compile_context.return_type ->
     Lam.t ->
     J.block -> J.expression -> t
 

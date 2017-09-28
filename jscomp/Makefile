@@ -278,7 +278,7 @@ CORE_SRCS= js_runtime_modules \
 	lam_compile_util \
 	lam_id_kind \
 	lam_stats \
-	lam_compile_defs \
+	lam_compile_context\
 	js_map js_fold js_fold_basic js_pass_scope\
 	js_op_util js_analyzer js_shake js_exp_make js_long js_of_lam_exception js_of_lam_module js_of_lam_array js_of_lam_block js_of_lam_string\
 	js_of_lam_tuple js_of_lam_record js_of_lam_float_record js_arr lam_compile_const \
