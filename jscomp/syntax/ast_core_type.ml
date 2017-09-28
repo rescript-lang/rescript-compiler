@@ -122,7 +122,7 @@ let from_labels ~loc arity labels
   let result_type =
     Ast_comb.to_js_type loc  
       (Typ.object_ ~loc
-         (List.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
+         (Ext_list.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
   in 
   Ext_list.fold_right2 
     (fun {Asttypes.loc ; txt = label }

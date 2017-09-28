@@ -607,7 +607,7 @@ let ocaml_obj_as_js_object
     ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
     (fun e ->
        Exp.apply ~loc e
-         (List.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
+         (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
     ~pval_type
 
 
