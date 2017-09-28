@@ -1210,8 +1210,7 @@ and
     | Lstaticcatch _  -> 
       let code_table, body =  flatten_caches lam in
 
-      let exit_id =   Ext_ident.create_tmp ~name:"exit" () in
-      let exit_expr = E.var exit_id in
+      
       let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
 
       (* compile_list name l false (\*\) *)
@@ -1239,6 +1238,8 @@ and
          ]}
       *)
       (* TODO: handle NeedValue *)
+      let exit_id =   Ext_ident.create_tmp ~name:"exit" () in
+      let exit_expr = E.var exit_id in
       let jmp_table, handlers =  Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
 
       (* Declaration First, body and handler have the same value *)

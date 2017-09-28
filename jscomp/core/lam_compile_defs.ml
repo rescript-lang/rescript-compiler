@@ -32,19 +32,19 @@
 type jbl_label = int 
 
 module HandlerMap = Map.Make(struct 
-  type t = jbl_label
-  let compare x y= compare (x:t) y 
-end )
+    type t = jbl_label
+    let compare x y= compare (x:t) y 
+  end )
 
 type value = {
-    exit_id : Ident.t ;
-    args : Ident.t list ;
-    order_id : int
-  }
+  exit_id : Ident.t ;
+  args : Ident.t list ;
+  order_id : int
+}
 
 (* delegate to the callee to generate expression 
       Invariant: [output] should return a trailing expression
- *)
+*)
 type return_label = {
   id : Ident.t;
   label : J.label;
@@ -57,14 +57,14 @@ type return_label = {
 type return_type = 
   | ReturnFalse 
   | ReturnTrue of return_label option 
-    (* Note [return] does indicate it is a tail position in most cases
-      however, in an exception handler, return may not be in tail position
-      to fix #1701 we play a trick that (ReturnTrue None) 
-      would never trigger tailcall, however, it preserves [return] 
-      semantics
-    *)
-   (* have a mutable field to notifiy it's actually triggered *)
-   (* anonoymous function does not have identifier *)
+  (* Note [return] does indicate it is a tail position in most cases
+     however, in an exception handler, return may not be in tail position
+     to fix #1701 we play a trick that (ReturnTrue None) 
+     would never trigger tailcall, however, it preserves [return] 
+     semantics
+  *)
+(* have a mutable field to notifiy it's actually triggered *)
+(* anonoymous function does not have identifier *)
 
 type let_kind = Lam.let_kind
 
@@ -89,21 +89,18 @@ type cxt = {
 let empty_handler_map = HandlerMap.empty
 
 
+
+(* 
+always keep key id positive, specifically no [0] generated
+   *)
 let add_jmps (exit_id, code_table)   
     (m : value HandlerMap.t) = 
-  (* always keep key id positive, specifically no [0] generated
-   *)
-  let map, _, handlers = 
-    List.fold_left 
-           (fun (acc,prev_order_id, handlers) 
-               (l,lam, args)   -> 
-                 let order_id = prev_order_id + 1 in
-                 (HandlerMap.add l {exit_id ; args; order_id } acc, 
-                  order_id ,
-                  (order_id, lam) :: handlers))
-      (m,
-       HandlerMap.cardinal m,
-       []
-      )
-      code_table in
+  let map, handlers = 
+    Ext_list.fold_left_with_offset
+      (fun order_id (acc,handlers)
+        (l,lam,args)
+        ->     
+          HandlerMap.add l {exit_id;args; order_id } acc, 
+          (order_id,lam)::handlers
+      ) (HandlerMap.cardinal m + 1 )  (m,[]) code_table in 
   map, List.rev handlers

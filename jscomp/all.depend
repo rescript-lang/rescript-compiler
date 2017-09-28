@@ -431,7 +431,7 @@ core/lam_id_kind.cmx : core/lam_arity.cmx core/lam.cmx core/lam_id_kind.cmi
 core/lam_stats.cmx : core/lam_id_kind.cmx ext/ident_set.cmx \
     ext/ident_hashtbl.cmx core/lam_stats.cmi
 core/lam_compile_defs.cmx : core/lam_stats.cmx core/lam.cmx core/j.cmx \
-    ext/ident_map.cmx core/lam_compile_defs.cmi
+    ext/ident_map.cmx ext/ext_list.cmx core/lam_compile_defs.cmi
 core/js_map.cmx : core/j.cmx
 core/js_fold.cmx : core/j.cmx
 core/js_fold_basic.cmx : core/lam_module_ident.cmx \
