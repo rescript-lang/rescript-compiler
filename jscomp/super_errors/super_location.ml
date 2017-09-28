@@ -140,9 +140,9 @@ let super_warning_printer loc ppf w =
     setup_colors ();
     (* open a vertical box. Everything in our message is indented 2 spaces *)
     Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]"
-      (print ~is_warning:true ("Warning number " ^ (Super_warnings.number w |> string_of_int)))
+      (print ~is_warning:true ("Warning number " ^ (Warnings.number w |> string_of_int)))
       loc
-      Super_warnings.print
+      (Warnings.super_print Super_warnings.message)
       w
   end
 ;;

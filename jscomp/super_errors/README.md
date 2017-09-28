@@ -58,3 +58,14 @@ make bin/bsc.exe && ./install-bsc.sh
 ```
 
 This will substitute the global `bsc.exe` you just installed with the newly built one. Then run `npm build again` in the dummy project and see the changes! The iteration cycle for testing these should be around 2 seconds =).
+
+##### Special Iteration Workflow
+
+This section is reserved for when you're making a change to the vendored ocaml compiler itself, in vendor/ocaml, and then testing on super-errors changes at the same time. If you're doing this for whatever reason, then the previous quick iteration workflow wouldn't work. Here's what you have to do after each change:
+
+```
+# at project root
+cd jscomp
+make force-snapshotml # make sure your changes are reflected in jscomp/bin/whole_compiler.ml
+make -C bin bsc.exe && ./install-bsc.sh
+```
