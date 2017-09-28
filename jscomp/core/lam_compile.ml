@@ -1181,7 +1181,7 @@ and
         match Lam_compile_context.find_exn i cxt  with 
         | {exit_id; args ; order_id} -> 
           let args_code  =
-            (Js_output.concat @@ List.map2 (
+            (Js_output.concat @@ Ext_list.map2 (
                 fun (x : Lam.t) (arg : Ident.t) ->
                   match x with
                   | Lvar id -> 

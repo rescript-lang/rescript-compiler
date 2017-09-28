@@ -33,6 +33,12 @@ val fold_right : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
 
 val fold_right2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
 
+val map2 : 
+  ('a -> 'b -> 'c) ->
+  'a list ->
+  'b list ->
+  'c list
+
 val fold_left_with_offset : 
   (int -> 'acc -> 'a -> 'acc) -> 
   int -> 
