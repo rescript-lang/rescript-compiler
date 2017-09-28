@@ -33,8 +33,10 @@
 
 (* The entry point of compile primitives
    Note it will call {!Lam_compile_external_call.translate} for c stubs compilation
- *)
+*)
 
 val translate : 
   Location.t -> 
-  Lam_compile_context.cxt  -> Lam.primitive -> J.expression list -> J.expression
+  Lam_compile_context.t  ->
+  Lam.primitive ->
+  J.expression list -> J.expression

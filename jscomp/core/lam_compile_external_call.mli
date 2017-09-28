@@ -39,7 +39,7 @@ val translate_ffi :
   Location.t -> 
   Ast_ffi_types.ffi -> 
   (* string -> *) (* Not used.. *)
-  Lam_compile_context.cxt -> 
+  Lam_compile_context.t -> 
   Ast_arg.kind list -> 
   (*bool -> *)
   J.expression list -> 

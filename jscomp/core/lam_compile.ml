@@ -113,7 +113,7 @@ type default_case =
 *)    
 let rec  
   compile_external_field 
-    (cxt : Lam_compile_context.cxt) 
+    (cxt : Lam_compile_context.t) 
     lam 
     (id : Ident.t)
     (pos : int)
@@ -164,7 +164,7 @@ let rec
 *)
 
 and compile_external_field_apply 
-    (cxt : Lam_compile_context.cxt) 
+    (cxt : Lam_compile_context.t) 
     lam 
     args_lambda
     (id : Ident.t)
@@ -221,7 +221,7 @@ and compile_external_field_apply
                        (fun _ -> Ext_ident.create "param") in
                    E.ocaml_fun params 
                      [S.return (E.call ~info:{arity=Full; call_info=Call_ml}
-                       acc (Ext_list.append args @@ Ext_list.map E.var params))]
+                                  acc (Ext_list.append args @@ Ext_list.map E.var params))]
                  else E.call ~info:Js_call_info.dummy acc args
                (* alpha conversion now? --
                   Since we did an alpha conversion before so it is not here
@@ -237,7 +237,7 @@ and compile_external_field_apply
                args (List.length args ))
       )
 
-and  compile_let let_kind (cxt : Lam_compile_context.cxt) id (arg : Lam.t) : Js_output.t =
+and  compile_let let_kind (cxt : Lam_compile_context.t) id (arg : Lam.t) : Js_output.t =
   compile_lambda {cxt with st = Declare (let_kind, id); should_return = ReturnFalse } arg 
 (** 
     The second return values are values which need to be wrapped using 
@@ -248,7 +248,7 @@ and  compile_let let_kind (cxt : Lam_compile_context.cxt) id (arg : Lam.t) : Js_
 
 *)
 and compile_recursive_let ~all_bindings
-    (cxt : Lam_compile_context.cxt)
+    (cxt : Lam_compile_context.t)
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
@@ -343,10 +343,10 @@ and compile_recursive_let ~all_bindings
         *)
         Js_output.of_block  
           (Ext_list.append
-            b   
-            [S.exp
-               (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy" 
-                  [ E.var id;  v])]),
+             b   
+             [S.exp
+                (E.runtime_call Js_runtime_modules.obj_runtime "caml_update_dummy" 
+                   [ E.var id;  v])]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
       | _ -> assert false 
@@ -407,14 +407,14 @@ and compile_general_cases :
   'a . 
   ('a -> J.expression) ->
   (J.expression -> J.expression -> J.expression) -> 
-  Lam_compile_context.cxt -> 
+  Lam_compile_context.t -> 
   (?default:J.block ->
    ?declaration:Lam.let_kind * Ident.t  -> 
    _ -> 'a J.case_clause list ->  J.statement) -> 
   _ -> 
   ('a * Lam.t) list -> default_case -> J.block 
   = fun f eq cxt switch v table default -> 
-    let wrap (cxt : Lam_compile_context.cxt) k =
+    let wrap (cxt : Lam_compile_context.t) k =
       let cxt, define =
         match cxt.st with 
         | Declare (kind, did)
@@ -494,7 +494,7 @@ and compile_string_cases cxt = compile_general_cases E.str E.string_equal cxt
     for high order currying *)
 and
   compile_lambda
-    ({st ; should_return; jmp_table; meta = {env ; _} } as cxt : Lam_compile_context.cxt)
+    ({st ; should_return; jmp_table; meta = {env ; _} } as cxt : Lam_compile_context.t)
     (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
@@ -870,7 +870,7 @@ and
         Lam_compile_external_obj.assemble_args_obj labels args_expr
       in
       Js_output.handle_block_return st should_return lam 
-      (Ext_list.append args_code block) exp  
+        (Ext_list.append args_code block) exp  
 
     | Lprim{primitive = prim; args =  args_lambda; loc} -> 
       let args_block, args_expr =
@@ -930,11 +930,11 @@ and
                  | out1 , out2 -> 
                    Js_output.make 
                      (Ext_list.append 
-                      (S.declare_variable ~kind:Variable id :: b)  [
-                         S.if_ e 
-                           (Js_output.to_block out1) 
-                           ~else_:(Js_output.to_block out2 )
-                       ])
+                        (S.declare_variable ~kind:Variable id :: b)  [
+                        S.if_ e 
+                          (Js_output.to_block out1) 
+                          ~else_:(Js_output.to_block out2 )
+                      ])
                      ~value:(E.var id)
                 )
               end
@@ -947,7 +947,7 @@ and
                 (* Invariant: should_return is false*)
                 Js_output.make @@ 
                 Ext_list.append b  [
-                    S.define ~kind id (E.econd e out1 out2) ]
+                  S.define ~kind id (E.econd e out1 out2) ]
               | _, _ -> 
                 Js_output.make 
                   ( Ext_list.append b [
@@ -1003,8 +1003,8 @@ and
                   | None, Some out2 -> 
                     Js_output.make @@
                     (Ext_list.append b  [S.if_ (E.not e)
-                           [S.exp out2]
-                        ])
+                                           [S.exp out2]
+                                        ])
                 end
               |  ReturnFalse , {block = []; value = Some out1}, _ -> 
                 (* assert branch 
@@ -1014,15 +1014,15 @@ and
                 if Js_analyzer.no_side_effect_expression out1 then 
                   Js_output.make
                     (Ext_list.append b [ S.if_ (E.not e)
-                            (Js_output.to_block @@
-                             (compile_lambda cxt f_br))])
+                                           (Js_output.to_block @@
+                                            (compile_lambda cxt f_br))])
                 else 
                   Js_output.make 
                     (Ext_list.append b [S.if_ e 
-                           (Js_output.to_block 
-                            @@ compile_lambda cxt t_br)
-                           ~else_:(Js_output.to_block @@  
-                                   (compile_lambda cxt f_br))]
+                                          (Js_output.to_block 
+                                           @@ compile_lambda cxt t_br)
+                                          ~else_:(Js_output.to_block @@  
+                                                  (compile_lambda cxt f_br))]
                     )
 
               | ReturnFalse , _, {block = []; value = Some out2} -> 
@@ -1035,9 +1035,9 @@ and
                       compile_lambda cxt f_br) in 
                 Js_output.make 
                   (Ext_list.append b [S.if_ e 
-                         (Js_output.to_block @@
-                          compile_lambda cxt t_br)
-                         ?else_])
+                                        (Js_output.to_block @@
+                                         compile_lambda cxt t_br)
+                                        ?else_])
 
               | ReturnTrue _, {block = []; value =  Some out1}, 
                 {block = []; value =  Some out2} ->
@@ -1047,7 +1047,7 @@ and
 #end                 
 *)
                 Js_output.make 
-                (Ext_list.append b  [S.return  (E.econd e  out1 out2)]) ~finished:True                         
+                  (Ext_list.append b  [S.return  (E.econd e  out1 out2)]) ~finished:True                         
               |   _, _, _  ->
                 (*              
 #if BS_DEBUG then 
@@ -1128,7 +1128,7 @@ and
           if Ext_list.length_ge sw_blocks sw_numblocks
           then Complete
           else Default x in 
-      let compile_whole  ({st; _} as cxt  : Lam_compile_context.cxt ) =
+      let compile_whole  ({st; _} as cxt  : Lam_compile_context.t ) =
         match sw_numconsts, sw_numblocks, 
               compile_lambda {cxt with should_return = ReturnFalse; st = NeedValue}
                 lam with 
@@ -1210,7 +1210,7 @@ and
     | Lstaticcatch _  -> 
       let code_table, body =  flatten_caches lam in
 
-      
+
       let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
 
       (* compile_list name l false (\*\) *)
@@ -1240,7 +1240,8 @@ and
       (* TODO: handle NeedValue *)
       let exit_id =   Ext_ident.create_tmp ~name:"exit" () in
       let exit_expr = E.var exit_id in
-      let jmp_table, handlers =  Lam_compile_context.add_jmps (exit_id, code_table) jmp_table in
+      let jmp_table, handlers =  
+        Lam_compile_context.add_jmps exit_id code_table jmp_table in
 
       (* Declaration First, body and handler have the same value *)
       (* There is a bug in google closure compiler:
@@ -1362,9 +1363,9 @@ and
               match b1,b2 with
               | _,[] -> 
                 Ext_list.append b1 [S.for_ (Some e1) e2  id direction 
-                         (Js_output.to_block @@ 
-                          compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
-                            body) ]
+                                      (Js_output.to_block @@ 
+                                       compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
+                                         body) ]
               | _, _ when Js_analyzer.no_side_effect_expression e1 
                 (* 
                      e1 > b2 > e2
@@ -1374,9 +1375,9 @@ and
                 -> 
                 Ext_list.append b1 
                   (Ext_list.append b2  [S.for_ (Some e1) e2  id direction 
-                             (Js_output.to_block @@ 
-                              compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
-                                body) ])
+                                          (Js_output.to_block @@ 
+                                           compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
+                                             body) ])
               | _ , _
                 -> 
                 Ext_list.append b1 (S.define ~kind:Variable id e1 :: (Ext_list.append b2   [

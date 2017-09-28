@@ -48,7 +48,7 @@ type value = {
 
 type let_kind = Lam.let_kind
 
-type st = 
+type cont = 
   | EffectCall
   | Declare of let_kind * J.ident (* bound value *)
   | NeedValue 
@@ -77,8 +77,8 @@ type return_type =
 
 type jmp_table 
 
-type cxt = {
-  st : st ;
+type t = {
+  st : cont ;
   should_return : return_type;
   jmp_table : jmp_table;
   meta : Lam_stats.t ;
@@ -87,7 +87,8 @@ type cxt = {
  val empty_handler_map : jmp_table  
 
 val add_jmps :
-    Ident.t * (jbl_label * 'a * Ident.t list) list ->
-    jmp_table -> jmp_table * (jbl_label * 'a) list
+    Ident.t ->
+    (jbl_label * Lam.t * Ident.t list) list ->
+    jmp_table -> jmp_table * (jbl_label * Lam.t) list
 
-val find_exn : jbl_label -> cxt -> value
+val find_exn : jbl_label -> t -> value

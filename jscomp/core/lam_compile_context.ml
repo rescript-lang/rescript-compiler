@@ -60,15 +60,16 @@ type return_type =
 
 type let_kind = Lam.let_kind
 
-type st = 
+type cont = 
   | EffectCall
   | Declare of let_kind * J.ident (* bound value *)
   | NeedValue 
   | Assign of J.ident (* when use [Assign], var is not needed, since it's already declared  *)
 
 type jmp_table =   value  HandlerMap.t
-type cxt = {
-  st : st ;
+
+type t = {
+  st : cont ;
   should_return : return_type;
   jmp_table : jmp_table;
   meta : Lam_stats.t ;
@@ -79,8 +80,9 @@ let empty_handler_map = HandlerMap.empty
 
 
 (* always keep key id positive, specifically no [0] generated *)
-let add_jmps (exit_id, code_table)   
-    (m : value HandlerMap.t) = 
+let add_jmps 
+    exit_id code_table
+    m = 
   let map, handlers = 
     Ext_list.fold_left_with_offset
       (fun order_id (acc,handlers)
