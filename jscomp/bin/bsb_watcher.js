@@ -1,4 +1,4 @@
-
+//@ts-check
 
 var fs = require('fs')
 var child_process = require('child_process')
@@ -10,8 +10,8 @@ var path = require('path')
  * and its content are file/directories with regard to project root
  */
 // for column one based error message
-process.env.BS_VSCODE = 1
-var bsb_exe  = "bsb.exe"
+process.env.BS_VSCODE = '1'
+var bsb_exe = "bsb.exe"
 var bsb = path.join(__dirname, bsb_exe)
 var bsconfig = "bsconfig.json"
 
@@ -25,11 +25,11 @@ var watchers = [];
 
 
 var is_building = false;
-function releaseBuild(){
-    is_building = false 
+function releaseBuild() {
+    is_building = false
 }
-function acquireBuild(){
-    if(is_building){
+function acquireBuild() {
+    if (is_building) {
         return false
     }
     else {
@@ -38,20 +38,20 @@ function acquireBuild(){
     }
 }
 var sourcedirs = path.join('lib', 'bs', '.sourcedirs.json')
-var watch_generated  = []
+var watch_generated = []
 
 function watch_build(watch_config) {
-    var watch_files = watch_config.dirs 
+    var watch_files = watch_config.dirs
     watch_generated = watch_config.generated
     // close and remove all unused watchers
-    watchers = watchers.filter(function(watcher){
-        if(watcher.dir === bsconfig){
+    watchers = watchers.filter(function (watcher) {
+        if (watcher.dir === bsconfig) {
             return true;
-        } else if(watch_files.indexOf(watcher.dir) < 0){
-            console.log(watcher.dir,'is no longer watched');
+        } else if (watch_files.indexOf(watcher.dir) < 0) {
+            console.log(watcher.dir, 'is no longer watched');
             watcher.watcher.close();
             return false
-        }  else {
+        } else {
             return true;
         }
     })
@@ -61,7 +61,7 @@ function watch_build(watch_config) {
         var dir = watch_files[i]
         if (!watchers.find(function (watcher) { return watcher.dir === dir })) {
             console.log('watching dir', dir, 'now')
-            var watcher = fs.watch(dir,on_change);
+            var watcher = fs.watch(dir, on_change);
             watchers.push({ dir: dir, watcher: watcher })
         } else {
             // console.log(dir, 'already watched')
@@ -75,14 +75,14 @@ function watch_build(watch_config) {
  * @param {string} eventType 
  * @param {string} fileName 
  */
-function validEvent(eventType,fileName){
+function validEvent(eventType, fileName) {
     // Return true if filename is nil, filename is only provided on Linux, macOS, Windows, and AIX.
     // On other systems, we just have to assume that any change is valid.
     // This could cause problems if source builds (generating js files in the same directory) are supported. 
     if (!fileName)
         return true;
 
-    return  !(fileName === '.merlin' ||  
+    return !(fileName === '.merlin' ||
         fileName.endsWith('.js') ||
         watch_generated.indexOf(fileName) >= 0
     )
@@ -90,7 +90,7 @@ function validEvent(eventType,fileName){
 /**
  * @return {boolean}
  */
-function needRebuild(){
+function needRebuild() {
     return reasons_to_rebuild.length != 0
 }
 function build_finished_callback() {
@@ -109,8 +109,8 @@ function build() {
         console.log("Rebuilding since", reasons_to_rebuild);
         reasons_to_rebuild = [];
         child_process
-          .spawn(bsb, [],{stdio: 'inherit'})
-          .on('exit', build_finished_callback);
+            .spawn(bsb, [], { stdio: 'inherit' })
+            .on('exit', build_finished_callback);
     }
 }
 /**
@@ -118,27 +118,75 @@ function build() {
  * @param {string} event 
  * @param {string} reason 
  */
-function on_change(event, reason) {    
-    if(validEvent(event,reason)){
-        console.log("Event", event,reason);
+function on_change(event, reason) {
+    if (validEvent(event, reason)) {
+        console.log("Event", event, reason);
         reasons_to_rebuild.push([event, reason])
-        if(needRebuild()){
+        if (needRebuild()) {
             build()
-        }    
-    }    
-    
-}
-function getWatchFiles(file) {
-    if (fs.existsSync(file)){
-        return JSON.parse(fs.readFileSync(file, 'utf8'))
-    } else {
-        return { dirs : [], generated : []}
+        }
     }
 
 }
+function getWatchFiles(file) {
+    if (fs.existsSync(file)) {
+        return JSON.parse(fs.readFileSync(file, 'utf8'))
+    } else {
+        return { dirs: [], generated: [] }
+    }
 
+}
+var cwd = process.cwd()
+var lockFileName = path.join(cwd, ".bsb.lock")
+
+/**
+ * @return {boolean}
+ */
+function acquireLockFile() {
+    try {
+        // We use [~perm:0o664] rather than our usual default perms, [0o666], because
+        // lock files shouldn't rely on the umask to disallow tampering by other.        
+        var fd = fs.openSync(lockFileName, 'wx', 0o664)
+        try {
+            fs.closeSync(fd)
+        } catch (err) {
+
+        }
+
+        process.on('exit', onExit)
+        // Ctrl+C
+        process.on('SIGINT', onExit)
+        // kill pid
+        process.on('SIGUSR1', onExit)
+        process.on('SIGUSR2', onExit)
+        process.on('SIGTERM', onExit)
+        process.on('uncaughtException', onExit)
+
+        return true
+    } catch (exn) {
+        return false
+    }
+}
+function onExit() {
+    try {
+        console.log('cleaning',lockFileName)
+        fs.unlinkSync(lockFileName)
+    } catch (err) {
+
+    }
+}
 
 // Initialization
+if (acquireLockFile()) {
 
-watchers.push({watcher : fs.watch(bsconfig,on_change) , dir : bsconfig});
-build();
+    watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
+    build();
+} else {
+    console.error(
+        'Error: could not acquire lockfile', lockFileName,
+        '\nCould be another process running in the background',
+        '\nEither kill that process or delete the staled lock'
+    )
+    process.exit(2)
+}
+
