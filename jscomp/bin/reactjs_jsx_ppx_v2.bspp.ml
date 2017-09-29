@@ -35,14 +35,25 @@
   patching the right parts, through the power of types(tm)
 *)
 
+#if defined BS_NO_COMPILER_PATCH then
+open Migrate_parsetree
+open Ast_404
+module To_current = Convert(OCaml_404)(OCaml_current)
 
+let nolabel = Ast_404.Asttypes.Nolabel
+let labelled str = Ast_404.Asttypes.Labelled str
+let argIsKeyRef = function
+  | (Asttypes.Labelled ("key" | "ref"), _) | (Asttypes.Optional ("key" | "ref"), _) -> true
+  | _ -> false
+let constantString ~loc str = Ast_helper.Exp.constant ~loc (Parsetree.Pconst_string (str, None))
+#else
 let nolabel = ""
 let labelled str = str
 let argIsKeyRef = function
   | (("key" | "ref"), _) | (("?key" | "?ref"), _) -> true
   | _ -> false
 let constantString ~loc str = Ast_helper.Exp.constant ~loc (Asttypes.Const_string (str, None))
-
+#end
 
 open Ast_helper
 open Ast_mapper
@@ -72,10 +83,13 @@ let listToArray ~loc ~mapper theList =
 let extractChildrenForDOMElements ?(removeLastPositionUnit=false) ~loc propsAndChildren =
   let rec allButLast_ lst acc = match lst with
     | [] -> []
-
+#if defined BS_NO_COMPILER_PATCH then
+    | (Nolabel, {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
+    | (Nolabel, _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
+#else
     | ("", {pexp_desc = Pexp_construct ({txt = Lident "()"}, None)})::[] -> acc
     | ("", _)::rest -> raise (Invalid_argument "JSX: found non-labelled argument before the last position")
-
+#end
     | arg::rest -> allButLast_ rest (arg::acc)
   in
   let allButLast lst = allButLast_ lst [] |> List.rev in
@@ -209,13 +223,19 @@ let jsxMapper () =
             (* no file-level jsx config found *)
             | ([], _) -> default_mapper.structure mapper structure
             (* {jsx: 2 | 3} *)
-
+#if defined BS_NO_COMPILER_PATCH then
+            | ((_, {pexp_desc = Pexp_constant (Pconst_integer (version, _))})::rest, recordFieldsWithoutJsx) -> begin
+                (match version with
+                | "2" -> jsxVersion := Some 2
+                | "3" -> jsxVersion := Some 3
+                | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be either 2 or 3"));
+#else
             | ((_, {pexp_desc = Pexp_constant (Const_int version)})::rest, recordFieldsWithoutJsx) -> begin
                 (match version with
                 | 2 -> jsxVersion := Some 2
                 | 3 -> jsxVersion := Some 3
                 | _ -> raise (Invalid_argument "JSX: the file-level bs.config's jsx version must be either 2 or 3"));
-
+#end
                 match recordFieldsWithoutJsx with
                 (* record empty now, remove the whole bs.config attribute *)
                 | [] -> default_mapper.structure mapper restOfStructure
@@ -244,7 +264,7 @@ let jsxMapper () =
             | Some 2 -> jsxTransformV2 modulePath
             | Some 3 -> jsxTransformV3 modulePath
             | Some _ -> raise (Invalid_argument "JSX: the JSX version must be either 2 or 3")
-            | None -> jsxTransformV3 modulePath
+            | None -> jsxTransformV2 modulePath
           in f mapper loc attrs callExpression callArguments
         (* div prop1::foo prop2:bar children::[bla] () *)
         (* turn that into ReactDOMRe.createElement props::(ReactDOMRe.props props1::foo props2::bar ()) [|bla|] *)
@@ -286,10 +306,14 @@ let jsxMapper () =
        (* Delegate to the default mapper, a deep identity traversal *)
        | e -> default_mapper.expr mapper e) in
 
-
+#if defined BS_NO_COMPILER_PATCH then
+  To_current.copy_mapper { default_mapper with structure; expr }
+#else
   { default_mapper with structure; expr }
+#end
 
-
-
+#if defined BS_NO_COMPILER_PATCH then
+let () = Compiler_libs.Ast_mapper.register "JSX" (fun _argv -> jsxMapper ())
+#else
 let () = Ast_mapper.register "JSX" (fun _argv -> jsxMapper ())
-
+#end
