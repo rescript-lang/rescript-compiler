@@ -401,6 +401,17 @@ let print ppf w =
   if (!current).error.(num) then incr nerrors
 ;;
 
+#if undefined BS_NO_COMPILER_PATCH then
+(* used by super-errors. Copied from the `print` above *)
+let super_print message ppf w =
+  let msg = message w in
+  let num = number w in
+  Format.fprintf ppf "%s" msg;
+  Format.pp_print_flush ppf ();
+  if (!current).error.(num) then incr nerrors
+;;
+#end
+
 exception Errors of int;;
 
 let check_fatal () =

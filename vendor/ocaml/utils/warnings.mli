@@ -84,3 +84,8 @@ val help_warnings: unit -> unit
 type state
 val backup: unit -> state
 val restore: state -> unit
+
+#if undefined BS_NO_COMPILER_PATCH then
+val number: t -> int
+val super_print : (t -> string) -> formatter -> t -> unit;;
+#end
