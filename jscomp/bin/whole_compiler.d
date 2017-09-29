@@ -285,7 +285,6 @@ bin/whole_compiler.ml : core/js_packages_info.ml
 bin/whole_compiler.ml : core/js_pass_flatten.mli
 bin/whole_compiler.ml : core/lam_beta_reduce.mli
 bin/whole_compiler.ml : core/lam_bounded_vars.ml
-bin/whole_compiler.ml : core/lam_compile_defs.ml
 bin/whole_compiler.ml : core/lam_compile_env.mli
 bin/whole_compiler.ml : core/lam_compile_main.ml
 bin/whole_compiler.ml : core/lam_compile_util.ml
@@ -327,7 +326,6 @@ bin/whole_compiler.ml : core/js_packages_info.mli
 bin/whole_compiler.ml : core/js_packages_state.ml
 bin/whole_compiler.ml : core/lam_bounded_vars.mli
 bin/whole_compiler.ml : core/lam_compile_const.ml
-bin/whole_compiler.ml : core/lam_compile_defs.mli
 bin/whole_compiler.ml : core/lam_compile_main.mli
 bin/whole_compiler.ml : core/lam_compile_util.mli
 bin/whole_compiler.ml : core/lam_module_ident.mli
@@ -388,6 +386,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/printtyped.ml
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typeclass.mli
 bin/whole_compiler.ml : ../vendor/ocaml/typing/typedtree.mli
 bin/whole_compiler.ml : core/js_of_lam_exception.ml
+bin/whole_compiler.ml : core/lam_compile_context.ml
 bin/whole_compiler.ml : core/lam_compile_global.mli
 bin/whole_compiler.ml : core/lam_eta_conversion.mli
 bin/whole_compiler.ml : core/ocaml_batch_compile.ml
@@ -413,6 +412,7 @@ bin/whole_compiler.ml : ../vendor/ocaml/typing/printtyped.mli
 bin/whole_compiler.ml : core/js_name_of_module_id.ml
 bin/whole_compiler.ml : core/js_of_lam_exception.mli
 bin/whole_compiler.ml : core/lam_beta_reduce_util.ml
+bin/whole_compiler.ml : core/lam_compile_context.mli
 bin/whole_compiler.ml : core/ocaml_batch_compile.mli
 bin/whole_compiler.ml : super_errors/super_pparse.ml
 bin/whole_compiler.ml : ../vendor/ocaml/bytecomp/translcore.ml
