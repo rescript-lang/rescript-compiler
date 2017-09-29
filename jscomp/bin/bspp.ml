@@ -1342,6 +1342,11 @@ type state
 val backup: unit -> state
 val restore: state -> unit
 
+
+val number: t -> int
+val super_print : (t -> string) -> formatter -> t -> unit;;
+
+
 end = struct
 #1 "warnings.ml"
 (***********************************************************************)
@@ -1746,6 +1751,17 @@ let print ppf w =
   Format.pp_print_flush ppf ();
   if (!current).error.(num) then incr nerrors
 ;;
+
+
+(* used by super-errors. Copied from the `print` above *)
+let super_print message ppf w =
+  let msg = message w in
+  let num = number w in
+  Format.fprintf ppf "%s" msg;
+  Format.pp_print_flush ppf ();
+  if (!current).error.(num) then incr nerrors
+;;
+
 
 exception Errors of int;;
 
