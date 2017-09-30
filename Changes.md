@@ -1,11 +1,28 @@
 # 1.9.3
 
 Features:
+- #2049, add a dedicated `warning` field, so that it is easy to override, enable `warn-error` and customize it.
 - React JSX PPX V3 is in. This allows a custom component's `children` to be of any type. When the child's a single non-jsx item, it's not wrapped in an array anymore.
+- #2016, add a flag `bsb -v` to tell the version number
+- 64ea144746f998955f69d8eb4ec2b0179ce2d5b4 add Js.Typed_array subarray api
+- #2030, error message: better unbound value message
+- #2041, add a flag `bsb -verbose`, by default it is less noisy
+- #2047, make bsb error message more professional
+- #2048, turn `-bs-super-error` by default for reason files
+
 
 Deprecations:
 - React JSX PPX V1 has been removed, and the bsconfig `"react-jsx": true` is removed too (use `2` or `3`). Jsx only accept a version number
+- #1666, remove deprecated API
 
+Fixes:
+- #2029, error message: fix display line and column
+- #2033, #2040 error message: trim output when too many lines 
+- #2042, better react error message 
+- #2053, beter error message when file name is non-existent
+- #2066, add a missing escaped char ':'
+- #2063, add Js.Float for windows, remove deprecated Js.Float API
+- #2070, fix -warn-error interaction with -bs-super-error
 
 # 1.9.2
 
