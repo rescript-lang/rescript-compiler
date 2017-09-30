@@ -1,6 +1,6 @@
-## Build modes
+# Build Instructions
 
-### Release mode
+## Release mode
 
 In release mode, assume you have NodeJS and
 OCaml compiler  with the right version installed:
@@ -18,24 +18,76 @@ OCaml installation, if it fails, it will try to invoke `buildocaml.sh` to
 install an OCaml compiler from scratch, and retry again
 
 
-### Dev mode
+## Dev mode
 
-In dev mode, BuckleScript reuses OCaml's compiler-libs, in that case, `LIBDIR`
-maybe incorrect, but it is okay in dev environment, since all paths are specified
-explicitly.
+### Setup
+
+#### Use the correct opam switch for working on BuckleScript
+```sh
+opam update
+opam switch 4.02.3+buckle-master
+opam switch reinstall 4.02.3+buckle-master # do this if you get errors even from a clean compilation
+opam install camlp4
+eval `opam config env`
+```
+
+#### build BuckleScript's forked OCaml
+```sh
+cd vendor/ocaml
+./configure -prefix `pwd`
+make world.opt
+make install
+```
+
+#### build all of Bucklescript
+```sh
+cd ../../jscomp
+make world
+```
+
+### build the compiler (bsc.exe)
+
+If you don't change the type definition of JS IR, i.e, [j.ml](./j.ml),
+then the only dependency is the build tool:
+`make`
+
+```sh
+make js_map.ml js_fold.ml bin/bsc.exe
+```
+
+If you do want to change the JS IR, you also need
+[camlp4](https://github.com/ocaml/camlp4), note that the version does
+not need match the exact the same version of compiler.
+
+### build the build system (bsb.exe)
+
+```sh
+make bin/bsb.exe && make bin/bsb_helper.ml && make -C bin bsb_helper.exe
+```
+
+Generate packed ML files for PR: `make force-snapshotml`
+
+### build the runtime
+
+```sh
+cd ./runtime; make all
+```
+
+### build the stdlib
+
+```sh
+cd ./stdlib; make all
+```
 
 Several useful targets
 
-- make check
-- make bin/bsc.exe
-- make bin/bsb
-- make libs
+- `make depend` generates the `.depend` files used by make to build things in the correct order
+- `make check`  builds and runs the tests
+- `make libs` builds the JS runtime
 
-The binaries depend on whether we really need it during dev time.
 ### Publish process
-
+- Run `make force-snapshotml`
 - Bump the compiler version
-
 - Build the JS playground
   * Generate js_compiler.ml
   * Generate cmj data sets
@@ -76,44 +128,6 @@ Javascript Code
 Note that there is one design goal to keep in mind, never introduce
 any meaningless symbol unless real necessary, we do optimizations,
 however, it should also compile readable output code.
-
-
-## Dependencies and Dev-Build
-
-
-### Build the compiler
-
-If you don't change the type definition of JS IR, i.e, [j.ml](./j.ml),
-then the only dependency is the build tool:
-`make`
-
-```sh
-make bsc.exe
-```
-
-
-
-If you do want to change the JS IR, you also need
-[camlp4](https://github.com/ocaml/camlp4), note that the version does
-not need match the exact the same version of compiler.
-
-so you need run commands below whenver you  change the type definition
-of  JS IR.
-
-```
-make js_map.ml js_fold.ml
-```
-### Build the runtime
-
-```sh
-cd ./runtime; make all
-```
-
-### Build the stdlib
-
-```sh
-cd ./stdlib; make all
-```
 
 # Rebuilding the browser-based playground
 
