@@ -52,7 +52,7 @@ then the only dependency is the build tool:
 `make`
 
 ```sh
-rm -rf core/js_map.ml js_fold.ml && make core/js_map.ml core/js_fold.ml bin/bsc.exe
+rm -rf core/js_map.ml core/js_fold.ml && make core/js_map.ml core/js_fold.ml bin/bsc.exe
 ```
 
 If you do want to change the JS IR, you also need
