@@ -45,18 +45,20 @@ val fold_left_with_offset :
   'acc -> 
   'a list -> 'acc 
 
-(** Extension to the standard library [List] module *)
+
+(** @unused *)
+val filter_map : ('a -> 'b option) -> 'a list -> 'b list  
+
+(** [excludes p l]
+    return a tuple [excluded,newl]
+    where [exluded] is true indicates that at least one  
+    element is removed,[newl] is the new list where all [p x] for [x] is false
     
-(** TODO some function are no efficiently implemented. *) 
+*)
+ val exclude_with_val : ('a -> bool) -> 'a list -> bool * 'a list 
 
-val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
-
-val excludes : ('a -> bool) -> 'a list -> bool * 'a list
-
-val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
-
-val exclude_with_fact2 : 
-  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
+ (** [exclude p l] is the opposite of [filter p l] *)
+ val exclude : ('a -> bool) -> 'a list -> 'a list 
 
 val same_length : 'a list -> 'b list -> bool
 

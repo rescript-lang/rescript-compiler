@@ -68,6 +68,7 @@ val process_derive_type :
 
 
 val bs : attr 
+val is_bs : attr -> bool
 val bs_this : attr
 val bs_method : attr
 

@@ -179,55 +179,29 @@ let rec filter_map (f: 'a -> 'b option) xs =
       | Some z -> z :: filter_map f ys
     end
 
-let excludes (p : 'a -> bool ) l : bool * 'a list=
-  let excluded = ref false in 
-  let rec aux accu = function
-    | [] -> List.rev accu
-    | x :: l -> 
-      if p x then 
-        begin 
-          excluded := true ;
-          aux accu l
-        end
-      else aux (x :: accu) l in
-  let v = aux [] l in 
-  if !excluded then true, v else false,l
+let rec exclude p xs =   
+  match xs with 
+  | [] ->  []
+  | x::xs -> 
+    if p x then exclude p xs 
+    else x:: exclude p xs  
 
-let exclude_with_fact p l =
-  let excluded = ref None in 
-  let rec aux accu = function
-    | [] -> List.rev accu
-    | x :: l -> 
-      if p x then 
-        begin 
-          excluded := Some x ;
-          aux accu l
-        end
-      else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded , if !excluded <> None then v else l 
-
-
-(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
-let exclude_with_fact2 p1 p2 l =
-  let excluded1 = ref None in 
-  let excluded2 = ref None in 
-  let rec aux accu = function
-    | [] -> List.rev accu
-    | x :: l -> 
-      if p1 x then 
-        begin 
-          excluded1 := Some x ;
-          aux accu l
-        end
-      else if p2 x then 
-        begin 
-          excluded2 := Some x ; 
-          aux accu l 
-        end
-      else aux (x :: accu) l in
-  let v = aux [] l in 
-  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
+let rec exclude_with_val p l =
+  match l with 
+  | [] ->  false, l
+  | a0::xs -> 
+    if p a0 then true, exclude p xs 
+    else 
+      match xs with 
+      | [] -> false, l 
+      | a1::rest -> 
+        if p a1 then 
+          true, a0:: exclude p rest 
+        else 
+          let st,rest = exclude_with_val p rest in 
+          if st then 
+            st, a0::a1::rest
+          else st, l 
 
 
 
@@ -237,6 +211,9 @@ let rec same_length xs ys =
   | _::xs, _::ys -> same_length xs ys 
   | _, _ -> false 
 
+(**
+   can not do loop unroll due to state combination
+*)  
 let  filter_mapi (f: int -> 'a -> 'b option) xs = 
   let rec aux i xs = 
     match xs with 

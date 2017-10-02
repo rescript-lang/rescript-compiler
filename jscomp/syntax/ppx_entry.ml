@@ -467,12 +467,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 | _ -> Ast_mapper.default_mapper.expr self e 
               end
             | _ -> 
-
-              begin match Ext_list.exclude_with_fact (function 
-                  | {Location.txt = "bs"; _}, _ -> true 
-                  | _ -> false) e.pexp_attributes with 
-              | None, _ -> Ast_mapper.default_mapper.expr self e 
-              | Some _, pexp_attributes -> 
+              begin match 
+                Ext_list.exclude_with_val
+                Ast_attributes.is_bs e.pexp_attributes with 
+              | false, _ -> Ast_mapper.default_mapper.expr self e 
+              | true, pexp_attributes -> 
                 {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
                         pexp_attributes }
               end
