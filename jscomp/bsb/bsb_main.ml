@@ -137,7 +137,8 @@ let handle_anonymous_arg arg =
 
 
 let watch_exit () =
-  Bsb_log.info "@{<info>Watching@}... @.";
+  exit 0
+  (* Bsb_log.info "@{<info>Watching@}... @.";
   let bsb_watcher =
     Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
   if Ext_sys.is_windows_or_cygwin then
@@ -146,7 +147,7 @@ let watch_exit () =
     Unix.execvp node_lit
       [| node_lit ;
          bsb_watcher
-      |]
+      |] *)
 
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)

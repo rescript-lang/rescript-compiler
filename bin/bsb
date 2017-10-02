@@ -1,50 +1,237 @@
 #!/usr/bin/env node
+//@ts-check
 "use strict";
 
+/* This script is supposed to be running in project root directory
+ * It matters since we need read .sourcedirs(location)
+ * and its content are file/directories with regard to project root
+ */
+
 var child_process = require('child_process')
-var fs = require('fs')
+
 var bsconfig = 'bsconfig.json'
 var bsb_exe = __filename + ".exe"
-var delegate_args = process.argv.slice(2)
+
+
+var watch_mode = false
+
+/**
+ * @type {string[]}
+ */
+var delegate_args = []
+var process_argv = process.argv
+for (var i = 2; i < process_argv.length; ++i) {
+    var current = process_argv[i]
+    delegate_args.push(current)
+    if (current === '-w') {
+        watch_mode = true
+    }
+}
+
 try {
     child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit' })
 } catch (e) {
     if (e.code === "ENOENT") {
         // when bsb is actually not found
         console.log(String(e))
-        console.error('Error happened when running command', bsb_exe, 'with args', delegate_args)
     }
-
     process.exit(2)
 }
 
-// if (fs.existsSync(bsconfig)) {
-// Note we make `bsb` behaves more similar to `bsb.exe`
-// Since it does not make sense that `bsb -h` will raise (here it would check bsconfig.json)
-// also `bsb -init project-name` should not break
-// } else {
-//     var path = require('path')
-//     var last_dir = process.cwd()
-//     var search_dir = last_dir
-//     do {
-//         last_dir = search_dir
-//         search_dir = path.dirname(last_dir)
-//     } while (!fs.existsSync(path.join(search_dir, bsconfig)) && (search_dir.length !== last_dir.length))
-//     if (search_dir.length === last_dir.length) {
-//         console.error('bsconfig.json not found in current directory and its parent')
-//         process.exit(2)
-//     } else {
-//         console.log("Root project : " ,  search_dir)
-//         try {
-//             child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit', cwd: search_dir })
-//         } catch (e) {
-//             console.error('Error happened when running command', bsb_exe, 'with args', delegate_args)
-//             process.exit(2)
-//         }
-//     }
-// }
+if (watch_mode) {
+    var fs = require('fs')
+    var path = require('path')
 
-// function uncaughtHandler(err){
-//          console.error('command failed')         
-// }
-// process.on('uncaughtException',uncaughtHandler)
+    // for column one based error message
+    process.env.BS_VSCODE = '1'
+    var cwd = process.cwd()
+    var lockFileName = path.join(cwd, ".bsb.lock")
+    /**
+     * @type {[string,string][]}
+     */
+    var reasons_to_rebuild = [];
+
+    /**
+     * watchers are held so that we close it later
+     */
+    var watchers = [];
+
+
+    function onExit() {
+        try {
+            fs.unlinkSync(lockFileName)
+        } catch (err) {
+
+        }
+        process.exit(2)
+    }
+
+    /**
+     * @return {boolean}
+     */
+    function acquireLockFile() {
+        try {
+            // We use [~perm:0o664] rather than our usual default perms, [0o666], because
+            // lock files shouldn't rely on the umask to disallow tampering by other.        
+            var fd = fs.openSync(lockFileName, 'wx', 0o664)
+            try {
+                fs.writeFileSync(fd,  String(process.pid), 'ascii')
+                fs.closeSync(fd)
+            } catch (err) {
+
+            }
+
+            process.on('exit', onExit)
+            // Ctrl+C
+            process.on('SIGINT', onExit)
+            // kill pid
+            process.on('SIGUSR1', onExit)
+            process.on('SIGUSR2', onExit)
+            process.on('SIGTERM', onExit)
+            process.on('uncaughtException', onExit)
+
+            return true
+        } catch (exn) {
+            return false
+        }
+    }
+
+    var is_building = false;
+    function releaseBuild() {
+        is_building = false
+    }
+    function acquireBuild() {
+        if (is_building) {
+            return false
+        }
+        else {
+            is_building = true
+            return true
+        }
+    }
+    var sourcedirs = path.join('lib', 'bs', '.sourcedirs.json')
+    var watch_generated = []
+
+    function watch_build(watch_config) {
+        var watch_files = watch_config.dirs
+        watch_generated = watch_config.generated
+        // close and remove all unused watchers
+        watchers = watchers.filter(function (watcher) {
+            if (watcher.dir === bsconfig) {
+                return true;
+            } else if (watch_files.indexOf(watcher.dir) < 0) {
+                console.log(watcher.dir, 'is no longer watched');
+                watcher.watcher.close();
+                return false
+            } else {
+                return true;
+            }
+        })
+
+        // adding new watchers
+        for (var i = 0; i < watch_files.length; ++i) {
+            var dir = watch_files[i]
+            if (!watchers.find(function (watcher) { return watcher.dir === dir })) {
+                console.log('watching dir', dir, 'now')
+                var watcher = fs.watch(dir, on_change);
+                watchers.push({ dir: dir, watcher: watcher })
+            } else {
+                // console.log(dir, 'already watched')
+            }
+        }
+    };
+
+
+    /**
+     * 
+     * @param {string} eventType 
+     * @param {string} fileName 
+     */
+    function validEvent(eventType, fileName) {
+        // Return true if filename is nil, filename is only provided on Linux, macOS, Windows, and AIX.
+        // On other systems, we just have to assume that any change is valid.
+        // This could cause problems if source builds (generating js files in the same directory) are supported. 
+        if (!fileName)
+            return true;
+
+        return !(fileName === '.merlin' ||
+            fileName.endsWith('.js') ||
+            watch_generated.indexOf(fileName) >= 0 ||
+            fileName.endsWith('.swp')
+        )
+    }
+    /**
+     * @return {boolean}
+     */
+    function needRebuild() {
+        return reasons_to_rebuild.length != 0
+    }
+    function build_finished_callback() {
+        console.log(">>>> Finish compiling")
+        releaseBuild()
+        if (needRebuild()) {
+            build()
+        } else {
+            var files = getWatchFiles(sourcedirs);
+            watch_build(files)
+        }
+    }
+    function build() {
+        if (acquireBuild()) {
+            console.log(">>>> Start compiling");
+            console.log("Rebuilding since", reasons_to_rebuild);
+            reasons_to_rebuild = [];
+            child_process
+                .spawn(bsb_exe, [], { stdio: 'inherit' })
+                .on('exit', build_finished_callback);
+        }
+    }
+    /**
+     * 
+     * @param {string} event 
+     * @param {string} reason 
+     */
+    function on_change(event, reason) {
+        if (validEvent(event, reason)) {
+            console.log("Event", event, reason);
+            reasons_to_rebuild.push([event, reason])
+            if (needRebuild()) {
+                build()
+            }
+        }
+
+    }
+    function getWatchFiles(file) {
+        if (fs.existsSync(file)) {
+            return JSON.parse(fs.readFileSync(file, 'utf8'))
+        } else {
+            return { dirs: [], generated: [] }
+        }
+
+    }
+
+
+    // Initialization
+    if (acquireLockFile()) {
+        watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
+        build();
+    } else {
+        var potential_pid;
+        try {
+            var content = fs.readFileSync(lockFileName, 'ascii')
+            potential_pid = parseInt(content)
+        } catch (err) {
+            // ignore   
+        }
+        console.error('Error: could not acquire lockfile', lockFileName)
+        console.log('Could be another process running in the background',
+            '\nEither kill that process or delete the staled lock')
+        if (potential_pid !== undefined && !isNaN(potential_pid)) {
+            console.error('Try run command: ', 'kill ', potential_pid)
+        }
+
+
+        process.exit(2)
+    }
+
+}
