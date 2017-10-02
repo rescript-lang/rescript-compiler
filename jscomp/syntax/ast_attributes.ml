@@ -56,10 +56,10 @@ let process_method_attributes_rev (attrs : t) =
                    Ast_payload.assert_bool_lit e)
               | "nullable" -> 
                 begin match opt_expr with 
-                | None -> true, true 
-                | Some e ->
-                  let v = Ast_payload.assert_bool_lit e in 
-                  v,v
+                  | None -> true, true 
+                  | Some e ->
+                    let v = Ast_payload.assert_bool_lit e in 
+                    v,v
                 end
               | _ -> Bs_syntaxerr.err loc Unsupported_predicates
             ) (false, false) 
@@ -254,6 +254,12 @@ let process_bs_string_or_int_as attrs =
 
 let bs : attr
   =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
+
+let is_bs (attr : attr) =   
+  match attr with 
+  | {Location.txt = "bs"; _}, _ -> true 
+  | _ -> false
+
 let bs_this : attr
   =  {txt = "bs.this" ; loc = Location.none}, Ast_payload.empty
 
