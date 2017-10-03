@@ -63,24 +63,6 @@ let caml_sys_random_seed () : nativeint array =
      ((Nativeint.to_float (Nativeint.logxor (Nativeint.of_float (now ()))
                              0xffffffffn)) *. random ()) |]
 
-type spawnResult
-
-external spawnSync : string -> spawnResult = "" [@@bs.module "child_process"]
-
-external readAs : spawnResult -> 
-  < 
-    status : int Js.null;
-  > Js.t = 
-  "%identity"
-
-(** This will pull in 'child_process', we should investigate more*)
-(* let caml_sys_system_command cmd = *)
-(*   match Js_null.to_opt (readAs (spawnSync cmd)) ##status with  *)
-(*   | None -> 127 (\* command not found *\) *)
-(*   | Some i -> i  *)
-
-let caml_sys_system_command _cmd = 127
-
 let caml_sys_getcwd () = 
   match [%external process] with 
   | None ->  "/"
@@ -90,22 +72,22 @@ let caml_sys_getcwd () =
 let caml_sys_get_argv () : string * string array = 
   match [%external process] with 
   | None -> ("",[|""|])
-  | Some process 
-    -> 
-    if Js.testAny process##argv then ("",[|""|])
-    else Array.unsafe_get process##argv 0, process##argv
+  | Some process ->
+    if Js.testAny process##argv then
+      ("",[|""|])
+    else
+      (* The first 2 elements of node's process.argv are the node executable and
+        the entry point JS script. This breaks any OCaml code which assumes the
+        program's "real" argv starts at index 1. Here, we take process.argv[0] as
+        Sys.executable_name, and process.argv[1..] as Sys.argv to get around that
+        snag. *)
+      (
+        Array.unsafe_get process##argv 0,
+        Caml_array.caml_array_sub process##argv 1 ((Array.length process##argv) - 1)
+      )
 
 (** {!Pervasives.sys_exit} *)
 let caml_sys_exit exit_code = 
   match [%external process] with 
   | None -> ()
   | Some x -> exit x exit_code
-
-let caml_sys_is_directory _s = 
-  raise @@ Failure "caml_sys_is_directory not implemented"
-
-(** Need polyfill to make cmdliner work 
-    {!Sys.is_directory} or {!Sys.file_exists} {!Sys.command} 
-*)
-let caml_sys_file_exists _s = 
-  raise @@ Failure "caml_sys_file_exists not implemented"

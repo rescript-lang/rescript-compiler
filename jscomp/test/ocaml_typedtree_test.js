@@ -37,6 +37,7 @@ var Caml_int64              = require("../../lib/js/caml_int64.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_format             = require("../../lib/js/caml_format.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_sys_fs             = require("../../lib/js/caml_sys_fs.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
 var CamlinternalFormat      = require("../../lib/js/camlinternalFormat.js");
@@ -229,9 +230,9 @@ function find_in_path_uncap(path, name) {
       var dir = param[0];
       var fullname = Filename.concat(dir, name);
       var ufullname = Filename.concat(dir, uname);
-      if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists not implemented by bucklescript yet\n")) {
+      if (Caml_sys_fs.caml_sys_file_exists(ufullname)) {
         return ufullname;
-      } else if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists not implemented by bucklescript yet\n")) {
+      } else if (Caml_sys_fs.caml_sys_file_exists(fullname)) {
         return fullname;
       } else {
         _param = param[1];
@@ -76913,7 +76914,7 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
     } else {
       var sourceintf = chop_extension_if_any(sourcefile) + interface_suffix[0];
       var mli_status = assume_no_mli[0];
-      if (mli_status === /* Mli_na */0 && Caml_missing_polyfill.not_implemented("caml_sys_file_exists not implemented by bucklescript yet\n") || mli_status === /* Mli_exists */1) {
+      if (mli_status === /* Mli_na */0 && Caml_sys_fs.caml_sys_file_exists(sourceintf) || mli_status === /* Mli_exists */1) {
         var intf_file;
         try {
           intf_file = find_in_path_uncap(load_path[0], modulename + ".cmi");

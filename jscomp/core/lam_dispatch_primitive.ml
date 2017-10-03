@@ -471,13 +471,17 @@ let translate (prim_name : string)
   | "caml_sys_time"
   | "caml_sys_random_seed"
   | "caml_sys_getenv"
-  | "caml_sys_system_command" 
   | "caml_sys_getcwd" (* check browser or nodejs *)
-  | "caml_sys_is_directory"
   | "caml_sys_exit"
-  (* | "caml_sys_file_exists" *)
     -> 
     call Js_runtime_modules.sys
+  | "caml_sys_is_directory"
+  | "caml_sys_file_exists"
+    ->
+    call Js_runtime_modules.sys_fs
+  | "caml_sys_system_command"
+    ->
+    call Js_runtime_modules.sys_system
   | "caml_lex_engine"
   | "caml_new_lex_engine"
     -> 

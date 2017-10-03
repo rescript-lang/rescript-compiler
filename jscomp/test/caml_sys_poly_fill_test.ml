@@ -8,6 +8,7 @@ let eq loc x y =
 
 let () =
 
+  (* test Sys.getenv *)
   eq __LOC__ "X" (
     Node_process.putEnvVar __FILE__ "X";
     let v = Sys.getenv __FILE__ in 
@@ -24,6 +25,46 @@ let () =
     Node_process.deleteEnvVar __FILE__ ;
     let v = try Sys.getenv __FILE__ with Not_found -> "Z" in 
     v
+  );
+
+  (* test Sys.is_directory *)
+  eq __LOC__ true (
+    Sys.is_directory "."
+  );
+  eq __LOC__ false (
+    Sys.is_directory "Makefile"
+  );
+  eq __LOC__ "sys_error" (
+    try
+      begin
+        ignore @@ Sys.is_directory "path_that_does_not_exist";
+        "no_error"
+      end
+    with
+    | Sys_error _e -> "sys_error"
+  );
+
+  (* test Sys.file_exists *)
+  eq __LOC__ true (
+    Sys.file_exists "."
+  );
+  eq __LOC__ false (
+    Sys.file_exists "path_that_does_not_exist"
+  );
+
+  (* test Sys.command *)
+  eq __LOC__ 0 (
+    Sys.command "true"
+  );
+  eq __LOC__ 0 (
+    (* make sure commands are interpreted by a shell *)
+    Sys.command "type true"
+  );
+  eq __LOC__ 1 (
+    Sys.command "false"
+  );
+  eq __LOC__ 127 (
+    Sys.command "not_a_real_command"
   )
 
 

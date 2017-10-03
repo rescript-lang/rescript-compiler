@@ -4,7 +4,7 @@ COMPILER=../bin/bsc.exe
 
 OTHERS= caml_array caml_string caml_bytes\
 	caml_obj caml_int64 \
-	caml_exceptions	caml_utils caml_sys caml_io\
+	caml_exceptions	caml_utils caml_sys caml_sys_fs caml_sys_system caml_io\
 	caml_float caml_lexer caml_parser caml_primitive\
 	caml_format caml_md5 caml_queue caml_hash caml_weak\
 	caml_backtrace caml_int32 caml_gc js_typed_array \
@@ -14,7 +14,8 @@ OTHERS= caml_array caml_string caml_bytes\
 
 SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js js_unsafe js_internal
 
-caml_sys.cmj: js_undefined.cmj
+caml_sys.cmj: js_undefined.cmj caml_array.cmj
+caml_sys_fs.cmj: js_primitive.cmj
 caml_oo.cmj : caml_array.cmj
 js_unsafe.cmj:js_unsafe.cmi js.cmj js.cmi
 js_unsafe.cmi js.cmj: js.cmi
