@@ -227,7 +227,7 @@ if (watch_mode) {
         console.log('Could be another process running in the background',
             '\nEither kill that process or delete the staled lock')
         if (potential_pid !== undefined && !isNaN(potential_pid)) {
-            console.error('Try run command: ', 'kill ', potential_pid)
+            console.error('Try run command: ', 'kill ', potential_pid, ' || rm -f .bsb.lock')
         }
 
 
