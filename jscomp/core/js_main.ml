@@ -102,9 +102,9 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    " Better error message combined with other tools "
   )
   :: 
-  ("-bs-re-error",
+  ("-bs-re-out",
     Arg.Unit Reason_outcome_printer_main.setup,
-   " Print compiler errors in Reason syntax"
+   " Print compiler output in Reason syntax"
   )
   :: 
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
