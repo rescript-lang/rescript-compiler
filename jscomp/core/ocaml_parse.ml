@@ -52,6 +52,7 @@ type valid_input =
   | Mlast    
   | Mliast 
   | Mlmap
+  | Cmi
   
 let check_suffix  name  = 
   if Filename.check_suffix name ".ml"
@@ -70,5 +71,7 @@ let check_suffix  name  =
     Mliast, Compenv.output_prefix name 
   else if Filename.check_suffix name ".mlmap"  then 
     Mlmap, Compenv.output_prefix name 
+  else if Filename.check_suffix name ".cmi" then 
+    Cmi, Compenv.output_prefix name
   else 
     raise(Arg.Bad("don't know what to do with " ^ name))

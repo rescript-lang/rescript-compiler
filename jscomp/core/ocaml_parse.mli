@@ -37,5 +37,5 @@ type valid_input =
   | Mlast    
   | Mliast 
   | Mlmap
-  
+  | Cmi
 val check_suffix :  string -> valid_input * string

@@ -29,6 +29,12 @@ let process_file ppf name =
     -> Js_implementation.implementation_mlast ppf name opref
   | Mlmap, opref 
     -> Js_implementation.implementation_map ppf name opref
+  | Cmi, _ 
+    ->
+      let {Cmi_format.cmi_sign } =  Cmi_format.read_cmi name in 
+      Printtyp.signature Format.std_formatter cmi_sign ; 
+      Format.pp_print_newline Format.std_formatter ()
+      
 
 let usage = "Usage: bsc <options> <files>\nOptions are:"
 
@@ -84,7 +90,7 @@ let define_variable s =
   | _ -> raise (Arg.Bad ("illegal definition: " ^ s))
 
   
-let buckle_script_flags =
+let buckle_script_flags : (string * Arg.spec * string) list =
   ("-bs-super-errors",
     Arg.Unit 
       (* needs to be set here instead of, say, setting a
