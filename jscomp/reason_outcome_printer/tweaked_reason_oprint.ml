@@ -251,6 +251,71 @@ and print_simple_out_type ppf =
     Otyp_class (ng, id, tyl) ->
       fprintf ppf "@[%s#%a%a@]" (if ng then "_" else "")
         print_ident id print_typargs tyl
+#if undefined BS_NO_COMPILER_PATCH then         
+  | Otyp_constr ( (Oide_dot ((Oide_dot (Oide_ident "Js", "Internal")),
+                             ("fn" | "meth" as name )) as id) ,
+                 ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
+    ->
+      (* Otyp_arrow*)
+      let make tys result =
+        if tys = [] then
+          Otyp_arrow ("", Otyp_constr (Oide_ident "unit", []),result)
+        else
+            match tys with
+          | [ Otyp_tuple tys as single] -> 
+              if variant = "Arity_1" then
+                Otyp_arrow ("", single, result)
+              else 
+                List.fold_right (fun x acc  -> Otyp_arrow("",x,acc) ) tys result
+          | [single] ->
+              Otyp_arrow ("", single, result)
+          | _ -> 
+              raise_notrace Not_found
+      in
+      begin match (make tys result) with
+      | exception _ ->
+          begin 
+            pp_open_box ppf 0;
+            print_typargs ppf tyl;
+            print_ident ppf id;
+            pp_close_box ppf ()
+          end
+      | res ->
+          begin match name  with
+          | "fn" -> 
+              fprintf ppf "@[<0>(%a@ [@bs])@]" print_out_type_1 res
+          | "meth" ->
+              fprintf ppf "@[<0>(%a@ [@bs.meth])@]" print_out_type_1 res
+          | _ -> assert false 
+          end
+      end
+  | Otyp_constr ((Oide_dot (Oide_dot (Oide_ident "Js", "Internal"), "meth_callback" ) as id) ,
+                 ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
+    ->
+      let make tys result =
+          match tys with
+          | [ Otyp_tuple tys as single ] -> 
+              if variant = "Arity_1" then Otyp_arrow ("", single, result)
+              else 
+                List.fold_right (fun x acc  -> Otyp_arrow("",x,acc) ) tys result
+          | [single] ->
+              Otyp_arrow ("", single, result)
+          | _ -> 
+              raise_notrace Not_found
+      in
+      begin match (make tys result) with
+      | exception _ ->
+          begin 
+            pp_open_box ppf 0;
+            print_typargs ppf tyl;
+            print_ident ppf id;
+            pp_close_box ppf ()
+          end
+      | res ->
+          fprintf ppf "@[<0>(%a@ [@bs.this])@]" print_out_type_1 res
+
+      end
+#end         
   | Otyp_constr (id, tyl) ->
       pp_open_box ppf 0;
       print_ident ppf id;
@@ -497,30 +562,30 @@ and print_out_sig_item ppf =
           | Orec_first -> "type"
           | Orec_next  -> "and")
         ppf td
-#if defined BS_NO_COMPILER_PATCH then
-  | Osig_value {oval_name; oval_type; oval_prims; oval_attributes} ->
-#else
-  | Osig_value(oval_name, oval_type, oval_prims) ->
-#end
-    let kwd = if oval_prims = [] then "let" else "external" in
+  | Osig_value(name, ty, prims) ->
+    let kwd = if prims = [] then "let" else "external" in
     let pr_prims ppf =
       function
         [] -> ()
       | s :: sl ->
           fprintf ppf "@ = \"%s\"" s;
-          List.iter (fun s -> fprintf ppf "@ \"%s\"" s) sl
+          List.iter (fun s -> 
+(* TODO: in general, we should print bs attributes, some attributes like
+  bs.splice does need it *)
+#if undefined BS_NO_COMPILER_PATCH then
+    let len = String.length s in
+    if len >= 3 && s.[0] = 'B' && s.[1] = 'S' && s.[2] = ':' then
+      fprintf ppf "@ \"BS-EXTERNAL\"" 
+    else
+      fprintf ppf "@ \"%s\"" s
+#else    
+      fprintf ppf "@ \"%s\"" s
+#end               
+    ) sl
     in
-#if defined BS_NO_COMPILER_PATCH then
-    fprintf ppf "@[<2>%s %a :@ %a%a%a@]" kwd value_ident oval_name
-        !out_type oval_type pr_prims oval_prims
-        (fun ppf -> List.iter (fun a -> fprintf ppf "@ [@@@@%s]" a.oattr_name))
-        oval_attributes
-  | Osig_ellipsis ->
-    fprintf ppf "..."
-#else
-    fprintf ppf "@[<2>%s %a :@ %a%a@]" kwd value_ident oval_name
-        !out_type oval_type pr_prims oval_prims
-#end
+    fprintf ppf "@[<2>%s %a :@ %a%a@]" kwd value_ident name !out_type 
+      ty pr_prims prims
+
 
 and print_out_type_decl kwd ppf td =
   let print_constraints ppf =
