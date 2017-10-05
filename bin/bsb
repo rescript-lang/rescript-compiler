@@ -88,6 +88,7 @@ if (watch_mode) {
             process.on('SIGUSR1', onExit)
             process.on('SIGUSR2', onExit)
             process.on('SIGTERM', onExit)
+            process.on('SIGHUP', onExit)
             process.on('uncaughtException', onExit)
 
             return true
@@ -166,8 +167,25 @@ if (watch_mode) {
     function needRebuild() {
         return reasons_to_rebuild.length != 0
     }
+    var error_is_tty = process.stderr.isTTY
+    var std_is_tty = process.stdout.isTTY
+    function logFinish() {
+        if (std_is_tty) {
+            console.log("\x1b[36m>>>> Finish compiling\x1b[0m")
+        } else {
+            console.log(">>>> Finish compiling")
+        }
+    }
+    function logStart() {
+        if (std_is_tty) {
+            console.log("\x1b[36m>>>> Start compiling\x1b[0m");
+        } else {
+            console.log(">>>> Start compiling");
+        }
+
+    }
     function build_finished_callback() {
-        console.log(">>>> Finish compiling")
+        logFinish()
         releaseBuild()
         if (needRebuild()) {
             build()
@@ -176,14 +194,41 @@ if (watch_mode) {
             watch_build(files)
         }
     }
+    var sub_config = { stdio: ['ignore', 'inherit', 'pipe'] }
+
+
+    /**
+     * TODO: how to make it captured by vscode
+     * @param output {string}
+     * @param highlight {string}
+     */
+    function error_output(output, highlight) {
+        if (error_is_tty && highlight) {
+            process.stderr.write(output.replace(highlight, '\x1b[1;31m' + highlight + '\x1b[0m'))
+        } else {
+            process.stderr.write(output)
+        }
+    }
+    // Note this function filters the error output
+    // it relies on the fact that ninja will merege stdout and stderr
+    // of the compiler output, if it does not
+    // then we should have a way to not filter the compiler output
     function build() {
         if (acquireBuild()) {
-            console.log(">>>> Start compiling");
-            console.log("Rebuilding since", reasons_to_rebuild);
+            logStart()
+            if (reasons_to_rebuild.length === 0) {
+                console.log("Rebuilding since just get started")
+            } else {
+                console.log("Rebuilding since", reasons_to_rebuild)
+            }
             reasons_to_rebuild = [];
-            child_process
-                .spawn(bsb_exe, [], { stdio: 'inherit' })
-                .on('exit', build_finished_callback);
+            var p = child_process
+                .spawn(bsb_exe, [], sub_config);
+            p.on('exit', build_finished_callback)
+            p.stderr
+                .setEncoding('utf8')
+                .on('data', function (s) { error_output(s, 'ninja: error') })
+
         }
     }
     /**
@@ -210,28 +255,56 @@ if (watch_mode) {
 
     }
 
-
-    // Initialization
-    if (acquireLockFile()) {
-        watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
-        build();
-    } else {
-        var potential_pid;
+    /**
+     * 
+     * @param potential_pid {number}
+     */
+    function existPid(potential_pid) {
         try {
-            var content = fs.readFileSync(lockFileName, 'ascii')
-            potential_pid = parseInt(content)
+            return process.kill(potential_pid, 0)
         } catch (err) {
-            // ignore   
+            return false
         }
-        console.error('Error: could not acquire lockfile', lockFileName)
-        console.log('Could be another process running in the background',
-            '\nEither kill that process or delete the staled lock')
-        if (potential_pid !== undefined && !isNaN(potential_pid)) {
-            console.error('Try run command: ', 'kill ', potential_pid, ' || rm -f .bsb.lock')
-        }
-
-
-        process.exit(2)
     }
+
+    // Initialization and get locker file
+    while (true) {
+        if (acquireLockFile()) {
+            break;
+        } else {
+            var potential_pid;
+            try {
+                var content = fs.readFileSync(lockFileName, 'ascii')
+                potential_pid = parseInt(content)
+            } catch (err) {
+                // ignore   
+            }
+            var validPid = potential_pid !== undefined && !isNaN(potential_pid)
+
+            if (validPid && !existPid(potential_pid)) {
+                console.log('Stale file detected : ', lockFileName)
+                try {
+                    fs.unlinkSync(lockFileName)
+                } catch (err) {
+
+                }
+                console.log('Retry:')
+                continue;
+            } else {
+
+                error_output('Error: could not acquire lockfile', 'Error')
+                console.error(lockFileName)
+
+                console.log('Could be another process running in the background',
+                    '\nEither kill that process or delete the staled lock')
+                if (validPid) {
+                    console.error('Try run command: ', '`kill ', potential_pid, ' || rm -f .bsb.lock`')
+                }
+                process.exit(2)
+            }
+        }
+    }
+    watchers.push({ watcher: fs.watch(bsconfig, on_change), dir: bsconfig });
+    build()
 
 }
