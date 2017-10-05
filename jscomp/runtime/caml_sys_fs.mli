@@ -26,3 +26,17 @@
 val caml_sys_is_directory : string -> bool
 
 val caml_sys_file_exists : string -> bool
+
+(* this must match the definition in ../stdlib/pervasives.ml *)
+type open_flag =
+  | Open_rdonly
+  | Open_wronly
+  | Open_append
+  | Open_creat
+  | Open_trunc
+  | Open_excl
+  | Open_binary
+  | Open_text
+  | Open_nonblock
+
+val caml_sys_open : string -> open_flag list -> int -> int

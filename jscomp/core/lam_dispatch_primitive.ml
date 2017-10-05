@@ -477,6 +477,7 @@ let translate (prim_name : string)
     call Js_runtime_modules.sys
   | "caml_sys_is_directory"
   | "caml_sys_file_exists"
+  | "caml_sys_open"
     ->
     call Js_runtime_modules.sys_fs
   | "caml_sys_system_command"
@@ -802,7 +803,6 @@ let translate (prim_name : string)
   | "caml_md5_chan"
   | "caml_hash_univ_param"
   | "caml_sys_close"
-  | "caml_sys_open"
   | "caml_ml_input"
   | "caml_ml_input_scan_line"
   | "caml_ml_input_int"

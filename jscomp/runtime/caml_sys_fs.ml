@@ -23,9 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type fsStats
+
 external statSync : string -> fsStats = "" [@@bs.module "fs"]
+
 external existsSync : string -> Js.boolean = "" [@@bs.module "fs"]
+
 external isDirectory : fsStats -> unit -> Js.boolean = "" [@@bs.send]
+
 external error_code : Js_exn.t -> string Js.undefined = "code" [@@bs.get]
 
 let caml_sys_is_directory p =
@@ -38,3 +42,57 @@ let caml_sys_is_directory p =
 
 let caml_sys_file_exists p =
   Js.to_bool @@ existsSync p
+
+
+(* this must match the definition in ../stdlib/pervasives.ml *)
+type open_flag =
+  | Open_rdonly
+  | Open_wronly
+  | Open_append
+  | Open_creat
+  | Open_trunc
+  | Open_excl
+  | Open_binary
+  | Open_text
+  | Open_nonblock
+
+external fs_O_RDONLY : int = "O_RDONLY" [@@bs.module "fs"] [@@bs.scope "constants"]
+external fs_O_WRONLY : int = "O_WRONLY" [@@bs.module "fs"] [@@bs.scope "constants"]
+external fs_O_RDWR : int = "O_RDWR" [@@bs.module "fs"] [@@bs.scope "constants"]
+external fs_O_CREAT : int = "O_CREAT" [@@bs.module "fs"] [@@bs.scope "constants"]
+external fs_O_EXCL : int = "O_EXCL" [@@bs.module "fs"] [@@bs.scope "constants"]
+external fs_O_TRUNC : int = "O_TRUNC" [@@bs.module "fs"] [@@bs.scope "constants"]
+external fs_O_APPEND : int = "O_APPEND" [@@bs.module "fs"] [@@bs.scope "constants"]
+external fs_O_NONBLOCK : int = "O_NONBLOCK" [@@bs.module "fs"] [@@bs.scope "constants"]
+
+let int_of_open_flag = function
+  | Open_rdonly -> fs_O_RDONLY
+  | Open_wronly -> fs_O_WRONLY
+  | Open_append -> fs_O_APPEND
+  | Open_creat -> fs_O_CREAT
+  | Open_trunc -> fs_O_TRUNC
+  | Open_excl -> fs_O_EXCL
+  | Open_nonblock -> fs_O_NONBLOCK
+    (* Open_binary and Open_text don't seem to have node equivalents *)
+  | Open_binary
+  | Open_text -> 0
+
+(* let int_of_open_flags flags = List.fold_left (fun acc f -> acc lor (int_of_open_flag f)) 0 flags *)
+[@@@warning "-20"]
+let int_of_open_flags : open_flag list -> int = [%bs.raw {|
+  function (int_of_open_flag) {
+    return function (flags) {
+      var res = 0;
+      while (flags instanceof Array) {
+        res |= int_of_open_flag(flags[0]);
+        flags = flags[1];
+      }
+      return res;
+    };
+  }
+|}] int_of_open_flag
+
+external fs_openSync : string -> int -> int -> int = "openSync" [@@bs.module "fs"]
+
+let caml_sys_open (file : string) (flags : open_flag list) (mode : int) : int =
+  fs_openSync file (int_of_open_flags flags) mode

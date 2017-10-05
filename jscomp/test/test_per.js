@@ -6,6 +6,7 @@ var Caml_obj                 = require("../../lib/js/caml_obj.js");
 var Caml_sys                 = require("../../lib/js/caml_sys.js");
 var Caml_format              = require("../../lib/js/caml_format.js");
 var Caml_string              = require("../../lib/js/caml_string.js");
+var Caml_sys_fs              = require("../../lib/js/caml_sys_fs.js");
 var Caml_exceptions          = require("../../lib/js/caml_exceptions.js");
 var Caml_missing_polyfill    = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions  = require("../../lib/js/caml_builtin_exceptions.js");
@@ -152,8 +153,8 @@ var stdout = Caml_io.caml_ml_open_descriptor_out(1);
 
 var stderr = Caml_io.caml_ml_open_descriptor_out(2);
 
-function open_out_gen(_, _$1, _$2) {
-  return Caml_io.caml_ml_open_descriptor_out(Caml_missing_polyfill.not_implemented("caml_sys_open not implemented by bucklescript yet\n"));
+function open_out_gen(mode, perm, name) {
+  return Caml_io.caml_ml_open_descriptor_out(Caml_sys_fs.caml_sys_open(name, mode, perm));
 }
 
 function open_out(name) {
@@ -262,8 +263,8 @@ function close_out_noerr(oc) {
   }
 }
 
-function open_in_gen(_, _$1, _$2) {
-  return Caml_io.caml_ml_open_descriptor_in(Caml_missing_polyfill.not_implemented("caml_sys_open not implemented by bucklescript yet\n"));
+function open_in_gen(mode, perm, name) {
+  return Caml_io.caml_ml_open_descriptor_in(Caml_sys_fs.caml_sys_open(name, mode, perm));
 }
 
 function open_in(name) {
