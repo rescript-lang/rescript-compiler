@@ -39,7 +39,7 @@ type t = {
 let warning_number =  "-40+6+7+27+32..39+44+45"
 
 let default_warning_flag = 
-  "-w -40+6+7+27+32..39+44+45"
+  "-w -30-40+6+7+27+32..39+44+45"
 
 let warn_error = " -warn-error A"
 let warning_to_string no_dev 
