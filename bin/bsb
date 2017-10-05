@@ -227,6 +227,7 @@ if (watch_mode) {
             p.on('exit', build_finished_callback)
             p.stderr
                 .setEncoding('utf8')
+                // @ts-ignore
                 .on('data', function (s) { error_output(s, 'ninja: error') })
 
         }
