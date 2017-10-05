@@ -2,6 +2,10 @@ let ((>::),
      (>:::)) = OUnit.((>::),(>:::))
 
 let (=~) = OUnit.assert_equal
+let printer_int_list = fun xs -> Format.asprintf "%a" 
+      (Format.pp_print_list  Format.pp_print_int
+      ~pp_sep:Format.pp_print_space 
+      ) xs 
 let suites = 
   __FILE__
   >:::
@@ -12,12 +16,44 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal
-        (Ext_list.flat_map_acc (fun x -> [x;x]) [3;4] [1;2]) [1;1;2;2;3;4] 
+        (Ext_list.flat_map_append 
+          (fun x -> [x;x])  [1;2] [3;4]) [1;1;2;2;3;4] 
     end;
+    __LOC__ >:: begin fun _ -> 
+    
+     let (=~)  = OUnit.assert_equal ~printer:printer_int_list in 
+     (Ext_list.flat_map (fun x -> [succ x ]) []) =~ [];
+     (Ext_list.flat_map (fun x -> [x;succ x ]) [1]) =~ [1;2];
+     (Ext_list.flat_map (fun x -> [x;succ x ]) [1;2]) =~ [1;2;2;3];
+     (Ext_list.flat_map (fun x -> [x;succ x ]) [1;2;3]) =~ [1;2;2;3;3;4]
+    end
+    ;
+    __LOC__ >:: begin fun _ ->
+      OUnit.assert_equal 
+      (Ext_list.stable_group (=)
+        [1;2;3;4;3]
+      )
+      ([[1];[2];[4];[3;3]])
+    end
+    ;
+    __LOC__ >:: begin fun _ -> 
+      let (=~)  = OUnit.assert_equal ~printer:printer_int_list in 
+      let f b _v = if b then 1 else 0 in 
+      Ext_list.map_last f [] =~ [];
+      Ext_list.map_last f [0] =~ [1];
+      Ext_list.map_last f [0;0] =~ [0;1];
+      Ext_list.map_last f [0;0;0] =~ [0;0;1];
+      Ext_list.map_last f [0;0;0;0] =~ [0;0;0;1];
+      Ext_list.map_last f [0;0;0;0;0] =~ [0;0;0;0;1];
+      Ext_list.map_last f [0;0;0;0;0;0] =~ [0;0;0;0;0;1];
+      Ext_list.map_last f [0;0;0;0;0;0;0] =~ [0;0;0;0;0;0;1];
+    end
+    ;
     __LOC__ >:: begin fun _ ->
       OUnit.assert_equal (
-        Ext_list.flat_map_acc (fun x -> if x mod 2 = 0 then [true] else [])
-          [false;false] [1;2]
+        Ext_list.flat_map_append 
+          (fun x -> if x mod 2 = 0 then [true] else [])
+          [1;2] [false;false] 
       )  [true;false;false]
     end;
     __LOC__ >:: begin fun _ -> 
@@ -32,13 +68,28 @@ let suites =
     end;
 
     __LOC__ >:: begin fun _ -> 
-      let (a,b) = Ext_list.take 3 [1;2;3;4;5;6] in 
+      let (a,b) = Ext_list.split_at 3 [1;2;3;4;5;6] in 
       OUnit.assert_equal (a,b)
         ([1;2;3],[4;5;6]);
-      OUnit.assert_equal (Ext_list.take 1 [1])
-        ([1],[])  
+      OUnit.assert_equal (Ext_list.split_at 1 [1])
+        ([1],[])  ;
+      OUnit.assert_equal (Ext_list.split_at 2 [1;2;3])
+        ([1;2],[3])  
     end;
-
+    __LOC__ >:: begin fun _ -> 
+      let printer = fun (a,b) -> 
+        Format.asprintf "([%a],%d)"
+          (Format.pp_print_list Format.pp_print_int ) a  
+          b 
+      in 
+      let (=~) = OUnit.assert_equal ~printer in 
+      (Ext_list.split_at_last [1;2;3;4;5;6;7;8])
+      =~
+      ([1;2;3;4;5;6;7],8);
+      (Ext_list.split_at_last [1;2;3;4;5;6;7;])
+      =~
+      ([1;2;3;4;5;6],7)
+    end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_equal (Ext_list.assoc_by_int None 1 [2,"x"; 3,"y"; 1, "z"]) "z"
     end;
@@ -85,9 +136,9 @@ let suites =
               (fun fmt (b,l) ->
                  Format.fprintf fmt "(%b,%a)" b 
                    (Format.pp_print_list
-                    ~pp_sep:(fun fmt () -> 
-                      Format.pp_print_space fmt ()
-                    )
+                      ~pp_sep:(fun fmt () -> 
+                          Format.pp_print_space fmt ()
+                        )
                       Format.pp_print_int
                    ) l
 

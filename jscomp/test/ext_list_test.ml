@@ -257,11 +257,11 @@ let rec drop n h =
   else 
     drop (n - 1) (List.tl h)
 
-let rec for_all_ret  p = function
+let rec find_first_not  p = function
   | [] -> None
   | a::l -> 
     if p a 
-    then for_all_ret p l
+    then find_first_not p l
     else Some a 
 
 let rec for_all_opt  p = function

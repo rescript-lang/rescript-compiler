@@ -1,5 +1,5 @@
-(* Copyright (C) 2017- Authors of BuckleScript
- *
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,32 +17,20 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let (//) = Ext_path.combine
+type 'a t = 'a list ref
 
-let sourcedirs_meta = ".sourcedirs.json"
+val create_ref_empty : unit -> 'a t
 
-let generate_sourcedirs_meta cwd (res : Bsb_parse_sources.t) = 
-  let ochan = open_out_bin (cwd // Bsb_config.lib_bs // sourcedirs_meta) in
-  let v = 
-    Ext_json_noloc.(
-      kvs [
-        "dirs" ,
-      arr (Ext_array.of_list_map ( fun (x : Bsb_parse_sources.file_group) -> 
-      str x.dir 
-      ) res.files ) ;
-      "generated" ,
-      arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_parse_sources.file_group) -> 
-      Ext_list.flat_map_append 
-      (fun x -> Ext_list.map str x.Bsb_parse_sources.output)   
-      x.generators acc
-      )  [] res.files 
-      ]
-     ) in 
-  Ext_json_noloc.to_channel ochan v ;
-  close_out ochan
+val ref_top : 'a t -> 'a 
+
+val ref_empty : 'a t -> bool
+
+val ref_push : 'a -> 'a t -> unit
+
+val ref_pop : 'a t -> 'a 

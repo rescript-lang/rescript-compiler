@@ -56,6 +56,44 @@ let rec map f l =
     y1::y2::y3::y4::y5::(map f tail)
 
 
+let rec map_last f l =
+  match l with
+  | [] ->
+    []
+  | [x1] ->
+    let y1 = f true x1 in
+    [y1]
+  | [x1; x2] ->
+    let y1 = f false x1 in
+    let y2 = f true x2 in
+    [y1; y2]
+  | [x1; x2; x3] ->
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f true x3 in
+    [y1; y2; y3]
+  | [x1; x2; x3; x4] ->
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f false x3 in
+    let y4 = f true x4 in
+    [y1; y2; y3; y4]
+  | x1::x2::x3::x4::tail ->
+    (* make sure that tail is not empty *)    
+    let y1 = f false x1 in
+    let y2 = f false x2 in
+    let y3 = f false x3 in
+    let y4 = f false x4 in
+    y1::y2::y3::y4::(map_last f tail)
+
+let rec last xs =
+  match xs with 
+  | [x] -> x 
+  | _ :: tl -> last tl 
+  | [] -> invalid_arg "Ext_list.last"    
+
+
+
 let rec append l1 l2 = 
   match l1 with
   | [] -> l2
@@ -211,6 +249,72 @@ let rec same_length xs ys =
   | _::xs, _::ys -> same_length xs ys 
   | _, _ -> false 
 
+
+let init n f = 
+  match n with 
+  | 0 -> []
+  | 1 -> 
+    let a0 = f 0 in  
+    [a0]
+  | 2 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    [a0; a1]
+  | 3 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    [a0; a1; a2]
+  | 4 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    let a3 = f 3 in 
+    [a0; a1; a2; a3]
+  | 5 -> 
+    let a0 = f 0 in 
+    let a1 = f 1 in 
+    let a2 = f 2 in 
+    let a3 = f 3 in 
+    let a4 = f 4 in  
+    [a0; a1; a2; a3; a4]
+  | _ ->
+    Array.to_list (Array.init n f)
+
+let rec small_split_at n acc l = 
+  if n <= 0 then List.rev acc , l 
+  else 
+    match l with 
+    | x::xs -> small_split_at (n - 1) (x ::acc) xs 
+    | _ -> invalid_arg "Ext_list.split_at"
+
+let split_at n l = 
+  small_split_at n [] l 
+
+let rec split_at_last_aux acc x = 
+  match x with 
+  | [] -> invalid_arg "Ext_list.split_at_last"
+  | [ x] -> List.rev acc, x
+  | y0::ys -> split_at_last_aux (y0::acc) ys   
+
+let split_at_last (x : 'a list) = 
+  match x with 
+  | [] -> invalid_arg "Ext_list.split_at_last"
+  | [a0] -> 
+    [], a0
+  | [a0;a1] -> 
+    [a0], a1  
+  | [a0;a1;a2] -> 
+    [a0;a1], a2 
+  | [a0;a1;a2;a3] -> 
+    [a0;a1;a2], a3 
+  | [a0;a1;a2;a3;a4] ->
+    [a0;a1;a2;a3], a4 
+  | a0::a1::a2::a3::a4::rest  ->  
+    let rev, last = split_at_last_aux [] rest
+    in 
+    a0::a1::a2::a3::a4::  rev , last
+
 (**
    can not do loop unroll due to state combination
 *)  
@@ -235,74 +339,32 @@ let rec filter_map2 (f: 'a -> 'b -> 'c option) xs ys =
     end
   | _ -> invalid_arg "Ext_list.filter_map2"
 
-let filter_map2i (f: int ->  'a -> 'b -> 'c option) xs ys = 
-  let rec aux i xs ys = 
-    match xs,ys with 
-    | [],[] -> []
-    | u::us, v :: vs -> 
-      begin match f i u v with 
-        | None -> aux (i + 1) us vs (* idea: rec f us vs instead? *)
-        | Some z -> z :: aux (i + 1) us vs
-      end
-    | _ -> invalid_arg "Ext_list.filter_map2i" in
-  aux 0 xs ys
 
 let rec rev_map_append  f l1 l2 =
   match l1 with
   | [] -> l2
   | a :: l -> rev_map_append f l (f a :: l2)
 
-let flat_map2 f lx ly = 
-  let rec aux acc lx ly = 
-    match lx, ly with 
-    | [], [] 
-      -> List.rev acc
-    | x::xs, y::ys 
-      ->  aux (List.rev_append (f x y) acc) xs ys
-    | _, _ -> invalid_arg "Ext_list.flat_map2" in
-  aux [] lx ly
 
+let rec (+>) l1 l2 =
+  match l1 with
+    [] -> l2
+  | a :: l -> l  +> (a :: l2)
+
+(** It is not worth loop unrolling, 
+    it is already tail-call, and we need to be careful 
+    about evaluation order when unroll
+*)
 let rec flat_map_aux f acc append lx =
   match lx with
-  | [] -> List.rev_append acc append
-  | y::ys -> flat_map_aux f (List.rev_append ( f y)  acc ) append ys 
+  | [] -> acc +> append
+  | a0::rest -> flat_map_aux f (f a0 +> acc ) append rest 
 
 let flat_map f lx =
   flat_map_aux f [] [] lx
 
-let flat_map_acc f append lx = flat_map_aux f [] append lx  
-
-let rec map2_last f l1 l2 =
-  match (l1, l2) with
-  | ([], []) -> []
-  | [u], [v] -> [f true u v ]
-  | (a1::l1, a2::l2) -> let r = f false  a1 a2 in r :: map2_last f l1 l2
-  | (_, _) -> invalid_arg "Ext_list.map2_last"
-
-let rec map_last f l1 =
-  match l1 with
-  | [] -> []
-  | [u]-> [f true u ]
-  | a1::l1 -> let r = f false  a1 in r :: map_last f l1
-
-
-
-let init n f = 
-  Array.to_list (Array.init n f)
-
-let take n l = 
-  let arr = Array.of_list l in 
-  let arr_length =  Array.length arr in
-  if arr_length  < n then invalid_arg "Ext_list.take"
-  else (Array.to_list (Array.sub arr 0 n ), 
-        Array.to_list (Array.sub arr n (arr_length - n)))
-
-(* let try_take n l = 
-   let arr = Array.of_list l in 
-   let arr_length =  Array.length arr in
-   if arr_length  <= n then 
-    l,  arr_length, []
-   else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n))) *)
+let flat_map_append f lx append  =
+  flat_map_aux f [] append lx  
 
 
 let rec length_compare l n = 
@@ -334,76 +396,59 @@ let rec length_larger_than_n n xs ys =
 
 
 
-let exclude_tail (x : 'a list) = 
-  let rec aux acc x = 
-    match x with 
-    | [] -> invalid_arg "Ext_list.exclude_tail"
-    | [ x ] ->  x, List.rev acc
-    | y0::ys -> aux (y0::acc) ys in
-  aux [] x
 
-(* For small list, only need partial equality 
-   {[
-     group (=) [1;2;3;4;3]
-     ;;
-     - : int list list = [[3; 3]; [4]; [2]; [1]]
-                         # group (=) [];;
-     - : 'a list list = []
-   ]}
-*)
-let rec group (cmp : 'a -> 'a -> bool) (lst : 'a list) : 'a list list =
+let rec group (eq : 'a -> 'a -> bool) lst =
   match lst with 
   | [] -> []
   | x::xs -> 
-    aux cmp x (group cmp xs )
+    aux eq x (group eq xs )
 
-and aux cmp (x : 'a)  (xss : 'a list list) : 'a list list = 
+and aux eq (x : 'a)  (xss : 'a list list) : 'a list list = 
   match xss with 
   | [] -> [[x]]
-  | y::ys -> 
-    if cmp x (List.hd y) (* cannot be null*) then
+  | (y0::_ as y)::ys -> (* cannot be empty *) 
+    if eq x y0 then
       (x::y) :: ys 
     else
-      y :: aux cmp x ys                                 
+      y :: aux eq x ys                                 
+  | _ :: _ -> assert false    
 
-let stable_group cmp lst =  group cmp lst |> List.rev  
+let stable_group eq lst =  group eq lst |> List.rev  
 
 let rec drop n h = 
   if n < 0 then invalid_arg "Ext_list.drop"
-  else if n = 0 then h 
-  else if h = [] then invalid_arg "Ext_list.drop"
+  else
+  if n = 0 then h 
   else 
-    drop (n - 1) (List.tl h)
+    match h with 
+    | [] ->
+      invalid_arg "Ext_list.drop"
+    | _ :: tl ->   
+      drop (n - 1) tl
 
-let rec for_all_ret  p = function
+let rec find_first_not  p = function
   | [] -> None
   | a::l -> 
     if p a 
-    then for_all_ret p l
+    then find_first_not p l
     else Some a 
 
 
+let rec rev_iter f l = 
+  match l with
+  | [] -> ()    
+  | [x1] ->
+    f x1 
+  | [x1; x2] ->
+    f x2 ; f x1 
+  | [x1; x2; x3] ->
+    f x3 ; f x2 ; f x1 
+  | [x1; x2; x3; x4] ->
+    f x4; f x3; f x2; f x1 
+  | x1::x2::x3::x4::x5::tail ->
+    rev_iter f tail;
+    f x5; f x4 ; f x3; f x2 ; f x1
 
-let fold f l init = 
-  List.fold_left (fun acc i -> f  i init) init l 
-
-let rev_map_acc  acc f l = 
-  let rec rmap_f accu = function
-    | [] -> accu
-    | a::l -> rmap_f (f a :: accu) l
-  in
-  rmap_f acc l
-
-
-
-
-
-let rec rev_iter f xs =
-  match xs with    
-  | [] -> ()
-  | y :: ys -> 
-    rev_iter f ys ;
-    f y      
 
 let rec for_all2_no_exn p l1 l2 = 
   match (l1, l2) with
@@ -412,94 +457,60 @@ let rec for_all2_no_exn p l1 l2 =
   | (_, _) -> false
 
 
-let rec find_no_exn p = function
-  | [] -> None
-  | x :: l -> if p x then Some x else find_no_exn p l
-
-
 let rec find_opt p = function
   | [] -> None
   | x :: l -> 
     match  p x with 
     | Some _ as v  ->  v
-    | None -> find_opt p l
+    | None -> find_opt p l 
 
 
-let split_map 
-    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
-  let rec aux bs cs xs =
-    match xs with 
-    | [] -> List.rev bs, List.rev cs 
-    | u::us -> 
-      let b,c =  f u in aux (b::bs) (c ::cs) us in 
 
-  aux [] [] xs 
+let rec split_map f l = 
+  match l with
+  | [] ->
+    [],[]
+  | [x1] ->
+    let a0,b0 = f x1 in
+    [a0],[b0]
+  | [x1; x2] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    [a1;a2],[b1;b2]
+  | [x1; x2; x3] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    [a1;a2;a3], [b1;b2;b3]
+  | [x1; x2; x3; x4] ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    let a4,b4 = f x4 in
+    [a1;a2;a3;a4], [b1;b2;b3;b4] 
+  | x1::x2::x3::x4::x5::tail ->
+    let a1,b1 = f x1 in
+    let a2,b2 = f x2 in
+    let a3,b3 = f x3 in
+    let a4,b4 = f x4 in
+    let a5,b5 = f x5 in
+    let ass,bss = split_map f tail in 
+    a1::a2::a3::a4::a5::ass,
+    b1::b2::b3::b4::b5::bss
 
 
-(*
-   {[
-     reduce_from_right (-) [1;2;3];;
-     - : int = 2
-               # reduce_from_right (-) [1;2;3; 4];;
-     - : int = -2
-                # reduce_from_right (-) [1];;
-     - : int = 1
-               # reduce_from_right (-) [1;2;3; 4; 5];;
-     - : int = 3
-   ]} 
-*)
-let reduce_from_right fn lst = 
-  begin match List.rev lst with
-    | last :: rest -> 
-      List.fold_left  (fun x y -> fn y x) last rest 
-    | _ -> invalid_arg "Ext_list.reduce" 
-  end
 let reduce_from_left fn lst = 
   match lst with 
   | first :: rest ->  List.fold_left fn first rest 
   | _ -> invalid_arg "Ext_list.reduce_from_left"
 
 
-type 'a t = 'a list ref
-
-let create_ref_empty () = ref []
-
-let ref_top x = 
-  match !x with 
-  | y::_ -> y 
-  | _ -> invalid_arg "Ext_list.ref_top"
-
-let ref_empty x = 
-  match !x with [] -> true | _ -> false 
-
-let ref_push x refs = 
-  refs := x :: !refs
-
-let ref_pop refs = 
-  match !refs with 
-  | [] -> invalid_arg "Ext_list.ref_pop"
-  | x::rest -> 
-    refs := rest ; 
-    x     
-
-let rev_except_last xs =
-  let rec aux acc xs =
-    match xs with
-    | [ ] -> invalid_arg "Ext_list.rev_except_last"
-    | [ x ] -> acc ,x
-    | x :: xs -> aux (x::acc) xs in
-  aux [] xs   
-
 let sort_via_array cmp lst =
   let arr = Array.of_list lst  in
   Array.sort cmp arr;
   Array.to_list arr
 
-let rec last xs =
-  match xs with 
-  | [x] -> x 
-  | _ :: tl -> last tl 
-  | [] -> invalid_arg "Ext_list.last"
+
 
 
 let rec assoc_by_string def (k : string) lst = 
@@ -522,16 +533,13 @@ let rec assoc_by_int def (k : int) lst =
     if k1 = k then v1 else 
       assoc_by_int def k rest     
 
-(** `modulo [1;2;3;4] [1;2;3]` => [1;2;3], Some [4] `
-    modulo [1;2;3] [1;2;3;4] => [1;2;3] None 
-    modulo [1;2;3] [1;2;3] => [1;2;3] Some []
-*)
 
+let rec nth_aux l n =
+  match l with
+  | [] -> None
+  | a::l -> if n = 0 then Some a else nth_aux l (n-1)
 
 let nth_opt l n =
-  if n < 0 then None else
-    let rec nth_aux l n =
-      match l with
-      | [] -> None
-      | a::l -> if n = 0 then Some a else nth_aux l (n-1)
-    in nth_aux l n
+  if n < 0 then None 
+  else
+    nth_aux l n

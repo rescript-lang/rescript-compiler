@@ -125,7 +125,7 @@ let values_of_export
 let get_effect (meta : Lam_stats.t) maybe_pure external_ids = 
   match maybe_pure with
   | None ->  
-    Ext_option.bind ( Ext_list.for_all_ret 
+    Ext_option.bind ( Ext_list.find_first_not 
                         (fun (id : Lam_module_ident.t) -> 
                            Lam_compile_env.query_and_add_if_not_exist id 
                              (Has_env meta.env )

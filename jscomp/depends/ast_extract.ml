@@ -219,9 +219,9 @@ let collect_from_main
             (*   dirname, excludes *)
             (* | `Dir_with_excludes (dirname, dir_excludes) -> *)
             dirname,
-            Ext_list.append (Ext_list.flat_map 
+             (Ext_list.flat_map_append 
               (fun x -> [x ^ ".ml" ; x ^ ".mli" ])
-              dir_excludes)  excludes
+              dir_excludes  excludes) 
         in 
         Array.fold_left (fun acc source_file -> 
             if (Ext_string.ends_with source_file ".ml" ||
