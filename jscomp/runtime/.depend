@@ -7,7 +7,8 @@ caml_int64.cmj : js_typed_array.cmj js_float.cmj caml_utils.cmj \
 caml_exceptions.cmj : caml_builtin_exceptions.cmj caml_exceptions.cmi
 caml_utils.cmj : caml_utils.cmi
 caml_sys.cmj : caml_array.cmj caml_sys.cmi
-caml_sys_fs.cmj : js_undefined.cmj js_exn.cmj js.cmj caml_sys_fs.cmi
+caml_sys_fs.cmj : js_undefined.cmj js_exn.cmj js.cmj caml_io.cmj \
+    caml_sys_fs.cmi
 caml_sys_system.cmj : js_null.cmj js.cmj caml_sys_system.cmi
 caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj
 caml_float.cmj : js_typed_array.cmj js_float.cmj caml_float.cmi
@@ -48,7 +49,7 @@ caml_int64.cmi :
 caml_exceptions.cmi : caml_builtin_exceptions.cmi
 caml_utils.cmi :
 caml_sys.cmi :
-caml_sys_fs.cmi :
+caml_sys_fs.cmi : caml_io.cmj
 caml_sys_system.cmi :
 caml_float.cmi :
 caml_lexer.cmi :

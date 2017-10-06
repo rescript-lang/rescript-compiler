@@ -149,12 +149,12 @@ function $at(l1, l2) {
 
 var stdin = Caml_io.caml_ml_open_descriptor_in(0);
 
-var stdout = Caml_io.caml_ml_open_descriptor_out(1);
+var stdout = Caml_sys_fs.caml_ml_open_descriptor_out(1);
 
-var stderr = Caml_io.caml_ml_open_descriptor_out(2);
+var stderr = Caml_sys_fs.caml_ml_open_descriptor_out(2);
 
 function open_out_gen(mode, perm, name) {
-  return Caml_io.caml_ml_open_descriptor_out(Caml_sys_fs.caml_sys_open(name, mode, perm));
+  return Caml_sys_fs.caml_ml_open_descriptor_out(Caml_sys_fs.caml_sys_open(name, mode, perm));
 }
 
 function open_out(name) {
@@ -245,7 +245,7 @@ function output_value(_, _$1) {
 
 function close_out(oc) {
   Caml_io.caml_ml_flush(oc);
-  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+  return Caml_sys_fs.caml_ml_close_channel(oc);
 }
 
 function close_out_noerr(oc) {
@@ -256,7 +256,7 @@ function close_out_noerr(oc) {
     
   }
   try {
-    return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    return Caml_sys_fs.caml_ml_close_channel(oc);
   }
   catch (exn$1){
     return /* () */0;
@@ -392,9 +392,9 @@ function input_line(chan) {
   };
 }
 
-function close_in_noerr() {
+function close_in_noerr(ic) {
   try {
-    return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    return Caml_sys_fs.caml_ml_close_channel(ic);
   }
   catch (exn){
     return /* () */0;

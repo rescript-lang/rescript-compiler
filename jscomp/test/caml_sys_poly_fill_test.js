@@ -4,6 +4,7 @@ var Mt                      = require("./mt.js");
 var Block                   = require("../../lib/js/block.js");
 var Js_exn                  = require("../../lib/js/js_exn.js");
 var Caml_sys                = require("../../lib/js/caml_sys.js");
+var Filename                = require("../../lib/js/filename.js");
 var Caml_sys_fs             = require("../../lib/js/caml_sys_fs.js");
 var Node_process            = require("../../lib/js/node_process.js");
 var Caml_sys_system         = require("../../lib/js/caml_sys_system.js");
@@ -87,6 +88,8 @@ eq("File \"caml_sys_poly_fill_test.ml\", line 59, characters 5-12", 0, Caml_sys_
 eq("File \"caml_sys_poly_fill_test.ml\", line 63, characters 5-12", 1, Caml_sys_system.caml_sys_system_command("false"));
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 66, characters 5-12", 127, Caml_sys_system.caml_sys_system_command("not_a_real_command"));
+
+eq("File \"caml_sys_poly_fill_test.ml\", line 70, characters 5-12", 0, (Filename.open_temp_file(/* None */0, /* None */0, "pre.", ".txt"), 0));
 
 Mt.from_pair_suites("caml_sys_poly_fill_test.ml", suites[0]);
 

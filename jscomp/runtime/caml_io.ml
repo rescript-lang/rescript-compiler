@@ -35,11 +35,13 @@ let stdin = Js_undefined.empty
 let stderr = Js_undefined.empty
 
 type out_channel  = {
+  fd : int;
   mutable buffer :  string;
   output :   out_channel  -> string -> unit 
 }
 
 let stdout = {
+  fd = 1;
   buffer = "";
   output = (fun _ s ->
     let v =Bs_string.length s - 1 in
@@ -52,6 +54,7 @@ let stdout = {
 }
 
 let stderr = {
+  fd = 2;
   buffer = "";
   output = fun _ s ->
     let v =Bs_string.length s - 1 in     
@@ -62,8 +65,6 @@ let stderr = {
 
 let caml_ml_open_descriptor_in (i : int) : in_channel = 
   raise (Failure "caml_ml_open_descriptor_in not implemented")  
-let caml_ml_open_descriptor_out (i : int)  : out_channel = 
-  raise (Failure "caml_ml_open_descriptor_out not implemented")
 
 (*TODO: we need flush all buffers in the end *)
 let caml_ml_flush (oc : out_channel)  : unit = 

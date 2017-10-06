@@ -245,9 +245,9 @@ function find_in_path_uncap(path, name) {
   };
 }
 
-function remove_file() {
+function remove_file(filename) {
   try {
-    return Caml_missing_polyfill.not_implemented("caml_sys_remove not implemented by bucklescript yet\n");
+    return Caml_sys_fs.caml_sys_remove(filename);
   }
   catch (raw_exn){
     var exn = Js_exn.internalToOCamlException(raw_exn);
@@ -5485,7 +5485,7 @@ function read_cmi(filename) {
   try {
     var buffer = Pervasives.really_input_string(ic, cmi_magic_number.length);
     if (buffer !== cmi_magic_number) {
-      Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+      Caml_sys_fs.caml_ml_close_channel(ic);
       var pre_len = cmi_magic_number.length - 3 | 0;
       if ($$String.sub(buffer, 0, pre_len) === $$String.sub(cmi_magic_number, 0, pre_len)) {
         var msg = buffer < cmi_magic_number ? "an older" : "a newer";
@@ -5504,25 +5504,25 @@ function read_cmi(filename) {
       }
     }
     var cmi = input_cmi(ic);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_sys_fs.caml_ml_close_channel(ic);
     return cmi;
   }
   catch (raw_exn){
     var exn = Js_exn.internalToOCamlException(raw_exn);
     if (exn === Caml_builtin_exceptions.end_of_file) {
-      Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+      Caml_sys_fs.caml_ml_close_channel(ic);
       throw [
             $$Error$1,
             /* Corrupted_interface */Block.__(2, [filename])
           ];
     } else if (exn[0] === Caml_builtin_exceptions.failure) {
-      Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+      Caml_sys_fs.caml_ml_close_channel(ic);
       throw [
             $$Error$1,
             /* Corrupted_interface */Block.__(2, [filename])
           ];
     } else if (exn[0] === $$Error$1) {
-      Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+      Caml_sys_fs.caml_ml_close_channel(ic);
       throw [
             $$Error$1,
             exn[1]
@@ -12615,7 +12615,7 @@ function save_signature(sg, modname, filename) {
     ];
     var crc = output_cmi(filename$1, oc, cmi);
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_sys_fs.caml_ml_close_channel(oc);
     var comps = components_of_module(empty, identity, /* Pident */Block.__(0, [/* record */[
               /* stamp */0,
               /* name */modname$1,
@@ -12641,7 +12641,7 @@ function save_signature(sg, modname, filename) {
   }
   catch (exn){
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_sys_fs.caml_ml_close_channel(oc);
     remove_file(filename$1);
     throw exn;
   }
@@ -23873,7 +23873,7 @@ function save_cmt(filename, modname, binary_annots, sourcefile, initial_env, sg)
     ];
     output_cmt(oc, cmt);
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_sys_fs.caml_ml_close_channel(oc);
   }
   return clear(/* () */0);
 }

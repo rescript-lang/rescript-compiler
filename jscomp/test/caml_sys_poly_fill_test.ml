@@ -65,6 +65,11 @@ let () =
   );
   eq __LOC__ 127 (
     Sys.command "not_a_real_command"
+  );
+
+  eq __LOC__ 0 (
+    let _tf = Filename.open_temp_file "pre." ".txt" in
+    0
   )
 
 

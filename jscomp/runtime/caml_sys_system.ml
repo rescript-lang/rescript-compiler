@@ -26,7 +26,7 @@ type spawnResult
 
 external spawnSync :
   string
-  -> (_ [@bs.as {json| {"shell": true} |json}])
+  -> (_ [@bs.as {json| {"shell": true, "stdio": "inherit"} |json}])
   -> spawnResult
   = "" [@@bs.module "child_process"]
 

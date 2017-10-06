@@ -44,6 +44,12 @@ let caml_sys_file_exists p =
   Js.to_bool @@ existsSync p
 
 
+external fs_unlinkSync : string -> 'a Js_undefined.t = "unlinkSync" [@@bs.module "fs"]
+
+let caml_sys_remove (path : string) : unit =
+  ignore @@ fs_unlinkSync path
+
+
 (* this must match the definition in ../stdlib/pervasives.ml *)
 type open_flag =
   | Open_rdonly
@@ -96,3 +102,21 @@ external fs_openSync : string -> int -> int -> int = "openSync" [@@bs.module "fs
 
 let caml_sys_open (file : string) (flags : open_flag list) (mode : int) : int =
   fs_openSync file (int_of_open_flags flags) mode
+
+
+external fs_writeSync : int -> string -> string -> int = "writeSync" [@@bs.module "fs"]
+
+let caml_ml_open_descriptor_out (fd : int)  : Caml_io.out_channel =
+  Caml_io.{
+    fd = fd;
+    buffer = "";
+    output = (fun _ s ->
+      ignore @@ fs_writeSync fd s "binary")
+  }
+
+
+external fs_closeSync : int -> 'a Js_undefined.t = "closeSync" [@@bs.module "fs"]
+
+let caml_ml_close_channel (oc : Caml_io.out_channel) : unit =
+  ignore @@ fs_closeSync Caml_io.(oc.fd)
+

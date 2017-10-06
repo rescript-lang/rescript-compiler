@@ -15,7 +15,7 @@ var Caml_bytes              = require("../../lib/js/caml_bytes.js");
 var Caml_int32              = require("../../lib/js/caml_int32.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
-var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
+var Caml_sys_fs             = require("../../lib/js/caml_sys_fs.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var dbg = [/* true */1];
@@ -1890,7 +1890,7 @@ function main() {
       top(/* () */0);
       elfgen(oc);
       Caml_io.caml_ml_flush(oc);
-      return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+      return Caml_sys_fs.caml_ml_close_channel(oc);
   }
 }
 
