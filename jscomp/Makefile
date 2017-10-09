@@ -180,6 +180,7 @@ EXT_SRCS = 	literals \
 	ext_js_regex\
 	string_hashtbl\
 	ext_list\
+	ext_stack\
 	ext_color\
 	ext_map\
 	ext_marshal ext_option \

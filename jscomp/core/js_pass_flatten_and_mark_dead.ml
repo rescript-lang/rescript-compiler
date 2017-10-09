@@ -229,8 +229,8 @@ let subst_map name = object (self)
         | _ ->  
           (* self#add_substitue ident e ; *)
           S.block @@
-          (Ext_list.rev_map_acc [original_statement] (fun (id,v) -> 
-               S.define ~kind:Strict id v)  bindings  )
+          (Ext_list.rev_map_append  (fun (id,v) -> 
+               S.define ~kind:Strict id v)  bindings [original_statement] )
       end
     | _ -> super#statement v 
 

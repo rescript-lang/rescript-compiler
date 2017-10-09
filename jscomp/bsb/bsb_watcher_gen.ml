@@ -38,7 +38,9 @@ let generate_sourcedirs_meta cwd (res : Bsb_parse_sources.t) =
       ) res.files ) ;
       "generated" ,
       arr @@ Array.of_list @@ List.fold_left (fun acc (x : Bsb_parse_sources.file_group) -> 
-      Ext_list.flat_map_acc (fun x -> Ext_list.map str x.Bsb_parse_sources.output) acc  x.generators 
+      Ext_list.flat_map_append 
+      (fun x -> Ext_list.map str x.Bsb_parse_sources.output)   
+      x.generators acc
       )  [] res.files 
       ]
      ) in 

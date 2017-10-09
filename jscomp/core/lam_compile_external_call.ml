@@ -334,8 +334,8 @@ let translate_ffi
   | Js_send { name ; pipe = true ; splice = js_splice; js_send_scopes = scopes  }
     -> (* splice should not happen *)
     (* assert (js_splice = false) ;  *)
-    let self, args = Ext_list.exclude_tail args in
-    let self_type, arg_types = Ext_list.exclude_tail arg_types in
+    let args, self = Ext_list.split_at_last args in
+    let arg_types, self_type = Ext_list.split_at_last arg_types in
     let args, eff = assemble_args call_loc ffi  js_splice arg_types args in
     add_eff eff @@
     let self = translate_scoped_access scopes self in 

@@ -630,7 +630,7 @@ function drop(_n, _h) {
   };
 }
 
-function for_all_ret(p, _param) {
+function find_first_not(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
@@ -1013,7 +1013,7 @@ exports.group                = group;
 exports.aux                  = aux;
 exports.stable_group         = stable_group;
 exports.drop                 = drop;
-exports.for_all_ret          = for_all_ret;
+exports.find_first_not       = find_first_not;
 exports.for_all_opt          = for_all_opt;
 exports.fold                 = fold;
 exports.rev_map_acc          = rev_map_acc;

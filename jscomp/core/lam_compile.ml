@@ -210,7 +210,7 @@ and compile_external_field_apply
                    else x in (* Relax when x = 0 *)
                  if  len >= x 
                  then
-                   let first_part, continue =  Ext_list.take x args in
+                   let first_part, continue =  Ext_list.split_at x args in
                    aux
                      (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
                      (Determin (a, rest, b))

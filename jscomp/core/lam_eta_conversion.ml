@@ -156,7 +156,7 @@ let transform_under_supply n loc status fn args =
                 if len = arity then
                   compile_lambda cxt fn 
                 else if len > arity then 
-                  let params, rest  = Ext_list.take arity args  in 
+                  let params, rest  = Ext_list.split_at arity args  in 
                   compile_lambda cxt 
                     (Lam.function_ 
                        ~arity
@@ -257,7 +257,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
               ~function_kind:Curried
               ~params:extra_args 
               ~body:(
-                let first_args, rest_args = Ext_list.take from extra_args in 
+                let first_args, rest_args = Ext_list.split_at from extra_args in 
                 Lam.apply (Lam.apply new_fn (Ext_list.map Lam.var first_args) loc App_ml_full) (Ext_list.map Lam.var rest_args) loc App_na ) in 
           begin match wrapper with 
             | None -> cont 
@@ -278,7 +278,7 @@ let unsafe_adjust_to_arity loc ~to_:(to_:int) ?from
               {params; body; function_kind } (* TODO check arity = List.length params in debug mode *)
             -> 
             let arity = to_ in 
-            let extra_outer_args, extra_inner_args = Ext_list.take arity params in 
+            let extra_outer_args, extra_inner_args = Ext_list.split_at arity params in 
             Lam.function_ 
               ~arity 
               ~function_kind:Curried
