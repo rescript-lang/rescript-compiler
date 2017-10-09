@@ -3523,7 +3523,7 @@ let rec last xs =
 
 
 
-let rec append l1 l2 = 
+let rec append_aux l1 l2 = 
   match l1 with
   | [] -> l2
   | [a0] -> a0::l2
@@ -3531,7 +3531,13 @@ let rec append l1 l2 =
   | [a0;a1;a2] -> a0::a1::a2::l2
   | [a0;a1;a2;a3] -> a0::a1::a2::a3::l2
   | [a0;a1;a2;a3;a4] -> a0::a1::a2::a3::a4::l2
-  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append rest l2
+  | a0::a1::a2::a3::a4::rest -> a0::a1::a2::a3::a4::append_aux rest l2
+
+let append l1 l2 =   
+  match l2 with 
+  | [] -> l1 
+  | _ -> append_aux l1 l2  
+
 
 let rec map_append  f l1 l2 =   
   match l1 with
@@ -3775,10 +3781,10 @@ let rec rev_map_append  f l1 l2 =
   | a :: l -> rev_map_append f l (f a :: l2)
 
 
-let rec (+>) l1 l2 =
+let rec rev_append l1 l2 =
   match l1 with
     [] -> l2
-  | a :: l -> l  +> (a :: l2)
+  | a :: l -> rev_append l   (a :: l2)
 
 (** It is not worth loop unrolling, 
     it is already tail-call, and we need to be careful 
@@ -3786,8 +3792,8 @@ let rec (+>) l1 l2 =
 *)
 let rec flat_map_aux f acc append lx =
   match lx with
-  | [] -> acc +> append
-  | a0::rest -> flat_map_aux f (f a0 +> acc ) append rest 
+  | [] -> rev_append acc  append
+  | a0::rest -> flat_map_aux f (rev_append (f a0)  acc ) append rest 
 
 let flat_map f lx =
   flat_map_aux f [] [] lx
@@ -11108,6 +11114,8 @@ let suites =
           b 
       in 
       let (=~) = OUnit.assert_equal ~printer in 
+      (Ext_list.split_at_last [1;2;3])
+      =~ ([1;2],3);
       (Ext_list.split_at_last [1;2;3;4;5;6;7;8])
       =~
       ([1;2;3;4;5;6;7],8);

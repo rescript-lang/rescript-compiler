@@ -83,6 +83,8 @@ let suites =
           b 
       in 
       let (=~) = OUnit.assert_equal ~printer in 
+      (Ext_list.split_at_last [1;2;3])
+      =~ ([1;2],3);
       (Ext_list.split_at_last [1;2;3;4;5;6;7;8])
       =~
       ([1;2;3;4;5;6;7],8);
