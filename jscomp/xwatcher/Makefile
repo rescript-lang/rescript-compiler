@@ -23,7 +23,7 @@ all: $(TESTS)
 
 bundle: all
 	rollup --silent -f cjs xwatcher_current.js -o ../../scripts/watcher.js
-	rollup --silent -f cjs xwatcher.js -o ../bin/bsb_watcher.future.js
+	# rollup --silent -f cjs xwatcher.js -o ../bin/bsb_watcher.future.js
 clean::
 	rm -f *.cm*
 	rm -f *~

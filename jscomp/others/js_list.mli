@@ -66,4 +66,6 @@ val countBy : ('a -> bool [@bs]) -> 'a list -> int
 
 val init : int -> (int -> 'a [@bs]) -> 'a t 
 
+val toVector : 'a t -> 'a Js_vector.t 
+
 val equal : ('a -> 'a -> bool [@bs]) -> 'a list -> 'a list -> bool
