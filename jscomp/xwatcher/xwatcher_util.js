@@ -58,8 +58,6 @@ function makeEventObj() {
         };
 }
 
-makeEventObj(/* () */0);
-
 function makeLock() {
   return {
           isBuilding: /* false */0,
@@ -138,4 +136,4 @@ export {
   makeWatcher    ,
   
 }
-/*  Not a pure module */
+/* fs Not a pure module */

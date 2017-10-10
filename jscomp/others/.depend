@@ -30,7 +30,7 @@ js_null_undefined.cmi :
 js_types.cmi :
 js_json.cmi : js_types.cmi js_string.cmj js_dict.cmi
 js_vector.cmi :
-js_list.cmi :
+js_list.cmi : js_vector.cmi
 js_option.cmi :
 js_result.cmi :
 bs_dyn.cmi :

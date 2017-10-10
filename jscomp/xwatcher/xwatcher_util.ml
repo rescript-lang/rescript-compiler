@@ -33,7 +33,7 @@ let makeEventObj () : eventObj =
     method currentEvents () = self##events
   end [@bs]
 
-let basic = makeEventObj ()
+(* let basic = makeEventObj () *)
 
 type t 
 

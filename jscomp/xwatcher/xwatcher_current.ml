@@ -55,6 +55,7 @@ let () =
            "xwatcher";
            "bsb";
            "common";
+           "super_errors";
            "."
         |];
 
