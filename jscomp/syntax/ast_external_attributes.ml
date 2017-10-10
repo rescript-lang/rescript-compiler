@@ -624,7 +624,7 @@ let handle_attributes
            (if i = 0 && splice  then
               match arg_type with 
               | Array  -> ()
-              | _ ->  Location.raise_errorf ~loc "[@@bs.splice] expect last type to array");
+              | _ ->  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
            ({ Ast_arg.arg_label  ; 
               arg_type 
             } :: arg_type_specs,
