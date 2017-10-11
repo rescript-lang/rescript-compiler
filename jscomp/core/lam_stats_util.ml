@@ -68,20 +68,18 @@ let rec get_arity
   (*   end *)
   | Lprim {primitive = Pfield (n,_); 
            args =  [ Lglobal_module id  ]; _} ->
-    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
-      ~not_found:(fun _ -> assert false)
-      ~found:(fun x -> match x.arity with Single x -> x | Submodule _ -> NA )
+    begin match (Lam_compile_env.cached_find_ml_id_pos id n meta.env).arity with 
+    | Single x -> x 
+    | Submodule _ -> NA
+    end
   | Lprim {primitive = Pfield (m,_); 
            args =  [ Lprim{primitive = Pfield(n,_); 
             args = [ Lglobal_module id]}  ]
            ; _} ->
-    Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
-      ~not_found:(fun _ -> assert false)
-      ~found:(fun x -> match x.arity with 
+    begin match (Lam_compile_env.cached_find_ml_id_pos id n meta.env).arity with 
       | Submodule subs -> subs.(m)
-      | Single _ -> NA
-       )
-
+      | Single _ -> NA       
+  end
       
   | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
   | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)

@@ -52,6 +52,9 @@ test.exe:all_ounit_tests.mli all_ounit_tests.ml
 test:test.exe
 	./test.exe	
 
-all: bsppx.exe bspp.exe bsdep.exe bsc.exe bspack.exe bsb.exe bsb_helper.exe refmt.exe reactjs_jsx_ppx_2.exe reactjs_jsx_ppx_3.exe
+all: bsc.exe bsb.exe bsb_helper.exe refmt.exe reactjs_jsx_ppx_2.exe reactjs_jsx_ppx_3.exe
+# bsppx.exe bspp.exe bsdep.exe 
+# bspack.exe
+
 
 .PHONY: test

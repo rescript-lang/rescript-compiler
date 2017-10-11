@@ -67,18 +67,7 @@ type default_case =
   | Complete
   | NonComplete
 
-(* let lam_of_pos ( (id : Ident.t), pos ) env = 
-   Lam_compile_env.find_and_add_if_not_exist (id,pos) env
-   ~not_found:(fun _ -> assert false)
-   ~found:(fun x ->
-    match x with 
-    | {id = {name = "Sys"; }; name = "os_type"} -> 
-      Lam.const (Const_string (Sys.os_type))
-    | {closed_lambda = Some lam} when Lam_util.not_function lam 
-      -> lam
-    | { id ; name } ->   
 
-   ) *)
 
 (* f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos)) *)
 (* E.index m (pos + 1) *) (** shift by one *)
@@ -119,23 +108,20 @@ let rec
     (pos : int)
     env : Js_output.t = 
   let f =   Js_output.handle_name_tail cxt.st cxt.should_return lam in    
-  Lam_compile_env.find_and_add_if_not_exist (id,pos) env 
-    ~not_found:(fun id -> 
-        assert false
-      )
-    ~found:(fun {id; name; closed_lambda } ->
-        match id, name, closed_lambda with 
-        | {name = "Sys"; _}, "os_type" , _
+  match Lam_compile_env.cached_find_ml_id_pos id pos env  with 
+  | {id; name; closed_lambda } ->
+    match id, name, closed_lambda with 
+    | {name = "Sys"; _}, "os_type" , _
 
-          ->  f (E.str Sys.os_type) 
-        | _, _, Some lam 
-          when Lam_util.not_function lam
+      ->  f (E.str Sys.os_type) 
+    | _, _, Some lam 
+      when Lam_util.not_function lam
 
-          ->  
-          compile_lambda cxt lam
-        | _ -> 
-          f (E.ml_var_dot id name)
-      ) 
+      ->  
+      compile_lambda cxt lam
+    | _ -> 
+      f (E.ml_var_dot id name)
+
 (* TODO: how nested module call would behave,
    In the future, we should keep in track  of if 
    it is fully applied from [Lapply]
@@ -169,73 +155,73 @@ and compile_external_field_apply
     args_lambda
     (id : Ident.t)
     (pos : int) env : Js_output.t = 
-  Lam_compile_env.find_and_add_if_not_exist 
-    (id,pos) env ~not_found:(fun _ -> assert false)
-    ~found:(fun {id; name;arity; closed_lambda ; _} -> 
-        let args_code, args = 
-          Ext_list.fold_right 
-            (fun (x : Lam.t) (args_code, args)  ->
-               match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
-               | {block = a; value = Some b} -> 
-                 (Ext_list.append a args_code), (b :: args )
-               | _ -> assert false
-            ) args_lambda ([], []) in
+  match Lam_compile_env.cached_find_ml_id_pos 
+          id pos env with 
+  | {id; name;arity; closed_lambda ; _} -> 
+    let args_code, args = 
+      Ext_list.fold_right 
+        (fun (x : Lam.t) (args_code, args)  ->
+           match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} x with
+           | {block = a; value = Some b} -> 
+             (Ext_list.append a args_code), (b :: args )
+           | _ -> assert false
+        ) args_lambda ([], []) in
 
-        match closed_lambda with 
-        | Some (Lfunction{ params; body; _}) 
-          when Ext_list.same_length params args_lambda -> 
-          (* TODO: serialize it when exporting to save compile time *)
-          let (_, param_map)  = 
-            Lam_closure.is_closed_with_map Ident_set.empty params body in
-          compile_lambda cxt 
-            (Lam_beta_reduce.propogate_beta_reduce_with_map cxt.meta param_map
-               params body args_lambda)
-        | _ ->  
-          Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@ 
-          (match id, name,  args with 
-           | {name = "Pervasives"; _}, "print_endline", ([ _ ] as args) ->  
-             E.seq (E.dump Log args) E.unit
-           | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
-             E.seq (E.dump Error args) E.unit
-           | _ -> 
-             let rec aux (acc : J.expression)
-                 (arity : Lam_arity.t) args (len : int)  =
-               match arity, len with
-               | _, 0 -> 
-                 acc (** All arguments consumed so far *)
-               | Determin (a, (x,_) :: rest, b), len   ->
-                 let x = 
-                   if x = 0 
-                   then 1 
-                   else x in (* Relax when x = 0 *)
-                 if  len >= x 
-                 then
-                   let first_part, continue =  Ext_list.split_at x args in
-                   aux
-                     (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
-                     (Determin (a, rest, b))
-                     continue (len - x)
-                 else (* GPR #1423 *)
-                 if List.for_all Js_analyzer.is_simple_no_side_effect_expression args then 
-                   let params = Ext_list.init (x - len)
-                       (fun _ -> Ext_ident.create "param") in
-                   E.ocaml_fun params 
-                     [S.return (E.call ~info:{arity=Full; call_info=Call_ml}
-                                  acc (Ext_list.append args @@ Ext_list.map E.var params))]
-                 else E.call ~info:Js_call_info.dummy acc args
-               (* alpha conversion now? --
-                  Since we did an alpha conversion before so it is not here
-               *)
-               | Determin (a, [], b ), _ ->
-                 (* can not happen, unless it's an exception ? *)
-                 E.call ~info:Js_call_info.dummy acc args
-               | NA, _ ->
-                 E.call ~info:Js_call_info.dummy acc args
-             in
-             aux (E.ml_var_dot id name) 
-               (match arity with Single x -> x | Submodule _ -> NA)
-               args (List.length args ))
-      )
+    match closed_lambda with 
+    | Some (Lfunction{ params; body; _}) 
+      when Ext_list.same_length params args_lambda -> 
+      (* TODO: serialize it when exporting to save compile time *)
+      let (_, param_map)  = 
+        Lam_closure.is_closed_with_map Ident_set.empty params body in
+      compile_lambda cxt 
+        (Lam_beta_reduce.propogate_beta_reduce_with_map cxt.meta param_map
+           params body args_lambda)
+    | _ ->  
+      Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@ 
+      (match id, name,  args with 
+       | {name = "Pervasives"; _}, "print_endline", ([ _ ] as args) ->  
+         E.seq (E.dump Log args) E.unit
+       | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
+         E.seq (E.dump Error args) E.unit
+       | _ -> 
+         let rec aux (acc : J.expression)
+             (arity : Lam_arity.t) args (len : int)  =
+           match arity, len with
+           | _, 0 -> 
+             acc (** All arguments consumed so far *)
+           | Determin (a, (x,_) :: rest, b), len   ->
+             let x = 
+               if x = 0 
+               then 1 
+               else x in (* Relax when x = 0 *)
+             if  len >= x 
+             then
+               let first_part, continue =  Ext_list.split_at x args in
+               aux
+                 (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
+                 (Determin (a, rest, b))
+                 continue (len - x)
+             else (* GPR #1423 *)
+             if List.for_all Js_analyzer.is_simple_no_side_effect_expression args then 
+               let params = Ext_list.init (x - len)
+                   (fun _ -> Ext_ident.create "param") in
+               E.ocaml_fun params 
+                 [S.return (E.call ~info:{arity=Full; call_info=Call_ml}
+                              acc (Ext_list.append args @@ Ext_list.map E.var params))]
+             else E.call ~info:Js_call_info.dummy acc args
+           (* alpha conversion now? --
+              Since we did an alpha conversion before so it is not here
+           *)
+           | Determin (a, [], b ), _ ->
+             (* can not happen, unless it's an exception ? *)
+             E.call ~info:Js_call_info.dummy acc args
+           | NA, _ ->
+             E.call ~info:Js_call_info.dummy acc args
+         in
+         aux (E.ml_var_dot id name) 
+           (match arity with Single x -> x | Submodule _ -> NA)
+           args (List.length args ))
+
 
 and  compile_let let_kind (cxt : Lam_compile_context.t) id (arg : Lam.t) : Js_output.t =
   compile_lambda {cxt with st = Declare (let_kind, id); should_return = ReturnFalse } arg 

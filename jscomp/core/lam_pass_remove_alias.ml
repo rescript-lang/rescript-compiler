@@ -143,10 +143,7 @@ let simplify_alias
                       _} as l1;
              args; loc ; status} ->
       begin
-        Lam_compile_env.find_and_add_if_not_exist (ident,index) meta.env
-          ~not_found:(fun _ -> assert false)
-          ~found:(fun i ->
-              match i with
+             match  Lam_compile_env.cached_find_ml_id_pos ident index meta.env with                   
               | {closed_lambda=Some Lfunction{params; body; _} } 
                 (** be more cautious when do cross module inlining *)
                 when
@@ -166,7 +163,7 @@ let simplify_alias
                   meta params body args
               | _ -> 
                 Lam.apply (simpl l1) (Ext_list.map simpl args) loc status
-            )
+            
 
       end
     (* Function inlining interact with other optimizations...
