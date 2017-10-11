@@ -38,7 +38,7 @@ type path = string
 
 
 type module_info = {
-  signature :  Types.signature ;
+  signature :  Ocaml_types.t ;
   pure : bool 
 }
 
@@ -50,7 +50,7 @@ type _ t =
 type ident_info = {
   id : Ident.t;
   name : string;
-  signature : Types.signature;
+  signature : Ocaml_types.t;
   arity : Js_cmj_format.arity;
   closed_lambda : Lam.t option 
 }  

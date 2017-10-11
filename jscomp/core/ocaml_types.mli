@@ -29,22 +29,20 @@
 
 
 
-(** Utilities for quering typing inforaation from {!Env.t}, this part relies
+(** Utilities for quering typing information from {!Env.t}, this part relies
     on compiler API
 *)
 
+type t
 
-val get_name : Types.signature -> int -> string
+val empty : t 
+val length : t -> int 
+val get_name : t -> int -> string
 
 
 (* Input path is a global module 
     TODO: it should be fine for local module*)
 val find_serializable_signatures_by_path :
-  Ident.t -> Env.t -> Types.signature option
-
-
-(* val find_name : *)
-(*   Ident.t -> int -> Env.t -> string option *)
-
+  Ident.t -> Env.t -> t option
 
 

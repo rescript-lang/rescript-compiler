@@ -22,8 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Types.signature
 
-
+let empty  = []
+let length  = List.length 
 let name_of_signature_item (x : Types.signature_item )=
   match x with 
   | Sig_value (i,_) 
@@ -50,15 +52,14 @@ let serializable_signature (x : Types.signature_item) =
 
 
 
-let filter_serializable_signatures signature 
-  : Types.signature = 
+let filter_serializable_signatures signature  : t  = 
   List.filter serializable_signature signature
   
 (* Input path is a global module 
     TODO: it should be fine for local module
 *)
 let find_serializable_signatures_by_path v (env : Env.t) 
-  : Types.signature option = 
+  : t option = 
   match Env.find_module (Pident v) env with 
   | exception Not_found -> None 
   | {md_type = Mty_signature signature; _} -> 
@@ -76,7 +77,7 @@ let rec dump_summary fmt (x : Env.summary) =
   | _ -> ()
 
 (** Used in [ Lglobal_module] *)
-let get_name  (serializable_sigs : Types.signature) (pos : int) = 
+let get_name  (serializable_sigs : t) (pos : int) = 
   Ident.name (name_of_signature_item (List.nth  serializable_sigs  pos))
 
 
