@@ -47,8 +47,8 @@ let obj_property_no_need_quot s =
     match String.unsafe_get s 0 with 
     | '$' | '_'
     | 'a'..'z'| 'A' .. 'Z' ->
-      Ext_string.for_all_range
-        ~start:1 ~finish:(len - 1) s
+      Ext_string.for_all_from  s
+        1 
         (function 
           | 'a'..'z'|'A'..'Z'
           | '$' | '_' 

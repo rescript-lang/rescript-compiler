@@ -29,19 +29,23 @@
 
 
 
-(** Extension to the standard library [String] module, avoid locale sensitivity *) 
+(** Extension to the standard library [String] module, fixed some bugs like
+    avoiding locale sensitivity *) 
+
+(** default is false *)    
+val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
 
 
+(** remove whitespace letters ('\t', '\n', ' ') on both side*)
 val trim : string -> string 
 
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-(** default is false *)
 
+(** default is false *)
 val split : ?keep_empty:bool -> string -> char -> string list
-(** default is false *)
 
-val quick_split_by_ws : string -> string list 
 (** split by space chars for quick scripting *)
+val quick_split_by_ws : string -> string list 
+
 
 
 val starts_with : string -> string -> bool
@@ -55,6 +59,8 @@ val ends_with_index : string -> string -> int
 val ends_with : string -> string -> bool
 
 (**
+  [ends_with_then_chop name ext]
+  @example:
    {[
      ends_with_then_chop "a.cmj" ".cmj"
      "a"
@@ -66,10 +72,16 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
-(** the range is [start, finish]
+(**
+  [for_all_from  s start p]
+  if [start] is negative, it raises,
+  if [start] is too large, it returns true
 *)
-val for_all_range : 
-  string -> start:int -> finish:int -> (char -> bool) -> bool 
+val for_all_from:
+  string -> 
+  int -> 
+  (char -> bool) -> 
+  bool 
 
 val for_all : (char -> bool) -> string -> bool
 
@@ -79,6 +91,10 @@ val repeat : int -> string -> string
 
 val equal : string -> string -> bool
 
+(**
+  [find ~start ~sub s]
+  returns [-1] if not found
+*)
 val find : ?start:int -> sub:string -> string -> int
 
 val contain_substring : string -> string -> bool 
@@ -87,13 +103,10 @@ val non_overlap_count : sub:string -> string -> int
 
 val rfind : sub:string -> string -> int
 
+(** [tail_from s 1]
+  return a substring from offset 1 (inclusive)
+*)
 val tail_from : string -> int -> string
-
-val digits_of_str : string -> offset:int -> int -> int
-
-val starts_with_and_number : string -> offset:int -> string -> int
-
-val unsafe_concat_with_length : int -> string -> string list -> string
 
 
 (** returns negative number if not found *)
@@ -107,15 +120,7 @@ type check_result =
 val is_valid_source_name :
    string -> check_result
 
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
+
 
 
 
@@ -157,5 +162,3 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
-(** return [Some xx] means the original *)
-(* val capitalize_ascii_opt : string -> string option *)

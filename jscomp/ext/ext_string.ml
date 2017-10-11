@@ -156,10 +156,11 @@ let rec unsafe_for_all_range s ~start ~finish p =
   p (String.unsafe_get s start) && 
   unsafe_for_all_range s ~start:(start + 1) ~finish p
 
-let for_all_range s ~start ~finish p = 
+let for_all_from s start  p = 
   let len = String.length s in 
-  if start < 0 || finish >= len then invalid_arg "Ext_string.for_all_range"
-  else unsafe_for_all_range s ~start ~finish p 
+  if start < 0  then invalid_arg "Ext_string.for_all_from"
+  else unsafe_for_all_range s ~start ~finish:(len - 1) p 
+  
 
 let for_all (p : char -> bool) s =   
   unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
@@ -240,69 +241,7 @@ let tail_from s x =
   if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
   else String.sub s x (len - x)
 
-
-(**
-   {[ 
-     digits_of_str "11_js" 2 == 11     
-   ]}
-*)
-let digits_of_str s ~offset x = 
-  let rec aux i acc s x  = 
-    if i >= x then acc 
-    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
-  aux 0 0 s x 
-
-
-
-(*
-   {[
-     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
-     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
-     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
-     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
-     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
-     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
-   ]}
-*)
-let starts_with_and_number s ~offset beg =
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-  let finish_delim = offset + beg_len in 
-
-  if finish_delim >  s_len  then -1 
-  else 
-    let i = ref offset  in
-    while !i <  finish_delim
-          && String.unsafe_get s !i =
-             String.unsafe_get beg (!i - offset) do 
-      incr i 
-    done;
-    if !i = finish_delim then 
-      digits_of_str ~offset:finish_delim s 2 
-    else 
-      -1 
-
 let equal (x : string) y  = x = y
-
-let unsafe_concat_with_length len sep l =
-  match l with 
-  | [] -> ""
-  | hd :: tl -> (* num is positive *)
-    let r = Bytes.create len in
-    let hd_len = String.length hd in 
-    let sep_len = String.length sep in 
-    String.unsafe_blit hd 0 r 0 hd_len;
-    let pos = ref hd_len in
-    List.iter
-      (fun s ->
-         let s_len = String.length s in
-         String.unsafe_blit sep 0 r !pos sep_len;
-         pos := !pos +  sep_len;
-         String.unsafe_blit s 0 r !pos s_len;
-         pos := !pos + s_len)
-      tl;
-    Bytes.unsafe_to_string r
-
 
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -332,25 +271,6 @@ let is_valid_module_file (s : string) =
   | _ -> false 
 
 
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
 
 
 type check_result = 
@@ -532,20 +452,7 @@ let capitalize_ascii (s : string) : string =
       else s 
     end
 
-let capitalize_ascii_opt (s : string) : string option = 
-  if String.length s = 0 then None
-  else 
-    begin
-      let c = String.unsafe_get s 0 in 
-      if (c >= 'a' && c <= 'z')
-      || (c >= '\224' && c <= '\246')
-      || (c >= '\248' && c <= '\254') then 
-        let uc = Char.unsafe_chr (Char.code c - 32) in 
-        let bytes = Bytes.of_string s in
-        Bytes.unsafe_set bytes 0 uc;
-        Some (Bytes.unsafe_to_string bytes)
-      else None
-    end
+
     
 
 

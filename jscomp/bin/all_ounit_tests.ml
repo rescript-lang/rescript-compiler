@@ -1676,19 +1676,23 @@ module Ext_string : sig
 
 
 
-(** Extension to the standard library [String] module, avoid locale sensitivity *) 
+(** Extension to the standard library [String] module, fixed some bugs like
+    avoiding locale sensitivity *) 
+
+(** default is false *)    
+val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
 
 
+(** remove whitespace letters ('\t', '\n', ' ') on both side*)
 val trim : string -> string 
 
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-(** default is false *)
 
+(** default is false *)
 val split : ?keep_empty:bool -> string -> char -> string list
-(** default is false *)
 
-val quick_split_by_ws : string -> string list 
 (** split by space chars for quick scripting *)
+val quick_split_by_ws : string -> string list 
+
 
 
 val starts_with : string -> string -> bool
@@ -1702,6 +1706,8 @@ val ends_with_index : string -> string -> int
 val ends_with : string -> string -> bool
 
 (**
+  [ends_with_then_chop name ext]
+  @example:
    {[
      ends_with_then_chop "a.cmj" ".cmj"
      "a"
@@ -1713,10 +1719,16 @@ val ends_with_then_chop : string -> string -> string option
 
 val escaped : string -> string
 
-(** the range is [start, finish]
+(**
+  [for_all_from  s start p]
+  if [start] is negative, it raises,
+  if [start] is too large, it returns true
 *)
-val for_all_range : 
-  string -> start:int -> finish:int -> (char -> bool) -> bool 
+val for_all_from:
+  string -> 
+  int -> 
+  (char -> bool) -> 
+  bool 
 
 val for_all : (char -> bool) -> string -> bool
 
@@ -1726,6 +1738,10 @@ val repeat : int -> string -> string
 
 val equal : string -> string -> bool
 
+(**
+  [find ~start ~sub s]
+  returns [-1] if not found
+*)
 val find : ?start:int -> sub:string -> string -> int
 
 val contain_substring : string -> string -> bool 
@@ -1734,13 +1750,10 @@ val non_overlap_count : sub:string -> string -> int
 
 val rfind : sub:string -> string -> int
 
+(** [tail_from s 1]
+  return a substring from offset 1 (inclusive)
+*)
 val tail_from : string -> int -> string
-
-val digits_of_str : string -> offset:int -> int -> int
-
-val starts_with_and_number : string -> offset:int -> string -> int
-
-val unsafe_concat_with_length : int -> string -> string list -> string
 
 
 (** returns negative number if not found *)
@@ -1754,15 +1767,7 @@ type check_result =
 val is_valid_source_name :
    string -> check_result
 
-(* TODO handle cases like 
-   '@angular/core'
-   its directory structure is like 
-   {[
-     @angular
-     |-------- core
-   ]}
-*)
-val is_valid_npm_package_name : string -> bool 
+
 
 
 
@@ -1802,8 +1807,7 @@ val current_dir_lit : string
 
 val capitalize_ascii : string -> string
 
-(** return [Some xx] means the original *)
-(* val capitalize_ascii_opt : string -> string option *)
+
 end = struct
 #1 "ext_string.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1964,10 +1968,11 @@ let rec unsafe_for_all_range s ~start ~finish p =
   p (String.unsafe_get s start) && 
   unsafe_for_all_range s ~start:(start + 1) ~finish p
 
-let for_all_range s ~start ~finish p = 
+let for_all_from s start  p = 
   let len = String.length s in 
-  if start < 0 || finish >= len then invalid_arg "Ext_string.for_all_range"
-  else unsafe_for_all_range s ~start ~finish p 
+  if start < 0  then invalid_arg "Ext_string.for_all_from"
+  else unsafe_for_all_range s ~start ~finish:(len - 1) p 
+  
 
 let for_all (p : char -> bool) s =   
   unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
@@ -2048,69 +2053,7 @@ let tail_from s x =
   if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
   else String.sub s x (len - x)
 
-
-(**
-   {[ 
-     digits_of_str "11_js" 2 == 11     
-   ]}
-*)
-let digits_of_str s ~offset x = 
-  let rec aux i acc s x  = 
-    if i >= x then acc 
-    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
-  aux 0 0 s x 
-
-
-
-(*
-   {[
-     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
-     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
-     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
-     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
-     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
-     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
-   ]}
-*)
-let starts_with_and_number s ~offset beg =
-  let beg_len = String.length beg in
-  let s_len = String.length s in
-  let finish_delim = offset + beg_len in 
-
-  if finish_delim >  s_len  then -1 
-  else 
-    let i = ref offset  in
-    while !i <  finish_delim
-          && String.unsafe_get s !i =
-             String.unsafe_get beg (!i - offset) do 
-      incr i 
-    done;
-    if !i = finish_delim then 
-      digits_of_str ~offset:finish_delim s 2 
-    else 
-      -1 
-
 let equal (x : string) y  = x = y
-
-let unsafe_concat_with_length len sep l =
-  match l with 
-  | [] -> ""
-  | hd :: tl -> (* num is positive *)
-    let r = Bytes.create len in
-    let hd_len = String.length hd in 
-    let sep_len = String.length sep in 
-    String.unsafe_blit hd 0 r 0 hd_len;
-    let pos = ref hd_len in
-    List.iter
-      (fun s ->
-         let s_len = String.length s in
-         String.unsafe_blit sep 0 r !pos sep_len;
-         pos := !pos +  sep_len;
-         String.unsafe_blit s 0 r !pos s_len;
-         pos := !pos + s_len)
-      tl;
-    Bytes.unsafe_to_string r
-
 
 let rec rindex_rec s i c =
   if i < 0 then i else
@@ -2140,25 +2083,6 @@ let is_valid_module_file (s : string) =
   | _ -> false 
 
 
-(* https://docs.npmjs.com/files/package.json 
-   Some rules:
-   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
-   The name can't start with a dot or an underscore.
-   New packages must not have uppercase letters in the name.
-   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
-*)
-let is_valid_npm_package_name (s : string) = 
-  let len = String.length s in 
-  len <= 214 && (* magic number forced by npm *)
-  len > 0 &&
-  match String.unsafe_get s 0 with 
-  | 'a' .. 'z' | '@' -> 
-    unsafe_for_all_range s ~start:1 ~finish:(len - 1)
-      (fun x -> 
-         match x with 
-         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
-         | _ -> false )
-  | _ -> false 
 
 
 type check_result = 
@@ -2338,20 +2262,7 @@ let capitalize_ascii (s : string) : string =
       else s 
     end
 
-let capitalize_ascii_opt (s : string) : string option = 
-  if String.length s = 0 then None
-  else 
-    begin
-      let c = String.unsafe_get s 0 in 
-      if (c >= 'a' && c <= 'z')
-      || (c >= '\224' && c <= '\246')
-      || (c >= '\248' && c <= '\254') then 
-        let uc = Char.unsafe_chr (Char.code c - 32) in 
-        let bytes = Bytes.of_string s in
-        Bytes.unsafe_set bytes 0 uc;
-        Some (Bytes.unsafe_to_string bytes)
-      else None
-    end
+
     
 
 
@@ -13856,7 +13767,10 @@ module Ext_namespace : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(** [make ~ns "a" ]
+  A typical example would return "a-Ns"
+  Note the namespace comes from the output of [namespace_of_package_name]
+*)
 val make : ns:string -> string -> string 
 
 
@@ -13869,7 +13783,21 @@ val make : ns:string -> string -> string
   of basename
 *)
 val js_name_of_basename :  string -> string 
+
+(** [js_name_of_modulename ~little A-Ns]
+*)
 val js_name_of_modulename : little:bool -> string -> string
+
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angular
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
+
 val namespace_of_package_name : string -> string
 
 end = struct
@@ -13934,6 +13862,26 @@ let js_name_of_modulename ~little s =
   else 
     remove_ns_suffix s ^ Literals.suffix_js
 
+(* https://docs.npmjs.com/files/package.json 
+   Some rules:
+   The name must be less than or equal to 214 characters. This includes the scope for scoped packages.
+   The name can't start with a dot or an underscore.
+   New packages must not have uppercase letters in the name.
+   The name ends up being part of a URL, an argument on the command line, and a folder name. Therefore, the name can't contain any non-URL-safe characters.
+*)
+let is_valid_npm_package_name (s : string) = 
+  let len = String.length s in 
+  len <= 214 && (* magic number forced by npm *)
+  len > 0 &&
+  match String.unsafe_get s 0 with 
+  | 'a' .. 'z' | '@' -> 
+    Ext_string.for_all_from s 1 
+      (fun x -> 
+         match x with 
+         |  'a'..'z' | '0'..'9' | '_' | '-' -> true
+         | _ -> false )
+  | _ -> false 
+    
     
 let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
@@ -14007,25 +13955,15 @@ let suites =
 
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__
-        (Ext_string.for_all_range "xABc"~start:1
-           ~finish:2 (function 'A' .. 'Z' -> true | _ -> false));
+        (not (Ext_string.for_all_from "xABc"1
+                (function 'A' .. 'Z' -> true | _ -> false)));
       OUnit.assert_bool __LOC__
-        (not (Ext_string.for_all_range "xABc"~start:1
-                ~finish:3(function 'A' .. 'Z' -> true | _ -> false)));
+        ( (Ext_string.for_all_from "xABC" 1
+             (function 'A' .. 'Z' -> true | _ -> false)));
       OUnit.assert_bool __LOC__
-        ( (Ext_string.for_all_range "xABc"~start:1
-             ~finish:2 (function 'A' .. 'Z' -> true | _ -> false)));
-      OUnit.assert_bool __LOC__
-        ( (Ext_string.for_all_range "xABc"~start:1
-             ~finish:1 (function 'A' .. 'Z' -> true | _ -> false)));
-      OUnit.assert_bool __LOC__
-        ( (Ext_string.for_all_range "xABc"~start:1
-             ~finish:0 (function 'A' .. 'Z' -> true | _ -> false)));    
-      OUnit.assert_raise_any       
-        (fun _ ->  (Ext_string.for_all_range "xABc"~start:1
-                      ~finish:4 (function 'A' .. 'Z' -> true | _ -> false)));    
-
-    end;
+        ( (Ext_string.for_all_from "xABC" 1_000
+             (function 'A' .. 'Z' -> true | _ -> false)));             
+    end; 
 
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
@@ -14043,12 +13981,12 @@ let suites =
     end;
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ @@
-      List.for_all Ext_string.is_valid_npm_package_name
+      List.for_all Ext_namespace.is_valid_npm_package_name
         ["x"; "@angualr"; "test"; "hi-x"; "hi-"]
       ;
       OUnit.assert_bool __LOC__ @@
       List.for_all 
-        (fun x -> not (Ext_string.is_valid_npm_package_name x))
+        (fun x -> not (Ext_namespace.is_valid_npm_package_name x))
         ["x "; "x'"; "Test"; "hI"]
       ;
     end;
@@ -14088,14 +14026,14 @@ let suites =
       Ext_string.ends_with_then_chop "xx.ml"  ".ml" =~ Some "xx";
       Ext_string.ends_with_then_chop "xx.ml" ".mll" =~ None
     end;
-    __LOC__ >:: begin fun _ -> 
-      Ext_string.starts_with_and_number "js_fn_mk_01" ~offset:0 "js_fn_mk_" =~ 1 ;
-      Ext_string.starts_with_and_number "js_fn_run_02" ~offset:0 "js_fn_mk_" =~ -1 ;
-      Ext_string.starts_with_and_number "js_fn_mk_03" ~offset:6 "mk_" =~ 3 ;
-      Ext_string.starts_with_and_number "js_fn_mk_04" ~offset:6 "run_" =~ -1;
-      Ext_string.starts_with_and_number "js_fn_run_04" ~offset:6 "run_" =~ 4;
-      Ext_string.(starts_with_and_number "js_fn_run_04" ~offset:6 "run_" = 3) =~ false 
-    end;
+    (* __LOC__ >:: begin fun _ -> 
+       Ext_string.starts_with_and_number "js_fn_mk_01" ~offset:0 "js_fn_mk_" =~ 1 ;
+       Ext_string.starts_with_and_number "js_fn_run_02" ~offset:0 "js_fn_mk_" =~ -1 ;
+       Ext_string.starts_with_and_number "js_fn_mk_03" ~offset:6 "mk_" =~ 3 ;
+       Ext_string.starts_with_and_number "js_fn_mk_04" ~offset:6 "run_" =~ -1;
+       Ext_string.starts_with_and_number "js_fn_run_04" ~offset:6 "run_" =~ 4;
+       Ext_string.(starts_with_and_number "js_fn_run_04" ~offset:6 "run_" = 3) =~ false 
+       end; *)
     __LOC__ >:: begin fun _ -> 
       Ext_string.for_all (function '_' -> true | _ -> false)
         "____" =~ true;
@@ -14108,9 +14046,9 @@ let suites =
       Ext_string.tail_from "ghsogh" 1 =~ "hsogh";
       Ext_string.tail_from "ghsogh" 0 =~ "ghsogh"
     end;
-    __LOC__ >:: begin fun _ -> 
-      Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
-    end;
+    (* __LOC__ >:: begin fun _ -> 
+       Ext_string.digits_of_str "11_js" ~offset:0 2 =~ 11 
+       end; *)
     __LOC__ >:: begin fun _ -> 
       OUnit.assert_bool __LOC__ 
         (Ext_string.replace_backward_slash "a:\\b\\d" = 
@@ -15109,7 +15047,7 @@ let valid_identifier s =
   if s_len = 0 then false 
   else
     valid_lead_identifier_char s.[0] &&
-    Ext_string.for_all_range s ~start:0 ~finish:(s_len - 1) valid_identifier_char
+    Ext_string.for_all_from s 1  valid_identifier_char
 
       
 let is_space x = 

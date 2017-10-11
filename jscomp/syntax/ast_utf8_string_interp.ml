@@ -97,7 +97,7 @@ let valid_identifier s =
   if s_len = 0 then false 
   else
     valid_lead_identifier_char s.[0] &&
-    Ext_string.for_all_range s ~start:0 ~finish:(s_len - 1) valid_identifier_char
+    Ext_string.for_all_from s 1  valid_identifier_char
 
       
 let is_space x = 

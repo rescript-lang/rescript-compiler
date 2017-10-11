@@ -22,7 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(** [make ~ns "a" ]
+  A typical example would return "a-Ns"
+  Note the namespace comes from the output of [namespace_of_package_name]
+*)
 val make : ns:string -> string -> string 
 
 
@@ -35,5 +38,19 @@ val make : ns:string -> string -> string
   of basename
 *)
 val js_name_of_basename :  string -> string 
+
+(** [js_name_of_modulename ~little A-Ns]
+*)
 val js_name_of_modulename : little:bool -> string -> string
+
+(* TODO handle cases like 
+   '@angular/core'
+   its directory structure is like 
+   {[
+     @angular
+     |-------- core
+   ]}
+*)
+val is_valid_npm_package_name : string -> bool 
+
 val namespace_of_package_name : string -> string
