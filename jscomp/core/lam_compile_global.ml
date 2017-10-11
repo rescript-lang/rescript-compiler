@@ -67,7 +67,7 @@ let expand_global_module  id env  : J.expression =
           Js_of_lam_module.make ~comment:id.name 
             (Ext_list.init len (fun i -> 
                  E.ml_var_dot id
-                   (Type_util.get_name sigs i ))))
+                   (Ocaml_types.get_name sigs i ))))
 
 
 
