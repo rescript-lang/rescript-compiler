@@ -83668,55 +83668,54 @@ let (+>) = Lam_module_ident.Hash.add cached_tbl
 
 let cached_find_ml_id_pos id pos env : ident_info =
   let oid  = Lam_module_ident.of_ml id in
-  begin match Lam_module_ident.Hash.find_opt cached_tbl oid with 
+  match Lam_module_ident.Hash.find_opt cached_tbl oid with 
+  | None -> 
+    let cmj_path, cmj_table = 
+      Js_cmj_load.find_cmj (id.name ^ Literals.suffix_cmj) in
+    begin match
+        Type_util.find_serializable_signatures_by_path id env with 
     | None -> 
-      let cmj_path, cmj_table = 
-        Js_cmj_load.find_cmj (id.name ^ Literals.suffix_cmj) in
-      begin match
-          Type_util.find_serializable_signatures_by_path id env with 
-      | None -> 
-        assert false (*TODO: more informative error message *)
-      (* not_found id  *)
-      | Some signature -> 
-        oid  +> Visit {signature = signature; 
-                       cmj_table ; cmj_path  }  ;
-        let name =  (Type_util.get_name signature pos ) in
-        let arity, closed_lambda =        
-          begin match String_map.find_opt name cmj_table.values with
-            | Some {arity ; closed_lambda} -> arity, closed_lambda
-            | None -> Js_cmj_format.single_na, None 
-          end in
-        {id; 
-         name ;
-         signature ;
-         arity ;
-         closed_lambda = 
-           if Js_config.get_cross_module_inline () then
-             closed_lambda
-           else None
-        }
-      end
-    | Some (Visit {signature = serializable_sigs ; cmj_table = { values ; _} } ) -> 
-      let name = (Type_util.get_name serializable_sigs pos ) in
-      let arity , closed_lambda =  (
-        match  String_map.find_opt name values with
-        | Some {arity; closed_lambda;_} -> 
-          arity, closed_lambda 
-        | None -> Js_cmj_format.single_na, None
-      ) in
-      { id;
-        name; 
-        signature = serializable_sigs;
-        arity;
-        closed_lambda = 
-          if Js_config.get_cross_module_inline () then
-            closed_lambda
-          else None
-          (* TODO shall we cache the arity ?*) 
-      } 
-    | Some (Runtime _) -> assert false
-    | Some External  -> assert false
-  end
+      assert false (*TODO: more informative error message *)
+    | Some signature -> 
+      oid  +> Visit {signature;  cmj_table ; cmj_path  }  ;
+      let name =  Type_util.get_name signature pos  in
+      let arity, closed_lambda =        
+        match String_map.find_opt name cmj_table.values with
+        | Some {arity ; closed_lambda} -> arity, closed_lambda
+        | None -> Js_cmj_format.single_na, None 
+      in
+      {id; 
+       name ;
+       signature ;
+       arity ;
+       closed_lambda = 
+         if Js_config.get_cross_module_inline () then
+           closed_lambda
+         else None
+      }
+    end
+  | Some (Visit {signature ; cmj_table = { values ; _} } )
+    -> 
+    let name = Type_util.get_name signature pos  in
+    let arity , closed_lambda =  
+      match  String_map.find_opt name values with
+      | Some {arity; closed_lambda;_} -> 
+        arity, 
+        if Js_config.get_cross_module_inline () then
+          closed_lambda 
+        else None 
+      | None -> Js_cmj_format.single_na, None
+    in
+    { id;
+      name; 
+      signature;
+      arity;
+      closed_lambda
+        (* TODO shall we cache the arity ?*) 
+    } 
+  | Some (Runtime _) -> assert false
+  | Some External  -> assert false
+
 
 
 type module_info = {

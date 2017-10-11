@@ -22,17 +22,48 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Types.signature
 
+let empty  = []
+let length  = List.length 
+let name_of_signature_item (x : Types.signature_item )=
+  match x with 
+  | Sig_value (i,_) 
+  | Sig_module (i,_,_) -> i 
+  | Sig_typext (i,_,_) -> i 
+  | Sig_modtype(i,_) -> i 
+  | Sig_class (i,_,_) -> i 
+  | Sig_class_type(i,_,_) -> i 
+  | Sig_type(i,_,_) -> i   
+
+
+(** It should be safe to replace Pervasives[], 
+    we should test cases  like module aliases if it is serializable or not 
+    {[ module Pervasives = List ]} 
+*)
+let serializable_signature (x : Types.signature_item) =
+  match x with 
+  | Sig_value(_, {val_kind = Val_prim _}) -> false
+  | Sig_typext _ 
+  | Sig_module _
+  | Sig_class _ 
+  | Sig_value _ -> true
+  | Sig_modtype _ | Sig_class_type _ | Sig_type _ -> false
+
+
+
+let filter_serializable_signatures signature  : t  = 
+  List.filter serializable_signature signature
 
 (* Input path is a global module 
     TODO: it should be fine for local module
 *)
 let find_serializable_signatures_by_path v (env : Env.t) 
-  : Types.signature option = 
+  : t option = 
   match Env.find_module (Pident v) env with 
   | exception Not_found -> None 
   | {md_type = Mty_signature signature; _} -> 
-    Some (Type_int_to_string.filter_serializable_signatures signature)
+    Some (filter_serializable_signatures signature)
   (** TODO: refine *)
   | _ -> Ext_log.err __LOC__  "@[impossible path %s@]@."
            (Ident.name v) ; assert false 
@@ -46,16 +77,14 @@ let rec dump_summary fmt (x : Env.summary) =
   | _ -> ()
 
 (** Used in [ Lglobal_module] *)
-let get_name  (serializable_sigs : Types.signature) (pos : int) = 
-  Ident.name @@ Type_int_to_string.name_of_signature_item @@ List.nth  serializable_sigs  pos
+let get_name  (serializable_sigs : t) (pos : int) = 
+  Ident.name (name_of_signature_item (List.nth  serializable_sigs  pos))
 
-(* let find_name id pos env = *)
-(*   match find_serializable_signatures_by_path id env with *)
-(*   | Some signatures -> *)
-(*     Some (get_name signatures pos) *)
-(*   | None -> None       *)
+let map (f : string -> 'a ) (xs : t) = 
+  Ext_list.map 
+    (fun x -> f (name_of_signature_item x ).name ) xs 
 
 
 
-    
+
 

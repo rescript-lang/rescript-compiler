@@ -265,7 +265,11 @@ CORE_SRCS= js_runtime_modules \
 	config_util \
 	js_packages_info\
 	js_packages_state\
-	type_int_to_string type_util  ocaml_stdlib_slots bs_conditional_initial ocaml_options ocaml_parse\
+	ocaml_types  \
+	ocaml_stdlib_slots \
+	bs_conditional_initial \
+	ocaml_options \
+	ocaml_parse\
 	js_op\
 	lam_module_ident\
 	lam_arity\

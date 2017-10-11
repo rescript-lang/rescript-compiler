@@ -86,7 +86,7 @@ let propogate_beta_reduce
            (* It's not completeness, its to make it sound.. 
               Pass global module as an argument
            *)
-           Lam_compile_global.query_lambda ident meta.env 
+           Lam_compile_global.expand_global_module_as_lam ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
            Ident_hashtbl.replace meta.ident_tbl param 
@@ -145,7 +145,7 @@ let propogate_beta_reduce_with_map
           | Lglobal_module ident 
           -> 
            (* It's not completeness, its to make it sound.. *)
-           Lam_compile_global.query_lambda ident meta.env 
+           Lam_compile_global.expand_global_module_as_lam ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
            Ident_hashtbl.replace meta.ident_tbl param 

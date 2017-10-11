@@ -35,4 +35,4 @@ val expand_global_module :  Ident.t -> Env.t   -> J.expression
 
 
 
-val query_lambda : Ident.t -> Env.t -> Lam.t
+val expand_global_module_as_lam : Ident.t -> Env.t -> Lam.t
