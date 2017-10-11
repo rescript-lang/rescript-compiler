@@ -106,7 +106,7 @@ let init_sample_project ~cwd ~theme name =
   begin match name with 
     | "." -> 
       let name = Filename.basename cwd in
-      if Ext_string.is_valid_npm_package_name name then 
+      if Ext_namespace.is_valid_npm_package_name name then 
         begin 
           String_hashtbl.add env "name" name;
           action ()
@@ -120,7 +120,7 @@ let init_sample_project ~cwd ~theme name =
         end
 
     | _ -> 
-      if Ext_string.is_valid_npm_package_name name 
+      if Ext_namespace.is_valid_npm_package_name name 
       then begin 
         Format.fprintf Format.std_formatter "Making directory %s@." name;  
         if Sys.file_exists name then 
