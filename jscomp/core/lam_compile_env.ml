@@ -32,12 +32,10 @@
 module E = Js_exp_make  
 module S = Js_stmt_make
 
-type module_id = Lam_module_ident.t
-
 type path = string 
 
 type ml_module_info = { 
-  signatures : Types.signature ;
+  signature : Types.signature ;
   cmj_table : Js_cmj_format.t ;
   cmj_path : path;
 }
@@ -45,28 +43,23 @@ type ml_module_info = {
 type env_value = 
   | Visit of ml_module_info
   | Runtime  of bool * path * Js_cmj_format.t
-  (** A built in module probably from our runtime primitives, 
+  (** 
+     [Runtime (pure, path, cmj_format)]
+     A built in module probably from our runtime primitives, 
       so it does not have any [signature]
+
   *)
   | External  
   (** Also a js file, but this belong to third party 
   *)
 
-type module_info = {
-  signature :  Types.signature ;
-  pure : bool 
-}
 
-type primitive_description =  Primitive.description
-
-type key = 
-  Ident.t * Env.t  * bool (** we need register which global variable is an dependency *)
 
 
 type ident_info = {
   id : Ident.t;
   name : string;
-  signatures : Types.signature;
+  signature : Types.signature;
   arity : Js_cmj_format.arity; 
   closed_lambda : Lam.t option 
 }
@@ -98,80 +91,70 @@ let reset () =
    Given a name, if duplicated, they should  have the same id
 *)
 
-let create_js_module (hint_name : string) : Ident.t = 
-  let hint_name = 
-    String.concat "" @@ Ext_list.map (Ext_string.capitalize_ascii ) @@ 
-    Ext_string.split hint_name '-' in
-  Ident.create hint_name
+let js_id_name_of_hint_name (hint_name : string)  = 
 
-(** 
-   Any [id] as long as put in the [cached_tbl] should be always valid,
+  String.concat "" 
+    (Ext_list.map Ext_string.capitalize_ascii 
+       (Ext_string.split hint_name '-')) 
 
-   Since it is already used in the code gen, the older will have higher precedence
-   So for freshly created id, we will test if it is already there not not 
-   (using key *only* involves external module name), 
 
-   If it is already there, we discard the freshly made one, 
-   Otherwise, we add it into cache table, and use it 
-
-*)
-let add_js_module ?hint_name module_name : Ident.t 
+let add_js_module ~hint_name module_name : Ident.t 
   = 
   let id = 
-    match hint_name with
-    | Some (* _ *)  hint_name
-      -> create_js_module hint_name
-    | None -> create_js_module module_name 
+    Ident.create @@ js_id_name_of_hint_name
+      (match hint_name with
+       | Some  hint_name
+         ->  hint_name
+       | None ->  module_name )
   in
   let lam_module_ident = 
     Lam_module_ident.of_external id module_name in  
   match Lam_module_ident.Hash.find_key_opt cached_tbl lam_module_ident with   
   | None ->
-    (* Ext_log.dwarn __LOC__ "HASH MISS %a@." Ext_pervasives.pp_any (lam_module_ident); *)
     Lam_module_ident.Hash.add 
       cached_tbl 
       lam_module_ident
       External;
     id
   | Some old_key ->
-    (* Ext_log.dwarn __LOC__ *)
-    (*   "HASH HIT %a@." Ext_pervasives.pp_any (old_key,lam_module_ident); *)
     old_key.id 
 
 
 
 
-let add_cached_tbl = Lam_module_ident.Hash.add cached_tbl
+let (+>) = Lam_module_ident.Hash.add cached_tbl
 
-let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
+let cached_find_ml_id_pos id pos env : ident_info =
   let oid  = Lam_module_ident.of_ml id in
   begin match Lam_module_ident.Hash.find_opt cached_tbl oid with 
     | None -> 
-      let cmj_path, cmj_table = Js_cmj_load.find_cmj (id.name ^ Literals.suffix_cmj) in
+      let cmj_path, cmj_table = 
+        Js_cmj_load.find_cmj (id.name ^ Literals.suffix_cmj) in
       begin match
-          Type_util.find_serializable_signatures_by_path
-            ( id) env with 
-      | None -> not_found id 
+          Type_util.find_serializable_signatures_by_path id env with 
+      | None -> 
+        assert false (*TODO: more informative error message *)
+      (* not_found id  *)
       | Some signature -> 
-        add_cached_tbl oid (Visit {signatures = signature; 
-                                   cmj_table ; cmj_path  } ) ;
+        oid  +> Visit {signature = signature; 
+                       cmj_table ; cmj_path  }  ;
         let name =  (Type_util.get_name signature pos ) in
         let arity, closed_lambda =        
           begin match String_map.find_opt name cmj_table.values with
             | Some {arity ; closed_lambda} -> arity, closed_lambda
             | None -> Js_cmj_format.single_na, None 
           end in
-        found {id; 
-               name ;
-               signatures = signature ;
-               arity ;
-               closed_lambda = 
-                 if Js_config.get_cross_module_inline () then
-                   closed_lambda
-                 else None
-              }
+        {id; 
+         name ;
+         signature ;
+         arity ;
+         closed_lambda = 
+           if Js_config.get_cross_module_inline () then
+             closed_lambda
+           else None
+        }
       end
-    | Some (Visit { signatures = serializable_sigs ; cmj_table = { values ; _} } ) -> 
+    | Some (Visit {signature = serializable_sigs ; cmj_table = { values ; _} } ) -> 
       let name = (Type_util.get_name serializable_sigs pos ) in
       let arity , closed_lambda =  (
         match  String_map.find_opt name values with
@@ -179,22 +162,25 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
           arity, closed_lambda 
         | None -> Js_cmj_format.single_na, None
       ) in
-      found { id;
-              name; 
-              signatures = serializable_sigs;
-              arity;
-              closed_lambda = 
-                if Js_config.get_cross_module_inline () then
-                  closed_lambda
-                else None
-                (* TODO shall we cache the arity ?*) 
-            } 
+      { id;
+        name; 
+        signature = serializable_sigs;
+        arity;
+        closed_lambda = 
+          if Js_config.get_cross_module_inline () then
+            closed_lambda
+          else None
+          (* TODO shall we cache the arity ?*) 
+      } 
     | Some (Runtime _) -> assert false
     | Some External  -> assert false
   end
 
 
-
+type module_info = {
+  signature :  Types.signature ;
+  pure : bool 
+}
 (* TODO: it does not make sense to cache
    [Runtime] 
    and [externals]*)
@@ -212,7 +198,7 @@ let query_and_add_if_not_exist (type u)
       | Runtime  -> 
         let (cmj_path, cmj_table) as cmj_info = 
           Js_cmj_load.find_cmj (Lam_module_ident.name oid ^ Literals.suffix_cmj) in           
-        add_cached_tbl oid (Runtime (true,cmj_path,cmj_table)) ; 
+        oid +> Runtime (true,cmj_path,cmj_table) ; 
         begin match env with 
           | Has_env _ -> 
             found {signature = []; pure = true}
@@ -229,7 +215,7 @@ let query_and_add_if_not_exist (type u)
                 Type_util.find_serializable_signatures_by_path ( oid.id) env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some signature -> 
-              add_cached_tbl oid (Visit {signatures = signature; cmj_table;cmj_path }) ;
+              oid +> Visit {signature = signature; cmj_table;cmj_path } ;
               found  { signature ; pure = cmj_table.effect = None} 
             end
           | No_env -> 
@@ -237,7 +223,7 @@ let query_and_add_if_not_exist (type u)
         end
 
       | External _  -> 
-        add_cached_tbl oid External;
+        oid +> External;
         (** This might be wrong, if we happen to expand  an js module
             we should assert false (but this in general should not happen)
         *)
@@ -251,10 +237,10 @@ let query_and_add_if_not_exist (type u)
         end
 
     end
-  | Some (Visit {signatures  ; cmj_table =  cmj_table; cmj_path}) -> 
+  | Some (Visit {signature  ; cmj_table =  cmj_table; cmj_path}) -> 
     begin match env with 
       | Has_env _ -> 
-        found   { signature =  signatures  ; pure = (cmj_table.effect = None)} 
+        found   { signature =  signature  ; pure = (cmj_table.effect = None)} 
       | No_env  -> found (cmj_path,cmj_table)
     end
 
@@ -286,18 +272,18 @@ let get_package_path_from_cmj
   : _ option = 
   query_and_add_if_not_exist id No_env
     ~not_found:(fun _ ->
-      None
+        None
         (*
           So after querying, it should return 
            [Js_packages_info.Package_not_found]
         *)
-        ) 
+      ) 
     ~found:(fun (cmj_path,x) -> 
         Some (cmj_path, 
-        x.npm_package_path, x.case )
-        )
+              x.npm_package_path, x.case )
+      )
 
-    
+
 let add = Lam_module_ident.Hash_set.add
 
 
@@ -307,11 +293,11 @@ let add = Lam_module_ident.Hash_set.add
 let get_required_modules 
     extras 
     (hard_dependencies 
-     : Lam_module_ident.Hash_set.t) : module_id list =  
-  Lam_module_ident.Hash.iter (fun (id : module_id)  _  ->
+     : Lam_module_ident.Hash_set.t) : Lam_module_ident.t list =  
+  Lam_module_ident.Hash.iter (fun id  _  ->
       if not @@ is_pure_module id 
       then add  hard_dependencies id) cached_tbl ;
-  Lam_module_ident.Hash_set.iter (fun (id  : module_id)  -> 
+  Lam_module_ident.Hash_set.iter (fun id  -> 
       (if not @@ is_pure_module  id 
        then add hard_dependencies id : unit)
     ) extras;

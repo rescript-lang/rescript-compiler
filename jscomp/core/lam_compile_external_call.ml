@@ -39,10 +39,10 @@ let handle_external
   =
   match bind_name with 
   | None -> 
-    Lam_compile_env.add_js_module bundle , bundle
+    Lam_compile_env.add_js_module ~hint_name:None bundle , bundle
   | Some bind_name -> 
     Lam_compile_env.add_js_module 
-      ~hint_name:bind_name
+      ~hint_name:(Some bind_name)
       bundle,
     bundle
 

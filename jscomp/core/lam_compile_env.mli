@@ -31,25 +31,11 @@
 
 (** Helper for global Ocaml module index into meaningful names  *) 
 
-type primitive_description =  Primitive.description
 
-type key = 
-  Ident.t * Env.t * bool 
-  (** the boolean is expand or not
-      when it's passed as module, it should be expanded, 
-      otherwise for alias, [include Array], it's okay to return an identifier
-      TODO: be more clear about its concept
-  *)
-  (** we need register which global variable is an dependency *)
 
 type path = string 
-type ident_info = {
-  id : Ident.t;
-  name : string;
-  signatures : Types.signature;
-  arity : Js_cmj_format.arity;
-  closed_lambda : Lam.t option 
-}
+
+
 
 type module_info = {
   signature :  Types.signature ;
@@ -60,19 +46,38 @@ type _ t =
   | No_env :  (path * Js_cmj_format.t) t 
   | Has_env : Env.t  -> module_info t 
 
-val find_and_add_if_not_exist : 
-  Ident.t * int -> 
-  Env.t -> 
-  not_found:(Ident.t -> 'a) -> 
-  found:(ident_info -> 'a) -> 'a
 
-val query_and_add_if_not_exist : 
-  Lam_module_ident.t ->
-  'a t -> not_found:(unit -> 'b) ->
-  found:('a -> 'b) -> 'b
+type ident_info = {
+  id : Ident.t;
+  name : string;
+  signature : Types.signature;
+  arity : Js_cmj_format.arity;
+  closed_lambda : Lam.t option 
+}  
 
-val add_js_module : ?hint_name:string -> string  -> Ident.t 
-(** add third party dependency *)
+
+
+
+val reset : unit -> unit 
+
+(** 
+  [add_js_module hint_name module_name]
+  Given a js module name and hint name, assign an id to it
+  we also bookkeep it as [External] dependency.
+
+  Note the complexity lies in that we should consolidate all 
+  same external dependencies into a single dependency.
+  
+  The strategy is that we first create a [Lam_module_ident.t] 
+  and  query it if already exists in [cache_tbl], if it already
+  exists, we discard the freshly made one, and use the cached one,
+  otherwise, use the freshly made one instead
+
+  Invariant: 
+    any [id] as long as put in the [cached_tbl] should be always valid,
+*)  
+val add_js_module : hint_name:string option -> string  -> Ident.t 
+
 
 (* The other dependencies are captured by querying 
    either when [access] or when expansion, 
@@ -87,8 +92,20 @@ val add_js_module : ?hint_name:string -> string  -> Ident.t
    when compile OCaml to Javascript, we only need 
    pay attention to for those modules are actually used or not
 *)
+(**
+  [cached_find_ml_id_pos id pos env found]
+  will raise if not found
+*)
+val cached_find_ml_id_pos : 
+  Ident.t ->
+  int -> 
+  Env.t -> 
+  ident_info
 
-val reset : unit -> unit 
+val query_and_add_if_not_exist : 
+  Lam_module_ident.t ->
+  'a t -> not_found:(unit -> 'b) ->
+  found:('a -> 'b) -> 'b
 
 val is_pure_module : Lam_module_ident.t -> bool
 
