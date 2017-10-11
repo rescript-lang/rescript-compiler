@@ -67,10 +67,36 @@ let () =
     Sys.command "not_a_real_command"
   );
 
+  (* test we can open an out_channel from a file, close it, and delete it *)
   eq __LOC__ 0 (
-    let _tf = Filename.open_temp_file "pre." ".txt" in
+    let (file, oc) = Filename.open_temp_file "pre." ".txt" in
+    output_string oc "test contents";
+    flush oc;
+    close_out oc;
+    Sys.remove file;
     0
+  );
+  (* test we can write to a file and read what we wrote *)
+  eq __LOC__ "test contents" (
+    let (file, oc) = Filename.open_temp_file "pre." ".txt" in
+    output_string oc "test contents";
+    close_out oc;
+    let read_contents = ([%bs.raw {|
+      function (file) { return require('fs').readFileSync(file, 'ascii'); }
+    |}] : string -> string) file in
+    Sys.remove file;
+    read_contents
   )
+  (* eq __LOC__ true (
+   *   (\* this will work once input_channel stuff is implemented *\)
+   *   let oc = open_out "tmp_foo.txt" in
+   *   output_string oc "foo";
+   *   close_out_noerr oc;
+   *   let ic = open_in "tmp_foo.txt" in
+   *   let line = input_line ic in
+   *   close_in_noerr ic;
+   *   line = "foo"
+   * ) *)
 
 
 

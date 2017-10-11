@@ -2,9 +2,12 @@
 
 var Mt                      = require("./mt.js");
 var Block                   = require("../../lib/js/block.js");
+var Curry                   = require("../../lib/js/curry.js");
 var Js_exn                  = require("../../lib/js/js_exn.js");
+var Caml_io                 = require("../../lib/js/caml_io.js");
 var Caml_sys                = require("../../lib/js/caml_sys.js");
 var Filename                = require("../../lib/js/filename.js");
+var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_sys_fs             = require("../../lib/js/caml_sys_fs.js");
 var Node_process            = require("../../lib/js/node_process.js");
 var Caml_sys_system         = require("../../lib/js/caml_sys_system.js");
@@ -89,7 +92,29 @@ eq("File \"caml_sys_poly_fill_test.ml\", line 63, characters 5-12", 1, Caml_sys_
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 66, characters 5-12", 127, Caml_sys_system.caml_sys_system_command("not_a_real_command"));
 
-eq("File \"caml_sys_poly_fill_test.ml\", line 70, characters 5-12", 0, (Filename.open_temp_file(/* None */0, /* None */0, "pre.", ".txt"), 0));
+var match = Filename.open_temp_file(/* None */0, /* None */0, "pre.", ".txt");
+
+var oc = match[1];
+
+eq("File \"caml_sys_poly_fill_test.ml\", line 71, characters 5-12", 0, (Pervasives.output_string(oc, "test contents"), Caml_io.caml_ml_flush(oc), Caml_io.caml_ml_flush(oc), Caml_sys_fs.caml_ml_close_channel(oc), Caml_sys_fs.caml_sys_remove(match[0]), 0));
+
+var match$1 = Filename.open_temp_file(/* None */0, /* None */0, "pre.", ".txt");
+
+var oc$1 = match$1[1];
+
+var file = match$1[0];
+
+Pervasives.output_string(oc$1, "test contents");
+
+Caml_io.caml_ml_flush(oc$1);
+
+Caml_sys_fs.caml_ml_close_channel(oc$1);
+
+var read_contents = Curry._1((
+      function (file) { return require('fs').readFileSync(file, 'ascii'); }
+    ), file);
+
+eq("File \"caml_sys_poly_fill_test.ml\", line 80, characters 5-12", "test contents", (Caml_sys_fs.caml_sys_remove(file), read_contents));
 
 Mt.from_pair_suites("caml_sys_poly_fill_test.ml", suites[0]);
 

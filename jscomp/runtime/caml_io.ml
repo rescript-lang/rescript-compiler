@@ -35,13 +35,13 @@ let stdin = Js_undefined.empty
 let stderr = Js_undefined.empty
 
 type out_channel  = {
-  fd : int;
-  mutable buffer :  string;
-  output :   out_channel  -> string -> unit 
+  mutable fd : int option;
+  mutable buffer : string;
+  output : out_channel -> string -> unit
 }
 
 let stdout = {
-  fd = 1;
+  fd = Some 1;
   buffer = "";
   output = (fun _ s ->
     let v =Bs_string.length s - 1 in
@@ -54,7 +54,7 @@ let stdout = {
 }
 
 let stderr = {
-  fd = 2;
+  fd = Some 2;
   buffer = "";
   output = fun _ s ->
     let v =Bs_string.length s - 1 in     
@@ -73,11 +73,6 @@ let caml_ml_flush (oc : out_channel)  : unit =
       oc.output oc oc.buffer;
       oc.buffer <- ""      
     end      
-
-let node_std_output  : string -> bool = [%bs.raw{|function (s){
-   return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);
-   }
-|}]
 
 (** note we need provide both [bytes] and [string] version 
 *)
