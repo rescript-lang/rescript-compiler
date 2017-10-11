@@ -387,7 +387,8 @@ core/js_packages_info.cmx : core/lam_module_ident.cmx ext/ext_sys.cmx \
     depends/bs_exception.cmx core/js_packages_info.cmi
 core/js_packages_state.cmx : core/js_packages_info.cmx \
     ext/ext_pervasives.cmx ext/ext_namespace.cmx core/js_packages_state.cmi
-core/ocaml_types.cmx : common/ext_log.cmx core/ocaml_types.cmi
+core/ocaml_types.cmx : common/ext_log.cmx ext/ext_list.cmx \
+    core/ocaml_types.cmi
 core/ocaml_stdlib_slots.cmx :
 core/bs_conditional_initial.cmx : common/bs_version.cmx \
     core/bs_conditional_initial.cmi

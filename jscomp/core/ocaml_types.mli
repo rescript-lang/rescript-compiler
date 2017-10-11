@@ -37,7 +37,7 @@ type t
 
 val empty : t 
 val length : t -> int 
-val get_name : t -> int -> string
+
 
 
 (* Input path is a global module 
@@ -45,4 +45,6 @@ val get_name : t -> int -> string
 val find_serializable_signatures_by_path :
   Ident.t -> Env.t -> t option
 
+val get_name : t -> int -> string
 
+val map : (string -> 'a) -> t -> 'a list 

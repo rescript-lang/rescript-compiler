@@ -54,7 +54,7 @@ let serializable_signature (x : Types.signature_item) =
 
 let filter_serializable_signatures signature  : t  = 
   List.filter serializable_signature signature
-  
+
 (* Input path is a global module 
     TODO: it should be fine for local module
 *)
@@ -80,6 +80,9 @@ let rec dump_summary fmt (x : Env.summary) =
 let get_name  (serializable_sigs : t) (pos : int) = 
   Ident.name (name_of_signature_item (List.nth  serializable_sigs  pos))
 
+let map (f : string -> 'a ) (xs : t) = 
+  Ext_list.map 
+    (fun x -> f (name_of_signature_item x ).name ) xs 
 
 
 

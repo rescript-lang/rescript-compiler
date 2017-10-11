@@ -40,7 +40,7 @@ open Js_output.Ops
 
 
 
-let query_lambda id env = 
+let expand_global_module_as_lam id env = 
   Lam_compile_env.query_and_add_if_not_exist 
     (Lam_module_ident.of_ml id) 
     (Has_env env)
@@ -55,8 +55,8 @@ let query_lambda id env =
                        Lam.prim
                          ~primitive:(Pfield (i, Lambda.Fld_na)) 
                          ~args:[ Lam.global_module id  ] Location.none)
-                     )
-                      Location.none (* FIXME*))
+                 )
+                 Location.none (* FIXME*))
 
 
 (* Given an module name,  find its expanded structure  *)  
@@ -66,11 +66,9 @@ let expand_global_module  id env  : J.expression =
     (Has_env env)
     ~not_found:(fun _ -> assert false)
     ~found:(fun   {signature; _} -> 
-        let len = Ocaml_types.length signature in (** TODO: could be optimized *) 
         Js_of_lam_module.make ~comment:id.name 
-          (Ext_list.init len (fun i -> 
-               E.ml_var_dot id
-                 (Ocaml_types.get_name signature i ))))
+          (Ocaml_types.map (fun name -> E.ml_var_dot id name) signature )
+      )
 
 
 
