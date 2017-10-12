@@ -18,7 +18,6 @@ infer_type_test.cmi : ../runtime/js.cmi
 inline_edge_cases.cmi :
 inline_map_test.cmi :
 inner_define.cmi :
-literals.cmi :
 map_test.cmi :
 mt.cmi : ../runtime/js.cmi
 mt_global.cmi : mt.cmi
@@ -35,6 +34,7 @@ simple_derive_use.cmi :
 test_for_map2.cmi :
 test_http_server.cmi :
 test_is_js.cmi :
+test_literals.cmi :
 test_unsafe_obj_ffi.cmi : ../runtime/js.cmi
 test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmi
 testing.cmi :
@@ -163,9 +163,9 @@ exn_error_pattern.cmj :
 export_keyword.cmj :
 ext_array_test.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes_test.cmj : ../stdlib/pervasives.cmj ../stdlib/bytes.cmj
-ext_filename_test.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj literals.cmj \
-    ../stdlib/list.cmj ../stdlib/lazy.cmj ../stdlib/filename.cmj \
-    ext_string_test.cmj ext_pervasives_test.cmj
+ext_filename_test.cmj : test_literals.cmj ../stdlib/sys.cmj \
+    ../stdlib/string.cmj ../stdlib/list.cmj ../stdlib/lazy.cmj \
+    ../stdlib/filename.cmj ext_string_test.cmj ext_pervasives_test.cmj
 ext_list_test.cmj : ../stdlib/list.cmj ext_string_test.cmj \
     ../stdlib/array.cmj
 ext_log_test.cmj : ../stdlib/format.cmj
@@ -352,7 +352,6 @@ libqueue_test.cmj : ../stdlib/queue.cmj ../stdlib/list.cmj
 limits_test.cmj : mt.cmj ../stdlib/int32.cmj
 list_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj
-literals.cmj : ../stdlib/string.cmj literals.cmi
 local_class_type.cmj : ../runtime/js.cmj
 local_exception_test.cmj :
 loop_regression_test.cmj : mt.cmj
@@ -570,6 +569,7 @@ test_js_ffi.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 test_let.cmj :
 test_list.cmj : ../stdlib/list.cmj
 test_literal.cmj :
+test_literals.cmj : ../stdlib/string.cmj test_literals.cmi
 test_match_exception.cmj :
 test_mutliple.cmj : ../stdlib/list.cmj
 test_nat64.cmj :

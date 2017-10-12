@@ -67,5 +67,5 @@ val string_of_module_id :
   module_system ->
   t ->
   (Lam_module_ident.t ->
-   (string * t * bool ) option ) -> 
+   (string * t * Ext_namespace.file_kind) option ) -> 
   Lam_module_ident.t -> string

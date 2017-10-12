@@ -139,17 +139,19 @@ let cached_find_ml_id_pos id pos env : ident_info =
       let name =  Ocaml_types.get_name signature pos  in
       let arity, closed_lambda =        
         match String_map.find_opt name cmj_table.values with
-        | Some {arity ; closed_lambda} -> arity, closed_lambda
+        | Some {arity ; closed_lambda} -> 
+          arity, 
+          ( if Js_config.get_cross_module_inline () then
+              closed_lambda
+            else None
+          )
         | None -> Js_cmj_format.single_na, None 
       in
       {id; 
        name ;
        signature ;
        arity ;
-       closed_lambda = 
-         if Js_config.get_cross_module_inline () then
-           closed_lambda
-         else None
+       closed_lambda
       }
     end
   | Some (Visit {signature ; cmj_table = { values ; _} } )
@@ -169,7 +171,7 @@ let cached_find_ml_id_pos id pos env : ident_info =
       signature;
       arity;
       closed_lambda
-        (* TODO shall we cache the arity ?*) 
+      (* TODO shall we cache the arity ?*) 
     } 
   | Some (Runtime _) -> assert false
   | Some External  -> assert false
@@ -211,11 +213,11 @@ let query_and_add_if_not_exist (type u)
         begin match env with 
           | Has_env env -> 
             begin match 
-                Ocaml_types.find_serializable_signatures_by_path ( oid.id) env with 
+                Ocaml_types.find_serializable_signatures_by_path  oid.id env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some signature -> 
-              oid +> Visit {signature = signature; cmj_table;cmj_path } ;
-              found  { signature ; pure = cmj_table.effect = None} 
+              oid +> Visit {signature; cmj_table;cmj_path } ;
+              found  { signature ; pure = (cmj_table.effect = None)} 
             end
           | No_env -> 
             found cmj_info
@@ -239,7 +241,7 @@ let query_and_add_if_not_exist (type u)
   | Some (Visit {signature  ; cmj_table =  cmj_table; cmj_path}) -> 
     begin match env with 
       | Has_env _ -> 
-        found   { signature =  signature  ; pure = (cmj_table.effect = None)} 
+        found   { signature; pure = (cmj_table.effect = None)} 
       | No_env  -> found (cmj_path,cmj_table)
     end
 
@@ -279,7 +281,7 @@ let get_package_path_from_cmj
       ) 
     ~found:(fun (cmj_path,x) -> 
         Some (cmj_path, 
-              x.npm_package_path, x.case )
+              x.npm_package_path, x.cmj_case )
       )
 
 

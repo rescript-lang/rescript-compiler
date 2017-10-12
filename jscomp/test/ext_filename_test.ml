@@ -153,7 +153,7 @@ let relative_path file_or_dir_1 file_or_dir_2 =
 *)
 let node_relative_path node_modules_shorten (file1 : t) 
     (`File file2 as dep_file : [`File of string]) = 
-  let v = Ext_string_test.find  file2 ~sub:Literals.node_modules in 
+  let v = Ext_string_test.find  file2 ~sub:Test_literals.node_modules in 
   let len = String.length file2 in 
   if node_modules_shorten && v >= 0 then
     
@@ -178,7 +178,7 @@ let node_relative_path node_modules_shorten (file1 : t)
         *)
     in 
     Ext_string_test.tail_from file2
-      (skip (v + Literals.node_modules_length)) 
+      (skip (v + Test_literals.node_modules_length)) 
   else 
     relative_path 
       (  match dep_file with 
@@ -207,7 +207,7 @@ let rec find_root_filename ~cwd filename   =
 
 
 let find_package_json_dir cwd  = 
-  find_root_filename ~cwd  Literals.bsconfig_json
+  find_root_filename ~cwd  Test_literals.bsconfig_json
 
 let package_dir = lazy (find_package_json_dir (Lazy.force cwd))
 
@@ -362,5 +362,3 @@ let simple_convert_node_path_to_os_path =
   else failwith ("Unknown OS : " ^ Sys.os_type)
 
 
-let js_name_of_basename s = 
-  String.uncapitalize s ^ Literals.suffix_js

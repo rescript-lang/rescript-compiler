@@ -66,7 +66,6 @@ bin/whole_compiler.ml : core/lam_print.ml
 bin/whole_compiler.ml : core/lam_stats.ml
 bin/whole_compiler.ml : core/lam_subst.ml
 bin/whole_compiler.ml : core/lam_util.mli
-bin/whole_compiler.ml : core/type_util.ml
 bin/whole_compiler.ml : ext/ext_array.mli
 bin/whole_compiler.ml : ext/ext_bytes.mli
 bin/whole_compiler.ml : ext/ext_format.ml
@@ -90,7 +89,6 @@ bin/whole_compiler.ml : core/lam_group.mli
 bin/whole_compiler.ml : core/lam_print.mli
 bin/whole_compiler.ml : core/lam_stats.mli
 bin/whole_compiler.ml : core/lam_subst.mli
-bin/whole_compiler.ml : core/type_util.mli
 bin/whole_compiler.ml : ext/ext_format.mli
 bin/whole_compiler.ml : ext/ext_option.mli
 bin/whole_compiler.ml : ext/ext_string.mli
@@ -119,6 +117,7 @@ bin/whole_compiler.ml : core/lam_closure.ml
 bin/whole_compiler.ml : core/lam_compile.ml
 bin/whole_compiler.ml : core/lam_id_kind.ml
 bin/whole_compiler.ml : core/ocaml_parse.ml
+bin/whole_compiler.ml : core/ocaml_types.ml
 bin/whole_compiler.ml : ext/ext_filename.ml
 bin/whole_compiler.ml : ext/ext_js_regex.ml
 bin/whole_compiler.ml : ext/ext_position.ml
@@ -151,6 +150,7 @@ bin/whole_compiler.ml : core/lam_coercion.ml
 bin/whole_compiler.ml : core/lam_compile.mli
 bin/whole_compiler.ml : core/lam_id_kind.mli
 bin/whole_compiler.ml : core/ocaml_parse.mli
+bin/whole_compiler.ml : core/ocaml_types.mli
 bin/whole_compiler.ml : ext/ext_filename.mli
 bin/whole_compiler.ml : ext/ext_js_regex.mli
 bin/whole_compiler.ml : ext/ext_namespace.ml
@@ -363,7 +363,6 @@ bin/whole_compiler.ml : core/lam_compile_global.ml
 bin/whole_compiler.ml : core/lam_eta_conversion.ml
 bin/whole_compiler.ml : core/lam_pass_lets_dce.mli
 bin/whole_compiler.ml : core/ocaml_stdlib_slots.ml
-bin/whole_compiler.ml : core/type_int_to_string.ml
 bin/whole_compiler.ml : ext/hash_set_ident_mask.ml
 bin/whole_compiler.ml : super_errors/super_main.ml
 bin/whole_compiler.ml : super_errors/super_misc.ml

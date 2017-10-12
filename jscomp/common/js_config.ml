@@ -109,3 +109,4 @@ let dump_js = ref false
 let syntax_only = ref false
 let binary_ast = ref false
 
+let bs_suffix = ref false 

@@ -5,7 +5,7 @@ var fs = require('fs')
 var path = require('path')
 child_process.execSync(`bsb -clean-world && bsb -make-world`, {cwd:__dirname, stdio:[0,1,2]})
 
-var x = require('./src/demo.js')
+var x = require('./src/demo.bs.js')
 var assert = require('assert')
 
 assert.equal(x.v, 3 )

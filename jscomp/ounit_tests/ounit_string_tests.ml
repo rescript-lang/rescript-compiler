@@ -3,7 +3,7 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal    
 
-
+let printer_string = fun x -> x 
 
 
 let suites = 
@@ -299,18 +299,23 @@ let suites =
       =~ "Reason"
     end;
     __LOC__ >:: begin fun _ -> 
-      Ext_namespace.js_name_of_basename "a-b"
+      Ext_namespace.js_name_of_basename false "a-b"
       =~ "a.js";
-      Ext_namespace.js_name_of_basename "a-"
+      Ext_namespace.js_name_of_basename false "a-"
       =~ "a.js";
-      Ext_namespace.js_name_of_basename "a--"
+      Ext_namespace.js_name_of_basename false "a--"
       =~ "a-.js";
-      Ext_namespace.js_name_of_basename "AA-b"
+      Ext_namespace.js_name_of_basename false "AA-b"
       =~ "AA.js";
-      Ext_namespace.js_name_of_modulename ~little:true "AA-b"
+      Ext_namespace.js_name_of_modulename 
+        Little_js "AA-b"
       =~ "aA.js";
-      Ext_namespace.js_name_of_modulename ~little:false "AA-b"
+      Ext_namespace.js_name_of_modulename 
+        Upper_js "AA-b"
       =~ "AA.js";
+      Ext_namespace.js_name_of_modulename 
+        Upper_bs "AA-b"
+      =~ "AA.bs.js";
     end;
 
     __LOC__ >:: begin fun _ ->
@@ -324,5 +329,12 @@ let suites =
       let v = "bc" in
       f v =~ "Bc";
       v =~ "bc"
-    end
+    end;
+    __LOC__ >:: begin fun _ -> 
+      let (=~) = OUnit.assert_equal ~printer:printer_string in 
+      Ext_path.chop_all_extensions_if_any "a.bs.js" =~ "a" ; 
+      Ext_path.chop_all_extensions_if_any "a.js" =~ "a";
+      Ext_path.chop_all_extensions_if_any "a" =~ "a";
+      Ext_path.chop_all_extensions_if_any "a.x.bs.js" =~ "a"
+    end;
   ]

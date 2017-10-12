@@ -127,6 +127,11 @@ let chop_extension ?(loc="") name =
 let chop_extension_if_any fname =
   try Filename.chop_extension fname with Invalid_argument _ -> fname
 
+let rec chop_all_extensions_if_any fname =
+  match Filename.chop_extension fname with 
+  | x -> chop_all_extensions_if_any x 
+  | exception _ -> fname
+
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 
   if pos < 0 then ""

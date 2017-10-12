@@ -1836,7 +1836,7 @@ val suffix_rei : string
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
-val suffix_js : string
+
 val suffix_mli : string 
 val suffix_cmt : string 
 val suffix_cmti : string 
@@ -1971,7 +1971,7 @@ let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
+
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
@@ -2048,7 +2048,9 @@ val chop_extension : ?loc:string -> string -> string
 
 val chop_extension_if_any : string -> string
 
-
+val chop_all_extensions_if_any : 
+  string -> string 
+  
 (**
    {[
      get_extension "a.txt" = ".txt"
@@ -2216,6 +2218,11 @@ let chop_extension ?(loc="") name =
 
 let chop_extension_if_any fname =
   try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+let rec chop_all_extensions_if_any fname =
+  match Filename.chop_extension fname with 
+  | x -> chop_all_extensions_if_any x 
+  | exception _ -> fname
 
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 
@@ -3425,25 +3432,32 @@ module Ext_namespace : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** [make ~ns "a" ]
-  A typical example would return "a-Ns"
-  Note the namespace comes from the output of [namespace_of_package_name]
+    A typical example would return "a-Ns"
+    Note the namespace comes from the output of [namespace_of_package_name]
 *)
 val make : ns:string -> string -> string 
 
 
 
 (* Note  we have to output uncapitalized file Name, 
-  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-  relevant issues: #1609, #913  
-  
-  #1933 when removing ns suffix, don't pass the bound
-  of basename
-*)
-val js_name_of_basename :  string -> string 
+   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+   relevant issues: #1609, #913  
 
-(** [js_name_of_modulename ~little A-Ns]
+   #1933 when removing ns suffix, don't pass the bound
+   of basename
 *)
-val js_name_of_modulename : little:bool -> string -> string
+val js_name_of_basename :  
+  bool ->
+  string -> string 
+
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs 
+  (** [js_name_of_modulename ~little A-Ns]
+  *)
+val js_name_of_modulename : file_kind -> string -> string
 
 (* TODO handle cases like 
    '@angular/core'
@@ -3509,15 +3523,29 @@ let remove_ns_suffix name =
   if i < 0 then name 
   else String.sub name 0 i 
 
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
 
-let js_name_of_basename s = 
-  remove_ns_suffix  s ^ Literals.suffix_js
+let suffix_js = ".js"  
+let bs_suffix_js = ".bs.js"
 
-let js_name_of_modulename ~little s = 
-  if little then 
-    remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
-  else 
-    remove_ns_suffix s ^ Literals.suffix_js
+let js_name_of_basename bs_suffix s =   
+  remove_ns_suffix  s ^ 
+  (if bs_suffix then bs_suffix_js else  suffix_js )
+
+let js_name_of_modulename little s = 
+  match little with 
+  | Little_js -> 
+    remove_ns_suffix (String.uncapitalize s) ^ suffix_js
+  | Little_bs -> 
+    remove_ns_suffix (String.uncapitalize s) ^ bs_suffix_js
+  | Upper_js ->
+    remove_ns_suffix s ^ suffix_js
+  | Upper_bs -> 
+    remove_ns_suffix s ^ bs_suffix_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:

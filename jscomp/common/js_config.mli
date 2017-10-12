@@ -100,3 +100,4 @@ val syntax_only  : bool ref
 val binary_ast : bool ref
 
 
+val bs_suffix : bool ref 

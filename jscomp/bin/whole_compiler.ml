@@ -22681,7 +22681,7 @@ val syntax_only  : bool ref
 val binary_ast : bool ref
 
 
-
+val bs_suffix : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -22795,7 +22795,7 @@ let dump_js = ref false
 let syntax_only = ref false
 let binary_ast = ref false
 
-
+let bs_suffix = ref false 
 end
 module Bs_exception : sig 
 #1 "bs_exception.mli"
@@ -24621,7 +24621,7 @@ val suffix_rei : string
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
-val suffix_js : string
+
 val suffix_mli : string 
 val suffix_cmt : string 
 val suffix_cmti : string 
@@ -24756,7 +24756,7 @@ let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
+
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
@@ -24833,7 +24833,9 @@ val chop_extension : ?loc:string -> string -> string
 
 val chop_extension_if_any : string -> string
 
-
+val chop_all_extensions_if_any : 
+  string -> string 
+  
 (**
    {[
      get_extension "a.txt" = ".txt"
@@ -25001,6 +25003,11 @@ let chop_extension ?(loc="") name =
 
 let chop_extension_if_any fname =
   try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+let rec chop_all_extensions_if_any fname =
+  match Filename.chop_extension fname with 
+  | x -> chop_all_extensions_if_any x 
+  | exception _ -> fname
 
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 
@@ -59047,25 +59054,32 @@ module Ext_namespace : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** [make ~ns "a" ]
-  A typical example would return "a-Ns"
-  Note the namespace comes from the output of [namespace_of_package_name]
+    A typical example would return "a-Ns"
+    Note the namespace comes from the output of [namespace_of_package_name]
 *)
 val make : ns:string -> string -> string 
 
 
 
 (* Note  we have to output uncapitalized file Name, 
-  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-  relevant issues: #1609, #913  
-  
-  #1933 when removing ns suffix, don't pass the bound
-  of basename
-*)
-val js_name_of_basename :  string -> string 
+   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+   relevant issues: #1609, #913  
 
-(** [js_name_of_modulename ~little A-Ns]
+   #1933 when removing ns suffix, don't pass the bound
+   of basename
 *)
-val js_name_of_modulename : little:bool -> string -> string
+val js_name_of_basename :  
+  bool ->
+  string -> string 
+
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs 
+  (** [js_name_of_modulename ~little A-Ns]
+  *)
+val js_name_of_modulename : file_kind -> string -> string
 
 (* TODO handle cases like 
    '@angular/core'
@@ -59131,15 +59145,29 @@ let remove_ns_suffix name =
   if i < 0 then name 
   else String.sub name 0 i 
 
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
 
-let js_name_of_basename s = 
-  remove_ns_suffix  s ^ Literals.suffix_js
+let suffix_js = ".js"  
+let bs_suffix_js = ".bs.js"
 
-let js_name_of_modulename ~little s = 
-  if little then 
-    remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
-  else 
-    remove_ns_suffix s ^ Literals.suffix_js
+let js_name_of_basename bs_suffix s =   
+  remove_ns_suffix  s ^ 
+  (if bs_suffix then bs_suffix_js else  suffix_js )
+
+let js_name_of_modulename little s = 
+  match little with 
+  | Little_js -> 
+    remove_ns_suffix (String.uncapitalize s) ^ suffix_js
+  | Little_bs -> 
+    remove_ns_suffix (String.uncapitalize s) ^ bs_suffix_js
+  | Upper_js ->
+    remove_ns_suffix s ^ suffix_js
+  | Upper_bs -> 
+    remove_ns_suffix s ^ bs_suffix_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
@@ -63394,7 +63422,7 @@ val string_of_module_id :
   module_system ->
   t ->
   (Lam_module_ident.t ->
-   (string * t * bool ) option ) -> 
+   (string * t * Ext_namespace.file_kind) option ) -> 
   Lam_module_ident.t -> string
 end = struct
 #1 "js_packages_info.ml"
@@ -63582,7 +63610,7 @@ let string_of_module_id
     (module_system : module_system)    
     (current_package_info : t)
     (get_package_path_from_cmj : 
-       Lam_module_ident.t -> (string * t * bool) option
+       Lam_module_ident.t -> (string * t * Ext_namespace.file_kind) option
     )
     (dep_module_id : Lam_module_ident.t) : string =
   let result = 
@@ -63609,7 +63637,7 @@ let string_of_module_id
       | None -> 
         Bs_exception.error (Missing_ml_dependency dep_module_id.id.name)
       | Some (cmj_path, package_info, little) -> 
-        let js_file =  Ext_namespace.js_name_of_modulename ~little id.name in 
+        let js_file =  Ext_namespace.js_name_of_modulename little id.name in 
         let dependency_pkg_info =  
           query_package_infos package_info module_system 
         in 
@@ -70570,13 +70598,12 @@ type cmj_value = {
 
 type effect = string option
 
-
-
+type cmj_case = Ext_namespace.file_kind 
 type t = {
   values : cmj_value String_map.t;
   effect : effect;
   npm_package_path : Js_packages_info.t;
-  case : bool;
+  cmj_case : cmj_case;
 }
 
 val single_na : arity
@@ -70637,15 +70664,16 @@ type effect = string option
 
 let single_na = Single NA
 (** we don't force people to use package *)
-
+type cmj_case = Ext_namespace.file_kind
+  
 type t = {
   values : cmj_value String_map.t;
   effect : effect;
   npm_package_path : Js_packages_info.t ;
-  case : bool; (* little case -> true *)
+  cmj_case : cmj_case; 
 }
 
-let cmj_magic_number =  "BUCKLE20170907"
+let cmj_magic_number =  "BUCKLE20171012"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 
@@ -70654,7 +70682,7 @@ let pure_dummy =
     values = String_map.empty;
     effect = None;
     npm_package_path = Js_packages_info.empty;
-    case = true;
+    cmj_case = Little_js;
   }
 
 let no_pure_dummy = 
@@ -70662,7 +70690,7 @@ let no_pure_dummy =
     values = String_map.empty;
     effect = Some Ext_string.empty;
     npm_package_path = Js_packages_info.empty;  
-    case = true;
+    cmj_case = Little_js; (** TODO: consistent with Js_config.bs_suffix default *)
   }
 
 
@@ -74878,6 +74906,153 @@ let debugger : t =
   { statement_desc = J.Debugger ; 
     comment = None 
   }
+
+end
+module Ocaml_types : sig 
+#1 "ocaml_types.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Utilities for quering typing information from {!Env.t}, this part relies
+    on compiler API
+*)
+
+type t
+
+val empty : t 
+val length : t -> int 
+
+
+
+(* Input path is a global module 
+    TODO: it should be fine for local module*)
+val find_serializable_signatures_by_path :
+  Ident.t -> Env.t -> t option
+
+val get_name : t -> int -> string
+
+val map : (string -> 'a) -> t -> 'a list 
+
+end = struct
+#1 "ocaml_types.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Types.signature
+
+let empty  = []
+let length  = List.length 
+let name_of_signature_item (x : Types.signature_item )=
+  match x with 
+  | Sig_value (i,_) 
+  | Sig_module (i,_,_) -> i 
+  | Sig_typext (i,_,_) -> i 
+  | Sig_modtype(i,_) -> i 
+  | Sig_class (i,_,_) -> i 
+  | Sig_class_type(i,_,_) -> i 
+  | Sig_type(i,_,_) -> i   
+
+
+(** It should be safe to replace Pervasives[], 
+    we should test cases  like module aliases if it is serializable or not 
+    {[ module Pervasives = List ]} 
+*)
+let serializable_signature (x : Types.signature_item) =
+  match x with 
+  | Sig_value(_, {val_kind = Val_prim _}) -> false
+  | Sig_typext _ 
+  | Sig_module _
+  | Sig_class _ 
+  | Sig_value _ -> true
+  | Sig_modtype _ | Sig_class_type _ | Sig_type _ -> false
+
+
+
+let filter_serializable_signatures signature  : t  = 
+  List.filter serializable_signature signature
+
+(* Input path is a global module 
+    TODO: it should be fine for local module
+*)
+let find_serializable_signatures_by_path v (env : Env.t) 
+  : t option = 
+  match Env.find_module (Pident v) env with 
+  | exception Not_found -> None 
+  | {md_type = Mty_signature signature; _} -> 
+    Some (filter_serializable_signatures signature)
+  (** TODO: refine *)
+  | _ -> Ext_log.err __LOC__  "@[impossible path %s@]@."
+           (Ident.name v) ; assert false 
+
+let rec dump_summary fmt (x : Env.summary) = 
+  match x with 
+  | Env_empty -> ()
+  | Env_value(s,id,value_description) -> 
+    dump_summary fmt s ;
+    Printtyp.value_description id fmt value_description
+  | _ -> ()
+
+(** Used in [ Lglobal_module] *)
+let get_name  (serializable_sigs : t) (pos : int) = 
+  Ident.name (name_of_signature_item (List.nth  serializable_sigs  pos))
+
+let map (f : string -> 'a ) (xs : t) = 
+  Ext_list.map 
+    (fun x -> f (name_of_signature_item x ).name ) xs 
+
+
+
+
+
 
 end
 module Printlambda : sig 
@@ -83235,179 +83410,6 @@ let reset () =
   aliased_idents := Ident.empty
 
 end
-module Type_int_to_string
-= struct
-#1 "type_int_to_string.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let name_of_signature_item (x : Types.signature_item )=
-  match x with 
-  | Sig_value (i,_) 
-  | Sig_module (i,_,_) -> i 
-  | Sig_typext (i,_,_) -> i 
-  | Sig_modtype(i,_) -> i 
-  | Sig_class (i,_,_) -> i 
-  | Sig_class_type(i,_,_) -> i 
-  | Sig_type(i,_,_) -> i  
-
-
-(** It should be safe to replace Pervasives[], 
-    we should test cases  like module Pervasives = List *)
-let serializable_signature =
-  (fun x ->
-     match (x : Types.signature_item) with 
-     | Sig_value(_, {val_kind = Val_prim _}) -> false
-     | Sig_typext _ 
-     | Sig_module _
-     | Sig_class _ 
-     | Sig_value _ -> true
-     | _ -> false)
-  
-let filter_serializable_signatures (signature : Types.signature)
-  : Types.signature = 
-  List.filter serializable_signature signature
-
-end
-module Type_util : sig 
-#1 "type_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Utilities for quering typing inforaation from {!Env.t}, this part relies
-    on compiler API
-*)
-
-
-val get_name : Types.signature -> int -> string
-
-
-(* Input path is a global module 
-    TODO: it should be fine for local module*)
-val find_serializable_signatures_by_path :
-  Ident.t -> Env.t -> Types.signature option
-
-
-(* val find_name : *)
-(*   Ident.t -> int -> Env.t -> string option *)
-
-
-
-
-end = struct
-#1 "type_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-(* Input path is a global module 
-    TODO: it should be fine for local module
-*)
-let find_serializable_signatures_by_path v (env : Env.t) 
-  : Types.signature option = 
-  match Env.find_module (Pident v) env with 
-  | exception Not_found -> None 
-  | {md_type = Mty_signature signature; _} -> 
-    Some (Type_int_to_string.filter_serializable_signatures signature)
-  (** TODO: refine *)
-  | _ -> Ext_log.err __LOC__  "@[impossible path %s@]@."
-           (Ident.name v) ; assert false 
-
-let rec dump_summary fmt (x : Env.summary) = 
-  match x with 
-  | Env_empty -> ()
-  | Env_value(s,id,value_description) -> 
-    dump_summary fmt s ;
-    Printtyp.value_description id fmt value_description
-  | _ -> ()
-
-(** Used in [ Lglobal_module] *)
-let get_name  (serializable_sigs : Types.signature) (pos : int) = 
-  Ident.name @@ Type_int_to_string.name_of_signature_item @@ List.nth  serializable_sigs  pos
-
-(* let find_name id pos env = *)
-(*   match find_serializable_signatures_by_path id env with *)
-(*   | Some signatures -> *)
-(*     Some (get_name signatures pos) *)
-(*   | None -> None       *)
-
-
-
-    
-
-
-end
 module Lam_compile_env : sig 
 #1 "lam_compile_env.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -83450,7 +83452,7 @@ type path = string
 
 
 type module_info = {
-  signature :  Types.signature ;
+  signature :  Ocaml_types.t ;
   pure : bool 
 }
 
@@ -83462,7 +83464,7 @@ type _ t =
 type ident_info = {
   id : Ident.t;
   name : string;
-  signature : Types.signature;
+  signature : Ocaml_types.t;
   arity : Js_cmj_format.arity;
   closed_lambda : Lam.t option 
 }  
@@ -83524,7 +83526,7 @@ val is_pure_module : Lam_module_ident.t -> bool
 
 val get_package_path_from_cmj : 
   Lam_module_ident.t -> 
-  (string * Js_packages_info.t * bool) option
+  (string * Js_packages_info.t * Js_cmj_format.cmj_case) option
 
 
 
@@ -83577,7 +83579,7 @@ module S = Js_stmt_make
 type path = string 
 
 type ml_module_info = { 
-  signature : Types.signature ;
+  signature : Ocaml_types.t;
   cmj_table : Js_cmj_format.t ;
   cmj_path : path;
 }
@@ -83601,7 +83603,7 @@ type env_value =
 type ident_info = {
   id : Ident.t;
   name : string;
-  signature : Types.signature;
+  signature : Ocaml_types.t;
   arity : Js_cmj_format.arity; 
   closed_lambda : Lam.t option 
 }
@@ -83673,30 +83675,32 @@ let cached_find_ml_id_pos id pos env : ident_info =
     let cmj_path, cmj_table = 
       Js_cmj_load.find_cmj (id.name ^ Literals.suffix_cmj) in
     begin match
-        Type_util.find_serializable_signatures_by_path id env with 
+        Ocaml_types.find_serializable_signatures_by_path id env with 
     | None -> 
       assert false (*TODO: more informative error message *)
     | Some signature -> 
       oid  +> Visit {signature;  cmj_table ; cmj_path  }  ;
-      let name =  Type_util.get_name signature pos  in
+      let name =  Ocaml_types.get_name signature pos  in
       let arity, closed_lambda =        
         match String_map.find_opt name cmj_table.values with
-        | Some {arity ; closed_lambda} -> arity, closed_lambda
+        | Some {arity ; closed_lambda} -> 
+          arity, 
+          ( if Js_config.get_cross_module_inline () then
+              closed_lambda
+            else None
+          )
         | None -> Js_cmj_format.single_na, None 
       in
       {id; 
        name ;
        signature ;
        arity ;
-       closed_lambda = 
-         if Js_config.get_cross_module_inline () then
-           closed_lambda
-         else None
+       closed_lambda
       }
     end
   | Some (Visit {signature ; cmj_table = { values ; _} } )
     -> 
-    let name = Type_util.get_name signature pos  in
+    let name = Ocaml_types.get_name signature pos  in
     let arity , closed_lambda =  
       match  String_map.find_opt name values with
       | Some {arity; closed_lambda;_} -> 
@@ -83711,7 +83715,7 @@ let cached_find_ml_id_pos id pos env : ident_info =
       signature;
       arity;
       closed_lambda
-        (* TODO shall we cache the arity ?*) 
+      (* TODO shall we cache the arity ?*) 
     } 
   | Some (Runtime _) -> assert false
   | Some External  -> assert false
@@ -83719,7 +83723,7 @@ let cached_find_ml_id_pos id pos env : ident_info =
 
 
 type module_info = {
-  signature :  Types.signature ;
+  signature :  Ocaml_types.t ;
   pure : bool 
 }
 (* TODO: it does not make sense to cache
@@ -83742,7 +83746,7 @@ let query_and_add_if_not_exist (type u)
         oid +> Runtime (true,cmj_path,cmj_table) ; 
         begin match env with 
           | Has_env _ -> 
-            found {signature = []; pure = true}
+            found {signature = Ocaml_types.empty; pure = true}
           | No_env -> 
             found cmj_info
         end
@@ -83753,11 +83757,11 @@ let query_and_add_if_not_exist (type u)
         begin match env with 
           | Has_env env -> 
             begin match 
-                Type_util.find_serializable_signatures_by_path ( oid.id) env with 
+                Ocaml_types.find_serializable_signatures_by_path  oid.id env with 
             | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
             | Some signature -> 
-              oid +> Visit {signature = signature; cmj_table;cmj_path } ;
-              found  { signature ; pure = cmj_table.effect = None} 
+              oid +> Visit {signature; cmj_table;cmj_path } ;
+              found  { signature ; pure = (cmj_table.effect = None)} 
             end
           | No_env -> 
             found cmj_info
@@ -83771,7 +83775,7 @@ let query_and_add_if_not_exist (type u)
         begin match env with 
           | Has_env _ 
             -> 
-            found {signature = []; pure = false}
+            found {signature = Ocaml_types.empty; pure = false}
           | No_env -> 
             found (Ext_string.empty, Js_cmj_format.no_pure_dummy)
             (* FIXME: #154, it come from External, should be okay *)
@@ -83781,21 +83785,21 @@ let query_and_add_if_not_exist (type u)
   | Some (Visit {signature  ; cmj_table =  cmj_table; cmj_path}) -> 
     begin match env with 
       | Has_env _ -> 
-        found   { signature =  signature  ; pure = (cmj_table.effect = None)} 
+        found   { signature; pure = (cmj_table.effect = None)} 
       | No_env  -> found (cmj_path,cmj_table)
     end
 
   | Some (Runtime (pure, cmj_path,cmj_table)) -> 
     begin match env with 
       | Has_env _ -> 
-        found {signature = []  ; pure }
+        found {signature = Ocaml_types.empty; pure }
       | No_env -> 
         found (cmj_path, cmj_table) 
     end
   | Some External -> 
     begin match env with 
       | Has_env _ -> 
-        found {signature = []  ; pure  = false}
+        found {signature = Ocaml_types.empty; pure  = false}
       | No_env -> 
         found (Ext_string.empty, Js_cmj_format.no_pure_dummy) (* External is okay *)
     end
@@ -83821,7 +83825,7 @@ let get_package_path_from_cmj
       ) 
     ~found:(fun (cmj_path,x) -> 
         Some (cmj_path, 
-              x.npm_package_path, x.case )
+              x.npm_package_path, x.cmj_case )
       )
 
 
@@ -87005,7 +87009,7 @@ end = struct
 
 
 
-  let string_of_module_id 
+let string_of_module_id 
       ~output_dir
       module_system
       id
@@ -93250,7 +93254,7 @@ val expand_global_module :  Ident.t -> Env.t   -> J.expression
 
 
 
-val query_lambda : Ident.t -> Env.t -> Lam.t
+val expand_global_module_as_lam : Ident.t -> Env.t -> Lam.t
 
 end = struct
 #1 "lam_compile_global.ml"
@@ -93296,20 +93300,23 @@ open Js_output.Ops
 
 
 
-let query_lambda id env = 
-  Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) 
+let expand_global_module_as_lam id env = 
+  Lam_compile_env.query_and_add_if_not_exist 
+    (Lam_module_ident.of_ml id) 
     (Has_env env)
     ~not_found:(fun id -> assert false)
-    ~found:(fun {signature = sigs; _} 
+    ~found:(fun {signature ; _} 
              -> 
                Lam.prim
                  ~primitive:(Pmakeblock(0, Blk_module None, Immutable))  
                  ~args:(
-                   List.mapi (fun i _ -> 
+                   let len = Ocaml_types.length signature in 
+                   Ext_list.init len (fun i  -> 
                        Lam.prim
                          ~primitive:(Pfield (i, Lambda.Fld_na)) 
                          ~args:[ Lam.global_module id  ] Location.none)
-                     sigs) Location.none (* FIXME*))
+                 )
+                 Location.none (* FIXME*))
 
 
 (* Given an module name,  find its expanded structure  *)  
@@ -93318,12 +93325,10 @@ let expand_global_module  id env  : J.expression =
     (Lam_module_ident.of_ml id) 
     (Has_env env)
     ~not_found:(fun _ -> assert false)
-    ~found:(fun   {signature = sigs; _} -> 
-          let len = List.length sigs in (** TODO: could be optimized *) 
-          Js_of_lam_module.make ~comment:id.name 
-            (Ext_list.init len (fun i -> 
-                 E.ml_var_dot id
-                   (Type_util.get_name sigs i ))))
+    ~found:(fun   {signature; _} -> 
+        Js_of_lam_module.make ~comment:id.name 
+          (Ocaml_types.map (fun name -> E.ml_var_dot id name) signature )
+      )
 
 
 
@@ -93505,7 +93510,7 @@ let propogate_beta_reduce
            (* It's not completeness, its to make it sound.. 
               Pass global module as an argument
            *)
-           Lam_compile_global.query_lambda ident meta.env 
+           Lam_compile_global.expand_global_module_as_lam ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
            Ident_hashtbl.replace meta.ident_tbl param 
@@ -93564,7 +93569,7 @@ let propogate_beta_reduce_with_map
           | Lglobal_module ident 
           -> 
            (* It's not completeness, its to make it sound.. *)
-           Lam_compile_global.query_lambda ident meta.env 
+           Lam_compile_global.expand_global_module_as_lam ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
            Ident_hashtbl.replace meta.ident_tbl param 
@@ -102163,7 +102168,7 @@ val export_to_cmj :
   Js_cmj_format.effect ->
   Lam_module_ident.t list ->
   Lam.t Ident_map.t ->
-  bool ->
+  Js_cmj_format.cmj_case ->
   Js_cmj_format.t
 
 
@@ -102330,7 +102335,7 @@ let export_to_cmj
     maybe_pure
     external_ids 
     export_map
-    case
+    cmj_case
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
   let () =
@@ -102343,7 +102348,7 @@ let export_to_cmj
   {values; 
    effect ; 
    npm_package_path = Js_packages_state.get_packages_info ();
-   case ;
+   cmj_case ;
     (* FIXME: make sure [-o] would not change its case 
       add test for ns/non-ns
     *)
@@ -102441,7 +102446,18 @@ end = struct
 module E = Js_exp_make 
 module S = Js_stmt_make  
 
- open Js_output.Ops 
+let get_cmj_case output_prefix : Ext_namespace.file_kind = 
+  let little = 
+    Ext_char.is_lower_case (Filename.basename output_prefix).[0] 
+  in 
+  match little, !Js_config.bs_suffix with 
+  | true, true -> Little_bs
+  | true, false -> Little_js
+  | false, true -> Upper_bs 
+  | false, false -> Upper_js
+  
+
+open Js_output.Ops 
 
 let compile_group ({filename = file_name; env;} as meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
@@ -102736,7 +102752,7 @@ let compile  ~filename (output_prefix : string) env _sigs
           maybe_pure 
           external_module_ids
           coerced_input.export_map
-          (Ext_char.is_lower_case (Filename.basename output_prefix).[0])
+          (get_cmj_case output_prefix)
       in
       (if not @@ !Clflags.dont_write_files then
          Js_cmj_format.to_file 
@@ -102759,10 +102775,10 @@ let lambda_as_module
     let lambda_output = compile ~filename output_prefix env sigs lam in
     let basename =  
       (* #758, output_prefix is already chopped *)
-       Ext_namespace.js_name_of_basename (Filename.basename
-         output_prefix (* -o *)
-         (* filename *) (* see #757  *)
-      ) in
+      (* -o  filename, see #757  *)
+       Ext_namespace.js_name_of_basename !Js_config.bs_suffix 
+        (Filename.basename
+         output_prefix) in
       (* #913
          only generate little-case js file
       *)
@@ -112824,7 +112840,8 @@ let process_result ppf  main_file ast_table result =
   if not (!Clflags.compile_only) then
     Sys.command
       ("node " ^
-        Ext_namespace.js_name_of_basename (Filename.chop_extension main_file)
+        Ext_namespace.js_name_of_basename 
+        !Js_config.bs_suffix (Filename.chop_extension main_file)
       )
   else 0
 
@@ -115538,6 +115555,11 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Arg.Unit Reason_outcome_printer_main.setup,
    " Print compiler output in Reason syntax"
   )
+  ::
+  ("-bs-suffix",
+    Arg.Set Js_config.bs_suffix,
+    " Set suffix to .bs.js"
+  )  
   :: 
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
   , " Don't include current dir implicitly")

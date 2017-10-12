@@ -1,6 +1,6 @@
 'use strict';
 
-var Demo$Namespace = require("./demo.js");
+var Demo$Namespace = require("./demo.bs.js");
 
 var a = Demo$Namespace.v;
 
