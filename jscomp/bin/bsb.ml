@@ -144,6 +144,7 @@ let in_source = "in-source"
 let warnings = "warnings"
 let number = "number"
 let error = "error"
+let suffix = "suffix"
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
@@ -3356,7 +3357,7 @@ val suffix_rei : string
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
-val suffix_js : string
+
 val suffix_mli : string 
 val suffix_cmt : string 
 val suffix_cmti : string 
@@ -3491,7 +3492,7 @@ let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
+
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"
@@ -5200,7 +5201,9 @@ val chop_extension : ?loc:string -> string -> string
 
 val chop_extension_if_any : string -> string
 
-
+val chop_all_extensions_if_any : 
+  string -> string 
+  
 (**
    {[
      get_extension "a.txt" = ".txt"
@@ -5368,6 +5371,11 @@ let chop_extension ?(loc="") name =
 
 let chop_extension_if_any fname =
   try Filename.chop_extension fname with Invalid_argument _ -> fname
+
+let rec chop_all_extensions_if_any fname =
+  match Filename.chop_extension fname with 
+  | x -> chop_all_extensions_if_any x 
+  | exception _ -> fname
 
 let get_extension x =
   let pos = Ext_string.rindex_neg x '.' in 
@@ -6508,25 +6516,32 @@ module Ext_namespace : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** [make ~ns "a" ]
-  A typical example would return "a-Ns"
-  Note the namespace comes from the output of [namespace_of_package_name]
+    A typical example would return "a-Ns"
+    Note the namespace comes from the output of [namespace_of_package_name]
 *)
 val make : ns:string -> string -> string 
 
 
 
 (* Note  we have to output uncapitalized file Name, 
-  or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
-  relevant issues: #1609, #913  
-  
-  #1933 when removing ns suffix, don't pass the bound
-  of basename
-*)
-val js_name_of_basename :  string -> string 
+   or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
+   relevant issues: #1609, #913  
 
-(** [js_name_of_modulename ~little A-Ns]
+   #1933 when removing ns suffix, don't pass the bound
+   of basename
 *)
-val js_name_of_modulename : little:bool -> string -> string
+val js_name_of_basename :  
+  bool ->
+  string -> string 
+
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs 
+  (** [js_name_of_modulename ~little A-Ns]
+  *)
+val js_name_of_modulename : file_kind -> string -> string
 
 (* TODO handle cases like 
    '@angular/core'
@@ -6592,15 +6607,29 @@ let remove_ns_suffix name =
   if i < 0 then name 
   else String.sub name 0 i 
 
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
 
-let js_name_of_basename s = 
-  remove_ns_suffix  s ^ Literals.suffix_js
+let suffix_js = ".js"  
+let bs_suffix_js = ".bs.js"
 
-let js_name_of_modulename ~little s = 
-  if little then 
-    remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
-  else 
-    remove_ns_suffix s ^ Literals.suffix_js
+let js_name_of_basename bs_suffix s =   
+  remove_ns_suffix  s ^ 
+  (if bs_suffix then bs_suffix_js else  suffix_js )
+
+let js_name_of_modulename little s = 
+  match little with 
+  | Little_js -> 
+    remove_ns_suffix (String.uncapitalize s) ^ suffix_js
+  | Little_bs -> 
+    remove_ns_suffix (String.uncapitalize s) ^ bs_suffix_js
+  | Upper_js ->
+    remove_ns_suffix s ^ suffix_js
+  | Upper_bs -> 
+    remove_ns_suffix s ^ bs_suffix_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:
@@ -6649,6 +6678,226 @@ let namespace_of_package_name (s : string) : string =
   aux true 0 len ;
   Buffer.contents buf 
 
+end
+module Js_config : sig 
+#1 "js_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* val get_packages_info :
+   unit -> Js_packages_info.t *)
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
+
+
+(* val set_package_name : string -> unit  
+val get_package_name : unit -> string option *)
+
+(** corss module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** generate tds option *)
+val default_gen_tds : bool ref
+
+(** options for builtion ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+val no_warn_ffi_type : bool ref 
+val no_warn_unused_bs_attribute : bool ref 
+val no_error_unused_bs_attribute : bool ref 
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+(* It will imply [-noassert] be set too, note from the implmentation point of view, 
+   in the lambda layer, it is impossible to tell whehther it is [assert (3 <> 2)] or 
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
+
+
+
+(** Debugging utilies *)
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+
+val sort_imports : bool ref 
+val dump_js : bool ref
+val syntax_only  : bool ref
+val binary_ast : bool ref
+
+
+val bs_suffix : bool ref 
+end = struct
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(* let add_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match Js_packages_info.module_system_of_string package_name with
+         | Some x -> x
+         | None ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+(** Browser is not set via command line only for internal use *)
+
+
+let no_version_header = ref false
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
+
+let (//) = Filename.concat
+
+(* let get_packages_info () = !packages_info *)
+
+let default_gen_tds = ref false
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+let no_warn_ffi_type = ref false
+
+(** TODO: will flip the option when it is ready *)
+let no_warn_unused_bs_attribute = ref false
+let no_error_unused_bs_attribute = ref false 
+
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f
+let get_current_file () = !current_file
+let get_module_name () =
+  Filename.chop_extension
+    (Filename.basename (String.uncapitalize !current_file))
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !current_file
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+let no_any_assert = ref false
+
+let set_no_any_assert () = no_any_assert := true
+let get_no_any_assert () = !no_any_assert
+
+let sort_imports = ref true
+let dump_js = ref false
+
+
+
+let syntax_only = ref false
+let binary_ast = ref false
+
+let bs_suffix = ref false 
 end
 module Bsb_package_specs : sig 
 #1 "bsb_package_specs.mli"
@@ -6879,10 +7128,12 @@ let package_output ({format; in_source } : spec) output=
 *)
 let get_list_of_output_js 
     package_specs output_file_sans_extension = 
-  Spec_set.fold (fun format acc ->
-      package_output format 
-        ( Ext_namespace.js_name_of_basename output_file_sans_extension)
-      :: acc
+  Spec_set.fold 
+    (fun format acc ->
+       package_output format 
+         ( Ext_namespace.js_name_of_basename !Js_config.bs_suffix
+             output_file_sans_extension)
+       :: acc
     ) package_specs []
 
 
@@ -10131,6 +10382,7 @@ type t =
     entries : entries_t list ;
     generators : string String_map.t ; 
     cut_generators : bool; (* note when used as a dev mode, we will always ignore it *)
+    bs_suffix : bool ; (* true means [.bs.js] we should pass [-bs-suffix] flag *)
   }
 
 end
@@ -10840,7 +11092,17 @@ let interpret_json
           | Some (Obj {map }) -> Bsb_warning.from_map map 
           | Some config -> Bsb_exception.config_error config "expect an object"
         in 
+        let bs_suffix = 
+          match String_map.find_opt Bsb_build_schemas.suffix map with 
+          | None -> false  
+          | Some (Str {str = ".js"} ) -> false 
+          | Some (Str {str = ".bs.js"}) -> true           
+          | Some config -> 
+            Bsb_exception.config_error config 
+            "expect .bs.js or .js string here"
+        in   
         {
+          bs_suffix ;
           package_name ;
           namespace ;    
           warning = warning;
@@ -12181,6 +12443,7 @@ let output_ninja_and_namespace_map
     ~bsc_dir
     ~no_dev           
     ({
+      bs_suffix;
       package_name;
       external_includes;
       bsc_flags ; 
@@ -12228,12 +12491,14 @@ let output_ninja_and_namespace_map
           Ext_string.inter2 "-ns" s  
       in  
       let bsc_flags = 
+        let result = 
         Ext_string.inter2  Literals.dash_nostdlib @@
         match built_in_dependency with 
         | None -> bsc_flags   
         | Some {package_install_path} -> 
           Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
-
+          in 
+          if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
       in 
       let reason_react_jsx_flag = 
         match reason_react_jsx with 

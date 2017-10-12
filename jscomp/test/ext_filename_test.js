@@ -10,9 +10,9 @@ var Js_exn                  = require("../../lib/js/js_exn.js");
 var $$String                = require("../../lib/js/string.js");
 var Caml_sys                = require("../../lib/js/caml_sys.js");
 var Filename                = require("../../lib/js/filename.js");
-var Literals                = require("./literals.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Test_literals           = require("./test_literals.js");
 var Ext_string_test         = require("./ext_string_test.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
 var Ext_pervasives_test     = require("./ext_pervasives_test.js");
@@ -176,7 +176,7 @@ function relative_path(file_or_dir_1, file_or_dir_2) {
 
 function node_relative_path(node_modules_shorten, file1, dep_file) {
   var file2 = dep_file[1];
-  var v = Ext_string_test.find(/* None */0, Literals.node_modules, file2);
+  var v = Ext_string_test.find(/* None */0, Test_literals.node_modules, file2);
   var len = file2.length;
   if (node_modules_shorten && v >= 0) {
     var skip = function (_i) {
@@ -205,7 +205,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
         }
       };
     };
-    return Ext_string_test.tail_from(file2, skip(v + Literals.node_modules_length | 0));
+    return Ext_string_test.tail_from(file2, skip(v + Test_literals.node_modules_length | 0));
   } else {
     return relative_path(dep_file[0] >= 781515420 ? /* `File */[
                   781515420,
@@ -254,7 +254,7 @@ function find_root_filename(_cwd, filename) {
 }
 
 function find_package_json_dir(cwd) {
-  return find_root_filename(cwd, Literals.bsconfig_json);
+  return find_root_filename(cwd, Test_literals.bsconfig_json);
 }
 
 var package_dir = Block.__(246, [(function () {
@@ -262,7 +262,7 @@ var package_dir = Block.__(246, [(function () {
         var cwd$1 = tag === 250 ? cwd[0] : (
             tag === 246 ? CamlinternalLazy.force_lazy_block(cwd) : cwd
           );
-        return find_root_filename(cwd$1, Literals.bsconfig_json);
+        return find_root_filename(cwd$1, Test_literals.bsconfig_json);
       })]);
 
 function module_name_of_file(file) {
@@ -442,10 +442,6 @@ if (Sys.unix) {
       ];
 }
 
-function js_name_of_basename(s) {
-  return Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(s))) + Literals.suffix_js;
-}
-
 var $slash$slash = Filename.concat;
 
 exports.node_sep                            = node_sep;
@@ -471,5 +467,4 @@ exports.rel_normalized_absolute_path        = rel_normalized_absolute_path;
 exports.normalize_absolute_path             = normalize_absolute_path;
 exports.get_extension                       = get_extension;
 exports.simple_convert_node_path_to_os_path = simple_convert_node_path_to_os_path;
-exports.js_name_of_basename                 = js_name_of_basename;
 /* simple_convert_node_path_to_os_path Not a pure module */

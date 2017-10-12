@@ -100,7 +100,7 @@ val suffix_rei : string
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
-val suffix_js : string
+
 val suffix_mli : string 
 val suffix_cmt : string 
 val suffix_cmti : string 

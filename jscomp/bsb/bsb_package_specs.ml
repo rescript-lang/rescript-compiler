@@ -181,9 +181,11 @@ let package_output ({format; in_source } : spec) output=
 *)
 let get_list_of_output_js 
     package_specs output_file_sans_extension = 
-  Spec_set.fold (fun format acc ->
-      package_output format 
-        ( Ext_namespace.js_name_of_basename output_file_sans_extension)
-      :: acc
+  Spec_set.fold 
+    (fun format acc ->
+       package_output format 
+         ( Ext_namespace.js_name_of_basename !Js_config.bs_suffix
+             output_file_sans_extension)
+       :: acc
     ) package_specs []
 

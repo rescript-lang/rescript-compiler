@@ -55,6 +55,7 @@ let output_ninja_and_namespace_map
     ~bsc_dir
     ~no_dev           
     ({
+      bs_suffix;
       package_name;
       external_includes;
       bsc_flags ; 
@@ -102,12 +103,14 @@ let output_ninja_and_namespace_map
           Ext_string.inter2 "-ns" s  
       in  
       let bsc_flags = 
-        Ext_string.inter2  Literals.dash_nostdlib @@
-        match built_in_dependency with 
-        | None -> bsc_flags   
-        | Some {package_install_path} -> 
-          Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
-
+        let result = 
+          Ext_string.inter2  Literals.dash_nostdlib @@
+          match built_in_dependency with 
+          | None -> bsc_flags   
+          | Some {package_install_path} -> 
+            Ext_string.inter3 dash_i (Filename.quote package_install_path) bsc_flags
+        in 
+        if bs_suffix then Ext_string.inter2 "-bs-suffix" result else result
       in 
       let reason_react_jsx_flag = 
         match reason_react_jsx with 
@@ -116,7 +119,7 @@ let output_ninja_and_namespace_map
           Ext_string.inter2 "-ppx" s 
       in 
       let warnings = Bsb_warning.opt_warning_to_string no_dev warning in
-        
+
       Bsb_ninja_util.output_kvs
         [|
           Bsb_ninja_global_vars.bs_package_flags, bs_package_flags ; 

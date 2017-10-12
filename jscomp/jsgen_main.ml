@@ -27,13 +27,18 @@ let get_files dir =
   let arr = 
     Sys.readdir dir 
     |> Ext_array.filter_map 
-        (fun  x -> 
-          if Ext_string.ends_with x Literals.suffix_js && x <> "unix.js" &&
-             x <> "bigarray.js" && x <> "std_exit.js" &&
-             x <> "unixLabels.js" && x <> "node_process.js"
-          then 
-            Some ( "./stdlib/" ^ Filename.chop_extension (Filename.basename x))
-          else None )
+      (fun  x -> 
+         if Filename.check_suffix x ".js"  then 
+           let y = Ext_path.chop_all_extensions_if_any x in 
+           if y <> "unix" &&
+              y <> "bigarray" && 
+              y <> "std_exit" &&
+              y <> "unixLabels" && 
+              y <> "node_process" (* does not work in browser*)
+           then 
+             Some ( "./stdlib/" ^ Filename.chop_extension (Filename.basename x))
+           else None
+         else None  )
   in
   (* Sort to guarantee it works the same across OSes *)
   Array.sort (fun (x : string) y -> Pervasives.compare x y ) arr;

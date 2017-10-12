@@ -4,7 +4,7 @@ CAMLC=../bin/bsc.exe
 BSPACK=../bin/bspack.exe
 INCLUDES= -I ../stdlib  -I ../runtime -I ../others/
 
-OTHERS := literals a test_ari test_export2 test_internalOO test_obj_simple_ffi test_scope \
+OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_ffi test_scope \
 	test_switch arith_lexer test_array test_external test_is_js test_order \
 	test_trywith arith_parser test_array_primitive test_js_ffi test_pack \
 	test_seq test_u arith_syntax test_bug test_ffi test_let test_per\

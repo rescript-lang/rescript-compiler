@@ -48,15 +48,29 @@ let remove_ns_suffix name =
   if i < 0 then name 
   else String.sub name 0 i 
 
+type file_kind = 
+  | Upper_js
+  | Upper_bs
+  | Little_js 
+  | Little_bs
 
-let js_name_of_basename s = 
-  remove_ns_suffix  s ^ Literals.suffix_js
+let suffix_js = ".js"  
+let bs_suffix_js = ".bs.js"
 
-let js_name_of_modulename ~little s = 
-  if little then 
-    remove_ns_suffix (String.uncapitalize s) ^ Literals.suffix_js
-  else 
-    remove_ns_suffix s ^ Literals.suffix_js
+let js_name_of_basename bs_suffix s =   
+  remove_ns_suffix  s ^ 
+  (if bs_suffix then bs_suffix_js else  suffix_js )
+
+let js_name_of_modulename little s = 
+  match little with 
+  | Little_js -> 
+    remove_ns_suffix (String.uncapitalize s) ^ suffix_js
+  | Little_bs -> 
+    remove_ns_suffix (String.uncapitalize s) ^ bs_suffix_js
+  | Upper_js ->
+    remove_ns_suffix s ^ suffix_js
+  | Upper_bs -> 
+    remove_ns_suffix s ^ bs_suffix_js
 
 (* https://docs.npmjs.com/files/package.json 
    Some rules:

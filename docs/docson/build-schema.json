@@ -426,6 +426,13 @@
                 "type": "string"
             },
             "description": "(Not needed usually) arguments to pass to `refmt` above. Default: `[\"--print\", \"binary\"]`."
+        },
+        "suffix" : {
+            "enum" : [
+                ".js",
+                ".bs.js"
+            ],
+            "description": "suffix of generated js files, default to [.js] "
         }
     },
     "additionalProperties": false,

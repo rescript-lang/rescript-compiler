@@ -24,13 +24,25 @@
 
 let p = Format.fprintf 
 
+let pp_cmj_case fmt (cmj_case : Js_cmj_format.cmj_case) = 
+  match cmj_case with 
+  | Little_js -> 
+    p fmt "@[case : little, .js @]@."
+  | Little_bs -> 
+    p fmt "@[case : little, .bs.js @]@."    
+  | Upper_js -> 
+    p fmt "@[case: upper, .js  @]@."
+  | Upper_bs -> 
+    p fmt "@[case: upper, .bs.js  @]@."    
+
 let pp_cmj fmt 
-    ({ values ; effect; npm_package_path ; case} :Js_cmj_format.t) = 
+    ({ values ; effect; npm_package_path ; cmj_case} :Js_cmj_format.t) = 
   p fmt "@[package info: %a@]@."  
     Js_packages_info.dump_packages_info
     npm_package_path
-    ;
-  p fmt "@[case:%b@]@." case ; 
+  ;
+  pp_cmj_case fmt cmj_case;
+
   p fmt "@[effect: %a@]@."
     (fun fmt o ->
        match o with None -> ()

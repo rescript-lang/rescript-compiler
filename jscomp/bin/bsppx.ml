@@ -7689,7 +7689,7 @@ val syntax_only  : bool ref
 val binary_ast : bool ref
 
 
-
+val bs_suffix : bool ref 
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -7803,7 +7803,7 @@ let dump_js = ref false
 let syntax_only = ref false
 let binary_ast = ref false
 
-
+let bs_suffix = ref false 
 end
 module Literals : sig 
 #1 "literals.mli"
@@ -7910,7 +7910,7 @@ val suffix_rei : string
 val suffix_d : string
 val suffix_mlastd : string
 val suffix_mliastd : string
-val suffix_js : string
+
 val suffix_mli : string 
 val suffix_cmt : string 
 val suffix_cmti : string 
@@ -8045,7 +8045,7 @@ let suffix_mliast_simple = ".mliast_simple"
 let suffix_d = ".d"
 let suffix_mlastd = ".mlast.d"
 let suffix_mliastd = ".mliast.d"
-let suffix_js = ".js"
+
 
 let commonjs = "commonjs" 
 let amdjs = "amdjs"

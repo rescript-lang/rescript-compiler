@@ -36,7 +36,7 @@ let string_of_module_id
     id = string_of_module_id_in_browser id
 #else
 
-  let string_of_module_id 
+let string_of_module_id 
       ~output_dir
       module_system
       id

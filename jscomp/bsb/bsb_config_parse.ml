@@ -275,7 +275,17 @@ let interpret_json
           | Some (Obj {map }) -> Bsb_warning.from_map map 
           | Some config -> Bsb_exception.config_error config "expect an object"
         in 
+        let bs_suffix = 
+          match String_map.find_opt Bsb_build_schemas.suffix map with 
+          | None -> false  
+          | Some (Str {str = ".js"} ) -> false 
+          | Some (Str {str = ".bs.js"}) -> true           
+          | Some config -> 
+            Bsb_exception.config_error config 
+            "expect .bs.js or .js string here"
+        in   
         {
+          bs_suffix ;
           package_name ;
           namespace ;    
           warning = warning;
