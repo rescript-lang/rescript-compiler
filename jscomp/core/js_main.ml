@@ -109,7 +109,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   ::
   ("-bs-suffix",
     Arg.Set Js_config.bs_suffix,
-    " Set suffix to bs.js"
+    " Set suffix to .bs.js"
   )  
   :: 
   ("-bs-no-implicit-include", Arg.Set Clflags.no_implicit_current_dir
