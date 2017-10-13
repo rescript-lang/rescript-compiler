@@ -27,7 +27,7 @@ type 'a t
 (** Dictionary type (ie an '\{ \}' JS object). However it is restricted 
     to hold a single type; therefore values must have the same type. 
     
-    This Dictionary type is mostly use with the [Js_json.t] type. *)
+    This Dictionary type is mostly used with the [Js_json.t] type. *)
 
 type key = string
 (** Key type *)
@@ -57,7 +57,7 @@ external keys : 'a t -> string array = "Object.keys" [@@bs.val]
 (** [keys dict] returns all the keys in the dictionary [dict]*)
 
 external empty : unit -> 'a t = "" [@@bs.obj]
-(** [empty ()] returns en empty dictionary *)
+(** [empty ()] returns an empty dictionary *)
 
 (** Experimental internal funciton *)
 val unsafeDeleteKey : string t -> string -> unit [@bs]
@@ -71,11 +71,11 @@ val values : 'a t -> 'a array
 (** [entries dict] returns the values in [dict] (ES2017) *)
 
 val fromList : (key * 'a) list -> 'a t
-(** [fromList entries] creates a new dictionary using with containing each
+(** [fromList entries] creates a new dictionary containing each
 [(key, value)] pair in [entries] *)
 
 val fromArray : (key * 'a) array -> 'a t
-(** [fromArray entries] creates a new dictionary using with containing each
+(** [fromArray entries] creates a new dictionary containing each
 [(key, value)] pair in [entries] *)
 
 val map : ('a -> 'b [@bs]) -> 'a t -> 'b t

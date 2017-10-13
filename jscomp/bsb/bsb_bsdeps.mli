@@ -27,7 +27,7 @@
   be regenerated. Everytime [bsb] run [regenerate_ninja], 
   bsb will try to [check] if it is needed, 
   if needed, we will regenerate ninja file and store the 
-  meta data again
+  metadata again
 *)
 
 
