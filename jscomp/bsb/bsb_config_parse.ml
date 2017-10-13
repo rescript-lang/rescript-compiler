@@ -23,6 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let config_file_bak = "bsconfig.json.bak"
+let refmt3_exe = "refmt3.exe"
 let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_path.combine
 
@@ -242,7 +243,15 @@ let interpret_json
                 end
               | _ -> acc ) String_map.empty  s  ))
     |? (Bsb_build_schemas.refmt, `Str (fun s -> 
-        refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.refmt s) ))
+        refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.refmt s) 
+      ))
+    |? (Bsb_build_schemas.refmt, `Flo_loc (fun version loc -> 
+      match version with
+      | "2" -> ()
+      | "3" -> refmt := Some (bsc_dir // refmt3_exe)
+      | _ -> 
+        Bsb_exception.errorf ~loc "Unexpected version for refmt. The it should be either 2 or 3."
+      ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
     |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;

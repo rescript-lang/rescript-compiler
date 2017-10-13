@@ -27,6 +27,7 @@ type callback =
     `Str of (string -> unit) 
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
+  | `Flo_loc of (string -> Lexing.position -> unit )
   | `Bool of (bool -> unit )
   | `Obj of (Ext_json_types.t String_map.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
@@ -55,6 +56,7 @@ let test   ?(fail=(fun () -> ())) key
     | True _, `Bool cb -> cb true
     | False _, `Bool cb  -> cb false 
     | Flo {flo = s} , `Flo cb  -> cb s 
+    | Flo {flo = s; loc} , `Flo_loc cb  -> cb s loc
     | Obj {map = b} , `Obj cb -> cb b 
     | Arr {content}, `Arr cb -> cb content 
     | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 
