@@ -72,7 +72,7 @@ let bsb_main_flags : (string * Arg.spec * string) list=
     "-make-world", Arg.Unit set_make_world,
     " Build all dependencies and itself ";
     "-init", Arg.String (fun path -> generate_theme_with_path := Some path),
-    " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will resuse current directory)";
+    " Init sample project to get started. Note (`bsb -init sample` will create a sample project while `bsb -init .` will reuse current directory)";
     "-theme", Arg.String set_theme,
     " The theme for project initialization, default is basic(https://github.com/bucklescript/bucklescript/tree/master/jscomp/bsb/templates)";
     "-query", Arg.String (fun s -> Bsb_query.query ~cwd ~bsc_dir s ),

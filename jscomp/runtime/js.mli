@@ -25,7 +25,7 @@
 
 (* DESIGN:  
     - It does not have any code, all its code will be inlined so that
-       there will be never
+       there will never be
        {[ require('js')]}
     - Its interface should be minimal
 *)
@@ -142,12 +142,12 @@ external unsafe_ge : 'a -> 'a -> bool = "#unsafe_ge"
 (** {12 nested modules}*)
 
 module Null = Js_null
-(** Provide utilities arond ['a null] *)
+(** Provide utilities around ['a null] *)
 
 module Undefined = Js_undefined
 (** Provide utilities around {!undefined} *)
 module Nullable = Js_null_undefined
-(** Provide utilities arond {!null_undefined} *)
+(** Provide utilities around {!null_undefined} *)
 module Null_undefined = Js_null_undefined
 
 module Exn = Js_exn
@@ -158,7 +158,7 @@ module Array = Js_array
 module String = Js_string
 (** Provide bindings to JS string *)
 module Boolean = Js_boolean
-(** Provide utilties for {!boolean} *)
+(** Provide utilities for {!boolean} *)
 
 module Re = Js_re
 (** Provide bindings to Js regex expression *)
@@ -188,7 +188,7 @@ module Typed_array = Js_typed_array
 (** Provide bindings for JS typed array *)
 
 module Types = Js_types
-(** Provide utilities for maninpulatig JS types  *)
+(** Provide utilities for manipulating JS types  *)
 module Float = Js_float
 (** Provide utilities for JS float *)
 module Int = Js_int
@@ -198,9 +198,9 @@ module Option = Js_option
 (** Provide utilities for option *)
 
 module Result = Js_result
-(** definie the interface for result *)
+(** Define the interface for result *)
 
 module List = Js_list 
-(** Provide utilties for list *)
+(** Provide utilities for list *)
 
 module Vector = Js_vector 

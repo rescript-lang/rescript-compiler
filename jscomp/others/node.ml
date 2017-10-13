@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** place holder for node bindings *)
+(** Placeholder for Node bindings *)
 
 module Path = Node_path
 
@@ -74,7 +74,7 @@ type _ string_buffer_kind =
   | Buffer :  buffer string_buffer_kind
 
 
-(** We except a good inliner will eliminate such boxing in the future *)
+(** We expect a good inliner will eliminate such boxing in the future *)
 let test (type t) (x : string_buffer) : (t string_buffer_kind * t)= 
   if Js.typeof x = "string" then 
     (Obj.magic String : t string_buffer_kind),  (Obj.magic x : t)
