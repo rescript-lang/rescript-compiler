@@ -14411,16 +14411,18 @@ let () =
     exit 2
   | Ext_json_parse.Error (start,_,e) -> 
     Format.fprintf Format.err_formatter
-    "File %S, line %d\n\
-    @{<error>Error:@} %a@."
-     start.pos_fname start.pos_lnum
-     Ext_json_parse.report_error e ;
+      "File %S, line %d\n\
+       @{<error>Error:@} %a@."
+      start.pos_fname start.pos_lnum
+      Ext_json_parse.report_error e ;
     exit 2
   | Arg.Bad s 
   | Sys_error s -> 
-    Format.pp_print_string Format.err_formatter s ;
-    Format.pp_print_newline Format.err_formatter () ;
-    exit 3
+    Format.fprintf Format.err_formatter
+      "@{<error>Error:@} %s@."
+      s ;
+
+    exit 2
   | e -> Ext_pervasives.reraise e 
 
 end
