@@ -138,17 +138,6 @@ let handle_anonymous_arg arg =
 
 let watch_exit () =
   exit 0
-  (* Bsb_log.info "@{<info>Watching@}... @.";
-  let bsb_watcher =
-    Bsb_build_util.get_bsc_dir cwd // "bsb_watcher.js" in
-  if Ext_sys.is_windows_or_cygwin then
-    exit (Sys.command (Ext_string.concat3 node_lit Ext_string.single_space (Filename.quote bsb_watcher)))
-  else
-    Unix.execvp node_lit
-      [| node_lit ;
-         bsb_watcher
-      |] *)
-
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
@@ -220,13 +209,21 @@ let () =
       end
   end
   with 
-    | Bsb_exception.Error e ->
-      Bsb_exception.print Format.err_formatter e ;
-      Format.pp_print_newline Format.err_formatter ();
-      exit 2 
-    | Arg.Bad s ->   
-      Format.pp_print_string Format.err_formatter s ;
-      Format.pp_print_newline Format.err_formatter () ;
-      exit 3
-    | e -> Ext_pervasives.reraise e 
-    
+  | Bsb_exception.Error e ->
+    Bsb_exception.print Format.err_formatter e ;
+    Format.pp_print_newline Format.err_formatter ();
+    exit 2
+  | Ext_json_parse.Error (start,_,e) -> 
+    Format.fprintf Format.err_formatter
+      "File %S, line %d\n\
+       @{<error>Error:@} %a@."
+      start.pos_fname start.pos_lnum
+      Ext_json_parse.report_error e ;
+    exit 2
+  | Arg.Bad s 
+  | Sys_error s -> 
+    Format.fprintf Format.err_formatter
+      "@{<error>Error:@} %s@."
+      s ;
+    exit 2
+  | e -> Ext_pervasives.reraise e 

@@ -12,7 +12,7 @@ type error =
   | Expect_eof 
   (* | Trailing_comma_in_obj *)
   (* | Trailing_comma_in_array *)
-exception Error of error * Lexing.position * Lexing.position;;
+
 
 let fprintf  = Format.fprintf
 let report_error ppf = function
@@ -43,28 +43,20 @@ let report_error ppf = function
     -> fprintf ppf "Unterminated_comment"
          
 
-type  error_info  = 
-  { error : error ;
-    loc_start : Lexing.position; 
-    loc_end :Lexing.position;
-  }
-
-let pp_error fmt {error; loc_start ; loc_end } = 
-  Format.fprintf fmt "@[%a:@ %a@ -@ %a)@]" 
-    report_error error
-    Ext_position.print loc_start
-    Ext_position.print loc_end
-
-exception Error of error_info
-
+exception Error of Lexing.position * Lexing.position * error
 
 
 let () = 
   Printexc.register_printer
     (function x -> 
      match x with 
-     | Error error_info -> 
-       Some (Format.asprintf "%a" pp_error error_info)
+     | Error (loc_start,loc_end,error) -> 
+       Some (Format.asprintf 
+          "@[%a:@ %a@ -@ %a)@]" 
+          report_error  error
+          Ext_position.print loc_start
+          Ext_position.print loc_end
+       )
 
      | _ -> None
     )
@@ -88,9 +80,7 @@ type token =
   | True   
   
 let error  (lexbuf : Lexing.lexbuf) e = 
-  raise (Error { error =  e; 
-                 loc_start =  lexbuf.lex_start_p; 
-                 loc_end = lexbuf.lex_curr_p})
+  raise (Error (lexbuf.lex_start_p, lexbuf.lex_curr_p, e))
 
 
 let lexeme_len (x : Lexing.lexbuf) =
@@ -338,13 +328,17 @@ let rec parse_json lexbuf =
 let parse_json_from_string s = 
   parse_json (Lexing.from_string s )
 
-let parse_json_from_chan in_chan = 
-  let lexbuf = Lexing.from_channel in_chan in 
+let parse_json_from_chan fname in_chan = 
+  let lexbuf = 
+    Ext_position.lexbuf_from_channel_with_fname
+    in_chan fname in 
   parse_json lexbuf 
 
 let parse_json_from_file s = 
   let in_chan = open_in s in 
-  let lexbuf = Lexing.from_channel in_chan in 
+  let lexbuf = 
+    Ext_position.lexbuf_from_channel_with_fname
+    in_chan s in 
   match parse_json lexbuf with 
   | exception e -> close_in in_chan ; raise e
   | v  -> close_in in_chan;  v

@@ -22,16 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type error_info
+type error
 
-exception Error of error_info
+val report_error : Format.formatter -> error -> unit 
 
-val pp_error : Format.formatter -> error_info -> unit 
+exception Error of Lexing.position * Lexing.position * error
 
-val parse_json : Lexing.lexbuf -> Ext_json_types.t 
 val parse_json_from_string : string -> Ext_json_types.t 
 
-val parse_json_from_chan : in_channel -> Ext_json_types.t 
+val parse_json_from_chan :
+  string ->  in_channel -> Ext_json_types.t 
 
 val parse_json_from_file  : string -> Ext_json_types.t
 

@@ -135,7 +135,9 @@ let interpret_json
   let entries = ref Bsb_default.main_entries in
   let cut_generators = ref false in 
   let config_json_chan = open_in_bin config_json  in
-  let global_data = Ext_json_parse.parse_json_from_chan config_json_chan  in
+  let global_data = 
+    Ext_json_parse.parse_json_from_chan 
+    config_json config_json_chan  in
   match global_data with
   | Obj { map} ->
     (* The default situation is empty *)
