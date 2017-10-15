@@ -5,22 +5,16 @@ let suites = Mt.[
     let str = "3-" in
     match re |> Js.Re.exec str with
       | Some result ->
-        let defined = ref "" in
-        let _ = Js.Nullable.iter (Js.Re.matches result).(1) ((fun m ->
-          defined := m) [@bs]) in
+        let defined = (Js.Re.matches result).(1) in
         let undefined = (Js.Re.matches result).(2) in
-        Eq(("3", Js.Nullable.null), (!defined, undefined))
+        Eq((Js.Nullable.return "3", Js.Nullable.null), (defined, undefined))
       | None -> Fail()
   );
 
   "exec_literal", (fun _ ->
     match [%re "/[^.]+/"] |> Js.Re.exec "http://xxx.domain.com" with
     | Some res ->
-      (match Js.Nullable.to_opt (res |> Js.Re.matches).(0) with
-      | Some m ->
-        Eq ("http://xxx", m)
-      | None ->
-        Fail())
+      Eq(Js.Nullable.return "http://xxx", (Js.Re.matches res).(0))
     | None ->
       FailWith "regex should match"
   );

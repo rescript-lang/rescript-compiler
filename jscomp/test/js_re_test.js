@@ -1,9 +1,8 @@
 'use strict';
 
-var Mt                = require("./mt.js");
-var Block             = require("../../lib/js/block.js");
-var Caml_array        = require("../../lib/js/caml_array.js");
-var Js_null_undefined = require("../../lib/js/js_null_undefined.js");
+var Mt         = require("./mt.js");
+var Block      = require("../../lib/js/block.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 
 var suites_000 = /* tuple */[
   "matches",
@@ -11,11 +10,7 @@ var suites_000 = /* tuple */[
       var re = (/(\d+)-(?:(\d+))?/g);
       var match = re.exec("3-");
       if (match !== null) {
-        var defined = [""];
-        Js_null_undefined.iter(Caml_array.caml_array_get(match, 1), (function (m) {
-                defined[0] = m;
-                return /* () */0;
-              }));
+        var defined = Caml_array.caml_array_get(match, 1);
         var $$undefined = Caml_array.caml_array_get(match, 2);
         return /* Eq */Block.__(0, [
                   /* tuple */[
@@ -23,7 +18,7 @@ var suites_000 = /* tuple */[
                     null
                   ],
                   /* tuple */[
-                    defined[0],
+                    defined,
                     $$undefined
                   ]
                 ]);
@@ -39,15 +34,10 @@ var suites_001 = /* :: */[
     (function () {
         var match = (/[^.]+/).exec("http://xxx.domain.com");
         if (match !== null) {
-          var match$1 = Caml_array.caml_array_get(match, 0);
-          if (match$1 == null) {
-            return /* Fail */Block.__(8, [/* () */0]);
-          } else {
-            return /* Eq */Block.__(0, [
-                      "http://xxx",
-                      match$1
-                    ]);
-          }
+          return /* Eq */Block.__(0, [
+                    "http://xxx",
+                    Caml_array.caml_array_get(match, 0)
+                  ]);
         } else {
           return /* FailWith */Block.__(9, ["regex should match"]);
         }
