@@ -337,6 +337,7 @@ Example:
 {
   ...
   "package-specs" : [{
+    "module": "commonjs",
     "in-source": true
   }]
 }
