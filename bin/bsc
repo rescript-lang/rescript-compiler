@@ -9,6 +9,8 @@ var delegate_args = process.argv.slice(2)
 try {
     child_process.execFileSync(exe, delegate_args, { stdio: 'inherit' })
 } catch (e) {
-    console.error('Error happened when running command', exe, 'with args', delegate_args)
+    if(e.code === "ENOENT"){
+        console.error(String(e))
+    }    
     process.exit(2)
 }

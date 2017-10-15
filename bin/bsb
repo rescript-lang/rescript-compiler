@@ -33,7 +33,7 @@ try {
 } catch (e) {
     if (e.code === "ENOENT") {
         // when bsb is actually not found
-        console.log(String(e))
+        console.error(String(e))
     }
     process.exit(2)
 }
