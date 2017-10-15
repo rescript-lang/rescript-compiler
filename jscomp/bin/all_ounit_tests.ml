@@ -13808,7 +13808,8 @@ module Ext_namespace : sig
 *)
 val make : ns:string -> string -> string 
 
-
+val try_split_module_name :
+  string -> (string * string ) option
 
 (* Note  we have to output uncapitalized file Name, 
    or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
@@ -13894,6 +13895,13 @@ let remove_ns_suffix name =
   if i < 0 then name 
   else String.sub name 0 i 
 
+let try_split_module_name name = 
+  let len = String.length name in 
+  let i = rindex_rec name (len - 1)  in 
+  if i < 0 then None 
+  else 
+    Some (String.sub name (i+1) (len - i - 1),
+          String.sub name 0 i )
 type file_kind = 
   | Upper_js
   | Upper_bs
@@ -13937,8 +13945,8 @@ let is_valid_npm_package_name (s : string) =
          |  'a'..'z' | '0'..'9' | '_' | '-' -> true
          | _ -> false )
   | _ -> false 
-    
-    
+
+
 let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
   let buf = Buffer.create len in 
@@ -14301,7 +14309,15 @@ let suites =
         Upper_bs "AA-b"
       =~ "AA.bs.js";
     end;
-
+    __LOC__ >:: begin   fun _ -> 
+      let (=~) = OUnit.assert_equal ~printer:(fun x -> 
+      match x with 
+      | None -> ""
+      | Some (a,b) -> a ^","^ b
+      ) in  
+       Ext_namespace.try_split_module_name "Js-X" =~ Some ("X","Js");
+       Ext_namespace.try_split_module_name "Js_X" =~ None
+    end;
     __LOC__ >:: begin fun _ ->
       let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  
       let f = Ext_string.capitalize_ascii in
@@ -14321,6 +14337,7 @@ let suites =
       Ext_path.chop_all_extensions_if_any "a" =~ "a";
       Ext_path.chop_all_extensions_if_any "a.x.bs.js" =~ "a"
     end;
+
   ]
 
 end

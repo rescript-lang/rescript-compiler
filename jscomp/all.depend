@@ -676,14 +676,16 @@ core/bspack_main.cmx : ext/string_set.cmx ext/string_hashtbl.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_path.cmx \
     ext/ext_list.cmx ext/ext_io.cmx depends/ast_extract.cmx \
     core/bspack_main.cmi
-core/jsoo_main.cmx : syntax/ppx_entry.cmx core/lam_compile_main.cmx \
+core/jsoo_main.cmx : syntax/ppx_entry.cmx \
+    outcome_printer/outcome_printer_ns.cmx core/lam_compile_main.cmx \
     core/lam_compile_env.cmx core/js_dump_program.cmx ext/ext_pp.cmx \
     common/bs_version.cmx core/bs_conditional_initial.cmx core/jsoo_main.cmi
 core/bspp_main.cmx : core/bspp_main.cmi
 core/js_cmi_datasets.cmx : ext/string_map.cmx core/js_cmi_datasets.cmi
 core/js_main.cmx : super_errors/super_main.cmx \
-    reason_outcome_printer/reason_outcome_printer_main.cmx \
-    core/ocaml_parse.cmx core/ocaml_options.cmx core/ocaml_batch_compile.cmx \
+    outcome_printer/reason_outcome_printer_main.cmx \
+    outcome_printer/outcome_printer_ns.cmx core/ocaml_parse.cmx \
+    core/ocaml_options.cmx core/ocaml_batch_compile.cmx \
     core/js_packages_state.cmx core/js_implementation.cmx \
     common/js_config.cmx ext/ext_string.cmx core/bs_conditional_initial.cmx \
     core/js_main.cmi
@@ -718,9 +720,12 @@ super_errors/super_main.cmx : super_errors/super_typetexp.cmx \
     super_errors/super_env.cmx
 super_errors/super_reason_react.cmi :
 super_errors/super_misc.cmi :
-reason_outcome_printer/tweaked_reason_oprint.cmx :
-reason_outcome_printer/reason_outcome_printer_main.cmx : \
-    reason_outcome_printer/tweaked_reason_oprint.cmx
+outcome_printer/outcome_printer_ns.cmx : ext/ext_namespace.cmx \
+    outcome_printer/outcome_printer_ns.cmi
+outcome_printer/tweaked_reason_oprint.cmx :
+outcome_printer/reason_outcome_printer_main.cmx : \
+    outcome_printer/tweaked_reason_oprint.cmx
+outcome_printer/outcome_printer_ns.cmi :
 ounit_tests/ounit_cmd_util.cmi :
 ounit_tests/ounit_tests_main.cmi :
 ounit_tests/ounit_tests_util.cmx :

@@ -23,6 +23,10 @@ B ounit_tests
 
 S depends
 B depends
+
+S outcome_printer
+B outcome_printer
+
 PKG compiler-libs.common
 B +compiler-libs
 FLG -w -40-30+6-23

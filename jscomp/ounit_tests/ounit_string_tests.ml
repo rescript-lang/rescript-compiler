@@ -317,7 +317,15 @@ let suites =
         Upper_bs "AA-b"
       =~ "AA.bs.js";
     end;
-
+    __LOC__ >:: begin   fun _ -> 
+      let (=~) = OUnit.assert_equal ~printer:(fun x -> 
+      match x with 
+      | None -> ""
+      | Some (a,b) -> a ^","^ b
+      ) in  
+       Ext_namespace.try_split_module_name "Js-X" =~ Some ("X","Js");
+       Ext_namespace.try_split_module_name "Js_X" =~ None
+    end;
     __LOC__ >:: begin fun _ ->
       let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  
       let f = Ext_string.capitalize_ascii in
@@ -337,4 +345,5 @@ let suites =
       Ext_path.chop_all_extensions_if_any "a" =~ "a";
       Ext_path.chop_all_extensions_if_any "a.x.bs.js" =~ "a"
     end;
+
   ]

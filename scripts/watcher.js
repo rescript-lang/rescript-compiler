@@ -272,8 +272,10 @@ if (exit === 1) {
         "xwatcher",
         "bsb",
         "common",
+        "super_errors",
+        "outcome_printer",
         ".",
-        "super_errors"
+
       ]);
   exec(/* () */0);
 }
