@@ -3437,7 +3437,8 @@ module Ext_namespace : sig
 *)
 val make : ns:string -> string -> string 
 
-
+val try_split_module_name :
+  string -> (string * string ) option
 
 (* Note  we have to output uncapitalized file Name, 
    or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
@@ -3523,6 +3524,13 @@ let remove_ns_suffix name =
   if i < 0 then name 
   else String.sub name 0 i 
 
+let try_split_module_name name = 
+  let len = String.length name in 
+  let i = rindex_rec name (len - 1)  in 
+  if i < 0 then None 
+  else 
+    Some (String.sub name (i+1) (len - i - 1),
+          String.sub name 0 i )
 type file_kind = 
   | Upper_js
   | Upper_bs
@@ -3566,8 +3574,8 @@ let is_valid_npm_package_name (s : string) =
          |  'a'..'z' | '0'..'9' | '_' | '-' -> true
          | _ -> false )
   | _ -> false 
-    
-    
+
+
 let namespace_of_package_name (s : string) : string = 
   let len = String.length s in 
   let buf = Buffer.create len in 

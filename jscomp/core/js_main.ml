@@ -253,6 +253,7 @@ let _ =
   Clflags.debug := true;
   Clflags.record_event_when_debug := false;
   Clflags.binary_annotations := true; 
+  Oprint.out_ident := Outcome_printer_ns.out_ident;
   Bs_conditional_initial.setup_env ();
   try
     Compenv.readenv ppf Before_args;
