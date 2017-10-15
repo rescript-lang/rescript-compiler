@@ -11,15 +11,21 @@ var suites_000 = /* tuple */[
       var re = (/(\d+)-(?:(\d+))?/g);
       var match = re.exec("3-");
       if (match !== null) {
-        var someMatch = Caml_array.caml_array_get(match, 2);
-        var hit = [/* false */0];
-        Js_null_undefined.iter(someMatch, (function () {
-                hit[0] = /* true */1;
+        var defined = [""];
+        Js_null_undefined.iter(Caml_array.caml_array_get(match, 1), (function (m) {
+                defined[0] = m;
                 return /* () */0;
               }));
+        var $$undefined = Caml_array.caml_array_get(match, 2);
         return /* Eq */Block.__(0, [
-                  /* false */0,
-                  hit[0]
+                  /* tuple */[
+                    "3",
+                    null
+                  ],
+                  /* tuple */[
+                    defined[0],
+                    $$undefined
+                  ]
                 ]);
       } else {
         return /* Fail */Block.__(8, [/* () */0]);
@@ -38,8 +44,8 @@ var suites_001 = /* :: */[
             return /* Fail */Block.__(8, [/* () */0]);
           } else {
             return /* Eq */Block.__(0, [
-                      "xxx",
-                      match$1.substring(7)
+                      "http://xxx",
+                      match$1
                     ]);
           }
         } else {

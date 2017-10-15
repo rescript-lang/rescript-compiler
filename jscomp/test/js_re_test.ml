@@ -3,14 +3,13 @@ let suites = Mt.[
   "matches", (fun _ ->
     let re = [%re "/(\\d+)-(?:(\\d+))?/g"] in
     let str = "3-" in
-
     match re |> Js.Re.exec str with
       | Some result ->
-        let matches = (Js.Re.matches result) in
-        let someMatch = matches.(2) in
-        let hit = ref false in
-        let _ = Js.Null_undefined.iter someMatch ((fun _ -> hit := true) [@bs]) in
-        Eq(false, !hit)
+        let defined = ref "" in
+        let _ = Js.Nullable.iter (Js.Re.matches result).(1) ((fun m ->
+          defined := m) [@bs]) in
+        let undefined = (Js.Re.matches result).(2) in
+        Eq(("3", Js.Nullable.null), (!defined, undefined))
       | None -> Fail()
   );
 
@@ -19,7 +18,7 @@ let suites = Mt.[
     | Some res ->
       (match Js.Nullable.to_opt (res |> Js.Re.matches).(0) with
       | Some m ->
-        Eq ("xxx", m |> Js.String.substringToEnd ~from:7)
+        Eq ("http://xxx", m)
       | None ->
         Fail())
     | None ->
