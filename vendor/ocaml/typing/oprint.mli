@@ -13,6 +13,9 @@
 open Format
 open Outcometree
 
+#if undefined BS_NO_COMPILER_PATCH then
+val out_ident : (formatter -> string -> unit) ref
+#end
 val out_value : (formatter -> out_value -> unit) ref
 val out_type : (formatter -> out_type -> unit) ref
 val out_class_type : (formatter -> out_class_type -> unit) ref

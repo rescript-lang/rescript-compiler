@@ -19,9 +19,11 @@ let cautious f ppf arg =
   try f ppf arg with
     Ellipsis -> fprintf ppf "..."
 
+let out_ident = ref pp_print_string
+
 let rec print_ident ppf =
   function
-    Oide_ident s -> pp_print_string ppf s
+    Oide_ident s -> !out_ident ppf s
   | Oide_dot (id, s) ->
       print_ident ppf id; pp_print_char ppf '.'; pp_print_string ppf s
   | Oide_apply (id1, id2) ->
@@ -190,7 +192,7 @@ and print_simple_out_type ppf =
       fprintf ppf "@[%a%s#%a@]" print_typargs tyl (if ng then "_" else "")
         print_ident id
 #if undefined BS_NO_COMPILER_PATCH then         
-  | Otyp_constr ( (Oide_dot ((Oide_dot (Oide_ident "Js", "Internal")),
+  | Otyp_constr ( (Oide_dot (((Oide_dot (Oide_ident "Js", "Internal"))| (Oide_ident "Js_internal")),
                              ("fn" | "meth" as name )) as id) ,
                  ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
     ->
@@ -227,7 +229,7 @@ and print_simple_out_type ppf =
           | _ -> assert false 
           end
       end
-  | Otyp_constr ((Oide_dot (Oide_dot (Oide_ident "Js", "Internal"), "meth_callback" ) as id) ,
+  | Otyp_constr ((Oide_dot ((Oide_dot (Oide_ident "Js", "Internal") | (Oide_ident "Js_internal")), "meth_callback" ) as id) ,
                  ([Otyp_variant(_,Ovar_fields [ variant, _, tys], _,_); result] as tyl))
     ->
       let make tys result =
