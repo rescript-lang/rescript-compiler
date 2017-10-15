@@ -330,6 +330,18 @@ people who use your library
 When user has an existing JS project, it makes sense to output the JS file in the same directory as vanilla JS,
 the schema added  a key called `in-source` so that generate JS file next to ML file.
 
+Example:
+
+[source,json]
+--------------
+{
+  ...
+  "package-specs" : [{
+    "in-source": true
+  }]
+}
+--------------
+
 === Build using Make
 [WARNING]
 ========
