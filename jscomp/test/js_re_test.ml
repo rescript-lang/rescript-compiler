@@ -1,12 +1,31 @@
 
 let suites = Mt.[
+  "matches", (fun _ ->
+    let re = [%re "/(\\d+)-(?:(\\d+))?/g"] in
+    let str = "3-" in
+
+    match re |> Js.Re.exec str with
+      | Some result ->
+        let matches = (Js.Re.matches result) in
+        let someMatch = matches.(2) in
+        let hit = ref false in
+        let _ = Js.Null_undefined.iter someMatch ((fun _ -> hit := true) [@bs]) in
+        Eq(false, !hit)
+      | None -> Fail()
+  );
+
   "exec_literal", (fun _ ->
     match [%re "/[^.]+/"] |> Js.Re.exec "http://xxx.domain.com" with
-    | Some res -> 
-      Eq ("xxx", (res |> Js.Re.matches).(0) |> Js.String.substringToEnd ~from:7)
+    | Some res ->
+      (match Js.Nullable.to_opt (res |> Js.Re.matches).(0) with
+      | Some m ->
+        Eq ("xxx", m |> Js.String.substringToEnd ~from:7)
+      | None ->
+        Fail())
     | None ->
       FailWith "regex should match"
   );
+
   "exec_no_match", (fun _ ->
     match [%re "/https:\\/\\/(.*)/"] |> Js.Re.exec "http://xxx.domain.com" with
     | Some _ ->  FailWith "regex should not match"

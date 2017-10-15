@@ -52,7 +52,7 @@ type t
 type result
 
 (** an array of the matches, the first is the full match and the remaining are the substring matches *)
-external matches : result -> string array = "%identity"
+external matches : result -> string Js.nullable array = "%identity"
 
 (** 0-based index of the match in the input string *)
 external index : result -> int = "" [@@bs.get]
