@@ -73,8 +73,9 @@ let from_cmj (files : string list) (output_file : string) =
       in
       Ext_pp.string f "(* -*-mode:fundamental-*- *)"  ;
       Ext_pp.newline f ;
-      Ext_pp.string f "let data_sets = String_map.of_list "    ;
-      Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files))
+      Ext_pp.string f "let data_sets = let map = String_map.of_list "    ;
+      Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files);
+      Ext_pp.string f " in ref map")
 
 
 (** the cache should be readable and also update *)
