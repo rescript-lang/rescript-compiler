@@ -29,7 +29,7 @@ module L = Js_dump_lit
 
 
 let empty_explanation = 
-  "/* This output is empty. Its source's type definitions, externals and/or unused code got optimized away. */"
+  "/* This output is empty. Its source's type definitions, externals and/or unused code got optimized away. */\n"
 
 let program_is_empty (x : J.program) = 
   match x with 

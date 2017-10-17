@@ -23,9 +23,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type task = 
-  | Main of string
-  | Eval of string 
-  | None
+  | Bsc_task_main of string
+  | Bsc_task_eval of string 
+  | Bsc_task_none
 
 (** reutrn value is the error code *)
 val batch_compile : Format.formatter -> string list -> string list -> task ->  int

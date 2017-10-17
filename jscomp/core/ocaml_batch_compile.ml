@@ -50,14 +50,14 @@ let process_result ppf  main_file ast_table result =
   else 0
 
 type task = 
-  | Main of string
-  | Eval of string 
+  | Bsc_task_main of string
+  | Bsc_task_eval of string 
   (* currently we just output JS file, 
      it is compilicated to run via node.
      1. Create a temporary file, it has to be in the same directory?
      2. Via `node -e`, we need a module to do shell escaping properly
   *)
-  | None
+  | Bsc_task_none
 
 
 let print_if ppf flag printer arg =
@@ -81,7 +81,7 @@ let batch_compile ppf search_dirs files main_file =
     end        
   ;
   begin match main_file with
-    | Main main_file -> 
+    | Bsc_task_main main_file -> 
       let main_module = (Ext_modulename.module_name_of_file main_file) in
       let ast_table, result =
         Ast_extract.collect_from_main ppf 
@@ -101,8 +101,8 @@ let batch_compile ppf search_dirs files main_file =
          bsc -I xx -I yy -bs-main Module_name
       *)
       process_result ppf main_file ast_table result     
-    | None ->  0
-    | Eval s ->
+    | Bsc_task_none ->  0
+    | Bsc_task_eval s ->
       Ext_ref.protect_list 
         [Clflags.dont_write_files , true ; 
          Clflags.annotations, false;

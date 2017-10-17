@@ -262,10 +262,10 @@ let _ =
     let eval_string = !eval_string in
     let task : Ocaml_batch_compile.task = 
       if main_file <> "" then 
-        Main main_file
+        Bsc_task_main main_file
       else if eval_string <> "" then 
-        Eval eval_string
-      else None in
+        Bsc_task_eval eval_string
+      else Bsc_task_none in
     exit (Ocaml_batch_compile.batch_compile ppf 
             (if !Clflags.no_implicit_current_dir then !script_dirs else 
                Filename.current_dir_name::!script_dirs) !batch_files task) 
