@@ -34,46 +34,38 @@ type t = {
   error : warning_error
 }
 
+let default_warning_flag =  "-w -30-40+6+7+27+32..39+44+45"
 
+let get_warning_flag x = 
+  default_warning_flag ^ 
+  (match x with 
+   | Some {number =None}
+   | None ->  Ext_string.empty
+   | Some {number = Some x} -> Ext_string.trim x )
 
-let warning_number =  "-40+6+7+27+32..39+44+45"
-
-let default_warning_flag = 
-  "-w -30-40+6+7+27+32..39+44+45"
 
 let warn_error = " -warn-error A"
-let warning_to_string no_dev 
-    (warning ) : string = 
-  if no_dev then 
-    match warning.number with 
-    | None ->
-      default_warning_flag      
-    | Some x -> 
-      "-w " ^ x 
-  else 
-    match warning.number with 
-    | None -> 
-      (match warning.error with 
-       | Warn_error_true -> default_warning_flag ^ warn_error
-       | Warn_error_number x -> 
-         default_warning_flag ^ " -warn-error " ^ x
-       | Warn_error_false -> default_warning_flag
-      )
-    | Some x -> 
-      "-w " ^ x ^
-      (match warning.error with 
-       | Warn_error_true -> 
-         warn_error
-       | Warn_error_false -> 
-         Ext_string.empty
-       | Warn_error_number y -> 
-         " -warn-error " ^ y
-      )
 
-let opt_warning_to_string no_dev warning =       
-  match warning with 
-  | None -> default_warning_flag
-  | Some w -> warning_to_string no_dev w 
+let warning_to_string no_dev 
+    warning : string = 
+  default_warning_flag  ^ 
+  (match warning.number with 
+   | None -> 
+     Ext_string.empty
+   | Some x -> 
+     Ext_string.trim x) ^
+  if no_dev then Ext_string.empty 
+  else
+    match warning.error with 
+    | Warn_error_true -> 
+      warn_error
+
+    | Warn_error_number y -> 
+      " -warn-error " ^ y
+    | Warn_error_false -> 
+      Ext_string.empty          
+
+
 
 let from_map (m : Ext_json_types.t String_map.t) = 
   let number_opt = String_map.find_opt Bsb_build_schemas.number m  in 
@@ -97,4 +89,10 @@ let from_map (m : Ext_json_types.t String_map.t) =
       | None -> None 
       | Some x -> Bsb_exception.config_error x "expect a string" 
     in 
-    Some {number; error }
+    Some {number; error }      
+
+let opt_warning_to_string no_dev warning =       
+  match warning with 
+  | None -> default_warning_flag
+  | Some w -> warning_to_string no_dev w 
+
