@@ -797,7 +797,7 @@ ounit_tests/ounit_tests_main.cmx : ext/resize_array.cmx \
     ounit_tests/ounit_cmd_tests.cmx ounit_tests/ounit_bsb_regex_tests.cmx \
     ounit_tests/ounit_bal_tree_tests.cmx ounit_tests/ounit_array_tests.cmx \
     ounit/oUnit.cmx ounit_tests/ounit_tests_main.cmi
-bsb/bsb_bsdeps.cmx : bsb/bsb_log.cmx common/bs_version.cmx \
+bsb/bsb_bsdeps.cmx : ext/ext_array.cmx bsb/bsb_log.cmx common/bs_version.cmx \
     bsb/bsb_bsdeps.cmi
 bsb/bsb_build_cache.cmx : ext/string_map.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
@@ -870,7 +870,7 @@ bsb/bsb_ninja_gen.cmx : ext/string_map.cmx ext/literals.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
     bsb/bsb_build_schemas.cmx bsb/bsb_build_cache.cmx bsb/bsb_ninja_gen.cmi
 bsb/bsb_ninja_global_vars.cmx :
-bsb/bsb_ninja_regen.cmx : ext/literals.cmx ext/ext_path.cmx ext/ext_list.cmx \
+bsb/bsb_ninja_regen.cmx : ext/literals.cmx ext/ext_path.cmx \
     bsb/bsb_ninja_gen.cmx bsb/bsb_merlin_gen.cmx bsb/bsb_log.cmx \
     bsb/bsb_config_parse.cmx bsb/bsb_config.cmx bsb/bsb_clean.cmx \
     bsb/bsb_build_util.cmx bsb/bsb_bsdeps.cmx bsb/bsb_ninja_regen.cmi

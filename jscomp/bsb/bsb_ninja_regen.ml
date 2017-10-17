@@ -70,16 +70,9 @@ let regenerate_ninja
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;       
         Bsb_ninja_gen.output_ninja_and_namespace_map 
-          ~cwd ~bsc_dir ~no_dev config ; 
-        Literals.bsconfig_json :: config.globbed_dirs
-        |> Ext_list.map
-          (fun x ->
-             { Bsb_bsdeps.dir_or_file = x ;
-               stamp = (Unix.stat (cwd // x)).st_mtime
-             }
-          )
-        |> (fun x -> 
-          Bsb_bsdeps.store ~cwd ~file:output_deps (Array.of_list x));
+          ~cwd ~bsc_dir ~no_dev config ;         
+        Bsb_bsdeps.record ~cwd ~file:output_deps 
+        (Literals.bsconfig_json::config.globbed_dirs) ;
         Some config 
       end 
   end

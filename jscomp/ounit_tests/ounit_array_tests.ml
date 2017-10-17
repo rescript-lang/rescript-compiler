@@ -2,6 +2,11 @@ let ((>::),
     (>:::)) = OUnit.((>::),(>:::))
 
 let (=~) = OUnit.assert_equal
+
+let printer_int_array = fun xs -> 
+    String.concat ","
+    (List.map string_of_int @@ Array.to_list xs )
+
 let suites = 
     __FILE__
     >:::
@@ -31,9 +36,15 @@ let suites =
         Ext_array.reverse [||] =~ [||]  
     end     ;
     __LOC__ >:: begin fun _ -> 
-        Ext_array.of_list_map succ [] =~ [||];
-        Ext_array.of_list_map succ [1]  =~ [|2|];
-        Ext_array.of_list_map succ [1;2;3]  =~ [|2;3;4|];
+        let (=~) = OUnit.assert_equal ~printer:printer_int_array in 
+        let k = Ext_array.of_list_map in 
+        k succ [] =~ [||];
+        k succ [1]  =~ [|2|];
+        k succ [1;2;3]  =~ [|2;3;4|];
+        k succ [1;2;3;4]  =~ [|2;3;4;5|];
+        k succ [1;2;3;4;5]  =~ [|2;3;4;5;6|];
+        k succ [1;2;3;4;5;6]  =~ [|2;3;4;5;6;7|];
+        k succ [1;2;3;4;5;6;7]  =~ [|2;3;4;5;6;7;8|];
     end; 
     __LOC__ >:: begin fun _ -> 
         Ext_array.to_list_map_acc

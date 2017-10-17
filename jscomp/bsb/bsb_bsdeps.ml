@@ -91,6 +91,19 @@ let read (fname : string) cont =
       cont res
   | exception _ -> Bsb_file_not_exist
 
+let record ~cwd ~file  file_or_dirs =
+  let file_stamps = 
+    Ext_array.of_list_map
+      (fun  x -> 
+         {dir_or_file = x ;
+          stamp = (Unix.stat (Filename.concat cwd  x )).st_mtime
+         })  file_or_dirs
+  in 
+  write file
+    { file_stamps ;
+      source_directory = cwd ;
+      bsb_version ;
+      bsc_version = Bs_version.version }
 
 (** check time stamp for all files
     TODO: those checks system call can be saved later
@@ -119,9 +132,3 @@ let check ~cwd ~forced ~file =
         end
   end
 
-let store ~cwd ~file:name file_stamps =
-  write name
-    { file_stamps ;
-      source_directory = cwd ;
-      bsb_version ;
-      bsc_version = Bs_version.version }

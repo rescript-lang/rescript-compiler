@@ -23,27 +23,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  This module is used to check when [build.ninja] will 
-  be regenerated. Everytime [bsb] run [regenerate_ninja], 
-  bsb will try to [check] if it is needed, 
-  if needed, we will regenerate ninja file and store the 
-  metadata again
+   This module is used to check whether [build.ninja] needs
+   be regenerated. Everytime [bsb] run [regenerate_ninja], 
+   bsb will try to [check] if it is needed, 
+   if needed, bsb will regenerate ninja file and store the 
+   metadata again
 *)
 
-
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float 
-}
-(** 
-   The data structure we decided to whether regenerate [build.ninja] 
-   or not. Note that if we don't record absolute path, 
-
-   ninja will not notice  its build spec changed, it will not trigger 
-   rebuild behavior, is this a desired behavior not?
-
-   It may not, since there is some subtlies here (__FILE__ or __dirname)
-*)
 
 
 
@@ -58,10 +44,18 @@ type check_result =
 
 val pp_check_result : Format.formatter -> check_result -> unit
 
-(** [store ~cwd name deps]
-  serialize data (should be [.bsdeps])
- *)
-val store : cwd:string -> file:string -> dep_info array -> unit
+
+(** [record cwd file relevant_file_or_dirs]
+    The data structure we decided to whether regenerate [build.ninja] 
+    or not. 
+    Note that if we don't record absolute path,  ninja will not notice  its build spec changed, 
+    it will not trigger  rebuild behavior, 
+    It may not be desired behavior, since there is some subtlies here (__FILE__ or __dirname)
+
+    We serialize such data structure and call {!check} to decide
+    [build.ninja] should be regenerated
+*)
+val record : cwd:string -> file:string -> string list -> unit
 
 
 (** check if [build.ninja] should be regenerated *)
