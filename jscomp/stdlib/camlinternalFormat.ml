@@ -2595,11 +2595,14 @@ let fmt_ebb_of_string ?legacy_behavior str =
     match str.[str_ind] with
     | '0' .. '9' as c ->
       let new_acc = acc * 10 + (int_of_char c - int_of_char '0') in
+#if BS then       
+#else 
       if new_acc > Sys.max_string_length then
         failwith_message
           "invalid format %S: integer %d is greater than the limit %d"
           str new_acc Sys.max_string_length
       else
+#end      
         parse_positive (str_ind + 1) end_ind new_acc
     | _ -> str_ind, acc
 

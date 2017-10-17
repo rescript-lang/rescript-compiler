@@ -21,7 +21,10 @@ type t =
 
 let create n =
  let n = if n < 1 then 1 else n in
+#if BS then  
+#else 
  let n = if n > Sys.max_string_length then Sys.max_string_length else n in
+#end 
  let s = Bytes.create n in
  {buffer = s; position = 0; length = n; initial_buffer = s}
 
@@ -60,11 +63,14 @@ let resize b more =
   let len = b.length in
   let new_len = ref len in
   while b.position + more > !new_len do new_len := 2 * !new_len done;
+#if BS then   
+#else 
   if !new_len > Sys.max_string_length then begin
     if b.position + more <= Sys.max_string_length
     then new_len := Sys.max_string_length
     else failwith "Buffer.add: cannot grow buffer"
   end;
+#end  
   let new_buffer = Bytes.create !new_len in
   Bytes.blit b.buffer 0 new_buffer 0 b.position;
   b.buffer <- new_buffer;
@@ -100,7 +106,12 @@ let add_buffer b bs =
   add_subbytes b bs.buffer 0 bs.position
 
 let add_channel b ic len =
-  if len < 0 || len > Sys.max_string_length then   (* PR#5004 *)
+  if len < 0 
+#if BS then   
+#else
+    || len > Sys.max_string_length 
+#end
+    then   (* PR#5004 *)
     invalid_arg "Buffer.add_channel";
   if b.position + len > b.length then resize b len;
   really_input ic b.buffer b.position len;

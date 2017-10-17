@@ -10,7 +10,11 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-
+#if BS then
+module Sys = struct
+  let word_size = 8
+end
+#end
 type stat = {
   minor_words : float;
   promoted_words : float;

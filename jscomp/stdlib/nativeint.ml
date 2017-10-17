@@ -38,7 +38,11 @@ let minus_one = -1n
 let succ n = add n 1n
 let pred n = sub n 1n
 let abs n = if n >= 0n then n else neg n
+#if BS then
+let size = 54 (* 54 is not a multiple of 8 *)
+#else
 let size = Sys.word_size
+#end
 let min_int = shift_left 1n (size - 1)
 let max_int = sub min_int 1n
 let lognot n = logxor n (-1n)
