@@ -1,11 +1,13 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
-var Caml_array = require("../../lib/js/caml_array.js");
+var Mt                = require("./mt.js");
+var Block             = require("../../lib/js/block.js");
+var Caml_array        = require("../../lib/js/caml_array.js");
+var Js_primitive      = require("../../lib/js/js_primitive.js");
+var Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
 var suites_000 = /* tuple */[
-  "matches",
+  "captures",
   (function () {
       var re = (/(\d+)-(?:(\d+))?/g);
       var match = re.exec("3-");
@@ -30,187 +32,231 @@ var suites_000 = /* tuple */[
 
 var suites_001 = /* :: */[
   /* tuple */[
-    "exec_literal",
+    "fromString",
     (function () {
-        var match = (/[^.]+/).exec("http://xxx.domain.com");
-        if (match !== null) {
-          return /* Eq */Block.__(0, [
-                    "http://xxx",
-                    Caml_array.caml_array_get(match, 0)
-                  ]);
-        } else {
-          return /* FailWith */Block.__(9, ["regex should match"]);
-        }
+        var contentOf = function (tag, xmlString) {
+          var param = new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString);
+          if (param !== null) {
+            return Js_primitive.null_undefined_to_opt(Caml_array.caml_array_get(param, 1));
+          } else {
+            return /* None */0;
+          }
+        };
+        return /* Eq */Block.__(0, [
+                  contentOf("div", "<div>Hi</div>"),
+                  /* Some */["Hi"]
+                ]);
       })
   ],
   /* :: */[
     /* tuple */[
-      "exec_no_match",
+      "fromStringfdsf",
       (function () {
-          var match = (/https:\/\/(.*)/).exec("http://xxx.domain.com");
-          if (match !== null) {
-            return /* FailWith */Block.__(9, ["regex should not match"]);
-          } else {
-            return /* Ok */Block.__(4, [/* true */1]);
-          }
+          var re = (/ab*/g);
+          var $$break = /* false */0;
+          while(!$$break) {
+            var match = re.exec("abbcdefabh");
+            if (match !== null) {
+              Js_null_undefined.bind(Caml_array.caml_array_get(match, 0), (function (match_) {
+                      var next = "" + re.lastIndex;
+                      console.log("Found " + (match_ + (". Next match starts at " + next)));
+                      return /* () */0;
+                    }));
+            } else {
+              $$break = /* true */1;
+            }
+          };
+          return /* Eq */Block.__(0, [
+                    $$break,
+                    /* true */1
+                  ]);
         })
     ],
     /* :: */[
       /* tuple */[
-        "test_str",
+        "exec_literal",
         (function () {
-            var res = +new RegExp("foo").test("#foo#");
-            return /* Eq */Block.__(0, [
-                      /* true */1,
-                      res
-                    ]);
+            var match = (/[^.]+/).exec("http://xxx.domain.com");
+            if (match !== null) {
+              return /* Eq */Block.__(0, [
+                        "http://xxx",
+                        Caml_array.caml_array_get(match, 0)
+                      ]);
+            } else {
+              return /* FailWith */Block.__(9, ["regex should match"]);
+            }
           })
       ],
       /* :: */[
         /* tuple */[
-          "fromStringWithFlags",
+          "exec_no_match",
           (function () {
-              var res = new RegExp("foo", "g");
-              return /* Eq */Block.__(0, [
-                        /* true */1,
-                        +res.global
-                      ]);
+              var match = (/https:\/\/(.*)/).exec("http://xxx.domain.com");
+              if (match !== null) {
+                return /* FailWith */Block.__(9, ["regex should not match"]);
+              } else {
+                return /* Ok */Block.__(4, [/* true */1]);
+              }
             })
         ],
         /* :: */[
           /* tuple */[
-            "result_index",
+            "test_str",
             (function () {
-                var match = new RegExp("zbar").exec("foobarbazbar");
-                if (match !== null) {
-                  return /* Eq */Block.__(0, [
-                            8,
-                            match.index
-                          ]);
-                } else {
-                  return /* Fail */Block.__(8, [/* () */0]);
-                }
+                var res = +new RegExp("foo").test("#foo#");
+                return /* Eq */Block.__(0, [
+                          /* true */1,
+                          res
+                        ]);
               })
           ],
           /* :: */[
             /* tuple */[
-              "result_input",
+              "fromStringWithFlags",
               (function () {
-                  var input = "foobar";
-                  var match = (/foo/g).exec(input);
-                  if (match !== null) {
-                    return /* Eq */Block.__(0, [
-                              input,
-                              match.input
-                            ]);
-                  } else {
-                    return /* Fail */Block.__(8, [/* () */0]);
-                  }
+                  var res = new RegExp("foo", "g");
+                  return /* Eq */Block.__(0, [
+                            /* true */1,
+                            +res.global
+                          ]);
                 })
             ],
             /* :: */[
               /* tuple */[
-                "t_flags",
+                "result_index",
                 (function () {
-                    return /* Eq */Block.__(0, [
-                              "gi",
-                              (/./ig).flags
-                            ]);
+                    var match = new RegExp("zbar").exec("foobarbazbar");
+                    if (match !== null) {
+                      return /* Eq */Block.__(0, [
+                                8,
+                                match.index
+                              ]);
+                    } else {
+                      return /* Fail */Block.__(8, [/* () */0]);
+                    }
                   })
               ],
               /* :: */[
                 /* tuple */[
-                  "t_global",
+                  "result_input",
                   (function () {
-                      return /* Eq */Block.__(0, [
-                                /* true */1,
-                                +(/./ig).global
-                              ]);
+                      var input = "foobar";
+                      var match = (/foo/g).exec(input);
+                      if (match !== null) {
+                        return /* Eq */Block.__(0, [
+                                  input,
+                                  match.input
+                                ]);
+                      } else {
+                        return /* Fail */Block.__(8, [/* () */0]);
+                      }
                     })
                 ],
                 /* :: */[
                   /* tuple */[
-                    "t_ignoreCase",
+                    "t_flags",
                     (function () {
                         return /* Eq */Block.__(0, [
-                                  /* true */1,
-                                  +(/./ig).ignoreCase
+                                  "gi",
+                                  (/./ig).flags
                                 ]);
                       })
                   ],
                   /* :: */[
                     /* tuple */[
-                      "t_lastIndex",
+                      "t_global",
                       (function () {
-                          var re = (/na/g);
-                          re.exec("banana");
                           return /* Eq */Block.__(0, [
-                                    4,
-                                    re.lastIndex
+                                    /* true */1,
+                                    +(/./ig).global
                                   ]);
                         })
                     ],
                     /* :: */[
                       /* tuple */[
-                        "t_setLastIndex",
+                        "t_ignoreCase",
                         (function () {
-                            var re = (/na/g);
-                            var before = re.lastIndex;
-                            re.lastIndex = 42;
-                            var after = re.lastIndex;
                             return /* Eq */Block.__(0, [
-                                      /* tuple */[
-                                        0,
-                                        42
-                                      ],
-                                      /* tuple */[
-                                        before,
-                                        after
-                                      ]
+                                      /* true */1,
+                                      +(/./ig).ignoreCase
                                     ]);
                           })
                       ],
                       /* :: */[
                         /* tuple */[
-                          "t_multiline",
+                          "t_lastIndex",
                           (function () {
+                              var re = (/na/g);
+                              re.exec("banana");
                               return /* Eq */Block.__(0, [
-                                        /* false */0,
-                                        +(/./ig).multiline
+                                        4,
+                                        re.lastIndex
                                       ]);
                             })
                         ],
                         /* :: */[
                           /* tuple */[
-                            "t_source",
+                            "t_setLastIndex",
                             (function () {
+                                var re = (/na/g);
+                                var before = re.lastIndex;
+                                re.lastIndex = 42;
+                                var after = re.lastIndex;
                                 return /* Eq */Block.__(0, [
-                                          "f.+o",
-                                          (/f.+o/ig).source
+                                          /* tuple */[
+                                            0,
+                                            42
+                                          ],
+                                          /* tuple */[
+                                            before,
+                                            after
+                                          ]
                                         ]);
                               })
                           ],
                           /* :: */[
                             /* tuple */[
-                              "t_sticky",
+                              "t_multiline",
                               (function () {
                                   return /* Eq */Block.__(0, [
-                                            /* true */1,
-                                            +(/./yg).sticky
+                                            /* false */0,
+                                            +(/./ig).multiline
                                           ]);
                                 })
                             ],
                             /* :: */[
                               /* tuple */[
-                                "t_unicode",
+                                "t_source",
                                 (function () {
                                     return /* Eq */Block.__(0, [
-                                              /* false */0,
-                                              +(/./yg).unicode
+                                              "f.+o",
+                                              (/f.+o/ig).source
                                             ]);
                                   })
                               ],
-                              /* [] */0
+                              /* :: */[
+                                /* tuple */[
+                                  "t_sticky",
+                                  (function () {
+                                      return /* Eq */Block.__(0, [
+                                                /* true */1,
+                                                +(/./yg).sticky
+                                              ]);
+                                    })
+                                ],
+                                /* :: */[
+                                  /* tuple */[
+                                    "t_unicode",
+                                    (function () {
+                                        return /* Eq */Block.__(0, [
+                                                  /* false */0,
+                                                  +(/./yg).unicode
+                                                ]);
+                                      })
+                                  ],
+                                  /* [] */0
+                                ]
+                              ]
                             ]
                           ]
                         ]
