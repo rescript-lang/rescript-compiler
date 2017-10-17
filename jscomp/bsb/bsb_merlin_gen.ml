@@ -96,13 +96,8 @@ let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
      Literals.dash_nostdlib::bsc_flags) 
 
 (* No need for [-warn-error] in merlin  *)     
-let warning_to_merlin_flg (warning: Bsb_warning.t option) : string= 
-    merlin_flg ^ 
-    ( match warning with 
-    | None  
-    | Some {number = None}
-      -> Bsb_warning.default_warning_flag
-    | Some {number = Some x } -> "-w " ^ x)
+let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=     
+    merlin_flg ^ Bsb_warning.get_warning_flag warning
 
 
 let merlin_file_gen ~cwd

@@ -23,20 +23,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(* type warning_error = private
-  | Warn_error_false 
-  (* default [false] to make our changes non-intrusive *)
-  | Warn_error_true
-  | Warn_error_number of string  *)
-type warning_error 
 
-type t = private {
-  number : string option;
-  error : warning_error
-}
+
+type t 
+
+val get_warning_flag : t option -> string 
 
 val default_warning_flag : string
 
+val from_map : Ext_json_types.t String_map.t -> t option
+
+(** [opt_warning_to_string no_dev warning]
+*)
 val opt_warning_to_string : bool -> t option -> string 
 
-val from_map : Ext_json_types.t String_map.t -> t option
