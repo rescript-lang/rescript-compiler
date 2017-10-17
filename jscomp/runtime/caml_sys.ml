@@ -91,7 +91,9 @@ let caml_sys_get_argv () : string * string array =
   match [%external process] with 
   | None -> ("",[|""|])
   | Some process 
-    -> Array.unsafe_get process##argv 0, process##argv
+    -> 
+    if Js.testAny process##argv then ("",[|""|])
+    else Array.unsafe_get process##argv 0, process##argv
 
 (** {!Pervasives.sys_exit} *)
 let caml_sys_exit exit_code = 
