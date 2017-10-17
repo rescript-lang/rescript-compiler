@@ -12,7 +12,8 @@
 (***********************************************************************)
 #if BS then
 module Sys = struct
-  let word_size = 8
+  external word_size : unit -> int = "%word_size"
+  let word_size = word_size ()
 end
 #end
 type stat = {

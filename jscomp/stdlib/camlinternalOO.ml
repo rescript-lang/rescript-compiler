@@ -44,7 +44,8 @@ let params = {
 (**** Parameters ****)
 #if BS then(* {!Translobj.oo_prim : string -> lambda} not by slot *)
 module Sys = struct 
-  let word_size = 32
+  external word_size : unit -> int = "%word_size"
+  let word_size = word_size ()
 end
 #end
 let step = Sys.word_size / 16
