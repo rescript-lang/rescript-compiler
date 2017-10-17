@@ -76,6 +76,9 @@ type + 'a null_undefined = 'a nullable
 external toOption : 'a nullable  -> 'a option = "#null_undefined_to_opt"
 external test : 'a nullable -> bool = "#is_nil_undef"
 
+(** The same as {!test} except that it is more permissive on the types of input *)
+external testAny : 'a -> bool = "#is_nil_undef"
+
 type boolean
 (** The value could be either  {!Js.true_} or {!Js.false_}.
      Note in BuckleScript, [boolean] has different representation from OCaml's [bool],
