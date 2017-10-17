@@ -55,8 +55,8 @@ type result
 external captures : result -> string Js.nullable array = "%identity"
 
 (** an array of the matches, the first is the full match and the remaining are the substring matches *)
-[@@deprecated "Use Js.Re.captures instead"]
 external matches : result -> string array = "%identity"
+[@@deprecated "Use Js.Re.captures instead"]
 
 (** 0-based index of the match in the input string *)
 external index : result -> int = "" [@@bs.get]
@@ -125,10 +125,9 @@ while not !break do
   match re |> Js.Re.exec str with
   | None -> break := true
   | Some result ->
-    let _ = Js.Nullable.bind (Js.Re.captures result).(0) ((fun match_ ->
+    Js.Nullable.iter (Js.Re.captures result).(0) ((fun match_ ->
       let next = string_of_int (Js.Re.lastIndex re) in
-      Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)) [@bs]) in
-    ()
+      Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)) [@bs])
 done
 ]}
 
