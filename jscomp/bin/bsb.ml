@@ -271,11 +271,11 @@ let reverse_in_place a =
 let reverse a =
   let b_len = Array.length a in
   if b_len = 0 then [||] else  
-  let b = Array.copy a in  
-  for i = 0 to  b_len - 1 do
+    let b = Array.copy a in  
+    for i = 0 to  b_len - 1 do
       Array.unsafe_set b i (Array.unsafe_get a (b_len - 1 -i )) 
-  done;
-  b  
+    done;
+    b  
 
 let reverse_of_list =  function
   | [] -> [||]
@@ -326,13 +326,13 @@ let map2i f a b =
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
 
- let rec tolist_aux a f  i res =
-    if i < 0 then res else
-      let v = Array.unsafe_get a i in
-      tolist_aux a f  (i - 1)
-        (match f v with
-         | Some v -> v :: res
-         | None -> res) 
+let rec tolist_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_aux a f  (i - 1)
+      (match f v with
+       | Some v -> v :: res
+       | None -> res) 
 
 let to_list_map f a = 
   tolist_aux a f (Array.length a - 1) []
@@ -341,32 +341,65 @@ let to_list_map_acc f a acc =
   tolist_aux a f (Array.length a - 1) acc
 
 
-(* TODO: What would happen if [f] raise, memory leak? *)
 let of_list_map f a = 
   match a with 
   | [] -> [||]
-  | h::tl -> 
-    let hd = f h in 
-    let len = List.length tl + 1 in 
-    let arr = Array.make len hd  in
+  | [a0] -> 
+    let b0 = f a0 in
+    [|b0|]
+  | [a0;a1] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    [|b0;b1|]
+  | [a0;a1;a2] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    [|b0;b1;b2|]
+  | [a0;a1;a2;a3] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    [|b0;b1;b2;b3|]
+  | [a0;a1;a2;a3;a4] -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    [|b0;b1;b2;b3;b4|]
+
+  | a0::a1::a2::a3::a4::tl -> 
+    let b0 = f a0 in  
+    let b1 = f a1 in 
+    let b2 = f a2 in  
+    let b3 = f a3 in 
+    let b4 = f a4 in 
+    let len = List.length tl + 5 in 
+    let arr = Array.make len b0  in
+    Array.unsafe_set arr 1 b1 ;  
+    Array.unsafe_set arr 2 b2 ;
+    Array.unsafe_set arr 3 b3 ; 
+    Array.unsafe_set arr 4 b4 ; 
     let rec fill i = function
-    | [] -> arr 
-    | hd :: tl -> 
-      Array.unsafe_set arr i (f hd); 
-      fill (i + 1) tl in 
-    fill 1 tl
-  
+      | [] -> arr 
+      | hd :: tl -> 
+        Array.unsafe_set arr i (f hd); 
+        fill (i + 1) tl in 
+    fill 5 tl
+
 (**
-{[
-# rfind_with_index [|1;2;3|] (=) 2;;
-- : int = 1
-# rfind_with_index [|1;2;3|] (=) 1;;
-- : int = 0
-# rfind_with_index [|1;2;3|] (=) 3;;
-- : int = 2
-# rfind_with_index [|1;2;3|] (=) 4;;
-- : int = -1
-]}
+   {[
+     # rfind_with_index [|1;2;3|] (=) 2;;
+     - : int = 1
+               # rfind_with_index [|1;2;3|] (=) 1;;
+     - : int = 0
+               # rfind_with_index [|1;2;3|] (=) 3;;
+     - : int = 2
+               # rfind_with_index [|1;2;3|] (=) 4;;
+     - : int = -1
+   ]}
 *)
 let rfind_with_index arr cmp v = 
   let len = Array.length arr in 
@@ -421,8 +454,8 @@ let rec unsafe_loop index len p xs ys  =
     p 
       (Array.unsafe_get xs index)
       (Array.unsafe_get ys index) &&
-      unsafe_loop (succ index) len p xs ys 
-   
+    unsafe_loop (succ index) len p xs ys 
+
 let for_all2_no_exn p xs ys = 
   let len_xs = Array.length xs in 
   let len_ys = Array.length ys in 
@@ -6340,27 +6373,13 @@ module Bsb_bsdeps : sig
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (**
-  This module is used to check when [build.ninja] will 
-  be regenerated. Everytime [bsb] run [regenerate_ninja], 
-  bsb will try to [check] if it is needed, 
-  if needed, we will regenerate ninja file and store the 
-  metadata again
+   This module is used to check whether [build.ninja] needs
+   be regenerated. Everytime [bsb] run [regenerate_ninja], 
+   bsb will try to [check] if it is needed, 
+   if needed, bsb will regenerate ninja file and store the 
+   metadata again
 *)
 
-
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float 
-}
-(** 
-   The data structure we decided to whether regenerate [build.ninja] 
-   or not. Note that if we don't record absolute path, 
-
-   ninja will not notice  its build spec changed, it will not trigger 
-   rebuild behavior, is this a desired behavior not?
-
-   It may not, since there is some subtlies here (__FILE__ or __dirname)
-*)
 
 
 
@@ -6375,10 +6394,18 @@ type check_result =
 
 val pp_check_result : Format.formatter -> check_result -> unit
 
-(** [store ~cwd name deps]
-  serialize data (should be [.bsdeps])
- *)
-val store : cwd:string -> file:string -> dep_info array -> unit
+
+(** [record cwd file relevant_file_or_dirs]
+    The data structure we decided to whether regenerate [build.ninja] 
+    or not. 
+    Note that if we don't record absolute path,  ninja will not notice  its build spec changed, 
+    it will not trigger  rebuild behavior, 
+    It may not be desired behavior, since there is some subtlies here (__FILE__ or __dirname)
+
+    We serialize such data structure and call {!check} to decide
+    [build.ninja] should be regenerated
+*)
+val record : cwd:string -> file:string -> string list -> unit
 
 
 (** check if [build.ninja] should be regenerated *)
@@ -6481,6 +6508,19 @@ let read (fname : string) cont =
       cont res
   | exception _ -> Bsb_file_not_exist
 
+let record ~cwd ~file  file_or_dirs =
+  let file_stamps = 
+    Ext_array.of_list_map
+      (fun  x -> 
+         {dir_or_file = x ;
+          stamp = (Unix.stat (Filename.concat cwd  x )).st_mtime
+         })  file_or_dirs
+  in 
+  write file
+    { file_stamps ;
+      source_directory = cwd ;
+      bsb_version ;
+      bsc_version = Bs_version.version }
 
 (** check time stamp for all files
     TODO: those checks system call can be saved later
@@ -6509,12 +6549,6 @@ let check ~cwd ~forced ~file =
         end
   end
 
-let store ~cwd ~file:name file_stamps =
-  write name
-    { file_stamps ;
-      source_directory = cwd ;
-      bsb_version ;
-      bsc_version = Bs_version.version }
 
 end
 module Ext_namespace : sig 
@@ -12780,16 +12814,9 @@ let regenerate_ninja
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;       
         Bsb_ninja_gen.output_ninja_and_namespace_map 
-          ~cwd ~bsc_dir ~no_dev config ; 
-        Literals.bsconfig_json :: config.globbed_dirs
-        |> Ext_list.map
-          (fun x ->
-             { Bsb_bsdeps.dir_or_file = x ;
-               stamp = (Unix.stat (cwd // x)).st_mtime
-             }
-          )
-        |> (fun x -> 
-          Bsb_bsdeps.store ~cwd ~file:output_deps (Array.of_list x));
+          ~cwd ~bsc_dir ~no_dev config ;         
+        Bsb_bsdeps.record ~cwd ~file:output_deps 
+        (Literals.bsconfig_json::config.globbed_dirs) ;
         Some config 
       end 
   end
