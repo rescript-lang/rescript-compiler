@@ -295,3 +295,6 @@ let absolute cwd s =
   match s with 
   | File x -> File (absolute_path cwd x )
   | Dir x -> Dir (absolute_path cwd x)
+
+let check_suffix_case =
+  Ext_string.ends_with

@@ -55,23 +55,23 @@ type valid_input =
   | Cmi
   
 let check_suffix  name  = 
-  if Filename.check_suffix name ".ml"
-  || Filename.check_suffix name ".mlt" then 
+  if Ext_path.check_suffix_case name ".ml"
+  || Ext_path.check_suffix_case name ".mlt" then 
     Ml,
     (** This is per-file based, 
         when [ocamlc] [-c -o another_dir/xx.cmi] 
         it will return (another_dir/xx)
     *)    
     Compenv.output_prefix name 
-  else if Filename.check_suffix name !Config.interface_suffix then 
+  else if Ext_path.check_suffix_case name !Config.interface_suffix then 
     Mli,  Compenv.output_prefix name 
-  else if Filename.check_suffix name ".mlast" then 
+  else if Ext_path.check_suffix_case name ".mlast" then 
     Mlast, Compenv.output_prefix name 
-  else if Filename.check_suffix name ".mliast" then 
+  else if Ext_path.check_suffix_case name ".mliast" then 
     Mliast, Compenv.output_prefix name 
-  else if Filename.check_suffix name ".mlmap"  then 
+  else if Ext_path.check_suffix_case name ".mlmap"  then 
     Mlmap, Compenv.output_prefix name 
-  else if Filename.check_suffix name ".cmi" then 
+  else if Ext_path.check_suffix_case name ".cmi" then 
     Cmi, Compenv.output_prefix name
   else 
     raise(Arg.Bad("don't know what to do with " ^ name))

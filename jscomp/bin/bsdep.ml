@@ -23450,6 +23450,11 @@ let starts_with s beg =
    !i = beg_len
   )
 
+let rec ends_aux s end_ j k = 
+  if k < 0 then (j + 1)
+  else if String.unsafe_get s j = String.unsafe_get end_ k then 
+    ends_aux s end_ (j - 1) (k - 1)
+  else  -1   
 
 (** return an index which is minus when [s] does not 
     end with [beg]
@@ -23459,12 +23464,7 @@ let ends_with_index s end_ =
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
   else
-    let rec aux j k = 
-      if k < 0 then (j + 1)
-      else if String.unsafe_get s j = String.unsafe_get end_ k then 
-        aux (j - 1) (k - 1)
-      else  -1 in 
-    aux s_finish s_beg
+    ends_aux s end_ s_finish s_beg
 
 let ends_with s end_ = ends_with_index s end_ >= 0 
 
@@ -23521,7 +23521,7 @@ let for_all_from s start  p =
   let len = String.length s in 
   if start < 0  then invalid_arg "Ext_string.for_all_from"
   else unsafe_for_all_range s ~start ~finish:(len - 1) p 
-  
+
 
 let for_all (p : char -> bool) s =   
   unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
@@ -23812,7 +23812,7 @@ let capitalize_ascii (s : string) : string =
     end
 
 
-    
+
 
 
 
