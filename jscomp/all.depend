@@ -884,7 +884,7 @@ bsb/bsb_package_specs.cmx : ext/string_map.cmx ext/literals.cmx \
     bsb/bsb_package_specs.cmi
 bsb/bsb_parse_sources.cmx : ext/string_vec.cmx ext/string_set.cmx \
     ext/string_map.cmx ext/string_hashtbl.cmx ext/ext_string.cmx \
-    ext/ext_path.cmx ext/ext_list.cmx ext/ext_json_types.cmx ext/ext_json.cmx \
+    ext/ext_list.cmx ext/ext_json_types.cmx ext/ext_json.cmx \
     ext/ext_filename.cmx ext/ext_file_pp.cmx ext/ext_array.cmx \
     bsb/bsb_log.cmx bsb/bsb_exception.cmx bsb/bsb_dir_index.cmx \
     bsb/bsb_db.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
