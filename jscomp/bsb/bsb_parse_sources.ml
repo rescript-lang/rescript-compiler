@@ -25,7 +25,9 @@
 let dir_cache = 
   String_hashtbl.create 32 
 
-(** Only cached in the life-time of a single process *)  
+(** Only cached in the life-time of a single process 
+    be careful when using caching, we have to sync it up when modify the cache
+*)  
 let readdir path = 
   match String_hashtbl.find_opt dir_cache path with
   | None -> 
@@ -116,7 +118,29 @@ let collect_pub_modules
         "public excpect a list of strings"
   done  ;
   !set
-(* String_set.of_list (Bsb_build_util.get_list_string xs) *)
+
+let extract_pub (input : Ext_json_types.t String_map.t) cur_sources =   
+  match String_map.find_opt Bsb_build_schemas.public input with 
+  | Some (Str{str = s; loc}) ->  
+    if s = Bsb_build_schemas.export_all then Export_all else 
+    if s = Bsb_build_schemas.export_none then Export_none else 
+      Bsb_exception.errorf ~loc "invalid str for %s "  s 
+  | Some (Arr {content = s}) ->         
+    Export_set (collect_pub_modules s cur_sources)
+  | Some config -> 
+    Bsb_exception.config_error config "expect array or string"
+  | None ->
+    Export_all 
+
+let extract_resources (input : Ext_json_types.t String_map.t) =   
+  match String_map.find_opt  Bsb_build_schemas.resources  input with 
+  | Some (Arr {content = s}) ->
+    Bsb_build_util.get_list_string s 
+  | Some config -> 
+    Bsb_exception.config_error config 
+      "expect array "  
+  | None -> [] 
+
 
 let  handle_list_files acc
     ({ cwd = dir ; root} : cxt)  
@@ -327,31 +351,10 @@ and parsing_source_dir_map
       cur_globbed_dirs := [dir]              
 
     | Some x -> Bsb_exception.config_error x "files field expect array or object "
-
   end;
   let cur_sources = !cur_sources in 
-  let resources = 
-    match String_map.find_opt  Bsb_build_schemas.resources  input with 
-    | Some (Arr {content = s}) ->
-      Bsb_build_util.get_list_string s 
-    | Some config -> 
-      Bsb_exception.config_error config 
-        "expect array "  
-    | None -> [] in 
-
-  let public = 
-    match String_map.find_opt Bsb_build_schemas.public input with 
-    | Some (Str{str = s; loc}) ->  
-      if s = Bsb_build_schemas.export_all then Export_all else 
-      if s = Bsb_build_schemas.export_none then Export_none else 
-        Bsb_exception.errorf ~loc "invalid str for %s "  s 
-    | Some (Arr {content = s}) ->         
-      Export_set (collect_pub_modules s cur_sources)
-    | Some config -> 
-      Bsb_exception.config_error config "expect array or string"
-    | None ->
-      Export_all 
-  in 
+  let resources = extract_resources input in
+  let public = extract_pub input cur_sources in 
 
   let cur_file = 
     {dir ; 
