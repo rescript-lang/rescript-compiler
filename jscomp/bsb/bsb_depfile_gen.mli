@@ -24,14 +24,20 @@
 
 type kind = Js | Bytecode | Native
 
-
+(** [deps_of_channel ic]
+    given an input_channel dumps all modules it depend on, only used for debugging 
+*)
 val deps_of_channel : in_channel -> string array
 
-
-val make: 
+(**
+  [make compilation_kind filename index namespace]
+  emit [.d] file based on filename (shoud be [.mlast] or [.mliast])
+*)
+val emit_dep_file: 
   kind ->
   string -> 
   Bsb_dir_index.t ->  
   string option ->
   unit
+
 

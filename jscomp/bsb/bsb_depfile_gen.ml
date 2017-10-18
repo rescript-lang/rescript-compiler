@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let (//) = Filename.concat
+
 let dep_lit = " :"
 
 
@@ -44,9 +44,10 @@ let deps_of_channel ic : string array =
   return_arr 
 
 (** Please refer to {!Binary_ast} for encoding format, we move it here 
-    mostly for cutting the dependency so that [bsb_helper.exe] is lean
+    mostly for cutting the dependency so that [bsb_helper.exe] does
+    not depend on compler-libs
 *)
-let read_deps fn = 
+let read_deps fn : string array = 
   let ic = open_in_bin fn in 
   let v = deps_of_channel ic in 
   close_in ic;
@@ -146,8 +147,8 @@ let oc_intf
   done  
 
 
-(* TODO: Don't touch the .d file if nothing changed *)
-let make
+(* OPT: Don't touch the .d file if nothing changed *)
+let emit_dep_file
     compilation_kind
     (fn : string)
     (index : Bsb_dir_index.t) 

@@ -835,9 +835,8 @@ bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
 bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_path.cmx ext/ext_modulename.cmx bsb/bsb_helper_extract.cmx \
     bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_linker.cmi
-bsb/bsb_helper_main.cmx : ext/ext_path.cmx bsb/bsb_helper_packer.cmx \
-    bsb/bsb_helper_linker.cmx bsb/bsb_dir_index.cmx bsb/bsb_depfile_gen.cmx \
-    bsb/bsb_helper_main.cmi
+bsb/bsb_helper_main.cmx : ext/ext_path.cmx bsb/bsb_dir_index.cmx \
+    bsb/bsb_depfile_gen.cmx bsb/bsb_helper_main.cmi
 bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/literals.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
     bsb/bsb_helper_extract.cmx bsb/bsb_helper_dep_graph.cmx \
