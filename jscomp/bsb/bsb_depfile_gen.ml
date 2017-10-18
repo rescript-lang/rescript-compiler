@@ -70,7 +70,7 @@ let output_file oc source namespace =
 
 let oc_impl set input_file lhs_suffix rhs_suffix 
     (index : Bsb_dir_index.t)
-    (data : Bsb_build_cache.t array)
+    (data : Bsb_db.t array)
     namespace
     (oc : out_channel)
   = 
@@ -117,7 +117,7 @@ let oc_intf
     set
     input_file 
     (index : Bsb_dir_index.t)
-    (data : Bsb_build_cache.t array)
+    (data : Bsb_db.t array)
     (namespace : string option)
     (oc : out_channel) =   
   output_file oc input_file namespace ; 
@@ -153,7 +153,7 @@ let make
     (index : Bsb_dir_index.t) 
     (namespace : string option) : unit = 
   let data  =
-    Bsb_build_cache.read_build_cache 
+    Bsb_db.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
   let set = read_deps fn in 

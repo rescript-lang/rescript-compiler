@@ -3042,8 +3042,8 @@ let of_array xs =
   Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
-module Bsb_build_cache : sig 
-#1 "bsb_build_cache.mli"
+module Bsb_db : sig 
+#1 "bsb_db.mli"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -3137,7 +3137,7 @@ val map_update :
 
 val sanity_check : t -> unit   
 end = struct
-#1 "bsb_build_cache.ml"
+#1 "bsb_db.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -3717,7 +3717,7 @@ let output_file oc source namespace =
 
 let oc_impl set input_file lhs_suffix rhs_suffix 
     (index : Bsb_dir_index.t)
-    (data : Bsb_build_cache.t array)
+    (data : Bsb_db.t array)
     namespace
     (oc : out_channel)
   = 
@@ -3764,7 +3764,7 @@ let oc_intf
     set
     input_file 
     (index : Bsb_dir_index.t)
-    (data : Bsb_build_cache.t array)
+    (data : Bsb_db.t array)
     (namespace : string option)
     (oc : out_channel) =   
   output_file oc input_file namespace ; 
@@ -3800,7 +3800,7 @@ let make
     (index : Bsb_dir_index.t) 
     (namespace : string option) : unit = 
   let data  =
-    Bsb_build_cache.read_build_cache 
+    Bsb_db.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
   let set = read_deps fn in 

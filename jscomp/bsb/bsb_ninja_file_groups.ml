@@ -225,7 +225,7 @@ let handle_module_info
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
     oc  module_name 
-    ( module_info : Bsb_build_cache.module_info)
+    ( module_info : Bsb_db.module_info)
     namespace
   : info =
   match module_info.ml, module_info.mli with
@@ -288,7 +288,7 @@ let handle_file_group
         | Export_set set ->  
           String_set.mem module_name set in
       if installable then 
-        String_hash_set.add files_to_install (Bsb_build_cache.filename_sans_suffix_of_module_info module_info);
+        String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info group.dir_index 
          package_specs js_post_build_cmd 
          oc 

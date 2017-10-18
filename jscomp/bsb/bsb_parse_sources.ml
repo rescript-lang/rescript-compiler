@@ -57,7 +57,7 @@ let is_input_or_output(xs : build_generator list) (x : string)  =
 
 type  file_group = 
   { dir : string ;
-    sources : Bsb_build_cache.t; 
+    sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
     dir_index : Bsb_dir_index.t  ;
@@ -99,7 +99,7 @@ type cxt = {
 
 let collect_pub_modules 
     (xs : Ext_json_types.t array)
-    (cache : Bsb_build_cache.t) : String_set.t = 
+    (cache : Bsb_db.t) : String_set.t = 
   let set = ref String_set.empty in 
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
@@ -136,7 +136,7 @@ let  handle_list_files acc
         else
           match Ext_string.is_valid_source_name name with 
           | Good ->   begin 
-              let new_acc = Bsb_build_cache.map_update ~dir acc name  in 
+              let new_acc = Bsb_db.map_update ~dir acc name  in 
               String_vec.push name dyn_file_array ;
               new_acc 
             end 
@@ -221,7 +221,7 @@ and parsing_source_dir_map
      } as cxt )
     (input : Ext_json_types.t String_map.t) : t     
   = 
-  let cur_sources : Bsb_build_cache.module_info String_map.t ref = ref String_map.empty in
+  let cur_sources : Bsb_db.module_info String_map.t ref = ref String_map.empty in
   let resources = ref [] in 
   let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
@@ -249,7 +249,7 @@ and parsing_source_dir_map
                 output |> List.iter begin fun  output -> 
                   begin match Ext_string.is_valid_source_name output with
                     | Good ->
-                      cur_sources := Bsb_build_cache.map_update ~dir !cur_sources output
+                      cur_sources := Bsb_db.map_update ~dir !cur_sources output
                     | Invalid_module_name ->                  
                       Bsb_log.warn warning_unused_file output dir 
                     | Suffix_mismatch -> ()
@@ -278,7 +278,7 @@ and parsing_source_dir_map
             else 
               match Ext_string.is_valid_source_name name with 
               | Good -> 
-                Bsb_build_cache.map_update  ~dir acc name 
+                Bsb_db.map_update  ~dir acc name 
               | Invalid_module_name ->
                 Bsb_log.warn
                   warning_unused_file
@@ -304,7 +304,7 @@ and parsing_source_dir_map
         Array.fold_left (fun acc (s : Ext_json_types.t) ->
             match s with 
             | Str {str = s} -> 
-              Bsb_build_cache.map_update ~dir acc s
+              Bsb_db.map_update ~dir acc s
             | _ -> acc
           ) !cur_sources s    
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -328,7 +328,7 @@ and parsing_source_dir_map
       cur_sources := Array.fold_left (fun acc name -> 
           if is_input_or_output generators name || not (predicate name) then acc 
           else 
-            Bsb_build_cache.map_update  ~dir acc name 
+            Bsb_db.map_update  ~dir acc name 
         ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
 
