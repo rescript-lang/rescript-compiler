@@ -11578,8 +11578,9 @@ type t
 
 
 (**
+  [combine path1 path2]
    1. add some simplifications when concatenating
-   2. when the second one is absolute, drop the first one
+   2. when [path2] is absolute, return [path2]
 *)  
 val combine : 
   string -> 

@@ -5247,8 +5247,9 @@ type t
 
 
 (**
+  [combine path1 path2]
    1. add some simplifications when concatenating
-   2. when the second one is absolute, drop the first one
+   2. when [path2] is absolute, return [path2]
 *)  
 val combine : 
   string -> 
@@ -9263,30 +9264,28 @@ type cxt = {
 }
 
 
-val parsing_simple_dir : 
+(* val parsing_simple_dir : 
   cxt -> 
   string -> 
-  t
+  t *)
 
-val parsing_source_dir_map :
+(* val parsing_source_dir_map :
   cxt ->
   Ext_json_types.t String_map.t -> 
-  t
+  t *)
 
-val parsing_source : 
+(* val parsing_source : 
   cxt -> 
   Ext_json_types.t ->     
-  t 
+  t  *)
 
-val parsing_arr_sources :  
+(* val parsing_arr_sources :  
   cxt ->
   Ext_json_types.t array ->
-  t
+  t *)
 
-(** entry is to the 
-    [sources] in the schema
-
-    [parse_sources cxt json]
+(** [parse_sources cxt json]
+    entry is to the [sources] in the schema    
     given a root, return an object which is
     all relative paths, this function will do the IO
 *)
@@ -9325,7 +9324,9 @@ end = struct
 let dir_cache = 
   String_hashtbl.create 32 
 
-(** Only cached in the life-time of a single process *)  
+(** Only cached in the life-time of a single process 
+    be careful when using caching, we have to sync it up when modify the cache
+*)  
 let readdir path = 
   match String_hashtbl.find_opt dir_cache path with
   | None -> 
@@ -9347,7 +9348,7 @@ type build_generator =
     command : string}
 
 
-let is_input_or_output(xs : build_generator list) (x : string)  = 
+let is_input_or_output (xs : build_generator list) (x : string)  = 
   List.exists 
     (fun  ({input; output} : build_generator) -> 
        let it_is = (fun y -> y = x ) in
@@ -9379,10 +9380,6 @@ type t =
     globbed_dirs : string list ; 
   }
 
-let (//) = Ext_path.combine
-
-let (|?)  m (key, cb) =
-  m  |> Ext_json.test key cb 
 
 
 let warning_unused_file : _ format = 
@@ -9420,7 +9417,29 @@ let collect_pub_modules
         "public excpect a list of strings"
   done  ;
   !set
-(* String_set.of_list (Bsb_build_util.get_list_string xs) *)
+
+let extract_pub (input : Ext_json_types.t String_map.t) cur_sources =   
+  match String_map.find_opt Bsb_build_schemas.public input with 
+  | Some (Str{str = s; loc}) ->  
+    if s = Bsb_build_schemas.export_all then Export_all else 
+    if s = Bsb_build_schemas.export_none then Export_none else 
+      Bsb_exception.errorf ~loc "invalid str for %s "  s 
+  | Some (Arr {content = s}) ->         
+    Export_set (collect_pub_modules s cur_sources)
+  | Some config -> 
+    Bsb_exception.config_error config "expect array or string"
+  | None ->
+    Export_all 
+
+let extract_resources (input : Ext_json_types.t String_map.t) =   
+  match String_map.find_opt  Bsb_build_schemas.resources  input with 
+  | Some (Arr {content = s}) ->
+    Bsb_build_util.get_list_string s 
+  | Some config -> 
+    Bsb_exception.config_error config 
+      "expect array "  
+  | None -> [] 
+
 
 let  handle_list_files acc
     ({ cwd = dir ; root} : cxt)  
@@ -9505,7 +9524,7 @@ let rec
   else 
     parsing_source_dir_map 
       {cxt with
-       cwd = cwd // Ext_filename.simple_convert_node_path_to_os_path dir
+       cwd = Filename.concat cwd  (Ext_filename.simple_convert_node_path_to_os_path dir)
       }
       String_map.empty
 
@@ -9522,8 +9541,6 @@ and parsing_source_dir_map
     (input : Ext_json_types.t String_map.t) : t     
   = 
   let cur_sources : Bsb_db.module_info String_map.t ref = ref String_map.empty in
-  let resources = ref [] in 
-  let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
   let generators : build_generator list ref  = ref [] in
@@ -9633,28 +9650,16 @@ and parsing_source_dir_map
       cur_globbed_dirs := [dir]              
 
     | Some x -> Bsb_exception.config_error x "files field expect array or object "
-
   end;
   let cur_sources = !cur_sources in 
-  input   
-  |?  (Bsb_build_schemas.resources ,
-       `Arr (fun s  ->
-           resources := Bsb_build_util.get_list_string s 
-         ))
-  |? (Bsb_build_schemas.public, `Str_loc (fun s loc -> 
-      if s = Bsb_build_schemas.export_all then public := Export_all else 
-      if s = Bsb_build_schemas.export_none then public := Export_none else 
-        Bsb_exception.errorf ~loc "invalid str for %s "  s 
-    ))
-  |? (Bsb_build_schemas.public, `Arr (fun s -> 
-      public := Export_set (collect_pub_modules s cur_sources)
-    ) )
-  |> ignore ;
+  let resources = extract_resources input in
+  let public = extract_pub input cur_sources in 
+
   let cur_file = 
-    {dir = dir; 
+    {dir ; 
      sources = cur_sources; 
-     resources = !resources;
-     public = !public;
+     resources ;
+     public ;
      dir_index = cxt.dir_index ;
      generators ; 
     } in 
@@ -9716,10 +9721,12 @@ and parsing_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
         | None -> 
           Bsb_exception.config_error x
             (
-            "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
-            
+              "required field :" ^ Bsb_build_schemas.dir ^ " missing" )
+
       in
-      parsing_source_dir_map {cxt with dir_index = current_dir_index; cwd= cwd // dir} map
+      parsing_source_dir_map 
+        {cxt with dir_index = current_dir_index; 
+                  cwd= Filename.concat cwd dir} map
   | _ -> empty 
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
