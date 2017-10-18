@@ -148,7 +148,7 @@ let () =
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       begin
         let _config_opt =  
-          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
+          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~not_dev:false 
             ~generate_watch_metadata:true
             ~forced:false 
             cwd bsc_dir 
@@ -179,7 +179,7 @@ let () =
                     watch_exit ()
                   end 
                 | make_world, force_regenerate ->
-                  let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
+                  let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~not_dev:false ~forced:force_regenerate cwd bsc_dir  in
                   if make_world then begin
                     Bsb_world.make_world_deps cwd config_opt
                   end;
@@ -199,7 +199,7 @@ let () =
           -> (* -make-world all dependencies fall into this category *)
           begin
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-            let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
+            let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~not_dev:false cwd bsc_dir ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
               Bsb_world.make_world_deps cwd config_opt ;

@@ -60,7 +60,7 @@ type t =
 
 
 type cxt = {
-  no_dev : bool ;
+  not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string ;

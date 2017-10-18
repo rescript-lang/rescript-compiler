@@ -78,7 +78,7 @@ let build_bs_deps cwd deps =
     (fun {top; cwd} ->
        if not top then
          begin 
-           let config_opt = Bsb_ninja_regen.regenerate_ninja ~no_dev:true
+           let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
                ~generate_watch_metadata:false
                ~override_package_specs:(Some deps) 
                ~forced:true

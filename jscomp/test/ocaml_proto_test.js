@@ -10,7 +10,6 @@ var Js_exn                  = require("../../lib/js/js_exn.js");
 var Lexing                  = require("../../lib/js/lexing.js");
 var Printf                  = require("../../lib/js/printf.js");
 var $$String                = require("../../lib/js/string.js");
-var Hashtbl                 = require("../../lib/js/hashtbl.js");
 var Parsing                 = require("../../lib/js/parsing.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Filename                = require("../../lib/js/filename.js");

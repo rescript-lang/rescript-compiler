@@ -98,7 +98,7 @@ let interpret_json
     ~override_package_specs
     ~bsc_dir 
     ~generate_watch_metadata
-    ~no_dev 
+    ~not_dev 
     cwd  
 
   : Bsb_config_types.t =
@@ -192,7 +192,7 @@ let interpret_json
     |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> Ext_list.map (resolve_package cwd)))
     |? (Bsb_build_schemas.bs_dev_dependencies,
         `Arr (fun s ->
-            if not  no_dev then 
+            if not  not_dev then 
               bs_dev_dependencies
               := Bsb_build_util.get_list_string s
                  |> Ext_list.map (resolve_package cwd))
@@ -229,7 +229,7 @@ let interpret_json
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
         let res = Bsb_parse_sources.parse_sources 
-            {no_dev; 
+            {not_dev; 
              dir_index =
                Bsb_dir_index.lib_dir_index; 
              cwd = Filename.current_dir_name; 

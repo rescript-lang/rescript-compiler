@@ -89,7 +89,7 @@ let warning_unused_file : _ format =
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 type cxt = {
-  no_dev : bool ;
+  not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
@@ -200,8 +200,8 @@ let get_input_output
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir : t =
-  if no_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
+  parsing_simple_dir ({not_dev; dir_index;  cwd} as cxt ) dir : t =
+  if not_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
   else 
     parsing_source_dir_map 
       {cxt with
@@ -216,7 +216,7 @@ let rec
    major work done in this function      
 *)
 and parsing_source_dir_map 
-    ({ cwd =  dir; no_dev; cut_generators ; 
+    ({ cwd =  dir; not_dev; cut_generators ; 
        traverse = cxt_traverse ;
      } as cxt )
     (input : Ext_json_types.t String_map.t) : t     
@@ -240,7 +240,7 @@ and parsing_source_dir_map
               | Some (Str{str = command}), Some (Arr {content })->
 
                 let output, input = get_input_output loc_start content in 
-                if not cut_generators && not no_dev then begin 
+                if not cut_generators && not not_dev then begin 
                   generators := {input ; output ; command } :: !generators
                 end;
                 (* ATTENTION: Now adding source files, 
@@ -395,7 +395,7 @@ and parsing_source_dir_map
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
@@ -406,7 +406,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
       | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
+    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 

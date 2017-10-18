@@ -6441,7 +6441,7 @@ end = struct
 
 type dep_info = {
   dir_or_file : string ;
-  stamp : float
+  st_mtime : float
 }
 
 type t =
@@ -6492,7 +6492,7 @@ let rec check_aux cwd xs i finish =
     let k = Array.unsafe_get  xs i  in
     let current_file = k.dir_or_file in
     let stat = Unix.stat  (Filename.concat cwd  current_file) in
-    if stat.st_mtime <= k.stamp then
+    if stat.st_mtime <= k.st_mtime then
       check_aux cwd xs (i + 1 ) finish
     else Other current_file
 
@@ -6513,7 +6513,7 @@ let record ~cwd ~file  file_or_dirs =
     Ext_array.of_list_map
       (fun  x -> 
          {dir_or_file = x ;
-          stamp = (Unix.stat (Filename.concat cwd  x )).st_mtime
+          st_mtime = (Unix.stat (Filename.concat cwd  x )).st_mtime
          })  file_or_dirs
   in 
   write file
@@ -6528,7 +6528,7 @@ let record ~cwd ~file  file_or_dirs =
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check ~cwd ~forced ~file =
+let check ~cwd ~forced ~file : check_result =
   read file  begin  function  {
     file_stamps = xs; source_directory; bsb_version = old_version;
     bsc_version
@@ -9459,7 +9459,7 @@ type t =
 
 
 type cxt = {
-  no_dev : bool ;
+  not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string ;
@@ -9594,7 +9594,7 @@ let warning_unused_file : _ format =
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 type cxt = {
-  no_dev : bool ;
+  not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
@@ -9705,8 +9705,8 @@ let get_input_output
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir : t =
-  if no_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
+  parsing_simple_dir ({not_dev; dir_index;  cwd} as cxt ) dir : t =
+  if not_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
   else 
     parsing_source_dir_map 
       {cxt with
@@ -9721,7 +9721,7 @@ let rec
    major work done in this function      
 *)
 and parsing_source_dir_map 
-    ({ cwd =  dir; no_dev; cut_generators ; 
+    ({ cwd =  dir; not_dev; cut_generators ; 
        traverse = cxt_traverse ;
      } as cxt )
     (input : Ext_json_types.t String_map.t) : t     
@@ -9745,7 +9745,7 @@ and parsing_source_dir_map
               | Some (Str{str = command}), Some (Arr {content })->
 
                 let output, input = get_input_output loc_start content in 
-                if not cut_generators && not no_dev then begin 
+                if not cut_generators && not not_dev then begin 
                   generators := {input ; output ; command } :: !generators
                 end;
                 (* ATTENTION: Now adding source files, 
@@ -9900,7 +9900,7 @@ and parsing_source_dir_map
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
@@ -9911,7 +9911,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
       | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
+    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
@@ -9978,7 +9978,7 @@ val default_warning_flag : string
 
 val from_map : Ext_json_types.t String_map.t -> t option
 
-(** [opt_warning_to_string no_dev warning]
+(** [opt_warning_to_string not_dev warning]
 *)
 val opt_warning_to_string : bool -> t option -> string 
 
@@ -10033,7 +10033,7 @@ let get_warning_flag x =
 
 let warn_error = " -warn-error A"
 
-let warning_to_string no_dev 
+let warning_to_string not_dev 
     warning : string = 
   default_warning_flag  ^ 
   (match warning.number with 
@@ -10041,7 +10041,7 @@ let warning_to_string no_dev
      Ext_string.empty
    | Some x -> 
      Ext_string.trim x) ^
-  if no_dev then Ext_string.empty 
+  if not_dev then Ext_string.empty 
   else
     match warning.error with 
     | Warn_error_true -> 
@@ -10078,10 +10078,10 @@ let from_map (m : Ext_json_types.t String_map.t) =
     in 
     Some {number; error }      
 
-let opt_warning_to_string no_dev warning =       
+let opt_warning_to_string not_dev warning =       
   match warning with 
   | None -> default_warning_flag
-  | Some w -> warning_to_string no_dev w 
+  | Some w -> warning_to_string not_dev w 
 
 
 end
@@ -10872,7 +10872,7 @@ val interpret_json :
     override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
     generate_watch_metadata:bool -> 
-    no_dev:bool -> 
+    not_dev:bool -> 
     string -> 
     Bsb_config_types.t
 
@@ -10983,7 +10983,7 @@ let interpret_json
     ~override_package_specs
     ~bsc_dir 
     ~generate_watch_metadata
-    ~no_dev 
+    ~not_dev 
     cwd  
 
   : Bsb_config_types.t =
@@ -11077,7 +11077,7 @@ let interpret_json
     |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> Ext_list.map (resolve_package cwd)))
     |? (Bsb_build_schemas.bs_dev_dependencies,
         `Arr (fun s ->
-            if not  no_dev then 
+            if not  not_dev then 
               bs_dev_dependencies
               := Bsb_build_util.get_list_string s
                  |> Ext_list.map (resolve_package cwd))
@@ -11114,7 +11114,7 @@ let interpret_json
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
         let res = Bsb_parse_sources.parse_sources 
-            {no_dev; 
+            {not_dev; 
              dir_index =
                Bsb_dir_index.lib_dir_index; 
              cwd = Filename.current_dir_name; 
@@ -12446,7 +12446,7 @@ val
   output_ninja_and_namespace_map :
   cwd:string ->  
   bsc_dir:string ->  
-  no_dev:bool -> 
+  not_dev:bool -> 
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -12506,7 +12506,7 @@ let dash_ppx = "-ppx"
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~no_dev           
+    ~not_dev           
     ({
       bs_suffix;
       package_name;
@@ -12571,7 +12571,7 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-      let warnings = Bsb_warning.opt_warning_to_string no_dev warning in
+      let warnings = Bsb_warning.opt_warning_to_string not_dev warning in
 
       Bsb_ninja_util.output_kvs
         [|
@@ -12735,7 +12735,7 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  no_dev:bool ->
+  not_dev:bool ->
   override_package_specs:Bsb_package_specs.t option ->
   generate_watch_metadata: bool -> 
   forced: bool -> string -> string -> 
@@ -12777,7 +12777,7 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~no_dev 
+    ~not_dev 
     ~override_package_specs
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
@@ -12808,13 +12808,13 @@ let regenerate_ninja
           ~override_package_specs
           ~bsc_dir
           ~generate_watch_metadata
-          ~no_dev
+          ~not_dev
           cwd in 
       begin 
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;       
         Bsb_ninja_gen.output_ninja_and_namespace_map 
-          ~cwd ~bsc_dir ~no_dev config ;         
+          ~cwd ~bsc_dir ~not_dev config ;         
         Bsb_bsdeps.record ~cwd ~file:output_deps 
         (Literals.bsconfig_json::config.globbed_dirs) ;
         Some config 
@@ -12899,7 +12899,7 @@ let query_sources ({bs_file_groups} : Bsb_config_types.t) : Ext_json_noloc.t
 
 let query_current_package_sources cwd bsc_dir = 
     let config_opt  = Bsb_ninja_regen.regenerate_ninja 
-      ~no_dev:false
+      ~not_dev:false
       ~override_package_specs:None
       ~generate_watch_metadata:true
       ~forced:true  cwd bsc_dir in 
@@ -14182,7 +14182,7 @@ let build_bs_deps cwd deps =
     (fun {top; cwd} ->
        if not top then
          begin 
-           let config_opt = Bsb_ninja_regen.regenerate_ninja ~no_dev:true
+           let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
                ~generate_watch_metadata:false
                ~override_package_specs:(Some deps) 
                ~forced:true
@@ -14371,7 +14371,7 @@ let () =
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       begin
         let _config_opt =  
-          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
+          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~not_dev:false 
             ~generate_watch_metadata:true
             ~forced:false 
             cwd bsc_dir 
@@ -14402,7 +14402,7 @@ let () =
                     watch_exit ()
                   end 
                 | make_world, force_regenerate ->
-                  let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
+                  let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~not_dev:false ~forced:force_regenerate cwd bsc_dir  in
                   if make_world then begin
                     Bsb_world.make_world_deps cwd config_opt
                   end;
@@ -14422,7 +14422,7 @@ let () =
           -> (* -make-world all dependencies fall into this category *)
           begin
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-            let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
+            let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~not_dev:false cwd bsc_dir ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
               Bsb_world.make_world_deps cwd config_opt ;

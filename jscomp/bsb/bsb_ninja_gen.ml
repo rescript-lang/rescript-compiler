@@ -53,7 +53,7 @@ let dash_ppx = "-ppx"
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~no_dev           
+    ~not_dev           
     ({
       bs_suffix;
       package_name;
@@ -118,7 +118,7 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-      let warnings = Bsb_warning.opt_warning_to_string no_dev warning in
+      let warnings = Bsb_warning.opt_warning_to_string not_dev warning in
 
       Bsb_ninja_util.output_kvs
         [|

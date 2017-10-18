@@ -24,7 +24,7 @@
 
 type dep_info = {
   dir_or_file : string ;
-  stamp : float
+  st_mtime : float
 }
 
 type t =
@@ -75,7 +75,7 @@ let rec check_aux cwd xs i finish =
     let k = Array.unsafe_get  xs i  in
     let current_file = k.dir_or_file in
     let stat = Unix.stat  (Filename.concat cwd  current_file) in
-    if stat.st_mtime <= k.stamp then
+    if stat.st_mtime <= k.st_mtime then
       check_aux cwd xs (i + 1 ) finish
     else Other current_file
 
@@ -96,7 +96,7 @@ let record ~cwd ~file  file_or_dirs =
     Ext_array.of_list_map
       (fun  x -> 
          {dir_or_file = x ;
-          stamp = (Unix.stat (Filename.concat cwd  x )).st_mtime
+          st_mtime = (Unix.stat (Filename.concat cwd  x )).st_mtime
          })  file_or_dirs
   in 
   write file
@@ -111,7 +111,7 @@ let record ~cwd ~file  file_or_dirs =
     Even forced, we still need walk through a little
     bit in case we found a different version of compiler
 *)
-let check ~cwd ~forced ~file =
+let check ~cwd ~forced ~file : check_result =
   read file  begin  function  {
     file_stamps = xs; source_directory; bsb_version = old_version;
     bsc_version
