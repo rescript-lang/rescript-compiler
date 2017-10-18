@@ -1934,6 +1934,11 @@ let starts_with s beg =
    !i = beg_len
   )
 
+let rec ends_aux s end_ j k = 
+  if k < 0 then (j + 1)
+  else if String.unsafe_get s j = String.unsafe_get end_ k then 
+    ends_aux s end_ (j - 1) (k - 1)
+  else  -1   
 
 (** return an index which is minus when [s] does not 
     end with [beg]
@@ -1943,12 +1948,7 @@ let ends_with_index s end_ =
   let s_beg = String.length end_ - 1 in
   if s_beg > s_finish then -1
   else
-    let rec aux j k = 
-      if k < 0 then (j + 1)
-      else if String.unsafe_get s j = String.unsafe_get end_ k then 
-        aux (j - 1) (k - 1)
-      else  -1 in 
-    aux s_finish s_beg
+    ends_aux s end_ s_finish s_beg
 
 let ends_with s end_ = ends_with_index s end_ >= 0 
 
@@ -2005,7 +2005,7 @@ let for_all_from s start  p =
   let len = String.length s in 
   if start < 0  then invalid_arg "Ext_string.for_all_from"
   else unsafe_for_all_range s ~start ~finish:(len - 1) p 
-  
+
 
 let for_all (p : char -> bool) s =   
   unsafe_for_all_range s ~start:0  ~finish:(String.length s - 1) p 
@@ -2296,7 +2296,7 @@ let capitalize_ascii (s : string) : string =
     end
 
 
-    
+
 
 
 
@@ -11633,7 +11633,8 @@ val normalize_absolute_path : string -> string
 
 val absolute_path : string Lazy.t -> string -> string
 
-
+val check_suffix_case : 
+  string -> string -> bool
 end = struct
 #1 "ext_path.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -11934,6 +11935,8 @@ let absolute cwd s =
   | File x -> File (absolute_path cwd x )
   | Dir x -> Dir (absolute_path cwd x)
 
+let check_suffix_case =
+  Ext_string.ends_with
 end
 module Ounit_path_tests
 = struct
@@ -14132,6 +14135,14 @@ let suites =
       Ext_string.starts_with "abb" "abbc" =~ false;
     end;
     __LOC__ >:: begin fun _ -> 
+      let (=~) = OUnit.assert_equal ~printer:(fun x -> string_of_bool x ) in 
+      let k = Ext_string.ends_with in 
+      k "xx.ml" ".ml" =~ true;
+      k "xx.bs.js" ".js" =~ true ;
+      k "xx" ".x" =~false;
+      k "xx" "" =~true
+    end;  
+    __LOC__ >:: begin fun _ -> 
       Ext_string.ends_with_then_chop "xx.ml"  ".ml" =~ Some "xx";
       Ext_string.ends_with_then_chop "xx.ml" ".mll" =~ None
     end;
@@ -14356,12 +14367,12 @@ let suites =
     end;
     __LOC__ >:: begin   fun _ -> 
       let (=~) = OUnit.assert_equal ~printer:(fun x -> 
-      match x with 
-      | None -> ""
-      | Some (a,b) -> a ^","^ b
-      ) in  
-       Ext_namespace.try_split_module_name "Js-X" =~ Some ("X","Js");
-       Ext_namespace.try_split_module_name "Js_X" =~ None
+          match x with 
+          | None -> ""
+          | Some (a,b) -> a ^","^ b
+        ) in  
+      Ext_namespace.try_split_module_name "Js-X" =~ Some ("X","Js");
+      Ext_namespace.try_split_module_name "Js_X" =~ None
     end;
     __LOC__ >:: begin fun _ ->
       let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  

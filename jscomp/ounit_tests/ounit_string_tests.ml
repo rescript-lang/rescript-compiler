@@ -95,6 +95,14 @@ let suites =
       Ext_string.starts_with "abb" "abbc" =~ false;
     end;
     __LOC__ >:: begin fun _ -> 
+      let (=~) = OUnit.assert_equal ~printer:(fun x -> string_of_bool x ) in 
+      let k = Ext_string.ends_with in 
+      k "xx.ml" ".ml" =~ true;
+      k "xx.bs.js" ".js" =~ true ;
+      k "xx" ".x" =~false;
+      k "xx" "" =~true
+    end;  
+    __LOC__ >:: begin fun _ -> 
       Ext_string.ends_with_then_chop "xx.ml"  ".ml" =~ Some "xx";
       Ext_string.ends_with_then_chop "xx.ml" ".mll" =~ None
     end;
@@ -319,12 +327,12 @@ let suites =
     end;
     __LOC__ >:: begin   fun _ -> 
       let (=~) = OUnit.assert_equal ~printer:(fun x -> 
-      match x with 
-      | None -> ""
-      | Some (a,b) -> a ^","^ b
-      ) in  
-       Ext_namespace.try_split_module_name "Js-X" =~ Some ("X","Js");
-       Ext_namespace.try_split_module_name "Js_X" =~ None
+          match x with 
+          | None -> ""
+          | Some (a,b) -> a ^","^ b
+        ) in  
+      Ext_namespace.try_split_module_name "Js-X" =~ Some ("X","Js");
+      Ext_namespace.try_split_module_name "Js_X" =~ None
     end;
     __LOC__ >:: begin fun _ ->
       let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in  

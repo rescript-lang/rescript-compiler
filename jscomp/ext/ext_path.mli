@@ -84,3 +84,5 @@ val normalize_absolute_path : string -> string
 
 val absolute_path : string Lazy.t -> string -> string
 
+val check_suffix_case : 
+  string -> string -> bool

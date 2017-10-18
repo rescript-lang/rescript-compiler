@@ -28,7 +28,7 @@ let get_files dir =
     Sys.readdir dir 
     |> Ext_array.filter_map 
       (fun  x -> 
-         if Filename.check_suffix x ".js"  then 
+         if Ext_path.check_suffix_case x ".js"  then 
            let y = Ext_path.chop_all_extensions_if_any x in 
            if y <> "unix" &&
               y <> "bigarray" && 

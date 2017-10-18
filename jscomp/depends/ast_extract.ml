@@ -125,11 +125,11 @@ let sort  project_ml project_mli (ast_table : _ t String_map.t) =
 
 (** same as {!Ocaml_parse.check_suffix} but does not care with [-c -o] option*)
 let check_suffix  name  = 
-  if Filename.check_suffix name ".ml"
-  || Filename.check_suffix name ".mlt" then 
+  if Ext_path.check_suffix_case name ".ml"
+  || Ext_path.check_suffix_case name ".mlt" then 
     `Ml,
     Ext_path.chop_extension_if_any  name 
-  else if Filename.check_suffix name !Config.interface_suffix then 
+  else if Ext_path.check_suffix_case name !Config.interface_suffix then 
     `Mli,   Ext_path.chop_extension_if_any  name 
   else 
     raise(Arg.Bad("don't know what to do with " ^ name))

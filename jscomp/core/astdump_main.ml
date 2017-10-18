@@ -39,13 +39,13 @@ let () =
          ) Format.pp_print_string) 
       (Array.to_list arrs);
     p Format.std_formatter "@.==============================@.";
-    if Filename.check_suffix file ".mlast" then 
+    if Ext_path.check_suffix_case file ".mlast" then 
       begin
         Pprintast.structure Format.std_formatter
           (Ml_binary.read_ast Ml_binary.Ml ic );
         close_in ic 
       end
-    else if Filename.check_suffix file ".mliast" then 
+    else if Ext_path.check_suffix_case file ".mliast" then 
       begin
         Pprintast.signature Format.std_formatter
           (Ml_binary.read_ast Ml_binary.Mli ic);

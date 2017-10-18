@@ -394,7 +394,7 @@ core/bs_conditional_initial.cmx : common/bs_version.cmx \
     core/bs_conditional_initial.cmi
 core/ocaml_options.cmx : common/bs_version.cmx core/ocaml_options.cmi
 core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
-    core/ocaml_parse.cmi
+    ext/ext_path.cmx core/ocaml_parse.cmi
 core/js_op.cmx :
 core/lam_module_ident.cmx : core/js_op.cmx core/j.cmx ext/hashtbl_make.cmx \
     ext/hash_set.cmx ext/ext_ident.cmx stubs/bs_hash_stubs.cmx \
@@ -691,7 +691,8 @@ core/js_main.cmx : super_errors/super_main.cmx \
     core/js_main.cmi
 core/cmjdump_main.cmx : ext/string_map.cmx core/lam_arity.cmx \
     core/js_packages_info.cmx core/js_cmj_format.cmx
-core/astdump_main.cmx : common/ml_binary.cmx bsb/bsb_helper_depfile_gen.cmx
+core/astdump_main.cmx : common/ml_binary.cmx ext/ext_path.cmx \
+    bsb/bsb_helper_depfile_gen.cmx
 ounit/oUnit.cmi :
 ounit/oUnitDiff.cmi :
 ounit/oUnit.cmx : ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx \
