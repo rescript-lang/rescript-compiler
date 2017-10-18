@@ -31,7 +31,7 @@ let () =
     let ic = open_in_bin file in 
 
     let arrs = 
-      Bsb_depfile_gen.deps_of_channel ic 
+      Bsb_helper_depfile_gen.deps_of_channel ic 
     in
     p Format.std_formatter "@[Dependent modules: @[%a@]@]@."
       (Format.pp_print_list ~pp_sep:(fun fmt () ->

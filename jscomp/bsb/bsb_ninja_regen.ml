@@ -33,19 +33,19 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~no_dev 
+    ~not_dev 
     ~override_package_specs
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : _ option =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let check_result  =
-    Bsb_bsdeps.check 
+    Bsb_ninja_check.check 
       ~cwd  
       ~forced ~file:output_deps in
   let () = 
     Bsb_log.info
-      "@{<info>BSB check@} build spec : %a @." Bsb_bsdeps.pp_check_result check_result in 
+      "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result in 
   begin match check_result  with 
     | Good ->
       None  (* Fast path, no need regenerate ninja *)
@@ -55,7 +55,7 @@ let regenerate_ninja
     | Bsb_source_directory_changed  
     | Other _ -> 
       if check_result = Bsb_bsc_version_mismatch then begin 
-        print_endline "Also clean current repo due to we have detected a different compiler";
+        Bsb_log.info "@{<info>Different compiler version@}: clean current repo";
         Bsb_clean.clean_self bsc_dir cwd; 
       end ; 
       Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
@@ -64,14 +64,14 @@ let regenerate_ninja
           ~override_package_specs
           ~bsc_dir
           ~generate_watch_metadata
-          ~no_dev
+          ~not_dev
           cwd in 
       begin 
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;       
         Bsb_ninja_gen.output_ninja_and_namespace_map 
-          ~cwd ~bsc_dir ~no_dev config ;         
-        Bsb_bsdeps.record ~cwd ~file:output_deps 
+          ~cwd ~bsc_dir ~not_dev config ;         
+        Bsb_ninja_check.record ~cwd ~file:output_deps 
         (Literals.bsconfig_json::config.globbed_dirs) ;
         Some config 
       end 

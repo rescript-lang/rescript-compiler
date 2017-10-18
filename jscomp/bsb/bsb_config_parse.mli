@@ -32,7 +32,7 @@ val interpret_json :
     override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
     generate_watch_metadata:bool -> 
-    no_dev:bool -> 
+    not_dev:bool -> 
     string -> 
     Bsb_config_types.t
 

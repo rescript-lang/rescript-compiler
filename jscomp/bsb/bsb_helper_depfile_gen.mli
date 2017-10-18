@@ -1,5 +1,5 @@
-(* Copyright (C) 2017 Authors of BuckleScript
- *
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,14 +17,27 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type kind = Js | Bytecode | Native
 
-val output : 
-  dir:string ->
+(** [deps_of_channel ic]
+    given an input_channel dumps all modules it depend on, only used for debugging 
+*)
+val deps_of_channel : in_channel -> string array
+
+(**
+  [make compilation_kind filename index namespace]
+  emit [.d] file based on filename (shoud be [.mlast] or [.mliast])
+*)
+val emit_dep_file: 
+  kind ->
   string -> 
-  Bsb_parse_sources.file_group list ->
-  unit 
+  Bsb_dir_index.t ->  
+  string option ->
+  unit
+
+

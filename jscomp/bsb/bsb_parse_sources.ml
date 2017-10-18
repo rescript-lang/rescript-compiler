@@ -57,7 +57,7 @@ let is_input_or_output(xs : build_generator list) (x : string)  =
 
 type  file_group = 
   { dir : string ;
-    sources : Bsb_build_cache.t; 
+    sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
     dir_index : Bsb_dir_index.t  ;
@@ -89,7 +89,7 @@ let warning_unused_file : _ format =
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 type cxt = {
-  no_dev : bool ;
+  not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
@@ -99,7 +99,7 @@ type cxt = {
 
 let collect_pub_modules 
     (xs : Ext_json_types.t array)
-    (cache : Bsb_build_cache.t) : String_set.t = 
+    (cache : Bsb_db.t) : String_set.t = 
   let set = ref String_set.empty in 
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
@@ -136,7 +136,7 @@ let  handle_list_files acc
         else
           match Ext_string.is_valid_source_name name with 
           | Good ->   begin 
-              let new_acc = Bsb_build_cache.map_update ~dir acc name  in 
+              let new_acc = Bsb_db.map_update ~dir acc name  in 
               String_vec.push name dyn_file_array ;
               new_acc 
             end 
@@ -200,8 +200,8 @@ let get_input_output
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir : t =
-  if no_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
+  parsing_simple_dir ({not_dev; dir_index;  cwd} as cxt ) dir : t =
+  if not_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
   else 
     parsing_source_dir_map 
       {cxt with
@@ -216,12 +216,12 @@ let rec
    major work done in this function      
 *)
 and parsing_source_dir_map 
-    ({ cwd =  dir; no_dev; cut_generators ; 
+    ({ cwd =  dir; not_dev; cut_generators ; 
        traverse = cxt_traverse ;
      } as cxt )
     (input : Ext_json_types.t String_map.t) : t     
   = 
-  let cur_sources : Bsb_build_cache.module_info String_map.t ref = ref String_map.empty in
+  let cur_sources : Bsb_db.module_info String_map.t ref = ref String_map.empty in
   let resources = ref [] in 
   let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
@@ -240,7 +240,7 @@ and parsing_source_dir_map
               | Some (Str{str = command}), Some (Arr {content })->
 
                 let output, input = get_input_output loc_start content in 
-                if not cut_generators && not no_dev then begin 
+                if not cut_generators && not not_dev then begin 
                   generators := {input ; output ; command } :: !generators
                 end;
                 (* ATTENTION: Now adding source files, 
@@ -249,7 +249,7 @@ and parsing_source_dir_map
                 output |> List.iter begin fun  output -> 
                   begin match Ext_string.is_valid_source_name output with
                     | Good ->
-                      cur_sources := Bsb_build_cache.map_update ~dir !cur_sources output
+                      cur_sources := Bsb_db.map_update ~dir !cur_sources output
                     | Invalid_module_name ->                  
                       Bsb_log.warn warning_unused_file output dir 
                     | Suffix_mismatch -> ()
@@ -278,7 +278,7 @@ and parsing_source_dir_map
             else 
               match Ext_string.is_valid_source_name name with 
               | Good -> 
-                Bsb_build_cache.map_update  ~dir acc name 
+                Bsb_db.map_update  ~dir acc name 
               | Invalid_module_name ->
                 Bsb_log.warn
                   warning_unused_file
@@ -304,7 +304,7 @@ and parsing_source_dir_map
         Array.fold_left (fun acc (s : Ext_json_types.t) ->
             match s with 
             | Str {str = s} -> 
-              Bsb_build_cache.map_update ~dir acc s
+              Bsb_db.map_update ~dir acc s
             | _ -> acc
           ) !cur_sources s    
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -328,7 +328,7 @@ and parsing_source_dir_map
       cur_sources := Array.fold_left (fun acc name -> 
           if is_input_or_output generators name || not (predicate name) then acc 
           else 
-            Bsb_build_cache.map_update  ~dir acc name 
+            Bsb_db.map_update  ~dir acc name 
         ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
 
@@ -395,7 +395,7 @@ and parsing_source_dir_map
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
@@ -406,7 +406,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
       | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
+    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 

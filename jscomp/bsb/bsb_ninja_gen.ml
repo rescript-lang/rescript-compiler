@@ -28,14 +28,14 @@ let (//) = Ext_path.combine
    it is a bad idea to copy package.json which requires to copy js files
 *)
 
-let merge_module_info_map acc sources : Bsb_build_cache.t =
+let merge_module_info_map acc sources : Bsb_db.t =
   String_map.merge (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
       | Some a, Some b  ->
         failwith ("Conflict files found: " ^ modname ^ " in "
-                  ^ Bsb_build_cache.dir_of_module_info a ^ " and " ^ Bsb_build_cache.dir_of_module_info b
+                  ^ Bsb_db.dir_of_module_info a ^ " and " ^ Bsb_db.dir_of_module_info b
                   ^ ". File names need to be unique in a project.")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
@@ -53,7 +53,7 @@ let dash_ppx = "-ppx"
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~no_dev           
+    ~not_dev           
     ({
       bs_suffix;
       package_name;
@@ -118,7 +118,7 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-      let warnings = Bsb_warning.opt_warning_to_string no_dev warning in
+      let warnings = Bsb_warning.opt_warning_to_string not_dev warning in
 
       Bsb_ninja_util.output_kvs
         [|
@@ -166,8 +166,8 @@ let output_ninja_and_namespace_map
               dir::dirs , 
               Ext_list.map_append (fun x -> dir // x ) resources  acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
-        Bsb_build_cache.sanity_check bs_group;    
-        Bsb_build_cache.write_build_cache 
+        Bsb_db.sanity_check bs_group;    
+        Bsb_db.write_build_cache 
           ~dir:(cwd // Bsb_config.lib_bs) [|bs_group|] ;
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes 
@@ -194,15 +194,15 @@ let output_ninja_and_namespace_map
               (if namespace = None then source_dirs.(0) 
                else Filename.current_dir_name::source_dirs.(0)))) oc ;
         let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
-        Bsb_build_cache.sanity_check lib;
+        Bsb_db.sanity_check lib;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
-          Bsb_build_cache.sanity_check c ;
+          Bsb_db.sanity_check c ;
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
           Bsb_ninja_util.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
-        Bsb_build_cache.write_build_cache 
+        Bsb_db.write_build_cache 
           ~dir:(cwd // Bsb_config.lib_bs) bs_groups ;
         static_resources;
     in
@@ -218,12 +218,9 @@ let output_ninja_and_namespace_map
       match namespace with 
       | None -> all_info
       | Some ns -> 
-        (* let dir = 
-           Bsb_parse_sources.find_first_lib_dir bs_file_groups in   *)
         let namespace_dir =     
           cwd // Bsb_config.lib_bs  in
-        (* Bsb_build_util.mkp namespace_dir ;    *)
-        Bsb_pkg_map_gen.output ~dir:namespace_dir ns
+        Bsb_namespace_map_gen.output ~dir:namespace_dir ns
           bs_file_groups
         ; 
         Bsb_ninja_util.output_build oc 

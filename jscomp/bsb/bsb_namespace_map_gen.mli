@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,37 +17,17 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-(* This would also create [cmis] directly 
-  But it is a bit too intrusive currently
-*)
-let make package_name cunits = 
-  let cmi_name = package_name in (* capital *)
-  let cmi_sign : Types.signature = 
-    cunits |> 
-    Ext_list.map (fun (cunit : string) -> 
-      Types.Sig_module(
-        (Ident.create_persistent cunit),
-        {md_type = 
-          Types.Mty_alias (Path.Pident (Ident.create_persistent (package_name ^ "-" ^ cunit)))
-        ; md_attributes = []; md_loc = Location.none}
-       ,
-       Trec_not 
-      )
-    ) in 
-    let fname = (package_name ^ ".cmi") in 
-    let ochan = open_out_bin fname in 
-    let _digest : Digest.t = Cmi_format.output_cmi 
-    fname ochan 
-    {cmi_name ; cmi_sign;
-     cmi_crcs = Ext_list.map (fun x -> x, None) cunits ; 
-    cmi_flags = []} in
-    close_out ochan
-
-(* let () = 
-  make "Pkg" ["A0"; "A1"]    *)
+(** [output dir namespace file_groups]
+    when [build.ninja] is generated, we output a module map [.mlmap] file 
+    such [.mlmap] file will be consumed by [bsc.exe] to generate [.cmi] file
+ *)
+val output : 
+  dir:string ->
+  string -> 
+  Bsb_parse_sources.file_group list ->
+  unit 

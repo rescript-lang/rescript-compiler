@@ -6346,211 +6346,6 @@ let clean_bs_deps bsc_dir proj_dir =
 
 let clean_self bsc_dir proj_dir = clean_bs_garbage bsc_dir proj_dir
 end
-module Bsb_bsdeps : sig 
-#1 "bsb_bsdeps.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(**
-   This module is used to check whether [build.ninja] needs
-   be regenerated. Everytime [bsb] run [regenerate_ninja], 
-   bsb will try to [check] if it is needed, 
-   if needed, bsb will regenerate ninja file and store the 
-   metadata again
-*)
-
-
-
-
-
-type check_result = 
-  | Good
-  | Bsb_file_not_exist (** We assume that it is a clean repo *)  
-  | Bsb_source_directory_changed
-  | Bsb_bsc_version_mismatch  
-  | Bsb_forced
-  | Other of string
-
-val pp_check_result : Format.formatter -> check_result -> unit
-
-
-(** [record cwd file relevant_file_or_dirs]
-    The data structure we decided to whether regenerate [build.ninja] 
-    or not. 
-    Note that if we don't record absolute path,  ninja will not notice  its build spec changed, 
-    it will not trigger  rebuild behavior, 
-    It may not be desired behavior, since there is some subtlies here (__FILE__ or __dirname)
-
-    We serialize such data structure and call {!check} to decide
-    [build.ninja] should be regenerated
-*)
-val record : cwd:string -> file:string -> string list -> unit
-
-
-(** check if [build.ninja] should be regenerated *)
-val check :
-  cwd:string ->  
-  forced:bool -> file:string -> check_result
-
-end = struct
-#1 "bsb_bsdeps.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type dep_info = {
-  dir_or_file : string ;
-  stamp : float
-}
-
-type t =
-  { file_stamps : dep_info array ;
-    source_directory :  string ;
-    bsb_version : string;
-    bsc_version : string;
-  }
-
-
-let magic_number = "BS_DEP_INFOS_20170822"
-let bsb_version = "20170822+dev"
-(* TODO: for such small data structure, maybe text format is better *)
-
-let write (fname : string)  (x : t) =
-  let oc = open_out_bin fname in
-  output_string oc magic_number ;
-  output_value oc x ;
-  close_out oc
-
-
-
-
-
-type check_result =
-  | Good
-  | Bsb_file_not_exist (** We assume that it is a clean repo *)
-  | Bsb_source_directory_changed
-  | Bsb_bsc_version_mismatch
-  | Bsb_forced
-  | Other of string
-
-let pp_check_result fmt (check_resoult : check_result) =
-  Format.pp_print_string fmt (match check_resoult with
-      | Good -> "OK"
-      | Bsb_file_not_exist -> "Dependencies information missing"
-      | Bsb_source_directory_changed ->
-        "Bsb source directory changed"
-      | Bsb_bsc_version_mismatch ->
-        "Bsc or bsb version mismatch"
-      | Bsb_forced ->
-        "Bsb forced rebuild"
-      | Other s -> s)
-
-let rec check_aux cwd xs i finish =
-  if i = finish then Good
-  else
-    let k = Array.unsafe_get  xs i  in
-    let current_file = k.dir_or_file in
-    let stat = Unix.stat  (Filename.concat cwd  current_file) in
-    if stat.st_mtime <= k.stamp then
-      check_aux cwd xs (i + 1 ) finish
-    else Other current_file
-
-
-let read (fname : string) cont =
-  match open_in_bin fname with   (* Windows binary mode*)
-  | ic ->
-    let buffer = really_input_string ic (String.length magic_number) in
-    if (buffer <> magic_number) then Bsb_bsc_version_mismatch
-    else
-      let res : t = input_value ic  in
-      close_in ic ;
-      cont res
-  | exception _ -> Bsb_file_not_exist
-
-let record ~cwd ~file  file_or_dirs =
-  let file_stamps = 
-    Ext_array.of_list_map
-      (fun  x -> 
-         {dir_or_file = x ;
-          stamp = (Unix.stat (Filename.concat cwd  x )).st_mtime
-         })  file_or_dirs
-  in 
-  write file
-    { file_stamps ;
-      source_directory = cwd ;
-      bsb_version ;
-      bsc_version = Bs_version.version }
-
-(** check time stamp for all files
-    TODO: those checks system call can be saved later
-    Return a reason
-    Even forced, we still need walk through a little
-    bit in case we found a different version of compiler
-*)
-let check ~cwd ~forced ~file =
-  read file  begin  function  {
-    file_stamps = xs; source_directory; bsb_version = old_version;
-    bsc_version
-  } ->
-    if old_version <> bsb_version then Bsb_bsc_version_mismatch else
-    if cwd <> source_directory then Bsb_source_directory_changed else
-    if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
-    if forced then Bsb_forced (* No need walk through *)
-    else
-      try
-        check_aux cwd xs  0 (Array.length xs)
-      with e ->
-        begin
-          Bsb_log.info
-            "@{<info>Stat miss %s@}@."
-            (Printexc.to_string e);
-          Bsb_file_not_exist
-        end
-  end
-
-
-end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
 (* Copyright (C) 2017- Authors of BuckleScript
@@ -7288,8 +7083,8 @@ let module_name_of_file_if_any_with_upper file =
   res, res == v 
 
 end
-module Bsb_build_cache : sig 
-#1 "bsb_build_cache.mli"
+module Bsb_db : sig 
+#1 "bsb_db.mli"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -7383,7 +7178,7 @@ val map_update :
 
 val sanity_check : t -> unit   
 end = struct
-#1 "bsb_build_cache.ml"
+#1 "bsb_db.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -9436,7 +9231,7 @@ type build_generator =
 type  file_group = 
   { dir : string ; 
     (* currently relative path expected for ninja file generation *)
-    sources : Bsb_build_cache.t ; 
+    sources : Bsb_db.t ; 
     resources : string list ; 
     (* relative path *)
     public : public;
@@ -9459,7 +9254,7 @@ type t =
 
 
 type cxt = {
-  no_dev : bool ;
+  not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string ;
@@ -9562,7 +9357,7 @@ let is_input_or_output(xs : build_generator list) (x : string)  =
 
 type  file_group = 
   { dir : string ;
-    sources : Bsb_build_cache.t; 
+    sources : Bsb_db.t; 
     resources : string list ;
     public : public ;
     dir_index : Bsb_dir_index.t  ;
@@ -9594,7 +9389,7 @@ let warning_unused_file : _ format =
   "@{<warning>IGNORED@}: file %s under %s is ignored because it can't be turned into a valid module name. The build system transforms a file name into a module name by upper-casing the first letter@."
 
 type cxt = {
-  no_dev : bool ;
+  not_dev : bool ;
   dir_index : Bsb_dir_index.t ; 
   cwd : string ;
   root : string;
@@ -9604,7 +9399,7 @@ type cxt = {
 
 let collect_pub_modules 
     (xs : Ext_json_types.t array)
-    (cache : Bsb_build_cache.t) : String_set.t = 
+    (cache : Bsb_db.t) : String_set.t = 
   let set = ref String_set.empty in 
   for i = 0 to Array.length xs - 1 do 
     let v = Array.unsafe_get xs i in 
@@ -9641,7 +9436,7 @@ let  handle_list_files acc
         else
           match Ext_string.is_valid_source_name name with 
           | Good ->   begin 
-              let new_acc = Bsb_build_cache.map_update ~dir acc name  in 
+              let new_acc = Bsb_db.map_update ~dir acc name  in 
               String_vec.push name dyn_file_array ;
               new_acc 
             end 
@@ -9705,8 +9500,8 @@ let get_input_output
 
 (** [dir_index] can be inherited  *)
 let rec 
-  parsing_simple_dir ({no_dev; dir_index;  cwd} as cxt ) dir : t =
-  if no_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
+  parsing_simple_dir ({not_dev; dir_index;  cwd} as cxt ) dir : t =
+  if not_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
   else 
     parsing_source_dir_map 
       {cxt with
@@ -9721,12 +9516,12 @@ let rec
    major work done in this function      
 *)
 and parsing_source_dir_map 
-    ({ cwd =  dir; no_dev; cut_generators ; 
+    ({ cwd =  dir; not_dev; cut_generators ; 
        traverse = cxt_traverse ;
      } as cxt )
     (input : Ext_json_types.t String_map.t) : t     
   = 
-  let cur_sources : Bsb_build_cache.module_info String_map.t ref = ref String_map.empty in
+  let cur_sources : Bsb_db.module_info String_map.t ref = ref String_map.empty in
   let resources = ref [] in 
   let public = ref Export_all in (* TODO: move to {!Bsb_default} later*)
   let cur_update_queue = ref [] in 
@@ -9745,7 +9540,7 @@ and parsing_source_dir_map
               | Some (Str{str = command}), Some (Arr {content })->
 
                 let output, input = get_input_output loc_start content in 
-                if not cut_generators && not no_dev then begin 
+                if not cut_generators && not not_dev then begin 
                   generators := {input ; output ; command } :: !generators
                 end;
                 (* ATTENTION: Now adding source files, 
@@ -9754,7 +9549,7 @@ and parsing_source_dir_map
                 output |> List.iter begin fun  output -> 
                   begin match Ext_string.is_valid_source_name output with
                     | Good ->
-                      cur_sources := Bsb_build_cache.map_update ~dir !cur_sources output
+                      cur_sources := Bsb_db.map_update ~dir !cur_sources output
                     | Invalid_module_name ->                  
                       Bsb_log.warn warning_unused_file output dir 
                     | Suffix_mismatch -> ()
@@ -9783,7 +9578,7 @@ and parsing_source_dir_map
             else 
               match Ext_string.is_valid_source_name name with 
               | Good -> 
-                Bsb_build_cache.map_update  ~dir acc name 
+                Bsb_db.map_update  ~dir acc name 
               | Invalid_module_name ->
                 Bsb_log.warn
                   warning_unused_file
@@ -9809,7 +9604,7 @@ and parsing_source_dir_map
         Array.fold_left (fun acc (s : Ext_json_types.t) ->
             match s with 
             | Str {str = s} -> 
-              Bsb_build_cache.map_update ~dir acc s
+              Bsb_db.map_update ~dir acc s
             | _ -> acc
           ) !cur_sources s    
     | Some (Obj {map = m; loc} ) -> (* { excludes : [], slow_re : "" }*)
@@ -9833,7 +9628,7 @@ and parsing_source_dir_map
       cur_sources := Array.fold_left (fun acc name -> 
           if is_input_or_output generators name || not (predicate name) then acc 
           else 
-            Bsb_build_cache.map_update  ~dir acc name 
+            Bsb_db.map_update  ~dir acc name 
         ) !cur_sources file_array;
       cur_globbed_dirs := [dir]              
 
@@ -9900,7 +9695,7 @@ and parsing_source_dir_map
    parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
 *)
 
-and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
@@ -9911,7 +9706,7 @@ and parsing_source ({no_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
       | Some (Str {str="dev"}) -> Bsb_dir_index.get_dev_index ()
       | Some _ -> Bsb_exception.config_error x {|type field expect "dev" literal |}
       | None -> dir_index in 
-    if no_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
+    if not_dev && not (Bsb_dir_index.is_lib_dir current_dir_index) then empty 
     else 
       let dir = 
         match String_map.find_opt Bsb_build_schemas.dir map with 
@@ -9978,7 +9773,7 @@ val default_warning_flag : string
 
 val from_map : Ext_json_types.t String_map.t -> t option
 
-(** [opt_warning_to_string no_dev warning]
+(** [opt_warning_to_string not_dev warning]
 *)
 val opt_warning_to_string : bool -> t option -> string 
 
@@ -10033,7 +9828,7 @@ let get_warning_flag x =
 
 let warn_error = " -warn-error A"
 
-let warning_to_string no_dev 
+let warning_to_string not_dev 
     warning : string = 
   default_warning_flag  ^ 
   (match warning.number with 
@@ -10041,7 +9836,7 @@ let warning_to_string no_dev
      Ext_string.empty
    | Some x -> 
      Ext_string.trim x) ^
-  if no_dev then Ext_string.empty 
+  if not_dev then Ext_string.empty 
   else
     match warning.error with 
     | Warn_error_true -> 
@@ -10078,10 +9873,10 @@ let from_map (m : Ext_json_types.t String_map.t) =
     in 
     Some {number; error }      
 
-let opt_warning_to_string no_dev warning =       
+let opt_warning_to_string not_dev warning =       
   match warning with 
   | None -> default_warning_flag
-  | Some w -> warning_to_string no_dev w 
+  | Some w -> warning_to_string not_dev w 
 
 
 end
@@ -10872,7 +10667,7 @@ val interpret_json :
     override_package_specs:Bsb_package_specs.t option -> 
     bsc_dir:string -> 
     generate_watch_metadata:bool -> 
-    no_dev:bool -> 
+    not_dev:bool -> 
     string -> 
     Bsb_config_types.t
 
@@ -10983,7 +10778,7 @@ let interpret_json
     ~override_package_specs
     ~bsc_dir 
     ~generate_watch_metadata
-    ~no_dev 
+    ~not_dev 
     cwd  
 
   : Bsb_config_types.t =
@@ -11077,7 +10872,7 @@ let interpret_json
     |? (Bsb_build_schemas.bs_dependencies, `Arr (fun s -> bs_dependencies := Bsb_build_util.get_list_string s |> Ext_list.map (resolve_package cwd)))
     |? (Bsb_build_schemas.bs_dev_dependencies,
         `Arr (fun s ->
-            if not  no_dev then 
+            if not  not_dev then 
               bs_dev_dependencies
               := Bsb_build_util.get_list_string s
                  |> Ext_list.map (resolve_package cwd))
@@ -11114,7 +10909,7 @@ let interpret_json
     begin match String_map.find_opt Bsb_build_schemas.sources map with 
       | Some x -> 
         let res = Bsb_parse_sources.parse_sources 
-            {no_dev; 
+            {not_dev; 
              dir_index =
                Bsb_dir_index.lib_dir_index; 
              cwd = Filename.current_dir_name; 
@@ -11423,6 +11218,293 @@ let merlin_file_gen ~cwd
 
 
 
+end
+module Bsb_ninja_check : sig 
+#1 "bsb_ninja_check.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(**
+   This module is used to check whether [build.ninja] needs
+   be regenerated. Everytime [bsb] run [regenerate_ninja], 
+   bsb will try to [check] if it is needed, 
+   if needed, bsb will regenerate ninja file and store the 
+   metadata again
+*)
+
+
+
+
+
+type check_result = 
+  | Good
+  | Bsb_file_not_exist (** We assume that it is a clean repo *)  
+  | Bsb_source_directory_changed
+  | Bsb_bsc_version_mismatch  
+  | Bsb_forced
+  | Other of string
+
+val pp_check_result : Format.formatter -> check_result -> unit
+
+
+(** [record cwd file relevant_file_or_dirs]
+    The data structure we decided to whether regenerate [build.ninja] 
+    or not. 
+    Note that if we don't record absolute path,  ninja will not notice  its build spec changed, 
+    it will not trigger  rebuild behavior, 
+    It may not be desired behavior, since there is some subtlies here (__FILE__ or __dirname)
+
+    We serialize such data structure and call {!check} to decide
+    [build.ninja] should be regenerated
+*)
+val record : cwd:string -> file:string -> string list -> unit
+
+
+(** check if [build.ninja] should be regenerated *)
+val check :
+  cwd:string ->  
+  forced:bool -> file:string -> check_result
+
+end = struct
+#1 "bsb_ninja_check.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type dep_info = {
+  dir_or_file : string ;
+  st_mtime : float
+}
+
+type t =
+  { file_stamps : dep_info array ;
+    source_directory :  string ;
+    bsb_version : string;
+    bsc_version : string;
+  }
+
+
+let magic_number = "BS_DEP_INFOS_20170822"
+let bsb_version = "20170822+dev"
+(* TODO: for such small data structure, maybe text format is better *)
+
+let write (fname : string)  (x : t) =
+  let oc = open_out_bin fname in
+  output_string oc magic_number ;
+  output_value oc x ;
+  close_out oc
+
+
+
+
+
+type check_result =
+  | Good
+  | Bsb_file_not_exist (** We assume that it is a clean repo *)
+  | Bsb_source_directory_changed
+  | Bsb_bsc_version_mismatch
+  | Bsb_forced
+  | Other of string
+
+let pp_check_result fmt (check_resoult : check_result) =
+  Format.pp_print_string fmt (match check_resoult with
+      | Good -> "OK"
+      | Bsb_file_not_exist -> "Dependencies information missing"
+      | Bsb_source_directory_changed ->
+        "Bsb source directory changed"
+      | Bsb_bsc_version_mismatch ->
+        "Bsc or bsb version mismatch"
+      | Bsb_forced ->
+        "Bsb forced rebuild"
+      | Other s -> s)
+
+let rec check_aux cwd xs i finish =
+  if i = finish then Good
+  else
+    let k = Array.unsafe_get  xs i  in
+    let current_file = k.dir_or_file in
+    let stat = Unix.stat  (Filename.concat cwd  current_file) in
+    if stat.st_mtime <= k.st_mtime then
+      check_aux cwd xs (i + 1 ) finish
+    else Other current_file
+
+
+let read (fname : string) cont =
+  match open_in_bin fname with   (* Windows binary mode*)
+  | ic ->
+    let buffer = really_input_string ic (String.length magic_number) in
+    if (buffer <> magic_number) then Bsb_bsc_version_mismatch
+    else
+      let res : t = input_value ic  in
+      close_in ic ;
+      cont res
+  | exception _ -> Bsb_file_not_exist
+
+let record ~cwd ~file  file_or_dirs =
+  let file_stamps = 
+    Ext_array.of_list_map
+      (fun  x -> 
+         {dir_or_file = x ;
+          st_mtime = (Unix.stat (Filename.concat cwd  x )).st_mtime
+         })  file_or_dirs
+  in 
+  write file
+    { file_stamps ;
+      source_directory = cwd ;
+      bsb_version ;
+      bsc_version = Bs_version.version }
+
+(** check time stamp for all files
+    TODO: those checks system call can be saved later
+    Return a reason
+    Even forced, we still need walk through a little
+    bit in case we found a different version of compiler
+*)
+let check ~cwd ~forced ~file : check_result =
+  read file  begin  function  {
+    file_stamps = xs; source_directory; bsb_version = old_version;
+    bsc_version
+  } ->
+    if old_version <> bsb_version then Bsb_bsc_version_mismatch else
+    if cwd <> source_directory then Bsb_source_directory_changed else
+    if bsc_version <> Bs_version.version then Bsb_bsc_version_mismatch else
+    if forced then Bsb_forced (* No need walk through *)
+    else
+      try
+        check_aux cwd xs  0 (Array.length xs)
+      with e ->
+        begin
+          Bsb_log.info
+            "@{<info>Stat miss %s@}@."
+            (Printexc.to_string e);
+          Bsb_file_not_exist
+        end
+  end
+
+
+end
+module Bsb_namespace_map_gen : sig 
+#1 "bsb_namespace_map_gen.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** [output dir namespace file_groups]
+    when [build.ninja] is generated, we output a module map [.mlmap] file 
+    such [.mlmap] file will be consumed by [bsc.exe] to generate [.cmi] file
+ *)
+val output : 
+  dir:string ->
+  string -> 
+  Bsb_parse_sources.file_group list ->
+  unit 
+end = struct
+#1 "bsb_namespace_map_gen.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let (//) = Ext_path.combine
+
+
+
+
+
+
+let output ~dir namespace 
+    (file_groups : Bsb_parse_sources.file_group list)
+  = 
+  let fname = namespace ^ Literals.suffix_mlmap in 
+  let oc = open_out_bin (dir// fname ) in 
+  List.iter
+    (fun  (x : Bsb_parse_sources.file_group) ->
+      String_map.iter (fun k _ -> 
+        output_string oc k ;
+        output_string oc "\n"
+      ) x.sources 
+     )  file_groups ;
+  close_out oc 
 end
 module Bsb_ninja_global_vars
 = struct
@@ -12246,7 +12328,7 @@ let handle_module_info
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
     oc  module_name 
-    ( module_info : Bsb_build_cache.module_info)
+    ( module_info : Bsb_db.module_info)
     namespace
   : info =
   match module_info.ml, module_info.mli with
@@ -12309,7 +12391,7 @@ let handle_file_group
         | Export_set set ->  
           String_set.mem module_name set in
       if installable then 
-        String_hash_set.add files_to_install (Bsb_build_cache.filename_sans_suffix_of_module_info module_info);
+        String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
       (handle_module_info group.dir_index 
          package_specs js_post_build_cmd 
          oc 
@@ -12333,85 +12415,6 @@ let handle_file_groups
     ) 
     st  file_groups
 
-end
-module Bsb_pkg_map_gen : sig 
-#1 "bsb_pkg_map_gen.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val output : 
-  dir:string ->
-  string -> 
-  Bsb_parse_sources.file_group list ->
-  unit 
-end = struct
-#1 "bsb_pkg_map_gen.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let (//) = Ext_path.combine
-
-
-
-
-
-
-let output ~dir namespace 
-    (file_groups : Bsb_parse_sources.file_group list)
-  = 
-  let fname = namespace ^ Literals.suffix_mlmap in 
-  let oc = open_out_bin (dir// fname ) in 
-  List.iter
-    (fun  (x : Bsb_parse_sources.file_group) ->
-      String_map.iter (fun k _ -> 
-        output_string oc k ;
-        output_string oc "\n"
-      ) x.sources 
-     )  file_groups ;
-  close_out oc 
 end
 module Bsb_ninja_gen : sig 
 #1 "bsb_ninja_gen.mli"
@@ -12446,7 +12449,7 @@ val
   output_ninja_and_namespace_map :
   cwd:string ->  
   bsc_dir:string ->  
-  no_dev:bool -> 
+  not_dev:bool -> 
   Bsb_config_types.t -> unit 
 
 end = struct
@@ -12481,14 +12484,14 @@ let (//) = Ext_path.combine
    it is a bad idea to copy package.json which requires to copy js files
 *)
 
-let merge_module_info_map acc sources : Bsb_build_cache.t =
+let merge_module_info_map acc sources : Bsb_db.t =
   String_map.merge (fun modname k1 k2 ->
       match k1 , k2 with
       | None , None ->
         assert false
       | Some a, Some b  ->
         failwith ("Conflict files found: " ^ modname ^ " in "
-                  ^ Bsb_build_cache.dir_of_module_info a ^ " and " ^ Bsb_build_cache.dir_of_module_info b
+                  ^ Bsb_db.dir_of_module_info a ^ " and " ^ Bsb_db.dir_of_module_info b
                   ^ ". File names need to be unique in a project.")
       | Some v, None  -> Some v
       | None, Some v ->  Some v
@@ -12506,7 +12509,7 @@ let dash_ppx = "-ppx"
 let output_ninja_and_namespace_map
     ~cwd 
     ~bsc_dir
-    ~no_dev           
+    ~not_dev           
     ({
       bs_suffix;
       package_name;
@@ -12571,7 +12574,7 @@ let output_ninja_and_namespace_map
         | Some  s -> 
           Ext_string.inter2 "-ppx" s 
       in 
-      let warnings = Bsb_warning.opt_warning_to_string no_dev warning in
+      let warnings = Bsb_warning.opt_warning_to_string not_dev warning in
 
       Bsb_ninja_util.output_kvs
         [|
@@ -12619,8 +12622,8 @@ let output_ninja_and_namespace_map
               dir::dirs , 
               Ext_list.map_append (fun x -> dir // x ) resources  acc_resources
             ) (String_map.empty,[],[]) bs_file_groups in
-        Bsb_build_cache.sanity_check bs_group;    
-        Bsb_build_cache.write_build_cache 
+        Bsb_db.sanity_check bs_group;    
+        Bsb_db.write_build_cache 
           ~dir:(cwd // Bsb_config.lib_bs) [|bs_group|] ;
         Bsb_ninja_util.output_kv
           Bsb_build_schemas.bsc_lib_includes 
@@ -12647,15 +12650,15 @@ let output_ninja_and_namespace_map
               (if namespace = None then source_dirs.(0) 
                else Filename.current_dir_name::source_dirs.(0)))) oc ;
         let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
-        Bsb_build_cache.sanity_check lib;
+        Bsb_db.sanity_check lib;
         for i = 1 to number_of_dev_groups  do
           let c = bs_groups.(i) in
-          Bsb_build_cache.sanity_check c ;
+          Bsb_db.sanity_check c ;
           String_map.iter (fun k _ -> if String_map.mem k lib then failwith ("conflict files found:" ^ k)) c ;
           Bsb_ninja_util.output_kv (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
             (Bsb_build_util.flag_concat "-I" @@ source_dirs.(i)) oc
         done  ;
-        Bsb_build_cache.write_build_cache 
+        Bsb_db.write_build_cache 
           ~dir:(cwd // Bsb_config.lib_bs) bs_groups ;
         static_resources;
     in
@@ -12671,12 +12674,9 @@ let output_ninja_and_namespace_map
       match namespace with 
       | None -> all_info
       | Some ns -> 
-        (* let dir = 
-           Bsb_parse_sources.find_first_lib_dir bs_file_groups in   *)
         let namespace_dir =     
           cwd // Bsb_config.lib_bs  in
-        (* Bsb_build_util.mkp namespace_dir ;    *)
-        Bsb_pkg_map_gen.output ~dir:namespace_dir ns
+        Bsb_namespace_map_gen.output ~dir:namespace_dir ns
           bs_file_groups
         ; 
         Bsb_ninja_util.output_build oc 
@@ -12735,7 +12735,7 @@ module Bsb_ninja_regen : sig
     otherwise return Some info
 *)
 val regenerate_ninja :
-  no_dev:bool ->
+  not_dev:bool ->
   override_package_specs:Bsb_package_specs.t option ->
   generate_watch_metadata: bool -> 
   forced: bool -> string -> string -> 
@@ -12777,19 +12777,19 @@ let (//) = Ext_path.combine
     otherwise return Some info
 *)
 let regenerate_ninja 
-    ~no_dev 
+    ~not_dev 
     ~override_package_specs
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : _ option =
   let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
   let check_result  =
-    Bsb_bsdeps.check 
+    Bsb_ninja_check.check 
       ~cwd  
       ~forced ~file:output_deps in
   let () = 
     Bsb_log.info
-      "@{<info>BSB check@} build spec : %a @." Bsb_bsdeps.pp_check_result check_result in 
+      "@{<info>BSB check@} build spec : %a @." Bsb_ninja_check.pp_check_result check_result in 
   begin match check_result  with 
     | Good ->
       None  (* Fast path, no need regenerate ninja *)
@@ -12799,7 +12799,7 @@ let regenerate_ninja
     | Bsb_source_directory_changed  
     | Other _ -> 
       if check_result = Bsb_bsc_version_mismatch then begin 
-        print_endline "Also clean current repo due to we have detected a different compiler";
+        Bsb_log.info "@{<info>Different compiler version@}: clean current repo";
         Bsb_clean.clean_self bsc_dir cwd; 
       end ; 
       Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
@@ -12808,14 +12808,14 @@ let regenerate_ninja
           ~override_package_specs
           ~bsc_dir
           ~generate_watch_metadata
-          ~no_dev
+          ~not_dev
           cwd in 
       begin 
         Bsb_merlin_gen.merlin_file_gen ~cwd
           (bsc_dir // bsppx_exe) config;       
         Bsb_ninja_gen.output_ninja_and_namespace_map 
-          ~cwd ~bsc_dir ~no_dev config ;         
-        Bsb_bsdeps.record ~cwd ~file:output_deps 
+          ~cwd ~bsc_dir ~not_dev config ;         
+        Bsb_ninja_check.record ~cwd ~file:output_deps 
         (Literals.bsconfig_json::config.globbed_dirs) ;
         Some config 
       end 
@@ -12899,7 +12899,7 @@ let query_sources ({bs_file_groups} : Bsb_config_types.t) : Ext_json_noloc.t
 
 let query_current_package_sources cwd bsc_dir = 
     let config_opt  = Bsb_ninja_regen.regenerate_ninja 
-      ~no_dev:false
+      ~not_dev:false
       ~override_package_specs:None
       ~generate_watch_metadata:true
       ~forced:true  cwd bsc_dir in 
@@ -14182,7 +14182,7 @@ let build_bs_deps cwd deps =
     (fun {top; cwd} ->
        if not top then
          begin 
-           let config_opt = Bsb_ninja_regen.regenerate_ninja ~no_dev:true
+           let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
                ~generate_watch_metadata:false
                ~override_package_specs:(Some deps) 
                ~forced:true
@@ -14371,7 +14371,7 @@ let () =
     | [| _ |] ->  (* specialize this path [bsb.exe] which is used in watcher *)
       begin
         let _config_opt =  
-          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~no_dev:false 
+          Bsb_ninja_regen.regenerate_ninja ~override_package_specs:None ~not_dev:false 
             ~generate_watch_metadata:true
             ~forced:false 
             cwd bsc_dir 
@@ -14402,7 +14402,7 @@ let () =
                     watch_exit ()
                   end 
                 | make_world, force_regenerate ->
-                  let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false ~forced:force_regenerate cwd bsc_dir  in
+                  let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~not_dev:false ~forced:force_regenerate cwd bsc_dir  in
                   if make_world then begin
                     Bsb_world.make_world_deps cwd config_opt
                   end;
@@ -14422,7 +14422,7 @@ let () =
           -> (* -make-world all dependencies fall into this category *)
           begin
             Arg.parse_argv bsb_args bsb_main_flags handle_anonymous_arg usage ;
-            let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~no_dev:false cwd bsc_dir ~forced:!force_regenerate in
+            let config_opt = Bsb_ninja_regen.regenerate_ninja ~generate_watch_metadata:true ~override_package_specs:None ~not_dev:false cwd bsc_dir ~forced:!force_regenerate in
             (* [-make-world] should never be combined with [-package-specs] *)
             if !make_world then
               Bsb_world.make_world_deps cwd config_opt ;

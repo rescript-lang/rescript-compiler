@@ -1,4 +1,6 @@
+bin/bsb.ml : bsb/bsb_db.ml
 bin/bsb.ml : ext/ext_io.ml
+bin/bsb.ml : bsb/bsb_db.mli
 bin/bsb.ml : bsb/bsb_log.ml
 bin/bsb.ml : bsb/bsb_pkg.ml
 bin/bsb.ml : ext/ext_io.mli
@@ -35,7 +37,6 @@ bin/bsb.ml : ext/ext_list.mli
 bin/bsb.ml : ext/ext_path.mli
 bin/bsb.ml : ext/ext_util.mli
 bin/bsb.ml : ext/literals.mli
-bin/bsb.ml : bsb/bsb_bsdeps.ml
 bin/bsb.ml : bsb/bsb_clean.mli
 bin/bsb.ml : bsb/bsb_config.ml
 bin/bsb.ml : bsb/bsb_query.mli
@@ -48,7 +49,6 @@ bin/bsb.ml : ext/ext_string.ml
 bin/bsb.ml : ext/string_map.ml
 bin/bsb.ml : ext/string_set.ml
 bin/bsb.ml : ext/string_vec.ml
-bin/bsb.ml : bsb/bsb_bsdeps.mli
 bin/bsb.ml : bsb/bsb_config.mli
 bin/bsb.ml : bsb/bsb_default.ml
 bin/bsb.ml : bsb/bsb_warning.ml
@@ -92,12 +92,11 @@ bin/bsb.ml : ext/ext_modulename.ml
 bin/bsb.ml : ext/ext_namespace.mli
 bin/bsb.ml : ext/ext_pervasives.ml
 bin/bsb.ml : ext/string_hashtbl.ml
-bin/bsb.ml : bsb/bsb_build_cache.ml
 bin/bsb.ml : bsb/bsb_build_util.mli
 bin/bsb.ml : bsb/bsb_merlin_gen.mli
+bin/bsb.ml : bsb/bsb_ninja_check.ml
 bin/bsb.ml : bsb/bsb_ninja_regen.ml
 bin/bsb.ml : bsb/bsb_ninja_util.mli
-bin/bsb.ml : bsb/bsb_pkg_map_gen.ml
 bin/bsb.ml : bsb/bsb_theme_init.mli
 bin/bsb.ml : bsb/bsb_watcher_gen.ml
 bin/bsb.ml : ext/ext_json_noloc.mli
@@ -107,11 +106,10 @@ bin/bsb.ml : ext/ext_pervasives.mli
 bin/bsb.ml : ext/string_hash_set.ml
 bin/bsb.ml : ext/string_hashtbl.mli
 bin/bsb.ml : stubs/bs_hash_stubs.ml
-bin/bsb.ml : bsb/bsb_build_cache.mli
 bin/bsb.ml : bsb/bsb_config_parse.ml
 bin/bsb.ml : bsb/bsb_config_types.ml
+bin/bsb.ml : bsb/bsb_ninja_check.mli
 bin/bsb.ml : bsb/bsb_ninja_regen.mli
-bin/bsb.ml : bsb/bsb_pkg_map_gen.mli
 bin/bsb.ml : bsb/bsb_watcher_gen.mli
 bin/bsb.ml : ext/string_hash_set.mli
 bin/bsb.ml : bsb/bsb_build_schemas.ml
@@ -120,6 +118,8 @@ bin/bsb.ml : bsb/bsb_package_specs.ml
 bin/bsb.ml : bsb/bsb_parse_sources.ml
 bin/bsb.ml : bsb/bsb_package_specs.mli
 bin/bsb.ml : bsb/bsb_parse_sources.mli
+bin/bsb.ml : bsb/bsb_namespace_map_gen.ml
 bin/bsb.ml : bsb/bsb_ninja_file_groups.ml
 bin/bsb.ml : bsb/bsb_ninja_global_vars.ml
+bin/bsb.ml : bsb/bsb_namespace_map_gen.mli
 bin/bsb.ml : bsb/bsb_ninja_file_groups.mli

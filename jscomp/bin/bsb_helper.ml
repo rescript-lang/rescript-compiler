@@ -1,3 +1,125 @@
+module Bsb_dir_index : sig 
+#1 "bsb_dir_index.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Used to index [.bsbuildcache] may not be needed if we flatten dev 
+  into  a single group
+*)
+type t = private int
+
+val lib_dir_index : t 
+
+val is_lib_dir : t -> bool 
+
+val get_dev_index : unit -> t 
+
+val of_int : int -> t 
+
+val get_current_number_of_dev_groups : unit -> int 
+
+
+val string_of_bsb_dev_include : t -> string 
+
+(** TODO: Need reset
+   when generating each ninja file to provide stronger guarantee. 
+   Here we get a weak guarantee because only dev group is 
+  inside the toplevel project
+   *)
+val reset : unit -> unit
+end = struct
+#1 "bsb_dir_index.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = int 
+
+(** 
+   0 : lib 
+   1 : dev 1 
+   2 : dev 2 
+*)  
+external of_int : int -> t = "%identity"
+let lib_dir_index = 0
+
+let is_lib_dir x = x = lib_dir_index
+
+let dir_index = ref 0 
+
+let get_dev_index ( ) = 
+  incr dir_index ; !dir_index
+
+let get_current_number_of_dev_groups =
+   (fun () -> !dir_index )
+
+
+(** bsb generate pre-defined variables [bsc_group_i_includes]
+  for each rule, there is variable [bsc_extra_excludes]
+  [bsc_extra_includes] are for app test etc
+  it will be like
+  {[
+    bsc_extra_includes = ${bsc_group_1_includes}
+  ]}
+  where [bsc_group_1_includes] will be pre-calcuated
+*)
+let bsc_group_1_includes = "bsc_group_1_includes"
+let bsc_group_2_includes = "bsc_group_2_includes"
+let bsc_group_3_includes = "bsc_group_3_includes"
+let bsc_group_4_includes = "bsc_group_4_includes"
+let string_of_bsb_dev_include i = 
+  match i with 
+  | 1 -> bsc_group_1_includes 
+  | 2 -> bsc_group_2_includes
+  | 3 -> bsc_group_3_includes
+  | 4 -> bsc_group_4_includes
+  | _ -> 
+    "bsc_group_" ^ string_of_int i ^ "_includes"
+
+
+let reset () = dir_index := 0
+end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -3042,8 +3164,8 @@ let of_array xs =
   Array.fold_left (fun acc (k,v) -> add k v acc) empty xs
 
 end
-module Bsb_build_cache : sig 
-#1 "bsb_build_cache.mli"
+module Bsb_db : sig 
+#1 "bsb_db.mli"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -3137,7 +3259,7 @@ val map_update :
 
 val sanity_check : t -> unit   
 end = struct
-#1 "bsb_build_cache.ml"
+#1 "bsb_db.ml"
 
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -3282,128 +3404,6 @@ let sanity_check (map  : t ) =
       | _ -> ()
     )  map
 
-end
-module Bsb_dir_index : sig 
-#1 "bsb_dir_index.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(** Used to index [.bsbuildcache] may not be needed if we flatten dev 
-  into  a single group
-*)
-type t = private int
-
-val lib_dir_index : t 
-
-val is_lib_dir : t -> bool 
-
-val get_dev_index : unit -> t 
-
-val of_int : int -> t 
-
-val get_current_number_of_dev_groups : unit -> int 
-
-
-val string_of_bsb_dev_include : t -> string 
-
-(** TODO: Need reset
-   when generating each ninja file to provide stronger guarantee. 
-   Here we get a weak guarantee because only dev group is 
-  inside the toplevel project
-   *)
-val reset : unit -> unit
-end = struct
-#1 "bsb_dir_index.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = int 
-
-(** 
-   0 : lib 
-   1 : dev 1 
-   2 : dev 2 
-*)  
-external of_int : int -> t = "%identity"
-let lib_dir_index = 0
-
-let is_lib_dir x = x = lib_dir_index
-
-let dir_index = ref 0 
-
-let get_dev_index ( ) = 
-  incr dir_index ; !dir_index
-
-let get_current_number_of_dev_groups =
-   (fun () -> !dir_index )
-
-
-(** bsb generate pre-defined variables [bsc_group_i_includes]
-  for each rule, there is variable [bsc_extra_excludes]
-  [bsc_extra_includes] are for app test etc
-  it will be like
-  {[
-    bsc_extra_includes = ${bsc_group_1_includes}
-  ]}
-  where [bsc_group_1_includes] will be pre-calcuated
-*)
-let bsc_group_1_includes = "bsc_group_1_includes"
-let bsc_group_2_includes = "bsc_group_2_includes"
-let bsc_group_3_includes = "bsc_group_3_includes"
-let bsc_group_4_includes = "bsc_group_4_includes"
-let string_of_bsb_dev_include i = 
-  match i with 
-  | 1 -> bsc_group_1_includes 
-  | 2 -> bsc_group_2_includes
-  | 3 -> bsc_group_3_includes
-  | 4 -> bsc_group_4_includes
-  | _ -> 
-    "bsc_group_" ^ string_of_int i ^ "_includes"
-
-
-let reset () = dir_index := 0
 end
 module Ext_namespace : sig 
 #1 "ext_namespace.mli"
@@ -3603,8 +3603,8 @@ let namespace_of_package_name (s : string) : string =
   Buffer.contents buf 
 
 end
-module Bsb_depfile_gen : sig 
-#1 "bsb_depfile_gen.mli"
+module Bsb_helper_depfile_gen : sig 
+#1 "bsb_helper_depfile_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3631,11 +3631,16 @@ module Bsb_depfile_gen : sig
 
 type kind = Js | Bytecode | Native
 
-
+(** [deps_of_channel ic]
+    given an input_channel dumps all modules it depend on, only used for debugging 
+*)
 val deps_of_channel : in_channel -> string array
 
-
-val make: 
+(**
+  [make compilation_kind filename index namespace]
+  emit [.d] file based on filename (shoud be [.mlast] or [.mliast])
+*)
+val emit_dep_file: 
   kind ->
   string -> 
   Bsb_dir_index.t ->  
@@ -3643,8 +3648,9 @@ val make:
   unit
 
 
+
 end = struct
-#1 "bsb_depfile_gen.ml"
+#1 "bsb_helper_depfile_gen.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -3670,7 +3676,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let (//) = Filename.concat
+
 let dep_lit = " :"
 
 
@@ -3691,9 +3697,10 @@ let deps_of_channel ic : string array =
   return_arr 
 
 (** Please refer to {!Binary_ast} for encoding format, we move it here 
-    mostly for cutting the dependency so that [bsb_helper.exe] is lean
+    mostly for cutting the dependency so that [bsb_helper.exe] does
+    not depend on compler-libs
 *)
-let read_deps fn = 
+let read_deps fn : string array = 
   let ic = open_in_bin fn in 
   let v = deps_of_channel ic in 
   close_in ic;
@@ -3717,7 +3724,7 @@ let output_file oc source namespace =
 
 let oc_impl set input_file lhs_suffix rhs_suffix 
     (index : Bsb_dir_index.t)
-    (data : Bsb_build_cache.t array)
+    (data : Bsb_db.t array)
     namespace
     (oc : out_channel)
   = 
@@ -3764,7 +3771,7 @@ let oc_intf
     set
     input_file 
     (index : Bsb_dir_index.t)
-    (data : Bsb_build_cache.t array)
+    (data : Bsb_db.t array)
     (namespace : string option)
     (oc : out_channel) =   
   output_file oc input_file namespace ; 
@@ -3793,14 +3800,14 @@ let oc_intf
   done  
 
 
-(* TODO: Don't touch the .d file if nothing changed *)
-let make
+(* OPT: Don't touch the .d file if nothing changed *)
+let emit_dep_file
     compilation_kind
     (fn : string)
     (index : Bsb_dir_index.t) 
     (namespace : string option) : unit = 
   let data  =
-    Bsb_build_cache.read_build_cache 
+    Bsb_db.read_build_cache 
       ~dir:Filename.current_dir_name
   in 
   let set = read_deps fn in 
@@ -3833,1955 +3840,6 @@ let make
       | None -> 
         raise (Arg.Bad ("don't know what to do with  " ^ fn))
     end
-
-end
-module Ext_color : sig 
-#1 "ext_color.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
-
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
-(** Input is the tag for example `@{<warning>@}` return escape code *)
-val ansi_of_tag : string -> string 
-
-val reset_lit : string
-
-end = struct
-#1 "ext_color.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type color 
-  = Black
-  | Red
-  | Green
-  | Yellow
-  | Blue
-  | Magenta
-  | Cyan
-  | White
-
-type style 
-  = FG of color 
-  | BG of color 
-  | Bold
-  | Dim
-
-
-let ansi_of_color = function
-  | Black -> "0"
-  | Red -> "1"
-  | Green -> "2"
-  | Yellow -> "3"
-  | Blue -> "4"
-  | Magenta -> "5"
-  | Cyan -> "6"
-  | White -> "7"
-
-let code_of_style = function
-  | FG Black -> "30"
-  | FG Red -> "31"
-  | FG Green -> "32"
-  | FG Yellow -> "33"
-  | FG Blue -> "34"
-  | FG Magenta -> "35"
-  | FG Cyan -> "36"
-  | FG White -> "37"
-  
-  | BG Black -> "40"
-  | BG Red -> "41"
-  | BG Green -> "42"
-  | BG Yellow -> "43"
-  | BG Blue -> "44"
-  | BG Magenta -> "45"
-  | BG Cyan -> "46"
-  | BG White -> "47"
-
-  | Bold -> "1"
-  | Dim -> "2"
-
-
-
-(** TODO: add more styles later *)
-let style_of_tag s = match s with
-  | "error" -> [Bold; FG Red]
-  | "warning" -> [Bold; FG Magenta]
-  | "info" -> [Bold; FG Yellow]
-  | "dim" -> [Dim]
-  | "filename" -> [FG Cyan]
-  | _ -> []
-
-let ansi_of_tag s = 
-  let l = style_of_tag s in
-  let s =  String.concat ";" (Ext_list.map code_of_style l) in
-  "\x1b[" ^ s ^ "m"
-
-
-
-let reset_lit = "\x1b[0m" 
-
-
-
-
-
-end
-module Bsb_log : sig 
-#1 "bsb_log.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-val color_enabled : bool ref 
-
-val setup : unit -> unit 
-
-type 'a fmt = Format.formatter -> ('a, Format.formatter, unit) format -> 'a
-
-type 'a log = ('a, Format.formatter, unit) format -> 'a
-
-val verbose : unit -> unit 
-val debug  : 'a log
-val info : 'a log 
-val warn : 'a log 
-val error : 'a log
-
-val info_args : string array -> unit
-end = struct
-#1 "bsb_log.ml"
-(* Copyright (C) 2017- Authors of BuckleScript
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let color_enabled = ref (Unix.isatty Unix.stdin)
-
-let color_functions : Format.formatter_tag_functions = {
-  mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
-  mark_close_tag = (fun _ ->  if !color_enabled then Ext_color.reset_lit else Ext_string.empty);
-  print_open_tag = (fun _ -> ());
-  print_close_tag = (fun _ -> ())
-}
-
-let set_color ppf =
-  Format.pp_set_formatter_tag_functions ppf color_functions
-
-
-let setup () = 
-  begin 
-    Format.pp_set_mark_tags Format.std_formatter true ;
-    Format.pp_set_mark_tags Format.err_formatter true;
-    Format.pp_set_formatter_tag_functions 
-      Format.std_formatter color_functions;
-    Format.pp_set_formatter_tag_functions
-      Format.err_formatter color_functions
-  end
-
-type level = 
-  | Debug
-  | Info 
-  | Warn
-  | Error 
-
-let int_of_level (x : level) = 
-  match x with 
-  | Debug -> 0 
-  | Info -> 1 
-  | Warn -> 2 
-  | Error -> 3 
-
-let log_level = ref Warn
-
-let verbose () =
-   log_level := Debug
-let dfprintf level fmt = 
-  if int_of_level level >= int_of_level  !log_level then 
-    Format.fprintf fmt 
-  else Format.ifprintf fmt  
-
-type 'a fmt = 
-  Format.formatter -> ('a, Format.formatter, unit) format -> 'a
-type 'a log = 
-  ('a, Format.formatter, unit) format -> 'a
-
-let debug fmt = dfprintf  Debug Format.std_formatter fmt 
-let info fmt = dfprintf Info Format.std_formatter fmt
-let warn fmt = dfprintf Warn Format.err_formatter fmt 
-let error fmt = dfprintf Error Format.err_formatter fmt
-
-
-let info_args (args : string array) = 
-  if int_of_level Info >= int_of_level !log_level then 
-    begin
-      for i  = 0 to Array.length args - 1 do
-        Format.pp_print_string Format.std_formatter (Array.unsafe_get args i) ;
-        Format.pp_print_string Format.std_formatter Ext_string.single_space;
-      done ;
-      Format.pp_print_newline Format.std_formatter ()
-    end
-  else ()
-  
-
-end
-module Bs_hash_stubs
-= struct
-#1 "bs_hash_stubs.ml"
-
-
-external hash_string :  string -> int = "caml_bs_hash_string" "noalloc";;
-
-external hash_string_int :  string -> int  -> int = "caml_bs_hash_string_and_int" "noalloc";;
-
-external hash_string_small_int :  string -> int  -> int = "caml_bs_hash_string_and_small_int" "noalloc";;
-
-external hash_stamp_and_name : int -> string -> int = "caml_bs_hash_stamp_and_name" "noalloc";;
-
-external hash_small_int : int -> int = "caml_bs_hash_small_int" "noalloc";;
-
-external hash_int :  int  -> int = "caml_bs_hash_int" "noalloc";;
-
-external string_length_based_compare : string -> string -> int  = "caml_string_length_based_compare" "noalloc";;
-
-
-external    
-    int_unsafe_blit : 
-    int array -> int -> int array -> int -> int -> unit = "caml_int_array_blit" "noalloc";;
-    
-
-end
-module Ext_util : sig 
-#1 "ext_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
- 
-val power_2_above : int -> int -> int
-
-
-val stats_to_string : Hashtbl.statistics -> string 
-end = struct
-#1 "ext_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(**
-   {[
-     (power_2_above 16 63 = 64)
-       (power_2_above 16 76 = 128)
-   ]}
-*)
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 > Sys.max_array_length then x
-  else power_2_above (x * 2) n
-
-
-let stats_to_string ({num_bindings; num_buckets; max_bucket_length; bucket_histogram} : Hashtbl.statistics) = 
-  Printf.sprintf 
-    "bindings: %d,buckets: %d, longest: %d, hist:[%s]" 
-    num_bindings 
-    num_buckets 
-    max_bucket_length
-    (String.concat "," (Array.to_list (Array.map string_of_int bucket_histogram)))
-end
-module Hashtbl_gen
-= struct
-#1 "hashtbl_gen.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-
-(* Hash tables *)
-
-
-
-module type S = sig 
-  type key
-  type 'a t
-  val create: int -> 'a t
-  val clear: 'a t -> unit
-  val reset: 'a t -> unit
-  val copy: 'a t -> 'a t
-  val add: 'a t -> key -> 'a -> unit
-  val modify_or_init: 'a t -> key -> ('a -> unit) -> (unit -> 'a) -> unit 
-  val remove: 'a t -> key -> unit
-  val find_exn: 'a t -> key -> 'a
-  val find_all: 'a t -> key -> 'a list
-  val find_opt: 'a t -> key  -> 'a option
-  
-  (** return the key found in the hashtbl.
-    Use case: when you find the key existed in hashtbl, 
-    you want to use the one stored in the hashtbl. 
-    (they are semantically equivlanent, but may have other information different) 
-   *)
-  val find_key_opt: 'a t -> key -> key option 
-
-  val find_default: 'a t -> key -> 'a -> 'a 
-
-  val replace: 'a t -> key -> 'a -> unit
-  val mem: 'a t -> key -> bool
-  val iter: (key -> 'a -> unit) -> 'a t -> unit
-  val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-  val length: 'a t -> int
-  val stats: 'a t -> Hashtbl.statistics
-  val of_list2: key list -> 'a list -> 'a t
-end
-
-(* We do dynamic hashing, and resize the table and rehash the elements
-   when buckets become too long. *)
-
-type ('a, 'b) t =
-  { mutable size: int;                        (* number of entries *)
-    mutable data: ('a, 'b) bucketlist array;  (* the buckets *)
-    mutable seed: int;                        (* for randomization *)
-    initial_size: int;                        (* initial array size *)
-  }
-
-and ('a, 'b) bucketlist =
-  | Empty
-  | Cons of 'a * 'b * ('a, 'b) bucketlist
-
-
-let create  initial_size =
-  let s = Ext_util.power_2_above 16 initial_size in
-  { initial_size = s; size = 0; seed = 0; data = Array.make s Empty }
-
-let clear h =
-  h.size <- 0;
-  let len = Array.length h.data in
-  for i = 0 to len - 1 do
-    h.data.(i) <- Empty
-  done
-
-let reset h =
-  h.size <- 0;
-  h.data <- Array.make h.initial_size Empty
-
-
-let copy h = { h with data = Array.copy h.data }
-
-let length h = h.size
-
-let resize indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if nsize < Sys.max_array_length then begin
-    let ndata = Array.make nsize Empty in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons(key, data, rest) ->
-        insert_bucket rest; (* preserve original order of elements *)
-        let nidx = indexfun h key in
-        ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
-    for i = 0 to osize - 1 do
-      insert_bucket (Array.unsafe_get odata i)
-    done
-  end
-
-
-
-let iter f h =
-  let rec do_bucket = function
-    | Empty ->
-      ()
-    | Cons(k, d, rest) ->
-      f k d; do_bucket rest in
-  let d = h.data in
-  for i = 0 to Array.length d - 1 do
-    do_bucket (Array.unsafe_get d i)
-  done
-
-let fold f h init =
-  let rec do_bucket b accu =
-    match b with
-      Empty ->
-      accu
-    | Cons(k, d, rest) ->
-      do_bucket rest (f k d accu) in
-  let d = h.data in
-  let accu = ref init in
-  for i = 0 to Array.length d - 1 do
-    accu := do_bucket d.(i) !accu
-  done;
-  !accu
-
-let rec bucket_length accu = function
-  | Empty -> accu
-  | Cons(_, _, rest) -> bucket_length (accu + 1) rest
-
-let stats h =
-  let mbl =
-    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
-  let histo = Array.make (mbl + 1) 0 in
-  Array.iter
-    (fun b ->
-       let l = bucket_length 0 b in
-       histo.(l) <- histo.(l) + 1)
-    h.data;
-  {Hashtbl.
-    num_bindings = h.size;
-    num_buckets = Array.length h.data;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }
-
-
-
-let rec small_bucket_mem eq key (lst : _ bucketlist) =
-  match lst with 
-  | Empty -> false 
-  | Cons(k1,_,rest1) -> 
-    eq  key k1 ||
-    match rest1 with
-    | Empty -> false 
-    | Cons(k2,_,rest2) -> 
-      eq key k2  || 
-      match rest2 with 
-      | Empty -> false 
-      | Cons(k3,_,rest3) -> 
-        eq key k3  ||
-        small_bucket_mem eq key rest3 
-
-
-let rec small_bucket_opt eq key (lst : _ bucketlist) : _ option =
-  match lst with 
-  | Empty -> None 
-  | Cons(k1,d1,rest1) -> 
-    if eq  key k1 then Some d1 else 
-      match rest1 with
-      | Empty -> None 
-      | Cons(k2,d2,rest2) -> 
-        if eq key k2 then Some d2 else 
-          match rest2 with 
-          | Empty -> None 
-          | Cons(k3,d3,rest3) -> 
-            if eq key k3  then Some d3 else 
-              small_bucket_opt eq key rest3 
-
-
-let rec small_bucket_key_opt eq key (lst : _ bucketlist) : _ option =
-  match lst with 
-  | Empty -> None 
-  | Cons(k1,d1,rest1) -> 
-    if eq  key k1 then Some k1 else 
-      match rest1 with
-      | Empty -> None 
-      | Cons(k2,d2,rest2) -> 
-        if eq key k2 then Some k2 else 
-          match rest2 with 
-          | Empty -> None 
-          | Cons(k3,d3,rest3) -> 
-            if eq key k3  then Some k3 else 
-              small_bucket_key_opt eq key rest3
-
-
-let rec small_bucket_default eq key default (lst : _ bucketlist) =
-  match lst with 
-  | Empty -> default 
-  | Cons(k1,d1,rest1) -> 
-    if eq  key k1 then  d1 else 
-      match rest1 with
-      | Empty -> default 
-      | Cons(k2,d2,rest2) -> 
-        if eq key k2 then  d2 else 
-          match rest2 with 
-          | Empty -> default 
-          | Cons(k3,d3,rest3) -> 
-            if eq key k3  then  d3 else 
-              small_bucket_default eq key default rest3 
-
-end
-module String_hashtbl : sig 
-#1 "string_hashtbl.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-include Hashtbl_gen.S with type key = string
-
-
-
-
-end = struct
-#1 "string_hashtbl.ml"
-# 9 "ext/hashtbl.cppo.ml"
-type key = string
-type 'a t = (key, 'a)  Hashtbl_gen.t 
-let key_index (h : _ t ) (key : key) =
-  (Bs_hash_stubs.hash_string  key ) land (Array.length h.data - 1)
-let eq_key = Ext_string.equal 
-
-# 33
-type ('a, 'b) bucketlist = ('a,'b) Hashtbl_gen.bucketlist
-let create = Hashtbl_gen.create
-let clear = Hashtbl_gen.clear
-let reset = Hashtbl_gen.reset
-let copy = Hashtbl_gen.copy
-let iter = Hashtbl_gen.iter
-let fold = Hashtbl_gen.fold
-let length = Hashtbl_gen.length
-let stats = Hashtbl_gen.stats
-
-
-
-let add (h : _ t) key info =
-  let i = key_index h key in
-  let h_data = h.data in   
-  Array.unsafe_set h_data i (Cons(key, info, (Array.unsafe_get h_data i)));
-  h.size <- h.size + 1;
-  if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h
-
-(* after upgrade to 4.04 we should provide an efficient [replace_or_init] *)
-let modify_or_init (h : _ t) key modf default =
-  let rec find_bucket (bucketlist : _ bucketlist)  =
-    match bucketlist with
-    | Cons(k,i,next) ->
-      if eq_key k key then begin modf i; false end
-      else find_bucket next 
-    | Empty -> true in
-  let i = key_index h key in 
-  let h_data = h.data in 
-  if find_bucket (Array.unsafe_get h_data i) then
-    begin 
-      Array.unsafe_set h_data i  (Cons(key,default (), Array.unsafe_get h_data i));
-      h.size <- h.size + 1 ;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h 
-    end
-
-
-let rec remove_bucket key (h : _ t) (bucketlist : _ bucketlist) : _ bucketlist = 
-  match bucketlist with  
-  | Empty ->
-    Empty
-  | Cons(k, i, next) ->
-    if eq_key k key 
-    then begin h.size <- h.size - 1; next end
-    else Cons(k, i, remove_bucket key h next) 
-
-let remove (h : _ t ) key =
-  let i = key_index h key in
-  let h_data = h.data in 
-  let old_h_szie = h.size in 
-  let new_bucket = remove_bucket key h (Array.unsafe_get h_data i) in  
-  if old_h_szie <> h.size then 
-    Array.unsafe_set h_data i  new_bucket
-
-let rec find_rec key (bucketlist : _ bucketlist) = match bucketlist with  
-  | Empty ->
-    raise Not_found
-  | Cons(k, d, rest) ->
-    if eq_key key k then d else find_rec key rest
-
-let find_exn (h : _ t) key =
-  match Array.unsafe_get h.data (key_index h key) with
-  | Empty -> raise Not_found
-  | Cons(k1, d1, rest1) ->
-    if eq_key key k1 then d1 else
-      match rest1 with
-      | Empty -> raise Not_found
-      | Cons(k2, d2, rest2) ->
-        if eq_key key k2 then d2 else
-          match rest2 with
-          | Empty -> raise Not_found
-          | Cons(k3, d3, rest3) ->
-            if eq_key key k3  then d3 else find_rec key rest3
-
-let find_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-
-let find_key_opt (h : _ t) key =
-  Hashtbl_gen.small_bucket_key_opt eq_key key (Array.unsafe_get h.data (key_index h key))
-  
-let find_default (h : _ t) key default = 
-  Hashtbl_gen.small_bucket_default eq_key key default (Array.unsafe_get h.data (key_index h key))
-let find_all (h : _ t) key =
-  let rec find_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      []
-    | Cons(k, d, rest) ->
-      if eq_key k key 
-      then d :: find_in_bucket rest
-      else find_in_bucket rest in
-  find_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-let replace h key info =
-  let rec replace_bucket (bucketlist : _ bucketlist) : _ bucketlist = match bucketlist with 
-    | Empty ->
-      raise_notrace Not_found
-    | Cons(k, i, next) ->
-      if eq_key k key
-      then Cons(key, info, next)
-      else Cons(k, i, replace_bucket next) in
-  let i = key_index h key in
-  let h_data = h.data in 
-  let l = Array.unsafe_get h_data i in
-  try
-    Array.unsafe_set h_data i  (replace_bucket l)
-  with Not_found ->
-    begin 
-      Array.unsafe_set h_data i (Cons(key, info, l));
-      h.size <- h.size + 1;
-      if h.size > Array.length h_data lsl 1 then Hashtbl_gen.resize key_index h;
-    end 
-
-let mem (h : _ t) key =
-  let rec mem_in_bucket (bucketlist : _ bucketlist) = match bucketlist with 
-    | Empty ->
-      false
-    | Cons(k, d, rest) ->
-      eq_key k key  || mem_in_bucket rest in
-  mem_in_bucket (Array.unsafe_get h.data (key_index h key))
-
-
-let of_list2 ks vs = 
-  let len = List.length ks in 
-  let map = create len in 
-  List.iter2 (fun k v -> add map k v) ks vs ; 
-  map
-
-
-end
-module Set_gen
-= struct
-#1 "set_gen.ml"
-(***********************************************************************)
-(*                                                                     *)
-(*                                OCaml                                *)
-(*                                                                     *)
-(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
-(*                                                                     *)
-(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
-(*  en Automatique.  All rights reserved.  This file is distributed    *)
-(*  under the terms of the GNU Library General Public License, with    *)
-(*  the special exception on linking described in file ../LICENSE.     *)
-(*                                                                     *)
-(***********************************************************************)
-
-(** balanced tree based on stdlib distribution *)
-
-type 'a t = 
-  | Empty 
-  | Node of 'a t * 'a * 'a t * int 
-
-type 'a enumeration = 
-  | End | More of 'a * 'a t * 'a enumeration
-
-
-let rec cons_enum s e = 
-  match s with 
-  | Empty -> e 
-  | Node(l,v,r,_) -> cons_enum l (More(v,r,e))
-
-let rec height = function
-  | Empty -> 0 
-  | Node(_,_,_,h) -> h   
-
-(* Smallest and greatest element of a set *)
-
-let rec min_elt = function
-    Empty -> raise Not_found
-  | Node(Empty, v, r, _) -> v
-  | Node(l, v, r, _) -> min_elt l
-
-let rec max_elt = function
-    Empty -> raise Not_found
-  | Node(l, v, Empty, _) -> v
-  | Node(l, v, r, _) -> max_elt r
-
-
-
-
-let empty = Empty
-
-let is_empty = function Empty -> true | _ -> false
-
-let rec cardinal_aux acc  = function
-  | Empty -> acc 
-  | Node (l,_,r, _) -> 
-    cardinal_aux  (cardinal_aux (acc + 1)  r ) l 
-
-let cardinal s = cardinal_aux 0 s 
-
-let rec elements_aux accu = function
-  | Empty -> accu
-  | Node(l, v, r, _) -> elements_aux (v :: elements_aux accu r) l
-
-let elements s =
-  elements_aux [] s
-
-let choose = min_elt
-
-let rec iter f = function
-  | Empty -> ()
-  | Node(l, v, r, _) -> iter f l; f v; iter f r
-
-let rec fold f s accu =
-  match s with
-  | Empty -> accu
-  | Node(l, v, r, _) -> fold f r (f v (fold f l accu))
-
-let rec for_all p = function
-  | Empty -> true
-  | Node(l, v, r, _) -> p v && for_all p l && for_all p r
-
-let rec exists p = function
-  | Empty -> false
-  | Node(l, v, r, _) -> p v || exists p l || exists p r
-
-
-let max_int3 (a : int) b c = 
-  if a >= b then 
-    if a >= c then a 
-    else c
-  else 
-  if b >=c then b
-  else c     
-let max_int_2 (a : int) b =  
-  if a >= b then a else b 
-
-
-
-exception Height_invariant_broken
-exception Height_diff_borken 
-
-let rec check_height_and_diff = 
-  function 
-  | Empty -> 0
-  | Node(l,_,r,h) -> 
-    let hl = check_height_and_diff l in
-    let hr = check_height_and_diff r in
-    if h <>  max_int_2 hl hr + 1 then raise Height_invariant_broken
-    else  
-      let diff = (abs (hl - hr)) in  
-      if  diff > 2 then raise Height_diff_borken 
-      else h     
-
-let check tree = 
-  ignore (check_height_and_diff tree)
-(* 
-    Invariants: 
-    1. {[ l < v < r]}
-    2. l and r balanced 
-    3. [height l] - [height r] <= 2
-*)
-let create l v r = 
-  let hl = match l with Empty -> 0 | Node (_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node (_,_,_,h) -> h in
-  Node(l,v,r, if hl >= hr then hl + 1 else hr + 1)         
-
-(* Same as create, but performs one step of rebalancing if necessary.
-    Invariants:
-    1. {[ l < v < r ]}
-    2. l and r balanced 
-    3. | height l - height r | <= 3.
-
-    Proof by indunction
-
-    Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
-*)
-(*
-let internal_bal l v r =
-  match l with
-  | Empty ->
-    begin match r with 
-      | Empty -> Node(Empty,v,Empty,1)
-      | Node(rl,rv,rr,hr) -> 
-        if hr > 2 then
-          begin match rl with
-            | Empty -> create (* create l v rl *) (Node (Empty,v,Empty,1)) rv rr 
-            | Node(rll,rlv,rlr,hrl) -> 
-              let hrr = height rr in 
-              if hrr >= hrl then 
-                Node  
-                  ((Node (Empty,v,rl,hrl+1))(* create l v rl *),
-                   rv, rr, if hrr = hrl then hrr + 2 else hrr + 1) 
-              else 
-                let hrll = height rll in 
-                let hrlr = height rlr in 
-                create
-                  (Node(Empty,v,rll,hrll + 1)) 
-                  (* create l v rll *) 
-                  rlv 
-                  (Node (rlr,rv,rr, if hrlr > hrr then hrlr + 1 else hrr + 1))
-                  (* create rlr rv rr *)    
-          end 
-        else Node (l,v,r, hr + 1)  
-    end
-  | Node(ll,lv,lr,hl) ->
-    begin match r with 
-      | Empty ->
-        if hl > 2 then 
-          (*if height ll >= height lr then create ll lv (create lr v r)
-            else*)
-          begin match lr with 
-            | Empty -> 
-              create ll lv (Node (Empty,v,Empty, 1)) 
-            (* create lr v r *)  
-            | Node(lrl,lrv,lrr,hlr) -> 
-              if height ll >= hlr then 
-                create ll lv
-                  (Node(lr,v,Empty,hlr+1)) 
-                  (*create lr v r*)
-              else 
-                let hlrr = height lrr in  
-                create 
-                  (create ll lv lrl)
-                  lrv
-                  (Node(lrr,v,Empty,hlrr + 1)) 
-                  (*create lrr v r*)
-          end 
-        else Node(l,v,r, hl+1)    
-      | Node(rl,rv,rr,hr) ->
-        if hl > hr + 2 then           
-          begin match lr with 
-            | Empty ->   create ll lv (create lr v r)
-            | Node(lrl,lrv,lrr,_) ->
-              if height ll >= height lr then create ll lv (create lr v r)
-              else 
-                create (create ll lv lrl) lrv (create lrr v r)
-          end 
-        else
-        if hr > hl + 2 then             
-          begin match rl with 
-            | Empty ->
-              let hrr = height rr in   
-              Node(
-                (Node (l,v,Empty,hl + 1))
-                (*create l v rl*)
-                ,
-                rv,
-                rr,
-                if hrr > hr then hrr + 1 else hl + 2 
-              )
-            | Node(rll,rlv,rlr,_) ->
-              let hrr = height rr in 
-              let hrl = height rl in 
-              if hrr >= hrl then create (create l v rl) rv rr else 
-                create (create l v rll) rlv (create rlr rv rr)
-          end
-        else  
-          Node(l,v,r, if hl >= hr then hl+1 else hr + 1)
-    end
-*)
-let internal_bal l v r =
-  let hl = match l with Empty -> 0 | Node(_,_,_,h) -> h in
-  let hr = match r with Empty -> 0 | Node(_,_,_,h) -> h in
-  if hl > hr + 2 then begin
-    match l with
-      Empty -> assert false
-    | Node(ll, lv, lr, _) ->   
-      if height ll >= height lr then
-        (* [ll] >~ [lr] 
-           [ll] >~ [r] 
-           [ll] ~~ [ lr ^ r]  
-        *)
-        create ll lv (create lr v r)
-      else begin
-        match lr with
-          Empty -> assert false
-        | Node(lrl, lrv, lrr, _)->
-          (* [lr] >~ [ll]
-             [lr] >~ [r]
-             [ll ^ lrl] ~~ [lrr ^ r]   
-          *)
-          create (create ll lv lrl) lrv (create lrr v r)
-      end
-  end else if hr > hl + 2 then begin
-    match r with
-      Empty -> assert false
-    | Node(rl, rv, rr, _) ->
-      if height rr >= height rl then
-        create (create l v rl) rv rr
-      else begin
-        match rl with
-          Empty -> assert false
-        | Node(rll, rlv, rlr, _) ->
-          create (create l v rll) rlv (create rlr rv rr)
-      end
-  end else
-    Node(l, v, r, (if hl >= hr then hl + 1 else hr + 1))    
-
-let rec remove_min_elt = function
-    Empty -> invalid_arg "Set.remove_min_elt"
-  | Node(Empty, v, r, _) -> r
-  | Node(l, v, r, _) -> internal_bal (remove_min_elt l) v r
-
-let singleton x = Node(Empty, x, Empty, 1)    
-
-(* 
-   All elements of l must precede the elements of r.
-       Assume | height l - height r | <= 2.
-   weak form of [concat] 
-*)
-
-let internal_merge l r =
-  match (l, r) with
-  | (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) -> internal_bal l (min_elt r) (remove_min_elt r)
-
-(* Beware: those two functions assume that the added v is *strictly*
-    smaller (or bigger) than all the present elements in the tree; it
-    does not test for equality with the current min (or max) element.
-    Indeed, they are only used during the "join" operation which
-    respects this precondition.
-*)
-
-let rec add_min_element v = function
-  | Empty -> singleton v
-  | Node (l, x, r, h) ->
-    internal_bal (add_min_element v l) x r
-
-let rec add_max_element v = function
-  | Empty -> singleton v
-  | Node (l, x, r, h) ->
-    internal_bal l x (add_max_element v r)
-
-(** 
-    Invariants:
-    1. l < v < r 
-    2. l and r are balanced 
-
-    Proof by induction
-    The height of output will be ~~ (max (height l) (height r) + 2)
-    Also use the lemma from [bal]
-*)
-let rec internal_join l v r =
-  match (l, r) with
-    (Empty, _) -> add_min_element v r
-  | (_, Empty) -> add_max_element v l
-  | (Node(ll, lv, lr, lh), Node(rl, rv, rr, rh)) ->
-    if lh > rh + 2 then 
-      (* proof by induction:
-         now [height of ll] is [lh - 1] 
-      *)
-      internal_bal ll lv (internal_join lr v r) 
-    else
-    if rh > lh + 2 then internal_bal (internal_join l v rl) rv rr 
-    else create l v r
-
-
-(*
-    Required Invariants: 
-    [t1] < [t2]  
-*)
-let internal_concat t1 t2 =
-  match (t1, t2) with
-  | (Empty, t) -> t
-  | (t, Empty) -> t
-  | (_, _) -> internal_join t1 (min_elt t2) (remove_min_elt t2)
-
-let rec filter p = function
-  | Empty -> Empty
-  | Node(l, v, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let l' = filter p l in
-    let pv = p v in
-    let r' = filter p r in
-    if pv then internal_join l' v r' else internal_concat l' r'
-
-
-let rec partition p = function
-  | Empty -> (Empty, Empty)
-  | Node(l, v, r, _) ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition p l in
-    let pv = p v in
-    let (rt, rf) = partition p r in
-    if pv
-    then (internal_join lt v rt, internal_concat lf rf)
-    else (internal_concat lt rt, internal_join lf v rf)
-
-let of_sorted_list l =
-  let rec sub n l =
-    match n, l with
-    | 0, l -> Empty, l
-    | 1, x0 :: l -> Node (Empty, x0, Empty, 1), l
-    | 2, x0 :: x1 :: l -> Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
-    | 3, x0 :: x1 :: x2 :: l ->
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
-    | n, l ->
-      let nl = n / 2 in
-      let left, l = sub nl l in
-      match l with
-      | [] -> assert false
-      | mid :: l ->
-        let right, l = sub (n - nl - 1) l in
-        create left mid right, l
-  in
-  fst (sub (List.length l) l)
-
-let of_sorted_array l =   
-  let rec sub start n l  =
-    if n = 0 then Empty else 
-    if n = 1 then 
-      let x0 = Array.unsafe_get l start in
-      Node (Empty, x0, Empty, 1)
-    else if n = 2 then     
-      let x0 = Array.unsafe_get l start in 
-      let x1 = Array.unsafe_get l (start + 1) in 
-      Node (Node(Empty, x0, Empty, 1), x1, Empty, 2) else
-    if n = 3 then 
-      let x0 = Array.unsafe_get l start in 
-      let x1 = Array.unsafe_get l (start + 1) in
-      let x2 = Array.unsafe_get l (start + 2) in
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2)
-    else 
-      let nl = n / 2 in
-      let left = sub start nl l in
-      let mid = start + nl in 
-      let v = Array.unsafe_get l mid in 
-      let right = sub (mid + 1) (n - nl - 1) l in        
-      create left v right
-  in
-  sub 0 (Array.length l) l 
-
-let is_ordered cmp tree =
-  let rec is_ordered_min_max tree =
-    match tree with
-    | Empty -> `Empty
-    | Node(l,v,r,_) -> 
-      begin match is_ordered_min_max l with
-        | `No -> `No 
-        | `Empty ->
-          begin match is_ordered_min_max r with
-            | `No  -> `No
-            | `Empty -> `V (v,v)
-            | `V(l,r) ->
-              if cmp v l < 0 then
-                `V(v,r)
-              else
-                `No
-          end
-        | `V(min_v,max_v)->
-          begin match is_ordered_min_max r with
-            | `No -> `No
-            | `Empty -> 
-              if cmp max_v v < 0 then 
-                `V(min_v,v)
-              else
-                `No 
-            | `V(min_v_r, max_v_r) ->
-              if cmp max_v min_v_r < 0 then
-                `V(min_v,max_v_r)
-              else `No
-          end
-      end  in 
-  is_ordered_min_max tree <> `No 
-
-let invariant cmp t = 
-  check t ; 
-  is_ordered cmp t 
-
-let rec compare_aux cmp e1 e2 =
-  match (e1, e2) with
-    (End, End) -> 0
-  | (End, _)  -> -1
-  | (_, End) -> 1
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    let c = cmp v1 v2 in
-    if c <> 0
-    then c
-    else compare_aux cmp (cons_enum r1 e1) (cons_enum r2 e2)
-
-let compare cmp s1 s2 =
-  compare_aux cmp (cons_enum s1 End) (cons_enum s2 End)
-
-
-module type S = sig
-  type elt 
-  type t
-  val empty: t
-  val is_empty: t -> bool
-  val iter: (elt -> unit) -> t -> unit
-  val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-  val for_all: (elt -> bool) -> t -> bool
-  val exists: (elt -> bool) -> t -> bool
-  val singleton: elt -> t
-  val cardinal: t -> int
-  val elements: t -> elt list
-  val min_elt: t -> elt
-  val max_elt: t -> elt
-  val choose: t -> elt
-  val of_sorted_list : elt list -> t 
-  val of_sorted_array : elt array -> t
-  val partition: (elt -> bool) -> t -> t * t
-
-  val mem: elt -> t -> bool
-  val add: elt -> t -> t
-  val remove: elt -> t -> t
-  val union: t -> t -> t
-  val inter: t -> t -> t
-  val diff: t -> t -> t
-  val compare: t -> t -> int
-  val equal: t -> t -> bool
-  val subset: t -> t -> bool
-  val filter: (elt -> bool) -> t -> t
-
-  val split: elt -> t -> t * bool * t
-  val find: elt -> t -> elt
-  val of_list: elt list -> t
-  val of_sorted_list : elt list ->  t
-  val of_sorted_array : elt array -> t 
-  val invariant : t -> bool 
-  val print : Format.formatter -> t -> unit 
-end 
-
-end
-module String_set : sig 
-#1 "string_set.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-type elt = String.t
-val compare_elt : elt -> elt -> int 
-(***********************************************************************)             
-type t
-val empty: t
-val is_empty: t -> bool
-val iter: (elt -> unit) -> t -> unit
-val fold: (elt -> 'a -> 'a) -> t -> 'a -> 'a
-val for_all: (elt -> bool) -> t -> bool
-val exists: (elt -> bool) -> t -> bool
-val singleton: elt -> t
-val cardinal: t -> int
-val elements: t -> elt list
-val remove : elt -> t -> t
-val min_elt: t -> elt
-val max_elt: t -> elt
-val choose: t -> elt
-val of_sorted_list : elt list -> t 
-val of_sorted_array : elt array -> t
-val partition: (elt -> bool) -> t -> t * t
-
-val mem: elt -> t -> bool
-val add: elt -> t -> t
-
-val of_list : elt list -> t
-val find : elt -> t -> elt 
-(***********************************************************************) 
-
-end = struct
-#1 "string_set.ml"
-# 1 "ext/set.cppo.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-# 27
-type elt = string
-let compare_elt = Ext_string.compare 
-type  t = elt Set_gen.t 
-let print_elt = Format.pp_print_string
-
-
-# 67
-let empty = Set_gen.empty 
-let is_empty = Set_gen.is_empty
-let iter = Set_gen.iter
-let fold = Set_gen.fold
-let for_all = Set_gen.for_all 
-let exists = Set_gen.exists 
-let singleton = Set_gen.singleton 
-let cardinal = Set_gen.cardinal
-let elements = Set_gen.elements
-let min_elt = Set_gen.min_elt
-let max_elt = Set_gen.max_elt
-let choose = Set_gen.choose 
-let of_sorted_list = Set_gen.of_sorted_list
-let of_sorted_array = Set_gen.of_sorted_array
-let partition = Set_gen.partition 
-let filter = Set_gen.filter 
-let of_sorted_list = Set_gen.of_sorted_list
-let of_sorted_array = Set_gen.of_sorted_array
-
-let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  match tree with 
-  | Empty ->
-    (Empty, false, Empty)
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    if c = 0 then (l, true, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
-    else
-      let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
-let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  match tree with 
-  | Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
-    let c = compare_elt x v in
-    if c = 0 then t else
-    if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
-
-let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
-  match (s1, s2) with
-  | (Empty, t2) -> t2
-  | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
-    if h1 >= h2 then
-      if h2 = 1 then add v2 s1 else begin
-        let (l2, _, r2) = split v1 s2 in
-        Set_gen.internal_join (union l1 l2) v1 (union r1 r2)
-      end
-    else
-    if h1 = 1 then add v1 s2 else begin
-      let (l1, _, r1) = split v2 s1 in
-      Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
-    end    
-
-let rec inter (s1 : _ Set_gen.t)  (s2 : _ Set_gen.t) : _ Set_gen.t  =
-  match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> Empty
-  | (Node(l1, v1, r1, _), t2) ->
-    begin match split v1 t2 with
-      | (l2, false, r2) ->
-        Set_gen.internal_concat (inter l1 l2) (inter r1 r2)
-      | (l2, true, r2) ->
-        Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
-    end 
-
-let rec diff (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
-  match (s1, s2) with
-  | (Empty, t2) -> Empty
-  | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, _), t2) ->
-    begin match split v1 t2 with
-      | (l2, false, r2) ->
-        Set_gen.internal_join (diff l1 l2) v1 (diff r1 r2)
-      | (l2, true, r2) ->
-        Set_gen.internal_concat (diff l1 l2) (diff r1 r2)    
-    end
-
-
-let rec mem x (tree : _ Set_gen.t) =  match tree with 
-  | Empty -> false
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    c = 0 || mem x (if c < 0 then l else r)
-
-let rec remove x (tree : _ Set_gen.t) : _ Set_gen.t = match tree with 
-  | Empty -> Empty
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    if c = 0 then Set_gen.internal_merge l r else
-    if c < 0 then Set_gen.internal_bal (remove x l) v r else Set_gen.internal_bal l v (remove x r)
-
-let compare s1 s2 = Set_gen.compare compare_elt s1 s2 
-
-
-let equal s1 s2 =
-  compare s1 s2 = 0
-
-let rec subset (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) =
-  match (s1, s2) with
-  | Empty, _ ->
-    true
-  | _, Empty ->
-    false
-  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
-    let c = compare_elt v1 v2 in
-    if c = 0 then
-      subset l1 l2 && subset r1 r2
-    else if c < 0 then
-      subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
-    else
-      subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
-
-
-
-
-let rec find x (tree : _ Set_gen.t) = match tree with
-  | Empty -> raise Not_found
-  | Node(l, v, r, _) ->
-    let c = compare_elt x v in
-    if c = 0 then v
-    else find x (if c < 0 then l else r)
-
-
-
-let of_list l =
-  match l with
-  | [] -> empty
-  | [x0] -> singleton x0
-  | [x0; x1] -> add x1 (singleton x0)
-  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-  | _ -> of_sorted_list (List.sort_uniq compare_elt l)
-
-let of_array l = 
-  Array.fold_left (fun  acc x -> add x acc) empty l
-
-(* also check order *)
-let invariant t =
-  Set_gen.check t ;
-  Set_gen.is_ordered compare_elt t          
-
-let print fmt s = 
-  Format.fprintf 
-   fmt   "@[<v>{%a}@]@."
-    (fun fmt s   -> 
-       iter 
-         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " 
-         print_elt e) s
-    )
-    s     
-
-
-
-
-
-end
-module Bsb_helper_dep_graph : sig 
-#1 "bsb_helper_dep_graph.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(* Will do a topological sort of the tree given [String_set.t String_map.t] while ignoring anything not in the given [domain]. Returns a queue of modules topologically sorted. *)
-val sort_files_by_dependencies : domain:String_set.t -> String_set.t String_map.t -> string Queue.t
-
-(* Returns a topologically sorted Queue of module names found from the given main module. *)
-val simple_collect_from_main :
-           ?alias_map:string String_hashtbl.t ->
-           String_set.t String_map.t ->
-           string -> string Queue.t
-
-(* Returns a list of extra modules which are part of the "otherlibs" stdlib to link in. *)
-val get_otherlibs_dependencies : String_set.t String_map.t -> string -> string list
-
-end = struct
-#1 "bsb_helper_dep_graph.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(* TODO: This function is a duplicate of `Ast_extract.sort_files_by_dependencies`
-         without the dependency on `bs_exception`. 
-         We should combine them at some point to avoid the duplicated logic. *)
-let sort_files_by_dependencies ~domain dependency_graph =
-  let next current =
-    (String_map.find_exn  current dependency_graph) in
-  let worklist = ref domain in
-  let result = Queue.create () in
-  let rec visit visiting path current =
-    if String_set.mem current visiting then
-      Bsb_log.error "@{<error>Cyclic depends@} : @[%a@]"
-        (Format.pp_print_list ~pp_sep:Format.pp_print_space
-           Format.pp_print_string)
-        (current::path)
-    else if String_set.mem current !worklist then
-      begin
-        next current |>
-        String_set.iter
-          (fun node ->
-             if  String_map.mem node  dependency_graph then
-               visit (String_set.add current visiting) (current::path) node)
-        ;
-        worklist := String_set.remove  current !worklist;
-        Queue.push current result ;
-      end in
-  while not (String_set.is_empty !worklist) do
-    visit String_set.empty []  (String_set.choose !worklist)
-  done;
-  result
-;;
-
-(* TODO: The core of the logic in this function is the exact same as 
-         `Ast_extract.collect_from_main` but we removed the dep on bs_exception
-         and made it return a Queue. It also doesn't create the ast_table itself.
-         We should probably refactor the two to work together at some point. *)
-let simple_collect_from_main ?alias_map ast_table main_module =
-  let visited = String_hashtbl.create 31 in
-  let result = Queue.create () in
-  let next module_name : String_set.t =
-    let module_set =
-      match String_map.find_exn module_name ast_table with
-      | exception _ -> String_set.empty
-      | x -> x
-    in
-    match alias_map with
-    | None -> module_set
-    | Some map ->
-      String_set.fold (fun x acc -> String_set.add (String_hashtbl.find_default map x x) acc  ) module_set String_set.empty
-  in
-  let rec visit visiting path current =
-    if String_set.mem current visiting  then
-      Bsb_log.error "@{<error>Cyclic depends@} : @[%a@]"
-        (Format.pp_print_list ~pp_sep:Format.pp_print_space
-           Format.pp_print_string)
-        (current::path)
-    else
-    if not (String_hashtbl.mem visited current)
-    && String_map.mem current ast_table then
-      begin
-        String_set.iter
-          (visit
-             (String_set.add current visiting)
-             (current::path))
-          (next current) ;
-        Queue.push current result;
-        String_hashtbl.add visited current ();
-      end in
-  visit (String_set.empty) [] main_module ;
-  result
-
-let get_otherlibs_dependencies dependency_graph file_extension =
-  let addIfPresentInSet v moduleName fileName acc = 
-    if String_set.mem moduleName v then
-      String_set.add (fileName ^ file_extension) acc 
-    else
-      acc
-  in
-  let set_of_otherlib_deps = String_map.fold (fun k v acc ->
-    let addIfPresent = addIfPresentInSet v in
-    acc
-      |> addIfPresent "Unix"     "unix"
-      |> addIfPresent "Bigarray" "bigarray"
-      |> addIfPresent "Str"      "str"
-      |> addIfPresent "Num"      "nums"
-      |> addIfPresent "Threads"  "threads"
-      |> addIfPresent "Dynlink"  "dynlink"
-      |> addIfPresent "Graphics" "graphics"
-  ) dependency_graph String_set.empty in
-  String_set.fold (fun v acc -> v :: acc) set_of_otherlib_deps []
-
-end
-module Bsb_helper_extract : sig 
-#1 "bsb_helper_extract.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-(* This reads the header part of the mlast file, which simply encodes a set that indicates all of the deps of the current library. *)
-val read_dependency_graph_from_mlast_file : string -> String_set.t
-
-end = struct
-#1 "bsb_helper_extract.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let read_dependency_graph_from_mlast_file fn  =
-  let ic = open_in_bin fn in
-  try
-    let dep_size = input_binary_int ic in
-    let dep_data = really_input_string ic dep_size in
-    let splitted_data = Ext_string.split dep_data '\t' in
-    let set = match splitted_data with
-    | final_length :: rest ->
-      let set = String_set.of_list rest in
-      assert (String_set.cardinal set = (int_of_string final_length));
-      set
-    | _ -> assert false in
-    close_in ic;
-    set
-  with exn ->
-    close_in ic;
-    raise exn
-
-end
-module Bsb_helper_linker : sig 
-#1 "bsb_helper_linker.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type link_t = LinkBytecode of string | LinkNative of string
-
-val link : link_t -> main_module:string -> batch_files:string list -> includes:string list -> unit
-
-end = struct
-#1 "bsb_helper_linker.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type link_t = LinkBytecode of string | LinkNative of string
-
-let link link_byte_or_native ~main_module ~batch_files ~includes =
-  let suffix_object_files, suffix_library_files, compiler, output_file = begin match link_byte_or_native with
-  | LinkBytecode output_file -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc.opt"  , output_file
-  | LinkNative output_file   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt.opt", output_file
-  end in
-  (* Map used to track the path to the files as the dependency_graph that we're going to read from the mlast file only contains module names *)
-  let module_to_filepath = List.fold_left
-    (fun m v ->
-      String_map.add
-      (Ext_modulename.module_name_of_file_if_any v)
-      (Ext_path.chop_extension_if_any v)
-      m)
-    String_map.empty
-    batch_files in
-  let dependency_graph = List.fold_left
-    (fun m file ->
-      String_map.add
-        (Ext_modulename.module_name_of_file_if_any file)
-        (Bsb_helper_extract.read_dependency_graph_from_mlast_file ((Ext_path.chop_extension file) ^ Literals.suffix_mlast))
-        m)
-    String_map.empty
-    batch_files in
-  let tasks = Bsb_helper_dep_graph.simple_collect_from_main dependency_graph main_module in
-  let list_of_object_files = Queue.fold
-    (fun acc v -> match String_map.find_opt v module_to_filepath with
-      | Some file -> (file ^ suffix_object_files) :: acc
-      | None -> failwith @@ "build.ninja is missing the file '" ^ v ^ "' that was used in the project. Try force-regenerating but this shouldn't happen."
-      )
-    []
-    tasks in
-  if list_of_object_files <> [] then begin
-    let library_files = List.fold_left
-      (fun acc dir ->
-        (Ext_path.combine dir (Literals.library_file ^ suffix_library_files)) :: acc)
-      [] includes in
-    (* This list will be reversed so we append the otherlibs object files at the end, and they'll end at the beginning. *)
-    let otherlibs = Bsb_helper_dep_graph.get_otherlibs_dependencies dependency_graph suffix_library_files in
-    let all_object_files = List.rev (list_of_object_files @ otherlibs) in
-    Unix.execvp
-      compiler
-      (Array.of_list (compiler :: "-o" :: output_file :: library_files @ all_object_files))
-  end else
-    failwith @@ "No " ^ suffix_object_files ^ " to link. Hint: is the main module in the entries array right?"
-
-end
-module Bsb_helper_packer : sig 
-#1 "bsb_helper_packer.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type pack_t = PackBytecode | PackNative
-
-val pack : pack_t -> batch_files:string list -> includes:string list -> unit
-
-end = struct
-#1 "bsb_helper_packer.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type pack_t = PackBytecode | PackNative
-
-let pack pack_byte_or_native ~batch_files ~includes =
-  let suffix_object_files, suffix_library_files, compiler = begin match pack_byte_or_native with
-  | PackBytecode -> Literals.suffix_cmo, Literals.suffix_cma , "ocamlc.opt"
-  | PackNative   -> Literals.suffix_cmx, Literals.suffix_cmxa, "ocamlopt.opt"
-  end in
-  let module_to_filepath = List.fold_left
-    (fun m v ->
-      String_map.add
-      (Ext_modulename.module_name_of_file_if_any v)
-      (Ext_path.chop_extension_if_any v)
-      m)
-    String_map.empty
-    batch_files in
-  let dependency_graph = List.fold_left
-    (fun m file ->
-      String_map.add
-        (Ext_modulename.module_name_of_file_if_any file)
-        (Bsb_helper_extract.read_dependency_graph_from_mlast_file ((Ext_path.chop_extension file) ^ Literals.suffix_mlast))
-        m)
-    String_map.empty
-    batch_files in
-  let domain =
-    String_map.fold
-      (fun k _ acc -> String_set.add k acc)
-      dependency_graph String_set.empty in
-  let sorted_tasks = Bsb_helper_dep_graph.sort_files_by_dependencies ~domain dependency_graph in
-  let list_of_object_files = Queue.fold
-    (fun acc v -> match String_map.find_opt v module_to_filepath with
-      | Some file -> (file ^ suffix_object_files) :: acc
-      | None -> failwith @@ "build.ninja is missing the file '" ^ v ^ "' that was used in the project. Try force-regenerating but this shouldn't happen."
-      )
-    []
-    sorted_tasks in
-  (* This list will be reversed so we append the otherlibs object files at the end, and they'll end at the beginning. *)
-  if list_of_object_files <> [] then
-    let includes = List.fold_left (fun acc dir -> "-I" :: dir :: acc) [] includes in
-    let otherlibs = Bsb_helper_dep_graph.get_otherlibs_dependencies dependency_graph suffix_library_files in
-    let all_object_files = List.rev (list_of_object_files @ otherlibs) in
-    Unix.execvp
-      compiler
-        (Array.of_list (compiler :: "-a" :: "-o" :: (Literals.library_file ^ suffix_library_files) :: includes @ all_object_files))
-  else
-    failwith @@ "No " ^ suffix_object_files ^ " to pack into a lib."
 
 end
 module Bsb_helper_main : sig 
@@ -5868,20 +3926,12 @@ let collect_file name =
 (* let output_prefix = ref None *)
 let dev_group = ref 0
 let namespace = ref None
-let link link_byte_or_native = 
-  begin match !main_module with
-    | None -> failwith "Linking needs a main module. Please add -main-module MyMainModule to the invocation."
-    | Some main_module ->
-      Bsb_helper_linker.link 
-        link_byte_or_native
-        ~main_module:main_module
-        ~includes:!includes
-        ~batch_files:!batch_files
-  end
+
 
 let anonymous filename =
   collect_file filename
 let usage = "Usage: bsb_helper.exe [options] \nOptions are:"
+  
 let () =
   Arg.parse [
     "-g", Arg.Int (fun i -> dev_group := i ),
@@ -5889,7 +3939,7 @@ let () =
     ;
     "-MD", Arg.String (
       fun x -> 
-        Bsb_depfile_gen.make
+        Bsb_helper_depfile_gen.emit_dep_file
           Js 
           x (Bsb_dir_index.of_int !dev_group )
           !namespace
@@ -5897,74 +3947,7 @@ let () =
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
     "-ns", Arg.String (fun s -> namespace := Some s),
     " Set namespace";
-    "-MD-bytecode", Arg.String (
-      fun x -> 
-        Bsb_depfile_gen.make
-          Bytecode 
-          x (Bsb_dir_index.of_int !dev_group ) !namespace),          
-    " (internal)Generate dep file for ninja format(from .ml[i]deps)";
-    "-MD-native", Arg.String (fun x -> 
-        Bsb_depfile_gen.make
-          Native 
-           x (Bsb_dir_index.of_int !dev_group )
-           !namespace
-           ),
-    " (internal)Generate dep file for ninja format(from .ml[i]deps)";
-
-    (**
-       The args below are used for packing/linking.
-
-       This makes bsb_helper act as an ocaml linker where we automatically figure
-       out the dependencies graph to do a topological sort before calling 
-       ocamlc/ocamlopt.
-    *)
-    "-bs-main", (Arg.String set_main_module),
-    " set the main entry module. Only used in conjunction with -link-bytecode and -link-native";
-
-    (* This is a way to add a directory to the search path. This is used for the 
-       compiler to look for cmi files. It's also used to look for a file called `lib.cma` to 
-       link with the current executable.
-
-       For example if called like so
-
-          bsb_helper -I theExtLib myMainFile.cmo -link-bytecode
-
-       Then we'll go look for `theExtLib/lib.cma` to link with the final exec.
-    *)
-    "-I",  (Arg.String add_include),
-    " add dir to search path for the linker and packer";
-
-    (* Both linking and packing arguments must come _after_ all of the other args and files have been listed.
-       For example:
-
-          bsb_helper -main-module MyModule myFile.cmo myOtherFile.cmo -link-bytecode 
-
-       In the following example, the file called `myIgnoredFile.cmo` is not linked nor is `myLibFolder/lib.cma`
-
-          bsb_helper -main-module MyModule myFile.cmo myOtherFile.cmo -link-bytecode -I myLibFolder myIgnoredFile.cmo
-
-    *)
-    "-link-bytecode", (Arg.String (fun x -> link (Bsb_helper_linker.LinkBytecode x))),
-    " link bytecode files into an executable";
-
-    "-link-native", (Arg.String (fun x -> link (Bsb_helper_linker.LinkNative x))),
-    " link native files into an executable";
-
-    "-pack-native-library", (Arg.Unit (fun () -> 
-        Bsb_helper_packer.pack
-          Bsb_helper_packer.PackNative
-          ~includes:!includes
-          ~batch_files:!batch_files
-      )),
-    " pack native files (cmx) into a library file (cmxa)";
-
-    "-pack-bytecode-library", (Arg.Unit (fun () -> 
-        Bsb_helper_packer.pack
-          Bsb_helper_packer.PackBytecode
-          ~includes:!includes
-          ~batch_files:!batch_files
-      )),
-    " pack bytecode files (cmo) into a library file (cma)";
+    
   ] anonymous usage
 
 end

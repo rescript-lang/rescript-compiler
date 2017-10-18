@@ -325,17 +325,17 @@ OTHER_CORE_SRCS= bsppx_main bspack_main jsoo_main  bspp_main js_cmi_datasets \
 
 OTHER_CORE_CMXS= $(addprefix core/, $(addsuffix .cmx, $(OTHER_CORE_SRCS)))
 BSB_SRCS= bsb_config\
-	bsb_build_cache\
+	bsb_db\
 	bsb_exception\
 	bsb_dir_index\
 	bsb_log\
 	bsb_ninja_global_vars\
-	bsb_depfile_gen\
+	bsb_helper_depfile_gen\
 	bsb_pkg\
 	bsb_build_schemas\
 	bsb_build_util\
 	bsb_package_specs\
-	bsb_pkg_map_gen\
+	bsb_namespace_map_gen\
 	bsb_helper_extract\
 	bsb_helper_dep_graph\
 	bsb_helper_linker\
@@ -346,7 +346,7 @@ BSB_SRCS= bsb_config\
 	bsb_ninja_file_groups\
 	bsb_parse_sources\
 	bsb_default\
-	bsb_bsdeps\
+	bsb_ninja_check\
 	bsb_watcher_gen\
 	bsb_warning\
 	bsb_merlin_gen\

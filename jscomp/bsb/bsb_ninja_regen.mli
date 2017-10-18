@@ -30,7 +30,7 @@
     otherwise return Some info
 *)
 val regenerate_ninja :
-  no_dev:bool ->
+  not_dev:bool ->
   override_package_specs:Bsb_package_specs.t option ->
   generate_watch_metadata: bool -> 
   forced: bool -> string -> string -> 
