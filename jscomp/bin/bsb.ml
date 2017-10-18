@@ -11424,6 +11424,88 @@ let check ~cwd ~forced ~file : check_result =
 
 
 end
+module Bsb_namespace_map_gen : sig 
+#1 "bsb_namespace_map_gen.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** [output dir namespace file_groups]
+    when [build.ninja] is generated, we output a module map [.mlmap] file 
+    such [.mlmap] file will be consumed by [bsc.exe] to generate [.cmi] file
+ *)
+val output : 
+  dir:string ->
+  string -> 
+  Bsb_parse_sources.file_group list ->
+  unit 
+end = struct
+#1 "bsb_namespace_map_gen.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let (//) = Ext_path.combine
+
+
+
+
+
+
+let output ~dir namespace 
+    (file_groups : Bsb_parse_sources.file_group list)
+  = 
+  let fname = namespace ^ Literals.suffix_mlmap in 
+  let oc = open_out_bin (dir// fname ) in 
+  List.iter
+    (fun  (x : Bsb_parse_sources.file_group) ->
+      String_map.iter (fun k _ -> 
+        output_string oc k ;
+        output_string oc "\n"
+      ) x.sources 
+     )  file_groups ;
+  close_out oc 
+end
 module Bsb_ninja_global_vars
 = struct
 #1 "bsb_ninja_global_vars.ml"
@@ -12334,85 +12416,6 @@ let handle_file_groups
     st  file_groups
 
 end
-module Bsb_pkg_map_gen : sig 
-#1 "bsb_pkg_map_gen.mli"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val output : 
-  dir:string ->
-  string -> 
-  Bsb_parse_sources.file_group list ->
-  unit 
-end = struct
-#1 "bsb_pkg_map_gen.ml"
-(* Copyright (C) 2017 Authors of BuckleScript
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let (//) = Ext_path.combine
-
-
-
-
-
-
-let output ~dir namespace 
-    (file_groups : Bsb_parse_sources.file_group list)
-  = 
-  let fname = namespace ^ Literals.suffix_mlmap in 
-  let oc = open_out_bin (dir// fname ) in 
-  List.iter
-    (fun  (x : Bsb_parse_sources.file_group) ->
-      String_map.iter (fun k _ -> 
-        output_string oc k ;
-        output_string oc "\n"
-      ) x.sources 
-     )  file_groups ;
-  close_out oc 
-end
 module Bsb_ninja_gen : sig 
 #1 "bsb_ninja_gen.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -12671,12 +12674,9 @@ let output_ninja_and_namespace_map
       match namespace with 
       | None -> all_info
       | Some ns -> 
-        (* let dir = 
-           Bsb_parse_sources.find_first_lib_dir bs_file_groups in   *)
         let namespace_dir =     
           cwd // Bsb_config.lib_bs  in
-        (* Bsb_build_util.mkp namespace_dir ;    *)
-        Bsb_pkg_map_gen.output ~dir:namespace_dir ns
+        Bsb_namespace_map_gen.output ~dir:namespace_dir ns
           bs_file_groups
         ; 
         Bsb_ninja_util.output_build oc 

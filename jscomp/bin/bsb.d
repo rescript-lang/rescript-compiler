@@ -97,7 +97,6 @@ bin/bsb.ml : bsb/bsb_merlin_gen.mli
 bin/bsb.ml : bsb/bsb_ninja_check.ml
 bin/bsb.ml : bsb/bsb_ninja_regen.ml
 bin/bsb.ml : bsb/bsb_ninja_util.mli
-bin/bsb.ml : bsb/bsb_pkg_map_gen.ml
 bin/bsb.ml : bsb/bsb_theme_init.mli
 bin/bsb.ml : bsb/bsb_watcher_gen.ml
 bin/bsb.ml : ext/ext_json_noloc.mli
@@ -111,7 +110,6 @@ bin/bsb.ml : bsb/bsb_config_parse.ml
 bin/bsb.ml : bsb/bsb_config_types.ml
 bin/bsb.ml : bsb/bsb_ninja_check.mli
 bin/bsb.ml : bsb/bsb_ninja_regen.mli
-bin/bsb.ml : bsb/bsb_pkg_map_gen.mli
 bin/bsb.ml : bsb/bsb_watcher_gen.mli
 bin/bsb.ml : ext/string_hash_set.mli
 bin/bsb.ml : bsb/bsb_build_schemas.ml
@@ -120,6 +118,8 @@ bin/bsb.ml : bsb/bsb_package_specs.ml
 bin/bsb.ml : bsb/bsb_parse_sources.ml
 bin/bsb.ml : bsb/bsb_package_specs.mli
 bin/bsb.ml : bsb/bsb_parse_sources.mli
+bin/bsb.ml : bsb/bsb_namespace_map_gen.ml
 bin/bsb.ml : bsb/bsb_ninja_file_groups.ml
 bin/bsb.ml : bsb/bsb_ninja_global_vars.ml
+bin/bsb.ml : bsb/bsb_namespace_map_gen.mli
 bin/bsb.ml : bsb/bsb_ninja_file_groups.mli

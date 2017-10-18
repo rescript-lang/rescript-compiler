@@ -19,9 +19,9 @@ bin/bsb_helper.ml : bsb/bsb_dir_index.mli
 bin/bsb_helper.ml : ext/ext_modulename.ml
 bin/bsb_helper.ml : ext/ext_namespace.mli
 bin/bsb_helper.ml : ext/ext_pervasives.ml
-bin/bsb_helper.ml : bsb/bsb_depfile_gen.ml
 bin/bsb_helper.ml : bsb/bsb_helper_main.ml
 bin/bsb_helper.ml : ext/ext_modulename.mli
 bin/bsb_helper.ml : ext/ext_pervasives.mli
-bin/bsb_helper.ml : bsb/bsb_depfile_gen.mli
 bin/bsb_helper.ml : bsb/bsb_helper_main.mli
+bin/bsb_helper.ml : bsb/bsb_helper_depfile_gen.ml
+bin/bsb_helper.ml : bsb/bsb_helper_depfile_gen.mli

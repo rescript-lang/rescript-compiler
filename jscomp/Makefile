@@ -330,12 +330,12 @@ BSB_SRCS= bsb_config\
 	bsb_dir_index\
 	bsb_log\
 	bsb_ninja_global_vars\
-	bsb_depfile_gen\
+	bsb_helper_depfile_gen\
 	bsb_pkg\
 	bsb_build_schemas\
 	bsb_build_util\
 	bsb_package_specs\
-	bsb_pkg_map_gen\
+	bsb_namespace_map_gen\
 	bsb_helper_extract\
 	bsb_helper_dep_graph\
 	bsb_helper_linker\

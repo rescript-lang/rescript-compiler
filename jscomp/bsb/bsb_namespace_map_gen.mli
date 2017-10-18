@@ -22,7 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+(** [output dir namespace file_groups]
+    when [build.ninja] is generated, we output a module map [.mlmap] file 
+    such [.mlmap] file will be consumed by [bsc.exe] to generate [.cmi] file
+ *)
 val output : 
   dir:string ->
   string -> 

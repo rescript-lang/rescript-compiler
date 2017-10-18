@@ -218,12 +218,9 @@ let output_ninja_and_namespace_map
       match namespace with 
       | None -> all_info
       | Some ns -> 
-        (* let dir = 
-           Bsb_parse_sources.find_first_lib_dir bs_file_groups in   *)
         let namespace_dir =     
           cwd // Bsb_config.lib_bs  in
-        (* Bsb_build_util.mkp namespace_dir ;    *)
-        Bsb_pkg_map_gen.output ~dir:namespace_dir ns
+        Bsb_namespace_map_gen.output ~dir:namespace_dir ns
           bs_file_groups
         ; 
         Bsb_ninja_util.output_build oc 

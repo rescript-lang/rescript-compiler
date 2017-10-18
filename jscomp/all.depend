@@ -691,7 +691,7 @@ core/js_main.cmx : super_errors/super_main.cmx \
     core/js_main.cmi
 core/cmjdump_main.cmx : ext/string_map.cmx core/lam_arity.cmx \
     core/js_packages_info.cmx core/js_cmj_format.cmx
-core/astdump_main.cmx : common/ml_binary.cmx bsb/bsb_depfile_gen.cmx
+core/astdump_main.cmx : common/ml_binary.cmx
 ounit/oUnit.cmi :
 ounit/oUnitDiff.cmi :
 ounit/oUnit.cmx : ounit/oUnitUtils.cmx ounit/oUnitTypes.cmx \
@@ -821,22 +821,22 @@ bsb/bsb_db.cmx : ext/string_map.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
     bsb/bsb_db.cmi
 bsb/bsb_default.cmx : bsb/bsb_config_types.cmx bsb/bsb_default.cmi
-bsb/bsb_depfile_gen.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_depfile_gen.cmi
 bsb/bsb_dir_index.cmx : bsb/bsb_dir_index.cmi
 bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
     ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
 bsb/bsb_file.cmx : bsb/bsb_file.cmi
 bsb/bsb_helper_dep_graph.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/string_hashtbl.cmx bsb/bsb_log.cmx bsb/bsb_helper_dep_graph.cmi
+bsb/bsb_helper_depfile_gen.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
+    bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_helper_depfile_gen.cmi
 bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
     bsb/bsb_helper_extract.cmi
 bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_path.cmx ext/ext_modulename.cmx bsb/bsb_helper_extract.cmx \
     bsb/bsb_helper_dep_graph.cmx bsb/bsb_helper_linker.cmi
-bsb/bsb_helper_main.cmx : ext/ext_path.cmx bsb/bsb_dir_index.cmx \
-    bsb/bsb_depfile_gen.cmx bsb/bsb_helper_main.cmi
+bsb/bsb_helper_main.cmx : ext/ext_path.cmx bsb/bsb_helper_depfile_gen.cmx \
+    bsb/bsb_dir_index.cmx bsb/bsb_helper_main.cmi
 bsb/bsb_helper_packer.cmx : ext/string_set.cmx ext/string_map.cmx \
     ext/literals.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
     bsb/bsb_helper_extract.cmx bsb/bsb_helper_dep_graph.cmx \
@@ -851,6 +851,8 @@ bsb/bsb_main.cmx : ext/ext_sys.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
 bsb/bsb_merlin_gen.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_path.cmx bsb/bsb_warning.cmx bsb/bsb_parse_sources.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_merlin_gen.cmi
+bsb/bsb_namespace_map_gen.cmx : ext/string_map.cmx ext/literals.cmx \
+    ext/ext_path.cmx bsb/bsb_parse_sources.cmx bsb/bsb_namespace_map_gen.cmi
 bsb/bsb_ninja_check.cmx : ext/ext_array.cmx bsb/bsb_log.cmx \
     common/bs_version.cmx bsb/bsb_ninja_check.cmi
 bsb/bsb_ninja_file_groups.cmx : ext/string_set.cmx ext/string_map.cmx \
@@ -863,9 +865,9 @@ bsb/bsb_ninja_file_groups.cmx : ext/string_set.cmx ext/string_map.cmx \
     bsb/bsb_ninja_file_groups.cmi
 bsb/bsb_ninja_gen.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_string.cmx ext/ext_path.cmx ext/ext_list.cmx bsb/bsb_warning.cmx \
-    bsb/bsb_rule.cmx bsb/bsb_pkg_map_gen.cmx bsb/bsb_parse_sources.cmx \
-    bsb/bsb_ninja_util.cmx bsb/bsb_ninja_global_vars.cmx \
-    bsb/bsb_ninja_file_groups.cmx bsb/bsb_dir_index.cmx bsb/bsb_db.cmx \
+    bsb/bsb_rule.cmx bsb/bsb_parse_sources.cmx bsb/bsb_ninja_util.cmx \
+    bsb/bsb_ninja_global_vars.cmx bsb/bsb_ninja_file_groups.cmx \
+    bsb/bsb_namespace_map_gen.cmx bsb/bsb_dir_index.cmx bsb/bsb_db.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
     bsb/bsb_build_schemas.cmx bsb/bsb_ninja_gen.cmi
 bsb/bsb_ninja_global_vars.cmx :
@@ -889,9 +891,6 @@ bsb/bsb_parse_sources.cmx : ext/string_vec.cmx ext/string_set.cmx \
     bsb/bsb_parse_sources.cmi
 bsb/bsb_pkg.cmx : ext/string_hashtbl.cmx ext/literals.cmx bsb/bsb_log.cmx \
     bsb/bsb_exception.cmx bsb/bsb_pkg.cmi
-bsb/bsb_pkg_cmi_create.cmx : ext/ext_list.cmx
-bsb/bsb_pkg_map_gen.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_path.cmx bsb/bsb_parse_sources.cmx bsb/bsb_pkg_map_gen.cmi
 bsb/bsb_query.cmx : ext/string_map.cmx ext/ext_json_noloc.cmx \
     ext/ext_array.cmx bsb/bsb_parse_sources.cmx bsb/bsb_ninja_regen.cmx \
     bsb/bsb_config_types.cmx bsb/bsb_query.cmi
@@ -923,12 +922,12 @@ bsb/bsb_config_parse.cmi : bsb/bsb_package_specs.cmi \
     bsb/bsb_config_types.cmx
 bsb/bsb_db.cmi : ext/string_map.cmi
 bsb/bsb_default.cmi : bsb/bsb_config_types.cmx
-bsb/bsb_depfile_gen.cmi : bsb/bsb_dir_index.cmi
 bsb/bsb_dir_index.cmi :
 bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
 bsb/bsb_file.cmi :
 bsb/bsb_helper_dep_graph.cmi : ext/string_set.cmi ext/string_map.cmi \
     ext/string_hashtbl.cmi
+bsb/bsb_helper_depfile_gen.cmi : bsb/bsb_dir_index.cmi
 bsb/bsb_helper_extract.cmi : ext/string_set.cmi
 bsb/bsb_helper_linker.cmi :
 bsb/bsb_helper_main.cmi :
@@ -936,6 +935,7 @@ bsb/bsb_helper_packer.cmi :
 bsb/bsb_log.cmi :
 bsb/bsb_main.cmi :
 bsb/bsb_merlin_gen.cmi : bsb/bsb_config_types.cmx
+bsb/bsb_namespace_map_gen.cmi : bsb/bsb_parse_sources.cmi
 bsb/bsb_ninja_check.cmi :
 bsb/bsb_ninja_file_groups.cmi : ext/string_map.cmi ext/string_hash_set.cmi \
     bsb/bsb_rule.cmi bsb/bsb_parse_sources.cmi bsb/bsb_package_specs.cmi
@@ -947,7 +947,6 @@ bsb/bsb_parse_sources.cmi : ext/string_set.cmi ext/string_map.cmi \
     ext/ext_json_types.cmx ext/ext_file_pp.cmi bsb/bsb_dir_index.cmi \
     bsb/bsb_db.cmi
 bsb/bsb_pkg.cmi :
-bsb/bsb_pkg_map_gen.cmi : bsb/bsb_parse_sources.cmi
 bsb/bsb_query.cmi :
 bsb/bsb_regex.cmi :
 bsb/bsb_rule.cmi : ext/string_map.cmi

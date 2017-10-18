@@ -66,7 +66,7 @@ let () =
     ;
     "-MD", Arg.String (
       fun x -> 
-        Bsb_depfile_gen.emit_dep_file
+        Bsb_helper_depfile_gen.emit_dep_file
           Js 
           x (Bsb_dir_index.of_int !dev_group )
           !namespace
@@ -77,12 +77,12 @@ let () =
 #if BS_NATIVE then    
     "-MD-bytecode", Arg.String (
       fun x -> 
-        Bsb_depfile_gen.make
+        Bsb_helper_depfile_gen.make
           Bytecode 
           x (Bsb_dir_index.of_int !dev_group ) !namespace),          
     " (internal)Generate dep file for ninja format(from .ml[i]deps)";
     "-MD-native", Arg.String (fun x -> 
-        Bsb_depfile_gen.make
+        Bsb_helper_depfile_gen.make
           Native 
            x (Bsb_dir_index.of_int !dev_group )
            !namespace
