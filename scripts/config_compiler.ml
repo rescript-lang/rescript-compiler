@@ -91,7 +91,7 @@ let patch_config jscomp_dir config_map is_windows =
             Js.log ("No value found from ocamlopt.opt -config for \"" ^ map_val ^ "\"");
             ""
         )
-      | None -> assert false
+      | None -> Js.Exn.raiseError __LOC__
       (** It is always there *)
   in
   let generated = Js.String.unsafeReplaceBy1 [%re {|/%%(\w+)%%/g|}] replace_values content in
@@ -131,7 +131,7 @@ let should_patch config_map =
 let () =
   let dirname = match [%node __dirname] with
     | Some a -> a
-    | None -> assert false
+    | None -> Js.Exn.raiseError "Not node"
   in
   let working_dir = Process.process##cwd () in
   Js.log ("Working dir " ^ working_dir);
@@ -159,5 +159,5 @@ let () =
 
 
 (* local variables: *)
-(* compile-command: "bscc -c config_compiler.ml" *)
+(* compile-command: "bscc -bs-package-output scripts -c config_compiler.ml " *)
 (* end: *)
