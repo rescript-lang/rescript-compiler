@@ -52,7 +52,7 @@ function bufferize(f) {
 }
 
 var match = bufferize((function () {
-        return Caml_io.caml_ml_input_char(inch[0]);
+        return Caml_sys_fs.caml_ml_input_char(inch[0]);
       }));
 
 var ungetch = match[1];

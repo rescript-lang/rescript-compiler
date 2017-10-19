@@ -116,6 +116,99 @@ var read_contents = Curry._1((
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 80, characters 5-12", "test contents", (Caml_sys_fs.caml_sys_remove(file), read_contents));
 
+var oc$2 = Pervasives.open_out("tmp_foo.txt");
+
+Pervasives.output_string(oc$2, "foo\nbar\nbaz\n");
+
+Pervasives.close_out_noerr(oc$2);
+
+var ic = Pervasives.open_in("tmp_foo.txt");
+
+var lines_000 = Pervasives.input_line(ic);
+
+var lines_001 = /* :: */[
+  Pervasives.input_line(ic),
+  /* :: */[
+    Pervasives.input_line(ic),
+    /* [] */0
+  ]
+];
+
+var lines = /* :: */[
+  lines_000,
+  lines_001
+];
+
+eq("File \"caml_sys_poly_fill_test.ml\", line 91, characters 5-12", /* :: */[
+      "foo",
+      /* :: */[
+        "bar",
+        /* :: */[
+          "baz",
+          /* [] */0
+        ]
+      ]
+    ], (Pervasives.close_in_noerr(ic), Caml_sys_fs.caml_sys_remove("tmp_foo.txt"), lines));
+
+var match$2 = Filename.open_temp_file(/* None */0, /* None */0, "pre.", ".txt");
+
+Pervasives.output_string(match$2[1], "foo\nbar\n");
+
+var ic$1 = Pervasives.open_in(match$2[0]);
+
+var match$3 = Pervasives.input_line(ic$1);
+
+var tmp$2;
+
+if (match$3 === "foo") {
+  var match$4 = Pervasives.input_line(ic$1);
+  if (match$4 === "bar") {
+    var match$5;
+    try {
+      match$5 = Pervasives.input_line(ic$1);
+    }
+    catch (exn$2){
+      if (exn$2 === Caml_builtin_exceptions.end_of_file) {
+        match$5 = "caught EOF";
+      } else {
+        throw exn$2;
+      }
+    }
+    if (match$5 === "caught EOF") {
+      tmp$2 = /* true */1;
+    } else {
+      throw [
+            Caml_builtin_exceptions.match_failure,
+            [
+              "caml_sys_poly_fill_test.ml",
+              108,
+              8
+            ]
+          ];
+    }
+  } else {
+    throw [
+          Caml_builtin_exceptions.match_failure,
+          [
+            "caml_sys_poly_fill_test.ml",
+            107,
+            8
+          ]
+        ];
+  }
+} else {
+  throw [
+        Caml_builtin_exceptions.match_failure,
+        [
+          "caml_sys_poly_fill_test.ml",
+          106,
+          8
+        ]
+      ];
+}
+
+eq("File \"caml_sys_poly_fill_test.ml\", line 102, characters 5-12", /* true */1, tmp$2);
+
 Mt.from_pair_suites("caml_sys_poly_fill_test.ml", suites[0]);
 
 exports.suites  = suites;

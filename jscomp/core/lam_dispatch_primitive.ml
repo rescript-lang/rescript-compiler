@@ -478,8 +478,13 @@ let translate (prim_name : string)
   | "caml_sys_is_directory"
   | "caml_sys_file_exists"
   | "caml_sys_open"
+  | "caml_sys_close"
   | "caml_sys_remove"
   | "caml_ml_open_descriptor_out"
+  | "caml_ml_open_descriptor_in"
+  | "caml_ml_input"
+  | "caml_ml_input_char"
+  | "caml_ml_input_scan_line"
   | "caml_ml_close_channel"
     ->
     call Js_runtime_modules.sys_fs
@@ -505,10 +510,8 @@ let translate (prim_name : string)
     call Js_runtime_modules.array
   | "caml_ml_flush"
   | "caml_ml_out_channels_list"
-  | "caml_ml_open_descriptor_in" 
   | "caml_ml_output_char"
   | "caml_ml_output" 
-  | "caml_ml_input_char"
     -> 
     call Js_runtime_modules.io
   | "caml_update_dummy"
@@ -804,9 +807,6 @@ let translate (prim_name : string)
   | "caml_output_value_to_string"
   | "caml_md5_chan"
   | "caml_hash_univ_param"
-  | "caml_sys_close"
-  | "caml_ml_input"
-  | "caml_ml_input_scan_line"
   | "caml_ml_input_int"
   | "caml_ml_output_int"
 

@@ -30,9 +30,6 @@
 (** *)
 
 let (^) = Bs_string.append
-let stdin = Js_undefined.empty
-
-let stderr = Js_undefined.empty
 
 type out_channel  = {
   mutable fd : int option;
@@ -40,7 +37,24 @@ type out_channel  = {
   output : out_channel -> string -> unit
 }
 
-let stdout = {
+type in_channel = {
+  mutable fd: int option;
+  mutable offset: int;
+  mutable buffer: Js_typed_array.Uint8Array.t option;
+  mutable curr: int;
+  mutable max: int
+}
+
+let stdin : in_channel =
+  {
+    fd = Some 0;
+    offset = 0;
+    buffer = None;
+    curr = 0;
+    max = 0
+  }
+
+let stdout : out_channel = {
   fd = Some 1;
   buffer = "";
   output = (fun _ s ->
@@ -53,7 +67,7 @@ let stdout = {
     else Js.log s)
 }
 
-let stderr = {
+let stderr : out_channel = {
   fd = Some 2;
   buffer = "";
   output = fun _ s ->
@@ -101,11 +115,6 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
 let caml_ml_output_char (oc : out_channel)  (char : char) : unit =
   caml_ml_output oc (Bs_string.of_char char) 0 1 
 
-let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
-  raise @@ Failure  "caml_ml_input ic not implemented"
-
-let caml_ml_input_char (ic : in_channel) : char = 
-  raise @@ Failure "caml_ml_input_char not implemnted"
 
 let caml_ml_out_channels_list () : out_channel list  =
   [stdout; stderr]  

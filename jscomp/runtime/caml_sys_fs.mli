@@ -43,7 +43,17 @@ val caml_sys_open : string -> open_flag list -> int -> int
 
 val caml_sys_remove : string -> unit
 
+val caml_sys_close : int -> unit
+
 val caml_ml_open_descriptor_out : int -> Caml_io.out_channel
 
+val caml_ml_open_descriptor_in : int -> Caml_io.in_channel
+
 val caml_ml_close_channel : Caml_io.out_channel -> unit
+
+val caml_ml_input : Caml_io.in_channel -> bytes -> int -> int -> int
+
+val caml_ml_input_char : Caml_io.in_channel -> char
+
+val caml_ml_input_scan_line : Caml_io.in_channel -> int
 

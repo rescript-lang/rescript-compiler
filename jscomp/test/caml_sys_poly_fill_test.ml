@@ -86,17 +86,28 @@ let () =
     |}] : string -> string) file in
     Sys.remove file;
     read_contents
+  );
+  (* test we can write some lines to a file and read them back linewise *)
+  eq __LOC__ ["foo"; "bar"; "baz"] (
+    let oc = open_out "tmp_foo.txt" in
+    output_string oc "foo\nbar\nbaz\n";
+    close_out_noerr oc;
+    let ic = open_in "tmp_foo.txt" in
+    let lines = [(input_line ic) ; (input_line ic); (input_line ic) ] in
+    close_in_noerr ic;
+    Sys.remove "tmp_foo.txt";
+    lines
+  );
+  (* test reading past EOF raises End_of_file *)
+  eq __LOC__ true (
+    let [@ocaml.warning "-8"] file, oc = Filename.open_temp_file "pre." ".txt" in
+    output_string oc "foo\nbar\n";
+    let ic = open_in file in
+    let "foo" = input_line ic in
+    let "bar" = input_line ic in
+    let "caught EOF" = try (input_line ic) with End_of_file -> "caught EOF" in
+    true
   )
-  (* eq __LOC__ true (
-   *   (\* this will work once input_channel stuff is implemented *\)
-   *   let oc = open_out "tmp_foo.txt" in
-   *   output_string oc "foo";
-   *   close_out_noerr oc;
-   *   let ic = open_in "tmp_foo.txt" in
-   *   let line = input_line ic in
-   *   close_in_noerr ic;
-   *   line = "foo"
-   * ) *)
 
 
 
