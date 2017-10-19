@@ -36,7 +36,7 @@ let find_cmj file : string * Js_cmj_format.t =
 #if BS_COMPILER_IN_BROWSER then  
         "BROWSER", (   
         let target = String.uncapitalize (Filename.basename file) in
-        match String_map.find_exn  target Js_cmj_datasets.data_sets with 
+        match String_map.find_exn  target !Js_cmj_datasets.data_sets with
         | v
           -> 
           begin match Lazy.force v with

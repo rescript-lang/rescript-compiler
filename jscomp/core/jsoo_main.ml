@@ -115,6 +115,7 @@ let shake_compile impl : string -> string =
   string_of_fmt (implementation true impl )
 
 
+
 (** *)
 module Js = struct
   module Unsafe = struct
@@ -134,7 +135,17 @@ module Js = struct
   type js_string
   external string : string -> js_string t = "caml_js_from_string"
   external to_string : js_string t -> string = "caml_js_to_string"
+  external fs_register : js_string t -> js_string t -> unit = "caml_fs_register"
+  external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
 end
+
+
+let load_module cmi_path cmi_content cmj_name cmj_content =
+  Js.fs_register cmi_path cmi_content;
+  Js_cmj_datasets.data_sets :=
+    String_map.add
+      cmj_name (lazy (Js_cmj_format.from_string cmj_content))
+      !Js_cmj_datasets.data_sets
 
 
 let export (field : string) v = 
@@ -166,6 +177,15 @@ let make_compiler name impl =
                       (fun _ code ->
                          Js.string (shake_compile impl (Js.to_string code)));
                     "version", Js.Unsafe.inject (Js.string (Bs_version.version));
+                    "load_module",
+                    inject @@
+                    Js.wrap_meth_callback
+                      (fun _ cmi_path cmi_content cmj_name cmj_content ->
+                        let cmj_bytestring = Js.to_bytestring cmj_content in
+                        (* HACK: force string tag to ASCII (9) to avoid
+                         * UTF-8 encoding *)
+                        Js.Unsafe.set cmj_bytestring "t" 9;
+                        load_module cmi_path cmi_content (Js.to_string cmj_name) cmj_bytestring);
                   |]))
 let () = make_compiler "ocaml" Parse.implementation
 
