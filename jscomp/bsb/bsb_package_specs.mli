@@ -31,7 +31,7 @@ val from_json:
   Ext_json_types.t -> t 
 
 val get_list_of_output_js : 
-  t -> string -> string list
+  t -> bool -> string -> string list
 
 (**
   Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
