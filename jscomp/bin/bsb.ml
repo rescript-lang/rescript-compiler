@@ -6563,227 +6563,6 @@ let namespace_of_package_name (s : string) : string =
   Buffer.contents buf 
 
 end
-module Js_config : sig 
-#1 "js_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* val get_packages_info :
-   unit -> Js_packages_info.t *)
-
-
-(** set/get header *)
-val no_version_header : bool ref 
-
-
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
-
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
-
-
-(* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
-
-(** cross module inline option *)
-val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
-val get_cross_module_inline : unit -> bool
-  
-(** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
-
-
-(** generate tds option *)
-val default_gen_tds : bool ref
-
-(** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
-val no_warn_ffi_type : bool ref 
-val no_warn_unused_bs_attribute : bool ref 
-val no_error_unused_bs_attribute : bool ref 
-(** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
-
-(* It will imply [-noassert] be set too, note from the implementation point of view,
-   in the lambda layer, it is impossible to tell whether it is [assert (3 <> 2)] or
-   [if (3<>2) then assert false]
- *)
-val no_any_assert : bool ref 
-val set_no_any_assert : unit -> unit
-val get_no_any_assert : unit -> bool 
-
-
-
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
-val get_module_name : unit -> string
-
-val iset_debug_file : string -> unit
-val set_debug_file : string -> unit
-val get_debug_file : unit -> string
-
-val is_same_file : unit -> bool 
-
-val tool_name : string
-
-
-val sort_imports : bool ref 
-val dump_js : bool ref
-val syntax_only  : bool ref
-val binary_ast : bool ref
-
-
-val bs_suffix : bool ref
-
-end = struct
-#1 "js_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_pervasives.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
-(** Browser is not set via command line only for internal use *)
-
-
-let no_version_header = ref false
-
-let cross_module_inline = ref false
-
-let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
-
-let diagnose = ref false
-let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
-
-let (//) = Filename.concat
-
-(* let get_packages_info () = !packages_info *)
-
-let default_gen_tds = ref false
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
-let no_warn_ffi_type = ref false
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unused_bs_attribute = ref false
-let no_error_unused_bs_attribute = ref false 
-
-let current_file = ref ""
-let debug_file = ref ""
-
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
-let get_module_name () =
-  Filename.chop_extension
-    (Filename.basename (String.uncapitalize !current_file))
-
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
-
-let tool_name = "BuckleScript"
-
-let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero
-
-let no_any_assert = ref false
-
-let set_no_any_assert () = no_any_assert := true
-let get_no_any_assert () = !no_any_assert
-
-let sort_imports = ref true
-let dump_js = ref false
-
-
-
-let syntax_only = ref false
-let binary_ast = ref false
-
-let bs_suffix = ref false 
-end
 module Bsb_package_specs : sig 
 #1 "bsb_package_specs.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -6819,7 +6598,7 @@ val from_json:
   Ext_json_types.t -> t 
 
 val get_list_of_output_js : 
-  t -> string -> string list
+  t -> bool -> string -> string list
 
 (**
   Sample output: {[ -bs-package-output commonjs:lib/js/jscomp/test]}
@@ -7012,11 +6791,13 @@ let package_output ({format; in_source } : spec) output=
 
 *)
 let get_list_of_output_js 
-    package_specs output_file_sans_extension = 
+    package_specs 
+    bs_suffix
+    output_file_sans_extension = 
   Spec_set.fold 
     (fun format acc ->
        package_output format 
-         ( Ext_namespace.js_name_of_basename !Js_config.bs_suffix
+         ( Ext_namespace.js_name_of_basename bs_suffix
              output_file_sans_extension)
        :: acc
     ) package_specs []
@@ -12129,6 +11910,7 @@ val zero : info
 val handle_file_groups :
   out_channel ->
   package_specs:Bsb_package_specs.t ->  
+  bs_suffix:bool ->
   js_post_build_cmd:string option -> 
   files_to_install:String_hash_set.t ->  
   custom_rules:Bsb_rule.t String_map.t ->
@@ -12239,6 +12021,7 @@ let emit_impl_build
     (package_specs : Bsb_package_specs.t)
     (group_dir_index : Bsb_dir_index.t) 
     oc 
+    ~bs_suffix
     ~no_intf_file:(no_intf_file : bool) 
     js_post_build_cmd
     ~is_re
@@ -12261,7 +12044,7 @@ let emit_impl_build
   let file_cmi =  output_filename_sans_extension ^ Literals.suffix_cmi in
   let output_cmj =  output_filename_sans_extension ^ Literals.suffix_cmj in
   let output_js =
-    Bsb_package_specs.get_list_of_output_js package_specs output_filename_sans_extension in 
+    Bsb_package_specs.get_list_of_output_js package_specs bs_suffix output_filename_sans_extension in 
   let common_shadows = 
     make_common_shadows is_re package_specs
       (Filename.dirname file_cmi)
@@ -12363,6 +12146,7 @@ let handle_module_info
     (group_dir_index : Bsb_dir_index.t)
     (package_specs : Bsb_package_specs.t) 
     js_post_build_cmd
+    ~bs_suffix
     oc  module_name 
     ( module_info : Bsb_db.module_info)
     namespace
@@ -12374,6 +12158,7 @@ let handle_module_info
       package_specs
       group_dir_index
       oc 
+      ~bs_suffix
       ~no_intf_file:false
       ~is_re:impl_is_re
       js_post_build_cmd      
@@ -12391,6 +12176,7 @@ let handle_module_info
       package_specs
       group_dir_index
       oc 
+      ~bs_suffix
       ~no_intf_file:true
       js_post_build_cmd      
       ~is_re
@@ -12409,6 +12195,7 @@ let handle_module_info
 
 let handle_file_group 
     oc 
+    ~bs_suffix
     ~custom_rules 
     ~package_specs 
     ~js_post_build_cmd  
@@ -12428,7 +12215,9 @@ let handle_file_group
           String_set.mem module_name set in
       if installable then 
         String_hash_set.add files_to_install (Bsb_db.filename_sans_suffix_of_module_info module_info);
-      (handle_module_info group.dir_index 
+      (handle_module_info 
+        ~bs_suffix
+         group.dir_index 
          package_specs js_post_build_cmd 
          oc 
          module_name 
@@ -12439,13 +12228,15 @@ let handle_file_group
 
 
 let handle_file_groups
-    oc ~package_specs ~js_post_build_cmd
+    oc ~package_specs 
+    ~bs_suffix
+    ~js_post_build_cmd
     ~files_to_install ~custom_rules
     (file_groups  :  Bsb_parse_sources.file_group list)
     namespace (st : info) : info  =
   List.fold_left 
     (handle_file_group 
-       oc ~package_specs ~custom_rules ~js_post_build_cmd
+       oc  ~bs_suffix ~package_specs ~custom_rules ~js_post_build_cmd
        files_to_install 
        namespace
     ) 
@@ -12699,7 +12490,8 @@ let output_ninja_and_namespace_map
         static_resources;
     in
     let all_info =      
-      Bsb_ninja_file_groups.handle_file_groups oc       
+      Bsb_ninja_file_groups.handle_file_groups oc  
+        ~bs_suffix     
         ~custom_rules
         ~js_post_build_cmd  ~package_specs ~files_to_install
         bs_file_groups 

@@ -207,7 +207,8 @@ let output_ninja_and_namespace_map
         static_resources;
     in
     let all_info =      
-      Bsb_ninja_file_groups.handle_file_groups oc       
+      Bsb_ninja_file_groups.handle_file_groups oc  
+        ~bs_suffix     
         ~custom_rules
         ~js_post_build_cmd  ~package_specs ~files_to_install
         bs_file_groups 
