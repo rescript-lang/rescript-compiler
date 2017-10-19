@@ -296,5 +296,11 @@ let absolute cwd s =
   | File x -> File (absolute_path cwd x )
   | Dir x -> Dir (absolute_path cwd x)
 
+let concat dirname filename =
+  if filename = Filename.current_dir_name then dirname
+  else if dirname = Filename.current_dir_name then filename
+  else Filename.concat dirname filename
+  
+
 let check_suffix_case =
   Ext_string.ends_with

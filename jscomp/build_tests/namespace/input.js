@@ -7,7 +7,8 @@ child_process.execSync(`bsb -clean-world && bsb -make-world`, {cwd:__dirname, st
 
 var x = require('./src/demo.bs.js')
 var assert = require('assert')
-
+var demo_bs_js = fs.readFileSync('./src/demo.bs.js','utf8')
+assert.ok(demo_bs_js.includes('liba/src/demo.bs.js'))
 assert.equal(x.v, 3 )
 
 var merlin = fs.readFileSync(path.join(__dirname,'.merlin'), 'utf8')

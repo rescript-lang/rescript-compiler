@@ -5247,7 +5247,7 @@ type t
 
 
 (**
-  [combine path1 path2]
+   [combine path1 path2]
    1. add some simplifications when concatenating
    2. when [path2] is absolute, return [path2]
 *)  
@@ -5265,7 +5265,7 @@ val chop_extension_if_any : string -> string
 
 val chop_all_extensions_if_any : 
   string -> string 
-  
+
 (**
    {[
      get_extension "a.txt" = ".txt"
@@ -5301,6 +5301,12 @@ val rel_normalized_absolute_path : from:string -> string -> string
 val normalize_absolute_path : string -> string 
 
 val absolute_path : string Lazy.t -> string -> string
+
+(** [concat dirname filename]
+    The same as {!Filename.concat} except a tiny optimization 
+    for current directory simplification
+*)
+val concat : string -> string -> string 
 
 val check_suffix_case : 
   string -> string -> bool
@@ -5603,6 +5609,12 @@ let absolute cwd s =
   match s with 
   | File x -> File (absolute_path cwd x )
   | Dir x -> Dir (absolute_path cwd x)
+
+let concat dirname filename =
+  if filename = Filename.current_dir_name then dirname
+  else if dirname = Filename.current_dir_name then filename
+  else Filename.concat dirname filename
+  
 
 let check_suffix_case =
   Ext_string.ends_with
@@ -9665,7 +9677,7 @@ let rec
               (
                 parsing_source_dir_map
                   {cxt with 
-                   cwd = Filename.concat cxt.cwd (Ext_filename.simple_convert_node_path_to_os_path x);
+                   cwd = Ext_path.concat cxt.cwd (Ext_filename.simple_convert_node_path_to_os_path x);
                    traverse = true
                   } String_map.empty ++ origin 
               )
@@ -9720,7 +9732,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
     else 
       parsing_source_dir_map 
         {cxt with 
-         cwd = Filename.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
+         cwd = Ext_path.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
         String_map.empty  
   | Obj {map} ->
     let current_dir_index = 
@@ -9743,7 +9755,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
       in
       parsing_source_dir_map 
         {cxt with dir_index = current_dir_index; 
-                  cwd= Filename.concat cwd dir} map
+                  cwd= Ext_path.concat cwd dir} map
   | _ -> empty 
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->

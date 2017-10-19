@@ -360,7 +360,7 @@ let rec
               (
                 parsing_source_dir_map
                   {cxt with 
-                   cwd = Filename.concat cxt.cwd (Ext_filename.simple_convert_node_path_to_os_path x);
+                   cwd = Ext_path.concat cxt.cwd (Ext_filename.simple_convert_node_path_to_os_path x);
                    traverse = true
                   } String_map.empty ++ origin 
               )
@@ -415,7 +415,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
     else 
       parsing_source_dir_map 
         {cxt with 
-         cwd = Filename.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
+         cwd = Ext_path.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
         String_map.empty  
   | Obj {map} ->
     let current_dir_index = 
@@ -438,7 +438,7 @@ and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_typ
       in
       parsing_source_dir_map 
         {cxt with dir_index = current_dir_index; 
-                  cwd= Filename.concat cwd dir} map
+                  cwd= Ext_path.concat cwd dir} map
   | _ -> empty 
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
