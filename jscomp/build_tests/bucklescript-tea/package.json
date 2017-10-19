@@ -1,0 +1,44 @@
+{
+  "name": "bucklescript-tea",
+  "version": "0.6.11",
+  "description": "TEA for Bucklescript",
+  "main": "index.js",
+  "scripts": {
+    "clean": "bsb clean",
+    "clean:all": "bsb -clean-world",
+    "build": "bsb",
+    "build:all": "bsb -make-world",
+    "watch": "bsb -w",
+    "build:test:client": "browserify --standalone=Test_client --outfile=lib/js/test/app_test_client.js lib/js/test/test_client.js",
+    "watch:test:client": "watchify --standalone=Test_client --outfile=lib/js/test/app_test_client.js lib/js/test/test_client.js",
+    "watch:test": "run-p watch watch:test:*",
+    "prebuild:test": "run-s build",
+    "build:test": "run-p build:test:*",
+    "pretest": "run-s build:test",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/overminddl1/bucklescript-tea.git"
+  },
+  "keywords": [
+    "TEA",
+    "Bucklescript",
+    "OCaml"
+  ],
+  "author": "OvermindDL1",
+  "license": "LGPLv3",
+  "bugs": {
+    "url": "https://github.com/overminddl1/bucklescript-tea/issues"
+  },
+  "homepage": "https://github.com/overminddl1/bucklescript-tea#readme",
+  "peerDependencies": {
+    "bs-platform": "^1.7.5"
+  },
+  "devDependencies": {
+    "browserify": "^14.0.0",
+    "bs-platform": "^1.7.5",
+    "npm-run-all": "4.0.2",
+    "watchify": "3.9.0"
+  }
+}
