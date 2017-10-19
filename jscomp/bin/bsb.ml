@@ -9492,6 +9492,10 @@ let rec
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmj));
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmt));
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmti));
+             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mlast));
+             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mlastd));
+             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mliast));
+             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_mliastd));
            end           
      done 
   )

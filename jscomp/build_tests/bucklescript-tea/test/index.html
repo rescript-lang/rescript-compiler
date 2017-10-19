@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Testing</title>
+  <!-- <link rel="stylesheet" href="style.css"> -->
+  <script src="../lib/js/test/app_test_client.js"></script>
+</head>
+<body>
+  <div>
+    All code is available on <a href="https://github.com/OvermindDL1/bucklescript-tea">github</a>.
+    <br />
+    <button onclick="loadApp()">Shutdown</button>
+    <button onclick="loadApp('counter')">Counter</button>
+    <button onclick="loadApp('btn_update_span')">Button Update Span</button>
+    <button onclick="loadApp('attribute_removal')">Attribute Removal</button>
+    <button onclick="loadApp('drag')">Drag</button>
+  </div>
+  <br />
+  <div id="content" style="width:49%;display:inline-block;vertical-align:top;">
+  </div>
+  <script type="text/javascript">
+    var elem = document.getElementById("content");
+    var app = undefined;
+    function loadApp(name) {
+      if(app) {
+        console.log("Shutting down app");
+        app.shutdown();
+        elem.className = "app";
+        app = undefined;
+      }
+      if(name) {
+        console.log("Loading app:", name)
+        elem.className = "app-" + name;
+        app = Test_client[name](elem, 0);
+      }
+    }
+  </script>
+</body>
+</html>
