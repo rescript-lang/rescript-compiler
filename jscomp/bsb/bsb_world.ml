@@ -83,11 +83,16 @@ let build_bs_deps cwd deps =
                ~override_package_specs:(Some deps) 
                ~forced:true
                cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
-           Bsb_unix.run_command_execv
-             {cmd = vendor_ninja;
+           let command = 
+            {Bsb_unix.cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
               args  = [|vendor_ninja|]
-             };
+             } in     
+           let eid =
+             Bsb_unix.run_command_execv
+             command in 
+           if eid <> 0 then   
+            Bsb_unix.command_fatal_error command eid;
            (* When ninja is not regenerated, ninja will still do the build, 
               still need reinstall check
               Note that we can check if ninja print "no work to do", 

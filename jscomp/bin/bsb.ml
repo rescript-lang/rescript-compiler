@@ -6140,9 +6140,9 @@ type command =
   }  
 
 
+val command_fatal_error : command -> int -> unit 
 
-
-val run_command_execv :   command -> unit 
+val run_command_execv :   command -> int
 
 
 val remove_dir_recursive : string -> unit 
@@ -6186,11 +6186,12 @@ let log cmd =
   Bsb_log.info "@{<info>Entering@} %s @." cmd.cwd ;  
   Bsb_log.info "@{<info>Cmd:@} " ; 
   Bsb_log.info_args cmd.args
-  
-let fail cmd =
-  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd
 
-let run_command_execv_unix  cmd =
+let command_fatal_error cmd eid =
+  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
+  exit eid 
+
+let run_command_execv_unix  cmd : int =
   match Unix.fork () with 
   | 0 -> 
     log cmd;
@@ -6201,16 +6202,11 @@ let run_command_execv_unix  cmd =
     | pid, process_status ->       
       match process_status with 
       | Unix.WEXITED eid ->
-        if eid <> 0 then 
-          begin 
-            fail cmd;
-            exit eid    
-          end;
+        eid    
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
-        begin 
-          Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
-          exit 2 
-        end        
+        Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
+        2 
+
 
 
 (** TODO: the args are not quoted, here 
@@ -6225,15 +6221,9 @@ let run_command_execv_win (cmd : command) =
     Sys.command 
       (String.concat Ext_string.single_space 
          ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
-  if eid <> 0 then 
-    begin 
-      fail cmd;
-      exit eid    
-    end
-  else  begin 
-    Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd  old_cwd;
-    Unix.chdir old_cwd
-  end
+  Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd  old_cwd;
+  Unix.chdir old_cwd;
+  eid
 
 
 let run_command_execv = 
@@ -6324,9 +6314,12 @@ let ninja_clean bsc_dir proj_dir =
     let cmd = bsc_dir // "ninja.exe" in 
     let cwd =  proj_dir // Bsb_config.lib_bs in 
     if Sys.file_exists cwd then 
-      Bsb_unix.run_command_execv { cmd ; args = [|cmd; "-t"; "clean"|] ; cwd  };
+      let eid = 
+        (Bsb_unix.run_command_execv { cmd ; args = [|cmd; "-t"; "clean"|] ; cwd  }) in
+      if eid <> 0 then  
+        Bsb_log.warn "@{<warning>ninja clean failed@}@."
   with  e -> 
-    Bsb_log.warn "@{<warning>ninja clean failed : %s @." (Printexc.to_string e)
+    Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
 
 let clean_bs_garbage bsc_dir proj_dir =
   Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ; 
@@ -6384,6 +6377,13 @@ val make : ns:string -> string -> string
 
 val try_split_module_name :
   string -> (string * string ) option
+
+(** [ends_with_bs_suffix_then_chop filename]
+  is used to help we have dangling modules
+*)
+val ends_with_bs_suffix_then_chop : 
+  string -> string option   
+
 
 (* Note  we have to output uncapitalized file Name, 
    or at least be consistent, since by reading cmi file on Case insensitive OS, we don't really know it is `list.cmi` or `List.cmi`, so that `require (./list.js)` or `require(./List.js)`
@@ -6485,6 +6485,9 @@ type file_kind =
 let suffix_js = ".js"  
 let bs_suffix_js = ".bs.js"
 
+let ends_with_bs_suffix_then_chop s = 
+  Ext_string.ends_with_then_chop s bs_suffix_js
+  
 let js_name_of_basename bs_suffix s =   
   remove_ns_suffix  s ^ 
   (if bs_suffix then bs_suffix_js else  suffix_js )
@@ -9324,21 +9327,6 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let dir_cache = 
-  String_hashtbl.create 32 
-
-(** Only cached in the life-time of a single process 
-    be careful when using caching, we have to sync it up when modify the cache
-*)  
-let readdir path = 
-  match String_hashtbl.find_opt dir_cache path with
-  | None -> 
-    let result = Sys.readdir path  in 
-    String_hashtbl.add dir_cache path result ; 
-    result 
-  | Some result -> result 
-
-
 type public = 
   | Export_all 
   | Export_set of String_set.t 
@@ -9445,12 +9433,12 @@ let extract_resources (input : Ext_json_types.t String_map.t) =
 
 
 let  handle_list_files acc
-    ({ cwd = dir ; root} : cxt)  
+    dir 
+    file_array
     loc_start loc_end 
     is_input_or_output
   : Ext_file_pp.interval list * _ =    
-  (** detect files to be populated later  *)
-  let files_array = readdir (Filename.concat root dir)  in 
+  let files_array = Lazy.force file_array in 
   let dyn_file_array = String_vec.make (Array.length files_array) in 
   let files  =
     Array.fold_left (fun acc name -> 
@@ -9492,7 +9480,7 @@ let (++) (u : t)  (v : t)  =
       globbed_dirs = Ext_list.append u.globbed_dirs  v.globbed_dirs ; 
     }
 
-let get_input_output 
+let extract_input_output 
     loc_start 
     (content : Ext_json_types.t array) : string list * string list = 
   let error () = 
@@ -9518,78 +9506,75 @@ let get_input_output
           Some str (* More rigirous error checking: It would trigger a ninja syntax error *)
         | _ -> None) input
 
+let extract_generators 
+    (input : Ext_json_types.t String_map.t) 
+    cut_generators_or_not_dev  dir  : build_generator list * Bsb_db.t ref =
+  let generators : build_generator list ref  = ref [] in
+  let cur_sources = ref String_map.empty in 
+  begin match String_map.find_opt Bsb_build_schemas.generators input with
+    | Some (Arr { content ; loc_start}) ->
+      (* Need check is dev build or not *)
+      for i = 0 to Array.length content - 1 do 
+        let x = Array.unsafe_get content i in 
+        match x with
+        | Obj { map = generator; loc} ->
+          begin match String_map.find_opt Bsb_build_schemas.name generator,
+                      String_map.find_opt Bsb_build_schemas.edge generator
+            with
+            | Some (Str{str = command}), Some (Arr {content })->
 
+              let output, input = extract_input_output loc_start content in 
+              if not cut_generators_or_not_dev then begin 
+                generators := {input ; output ; command } :: !generators
+              end;
+              (* ATTENTION: Now adding source files, 
+                 it may be re-added again later when scanning files (not explicit files input)
+              *)
+              output |> List.iter begin fun  output -> 
+                begin match Ext_string.is_valid_source_name output with
+                  | Good ->
+                    cur_sources := Bsb_db.map_update ~dir !cur_sources output
+                  | Invalid_module_name ->                  
+                    Bsb_log.warn warning_unused_file output dir 
+                  | Suffix_mismatch -> ()
+                end
+              end
+            | _ ->
+              Bsb_exception.errorf ~loc "Invalid generator format"
+          end
+        | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
+      done ;
+    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
+    | None -> ()
+  end ;
+  !generators , cur_sources
 
-(** [dir_index] can be inherited  *)
-let rec 
-  parsing_simple_dir ({not_dev; dir_index;  cwd} as cxt ) dir : t =
-  if not_dev && not (Bsb_dir_index.is_lib_dir dir_index)  then empty 
-  else 
-    parsing_source_dir_map 
-      {cxt with
-       cwd = Filename.concat cwd  (Ext_filename.simple_convert_node_path_to_os_path dir)
-      }
-      String_map.empty
-
-
-
-(** 
-   { dir : xx, files : ... } [dir] is already extracted 
-   major work done in this function      
+(** [parsing_source_dir_map cxt input]
+    Major work done in this function, 
+    assume [not_dev && not (Bsb_dir_index.is_lib_dir dir_index)]      
+    is already checked, so we don't need check it again    
 *)
-and parsing_source_dir_map 
+let try_unlink s = 
+  try Unix.unlink s  
+  with _ -> 
+    Bsb_log.info "@{<info>Failed to remove %s}@." s 
+
+let rec 
+  parsing_source_dir_map 
     ({ cwd =  dir; not_dev; cut_generators ; 
        traverse = cxt_traverse ;
      } as cxt )
     (input : Ext_json_types.t String_map.t) : t     
   = 
-  let cur_sources : Bsb_db.module_info String_map.t ref = ref String_map.empty in
   let cur_update_queue = ref [] in 
   let cur_globbed_dirs = ref [] in 
-  let generators : build_generator list ref  = ref [] in
-  begin match String_map.find_opt Bsb_build_schemas.generators input with
-    | Some (Arr { content ; loc_start}) ->
-      (* Need check is dev build or not *)
-      content 
-      |> Array.iter (fun (x : Ext_json_types.t) ->
-          match x with
-          | Obj { map = generator; loc} ->
-            begin match String_map.find_opt Bsb_build_schemas.name generator,
-                        String_map.find_opt Bsb_build_schemas.edge generator
-              with
-              | Some (Str{str = command}), Some (Arr {content })->
-
-                let output, input = get_input_output loc_start content in 
-                if not cut_generators && not not_dev then begin 
-                  generators := {input ; output ; command } :: !generators
-                end;
-                (* ATTENTION: Now adding source files, 
-                   it may be re-added again later when scanning files (not explicit files input)
-                *)
-                output |> List.iter begin fun  output -> 
-                  begin match Ext_string.is_valid_source_name output with
-                    | Good ->
-                      cur_sources := Bsb_db.map_update ~dir !cur_sources output
-                    | Invalid_module_name ->                  
-                      Bsb_log.warn warning_unused_file output dir 
-                    | Suffix_mismatch -> ()
-                  end
-                end
-              | _ ->
-                Bsb_exception.errorf ~loc "Invalid generator format"
-            end
-          | _ -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x) "Invalid generator format"
-        )
-    | Some x  -> Bsb_exception.errorf ~loc:(Ext_json.loc_of x ) "Invalid generators format"
-    | None -> ()
-  end
-  ;
-  let generators = !generators in 
+  let generators, cur_sources = extract_generators input (cut_generators || not_dev) dir in 
   let sub_dirs_field = String_map.find_opt Bsb_build_schemas.subdirs input in 
+  let file_array = lazy (Sys.readdir (Filename.concat cxt.root dir)) in 
   begin 
     match String_map.find_opt Bsb_build_schemas.files input with 
     | None ->  (* No setting on [!files]*)
-      let file_array = readdir (Filename.concat cxt.root dir) in 
+
       (** We should avoid temporary files *)
       cur_sources := 
         Array.fold_left (fun acc name -> 
@@ -9606,12 +9591,13 @@ and parsing_source_dir_map
                 ; 
                 acc 
               | Suffix_mismatch ->  acc
-          ) !cur_sources file_array;
+          ) !cur_sources (Lazy.force file_array);
       cur_globbed_dirs :=  [dir]  
     | Some (Arr {loc_start;loc_end; content = [||] }) -> 
       (* [ ] populatd by scanning the dir (just once) *) 
       let tasks, files =  
-        handle_list_files !cur_sources cxt 
+        handle_list_files !cur_sources cxt.cwd 
+          file_array 
           loc_start loc_end (is_input_or_output  generators) in
       cur_update_queue := tasks ;
       cur_sources := files
@@ -9644,12 +9630,11 @@ and parsing_source_dir_map
           fun name -> Str.string_match re name 0 && not (List.mem name excludes)
         | Some x, _ -> Bsb_exception.errorf ~loc "slow-re expect a string literal"
         | None , _ -> Bsb_exception.errorf ~loc  "missing field: slow-re"  in 
-      let file_array = readdir (Filename.concat cxt.root dir) in 
       cur_sources := Array.fold_left (fun acc name -> 
           if is_input_or_output generators name || not (predicate name) then acc 
           else 
             Bsb_db.map_update  ~dir acc name 
-        ) !cur_sources file_array;
+        ) !cur_sources (Lazy.force file_array);
       cur_globbed_dirs := [dir]              
 
     | Some x -> Bsb_exception.config_error x "files field expect array or object "
@@ -9657,7 +9642,6 @@ and parsing_source_dir_map
   let cur_sources = !cur_sources in 
   let resources = extract_resources input in
   let public = extract_pub input cur_sources in 
-
   let cur_file = 
     {dir ; 
      sources = cur_sources; 
@@ -9674,11 +9658,17 @@ and parsing_source_dir_map
       let root = cxt.root in 
       let parent = Filename.concat root dir in
       let res =
-        readdir parent (* avoiding scanning twice *)
+        (* readdir parent avoiding scanning twice *)
+        Lazy.force file_array
         |> Array.fold_left (fun origin x -> 
             if Sys.is_directory (Filename.concat parent x) then 
-              parsing_simple_dir 
-                (if cxt_traverse then cxt else {cxt with traverse = true})  x ++ origin 
+              (
+                parsing_source_dir_map
+                  {cxt with 
+                   cwd = Filename.concat cxt.cwd (Ext_filename.simple_convert_node_path_to_os_path x);
+                   traverse = true
+                  } String_map.empty ++ origin 
+              )
             else origin  
           ) empty in 
       res.files, res.intervals, res.globbed_dirs 
@@ -9690,8 +9680,29 @@ and parsing_source_dir_map
       res.files ,
       res.intervals,
       res.globbed_dirs
-
   in 
+  (match file_array with 
+   | lazy files -> 
+     for i = 0 to Array.length files - 1 do 
+       let f = Array.unsafe_get files i in
+       match Ext_namespace.ends_with_bs_suffix_then_chop f  with
+       | None -> ()
+       | Some basename -> 
+         let parent = Filename.concat cxt.root cxt.cwd in 
+         let lib_parent = 
+           Filename.concat (Filename.concat cxt.root Bsb_config.lib_bs) 
+             cxt.cwd in 
+         if not (String_map.mem (String.capitalize basename) cur_sources) then 
+           begin 
+             Unix.unlink (Filename.concat parent f);
+             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmi));
+             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmj));
+             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmt));
+             try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmti));
+           end           
+     done 
+  )
+  ;
 
   {
     files =  cur_file :: children;
@@ -9699,15 +9710,18 @@ and parsing_source_dir_map
     globbed_dirs = !cur_globbed_dirs @ children_globbed_dirs;
   } 
 
-(* and parsing_simple_dir dir_index cwd  dir  : t = 
-   parsing_source dir_index cwd (String_map.singleton Bsb_build_schemas.dir dir)
-*)
 
-and parsing_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
+and parsing_single_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   : t  =
   match x with 
   | Str  { str = dir }  -> 
-    parsing_simple_dir cxt dir   
+    if not_dev && not (Bsb_dir_index.is_lib_dir dir_index) then 
+      empty
+    else 
+      parsing_source_dir_map 
+        {cxt with 
+         cwd = Filename.concat cwd (Ext_filename.simple_convert_node_path_to_os_path dir)}
+        String_map.empty  
   | Obj {map} ->
     let current_dir_index = 
       match String_map.find_opt Bsb_build_schemas.type_ map with 
@@ -9733,14 +9747,14 @@ and parsing_source ({not_dev; dir_index ; cwd} as cxt ) (x : Ext_json_types.t )
   | _ -> empty 
 and  parsing_arr_sources cxt (file_groups : Ext_json_types.t array)  = 
   Array.fold_left (fun  origin x ->
-      parsing_source cxt x ++ origin 
+      parsing_single_source cxt x ++ origin 
     ) empty  file_groups 
 
 and  parse_sources ( cxt : cxt) (sources : Ext_json_types.t )  = 
   match sources with   
   | Arr file_groups -> 
     parsing_arr_sources cxt file_groups.content
-  | _ -> parsing_source cxt sources
+  | _ -> parsing_single_source cxt sources
 
 
 
@@ -14197,11 +14211,16 @@ let build_bs_deps cwd deps =
                ~override_package_specs:(Some deps) 
                ~forced:true
                cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
-           Bsb_unix.run_command_execv
-             {cmd = vendor_ninja;
+           let command = 
+            {Bsb_unix.cmd = vendor_ninja;
               cwd = cwd // Bsb_config.lib_bs;
               args  = [|vendor_ninja|]
-             };
+             } in     
+           let eid =
+             Bsb_unix.run_command_execv
+             command in 
+           if eid <> 0 then   
+            Bsb_unix.command_fatal_error command eid;
            (* When ninja is not regenerated, ninja will still do the build, 
               still need reinstall check
               Note that we can check if ninja print "no work to do", 
