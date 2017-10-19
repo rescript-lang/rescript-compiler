@@ -36,11 +36,12 @@ let log cmd =
   Bsb_log.info "@{<info>Entering@} %s @." cmd.cwd ;  
   Bsb_log.info "@{<info>Cmd:@} " ; 
   Bsb_log.info_args cmd.args
-  
-let fail cmd =
-  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd
 
-let run_command_execv_unix  cmd =
+let command_fatal_error cmd eid =
+  Bsb_log.error "@{<error>Failure:@} %s \n Location: %s@." cmd.cmd cmd.cwd;
+  exit eid 
+
+let run_command_execv_unix  cmd : int =
   match Unix.fork () with 
   | 0 -> 
     log cmd;
@@ -51,16 +52,11 @@ let run_command_execv_unix  cmd =
     | pid, process_status ->       
       match process_status with 
       | Unix.WEXITED eid ->
-        if eid <> 0 then 
-          begin 
-            fail cmd;
-            exit eid    
-          end;
+        eid    
       | Unix.WSIGNALED _ | Unix.WSTOPPED _ -> 
-        begin 
-          Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
-          exit 2 
-        end        
+        Bsb_log.error "@{<error>Interrupted:@} %s@." cmd.cmd;
+        2 
+
 
 
 (** TODO: the args are not quoted, here 
@@ -75,15 +71,9 @@ let run_command_execv_win (cmd : command) =
     Sys.command 
       (String.concat Ext_string.single_space 
          ( Filename.quote cmd.cmd ::( List.tl  @@ Array.to_list cmd.args))) in 
-  if eid <> 0 then 
-    begin 
-      fail cmd;
-      exit eid    
-    end
-  else  begin 
-    Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd  old_cwd;
-    Unix.chdir old_cwd
-  end
+  Bsb_log.info "@{<info>Leaving@} %s => %s  @." cmd.cwd  old_cwd;
+  Unix.chdir old_cwd;
+  eid
 
 
 let run_command_execv = 

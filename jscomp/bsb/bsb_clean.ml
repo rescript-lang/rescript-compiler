@@ -31,9 +31,12 @@ let ninja_clean bsc_dir proj_dir =
     let cmd = bsc_dir // "ninja.exe" in 
     let cwd =  proj_dir // Bsb_config.lib_bs in 
     if Sys.file_exists cwd then 
-      Bsb_unix.run_command_execv { cmd ; args = [|cmd; "-t"; "clean"|] ; cwd  };
+      let eid = 
+        (Bsb_unix.run_command_execv { cmd ; args = [|cmd; "-t"; "clean"|] ; cwd  }) in
+      if eid <> 0 then  
+        Bsb_log.warn "@{<warning>ninja clean failed@}@."
   with  e -> 
-    Bsb_log.warn "@{<warning>ninja clean failed : %s @." (Printexc.to_string e)
+    Bsb_log.warn "@{<warning>ninja clean failed@} : %s @." (Printexc.to_string e)
 
 let clean_bs_garbage bsc_dir proj_dir =
   Bsb_log.info "@{<info>Cleaning:@} in %s@." proj_dir ; 

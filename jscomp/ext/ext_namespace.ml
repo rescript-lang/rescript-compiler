@@ -64,6 +64,9 @@ type file_kind =
 let suffix_js = ".js"  
 let bs_suffix_js = ".bs.js"
 
+let ends_with_bs_suffix_then_chop s = 
+  Ext_string.ends_with_then_chop s bs_suffix_js
+  
 let js_name_of_basename bs_suffix s =   
   remove_ns_suffix  s ^ 
   (if bs_suffix then bs_suffix_js else  suffix_js )
