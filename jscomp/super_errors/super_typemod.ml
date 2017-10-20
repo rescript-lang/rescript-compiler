@@ -6,17 +6,17 @@ let fprintf = Format.fprintf
 let pp_component_type_not_generalizable_pre ppf =
   fprintf ppf "@[<v>\
     @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
-    If so, this error will disappear after:@]@,\
+    If so, you can fix it by doing one of these:@]@,\
     @[- Defining the component's `make` function@]@,\
-    @[- Using the state once or annotating it with a type where it's used (e.g. render)@]@,\
-    @[- Doing the same for action (in e.g. reducer)@]@,\
-    @[- Doing the same for retained props, if any@]@,@,\
+    @[- Annotating the state once with a type, wherever it's used (e.g. render)@]@,\
+    @[- Annotating actions (in e.g. reducer)@]@,\
+    @[- Annotating retained props, if any@]@,@,\
     @[@{<info>Here's the original error message@}@]\
   @]@,"
 
 let pp_component_type_not_generalizable_post ppf () =
   fprintf ppf
-  "@[This happens when the type system senses there's a mutation/side-effect, in combination with a polymorphic value.@,\
+  "@[This happens when the type system senses there's a mutation/side-effect,@ in combination with a polymorphic value.@,\
   Using or annotating that value usually solves it.@ \
   More info:@ https://realworldocaml.org/v1/en/html/imperative-programming-1.html#side-effects-and-weak-polymorphism@]"
 
