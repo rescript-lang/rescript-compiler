@@ -676,10 +676,11 @@ core/bspack_main.cmx : ext/string_set.cmx ext/string_hashtbl.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_path.cmx \
     ext/ext_list.cmx ext/ext_io.cmx depends/ast_extract.cmx \
     core/bspack_main.cmi
-core/jsoo_main.cmx : syntax/ppx_entry.cmx \
+core/jsoo_main.cmx : ext/string_map.cmx syntax/ppx_entry.cmx \
     outcome_printer/outcome_printer_ns.cmx core/lam_compile_main.cmx \
-    core/lam_compile_env.cmx core/js_dump_program.cmx ext/ext_pp.cmx \
-    common/bs_version.cmx core/bs_conditional_initial.cmx core/jsoo_main.cmi
+    core/lam_compile_env.cmx core/js_dump_program.cmx core/js_cmj_format.cmx \
+    core/js_cmj_datasets.cmx ext/ext_pp.cmx common/bs_version.cmx \
+    core/bs_conditional_initial.cmx core/jsoo_main.cmi
 core/bspp_main.cmx : core/bspp_main.cmi
 core/js_cmi_datasets.cmx : ext/string_map.cmx core/js_cmi_datasets.cmi
 core/js_main.cmx : super_errors/super_main.cmx \
