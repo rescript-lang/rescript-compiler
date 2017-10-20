@@ -1665,7 +1665,18 @@ let crc_of_unit name =
 (* Return the list of imported interfaces with their CRCs *)
 
 let imports() =
+#if undefined BS_NO_COMPILER_PATCH then   
+  let dont_record_crc_unit = !Clflags.dont_record_crc_unit in 
+  match dont_record_crc_unit with 
+  | None -> Consistbl.extract (StringSet.elements !imported_units) crc_units
+  | Some x -> 
+    Consistbl.extract 
+      (StringSet.fold 
+      (fun m acc -> if m = x then acc else m::acc) 
+      !imported_units []) crc_units
+#else 
   Consistbl.extract (StringSet.elements !imported_units) crc_units
+#end  
 
 (* Save a signature to a file *)
 

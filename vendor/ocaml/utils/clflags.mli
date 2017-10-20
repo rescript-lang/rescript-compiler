@@ -105,6 +105,7 @@ val no_implicit_current_dir : bool ref
 val assume_no_mli : mli_status ref 
 val record_event_when_debug : bool ref 
 val bs_vscode : bool
+val dont_record_crc_unit : string option ref 
 #end
 
 type color_setting = Auto | Always | Never
