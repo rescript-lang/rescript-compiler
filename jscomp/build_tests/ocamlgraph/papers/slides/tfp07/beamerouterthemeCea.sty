@@ -1,0 +1,210 @@
+% Copyright 2006 by Fabrice Derepas
+%
+% Modified by V. Prevosto 2006-09-25
+% This program can be redistributed and/or modified under the terms
+% of the GNU Public License, version 2.
+
+\ProvidesPackage{beamerouterthemeCea}[2006/09/25]
+
+\pgfdeclareimage[height=3em,interpolate=true]{cealistlogo}{logoceaquadri2002}
+\pgfdeclareimage[height=1ex,interpolate=true]{listlogo}{list_g}
+\pgfdeclareimage[height=.3em,width=12.5cm,interpolate=false]{greenpixel}{greenpixel}
+\pgfdeclareimage[height=.3em,width=12.5cm,interpolate=false]{orangepixel}{orangepixel}
+\pgfdeclareimage[height=1.5em,width=1.5em,interpolate=true]{lrqa}{lrqa}
+
+
+\newdimen\beamer@sidebarwidth
+\newdimen\beamer@headheight
+\newdimen\beamercea@projectlogoheight
+\newdimen\beamercea@projectlogoheightaux
+\newdimen\beamercea@skiplogo
+\beamercea@skiplogo=31ex
+\usebeamerfont{frametitle}
+\beamer@sidebarwidth=2.5\baselineskip
+\beamer@headheight=2.5\baselineskip
+\reset@font
+
+\def\beamer@lefttext{left}
+
+\DeclareOptionBeamer{hideothersubsections}[]{\beamer@nav@subsectionstyle{show/show/hide}}
+\DeclareOptionBeamer{hideallsubsections}[]{\beamer@nav@subsectionstyle{hide}}
+
+\DeclareOptionBeamer{width}{\beamer@sidebarwidth=#1}
+\DeclareOptionBeamer{height}{\beamer@headheight=#1}
+\DeclareOptionBeamer{left}{\def\beamer@sidebarside{left}}
+\DeclareOptionBeamer{right}{\def\beamer@sidebarside{right}}
+\ExecuteOptionsBeamer{left}
+\DeclareOptionBeamer{projectlogoheight}[2em]{\beamercea@projectlogoheightaux=#1}
+\ExecuteOptionsBeamer{projectlogoheight}
+\DeclareOptionBeamer{projectlogo}{%
+\beamercea@projectlogoheight=\beamercea@projectlogoheightaux
+\advance\beamercea@skiplogo by -\beamercea@projectlogoheightaux
+\pgfdeclareimage[height=\beamercea@projectlogoheight,interpolate=true]{projetlogo}{#1}
+}
+
+\ProcessOptionsBeamer
+
+
+\mode<presentation>
+
+\ifdim\beamer@headheight>0pt
+% if head height is 0pt, use default frame title
+
+  \setbeamercolor*{frametitle}{parent=sidebar,fg=GrisCEA}
+
+  \defbeamertemplate*{frametitle}{sidebar theme}%
+  {%
+    \nointerlineskip%
+    \vskip-\beamer@headheight%
+    \vbox to \beamer@headheight{%
+      \vfil
+      \leftskip=-\beamer@leftmargin%
+      \advance\leftskip by0.3cm%
+      \rightskip=-\beamer@rightmargin%
+      \advance\rightskip by0.3cm plus1fil%
+          {\usebeamercolor[fg]{frametitle}%
+            \usebeamerfont{frametitle}\insertframetitle\par}
+          {\usebeamercolor[fg]{framesubtitle}\usebeamerfont{framesubtitle}%
+              \insertframesubtitle\par}%
+      \vbox{}%
+      \vskip-1em
+      \vfil%
+    }%
+  }
+
+  \defbeamertemplate*{headline}{sidebar theme}
+  {%
+    \begin{beamercolorbox}[wd=13cm]{frametitle}
+      \ifx\beamer@sidebarside\beamer@lefttext%
+      \else%
+        \hfill%
+      \fi%
+      \ifdim\beamer@sidebarwidth>0pt%
+        \usebeamercolor[bg]{logo}%
+        \vrule width\beamer@sidebarwidth height \beamer@headheight%
+        \hskip-\beamer@sidebarwidth%
+        \hbox to \beamer@sidebarwidth{\hss\vbox to
+          \beamer@headheight{\vss\hbox{\color{fg}\insertlogo}\vss}\hss}%
+      \else%
+        \vrule width0pt height \beamer@headheight%
+      \fi%
+    \end{beamercolorbox}
+  }
+\fi
+
+\def\beamer@sidebarformat#1#2#3{%
+  \begin{beamercolorbox}[wd=\beamer@sidebarwidth,leftskip=#1,rightskip=1ex plus1fil,vmode]{#2}
+    \vbox{}%
+    #3\par%
+    \vbox{}%
+    \vskip-1.5ex%
+  \end{beamercolorbox}
+}
+
+\defbeamertemplate*{section in sidebar}{sidebar theme}
+{%
+  \vbox{%
+    \vskip1ex%
+    \beamer@sidebarformat{3pt}{section in sidebar}{\insertsectionhead}%
+  }%
+}
+
+\defbeamertemplate*{section in sidebar shaded}{sidebar theme}
+{%
+  \vbox{%
+    \vskip1ex%
+    \beamer@sidebarformat{3pt}{section in sidebar shaded}{\insertsectionhead}%
+  }%
+}
+
+\defbeamertemplate*{subsection in sidebar}{sidebar theme}
+{%
+  \beamer@sidebarformat{5pt}{subsection in sidebar}{\insertsubsectionhead}%
+}
+
+\defbeamertemplate*{subsection in sidebar shaded}{sidebar theme}
+{%
+  \beamer@sidebarformat{5pt}{subsection in sidebar shaded}{\insertsubsectionhead}%
+}
+
+
+\ifdim\beamer@sidebarwidth>0pt
+
+                                % Sidebar
+  \setbeamersize{sidebar width \beamer@sidebarside=\beamer@sidebarwidth}
+  \defbeamertemplate*{sidebar \beamer@sidebarside}{sidebar theme}
+  {
+    \beamer@tempdim=\beamer@sidebarwidth%
+    \advance\beamer@tempdim by -6pt%
+    {\usebeamerfont{title in sidebar}%
+      \vskip1.5em%
+      \hskip3pt%
+      \usebeamercolor[fg]{title in sidebar}%
+      \pgfuseimage{cealistlogo}%
+      \vskip10ex%
+      \ifdim\beamercea@projectlogoheight>0pt%
+      \hskip3pt\pgfuseimage{projetlogo}%
+      \fi%
+      \vskip\beamercea@skiplogo%
+      \ \ \ \ \pgfuseimage{lrqa} %
+    }%
+    {%
+%      \hskip3pt%
+%      \usebeamercolor[fg]{author in sidebar}%
+%      \usebeamerfont{author in sidebar}%
+%      \insertshortauthor[width=\beamer@tempdim,center,respectlinebreaks]\par%
+%      \vskip1.25em%
+  }%
+    %\insertverticalnavigation{\beamer@sidebarwidth}%
+    \vfill
+    \ifx\beamer@sidebarside\beamer@lefttext%
+    \else%
+      \usebeamercolor{normal text}%
+     \llap{\usebeamertemplate***{navigation symbols}\hskip0.1cm}%
+      \vskip2pt%
+    \fi%
+  }%
+
+  \ifx\beamer@sidebarside\beamer@lefttext%
+    \defbeamertemplate*{sidebar right}{sidebar theme}
+    {%
+      \vfill%
+%      \llap{\usebeamertemplate***{navigation symbols}\hskip0.1cm}%
+      \vskip2pt}
+  \fi
+                                % Margins
+  \setbeamersize{text margin left=0.5cm,text margin right=0.5cm}
+\fi
+
+\defbeamertemplate*{footline}{cea theme}
+{
+  \leavevmode
+\hskip\beamer@sidebarwidth
+\usebeamercolor[fg]{footrule}{\rule{\paperwidth-\beamer@sidebarwidth}{0.6ex}}
+  \begin{pgftranslate}{\pgfpoint{\beamer@sidebarwidth}{0pt}}
+  \pgfuseimage{greenpixel}
+  \end{pgftranslate}
+ \hbox{
+\begin{beamercolorbox}[wd=\paperwidth,ht=2.3ex,dp=1.125ex,leftskip=.3cm,rightskip=.3cm]{title in head/foot}
+\hskip\beamer@sidebarwidth \usebeamerfont{title in head/foot}
+\pgfuseimage{listlogo}\hfill
+\insertshorttitle\hfill\usebeamerfont{author in head/foot}
+\insertshortdate
+\hfill
+\insertframenumber{}
+\end{beamercolorbox}
+}
+\vskip0pt
+}
+
+\addtobeamertemplate{headline}
+{}
+{\hskip\beamer@sidebarwidth
+\usebeamercolor[fg]{headrule}{\rule{\paperwidth-\beamer@sidebarwidth}{0.6ex}}
+
+  %\vskip-0.2pt
+  %\pgfuseshading{beamer@topshade}
+  %\vskip-2pt
+}
+\mode
+<all>

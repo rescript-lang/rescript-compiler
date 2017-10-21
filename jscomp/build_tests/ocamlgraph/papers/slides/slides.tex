@@ -1,0 +1,348 @@
+\documentclass[a4]{seminar}
+
+\usepackage{./talkadvi}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
+\usepackage{pstricks}
+\usepackage{pst-node}
+%\usepackage{color}
+\usepackage{alltt}
+\usepackage{url}
+\usepackage{amsmath}	
+\usepackage{amssymb}	
+
+\newcommand{\rouge}[1]{\color{red}#1}
+\newcommand{\monvert}[1]{\color{ForestGreen}#1}
+\newcommand{\motcle}[1]{{\color{Blue}#1}}
+\newcommand{\ocamlgraph}{\textsf{OcamlGraph}}
+\newcommand{\fleche}{\ensuremath{\rightarrow}}
+\newcommand{\vara}{\ensuremath{\alpha}}
+\newcommand{\varb}{\ensuremath{\beta}}
+
+\begin{document}
+\sffamily
+\parindent=0mm
+
+\begin{slide}
+~\vfill
+\begin{center}
+  \textcolor{red}{\rule{\linewidth}{0.1em}} \\[0.7em]
+  \textcolor{red}{\Large\bfseries 
+          Le foncteur sonne toujours deux fois} \\
+  \textcolor{red}{\rule{\linewidth}{0.1em}} \\[2em]
+  \textcolor{royalblue}{\large Sylvain Conchon, Jean-Christophe Filliâtre, Julien Signoles}
+ \\[3em]
+  \textcolor{orange}{{\large LRI -- CNRS 8623}}
+\end{center}
+\vfill\vfill
+\end{slide}
+
+\begin{slide}\slidetitle{Ocamlgraph}
+
+  \begin{center}
+  une bibliothèque de graphes pour Ocaml
+
+  ~\\[2em] 
+  \pause
+  \emph{pourquoi ?}
+
+  contrairement à C++ ou Java, pas de telle bibliothèque
+  \end{center}
+
+\end{slide}
+
+\begin{slide}\slidetitle{Caractéristiques}
+
+  \begin{points}
+  \item nombreuses structures de données
+    \begin{itemize}
+    \item persistantes
+    \item impératives
+    \item étiquetées ou non
+    \item etc.
+    \end{itemize}
+    
+    \pause
+  \item algorithmes « génériques »
+    \begin{itemize}
+    \item flots
+    \item parcours
+    \item génération aléatoire
+    \item etc.
+    \end{itemize}
+  \end{points}
+
+  \pause
+  \begin{center}
+  \emph{rendu possible par l'utilisation massive de foncteurs}
+  \end{center}
+\end{slide}
+
+\talkpart{I}{structures de données}
+
+\begin{slide}\slidetitle{Interfaces}
+  
+\emph{Interface commune à tous les graphes :}
+\begin{alltt}
+module type G = sig ... end    
+\end{alltt}
+
+\pause
+\emph{Interface des graphes persistants :}
+\begin{alltt}
+module type P = sig
+  include G
+  ...
+end
+\end{alltt}
+
+\pause
+\emph{Interface des graphes impératifs :}
+\begin{alltt}
+module type I = sig
+  include G
+  ...
+end
+\end{alltt}
+\end{slide}
+
+\begin{slide}\slidetitle{Partage du code}
+
+Au total, \ocamlgraph\ implante \emph{18} structures de données
+\pause
+
+A priori, 8 variantes d'interface \texttt{G} :
+\begin{center}
+  orienté ? $\times$ sommets abstraits ? $\times$ arêtes étiquetées ?
+\end{center}
+\pause
+
+\begin{points}
+\item 8 persistantes : table (\texttt{Map}) associant à chaque sommet
+  l'ensemble (\texttt{Set}) de ses successeurs
+\item 8 impératives : même chose avec \texttt{Hashtbl} au lieu de \texttt{Map}
+\item 2 impératives par matrices d'adjacence \linebreak 
+  (sommets = entiers, pas d'étiquette) 
+\end{points}
+
+\pause
+Mais partage du code maximal à l'aide de \emph{foncteurs}
+\end{slide}
+
+\begin{slide}\slidetitle{Code commun aux graphes persistants et impératifs}
+\begin{points}
+
+\item uniformisation de \texttt{Hashtbl} et \texttt{Map} dans une
+  signature commune \texttt{HM}
+
+\item \texttt{Minimal} : opérations communes à toutes les structures
+  de données 
+
+\item \texttt{Pred} : opérations sur les
+  prédécesseurs en utilisant les successeurs 
+
+\item \texttt{Labeled} / \texttt{Unlabeled} : opérations communes aux
+  arêtes (non) étiquetées 
+
+\item \texttt{Make\_Abstract} : graphe abstrait à partir de sa version
+  concrète
+    
+\end{points}
+\end{slide}
+
+\begin{slide}\slidetitle{Assemblage des briques}
+\begin{alltt}
+\motcle{module} Make
+  (F: \motcle{functor}(X: COMPARABLE) \fleche\ HM \motcle{with type} key = X.t) = 
+\motcle{struct}
+  \motcle{module} Digraph = \motcle{struct}
+
+    \motcle{module} Concrete(V: COMPARABLE) = \motcle{struct}
+      \emph{include} ConcreteVertex(F)(V)
+      \emph{include} Unlabeled(V)(HM)
+      \emph{include} Minimal(S)(HM)
+    \motcle{end}
+
+    \motcle{module} ConcreteLabeled(V: COMPARABLE)(E: ORDERED_TYPE_DFT) = 
+    ...
+\end{alltt}
+\end{slide}
+
+\talkpart{II}{algorithmes}
+
+\begin{slide}\slidetitle{programmation générique}
+
+\bigskip
+\begin{center}
+chaque algorithme est écrit indépendamment de la structure de graphe
+
+c'est un \emph{foncteur}
+
+son argument contient uniquement les opérations dont il a besoin
+\end{center}
+
+\bigskip
+\pause
+\emph{intérêts :}
+
+1. codage facilité
+
+2. utilisation sur des structures autres que celles d'\ocamlgraph
+\end{slide}
+
+\begin{slide}\slidetitle{Algorithmes fournis}
+
+\begin{points}
+\item 
+parcours : 7 DFS, 2 BFS, 2 détections de cycle
+
+\item 
+constructions : 
+\begin{itemize}
+\item 4 classiques (ex. graphe de de Bruijn)
+\item 2 aléatoires (ex. planaires) 
+\end{itemize}
+
+\item 
+plus court chemin (Dijkstra)
+
+\item 
+composantes fortement connexes
+
+\item 
+flot maximal (Goldberg, Ford-Fulkerson)
+
+\item 
+tri topologique
+
+\item 
+arbre couvrant minimal (Kruskal)
+
+\item 
+opérations : clôture transitive, complémentaire, miroir, voisinages, etc.
+
+\item 
+ensemble des séparateurs minimaux
+
+\item 
+graphes sans cordes, cliques
+
+\item 
+sortie DOT (Graphviz)
+\end{points}
+\end{slide}
+
+
+\begin{slide}\slidetitle{exemples}
+
+\bigskip
+\begin{center}
+algorithmes de flots : Ford-Fulkerson \&  Goldberg
+
+\bigskip
+
+parcours en profondeur et en largeur
+\end{center}
+\end{slide}
+
+
+
+\talkpart{III}{conclusion}
+
+\newcommand{\present}{\monvert\large\boldmath $\surd$}
+\newcommand{\absent}{\rouge\large\boldmath $\oslash$}
+
+\begin{slide}\slidetitle{comparaisons}
+
+\bigskip
+\begin{center}
+  \begin{tabular}{|l||c|c|c|c|c|}
+    \hline
+     & langage     &P/I& algo gén & signature\emph{s} & str données \\\hline\hline
+     LEDA & C++    & I & \absent  & \absent  & 1  \\\hline
+     GTL & C++     & I & \absent  & \absent  & 1  \\\hline
+     MLRisc & SML  & I & \absent  & \absent  & 1  \\\hline
+     FGL & Haskell & P & \absent  & \absent  & 1  \\\hline
+     Baire & Ocaml &P/I& ---      & \absent  & 8  \\\hline
+     JDSL & Java   & I & \present & \present & 1  \\\hline
+     BGL & C++     & I & \present & \present & 1  \\\hline
+ OcamlGraph& Ocaml &P/I& \present & \present & 18 \\\hline
+  \end{tabular}
+\end{center}
+\end{slide}
+
+\begin{slide}\slidetitle{Chiffres}
+
+\begin{points}
+\item 6000 lignes (dont 1000 lignes de contribution)
+
+\item 9 personnes-semaines de travail
+
+\item performances : peu de comparaisons à ce jour
+
+exemples (sur Pentium 4 2.8 GHz) :
+\begin{itemize}
+\item DFS sur 200\,000 sommets et 500\,000 arêtes : 0.63 s
+
+\item Dijkstra 70\,000 s. et 210\,000 ar. : chemin de 400
+  sommets en 1.38 s 
+\end{itemize}
+
+\end{points}
+\end{slide}
+
+\begin{slide}\slidetitle{foncteurs vs polymorphisme}
+
+\bigskip
+quelles limitations avec
+\begin{alltt}
+   type (\vara,\varb) graph = ... \textrm{?}
+\end{alltt}
+% (\vara * (\vara * \varb) list) list \textrm{?}
+
+\pause
+\begin{points}
+\item moins bonnes structures de données
+  \begin{itemize}
+  \item moins efficaces
+  \begin{alltt}
+    type (\vara,\varb) graph = (\vara * (\vara * \varb) list) list
+  \end{alltt}\adviwait
+  \item et/ou moins nombreuses
+    \begin{alltt}
+    type \vara node = \vara * int
+    type (\vara,\varb) graph = (\vara node * \varb) list IntMap.t
+  \end{alltt}
+  \end{itemize}\pause
+\item généricité des algos « à la Caml Light »
+\end{points}
+\end{slide}
+
+
+\begin{slide}\slidetitle{remarques concernant les foncteurs}
+
+\bigskip
+  \begin{points}
+
+  \item quelques limitations du système de modules nous ont gênés \linebreak
+(bug report \#2049)
+
+\bigskip
+principalement, ne pas pouvoir réunir deux structures ayant un type ou
+un module en commun
+
+\bigskip
+\item 
+trop de foncteurs dans l'interface = frein à l'utilisation d'\ocamlgraph\ ?
+    
+  \end{points}
+
+\end{slide}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,1019 @@
+\documentclass[twoside]{article}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{actes}
+\usepackage[french]{babel}
+\usepackage{url,xspace}
+\usepackage{alltt}
+
+\newcommand{\ocamlgraph}{\textsc{Ocamlgraph}\xspace}
+\newcommand{\ocaml}{\textsc{OCaml}\xspace}
+\newcommand{\fl}{\ensuremath{\rightarrow}}
+
+%% Title page...
+\title{Le foncteur sonne toujours deux fois}
+\author{S. Conchon$^1$
+     \& J.-C. Filliâtre$^1$
+     \& J. Signoles$^1$}
+%% Headers for other pages...
+\titlehead{Le foncteur sonne toujours deux fois} % for odd pages
+\authorhead{Conchon \& Filliâtre \& Signoles}     % for even pages
+\affiliation{\begin{tabular}{rr}        % for institute(s) 
+\\ 1:  Laboratoire de Recherche en Informatique -- CNRS 8623
+\\     Bât 490 Université Paris Sud 91405 ORSAY CEDEX, France
+\\     {\tt \{conchon,filliatr,signoles\}@lri.fr} 
+\end{tabular}}
+
+\begin{document}
+\setcounter{page}{1}
+\maketitle
+
+\begin{abstract}
+  Cet article présente \ocamlgraph, une bibliothèque générique de graphes pour
+  le langage de programmation \ocaml. L'originalité de cette
+  bibliothèque est de proposer d'une part un grand nombre de
+  structures de données différentes pour représenter les graphes ---
+  graphes orientés ou non, structures persistantes ou modifiées en
+  place, sommets et arcs avec ou sans étiquettes, marques sur les
+  sommets, etc. --- et d'autre part des algorithmes sur les graphes
+  écrits indépendamment de la structure de données représentant les
+  graphes. Le codage de ces deux aspects originaux a été rendu
+  possible par une utilisation massive du système de modules d'\ocaml
+  et notamment de ses fonctions, les foncteurs.
+\end{abstract}
+
+\section{Introduction}
+
+Trouver une bibliothèque de graphes pour son langage de programmation
+préféré n'est souvent pas très difficile. Mais pouvoir utiliser les
+algorithmes fournis par cette bibliothèque sur sa propre structure de
+graphe ou attendre de cette bibliothèque qu'elle permette de créer des
+graphes persistants, non-orientés dont les sommets et les arêtes sont
+étiquetés par autre chose que des entiers devient plus difficile.
+
+\medskip
+
+Cet article présente
+\textsc{Ocamlgraph}\footnote{\url{http://www.lri.fr/~filliatr/ocamlgraph/}},
+une bibliothèque générique de graphes pour le langage de programmation
+\ocaml~\cite{ObjectiveCaml}.  Au delà de la simple présentation de
+l'interface de cette bibliothèque, cet article est surtout l'occasion
+de montrer comment le langage \ocaml a été utilisé pour introduire
+deux aspects originaux pour une telle bibliothèque.  Le premier
+consiste à fournir non pas une structure de données de graphes mais de
+multiples structures de données énumérant toutes les variations
+possibles autour d'un certain nombre de critères --- graphes orientés
+ou non, structures persistantes ou modifiées en place, sommets et arcs
+avec ou sans étiquettes, marques sur les sommets, etc. --- mais
+regroupées sous des interfaces communes. La seconde originalité
+consiste à fournir un grand nombre d'algorithmes sur les graphes
+indépendamment de la structure de graphes sous-jacente. Ceux-ci
+peuvent être alors instanciés sur les nombreuses structures de données
+fournies par la bibliothèque mais également sur d'autres structures
+apportées par l'utilisateur, si tant est qu'elles satisfassent à des
+interfaces minimales.
+
+Ces deux originalités sont rendues possibles par une utilisation massive
+du système de modules d'\ocaml. Dans le premier cas, il s'agit
+d'éviter la duplication de code entre les différentes variantes de
+structures de données, une règle d'or en programmation et un impératif
+ici vu le nombre très élevé (17) de structures très semblables mais
+toutes différentes. Dans le second cas, il s'agit tout simplement de
+parvenir à écrire des algorithmes indépendamment des structures de
+données sous-jacentes, avec le plus de généricité possible mais avec
+un soucis constant d'efficacité du code final.
+Dans les deux cas ce sont les fonctions du système de modules
+d'\ocaml, appelées \emph{foncteurs} dans le jargon de la programmation
+fonctionnelle, qui apportent la solution technique. Cet article a pour
+but d'expliquer ces deux utilisations très différentes des foncteurs ---
+d'où le titre accrocheur --- et il s'agit donc plus d'un article de
+génie logiciel que d'un article présentant une bibliothèque.
+
+%\medskip
+
+Le plan de cet article est le suivant. La section~\ref{systememodules}
+présente brièvement le système de modules d'\ocaml. La
+section~\ref{structuresdedonnees} présente ensuite la conception de la
+signature commune à toutes les structures de données de graphes et
+montre comment le code de ses différentes réalisations a pu être
+factorisé. La section~\ref{algos} décrit les algorithmes
+proposés dans \ocamlgraph et comment leur généricité vis-à-vis de la
+structure de graphes à pu être obtenue.
+Enfin la section~\ref{comparaison} compare \ocamlgraph avec un
+certain nombre de bibliothèques existantes.
+
+
+\section{Le système de modules d'\ocaml}\label{systememodules}
+
+Dans cette section, nous rappelons les caractéristiques du système de
+modules d'\ocaml pour le lecteur qui n'en serait pas familier.  Il
+s'agit d'un langage à part entière au dessus du langage de base
+d'\ocaml, remplissant uniquement des fonctions de génie logiciel :
+compilation séparée, structuration de l'espace de noms, encapsulation,
+et généricité du code.  Ce langage de modules pourrait être
+intégralement supprimé statiquement, et se trouve être en réalité
+indépendant du langage de base~\cite{leroy00}.  
+
+C'est un langage fonctionnel d'ordre supérieur fortement typé dont les
+termes sont appelés \emph{modules}. Les briques de base sont les
+\emph{structures}, unités regroupant entre eux des types, valeurs,
+exceptions et/ou définitions de modules. Par exemple, une implantation
+naïve sous forme de matrices d'adjacence des graphes orientés,
+étiquetés sur les arcs et modifiables en place peut être la suivante:
+%
+\begin{alltt}
+module Graph = struct
+  type label = int 
+  type t = label array array
+  let create n = Array.make_matrix n n 0
+  let add_edge g v1 v2 l = g.(v1).(v2) <- l
+  let iter g f v = Array.iter f g.(v)
+end
+\end{alltt}
+
+Les types des structures, appelés \emph{signatures}, permettent de
+restreindre la visibilité des composantes d'une structure en lui
+adjoignant une \emph{interface}\footnote{au sens de \textsc{Modula} et
+  non de \textsc{Java}} et de masquer la définition de certains types
+(on parle alors de \emph{type abstrait}). Ainsi, une signature
+possible masquant les types des graphes et des étiquettes de
+\texttt{Graph} est:
+%
+\begin{alltt}
+module type GRAPH = sig
+  type label
+  type t
+  val create : int -> t
+  val add_edge : t -> int -> int -> label -> unit 
+  val iter : t -> (label -> unit) -> int -> unit
+end
+\end{alltt}
+
+Les fonctions de ce langage, appelées \emph{foncteurs}, permettent
+d'écrire des modules paramétrés par d'autres modules et de les
+appliquer ensuite à des modules particuliers.  L'apport des foncteurs
+en terme de génie logiciel est important lorsqu'il s'agit de
+paramétrer un \emph{ensemble} de types et de fonctions par un autre
+\emph{ensemble} de types et de fonctions, de manière cohérente.  Par
+exemple, pour rester indépendant de l'implantation de la structure de
+graphe, l'algorithme de Dijkstra, pour des graphes dont les arcs sont
+étiquetés par des entiers, peut être << fonctorisé >> de la manière
+suivante:
+%
+\begin{alltt}
+module type S = sig
+  type label
+  type t
+  val iter : t -> (label -> unit) -> int -> unit
+end
+
+module Dijkstra (G : S with type label = int) = struct
+  let dijkstra g v1 v2 = (* ... *)
+end
+\end{alltt}
+%
+L'annotation \texttt{with type} permet d'unifier ici le type abstrait
+\texttt{label} de la signature \texttt{S} avec le type \texttt{int}.
+D'autre part, la signature \texttt{S} exigée pour l'argument du
+foncteur ne contient que ce qui est nécessaire à l'implantation de
+l'algorithme. On pourra cependant appliquer ce foncteur à tout module
+dont la signature contient \emph{au moins} \texttt{S}, c'est-à-dire
+qui est \emph{sous-type} de \texttt{S}.
+
+Enfin, il est possible de construire des aggrégats de signatures ou de
+modules à l'aide de la construction \texttt{include} qui peut être vue
+naïvement comme une inclusion textuelle.
+
+\section{Structures de données}\label{structuresdedonnees}
+
+Fournir de multiples structures de données de graphes est un des deux
+aspects originaux d'\ocamlgraph. En effet, un graphe peut être orienté
+ou non, ses sommets et ses arcs peuvent être avec ou sans étiquettes
+et la structure de données sous-jacente peut être \emph{persistante}
+ou \emph{modifiable en place} (\emph{impérative)}: pas moins de seize
+structures de données différentes doivent donc être fournies pour
+rendre compte de ces diverses combinaisons.  Par conséquent, il
+convient, d'une part, d'unifier au maximum les interfaces de ces
+structures de données pour permettre leur compréhension par
+l'utilisateur et, d'autre part, de factoriser le plus possible leurs
+implantations de manière à limiter la taille du code, et donc les
+bogues.
+
+\subsection{Les interfaces}\label{interfaces}
+
+Les interfaces des diverses structures de données de graphes sont
+regroupées dans le module \texttt{Sig} et sont essentiellement au
+nombre de trois : une interface \texttt{G} commune à toutes les
+structures de données, une interface \texttt{P} commune à toutes les
+structures persistantes (\emph{i.e.} immuables d'un point de vue
+observationnel) et une interface \texttt{I} commune à toutes les
+structures impératives. L'interface commune \texttt{G} contient toutes
+les opérations d'accès à la structure du graphe. Les interfaces
+\texttt{P} et \texttt{I} étendent \texttt{G} en ajoutant les fonctions
+de création et de modification du graphe, nécessairement différentes
+selon le caractère persistant ou impératif.
+
+L'interface commune \texttt{G} introduit un type abstrait \texttt{t} pour les
+graphes~:
+\begin{alltt}
+module type G = sig
+  type t  \hfill(* le type des graphes *)
+\end{alltt}
+Le type des sommets est également un type abstrait\footnote{Le type
+  des sommets est abstrait \emph{a priori} mais une réalisation
+  particulière de la signature \texttt{G} peut tout à fait
+  déclarer un type de sommets manifeste.}. Vu que l'on ne préjuge pas
+du caractère étiqueté ou non des sommets, on introduit également un type
+pour les étiquettes des sommets (on aurait pu choisir un type de
+sommets polymorphe mais le polymorphisme se marrie mal avec les foncteurs).
+Enfin, la plupart des algorithmes sur les graphes ont besoin de
+stocker des sommets dans des structures de données de type ensembles
+ou dictionnaires et il est pour cela très utile que le type des
+sommets soit équipé de fonctions de comparaison et de hachage adéquates.
+On regroupe tout cela dans un sous-module \texttt{V}~:
+\begin{alltt}
+  module V : sig
+    type t  \hfil(* le types des sommets *)
+    type label  \hfill(* le type des étiquettes des sommets *)
+    val create : label -> t
+    val label : t -> label
+    val compare : t -> t -> int 
+    val hash : t -> int 
+    val equal : t -> t -> bool
+  end
+\end{alltt}
+L'intérêt d'introduire un sous-module est double : d'une part il évite
+de polluer l'espace de noms et d'autre part, il permet à ce
+sous-module d'être directement l'argument d'un foncteur tel que
+\texttt{Map.Make} ou \texttt{Hashtbl.Make}.
+On introduit tout de même un alias pour le type \texttt{V.t} pour plus
+de lisibilité par la suite~:
+\begin{alltt}
+  type vertex = V.t
+\end{alltt}
+Pour les graphes dont les sommets ne sont pas étiquetés, il suffira
+d'identifier les types \texttt{V.t} et \texttt{V.label} et de réaliser
+les deux fonctions \texttt{V.create} et \texttt{V.label} par l'identité.
+
+De même on introduit un sous-module \texttt{E} pour les arcs.  Là
+encore on suppose que les arcs peuvent être étiquetées et un arc est
+donc construit à partir de deux sommets et d'une étiquette. Enfin,
+comme pour les sommets, on équipe le type des arcs d'une fonction de
+comparaison.
+\begin{alltt}
+  module E : sig
+    type t
+    type label
+    val create : vertex -> label -> vertex -> t
+    val src : t -> vertex
+    val dst : t -> vertex
+    val label : t -> label
+    val compare : t -> t -> int
+  end
+  type edge = E.t
+\end{alltt}
+Pour des arcs non étiquetés, il suffira de prendre pour \texttt{E.t}
+le type \texttt{V.t * V.t} et d'ignorer le type \texttt{E.label} (en
+le réalisant par exemple par le type \texttt{unit}).
+
+Viennent ensuite un grand nombre de fonctions de tests, de fonctions
+d'accès et d'itérateurs sur les sommets et les arcs dont la
+signification est immédiate~:
+\begin{alltt}
+  val is_directed : bool
+  val nb_vertex : t -> int
+  val out_degree : t -> vertex -> int
+  val iter_vertex : (vertex -> unit) -> t -> unit
+  (* ... *)
+\end{alltt}
+La partie essentielle de l'interface réside dans les fonctions
+donnant accès à la relation d'adjacence dans le graphe. On trouve par
+exemple une fonction donnant les successeurs
+d'un sommet sous la forme d'une listes de sommets~:
+\begin{alltt}
+  val succ : t -> vertex -> vertex list
+  (* ... *)
+\end{alltt}
+En pratique, cependant, il sera plus utile de pouvoir itérer une
+fonction sur les successeurs (ou les prédécesseurs), afin d'éviter de
+construire des liste pour immédiatement les déstructurer.
+Cet ensemble d'itérateurs complète la signature \texttt{G}~:
+\begin{alltt}
+  val iter_succ : (vertex -> unit) -> t -> vertex -> unit
+  val fold_succ : (vertex -> 'a -> 'a) -> t -> vertex -> 'a -> 'a
+  (* ... *)
+end
+\end{alltt}
+Comme nous le montrerons dans la section~\ref{algos}, l'écriture d'un
+algorithme sur les graphes ne nécessite généralement qu'un très petit
+sous-ensemble de ces opérations. Grâce au sous-typage des signatures,
+une réalisation de l'interface \texttt{G} sera également une interface
+adéquate pour nos algorithmes.
+
+L'interface \texttt{P} des graphes persistants étend alors l'interface
+\texttt{G} par un ensemble de fonctions de création de graphes~:
+\begin{alltt}
+module type P = sig
+  include G
+  val empty : t
+  val add_vertex : t -> vertex -> t
+  val remove_vertex : t -> vertex -> t
+  val add_edge : t -> vertex -> vertex -> t
+  (* ... *)
+end
+\end{alltt}
+De même l'interface \texttt{I} étend l'interface \texttt{G} par un
+ensemble de fonctions de création et de modification de graphes impératifs~:
+\begin{alltt}
+module type I = sig
+  include G
+  val create : unit -> t
+  val copy : t -> t
+  val add_vertex : t -> vertex -> unit
+  val add_edge : t -> vertex -> vertex -> unit
+  (* ... *)
+end
+\end{alltt}
+On notera la présence d'une fonction \texttt{copy} qui n'a pas de
+correspondant dans l'interface \texttt{P}.
+
+Dans la section~\ref{builder} nous montrerons comment il est possible
+de donner une interface commune à la construction de graphes, qu'ils
+soient persistants ou impératifs, afin de factoriser du code
+construisant des graphes. Mais il aurait été malheureux de le faire
+ici, car le caractère persistant ou impératif doit apparaître
+clairement à l'utilisateur et pour cela transparaître dans la signature.
+
+En réalité, le module \texttt{Sig} introduit une quatrième et dernière
+signature de graphes, \texttt{IA}, pour les structures 
+impératives où les sommets sont munis de \emph{marques} entières que
+l'on peut modifier en place~:
+\begin{alltt}
+module type IA = sig
+  include I
+  module Mark : sig
+    val clear : t -> unit \hfill (* met toutes les marques à 0 *)
+    val get : vertex -> int
+    val set : vertex -> int -> unit
+  end
+end
+\end{alltt}
+Une telle signature est utile lorsque l'on veut proposer un codage
+efficace d'un algorithme basé sur un marquage particulier des
+sommets, \emph{a fortiori} si ces marques peuvent être ensuite
+exploitées par l'utilisateur. L'exemple typique est celui d'un
+parcours en profondeur.
+
+On notera enfin qu'à aucun moment il n'a été nécessaire d'expliciter
+le caractère orienté ou non des graphes. Seule l'\emph{implantation}
+le définira.
+
+\subsection{Le partage du code}
+
+Les implantations des diverses structures de données sont partagées
+entre les modules \texttt{Persistent} et \texttt{Imperative}. Chacun
+de ces deux modules se divise en deux sous-modules appelés
+\texttt{Graph} (graphes non orientés) et \texttt{Digraph} (graphes
+orientés). Ces derniers regroupent chacun quatre foncteurs; chacun
+d'eux correspondent à des graphes concrets ou abstraits\footnote{Un
+  graphe abstrait masque le type (et donc l'implantation) des sommets
+  et des arcs à l'utilisateur et permet une implantation optimisée de
+  certaines opérations.} possédant ou non des étiquettes sur ses
+arcs (un sommet est toujours étiqueté).  Ils sont paramétrés par un
+module \texttt{V} correspondant aux sommets du graphe et, dans le cas
+des graphes étiquetés aux arcs, par un module \texttt{E} correspondant
+aux arcs.  Par exemple, le foncteur
+\texttt{Persistent.Digraph.Abstract} implante les graphes persistants
+non orientés, abstraits et sans étiquette. Sa signature est la
+suivante:
+\begin{alltt}
+module Abstract(V: sig type t end) : 
+  Sig.P with type V.t = V.t and type V.label = V.t and type E.t = V.t * V.t
+\end{alltt}
+
+Dans la suite de cette section, nous montrons comment les foncteurs
+sont utilisés pour factoriser un maximum de code entre ces seize
+structures de données. Il est important de noter que le code présenté
+ici n'est ni visible ni utile pour l'utilisateur de la bibliothèque.
+
+Le module \texttt{Per\_imp}, interne à \ocamlgraph,
+regroupe un certain nombre de foncteurs réalisant
+les opérations sur les graphes pour lesquelles il est possible de
+s'abstraire du caractère persistant ou impératif.  
+Chaque foncteur est dédié à une
+tâche particulière comme poser des étiquettes sur les arcs (foncteur
+\texttt{Labelled}), rendre le graphe abstrait (foncteur
+\texttt{Make\_Abstract}) ou coder les opérations sur les prédécesseurs
+(foncteur \texttt{Pred}). Coder une structure de données de graphes
+particulière revient alors à assembler les différents foncteurs comme
+dans un jeu de construction et à coder les quelques opérations qui ne
+peuvent pas être factorisées.
+
+\paragraph{S'abstraire du caractère persistant ou impératif}
+
+Dans notre bibliothèque, les graphes sont représentés sous la forme d'une table
+associant à chaque sommet du graphe l'ensemble de ses successeurs (auxquels
+est adjoint l'étiquette de l'arc correspondant si nécessaire). Ces tables
+d'association sont persistantes ou impératives selon le type de graphes
+considérés. En \ocaml, cela se traduit par des opérations de types
+différents. Ainsi, la fonction d'ajout dans une table de
+hachage ne retourne aucune valeur (car la modification est faite en
+place) alors que celle d'ajout dans une table persistante retourne une
+nouvelle table.
+Mais on peut toutefois donner une signature commune à ces tables
+persistantes et impératives en introduisant un type explicite
+\texttt{'a return} de la manière suivante~:
+\begin{alltt}
+module type HM = sig
+  type 'a return \hfill (* type de retour de [add] et [remove] *)
+  type 'a t
+  type key
+  val add: key -> 'a -> 'a t -> 'a return
+  val mem: key -> 'a t -> bool
+  val find: key -> 'a t -> 'a
+  (* ... *)
+end
+\end{alltt}
+Il est alors possible d'obtenir une implantation persistante de
+\texttt{HM} basée sur 
+le module \texttt{Map} d'\ocaml\ en instanciant le type \texttt{'a
+  return} par le type des tables persistantes~:
+\begin{alltt}
+module Make_Map(X: (* ... *) ) = struct
+  include Map.Make(X)
+  type 'a return = 'a t
+  (* ... *)
+end
+\end{alltt}
+Et il en est de même pour une version impérative basée sur le module
+\texttt{Hashtbl} d'\ocaml\ en instanciant le type \texttt{'a return}
+par \texttt{unit}~:
+\begin{alltt}
+module Make_Hashtbl(X: (* ... *) ) = struct
+  include Hashtbl.Make(X)
+  type 'a return = unit
+  let add k v h = replace h k v
+  (* ... *)
+end
+\end{alltt}
+
+Dès lors, en utilisant une implantation de \texttt{HM} ainsi qu'une
+implantation des 
+ensembles, il est possible d'écrire un foncteur implantant les opérations
+communes à tous les types de graphe:
+\begin{alltt}
+module Minimal(S: Set.S)(HM: HM) = struct
+  let mem_vertex g v = HM.mem v g
+  let out_degree g v = 
+    S.cardinal (try HM.find v g with Not_found -> invalid_arg "out_degree")
+  (* ... *)
+end
+\end{alltt}
+
+\paragraph{Foncteurs comme briques d'assemblage}
+
+Les opérations sur les prédécesseurs se programment toujours de la même
+manière. Elles sont regroupées dans le foncteur \texttt{Pred}:
+\begin{alltt}
+module Pred(S: (* ... *) ) = struct
+  let fold_pred f g v = (* ... *)
+  let pred g v = fold_pred (fun v l -> v :: l) g v []
+  (* ... *)
+end
+\end{alltt}
+En outre, dans le cas des graphes non orientés, les opérations sur les
+prédécesseurs peuvent être optimisées en tenant compte du fait que l'ensemble
+des prédécesseurs d'un sommet $s$ est égal à l'ensemble des successeurs de $s$.
+On peut alors redéfinir \texttt{Pred}:
+\begin{alltt}
+module Pred(S: (* ... *) ) = struct
+  let fold_pred = S.fold_succ
+  let pred = S.succ
+  (* ... *)
+end
+\end{alltt}
+
+Un certain nombre d'opérations, comme itérer sur les arcs d'un graphe,
+dépendent de la présence ou non d'étiquettes sur les arcs du graphe. Ceci
+entraîne l'implantation de deux foncteurs \texttt{Labelled} et
+\texttt{Unlabelled} (non détaillés dans cet article).
+
+Il est possible de rendre un graphe abstrait à partir de sa version concrète
+et, ainsi, d'optimiser certaines opérations. C'est le rôle dédié au foncteur
+\texttt{Make\_Abstract}:
+\begin{alltt}
+module Make_Abstract(G: Sig.G) = struct
+  module I = struct
+    type t = \{ edges: G.t; mutable size: int \}
+    let iter_vertex f g = G.iter_vertex f g.edges
+    (* ... *)
+  end
+  include I
+  include Pred(I)
+  let nb_vertex g = g.size \hfill (* optimisation *)
+  (* ... *)
+end
+\end{alltt}
+
+Enfin, il est possible d'implanter la version concrète du module \texttt{V} et
+la table d'association l'utilisant à l'aide d'un foncteur d'ordre supérieur:
+\begin{alltt}
+module ConcreteVertex
+  (F: functor(X: (* ... *) ) -> HM with type key = X.t)(V: (* ... *) ) =
+struct
+  module V = struct
+    include V
+    type label = t
+    (* ... *)
+  end
+  module HM = F(V)
+end
+\end{alltt}
+
+\paragraph{Assemblage des briques}
+
+A l'aide de l'ensemble de ces foncteurs, il est possible d'implanter de manière
+générique --- et aisément ! --- la majeure partie des modules \texttt{Digraph}
+et \texttt{Graph}:
+\begin{alltt}
+module Make(F: functor(X: (* ... *) ) -> HM with type key = X.t) = struct
+  module Digraph = struct
+    module Concrete(V: (* ... *) ) = struct
+      include ConcreteVertex(F)(V) \hfill (* les sommets sont concrets *)
+      include Unlabeled(V)(HM) \hfill (* les arcs ne sont pas étiquetés *)
+      include Minimal(S)(HM) \hfill (* opérations communes à tous *)
+    end
+    module ConcreteLabelled = (* ... *)
+    module Abstract = (* ... *)
+    module AbstractLabelled = (* ... *)
+    end
+  end
+  module Graph = struct (* ... *) end
+end
+\end{alltt}
+Les implantations persistantes et impératives sont obtenues en appliquant ce
+foncteur:
+\begin{alltt}
+module P = Make(Make_Map)
+module I = Make(Make_Hashtbl)
+\end{alltt}
+
+Pour obtenir les foncteurs visibles par l'utilisateur, il reste à étendre
+les foncteurs obtenus en ajoutant les quelques fonctions qui ne peuvent pas
+être factorisées:
+\begin{alltt}
+module Digraph = struct
+  module Concrete(V: (* ... *) ) = struct
+    include P.Digraph.Concrete(V) 
+    let add_vertex g v1 v2 = if HM.mem v g then g else add_vertex g v
+    (* ... *)
+  end
+  (* ... *)
+end
+\end{alltt}
+
+\section{Algorithmes}\label{algos}
+
+Nous présentons dans cette section la deuxième utilisation des
+foncteurs dans \ocamlgraph~: la programmation générique d'algorithmes
+sur les graphes.
+
+\subsection{Programmation générique}
+
+Comme nous l'avons vu en partie~\ref{structuresdedonnees}, notre
+bibliothèque fournit de nombreuses implantations de graphe. Le
+problème se pose alors d'écrire des algorithmes pour toutes ces
+structures sans avoir à les réécrire pour chacune d'elles.  Tout comme
+les foncteurs nous ont permis d'implanter ces structures de données
+avec un minimum de duplication de code, ils vont également nous
+permettre de programmer des algorithmes génériques à moindre frais.
+
+L'idée de base est d'écrire un algorithme sans se soucier de
+l'implantation des graphes mais en se concentrant uniquement sur les
+opérations nécessaires et suffisantes à la manipulation de ces
+structures de données. L'algorithme devient alors naturellement un
+foncteur paramétré par ces opérations et la signature qu'elles
+engendrent est le type de son paramètre. Ces opérations correspondent
+en général à un sous-ensemble de celles fournies par \ocamlgraph mais,
+comme nous le verrons dans les exemples donnés par la suite, certains
+algorithmes ont besoin d'opérations spécifiques, indépendantes de la
+structure du graphe, qui seront alors fournies comme des paramètres
+supplémentaires au foncteur.
+
+Cette << fonctorisation >> des algorithmes permet, d'une part,
+d'ajouter facilement des algorithmes à la bibliothèque et, d'autre
+part, d'utiliser facilement les algorithmes d'\ocamlgraph sur des
+structures de données non fournies par la bibliothèque.
+
+\subsection{Exemple : algorithmes de flots}
+\label{algos-flot}
+
+Nous illustrons l'aspect générique des algorithmes d'\ocamlgraph à
+travers deux exemples pour calculer le flot maximal d'un
+réseau\footnote{\emph{i.e.} un graphe orienté possédant deux sommets
+  distingués appelés \emph{source} et \emph{puits}}, l'algorithme de
+Ford et Fulkerson~\cite{FF} et celui de Goldberg~\cite{Goldberg}. Ils se
+présentent sous forme de deux foncteurs dont les signatures sont les
+suivantes:
+\begin{alltt}
+module Ford_Fulkerson (G: G_FORD_FULKERSON)(F: FLOW with type label = G.E.label) :
+sig
+  val maxflow : G.t -> G.V.t -> G.V.t -> (G.E.t -> F.t) * F.t
+end
+
+module Goldberg(G: G_GOLDBERG)(F: FLOW with type label = G.E.label) : 
+sig
+  val maxflow : G.t -> G.V.t -> G.V.t -> (G.E.t -> F.t) * F.t
+end
+\end{alltt}
+%
+Les corps de ces foncteurs implantent une fonction \texttt{maxflow} de
+même signature prenant en paramètre un réseau, une source et un puits et
+retournant une paire \texttt{(f,delta)} où \texttt{f} associe à chaque
+arc du réseau son nouveau flot et où \texttt{delta} représente la
+différence entre le flot maximal calculé et le flot initial du réseau.
+
+La signature du premier paramètre \texttt{G} de ces deux foncteurs
+décrit les opérations minimales du graphe pour l'implantation de
+\texttt{maxflow}. Puisque les deux algorithmes implantés par ces
+foncteurs sont différents, les signatures \texttt{G\_FORD\_FULKERSON}
+et \texttt{G\_GOLDBERG} sont également différentes. Par exemple
+l'algorithme de Goldberg nécessite d'itérer sur tous les
+sommets et arcs du graphe tandis que celui de Ford et
+Fulkerson a besoin d'itérer sur les arcs issus d'un sommet,
+comme le montrent leurs signatures respectives:
+\begin{alltt}
+module type G_GOLDBERG = sig
+  type t
+  module V : sig type t (* ... *) end
+  module E : sig type t (* ... *) end
+  val iter_vertex : (V.t -> unit) -> t -> unit
+  val iter_edges_e : (E.t -> unit) -> t -> unit
+  (* ... *)
+end
+
+module type G_FORD_FULKERSON = sig
+  type t
+  module V : sig type t (* ... *) end
+  module E : sig type t (* ... *) end
+  val iter_succ_e : (E.t -> unit) -> t -> V.t -> unit
+  val iter_pred_e : (E.t -> unit) -> t -> V.t -> unit
+end
+\end{alltt}
+
+La signature du second paramètre \texttt{F} est commune aux deux
+foncteurs. Elle rassemble les opérations pour manipuler les étiquettes
+des arcs comme des flots:
+\begin{alltt}
+module type FLOW = sig
+  type label \hfill(* type des étiquettes d'un arc *)
+  type t \hfill(* type des flots passant sur un arc *)
+  val flow : label -> t \hfill(* flot actuel *)
+  val max_capacity : label -> t \hfill(* capacité maximale *)
+  val min_capacity : label -> t \hfill(* capacité minimale *)
+  val add : t -> t -> t \hfill(* addition *)
+  val sub : t -> t -> t \hfill(* soustraction *)
+  val zero : t \hfill (* élément neutre *)
+  val compare : t -> t -> int \hfill(* fonction de comparaison *)
+end
+\end{alltt}
+
+Cette signature \texttt{FLOW} s'implante facilement quelque soit le
+type de données. Par exemple, une implantation possible pour un graphe
+dont les étiquettes des arcs seraient des entiers correspondant à la
+capacité maximale de chaque arc et dont le flot initial serait nul est
+la suivante~:
+\begin{alltt}
+module Flow = struct
+  type label = int
+  type t = int
+  let max_capacity x = x
+  let min_capacity _ = 0
+  let flow _ = 0
+  let add = (+)
+  let sub = (-)
+  let compare = compare
+  let zero = 0
+end
+\end{alltt}
+
+\subsection{Autre exemple : parcours de graphes}
+
+Nous donnons ici un second exemple de programmation générique avec les
+algorithmes classiques de parcours en profondeur et en largeur. 
+Pour parcourir un graphe, il y a besoin de très peu
+d'opérations. Principalement, il faut pouvoir itérer une fonction sur
+tous les successeurs d'un sommet. Il faut également pouvoir
+parcourir l'ensemble des sommets pour parcourir toutes les
+composantes connexes. Enfin il faut pouvoir marquer les sommets
+visités. Concernant ce dernier point, et en l'absence de toute
+hypothèse sur les sommets du graphe, le plus simple est d'utiliser
+une table de hachage contenant les sommets déjà visités. Pour cela,
+il suffit que le type des sommets soit équipé de fonctions
+\texttt{hash} et \texttt{equal} convenables. L'interface minimale
+requise pour les algorithmes de parcours de graphes est donc la suivante~:
+\begin{alltt}
+module type G = sig
+  type t
+  module V : sig type t val hash : t -> int val equal : t -> t -> bool end
+  val iter_vertex : (V.t -> unit) -> t -> unit
+  val iter_succ : (V.t -> unit) -> t -> V.t -> unit
+end
+\end{alltt}
+Dès lors les algorithmes de parcours se présentent sous la forme de
+foncteurs ressemblant à ceci~:
+\begin{alltt}
+module Dfs(G : G) : sig val iter : (G.V.t -> unit) -> G.t -> unit end
+\end{alltt}
+En réalité, plusieurs variantes de chaque parcours sont offertes~:
+composante à partir d'un sommet donné uniquement, application de la
+fonction après les successeurs plutôt qu'avant, etc. Le foncteur de
+parcours en profondeur propose également une fonction de détection de cycle.
+Enfin, il y a un foncteur spécialisé pour les graphes équipés de
+marques (voir la signature \texttt{IA} au paragraphe~\ref{interfaces}),
+car celles-ci peuvent être alors utilisées de manière directe pour
+noter les sommets déjà visités.
+
+Les fonctions de parcours de graphes sont également proposées dans des
+versions « pas à pas », à l'instar des itérateurs que l'on trouve
+plutôt dans des contextes de programmation impérative (telles que les
+classes réalisant l'interface \texttt{Enumeration} en \textsc{Java}).
+Un tel itérateur se présente sous la forme suivante~:
+\begin{alltt}
+module Dfs(G : G) : sig
+  type iterator
+  val start : G.t -> iterator
+  val step : iterator -> iterator
+  val get : iterator -> G.V.t
+end 
+\end{alltt}
+Le type abstrait \texttt{iterator} représente un état de l'itérateur,
+ou si l'on préfère un point dans l'itération en cours. On obtient le
+point de départ avec la fonction \texttt{start}. Dès lors, on peut
+avancer dans l'itération avec la fonction \texttt{step} ou récupérer
+le sommet en cours de visite avec \texttt{get}. Ces deux fonctions
+lève l'exception \texttt{Exit} lorsque l'on se trouve dans l'état
+final. Cette séparation en
+deux fonctions distinctes \texttt{step} et \texttt{get} constitue une
+différence importante avec les  
+itérateurs « pas à pas » que l'on trouve habituellement en
+programmation impérative, où une seule fonction retourne l'élément
+courant \emph{et} avance l'itérateur. D'autre part, et c'est là une
+différence encore plus importante, le type \texttt{iterator} est un
+type \emph{persistant} : l'itérateur n'est pas modifié par la fonction
+\texttt{step}. Dès lors, il est très facile d'utiliser ces itérateurs
+dans des algorithmes de \emph{backtracking} impliquant des graphes.
+
+Voici par exemple comment peut être codée la $k$-coloration d'un
+graphe \texttt{g} sur la base d'un parcours en largeur pas à pas
+\texttt{Bfs}. Le graphe possède des marques que l'on utilise pour
+indiquer la couleur (0 signifiant qu'il n'y a pas encore de couleur
+assignée). 
+\begin{alltt}
+let coloring g k =
+  Mark.clear g;
+  let try_color v i =
+    iter_succ (fun w -> if Mark.get w = i then raise NoColor) g v;
+    Mark.set v i
+  in
+  let rec iterate iter =
+    let v = Bfs.get iter in
+    for i = 1 to k do
+      try try_color v i; iterate (Bfs.step iter); assert false
+      with NoColor -> ()
+    done;
+    Mark.set v 0; raise NoColor
+  in
+  try iterate (Bfs.start g); assert false with Exit -> ()
+\end{alltt}
+Le gain de l'itérateur pas à pas persistant est double~: non seulement
+on a pu utiliser une fonction de parcours existante sans avoir besoin
+de la réécrire au sein même de l'algorithme de coloration, mais la
+persistance de l'itérateur a également permis d'éviter une écriture
+explicite du \emph{backtrack} dans le code ci-dessus.
+
+\subsection{Constructions de graphes}\label{builder}
+
+Nous avons montré au paragraphe~\ref{interfaces} que les opérations de
+constructions de graphes différaient entre les graphes persistants et
+les graphes impératifs, ce qui est parfaitement justifié. Cependant,
+de même que nous avons écrit des algorithmes sur les graphes de
+manière générique, on peut souhaiter \emph{construire} des graphes de
+manière générique, \emph{i.e.} indépendamment de la structure de
+données les représentant.  On peut ainsi vouloir définir des
+opérations telles que l'union de deux graphes, la clôture transitive
+d'un graphe ou encore construire des graphes classiques (graphe
+complet à $n$ sommets, graphe de de Bruijn d'ordre $n$, graphe des
+diviseurs, etc.)  ou des graphes aléatoires, etc. Dans tous ces cas,
+le caractère persistant ou impératif des graphes n'est pas
+significatif mais la différence d'interfaces s'oppose à la généricité.
+
+Pour remédier à cela, on introduit un module \texttt{Builder}. Il définit une
+interface de construction commune aux graphes persistants et
+impératifs~:
+\begin{alltt}
+module type S = sig
+  module G : Sig.G
+  val empty : unit -> G.t
+  val copy : G.t -> G.t
+  val add_vertex : G.t -> G.V.t -> G.t
+  val add_edge : G.t -> G.V.t -> G.V.t -> G.t
+  val add_edge_e : G.t -> G.E.t -> G.t
+end
+\end{alltt}
+Il est immédiat d'implanter une telle signature à partir d'une
+structure persistante ou d'une structure impérative~:
+\begin{alltt}
+module P(G : Sig.P) : S with module G = G
+module I(G : Sig.I) : S with module G = G
+\end{alltt}
+Il est important de noter que, pour une structure impérative, les
+graphes retournés par les fonctions \texttt{add\_vertex},
+\texttt{add\_edge} et \texttt{add\_edge\_e} ne sont pas
+significatifs. Il y a même là une illusion trompeuse de
+persistance. Mais cette interface commune se limite à ce module
+\texttt{Builder} et comporte un avertissement adéquat.
+
+Dès lors, il est facile de coder un algorithme générique de
+construction de graphes. On commence par écrire une version très
+générique prenant en argument un module de type \texttt{Builder.S}~:
+\begin{alltt}
+module Make(B : Builder.S) = struct ... end
+\end{alltt}
+puis on peut trivialement proposer deux variantes de ce foncteur pour
+les graphes persistants et les graphes impératifs avec les deux
+lignes suivantes~:
+\begin{alltt}
+module P(G : Sig.P) = Make(Builder.P(G))
+module I(G : Sig.I) = Make(Builder.I(G))
+\end{alltt}
+Ainsi l'utilisation du module \texttt{Builder} est entièrement cachée
+à l'utilisateur de la bibliothèque.
+
+\section{\ocamlgraph et les autres bibliothèques de  graphes}
+\label{comparaison}
+
+Nous présentons dans cette section les fonctionnalités de quelques
+bibliothèques de graphes afin de donner au lecteur des éléments de
+comparaison sur les possibilités qu'offrent ces bibliothèques et ce
+que nous fournissons avec \ocamlgraph.
+
+Loin d'être exhaustive, notre liste présente des bibliothèques écrites
+dans (ou pour) des langages de programmation permettant une certaine
+forme de programmation générique. Par conséquent, les critères de
+comparaison que nous avons retenus portent principalement sur la
+variété de structures de données de graphes et d'opérations associées
+(itérateurs, modificateurs etc.) proposée dans ces bibliothèques et
+sur la généricité des algorithmes fournis.
+
+\paragraph{\textsc{Jdsl} \cite{Jdsl}} Cette bibliothèque \textsc{Java}
+fournit des implantations et des algorithmes pour plusieurs structures
+de données (listes, vecteurs, files à priorité, dictionnaires et
+graphes).  En ce qui concerne les graphes, les interfaces définies
+dans JDSL regroupent --- dans des signatures distinctes --- les
+opérations d'accès en lecture et en écriture à la structure de données
+sous-jacente: On trouve des \emph{accesseurs} pour l'accès en temps
+constant aux éléments du graphe, des \emph{itérateurs} pour parcourir
+la structure de données et des \emph{modificateurs} pour ajouter ou
+supprimer des sommets et des arcs.  L'utilisation du système
+d'interfaces et des classes abstraites de \texttt{Java} rend les
+algorithmes de JDSL très génériques.  La bibliothèque ne propose
+cependant qu'une seule implantation de graphe par listes d'adjacences
+et on ne trouve pas de notion de graphe persistant dans les signatures
+des interfaces. De plus, aucun type de données ne permet de distinguer
+les graphes orientés des graphes non-orientés (arêtes et arcs pouvant
+coexister dans un même graphe).  Enfin, les sommets et les arcs
+peuvent être étiquetés par des informations de type \texttt{Object},
+mais cette technique de programmation, bien connue des programmeurs
+\textsc{Java}, offre une forme de polymorphisme non sûre qui oblige à
+effectuer des vérifications de typage au moment de l'exécution.
+
+\paragraph{\textsc{Mlrisc} \cite{Mlrisc}} Ce Back-End de compilateur
+paramétrable fournit une bibliothèque de graphes pour SML ne
+contennant qu'une unique signature de multi-graphes orientés ainsi
+qu'une unique implantation impérative. Les sommets et les arcs d'un
+graphe peuvent être étiquetés par des informations de type quelconque.
+Des modificateurs et des itérateurs permettent respectivement de
+mettre à jour et de parcourir la structure de données sous-jacente.
+On trouve également des combinateurs pour construire des \emph{vues}
+différentes d'un même graphe.  On peut par exemple construire une vue
+d'un graphe où les arcs sont inversés, où les sommets (resp.  les
+arcs) sont renommés ou forment un sous-ensemble de l'ensemble des
+sommets (resp.  des arcs) du graphe etc. Un système de vues
+\emph{comportementales}, semblable aux principes de la programmation
+par aspect, permet d'attacher des actions aux modificateurs d'un
+graphe afin, par exemple, de réaliser telles ou telles actions avant
+l'ajout d'un sommet.  La bibliothèque contient également de nombreux
+algorithmes dont certains sont implantés sous forme de foncteurs afin
+de s'abstraire d'opérations spécifiques, indépendantes de la structure
+de graphes (par exemple, l'algorithme de flot de \textsc{Mlrisc} est,
+comme ceux d'\ocamlgraph présentés en section~\ref{algos-flot},
+paramétré par une structure de groupe abélien).
+
+\paragraph{\textsc{Leda} \cite{Leda}} Cette bibliothèque en
+\textsc{C++} fournit de nombreuses structures de données (graphes,
+listes, ensembles, dictionnaires, arbres, partitions, file de
+priorités, lignes, points, surfaces etc.)  ainsi que de nombreux
+algorithmes sur les graphes, la géométrie, les réseaux et le
+graphisme.  Les graphes de \textsc{Leda} sont impératifs. Ils peuvent
+être orientés ou non, paramétrés par un type de sommet et un type
+d'arc quelconques, statiques ou planaires.  Des macros permettent
+d'itérer sur les sommets et sur les arcs. On trouve également de
+nombreuses fonctions d'accès, des modificateurs, des générateurs de
+graphes et des tests de toutes sortes (cyclicité, planarité,
+convexité, etc.).  Malheureusement, les algorithmes de cette
+bibliothèque ne sont pas génériques et une seule implantation est
+fournie (à l'aide de deux listes doublement chaînées de sommets et
+d'arcs).
+
+\paragraph{\textsc{Fgl} \cite{Fgl,Erwig}} Cette bibliothèque de
+graphes pour \textsc{Haskell} (la version pour \textsc{Sml} ne semble
+plus être maintenue) propose une représentation inductive des graphes
+et fournit un ensemble d'algorithmes fonctionnels pour cette nouvelle
+structure de données.  Les graphes de FGL sont des multi-graphes,
+orientés ou non, persistants, dont les sommets et les arcs sont
+étiquetés avec des informations de type quelconque.  L'implantation
+des graphes est réalisée par des tableaux fonctionnels ou des arbres
+AVL.  Cette bibliothèque est la seule, avec \ocamlgraph et
+\textsc{Baire} (voir ci-dessous), à proposer des graphes persistants.
+Cependant, la <<philosophie>> purement fonctionnelle de \textsc{Fgl}
+est bien différente de celle avec laquelle nous avons conçu notre
+bibliothèque.  Par exemple, l'interface de nos graphes persistants
+partage une importante signature avec nos graphes impératifs et les
+algorithmes que l'on fournit sont directement inspirés des algorithmes
+\emph{impératifs} de la littérature.
+
+\paragraph{\textsc{Bgl} \cite{Bgl}} Cette bibliothèque de graphes pour
+C++ propose des algorithmes génériques implantés à l'aide de
+\emph{templates} (forme purement <<syntaxique>> des foncteurs
+d'\ocaml). Les paramètres de ces templates décrivent l'interface
+minimale que la structure de données de graphes doit remplir pour
+appliquer l'algorithme.  Cette bibliothèque est la seule, avec
+\ocamlgraph, à proposer de tels algorithmes génériques.  Cependant, on
+ne trouve que deux implantations de graphes et la liste des interfaces
+définies dans \textsc{Bgl} est moins complète que celle de notre
+bibliothèque: on ne retrouve pas, par exemple, d'interfaces permettant
+aux algorithmes de profiter du caractère persistant d'une structure de
+données. De plus, l'étiquetage des sommets ou des arcs est réalisé à
+l'aide de dictionnaires passés comme paramètres aux algorithmes qui en
+ont besoin, et ne fait donc pas parti de la signature des graphes.
+
+\paragraph{\textsc{Baire} \cite{Baire}} Cette bibliothèque de structures de
+données pour \textsc{Caml} fournit huit implantations différentes de
+graphes sans aucun partage de code (la bibliothèque n'utilisant pas le
+système de foncteurs d'\textsc{Ocaml}). Chaque structure implante des
+graphes orientés et étiquetés sur les arcs (il n'y a pas de graphes
+non étiquetés) et possède des opérations sur les arcs et les sommets
+ainsi qu'un ensemble d'itérateurs et d'observateurs. \textsc{Baire} ne
+fournit aucun algorithme sur les graphes.
+
+\paragraph{\textsc{Gtl} \cite{Gtl}} Cette bibliothèque en C++ propose
+une unique structure de graphes impératifs, orientés (un graphe
+non-orienté est obtenu en <<annulant>> la direction des arcs d'un
+graphe orienté) et non-étiquetés.  Tout comme \textsc{Bgl},
+l'étiquetage des sommets ou des arcs est réalisé à l'aide de
+dictionnaires. Enfin, la bibliothèque fournit plusieurs algorithmes
+pouvant être appliqués uniquement sur sa structure de données.
+
+\vspace*{-1em}
+
+\section{Conclusion}
+
+Nous avons présenté dans cet article \ocamlgraph, une bibliothèque de
+graphes pour \ocaml, proposant de nombreuses structures de données de
+graphes ainsi que des algorithmes implantés indépendamment de ces
+structures. Cette généricité est réalisée grâce au système de modules
+d'\ocaml, et tout particulièrement à ses foncteurs qui permettent une
+large factorisation du code au niveau des implantations tant des
+différentes structures de données que des algorithmes.
+
+À notre connaissance, aucune bibliothèque d'un langage applicatif
+n'est aussi générique qu'\ocamlgraph. Celles des langages impératifs
+ne le sont que rarement et, quoi qu'il en soit, ne fournissent jamais
+une telle diversité de structures de données.
+
+Il reste à comparer les performances d'\ocamlgraph\ à celles des
+bibliothèques existantes. Cependant l'attention portée à l'efficacité
+des structures de données utilisées dans \ocamlgraph\ autorise un
+certain optimisme, qui semble confirmé par les toutes premières
+expériences.
+
+\vspace*{-1em}
+
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{./biblio}
+% And do NOT FORGET to include your bibliography for submission
+%\begin{thebibliography}{10}
+%\bibitem{...}
+%\end{thebibliography}
+\vfill
+\pagebreak 
+\thispagestyle{colloquetitle}
+\cleardoublepage
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

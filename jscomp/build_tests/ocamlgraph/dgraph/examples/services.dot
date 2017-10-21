@@ -1,0 +1,255 @@
+digraph G {
+  "unlzw (1)" [height=0.200000, width=0.200000, shape=box, color="#000080",
+               style=bold];
+  "unzip (9)" [height=1.800000, width=1.800000, shape=box, color="#008000",
+               style=bold];
+  "make_simple_name (1)" [height=0.200000, width=0.200000, shape=box,
+                          color="#008080", style=bold];
+  "treat_file (21)" [height=4.200000, width=4.200000, shape=box,
+                     color="#800000", style=bold];
+  "strlen (1)" [height=0.200000, width=0.200000, shape=box, color="#800080",
+                style=dotted];
+  "treat_stdin (1)" [height=0.200000, width=0.200000, shape=box,
+                     color="#808000", style=bold];
+  "atoi (1)" [height=0.200000, width=0.200000, shape=box, color="#808080",
+              style=dotted];
+  "unlzh (12)" [height=2.400000, width=2.400000, shape=box, color="#000040",
+                style=bold];
+  "signal (1)" [height=0.200000, width=0.200000, shape=box, color="#0000C0",
+                style=dotted];
+  "strcmp (1)" [height=0.200000, width=0.200000, shape=box, color="#008040",
+                style=dotted];
+  "do_list (4)" [height=0.800000, width=0.800000, shape=box, color="#0080C0",
+                 style=bold];
+  "version (1)" [height=0.200000, width=0.200000, shape=box, color="#800040",
+                 style=bold];
+  "add_envopt (5)" [height=1.000000, width=1.000000, shape=box,
+                    color="#8000C0", style=bold];
+  "strcpy (1)" [height=0.200000, width=0.200000, shape=box, color="#808040",
+                style=dotted];
+  "strncmp (1)" [height=0.200000, width=0.200000, shape=box, color="#8080C0",
+                 style=dotted];
+  "fprintf (1)" [height=0.200000, width=0.200000, shape=box, color="#004000",
+                 style=dotted];
+  "main (1)" [height=0.200000, width=0.200000, shape=box, color="#004080",
+              style=bold];
+  "strncpy (1)" [height=0.200000, width=0.200000, shape=box, color="#00C000",
+                 style=dotted];
+  "basename (1)" [height=0.200000, width=0.200000, shape=box,
+                  color="#00C080", style=bold];
+  "lzw (1)" [height=0.200000, width=0.200000, shape=box, color="#804000",
+             style=bold];
+  "zip (26)" [height=5.200000, width=5.200000, shape=box, color="#804080",
+              style=bold];
+  "getopt_long (1)" [height=0.200000, width=0.200000, shape=box,
+                     color="#80C000", style=dotted];
+  "usage (1)" [height=0.200000, width=0.200000, shape=box, color="#80C080",
+               style=bold];
+  "warn (1)" [height=0.200000, width=0.200000, shape=box, color="#004040",
+              style=bold];
+  "copy (1)" [height=0.200000, width=0.200000, shape=box, color="#0040C0",
+              style=bold];
+  "help (1)" [height=0.200000, width=0.200000, shape=box, color="#00C040",
+              style=bold];
+  "unpack (3)" [height=0.600000, width=0.600000, shape=box, color="#00C0C0",
+                style=bold];
+  "license (1)" [height=0.200000, width=0.200000, shape=box, color="#804040",
+                 style=bold];
+  "file_read (1)" [height=0.200000, width=0.200000, shape=box,
+                   color="#8040C0", style=bold];
+  "do_exit (2)" [height=0.400000, width=0.400000, shape=box, color="#80C040",
+                 style=bold];
+  "read (1)" [height=0.200000, width=0.200000, shape=box, color="#80C0C0",
+              style=dotted];
+  "write_buf (2)" [height=0.400000, width=0.400000, shape=box,
+                   color="#400000", style=bold];
+  "read_error (1)" [height=0.200000, width=0.200000, shape=box,
+                    color="#400080", style=bold];
+  "get_method (3)" [height=0.600000, width=0.600000, shape=box,
+                    color="#408000", style=bold];
+  "fill_inbuf (1)" [height=0.200000, width=0.200000, shape=box,
+                    color="#408080", style=bold];
+  "error (1)" [height=0.200000, width=0.200000, shape=box, color="#C00000",
+               style=bold];
+  "memset (1)" [height=0.200000, width=0.200000, shape=box, color="#C00080",
+                style=dotted];
+  "memcpy (1)" [height=0.200000, width=0.200000, shape=box, color="#C08000",
+                style=dotted];
+  "updcrc (1)" [height=0.200000, width=0.200000, shape=box, color="#C08080",
+                style=bold];
+  "flush_window (1)" [height=0.200000, width=0.200000, shape=box,
+                      color="#400040", style=bold];
+  "strrchr (1)" [height=0.200000, width=0.200000, shape=box, color="#4000C0",
+                 style=dotted];
+  "clear_bufs (1)" [height=0.200000, width=0.200000, shape=box,
+                    color="#408040", style=bold];
+  "write_error (1)" [height=0.200000, width=0.200000, shape=box,
+                     color="#4080C0", style=bold];
+  "perror (1)" [height=0.200000, width=0.200000, shape=box, color="#C00040",
+                style=dotted];
+  "display_ratio (2)" [height=0.400000, width=0.400000, shape=box,
+                       color="#C000C0", style=bold];
+  "<indirect> (1)" [height=0.200000, width=0.200000, shape=box,
+                    color="#C08040", style=bold];
+  "fileno (1)" [height=0.200000, width=0.200000, shape=box, color="#C080C0",
+                style=dotted];
+  "abort_gzip (1)" [height=0.200000, width=0.200000, shape=box,
+                    color="#404000", style=bold];
+  "close (1)" [height=0.200000, width=0.200000, shape=box, color="#404080",
+               style=dotted];
+  "unlink (1)" [height=0.200000, width=0.200000, shape=box, color="#40C000",
+                style=dotted];
+  "isatty (1)" [height=0.200000, width=0.200000, shape=box, color="#40C080",
+                style=dotted];
+  "fstat (1)" [height=0.200000, width=0.200000, shape=box, color="#C04000",
+               style=dotted];
+  "strcspn (1)" [height=0.200000, width=0.200000, shape=box, color="#C04080",
+                 style=dotted];
+  "free (1)" [height=0.200000, width=0.200000, shape=box, color="#C0C000",
+              style=dotted];
+  "strlwr (1)" [height=0.200000, width=0.200000, shape=box, color="#C0C080",
+                style=bold];
+  "__errno_location (1)" [height=0.200000, width=0.200000, shape=box,
+                          color="#404040", style=dotted];
+  "malloc (1)" [height=0.200000, width=0.200000, shape=box, color="#4040C0",
+                style=dotted];
+  "__ctype_b_loc (1)" [height=0.200000, width=0.200000, shape=box,
+                       color="#40C040", style=dotted];
+  
+  
+  "unlzw (1)" -> "fprintf (1)";
+  "unlzw (1)" -> "read (1)";
+  "unlzw (1)" -> "write_buf (2)";
+  "unlzw (1)" -> "read_error (1)";
+  "unlzw (1)" -> "fill_inbuf (1)";
+  "unlzw (1)" -> "error (1)";
+  "unlzw (1)" -> "memset (1)";
+  "unlzw (1)" -> "memcpy (1)";
+  "unzip (9)" -> "fprintf (1)";
+  "unzip (9)" -> "fill_inbuf (1)";
+  "unzip (9)" -> "error (1)";
+  "unzip (9)" -> "memset (1)";
+  "unzip (9)" -> "memcpy (1)";
+  "unzip (9)" -> "updcrc (1)";
+  "unzip (9)" -> "flush_window (1)";
+  "unzip (9)" -> "free (1)";
+  "unzip (9)" -> "malloc (1)";
+  "make_simple_name (1)" -> "strrchr (1)";
+  "treat_file (21)" -> "strlen (1)";
+  "treat_file (21)" -> "treat_stdin (1)";
+  "treat_file (21)" -> "strcmp (1)";
+  "treat_file (21)" -> "do_list (4)";
+  "treat_file (21)" -> "strcpy (1)";
+  "treat_file (21)" -> "fprintf (1)";
+  "treat_file (21)" -> "get_method (3)";
+  "treat_file (21)" -> "error (1)";
+  "treat_file (21)" -> "strrchr (1)";
+  "treat_file (21)" -> "clear_bufs (1)";
+  "treat_file (21)" -> "write_error (1)";
+  "treat_file (21)" -> "perror (1)";
+  "treat_file (21)" -> "display_ratio (2)";
+  "treat_file (21)" -> "<indirect> (1)";
+  "treat_file (21)" -> "fileno (1)";
+  "treat_file (21)" -> "close (1)";
+  "treat_file (21)" -> "unlink (1)";
+  "treat_file (21)" -> "isatty (1)";
+  "treat_file (21)" -> "fstat (1)";
+  "treat_file (21)" -> "strcspn (1)";
+  "treat_file (21)" -> "strlwr (1)";
+  "treat_file (21)" -> "__errno_location (1)";
+  "treat_file (21)" -> "__ctype_b_loc (1)";
+  "treat_stdin (1)" -> "do_list (4)";
+  "treat_stdin (1)" -> "strcpy (1)";
+  "treat_stdin (1)" -> "fprintf (1)";
+  "treat_stdin (1)" -> "do_exit (2)";
+  "treat_stdin (1)" -> "get_method (3)";
+  "treat_stdin (1)" -> "error (1)";
+  "treat_stdin (1)" -> "clear_bufs (1)";
+  "treat_stdin (1)" -> "display_ratio (2)";
+  "treat_stdin (1)" -> "<indirect> (1)";
+  "treat_stdin (1)" -> "fileno (1)";
+  "treat_stdin (1)" -> "isatty (1)";
+  "treat_stdin (1)" -> "fstat (1)";
+  "unlzh (12)" -> "write_buf (2)";
+  "unlzh (12)" -> "fill_inbuf (1)";
+  "unlzh (12)" -> "error (1)";
+  "do_list (4)" -> "read (1)";
+  "do_list (4)" -> "read_error (1)";
+  "do_list (4)" -> "display_ratio (2)";
+  "version (1)" -> "fprintf (1)";
+  "add_envopt (5)" -> "strlen (1)";
+  "add_envopt (5)" -> "strcpy (1)";
+  "add_envopt (5)" -> "error (1)";
+  "add_envopt (5)" -> "strcspn (1)";
+  "add_envopt (5)" -> "free (1)";
+  "add_envopt (5)" -> "malloc (1)";
+  "main (1)" -> "treat_file (21)";
+  "main (1)" -> "strlen (1)";
+  "main (1)" -> "treat_stdin (1)";
+  "main (1)" -> "atoi (1)";
+  "main (1)" -> "signal (1)";
+  "main (1)" -> "strcmp (1)";
+  "main (1)" -> "do_list (4)";
+  "main (1)" -> "version (1)";
+  "main (1)" -> "add_envopt (5)";
+  "main (1)" -> "strcpy (1)";
+  "main (1)" -> "strncmp (1)";
+  "main (1)" -> "fprintf (1)";
+  "main (1)" -> "strncpy (1)";
+  "main (1)" -> "basename (1)";
+  "main (1)" -> "getopt_long (1)";
+  "main (1)" -> "usage (1)";
+  "main (1)" -> "help (1)";
+  "main (1)" -> "license (1)";
+  "main (1)" -> "do_exit (2)";
+  "basename (1)" -> "strrchr (1)";
+  "basename (1)" -> "strlwr (1)";
+  "lzw (1)" -> "fprintf (1)";
+  "zip (26)" -> "basename (1)";
+  "zip (26)" -> "write_buf (2)";
+  "zip (26)" -> "error (1)";
+  "zip (26)" -> "memset (1)";
+  "zip (26)" -> "memcpy (1)";
+  "zip (26)" -> "updcrc (1)";
+  "zip (26)" -> "<indirect> (1)";
+  "usage (1)" -> "fprintf (1)";
+  "warn (1)" -> "fprintf (1)";
+  "copy (1)" -> "read (1)";
+  "copy (1)" -> "write_buf (2)";
+  "copy (1)" -> "read_error (1)";
+  "copy (1)" -> "__errno_location (1)";
+  "help (1)" -> "fprintf (1)";
+  "help (1)" -> "usage (1)";
+  "unpack (3)" -> "fill_inbuf (1)";
+  "unpack (3)" -> "error (1)";
+  "unpack (3)" -> "flush_window (1)";
+  "license (1)" -> "fprintf (1)";
+  "file_read (1)" -> "read (1)";
+  "file_read (1)" -> "updcrc (1)";
+  "do_exit (2)" -> "free (1)";
+  "write_buf (2)" -> "write_error (1)";
+  "read_error (1)" -> "fprintf (1)";
+  "read_error (1)" -> "perror (1)";
+  "read_error (1)" -> "abort_gzip (1)";
+  "read_error (1)" -> "__errno_location (1)";
+  "get_method (3)" -> "fprintf (1)";
+  "get_method (3)" -> "basename (1)";
+  "get_method (3)" -> "fill_inbuf (1)";
+  "get_method (3)" -> "error (1)";
+  "fill_inbuf (1)" -> "read (1)";
+  "fill_inbuf (1)" -> "read_error (1)";
+  "fill_inbuf (1)" -> "__errno_location (1)";
+  "error (1)" -> "fprintf (1)";
+  "error (1)" -> "abort_gzip (1)";
+  "flush_window (1)" -> "write_buf (2)";
+  "flush_window (1)" -> "updcrc (1)";
+  "write_error (1)" -> "fprintf (1)";
+  "write_error (1)" -> "perror (1)";
+  "write_error (1)" -> "abort_gzip (1)";
+  "display_ratio (2)" -> "fprintf (1)";
+  "abort_gzip (1)" -> "do_exit (2)";
+  "abort_gzip (1)" -> "close (1)";
+  "abort_gzip (1)" -> "unlink (1)";
+  "strlwr (1)" -> "__ctype_b_loc (1)";
+  
+  }

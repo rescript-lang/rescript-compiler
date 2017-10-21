@@ -1,0 +1,378 @@
+%                       LaTeX Style for Actes de colloques
+
+
+% Version générique pour la série ``Actes de colloques''.
+% In the documentation examples are given for the workshop WAGA,
+% ``International Workshop of Attribute Grammars and their Applications''
+% P.Weis entretien 2000 2001 2002 2003.
+% P.Weis & E.Duris (01/99) Migration from jfla99 style to waga99 style.
+% P.Weis (change 98 en 99). Adaptation \`a Latex2e, documentation.
+% C.Queinnec (change 97 en 98) ainsi que le mois.
+% C.Queinnec (pour 97, parametre pour date)
+% B.Serpette (Guy Lapalme pour 96)
+% Origine:
+% Richard Furuta December 9, 1987
+% (adapte pour Bigre - Ph Louarn & J.Andre 88-89, 91)
+
+
+
+%   ----------------------------------------------------------------------
+%                            Author's instructions
+%   ----------------------------------------------------------------------
+
+
+%   In order to ease the proceedings publishing and the printout process, we ask
+%   authors to respect the following instructions. Thanks for your attention.
+%   
+%    1) create a directory named by the first author of your article
+%           For instance: ``firstauthor''
+%   
+%    2) down-load this actes.sty file and put it into this directory.
+%    
+%    3) in this directory, copy one of the latex squeleton files given below,
+%    that you will fill in with your own latex text (see example in the
+%    squeleton). Save this file with the same name.
+%           For instance: ``firstauthor.tex''
+%   
+%    4) put into the directory ``firstauthor'' all other required files, for
+%    instance postscript files for images and specific latex style files.
+%   
+%    5) once the file ``firstauthor.tex'' is complete, and before the
+%    real submission:
+%    
+%          - include your bibliography directly in your latex file (from the
+%          .bbl file).
+%
+%          - compile ``firstauthor.tex'' and verify the layout of your paper.
+%   
+%          - from the parent directory, create one single tar file
+%          ``firstauthor.tar'' which contains all the files inside your
+%          directory. Then, gzip and uuencode it.
+%          For instance:
+%          cd ..;  tar cf firstauthor.tar ./firstauthor
+%          gzip [--best] firstauthor.tar
+%          uuencode firstauthor.tar.gz firstauthor.tar.gz > firstauthor.tar.gz.uu 
+%    
+%    6) Finally send this single tar file ``firstauthor.tar.gz.uu''
+%    to (colloque name address, for instance WAGA-subm@inria.fr),
+%    before the (deadline).
+%
+
+%---------------------------------------------------------------------
+%          A squeleton (example) of your latex file ``firstauthor.tex''
+%          Copy this code as ``firstauthor.tex'' file and fill it.
+%---------------------------------------------------------------------
+
+%% If you are writing in english and using new latex: latex2e
+
+%      \documentclass[twoside]{article}
+%      \usepackage{actes}
+%      %% Title page...
+%      \title{The title of your article}
+%      \author{G. McHulott$^1$
+%           \& E. Massinture$^2$}
+%      %% Headers for other pages...
+%      \titlehead{Short title of your article} % for odd pages
+%      \authorhead{McHulott \& Massinture}     % for even pages
+%      \affiliation{\begin{tabular}{rr}        % for institute(s) 
+%      \\ 1:  Laboratoire d'Informatique de l'\'Ecole UniTechnique,
+%      \\     99999 Petit Oiseau CEDEX, France
+%      \\     {\tt mchulott@info.unitechnique.fr} 
+%      \\ 2:  Universit\'e de Par-ici,CP 6666, Montr\'eal, Qu\'ebec, 
+%      \\     {\tt massinture@uparici.qc}
+%      \end{tabular}}
+%
+%      \begin{document}
+%      \setcounter{page}{1}
+%      \maketitle
+%      % Here is the place for your text...
+%
+%      % And do NOT FORGET to include your bibliography for submission
+%      \begin{thebibliography}{10}
+%      \bibitem{...}
+%      \end{thebibliography}
+%
+%      \pagebreak 
+%      \thispagestyle{colloquetitle}
+%      \cleardoublepage
+%      \end{document}
+
+
+%% If you are writing in english using old latex
+
+%      \documentstyle[twoside,actes]{article}
+%      %% Title page...
+%      \title{The title of your article}
+%      \author{G. McHulott$^1$
+%           \& E. Massinture$^2$}
+%      %% Headers for other pages 
+%      \titlehead{Short title of your article}  % for odd pages  
+%      \authorhead{McHulott \& Massinture}      % for even pages
+%      \affiliation{\begin{tabular}{rr}         % for institute(s)
+%      \\ 1:  Laboratoire d'Informatique de l'\'Ecole UniTechnique,
+%      \\     99999 Petit Oiseau CEDEX, France
+%      \\     {\tt mchulott@info.unitechnique.fr}
+%      \\ 2:  Universit\'e de Par-ici,CP 6666, Montr\'eal, Qu\'ebec,
+%      \\     {\tt massinture@uparici.qc}
+%      \end{tabular}}
+%
+%      \begin{document} 
+%      \setcounter{page}{1}
+%      \maketitle 
+%      % Here is the place for your text...
+%
+%      % And do NOT FORGET to include your bibliography for submission
+%      \begin{thebibliography}{10}
+%      \bibitem{...}               
+%      \end{thebibliography}
+%
+%      \pagebreak
+%      \thispagestyle{colloquetitle}
+%      \cleardoublepage
+%      \end{document}
+
+%   ----------------------------------------------------------------------
+%                            End of author's instructions
+%   ----------------------------------------------------------------------
+
+%----------------------------------------------------------------------
+%                Mode d'emploi pour les auteurs. 
+%----------------------------------------------------------------------
+
+%% Si vous écrivez en français en utilisant latex2e,
+%% voici le squelette du corps de votre article sans le texte!
+
+% Si vous êtes en Latex2e
+%      \documentclass[twoside]{article}
+%      \usepackage[latin1]{inputenc}
+%      \usepackage[T1]{fontenc}
+%      \usepackage{actes}
+%      \usepackage{french}
+%      \title{ le titre de votre article }
+%      \author{G. McHulott$^1$
+%              \& E. Massinture$^2$}
+%      % les titres de haut de pages
+%      \titlehead{Titre de l'article en quelques mots}%  a droite (page impaire)
+%      \authorhead{McHulott \& Massinture}% a gauche (page paire)
+%      \affiliation{\begin{tabular}{rr} 
+%      \\ 1:  Laboratoire d'Informatique de l'\'Ecole UniTechnique,
+%      \\     99999 Petit Oiseau CEDEX, France
+%      \\     {\tt mchulott@info.unitechnique.fr} 
+%      \\ 2:  Universit\'e de Par-ici,CP 6666, Montr\'eal, Qu\'ebec, 
+%      \\     {\tt massinture@uparici.qc}
+%      \end{tabular}}
+%
+%      \begin{document}
+%      \setcounter{page}{1}
+%      \maketitle
+%      Ici commence votre texte
+%
+%      % La bibliographie
+%      \begin{thebibliography}{10} % N'oubliez pas de l'inclure lors
+%      \bibitem{...}               % de votre soumission.
+%      \end{thebibliography}
+%
+%      \pagebreak
+%      \thispagestyle{colloquetitle}
+%      \cleardoublepage
+%      \end{document}
+
+%% Si vous écrivez en français en utilisant le latex traditionnel,
+%% voici le squelette du corps de votre article sans le texte!
+
+%      \documentstyle[french,frtypo,twoside,actes]{article}
+%      \title{Le titre de votre article }
+%      \author{G. McHulott$^1$
+%              \& E. Massinture$^2$}
+%       les titres de haut de pages
+%      \titlehead{Titre de l'article en quelques mots}%  a droite (page impaire)
+%      \authorhead{McHulott \& Massinture}% a gauche (page paire)
+%      \affiliation{\begin{tabular}{rr} 
+%      \\ 1:  Laboratoire d'Informatique de l'\'Ecole UniTechnique,
+%      \\     99999 Petit Oiseau CEDEX, France
+%      \\     {\tt mchulott@info.unitechnique.fr} 
+%      \\ 2:  Universit\'e de Par-ici,CP 6666, Montr\'eal, Qu\'ebec, 
+%      \\     {\tt massinture@uparici.qc}
+%      \end{tabular}}
+%             ....
+%      \begin{document}
+%      \setcounter{page}{1}
+%      \maketitle 
+%      %Ici commence votre texte
+%
+%      % La bibliographie
+%      \begin{thebibliography}{10} % N'oubliez pas de l'inclure lors
+%      \bibitem{...}               % de votre soumission.
+%      \end{thebibliography}
+%
+%      \pagebreak
+%      \thispagestyle{colloquetitle}
+%      \cleardoublepage
+%      \end{document}
+
+%   ----------------------------------------------------------------------
+%                            Editor's instructions
+%   ----------------------------------------------------------------------
+
+%% To fit to the colloque or conference at hand, you must change the
+%% following macros:
+% Namecolloque, Namecolloqueplain
+% Yearcolloque, Yearcolloqueplain
+% Monthcolloque, the month of the colloque
+
+%   ----------------------------------------------------------------------
+%                            End of Editor's instructions
+%   ----------------------------------------------------------------------
+
+
+
+%                       LaTeX Style for Actes de colloques
+
+
+% beginning of actes.sty
+\def\Namecolloque{JFLA}
+\def\Namecolloqueplain{Journ\'ees Francophones des Langages Applicatifs}
+\def\Yearcolloque{04}
+\def\Yearcolloqueplain{20\Yearcolloque}
+\def\Monthcolloque{janvier}
+
+\ds@twoside
+
+%%%%%%%%%%%%%%%%%%%% The sizes %%%%%%%%%%%%%%%%%%%%
+\oddsidemargin 0.21cm  % (21 - (2*2.54) - textwidth)/2
+\evensidemargin 0.21cm
+\marginparwidth 0cm
+\marginparsep 0pt
+\topmargin 0.7cm
+\headheight 0cm
+\headsep 0.5cm
+\textheight 22cm
+\textwidth 15.5cm
+\topskip 0.7cm
+\footskip 0.7cm
+
+%\footnotesep 8.4pt
+
+\parindent 0.5cm
+\parskip 0.1cm
+
+\hfuzz2pt
+\tolerance3500
+\pretolerance3500
+\hbadness10000
+\hyphenpenalty50
+\exhyphenpenalty50
+
+%%%%%%%%%%%%%%%%%%%% Style of the first page of each paper %%%%%%%%%%%%%%%%%%%%
+\def\DateC#1{\gdef\D@teC{#1}}
+\DateC{\Monthcolloque{} \Yearcolloqueplain{} -- 
+\Namecolloqueplain -- 
+       \Namecolloque\Yearcolloque{}
+}
+
+\def\ps@colloquetitle{\let\@mkboth\@gobbletwo%
+     \def\@oddhead{
+       \vbox to\headheight
+        {\vfil \hbox to\headwidth{\footnotesize \D@teC}
+               \vskip 4pt
+               \hbox to\headwidth{\hrulefill}
+        }}
+     \def\@oddfoot{\rm\hfil\thepage\hfil}
+     \let\@evenhead\@oddhead
+     \let\@evenfoot\@oddfoot}
+\thispagestyle{colloquetitle}
+
+%%%%%%%%%%%%%%%%%%%% Style of other pages %%%%%%%%%%%%%%%%%%%%
+\def\authorhead#1{\gdef\@authorhead{#1}}
+\def\titlehead#1{\gdef\@titlehead{#1}}
+
+\newlength{\headwidth}\setlength{\headwidth}{\textwidth}
+\addtolength{\headwidth}{-1pt}
+
+\def\ps@colloque{\let\@mkboth\@gobbletwo%
+     \def\@oddhead{
+       \vbox to\headheight
+        {\vfil \hbox to\headwidth{\rm\normalsize\hfil{\@titlehead}}
+               \vskip 4pt
+               \hbox to\headwidth{\hrulefill}
+        }}
+     \def\@oddfoot{\rm\hfil\thepage\hfil}
+     \def\@evenhead{
+       \vbox to\headheight
+        {\vfil \hbox to\headwidth{\rm\normalsize{\@authorhead}\hfil}
+               \vskip 4pt
+               \hbox to\headwidth{\hrulefill}
+        }}
+     \let\@evenfoot\@oddfoot}
+
+%%%%%%%%%%%%%%%%%%%% Title %%%%%%%%%%%%%%%%%%%%
+\def\affiliation#1{\gdef\@affiliation{#1}}
+\def\titlesize{\@setsize\titlesize{25pt}\xxpt\@xxpt}    % title large
+\def\authsize{\@setsize\authsize{14pt}\xipt\@xipt}      % author size
+\def\affilsize{\@setsize\affilsize{12pt}\xpt\@xpt}      % affiliation
+
+% title needs adjusting, no date in title
+\def\@maketitle{\newpage
+ \null
+ \vspace*{-20pt}
+ \begin{flushright}
+  {\titlesize \@title \par}
+  \vskip 10pt                   % Vertical space after title. 8pt
+  \hrule height 1.5pt                   % one point rule
+  \vskip 14pt                   % 14 points below rule (adjusted for baseline)
+  {\authsize \@author \par}
+  % there should be 18 pts between author and affiliation baselines
+  \vskip 6pt                    % Vertical space after author.  18pt - 6pt
+  {\affilsize\it \@affiliation \par}
+ \end{flushright}
+ \par
+ \vskip 16pt}                   % Vertical space after title.  26pt - 10pt
+
+\def\maketitle{\par
+\begingroup
+\def\thefootnote{\fnsymbol{footnote}}
+\def\@makefnmark{\hbox 
+to 0pt{$^{\@thefnmark}$\hss}} 
+\if@twocolumn 
+\twocolumn[\@maketitle] 
+\else \newpage
+\global\@topnum\z@ \@maketitle \fi\thispagestyle{colloquetitle}\@thanks
+\endgroup
+\setcounter{footnote}{0}
+\let\maketitle\relax
+\let\@maketitle\relax
+\gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}
+
+%%%%%%%%%%%%%%%%%%%% environnement "abst" %%%%%%%%%%%%%%%%%%%%
+\def\abstsize{\@setsize\abstsize{11pt}\viiipt\@viiipt}  % for abstract
+\def\abst{\list{}{\leftmargin0pc}\abstsize\item[]}
+\def\endabst{\endlist\vskip-7pt}
+
+%%%%%%%%%%%%%%%%%%%% need a period after section numbers %%%%%%%%%%%%%%%%%%%%
+\def\@sect#1#2#3#4#5#6[#7]#8{\ifnum #2>\c@secnumdepth
+     \def\@svsec{}\else 
+     \refstepcounter{#1}\edef\@svsec{\csname the#1\endcsname{.}\hskip 1em }\fi
+     \@tempskipa #5\relax
+      \ifdim \@tempskipa>\z@ 
+        \begingroup #6\relax
+          \@hangfrom{\hskip #3\relax\@svsec}{\interlinepenalty \@M #8\par}
+        \endgroup
+       \csname #1mark\endcsname{#7}\addcontentsline
+         {toc}{#1}{\ifnum #2>\c@secnumdepth \else
+                      \protect\numberline{\csname the#1\endcsname}\fi
+                    #7}\else
+        \def\@svsechd{#6\hskip #3\@svsec #8\csname #1mark\endcsname
+                      {#7}\addcontentsline
+                           {toc}{#1}{\ifnum #2>\c@secnumdepth \else
+                             \protect\numberline{\csname the#1\endcsname}\fi
+                       #7}}\fi
+     \@xsect{#5}}
+
+\pagestyle{colloque}
+\thispagestyle{colloquetitle}
+\def\abstractname{R\'esum\'e}
+\def\refname{Bibliographie}
+
+\endinput
+
+% end of actes.sty

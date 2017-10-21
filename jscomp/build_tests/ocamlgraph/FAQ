@@ -1,0 +1,86 @@
+==========================
+FREQUENTLY ASKED QUESTIONS
+==========================
+
+==========
+Q: I need to store some information into vertices and/or edges
+   I need several kind of labels on the edges
+-----
+A: Use one of the functor implementation provided in Persistent or Imperative.
+   If for instance you want mutable directed graphs with colored vertices,
+   you may do
+
+	type color = Red | Green | Blue | Yellow
+	module G = Imperative.Digraph.Abstract(struct type t = color end)
+
+  (to be able to change the color you would use `type t = color ref' instead)
+==========
+==========
+Q: How to choose between concrete and abstract vertices for my graph
+   implementation?
+-----
+A: If you fall into one of the following cases, use abstract vertices:
+   - you cannot provide efficient comparison/hash functions for vertices; or
+   - you wish to get two different vertices with the same label.
+   In other cases, it is certainly easier to use concrete vertices.
+==========
+==========
+Q: Is it possible to serialize graphs?
+-----
+A: Graphs are serializable data structures: just call [Pervasives.output_value]
+   on your graph (for example).
+
+   But abstract graphs use integer tags to identify vertices;
+   this tag is made from the global reference [Blocks.cpt_vertex].
+   There are two related issues.
+
+   1) If there are abstract vertices in RAM while unmarshalling some others,
+      you have to be sure that RAM vertices do not share tags with unmarshalled
+      ones (except if you really want that).
+
+   2) If you need to create new vertices after unserialising an abstract graph,
+      you have to:
+      - serialize [!Blocks.cpt_vertex];
+      - call function [Blocks.after_unserialization] after your unserialisation
+      process.
+
+   There is no issue with concrete graph: it may be easier to use them if
+   unmarshalling is required.
+==========
+==========
+Q: I need Foobar-Tarjan algorithm and it is not provided
+-----
+A: Please contribute by sending us the code :-) See next question.
+==========
+==========
+Q: How can I contribute to this library?
+-----
+A: You can contribute either with a graph data structure or with an algorithm
+   over graphs. For the former, please follow the signatures given in module
+   Sig. For the latter, write your algorithm as a functor, following examples
+   in modules Path, Flow, Components, etc.
+==========
+==========
+Q: Your implementation of algorithm AAA could be greatly improved provided
+   you add this and this into the graph data structure
+-----
+A: Of course yes. But the idea behind ocamlgraph is to be as generic as
+   possible (any algorithm should be useable on any implementation).
+
+   When the graph data structure provides additional capabilities
+   (such as marking, etc.) it is possible to provide a more efficient
+   implementation into some specialized functor. See module Traverse for
+   instance (where DFS and cycle detection are optimized for imperative
+   graphs equipped with marks)
+==========
+==========
+Q: I have a graph implementation with polymorphic types for vertices or edges
+   and thus I can't apply the algorithms functors
+-----
+A: Here we bump into Ocaml's type system limitations: the number of type
+   parameters must be know when the functor is written and the simplest
+   choice for us was to assume no type parameter at all. (This is exactly the
+   same for functors Set.Make or Map.Make from Ocaml standard library.)
+   As a (bad) workaround, you can copy the functor body and substitute your
+   own functions for the functor arguments.
+==========
