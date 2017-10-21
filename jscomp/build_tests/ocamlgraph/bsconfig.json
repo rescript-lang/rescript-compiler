@@ -1,0 +1,57 @@
+{
+    "name": "graph",
+    "sources": [
+        "libx",
+        {
+            "dir": "src",
+            "generators": [
+                {
+                    "name" : "lex",
+                    "edge": [
+                        "dot_lexer.ml", ":", "dot_lexer.mll"
+                    ]
+                },
+                {
+                    "name" : "lex",
+                    "edge": [
+                        "gml.ml",  ":", "gml.mll"
+                    ]
+                },
+                {
+                    "name" : "yacc",
+                    "edge": [
+                        "dot_parser.ml", "dot_parser.mli", 
+                        ":", "dot_parser.mly"
+                    ]
+                }
+            ]
+        },
+        {
+            "dir" : "tests",
+            "files" : [
+                "check.ml",
+                "test_clique.ml",
+                "test_topsort.ml",
+                "test_johnson.ml",
+                "test_bf.ml"
+            ]
+        }
+     
+    ],
+    "package-specs": {
+        "module": "commonjs",
+        "in-source": true
+    },
+    "suffix": ".bs.js",
+    "generators": [
+        {
+            "name": "lex",
+            "command": "ocamllex.opt $in"
+        },
+        {
+            "name": "yacc",
+            "command": "ocamlyacc $in"
+        }
+    ],
+    "namespace": true
+}
