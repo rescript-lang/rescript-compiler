@@ -77,7 +77,8 @@ type cxt = {
   cwd : string ;
   root : string;
   cut_generators : bool;
-  traverse : bool
+  traverse : bool;
+  namespace : string option;
 }
 
 let collect_pub_modules 
