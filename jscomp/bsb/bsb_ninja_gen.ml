@@ -34,9 +34,9 @@ let merge_module_info_map acc sources : Bsb_db.t =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        failwith ("Conflict files found: " ^ modname ^ " in "
-                  ^ Bsb_db.dir_of_module_info a ^ " and " ^ Bsb_db.dir_of_module_info b
-                  ^ ". File names need to be unique in a project.")
+        Bsb_exception.conflict_module modname 
+          (Bsb_db.dir_of_module_info a)
+          (Bsb_db.dir_of_module_info b)     
       | Some v, None  -> Some v
       | None, Some v ->  Some v
     ) acc  sources 

@@ -34,8 +34,11 @@ try {
     if (e.code === "ENOENT") {
         // when bsb is actually not found
         console.error(String(e))
+        process.exit(2)
     }
-    process.exit(2)
+    if (!watch_mode) {
+        process.exit(2)
+    }
 }
 
 if (watch_mode) {
@@ -75,7 +78,7 @@ if (watch_mode) {
             // lock files shouldn't rely on the umask to disallow tampering by other.        
             var fd = fs.openSync(lockFileName, 'wx', 0o664)
             try {
-                fs.writeFileSync(fd,  String(process.pid), 'ascii')
+                fs.writeFileSync(fd, String(process.pid), 'ascii')
                 fs.closeSync(fd)
             } catch (err) {
 
@@ -169,11 +172,20 @@ if (watch_mode) {
     }
     var error_is_tty = process.stderr.isTTY
     var std_is_tty = process.stdout.isTTY
-    function logFinish() {
+    function logFinish(code) {
         if (std_is_tty) {
-            console.log("\x1b[36m>>>> Finish compiling\x1b[0m")
+            if (code === 0) {
+                console.log("\x1b[36m>>>> Finish compiling\x1b[0m")
+            } else {
+                console.log("\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m")
+            }
         } else {
-            console.log(">>>> Finish compiling")
+            if (code === 0) {
+                console.log(">>>> Finish compiling")
+            } else {
+                console.log(">>>> Finish compiling(exit: " + code + ")")
+            }
+
         }
     }
     function logStart() {
@@ -184,8 +196,13 @@ if (watch_mode) {
         }
 
     }
-    function build_finished_callback() {
-        logFinish()
+    /**
+     * 
+     * @param code {number}
+     * @param signal {string}
+     */
+    function build_finished_callback(code, signal) {
+        logFinish(code)
         releaseBuild()
         if (needRebuild()) {
             build()
