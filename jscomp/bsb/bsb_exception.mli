@@ -32,7 +32,9 @@ exception Error of error
 val print : Format.formatter -> error -> unit 
 val package_not_found : pkg:string -> json:string option -> 'a
 
-
+val conflict_module:
+    string -> string -> string -> 'a 
+    
 val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 
 val config_error : Ext_json_types.t -> string -> 'a 

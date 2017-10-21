@@ -2178,7 +2178,9 @@ exception Error of error
 val print : Format.formatter -> error -> unit 
 val package_not_found : pkg:string -> json:string option -> 'a
 
-
+val conflict_module:
+    string -> string -> string -> 'a 
+    
 val errorf : loc:Ext_position.t ->  ('a, unit, string, 'b) format4 -> 'a
 
 val config_error : Ext_json_types.t -> string -> 'a 
@@ -2217,6 +2219,8 @@ type error =
   | Package_not_found of string * string option (* json file *)
   | Json_config of Ext_position.t * string
   | Invalid_json of string
+  | Conflict_module of string * string * string 
+
 exception Error of error 
 
 let error err = raise (Error err)
@@ -2225,6 +2229,11 @@ let package_not_found ~pkg ~json =
 
 let print (fmt : Format.formatter) (x : error) = 
   match x with     
+  | Conflict_module (modname,dir1,dir2) ->
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
+    File names must be unique per project" 
+      modname dir1 dir2
   | Package_not_found (name,json_opt) -> 
     let in_json = match json_opt with 
     | None -> Ext_string.empty 
@@ -2251,6 +2260,8 @@ let print (fmt : Format.formatter) (x : error) =
     "File %S, line 1\n\
     @{<error>Error: Invalid json format@}" s 
     
+let conflict_module modname dir1 dir2 = 
+  error (Conflict_module (modname,dir1,dir2))    
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 
@@ -12330,9 +12341,10 @@ let merge_module_info_map acc sources : Bsb_db.t =
       | None , None ->
         assert false
       | Some a, Some b  ->
-        failwith ("Conflict files found: " ^ modname ^ " in "
-                  ^ Bsb_db.dir_of_module_info a ^ " and " ^ Bsb_db.dir_of_module_info b
-                  ^ ". File names need to be unique in a project.")
+        Bsb_exception.conflict_module modname 
+          (Bsb_db.dir_of_module_info a)
+          (Bsb_db.dir_of_module_info b)
+     
       | Some v, None  -> Some v
       | None, Some v ->  Some v
     ) acc  sources 
