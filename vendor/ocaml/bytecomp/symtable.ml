@@ -207,6 +207,7 @@ let ls_patch_object = gen_patch_object LongString.set
 
 let rec transl_const = function
     Const_base(Const_int i) -> Obj.repr i
+  | Const_base(Const_bool b) -> Obj.repr (if b then 1 else 0)
   | Const_base(Const_char c) -> Obj.repr c
   | Const_base(Const_string (s, _)) -> Obj.repr s
   | Const_base(Const_float f) -> Obj.repr (float_of_string f)

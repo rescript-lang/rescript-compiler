@@ -242,6 +242,7 @@ let all_idents_cases el =
 
 let type_constant = function
     Const_int _ -> instance_def Predef.type_int
+  | Const_bool _ -> instance_def Predef.type_bool
   | Const_char _ -> instance_def Predef.type_char
   | Const_string _ -> instance_def Predef.type_string
   | Const_float _ -> instance_def Predef.type_float

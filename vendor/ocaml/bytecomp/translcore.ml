@@ -754,6 +754,12 @@ and transl_exp0 e =
       with Not_constant ->
         Lprim(Pmakeblock(0,  tag_info, Immutable), ll, e.exp_loc)
       end
+  | Texp_construct({txt = Longident.Lident "false"}, cstr, args) ->
+      (* XXX Lconst (Const_base (Const_string ("False", None))) *)
+      Lconst (Const_base (Const_bool false))
+  | Texp_construct({txt = Longident.Lident "true"}, cstr, args) ->
+      (* Lconst (Const_base (Const_string ("True", None))) *)
+      Lconst (Const_base (Const_bool true))
   | Texp_construct(_, cstr, args) ->
       let ll = transl_list args in
       begin match cstr.cstr_tag with

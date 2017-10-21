@@ -2306,6 +2306,11 @@ let combine_constant loc arg cst partial ctx def
           List.map (function Const_int n, l -> n,l | _ -> assert false)
             const_lambda_list in
         call_switcher fail arg min_int max_int int_lambda_list
+    | Const_bool b ->
+        let int_lambda_list =
+          List.map (function Const_bool b, l -> (if b then 1 else 0), l | _ -> assert false)
+            const_lambda_list in
+        call_switcher fail arg min_int max_int int_lambda_list
     | Const_char _ ->
         let int_lambda_list =
           List.map (function Const_char c, l -> (Char.code c, l)
@@ -2815,6 +2820,23 @@ and do_compile_matching repr partial ctx arg pmh = match pmh with
         divide_constant
         (combine_constant pat.pat_loc arg cst partial)
         ctx pm
+  | Tpat_construct ({txt = Longident.Lident "false"}, cstr, _)
+  | Tpat_construct ({txt = Longident.Lident "true"}, cstr, _) ->
+      let lambda, cont =
+        compile_test
+          (compile_match repr partial) partial
+          divide_constructor (combine_constructor pat.pat_loc arg pat cstr partial)
+          ctx pm in
+      let lambda1 = match lambda with
+        | Lifthenelse (Lprim (Pintcomp Cneq, [l1; Lconst (Const_base (Const_int n))], loc), l2, l3) ->
+            (* XXX
+               let const' = Const_string ((if n == 0 then "False" else "True"), None) in
+               let prim' = prim_string_notequal in *)
+            let const' = Const_bool (if n == 0 then false else true) in
+            let prim' = Pintcomp Cneq in
+            Lifthenelse (Lprim (prim', [l1; Lconst (Const_base const')], loc), l2, l3)
+        | _ -> lambda in
+      lambda1, cont
   | Tpat_construct (_, cstr, _) ->
       compile_test
         (compile_match repr partial) partial
