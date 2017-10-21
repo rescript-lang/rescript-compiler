@@ -1,0 +1,129 @@
+.typetable {
+  border-style : hidden
+}
+.indextable {
+  border-style : hidden
+}
+.paramstable {
+  border-style : hidden ;
+  padding: 5pt 5pt
+}
+body {
+  background-color : white
+  font-family: Lucida,Times,serif;
+  margin-left: 2em;
+  margin-right: 1em;
+}
+td.typefieldcomment {
+  background-color : white
+  font-size: smaller ;
+}
+pre {
+  margin-bottom: 2px;
+}
+pre, code {
+  font-family: terminal,"courier new",monospace;
+  font-size: 10pt;
+}
+div.sig_block {
+  margin-left: 2em
+}
+.keyword {
+  font-weight : bold ;
+  color : fuchsia;
+}
+.keywordsign {
+  color : #C04600
+}
+.superscript {
+  font-size : 4
+}
+.subscript {
+  font-size : 4
+}
+.comment {
+  color : Green
+}
+.constructor {
+  color : Blue
+}
+.type {
+  color : #5C6585
+}
+.string {
+  color : Maroon
+}
+.warning {
+  color : Red ;
+  font-weight : bold
+}
+.info {
+  margin-left : 3em;
+  margin-right : 3em
+}
+.param_info {
+  margin-top: 4px;
+  margin-left : 3em;
+  margin-right : 3em
+}
+.code {
+  color : #465F91 ;
+}
+a .code {
+  color : #416DFF;
+}
+a:link {
+  color : #416DFF;
+  text-decoration : none;
+}
+a:visited {
+  color : #416DFF;
+  text-decoration : none;
+}
+a:hover {
+  color : fuchsia;
+  text-decoration : none;
+  background-color: #CCE8FE;
+}
+a:active {
+  color : fuchsia;
+  text-decoration : underline;
+}
+h1 {
+  font-size : 30 ;
+  text-align: center;
+}
+h2 {
+  background-color: #1E90FF ;
+  font-size : 25 ;
+  border: 1px solid #000000;
+  margin-top: 2ex;
+  margin-bottom: 1ex; 
+  margin-left: -1ex;
+  margin-right: -1ex;
+  text-align: center;
+  padding: 2px;
+}
+h3 {
+  background-color: #00CFFF ;
+  font-size : 18 ;
+  border: 1px solid #000000;
+  margin-top: 5px;
+  margin-bottom: 2px;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: center;
+  padding: 2px;
+}
+h4 {
+  font-size : 18 ;
+  margin-top: 1ex;
+  margin-bottom: 1ex;
+}
+ul {
+  margin:0;
+  list-style-type: square;
+}
+ul ul {
+  list-style-type: disc;
+}

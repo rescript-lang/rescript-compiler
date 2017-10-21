@@ -1,0 +1,9 @@
+S src
+S lib
+S dgraph
+B src
+B lib
+B dgraph
+B .
+PKG lablgtk2
+FLG -w +a -w -4 -w -44 -w -48 -w -29

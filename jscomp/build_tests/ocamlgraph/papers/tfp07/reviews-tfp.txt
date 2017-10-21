@@ -1,0 +1,322 @@
+From VM Wed Jul  4 07:34:51 2007
+X-VM-v5-Data: ([nil nil nil nil nil nil nil nil nil]
+	[nil "Monday" "2" "July" "2007" "12:53:18" "-0400" "TFP 2007" "tfp2007@shu.edu" "<OF5550EB29.C0CAB5F9-ON8525730C.005C4BE5-8525730C.005CCCD7@shu.edu>" nil "TFP 2007: Decision for Paper ID 60" "^From:" nil nil "7" "2007070218:53:18" nil nil nil nil nil nil nil nil]
+	nil)
+X-VM-Labels: nil
+X-VM-Summary-Format: "%n %*%a %-20.20F %-3.3m %2d %I\"%s\"\n"
+X-VM-IMAP-Retrieved: nil
+X-VM-POP-Retrieved: nil
+X-VM-Last-Modified: (18059 12733 874551)
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="=_mixed 005CCCD48525730C_="
+Return-Path: <morazanm@shu.edu>
+X-Original-To: Sylvain.Conchon@lri.fr
+Delivered-To: Sylvain.Conchon@lri.fr
+Received: from lri.lri.fr (lri [129.175.15.1])
+	by smtp.lri.fr (Postfix) with ESMTP id A512DE04EB
+	for <Sylvain.Conchon@lri.fr>; Mon,  2 Jul 2007 18:53:22 +0200 (CEST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by lri.lri.fr (Postfix) with ESMTP id 3830D249BBE
+	for <Sylvain.Conchon@lri.fr>; Mon,  2 Jul 2007 18:53:22 +0200 (CEST)
+Received: from lri.lri.fr ([127.0.0.1])
+	by localhost (lri.lri.fr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 22298-09 for <Sylvain.Conchon@lri.fr>;
+	Mon, 2 Jul 2007 18:53:22 +0200 (CEST)
+Received: from mta01.shu.edu (mta01.shu.edu [149.150.209.21])
+	by lri.lri.fr (Postfix) with ESMTP id 86968249BBB
+	for <Sylvain.Conchon@lri.fr>; Mon,  2 Jul 2007 18:53:21 +0200 (CEST)
+X-Mailer: Lotus Notes Release 7.0.1 January 17, 2006
+Message-ID: <OF5550EB29.C0CAB5F9-ON8525730C.005C4BE5-8525730C.005CCCD7@shu.edu>
+X-MIMETrack: Serialize by Router on MTA01/SHU(Release 7.0.2FP1|January 10, 2007) at 07/02/2007
+ 12:53:21 PM
+X-Virus-Scanned: by amavisd-new at lri.fr
+X-Spam: no; 0.00; conchon:01 conchon:01 morazan:01 morazan:01 genericity:01 font:98 7.0.1:01 tfp:02 tfp:02 2007:02 2007:02 graphs:02 graphs:02 subtyping:03 exercised:96 
+X-Attachments: name="ID60.txt" name="ID60.txt" 
+From: TFP 2007 <tfp2007@shu.edu>
+Sender: Marco T Morazan <morazanm@shu.edu>
+To: Sylvain.Conchon@lri.fr
+Cc: tfp2007@shu.edu
+Subject: TFP 2007: Decision for Paper ID 60
+Date: Mon, 2 Jul 2007 12:53:18 -0400
+
+--=_mixed 005CCCD48525730C_=
+Content-Type: multipart/alternative; boundary="=_alternative 005CCCD48525730C_="
+
+
+--=_alternative 005CCCD48525730C_=
+Content-Type: text/plain; charset="US-ASCII"
+
+Dear Authors,
+
+On behalf of the TFP 2007 Program Committee, I am happy to inform you that 
+your paper has been conditionally accepted for publication in the official 
+proceedings.  This means that the PC would like to see the paper 
+published, but it requires significant revisions. These revisions must be 
+met to the satisfaction of the reviewers. If you are unable to achieve 
+this the paper will be rejected. TFP 2007 received 33 submissions and we 
+were only able to accept 10 for publication (including your own).
+
+Attached you will find the comments from the reviewers. Please pay close 
+attention to their comments as you prepare the camera-ready version of 
+your article. Shortly, you will receive formatting instructions for the 
+final version of your article.
+
+Best regards,
+
+Marco 
+
+
+************************************************************************************
+Dr. Marco T. Morazan
+TFP 2007
+Program Committee Chair
+http://cs.shu.edu/tfp2007/
+--=_alternative 005CCCD48525730C_=
+Content-Type: text/html; charset="US-ASCII"
+
+
+<br><tt><font size=3>Dear Authors,<br>
+</font></tt>
+<br><tt><font size=3>On behalf of the TFP 2007 Program Committee, I am
+happy to inform you that your paper has been conditionally accepted for
+publication in the official proceedings. &nbsp;This means that the PC would
+like to see the paper published, but it requires significant revisions.
+These revisions must be met to the satisfaction of the reviewers. If you
+are unable to achieve this the paper will be rejected. TFP 2007 received
+33 submissions and we were only able to accept 10 for publication (including
+your own).<br>
+</font></tt>
+<br><tt><font size=3>Attached you will find the comments from the reviewers.
+Please pay close attention to their comments as you prepare the camera-ready
+version of your article. Shortly, you will receive formatting instructions
+for the final version of your article.<br>
+</font></tt>
+<br><tt><font size=3>Best regards,<br>
+</font></tt>
+<br><tt><font size=3>Marco </font></tt><font size=2 face="sans-serif"><br>
+<br>
+<br>
+************************************************************************************<br>
+Dr. Marco T. Morazan<br>
+TFP 2007<br>
+Program Committee Chair<br>
+http://cs.shu.edu/tfp2007/</font>
+--=_alternative 005CCCD48525730C_=--
+--=_mixed 005CCCD48525730C_=
+CONTENT-TRANSFER-ENCODING: quoted-printable
+Content-Type: text/plain; name="ID60.txt"
+Content-Disposition: attachment; filename="ID60.txt"
+
+
+
+---------------------------------------------------------------------------=
+-----
+
+
+For the following questions, please use a scale of 1 (lowest, clear reject)=
+ to 5 (highest, clear accept)
+
+Is the topic appropriate for TFP?
+
+
+5
+
+Format
+
+
+5
+
+Technical Content
+
+
+4
+
+Quality of Writing
+
+
+5
+
+Is the length appropriate?
+
+
+3
+
+Does the article meet the review criteria for its article type?
+
+
+5
+
+Overall Recommendation
+
+
+5
+
+
+Comments for the author(s)
+
+
+Given the page limit, the paper could perhaps be extended to give even more=
+ examples.
+
+
+
+---------------------------------------------------------------------------=
+-----
+
+
+For the following questions, please use a scale of 1 (lowest, clear reject)=
+ to 5 (highest, clear accept)
+
+
+Is the topic appropriate for TFP?
+
+
+5
+
+Format
+
+
+4
+
+Technical Content
+
+
+4
+
+Quality of Writing
+
+
+3
+
+
+Is the length appropriate?
+
+
+5
+
+Does the article meet the review criteria for its article type?
+
+
+5
+
+Overall Recommendation
+
+
+4
+
+
+Comments for the author(s)
+
+
+There is something very strange about your references. I noticed that you h=
+ave remarkably few citations within=20
+your text (with the exception of Fig 1). When I looked closer, I found that=
+ close to half of your references=20
+(8, 10, 11, 12, 13, 17, 18) are never actually cited anywhere in your paper=
+! I'm guessing that these citations=20
+were edited out somewhere along the line, and you never re-ran bibtex.=20
+
+I'm surprised that your Imperative.Graph.Abstract graphs appear to have *in=
+teger* marks built-in, given that=20
+applications that need boolean marks or floating-point marks are common. Is=
+ there a functor in your system that=20
+lets choose different types of marks? It is worth a sentence or two explain=
+ing about the default treatment of=20
+marks. (More on this point: on page 5, you say "*can* be equipped" rather t=
+han "are equipped", which implies=20
+that there is a choice, but I don't see in appendix A where this choice is =
+exercised.)=20
+
+It would also be worth adding an appendix or a table listing the various fu=
+nctors supported in your library,=20
+with just a short sentence for each.=20
+
+I don't understand the last column in Fig 1. I assume a check means "has ge=
+neric algorithms", and a 0 means=20
+"does not have", but I don't know what the dash means.=20
+
+Please add a citation on page 9 where you say "percolation algorithm". I'm =
+not familiar with this term.
+
+
+
+---------------------------------------------------------------------------=
+-----
+
+
+For the following questions, please use a scale of 1 (lowest, clear reject)=
+ to 5 (highest, clear accept)
+
+
+Is the topic appropriate for TFP?
+
+
+5
+
+Format
+
+
+5
+
+Technical Content
+
+
+4
+
+Quality of Writing
+
+
+3
+
+
+Is the length appropriate?
+
+
+3
+
+Does the article meet the review criteria for its article type?
+
+
+2
+
+Overall Recommendation
+
+
+4
+
+
+Comments for the author(s)
+
+
+The paper presents a generic graph library which provides many different gr=
+aph data structures and typical graph=20
+algorithms. The genericity is achieved using the OCAML module system and ML=
+ functors.=20
+
+This work is worth publishing, the results are impressive, but the paper ne=
+eds much more explanation of the OCAML=20
+module system, ML functors, and their support for generic programming.=20
+
+In the conclusions, you state that your approach provides greater consisten=
+cy than the mere use of higher-order=20
+functions. Please elaborate on this point.=20
+
+You state that the modifiers for imperative and persistent graphs have diff=
+erent types. How can you then type=20
+the generic algorithms using these modifiers? Do you require the types of t=
+he modifiers to be in a subtype relation?=20
+
+How can you ensure that the generic graph algorithms work correctly for the=
+ user's own graph structures. How do=20
+you specify side-conditions that the user's graph implementation should res=
+pect?=20
+
+I would like to see the generic coloring routine.=20
+
+In Figure 3m, you used a too small font size, a looking glass is needed to =
+read the boxes. This figure should be=20
+explained in more detail. Comment on the subtyping and functor application =
+relations.
+
+--=_mixed 005CCCD48525730C_=--
+

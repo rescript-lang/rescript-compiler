@@ -1,0 +1,428 @@
+\documentclass[a4]{seminar}
+
+\usepackage{./talkadvi}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
+\usepackage{epsfig}
+\usepackage{alltt}
+\usepackage{url}
+
+\newcommand{\rouge}[1]{{\color{red}#1}}
+\newcommand{\bleu}[1]{{\color{royalblue}#1}}
+\newcommand{\monvert}[1]{{\color{ForestGreen}#1}}
+\newcommand{\motcle}[1]{{\color{Blue}#1}}
+\newcommand{\ocamlgraph}{\textsf{OcamlGraph}}
+\newcommand{\fleche}{\ensuremath{\rightarrow}}
+\newcommand{\vara}{\ensuremath{\alpha}}
+\newcommand{\varb}{\ensuremath{\beta}}
+
+\newcommand{\code}[1]{\bleu{\texttt{#1}}}
+
+\begin{document}
+\sffamily
+\parindent=0mm
+
+\begin{slide}
+~\vfill
+\begin{center}
+  \textcolor{red}{\rule{\linewidth}{0.1em}} \\[0.7em]
+  \textcolor{red}{\Large\bfseries 
+          \ocamlgraph:\\[0.7em] \textcolor{orange}{une bibliothèque générique
+  de graphes massivement fonctorisée}} \\
+  \textcolor{red}{\rule{\linewidth}{0.1em}} \\[2em]
+  \textcolor{royalblue}{\large Julien Signoles}\\[1em]
+  \textcolor{orange}{\large LSL}\\[2em]
+  \textcolor{royalblue}{\large Sylvain Conchon, Jean-Christophe Filliâtre}
+  \\[1em]
+  \textcolor{orange}{\large LRI, université Paris XI}
+\end{center}
+\vfill\vfill
+\end{slide}
+
+\begin{slide}\slidetitle{OcamlGraph}
+
+  ~
+
+  \emph{Pourquoi \ocamlgraph?}
+  \begin{center}
+    Contrairement à C++ ou Java, pas de telle bibliothèque
+  \end{center}
+  \pause
+
+  \emph{Quand l'utiliser ?}
+  \begin{center}
+    Ocaml + graphes
+
+    \bleu{\url{http://www.lri.fr/~filliatr/ocamlgraph}}
+  \end{center}
+  \pause
+
+  \emph{But de l'exposé ?}
+
+  \begin{center}
+  \begin{points}
+  \item Comprendre (la philosophie de) la bibliothèque
+  \item Démocratiser les foncteurs
+  \end{points}
+  \end{center}
+
+\end{slide}
+
+\begin{slide}\slidetitle{Caractéristiques}
+
+  \begin{points}
+  \item \bleu{Nombreuses structures de données}
+    \begin{itemize}
+    \item persistantes
+    \item impératives
+    \item étiquetées ou non
+    \item etc.
+    \end{itemize}
+    
+    \pause
+  \item \bleu{Algorithmes « génériques »}
+    \begin{itemize}
+    \item flots
+    \item parcours
+    \item génération aléatoire
+    \item etc.
+    \end{itemize}
+  \end{points}
+
+  \pause
+  \begin{center}
+  \emph{Rendu possible par l'utilisation massive de foncteurs}
+  \end{center}
+\end{slide}
+
+\talkpart{I}{Structures de données: interface}
+
+\begin{slide}\slidetitle{Interfaces}
+  
+\emph{Interface commune à tous les graphes :}
+\begin{alltt}
+module type G = sig ... end    
+\end{alltt}
+
+\pause
+\emph{Interface des graphes persistants :}
+\begin{alltt}
+module type P = sig
+  include G
+  ...
+end
+\end{alltt}
+
+\pause
+\emph{Interface des graphes impératifs :}
+\begin{alltt}
+module type I = sig
+  include G
+  ...
+end
+\end{alltt}
+\end{slide}
+
+\begin{slide}\slidetitle{Structure de données}
+
+\begin{center}
+  \emph{19} structures de données sous forme de \emph{foncteurs}
+  \pause
+
+  \emph{Comment choisir ?}
+\end{center}
+\begin{points}
+\item \bleu{Modifiable en place ?} 
+  \hfill \texttt{Imperative} ou \texttt{Persistent}
+\item \bleu{Orienté ?} 
+  \hfill \texttt{Digraph} ou \texttt{Graph}
+\item \bleu{Sommets abstraits ?} 
+  \hfill \texttt{Abstract} ou \texttt{Concrete}
+\item \bleu{Arêtes étiquetées ?} 
+  \hfill \texttt{Labeled} (ou rien)
+\end{points}
+
+\begin{center}
+  Exemple: \monvert{\texttt{Imperative.Digraph.AbstractLabeled}}\medskip
+
+  $2 \times 2 \times 2 \times 2 = \emph{16}$
+\end{center}
+\end{slide}
+
+\begin{slide}\slidetitle{Composants}
+~\\
+\psfig{file=interface.eps,width=\textwidth}
+
+\begin{points}
+\item 8 \bleu{persistantes}:
+  table (\code{Map}) associant à chaque sommet l'ensemble (\code{Set}) de
+  ses successeurs.
+\item 8 \bleu{impératives}: même chose avec \code{Hashtbl} au lieu de
+  \code{Map}.
+\item 3 impératives \bleu{spécialisés}: matrices d'adjacence et bidirectionnel.
+\end{points}
+\end{slide}
+
+\talkpart{II}{Structures de données: l'envers du décors}
+
+\begin{slide}\slidetitle{Décomposition en briques}
+
+~\\[-5mm]
+\begin{center}
+  \emph{Partage du code maximal grâce aux foncteurs}
+\end{center}
+\smallskip
+
+\begin{points}
+\item uniformisation de \code{Hashtbl} et \code{Map} dans une
+  signature commune \code{HM}
+\smallskip
+\item \code{Minimal} : opérations communes à toutes les structures
+  de données 
+\smallskip
+\item \code{Pred} : opérations sur les
+  prédécesseurs en utilisant les successeurs 
+\smallskip
+\item \code{Labeled} / \code{Unlabeled} : opérations communes aux
+  arêtes (non) étiquetées
+\smallskip
+\item \code{Make\_Abstract} : graphe abstrait à partir de sa version
+  concrète
+\end{points}
+\end{slide}
+
+\begin{slide}\slidetitle{Assemblage des briques}
+
+\begin{center}
+\emph{Make}: un foncteur d'ordre supérieur.
+\end{center}
+
+\begin{alltt}
+\motcle{module} Make
+  (F: \motcle{functor}(X: COMPARABLE) \fleche\ HM \motcle{with type} key = X.t) = 
+\motcle{struct}
+  \motcle{module} Digraph = \motcle{struct}
+    \motcle{module} Concrete(V: COMPARABLE) = \motcle{struct}
+      \emph{include} ConcreteVertex(F)(V)
+      \emph{include} Unlabeled(V)(HM)
+      \emph{include} Minimal(S)(HM)
+    \motcle{end}
+
+    \motcle{module} ConcreteLabeled(V: COMPARABLE)(E: ORDERED_TYPE_DFT) = 
+    ...
+\end{alltt}
+\end{slide}
+
+\begin{slide}\slidetitle{Instantiation et spécialisation}
+
+\begin{alltt}
+\motcle{module} P = Make(Make_Map)
+
+\motcle{module} Digraph = struct
+  \motcle{module} Concrete (V: COMPARABLE) = \motcle{struct}
+    \emph{include} P.Digraph.Concrete(V)
+
+    \motcle{let} add_vertex g v = 
+      \motcle{if} HM.mem v g \motcle{then} g \motcle{else} unsafe_add_vertex g v
+
+    \motcle{let} add_edge g v1 v2 = 
+      \motcle{let} g = add_vertex g v1 \motcle{in}
+      \motcle{let} g = add_vertex g v2 \motcle{in}
+      unsafe_add_edge g v1 v2
+    ...
+\end{alltt}
+
+\end{slide}
+
+\talkpart{III}{Algorithmes}
+
+\begin{slide}\slidetitle{Programmation générique}
+
+\bigskip
+\begin{center}
+Chaque algorithme est écrit indépendamment de la structure de graphe
+
+c'est un \emph{foncteur}
+
+dont l'argument contient uniquement les opérations nécessaires.
+\end{center}
+
+\bigskip
+\pause
+\emph{Intérêts :}
+
+\begin{enumerate}
+\item \bleu{Utilisation} sur des structures autres que celles d'\ocamlgraph
+\smallskip
+
+\item \bleu{Codage} facilité
+\smallskip
+
+\item \bleu{Extension de la bibliothèque} facilitée
+\end{enumerate}
+\end{slide}
+
+\begin{slide}\slidetitle{Algorithmes fournis}
+
+\begin{points}
+\item 
+parcours : 7 DFS, 2 BFS, 2 détections de cycle
+
+\item 
+constructions : 
+\begin{itemize}
+\item 4 classiques (ex. graphe de de Bruijn)
+\item 2 aléatoires (ex. planaires) 
+\end{itemize}
+
+\item 
+plus court chemin (Dijkstra)
+
+\item 
+composantes fortement connexes
+
+\item 
+flot maximal (Goldberg, Ford-Fulkerson)
+
+\item
+k-coloriage
+
+\item 
+tri topologique
+
+\item 
+arbre couvrant minimal (Kruskal)
+
+\item 
+opérations : clôture transitive, complémentaire, miroir, voisinages, etc.
+
+\item 
+sortie DOT (Graphviz)
+
+\item
+parseur GML
+\end{points}
+\end{slide}
+
+
+\begin{slide}\slidetitle{Exemples}
+
+~\\
+\begin{center}
+\emph{Algorithmes de flots} : Ford-Fulkerson \&  Goldberg
+
+\bigskip
+
+\emph{Parcours} en profondeur et en largeur
+\end{center}
+\end{slide}
+
+
+
+\talkpart{III}{Conclusion}
+
+\newcommand{\present}{{\monvert{\large\boldmath $\surd$}}}
+\newcommand{\absent}{\rouge{\large\boldmath $\oslash$}}
+
+\begin{slide}\slidetitle{Comparaisons}
+
+\bigskip
+\begin{center}
+  \begin{tabular}{|l||c|c|c|c|c|}
+    \hline
+     & langage     &P/I& algo gén & signature\emph{s} & str données \\\hline\hline
+     LEDA & C++    & I & \absent  & \absent  & 1  \\\hline
+     GTL & C++     & I & \absent  & \absent  & 1  \\\hline
+     MLRisc & SML  & I & \absent  & \absent  & 1  \\\hline
+     FGL & Haskell & P & \absent  & \absent  & 1  \\\hline
+     Baire & Ocaml &P/I& ---      & \absent  & 8  \\\hline
+     JDSL & Java   & I & \present & \present & 1  \\\hline
+     BGL & C++     & I & \present & \present & 1  \\\hline
+ OcamlGraph& Ocaml &P/I& \present & \present & 19 \\\hline
+  \end{tabular}
+\end{center}
+\end{slide}
+
+\begin{slide}\slidetitle{Performances}
+\begin{center}
+  \emph{Création d'un graphe complet}
+
+  \input{./bench1c.tex}
+
+  \bleu{100 000 arêtes créées par seconde} (graphes impératifs)
+\end{center}
+\end{slide}
+
+\begin{slide}\slidetitle{Performances (2)}
+\begin{center}
+  \emph{Parcours DFS d'un labyrinthe}
+
+  \input{./bench2dfs.tex}
+
+  \bleu{Entre 500 000 et 1 million d'arêtes visitées par seconde}
+\end{center}
+\end{slide}
+
+\begin{slide}\slidetitle{Pour finir}
+
+~\\
+\emph{\ocamlgraph\ en chiffre:}
+
+\begin{points}
+\item $\approx$ \bleu{7000} lignes de code 
+  (dont $\approx$ \bleu{2000} lignes de contribution)
+
+\item \bleu{9} personnes-semaines de travail
+\end{points}
+
+\emph{Quelques remarques sur les foncteurs:}
+
+\begin{points}
+\item \bleu{Quelques limitations} du système de modules nous ont gênées
+  \begin{itemize}
+  \item Bug report \#2049 (faiblesse des modules applicatifs)
+  \item Principalement, ne pas pouvoir réunir deux structures ayant un type ou
+    un module en commun
+  \end{itemize}
+
+\item 
+  \bleu{Trop de foncteurs} dans l'interface = frein à l'utilisation
+  d'\ocamlgraph\ \bleu{?}
+\end{points}
+
+\end{slide}
+
+%% \begin{slide}\slidetitle{foncteurs vs polymorphisme}
+
+%% \bigskip
+%% quelles limitations avec
+%% \begin{alltt}
+%%    type (\vara,\varb) graph = ... \textrm{?}
+%% \end{alltt}
+%% % (\vara * (\vara * \varb) list) list \textrm{?}
+
+%% \pause
+%% \begin{points}
+%% \item moins bonnes structures de données
+%%   \begin{itemize}
+%%   \item moins efficaces
+%%   \begin{alltt}
+%%     type (\vara,\varb) graph = (\vara * (\vara * \varb) list) list
+%%   \end{alltt}\adviwait
+%%   \item et/ou moins nombreuses
+%%     \begin{alltt}
+%%     type \vara node = \vara * int
+%%     type (\vara,\varb) graph = (\vara node * \varb) list IntMap.t
+%%   \end{alltt}
+%%   \end{itemize}\pause
+%% \item généricité des algos « à la Caml Light »
+%% \end{points}
+%% \end{slide}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

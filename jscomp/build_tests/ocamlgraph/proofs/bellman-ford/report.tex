@@ -1,0 +1,390 @@
+\documentclass[a4paper,10.5pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage,url}
+\usepackage{listings}
+\usepackage{amssymb,amsmath,amsthm}
+
+\title{Internship report at LRI}
+\author{Yuto Takei \\ The University of Tokyo }
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+This document describes my experience of 5 week internship at the
+Laboratoire de Recherche en Informatique (LRI) at Universit\'e
+Paris-Sud. My main objective for this internship was to find the
+research topic for my Master's project and learn how to conduct it. It
+was also expected to broaden my network for prolonging academic
+communication.
+
+I was dispatched to ProVal Team at LRI, whose members investigate the
+methods to prove the correctness of the program code. My assignments
+were implementation of the negative-cycle detection algorithms and
+formal verification of \textsc{Bellman-Ford} algorithm under the
+supervision of Dr.\ Jean-Christophe Filli\^atre. In order to handle
+them, I utilized some tools developed by ProVal Team such as
+\emph{ocamlgraph} and \emph{Why3}.  With gaining much support and
+instructions from him, I successfully integrated the implementation
+and additional by-product to the existing software library and proved
+some characteristics of the algorithm to be correct. Also as a result,
+I acquired some of the fundamental skill for conducting the research
+through taking communications with various researchers.
+
+In the former half of the document, my objectives and results are
+explained in terms of research. The section contains the background
+motivation and importance of the work as well. In the latter half, my
+experiences during the internship are explained in detail. They
+include the reception, supervision and social communication with other
+researchers.
+
+\end{abstract}
+
+\newpage
+
+\section{Objective and Results}
+
+\paragraph{Motivation and Objectives}
+
+The main objective for my exchange internship was to find the
+appropriate topic for my Master's research and to broaden my network
+for wider communication with other researchers. My interests in
+computer science lay in deep understanding and contribution to the
+topics related to both programming languages and computation
+theory. It is because the study on these is essential and directly
+beneficial in order to put the algorithmic research into practice. At
+the same time, I had an interest as well in methods to process graph
+data structure efficiently. By combining these interests, I decided to
+investigate the graph processing system written in a functional
+programming language.
+
+Since those languages have higher ability to let the compilers
+optimize the program for execution, I thought it is efficient by
+nature to construct discrete algorithms by using them. Among them,
+OCaml was most flexible with wider choices to handle complicated data
+structure; it provides the interface to operate both persistent and
+imperative data. Additionally it is a strong advantage that OCaml is
+developed by INRIA and has a close connection with research ground.
+
+By examining noted graph processing systems in OCaml, I found
+\emph{ocamlgraph} project, which was ongoing at ProVal Team in
+Laboratoire de Recherche en Informatique (LRI) at Universit\'e
+Paris-Sud. The project was appealing for me also because LRI has many
+researchers from CNRS and INRIA.  Thinking about the diversity of the
+laboratory, it was the ideal project to fulfill my objective.
+
+In asking for the acceptance approval, I contacted Prof.\ Christine
+Paulin-Mohring, the leader of ProVal Team at LRI and she kindly
+introduced Dr.\ Jean-Christophe Filli\^atre, one of the developers of
+\emph{ocamlgraph}. He accepted my internship request and suggested me
+some assignments:
+
+\vspace*{-4pt}\begin{itemize}\itemsep-3pt
+\item Implementation of one or more negative-cycle detection
+  algorithms\cite{cg99negcycle} in \emph{ocamlgraph} library
+\item Proving the correctness of the implemented algorithms by using
+  \emph{Why3} platform and theorem provers (e.g. \emph{Alt-Ergo} as an
+  automated prover and \emph{Coq} for an interactive one)
+\end{itemize}\vspace*{-4pt}
+
+Fortunately, these assignments completely matched to my interest and
+objective. The internship was thus finally settled.
+
+\paragraph{Importance of the Topics}
+
+The assignments shown earlier contain important challenges.
+
+Regarding the first assignment, \emph{ocamlgraph} \cite{conchon07tfp}
+is a software library for OCaml language that provides several
+implementations to represent a graph and discrete algorithms to
+perform on them. The implementation can be chosen in accordance with
+the user's program. It is also possible to define a new data structure
+optimized for specific purpose.
+
+The implementation of negative-cycle detection algorithm is important
+on \emph{ocamlgraph} because the algorithm is essential as a
+pre-performed operation before the others to let them work properly.
+It has wide range of applications not only in discrete algorithms, but
+also in the real world such as currency arbitrage.
+
+Besides, as mentioned in \cite{conchon07tfp}, the enrichment of
+\emph{ocamlgraph} should be promoted because that it is the only
+successful graph library to provide the wider choices of graph
+representations than any other without making the codes unmanageable.
+Others either failed in supporting several representations or
+algorithms, or/and lost the generality of the algorithm to perform.
+
+Regarding the second assignment, \emph{Why3} \cite{boogie11why3} is a
+software verification platform that enables one to describe the
+algorithm properties by first-order logic. Same as \emph{ocamlgraph},
+it is developed by ProVal Team. The importance of the assignment is of
+two-fold.
+
+First, in this field of study, there existed many proof works on
+discrete algorithms. However they required either total involvement of
+human in proof session or manual division of original goal into
+smaller propositions, resulting in the cost enlargement. By enjoying
+one of the most important advantages in \emph{Why3}, the ability to
+prove the goal by combining several different theorem provers to
+expand the availability of partial proofs, it is possible to largely
+promote the automation of the entire proof. Therefore, it is worth to
+accomplish the proof on the discrete algorithms by \emph{Why3}.
+
+Second, at the end of the project, it was also planned to integrate
+the achievement of the proof into the standard libraries in
+\emph{Why3} platform. By accomplishing this, logical description of a
+graph data, axioms and theorems on graph characteristics, and related
+functions and predicates become reusable in other proof sessions. It
+largely contributes to the other works on proving discrete algorithms
+mostly automatically.
+
+\paragraph{Project Results}
+
+Here I explain the overview of my result from the research point of
+view. As for the achievement in communication with other researchers
+as noted as one of the objectives above, it will be discussed in the
+next section.
+
+First, I implemented \textsc{Bellman-Ford} algorithm taken from
+\cite{cor01algo} as one of the fundamental algorithms of
+negative-cycle detection algorithm. By integrating the implementation
+within \emph{ocamlgraph} library, as much attention was paid not to
+lose the generality to handle any arbitrarily graph
+representations. Also considering the practical usage, a simple
+optimization was done to reduce the number of loop iterations. In the
+end, I tested it comprehensively to work correctly for any input.
+
+Additionally as the advanced topic, I also designed and added the
+incremental graph builder for \emph{ocamlgraph}, which is available as
+a new graph representation and ensures it to be free of negative
+cycles at any point. However on the other hand, it does not improve
+the worst-case time complexity compared to the trivial method and I
+found out it is required to survey the results of dynamic graph
+researches.
+
+Second, the correctness proof of the implemented algorithm was half
+completed. I found there involves following four desired properties,
+and first half of them was proved to be correct:
+
+\begin{enumerate}\itemsep-3pt
+\item The algorithm always terminates eventually.
+\item Non-reachable vertices from the source vertex have infinity
+  length after the termination.
+\item Other vertices must have the length of the shortest path from
+  the source after the termination, if no negative length cycle exists
+  in the graph.
+\item If and only if there is at least one negative-cycle in the
+  graph, the algorithm reports the existence.
+\end{enumerate}
+
+Although not all properties were proved, I learned the basic
+techniques for formal verification and gained some observations
+throughout this assignment.
+
+\begin{itemize}\itemsep-3pt
+\item It is essential to provide the correct specification of the
+  algorithm as precondition and postcondition. It should be concise
+  without redundancy to keep the whole proof manageable by automated
+  provers, but also should be exhaustive to cover all properties.
+\item It is sometimes effective to use ghost codes, i.e., the
+  redundant assertions when the automated provers cannot infer strong
+  enough premises. They are not part of the specification, but it is
+  inserted for proving to provide the strong enough hypothesis.
+\item The pigeon whole principal on graph path is in high demand for
+  proving path-related discrete algorithms. It is expressed as the
+  statement that ``If there exists a path between given two vertices,
+  there always exists the path between them with less steps than the
+  number of all vertices in the graph.''
+\end{itemize}
+
+Since I could not finish the proof, I was not able to integrate the
+result for \emph{Why3} standard library yet. Therefore, continuous
+effort will be made to finish the proof before that. In addition, it
+is to be considered to define a simple path as the path between two
+vertices without any loop. It was one of the experimental intermediate
+observations during the work that the use of simple path may make it
+possible to bypass the proof of pigeonhole principle. Because it can
+be inductively defined easily, I can expect simpler proof if it works
+successful.
+
+As a whole, I would like to continue making the effort to complete
+this proof work and publish the result at some conference.
+
+\section{Experiences}
+
+As mentioned in the introduction, Dr.\ Jean-Christophe Filli\^atre
+kindly supervised me for all the work during the internship. In this
+section, I describe my experience at LRI informally apart from the
+research result.
+
+\paragraph{Project and Assignments}
+
+On the very first day of my arrival at LRI, Dr.\ Filli\^atre clearly
+showed my first task and instructed the way to start. The first task
+was the implementation of \textsc{Bellman-Ford} algorithm in
+\emph{ocamlgraph} library, which I think was very appropriate as the
+first assignment. It helped me to understand the algorithm with detail
+and to measure my skill to handle the later proof problem. As a
+result, it also made me familiar with \emph{ocamlgraph} library
+itself.
+
+In the end of the first week, I started to make the incremental graph
+builder. By using the knowledge I acquired by handling the first
+assignment, I was able to deal with this problem as advanced topic on
+detecting negative length cycle. Unfortunately I lack of time to refer
+the literature from the previous work by others and so I could not
+make the efficient implementation in terms of time and space
+complexity. Yet still this task let me notice the field of dynamic
+graph.
+
+When the second week started, he showed the main assignment during my
+internship; that is to prove the correctness of the implemented
+algorithm by using \emph{Why3} platform. It was difficult and
+challenging enough to spend the rest of my internship period to get
+some insights about the problem.  Since my interest lay in the
+programming languages and computation theory, this assignment best
+matched to me. As a result, I was able to devote myself to understand
+the background and fundamental techniques to deal with formal
+verification as well as the mechanism of \emph{Why3}.
+
+Through the challenge on my assignment, I also gained the opportunity
+to learn basics of \emph{Coq}. For example, some parts of the proof
+still required the human interaction although most of the proof was
+done automatically. In these parts, \emph{Coq} helped me with
+understanding inductional propositions and logical leaps that
+automated provers could not resolve. Therefore I had to either add
+intermediate lemmas and assertions so that they could resolve, or try
+to prove the goal by \emph{Coq} on my own. Eventually this specific
+experience motivated me to learn the method to prove some propositions
+by induction on \emph{Coq}.
+
+Beside the proof work on \emph{Why3}, it was also the important duty
+to put the result into the paper and the presentation. Considering to
+present and to publish the result at some occasions, he instructed me
+to write the article simultaneously with the proof. Also he gave me
+the opportunity to give a talk about the result in front of the other
+members of the team at the end of the fourth week. I think it was a
+really good training for me to gather the result into slides and let
+the audience understand the contents.
+
+Finally, there were some works left which requires some additional
+effort to solve. I would like to continue working on it to finish
+them.
+
+\paragraph{Supervision}
+
+The supervision of Dr.\ Filli\^atre was well organized and easy to
+understand yet deep as it motivated me to learn greedily. Also it is
+strongly agreed that his guidance was more than conscientious that I
+respected his instructions.
+
+He gave me the opportunity to review the work every day or two. In
+this review, I reported my daily accomplishments and problems that I
+have. I had a feeling that he evaluated the result properly positive
+as for the successful part, and he promptly pointed out both the cause
+of problems and ways to improve for unfavorable results. That attitude
+of him greatly encouraged me to advance the work.
+
+I also thought that he focused on the efficiency to learn new things
+and deal with the assignment. For me to try to learn new things, he
+showed me several literatures that I should refer as well as letting
+me borrow his books. Besides, some tutorials are also given
+appropriately when I was in need. For example, while I did not have
+any experience in using LaTeX for formatting documents, he explained
+the basic techniques on effective usage of it. He also advised me in
+the quickest way to adapt with the Ubuntu environment and Emacs. Owing
+to it, I now continue to use it efficiently for my work after the
+internship.
+
+Finally, he was also outstanding to instruct the way to present the
+result. When my draft slides and practice session of the presentation
+lacked some consistency among the contents, he illustrated the way to
+clearly explain the results and reviewed the amendment for the final
+version till it reached to satisfactory level.
+
+As a whole, I deeply appreciated his supervision for giving me the
+opportunity to train myself for starting the research work.
+
+\paragraph{Research Activities and Environment}
+
+On every weekday during the internship, I regularly started the work
+from half past nine and ended at six sharp in the evening. The total
+work hours were 7 per day by taking one and half hour of lunch
+break. I spent most of the time at my assigned room for the
+work. Without interruption, I was able to concentrate comfortably on
+my work.
+
+Regarding the facility, there is a lounge space for every team that
+the members can freely discuss anything with having coffee and tea
+with some snacks. Many people gathered in the room to talk after
+having lunch at noon, which I thought stimulates the interaction
+between researchers. I also found that it helped the people to take
+some short rest during the work, resulting in the improvement of their
+efficiency during the work.
+
+Apart from the daily work, I also had some other opportunities to
+cultivate my research ground. One of them was to participate in a
+seminar in LRI. It was about bounding the iterations of Linear
+Programming given by Prof.\ Shinji Mizuno from Tokyo Institute of
+Technology. I thought the atmosphere at the seminar was completely
+different from the one we have in my laboratory; audience involves in
+the presentation more frankly and discuss what they thought without
+any hesitation. Under such an environment, the interaction between the
+participants is promoted, resulting in wider communication among
+researchers on the topic.
+
+Another opportunity was to have a discussion with Prof.\ Abdel Lisser
+regarding my objective. He is the leader of GraphComb Team at LRI and
+his research includes optimization methods in terms of combinatorics.
+He suggested me to check discrete algorithms which relates to matroids
+because some of them may still not be done in formal verification
+yet. By checking some related works about them, he recommended me to
+find the automated proving tasks which would have academic
+significance.
+
+Prof.\ Claude March\' e also kindly gave some time to have a
+discussion on the efficient way to prove graph related algorithms,
+especially the graph representation method for proof and the proving
+the pigeonhole principle about graph paths on \emph{Coq}.
+
+\paragraph{Administrative Procedures}
+
+The administrative tasks at LRI were mostly taken care of by
+Dr.\ Emmanuel Waller and Mr.\ Jean-Fran\c cois Baffier. Following are
+some examples of them but not limited to them.
+
+\begin{itemize}\itemsep-3pt
+\item Public transportation subscriptions
+\item Entrance control at the building
+\item School cafeteria arrangement
+\item Reimbursement of expenses
+\item Accommodation consideration
+\end{itemize}
+
+\paragraph{Other Communications}
+
+I was able to have miscellaneous discussions with other team members
+time to time at lunch and other occasions. Some of them are about the
+research interests; others are general topics such as educations. Also
+with courtesy of Dr.\ Waller and Dr.\ Filli\^atre, I had opportunities
+to visit their places to enjoy the private meal.
+
+\section*{Acknowledgement}
+
+This internship was realized by the overseas dispatch program of IST
+and I hereby would like to express my sincere gratitude to all people
+involved in it. I would like to express my particular appreciation for
+LRI faculty members, especially Dr.\ Filli\^atre for the great
+supervision and Dr.\ Waller for the kindest care on administration
+procedures. I am thankful for OIR/IST staffs and the program committee
+of the University of Tokyo for providing me this opportunity as well.
+I received the great support from Mrs.\ Sato on the internship
+arrangement.
+
+\bibliographystyle{plain}
+\bibliography{./biblio}
+
+\end{document}

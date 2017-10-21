@@ -1,0 +1,16 @@
+
+<#def absolute>http://www.lri.fr/~filliatr</#def>
+
+<#def iso>
+<META http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<link rel="stylesheet" type="text/css" href="http://www.lri.fr/~filliatr/style.css">
+</#def>
+
+<#def drapfr><img src="<#absolute>/icons/france.gif" alt="Français"></#def>
+<#def drapen><img src="<#absolute>/icons/us.gif" alt=American></#def>
+
+<#def drapeaux>
+<#fr><a href="<#thisfile>.en.html"><#drapen></a></#fr>
+<#en><a href="<#thisfile>.fr.html"><#drapfr></a></#en>
+</#def>
+

@@ -1,0 +1,40 @@
+\documentclass[12pt]{article}
+
+\begin{document}
+
+\title{\bf Designing a Generic Graph Library \\ using ML Functors}
+
+\author
+    {Sylvain Conchon$^1$ \quad
+     Jean-Christophe Filli\^atre$^1$ \quad
+     Julien Signoles$^2$}
+
+\date{$^1$ LRI, Univ Paris-Sud, CNRS, Orsay F-91405\\
+INRIA Futurs, ProVal, Orsay F-91893\\
+  \texttt{\{conchon,filliatr\}@lri.fr} \\[0.5em]
+  $^2$ CEA-LIST, Laboratoire S\^uret\'e des Logiciels \\
+  \texttt{Julien.Signoles@cea.fr}}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+  This paper details the design and implementation of \textsc{Ocamlgraph}, a
+  highly generic graph library for the programming language \textsc{Ocaml}.
+  This library features a large set of graph data
+  structures---directed or undirected, with or without labels on
+  vertices and edges, as persistent or mutable data structures,
+  etc.---and a large set of graph algorithms.  Algorithms are written
+  independently from graph data structures, which allows combining
+  user data structure (resp. algorithm) with \textsc{Ocamlgraph} algorithm
+  (resp. data structure).  Genericity is obtained through massive use
+  of the \textsc{Ocaml} module system and its functions, the so-called
+  \emph{functors}.
+\end{abstract}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

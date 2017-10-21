@@ -1,0 +1,32 @@
+digraph g {
+
+r -> U;
+r -> D;
+r -> T;
+
+U -> Ua; 
+U -> Ub;
+Ua -> Uaa; 
+Ub -> Ubb;  
+Ua -> Ubb;
+Ub -> Uaa;
+
+D -> Da; 
+D -> Db;
+Da -> Daa; 
+Db -> Dbb;  
+Da -> Dbb;
+Db -> Daa;
+
+T -> Ta; 
+T -> Tb;
+Ta -> Taa; 
+Tb -> Tbb;  
+Ta -> Tbb;
+Tb -> Taa;
+
+Ua -> Da;
+Db -> Ta;
+Tb -> Ub;
+
+}

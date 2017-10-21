@@ -1,0 +1,367 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage,url}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{listings}
+\usepackage{amssymb,amsmath,amsthm}
+\usepackage{color}
+
+\title{A Formal Proof of Bellman-Ford Algorithm}
+\author{Yuto Takei \\ The University of Tokyo }
+
+\lstdefinelanguage{Why3}
+{
+basicstyle=\ttfamily,
+keywordstyle=\color{blue},
+morekeywords=[1]{inductive,predicate,function,goal,type,use,import,theory,end,in,axiom,lemma,export,forall,constant,module,let,exception,match,with,exists},%
+%keywordstyle=[1]{\color{red}},%
+morekeywords=[2]{true,false},%
+%keywordstyle=[2]{\color{blue}},%
+otherkeywords={},%
+commentstyle=\itshape,%
+columns=[l]fullflexible,%
+sensitive=true,%
+morecomment=[s]{(*}{*)},%
+escapeinside={*?}{?*},%
+keepspaces=true,
+literate=%
+{'a}{$\alpha$}{1}%
+{'b}{$\beta$}{1}%
+{<}{$<$}{1}%
+{>}{$>$}{1}%
+{<=}{$\le$}{1}%
+{>=}{$\ge$}{1}%
+{<>}{$\ne$}{1}%
+{/\\}{$\land$}{1}%
+{\\/}{ $\lor$ }{3}%
+{\ or(}{ $\lor$(}{3}%
+{not\ }{$\lnot$ }{1}%
+{not(}{$\lnot$(}{1}%
+{->}{$\rightarrow$}{2}%
+{<->}{$\leftrightarrow$}{2}%
+}
+
+\lstnewenvironment{why3}
+{\lstset{language=Why3}}
+{}
+
+\newcommand{\edgen}[3]{#1\rightarrow_{#3}#2}
+\newcommand{\pathn}[3]{#1\rightarrow^\star_{#3}#2}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  This is the abstract.
+\end{abstract}
+
+\section{Introduction}
+
+I want to \emph{emphasize} a word.
+
+\section{Bellman-Ford Algorithm}
+
+The Bellman-Ford algorithm is one of the algorithms to solve the
+single-source shortest paths problem, i.e., to give the shortest paths
+to all vertices from one given source vertex. To solve such a problem,
+Dijkstra's algorithm is widely known as an effective solution, yet it
+assums edges to have non-negative length. The Bellman-Ford algorithm
+relaxed such the assumption and is able to compute the solution for
+directed graphs with edges that have negative length.
+
+However on the other hand, if the graph contains a cycle whose total
+length of involving edges is negative, it may cause an inability to
+compute the shortest paths. This is only limited to the case such a
+negative-cylce is reachable from the given source, and the
+Bellman-Ford algorithm detects and reports it without failure.
+
+Now we give the formal description of the single-source shortest
+paths. It is given as a triple $ (G,s,l) $, where $ G $ represents a
+directed graph $ G=(V,E) $, $ s \in V $ is a source vertex, and $ l :
+E \rightarrow \mathbf{R} $ gives the length for all edges. The goal
+for this problem is either to produce the shortest path tree from $ s
+$ or to prove that there is a negative-cycle reachable from $ s $.
+
+The listing \ref{alg:bf} shows the psuedocode of the Bellman-Ford
+algorithm \cite[p.~532]{algo}.
+
+\newcommand{\initBF}{\ensuremath{\mbox{\sc Initialize-Single-Source}}}
+\newcommand{\relaxBF}{\ensuremath{\mbox{\sc Relax}}}
+\newcommand{\mainBF}{\ensuremath{\mbox{\sc Bellman-Ford}}}
+
+\begin{algorithm}
+\caption{$ \initBF (G,s) $}
+\begin{algorithmic}[1]
+\FORALL{ vertex $ v \in V[G] $}
+\STATE{$ d[v] \leftarrow \infty $}
+\STATE{$ \pi [v] \leftarrow nil $}
+\ENDFOR
+\STATE{$ d[s] \leftarrow 0 $}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$ \relaxBF (u,v,l) $}
+\begin{algorithmic}[1]
+\IF{$ d[v]>d[u]+l(u,v) $}
+\STATE{$ d[v] \leftarrow d[u]+l(u,v) $}
+\STATE{$ \pi [v] \leftarrow u $}
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{$ \mainBF (G,s,l) $}\label{alg:bf}
+\begin{algorithmic}[1]
+\STATE{$ \initBF (G,s) $}
+\FOR{$i = 1 \to |V[G]|-1 $}
+\FORALL{ edge $ (u,v) \in E[G] $}
+\STATE{$ \relaxBF (u,v,l) $}
+\ENDFOR
+\ENDFOR
+\FORALL{edge $ (u,v)\in E[G] $}
+\IF{$ d[v]>d[u]+l(u,v) $}
+\RETURN{False}
+\ENDIF
+\ENDFOR
+\RETURN{True}
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Quick Overview of Why3}
+
+Why3 is a software verification platfrom that enables one to describe
+the algorithm properties by first-order logic. Its important feature
+is the ability to separate the logical statements from programs
+\cite{boogie11why3}.
+
+\subsection{Logic}
+
+Logic component is described by set of theories that contains the
+definition of data types, their characteristics as either an axiom or
+a lemma, and predicates (or functions if returns non-Boolean) upon the
+given arguments.
+
+\paragraph {[TODO: align the following paragraphs]} 
+
+\emph{Types.} Types are either a non-interpreted abstract type or an
+algebraic type with polymorphism supported.
+
+\emph{Predicates and functions.} Predicate takes any number of
+arguments with the above type and returns a Boolean value. Function
+plays the same role but returns non-Boolean values. They are strictly
+typed before verification and recognized its recursiveness. The other
+important things is that the termination of them is guaranteed by the
+automated check of the structural decreasing of arguments.
+
+\emph{Inductive predicates.} Inductive predicate is provided as an
+other option to declare predicates. It is described by the set of
+conditional clauses where the predicate holds, and defined as the
+minimum predicate that all of them hold.
+
+\subsection{Program}
+
+Program component takes over the similar syntax as Objective Caml
+\ref{ocaml}, but we define conditions of the program additionally.
+
+\emph{Pre-condition and post-condition.} Pre-condition is the
+assumption that the algorithm makes prior to its execution, and the
+post-condition is the result the aglrotihm ensures after its
+execution. It is often useful to describe the effect of the
+algorithm. One should give the most strict statement for
+pre-condition, and the most general statement for post-condition.
+
+\emph{Loop variant.} Variant expression is used to guarantees the
+terminability of recursive calls or loops. One must give an arbitral
+integral expression for it, which necessarily decreases in the certain
+sequential operations. With the assumption that the given expression
+remains positive during the iteration, and firmly decreases at every
+step, Why3 guarantees that the iteration will eventually terminate.
+
+(TODO: Insertion of small example)
+
+
+\section{Formal Proof}
+
+\subsection{Specification}
+
+Proving the algorithm first starts by providing the specification of
+the algorithm. It should be minimal yet comprehensive to define the
+behavior of algorithm and should be clearly distinguished from the
+proofs. We now present minimal logical properties of graph data
+structure as prerequisites for Bellman-For algorithm, and then
+introduce those of the algorithm itself.
+ 
+\subsubsection{Graph}
+
+In order to show the correctness of algorithms that make use of graph
+data structure, it is neccesary to define the characteristics of graph
+itself in purely logical way. There are several ways to represent the
+graph for formal verification.
+
+\begin{enumerate}
+
+\item Defining the logical functions, which give the set of vertices,
+  successors to each of them, and weight between one vertex and
+  another. Note that the verification context encapsulate the actual
+  graph and thus the algorithm should obtain it by calling those
+  global functions.
+
+\item Passing the graph as one of the input parameters for the
+  algorithm. Although this structure is more natural in practical
+  implementation, one must pass the graph to all involving
+  sub-functions as a parameter and describe the desired property of it
+  as a pre-condition for them.
+
+\end{enumerate}
+
+Note that both of above will eventually result in the similar
+proof. For the simplicity in this paper, we choose the first method.
+
+Considering the Bellman-Ford algorithm, one must give the formal
+definition of the path with the given length. We define such the path
+by inductive manner. Let $\edgen{v_1}{v_2}{n}$ denote the existence of
+the edge between $ v_1 $ and $ v_2 $ with the length $ n $, and $ \to
+^* $ represent the transitive closure of $ \to $; then following two
+properties are introduced.
+
+\begin{displaymath}
+  \frac{}
+       {\pathn{v}{v}{0}}
+  \qquad\qquad
+  \frac{\pathn{v_1}{v_2}{m} \qquad \edgen{v_2}{v_3}{n}}
+       {\pathn{v_1}{v_3}{m+n}}
+\end{displaymath}
+
+(\textbf{TODO:} My arrow is so ugly... $ \stackrel{m+n}{\longrightarrow^*} $)
+
+After introducing the predicate for the path existence between certain
+vertices, one can immediately precise that the property of the
+shortest path from $ v_1 $ to $ v_2 $ with length $ n $, i.e., to
+assert that there are no path shorter than $ n $ connecting $ v_1 $ to
+$ v_2 $. Moreover, if no such path exists from $ v_1 $ to $ v_2 $, it
+is suffice to say that there is no $ n $, which is the length between
+those vertices.
+
+With the specification in Why3 syntax, the formulation above is
+expressed as in the listing~\ref{lst:why_graph}. Here all graph
+structures and predicates are packed in the theory \mbox{\sc
+  Graph}. Vertices are given as a global constant set namely \mbox{\sc
+  vertices}, and edges and their weights are given by global functions
+\mbox{\sc succ} and \mbox{\sc weight} respectively.
+
+\begin{algorithm}
+\caption{Definition of graph in logical way}\label{lst:why_graph}
+\begin{why3}[1]
+theory Graph
+  use export int.Int
+  use export set.Fset
+
+  type vertex
+  constant vertices : set vertex
+  function succ vertex : set vertex
+  function weight vertex vertex : int
+
+  inductive path (v1 v2: vertex) (n: int) =
+    | path_empty:
+        forall v: vertex. path v v 0
+    | path_succ:
+        forall v1 v2 v3: vertex, n: int.
+        path v1 v2 n -> mem v3 (succ v2) -> path v1 v3 (n + weight v2 v3)
+
+  predicate shortest_path (v1 v2: vertex) (n: int) =
+    path v1 v2 n /\
+    forall m: int. m < n -> not (path v1 v2 m)
+
+  predicate no_path (v1 v2: vertex) =
+    forall n: int. not (path v1 v2 n)
+end
+\end{why3}
+\end{algorithm}
+
+\subsubsection{Bellman-Ford algorithm}
+
+Now we discuss the foundamental characteristics of Bellman-Ford
+algorithm. They consists of precondition, postcondition and
+terminability of the algorithm, and we aim to describe it by utilizing
+Hoare logic.
+
+Although the psuedocode of Bellman-Ford algorithm in listing
+\ref{alg:bf} returns an Boolean value and modify the distance and
+parent mappings in imperatiev manner, we slightly change the format
+for practical implementation in O'Caml and let it return a mapping
+from vertex to shortest-distances rather than the indication of the
+existence of negative-cycle. Additionally, we raise an exception in
+presence of the negative-cycle.
+
+As a result, our implementation will be a function that takes the
+source vertex $ s $ as a single argument, and either returns the
+mapping from $ v $ to \mbox{\sc int} for shortest paths, or raise an
+exception indicating the presence of a negative cycle. Now we adapt
+algorithmic characteristic into the implementation above.
+
+\emph{Precondition.} The only requirement is that the source vertex $
+s $ given must be contained in the graph $ G $, which is described by
+the theory \mbox{\sc Graph}.
+
+\emph{Postcondition.} If algorithm returns the value without the
+exception, the resulting mapping at the key $ v $ should give the
+length of the shortest path from $ s $ to $ v $. The existence of such
+a path is indicated by the algebraic type, which either has a finite
+integer value or an inifinity. With the exception returned, there
+exists at least one negative-cycle.
+
+\emph{Terminability.} (TODO)
+
+Note that the case without the exception, one does not need to assert
+the graph to be free of negative-cycle.
+
+
+
+
+
+
+
+
+\begin{algorithm}
+\caption{Specification of Bellman-Ford algorithm}\label{lst:why_bf}
+\begin{why3}[1]
+module BellmanFord
+  use import map.Map
+  use import Graph
+
+  type dist = Finite int | Infinite
+  type distmap = map vertex dist
+
+  exception NegativeCycle
+
+  let bellman_ford (s: vertex) : distmap =
+    { mem s vertices }
+    (* ... actual implementation comes here ... *)
+    { forall v: vertex. mem v vertices ->
+        match result[v] with
+        | Finite n -> shortest_path s v n
+        | Infinite -> no_path s v
+        end }
+    | NegativeCycle ->
+    { exists v: vertex. mem v vertices /\
+      exists n: int. n < 0 /\ path v v n  }
+end
+\end{why3}
+\end{algorithm}
+
+
+
+
+\subsection{Proof}
+
+\section{Conclusion}
+
+\bibliographystyle{plain}
+\bibliography{./biblio}
+
+\end{document}
