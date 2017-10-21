@@ -2829,9 +2829,6 @@ and do_compile_matching repr partial ctx arg pmh = match pmh with
           ctx pm in
       let lambda1 = match lambda with
         | Lifthenelse (Lprim (Pintcomp Cneq, [l1; Lconst (Const_base (Const_int n))], loc), l2, l3) ->
-            (* XXX
-               let const' = Const_string ((if n == 0 then "False" else "True"), None) in
-               let prim' = prim_string_notequal in *)
             let const' = Const_bool (if n == 0 then false else true) in
             let prim' = Pintcomp Cneq in
             Lifthenelse (Lprim (prim', [l1; Lconst (Const_base const')], loc), l2, l3)
