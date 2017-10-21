@@ -12343,8 +12343,7 @@ let merge_module_info_map acc sources : Bsb_db.t =
       | Some a, Some b  ->
         Bsb_exception.conflict_module modname 
           (Bsb_db.dir_of_module_info a)
-          (Bsb_db.dir_of_module_info b)
-     
+          (Bsb_db.dir_of_module_info b)     
       | Some v, None  -> Some v
       | None, Some v ->  Some v
     ) acc  sources 
