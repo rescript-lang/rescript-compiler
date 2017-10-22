@@ -1,0 +1,87 @@
+
+--------------------------------------------------------------------------
+
+> Given the page limit, the paper could perhaps be extended to give even more
+> examples.
+
+We added a new section 1.5.4 "Building Graphs" presenting some
+functors from ocamlgraph to build graphs independently of the
+persistent or imperative nature (this is related to another question
+below). 
+
+---------------------------------------------------------------------------
+
+> There is something very strange about your references.
+
+This is fixed.
+
+> I'm surprised that your Imperative.Graph.Abstract graphs appear to
+> have *integer* marks built-in 
+
+Indeed this is somewhat of a limitation. We have already patched
+ocamlgraph accordingly and added a note in the Aknowledgements section
+to indicate this change.
+
+> It would also be worth adding an appendix or a table listing the
+> various functors supported in your library, with just a short sentence
+> for each.
+
+There are two many functors in our library to be listed in the paper
+(even in an appendix). But we added a note about the availability of
+the API at http://ocamlgraph.lri.fr/doc/ in the paper.
+
+> I don't understand the last column in Fig 1.
+
+Fixed with yes/no/meaningless instead of signs.
+
+> Please add a citation on page 9 where you say "percolation algorithm". I'm
+> not familiar with this term.
+
+We removed the percolation term.
+
+
+---------------------------------------------------------------------------
+
+> but the paper needs much more explanation of the OCAML
+> module system, ML functors, and their support for generic
+> programming.
+
+We added a whole section (1.2) about ocaml module system.
+
+> In the conclusions, you state that your approach provides greater
+> consistency than the mere use of higher-order functions. Please
+> elaborate on this point.
+
+We rephrased the sentence (removing comparison to higher-order
+functions, which we thought to be folklore but was indeed obscure).
+
+> You state that the modifiers for imperative and persistent graphs
+> have different types. How can you then type
+> the generic algorithms using these modifiers? Do you require the
+> types of the modifiers to be in a subtype relation?
+
+We added a whole section (1.5.4) about the issue of graph building.
+
+> How can you ensure that the generic graph algorithms work correctly
+> for the user's own graph structures. How do you specify
+> side-conditions that the user's graph implementation should respect?
+
+We added a sentence indicating that the user is responsible for
+fulfilling the requirements over the functor parameters.
+
+> I would like to see the generic coloring routine.
+
+Added as appendix B.
+
+> In Figure 3m, you used a too small font size, a looking glass is needed to
+> read the boxes. 
+
+We agree that the font is small but we didn't figure out how to
+enlarge it due to lack of space (the figure was originally designed to
+be A4-paper wide).
+
+> This figure should be explained in more detail. Comment on the
+> subtyping and functor application relations.
+
+We added such explanations. Moreover, module subtyping is now also
+covered in the new section about ocaml module system.

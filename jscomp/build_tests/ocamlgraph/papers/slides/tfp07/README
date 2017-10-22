@@ -1,0 +1,16 @@
+
+Makefile                     Fichier de make pour faciliter les manips
+README                       Ce fichier
+beamer.tex                   Le source beamer
+beamercolorthemeCea.sty      Les couleurs du thème Cea
+beamerouterthemeCea.sty      La mise en page du thème Cea
+beamerthemeCea.sty           Le thème Cea
+cealist.eps                  Logo du cea list
+greenpixel.eps               Pixel 1x1 vert
+lrqa.eps                     Logo qualité
+orangepixel.eps              Pixel 1x1 orange
+
+Pour créer un ps : 'make ps' ou juste 'make'
+Pour créer un pdf : 'make pdf'
+
+

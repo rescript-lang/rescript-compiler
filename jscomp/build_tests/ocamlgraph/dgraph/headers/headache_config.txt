@@ -1,0 +1,20 @@
+# Objective Caml source
+| ".*\\.mly"      -> frame open:"/*" line:"*" close:"*/"
+| ".*\\.ml[il4]?.*" -> frame open:"(*" line:"*" close:"*)"
+# C source
+| ".*\\.c"      -> frame open:"/*" line:"*" close:"*/"
+| ".*\\.ast"    -> frame open:"//" line:" " close:" "
+| ".*\\.cc"     -> frame open:"/*" line:"*" close:"*/"
+# Asm source
+| ".*\\.S"      -> frame open:"/*" line:"*" close:"*/"
+# Configure
+| "config\\.h\\.in" -> frame open:"/*"  line:"*" close:"*/"
+| "configure\\.in" -> frame open:"#"  line:"#" close:"#"
+# Makefile
+| "Makefile" -> frame open:"#"  line:"#" close:"#"
+# Sh
+| ".*\\.sh" -> frame open:"#"  line:"#" close:"#"
+# Misc
+| "make_release" -> frame open:"#"  line:"#" close:"#"
+| "FAQ" -> frame open:"#"  line:"#" close:"#"
+| ".*\\.el" -> frame open: ";" line: ";" close:";"

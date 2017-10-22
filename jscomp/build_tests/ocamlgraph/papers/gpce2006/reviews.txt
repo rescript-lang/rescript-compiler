@@ -1,0 +1,278 @@
+---------------------------- Original Message ----------------------------
+Subject: GPCE paper reviews
+From:    "GPCE" <gpce@easychair.org>
+Date:    Sat, July 1, 2006 4:43 am
+To:      "Sylvain Conchon" <sylvain.conchon@lri.fr>
+--------------------------------------------------------------------------
+
+Paper: 18
+Title: Designing a Generic Graph Library using ML Functors
+
+-------------------- review 1 --------------------
+
+REVIEWER'S CONFIDENCE: 4 (expert)
+----------------------- REVIEW --------------------
+
+Relevance to the conference (+3 .. -3):
++3
+
+Short summary of the paper:
+The paper describes design and implementation of a general graph
+library in OCaml, which relies to the great extent on OCaml module system
+to enforce abstractions in graph representations and to factor out the
+implementation in easily composable units and to prevent code duplication.
+The graph library contains not only the implementation of various graph
+interfaces but graph algorithms as well. The algorithms can work on any
+suitable (satisfying the interface) graph
+representation -- included in the library or developed by the user.
+
+Pros and cons of the paper:
+OCAMLGraph is probably the best example of component engineering. The
+promises of components can be fully fulfilled; so OCAMLGraph belongs to
+the `component engineering Hall of fame', seriously. I wish to see a web
+page dedicated to the best practices of GPCE, and wish to see OCAMLGraph
+there. It is the submitted paper that I have doubts
+about. Unlike OCAMLGraph, the paper is poorly designed and leaves the
+reader unsatisfied.
+
+First of all, the paper dives too fast and too much into specific
+details; when details are presented, they are given no motivation; only in
+hindsight (e.g., when one sees the module Digraph) one
+understands the significance of the design decisions. Because most of the
+examples include "...", one cannot meaningfully follow the
+presented code examples. Perhaps the paper should start with the
+related work -- with the description of the existing graph libraries and
+the discussion of their limitations. Only then the design
+decisions of OCAMLGraph become meaningful. A simple running example would
+have helped as well.
+
+The paper leaves unanswered (and more seriously, un-posed) the
+question of overhead (space + time) of all of the generality and
+abstraction of OCAMLGraph. To answer the question, one must compare
+OCAMLGraph with something else. Alas, the only performance numbers in the
+paper refer to the OCAMLGraph itself. I would like to see their benchmark
+(DFS/BFS traversal of mazes) implemented, first, by hand in OCaml, and
+then in Baire (which is also an OCaml system) -- and see the run time,
+compilation time, the sizes of final executables and the run-time space
+requirements.
+
+Detailed comments to the authors to improve the paper:
+p2, section 2.3. It's worth calling 'with type' annotations by their
+proper name, sharing annotations, and refer to Harper et al for more
+discussion.
+
+p3:
+``(One could have considered a polymorphic type for vertices but
+polymorphism does not marry nicely with functors.)''
+
+That is a bad phrase to write in an academic paper. In general, any claim
+must be justified: by an example, proof, or by
+reference. Reading empty assertions like the above does not give the
+reader any clue and any knowledge; it only perplexes the reader. If the
+author has no justification or illustration for the claim, it's better not
+to make it at all. Incidentally, the paper itself shows many examples of
+functors whose members have polymorphic types (e.g., fold_succ on the same
+page).
+
+p7, Sec 4.4. When we unify building of imperative and functional graphs
+under the same signature, care must be taken! For example, the user may
+wish to build two graphs, as in
+	let g = empty () in
+	let g1 = add_edge g 1 2 in
+	let g2 = add_edge g 3 4 in
+	(g1,g2)
+In case of imperative graphs, the end result will be quite
+unexpected. So, one can't really unify building of imperative and
+functional graphs, the difference is easy observable (in sharing,
+etc). That has to be explained and the user must be warned. Alas, the type
+system does not enforce the linearity of using constructed graph values.
+
+
+-------------------- review 2 --------------------
+
+REVIEWER'S CONFIDENCE: 2 (medium)
+----------------------- REVIEW --------------------
+
+Relevance to the conference (+3 .. -3):
+
+-1
+
+Short summary of the paper:
+
+The paper describes the design and implementation of a generic graph
+library for the O'Caml programming language. The library supports
+directed and undirected edges, labeled vertices and edges, as well as
+persistent and mutable data structures. It also provides a set of graph
+algorithms which are independent of these structures.
+
+Pros and cons of the paper:
+
+Pros:
+
+- Designing (graph) libraries supporting a large set of features will,
+  without proper parametrization, result in an unmanageable
+  set of variants, due to explosion of feature combinations. The
+  paper shows how thoughtful and judicious use of meta programming, in
+this instance using functors, can be employed in practice to manage
+variants.
+
+- The techniques described in the paper results in a small and very
+  manageable code size, without (significantly) compromising
+  performance.
+
+- The choice of data structure representation is largely
+  independent of the graph algorithms, leading to better reuse of
+  both algorithms and representation code.
+
+- Overall, the paper gives a good description of how to construct a
+  library, maximizing reuse without compromising performance, using
+well-known meta programming techniques,
+
+Cons:
+
+- The paper does not describe any novel techniques, and should be
+  taken as an experience paper, but as an experience paper, a proper case
+study is missing. The discussion of experiences with applying the
+library and more importantly, the functor-based design philosophy, to a
+larger applications than Sudoku and topological sorting is
+  warranted.
+
+  Compared to "standard" graph libraries, what are the actual,
+  experienced benefits with this generic, more flexible library?
+
+  An interesting question here would be whether actual improvements of
+maintenance or reuse costs due to the improved genericity
+  could be found, i.e. does improved genericity improve reuse/reduce
+maintenance costs?
+
+- The benchmarking part is a bit weak: It should include benchmarks of
+  identical algorithms in competing libraries, preferably with a
+  side-by-side comparison of algorithm code using other libraries, when
+there are noteworthy differences.
+
+  The algorithms written by the authors for the benchmarks in
+  Figure 2 and 3 should be readily available for many of the
+  other libraries in "Related Work", so designing a mini benchmark for
+these ought to be feasible.
+
+Detailed comments to the authors to improve the paper:
+
+page 2, sec 3, para -3, line 3
+ "the edges labels" -> "edge labels"
+
+page 4, sec 3.1, para -4, line 2
+ "to graphs creation" -> "to graph creation"
+
+page 5, sec 4.2, para 3, line 5
+ "requires to iterates" -> "requires iteration"
+
+page 5, sec 4.2, para 3, line 7
+ "requires to iterates -> "requires iteration"
+
+page 5, sec 4.2, para 4, line 2
+ "operations to manipulate" -> "operations for manipulating"
+
+
+-------------------- review 3 --------------------
+
+REVIEWER'S CONFIDENCE: 3 (high)
+----------------------- REVIEW --------------------
+
+Relevance to the conference (+3 .. -3): 1
+
+Short summary of the paper:
+===========================
+
+The authors describe the design and implementation of a graph library
+using OCaml's modules system. The library is generic in two
+directions: different graph implementations are provided (such as
+directed/undirected, labelled/unlabelled or persistent/imperative
+graphs) without unnecessary code duplication; graph algorithms work on all
+graph implementations (even used-defined ones) that match a
+certain signature. Genericity is obtained through the use of functors.
+
+Pros and cons of the paper:
+===========================
+
+* Pros:
+
+  + The library seems to be mature.
+  + All common kinds of graphs are provided.
+  + Graph algorithms work for user-defined graphs.
+  + It is interesting to see how a graph library can be structured using
+    OCaml functors.
+
+* Cons:
+  + The implementation techniques described in the paper are not new. +
+The paper is, in large parts, only a description of a library. + The
+code presented is not fully self-contained. For example,
+    argument and result signatures of functors are often missing, which 
+makes them hard to understand and impossible to execute. It would  be
+better to present a self-contained and executable version of the 
+graph library.
+  + There are some factual errors in the related work section (see below).
+
+
+Detailed comments to the authors to improve the paper:
+======================================================
+
+* Section 3
+
+  + You should mention that the ellipses in Fig.1 represent signatures.
+
+* Section 3.1
+
+  + Why does polymorphism not marry nicely with functors? After all, the
+    HM signature from Section 3.2 has a polymorphic type component.
+  + Shouldn't the type of "is_directed" be "t -> bool"?
+  + What do the first two "(* ... *)" on page 3 stand for? I think
+    you should not use "(* ... *)" at all in your paper. At several
+points, "(* ... *)" replaces the argument signature of a functor; this
+is unfortunate because argument signatures convey important type
+information to the reader. If "(* ... *)" stands for some  irrelevant
+functions, than just omit these functions.
+  + Why has the "iter_succ" function type "(vertex -> unit) -> t ->
+    vertex -> unit"  and not "(vertex -> 'a) -> t -> vertex -> 'a"
+
+* Section 3.2
+
+  + The argument and result signatures of "Make_Map" are missing.
+    This might be ok for this particular module but there are other
+modules in the remainder of the article for which argument and result
+signatures would really improve understandability.
+  + Module "Make_Abstract": what is "g.edges"? You write that the
+    abstraction of a graph encapsulates the types of vertices;
+    I can't see this from the code.
+
+* Section 4.3
+
+  + The body of the second Dfs module is missing.
+
+* Section 4.4
+
+  + The bodies of P and I (page 7, left column) are missing.
+  + I really didn't get what the Make module does. There is no
+    result signature and the body is missing as well.
+
+* Section 5.1
+
+  + Is C.coloring the same as the coloring function defined in
+    Section 4.3? If yes, then your algorithm does not work because
+"coloring" from Section 4.3 unsets all marks before doing its work.
+
+* Section 7
+
+  + The table in Fig.4 is wrong with respect to FGL. The FGL
+    library has generic algorithms, for example the "maxflow"
+    function has type "(DynGraph gr, Num b, Ord b) => gr a b ->
+    Node -> Node -> b", so we can compute the maximum flow of
+    every instance of type class "DynGraph". Moreover,
+    FGL also supports signatures in form of type classes.
+
+  + I think it's a bit unfair to state that OCamlGraph supports 19
+    graph data structures whereas (say) LEDA supports only five. For
+OCamlGraph, you count (say) directed and undirected implementations 
+as 2 data structures. LEAD also has directed and undirected graphs 
+but obviously you count them as a single data structure.
+
+

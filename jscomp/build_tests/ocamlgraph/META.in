@@ -1,0 +1,5 @@
+version = "VERSION"
+description = "Generic Graph Library"
+requires=""
+archive(byte) = "CMA"
+archive(native) = "CMXA"

@@ -1,0 +1,9 @@
+digraph G {
+  size="7.5,10" ;
+  rankdir = TB ;
+  "Ed_main" -> "Ed_display" ;
+  "Ed_main" -> "Ed_draw" ;
+  "Ed_graph" -> "Ed_hyper" ;
+  "Ed_draw" -> "Ed_graph" ;
+  "Ed_display" -> "Ed_graph" ;
+}

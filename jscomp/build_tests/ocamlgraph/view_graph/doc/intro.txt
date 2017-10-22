@@ -1,0 +1,69 @@
+{1 ViewGraph}
+
+{2 Presentation}
+
+ViewGraph is a small {{:http://caml.inria.fr/ocaml/}ocaml} library 
+that helps to view a graph from a dot file
+in a Lablgtk canvas, and interact with it.
+
+It reads dot files and uses the dot tool for the layout of the nodes.
+You can have a look to {{:http://www.graphviz.org/}Graphviz} 
+to know more about the dot tool and file format.
+
+It also uses the {{:http://caml.inria.fr/ocaml/}ocaml}
+graph library {{:http://ocamlgraph.lri.fr/}ocamlgraph}.
+
+It is composed of the {{:index_modules.html}modules}:
+- {!module:ViewGraph} : which is the main part and that can be used alone
+    to parse a file, generate an image of the graph
+    and add some user defined callbacks to interact with it,
+- {!module:ViewGraph_select} : which can be used to add selection features
+    in addition to user callbacks,
+- {!module:ViewGraph_test} : which is not really part of the library
+    but that creates a small gui to show how to use the 2 other modules.
+
+To know more about it, the best thing to do is to compile
+and test :
+- [make]
+- [./viewgraph file.dot]
+
+If you don't have any dot file, you can for instance use some examples from
+{{:http://www.graphviz.org/Gallery.php}graphviz gallery}
+but please remove the size attibutes (they are not handdled yet : see below)
+
+Notice also that if you are already using 
+{{:http://ocamlgraph.lri.fr/}ocamlgraph} to build some graphs,
+it is quite easy to generate dot files by using 
+{{:http://ocamlgraph.lri.fr/doc/Graphviz.html}Graph.Graphviz.Dot}.
+
+{2 Some more things TODO}
+
+- some of the dot format attributes are not handled
+  (size and ratio for instance)
+- the zoom feature is very ugly at the moment !
+- as we call 'dot' once for the image and another time for annotations,
+  the layout is computed twice. That can be a problem for big graphs.
+- instead of using PNG images from dot, we could generate the GTK objects,
+  and the zoom problem would be solved. This requires a lot of  work,
+  but we hope to do it soon !
+- add something to find a node by its name
+- ... and more...
+
+{2 More links}
+
+- GTK : 
+{ul {- all the {{:http://library.gnome.org/devel/gtk/stable/}widgets} 
+Reference Manual}
+    {- the
+{{:http://library.gnome.org/devel/libgnomecanvas/stable/}GnomeCanvas}
+Library Reference Manual}
+}
+- Lablgtk :
+  {ul{- ocamldoc
+{{:http://plus.kaist.ac.kr/~shoh/ocaml/lablgtk2/lablgtk-2.4.0/doc/html/index.html}
+reference} with links on GTK reference,}
+{- an excellent
+{{:http://plus.kaist.ac.kr/~shoh/english/ocaml/lablgtk2/lablgtk2-tutorial/index.html}tutorial} fo those (like me) who don't know GTK.}
+}
+- Author : {{:http://www-sop.inria.fr/everest/personnel/Anne.Pacalet/}Anne
+  Pacalet}

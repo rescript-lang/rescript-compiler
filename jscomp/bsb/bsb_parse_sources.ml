@@ -77,7 +77,8 @@ type cxt = {
   cwd : string ;
   root : string;
   cut_generators : bool;
-  traverse : bool
+  traverse : bool;
+  namespace : string option;
 }
 
 let collect_pub_modules 
@@ -390,6 +391,10 @@ let rec
          if not (String_map.mem (String.capitalize basename) cur_sources) then 
            begin 
              Unix.unlink (Filename.concat parent f);
+             let basename = 
+              match cxt.namespace with  
+              | None -> basename
+              | Some ns -> Ext_namespace.make ~ns basename in 
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmi));
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmj));
              try_unlink (Filename.concat lib_parent (basename ^ Literals.suffix_cmt));

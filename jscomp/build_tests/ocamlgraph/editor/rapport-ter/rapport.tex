@@ -1,0 +1,572 @@
+\documentclass{llncs}
+
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
+\usepackage{url}
+\usepackage{graphicx}
+%\usepackage{alltt}
+
+\newcommand{\ocaml}{OCaml}
+\newcommand{\ocamlgraph}{Ocamlgraph}
+\newcommand{\graphviz}{Graphviz}
+\newcommand{\miquel}{A. Miquel}
+\newcommand{\noeud}{n\oe ud}
+\newcommand{\noeuds}{n\oe uds}
+
+\newcommand{\figs}[1]{(fig. \ref{fig:#1})}
+\newcommand{\figl}[1]{figure \ref{fig:#1}}
+\newcommand{\figa}[2]{(fig. \ref{fig:#1} #2)}
+
+\pagestyle{plain}
+\begin{document}
+
+\title{Édition interactive de graphes\\ en géométrie hyperbolique}
+
+\author{Benjamin Vadon}
+
+\institute{Stage de TER 2006--2007 \\
+effectué sous la direction de Jean-Christophe Filliâtre \\
+à l'INRIA Futurs, dans l'équipe ProVal \\
+Parc Club Université, 91893 ORSAY}
+
+\maketitle
+
+\section{Introduction}
+Nous nous intéressons à la visualisation et à l'édition de graphes.
+La visualisation d'un graphe comportant peu de \noeuds\ et d'arêtes est
+un problème trivial, mais le sujet se complique très rapidement dès
+que le nombre de ces composants augmente.
+En effet, la représentation d'un graphe pose un problème dès qu'il
+commence à être d'une taille conséquente, et notamment quand le 
+nombre d'arêtes est relativement élevé en proportion du nombre de
+\noeuds\ : les arêtes se croisent, ce qui est à même de gêner la
+compréhension.
+
+De nombreux auteurs se sont penchés sur ce thème et un grand nombre
+d'algorithmes de placement dans le plan en ont résulté. On peut citer
+\graphviz~\cite{graphviz} comme suite logicielle très connue dans le
+domaine de la visualisation planaire de graphes utilisant certain de
+ces algorithmes.  Ce problème a aussi été abordé d'une manière
+différente, en tentant de réaliser une représentation dans l'espace.
+Certes, avec cette méthode on peut arriver à ce que les arêtes ne
+s'entrecroisent pas, mais cela ne répond pas tout à fait au problème
+d'amélioration de lisibilité du graphe, car un graphe contenant
+beaucoup d'éléments restera indéchiffrable, même en trois dimensions.
+
+L'objectif de ce stage est de se pencher sur ce sujet mais en
+l'abordant d'une façon encore différente, et ce en utilisant une
+représentation planaire, mais dans le plan hyperbolique de Poincaré,
+contrairement au plan euclidien couramment utilisé.
+Le point de départ de ce TER est le travail effectué par
+\miquel~\cite{miquel} sur la représentation d'arbres à l'aide de la
+géométrie hyperbolique. 
+Nous allons tout d'abord expliquer les grands principes de la géométrie
+hyperbolique, et plus particulièrement dans le plan hyperbolique de
+Poincaré.
+Ensuite, nous ferons le lien entre cette géométrie non euclidienne et
+son application à la représentation de graphes, par le biais du
+travail de \miquel.
+Et enfin, nous nous pencherons sur sa réalisation en \ocaml~\cite{ocaml} dans le
+cadre de la librairie \ocamlgraph~\cite{ocamlgraph}, servant à la fois de support de
+développement et de médium de diffusion.
+
+
+\section{Géométrie hyperbolique}
+
+\subsection{Principe}
+
+La géométrie euclidienne est fondée sur cinq postulats dictés par Euclide
+dans ses ``Éléments''. Le cinquième postulat, pouvant être formulé comme ceci
+\begin{quote}
+``Étant donnés une droite $D$ et un point M, il n'existe qu'une seule
+droite passant par $M$ et qui soit parallèle à $D$.''
+\end{quote} 
+a été remis en question dès la renaissance, et c'est
+environ en 1850 que Bolyai et Lobatchevsky ont indépendamment
+découvert une nouvelle géométrie vérifiant les quatre premiers axiomes
+d'Euclide, mais réfutant le postulat des parallèles. Certains principes de
+la géométrie euclidienne sont conservés, tels que :
+\begin{itemize}
+\item  une droite est le chemin le plus court reliant deux points ;
+\item  deux droites sont parallèles si elles ne s'intersectent pas.
+\end{itemize}
+Cette géométrie dite hyperbolique est donc basée sur le fait qu'en un
+point $M$, il peut passer une infinité de droites parallèles à la
+droite $D$. Ainsi exprimé, ce concept peut paraître difficile à
+imaginer, mais plusieurs modèles permettant de se représenter la
+géométrie hyperbolique ont été développé depuis sa découverte. La
+\figl{parallels} illustre l'un de ces modèles. On peut y voir que les
+trois droites $d_1$, $d_2$ et $d_3$ passent par $M$ et sont parallèles
+à $D$ (et non parallèles entre elles car elles se croisent en $M$).
+Précisons que dans cette géométrie, les droites nous apparaissent
+courbes, mais ce sont bien des droites au sens où elles représentent
+le plus court chemin entre deux points.
+
+\begin{figure}
+  \centering
+ \includegraphics[scale=0.50]{images/parallels.eps}
+  \caption{Théorème des parallèles en géométrie hyperbolique}
+  \label{fig:parallels}
+\end{figure}
+\subsection{Le modèle de Poincaré}
+Henri Poincaré a imaginé un modèle pour la géométrie hyperbolique que
+l'on appelle le disque de Poincaré. Ce modèle est composé d'un cercle $C$,
+dénommé horizon, et d'un ensemble de point se trouvant à l'intérieur
+strict de ce cercle. Les points de l'horizon sont dits idéaux pour le modèle.
+Pour essayer de faciliter la compréhension de ce modèle, on peut se
+pencher sur la \figl{passage} ci-après qui représente le plan euclidien sur
+lequel on a déposé une lentille plan convexe convergente (semblable à
+un bol transparent rempli d'eau), et dont la surface plane est notre
+disque de Poincaré.
+\begin{figure}
+  \centering
+   \begin{minipage}{0.49\linewidth}
+      \includegraphics[scale=0.25]{images/lentille1.eps}   
+  \label{fig:lentille1}
+  \end{minipage}
+  \begin{minipage}{0.49\linewidth}
+      \includegraphics[scale=0.25]{images/lentille2.eps}   
+  \label{fig:lentille2}
+  \end{minipage}
+ \caption{Représentation de passage entre le plan euclidien et le plan
+   hyperbolique}
+ \label{fig:passage}
+\end{figure}
+
+ On peut voir \figa{passage}{de gauche} que pour représenter un
+point sur ce plan, on trace une droite $D$ entre le centre du
+disque unité et le point dans le plan euclidien, et ensuite on prend
+la normal $N$ au plan hyperbolique où $D$ a traversé la lentille. 
+La \figa{passage}{de droite} représente grossièrement le passage d'un dessin du
+plan euclidien au dessin sur le disque de Poincaré.
+
+Les droites sont des arcs portés par des cercles perpendiculaires à
+$C$ comme illustré par la droite $D_3$ ci-après \figs{cercles}.
+\begin{figure}[!b]
+  \centering
+   \includegraphics[scale=0.31]{images/perpendiculaire.eps}  
+  \caption{Représentation de quelques éléments dans un disque de Poincaré}
+  \label{fig:cercles}
+\end{figure}
+On peut noter que les droites $D_2$ et $D_3$ sont parallèles à $D_1$, mais,
+étant donné qu'elles se coupent, $D_2$ et $D_3$ ne sont pas parallèles entre
+elles. Remarquons aussi que la droite $D_1$ est portée par un cercle
+de rayon infini ce qui fait d'elle un diamètre du cercle $C$.
+
+Ce modèle est doté d'une fonction $\delta$,  que l'on
+appelle une métrique, permettant de calculer la distance entre deux
+points $A$ et $B$ du disque de Poincaré, dont la formule est la
+suivante :  
+$$
+\delta(A,B) = \mathrm{ath}\left(\left|\frac{A-B}{1-\overline{A}B}\right|\right)
+\quad\mbox{où}~
+\mathrm{ath}(x) = \frac{1}{2}\ln\left(\frac{1+x}{1-x}\right)
+$$
+
+On remarque \figs{cercles} que si l'un des point, $A$ ou $B$, se
+rapproche fortement du bord $C$ du disque, alors la distance
+$\delta(A,B)$ tend vers l'infini. Pour bien comprendre ce principe,
+qui nous sera fort important dans notre application de ce modèle à la
+représentation des graphes, on peut imaginer que nous observons un
+petit être vivant sur ce plan hyperbolique et se déplaçant dessus. À
+chaque pas qu'il fait dans la direction de l'horizon (le bord du
+disque pour l'observateur), la distance par unité de pas qu'il
+parcourt paraît de plus en plus petite pour l'observateur. Ainsi le
+bord du disque est inatteignable pour ce petit être vivant sur le plan
+de Poincaré.
+
+\medskip
+
+C'est en utilisant ce point de vue que nous avons réalisé le traçage
+des segments de droites dans le plan hyperbolique, en implantant une
+tortue LOGO se déplaçant sur ce plan.
+
+\subsection{Tortue hyperbolique}
+
+Ce principe de tortue LOGO, emprunté à \miquel, rend bien plus aisé la
+compréhension de la géométrie hyperbolique. Il faut clairement
+comprendre que nous aurons deux mondes :
+
+\begin{itemize}
+\item  le point de vue de l'observateur qui voit un disque unité, par
+définition un espace borné, sur le lequel se déplace la tortue ;
+\item le point de vue de la tortue qui se déplace dans le plan 
+hyperbolique, par définition un espace infini.
+\end{itemize}
+
+Une tortue est définie par un type \texttt{turtle} composé d'une position et
+d'une direction. 
+\begin{center}
+\texttt{type turtle = 
+\{ 
+  pos : coord; 
+  dir : coord; 
+\}
+}
+\end{center}
+Elle peut avancer et tourner, à gauche  et à droite, tout comme son
+équivalente en géométrie euclidienne. Bien entendu, pour représenter
+ce déplacement, il nous faut des fonctions pour connaître la position
+et la direction après un pas de mouvement. Ces foncions sont détaillés
+dans \cite{miquel}. Les fonctions de déplacement et de rotations
+(angle en radian) sont les suivantes :
+\begin{itemize}
+\item
+\texttt{val advance : turtle -> float -> turtle = <fun>}
+\item
+\texttt{val turn\_left : turtle -> float -> turtle = <fun>}
+\item
+\texttt{val turn\_right : turtle -> float -> turtle = <fun>}
+\end{itemize}
+
+\medskip
+
+On peut voir \figs{parcours} le parcours de différentes tortues se
+déplaçant sur le plan de Poincaré. On peut observer, entre deux pas de
+temps identiques, la différence de distance parcourue qui apparaît à
+l'observateur.
+
+\begin{figure}
+  \centering
+  \begin{minipage}{0.49\linewidth}
+    \includegraphics[scale=0.27]{images/parcours.eps}  
+    \caption{Parcours de différentes tortues sur le plan de Poincaré}
+    \label{fig:parcours}    
+  \end{minipage}
+  \begin{minipage}{0.49\linewidth}
+    \includegraphics[scale=0.50]{images/dictateurs.eps}
+    \caption{Le paradoxe des $n$ dictateurs}
+    \label{fig:dictateurs}
+    \end{minipage}
+\end{figure}
+
+Nous avons maintenant un moyen de tracer facilement des droites sur le
+plan hyperbolique, et nous pouvons nous intéresser au dessin d'un
+graphe sur ce plan.
+
+\section{Visualisation de graphes en géométrie hyperbolique}
+
+Nous allons commencé par présenter brièvement le travail effectué par
+\miquel~\cite{miquel} sur la représentation des arbres dans le plan de
+Poincaré. Ensuite, nous montrerons comment nous avons choisi de
+représenter les graphes dans le même modèle géométrique. Et enfin,
+nous expliquerons les problèmes de placement auxquels nous avons dû
+faire face et comment nous les avons résolus.
+
+\subsection{Visualisation d'arbres en géométrie hyperbolique}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\label{arbres}
+Nous nous intéressons d'abord au travail effectué par
+\miquel~\cite{miquel} sur les arbres qui sont un cas particulier, et
+simplifié, de graphes ayant une seule source et aucun cycle. Le
+problème est bien-sûr de placer correctement les \noeuds. Ensuite le
+traçage des arêtes est relativement trivial avec l'aide de notre
+tortue et de ses fonctions de mouvement l'accompagnement.
+
+Pour répartir les \noeuds\ d'un arbre dans le plan hyperbolique, \miquel se
+base sur deux propriétés de ce plan :
+\begin{itemize}
+\item une droite du plan le sépare en deux demi-plans, tout comme en
+  géométrie euclidienne ;
+\item quelque soit $n$, on peut disposer de $n$ demi-plans deux à deux
+  disjoints, contrairement à la géométrie euclidienne.
+\end{itemize}
+
+Pour arriver à séparer l'espace en $n$ demi-plans, \miquel\ illustre
+le problème par le paradoxe des $n$ dictateurs. Le principe en est
+simple : dans un espace fini à deux dimensions, $n$ dictateurs situés en
+un même point désirent se partager le monde de façon à régner chacun
+sur un demi-espace. Pour ce faire, ils se mettent en marche dans n
+directions régulièrement espacées de $\frac{360}{n}$
+degrés \figs{dictateurs}. Lorsqu'ils ont tous parcouru une distance $d$, les $n$ dictateurs
+s'arrêtent, et chacun d'entre eux s'approprie le demi-espace en face
+de lui (et dont la frontière est une droite imaginaire passant par
+ses deux pieds).
+
+ Dans le plan hyperbolique, quel que soit $n$, il existe une distance $d$
+ à partir de laquelle les demi-espaces attribués aux dictateurs sont
+ deux à deux disjoints. Pour calculer cette distance $d$, \miquel\ utilise la
+ formule suivante :
+$$
+d_n= \mathrm{ath}\left(\mathrm{tan}\left(\frac{\pi}{4}-\frac{\pi}{2n}\right)\right)
+$$ 
+Pour le placement des \noeuds, il pose donc la racine au centre du
+disque, sépare l'espace en $n$ demi-plans, où $n$ est le nombre de fils de
+la racine, et enfin fait avancer la tortue de chaque fils suivant la
+direction et la distance données. Ensuite, il fait de même
+récursivement pour l'ensemble des successeurs de ces \noeuds. On peut voir \figs{htree}
+le résultat final sur une arborescence de répertoire Unix.
+
+\begin{figure}
+  \centering
+  \includegraphics[scale=0.30]{images/htree.eps}
+  \caption{Affichage d'arbres}
+  \label{fig:htree}
+\end{figure}
+
+
+Après avoir déterminé où placer les \noeuds\ d'un arbre, on peut
+s'intéresser au placement des \noeuds\ d'un graphe qui pose certains
+problèmes comme, par exemple, le fait que des arêtes peuvent se croiser.
+
+\subsection{Adaptation aux graphes}
+
+Le graphe diffère sur deux points importants, pour notre sujet, par
+rapport à un arbre :
+\begin{itemize}
+\item il n'y a pas de racine, ce qui implique un choix arbitraire pour
+  commencer le tracé ;
+\item il peut, avec une forte certitude, y avoir des arêtes qui
+  s'entrecroisent. 
+\end{itemize}
+
+On reporte le choix de la racine sur la librairie
+\ocamlgraph\ sous la forme d'une fonction donnant un \noeud\
+arbitraire.  À partir de cette racine, on procède comme pour
+l'affichage d'un arbre, c'est-à-dire qu'on affecte à chacun de ses
+successeurs immédiats un demi-plan puis, récursivement, on procède à
+l'affichage des descendants de chacun de ses successeurs.  Mais il y a
+cependant deux différences importantes.  En effet, il peut y avoir
+plusieurs chemins différents menant de la racine à un \noeud\ donné.
+Dès lors, un \noeud\ peut déjà avoir été affiché comme successeur
+immédiat d'un descendant de la racine déjà traité, et ne doit donc
+plus être considéré comme successeur de tout autre \noeud.
+Cependant, les arêtes correspondantes doivent être affichées, ce
+qui amène à ajouter des arêtes transversales par rapport au dessin
+d'un arbre, c'est-à-dire des arêtes s'affranchissant des frontières
+entre demi-plans.
+
+Ces deux dissemblances peuvent avoir des conséquences importantes pour
+l'affichage d'un graphe, ce qui implique de considérer avec soin les
+deux paramètres suivants : d'une part, le type de parcours effectué à
+partir de la racine, qui va déterminer si un \noeud\ est visité plus ou
+moins tôt ; et d'autre part, l'ordonnancement des successeurs d'un
+\noeud, qui peut rapprocher ou éloigner les \noeuds\ reliés par des
+arêtes transversales. Nous allons maintenant présenter des
+heuristiques concernant ces deux points.
+
+\subsection{Heuristiques de placement}
+
+Pour parcourir un graphe, on a principalement deux choix : le parcours
+en profondeur (Dfs, de l'anglais \textit{Depth-first search}) et le
+parcours en largeur (Bfs, de l'anglais \textit{Breadth-first search}). Nous avons
+implanté les deux, ce qui a permis de voir les conséquences d'un tel
+choix. En observant les deux figures suivantes (fig. \ref{fig:dfs},
+\ref{fig:bfs}), on se doute que le choix entre les deux n'est pas
+évident.
+
+ Au premier coup d'oeil, le Dfs semble moins croiser
+les arêtes et le Bfs paraît mieux équilibrer la représentation du
+graphe. En effet, sur la \figl{dfs} de gauche, on voit une tendance à regrouper les
+\noeuds\ et à éviter trop de croisement d'arêtes, contrairement à la
+\figl{dfs} de droite qui a tendance, elle, à se faire croiser une grande
+quantité d'arêtes. Mais à la décharge de Bfs, il permet d'afficher
+plus de \noeuds\ que Dfs (respectivement 16 contre 11, pour la
+\figl{dfs}), ce qui implique l'affichage de plus d'arêtes et donc un
+risque plus grand que certaines se croisent. 
+
+\begin{figure}
+  \centering
+  \begin{minipage}{0.49\linewidth}
+    \includegraphics[scale=0.30]{images/db4_dfs.eps} 
+    \label{fig:dfs-dfs}
+  \end{minipage}
+  \begin{minipage}{0.49\linewidth}
+    \includegraphics[scale=0.30]{images/db4_bfs.eps}
+    \label{fig:dfs-bfs}
+  \end{minipage}
+  \caption{Intérêt d'un parcours en profondeur}
+  \label{fig:dfs}
+\end{figure}
+
+Pour la \figl{bfs}, la différence du nombre de \noeuds\ affichés est
+moins flagrante, mais reste plus grande pour Bfs (16 contre 14 pour
+Dfs). La \figl{bfs} de gauche montre par contre bien que le Dfs compresse
+tout le graphe dans un coin du plan, alors que le Bfs \figa{bfs} {de droite}
+utilise pleinement le plan hyperbolique, sans pour autant trop croiser les
+arêtes.
+
+
+\begin{figure}
+  \centering
+  \begin{minipage}{0.49\linewidth}
+    \includegraphics[scale=0.30]{images/parcours_dfs.eps} 
+    \label{fig:bfs-dfs}
+  \end{minipage}
+  \begin{minipage}{0.49\linewidth}
+    \includegraphics[scale=0.30]{images/parcours_bfs.eps}
+    \label{fig:bfs-bfs}
+  \end{minipage}
+  \caption{Intérêt d'un parcours en largeur}
+  \label{fig:bfs}
+\end{figure}
+
+Pour choisir un parcours par défaut, nous avons préféré nous appuyer
+sur le fait que le but était tout de même de visualiser le plus de
+\noeuds\ possibles, et aussi d'utiliser le maximum du plan
+hyperbolique. Le choix s'est donc objectivement porté sur le parcours
+Bfs comme parcours par défaut, mais une option de la ligne de commande
+permet de choisir Dfs.
+
+\medskip
+
+Pour palier les défauts de placement engendrés par le Bfs, on a décidé
+d'ordonnancer les successeurs d'un \noeud\ de sorte que le moins
+d'arêtes possibles ne se croisent. Pour ce faire, on commence tout
+d'abord par construire la liste de tous les successeurs d'un noeud qui
+ne sont pas déjà affichés. De cette liste, on construit la liste des
+composantes fortement connexes.  Ensuite, pour ordonner chaque
+composante, on son \noeud\ de degré minimal et on effectue à partir de
+lui un parcours en profondeur. Les listes résultantes de l'ensemble
+des composantes sont ensuite concaténées pour donner la liste
+ordonnée des successeurs du \noeud\ étudié.
+
+\section{Réalisation dans \ocamlgraph}
+
+\subsection {Présentation de \ocamlgraph}
+
+\ocamlgraph~\cite{ocamlgraph} est une bibliothèque,
+développée pour le langage \ocaml~\cite{ocaml}, qui propose de multiples structures
+de données de graphes ainsi que plusieurs opérations et algorithmes
+classiques sur les graphes. Cette librairie permet de s'abstraire
+complètement des données utilisées dans les graphes grâce à
+l'attention portée par les développeurs sur la généricité de leur
+code, ce qui est un atout majeur pour un usage dans tous les domaines.
+Pour arriver à cette généricité, la bibliothèque exploite le système de
+modules du langage \ocaml~\cite{ocaml}, et notamment les modules paramétrés,
+communément appelés les foncteurs. Ces foncteurs permettent d'avoir
+des structures de données et des algorithmes indépendants. Ainsi,
+l'utilisateur peut utiliser sa propre structure de données et créer
+les modules correspondants. Pour le programmeur, les foncteurs évitent
+une duplication inutile de code.
+\ocamlgraph\ , sans être une librairie complète, en ce sens où tous les
+algorithmes existants sur les graphes n'y sont pas implantés, est bien
+plus qu'une base car pleinement fonctionnelle et d'une utilisation
+relativement aisée, une fois que le principe de fonctionnement à été compris.
+
+L'objectif pratique de ce TER est d'étendre \ocamlgraph\ par un outil graphique
+permettant de visualiser et d'éditer des graphes. Pour le développement de
+cet éditeur graphique, la bibliothèque est principalement utilisée pour la structure
+de données des graphes, et aussi pour des fonctionnalités internes à
+l'éditeur comme calculer des composantes connexes, ou bien trouver les
+successeurs d'un \noeud.
+
+L'éditeur est donc indépendant de la bibliothèque pour son utilisation
+(il n'est pas utile de posséder la librairie pour utiliser l'éditeur),
+mais il sera tout de même livré avec \ocamlgraph\ pour des raisons
+pratiques et ``historiques''(il a été développé avec et pour
+\ocamlgraph).
+
+\subsection {Fonctionnalités}
+L'éditeur de graphes comporte certaines fonctions de base pour remplir
+son objectif de visualisation et d'édition. Il permet de traiter les
+fichiers aux formats Dot \cite{graphviz} et Gml \cite{gml}. On peut donc ouvrir un fichier, créer
+un nouveau graphe, et sauvegarder sous ces formats. 
+Concernant l'édition, on peut ajouter des \noeuds\  isolés et des successeurs
+à un \noeud. Il est possible de créer des arêtes entre un \noeud\ et un
+ensemble de \noeuds\  sélectionnés. Il existe bien entendu les
+réciproques qui sont la suppression d'un \noeud, d'un ensemble de
+\noeuds\  et aussi d'arêtes reliant un ensemble de \noeuds.
+Il est aussi possible de changer le \noeud\ racine à partir duquel le
+graphe est dessiné.
+
+À la ligne de commande, il est possible de lancer l'éditeur en
+chargeant directement un graphe (format Gml ou Dot), et aussi de
+spécifier certains paramètres :
+\begin{itemize}
+\item le taux de rafraîchissement, option \texttt{-rr} $n$, où $n > 0$;
+\item la désactivation du mode anti-aliasé, option \texttt{-aa};
+\item le choix entre Dfs et Bfs, options respectivement \texttt{-dfs} et \texttt{-bfs}.
+\end{itemize}
+
+
+\section{Conclusion}
+
+Dans ce stage, nous nous sommes intéressés au problème complexe et
+bien connu de l'affichage de graphes. Pour cela, nous avons repris le
+travail effectué par \miquel~\cite{miquel} sur l'affichage d'arbres
+infinis avec une représentation dans la géométrie hyperbolique, et
+plus précisément dans le modèle de Poincaré. Nous avons étendu ce
+travail à la visualisation des graphes. Nous avons porté le tout sous
+une bibliothèque graphique de plus haut niveau, GTK+ \cite{gtk} dont
+le portage en \ocaml\ s'appelle Lablgtk2 \cite{lablgtk}, qui permet
+des interactions bien plus intéressantes avec l'utilisateur que la
+bibliothèque Graphics d'\ocaml\ utilisée par \miquel.  Au final, nous
+nous sommes intéressés à l'implantation des fonctionnalités d'édition
+de base (ajout/suppression de \noeuds\ et d'arêtes).
+
+Durant ce stage, plusieurs points plus ou moins nouveaux et plus ou
+moins difficiles ont dû être abordés :
+\begin{itemize}
+\item la découverte et l'utilisation de \texttt {subversion};
+\item la découverte des modules et de la couche objet
+  d'\ocaml~\cite{ocaml};
+\item l'utilisation intensive de Linux;
+\item la découverte d'Emacs \cite{emacs};
+\item la découverte de GTK et de son pendant en \ocaml, Lablgtk;
+\item la découverte de Latex.
+\end{itemize}
+Les sujets les plus difficiles à aborder, à mon avis, ont été d'une
+part les foncteurs d'\ocaml\ ce qui fût nécessaire pour la reprise des
+idées du code d'\miquel\ et aussi l'utilisation d'\ocamlgraph, et
+d'autre part, la librairie graphique Lablgtk basée sur la couche objet
+d'\ocaml\ ce qui l'a rendait un peu plus difficile à appréhender, ne
+connaissant ni la syntaxe ni les principes de la couche objet d'\ocaml.
+
+Le travail effectué à l'heure actuelle n'est qu'une base qui peut être
+améliorée. Quelques grands thèmes peuvent être envisagés pour son
+évolution. D'une part, on peut effectuer des ajouts triviaux pour
+permettre un peu plus de diversité dans les fonctions d'édition tels
+que :
+\begin{itemize}
+\item la gestion des graphes orientés;
+\item l'ajout d'étiquette aux arêtes;
+\item la création d'une clique avec un ensemble de \noeuds\ sélectionnés;
+\item la création d'un graphe plein de $n$ \noeuds.
+\end{itemize}
+
+D'autre part, on pourrait étudier le passage à l'échelle, et voir comment
+réagirait l'éditeur face à des milliers, voire des millions de \noeuds. On
+peut penser qu'une optimisation du code serait nécessaire pour arriver
+à gérer une grande quantité d'éléments. Mais le problème ne se
+situerait pas seulement au niveau des ressources consommées, mais aussi de
+l'interface graphique actuelle. On peut imaginer une modification de
+l'abre situé en partie droite de l'application en permettant
+d'englober les \noeuds\ dans leur composante respective.
+
+On pourrait aussi améliorer l'intégration d'\ocamlgraph\ à
+l'éditeur, en ajoutant des possibilités de visualiser des algorithmes
+implantés dans \ocamlgraph\ comme afficher le plus court chemin entre
+deux \noeuds, faire une k-coloration d'un graphe. Ceux-ci
+permettraient à cet éditeur de prendre une tournure pédagogique en
+permettant ce genre d'opérations.
+
+Et enfin, la transformation probablement la plus intéressante pour un
+usage professionnel serait de transformer l'éditeur en un foncteur, et
+ainsi, cela permettrait à l'utilisateur de se créer son propre éditeur
+de graphe avec ses structures de données et ses algorithmes
+appropriés.
+
+\section*{Remerciement}
+
+Je tiens à remercier Mme Marie-Christine Rousset qui m'a mis en
+rapport avec l'équipe Proval et sans qui je n'aurai sans doute jamais
+pu avoir la chance de faire ce stage aussi enrichissant.  Je tiens
+aussi à remercier Mme Christine Paulin qui m'a accueilli dans son
+équipe, et qui m'a accordé des fonds pour pouvoir effectuer les
+trajets nécessaires.  Et bien entendu, je suis extrêmement
+reconnaissant à l'égard de M. Jean-Christophe Filliâtre qui a toujours
+été là pour m'orienter, me conseiller et me corriger. Le fait de
+travailler à ses côtés m'a énormément appris, aussi bien sur les
+outils utilisés, que par les méthodes de travail qu'il emploie.
+
+
+
+\bibliographystyle{plain}
+\bibliography{./biblio}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

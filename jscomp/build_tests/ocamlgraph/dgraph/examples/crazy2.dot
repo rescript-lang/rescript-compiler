@@ -1,0 +1,15 @@
+digraph "unix" {
+	graph [	fontname = "Helvetica-Oblique",
+		fontsize = 36,
+		label = "\n\n\n\nObject Oriented Graphs\nStephen North, 3/19/93",
+		size = "6,6" ];
+	node [	shape = polygon,
+		sides = 4,
+		distortion = "0.0",
+		orientation = "0.0",
+		skew = "0.0",
+		color = blue,
+		style = filled,
+		fontname = "Helvetica-Outline" ];
+	"CB Unix 2" [sides=10, distortion="0.851818", orientation=32, skew="-0.020120", color=greenyellow];
+}

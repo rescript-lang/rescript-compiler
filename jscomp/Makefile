@@ -436,7 +436,7 @@ bin/jsgen.exe:bs_hash.cmxa ext.cmxa jsgen_main.cmx
 
 
 depend:
-	$(CAMLDEP) -absname -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb -I super_errors -I outcome_printer \
+	BS_DEBUG=true $(CAMLDEP) -absname -native -I stubs -I ext -I common -I syntax -I depends -I core -I ounit -I ounit_tests -I bsb -I super_errors -I outcome_printer \
 	$(addprefix stubs/, $(addsuffix .ml, $(STUB_SRCS))) \
 	$(addprefix stubs/, $(addsuffix .mli, $(STUB_SRCS))) \
 	$(addprefix ext/, $(addsuffix .ml, $(EXT_SRCS))) \

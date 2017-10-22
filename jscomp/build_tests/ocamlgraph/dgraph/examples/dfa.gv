@@ -1,0 +1,34 @@
+digraph g {
+"start" [ label = "MWGC-" ];
+"n1" [ label = "WC-MG" ];
+"n2" [ label = "MWC-G" ];
+"n3" [ label = "C-MWG" ];
+"n4" [ label = "W-MGC" ];
+"n5" [ label = "MGC-W" ];
+"n6" [ label = "MWG-C" ];
+"n7" [ label = "G-MWC" ];
+"n8" [ label = "MG-WC" ];
+"n9" [ label = "-MWGC" ];
+"start" -> "n1" [ label = "g" ];
+"n1" -> "start" [ label = "g" ];
+subgraph l { rank = same; "n3" "n4" }
+subgraph r { rank = same; "n5" "n6" }
+"n1" -> "n2" [ label = "m" ];
+"n2" -> "n1" [ label = "m" ];
+"n2" -> "n3" [ label = "w" ];
+"n3" -> "n2" [ label = "w" ];
+"n2" -> "n4" [ label = "c" ];
+"n4" -> "n2" [ label = "c" ];
+"n3" -> "n5" [ label = "g" ];
+"n5" -> "n3" [ label = "g" ];
+"n4" -> "n6" [ label = "g" ];
+"n6" -> "n4" [ label = "g" ];
+"n5" -> "n7" [ label = "c" ];
+"n7" -> "n5" [ label = "c" ];
+"n6" -> "n7" [ label = "w" ];
+"n7" -> "n6" [ label = "w" ];
+"n7" -> "n8" [ label = "m" ];
+"n8" -> "n7" [ label = "m" ];
+"n8" -> "n9" [ label = "g" ];
+"n9" -> "n8" [ label = "g" ];
+}

@@ -402,6 +402,7 @@ val no_implicit_current_dir : bool ref
 val assume_no_mli : mli_status ref 
 val record_event_when_debug : bool ref 
 val bs_vscode : bool
+val dont_record_crc_unit : string option ref 
 
 
 type color_setting = Auto | Always | Never
@@ -538,6 +539,7 @@ let bs_vscode =
     (* We get it from environment variable mostly due to 
        we don't want to rebuild when flip on or off
     *)
+let dont_record_crc_unit : string option ref = ref None     
 
 
 type color_setting = Auto | Always | Never

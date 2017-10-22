@@ -1,0 +1,218 @@
+\documentclass{beamer}
+
+\usetheme{Singapore}
+
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+
+
+\begin{document}
+
+\title[Édition interactive de graphes]{Édition interactive de graphes\\ en géométrie hyperbolique}
+
+\author{Benjamin Vadon}
+
+\institute[TER 2006--2007]{Stage de TER 2006--2007 \\
+effectué sous la direction de Jean-Christophe Filliâtre \\
+à l'INRIA Futurs, dans l'équipe ProVal \\
+Parc Club Université, 91893 ORSAY}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{La visualisation de graphes}
+  \begin{itemize}
+  \item Un problème complexe
+  \item De nombreux algorithmes de placement, mais aucune solution générale 
+  \item Une approche différente 
+    \begin{itemize}
+    \item A. Miquel, \emph{Affichage générique d'arbres à l'aide de la géométrie hyperbolique} (JFLA 2000)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Visualisation d'arbre en géométrie hyperbolique}
+  \begin{figure}
+    \begin{center}
+      \includegraphics[scale=0.3]{images/htree.pdf}   
+    \end{center}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Plan}
+  \begin{itemize}
+  \item La géométrie hyperbolique
+  \item La visualisation de graphes en géométrie hyperbolique
+  \item Démonstration
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Historique}
+  \begin{itemize}
+  \item $V^e$ postulat de la géométrie euclidienne
+    \begin{quote}
+      \og Étant donnés une droite $D$ et un point $M$, il n'existe qu'une seule
+      droite passant par $M$ et qui soit parallèle à $D$. \fg
+    \end{quote}
+  \item Théories de Bolyai et Lobatchevsky contredisant ce postulat
+    et introduisant la géométrie hyperbolique
+  \item En un point $M$, il peut passer une infinité de droites
+    parallèles à la droite $D$ 
+    \bigskip
+    \begin{center}
+           \includegraphics[height=2.5cm]{images/parallels.png}
+    \end{center}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Modèle du disque de Poincaré}
+
+  Passage du plan euclidien au plan de Poincaré
+
+  \begin{center}
+        \includegraphics[scale=0.5]{images/lentille1.jpg}   
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Disque de Poincaré}
+  \begin{itemize}
+  \item   Les droites sont des arcs de cercles
+    \begin{center}
+      \includegraphics[scale=0.3]{images/perpendiculaire.png}   
+    \end{center}
+  \item  On peut définir, dans le plan de Poincaré, une tortue \og à la LOGO \fg
+  \end{itemize}
+  
+  
+\end{frame}
+
+\begin{frame}
+  \frametitle{Application à la visualisation de graphes}
+Répartition du plan entre les successeurs d'un n\oe ud 
+  \begin{center}
+    \includegraphics[scale=0.3027]{images/dictateurs.jpg}   
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Application à la visualisation de graphes}
+  Répartition d'un demi-plan entre les successeurs d'un n\oe ud
+  \begin{center}
+    \begin{minipage}{0.3\linewidth}
+\begin{tabular}{l}
+    A $\rightarrow$ [1; 2; 3 ] \\
+    B $\rightarrow$ [3; 4; 5 ] 
+\end{tabular}
+    \end{minipage} \quad
+    \begin{minipage}{0.6\linewidth}
+      \includegraphics[scale=0.3]{images/dictateursniv2.jpg}   
+    \end{minipage}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Application à la visualisation de graphes}
+Arêtes s'affranchissant des frontières entre demi-plans \smallskip
+  \begin{center}
+    \begin{minipage}{0.3\linewidth}
+\begin{tabular}{l}
+    A $\rightarrow$ [1; 2; 3 ] \\
+    B $\rightarrow$ [3; 4; 5 ] 
+\end{tabular}
+    \end{minipage} \quad
+    \begin{minipage}{0.6\linewidth}
+    \includegraphics[scale=0.3]{images/intern-edge.jpg}   
+  \end{minipage}
+\end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Parcours des graphes}
+  Deux parcours possibles : 
+  \begin{center}
+    en profondeur (Dfs) et en largeur (Bfs)  
+  \end{center}
+  \begin{center}
+   \begin{minipage}{0.49\linewidth}
+     \includegraphics[scale=0.27]{images/parcours_dfs.jpg} 
+  \end{minipage}
+  \begin{minipage}{0.49\linewidth}
+    \includegraphics[scale=0.27]{images/parcours_bfs.jpg}
+  \end{minipage}
+
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Ordonnancement des successeurs d'un n\oe ud}
+  \begin{itemize}
+  \item regrouper les composantes 
+    \begin{center}
+          \includegraphics[scale=0.27]{images/composantes.jpg}
+    \end{center}
+  \item parcourir chaque composante 
+    \begin{center}
+      \includegraphics[scale=0.27]{images/parcours-composante.jpg} 
+    \end{center}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Réalisation en Ocaml}
+  \begin{minipage}{0.70\linewidth}
+    \begin{itemize}
+    \item Intégration dans Ocamlgraph
+      \begin{itemize}
+      \item utilise Ocamlgraph de manière interne
+      \item livré avec Ocamlgraph
+      \end{itemize}
+    \item Utilisation de la bibliothèque graphique GTK2+ (par le biais
+      de lablgtk2) 
+    \item Environ 1600 lignes de code
+    \end{itemize}
+  \end{minipage}
+  \begin{minipage}{0.28\linewidth}
+    \begin{center}
+      \includegraphics[scale=0.4]{images/dep.jpg} 
+    \end{center}
+  \end{minipage}
+\end{frame}
+
+
+\begin{frame}
+  \begin{center}
+    Démonstration
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Améliorations et extensions possibles}
+  \begin{itemize}
+  \item Fonctionnalités de base
+    \begin{itemize}
+    \item Gestion des graphes orientés
+    \item Arêtes étiquetées
+    \item Opérations avancées (clôture transitive, noyau, clique, etc.)
+    \end{itemize}
+  \item Optimisation du code et animation plus fluide
+  \item Visualisation d'algorithmes (plus court chemin, parcours, etc.)
+  \item Fonctorisation du code
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

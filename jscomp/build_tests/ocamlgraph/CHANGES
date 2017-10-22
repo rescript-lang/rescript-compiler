@@ -1,0 +1,366 @@
+
+* marks some incompatible change
+
+version 1.8.7, April 12, 2016
+-----------------------------
+ o fixed examples/demo.ml so that it also compiles with an installed OCamlGraph
+ o [Components] fixed stack overflow with [scc] (patch by Albin Coquereau)
+ o [Dominator] fixed stack overflow (patch by Albin Coquereau)
+ o new functor [Path.Johnson] to compute all pairs of shortest paths
+   using Johnson's algorithm (contributed by Mário Pereira)
+ o fixed configuration on Windows (patch by Martin R. Neuhäußer)
+ o new functor [Components.Undirected] to compute connected components
+ o Graphviz: fixed printing of attribute BgcolorWithTransparency
+ * Prim, Nonnegative: function weight now has the more general type "edge -> t"
+   (to be consistent with Path)
+ o new module type Sig.WEIGHT (used in Path, Prim, and Nonnegative)
+ o Fixpoint: do not catch Not_found raised by a user-provided function.
+ o Adding folds to BFS.
+
+version 1.8.6, January 23, 2015
+-------------------------------
+ * Dominator: new functor [Make_graph] with may use graph building operations,
+   while the old functor [Make] now only requires a read-only graph.
+   Function [compute_all] and [compute_dom_graph] are now only defined in the
+   new [Make_graph] functor.
+ o Graphviz: support for additional polygonal-shapes
+ o New module Clique (contributed by Giselle Reis)
+ o Avoid ocamldoc error with OCaml 4.02
+ * Path: function weight now has the more general type "edge -> t"
+   (contributed by Steffen Smolka)
+   update your code by turning "weight l" into "weight (G.E.label e)"
+ o installation: "make install-findlib" now uses DESTDIR when defined
+ o Traverse: documentation is clarified: providing iterators over the roots of
+   the graph is enough.
+ o Imperative concreate (di)graph: fix bug of functions add_edge* of imperative
+   concrete (di)graphs which appears when the added edge [e] was already in the
+   graph [g] and one of the vertices of [e] is equal to another vertex of [g]
+   (when using the user-defined equality [G.V.equal]), but not physically equal
+   to it. This bug only occurs with OCaml version >= 4.0.
+ o functions in modules Components, Dominator, Flow, Topological and Traverse
+   now create smaller auxiliary hash tables
+ o Graphviz: add the attribute `HtmlLabel to specify html strings.
+
+version 1.8.5, March 4, 2014
+-----------------------------
+ o Graphviz: reverted to the old API where edges and vertices are
+   given a single style attribute; but such attributes are collected
+   and output in the DOT file into a list (thus allowing multiple style
+   attributes)
+ o fixed issue in ./configure with ocamlfind on Win32.
+ o fixed compilation when laglgnomecanvas is missing (bug introduced in 1.8.4).
+ o fixed more issues with 'make -j'.
+
+version 1.8.4, February 4, 2014
+-------------------------------
+ o fixed [Graphml] printer (contributed by Johannes Schauer)
+ o Components: the components of [scc_list] are provided in the same order than
+ the ones of [scc_array].
+ o fix compilation with 'make -j'
+ o Graphviz: handle attribute penwidth on edges and vertices
+ o also install graph.o and graph.cmxs
+ o fixed installation with ocamlfind (thanks to Virgile Prevosto)
+ o new functions [gnp] and [gnp_labeled] in module [Rand] to generate random
+   graphs using the G(n,p) model (contributed by Thomas Aubry)
+ o Prim's algorithm (in module [Prim]; not exported in [Pack])
+   (contributed by Thomas Aubry)
+ o Graphviz: support for nested subgraphs. (Backward-incompatible change:
+   add 'sg_parent = None' to obtain subgraphs whose parents are the main graph)
+ o Graphviz: edges and vertices can now receive multiple styles.
+   (Backward-incompatible change: constructors `Style now require a list as
+   argument)
+ o Graphviz: new vertex style 'rounded'
+ o Merge: fixed bug with vertices with no incoming nor outcoming edge.
+ o fixed compilation issue with OCaml 3.12.1
+
+version 1.8.3, April 17, 2013
+-----------------------------
+ o new module Merge implementing several different merges of vertices and
+   edges into a graph (contributed by Emmanuel Haucourt)
+ o fixed DOT parser (contributed by Alex Reece)
+ o Topological: fixed bug in presence of disjoint cycles; new implementation
+ o new module [Graphml] to export graphs into the graphml format
+  (contributed by Pietro Abate)
+ o Builder.S now contains functions remove_*.
+ o modified Fixpoint module so that it also works with unlabeled
+   graphs, break backward compatibility yet (contributed by Markus W. Weissmann)
+ o support of lablgtk2 installed with findlib (contributed by B. Monate)
+ o new module [Dominator] to compute dominators
+   (contributed by David Brumley and Ivan Jager)
+
+version 1.8.2, May 12, 2012
+---------------------------
+ o new module [Path.BellmanFord] implementing Bellman-Ford algorithm
+   (contributed by Yuto Takei)
+ o new module Contraction implementing edge contraction
+   (contributed by Markus W. Weissmann)
+ o Gmap: new function [filter_map] (contributed by Markus W. Weissmann)
+ o Topological: fix bug when a cycle depends on another cycle. That breaks
+   compatibility: the input graph must implement Sig.COMPARABLE instead of
+   Sig.HASHABLE
+ o new module Topological.Make_stable to iterate over a graph in a **stable**
+   topological order. Stable means that the provided ordering only depends on
+   the graph topology and on the user's vertices ordering.
+ o new module Leaderlist to compute the leader list algorithm (see the Dragon)
+   (contributed by Markus W. Weissmann <markus.weissmann@in.tum.de>)
+
+version 1.8.1, October 17, 2011
+-------------------------------
+ o module Gmap now has a signature for edges (E_SRC) compatible with
+   Sig, so that it is easier to apply functor Gmap.Edge
+   (contributed by Markus W. Weissmann <markus.weissmann@in.tum.de>)
+ o new module Fixpoint to compute fixpoints using the work-list
+   algorithm, e.g. for data flow analysis
+   (contributed by Markus W. Weissmann <markus.weissmann@in.tum.de>)
+
+version 1.8, October 4, 2011
+----------------------------
+ o removed ocamlyacc shift/reduce conflict in dot_parser.mly
+   (patch contributed by Till Varoquaux)
+ o Dgraph: Correct height and width-related problems with text
+ o DGraph: many bug fixes. Patch by Benjamin Monate
+ o Sig.G: new function [find_all_edges] for each graph implementation
+ o Oper: fixed bug with function [intersect]: now use G.E.compare instead of (=)
+ o fixed "make install-findlib"
+
+version 1.7, February 23, 2011
+------------------------------
+ o Makefile: fixed bug when installing ocamlgraph with ocamlfind
+ o DGraph: fixed bug with colors on some windows manager
+ o Configure: fixed issue with automatic detection of extension under
+   Windows/Mingw
+
+version 1.6, December 13, 2010
+------------------------------
+ o DGraph: new viewer mode (called `tree') which focus on a subset part of the
+   graph centered on a given node
+ o Graphviz: fixed bug with attribute `Constraint (was `Constraints) (patch by
+   Boris Yakobowski)
+ o DGraph: fixed font size issue when zooming
+ o DGraph: now interpret text anchors and espaced sequences correctly
+ o DGraph: offer possibility to disable the default callbacks on nodes
+ o 'make -j' works again
+ o new implementation Persistent.Digraph.ConcreteBidirectionalLabeled
+ o new implementation Persistent.Digraph.ConcreteBidirectional
+ o Makefile: bug fixed when ocamlc (resp. ocamlopt) and ocamlc.opt
+   (resp. ocamlopt.opt) are unconsistent
+
+version 1.5, April 29, 2010
+---------------------------
+ o Makefile: bug fixed when installing ocamlgraph with ocamlfind
+   (patch by Virgile Prevosto)
+ o DGraph: new method set_zoom_padding in DgraphView.view
+ o Traverse.Dfs.has_cycle: can now be used on undirected graphs as well,
+   and is now tail recursive
+ o DGraph: handle dotted ellipse
+
+version 1.4, March 24, 2010
+---------------------------
+ o new function [clear] for imperative graphs
+ o new implementation Imperative.Digraph.ConcreteBidirectionalLabeled
+   (contribution of Jaap Boender)
+ o Dgraph displays graphs faster
+ o DGraph: several bugs fixed
+ o DGraph: several API changes
+   (may break compatibility with existing development)
+
+version 1.3, October 2, 2009
+----------------------------
+ o Oper.mirror: undirected graphs are not copied anymore
+ o Oper.mirror: fixed bug (isolated vertices were lost)
+ o Graphviz: new signature GraphWithDotAttrs
+ o Improvements of Dgraph
+ o Configure: better test for detecting lablgtk
+ o OcamlGraph is now installed by default in `ocamlc -where`/ocamlgraph
+ o Viewgraph is now packed in a single module Viewgraph (break compatibility
+   with previous version)
+ o Dgraph is now packed in a single module Dgraph (break compatibility with
+   previous version)
+ o Makefile: fixed bug when the installation directory of binaries does not
+             exist
+ o Makefile: fixed bug of ocamldep under Windows
+
+version 1.2, August 31, 2009
+----------------------------
+ o experimental: new GTK-based graph viewer called Dgraph
+   (viewGraph is now deprecated)
+ o added Delaunay.iter_triangles (not of use in Ocamlgraph, actually)
+
+version 1.1, June 23, 2009
+--------------------------
+ o added constraint "type E.label = unit" to unlabeled graph data structure
+ o viewGraph: new module viewGraph_utils; fixed compilation (gtkInit
+   was missing; patch by Mehdi Dogguy)
+ o configure: fixed bug under Cygwin (patch by Julien Bernet)
+ o configure: look for lablgnomecanvas.cmxa when compiling in native code
+ o Makefile: fixed make install-findlib when lablgtk and/or
+   lablgnomecanvas not installed (patch by Peter Hawkins)
+
+version 1.0, October 14, 2008
+-----------------------------
+ o license: LGPL updated to version 2.1
+ o ocamlgraph now requires ocaml 3.10 or higher
+ o experimental: GTK-based graph viewer based on dot
+   (contribution of Anne Pacalet)
+ o Makefile:
+     - fixed bug when lablgnomecanvas is not installed
+     - fixed bug when ocamlfind is installed
+     - patch to the build system for a DESTDIR (patch by Igor Galic)
+     - "make -j" compliant
+ o new function Blocks.after_unserialization in order to be able to safely
+   serialize abstract vertices (see the FAQ)
+ o Dot:
+     - fixed bug in the parsing of attributes
+     - fixed bug in the parsing of subgraphs (patch by Anne Pacalet)
+ o Oper: fixed bug in intersect
+ o Path: improved efficiency of Dijkstra
+ o Topological:
+     - fixed bug in Make.{iter,fold}
+     - folding is now tail-recursive (patch by Michael Furr)
+
+version 0.99c, April 3rd, 2008
+------------------------------
+ o replicated a bug fix of Bitv (could not affect Matrix, though)
+ o fixed DFS traversal in Traverse.Dfs.{prefix,prefix_component,iterator}
+
+version 0.99b, December 18th, 2007
+----------------------------------
+ o fixed link bug with ocaml 3.09
+   (see http://caml.inria.fr/mantis/view.php?id=4124)
+
+version 0.99a, November 21st, 2007
+---------------------------------
+ o fixed bug in Makefile when lablgtk2 is not installed
+ o Sig.I.create and Sig_pack.create are now of type ?size:int -> unit -> t
+   (instead of unit -> t) to indicate an initial guess on the graph size
+
+version 0.99, June 27th, 2007
+-----------------------------
+ o experimental: GTK-based graph editor based on hyperbolic geometry;
+   to build it and test it, cd to editor/ and type make
+ o [Components.Make] functor: function [scc] as a new profile and a
+   more precise specification. New function [scc_array].
+ o fixed configure to set ocaml's standard library using "ocamlc -where"
+ o new module Dot to parse files in Graphviz's DOT format
+ o slight change in the license (no more clause 6 of the LGPL; see LICENSE)
+ o new module Strat implementing simple game strategies
+ o Graphviz: little refactoring and improved documentation
+
+version 0.98, Sep 27th, 2006
+----------------------------
+ o rename Sig.IA to Sig.IM
+ o add subgraph support in Graphviz
+   (breaks ascendent compatibility if you use Graphviz: by default add
+      let get_subgraph _ = None
+   in the argument of Graphviz.Dot and Graphviz.Neato)
+
+version 0.97, July 20th, 2006
+-----------------------------
+ o fixed compilation under Windows/Cygwin (contributed by Denis Berthod)
+ o fixed bug with escaped string in Graphviz
+
+version 0.96, May 2nd, 2006
+---------------------------
+ o new demo program: sudoku.ml (solving the Sudoku using graph coloring)
+ o new module Coloring for (rather brute force) graph coloring
+ o new implementation Imperative.Digraph.ConcreteBidirectional
+   that maintains the set of ingoing edges for each node, thus improving the
+   efficiency of functions such as iter_pred, pred, in_degree, etc.
+   (contributed by Ted Kremenek)
+
+version 0.95, November 2nd, 2005
+--------------------------------
+ o compatibility with ocaml 3.09
+ o new module Path.Check to check for paths
+
+version 0.94, July 6th, 2005
+----------------------------
+ o new module Gml to parse and print graphs in GML file format
+   (see http://www.infosun.fmi.uni-passau.de/Graphlet/GML)
+   corresponding functions parse_gml_file and print_gml_file in Pack
+ o added display_with_gv in Pack
+ o improved implementation of Unionfind (patch by Marc Lasson)
+
+version 0.93, March 31st, 2005
+------------------------------
+ o fixed bug in Rand (integer overflow causing Invalid_argument "random");
+   improved code in Rand
+ o bug fixed in the META file
+ o add find_edge in Sig.G (and so in all graph implementations)
+
+version 0.92, January 18th, 2005
+--------------------------------
+ o fixed escaped labels in Graphviz output (patch by Boris Yakobowski)
+ o new Graphviz option OrderingOut (patch by Boris Yakobowski)
+ o fixed sharing bugs in Oper (patch by Boris Yakobowski)
+ o fixed bug in nb_edges for undirected graphs
+ o improvement of iterators of undirected concrete graphs
+
+version 0.91, December 16th, 2004
+---------------------------------
+ o more precise specifications of remove_edge and shortest_path.
+ o bug fixed in mem_edge_e of labelled graphs
+ o generation of random graphs improved
+ o add Rand.Make and Rand.Planar.Make (generic functors)
+ o add signatures Persistent.S and Imperative.S
+
+version 0.90, November 30th, 2004
+---------------------------------
+ o graph.cma graph.cmxa
+ o version.ml and META files are now writable
+ o add interfaces Sig.VERTEX and Sig.EDGE
+ o "sig.ml" and "sig_pack.ml" removed; ocamlgraph now requires ocaml 3.08.0
+ o improvement of Minsep
+ o add Components.scc_list
+ o Oper.Neighbourhood replaces Neighborhood
+ o Gmap replaces Copy
+ o add types Sig_pack.vertex and Sig_pack.edge
+ o fixed bug in Ford-Fulkerson: G.V.equal instead of = in two asserts
+
+version 0.81, July 13th, 2004
+-----------------------------
+ o compatibility with ocaml 3.08
+ o Oper.Choose.choose_edge: choose an edge in a graph
+ o add types Sig.G.edge and Sig.G.vertex resp. equal to Sig.G.V.t and Sig.G.E.t
+ o fixed typos in invalid_arg arguments (in Bitv)
+
+version 0.80, June 28th, 2004
+-----------------------------
+ o major contribution by Matthieu Sozeau and Pierre-Loïc Garoche.
+   New modules are:
+   - Md: Minimum Degree algorithm
+   - Cliquetree: the clique tree of a graph
+   - Mcs_m: Maximal Cardinality Search (MCS-M) algorithm
+   - Minsep: Minimal separators of a graph
+   - Neighborhood: compute the neighborhood of a vertex/some vertices
+   - Oper.Difference: subgraphs induced by the elimination of some vertices
+   - Oper.Choose: choose a vertex in a graph
+   - Copy: graphs copying
+   - Util.DataV: create a vertex type with data attached to it
+ o out_degree: raises Invalid_argument if v not in g (instead of Not_found)
+ o Pack.Graph: golberg/ford_fulkerson fail ("not a directed graph")
+
+version 0.70, Feb 27th, 2004
+----------------------------
+ o Makefile.in: dependences ("make -j" works)
+ o union and intersection (see Oper.S.union and Oper.S.intersection)
+ o Golberg/Ford_fulkerson algorithms in a single module Flow
+ o step-by-step iterators in Traverse.{Dfs,Bfs}
+ o Ford_fulkerson: maxflow now returns a flow function over edges
+
+version 0.60, Feb 18th, 2004
+----------------------------
+ o fixed bug in Ford-Fulkerson
+ o random planar graphs (see Rand.Planar)
+ o Delaunay triangulation (see Delaunay)
+ o implementations with adjacency matrices (see Imperative.Matrix)
+ o operations on predecessors for undirected graphs optimized
+ o Traverse.Dfs.{prefix,prefix_component} optimized (now tail recursive)
+
+version 0.50, Feb 4th, 2004
+---------------------------
+ o first release
+
+Local Variables:
+mode: text
+End:

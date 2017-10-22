@@ -28,6 +28,8 @@ type error =
   | Package_not_found of string * string option (* json file *)
   | Json_config of Ext_position.t * string
   | Invalid_json of string
+  | Conflict_module of string * string * string 
+
 exception Error of error 
 
 let error err = raise (Error err)
@@ -36,6 +38,11 @@ let package_not_found ~pkg ~json =
 
 let print (fmt : Format.formatter) (x : error) = 
   match x with     
+  | Conflict_module (modname,dir1,dir2) ->
+    Format.fprintf fmt 
+    "@{<error>Error:@} %s found in two directories: (%s, %s)\n\
+    File names must be unique per project" 
+      modname dir1 dir2
   | Package_not_found (name,json_opt) -> 
     let in_json = match json_opt with 
     | None -> Ext_string.empty 
@@ -62,6 +69,8 @@ let print (fmt : Format.formatter) (x : error) =
     "File %S, line 1\n\
     @{<error>Error: Invalid json format@}" s 
     
+let conflict_module modname dir1 dir2 = 
+  error (Conflict_module (modname,dir1,dir2))    
 let errorf ~loc fmt =
   Format.ksprintf (fun s -> error (Json_config (loc,s))) fmt
 

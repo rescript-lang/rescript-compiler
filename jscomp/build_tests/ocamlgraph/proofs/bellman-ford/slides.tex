@@ -1,0 +1,567 @@
+\documentclass{beamer}
+
+\usetheme{Marburg}
+\usecolortheme{beaver}
+\usefonttheme{structurebold}
+
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{listings}
+\usepackage{amssymb,amsmath,amsthm}
+
+\setbeamertemplate{footline}{
+\hfill\scriptsize{\color{white}\insertframenumber}\hspace*{24pt}\vspace{8pt}}
+\setbeamertemplate{navigation symbols}{}
+
+\lstset{basicstyle=\footnotesize, columns=fullflexible}
+\lstdefinelanguage{Ocaml}
+{
+basicstyle=\ttfamily,
+keywordstyle=\color{blue},
+morekeywords=[1]{exception,of,val},%
+%keywordstyle=[1]{\color{red}},%
+morekeywords=[2]{true,false},%
+%keywordstyle=[2]{\color{blue}},%
+otherkeywords={},%
+commentstyle=\itshape,%
+columns=[l]fullflexible,%
+sensitive=true,%
+morecomment=[s]{(*}{*)},%
+escapeinside={*?}{?*},%
+keepspaces=true,
+literate=%
+{<}{$<$}{1}%
+{>}{$>$}{1}%
+{<=}{$\le$}{1}%
+{>=}{$\ge$}{1}%
+{<>}{$\ne$}{1}%
+{->}{$\rightarrow$}{2}%
+{<->}{$\leftrightarrow$}{2}%
+}
+
+\lstdefinelanguage{Why3}
+{
+basicstyle=\ttfamily,
+keywordstyle=\color{blue},
+morekeywords=[1]{inductive,predicate,function,goal,type,use,import,theory,end,in,axiom,lemma,export,forall,constant,module,let,exception,match,with,exists,val,unit},%
+%keywordstyle=[1]{\color{red}},%
+morekeywords=[2]{true,false},%
+%keywordstyle=[2]{\color{blue}},%
+otherkeywords={},%
+commentstyle=\itshape,%
+columns=[l]fullflexible,%
+sensitive=true,%
+morecomment=[s]{(*}{*)},%
+escapeinside={*?}{?*},%
+keepspaces=true,
+literate=%
+{v1}{v$_1$}{1}%
+{v2}{v$_2$}{1}%
+{v3}{v$_3$}{1}%
+{<}{$<$}{1}%
+{>}{$>$}{1}%
+{<=}{$\le$}{1}%
+{>=}{$\ge$}{1}%
+{<>}{$\ne$}{1}%
+{/\\}{$\land$}{1}%
+{\\/}{ $\lor$ }{3}%
+{\ or(}{ $\lor$(}{3}%
+{not\ }{$\lnot$ }{1}%
+{not(}{$\lnot$(}{1}%
+{->}{$\rightarrow$}{2}%
+{<->}{$\leftrightarrow$}{2}%
+}
+
+\lstnewenvironment{why3}
+{\lstset{language=Why3}}
+{}
+
+\begin{document}
+
+\title{A Formal Proof of Bellman-Ford Algorithm}
+\author[Yuto Takei]{Yuto Takei}
+\institute{The University of Tokyo}
+
+\maketitle
+
+\begin{frame}{Table of contents}
+\tableofcontents
+\end{frame}
+
+\section{Bellman-Ford Algorithm}
+\frame{\sectionpage}
+
+\subsection{Introduction}
+
+\begin{frame}{Bellman-Ford Algorithm}
+
+Solution for single-source shortest path problem $(G,s,l)$
+
+\begin{itemize}
+\item Directed graph $G(V,E)$
+\item Source vertex $s\in V$
+\item Length function $l: E\to \mathbf{K}$
+\begin{itemize}
+\item $\mathbf{K}$: Any monoid with total order (e.g. 
+$\mathbf{N}, \mathbf{Z}, \mathbf{R}$).
+\end{itemize}
+\end{itemize}
+
+\pause
+
+The algorithm will either
+
+\begin{itemize}
+\item give shortest-paths to all vertices from $s$, or
+\item assert the existence of a negative cycle.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{For example...}
+
+\only<1>{\includegraphics[width=1.0\textwidth]{intro1.pdf}
+}\only<2>{\includegraphics[width=1.0\textwidth]{intro2.pdf}
+}\only<3>{\includegraphics[width=1.0\textwidth]{intro3.pdf}
+}\only<4>{\includegraphics[width=1.0\textwidth]{intro4.pdf}
+}
+
+\begin{itemize} 
+\only<1-2>{\onslide<2>{\item Gave distances from source to all vertices}}
+\only<3-4>{\onslide<4>{\item Found a negative cycle}}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Goal (revisited)}
+
+Each node has a label $(\pi,d)$ containing parent and distance.
+
+\includegraphics[width=1.0\textwidth]{intro5.pdf}
+
+After the algorithm termination,
+\begin{itemize}
+\item all nodes have the smallest possible distance from $s$, and
+\item the shortest path tree is built by traversing $\pi$
+\end{itemize}
+
+\end{frame}
+
+\subsection{Mechanism}
+
+\begin{frame}{How does it work?}
+
+\begin{enumerate}
+
+\item \alert{Initialization}
+
+Set $(nil,\infty)$ for all vertex except $s$ having $(nil,0)$.\newline
+
+\item \alert{Relaxing edges}
+
+If $v$ is reachable with less distance by $(u,v)\in E$, update the
+label. Perform this over all edges.
+
+\only<1-2>{\begin{center}\onslide<2>\includegraphics[width=0.7\textwidth]{rlx1.pdf}\end{center}
+}\only<3->{\begin{center}\includegraphics[width=0.7\textwidth]{rlx2.pdf}\end{center}
+}\onslide<4>{Iterate for $|V|-1$ times. (You can stop when stable)}
+
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Example}
+\only<1>{Pass \#0 - just after initialization
+\includegraphics[width=0.9\textwidth]{ex1.pdf}
+}\only<2>{Pass \#1
+\includegraphics[width=0.9\textwidth]{ex2.pdf}
+}\only<3>{Pass \#1
+\includegraphics[width=0.9\textwidth]{ex3.pdf}
+}\only<4>{Pass \#1
+\includegraphics[width=0.9\textwidth]{ex4.pdf}
+}\only<5>{Pass \#1
+\includegraphics[width=0.9\textwidth]{ex5.pdf}
+}\only<6>{Pass \#2
+\includegraphics[width=0.9\textwidth]{ex6.pdf}
+}\only<7>{Pass \#3
+\includegraphics[width=0.9\textwidth]{ex7.pdf}
+}
+
+\end{frame}
+
+\begin{frame}{How does it work? (cont.)}
+
+\begin{enumerate}
+\setcounter{enumi}{2}
+
+\item \alert{Still be able to relax?}
+
+After $(|V|-1)$-th pass, all vertices should be exact.
+Otherwise, a negative cycle exists.
+
+\begin{center}
+\only<1>{\includegraphics[height=0.6\textheight]{wst1.pdf}
+}\only<2>{\includegraphics[height=0.6\textheight]{wst2.pdf}
+}
+\end{center}
+
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}{$\mbox{\sc Bellman-Ford}(G,s,l)$}
+
+\begin{algorithmic}[1]
+\STATE{$\mbox{\sc Initialize-Single-Source}(G,s)$}
+\FOR{$i=1\to |V[G]|-1$}
+\FORALL{edge $(u,v) \in E[G]$}
+\STATE{$\mbox{\sc Relax}(u,v,l)$}
+\ENDFOR
+\ENDFOR
+\FORALL{edge $(u,v)\in E[G]$}
+\IF{$d[v]>d[u]+l(u,v)$}
+\RETURN{False}
+\ENDIF
+\ENDFOR
+\RETURN{True}
+\end{algorithmic}
+
+(Cormen et al. Introduction to Algorithms, p 532)
+
+\end {frame}
+
+\section{Implementation in OCamlgraph}
+\frame{\sectionpage}
+
+\begin{frame}[fragile]{Work that has been done}
+
+\begin{enumerate}
+\item Implementation of Bellman-Ford algorithm
+
+\begin{lstlisting}[language=Ocaml]
+exception Negative_cycle of G.E.t list
+
+val all_shortest_paths:
+             G.t -> G.V.t -> W.t H.t
+
+val find_negative_cycle_from:
+             G.t -> G.V.t -> G.E.t list
+\end{lstlisting} \vspace*{10pt}
+
+\pause
+\item Negative cycle detection from any source
+
+\begin{lstlisting}[language=Ocaml]
+val find_negative_cycle: G.t -> G.E.t list
+\end{lstlisting}
+
+\end{enumerate}
+
+\end{frame}
+
+
+\begin{frame}{Negative cycle detection from any source}
+
+\vspace*{8pt}
+\only<1>{Want to ensure that $G$ is free of any negative cycles.\vspace*{-18pt}
+}\only<2>{Checking from specific $s$ is not exhaustive.\vspace*{-14pt}
+}\only<3>{\alert{Solution:} To give a ``virtual'' $s$ that can reach all nodes.}
+
+\begin{center}
+\only<1>{\includegraphics[height=0.8\textheight]{s1.pdf}
+}\only<2>{\includegraphics[height=0.8\textheight]{s2.pdf}
+}\only<3>{\includegraphics[width=0.8\textwidth]{s3.pdf}
+}\end{center}
+
+\only<3>{$s$ connects to one of the elements in every top ancestor among
+strongly connected components.\vspace{100pt}}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Work that has been done (cont.)}
+
+\vspace*{16pt}\begin{enumerate}
+\setcounter{enumi}{2}
+\item Incremental graph builder w/o negative cycle\newline
+
+\only<1>{
+Keep track of
+\begin{itemize}
+\item the set of ancestors $S$, and
+\item distances from each ancestor to every node $d_s(v)$
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{inc1.pdf}
+\end{center}
+}
+
+\only<2-3>
+{
+When adding
+\begin{itemize}
+\item\alert{vertex $v$}, just add $v$ to $S$.
+\item\alert{edge $(u,v)$}, if $v\in S$, check if $(u,v)$ causes a loop.\newline
+If not, $S\leftarrow S\backslash v$. Propagate distance to descendants.
+\end{itemize}
+
+\begin{center}
+\only<2>{\includegraphics[width=0.8\textwidth]{inc2.pdf}}
+\only<3>{\includegraphics[width=0.8\textwidth]{inc3.pdf}}
+\end{center}
+}
+
+\only<4-5>
+{
+When removing
+\begin{itemize}
+\item\alert{vertex $v$}, remove all edges $(u,v)$, $(v,w)$ then $v$ itself.
+\item\alert{edge $(u,v)$}, correct the distances of $v$ and propagate.
+\end{itemize}
+
+\begin{center}
+\only<4>{\includegraphics[width=0.65\textwidth]{inc4.pdf}}
+\only<5>{\includegraphics[width=0.65\textwidth]{inc5.pdf}}
+\end{center}
+}
+\end{enumerate} \vspace*{100pt}
+
+\end{frame}
+
+\section{Formal proof with Why3}
+\frame{\sectionpage}
+
+\subsection{Specification}
+
+\begin{frame}[fragile]{Specification}
+
+\begin{itemize}
+\item \alert{Graph}
+
+\begin{lstlisting}[language=why3]
+type vertex
+constant vertices : set vertex
+constant edges: set (vertex, vertex)
+constant s : vertex
+function weight vertex vertex : int
+\end{lstlisting}
+
+\item \alert{Algorithm interface}
+
+\begin{lstlisting}[language=why3]
+type dist = Finite int | Infinite
+exception Negative_cycle
+val bellman_ford : unit -> map vertex dist
+\end{lstlisting}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Specification}
+
+\begin{itemize}
+\item \alert{Path} as an inductive predicate
+\small
+\begin{lstlisting}[language=why3]
+inductive path (v1 v2: vertex) (n: int) =
+| path_empty:
+    forall v: vertex. path v v 0
+| path_succ:
+    forall v1 v2: vertex, n: int. path v1 v2 n ->
+    forall v3: vertex. mem (v2, v3) edges ->
+    path v1 v3 (n + (weight v2 v3))
+\end{lstlisting}
+\normalsize
+
+\item \alert{Shortest path} and \alert{non-reachability}
+\small
+\begin{lstlisting}[language=why3]
+predicate shortest_path (v1 v2: vertex) (n: int) =
+  (path v1 v2 n) /\
+  (forall m: int. m < n -> not (path v1 v2 m))
+
+predicate no_path (v1 v2: vertex) =
+  forall n: int. not (path v1 v2 n)
+\end{lstlisting}
+\normalsize
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Specification}
+
+\begin{itemize}
+
+\item \alert{Precondition} and \alert{postcondition}
+
+\begin{lstlisting}[language=why3]
+let bellman_ford () =
+  { (* nothing *) }
+  ...
+  { forall v: vertex. mem v vertices ->
+    match result[v] with
+    | Infinite -> no_path s v
+    | Finite n -> shortest_path s v n
+    end }
+  | Negative_cycle ->
+  { exists v: vertex. mem v vertices /\
+    exists n: int. n < 0 /\ path v v n }
+\end{lstlisting}
+
+\end{itemize}
+
+\end{frame}
+
+\subsection{Proof}
+
+\begin{frame}[fragile]{Termination}
+
+Loop variants are trivial and easily given.\vspace*{12pt}
+
+\begin{algorithmic}[1]
+\STATE{$\mbox{\sc Initialize-Single-Source}(G,s)$}
+\FOR{\alert{$i=1\to |V[G]|-1$}}
+\FORALL{\alert{edge $(u,v)\in E[G]$}}
+\STATE{$\mbox{\sc Relax}(u,v,l)$}
+\ENDFOR
+\ENDFOR
+\FORALL{\alert{edge $(u,v)\in E[G]$}}
+\IF{$d[v]>d[u]+l(u,v)$}
+\RETURN{False}
+\ENDIF
+\ENDFOR
+\RETURN{True}
+\end{algorithmic}
+
+\end{frame}
+
+\begin{frame}{Strategy for correctness}
+
+Invariant during the algorithm execution for example:
+
+\begin{itemize}
+
+\item If $v$ has a \alert{finite} distance $n$
+
+$\to$ Path from $s$ to $v$ with distance $n$ exists
+
+\item If $v$ has an \alert{infinite} distance
+
+$\to$ $v$ is not yet reachable at given point
+
+\end{itemize}
+
+\pause
+
+\vspace{24pt}Need to keep this condition through
+\begin{itemize}
+\item every pass
+\item every edge relaxation during one pass
+\end{itemize} 
+
+\end{frame}
+
+\begin{frame}{Strategy for correctness}
+
+\vspace*{16pt}
+
+\only<1>{After $i$-th pass\vspace*{-16pt}
+\begin{center}
+\includegraphics[height=0.8\textheight]{inv1.pdf}
+\end{center}
+}\only<2>{Executing pass \#$i+1$, relaxed some edges\vspace*{-16pt}
+\begin{center}
+\includegraphics[height=0.8\textheight]{inv2.pdf}
+\end{center}
+}
+
+\end{frame}
+
+\begin{frame}[fragile]{Invariant at a glance}
+\footnotesize
+\begin{lstlisting}[language=why3]
+predicate invar (m: distmap) (pass: int) (via: set edge) =
+  forall v: vertex. mem v vertices ->
+  match m[v] with
+  | Finite n ->
+    negcycle \/
+    (not negcycle /\ (exists n d: int. shortest_path s v n d) /\
+    forall n' d': int. shortest_path s v n' d' ->
+      (0 <= d' < pass -> n = n') /\
+      (d' = pass ->
+        (exists u: vertex. mem (u, v) edges /\
+          shortest_path s u (n' - weight u v) (pass - 1)) /\
+        (forall u: vertex. mem (u, v) edges /\
+          shortest_path s u (n' - weight u v) (pass - 1) ->
+            mem (u, v) via -> n = n')))
+  | Infinite ->
+    (forall d: int. 0 <= d < pass ->
+      forall n: int. not (path s v n d)) /\
+    (forall u: vertex. mem (u, v) via ->
+      forall d: int. 0 <= d < pass ->
+        forall n: int. not (path s u n d))
+  end
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]{Problems to solve}
+
+\begin{itemize}
+
+\item Give an appropriate property for negative cycle
+
+\item Guarantee an existence of ``simple path''.
+
+\begin{lstlisting}[language=why3]
+lemma reach_less_than_n:
+  forall v1 v2: vertex. mem v1 vertices ->
+  forall d n: int. path v1 v2 n d ->
+  exists n' d': int.
+    d' < cardinal vertices /\
+    path v1 v2 n' d'
+\end{lstlisting}
+
+\item Reduce hand-proving (e.g. Coq) as much as possible
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+
+\Huge \alert{Demo}\vspace{8pt}
+
+\large Proving infinite path properties on Why3
+
+\end{frame}
+
+\section{Conclusion}
+
+\frame{\sectionpage}
+\begin{frame}{Conclusion and Perspectives}
+Done:
+
+\begin{itemize}
+\item Implemented Bellman-Ford algorithm in Ocamlgraph
+\begin{itemize}
+\item Normal traversal
+\item Exhaustive negative cycle detection
+\item Incremental graph builder
+\end{itemize}
+
+\item Proved some characteristics of the algorithm
+\begin{itemize}
+\item Termination (including safety)
+\item Properties of unreachable nodes
+\end{itemize}
+\end{itemize}
+
+Do:
+\begin{itemize}
+\item Finish the formal proof
+\item Compile into a paper
+\end{itemize}
+\end{frame}
+
+\end{document}
