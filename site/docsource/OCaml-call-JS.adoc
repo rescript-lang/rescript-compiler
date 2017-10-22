@@ -26,7 +26,7 @@ It will be translated into
 console.log("\xe4\xbd\xa0\xe5\xa5\xbd");
 -----------
 
-Luckily, OCaml allows customized multiple-line string support, BuckleScript *reserves* the delimiter `js` and `j` (`j` is unused so far).
+Luckily, OCaml allows customized multiple-line string support, BuckleScript *reserves* the delimiter `js` and `j`.
 
 .Input:
 [source,ocaml]
