@@ -29,11 +29,12 @@
         {
             "dir" : "tests",
             "files" : [
-                "check.ml",
-                "test_clique.ml",
-                "test_topsort.ml",
-                "test_johnson.ml",
-                "test_bf.ml"
+                "check.ml"
+                ,"test_clique.ml"
+                ,"test_topsort.ml"
+                ,"test_johnson.ml"
+                // ,"test_bf.ml"
+                // relies on Filename.tempfile
             ]
         }
      

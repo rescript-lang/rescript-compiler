@@ -42,4 +42,10 @@ let () =
   G.add_edge_e g (G.E.create  5 6  4)
 
 let () = let test = J.all_pairs_shortest_paths g in
-	 J.HVV.iter (fun (v, u) d -> Printf.printf "[%d -> %d : %d]\n" v u d) test
+   (* J.HVV.iter (fun (v, u) d -> Printf.printf "[%d -> %d : %d]\n" v u d) test *)
+   let result = J.HVV.fold (fun (v, u) d acc ->  (v, (u, d))::acc) test [] in 
+   List.sort (fun (_,x) (_,y) -> Pervasives.compare x y) result 
+   |> List.iter (fun (v,(u,d)) -> 
+    Printf.printf
+    "[%d -> %d : %d]\n" v u d
+   )

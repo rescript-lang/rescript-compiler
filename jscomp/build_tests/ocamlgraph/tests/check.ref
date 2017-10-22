@@ -1,0 +1,24 @@
+iter:
+pre 3
+pre 5
+pre 4
+pre 2
+post 2
+post 4
+post 5
+pre 6
+post 6
+post 3
+prefix:
+pre 3
+pre 6
+pre 5
+pre 4
+pre 2
+step:
+visit 6
+visit 5
+visit 4
+visit 2
+visit 3
+visit 1
