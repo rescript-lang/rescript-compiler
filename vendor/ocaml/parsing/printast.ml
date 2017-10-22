@@ -52,7 +52,6 @@ let fmt_string_loc f x =
 let fmt_constant f x =
   match x with
   | Const_int (i) -> fprintf f "Const_int %d" i;
-  | Const_bool (b) -> fprintf f "Const_int %b" b;
   | Const_char (c) -> fprintf f "Const_char %02x" (Char.code c);
   | Const_string (s, None) -> fprintf f "Const_string(%S,None)" s;
   | Const_string (s, Some delim) ->

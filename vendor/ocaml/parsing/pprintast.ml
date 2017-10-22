@@ -181,7 +181,6 @@ class printer  ()= object(self:'self)
     | Const_string (i, None) -> pp f "%S" i
     | Const_string (i, Some delim) -> pp f "{%s|%s|%s}" delim i delim
     | Const_int i -> self#paren (i<0) (fun f -> pp f "%d") f i
-    | Const_bool b ->  pp f "%b" b
     | Const_float  i -> self#paren (i.[0]='-') (fun f -> pp f "%s") f i
     | Const_int32 i -> self#paren (i<0l) (fun f -> pp f "%ldl") f i
     | Const_int64 i -> self#paren (i<0L) (fun f -> pp f "%LdL") f i

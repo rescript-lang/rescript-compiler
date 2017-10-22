@@ -2306,11 +2306,6 @@ let combine_constant loc arg cst partial ctx def
           List.map (function Const_int n, l -> n,l | _ -> assert false)
             const_lambda_list in
         call_switcher fail arg min_int max_int int_lambda_list
-    | Const_bool b ->
-        let int_lambda_list =
-          List.map (function Const_bool b, l -> (if b then 1 else 0), l | _ -> assert false)
-            const_lambda_list in
-        call_switcher fail arg min_int max_int int_lambda_list
     | Const_char _ ->
         let int_lambda_list =
           List.map (function Const_char c, l -> (Char.code c, l)
@@ -2829,9 +2824,8 @@ and do_compile_matching repr partial ctx arg pmh = match pmh with
           ctx pm in
       let lambda1 = match lambda with
         | Lifthenelse (Lprim (Pintcomp Cneq, [l1; Lconst (Const_base (Const_int n))], loc), l2, l3) ->
-            let const' = Const_bool (if n == 0 then false else true) in
-            let prim' = Pintcomp Cneq in
-            Lifthenelse (Lprim (prim', [l1; Lconst (Const_base const')], loc), l2, l3)
+            let const' = (if n == 0 then false else true) in
+            Lifthenelse (Lprim (Pintcomp Cneq, [l1; Lconst (Const_base_bool const')], loc), l2, l3)
         | _ -> lambda in
       lambda1, cont
   | Tpat_construct (_, cstr, _) ->
