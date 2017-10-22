@@ -276,7 +276,7 @@ let obj_int_tag_literal : t =
 
 let int ?comment ?c  i : t = 
   {expression_desc = Number (Int {i; c}) ; comment}
-
+  
 let small_int i : t = 
   match i with 
   | 0 -> zero_int_literal
@@ -513,7 +513,9 @@ let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
 
 let caml_false  = int ~comment:"false" 0l
 
-let bool v = if  v then caml_true else caml_false
+let bool v : t =
+  {expression_desc = Bool v; comment = None}
+
 
 (** Here we have to use JS [===], and therefore, we are introducing 
     Js boolean, so be sure to convert it back to OCaml boolean
