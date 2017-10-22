@@ -18,7 +18,8 @@ open Types
 
 
 let rec struct_const ppf (cst : Lam.constant) =
-  match cst with 
+  match cst with
+  |  (Const_bool b) -> fprintf ppf "%b" b
   |  (Const_int n) -> fprintf ppf "%i" n
   |  (Const_char c) -> fprintf ppf "%C" c
   |  (Const_string s) -> fprintf ppf "%S" s
