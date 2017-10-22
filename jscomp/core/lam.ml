@@ -1176,10 +1176,10 @@ let stringswitch (lam : t) cases default : t =
 
 
 let true_ : t =
-  Lconst (Const_pointer ( 1, Pt_constructor "true")) 
+  Lconst (Const_bool true) 
 
 let false_ : t =
-  Lconst (Const_pointer( 0, Pt_constructor "false"))
+  Lconst (Const_bool false)
 
 let unit : t = 
   Lconst (Const_pointer( 0, Pt_constructor "()"))
@@ -1445,8 +1445,6 @@ let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  =
   | Return_null_to_opt -> prim ~primitive:Pnull_to_opt ~args:[result] loc 
   | Return_null_undefined_to_opt -> prim ~primitive:Pnull_undefined_to_opt ~args:[result] loc 
   | Return_undefined_to_opt -> prim ~primitive:Pundefined_to_opt ~args:[result] loc 
-  | Return_to_ocaml_bool ->
-    prim ~primitive:Pjs_boolean_to_bool ~args:[result] loc 
   | Return_unset
   | Return_identity -> 
     result 

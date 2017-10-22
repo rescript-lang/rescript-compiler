@@ -148,8 +148,7 @@ class virtual map =
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
-                 (* 1 - v *) (* !v *)
-                 (* String.fromCharCode.apply(null, args) *)
+                 (* !v *) (* String.fromCharCode.apply(null, args) *)
                  (* Convert JS boolean into OCaml boolean 
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
@@ -406,7 +405,6 @@ class virtual map =
           let _x = o#expression _x in Anything_to_number _x
       | Bool _x -> let _x = o#bool _x in Bool _x
       | Typeof _x -> let _x = o#expression _x in Typeof _x
-      | Caml_not _x -> let _x = o#expression _x in Caml_not _x
       | Js_not _x -> let _x = o#expression _x in Js_not _x
       | String_of_small_int_array _x ->
           let _x = o#expression _x in String_of_small_int_array _x

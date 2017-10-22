@@ -120,7 +120,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   (* | Tag_ml_obj _ *)
   | Int_of_boolean _ 
   | J.Anything_to_number _
-  | Caml_not _ 
   | Js_not _
   | String_of_small_int_array _ 
   | Json_stringify _ 
@@ -275,7 +274,6 @@ let rec eq_expression
     | Anything_to_number _ 
 
     | Typeof _ 
-    | Caml_not _
     | Js_not _ 
     | String_of_small_int_array _ 
     | Json_stringify _ 
