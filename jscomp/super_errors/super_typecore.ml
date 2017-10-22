@@ -60,7 +60,7 @@ let report_error env ppf = function
       else if Super_reason_react.is_array_wanted_reactElement trace then
         fprintf ppf "@[<v>\
           @[@{<info>Are you passing an array as a ReasonReact DOM (lower-case) component's children?@}@ If not, disregard this.@ \
-          If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/index.html#reason-react-working-with-children@]@,@,\
+          If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/docs/en/children.html@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]";
       super_report_unification_error ppf env trace
