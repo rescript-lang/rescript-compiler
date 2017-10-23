@@ -29,7 +29,8 @@
     "cover": "istanbul cover --report html ./node_modules/.bin/_mocha --   ./jscomp/test/**/*test.js && open coverage/index.html",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './jscomp/test/*test.js'",
     "coveralls": "npm run-script coverage && node ./node_modules/.bin/coveralls < coverage/lcov.info",
-    "postinstall": "node scripts/install.js"
+    "postinstall": "node scripts/install.js",
+    "prepublishOnly": "./scripts/prepublish.sh"
   },
   "name": "bs-platform",
   "version": "2.2.3",

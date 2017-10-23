@@ -12,6 +12,7 @@ docs/*
 docs/docson/*
 !docs/docson/build-schema.json
 site/
+lib/
 .vscode/
 .github/
 odoc_gen

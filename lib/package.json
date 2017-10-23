@@ -1,0 +1,29 @@
+{
+  "name": "bs-stdlib",
+  "version": "1.9.4",
+  "description": "BuckleScript compiled JS standard library",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bucklescript/bucklescript.git"
+  },
+  "keywords": [
+    "ocaml",
+    "bucklescript",
+    "stdlib",
+    "functional programming"
+  ],
+  "author": {
+    "name": "Hongbo Zhang"
+  },
+  "maintainers": [
+    {
+      "name": "hongbo_zhang",
+      "email": "bobzhang1988@gmail.com"
+    }
+  ],
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/bucklescript/bucklescript/issues"
+  },
+  "homepage": "https://github.com/bucklescript/bucklescript#readme"
+}
