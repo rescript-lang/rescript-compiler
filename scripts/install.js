@@ -87,6 +87,9 @@ var make = is_bsd ? 'gmake' : 'make';
 function non_windows_npm_release() {
 
     try {
+        if (process.env.BS_ALWAYS_BUILD_YOUR_COMPILER){
+            throw 'FORCED TO REBUILD'
+        }
         child_process.execSync('node ../scripts/config_compiler.js', working_config)
     } catch (e) {
         console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
