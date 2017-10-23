@@ -1501,7 +1501,7 @@ improve the generated code.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Luckily, OCaml allows customized multiple-line string support, BuckleScript <strong>reserves</strong> the delimiter <code>js</code> and <code>j</code> (<code>j</code> is unused so far).</p>
+<p>Luckily, OCaml allows customized multiple-line string support, BuckleScript <strong>reserves</strong> the delimiter <code>js</code> and <code>j</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">Input:</div>
@@ -4986,6 +4986,20 @@ people who use your library</p>
 <div class="paragraph">
 <p>When user has an existing JS project, it makes sense to output the JS file in the same directory as vanilla JS,
 the schema added  a key called <code>in-source</code> so that generate JS file next to ML file.</p>
+</div>
+<div class="paragraph">
+<p>Example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="json"><span class="tok-p">{</span>
+  <span class="tok-err">...</span>
+  <span class="tok-nt">&quot;package-specs&quot;</span> <span class="tok-p">:</span> <span class="tok-p">[{</span>
+    <span class="tok-nt">&quot;module&quot;</span><span class="tok-p">:</span> <span class="tok-s2">&quot;commonjs&quot;</span><span class="tok-p">,</span>
+    <span class="tok-nt">&quot;in-source&quot;</span><span class="tok-p">:</span> <span class="tok-kc">true</span>
+  <span class="tok-p">}]</span>
+<span class="tok-p">}</span></code></pre>
+</div>
 </div>
 </div>
 <div class="sect2">
