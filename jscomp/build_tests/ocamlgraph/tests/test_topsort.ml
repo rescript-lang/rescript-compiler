@@ -63,8 +63,8 @@ let tests iter =
 let () = tests Topological.iter
 (* let () = tests Topological.iter_stable *)
 
-let n = int_of_string Sys.argv.(1)
-
+(* let n = int_of_string Sys.argv.(1) *)
+let n = 10
 let () =
   let el = ref [] in
   (* linear graph *)

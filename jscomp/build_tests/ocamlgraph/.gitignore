@@ -26,3 +26,6 @@
 /view_graph/viewgraph.byte
 /view_graph/viewgraph.opt
 /export
+*.bs.js
+.merlin
+.bsb.lock
