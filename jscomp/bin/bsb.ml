@@ -12898,6 +12898,11 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
+      \  \"package-specs\" : {\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  },\n\
+      \  \"suffix\": \".bs.js\",\n\
       \  \"bs-dependencies\" : [\n\
       \      // add your bs-dependencies here \n\
       \  ]\n\
