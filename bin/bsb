@@ -14,7 +14,7 @@ var bsb_exe = __filename + ".exe"
 
 
 var watch_mode = false
-
+var verbose = false
 /**
  * @type {string[]}
  */
@@ -25,6 +25,8 @@ for (var i = 2; i < process_argv.length; ++i) {
     delegate_args.push(current)
     if (current === '-w') {
         watch_mode = true
+    } else if (current === "-verbose"){
+        verbose = true
     }
 }
 
@@ -124,7 +126,7 @@ if (watch_mode) {
             if (watcher.dir === bsconfig) {
                 return true;
             } else if (watch_files.indexOf(watcher.dir) < 0) {
-                console.log(watcher.dir, 'is no longer watched');
+                verbose && console.log(watcher.dir, 'is no longer watched');
                 watcher.watcher.close();
                 return false
             } else {
@@ -136,7 +138,7 @@ if (watch_mode) {
         for (var i = 0; i < watch_files.length; ++i) {
             var dir = watch_files[i]
             if (!watchers.find(function (watcher) { return watcher.dir === dir })) {
-                console.log('watching dir', dir, 'now')
+                verbose && console.log('watching dir', dir, 'now')
                 var watcher = fs.watch(dir, on_change);
                 watchers.push({ dir: dir, watcher: watcher })
             } else {
@@ -256,7 +258,7 @@ if (watch_mode) {
      */
     function on_change(event, reason) {
         if (validEvent(event, reason)) {
-            console.log("Event", event, reason);
+            verbose && console.log("Event", event, reason);
             reasons_to_rebuild.push([event, reason])
             if (needRebuild()) {
                 build()
