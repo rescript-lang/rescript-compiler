@@ -34,18 +34,33 @@ function prepare() {
 
     e(`./release.sh`)
 
-    fs.unlinkSync(path.join(__dirname, 'bin', 'js_compiler.ml'))
+    try {
+      fs.unlinkSync(path.join(__dirname, 'bin', 'js_compiler.ml'))
+    } catch (err) {
+      console.log(err)
+    }
 
-
-    e(`make -j2 bin/jscmj.exe bin/jsgen.exe bin/js_compiler.ml`)
+    e(`make -j2 bin/jscmj.exe bin/jsgen.exe bin/js_compiler.ml ext.cma outcome_printer.cma`)
     e(`./bin/jsgen.exe --`)
     e(`./bin/jscmj.exe`)
 
-    e(`ocamlc.opt -w -30-40 -no-check-prims -I bin  bin/config_whole_compiler.mli bin/config_whole_compiler.ml bin/js_compiler.mli bin/js_compiler.ml -o jsc.byte`)
+    e(`ocamlc.opt -w -30-40 -no-check-prims -I bin -I outcome_printer ext.cma outcome_printer.cma bin/config_whole_compiler.mli bin/config_whole_compiler.ml bin/js_compiler.mli bin/js_compiler.ml -o jsc.byte`)
 
     e(`rm -rf  ${playground}/pre_load.js`)
     e(`cp ./pre_load.js ${playground}`)
     e(`cp ../lib/amdjs/*.js ${playground}/stdlib`)
+
+    // Build JSX v2 PPX with jsoo
+    try {
+      fs.unlinkSync(path.join(__dirname, 'bin', 'jsoo_reactjs_jsx_ppx_v2.ml'))
+    } catch (err) {
+      console.log(err)
+    }
+
+    e(`make bin/jsoo_reactjs_jsx_ppx_v2.ml`)
+
+    e(`ocamlc.opt -w -30-40 -no-check-prims -o jsoo_reactjs_jsx_ppx_v2.byte -I +compiler-libs ocamlcommon.cma bin/jsoo_reactjs_jsx_ppx_v2.ml`)
+    e(`js_of_ocaml --toplevel +weak.js +toplevel.js jsoo_reactjs_jsx_ppx_v2.byte -I bin -I ../vendor/ocaml/lib/ocaml/compiler-libs -o ${playground}/jsoo_reactjs_jsx_ppx_v2.js`)
 
 }
 
