@@ -13,6 +13,7 @@ Features:
 - #2123 avoid namespace leaking in types
 - #2130 make Sys module not break React Native bindings
 - #2159, #2165 enhance user expereince of bsb (less verbose, status bar when failed)
+- #2134, allow people to make customized playground via a plugin
 
 Fixes:
 - #2157, fix unnecessary rebuilding when adding files with namespace option on
