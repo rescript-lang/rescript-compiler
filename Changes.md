@@ -1,3 +1,32 @@
+# 1.10.3
+Features:
+- #2112, introduced a key `suffix`, so that user can 
+  choose `suffix : ".bs.js"`
+- #2138, in combination of `.bs.js` suffix and `in-source` build,
+  bsb is able to remove staled build artifact
+- #2091 bsc xx.cmi will print xx.mli so users can generate
+  mli in the beginning. `bsc -output-re xx.cmi` will print
+  it in reason syntax
+- #2096, clorized ninja build output
+
+- #2120 better error message in the location of `{json||json}`  
+- #2123 avoid namespace leaking in types
+- #2130 make Sys module not break React Native bindings
+- #2159, #2165 enhance user expereince of bsb (less verbose, status bar when failed)
+
+Fixes:
+- #2157, fix unnecessary rebuilding when adding files with namespace option on
+- #2145, fix bsb unnecessary rebuild issues
+- #2150, fix an edge case of comparison between cyclic value
+- #2140 tweak invalid npm package error message
+- #2080, #2094 bsb -w can detect multiple processes running
+  so no race condition
+- #2097 default warning with "-30"
+- #2101 fix bs.splice error message
+- #2102 fix reason printer bug
+- #2089 more logs when ocaml fails to build
+- e16cbd03c64eb2b7e99570abdc29f5799778835f fix a binding of `Js.Re.matches`
+
 # 1.9.3
 
 Features:
