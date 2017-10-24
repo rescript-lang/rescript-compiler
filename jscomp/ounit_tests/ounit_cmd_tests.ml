@@ -197,6 +197,17 @@ external ff :
         (not (Ext_string.is_empty should_err.stderr))
 
     end;
+    __LOC__ >:: begin fun _ -> 
+    let should_err = bsc_check_eval {|
+    external foo_bar :
+    (_ [@bs.as "foo"]) ->
+    string ->
+    string = "bar"
+  [@@bs.send]
+    |} in 
+    OUnit.assert_bool __LOC__ 
+    (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
+  end;
 
     (* __LOC__ >:: begin fun _ ->  *)
     (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
