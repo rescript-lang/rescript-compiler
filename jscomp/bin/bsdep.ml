@@ -31260,7 +31260,7 @@ let handle_attributes
   if has_bs_uncurry type_annotation.Parsetree.ptyp_attributes then 
     begin 
       Location.raise_errorf 
-        ~loc "[@@bs.uncurry] can not be applied to the whole defintion"
+        ~loc "[@@bs.uncurry] can not be applied to the whole definition"
     end; 
 
   let prim_name_or_pval_prim =
