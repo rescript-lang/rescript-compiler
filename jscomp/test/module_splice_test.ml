@@ -11,6 +11,10 @@ external joinClasses : int array  -> int = "./joinClasses"
   [@@bs.module] [@@bs.splice]
 
 
+external make: unit -> unit = "xxx" [@@bs.module]
+
+let f u = make ()
+
 let a =
   joinClasses [|1;2;3|]
 

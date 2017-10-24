@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt          = require("./mt.js");
+var Make        = require("xxx");
 var Block       = require("../../lib/js/block.js");
 var JoinClasses = require("./joinClasses");
 
@@ -27,6 +28,8 @@ function eq(loc, param) {
   return /* () */0;
 }
 
+Make();
+
 var a = JoinClasses(1, 2, 3);
 
 var pair = /* tuple */[
@@ -36,12 +39,15 @@ var pair = /* tuple */[
 
 console.log(pair);
 
-eq("File \"module_splice_test.ml\", line 21, characters 5-12", pair);
+eq("File \"module_splice_test.ml\", line 25, characters 5-12", pair);
 
 Mt.from_pair_suites("module_splice_test.ml", suites[0]);
+
+var u = /* () */0;
 
 exports.suites  = suites;
 exports.test_id = test_id;
 exports.eq      = eq;
+exports.u       = u;
 exports.a       = a;
-/* a Not a pure module */
+/*  Not a pure module */
