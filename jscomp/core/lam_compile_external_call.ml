@@ -184,7 +184,8 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
         let accs, eff = aux labels args in 
         let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
         Ext_list.append acc  accs, Ext_list.append new_eff  eff
-    | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] -> assert false 
+    | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] 
+      -> assert false 
     | [],  _ :: _  -> assert false      
 
   in 
@@ -322,7 +323,9 @@ let translate_ffi
   | Js_send {splice  = js_splice ; name ; pipe = false; js_send_scopes = scopes } -> 
     begin match args  with
       | self :: args -> 
-        let [@warning"-8"] ( self_type::arg_types )
+        (* PR2162 [self_type] more checks in syntax:
+          - should not be [bs.as] *)
+        let [@warning"-8"] ( _self_type::arg_types )
           = arg_types in
         let args, eff = assemble_args  call_loc ffi  js_splice arg_types args in
         add_eff eff @@ 

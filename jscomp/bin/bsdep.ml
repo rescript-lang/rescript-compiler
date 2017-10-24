@@ -30866,22 +30866,22 @@ end = struct
 
 
 let variant_can_bs_unwrap_fields row_fields =
-  let validity = (List.fold_left
-     begin fun st row ->
-       match st, row with
-       | (* we've seen no fields or only valid fields so far *)
-         (`No_fields | `Valid_fields),
-         (* and this field has one constructor arg that we can unwrap to *)
-         Parsetree.Rtag (label, attrs, false, ([ _ ]))
-         ->
-         `Valid_fields
-       | (* otherwise, this field or a previous field was invalid *)
-         _ ->
-         `Invalid_field
-     end
-     `No_fields
-     row_fields
-  )
+  let validity = 
+    List.fold_left
+      begin fun st row ->
+        match st, row with
+        | (* we've seen no fields or only valid fields so far *)
+          (`No_fields | `Valid_fields),
+          (* and this field has one constructor arg that we can unwrap to *)
+          Parsetree.Rtag (label, attrs, false, ([ _ ]))
+          ->
+          `Valid_fields
+        | (* otherwise, this field or a previous field was invalid *)
+          _ ->
+          `Invalid_field
+      end
+      `No_fields
+      row_fields
   in
   match validity with
   | `Valid_fields -> true
@@ -31469,7 +31469,7 @@ let handle_attributes
             new_arg_types,
             if arg_type = Ignore then i 
             else i + 1
-            )
+           )
         ) arg_types_ty 
         (match st with
          | {val_send_pipe = Some obj; _ } ->      
@@ -31543,7 +31543,7 @@ let handle_attributes
         if arg_type_specs_length = 2 then 
           Js_get_index {js_get_index_scopes = scopes}
         else Location.raise_errorf ~loc 
-        "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
+            "Ill defined attribute [@@bs.get_index] (arity expected 2 : while %d)" arg_type_specs_length
 
       | {get_index = true; _}
 
@@ -31570,7 +31570,7 @@ let handle_attributes
          set_index = false; 
          return_wrapper = _; 
          mk_obj = _ ;
-         } ->
+        } ->
         begin match arg_types_ty, new_name, val_name  with         
           | [], `Nm_na,  _ -> Js_module_as_var external_module_name
           | _, `Nm_na, _ -> Js_module_as_fn {splice; external_module_name }
@@ -31673,10 +31673,22 @@ let handle_attributes
          mk_obj = _ ;
          return_wrapper = _ ; 
         } -> 
-        if arg_type_specs_length > 0 then 
-          Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
-        else 
-          Location.raise_errorf ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
+
+        (* PR #2162 - since when we assemble arguments the first argument in 
+           [@@bs.send] is ignored
+        *)
+        begin match arg_type_specs with 
+          | [] ->
+            Location.raise_errorf 
+              ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
+          |  {arg_type = Arg_cst _ ; arg_label = _} :: _
+            -> 
+            Location.raise_errorf 
+              ~loc "Ill defined attribute [@@bs.send] (first argument can not be const)"
+          | _ :: _  -> 
+            Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
+        end
+
       | {val_send = #bundle_source; _ } 
         -> Location.raise_errorf ~loc "You used an FFI attribute that can't be used with [@@bs.send]"
 
@@ -31751,7 +31763,7 @@ let handle_attributes
         if arg_type_specs_length = 2 then 
           Js_set { js_set_scopes = scopes ; js_set_name = name}
         else  Location.raise_errorf ~loc "Ill defined attribute [@@bs.set] (two args required)"
-      
+
       | {set_name = #bundle_source; _}
         -> Location.raise_errorf ~loc "conflict attributes found with [@@bs.set]"
 
@@ -31797,7 +31809,7 @@ let handle_attributes
          return_wrapper = _;
 
         }       
-       ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in 
+        ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in 
     begin 
       Ast_ffi_types.check_ffi ~loc ffi;
       (* result type can not be labeled *)
