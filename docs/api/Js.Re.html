@@ -92,6 +92,15 @@
 
                   
 
+<pre><span id="VALcaptures"><span class="keyword">val</span> captures</span> : <code class="type"><a href="Js_re.html#TYPEresult">result</a> -> string <a href="Js.html#TYPEnullable">Js.nullable</a> array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    an array of the match and captures, the first is the full match and the remaining are the substring captures<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALmatches"><span class="keyword">val</span> matches</span> : <code class="type"><a href="Js_re.html#TYPEresult">result</a> -> string array</code></pre><div class="info ">
                     <div class="not-examples">
                     an array of the matches, the first is the full match and the remaining are the substring matches<br>
@@ -132,10 +141,10 @@ Regex literals (<code class="code">[%re "/.../"]</code>) should generally be pre
                     <pre class="example"> <pre class="codepre"><code class="code">(* A function that extracts the content of the first element with the given tag *)
 
 let contentOf tag xmlString =
-  Js.Re.fromString ("&lt;" ^ tag ^ "&gt;(.|\n)*?&lt;\/" ^ tag ^"&gt;")
+  Js.Re.fromString ("&lt;" ^ tag ^ "&gt;(.*?)&lt;\\/" ^ tag ^"&gt;")
     |&gt; Js.Re.exec xmlString
     |&gt; function
-      | Some result -&gt; Some (Js.Re.matches result).(1)
+      | Some result -&gt; Js.Nullable.to_opt (Js.Re.captures result).(1)
       | None -&gt; None
 </code></pre>  </pre>
                     </div>
@@ -213,9 +222,9 @@ while not !break do
   match re |&gt; Js.Re.exec str with
   | None -&gt; break := true
   | Some result -&gt;
-    let match_ = (Js.Re.matches result).(0) in
-    let next = string_of_int (Js.Re.lastIndex re) in
-    Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)
+    Js.Nullable.iter (Js.Re.captures result).(0) ((fun match_ -&gt;
+      let next = string_of_int (Js.Re.lastIndex re) in
+      Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)))
 done
 </code></pre>  </pre>
                     </div>
