@@ -35,8 +35,10 @@ let set_package_name name =
 
 let set_package_map name = 
     set_package_name name ; 
+    let module_name = Ext_namespace.namespace_of_package_name name  in 
+    Clflags.dont_record_crc_unit := Some module_name;
     Clflags.open_modules := 
-      Ext_namespace.namespace_of_package_name name ::
+      module_name::
       !Clflags.open_modules
       
 let update_npm_package_path s  = 

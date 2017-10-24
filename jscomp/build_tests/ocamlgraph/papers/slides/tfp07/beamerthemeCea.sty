@@ -1,0 +1,41 @@
+
+% Copyright 2006 by Fabrice Derepas
+%
+% This program can be redistributed and/or modified under the terms
+% of the GNU Public License, version 2.
+
+\ProvidesPackage{beamerthemeCea}[2006/07/03]
+
+\PassOptionsToPackage{left}{beamerouterthemeCea}
+\PassOptionsToPackage{width=2cm}{beamerouterthemeCea}
+
+\DeclareOptionBeamer{hideothersubsections}{\PassOptionsToPackage{hideothersubsections=#1}{beamerouterthemeCea}}
+\DeclareOptionBeamer{hideallsubsections}{\PassOptionsToPackage{hideallsubsections=#1}{beamerouterthemeCea}}
+
+\DeclareOptionBeamer{width}{\PassOptionsToPackage{width=#1}{beamerouterthemeCea}}
+\DeclareOptionBeamer{left}{\PassOptionsToPackage{left}{beamerouterthemeCea}}
+\DeclareOptionBeamer{right}{\PassOptionsToPackage{right}{beamerouterthemeCea}}
+\DeclareOptionBeamer{projectlogoheight}{\PassOptionsToPackage{projectlogoheight=#1}{beamerouterthemeCea}}
+\DeclareOptionBeamer{projectlogo}{\PassOptionsToPackage{projectlogo=#1}{beamerouterthemeCea}}
+\ProcessOptionsBeamer
+
+
+
+\mode<presentation>
+
+\usecolortheme{Cea}
+
+\setbeamercolor*{titlelike}{use=structure,fg=structure.fg}
+
+%\useoutertheme[height=0pt]{Cea}
+\useoutertheme[height=20pt]{Cea}
+
+\setbeamercolor{sidebar}{parent=palette primary}
+
+{\usebeamercolor{palette quaternary}}
+{\usebeamercolor{palette primary}}
+
+\setbeamertemplate{sidebar canvas \beamer@sidebarside}[vertical shading][top=palette quaternary.bg,bottom=palette primary.bg]
+
+\mode
+<all>

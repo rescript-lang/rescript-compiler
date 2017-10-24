@@ -153,6 +153,7 @@ let unsafe_js_compare x y =
     as well as the [List.sort] and [Array.sort] functions.
 *)
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
+  if a == b then 0 else
   (*front and formoest, we do not compare function values*)
   let a_type = Js.typeof a in 
   let b_type = Js.typeof b in 

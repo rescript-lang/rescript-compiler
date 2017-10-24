@@ -98,3 +98,4 @@ jscomp/build_tests/*/lib/
 *.jsoo.js
 *.so
 bin/ninja.exe
+tmp/

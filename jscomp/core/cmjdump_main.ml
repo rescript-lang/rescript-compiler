@@ -50,15 +50,22 @@ let pp_cmj fmt
     ) effect ;
   p fmt "@[arities: @[%a@]@]@."
     (fun fmt m -> 
-       m |> String_map.iter (fun k (v : Js_cmj_format.cmj_value) -> 
-           match v.arity with 
-           | Single arity ->
-             p fmt "@[%s:@ @[%a@]@]@." k Lam_arity.print arity
-           | Submodule xs -> 
-             p fmt "@[<h 1>@[%s:@ @[<hov 2>%a@]@]@]" k 
-               (fun fmt xs ->
-                  Array.iter (fun arity -> p fmt "@[%a@]@ ;" Lam_arity.print arity ) 
-                    xs) xs 
+       m |> String_map.iter 
+         (fun k ({arity; closed_lambda} : Js_cmj_format.cmj_value) -> 
+            let non_saved = closed_lambda = None in 
+            match arity with             
+            | Single arity ->
+              p fmt "@[%s:@ %b@ @[%a@]@]@." 
+                k 
+                (not non_saved) 
+                Lam_arity.print arity
+            | Submodule xs -> 
+              p fmt "@[<h 1>@[%s:@ %b@ @[<hov 2>%a@]@]@]" 
+                k 
+                (not non_saved)
+                (fun fmt xs ->
+                   Array.iter (fun arity -> p fmt "@[%a@]@ ;" Lam_arity.print arity ) 
+                     xs) xs 
 
          )) values
 

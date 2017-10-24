@@ -29,7 +29,7 @@
 
 
 
-(** Type defintion to keep track of compilation state 
+(** Type definition to keep track of compilation state 
   *)
 
 (** Some types are defined in this module to help avoiding generating unnecessary symbols 

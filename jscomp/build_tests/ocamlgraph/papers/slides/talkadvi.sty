@@ -1,0 +1,96 @@
+%%%
+%%% talk.sty
+%%% ========
+%%% Macros to use with the class seminar for presentations.
+%%% Usage:
+%%%
+%%% \documentclass[a4]{seminar}
+%%% \usepackage{talk}
+%%% \begin{document}
+%%% \sf
+%%% \begin{slide}...\end{slide}
+%%%
+%%% Macros provided are:
+%%%
+%%%   \talktitle{The Title}{The author}{Place, date, etc.}
+%%%
+%%%   \talkpart{Title of the part}{subtitle}
+%%%
+%%%   \slidehead{This slide is about...}
+
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[usenames]{color}
+\usepackage{graphicx}
+\usepackage{advi}
+\usepackage{advi-annot}
+\usepackage{alltt}
+
+\def\_{\kern.08em\vbox{\hrule width.35em height.6pt}\kern.08em}
+
+% taille page
+\slidewidth 235mm
+\slideheight 174mm
+\centerslidesfalse
+\renewcommand{\sliderightmargin}{0mm}
+\renewcommand{\slideleftmargin}{20mm}
+\renewcommand{\slidetopmargin}{30mm}
+\renewcommand{\slidebottommargin}{10mm}
+\slideframe{none}
+
+% des couleurs 
+\definecolor{red}{rgb}{1.0,0.0,0.0}
+\definecolor{darkred}{rgb}{0.8,0.2,0.2}
+\definecolor{green}{rgb}{0.13,0.55,0.13} % forestgreen, en fait
+\definecolor{blue}{rgb}{0.0,0.0,1.0}
+\definecolor{royalblue}{rgb}{0.25,0.41,0.88}
+\definecolor{orange}{rgb}{1.00,0.27,0.00}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\remph}[1]{\textcolor{red}{#1}}
+\let\bemph\blue
+
+\newcommand{\unixtilde}{\raisebox{-0.22em}{\~{}}}
+
+% page style
+% \newpagestyle{jcf}{}{\hfil\rouge{\thepage}\qquad\qquad}
+\slidepagestyle{empty}
+\slideframe{none}
+% \def\advifooter{\vbox to 0em{\vbox to \vsize {\vfill\hfill{\thepage}}\vss}}
+% \let \Newpage \newpage
+% \def \newpage {\Newpage \advifooter}
+
+% macros
+\newcommand{\talktitle}[3]{\begin{slide}\pagestyle{empty}~\vfill
+{\begin{center}%
+    \textcolor{orange}{\rule{\linewidth}{0.1em}} \\[0.7em]
+    \textcolor{orange}{{\LARGE\vbox{#1}}} \\
+    \textcolor{orange}{\rule{\linewidth}{0.1em}} \\[2em]
+    \textcolor{royalblue}{#2} \\[3em]
+    \textcolor{orange}{#3}
+  \end{center}}
+\vfill\vfill\end{slide}}
+
+\newcommand{\slidetitle}[1]{%
+\textcolor{royalblue}{{\hfill\bfseries#1\hfill}}\par%
+\vspace{-1.3em}\textcolor{royalblue}{{\rule{\linewidth}{0.1em}}}}
+
+\newcommand{\talkpart}[2]{\begin{slide}\pagestyle{empty}~\vfill
+  \begin{center}
+  {\sf\textcolor{royalblue}{\bfseries#1}}\\
+  {\textcolor{royalblue}{\hrulefill}}\\[1em]
+  {\sf\Large\textcolor{royalblue}{\bfseries#2}}\end{center}\vfill\vfill\end{slide}}
+
+\let\emph\remph
+
+\newenvironment{points}%
+{\begin{list}{\emph{$\bullet$}}{\setlength{\itemsep}{0.3em}}}%
+{\end{list}}
+
+\usepackage{url}
+\newcommand{\redurl}[1]{\textcolor{red}{\url{#1}}}
+
+\newcommand{\pause}{\vspace*{1em}\adviwait}
+

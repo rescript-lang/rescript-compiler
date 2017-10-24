@@ -14,7 +14,7 @@ var bsb_exe = __filename + ".exe"
 
 
 var watch_mode = false
-
+var verbose = false
 /**
  * @type {string[]}
  */
@@ -25,6 +25,8 @@ for (var i = 2; i < process_argv.length; ++i) {
     delegate_args.push(current)
     if (current === '-w') {
         watch_mode = true
+    } else if (current === "-verbose"){
+        verbose = true
     }
 }
 
@@ -34,8 +36,11 @@ try {
     if (e.code === "ENOENT") {
         // when bsb is actually not found
         console.error(String(e))
+        process.exit(2)
     }
-    process.exit(2)
+    if (!watch_mode) {
+        process.exit(2)
+    }
 }
 
 if (watch_mode) {
@@ -75,7 +80,7 @@ if (watch_mode) {
             // lock files shouldn't rely on the umask to disallow tampering by other.        
             var fd = fs.openSync(lockFileName, 'wx', 0o664)
             try {
-                fs.writeFileSync(fd,  String(process.pid), 'ascii')
+                fs.writeFileSync(fd, String(process.pid), 'ascii')
                 fs.closeSync(fd)
             } catch (err) {
 
@@ -121,7 +126,7 @@ if (watch_mode) {
             if (watcher.dir === bsconfig) {
                 return true;
             } else if (watch_files.indexOf(watcher.dir) < 0) {
-                console.log(watcher.dir, 'is no longer watched');
+                verbose && console.log(watcher.dir, 'is no longer watched');
                 watcher.watcher.close();
                 return false
             } else {
@@ -133,7 +138,7 @@ if (watch_mode) {
         for (var i = 0; i < watch_files.length; ++i) {
             var dir = watch_files[i]
             if (!watchers.find(function (watcher) { return watcher.dir === dir })) {
-                console.log('watching dir', dir, 'now')
+                verbose && console.log('watching dir', dir, 'now')
                 var watcher = fs.watch(dir, on_change);
                 watchers.push({ dir: dir, watcher: watcher })
             } else {
@@ -169,11 +174,20 @@ if (watch_mode) {
     }
     var error_is_tty = process.stderr.isTTY
     var std_is_tty = process.stdout.isTTY
-    function logFinish() {
+    function logFinish(code) {
         if (std_is_tty) {
-            console.log("\x1b[36m>>>> Finish compiling\x1b[0m")
+            if (code === 0) {
+                console.log("\x1b[36m>>>> Finish compiling\x1b[0m")
+            } else {
+                console.log("\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m")
+            }
         } else {
-            console.log(">>>> Finish compiling")
+            if (code === 0) {
+                console.log(">>>> Finish compiling")
+            } else {
+                console.log(">>>> Finish compiling(exit: " + code + ")")
+            }
+
         }
     }
     function logStart() {
@@ -184,8 +198,13 @@ if (watch_mode) {
         }
 
     }
-    function build_finished_callback() {
-        logFinish()
+    /**
+     * 
+     * @param code {number}
+     * @param signal {string}
+     */
+    function build_finished_callback(code, signal) {
+        logFinish(code)
         releaseBuild()
         if (needRebuild()) {
             build()
@@ -239,7 +258,7 @@ if (watch_mode) {
      */
     function on_change(event, reason) {
         if (validEvent(event, reason)) {
-            console.log("Event", event, reason);
+            verbose && console.log("Event", event, reason);
             reasons_to_rebuild.push([event, reason])
             if (needRebuild()) {
                 build()

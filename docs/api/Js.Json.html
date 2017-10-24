@@ -190,19 +190,6 @@
 
 
 <pre><span id="VALclassify"><span class="keyword">val</span> classify</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> <a href="Js_json.html#TYPEtagged_t">tagged_t</a></code></pre>
-<pre><span id="VALreifyType"><span class="keyword">val</span> reifyType</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> 'b <a href="Js_json.html#TYPEkind">kind</a> * 'b</code></pre><div class="info ">
-                    <div class="not-examples">
-                    <div class="warning">
-                              <span class="label">Deprecated.</span>
-                              Use <a href="Js_json.html#VALclassify"><code class="code">Js_json.classify</code></a> instead
-                              </div>
-                            <code class="code">reifyType v</code> returns both type and underlying value<br>
- 
-                    </div>
-                    
-                    </div>
-
-                  
 <pre><span id="VALtest"><span class="keyword">val</span> test</span> : <code class="type">'a -> 'b <a href="Js_json.html#TYPEkind">kind</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">test v kind</code> returns true if <code class="code">v</code> is of <code class="code">kind</code><br>
@@ -317,7 +304,6 @@
                     </div>
 
                   
-<pre><span id="VALarray_"><span class="keyword">val</span> array_</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> array -> <a href="Js_json.html#TYPEt">t</a></code></pre>
 <pre><span id="VALarray"><span class="keyword">val</span> array</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">array_ a</code> makes a JSON array of the <code class="code">Js.Json.t array</code> <code class="code">a</code><br>
@@ -363,7 +349,6 @@
                     </div>
 
                   
-<pre><span id="VALparse"><span class="keyword">val</span> parse</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre>
 <pre><span id="VALparseExn"><span class="keyword">val</span> parseExn</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">parse s</code> parses the string <code class="code">s</code> into a JSON data structure

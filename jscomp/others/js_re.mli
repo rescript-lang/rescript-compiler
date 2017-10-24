@@ -127,7 +127,7 @@ while not !break do
   | Some result ->
     Js.Nullable.iter (Js.Re.captures result).(0) ((fun match_ ->
       let next = string_of_int (Js.Re.lastIndex re) in
-      Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)) [@bs])
+      Js.log ("Found " ^ match_ ^ ". Next match starts at " ^ next)))
 done
 ]}
 

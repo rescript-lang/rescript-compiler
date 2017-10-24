@@ -4034,7 +4034,7 @@ Pbtt
 
 (** scope of the field type when the field is a message type. 
     
-    For instance in the following field defintion:
+    For instance in the following field definition:
 
     [required foo.bar.Msg1 f = 1]
 
