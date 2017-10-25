@@ -89,7 +89,7 @@ type js_set_index = {
 
 
 
-type ffi = 
+type attr  = 
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -114,15 +114,15 @@ type return_wrapper =
 type t  = 
   | Ffi_bs of 
       External_arg_spec.t list  *
-      return_wrapper * ffi
+      return_wrapper * attr
   | Ffi_obj_create of obj_create
   | Ffi_normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 
 
-val name_of_ffi : ffi -> string
+val name_of_ffi : attr -> string
 
-val check_ffi : ?loc:Location.t ->  ffi -> unit 
+val check_ffi : ?loc:Location.t ->  attr -> unit 
 
 val to_string : t -> string 
 

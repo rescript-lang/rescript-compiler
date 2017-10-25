@@ -681,7 +681,7 @@ let translate  loc
   (*Lam_compile_external_obj.assemble_args_obj labels args *)
   | Pjs_call (_, arg_types, ffi) -> 
     Lam_compile_external_call.translate_ffi 
-      loc ffi cxt arg_types args 
+      loc cxt arg_types ffi args 
   (** FIXME, this can be removed later *)
   | Pisint -> 
     begin 

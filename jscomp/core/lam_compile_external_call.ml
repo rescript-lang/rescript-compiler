@@ -229,10 +229,10 @@ let translate_scoped_access scopes obj =
     List.fold_left (fun acc x -> E.dot acc x) (E.dot obj x) xs 
   
 let translate_ffi 
-    call_loc (ffi : External_ffi_types.ffi ) 
-    (* prim_name *)
+    call_loc 
     (cxt  : Lam_compile_context.t)
     arg_types 
+    (ffi : External_ffi_types.attr ) 
     (args : J.expression list) = 
   match ffi with 
 

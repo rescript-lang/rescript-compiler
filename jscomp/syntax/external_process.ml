@@ -649,7 +649,7 @@ let handle_attributes
 
          | {val_send_pipe = None ; _ } -> [],[], 0) in 
 
-    let ffi : External_ffi_types.ffi  = match st with           
+    let ffi : External_ffi_types.attr  = match st with           
       | {set_index = true;
 
          val_name = `Nm_na; 

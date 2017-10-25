@@ -85,7 +85,7 @@ type primitive =
   | Pjs_call of
       string *  (* prim_name *)
       External_arg_spec.t list * (* arg_types *)
-      External_ffi_types.ffi  (* ffi *)
+      External_ffi_types.attr  (* ffi *)
   | Pjs_object_create of External_ffi_types.obj_create
   (* Exceptions *)
   | Praise
