@@ -660,7 +660,7 @@ let translate  loc
       | _ -> assert false
     end
   | Parrayrefs _kind ->
-    Lam_dispatch_primitive.translate "caml_array_get" args
+    Lam_dispatch_primitive.translate loc "caml_array_get" args
   | Pmakearray kind -> 
     Js_of_lam_array.make_array Mutable kind args 
   | Parraysetu _kind -> 
@@ -670,9 +670,9 @@ let translate  loc
     end
 
   | Parraysets _kind -> 
-    Lam_dispatch_primitive.translate "caml_array_set" args
+    Lam_dispatch_primitive.translate loc "caml_array_set" args
   | Pccall prim -> 
-    Lam_dispatch_primitive.translate prim.prim_name  args
+    Lam_dispatch_primitive.translate loc prim.prim_name  args
   (* Lam_compile_external_call.translate loc cxt prim args *)
   (* Test if the argument is a block or an immediate integer *)
   | Pjs_object_create labels
@@ -804,11 +804,9 @@ let translate  loc
   | Pbigstring_set_32 _
   | Pbigstring_set_64 _
     -> 
-    let comment = "Missing primitive" in       
-    let s = Lam_print.primitive_to_string prim in
-    let warn = Printf.sprintf  "%s: %s\n" comment s in
-    Ext_log.warn __LOC__ "%s"  warn;
     (*we dont use [throw] here, since [throw] is an statement  *)        
-    E.dump  Error [ E.str warn]
+    let s = Lam_print.primitive_to_string prim in    
+    Bs_warnings.warn_missing_primitive loc  s;
+    E.not_implemented s 
 
 

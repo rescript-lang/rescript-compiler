@@ -73,7 +73,7 @@ let no_warn_ffi_type = ref false
 (** TODO: will flip the option when it is ready *)
 let no_warn_unused_bs_attribute = ref false
 let no_error_unused_bs_attribute = ref false 
-
+let no_warn_unimplemented_external = ref false 
 let current_file = ref ""
 let debug_file = ref ""
 

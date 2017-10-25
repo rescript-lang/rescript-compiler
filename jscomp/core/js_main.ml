@@ -185,11 +185,15 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Js_packages_state.update_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
   ::
-  
+  ("-bs-no-warn-unimplemented-external",
+    Arg.Set Js_config.no_warn_unimplemented_external,
+    " disable warnings on unimplmented c externals"
+  )
+  ::
   ("-bs-no-warn-unused-bs-attribute",
    Arg.Set Js_config.no_warn_unused_bs_attribute,
    " disable warnings on unused bs. attribute"
-  )
+  )  
   ::
   ("-bs-no-warn-ffi-type", 
    Arg.Set Js_config.no_warn_ffi_type,

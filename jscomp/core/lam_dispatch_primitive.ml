@@ -44,7 +44,7 @@ There are two things we need consider:
 TODO: return type to be expression is ugly, 
    we should allow return block    
 *)
-let translate (prim_name : string) 
+let translate loc (prim_name : string) 
     (args : J.expression list) : J.expression  =
   let call m = 
     E.runtime_call m prim_name args in 
@@ -729,34 +729,6 @@ let translate (prim_name : string)
       | [e] -> E.seq e E.unit 
       | _ -> assert false
     end
-  | "caml_ba_create"
-  | "caml_ba_get_generic"
-  | "caml_ba_set_generic"
-  | "caml_ba_num_dims"
-  | "caml_ba_dim"
-  | "caml_ba_kind"
-  | "caml_ba_layout"
-  | "caml_ba_sub"
-  | "caml_ba_slice"
-  | "caml_ba_blit"
-  | "caml_ba_fill"
-  | "caml_ba_reshape"
-  | "caml_ba_map_file_bytecode"
-
-    (* caml_ba_get_1,  (\* %caml_ba_ref_1 *\) *)
-    (* caml_ba_get_2, *)
-    (* caml_ba_get_3, *)
-
-    (* caml_ba_set_1,  // %caml_ba_set_1 *)
-    (* caml_ba_set_2, *)
-    (* caml_ba_set_3, *)
-
-    (* caml_ba_dim_1, // %caml_ba_dim_1 *)
-    (* caml_ba_dim_2,  *)
-    (* caml_ba_dim_3,  *)
-
-    -> 
-    E.not_implemented prim_name
     (* call  Js_config.bigarray *)
   (* End of bigarray support *)
   | "caml_convert_raw_backtrace_slot"
@@ -788,7 +760,33 @@ let translate (prim_name : string)
   | "caml_weak_blit"
   | "caml_weak_get_copy"
     -> call Js_runtime_modules.weak
+  
+  
+  | "caml_ba_create"
+  | "caml_ba_get_generic"
+  | "caml_ba_set_generic"
+  | "caml_ba_num_dims"
+  | "caml_ba_dim"
+  | "caml_ba_kind"
+  | "caml_ba_layout"
+  | "caml_ba_sub"
+  | "caml_ba_slice"
+  | "caml_ba_blit"
+  | "caml_ba_fill"
+  | "caml_ba_reshape"
+  | "caml_ba_map_file_bytecode"
 
+    (* caml_ba_get_1,  (\* %caml_ba_ref_1 *\) *)
+    (* caml_ba_get_2, *)
+    (* caml_ba_get_3, *)
+
+    (* caml_ba_set_1,  // %caml_ba_set_1 *)
+    (* caml_ba_set_2, *)
+    (* caml_ba_set_3, *)
+
+    (* caml_ba_dim_1, // %caml_ba_dim_1 *)
+    (* caml_ba_dim_2,  *)
+    (* caml_ba_dim_3,  *)
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"
   | "caml_input_value_from_string"
@@ -815,12 +813,9 @@ let translate (prim_name : string)
   | "caml_ml_pos_out_64"
   | "caml_ml_seek_out"
   | "caml_ml_seek_out_64"
-  | "caml_ml_set_binary_mode"
-    ->  E.not_implemented prim_name
+  | "caml_ml_set_binary_mode"    
   | _ -> 
-      let comment = "Missing primitive" in       
-      Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
-        (Js_config.get_current_file ()) ;
+      Bs_warnings.warn_missing_primitive loc prim_name  ;
       E.not_implemented prim_name
       (*we dont use [throw] here, since [throw] is an statement 
         so we wrap in IIFE
