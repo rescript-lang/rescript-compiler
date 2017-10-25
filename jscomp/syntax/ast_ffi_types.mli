@@ -61,7 +61,7 @@ type js_module_as_fn =
     splice : bool 
   }
 
-type arg_type = External_arg_spec.ty
+type arg_type = External_arg_spec.attr
 
 type arg_label = External_arg_spec.label 
 

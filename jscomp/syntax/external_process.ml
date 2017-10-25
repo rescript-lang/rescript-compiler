@@ -61,7 +61,7 @@ let variant_can_bs_unwrap_fields row_fields =
 *)
 let get_arg_type ~nolabel optional 
     (ptyp : Ast_core_type.t) : 
-  External_arg_spec.ty * Ast_core_type.t  = 
+  External_arg_spec.attr * Ast_core_type.t  = 
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 

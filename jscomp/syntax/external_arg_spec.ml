@@ -38,7 +38,7 @@ type label =
   | Optional of string 
   (* it will be ignored , side effect will be recorded *)
 
-type ty = 
+type attr = 
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
@@ -53,7 +53,7 @@ type ty =
 
 type t = 
   {
-    arg_type : ty;
+    arg_type : attr;
     arg_label : label
   }
 

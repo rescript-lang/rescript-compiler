@@ -29,19 +29,21 @@ type cst = private
   | Arg_js_true
   | Arg_js_false
   | Arg_js_json of string
+
+
 type label = private
   | Label of string * cst option 
   | Empty of cst option
   | Optional of string 
   (* it will be ignored , side effect will be recorded *)
 
-type ty = 
+type attr = 
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
-    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
   | Extern_unit
   | Nothing
@@ -50,7 +52,7 @@ type ty =
 
 type t = 
   {
-    arg_type : ty;
+    arg_type : attr;
     arg_label :label
   }
 
@@ -62,4 +64,4 @@ val empty_label : label
 val empty_lit : cst -> label 
 val label :  string -> cst option -> label
 val optional  : string -> label
-val empty_kind : ty -> t
+val empty_kind : attr -> t

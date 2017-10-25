@@ -27,7 +27,12 @@
 
 
 (**
-   return value is of [pval_type, pval_prim]
+  [handle_attributes_as_string 
+  loc pval_name.txt pval_type pval_attributes pval_prim]
+  [pval_name.txt] is the name of identifier
+  [pval_prim] is the name of string literal
+  
+  return value is of [pval_type, pval_prims, new_attrs]
 *)    
 val handle_attributes_as_string : 
   Bs_loc.t ->
@@ -40,7 +45,11 @@ val handle_attributes_as_string :
 
 
 
-
+(** [pval_prim_of_labels labels] 
+    return [pval_prims] for FFI, it is specialized for 
+    external object which is used in 
+    {[ [%obj { x = 2; y = 1} ] ]}
+*)  
 val pval_prim_of_labels : string Asttypes.loc list -> string list
 
 

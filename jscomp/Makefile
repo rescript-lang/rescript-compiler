@@ -253,7 +253,7 @@ SYNTAX_SRCS= \
 	ast_core_type ast_derive_dyn\
 	ast_derive_projector \
 	ast_ffi_types\
-	ast_external_attributes\
+	external_process\
 	ast_util\
 	ppx_entry\
 	bs_ast_invariant

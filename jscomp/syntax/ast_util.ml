@@ -604,7 +604,7 @@ let ocaml_obj_as_js_object
       ) labels label_types public_obj_type in
   Ast_external.local_extern_cont
     loc
-    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+    ~pval_prim:(External_process.pval_prim_of_labels labels)
     (fun e ->
        Exp.apply ~loc e
          (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
@@ -625,7 +625,7 @@ let record_as_js_object
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
   Ast_external.create_local_external loc 
-    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+    ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
 
