@@ -241,7 +241,7 @@ SYNTAX_SRCS= \
 	ast_derive_constructor \
 	ast_derive_util \
 	ast_exp \
-	ast_external \
+	ast_external_mk\
 	ast_lift \
 	ast_literal \
 	ast_pat \
