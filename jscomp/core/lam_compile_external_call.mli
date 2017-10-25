@@ -37,7 +37,7 @@ val ocaml_to_js_eff :
 
 val translate_ffi :
   Location.t -> 
-  Ast_ffi_types.ffi -> 
+  External_ffi_types.ffi -> 
   (* string -> *) (* Not used.. *)
   Lam_compile_context.t -> 
   External_arg_spec.t list -> 

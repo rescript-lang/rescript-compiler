@@ -82,8 +82,8 @@ type primitive =
     (* Location.t *  [loc] is passed down *)
     string *  (* prim_name *)
     External_arg_spec.t list * (* arg_types *)
-    Ast_ffi_types.ffi  (* ffi *)
-  | Pjs_object_create of Ast_ffi_types.obj_create
+    External_ffi_types.ffi  (* ffi *)
+  | Pjs_object_create of External_ffi_types.obj_create
 
   | Praise 
   | Psequand | Psequor | Pnot

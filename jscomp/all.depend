@@ -213,14 +213,15 @@ syntax/ast_derive_dyn.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
 syntax/ast_derive_projector.cmx : ext/ext_list.cmx \
     syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
     syntax/ast_derive_projector.cmi
-syntax/ast_ffi_types.cmx : syntax/external_arg_spec.cmx ext/ext_string.cmx \
-    ext/ext_pervasives.cmx common/bs_version.cmx syntax/ast_ffi_types.cmi
+syntax/external_ffi_types.cmx : syntax/external_arg_spec.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx common/bs_version.cmx \
+    syntax/external_ffi_types.cmi
 syntax/external_process.cmx : common/lam_methname.cmx \
-    syntax/external_arg_spec.cmx ext/ext_string.cmx ext/ext_pervasives.cmx \
-    ext/ext_list.cmx common/bs_warnings.cmx syntax/bs_syntaxerr.cmx \
-    common/bs_loc.cmx syntax/ast_payload.cmx syntax/ast_literal.cmx \
-    syntax/ast_ffi_types.cmx syntax/ast_core_type.cmx syntax/ast_comb.cmx \
-    syntax/ast_attributes.cmx syntax/external_process.cmi
+    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
+    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_list.cmx \
+    common/bs_warnings.cmx syntax/bs_syntaxerr.cmx common/bs_loc.cmx \
+    syntax/ast_payload.cmx syntax/ast_literal.cmx syntax/ast_core_type.cmx \
+    syntax/ast_comb.cmx syntax/ast_attributes.cmx syntax/external_process.cmi
 syntax/ast_util.cmx : ext/literals.cmx syntax/external_process.cmx \
     ext/ext_string.cmx ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
     syntax/ast_payload.cmx syntax/ast_pat.cmx syntax/ast_literal.cmx \
@@ -257,7 +258,7 @@ syntax/ast_attributes.cmi : syntax/ast_payload.cmi
 syntax/ast_core_type.cmi :
 syntax/ast_derive_dyn.cmi :
 syntax/ast_derive_projector.cmi :
-syntax/ast_ffi_types.cmi : syntax/external_arg_spec.cmi
+syntax/external_ffi_types.cmi : syntax/external_arg_spec.cmi
 syntax/external_process.cmi : common/bs_loc.cmi syntax/ast_core_type.cmi \
     syntax/ast_attributes.cmi
 syntax/ast_util.cmi : syntax/ast_payload.cmi
@@ -285,7 +286,7 @@ core/lam_module_ident.cmi : core/js_op.cmx core/j.cmx ext/hashtbl_gen.cmx \
     ext/hash_set_gen.cmx
 core/lam_arity.cmi :
 core/lam.cmi : core/lam_module_ident.cmi ext/ident_set.cmi \
-    syntax/external_arg_spec.cmi syntax/ast_ffi_types.cmi
+    syntax/external_ffi_types.cmi syntax/external_arg_spec.cmi
 core/lam_print.cmi : core/lam.cmi
 core/lam_beta_reduce_util.cmi : core/lam.cmi
 core/lam_inline_util.cmi : core/lam.cmi
@@ -364,7 +365,7 @@ core/lam_bounded_vars.cmi : core/lam.cmi ext/ident_hashtbl.cmi
 core/lam_beta_reduce.cmi : core/lam_stats.cmi core/lam_closure.cmi \
     core/lam.cmi ext/ident_map.cmi
 core/lam_compile_external_call.cmi : core/lam_compile_context.cmi core/j.cmx \
-    syntax/external_arg_spec.cmi syntax/ast_ffi_types.cmi
+    syntax/external_ffi_types.cmi syntax/external_arg_spec.cmi
 core/lam_compile_external_obj.cmi : core/j.cmx syntax/external_arg_spec.cmi
 core/lam_compile_primitive.cmi : core/lam_compile_context.cmi core/lam.cmi \
     core/j.cmx
@@ -406,8 +407,9 @@ core/lam.cmx : ext/ordered_hash_map_local_ident.cmx \
     common/js_config.cmx ext/int_vec_vec.cmx ext/int_vec_util.cmx \
     ext/int_vec.cmx ext/int_hashtbl.cmx ext/ident_set.cmx \
     ext/ident_hashtbl.cmx ext/ident_hash_set.cmx ext/hash_set_ident_mask.cmx \
-    syntax/external_arg_spec.cmx ext/ext_string.cmx ext/ext_scc.cmx \
-    common/ext_log.cmx ext/ext_list.cmx syntax/ast_ffi_types.cmx core/lam.cmi
+    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
+    ext/ext_string.cmx ext/ext_scc.cmx common/ext_log.cmx ext/ext_list.cmx \
+    core/lam.cmi
 core/lam_print.cmx : core/lam.cmx ext/ext_list.cmx core/lam_print.cmi
 core/lam_beta_reduce_util.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     core/lam_beta_reduce_util.cmi
@@ -586,8 +588,8 @@ core/lam_compile_external_call.cmx : core/lam_compile_env.cmx \
     core/lam_compile_context.cmx core/lam_compile_const.cmx \
     core/js_runtime_modules.cmx core/js_of_lam_variant.cmx \
     core/js_of_lam_option.cmx core/js_exp_make.cmx core/js_arr.cmx \
-    core/js_analyzer.cmx core/j.cmx syntax/external_arg_spec.cmx \
-    ext/ext_list.cmx ext/ext_ident.cmx syntax/ast_ffi_types.cmx \
+    core/js_analyzer.cmx core/j.cmx syntax/external_ffi_types.cmx \
+    syntax/external_arg_spec.cmx ext/ext_list.cmx ext/ext_ident.cmx \
     core/lam_compile_external_call.cmi
 core/lam_compile_external_obj.cmx : core/lam_compile_external_call.cmx \
     core/lam_compile_const.cmx core/js_stmt_make.cmx core/js_op.cmx \

@@ -225,8 +225,8 @@ type name_source =
 
 type st = 
   { val_name : name_source;
-    external_module_name : Ast_ffi_types.external_module_name option;
-    module_as_val : Ast_ffi_types.external_module_name option;
+    external_module_name : External_ffi_types.external_module_name option;
+    module_as_val : External_ffi_types.external_module_name option;
     val_send : name_source ;
     val_send_pipe : Ast_core_type.t option;    
     splice : bool ; (* mutable *)
@@ -239,7 +239,7 @@ type st =
     get_name : name_source ;
 
     mk_obj : bool ;
-    return_wrapper : Ast_ffi_types.return_wrapper ;
+    return_wrapper : External_ffi_types.return_wrapper ;
 
   }
 
@@ -346,7 +346,7 @@ let process_external_attributes
             | "bs.get_index"-> {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
-              let aux loc txt : Ast_ffi_types.return_wrapper = 
+              let aux loc txt : External_ffi_types.return_wrapper = 
                 begin match txt with 
                   | "undefined_to_opt" -> Return_undefined_to_opt
                   | "null_to_opt" -> Return_null_to_opt
@@ -381,7 +381,7 @@ let rec has_bs_uncurry (attrs : Ast_attributes.t) =
 
 
 let check_return_wrapper 
-    loc (wrapper : Ast_ffi_types.return_wrapper) 
+    loc (wrapper : External_ffi_types.return_wrapper) 
     result_type = 
   match wrapper with 
   | Return_identity -> wrapper
@@ -414,7 +414,7 @@ let handle_attributes
     (pval_prim : string ) 
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-  : Ast_core_type.t * string * Ast_ffi_types.t * Ast_attributes.t =
+  : Ast_core_type.t * string * External_ffi_types.t * Ast_attributes.t =
   (** sanity check here 
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense 
@@ -649,7 +649,7 @@ let handle_attributes
 
          | {val_send_pipe = None ; _ } -> [],[], 0) in 
 
-    let ffi : Ast_ffi_types.ffi  = match st with           
+    let ffi : External_ffi_types.ffi  = match st with           
       | {set_index = true;
 
          val_name = `Nm_na; 
@@ -973,13 +973,13 @@ let handle_attributes
         }       
         ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in 
     begin 
-      Ast_ffi_types.check_ffi ~loc ffi;
+      External_ffi_types.check_ffi ~loc ffi;
       (* result type can not be labeled *)
       (* currently we don't process attributes of 
          return type, in the future we may  *)
       let  new_result_type  =  result_type in
       (* get_arg_type ~nolabel:true false result_type in *)
-      let return_wrapper : Ast_ffi_types.return_wrapper = 
+      let return_wrapper : External_ffi_types.return_wrapper = 
         check_return_wrapper loc st.return_wrapper new_result_type
       in 
       (
@@ -998,7 +998,7 @@ let handle_attributes_as_string
     (typ : Ast_core_type.t) attrs v = 
   let pval_type, prim_name, ffi, processed_attrs  = 
     handle_attributes pval_loc pval_prim typ attrs v  in
-  pval_type, [prim_name; Ast_ffi_types.to_string ffi], processed_attrs
+  pval_type, [prim_name; External_ffi_types.to_string ffi], processed_attrs
 
 
 
@@ -1013,7 +1013,7 @@ let pval_prim_of_labels labels =
              arg_label  } :: arg_kinds
         )
         labels [] in 
-    Ast_ffi_types.to_string 
+    External_ffi_types.to_string 
       (Ffi_obj_create arg_kinds)   in 
   [""; encoding]
 

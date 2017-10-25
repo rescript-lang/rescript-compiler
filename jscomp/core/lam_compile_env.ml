@@ -89,6 +89,7 @@ let reset () =
    ]}
 
    Given a name, if duplicated, they should  have the same id
+   
 *)
 
 let js_id_name_of_hint_name (hint_name : string)  = 
@@ -97,7 +98,7 @@ let js_id_name_of_hint_name (hint_name : string)  =
     (Ext_list.map Ext_string.capitalize_ascii 
        (Ext_string.split hint_name '-')) 
 
-
+(* TODO: #2163 *)
 let add_js_module ~hint_name module_name : Ident.t 
   = 
   let id = 

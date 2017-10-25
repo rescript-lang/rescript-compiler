@@ -85,8 +85,8 @@ type primitive =
   | Pjs_call of
       string *  (* prim_name *)
       External_arg_spec.t list * (* arg_types *)
-      Ast_ffi_types.ffi  (* ffi *)
-  | Pjs_object_create of Ast_ffi_types.obj_create
+      External_ffi_types.ffi  (* ffi *)
+  | Pjs_object_create of External_ffi_types.obj_create
   (* Exceptions *)
   | Praise
   (* Boolean operations *)
@@ -1436,7 +1436,7 @@ let rec no_auto_uncurried_arg_types
   | _ :: xs -> no_auto_uncurried_arg_types xs 
 
 
-let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  = 
+let result_wrap loc (result_type : External_ffi_types.return_wrapper) result  = 
   match result_type with 
   | Return_replaced_with_unit  
     -> append_unit result              
@@ -1476,7 +1476,7 @@ let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.t list)
 
 let handle_bs_non_obj_ffi 
     (arg_types : External_arg_spec.t list) 
-    (result_type : Ast_ffi_types.return_wrapper) 
+    (result_type : External_ffi_types.return_wrapper) 
     ffi 
     args 
     loc 
@@ -1764,7 +1764,7 @@ let convert exports lam : _ * _  =
     convert_ccall (a : Primitive.description)  (args : Lambda.lambda list) loc : t= 
     let prim_name = a.prim_name in    
     let prim_name_len  = String.length prim_name in 
-    match Ast_ffi_types.from_string a.prim_native_name with 
+    match External_ffi_types.from_string a.prim_native_name with 
     | Ffi_normal ->
       if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
         convert_js_primitive a args loc 

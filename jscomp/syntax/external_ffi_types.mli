@@ -87,12 +87,9 @@ type js_set_index = {
   js_set_index_scopes : string list 
 } 
 
-(*val empty_js_get_index : js_get_index
-  val empty_js_set_index : js_set_index  *)
 
 
 type ffi = 
-  (* | Obj_create of obj_create*)
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
