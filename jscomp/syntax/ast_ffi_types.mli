@@ -61,12 +61,12 @@ type js_module_as_fn =
     splice : bool 
   }
 
-type arg_type = Ast_arg.ty
+type arg_type = External_arg_spec.ty
 
-type arg_label = Ast_arg.label 
+type arg_label = External_arg_spec.label 
 
 
-type obj_create = Ast_arg.kind list
+type obj_create = External_arg_spec.kind list
 
 type js_get =  
   { js_get_name : string   ;
@@ -115,7 +115,7 @@ type return_wrapper =
   | Return_replaced_with_unit    
 
 type t  = 
-  | Ffi_bs of Ast_arg.kind list  *
+  | Ffi_bs of External_arg_spec.kind list  *
      return_wrapper * ffi
   | Ffi_obj_create of obj_create
   | Ffi_normal 

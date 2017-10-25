@@ -245,7 +245,7 @@ SYNTAX_SRCS= \
 	ast_lift \
 	ast_literal \
 	ast_pat \
-	ast_arg \
+	external_arg_spec\
 	ast_payload \
 	ast_signature \
 	ast_structure bs_ast_iterator  \

@@ -78,7 +78,7 @@ let handle_external_opt
      This would not work with [NonNullString]
 *)
 let ocaml_to_js_eff 
-    ({ Ast_arg.arg_label;  arg_type })
+    ({ External_arg_spec.arg_label;  arg_type })
     (raw_arg : J.expression)
   : E.t list * E.t list  =
   let arg =
@@ -93,7 +93,7 @@ let ocaml_to_js_eff
   | Fn_uncurry_arity _ -> assert false  
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
-    (if arg_label = Ast_arg.empty_label then [] else [E.unit]), 
+    (if arg_label = External_arg_spec.empty_label then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
@@ -157,7 +157,7 @@ let add_eff eff e =
    @return arguments and effect
 *)
 let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
-  let rec aux (labels : Ast_arg.kind list) args = 
+  let rec aux (labels : External_arg_spec.kind list) args = 
     match labels, args with 
     | [] , [] -> empty_pair
     | { arg_label =  Empty (Some cst) ; _} :: labels  , args 

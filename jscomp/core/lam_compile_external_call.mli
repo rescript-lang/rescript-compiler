@@ -31,7 +31,7 @@
 
 (** Compile ocaml external function call to JS IR. *) 
 val ocaml_to_js_eff : 
-  Ast_arg.kind -> 
+  External_arg_spec.kind -> 
   J.expression -> 
   J.expression list * J.expression list  
 
@@ -40,7 +40,7 @@ val translate_ffi :
   Ast_ffi_types.ffi -> 
   (* string -> *) (* Not used.. *)
   Lam_compile_context.t -> 
-  Ast_arg.kind list -> 
+  External_arg_spec.kind list -> 
   (*bool -> *)
   J.expression list -> 
   J.expression 

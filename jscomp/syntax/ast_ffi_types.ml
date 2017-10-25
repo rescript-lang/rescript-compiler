@@ -81,13 +81,13 @@ type js_set_index = {
 (** TODO: information between [arg_type] and [arg_label] are duplicated, 
   design a more compact representation so that it is also easy to seralize by hand
 *)  
-type arg_type = Ast_arg.ty
+type arg_type = External_arg_spec.ty
 
-type arg_label = Ast_arg.label
+type arg_label = External_arg_spec.label
 
 
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type obj_create = Ast_arg.kind list
+type obj_create = External_arg_spec.kind list
 
 type ffi = 
   (* | Obj_create of obj_create *)
@@ -133,7 +133,7 @@ type return_wrapper =
   | Return_to_ocaml_bool
   | Return_replaced_with_unit    
 type t  = 
-  | Ffi_bs of Ast_arg.kind list  *
+  | Ffi_bs of External_arg_spec.kind list  *
      return_wrapper * ffi 
   (**  [Ffi_bs(args,return,ffi) ]
        [return] means return value is unit or not, 
