@@ -576,7 +576,7 @@ core/lam_dispatch_primitive.cmx : core/js_stmt_make.cmx \
     core/js_runtime_modules.cmx core/js_of_lam_tuple.cmx \
     core/js_of_lam_exception.cmx core/js_of_lam_array.cmx core/js_long.cmx \
     core/js_exp_make.cmx common/js_config.cmx core/js_analyzer.cmx core/j.cmx \
-    common/ext_log.cmx ext/ext_list.cmx core/lam_dispatch_primitive.cmi
+    ext/ext_list.cmx common/bs_warnings.cmx core/lam_dispatch_primitive.cmi
 core/lam_bounded_vars.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     ext/ext_list.cmx core/lam_bounded_vars.cmi
 core/lam_beta_reduce.cmx : core/lam_util.cmx core/lam_stats.cmx \
@@ -603,7 +603,7 @@ core/lam_compile_primitive.cmx : core/lam_print.cmx \
     core/js_of_lam_option.cmx core/js_of_lam_float_record.cmx \
     core/js_of_lam_exception.cmx core/js_of_lam_block.cmx \
     core/js_of_lam_array.cmx core/js_long.cmx core/js_exp_make.cmx \
-    common/js_config.cmx core/j.cmx common/ext_log.cmx \
+    common/js_config.cmx core/j.cmx common/bs_warnings.cmx \
     core/lam_compile_primitive.cmi
 core/lam_compile.cmx : ext/literals.cmx core/lam_util.cmx \
     common/lam_methname.cmx core/lam_exit_code.cmx \

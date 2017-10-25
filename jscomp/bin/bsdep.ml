@@ -25708,6 +25708,8 @@ val no_builtin_ppx_mli : bool ref
 val no_warn_ffi_type : bool ref 
 val no_warn_unused_bs_attribute : bool ref 
 val no_error_unused_bs_attribute : bool ref 
+val no_warn_unimplemented_external : bool ref 
+
 (** check-div-by-zero option *)
 val check_div_by_zero : bool ref 
 val get_check_div_by_zero : unit -> bool 
@@ -25821,7 +25823,7 @@ let no_warn_ffi_type = ref false
 (** TODO: will flip the option when it is ready *)
 let no_warn_unused_bs_attribute = ref false
 let no_error_unused_bs_attribute = ref false 
-
+let no_warn_unimplemented_external = ref false 
 let current_file = ref ""
 let debug_file = ref ""
 
@@ -26159,8 +26161,6 @@ type t =
   | Unsafe_ffi_bool_type
   | Unsafe_poly_variant_type
 
-(* val print_string_warning : Location.t -> string -> unit *)
-
 val prerr_warning : Location.t -> t -> unit
 
 (**It will always warn not relevant to whether {!Js_config.warn_unused_attribute} set or not
@@ -26168,6 +26168,8 @@ val prerr_warning : Location.t -> t -> unit
    The reason is that we will do a global check first, then start warning later
 *)
 val warn_unused_attribute : Location.t -> string -> unit
+
+val warn_missing_primitive : Location.t -> string -> unit 
 
 val error_unescaped_delimiter : 
   Location.t -> string  -> unit 
@@ -26221,25 +26223,30 @@ let to_string t =
 
 let warning_formatter = Format.err_formatter
 
-let print_string_warning loc x = 
-  Location.print warning_formatter loc ; 
-  Format.pp_print_string warning_formatter "Warning: ";
-  Format.pp_print_string warning_formatter x;
-  Format.pp_print_string warning_formatter "\n"
+let print_string_warning (loc : Location.t) x =   
+  if loc.loc_ghost then 
+    Format.fprintf warning_formatter "File %s@." 
+      (Js_config.get_current_file ())
+  else 
+    Location.print warning_formatter loc ; 
+  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
 
 let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then
     print_string_warning loc (to_string x) 
 
-
+let unimplemented_primitive = "Unimplemented primitive used:" 
 type error = 
   | Unused_attribute of string
   | Uninterpreted_delimiters of string
-
+  | Unimplemented_primitive of string 
 exception  Error of Location.t * error
 
 let pp_error fmt x =
   match x with 
+  | Unimplemented_primitive str -> 
+    Format.pp_print_string fmt unimplemented_primitive;
+    Format.pp_print_string fmt str
   | Unused_attribute str ->
     Format.pp_print_string fmt Literals.unused_attribute;
     Format.pp_print_string fmt str
@@ -26251,9 +26258,9 @@ let pp_error fmt x =
 
 let () = 
   Location.register_error_of_exn (function 
-    | Error (loc,err) -> 
-      Some (Location.error_of_printer loc pp_error err)
-    | _ -> None
+      | Error (loc,err) -> 
+        Some (Location.error_of_printer loc pp_error err)
+      | _ -> None
     )
 
 
@@ -26267,6 +26274,15 @@ let warn_unused_attribute loc txt =
   else 
     raise (Error(loc, Unused_attribute txt))
 
+let warn_missing_primitive loc txt =      
+  if not @@ !Js_config.no_warn_unimplemented_external then
+    begin 
+      print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
+      Format.pp_print_flush warning_formatter ()
+    end
+
+
+
 let error_unescaped_delimiter loc txt = 
   raise (Error(loc, Uninterpreted_delimiters txt))
 
@@ -26276,28 +26292,28 @@ let error_unescaped_delimiter loc txt =
 
 
 (**
-Note the standard way of reporting error in compiler:
+   Note the standard way of reporting error in compiler:
 
-val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
-val Location.error_of_printer : Location.t ->
-  (Format.formatter -> error -> unit) -> error -> Location.error
+   val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
+   val Location.error_of_printer : Location.t ->
+   (Format.formatter -> error -> unit) -> error -> Location.error
 
-Define an error type
+   Define an error type
 
-type error 
-exception Error of Location.t * error 
+   type error 
+   exception Error of Location.t * error 
 
-Provide a printer to error
+   Provide a printer to error
 
-{[
-  let () = 
-    Location.register_error_of_exn
-      (function 
-        | Error(loc,err) -> 
-          Some (Location.error_of_printer loc pp_error err)
-        | _ -> None
-      )
-]}
+   {[
+     let () = 
+       Location.register_error_of_exn
+         (function 
+           | Error(loc,err) -> 
+             Some (Location.error_of_printer loc pp_error err)
+           | _ -> None
+         )
+   ]}
 *)
 
 end
@@ -28104,6 +28120,1510 @@ let init () =
 
 
 end
+module Ext_char : sig 
+#1 "ext_char.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(** Extension to Standard char module, avoid locale sensitivity *)
+
+val escaped : char -> string
+
+
+val valid_hex : char -> bool
+
+val is_lower_case : char -> bool
+end = struct
+#1 "ext_char.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+external string_unsafe_set : string -> int -> char -> unit
+                           = "%string_unsafe_set"
+
+external string_create: int -> string = "caml_create_string"
+
+external unsafe_chr: int -> char = "%identity"
+
+(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
+    backport it here
+ *)
+let escaped = function
+  | '\'' -> "\\'"
+  | '\\' -> "\\\\"
+  | '\n' -> "\\n"
+  | '\t' -> "\\t"
+  | '\r' -> "\\r"
+  | '\b' -> "\\b"
+  | ' ' .. '~' as c ->
+      let s = string_create 1 in
+      string_unsafe_set s 0 c;
+      s
+  | c ->
+      let n = Char.code c in
+      let s = string_create 4 in
+      string_unsafe_set s 0 '\\';
+      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
+      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
+      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
+      s
+
+
+let valid_hex x = 
+    match x with 
+    | '0' .. '9'
+    | 'a' .. 'f'
+    | 'A' .. 'F' -> true
+    | _ -> false 
+
+
+
+let is_lower_case c =
+  (c >= 'a' && c <= 'z')
+  || (c >= '\224' && c <= '\246')
+  || (c >= '\248' && c <= '\254')    
+end
+module Ast_utf8_string : sig 
+#1 "ast_utf8_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type error 
+
+
+type exn += Error of int  (* offset *) * error 
+
+val pp_error :  Format.formatter -> error -> unit  
+
+
+  
+(* module Interp : sig *)
+(*   val check_and_transform : int -> string -> int -> cxt -> unit *)
+(*   val transform_test : string -> segments *)
+(* end *)
+val transform_test : string -> string 
+
+val transform : Location.t -> string -> string      
+
+
+end = struct
+#1 "ast_utf8_string.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type error = 
+  | Invalid_code_point 
+  | Unterminated_backslash
+  | Invalid_escape_code of char 
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+
+let pp_error fmt err = 
+  Format.pp_print_string fmt @@  match err with 
+  | Invalid_code_point -> "Invalid code point"
+  | Unterminated_backslash -> "\\ ended unexpectedly"
+  | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c 
+  | Invalid_hex_escape -> 
+    "Invalid \\x escape"
+  | Invalid_unicode_escape -> "Invalid \\u escape"
+
+
+
+type exn += Error of int  (* offset *) * error 
+
+
+
+
+let error ~loc error = 
+  raise (Error (loc, error))
+
+(** Note the [loc] really should be the utf8-offset, it has nothing to do with our 
+    escaping mechanism
+*)
+(* we can not just print new line in ES5 
+   seems we don't need 
+   escape "\b" "\f" 
+   we need escape "\n" "\r" since 
+   ocaml multiple-line allows [\n]
+   visual input while es5 string 
+   does not*)
+
+let rec check_and_transform (loc : int ) buf s byte_offset s_len =
+  if byte_offset = s_len then ()
+  else 
+    let current_char = s.[byte_offset] in 
+    match Ext_utf8.classify current_char with 
+    | Single 92 (* '\\' *) -> 
+      escape_code (loc + 1) buf s (byte_offset+1) s_len
+    | Single 34 ->
+      Buffer.add_string buf "\\\"";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
+    | Single 39 -> 
+      Buffer.add_string buf "\\'";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single 10 ->          
+      Buffer.add_string buf "\\n";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single 13 -> 
+      Buffer.add_string buf "\\r";
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+    | Single _ -> 
+      Buffer.add_char buf current_char;
+      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
+
+    | Invalid 
+    | Cont _ -> error ~loc Invalid_code_point
+    | Leading (n,_) -> 
+      let i' = Ext_utf8.next s ~remaining:n  byte_offset in
+      if i' < 0 then 
+        error ~loc Invalid_code_point
+      else 
+        begin 
+          for k = byte_offset to i' do 
+            Buffer.add_char buf s.[k]; 
+          done;   
+          check_and_transform (loc + 1 ) buf s (i' + 1) s_len 
+        end
+(* we share the same escape sequence with js *)        
+and escape_code loc buf s offset s_len = 
+  if offset >= s_len then 
+    error ~loc Unterminated_backslash
+  else
+    Buffer.add_char buf '\\'; 
+  let cur_char = s.[offset] in
+  match cur_char with 
+  | '\\'
+  | 'b' 
+  | 't' 
+  | 'n' 
+  | 'v'
+  | 'f'
+  | 'r' 
+  | '0' 
+  | '$'
+    -> 
+    begin 
+      Buffer.add_char buf cur_char ;
+      check_and_transform (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | 'u' -> 
+    begin 
+      Buffer.add_char buf cur_char;
+      unicode (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | 'x' -> begin 
+      Buffer.add_char buf cur_char ; 
+      two_hex (loc + 1) buf s (offset + 1) s_len 
+    end 
+  | _ -> error ~loc (Invalid_escape_code cur_char)
+and two_hex loc buf s offset s_len = 
+  if offset + 1 >= s_len then 
+    error ~loc Invalid_hex_escape;
+  (*Location.raise_errorf ~loc "\\x need at least two chars";*)
+  let a, b = s.[offset], s.[offset + 1] in 
+  if Ext_char.valid_hex a && Ext_char.valid_hex b then 
+    begin 
+      Buffer.add_char buf a ; 
+      Buffer.add_char buf b ; 
+      check_and_transform (loc + 2) buf s (offset + 2) s_len 
+    end
+  else
+    error ~loc Invalid_hex_escape
+(*Location.raise_errorf ~loc "%c%c is not a valid hex code" a b*)
+
+and unicode loc buf s offset s_len = 
+  if offset + 3 >= s_len then 
+    error ~loc Invalid_unicode_escape
+  (*Location.raise_errorf ~loc "\\u need at least four chars"*)
+  ;
+  let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
+  if 
+    Ext_char.valid_hex a0 &&
+    Ext_char.valid_hex a1 &&
+    Ext_char.valid_hex a2 &&
+    Ext_char.valid_hex a3 then 
+    begin 
+      Buffer.add_char buf a0;
+      Buffer.add_char buf a1;
+      Buffer.add_char buf a2;
+      Buffer.add_char buf a3;  
+      check_and_transform (loc + 4) buf s  (offset + 4) s_len 
+    end 
+  else
+    error ~loc Invalid_unicode_escape 
+(*Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
+  a0 a1 a2 a3 *)
+(* http://www.2ality.com/2015/01/es6-strings.html
+   console.log('\uD83D\uDE80'); (* ES6*)
+   console.log('\u{1F680}');
+*)   
+
+
+
+
+
+
+
+
+
+let transform_test s =
+  let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2) in
+  check_and_transform 0 buf s 0 s_len;
+  Buffer.contents buf
+
+let transform loc s = 
+  let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2) in
+  try
+    check_and_transform 0 buf s 0 s_len;
+    Buffer.contents buf 
+  with
+    Error (offset, error)
+    ->  Location.raise_errorf ~loc "Offset: %d, %a" offset pp_error error
+
+
+
+end
+module Bs_loc : sig 
+#1 "bs_loc.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
+
+val is_ghost : t -> bool
+val merge : t -> t -> t 
+val none : t 
+
+
+end = struct
+#1 "bs_loc.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Location.t = {
+  loc_start : Lexing.position;
+  loc_end : Lexing.position ; 
+  loc_ghost : bool
+} 
+
+let is_ghost x = x.loc_ghost
+
+let merge (l: t) (r : t) = 
+  if is_ghost l then r 
+  else if is_ghost r then l 
+  else match l,r with 
+  | {loc_start ; }, {loc_end; _} (* TODO: improve*)
+    -> 
+    {loc_start ;loc_end; loc_ghost = false}
+
+let none = Location.none
+
+end
+module Ast_utf8_string_interp : sig 
+#1 "ast_utf8_string_interp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type kind =
+  | String
+  | Var
+type error = private
+  | Invalid_code_point
+  | Unterminated_backslash
+  | Invalid_escape_code of char
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+  | Unterminated_variable
+  | Unmatched_paren
+  | Invalid_syntax_of_var of string 
+
+(** Note the position is about code point *)
+type pos = { lnum : int ; offset : int ; byte_bol : int }
+
+type segment = {
+  start : pos;
+  finish : pos ;
+  kind : kind;
+  content : string ;
+} 
+
+type segments = segment list  
+
+type cxt = {
+  mutable segment_start : pos ;
+  buf : Buffer.t ;
+  s_len : int ;
+  mutable segments : segments;
+  mutable pos_bol : int; (* record the abs position of current beginning line *)
+  mutable byte_bol : int ; 
+  mutable pos_lnum : int ; (* record the line number *)
+}
+
+type exn += Error of pos *  pos * error 
+
+val empty_segment : segment -> bool
+
+val transform_test : string -> segment list
+val transform_interp : Location.t -> string -> Parsetree.expression
+
+end = struct
+#1 "ast_utf8_string_interp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type error = 
+  | Invalid_code_point
+  | Unterminated_backslash
+  | Invalid_escape_code of char
+  | Invalid_hex_escape
+  | Invalid_unicode_escape
+  | Unterminated_variable
+  | Unmatched_paren
+  | Invalid_syntax_of_var of string 
+type kind =
+  | String
+  | Var
+
+
+(** Note the position is about code point *)
+type pos = { 
+  lnum : int ; 
+  offset : int ;
+  byte_bol : int (* Note it actually needs to be in sync with OCaml's lexing semantics *)
+}
+
+
+type segment = {
+  start : pos;
+  finish : pos ;
+  kind : kind;
+  content : string ;
+} 
+
+type segments = segment list 
+
+
+type cxt = {
+  mutable segment_start : pos ;
+  buf : Buffer.t ;
+  s_len : int ;
+  mutable segments : segments;
+  mutable pos_bol : int; (* record the abs position of current beginning line *)
+  mutable byte_bol : int ; 
+  mutable pos_lnum : int ; (* record the line number *)
+}
+
+
+type exn += Error of pos *  pos * error 
+
+let pp_error fmt err = 
+  Format.pp_print_string fmt @@  match err with 
+  | Invalid_code_point -> "Invalid code point"
+  | Unterminated_backslash -> "\\ ended unexpectedly"
+  | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c 
+  | Invalid_hex_escape -> 
+    "Invalid \\x escape"
+  | Invalid_unicode_escape -> "Invalid \\u escape"
+  | Unterminated_variable -> "$ unterminated"
+  | Unmatched_paren -> "Unmatched paren"
+  | Invalid_syntax_of_var s -> "`" ^s ^ "' is not a valid syntax of interpolated identifer"
+let valid_lead_identifier_char x = 
+  match x with
+  | 'a'..'z' | '_' -> true
+  | _ -> false
+
+let valid_identifier_char x = 
+  match x with
+  | 'a'..'z' 
+  | 'A'..'Z'
+  | '0'..'9'
+  | '_' | '\''-> true
+  | _ -> false
+(** Invariant: [valid_lead_identifier] has to be [valid_identifier] *)
+
+let valid_identifier s =
+  let s_len = String.length s in 
+  if s_len = 0 then false 
+  else
+    valid_lead_identifier_char s.[0] &&
+    Ext_string.for_all_from s 1  valid_identifier_char
+
+      
+let is_space x = 
+  match x with
+  | ' ' | '\n' | '\t' -> true
+  | _ -> false
+
+
+
+(**
+   FIXME: multiple line offset 
+   if there is no line offset. Note {|{j||} border will never trigger a new line
+*)
+let update_position border 
+    ({lnum ; offset;byte_bol } : pos)
+    (pos : Lexing.position)= 
+  if lnum = 0 then 
+    {pos with pos_cnum = pos.pos_cnum + border + offset  }
+    (** When no newline, the column number is [border + offset] *)
+  else 
+    {
+      pos with 
+      pos_lnum = pos.pos_lnum + lnum ;
+      pos_bol = pos.pos_cnum + border + byte_bol;
+      pos_cnum = pos.pos_cnum + border + byte_bol + offset;
+      (** when newline, the column number is [offset] *)
+    }  
+let update border
+    (start : pos) 
+    (finish : pos) (loc : Location.t) : Location.t = 
+  let start_pos = loc.loc_start in 
+  { loc  with 
+    loc_start = 
+      update_position  border start start_pos;
+    loc_end = 
+      update_position border finish start_pos
+  }
+
+
+(** Note [Var] kind can not be mpty  *)
+let empty_segment {content } =
+  Ext_string.is_empty content
+
+
+
+let update_newline ~byte_bol loc  cxt = 
+  cxt.pos_lnum <- cxt.pos_lnum + 1 ; 
+  cxt.pos_bol <- loc;
+  cxt.byte_bol <- byte_bol  
+
+let pos_error cxt ~loc error = 
+  raise (Error 
+           (cxt.segment_start,
+            { lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; byte_bol = cxt.byte_bol}, error))
+
+let add_var_segment cxt loc  = 
+  let content =  Buffer.contents cxt.buf in
+  Buffer.clear cxt.buf ;
+  let next_loc = {
+    lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
+    byte_bol = cxt.byte_bol } in
+  if valid_identifier content then 
+    begin 
+      cxt.segments <- 
+        { start = cxt.segment_start; 
+          finish =  next_loc ;
+          kind = Var; 
+          content} :: cxt.segments ;
+      cxt.segment_start <- next_loc
+    end
+  else pos_error cxt ~loc (Invalid_syntax_of_var content)
+
+let add_str_segment cxt loc   =
+  let content =  Buffer.contents cxt.buf in
+  Buffer.clear cxt.buf ;
+  let next_loc = {
+    lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
+    byte_bol = cxt.byte_bol } in
+  cxt.segments <- 
+    { start = cxt.segment_start; 
+      finish =  next_loc ;
+      kind = String; 
+      content} :: cxt.segments ;
+  cxt.segment_start <- next_loc
+
+
+  
+
+
+let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : cxt) =
+  if byte_offset = s_len then
+    add_str_segment cxt loc 
+  else 
+    let current_char = s.[byte_offset] in 
+    match Ext_utf8.classify current_char with 
+    | Single 92 (* '\\' *) -> 
+      escape_code (loc + 1)  s (byte_offset+1) cxt
+    | Single 34 ->
+      Buffer.add_string buf "\\\"";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 39 -> 
+      Buffer.add_string buf "\\'";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 10 ->          
+
+      Buffer.add_string buf "\\n";
+      let loc = loc + 1 in 
+      let byte_offset = byte_offset + 1 in 
+      update_newline ~byte_bol:byte_offset loc cxt ; (* Note variable could not have new-line *)
+      check_and_transform loc  s byte_offset cxt
+    | Single 13 -> 
+      Buffer.add_string buf "\\r";
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+    | Single 36 -> (* $ *)
+      add_str_segment cxt loc  ; 
+      let offset = byte_offset + 1 in
+      if offset >= s_len then
+        pos_error ~loc cxt  Unterminated_variable
+      else
+        let cur_char = s.[offset] in
+        if cur_char = '(' then
+          expect_var_paren  (loc + 2)  s (offset + 1) cxt
+        else
+          expect_simple_var (loc + 1)  s offset cxt
+    | Single _ -> 
+      Buffer.add_char buf current_char;
+      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
+
+    | Invalid 
+    | Cont _ -> pos_error ~loc cxt Invalid_code_point
+    | Leading (n,_) -> 
+      let i' = Ext_utf8.next s ~remaining:n  byte_offset in
+      if i' < 0 then 
+        pos_error cxt ~loc Invalid_code_point
+      else 
+        begin 
+          for k = byte_offset to i' do 
+            Buffer.add_char buf s.[k]; 
+          done;   
+          check_and_transform (loc + 1 )  s (i' + 1) cxt
+        end
+(**Lets keep identifier simple, so that we could generating a function easier in the future
+   for example
+   let f = [%fn{| $x + $y = $x_add_y |}]
+*)
+and expect_simple_var  loc  s offset ({buf; s_len} as cxt) =
+  let v = ref offset in
+  (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
+  if not (offset < s_len  && valid_lead_identifier_char s.[offset]) then 
+    pos_error cxt ~loc (Invalid_syntax_of_var Ext_string.empty)
+  else 
+    begin 
+      while !v < s_len && valid_identifier_char s.[!v]  do (* TODO*)
+        let cur_char = s.[!v] in
+        Buffer.add_char buf cur_char;
+        incr v ;
+      done;
+      let added_length = !v - offset in
+      let loc = added_length + loc in 
+      add_var_segment cxt loc  ; 
+      check_and_transform loc  s (added_length + offset) cxt
+    end
+and expect_var_paren  loc  s offset ({buf; s_len} as cxt) =
+  let v = ref offset in
+  (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
+  while !v < s_len &&  s.[!v] <> ')' do 
+    let cur_char = s.[!v] in
+    Buffer.add_char buf cur_char;
+    incr v ;
+  done;
+  let added_length = !v - offset in
+  let loc = added_length +  1 + loc  in
+  if !v < s_len && s.[!v] = ')' then
+    begin 
+      add_var_segment cxt loc ; 
+      check_and_transform loc  s (added_length + 1 + offset) cxt 
+    end
+  else
+    pos_error cxt ~loc Unmatched_paren
+
+
+
+
+
+(* we share the same escape sequence with js *)        
+and escape_code loc  s offset ({ buf; s_len} as cxt) = 
+  if offset >= s_len then 
+    pos_error cxt ~loc Unterminated_backslash
+  else
+    Buffer.add_char buf '\\'; 
+  let cur_char = s.[offset] in
+  match cur_char with 
+  | '\\'
+  | 'b' 
+  | 't' 
+  | 'n' 
+  | 'v'
+  | 'f'
+  | 'r' 
+  | '0' 
+  | '$'
+    -> 
+    begin 
+      Buffer.add_char buf cur_char ;
+      check_and_transform (loc + 1)  s (offset + 1) cxt
+    end 
+  | 'u' -> 
+    begin 
+      Buffer.add_char buf cur_char;
+      unicode (loc + 1) s (offset + 1) cxt
+    end 
+  | 'x' -> begin 
+      Buffer.add_char buf cur_char ; 
+      two_hex (loc + 1)  s (offset + 1) cxt
+    end 
+  | _ -> pos_error cxt ~loc (Invalid_escape_code cur_char)
+and two_hex loc  s offset ({buf ; s_len} as cxt) = 
+  if offset + 1 >= s_len then 
+    pos_error cxt ~loc Invalid_hex_escape;
+  let a, b = s.[offset], s.[offset + 1] in 
+  if Ext_char.valid_hex a && Ext_char.valid_hex b then 
+    begin 
+      Buffer.add_char buf a ; 
+      Buffer.add_char buf b ; 
+      check_and_transform (loc + 2)  s (offset + 2) cxt
+    end
+  else
+    pos_error cxt ~loc Invalid_hex_escape
+
+
+and unicode loc  s offset ({buf ; s_len} as cxt) = 
+  if offset + 3 >= s_len then 
+    pos_error cxt ~loc Invalid_unicode_escape
+  ;
+  let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
+  if 
+    Ext_char.valid_hex a0 &&
+    Ext_char.valid_hex a1 &&
+    Ext_char.valid_hex a2 &&
+    Ext_char.valid_hex a3 then 
+    begin 
+      Buffer.add_char buf a0;
+      Buffer.add_char buf a1;
+      Buffer.add_char buf a2;
+      Buffer.add_char buf a3;  
+      check_and_transform (loc + 4) s  (offset + 4) cxt
+    end 
+  else
+    pos_error cxt ~loc Invalid_unicode_escape 
+let transform_test s =
+  let s_len = String.length s in
+  let buf = Buffer.create (s_len * 2) in
+  let cxt = 
+    { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
+      buf ;
+      s_len;
+      segments = [];
+      pos_lnum = 0;          
+      byte_bol = 0;
+      pos_bol = 0;
+
+    } in 
+  check_and_transform 0 s 0 cxt;
+  List.rev cxt.segments
+
+
+(** TODO: test empty var $() $ failure, 
+    Allow identifers x.A.y *)    
+
+open Ast_helper     
+
+(** Longident.parse "Pervasives.^" *)
+let concat_ident  : Longident.t = 
+  Ldot (Lident "Pervasives", "^")
+   (* JS string concatMany *)
+    (* Ldot (Ldot (Lident "Js", "String"), "concat") *)
+
+(* Longident.parse "Js.String.make"     *)
+let to_string_ident : Longident.t = 
+    Ldot (Ldot (Lident "Js", "String"), "make")
+
+
+
+let escaped = Some Literals.escaped_j_delimiter 
+
+let concat_exp 
+  (a : Parsetree.expression)
+  (b : Parsetree.expression) : Parsetree.expression = 
+  let loc = Bs_loc.merge a.pexp_loc b.pexp_loc in 
+  Exp.apply ~loc 
+  (Exp.ident { txt =concat_ident; loc})
+    ["",a ;
+     "",b]
+
+let border = String.length "{j|"
+
+let aux loc (segment : segment) =  
+  match segment with 
+  | {start ; finish; kind ; content} 
+    -> 
+    let loc = update border start finish  loc in 
+    begin match kind with 
+      | String -> 
+        Exp.constant 
+          ~loc
+          (Const_string (content, escaped)) 
+      | Var -> 
+        Exp.apply ~loc 
+          (Exp.ident ~loc {loc ; txt = to_string_ident })
+          [
+            "",
+            Exp.ident ~loc {loc ; txt = Lident content}
+          ]
+    end 
+
+
+let transform_interp loc s = 
+  let s_len = String.length s in 
+  let buf = Buffer.create (s_len * 2 ) in 
+  try 
+    let cxt : cxt = 
+      { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
+        buf ;
+        s_len;
+        segments = [];
+        pos_lnum = 0;          
+        byte_bol = 0;
+        pos_bol = 0;
+
+      } in 
+
+    check_and_transform 0 s 0 cxt; 
+    let rev_segments =  cxt.segments in 
+    match rev_segments with 
+    | [] -> 
+      Exp.constant ~loc 
+        (Const_string ("", Some Literals.escaped_j_delimiter)) 
+    | [ segment] -> 
+      aux loc segment 
+    | a::rest -> 
+      List.fold_left (fun (acc : Parsetree.expression)
+       (x : segment) ->
+          concat_exp (aux loc x) acc )
+        (aux loc a) rest
+  with 
+    Error (start,pos, error) 
+    -> 
+    Location.raise_errorf ~loc:(update border start pos loc )
+      "%a"  pp_error error 
+
+end
+module Ast_exp : sig 
+#1 "ast_exp.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.expression 
+
+end = struct
+#1 "ast_exp.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.expression 
+
+end
+module Ast_external_mk : sig 
+#1 "ast_external_mk.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(**
+  [local_module loc ~pval_prim ~pval_type args]
+  generate such code 
+  {[
+    let module J = struct 
+       external unsafe_expr : pval_type = pval_prim 
+    end in 
+    J.unssafe_expr args
+  ]}
+*)
+val local_external : Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (string * Parsetree.expression) list -> Parsetree.expression_desc
+
+val local_extern_cont : 
+  Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string list ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
+
+end = struct
+#1 "ast_external_mk.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let local_external loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+
+let local_extern_cont loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     (cb : Parsetree.expression -> 'a) 
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim ;
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                 loc};
+         pexp_attributes = [] ;
+         pexp_loc = loc}
+)
+
+end
+module Ast_pat : sig 
+#1 "ast_pat.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.pattern
+
+val is_unit_cont : yes:'a -> no:'a -> t -> 'a
+
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]*)
+val arity_of_fun : t -> Parsetree.expression -> int
+
+
+val is_single_variable_pattern_conservative : t -> bool
+
+end = struct
+#1 "ast_pat.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = Parsetree.pattern
+
+
+let is_unit_cont ~yes ~no (p : t)  =
+  match p  with
+  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
+    -> yes 
+  | _ -> no
+
+
+(** [arity_of_fun pat e] tells the arity of 
+    expression [fun pat -> e]
+*)
+let arity_of_fun
+    (pat : Parsetree.pattern)
+    (e : Parsetree.expression) =
+  let rec aux (e : Parsetree.expression)  =
+    match e.pexp_desc with
+    | Pexp_fun ("", None, pat, e) ->
+      1 + aux e       
+    | Pexp_fun _
+      -> Location.raise_errorf
+           ~loc:e.pexp_loc "Label is not allowed in JS object"
+    | _ -> 0 in
+  is_unit_cont ~yes:0 ~no:1 pat + aux e 
+
+
+let rec is_single_variable_pattern_conservative  (p : t ) =
+  match p.ppat_desc with 
+  | Parsetree.Ppat_any 
+  | Parsetree.Ppat_var _ -> true 
+  | Parsetree.Ppat_alias (p,_) 
+  | Parsetree.Ppat_constraint (p, _) -> 
+    is_single_variable_pattern_conservative p 
+  
+  | _ -> false
+
+end
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
+
+external reraise: exn -> 'a = "%reraise"
+
+val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
+
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
+
+val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a
+
+
+
+val dump : 'a -> string 
+val pp_any : Format.formatter -> 'a -> unit 
+external id : 'a -> 'a = "%identity"
+
+(** Copied from {!Btype.hash_variant}:
+    need sync up and add test case
+ *)
+val hash_variant : string -> int
+
+end = struct
+#1 "ext_pervasives.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+external reraise: exn -> 'a = "%reraise"
+
+let finally v action f   = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let with_file_as_chan filename f = 
+  finally (open_out_bin filename) close_out f 
+
+let with_file_as_pp filename f = 
+  finally (open_out_bin filename) close_out
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) 
+
+
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
+
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt
+
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+
+
+let rec dump r =
+  if Obj.is_int r then
+    string_of_int (Obj.magic r : int)
+  else (* Block. *)
+    let rec get_fields acc = function
+      | 0 -> acc
+      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
+    in
+    let rec is_list r =
+      if Obj.is_int r then
+        r = Obj.repr 0 (* [] *)
+      else
+        let s = Obj.size r and t = Obj.tag r in
+        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
+    in
+    let rec get_list r =
+      if Obj.is_int r then
+        []
+      else
+        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
+        h :: t
+    in
+    let opaque name =
+      (* XXX In future, print the address of value 'r'.  Not possible
+       * in pure OCaml at the moment.  *)
+      "<" ^ name ^ ">"
+    in
+    let s = Obj.size r and t = Obj.tag r in
+    (* From the tag, determine the type of block. *)
+    match t with
+    | _ when is_list r ->
+      let fields = get_list r in
+      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
+    | 0 ->
+      let fields = get_fields [] s in
+      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+    | x when x = Obj.lazy_tag ->
+      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
+         * clear if very large constructed values could have the same
+         * tag. XXX *)
+      opaque "lazy"
+    | x when x = Obj.closure_tag ->
+      opaque "closure"
+    | x when x = Obj.object_tag ->
+      let fields = get_fields [] s in
+      let _clasz, id, slots =
+        match fields with
+        | h::h'::t -> h, h', t
+        | _ -> assert false
+      in
+      (* No information on decoding the class (first field).  So just print
+         * out the ID and the slots. *)
+      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
+    | x when x = Obj.infix_tag ->
+      opaque "infix"
+    | x when x = Obj.forward_tag ->
+      opaque "forward"
+    | x when x < Obj.no_scan_tag ->
+      let fields = get_fields [] s in
+      "Tag" ^ string_of_int t ^
+      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
+    | x when x = Obj.string_tag ->
+      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
+    | x when x = Obj.double_tag ->
+      string_of_float (Obj.magic r : float)
+    | x when x = Obj.abstract_tag ->
+      opaque "abstract"
+    | x when x = Obj.custom_tag ->
+      opaque "custom"
+    | x when x = Obj.custom_tag ->
+      opaque "final"
+    | x when x = Obj.double_array_tag ->
+      "[|"^
+      String.concat ";"
+        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
+      "|]"
+    | _ ->
+      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
+
+let dump v = dump (Obj.repr v)
+
+let pp_any fmt v = 
+  Format.fprintf fmt "@[%s@]"
+  (dump v )
+external id : 'a -> 'a = "%identity"
+
+
+let hash_variant s =
+  let accu = ref 0 in
+  for i = 0 to String.length s - 1 do
+    accu := 223 * !accu + Char.code s.[i]
+  done;
+  (* reduce to 31 bits *)
+  accu := !accu land (1 lsl 31 - 1);
+  (* make it signed for 64 bits architectures *)
+  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
+
+
+end
 module Ext_array : sig 
 #1 "ext_array.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -29317,8 +30837,8 @@ let parse_json_from_file s =
 # 688 "ext/ext_json_parse.ml"
 
 end
-module Ast_arg : sig 
-#1 "ast_arg.mli"
+module External_arg_spec : sig 
+#1 "external_arg_spec.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -29346,34 +30866,34 @@ module Ast_arg : sig
 type cst = private
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-  (* | Arg_js_true *)
-  (* | Arg_js_false *)
   | Arg_js_null
   | Arg_js_true
   | Arg_js_false
   | Arg_js_json of string
+
+
 type label = private
   | Label of string * cst option 
   | Empty of cst option
   | Optional of string 
   (* it will be ignored , side effect will be recorded *)
 
-type ty = 
+type attr = 
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
   | Arg_cst of cst
   | Fn_uncurry_arity of int (* annotated with [@bs.uncurry ] or [@bs.uncurry 2]*)
-    (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
+  (* maybe we can improve it as a combination of {!Asttypes.constant} and tuple *)
   | Array 
   | Extern_unit
   | Nothing
   | Ignore
   | Unwrap
 
-type kind = 
+type t = 
   {
-    arg_type : ty;
+    arg_type : attr;
     arg_label :label
   }
 
@@ -29385,10 +30905,10 @@ val empty_label : label
 val empty_lit : cst -> label 
 val label :  string -> cst option -> label
 val optional  : string -> label
-val empty_kind : ty -> kind
+val empty_kind : attr -> t
 
 end = struct
-#1 "ast_arg.ml"
+#1 "external_arg_spec.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -29429,7 +30949,7 @@ type label =
   | Optional of string 
   (* it will be ignored , side effect will be recorded *)
 
-type ty = 
+type attr = 
   | NullString of (int * string) list (* `a does not have any value*)
   | NonNullString of (int * string) list (* `a of int *)
   | Int of (int * int ) list (* ([`a | `b ] [@bs.int])*)
@@ -29442,9 +30962,9 @@ type ty =
   | Ignore
   | Unwrap
 
-type kind = 
+type t = 
   {
-    arg_type : ty;
+    arg_type : attr;
     arg_label : label
   }
 
@@ -29490,241 +31010,8 @@ let optional s = Optional s
 let empty_kind arg_type = { arg_label = empty_label ; arg_type }
 
 end
-module Ext_pervasives : sig 
-#1 "ext_pervasives.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(** Extension to standard library [Pervavives] module, safe to open 
-  *)
-
-external reraise: exn -> 'a = "%reraise"
-
-val finally : 'a -> ('a -> 'c) -> ('a -> 'b) -> 'b
-
-val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-
-val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-
-val is_pos_pow : Int32.t -> int
-
-val failwithf : loc:string -> ('a, unit, string, 'b) format4 -> 'a
-
-val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
-
-val bad_argf : ('a, unit, string, 'b) format4 -> 'a
-
-
-
-val dump : 'a -> string 
-val pp_any : Format.formatter -> 'a -> unit 
-external id : 'a -> 'a = "%identity"
-
-(** Copied from {!Btype.hash_variant}:
-    need sync up and add test case
- *)
-val hash_variant : string -> int
-
-end = struct
-#1 "ext_pervasives.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-external reraise: exn -> 'a = "%reraise"
-
-let finally v action f   = 
-  match f v with
-  | exception e -> 
-      action v ;
-      reraise e 
-  | e ->  action v ; e 
-
-let with_file_as_chan filename f = 
-  finally (open_out_bin filename) close_out f 
-
-let with_file_as_pp filename f = 
-  finally (open_out_bin filename) close_out
-    (fun chan -> 
-      let fmt = Format.formatter_of_out_channel chan in
-      let v = f  fmt in
-      Format.pp_print_flush fmt ();
-      v
-    ) 
-
-
-let  is_pos_pow n = 
-  let module M = struct exception E end in 
-  let rec aux c (n : Int32.t) = 
-    if n <= 0l then -2 
-    else if n = 1l then c 
-    else if Int32.logand n 1l =  0l then   
-      aux (c + 1) (Int32.shift_right n 1 )
-    else raise M.E in 
-  try aux 0 n  with M.E -> -1
-
-let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
-    fmt
-    
-let invalid_argf fmt = Format.ksprintf invalid_arg fmt
-
-let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
-
-
-let rec dump r =
-  if Obj.is_int r then
-    string_of_int (Obj.magic r : int)
-  else (* Block. *)
-    let rec get_fields acc = function
-      | 0 -> acc
-      | n -> let n = n-1 in get_fields (Obj.field r n :: acc) n
-    in
-    let rec is_list r =
-      if Obj.is_int r then
-        r = Obj.repr 0 (* [] *)
-      else
-        let s = Obj.size r and t = Obj.tag r in
-        t = 0 && s = 2 && is_list (Obj.field r 1) (* h :: t *)
-    in
-    let rec get_list r =
-      if Obj.is_int r then
-        []
-      else
-        let h = Obj.field r 0 and t = get_list (Obj.field r 1) in
-        h :: t
-    in
-    let opaque name =
-      (* XXX In future, print the address of value 'r'.  Not possible
-       * in pure OCaml at the moment.  *)
-      "<" ^ name ^ ">"
-    in
-    let s = Obj.size r and t = Obj.tag r in
-    (* From the tag, determine the type of block. *)
-    match t with
-    | _ when is_list r ->
-      let fields = get_list r in
-      "[" ^ String.concat "; " (Ext_list.map dump fields) ^ "]"
-    | 0 ->
-      let fields = get_fields [] s in
-      "(" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
-    | x when x = Obj.lazy_tag ->
-      (* Note that [lazy_tag .. forward_tag] are < no_scan_tag.  Not
-         * clear if very large constructed values could have the same
-         * tag. XXX *)
-      opaque "lazy"
-    | x when x = Obj.closure_tag ->
-      opaque "closure"
-    | x when x = Obj.object_tag ->
-      let fields = get_fields [] s in
-      let _clasz, id, slots =
-        match fields with
-        | h::h'::t -> h, h', t
-        | _ -> assert false
-      in
-      (* No information on decoding the class (first field).  So just print
-         * out the ID and the slots. *)
-      "Object #" ^ dump id ^ " (" ^ String.concat ", " (Ext_list.map dump slots) ^ ")"
-    | x when x = Obj.infix_tag ->
-      opaque "infix"
-    | x when x = Obj.forward_tag ->
-      opaque "forward"
-    | x when x < Obj.no_scan_tag ->
-      let fields = get_fields [] s in
-      "Tag" ^ string_of_int t ^
-      " (" ^ String.concat ", " (Ext_list.map dump fields) ^ ")"
-    | x when x = Obj.string_tag ->
-      "\"" ^ String.escaped (Obj.magic r : string) ^ "\""
-    | x when x = Obj.double_tag ->
-      string_of_float (Obj.magic r : float)
-    | x when x = Obj.abstract_tag ->
-      opaque "abstract"
-    | x when x = Obj.custom_tag ->
-      opaque "custom"
-    | x when x = Obj.custom_tag ->
-      opaque "final"
-    | x when x = Obj.double_array_tag ->
-      "[|"^
-      String.concat ";"
-        (Array.to_list (Array.map string_of_float (Obj.magic r : float array))) ^
-      "|]"
-    | _ ->
-      opaque (Printf.sprintf "unknown: tag %d size %d" t s)
-
-let dump v = dump (Obj.repr v)
-
-let pp_any fmt v = 
-  Format.fprintf fmt "@[%s@]"
-  (dump v )
-external id : 'a -> 'a = "%identity"
-
-
-let hash_variant s =
-  let accu = ref 0 in
-  for i = 0 to String.length s - 1 do
-    accu := 223 * !accu + Char.code s.[i]
-  done;
-  (* reduce to 31 bits *)
-  accu := !accu land (1 lsl 31 - 1);
-  (* make it signed for 64 bits architectures *)
-  if !accu > 0x3FFFFFFF then !accu - (1 lsl 31) else !accu
-
-
-end
-module Ast_ffi_types : sig 
-#1 "ast_ffi_types.mli"
+module External_ffi_types : sig 
+#1 "external_ffi_types.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -29788,12 +31075,12 @@ type js_module_as_fn =
     splice : bool 
   }
 
-type arg_type = Ast_arg.ty
+type arg_type = External_arg_spec.attr
 
-type arg_label = Ast_arg.label 
+type arg_label = External_arg_spec.label 
 
 
-type obj_create = Ast_arg.kind list
+type obj_create = External_arg_spec.t list
 
 type js_get =  
   { js_get_name : string   ;
@@ -29814,12 +31101,9 @@ type js_set_index = {
   js_set_index_scopes : string list 
 } 
 
-(*val empty_js_get_index : js_get_index
-val empty_js_set_index : js_set_index  *)
 
 
-type ffi = 
-  (* | Obj_create of obj_create*)
+type attr  = 
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -29842,16 +31126,17 @@ type return_wrapper =
   | Return_replaced_with_unit    
 
 type t  = 
-  | Ffi_bs of Ast_arg.kind list  *
-     return_wrapper * ffi
+  | Ffi_bs of 
+      External_arg_spec.t list  *
+      return_wrapper * attr
   | Ffi_obj_create of obj_create
   | Ffi_normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 
 
-val name_of_ffi : ffi -> string
+val name_of_ffi : attr -> string
 
-val check_ffi : ?loc:Location.t ->  ffi -> unit 
+val check_ffi : ?loc:Location.t ->  attr -> unit 
 
 val to_string : t -> string 
 
@@ -29860,7 +31145,7 @@ val from_string : string -> t
 
 
 end = struct
-#1 "ast_ffi_types.ml"
+#1 "external_ffi_types.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -29944,16 +31229,15 @@ type js_set_index = {
 (** TODO: information between [arg_type] and [arg_label] are duplicated, 
   design a more compact representation so that it is also easy to seralize by hand
 *)  
-type arg_type = Ast_arg.ty
+type arg_type = External_arg_spec.attr
 
-type arg_label = Ast_arg.label
+type arg_label = External_arg_spec.label
 
 
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type obj_create = Ast_arg.kind list
+type obj_create = External_arg_spec.t list
 
-type ffi = 
-  (* | Obj_create of obj_create *)
+type attr = 
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -29984,8 +31268,6 @@ let name_of_ffi ffi =
   | Js_global v 
     -> 
     Printf.sprintf "[@@bs.val] %S " v.name                    
-(* | Obj_create _ -> 
-   Printf.sprintf "[@@bs.obj]" *)
 
 type return_wrapper = 
   | Return_unset 
@@ -29996,9 +31278,9 @@ type return_wrapper =
   | Return_to_ocaml_bool
   | Return_replaced_with_unit    
 type t  = 
-  | Ffi_bs of Ast_arg.kind list  *
-     return_wrapper * ffi 
-  (**  [Ffi_bs(args,return,ffi) ]
+  | Ffi_bs of External_arg_spec.t list  *
+     return_wrapper * attr 
+  (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not, 
         [true] means is [unit]  
   *)
@@ -30068,7 +31350,6 @@ let check_ffi ?loc ffi =
   | Js_set  {js_set_name = name}
   | Js_get { js_get_name = name}
     ->  valid_method_name ?loc name
-  (* | Obj_create _ -> () *)
   | Js_get_index  _ (* TODO: check scopes *)
   | Js_set_index _
     -> ()
@@ -30116,89 +31397,6 @@ let from_string s : t =
         ~loc:__LOC__
         "compiler version mismatch, please do a clean build"
   else Ffi_normal    
-
-end
-module Bs_loc : sig 
-#1 "bs_loc.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Location.t = {
-  loc_start : Lexing.position;
-  loc_end : Lexing.position ; 
-  loc_ghost : bool
-} 
-
-val is_ghost : t -> bool
-val merge : t -> t -> t 
-val none : t 
-
-
-end = struct
-#1 "bs_loc.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Location.t = {
-  loc_start : Lexing.position;
-  loc_end : Lexing.position ; 
-  loc_ghost : bool
-} 
-
-let is_ghost x = x.loc_ghost
-
-let merge (l: t) (r : t) = 
-  if is_ghost l then r 
-  else if is_ghost r then l 
-  else match l,r with 
-  | {loc_start ; }, {loc_end; _} (* TODO: improve*)
-    -> 
-    {loc_start ;loc_end; loc_ghost = false}
-
-let none = Location.none
 
 end
 module Bs_hash_stubs
@@ -30785,8 +31983,8 @@ let translate ?loc name =
 
 
 end
-module Ast_external_attributes : sig 
-#1 "ast_external_attributes.mli"
+module External_process : sig 
+#1 "external_process.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -30816,7 +32014,12 @@ module Ast_external_attributes : sig
 
 
 (**
-   return value is of [pval_type, pval_prim]
+  [handle_attributes_as_string 
+  loc pval_name.txt pval_type pval_attributes pval_prim]
+  [pval_name.txt] is the name of identifier
+  [pval_prim] is the name of string literal
+  
+  return value is of [pval_type, pval_prims, new_attrs]
 *)    
 val handle_attributes_as_string : 
   Bs_loc.t ->
@@ -30829,13 +32032,17 @@ val handle_attributes_as_string :
 
 
 
-
+(** [pval_prim_of_labels labels] 
+    return [pval_prims] for FFI, it is specialized for 
+    external object which is used in 
+    {[ [%obj { x = 2; y = 1} ] ]}
+*)  
 val pval_prim_of_labels : string Asttypes.loc list -> string list
 
 
 
 end = struct
-#1 "ast_external_attributes.ml"
+#1 "external_process.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -30899,7 +32106,7 @@ let variant_can_bs_unwrap_fields row_fields =
 *)
 let get_arg_type ~nolabel optional 
     (ptyp : Ast_core_type.t) : 
-  Ast_arg.ty * Ast_core_type.t  = 
+  External_arg_spec.attr * Ast_core_type.t  = 
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
@@ -30911,13 +32118,13 @@ let get_arg_type ~nolabel optional
 
       | Some (`Int i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst(Ast_arg.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
+        Arg_cst(External_arg_spec.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
       | Some (`Str i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst (Ast_arg.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+        Arg_cst (External_arg_spec.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
       | Some (`Json_str s), others ->
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst (Ast_arg.cst_json ptyp.ptyp_loc s),
+        Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s),
         Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
 
     end 
@@ -31063,8 +32270,8 @@ type name_source =
 
 type st = 
   { val_name : name_source;
-    external_module_name : Ast_ffi_types.external_module_name option;
-    module_as_val : Ast_ffi_types.external_module_name option;
+    external_module_name : External_ffi_types.external_module_name option;
+    module_as_val : External_ffi_types.external_module_name option;
     val_send : name_source ;
     val_send_pipe : Ast_core_type.t option;    
     splice : bool ; (* mutable *)
@@ -31077,7 +32284,7 @@ type st =
     get_name : name_source ;
 
     mk_obj : bool ;
-    return_wrapper : Ast_ffi_types.return_wrapper ;
+    return_wrapper : External_ffi_types.return_wrapper ;
 
   }
 
@@ -31184,7 +32391,7 @@ let process_external_attributes
             | "bs.get_index"-> {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
-              let aux loc txt : Ast_ffi_types.return_wrapper = 
+              let aux loc txt : External_ffi_types.return_wrapper = 
                 begin match txt with 
                   | "undefined_to_opt" -> Return_undefined_to_opt
                   | "null_to_opt" -> Return_null_to_opt
@@ -31219,7 +32426,7 @@ let rec has_bs_uncurry (attrs : Ast_attributes.t) =
 
 
 let check_return_wrapper 
-    loc (wrapper : Ast_ffi_types.return_wrapper) 
+    loc (wrapper : External_ffi_types.return_wrapper) 
     result_type = 
   match wrapper with 
   | Return_identity -> wrapper
@@ -31252,7 +32459,7 @@ let handle_attributes
     (pval_prim : string ) 
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-  : Ast_core_type.t * string * Ast_ffi_types.t * Ast_attributes.t =
+  : Ast_core_type.t * string * External_ffi_types.t * Ast_attributes.t =
   (** sanity check here 
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense 
@@ -31314,7 +32521,7 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:true false ty in 
                    begin match arg_type with 
                      | Extern_unit ->  
-                       Ast_arg.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
+                       External_arg_spec.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
                      | _ ->  
                        Location.raise_errorf ~loc "expect label, optional, or unit here"
                    end 
@@ -31322,27 +32529,27 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:false false ty in 
                    begin match arg_type with 
                      | Ignore -> 
-                       Ast_arg.empty_kind arg_type, 
+                       External_arg_spec.empty_kind arg_type, 
                        (label,new_ty,attr,loc)::arg_types, result_types
                      | Arg_cst  i  -> 
                        let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = Ast_arg.label s (Some i);
+                       {arg_label = External_arg_spec.label s (Some i);
                         arg_type }, 
                        arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                        ((name , [], new_ty) :: result_types)
                      | Nothing | Array -> 
                        let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = Ast_arg.label s None ; arg_type },
+                       {arg_label = External_arg_spec.label s None ; arg_type },
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name , [], new_ty) :: result_types)
                      | Int _  -> 
                        let s = Lam_methname.translate ~loc name in
-                       {arg_label = Ast_arg.label s None; arg_type},
+                       {arg_label = External_arg_spec.label s None; arg_type},
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_int ~loc ()) :: result_types)  
                      | NullString _ -> 
                        let s = Lam_methname.translate ~loc name in
-                       {arg_label = Ast_arg.label s None; arg_type}, 
+                       {arg_label = External_arg_spec.label s None; arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_string ~loc ()) :: result_types)  
                      | Fn_uncurry_arity _ -> 
@@ -31362,22 +32569,22 @@ let handle_attributes
                    let new_ty = Ast_core_type.lift_option_type new_ty_extract in 
                    begin match arg_type with 
                      | Ignore -> 
-                       Ast_arg.empty_kind arg_type, 
+                       External_arg_spec.empty_kind arg_type, 
                        (label,new_ty,attr,loc)::arg_types, result_types
 
                      | Nothing | Array -> 
                        let s = (Lam_methname.translate ~loc name) in 
-                       {arg_label = Ast_arg.optional s; arg_type}, 
+                       {arg_label = External_arg_spec.optional s; arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, 
                        ( (name, [], Ast_comb.to_undefined_type loc new_ty_extract) ::  result_types)
                      | Int _  -> 
                        let s = Lam_methname.translate ~loc name in 
-                       {arg_label = Ast_arg.optional s ; arg_type },
+                       {arg_label = External_arg_spec.optional s ; arg_type },
                        (label,new_ty,attr,loc)::arg_types,
                        ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)                      
                      | NullString _  -> 
                        let s = Lam_methname.translate ~loc name in 
-                       {arg_label = Ast_arg.optional s ; arg_type }, 
+                       {arg_label = External_arg_spec.optional s ; arg_type }, 
                        (label,new_ty,attr,loc)::arg_types,
                        ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)                      
                      | Arg_cst _   
@@ -31442,28 +32649,28 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" label
                  | _ -> 
-                   Ast_arg.optional s, arg_type, 
+                   External_arg_spec.optional s, arg_type, 
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
              | Label s  -> 
                begin match get_arg_type ~nolabel:false false  ty with
                  | (Arg_cst ( i) as arg_type), new_ty -> 
-                   Ast_arg.label s (Some i), arg_type, arg_types
+                   External_arg_spec.label s (Some i), arg_type, arg_types
                  | arg_type, new_ty -> 
-                   Ast_arg.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   External_arg_spec.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
              | Empty -> 
                begin match get_arg_type ~nolabel:true false  ty with 
                  | (Arg_cst ( i) as arg_type), new_ty -> 
-                   Ast_arg.empty_lit i , arg_type,  arg_types
+                   External_arg_spec.empty_lit i , arg_type,  arg_types
                  | arg_type, new_ty -> 
-                   Ast_arg.empty_label, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   External_arg_spec.empty_label, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
            in
            (if i = 0 && splice  then
               match arg_type with 
               | Array  -> ()
               | _ ->  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
-           ({ Ast_arg.arg_label  ; 
+           ({ External_arg_spec.arg_label  ; 
               arg_type 
             } :: arg_type_specs,
             new_arg_types,
@@ -31479,7 +32686,7 @@ let handle_attributes
                Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
              | _ -> 
                (* more error checking *)
-               [Ast_arg.empty_kind arg_type]
+               [External_arg_spec.empty_kind arg_type]
                ,
                ["", new_ty, [], obj.ptyp_loc]
                ,0
@@ -31487,7 +32694,7 @@ let handle_attributes
 
          | {val_send_pipe = None ; _ } -> [],[], 0) in 
 
-    let ffi : Ast_ffi_types.ffi  = match st with           
+    let ffi : External_ffi_types.attr  = match st with           
       | {set_index = true;
 
          val_name = `Nm_na; 
@@ -31811,13 +33018,13 @@ let handle_attributes
         }       
         ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in 
     begin 
-      Ast_ffi_types.check_ffi ~loc ffi;
+      External_ffi_types.check_ffi ~loc ffi;
       (* result type can not be labeled *)
       (* currently we don't process attributes of 
          return type, in the future we may  *)
       let  new_result_type  =  result_type in
       (* get_arg_type ~nolabel:true false result_type in *)
-      let return_wrapper : Ast_ffi_types.return_wrapper = 
+      let return_wrapper : External_ffi_types.return_wrapper = 
         check_return_wrapper loc st.return_wrapper new_result_type
       in 
       (
@@ -31836,7 +33043,7 @@ let handle_attributes_as_string
     (typ : Ast_core_type.t) attrs v = 
   let pval_type, prim_name, ffi, processed_attrs  = 
     handle_attributes pval_loc pval_prim typ attrs v  in
-  pval_type, [prim_name; Ast_ffi_types.to_string ffi], processed_attrs
+  pval_type, [prim_name; External_ffi_types.to_string ffi], processed_attrs
 
 
 
@@ -31846,1194 +33053,15 @@ let pval_prim_of_labels labels =
       Ext_list.fold_right 
         (fun {Asttypes.loc ; txt } arg_kinds
           ->
-            let arg_label =  Ast_arg.label (Lam_methname.translate ~loc txt) None in
-            {Ast_arg.arg_type = Nothing ; 
+            let arg_label =  External_arg_spec.label (Lam_methname.translate ~loc txt) None in
+            {External_arg_spec.arg_type = Nothing ; 
              arg_label  } :: arg_kinds
         )
         labels [] in 
-    Ast_ffi_types.to_string 
+    External_ffi_types.to_string 
       (Ffi_obj_create arg_kinds)   in 
   [""; encoding]
 
-
-end
-module Ext_char : sig 
-#1 "ext_char.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(** Extension to Standard char module, avoid locale sensitivity *)
-
-val escaped : char -> string
-
-
-val valid_hex : char -> bool
-
-val is_lower_case : char -> bool
-end = struct
-#1 "ext_char.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-external string_unsafe_set : string -> int -> char -> unit
-                           = "%string_unsafe_set"
-
-external string_create: int -> string = "caml_create_string"
-
-external unsafe_chr: int -> char = "%identity"
-
-(** {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,
-    backport it here
- *)
-let escaped = function
-  | '\'' -> "\\'"
-  | '\\' -> "\\\\"
-  | '\n' -> "\\n"
-  | '\t' -> "\\t"
-  | '\r' -> "\\r"
-  | '\b' -> "\\b"
-  | ' ' .. '~' as c ->
-      let s = string_create 1 in
-      string_unsafe_set s 0 c;
-      s
-  | c ->
-      let n = Char.code c in
-      let s = string_create 4 in
-      string_unsafe_set s 0 '\\';
-      string_unsafe_set s 1 (unsafe_chr (48 + n / 100));
-      string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
-      string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
-      s
-
-
-let valid_hex x = 
-    match x with 
-    | '0' .. '9'
-    | 'a' .. 'f'
-    | 'A' .. 'F' -> true
-    | _ -> false 
-
-
-
-let is_lower_case c =
-  (c >= 'a' && c <= 'z')
-  || (c >= '\224' && c <= '\246')
-  || (c >= '\248' && c <= '\254')    
-end
-module Ast_utf8_string : sig 
-#1 "ast_utf8_string.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type error 
-
-
-type exn += Error of int  (* offset *) * error 
-
-val pp_error :  Format.formatter -> error -> unit  
-
-
-  
-(* module Interp : sig *)
-(*   val check_and_transform : int -> string -> int -> cxt -> unit *)
-(*   val transform_test : string -> segments *)
-(* end *)
-val transform_test : string -> string 
-
-val transform : Location.t -> string -> string      
-
-
-end = struct
-#1 "ast_utf8_string.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type error = 
-  | Invalid_code_point 
-  | Unterminated_backslash
-  | Invalid_escape_code of char 
-  | Invalid_hex_escape
-  | Invalid_unicode_escape
-
-let pp_error fmt err = 
-  Format.pp_print_string fmt @@  match err with 
-  | Invalid_code_point -> "Invalid code point"
-  | Unterminated_backslash -> "\\ ended unexpectedly"
-  | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c 
-  | Invalid_hex_escape -> 
-    "Invalid \\x escape"
-  | Invalid_unicode_escape -> "Invalid \\u escape"
-
-
-
-type exn += Error of int  (* offset *) * error 
-
-
-
-
-let error ~loc error = 
-  raise (Error (loc, error))
-
-(** Note the [loc] really should be the utf8-offset, it has nothing to do with our 
-    escaping mechanism
-*)
-(* we can not just print new line in ES5 
-   seems we don't need 
-   escape "\b" "\f" 
-   we need escape "\n" "\r" since 
-   ocaml multiple-line allows [\n]
-   visual input while es5 string 
-   does not*)
-
-let rec check_and_transform (loc : int ) buf s byte_offset s_len =
-  if byte_offset = s_len then ()
-  else 
-    let current_char = s.[byte_offset] in 
-    match Ext_utf8.classify current_char with 
-    | Single 92 (* '\\' *) -> 
-      escape_code (loc + 1) buf s (byte_offset+1) s_len
-    | Single 34 ->
-      Buffer.add_string buf "\\\"";
-      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len
-    | Single 39 -> 
-      Buffer.add_string buf "\\'";
-      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
-    | Single 10 ->          
-      Buffer.add_string buf "\\n";
-      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
-    | Single 13 -> 
-      Buffer.add_string buf "\\r";
-      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
-    | Single _ -> 
-      Buffer.add_char buf current_char;
-      check_and_transform (loc + 1) buf s (byte_offset + 1) s_len 
-
-    | Invalid 
-    | Cont _ -> error ~loc Invalid_code_point
-    | Leading (n,_) -> 
-      let i' = Ext_utf8.next s ~remaining:n  byte_offset in
-      if i' < 0 then 
-        error ~loc Invalid_code_point
-      else 
-        begin 
-          for k = byte_offset to i' do 
-            Buffer.add_char buf s.[k]; 
-          done;   
-          check_and_transform (loc + 1 ) buf s (i' + 1) s_len 
-        end
-(* we share the same escape sequence with js *)        
-and escape_code loc buf s offset s_len = 
-  if offset >= s_len then 
-    error ~loc Unterminated_backslash
-  else
-    Buffer.add_char buf '\\'; 
-  let cur_char = s.[offset] in
-  match cur_char with 
-  | '\\'
-  | 'b' 
-  | 't' 
-  | 'n' 
-  | 'v'
-  | 'f'
-  | 'r' 
-  | '0' 
-  | '$'
-    -> 
-    begin 
-      Buffer.add_char buf cur_char ;
-      check_and_transform (loc + 1) buf s (offset + 1) s_len 
-    end 
-  | 'u' -> 
-    begin 
-      Buffer.add_char buf cur_char;
-      unicode (loc + 1) buf s (offset + 1) s_len 
-    end 
-  | 'x' -> begin 
-      Buffer.add_char buf cur_char ; 
-      two_hex (loc + 1) buf s (offset + 1) s_len 
-    end 
-  | _ -> error ~loc (Invalid_escape_code cur_char)
-and two_hex loc buf s offset s_len = 
-  if offset + 1 >= s_len then 
-    error ~loc Invalid_hex_escape;
-  (*Location.raise_errorf ~loc "\\x need at least two chars";*)
-  let a, b = s.[offset], s.[offset + 1] in 
-  if Ext_char.valid_hex a && Ext_char.valid_hex b then 
-    begin 
-      Buffer.add_char buf a ; 
-      Buffer.add_char buf b ; 
-      check_and_transform (loc + 2) buf s (offset + 2) s_len 
-    end
-  else
-    error ~loc Invalid_hex_escape
-(*Location.raise_errorf ~loc "%c%c is not a valid hex code" a b*)
-
-and unicode loc buf s offset s_len = 
-  if offset + 3 >= s_len then 
-    error ~loc Invalid_unicode_escape
-  (*Location.raise_errorf ~loc "\\u need at least four chars"*)
-  ;
-  let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
-  if 
-    Ext_char.valid_hex a0 &&
-    Ext_char.valid_hex a1 &&
-    Ext_char.valid_hex a2 &&
-    Ext_char.valid_hex a3 then 
-    begin 
-      Buffer.add_char buf a0;
-      Buffer.add_char buf a1;
-      Buffer.add_char buf a2;
-      Buffer.add_char buf a3;  
-      check_and_transform (loc + 4) buf s  (offset + 4) s_len 
-    end 
-  else
-    error ~loc Invalid_unicode_escape 
-(*Location.raise_errorf ~loc "%c%c%c%c is not a valid unicode point"
-  a0 a1 a2 a3 *)
-(* http://www.2ality.com/2015/01/es6-strings.html
-   console.log('\uD83D\uDE80'); (* ES6*)
-   console.log('\u{1F680}');
-*)   
-
-
-
-
-
-
-
-
-
-let transform_test s =
-  let s_len = String.length s in 
-  let buf = Buffer.create (s_len * 2) in
-  check_and_transform 0 buf s 0 s_len;
-  Buffer.contents buf
-
-let transform loc s = 
-  let s_len = String.length s in 
-  let buf = Buffer.create (s_len * 2) in
-  try
-    check_and_transform 0 buf s 0 s_len;
-    Buffer.contents buf 
-  with
-    Error (offset, error)
-    ->  Location.raise_errorf ~loc "Offset: %d, %a" offset pp_error error
-
-
-
-end
-module Ast_utf8_string_interp : sig 
-#1 "ast_utf8_string_interp.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type kind =
-  | String
-  | Var
-type error = private
-  | Invalid_code_point
-  | Unterminated_backslash
-  | Invalid_escape_code of char
-  | Invalid_hex_escape
-  | Invalid_unicode_escape
-  | Unterminated_variable
-  | Unmatched_paren
-  | Invalid_syntax_of_var of string 
-
-(** Note the position is about code point *)
-type pos = { lnum : int ; offset : int ; byte_bol : int }
-
-type segment = {
-  start : pos;
-  finish : pos ;
-  kind : kind;
-  content : string ;
-} 
-
-type segments = segment list  
-
-type cxt = {
-  mutable segment_start : pos ;
-  buf : Buffer.t ;
-  s_len : int ;
-  mutable segments : segments;
-  mutable pos_bol : int; (* record the abs position of current beginning line *)
-  mutable byte_bol : int ; 
-  mutable pos_lnum : int ; (* record the line number *)
-}
-
-type exn += Error of pos *  pos * error 
-
-val empty_segment : segment -> bool
-
-val transform_test : string -> segment list
-val transform_interp : Location.t -> string -> Parsetree.expression
-
-end = struct
-#1 "ast_utf8_string_interp.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type error = 
-  | Invalid_code_point
-  | Unterminated_backslash
-  | Invalid_escape_code of char
-  | Invalid_hex_escape
-  | Invalid_unicode_escape
-  | Unterminated_variable
-  | Unmatched_paren
-  | Invalid_syntax_of_var of string 
-type kind =
-  | String
-  | Var
-
-
-(** Note the position is about code point *)
-type pos = { 
-  lnum : int ; 
-  offset : int ;
-  byte_bol : int (* Note it actually needs to be in sync with OCaml's lexing semantics *)
-}
-
-
-type segment = {
-  start : pos;
-  finish : pos ;
-  kind : kind;
-  content : string ;
-} 
-
-type segments = segment list 
-
-
-type cxt = {
-  mutable segment_start : pos ;
-  buf : Buffer.t ;
-  s_len : int ;
-  mutable segments : segments;
-  mutable pos_bol : int; (* record the abs position of current beginning line *)
-  mutable byte_bol : int ; 
-  mutable pos_lnum : int ; (* record the line number *)
-}
-
-
-type exn += Error of pos *  pos * error 
-
-let pp_error fmt err = 
-  Format.pp_print_string fmt @@  match err with 
-  | Invalid_code_point -> "Invalid code point"
-  | Unterminated_backslash -> "\\ ended unexpectedly"
-  | Invalid_escape_code c -> "Invalid escape code: " ^ String.make 1 c 
-  | Invalid_hex_escape -> 
-    "Invalid \\x escape"
-  | Invalid_unicode_escape -> "Invalid \\u escape"
-  | Unterminated_variable -> "$ unterminated"
-  | Unmatched_paren -> "Unmatched paren"
-  | Invalid_syntax_of_var s -> "`" ^s ^ "' is not a valid syntax of interpolated identifer"
-let valid_lead_identifier_char x = 
-  match x with
-  | 'a'..'z' | '_' -> true
-  | _ -> false
-
-let valid_identifier_char x = 
-  match x with
-  | 'a'..'z' 
-  | 'A'..'Z'
-  | '0'..'9'
-  | '_' | '\''-> true
-  | _ -> false
-(** Invariant: [valid_lead_identifier] has to be [valid_identifier] *)
-
-let valid_identifier s =
-  let s_len = String.length s in 
-  if s_len = 0 then false 
-  else
-    valid_lead_identifier_char s.[0] &&
-    Ext_string.for_all_from s 1  valid_identifier_char
-
-      
-let is_space x = 
-  match x with
-  | ' ' | '\n' | '\t' -> true
-  | _ -> false
-
-
-
-(**
-   FIXME: multiple line offset 
-   if there is no line offset. Note {|{j||} border will never trigger a new line
-*)
-let update_position border 
-    ({lnum ; offset;byte_bol } : pos)
-    (pos : Lexing.position)= 
-  if lnum = 0 then 
-    {pos with pos_cnum = pos.pos_cnum + border + offset  }
-    (** When no newline, the column number is [border + offset] *)
-  else 
-    {
-      pos with 
-      pos_lnum = pos.pos_lnum + lnum ;
-      pos_bol = pos.pos_cnum + border + byte_bol;
-      pos_cnum = pos.pos_cnum + border + byte_bol + offset;
-      (** when newline, the column number is [offset] *)
-    }  
-let update border
-    (start : pos) 
-    (finish : pos) (loc : Location.t) : Location.t = 
-  let start_pos = loc.loc_start in 
-  { loc  with 
-    loc_start = 
-      update_position  border start start_pos;
-    loc_end = 
-      update_position border finish start_pos
-  }
-
-
-(** Note [Var] kind can not be mpty  *)
-let empty_segment {content } =
-  Ext_string.is_empty content
-
-
-
-let update_newline ~byte_bol loc  cxt = 
-  cxt.pos_lnum <- cxt.pos_lnum + 1 ; 
-  cxt.pos_bol <- loc;
-  cxt.byte_bol <- byte_bol  
-
-let pos_error cxt ~loc error = 
-  raise (Error 
-           (cxt.segment_start,
-            { lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; byte_bol = cxt.byte_bol}, error))
-
-let add_var_segment cxt loc  = 
-  let content =  Buffer.contents cxt.buf in
-  Buffer.clear cxt.buf ;
-  let next_loc = {
-    lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
-    byte_bol = cxt.byte_bol } in
-  if valid_identifier content then 
-    begin 
-      cxt.segments <- 
-        { start = cxt.segment_start; 
-          finish =  next_loc ;
-          kind = Var; 
-          content} :: cxt.segments ;
-      cxt.segment_start <- next_loc
-    end
-  else pos_error cxt ~loc (Invalid_syntax_of_var content)
-
-let add_str_segment cxt loc   =
-  let content =  Buffer.contents cxt.buf in
-  Buffer.clear cxt.buf ;
-  let next_loc = {
-    lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; 
-    byte_bol = cxt.byte_bol } in
-  cxt.segments <- 
-    { start = cxt.segment_start; 
-      finish =  next_loc ;
-      kind = String; 
-      content} :: cxt.segments ;
-  cxt.segment_start <- next_loc
-
-
-  
-
-
-let rec check_and_transform (loc : int )  s byte_offset ({s_len; buf} as cxt : cxt) =
-  if byte_offset = s_len then
-    add_str_segment cxt loc 
-  else 
-    let current_char = s.[byte_offset] in 
-    match Ext_utf8.classify current_char with 
-    | Single 92 (* '\\' *) -> 
-      escape_code (loc + 1)  s (byte_offset+1) cxt
-    | Single 34 ->
-      Buffer.add_string buf "\\\"";
-      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
-    | Single 39 -> 
-      Buffer.add_string buf "\\'";
-      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
-    | Single 10 ->          
-
-      Buffer.add_string buf "\\n";
-      let loc = loc + 1 in 
-      let byte_offset = byte_offset + 1 in 
-      update_newline ~byte_bol:byte_offset loc cxt ; (* Note variable could not have new-line *)
-      check_and_transform loc  s byte_offset cxt
-    | Single 13 -> 
-      Buffer.add_string buf "\\r";
-      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
-    | Single 36 -> (* $ *)
-      add_str_segment cxt loc  ; 
-      let offset = byte_offset + 1 in
-      if offset >= s_len then
-        pos_error ~loc cxt  Unterminated_variable
-      else
-        let cur_char = s.[offset] in
-        if cur_char = '(' then
-          expect_var_paren  (loc + 2)  s (offset + 1) cxt
-        else
-          expect_simple_var (loc + 1)  s offset cxt
-    | Single _ -> 
-      Buffer.add_char buf current_char;
-      check_and_transform (loc + 1)  s (byte_offset + 1) cxt
-
-    | Invalid 
-    | Cont _ -> pos_error ~loc cxt Invalid_code_point
-    | Leading (n,_) -> 
-      let i' = Ext_utf8.next s ~remaining:n  byte_offset in
-      if i' < 0 then 
-        pos_error cxt ~loc Invalid_code_point
-      else 
-        begin 
-          for k = byte_offset to i' do 
-            Buffer.add_char buf s.[k]; 
-          done;   
-          check_and_transform (loc + 1 )  s (i' + 1) cxt
-        end
-(**Lets keep identifier simple, so that we could generating a function easier in the future
-   for example
-   let f = [%fn{| $x + $y = $x_add_y |}]
-*)
-and expect_simple_var  loc  s offset ({buf; s_len} as cxt) =
-  let v = ref offset in
-  (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
-  if not (offset < s_len  && valid_lead_identifier_char s.[offset]) then 
-    pos_error cxt ~loc (Invalid_syntax_of_var Ext_string.empty)
-  else 
-    begin 
-      while !v < s_len && valid_identifier_char s.[!v]  do (* TODO*)
-        let cur_char = s.[!v] in
-        Buffer.add_char buf cur_char;
-        incr v ;
-      done;
-      let added_length = !v - offset in
-      let loc = added_length + loc in 
-      add_var_segment cxt loc  ; 
-      check_and_transform loc  s (added_length + offset) cxt
-    end
-and expect_var_paren  loc  s offset ({buf; s_len} as cxt) =
-  let v = ref offset in
-  (* prerr_endline @@ Ext_pervasives.dump (s, has_paren, (is_space s.[!v]), !v); *)
-  while !v < s_len &&  s.[!v] <> ')' do 
-    let cur_char = s.[!v] in
-    Buffer.add_char buf cur_char;
-    incr v ;
-  done;
-  let added_length = !v - offset in
-  let loc = added_length +  1 + loc  in
-  if !v < s_len && s.[!v] = ')' then
-    begin 
-      add_var_segment cxt loc ; 
-      check_and_transform loc  s (added_length + 1 + offset) cxt 
-    end
-  else
-    pos_error cxt ~loc Unmatched_paren
-
-
-
-
-
-(* we share the same escape sequence with js *)        
-and escape_code loc  s offset ({ buf; s_len} as cxt) = 
-  if offset >= s_len then 
-    pos_error cxt ~loc Unterminated_backslash
-  else
-    Buffer.add_char buf '\\'; 
-  let cur_char = s.[offset] in
-  match cur_char with 
-  | '\\'
-  | 'b' 
-  | 't' 
-  | 'n' 
-  | 'v'
-  | 'f'
-  | 'r' 
-  | '0' 
-  | '$'
-    -> 
-    begin 
-      Buffer.add_char buf cur_char ;
-      check_and_transform (loc + 1)  s (offset + 1) cxt
-    end 
-  | 'u' -> 
-    begin 
-      Buffer.add_char buf cur_char;
-      unicode (loc + 1) s (offset + 1) cxt
-    end 
-  | 'x' -> begin 
-      Buffer.add_char buf cur_char ; 
-      two_hex (loc + 1)  s (offset + 1) cxt
-    end 
-  | _ -> pos_error cxt ~loc (Invalid_escape_code cur_char)
-and two_hex loc  s offset ({buf ; s_len} as cxt) = 
-  if offset + 1 >= s_len then 
-    pos_error cxt ~loc Invalid_hex_escape;
-  let a, b = s.[offset], s.[offset + 1] in 
-  if Ext_char.valid_hex a && Ext_char.valid_hex b then 
-    begin 
-      Buffer.add_char buf a ; 
-      Buffer.add_char buf b ; 
-      check_and_transform (loc + 2)  s (offset + 2) cxt
-    end
-  else
-    pos_error cxt ~loc Invalid_hex_escape
-
-
-and unicode loc  s offset ({buf ; s_len} as cxt) = 
-  if offset + 3 >= s_len then 
-    pos_error cxt ~loc Invalid_unicode_escape
-  ;
-  let a0,a1,a2,a3 = s.[offset], s.[offset+1], s.[offset+2], s.[offset+3] in
-  if 
-    Ext_char.valid_hex a0 &&
-    Ext_char.valid_hex a1 &&
-    Ext_char.valid_hex a2 &&
-    Ext_char.valid_hex a3 then 
-    begin 
-      Buffer.add_char buf a0;
-      Buffer.add_char buf a1;
-      Buffer.add_char buf a2;
-      Buffer.add_char buf a3;  
-      check_and_transform (loc + 4) s  (offset + 4) cxt
-    end 
-  else
-    pos_error cxt ~loc Invalid_unicode_escape 
-let transform_test s =
-  let s_len = String.length s in
-  let buf = Buffer.create (s_len * 2) in
-  let cxt = 
-    { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
-      buf ;
-      s_len;
-      segments = [];
-      pos_lnum = 0;          
-      byte_bol = 0;
-      pos_bol = 0;
-
-    } in 
-  check_and_transform 0 s 0 cxt;
-  List.rev cxt.segments
-
-
-(** TODO: test empty var $() $ failure, 
-    Allow identifers x.A.y *)    
-
-open Ast_helper     
-
-(** Longident.parse "Pervasives.^" *)
-let concat_ident  : Longident.t = 
-  Ldot (Lident "Pervasives", "^")
-   (* JS string concatMany *)
-    (* Ldot (Ldot (Lident "Js", "String"), "concat") *)
-
-(* Longident.parse "Js.String.make"     *)
-let to_string_ident : Longident.t = 
-    Ldot (Ldot (Lident "Js", "String"), "make")
-
-
-
-let escaped = Some Literals.escaped_j_delimiter 
-
-let concat_exp 
-  (a : Parsetree.expression)
-  (b : Parsetree.expression) : Parsetree.expression = 
-  let loc = Bs_loc.merge a.pexp_loc b.pexp_loc in 
-  Exp.apply ~loc 
-  (Exp.ident { txt =concat_ident; loc})
-    ["",a ;
-     "",b]
-
-let border = String.length "{j|"
-
-let aux loc (segment : segment) =  
-  match segment with 
-  | {start ; finish; kind ; content} 
-    -> 
-    let loc = update border start finish  loc in 
-    begin match kind with 
-      | String -> 
-        Exp.constant 
-          ~loc
-          (Const_string (content, escaped)) 
-      | Var -> 
-        Exp.apply ~loc 
-          (Exp.ident ~loc {loc ; txt = to_string_ident })
-          [
-            "",
-            Exp.ident ~loc {loc ; txt = Lident content}
-          ]
-    end 
-
-
-let transform_interp loc s = 
-  let s_len = String.length s in 
-  let buf = Buffer.create (s_len * 2 ) in 
-  try 
-    let cxt : cxt = 
-      { segment_start = {lnum = 0; offset = 0; byte_bol = 0}; 
-        buf ;
-        s_len;
-        segments = [];
-        pos_lnum = 0;          
-        byte_bol = 0;
-        pos_bol = 0;
-
-      } in 
-
-    check_and_transform 0 s 0 cxt; 
-    let rev_segments =  cxt.segments in 
-    match rev_segments with 
-    | [] -> 
-      Exp.constant ~loc 
-        (Const_string ("", Some Literals.escaped_j_delimiter)) 
-    | [ segment] -> 
-      aux loc segment 
-    | a::rest -> 
-      List.fold_left (fun (acc : Parsetree.expression)
-       (x : segment) ->
-          concat_exp (aux loc x) acc )
-        (aux loc a) rest
-  with 
-    Error (start,pos, error) 
-    -> 
-    Location.raise_errorf ~loc:(update border start pos loc )
-      "%a"  pp_error error 
-
-end
-module Ast_exp : sig 
-#1 "ast_exp.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.expression 
-
-end = struct
-#1 "ast_exp.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.expression 
-
-end
-module Ast_external : sig 
-#1 "ast_external.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-val create_local_external : Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (string * Parsetree.expression) list -> Parsetree.expression_desc
-
-val local_extern_cont : 
-  Location.t ->
-  ?pval_attributes:Parsetree.attributes ->
-  pval_prim:string list ->
-  pval_type:Parsetree.core_type ->
-  ?local_module_name:string ->
-  ?local_fun_name:string ->
-  (Parsetree.expression -> Parsetree.expression) -> Parsetree.expression_desc
-
-end = struct
-#1 "ast_external.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-let create_local_external loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     args
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
-
-let local_extern_cont loc 
-     ?(pval_attributes=[])
-     ~pval_prim
-     ~pval_type 
-     ?(local_module_name = "J")
-     ?(local_fun_name = "unsafe_expr")
-     (cb : Parsetree.expression -> 'a) 
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim ;
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     cb {pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                 loc};
-         pexp_attributes = [] ;
-         pexp_loc = loc}
-)
-
-end
-module Ast_pat : sig 
-#1 "ast_pat.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-type t = Parsetree.pattern
-
-val is_unit_cont : yes:'a -> no:'a -> t -> 'a
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]*)
-val arity_of_fun : t -> Parsetree.expression -> int
-
-
-val is_single_variable_pattern_conservative : t -> bool
-
-end = struct
-#1 "ast_pat.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Parsetree.pattern
-
-
-let is_unit_cont ~yes ~no (p : t)  =
-  match p  with
-  | {ppat_desc = Ppat_construct({txt = Lident "()"}, None)}
-    -> yes 
-  | _ -> no
-
-
-(** [arity_of_fun pat e] tells the arity of 
-    expression [fun pat -> e]
-*)
-let arity_of_fun
-    (pat : Parsetree.pattern)
-    (e : Parsetree.expression) =
-  let rec aux (e : Parsetree.expression)  =
-    match e.pexp_desc with
-    | Pexp_fun ("", None, pat, e) ->
-      1 + aux e       
-    | Pexp_fun _
-      -> Location.raise_errorf
-           ~loc:e.pexp_loc "Label is not allowed in JS object"
-    | _ -> 0 in
-  is_unit_cont ~yes:0 ~no:1 pat + aux e 
-
-
-let rec is_single_variable_pattern_conservative  (p : t ) =
-  match p.ppat_desc with 
-  | Parsetree.Ppat_any 
-  | Parsetree.Ppat_var _ -> true 
-  | Parsetree.Ppat_alias (p,_) 
-  | Parsetree.Ppat_constraint (p, _) -> 
-    is_single_variable_pattern_conservative p 
-  
-  | _ -> false
 
 end
 module Ast_util : sig 
@@ -33321,7 +33349,7 @@ let generic_apply  kind loc
         ["#method_run" ; string_arity], 
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
-    Ast_external.create_local_external loc ~pval_prim ~pval_type 
+    Ast_external_mk.local_external loc ~pval_prim ~pval_type 
       (("", fn) :: Ext_list.map (fun x -> "",x) args )
 
 
@@ -33452,7 +33480,7 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
         | `Method_callback -> 
           lift_js_method_callback loc args_type result_type
       ) in
-    Ast_external.local_extern_cont loc ~pval_prim ~pval_type 
+    Ast_external_mk.local_extern_cont loc ~pval_prim ~pval_type 
       (fun prim -> Exp.apply ~loc prim ["", body]) 
 
 let to_uncurry_fn   = 
@@ -33777,9 +33805,9 @@ let ocaml_obj_as_js_object
            label.Asttypes.txt
            label_type acc           
       ) labels label_types public_obj_type in
-  Ast_external.local_extern_cont
+  Ast_external_mk.local_extern_cont
     loc
-    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+    ~pval_prim:(External_process.pval_prim_of_labels labels)
     (fun e ->
        Exp.apply ~loc e
          (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
@@ -33799,8 +33827,8 @@ let record_as_js_object
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
-  Ast_external.create_local_external loc 
-    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+  Ast_external_mk.local_external loc 
+    ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
 
@@ -34324,16 +34352,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             (Ast_comb.to_js_re_type loc)
         | Pexp_extension ({txt = "bs.external" | "external" ; loc }, payload) -> 
           begin match Ast_payload.as_ident payload with 
-          | Some {txt = Lident x}
-            -> Ast_util.handle_external loc x
+            | Some {txt = Lident x}
+              -> Ast_util.handle_external loc x
             (* do we need support [%external gg.xx ] 
-               
+
                {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
             *)
 
-          | None | Some _ -> 
-            Location.raise_errorf ~loc 
-            "external expects a single identifier"
+            | None | Some _ -> 
+              Location.raise_errorf ~loc 
+                "external expects a single identifier"
           end 
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
@@ -34354,7 +34382,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 Ast_util.handle_external loc (strip name)  in
               let typ =
                 Ast_core_type.lift_option_type  
-                 @@                 
+                @@                 
                 if name = "_module" then
                   Typ.constr ~loc
                     { txt = Ldot (Lident "Node", "node_module") ;
@@ -34385,7 +34413,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           if Ext_string.equal delim Literals.unescaped_js_delimiter then 
             let js_str = Ast_utf8_string.transform loc s in 
             { e with pexp_desc = 
-              Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
+                       Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
             Ast_utf8_string_interp.transform_interp loc s             
           else e 
@@ -34410,10 +34438,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         (** End rewriting *)
         | Pexp_function cases -> 
           begin match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with 
-          | `Nothing, _ -> 
-            Ast_mapper.default_mapper.expr self  e 
-          | `Exn, pexp_attributes -> 
-            Ast_util.convertBsErrorFunction loc self  pexp_attributes cases
+            | `Nothing, _ -> 
+              Ast_mapper.default_mapper.expr self  e 
+            | `Exn, pexp_attributes -> 
+              Ast_util.convertBsErrorFunction loc self  pexp_attributes cases
           end
         | Pexp_fun ("", None, pat , body)
           ->
@@ -34521,8 +34549,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               end
             | _ -> 
               begin match 
-                Ext_list.exclude_with_val
-                Ast_attributes.is_bs e.pexp_attributes with 
+                  Ext_list.exclude_with_val
+                    Ast_attributes.is_bs e.pexp_attributes with 
               | false, _ -> Ast_mapper.default_mapper.expr self e 
               | true, pexp_attributes -> 
                 {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
@@ -34636,12 +34664,15 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         let pval_type, pval_prim, pval_attributes = 
           match pval_prim with 
           | [ v ] -> 
-            Ast_external_attributes.handle_attributes_as_string
+            External_process.handle_attributes_as_string
               pval_loc 
               pval_name.txt 
               pval_type 
               pval_attributes v
-          | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
+          | _ -> 
+            Location.raise_errorf 
+              ~loc:pval_loc
+              "only a single string is allowed in bs external" in
         {sigi with 
          psig_desc = 
            Psig_value
@@ -34700,12 +34731,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           let pval_type, pval_prim, pval_attributes = 
             match pval_prim with 
             | [ v] -> 
-              Ast_external_attributes.handle_attributes_as_string
+              External_process.handle_attributes_as_string
                 pval_loc
                 pval_name.txt
                 pval_type pval_attributes v
 
-            | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
+            | _ -> Location.raise_errorf 
+                     ~loc:pval_loc "only a single string is allowed in bs external" in
           {str with 
            pstr_desc = 
              Pstr_primitive

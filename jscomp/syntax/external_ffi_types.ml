@@ -202,7 +202,6 @@ let check_ffi ?loc ffi =
   | Js_set  {js_set_name = name}
   | Js_get { js_get_name = name}
     ->  valid_method_name ?loc name
-  (* | Obj_create _ -> () *)
   | Js_get_index  _ (* TODO: check scopes *)
   | Js_set_index _
     -> ()
