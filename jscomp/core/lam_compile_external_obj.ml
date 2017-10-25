@@ -40,9 +40,9 @@ module S = Js_stmt_make
 *)
 
 (* TODO: check stackoverflow *)
-let assemble_args_obj (labels : External_arg_spec.kind list)  (args : J.expression list) 
+let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression list) 
   : J.block * J.expression = 
-   let rec aux (labels : External_arg_spec.kind list) args 
+   let rec aux (labels : External_arg_spec.t list) args 
     : (Js_op.property_name * E.t ) list  * J.expression list * _ = 
     match labels, args with 
     | [] , []  ->  [], [], []
@@ -104,7 +104,7 @@ let assemble_args_obj (labels : External_arg_spec.kind list)  (args : J.expressi
       | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)     
     end) :: 
       (Ext_list.flat_map (fun 
-        ((label : External_arg_spec.kind), (arg  : J.expression )) -> 
+        ((label : External_arg_spec.t), (arg  : J.expression )) -> 
       match label with 
       | {arg_label = Optional label } -> 
         (* Need make sure whether assignment is effectful or not

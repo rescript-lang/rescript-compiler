@@ -84,7 +84,7 @@ type primitive =
   | Pccall of  Primitive.description
   | Pjs_call of
       string *  (* prim_name *)
-      External_arg_spec.kind list * (* arg_types *)
+      External_arg_spec.t list * (* arg_types *)
       Ast_ffi_types.ffi  (* ffi *)
   | Pjs_object_create of Ast_ffi_types.obj_create
   (* Exceptions *)
@@ -1428,7 +1428,7 @@ let not_ loc x  : t =
    if it does not we wrap it in a nomral way otherwise
 *)
 let rec no_auto_uncurried_arg_types 
-    (xs : External_arg_spec.kind list)  = 
+    (xs : External_arg_spec.t list)  = 
   match xs with 
   | [] -> true 
   | {arg_type = Fn_uncurry_arity _ } :: _ ->
@@ -1451,7 +1451,7 @@ let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  =
 (* TODO: sort out the order here
    consolidate {!Lam_compile_external_call.assemble_args_splice}
 *)
-let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.kind list) 
+let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.t list) 
     (args : t list ) = 
   match arg_types,args with 
   | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
@@ -1475,7 +1475,7 @@ let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.kind lis
 
 
 let handle_bs_non_obj_ffi 
-    (arg_types : External_arg_spec.kind list) 
+    (arg_types : External_arg_spec.t list) 
     (result_type : Ast_ffi_types.return_wrapper) 
     ffi 
     args 

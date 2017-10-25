@@ -66,7 +66,7 @@ type arg_type = External_arg_spec.ty
 type arg_label = External_arg_spec.label 
 
 
-type obj_create = External_arg_spec.kind list
+type obj_create = External_arg_spec.t list
 
 type js_get =  
   { js_get_name : string   ;
@@ -88,7 +88,7 @@ type js_set_index = {
 } 
 
 (*val empty_js_get_index : js_get_index
-val empty_js_set_index : js_set_index  *)
+  val empty_js_set_index : js_set_index  *)
 
 
 type ffi = 
@@ -115,8 +115,9 @@ type return_wrapper =
   | Return_replaced_with_unit    
 
 type t  = 
-  | Ffi_bs of External_arg_spec.kind list  *
-     return_wrapper * ffi
+  | Ffi_bs of 
+      External_arg_spec.t list  *
+      return_wrapper * ffi
   | Ffi_obj_create of obj_create
   | Ffi_normal 
   (* When it's normal, it is handled as normal c functional ffi call *)

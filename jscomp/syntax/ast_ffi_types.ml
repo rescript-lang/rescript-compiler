@@ -87,7 +87,7 @@ type arg_label = External_arg_spec.label
 
 
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type obj_create = External_arg_spec.kind list
+type obj_create = External_arg_spec.t list
 
 type ffi = 
   (* | Obj_create of obj_create *)
@@ -133,7 +133,7 @@ type return_wrapper =
   | Return_to_ocaml_bool
   | Return_replaced_with_unit    
 type t  = 
-  | Ffi_bs of External_arg_spec.kind list  *
+  | Ffi_bs of External_arg_spec.t list  *
      return_wrapper * ffi 
   (**  [Ffi_bs(args,return,ffi) ]
        [return] means return value is unit or not, 

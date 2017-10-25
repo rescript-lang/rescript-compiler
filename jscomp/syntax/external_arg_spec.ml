@@ -51,7 +51,7 @@ type ty =
   | Ignore
   | Unwrap
 
-type kind = 
+type t = 
   {
     arg_type : ty;
     arg_label : label

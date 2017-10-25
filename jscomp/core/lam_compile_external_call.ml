@@ -157,7 +157,7 @@ let add_eff eff e =
    @return arguments and effect
 *)
 let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
-  let rec aux (labels : External_arg_spec.kind list) args = 
+  let rec aux (labels : External_arg_spec.t list) args = 
     match labels, args with 
     | [] , [] -> empty_pair
     | { arg_label =  Empty (Some cst) ; _} :: labels  , args 

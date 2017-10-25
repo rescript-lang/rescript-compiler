@@ -25,8 +25,6 @@
 type cst = private
   | Arg_int_lit of int 
   | Arg_string_lit of string 
-  (* | Arg_js_true *)
-  (* | Arg_js_false *)
   | Arg_js_null
   | Arg_js_true
   | Arg_js_false
@@ -50,7 +48,7 @@ type ty =
   | Ignore
   | Unwrap
 
-type kind = 
+type t = 
   {
     arg_type : ty;
     arg_label :label
@@ -64,4 +62,4 @@ val empty_label : label
 val empty_lit : cst -> label 
 val label :  string -> cst option -> label
 val optional  : string -> label
-val empty_kind : ty -> kind
+val empty_kind : ty -> t
