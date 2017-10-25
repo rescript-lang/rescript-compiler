@@ -1134,18 +1134,30 @@ let if_ (a : t) (b : t) c =
     end
   | _ ->  Lifthenelse (a,b,c)
 
+
+let abs_int x = if x < 0 then - x else x   
+let no_over_flow x  = abs_int x < 0x1fff_ffff
+
+(** Make sure no int range overflow happens
+    also we only check [int]
+*)  
 let happens_to_be_diff 
     (sw_consts :
        (int * Lambda.lambda) list) : int option =   
   match sw_consts with 
   | (a, Lconst (Const_pointer (a0,_)| Const_base (Const_int a0)))::
     (b, Lconst (Const_pointer (b0,_)| Const_base (Const_int b0)))::
-    rest ->
+    rest when
+     no_over_flow a  && 
+     no_over_flow a0 && 
+     no_over_flow b && 
+     no_over_flow b0 -> 
     let diff = a0 - a in 
     if b0 - b = diff then 
       if List.for_all (fun (x, (lam : Lambda.lambda )) -> 
           match lam with 
-          | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0)) ->
+          | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0)) 
+            when no_over_flow x0 && no_over_flow x ->
             x0 - x = diff 
           | _ -> false
         ) rest  then 
@@ -2095,7 +2107,11 @@ let convert exports lam : _ * _  =
         } ->
           begin match happens_to_be_diff sw_consts with 
             | Some 0 -> e
-            | Some _ 
+            | Some i -> 
+              prim 
+              ~primitive:Paddint
+               ~args:[e; Lconst(Const_int i)]
+               Location.none
             | None ->
               Lswitch(e,  
                       {sw_failaction = None; 
