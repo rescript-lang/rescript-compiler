@@ -61,7 +61,7 @@ let variant_can_bs_unwrap_fields row_fields =
 *)
 let get_arg_type ~nolabel optional 
     (ptyp : Ast_core_type.t) : 
-  Ast_arg.ty * Ast_core_type.t  = 
+  External_arg_spec.attr * Ast_core_type.t  = 
   let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in 
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then 
@@ -73,13 +73,13 @@ let get_arg_type ~nolabel optional
 
       | Some (`Int i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst(Ast_arg.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
+        Arg_cst(External_arg_spec.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
       | Some (`Str i), others -> 
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst (Ast_arg.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
+        Arg_cst (External_arg_spec.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
       | Some (`Json_str s), others ->
         Ast_attributes.warn_unused_attributes others;
-        Arg_cst (Ast_arg.cst_json ptyp.ptyp_loc s),
+        Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s),
         Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
 
     end 
@@ -225,8 +225,8 @@ type name_source =
 
 type st = 
   { val_name : name_source;
-    external_module_name : Ast_ffi_types.external_module_name option;
-    module_as_val : Ast_ffi_types.external_module_name option;
+    external_module_name : External_ffi_types.external_module_name option;
+    module_as_val : External_ffi_types.external_module_name option;
     val_send : name_source ;
     val_send_pipe : Ast_core_type.t option;    
     splice : bool ; (* mutable *)
@@ -239,7 +239,7 @@ type st =
     get_name : name_source ;
 
     mk_obj : bool ;
-    return_wrapper : Ast_ffi_types.return_wrapper ;
+    return_wrapper : External_ffi_types.return_wrapper ;
 
   }
 
@@ -346,7 +346,7 @@ let process_external_attributes
             | "bs.get_index"-> {st with get_index = true}
             | "bs.obj" -> {st with mk_obj = true}
             | "bs.return" ->
-              let aux loc txt : Ast_ffi_types.return_wrapper = 
+              let aux loc txt : External_ffi_types.return_wrapper = 
                 begin match txt with 
                   | "undefined_to_opt" -> Return_undefined_to_opt
                   | "null_to_opt" -> Return_null_to_opt
@@ -381,7 +381,7 @@ let rec has_bs_uncurry (attrs : Ast_attributes.t) =
 
 
 let check_return_wrapper 
-    loc (wrapper : Ast_ffi_types.return_wrapper) 
+    loc (wrapper : External_ffi_types.return_wrapper) 
     result_type = 
   match wrapper with 
   | Return_identity -> wrapper
@@ -414,7 +414,7 @@ let handle_attributes
     (pval_prim : string ) 
     (type_annotation : Parsetree.core_type)
     (prim_attributes : Ast_attributes.t) (prim_name : string)
-  : Ast_core_type.t * string * Ast_ffi_types.t * Ast_attributes.t =
+  : Ast_core_type.t * string * External_ffi_types.t * Ast_attributes.t =
   (** sanity check here 
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense 
@@ -476,7 +476,7 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:true false ty in 
                    begin match arg_type with 
                      | Extern_unit ->  
-                       Ast_arg.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
+                       External_arg_spec.empty_kind arg_type, (label,new_ty,attr,loc)::arg_types, result_types
                      | _ ->  
                        Location.raise_errorf ~loc "expect label, optional, or unit here"
                    end 
@@ -484,27 +484,27 @@ let handle_attributes
                    let arg_type, new_ty = get_arg_type ~nolabel:false false ty in 
                    begin match arg_type with 
                      | Ignore -> 
-                       Ast_arg.empty_kind arg_type, 
+                       External_arg_spec.empty_kind arg_type, 
                        (label,new_ty,attr,loc)::arg_types, result_types
                      | Arg_cst  i  -> 
                        let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = Ast_arg.label s (Some i);
+                       {arg_label = External_arg_spec.label s (Some i);
                         arg_type }, 
                        arg_types, (* ignored in [arg_types], reserved in [result_types] *)
                        ((name , [], new_ty) :: result_types)
                      | Nothing | Array -> 
                        let s = (Lam_methname.translate ~loc name) in
-                       {arg_label = Ast_arg.label s None ; arg_type },
+                       {arg_label = External_arg_spec.label s None ; arg_type },
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name , [], new_ty) :: result_types)
                      | Int _  -> 
                        let s = Lam_methname.translate ~loc name in
-                       {arg_label = Ast_arg.label s None; arg_type},
+                       {arg_label = External_arg_spec.label s None; arg_type},
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_int ~loc ()) :: result_types)  
                      | NullString _ -> 
                        let s = Lam_methname.translate ~loc name in
-                       {arg_label = Ast_arg.label s None; arg_type}, 
+                       {arg_label = External_arg_spec.label s None; arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, 
                        ((name, [], Ast_literal.type_string ~loc ()) :: result_types)  
                      | Fn_uncurry_arity _ -> 
@@ -524,22 +524,22 @@ let handle_attributes
                    let new_ty = Ast_core_type.lift_option_type new_ty_extract in 
                    begin match arg_type with 
                      | Ignore -> 
-                       Ast_arg.empty_kind arg_type, 
+                       External_arg_spec.empty_kind arg_type, 
                        (label,new_ty,attr,loc)::arg_types, result_types
 
                      | Nothing | Array -> 
                        let s = (Lam_methname.translate ~loc name) in 
-                       {arg_label = Ast_arg.optional s; arg_type}, 
+                       {arg_label = External_arg_spec.optional s; arg_type}, 
                        (label,new_ty,attr,loc)::arg_types, 
                        ( (name, [], Ast_comb.to_undefined_type loc new_ty_extract) ::  result_types)
                      | Int _  -> 
                        let s = Lam_methname.translate ~loc name in 
-                       {arg_label = Ast_arg.optional s ; arg_type },
+                       {arg_label = External_arg_spec.optional s ; arg_type },
                        (label,new_ty,attr,loc)::arg_types,
                        ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_int ~loc ()) :: result_types)                      
                      | NullString _  -> 
                        let s = Lam_methname.translate ~loc name in 
-                       {arg_label = Ast_arg.optional s ; arg_type }, 
+                       {arg_label = External_arg_spec.optional s ; arg_type }, 
                        (label,new_ty,attr,loc)::arg_types,
                        ((name, [], Ast_comb.to_undefined_type loc @@ Ast_literal.type_string ~loc ()) :: result_types)                      
                      | Arg_cst _   
@@ -604,28 +604,28 @@ let handle_attributes
                      ~loc
                      "[@@bs.string] does not work with optional when it has arities in label %s" label
                  | _ -> 
-                   Ast_arg.optional s, arg_type, 
+                   External_arg_spec.optional s, arg_type, 
                    ((label, Ast_core_type.lift_option_type new_ty , attr,loc) :: arg_types) end
              | Label s  -> 
                begin match get_arg_type ~nolabel:false false  ty with
                  | (Arg_cst ( i) as arg_type), new_ty -> 
-                   Ast_arg.label s (Some i), arg_type, arg_types
+                   External_arg_spec.label s (Some i), arg_type, arg_types
                  | arg_type, new_ty -> 
-                   Ast_arg.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   External_arg_spec.label s None, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
              | Empty -> 
                begin match get_arg_type ~nolabel:true false  ty with 
                  | (Arg_cst ( i) as arg_type), new_ty -> 
-                   Ast_arg.empty_lit i , arg_type,  arg_types
+                   External_arg_spec.empty_lit i , arg_type,  arg_types
                  | arg_type, new_ty -> 
-                   Ast_arg.empty_label, arg_type, (label, new_ty,attr,loc) :: arg_types
+                   External_arg_spec.empty_label, arg_type, (label, new_ty,attr,loc) :: arg_types
                end
            in
            (if i = 0 && splice  then
               match arg_type with 
               | Array  -> ()
               | _ ->  Location.raise_errorf ~loc "[@@@@bs.splice] expect the last type to be an array");
-           ({ Ast_arg.arg_label  ; 
+           ({ External_arg_spec.arg_label  ; 
               arg_type 
             } :: arg_type_specs,
             new_arg_types,
@@ -641,7 +641,7 @@ let handle_attributes
                Location.raise_errorf ~loc:obj.ptyp_loc "[@bs.as] is not supported in bs.send type "
              | _ -> 
                (* more error checking *)
-               [Ast_arg.empty_kind arg_type]
+               [External_arg_spec.empty_kind arg_type]
                ,
                ["", new_ty, [], obj.ptyp_loc]
                ,0
@@ -649,7 +649,7 @@ let handle_attributes
 
          | {val_send_pipe = None ; _ } -> [],[], 0) in 
 
-    let ffi : Ast_ffi_types.ffi  = match st with           
+    let ffi : External_ffi_types.attr  = match st with           
       | {set_index = true;
 
          val_name = `Nm_na; 
@@ -973,13 +973,13 @@ let handle_attributes
         }       
         ->  Location.raise_errorf ~loc "Could not infer which FFI category it belongs to, maybe you forgot [%@%@bs.val]? "  in 
     begin 
-      Ast_ffi_types.check_ffi ~loc ffi;
+      External_ffi_types.check_ffi ~loc ffi;
       (* result type can not be labeled *)
       (* currently we don't process attributes of 
          return type, in the future we may  *)
       let  new_result_type  =  result_type in
       (* get_arg_type ~nolabel:true false result_type in *)
-      let return_wrapper : Ast_ffi_types.return_wrapper = 
+      let return_wrapper : External_ffi_types.return_wrapper = 
         check_return_wrapper loc st.return_wrapper new_result_type
       in 
       (
@@ -998,7 +998,7 @@ let handle_attributes_as_string
     (typ : Ast_core_type.t) attrs v = 
   let pval_type, prim_name, ffi, processed_attrs  = 
     handle_attributes pval_loc pval_prim typ attrs v  in
-  pval_type, [prim_name; Ast_ffi_types.to_string ffi], processed_attrs
+  pval_type, [prim_name; External_ffi_types.to_string ffi], processed_attrs
 
 
 
@@ -1008,12 +1008,12 @@ let pval_prim_of_labels labels =
       Ext_list.fold_right 
         (fun {Asttypes.loc ; txt } arg_kinds
           ->
-            let arg_label =  Ast_arg.label (Lam_methname.translate ~loc txt) None in
-            {Ast_arg.arg_type = Nothing ; 
+            let arg_label =  External_arg_spec.label (Lam_methname.translate ~loc txt) None in
+            {External_arg_spec.arg_type = Nothing ; 
              arg_label  } :: arg_kinds
         )
         labels [] in 
-    Ast_ffi_types.to_string 
+    External_ffi_types.to_string 
       (Ffi_obj_create arg_kinds)   in 
   [""; encoding]
 

@@ -271,16 +271,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             (Ast_comb.to_js_re_type loc)
         | Pexp_extension ({txt = "bs.external" | "external" ; loc }, payload) -> 
           begin match Ast_payload.as_ident payload with 
-          | Some {txt = Lident x}
-            -> Ast_util.handle_external loc x
+            | Some {txt = Lident x}
+              -> Ast_util.handle_external loc x
             (* do we need support [%external gg.xx ] 
-               
+
                {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
             *)
 
-          | None | Some _ -> 
-            Location.raise_errorf ~loc 
-            "external expects a single identifier"
+            | None | Some _ -> 
+              Location.raise_errorf ~loc 
+                "external expects a single identifier"
           end 
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
@@ -301,7 +301,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 Ast_util.handle_external loc (strip name)  in
               let typ =
                 Ast_core_type.lift_option_type  
-                 @@                 
+                @@                 
                 if name = "_module" then
                   Typ.constr ~loc
                     { txt = Ldot (Lident "Node", "node_module") ;
@@ -332,7 +332,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           if Ext_string.equal delim Literals.unescaped_js_delimiter then 
             let js_str = Ast_utf8_string.transform loc s in 
             { e with pexp_desc = 
-              Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
+                       Pexp_constant (Const_string (js_str, Some Literals.escaped_j_delimiter))}
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
             Ast_utf8_string_interp.transform_interp loc s             
           else e 
@@ -357,10 +357,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         (** End rewriting *)
         | Pexp_function cases -> 
           begin match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with 
-          | `Nothing, _ -> 
-            Ast_mapper.default_mapper.expr self  e 
-          | `Exn, pexp_attributes -> 
-            Ast_util.convertBsErrorFunction loc self  pexp_attributes cases
+            | `Nothing, _ -> 
+              Ast_mapper.default_mapper.expr self  e 
+            | `Exn, pexp_attributes -> 
+              Ast_util.convertBsErrorFunction loc self  pexp_attributes cases
           end
         | Pexp_fun ("", None, pat , body)
           ->
@@ -468,8 +468,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               end
             | _ -> 
               begin match 
-                Ext_list.exclude_with_val
-                Ast_attributes.is_bs e.pexp_attributes with 
+                  Ext_list.exclude_with_val
+                    Ast_attributes.is_bs e.pexp_attributes with 
               | false, _ -> Ast_mapper.default_mapper.expr self e 
               | true, pexp_attributes -> 
                 {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
@@ -583,12 +583,15 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         let pval_type, pval_prim, pval_attributes = 
           match pval_prim with 
           | [ v ] -> 
-            Ast_external_attributes.handle_attributes_as_string
+            External_process.handle_attributes_as_string
               pval_loc 
               pval_name.txt 
               pval_type 
               pval_attributes v
-          | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
+          | _ -> 
+            Location.raise_errorf 
+              ~loc:pval_loc
+              "only a single string is allowed in bs external" in
         {sigi with 
          psig_desc = 
            Psig_value
@@ -647,12 +650,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           let pval_type, pval_prim, pval_attributes = 
             match pval_prim with 
             | [ v] -> 
-              Ast_external_attributes.handle_attributes_as_string
+              External_process.handle_attributes_as_string
                 pval_loc
                 pval_name.txt
                 pval_type pval_attributes v
 
-            | _ -> Location.raise_errorf "only a single string is allowed in bs external" in
+            | _ -> Location.raise_errorf 
+                     ~loc:pval_loc "only a single string is allowed in bs external" in
           {str with 
            pstr_desc = 
              Pstr_primitive

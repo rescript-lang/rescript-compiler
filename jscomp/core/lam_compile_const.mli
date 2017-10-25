@@ -34,4 +34,4 @@
 val translate : Lam.constant -> J.expression
 
 
-val translate_arg_cst : Ast_arg.cst -> J.expression
+val translate_arg_cst : External_arg_spec.cst -> J.expression

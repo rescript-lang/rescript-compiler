@@ -34,7 +34,7 @@ module E = Js_exp_make
    better names for external module 
 *)
 let handle_external 
-    ({bundle ; bind_name} : Ast_ffi_types.external_module_name)
+    ({bundle ; bind_name} : External_ffi_types.external_module_name)
   : Ident.t * string 
   =
   match bind_name with 
@@ -47,7 +47,7 @@ let handle_external
     bundle
 
 let handle_external_opt 
-    (module_name : Ast_ffi_types.external_module_name option) 
+    (module_name : External_ffi_types.external_module_name option) 
   : (Ident.t * string) option = 
   match module_name with 
   | Some module_name -> Some (handle_external module_name) 
@@ -78,7 +78,7 @@ let handle_external_opt
      This would not work with [NonNullString]
 *)
 let ocaml_to_js_eff 
-    ({ Ast_arg.arg_label;  arg_type })
+    ({ External_arg_spec.arg_label;  arg_type })
     (raw_arg : J.expression)
   : E.t list * E.t list  =
   let arg =
@@ -93,7 +93,7 @@ let ocaml_to_js_eff
   | Fn_uncurry_arity _ -> assert false  
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
-    (if arg_label = Ast_arg.empty_label then [] else [E.unit]), 
+    (if arg_label = External_arg_spec.empty_label then [] else [E.unit]), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
@@ -157,7 +157,7 @@ let add_eff eff e =
    @return arguments and effect
 *)
 let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option = 
-  let rec aux (labels : Ast_arg.kind list) args = 
+  let rec aux (labels : External_arg_spec.t list) args = 
     match labels, args with 
     | [] , [] -> empty_pair
     | { arg_label =  Empty (Some cst) ; _} :: labels  , args 
@@ -176,7 +176,7 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
               | _ -> 
                 Location.raise_errorf ~loc:call_loc
                   {|@{<error>Error:@} function call with %s  is a primitive with [@@bs.splice], it expects its `bs.splice` argument to be a syntactic array in the call site and  all arguments to be supplied|}
-                  (Ast_ffi_types.name_of_ffi ffi)
+                  (External_ffi_types.name_of_ffi ffi)
             end
           | _ -> assert false 
         end
@@ -229,10 +229,10 @@ let translate_scoped_access scopes obj =
     List.fold_left (fun acc x -> E.dot acc x) (E.dot obj x) xs 
   
 let translate_ffi 
-    call_loc (ffi : Ast_ffi_types.ffi ) 
-    (* prim_name *)
+    call_loc 
     (cxt  : Lam_compile_context.t)
     arg_types 
+    (ffi : External_ffi_types.attr ) 
     (args : J.expression list) = 
   match ffi with 
 

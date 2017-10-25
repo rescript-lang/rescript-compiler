@@ -146,7 +146,7 @@ let generic_apply  kind loc
         ["#method_run" ; string_arity], 
         arrow ~loc "" (lift_method_type loc args_type result_type) fn_type
     in
-    Ast_external.create_local_external loc ~pval_prim ~pval_type 
+    Ast_external_mk.local_external loc ~pval_prim ~pval_type 
       (("", fn) :: Ext_list.map (fun x -> "",x) args )
 
 
@@ -277,7 +277,7 @@ let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body
         | `Method_callback -> 
           lift_js_method_callback loc args_type result_type
       ) in
-    Ast_external.local_extern_cont loc ~pval_prim ~pval_type 
+    Ast_external_mk.local_extern_cont loc ~pval_prim ~pval_type 
       (fun prim -> Exp.apply ~loc prim ["", body]) 
 
 let to_uncurry_fn   = 
@@ -602,9 +602,9 @@ let ocaml_obj_as_js_object
            label.Asttypes.txt
            label_type acc           
       ) labels label_types public_obj_type in
-  Ast_external.local_extern_cont
+  Ast_external_mk.local_extern_cont
     loc
-    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+    ~pval_prim:(External_process.pval_prim_of_labels labels)
     (fun e ->
        Exp.apply ~loc e
          (Ext_list.map2 (fun l expr -> l.Asttypes.txt, expr) labels exprs) )
@@ -624,8 +624,8 @@ let record_as_js_object
           ({Asttypes.loc = loc ; txt = x} :: labels, (x, self.expr self e) :: args, i + 1)
         | Ldot _ | Lapply _ ->  
           Location.raise_errorf ~loc "invalid js label ") label_exprs ([],[],0) in
-  Ast_external.create_local_external loc 
-    ~pval_prim:(Ast_external_attributes.pval_prim_of_labels labels)
+  Ast_external_mk.local_external loc 
+    ~pval_prim:(External_process.pval_prim_of_labels labels)
     ~pval_type:(Ast_core_type.from_labels ~loc arity labels) 
     args 
 

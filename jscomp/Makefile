@@ -241,19 +241,19 @@ SYNTAX_SRCS= \
 	ast_derive_constructor \
 	ast_derive_util \
 	ast_exp \
-	ast_external \
+	ast_external_mk\
 	ast_lift \
 	ast_literal \
 	ast_pat \
-	ast_arg \
+	external_arg_spec\
 	ast_payload \
 	ast_signature \
 	ast_structure bs_ast_iterator  \
 	ast_derive ast_comb ast_attributes\
 	ast_core_type ast_derive_dyn\
 	ast_derive_projector \
-	ast_ffi_types\
-	ast_external_attributes\
+	external_ffi_types\
+	external_process\
 	ast_util\
 	ppx_entry\
 	bs_ast_invariant

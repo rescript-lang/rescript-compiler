@@ -93,7 +93,7 @@ let rec translate (x : Lam.constant ) : J.expression =
     E.str s  (* TODO: check *)
 
 
-let translate_arg_cst (cst : Ast_arg.cst) = 
+let translate_arg_cst (cst : External_arg_spec.cst) = 
   match cst with 
    | Arg_int_lit i -> 
      E.int (Int32.of_int i)

@@ -81,16 +81,15 @@ type js_set_index = {
 (** TODO: information between [arg_type] and [arg_label] are duplicated, 
   design a more compact representation so that it is also easy to seralize by hand
 *)  
-type arg_type = Ast_arg.ty
+type arg_type = External_arg_spec.attr
 
-type arg_label = Ast_arg.label
+type arg_label = External_arg_spec.label
 
 
 (**TODO: maybe we can merge [arg_label] and [arg_type] *)
-type obj_create = Ast_arg.kind list
+type obj_create = External_arg_spec.t list
 
-type ffi = 
-  (* | Obj_create of obj_create *)
+type attr = 
   | Js_global of js_global_val 
   | Js_module_as_var of  external_module_name
   | Js_module_as_fn of js_module_as_fn
@@ -121,8 +120,6 @@ let name_of_ffi ffi =
   | Js_global v 
     -> 
     Printf.sprintf "[@@bs.val] %S " v.name                    
-(* | Obj_create _ -> 
-   Printf.sprintf "[@@bs.obj]" *)
 
 type return_wrapper = 
   | Return_unset 
@@ -133,9 +130,9 @@ type return_wrapper =
   | Return_to_ocaml_bool
   | Return_replaced_with_unit    
 type t  = 
-  | Ffi_bs of Ast_arg.kind list  *
-     return_wrapper * ffi 
-  (**  [Ffi_bs(args,return,ffi) ]
+  | Ffi_bs of External_arg_spec.t list  *
+     return_wrapper * attr 
+  (**  [Ffi_bs(args,return,attr) ]
        [return] means return value is unit or not, 
         [true] means is [unit]  
   *)
