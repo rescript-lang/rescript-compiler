@@ -213,8 +213,8 @@ $(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi
 $(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj
 
 # It is okay to test deprecated API
-COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error A+8-3-30-26 
-COMPFLAGS+=  -bs-no-version-header -absname -bs-no-error-unused-attribute -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform -bs-package-output commonjs:jscomp/test
+COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error A+8-3-30-26-101 
+COMPFLAGS+=  -bs-no-version-header -absname -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform -bs-package-output commonjs:jscomp/test
 
 
 $(TESTS): $(CAMLC)

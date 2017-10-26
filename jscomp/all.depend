@@ -203,8 +203,8 @@ syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
     syntax/ast_derive.cmi
 syntax/ast_comb.cmx : ext/ext_list.cmx syntax/ast_literal.cmx \
     syntax/ast_comb.cmi
-syntax/ast_attributes.cmx : ext/ext_string.cmx common/bs_warnings.cmx \
-    syntax/bs_syntaxerr.cmx syntax/ast_payload.cmx syntax/ast_attributes.cmi
+syntax/ast_attributes.cmx : ext/ext_string.cmx syntax/bs_syntaxerr.cmx \
+    syntax/ast_payload.cmx syntax/ast_attributes.cmi
 syntax/ast_core_type.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
     syntax/ast_comb.cmx syntax/ast_core_type.cmi
 syntax/ast_derive_dyn.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
@@ -777,7 +777,7 @@ ounit_tests/ounit_ident_mask_tests.cmx : ounit/oUnit.cmx \
 ounit_tests/ounit_cmd_util.cmx : ext/literals.cmx \
     ounit_tests/ounit_cmd_util.cmi
 ounit_tests/ounit_cmd_tests.cmx : ounit_tests/ounit_cmd_util.cmx \
-    ounit/oUnit.cmx ext/literals.cmx ext/ext_string.cmx
+    ounit/oUnit.cmx ext/ext_string.cmx
 ounit_tests/ounit_ffi_error_debug_test.cmx : ounit_tests/ounit_cmd_util.cmx \
     ounit/oUnit.cmx ext/ext_string.cmx
 ounit_tests/ounit_unicode_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \

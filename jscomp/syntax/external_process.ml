@@ -365,7 +365,7 @@ let process_external_attributes
                     | _ ->
                       Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
                   end
-            | _ -> (Bs_warnings.warn_unused_attribute loc txt; st)
+            | _ -> (Location.prerr_warning loc (Bs_unused_attribute txt); st)
           end, attrs
         else (st , attr :: attrs)
     )

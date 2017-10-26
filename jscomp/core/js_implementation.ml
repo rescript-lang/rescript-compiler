@@ -20,7 +20,7 @@ open Compenv
 
 let fprintf = Format.fprintf
 
-
+let dummy_unused_attribute : Warnings.t = (Bs_unused_attribute "")
 
 let print_if ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg;
@@ -41,7 +41,7 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
     end;
   if !Js_config.syntax_only then () else 
     begin 
-      if not @@ !Js_config.no_warn_unused_bs_attribute then 
+      if Warnings.is_active dummy_unused_attribute then 
         Bs_ast_invariant.emit_external_warnings.signature Bs_ast_invariant.emit_external_warnings ast ;
       if Js_config.get_diagnose () then
         Format.fprintf Format.err_formatter "Building %s@." sourcefile;    
@@ -87,7 +87,7 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
   if !Js_config.syntax_only then () else 
     begin
 
-      if not @@ !Js_config.no_warn_unused_bs_attribute then 
+      if Warnings.is_active dummy_unused_attribute then 
         Bs_ast_invariant.emit_external_warnings.structure Bs_ast_invariant.emit_external_warnings ast ;
       if Js_config.get_diagnose () then
         Format.fprintf Format.err_formatter "Building %s@." sourcefile;      

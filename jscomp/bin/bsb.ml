@@ -9654,7 +9654,7 @@ type t = {
   error : warning_error
 }
 
-let default_warning_flag =  "-w -30-40+6+7+27+32..39+44+45"
+let default_warning_flag =  "-w -30-40+6+7+27+32..39+44+45+101"
 
 let get_warning_flag x = 
   default_warning_flag ^ 
