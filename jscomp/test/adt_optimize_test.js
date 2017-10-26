@@ -3,15 +3,11 @@
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(x) {
-  switch (x) {
-    case 0 : 
-        return 1;
-    case 1 : 
-        return 2;
-    case 2 : 
-        return 3;
-    
-  }
+  return x + 1 | 0;
+}
+
+function f_0(x) {
+  return x - 1 | 0;
 }
 
 function f2(param) {
@@ -164,7 +160,7 @@ function f11(x) {
           Caml_builtin_exceptions.assert_failure,
           [
             "adt_optimize_test.ml",
-            149,
+            155,
             9
           ]
         ];
@@ -174,6 +170,7 @@ function f11(x) {
 }
 
 exports.f   = f;
+exports.f_0 = f_0;
 exports.f2  = f2;
 exports.f3  = f3;
 exports.f4  = f4;

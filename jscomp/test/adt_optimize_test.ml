@@ -9,7 +9,13 @@ let f x  =
   | C ->  3
 
 
+let f_0 x = 
+  match x with 
+  | A -> -1 
+  | B -> 0 
+  | C -> 1 
 
+  
 type t1 = 
   | T000
   | T001
