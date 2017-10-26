@@ -1408,6 +1408,7 @@ val backup: unit -> state
 val restore: state -> unit
 
 
+val message : t -> string 
 val number: t -> int
 val super_print : (t -> string) -> formatter -> t -> unit;;
 
