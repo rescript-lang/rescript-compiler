@@ -285,6 +285,19 @@
                 }
             }
         },
+        "refmt-specs": {
+            "oneOf": [
+                {
+                    "type": "number",
+                    "enum": [2, 3],
+                    "description": "Reason syntax version to use. Prefer 3. Default: 2, for backward-compatiblity"
+                },
+                {
+                    "type": "string",
+                    "description": "(Usually not needed) Alternative path to `refmt`, the Reason syntax binary. Default: path to the `refmt.exe` BuckleScript provides out of the box"
+                }
+            ]
+        },
         "bsc-flags": {
             "oneOf": [
                 {
@@ -417,8 +430,8 @@
             "description": "(Not needed usually) external include directories, which will be applied `-I` to all compilation units"
         },
         "refmt": {
-            "type": "string",
-            "description": "(Not needed usually) alternative path to `refmt` for Reason syntax, for example: `reason/refmt_impl.native`. Default: the `refmt.exe` BuckleScript provides out of the box"
+            "$ref": "#/definitions/refmt-specs",
+            "description": "Reason syntax configuration"
         },
         "refmt-flags": {
             "type": "array",
