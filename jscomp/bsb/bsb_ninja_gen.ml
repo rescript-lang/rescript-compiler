@@ -45,7 +45,7 @@ let merge_module_info_map acc sources : Bsb_db.t =
 let bsc_exe = "bsc.exe"
 let bsb_helper_exe = "bsb_helper.exe"
 let dash_i = "-I"
-let refmt_exe = "refmt.exe"
+let refmt2_exe = "refmt.exe"
 let dash_ppx = "-ppx"
 
 
@@ -131,7 +131,7 @@ let output_ninja_and_namespace_map
           Bsb_ninja_global_vars.ppx_flags, ppx_flags;
           Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
           Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
-          Bsb_ninja_global_vars.refmt, (match refmt with None -> bsc_dir // refmt_exe | Some x -> x) ;
+          Bsb_ninja_global_vars.refmt, (match refmt with None -> bsc_dir // refmt2_exe | Some x -> x) ;
           Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag
           ; (* make it configurable in the future *)
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
