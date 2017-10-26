@@ -88,14 +88,6 @@ let () =
 
 
 
-let warn_unused_attribute loc txt =
-  if !Js_config.no_error_unused_bs_attribute then 
-    begin 
-      print_string_warning loc ( Literals.unused_attribute  ^ txt ^ " \n" );
-      Format.pp_print_flush warning_formatter ()
-    end
-  else 
-    raise (Error(loc, Unused_attribute txt))
 
 let warn_missing_primitive loc txt =      
   if not @@ !Js_config.no_warn_unimplemented_external then

@@ -29,11 +29,6 @@ type t =
 
 val prerr_warning : Location.t -> t -> unit
 
-(**It will always warn not relevant to whether {!Js_config.warn_unused_attribute} set or not
-   User should check it first. 
-   The reason is that we will do a global check first, then start warning later
-*)
-val warn_unused_attribute : Location.t -> string -> unit
 
 val warn_missing_primitive : Location.t -> string -> unit 
 

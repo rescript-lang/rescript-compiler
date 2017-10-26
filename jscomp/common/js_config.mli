@@ -64,8 +64,8 @@ val default_gen_tds : bool ref
 val no_builtin_ppx_ml : bool ref 
 val no_builtin_ppx_mli : bool ref 
 val no_warn_ffi_type : bool ref 
-val no_warn_unused_bs_attribute : bool ref 
-val no_error_unused_bs_attribute : bool ref 
+
+
 val no_warn_unimplemented_external : bool ref 
 
 (** check-div-by-zero option *)
