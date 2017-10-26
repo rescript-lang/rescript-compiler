@@ -20,7 +20,7 @@
     "reason-react": ">=0.2.1"
   },
   "devDependencies": {
-    "bs-platform": "^1.9.3",
-    "webpack": "^1.14.0"
+    "bs-platform": "^1.10.3",
+    "webpack": "^3.8.1"
   }
 }
