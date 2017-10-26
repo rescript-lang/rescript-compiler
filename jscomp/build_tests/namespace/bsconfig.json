@@ -1,7 +1,10 @@
 {
   "name": "namespace",
   "version": "0.1.0",
-  "sources": "src",
+  "sources": {
+    "dir" : "src",
+    "subdirs" : true
+  },
   "namespace": true,
   "package-specs":{
     "module": "commonjs",

@@ -9050,7 +9050,10 @@ type  file_group =
     generators : build_generator list;
   } 
 
-
+(** when [is_empty file_group]
+    we don't need issue [-I] [-S] in [.merlin] file
+*)  
+val is_empty : file_group -> bool 
 
 type t = 
   { files :  file_group list ;
@@ -9164,6 +9167,12 @@ type  file_group =
     *)
   } 
 
+let is_empty (x : file_group) = 
+  String_map.is_empty x.sources &&
+  x.resources = [] &&
+  x.generators = []
+
+  
 (**
     [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
      we need add a new line in the end,
@@ -10971,7 +10980,7 @@ let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
 
 (* No need for [-warn-error] in merlin  *)     
 let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=     
-    merlin_flg ^ Bsb_warning.get_warning_flag warning
+  merlin_flg ^ Bsb_warning.get_warning_flag warning
 
 
 let merlin_file_gen ~cwd
@@ -11039,7 +11048,7 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer path ;
       );
     bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    |> List.iter (fun package ->
+    |> List.iter (fun package ->    
         let path = package.Bsb_config_types.package_install_path in
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
@@ -11048,10 +11057,13 @@ let merlin_file_gen ~cwd
       );
 
     res_files |> List.iter (fun (x : Bsb_parse_sources.file_group) -> 
-        Buffer.add_string buffer merlin_s;
-        Buffer.add_string buffer x.dir ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+        if not (Bsb_parse_sources.is_empty x) then 
+          begin
+            Buffer.add_string buffer merlin_s;
+            Buffer.add_string buffer x.dir ;
+            Buffer.add_string buffer merlin_b;
+            Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+          end
       ) ;
     Buffer.add_string buffer "\n";
     revise_merlin (cwd // merlin) buffer 
@@ -12468,11 +12480,14 @@ let output_ninja_and_namespace_map
       let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
         let bs_group, source_dirs,static_resources  =
-          List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
+          List.fold_left (
+            fun (acc, dirs,acc_resources) 
+              ({Bsb_parse_sources.sources ; dir; resources } as x : Bsb_parse_sources.file_group) ->
               merge_module_info_map  acc  sources ,  
-              dir::dirs , 
-              Ext_list.map_append (fun x -> dir // x ) resources  acc_resources
-            ) (String_map.empty,[],[]) bs_file_groups in
+              (if Bsb_parse_sources.is_empty x then dirs else  dir::dirs) , 
+              ( if resources = [] then acc_resources
+                else Ext_list.map_append (fun x -> dir // x ) resources  acc_resources)
+          ) (String_map.empty,[],[]) bs_file_groups in
         Bsb_db.sanity_check bs_group;    
         Bsb_db.write_build_cache 
           ~dir:(cwd // Bsb_config.lib_bs) [|bs_group|] ;
@@ -12667,6 +12682,8 @@ let regenerate_ninja
           (bsc_dir // bsppx_exe) config;       
         Bsb_ninja_gen.output_ninja_and_namespace_map 
           ~cwd ~bsc_dir ~not_dev config ;         
+        (* PR2184: we still need record empty dir 
+            since it may add files in the future *)  
         Bsb_ninja_check.record ~cwd ~file:output_deps 
         (Literals.bsconfig_json::config.globbed_dirs) ;
         Some config 

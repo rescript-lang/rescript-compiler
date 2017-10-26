@@ -161,11 +161,14 @@ let output_ninja_and_namespace_map
       let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
       if number_of_dev_groups = 0 then
         let bs_group, source_dirs,static_resources  =
-          List.fold_left (fun (acc, dirs,acc_resources) ({Bsb_parse_sources.sources ; dir; resources }) ->
+          List.fold_left (
+            fun (acc, dirs,acc_resources) 
+              ({Bsb_parse_sources.sources ; dir; resources } as x : Bsb_parse_sources.file_group) ->
               merge_module_info_map  acc  sources ,  
-              dir::dirs , 
-              Ext_list.map_append (fun x -> dir // x ) resources  acc_resources
-            ) (String_map.empty,[],[]) bs_file_groups in
+              (if Bsb_parse_sources.is_empty x then dirs else  dir::dirs) , 
+              ( if resources = [] then acc_resources
+                else Ext_list.map_append (fun x -> dir // x ) resources  acc_resources)
+          ) (String_map.empty,[],[]) bs_file_groups in
         Bsb_db.sanity_check bs_group;    
         Bsb_db.write_build_cache 
           ~dir:(cwd // Bsb_config.lib_bs) [|bs_group|] ;

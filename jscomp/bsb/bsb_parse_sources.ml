@@ -54,6 +54,12 @@ type  file_group =
     *)
   } 
 
+let is_empty (x : file_group) = 
+  String_map.is_empty x.sources &&
+  x.resources = [] &&
+  x.generators = []
+
+  
 (**
     [intervals] are used for side effect so we can patch `bsconfig.json` to add new files 
      we need add a new line in the end,
