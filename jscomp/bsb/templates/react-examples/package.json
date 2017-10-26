@@ -1,7 +1,7 @@
 {
-  "name": "react-template",
+  "name": "${bsb:name}",
   "private": true,
-  "version": "0.1.0",
+  "version": "${bsb:proj-version}",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
     "reason-react": ">=0.2.1"
   },
   "devDependencies": {
-    "bs-platform": "^1.10.3",
-    "webpack": "^3.8.1"
+    "bs-platform": "^${bsb:bs-version}",
+    "webpack": "^1.14.0"
   }
 }

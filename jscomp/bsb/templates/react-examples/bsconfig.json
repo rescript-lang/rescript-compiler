@@ -3,14 +3,14 @@
   comma. If this screws with your editor highlighting, please tell us by filing
   an issue! */
 {
-  "name": "react-template",
-  "reason": {"react-jsx" : 2},
+  "name" : "${bsb:name}",
+  "reason" : {"react-jsx" : 2},
   "bs-dependencies": ["reason-react"],
-  "package-specs": [{
-    "module": "commonjs",
-    "in-source": true
-  }],
-  "sources": ["src"],
-  "namespace": true,
-  "suffix": ".bs.js"
+  "sources": [
+    {
+      "dir": "src",
+      "subdirs": ["async", "interop", "simple"]
+    }
+  ],
+  "namespace": true
 }
