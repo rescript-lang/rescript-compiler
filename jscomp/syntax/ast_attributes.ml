@@ -270,5 +270,5 @@ let bs_method : attr
 let warn_unused_attributes attrs = 
   if attrs <> [] then 
     List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
-        Bs_warnings.warn_unused_attribute loc txt 
+      Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
       ) attrs

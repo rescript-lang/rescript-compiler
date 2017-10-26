@@ -33,7 +33,7 @@ val prerr_warning : Location.t -> t -> unit
    User should check it first. 
    The reason is that we will do a global check first, then start warning later
 *)
-val warn_unused_attribute : Location.t -> string -> unit
+(* val warn_unused_attribute : Location.t -> string -> unit *)
 
 val warn_missing_primitive : Location.t -> string -> unit 
 
