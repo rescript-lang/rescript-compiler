@@ -5,12 +5,16 @@
 {
   "name": "react-template",
   "reason": {"react-jsx" : 2},
-  "bs-dependencies": ["reason-react"],
+  "sources": [
+    "src"
+  ],
   "package-specs": [{
     "module": "commonjs",
     "in-source": true
   }],
-  "sources": ["src"],
+  "suffix": ".bs.js",
   "namespace": true,
-  "suffix": ".bs.js"
+  "bs-dependencies": [
+    "reason-react"
+  ]
 }
