@@ -13,7 +13,7 @@ function clean() {
 }
 function verifyIsCleanWorkTree() {
     var output = p.execSync(`git status`, root_config)
-    if (output.includes('nothing to commit, working tree clean')) {
+    if (output.includes('nothing to commit')) {
         console.log(`still clean tree`)
 
     } else {
