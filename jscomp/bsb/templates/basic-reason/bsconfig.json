@@ -6,7 +6,12 @@
   "sources": [
     "src"
   ],
-  "bs-dependencies" : [
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": true
+  },
+  "suffix": ".bs.js",
+  "bs-dependencies": [
       // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.
   ],
   "namespace": true

@@ -35,9 +35,10 @@ let root = OCamlRes.Res.([
       \  \"keywords\": [\n\
       \    \"BuckleScript\"\n\
       \  ],\n\
+      \  \"author\": \"\",\n\
       \  \"license\": \"MIT\",\n\
       \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
       \  }\n\
        }") ;
     File ("bsconfig.json",
@@ -47,12 +48,12 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
-      \  \"package-specs\" : {\n\
+      \  \"package-specs\": {\n\
       \    \"module\": \"commonjs\",\n\
       \    \"in-source\": true\n\
       \  },\n\
       \  \"suffix\": \".bs.js\",\n\
-      \  \"bs-dependencies\" : [\n\
+      \  \"bs-dependencies\": [\n\
       \      // add your bs-dependencies here \n\
       \  ]\n\
        }") ;
@@ -198,9 +199,10 @@ let root = OCamlRes.Res.([
       \  \"keywords\": [\n\
       \    \"BuckleScript\"\n\
       \  ],\n\
+      \  \"author\": \"\",\n\
       \  \"license\": \"MIT\",\n\
       \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
       \  }\n\
        }\n\
        ") ;
@@ -213,7 +215,12 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
-      \  \"bs-dependencies\" : [\n\
+      \  \"package-specs\": {\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  },\n\
+      \  \"suffix\": \".bs.js\",\n\
+      \  \"bs-dependencies\": [\n\
       \      // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.\n\
       \  ],\n\
       \  \"namespace\": true\n\
@@ -222,6 +229,7 @@ let root = OCamlRes.Res.([
     File (".gitignore",
       ".DS_Store\n\
        .merlin\n\
+       .bsb.lock\n\
        npm-debug.log\n\
        /lib/bs/\n\
        /node_modules/\n\
@@ -272,35 +280,27 @@ let root = OCamlRes.Res.([
       \  \"keywords\": [\n\
       \    \"BuckleScript\"\n\
       \  ],\n\
+      \  \"author\": \"\",\n\
       \  \"license\": \"MIT\",\n\
       \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
       \  }\n\
        }") ;
     File ("bsconfig.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
       \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"sources\": [\n\
-      \    {\n\
-      \      \"dir\": \"src\",\n\
-      \      \"generators\": [\n\
-      \        {\n\
-      \          \"name\": \"cpp\",\n\
-      \          \"edge\": [\n\
-      \            \"test.ml\", \":\", \"test.cpp.ml\"\n\
-      \          ]\n\
-      \        }\n\
-      \      ]\n\
-      \    }\n\
-      \    \n\
-      \  ],\n\
-      \  \"generators\": [\n\
-      \    {\n\
-      \      \"name\" : \"cpp\",\n\
-      \      \"command\": \"sed 's/OCAML/3/' $in > $out\"\n\
-      \    }\n\
-      \  ],\n\
+      \  \"sources\": [{\n\
+      \    \"dir\": \"src\",\n\
+      \    \"generators\": [{\n\
+      \      \"name\": \"cpp\",\n\
+      \      \"edge\": [\"test.ml\", \":\", \"test.cpp.ml\"]\n\
+      \    }]\n\
+      \  }],\n\
+      \  \"generators\": [{\n\
+      \    \"name\" : \"cpp\",\n\
+      \    \"command\": \"sed 's/OCAML/3/' $in > $out\"\n\
+      \  }],\n\
       \  \"bs-dependencies\" : [\n\
       \      // add your bs-dependencies here \n\
       \  ]\n\
@@ -348,6 +348,7 @@ let root = OCamlRes.Res.([
       \  \"keywords\": [\n\
       \    \"BuckleScript\"\n\
       \  ],\n\
+      \  \"author\": \"\",\n\
       \  \"license\": \"MIT\",\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
@@ -359,10 +360,12 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\"src\"]\n\
        }") ;
     File (".gitignore",
-      "lib\n\
-       node_modules\n\
+      ".DS_Store\n\
        .merlin\n\
-       npm-debug.log")]) ;
+       .bsb.lock\n\
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/")]) ;
   Dir ("node", [
     Dir ("src", [
       File ("demo.ml",
@@ -398,9 +401,10 @@ let root = OCamlRes.Res.([
       \  \"keywords\": [\n\
       \    \"BuckleScript\"\n\
       \  ],\n\
+      \  \"author\": \"\",\n\
       \  \"license\": \"MIT\",\n\
       \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"${bsb:bs-version}\"\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
       \  }\n\
        }") ;
     File ("bsconfig.json",
@@ -410,13 +414,12 @@ let root = OCamlRes.Res.([
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\
-      \  \"package-specs\":\n\
-      \    {\n\
-      \      \"module\": \"commonjs\",\n\
-      \      \"in-source\": true\n\
-      \    }\n\
-      \  ,\n\
-      \  \"bs-dependencies\" : [\n\
+      \  \"package-specs\": {\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  },\n\
+      \  \"suffix\": \".bs.js\",\n\
+      \  \"bs-dependencies\": [\n\
       \      // add your bs-dependencies here \n\
       \  ]\n\
        }") ;
@@ -447,6 +450,122 @@ let root = OCamlRes.Res.([
        .vscode\n\
        .merlin")]) ;
   Dir ("react", [
+    File ("webpack.config.js",
+      "const path = require('path');\n\
+       \n\
+       module.exports = {\n\
+      \  entry: './src/index.bs.js',\n\
+      \  output: {\n\
+      \    path: path.join(__dirname, \"build\"),\n\
+      \    filename: 'index.js',\n\
+      \  },\n\
+       };\n\
+       ") ;
+    Dir ("src", [
+      File ("page.re",
+        "/* This is the basic component. */\n\
+         let component = ReasonReact.statelessComponent \"Page\";\n\
+         \n\
+         /* Your familiar handleClick from ReactJS. This mandatorily takes the payload,\n\
+        \   then the `self` record, which contains state (none here), `handle`, `reduce`\n\
+        \   and other utilities */\n\
+         let handleClick _event _self => Js.log \"clicked!\";\n\
+         \n\
+         /* `make` is the function that mandatorily takes `children` (if you want to use\n\
+        \   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:\n\
+         \n\
+        \   `<Page message=\"hello\" />`\n\
+         \n\
+        \   Which desugars to\n\
+         \n\
+        \   `ReasonReact.element (Page.make message::\"hello\" [||])` */\n\
+         let make ::message _children => {\n\
+        \  ...component,\n\
+        \  render: fun self =>\n\
+        \    <div onClick=(self.handle handleClick)> (ReasonReact.stringToElement message) </div>\n\
+         };\n\
+         ") ;
+      File ("index.re",
+        "ReactDOMRe.renderToElementWithId <Page message=\"Hello!\" /> \"index\";\n\
+         ") ;
+      File ("index.html",
+        "<!DOCTYPE html>\n\
+         <html lang=\"en\">\n\
+         <head>\n\
+        \  <meta charset=\"UTF-8\">\n\
+        \  <title>Pure Reason Example</title>\n\
+         </head>\n\
+         <body>\n\
+        \  <div id=\"index\"></div>\n\
+        \  <script src=\"../build/index.js\"></script>\n\
+         </body>\n\
+         </html>\n\
+         ")]) ;
+    File ("README.md",
+      "# ${bsb:name}\n\
+       \n\
+       Run this project:\n\
+       \n\
+       ```\n\
+       npm link bs-platform\n\
+       npm install\n\
+       npm start\n\
+       # in another tab\n\
+       npm run webpack\n\
+       ```\n\
+       \n\
+       After you see the webpack compilation succeed (the `npm run webpack` step), open up the nested html files in `src/*` (**no server needed!**). Then modify whichever file in `src` and refresh the page to see the changes.\n\
+       ") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"start\": \"bsb -make-world -w\",\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
+      \    \"webpack\": \"webpack -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"dependencies\": {\n\
+      \    \"react\": \"^15.4.2\",\n\
+      \    \"react-dom\": \"^15.4.2\",\n\
+      \    \"reason-react\": \">=0.2.1\"\n\
+      \  },\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
+      \    \"webpack\": \"^3.8.1\"\n\
+      \  }\n\
+       }\n\
+       ") ;
+    File ("bsconfig.json",
+      "/* This is the BuckleScript configuration file. Note that this is a comment;\n\
+      \  BuckleScript comes with a JSON parser that supports comments and trailing\n\
+      \  comma. If this screws with your editor highlighting, please tell us by filing\n\
+      \  an issue! */\n\
+       {\n\
+      \  \"name\": \"react-template\",\n\
+      \  \"reason\": {\"react-jsx\" : 2},\n\
+      \  \"sources\": [\n\
+      \    \"src\"\n\
+      \  ],\n\
+      \  \"package-specs\": [{\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  }],\n\
+      \  \"suffix\": \".bs.js\",\n\
+      \  \"namespace\": true,\n\
+      \  \"bs-dependencies\": [\n\
+      \    \"reason-react\"\n\
+      \  ]\n\
+       }\n\
+       ")]) ;
+  Dir ("react-examples", [
     File ("webpack.config.js",
       "const path = require('path');\n\
        \n\
