@@ -50,6 +50,7 @@ let cautious f ppf arg =
   try f ppf arg with
     Ellipsis -> fprintf ppf "..."
 
+#if defined BS_NO_COMPILER_PATCH then
 let rec print_ident ppf =
   function
     Oide_ident s -> pp_print_string ppf s
@@ -57,6 +58,15 @@ let rec print_ident ppf =
       print_ident ppf id; pp_print_char ppf '.'; pp_print_string ppf s
   | Oide_apply (id1, id2) ->
       fprintf ppf "%a(%a)" print_ident id1 print_ident id2
+#else
+let rec print_ident ppf =
+  function
+    Oide_ident s -> !Oprint.out_ident ppf s
+  | Oide_dot (id, s) ->
+      print_ident ppf id; pp_print_char ppf '.'; !Oprint.out_ident ppf s
+  | Oide_apply (id1, id2) ->
+      fprintf ppf "%a(%a)" print_ident id1 print_ident id2
+#end
 
 let parenthesized_ident name =
   (List.mem name ["or"; "mod"; "land"; "lor"; "lxor"; "lsl"; "lsr"; "asr"])
@@ -633,12 +643,12 @@ and print_out_sig_item ppf =
         [] -> ()
       | s :: sl ->
           fprintf ppf "@ = \"%s\"" s;
-          List.iter (fun s ->
+          List.iter (fun s -> 
     (* TODO: in general, we should print bs attributes, some attributes like
       bs.splice does need it *)
     let len = String.length s in
     if len >= 3 && s.[0] = 'B' && s.[1] = 'S' && s.[2] = ':' then
-      fprintf ppf "@ \"BuckleScript External\""
+      fprintf ppf "@ \"BuckleScript External\"" 
     else
       fprintf ppf "@ \"%s\"" s
     ) sl
