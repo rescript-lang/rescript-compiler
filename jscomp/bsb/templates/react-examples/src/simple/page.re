@@ -13,7 +13,7 @@ let handleClick = (event, _self) => Js.log("clicked!");
 
    Which desugars to
 
-   `ReasonReact.element (Page.make message::"hello" [||])` */
+   `ReasonReact.element(Page.make(~message="hello", [||]))` */
 let make = (~message, _children) => {
   ...component,
   render: (self) =>
