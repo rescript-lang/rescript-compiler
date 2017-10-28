@@ -1,0 +1,546 @@
+0 1 2 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=false
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=false  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=true  y-->x=false
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=false  y-->x=true
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+0 1 2 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=false  y-->x=false
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=false  y-->x=false
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=false  y-->x=false
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=false  y-->x=false
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=false
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=false  y-->x=false
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+0 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+0 1 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+0 1 2 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=true  y-->x=false
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=false  y-->x=true
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+0 2 1 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=0 y=2 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=1 y=1 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=3 num(y)=2
+x-->y=false  y-->x=true
+x=2 y=0 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=2 y=1 num(x)=2 num(y)=3
+x-->y=true  y-->x=false
+x=2 y=2 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+1 2 0 
+x=0 y=0 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=0 y=2 num(x)=3 num(y)=2
+x-->y=false  y-->x=true
+x=1 y=0 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=1 y=1 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=2 y=0 num(x)=2 num(y)=3
+x-->y=true  y-->x=false
+x=2 y=1 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=2 y=2 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+1 2 3 4 0 
+x=0 y=0 num(x)=5 num(y)=5
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=5 num(y)=1
+x-->y=false  y-->x=true
+x=0 y=2 num(x)=5 num(y)=2
+x-->y=false  y-->x=true
+x=0 y=3 num(x)=5 num(y)=3
+x-->y=false  y-->x=false
+x=0 y=4 num(x)=5 num(y)=4
+x-->y=false  y-->x=false
+x=1 y=0 num(x)=1 num(y)=5
+x-->y=true  y-->x=false
+x=1 y=1 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=3 num(x)=1 num(y)=3
+x-->y=false  y-->x=false
+x=1 y=4 num(x)=1 num(y)=4
+x-->y=false  y-->x=false
+x=2 y=0 num(x)=2 num(y)=5
+x-->y=true  y-->x=false
+x=2 y=1 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=2 y=2 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=2 y=3 num(x)=2 num(y)=3
+x-->y=false  y-->x=false
+x=2 y=4 num(x)=2 num(y)=4
+x-->y=false  y-->x=false
+x=3 y=0 num(x)=3 num(y)=5
+x-->y=false  y-->x=false
+x=3 y=1 num(x)=3 num(y)=1
+x-->y=false  y-->x=false
+x=3 y=2 num(x)=3 num(y)=2
+x-->y=false  y-->x=false
+x=3 y=3 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=3 y=4 num(x)=3 num(y)=4
+x-->y=true  y-->x=true
+x=4 y=0 num(x)=4 num(y)=5
+x-->y=false  y-->x=false
+x=4 y=1 num(x)=4 num(y)=1
+x-->y=false  y-->x=false
+x=4 y=2 num(x)=4 num(y)=2
+x-->y=false  y-->x=false
+x=4 y=3 num(x)=4 num(y)=3
+x-->y=true  y-->x=true
+x=4 y=4 num(x)=4 num(y)=4
+x-->y=true  y-->x=true
+0 1 2 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=false
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=false  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=true  y-->x=true
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=true  y-->x=true
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+0 1 2 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=false
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=false  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=true  y-->x=true
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=true  y-->x=true
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+2 3 0 1 
+x=0 y=0 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=3 num(y)=4
+x-->y=true  y-->x=true
+x=0 y=2 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=0 y=3 num(x)=3 num(y)=2
+x-->y=false  y-->x=true
+x=1 y=0 num(x)=4 num(y)=3
+x-->y=true  y-->x=true
+x=1 y=1 num(x)=4 num(y)=4
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=4 num(y)=1
+x-->y=false  y-->x=true
+x=1 y=3 num(x)=4 num(y)=2
+x-->y=false  y-->x=true
+x=2 y=0 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=2 y=1 num(x)=1 num(y)=4
+x-->y=true  y-->x=false
+x=2 y=2 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=2 y=3 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=3 y=0 num(x)=2 num(y)=3
+x-->y=true  y-->x=false
+x=3 y=1 num(x)=2 num(y)=4
+x-->y=true  y-->x=false
+x=3 y=2 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=3 y=3 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+0 1 2 3 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=0 y=3 num(x)=1 num(y)=4
+x-->y=true  y-->x=false
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=true  y-->x=false
+x=1 y=3 num(x)=2 num(y)=4
+x-->y=true  y-->x=false
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=false  y-->x=true
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=2 y=3 num(x)=3 num(y)=4
+x-->y=true  y-->x=true
+x=3 y=0 num(x)=4 num(y)=1
+x-->y=false  y-->x=true
+x=3 y=1 num(x)=4 num(y)=2
+x-->y=false  y-->x=true
+x=3 y=2 num(x)=4 num(y)=3
+x-->y=true  y-->x=true
+x=3 y=3 num(x)=4 num(y)=4
+x-->y=true  y-->x=true
+0 1 2 3 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=true  y-->x=true
+x=0 y=3 num(x)=1 num(y)=4
+x-->y=true  y-->x=true
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=true  y-->x=true
+x=1 y=3 num(x)=2 num(y)=4
+x-->y=true  y-->x=true
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=true  y-->x=true
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=true  y-->x=true
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=2 y=3 num(x)=3 num(y)=4
+x-->y=true  y-->x=true
+x=3 y=0 num(x)=4 num(y)=1
+x-->y=true  y-->x=true
+x=3 y=1 num(x)=4 num(y)=2
+x-->y=true  y-->x=true
+x=3 y=2 num(x)=4 num(y)=3
+x-->y=true  y-->x=true
+x=3 y=3 num(x)=4 num(y)=4
+x-->y=true  y-->x=true
+3 0 1 2 4 
+x=0 y=0 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=2 num(y)=3
+x-->y=true  y-->x=true
+x=0 y=2 num(x)=2 num(y)=4
+x-->y=true  y-->x=true
+x=0 y=3 num(x)=2 num(y)=1
+x-->y=false  y-->x=true
+x=0 y=4 num(x)=2 num(y)=5
+x-->y=true  y-->x=false
+x=1 y=0 num(x)=3 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=1 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=3 num(y)=4
+x-->y=true  y-->x=true
+x=1 y=3 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=1 y=4 num(x)=3 num(y)=5
+x-->y=true  y-->x=false
+x=2 y=0 num(x)=4 num(y)=2
+x-->y=true  y-->x=true
+x=2 y=1 num(x)=4 num(y)=3
+x-->y=true  y-->x=true
+x=2 y=2 num(x)=4 num(y)=4
+x-->y=true  y-->x=true
+x=2 y=3 num(x)=4 num(y)=1
+x-->y=false  y-->x=true
+x=2 y=4 num(x)=4 num(y)=5
+x-->y=true  y-->x=false
+x=3 y=0 num(x)=1 num(y)=2
+x-->y=true  y-->x=false
+x=3 y=1 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=3 y=2 num(x)=1 num(y)=4
+x-->y=true  y-->x=false
+x=3 y=3 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=3 y=4 num(x)=1 num(y)=5
+x-->y=true  y-->x=false
+x=4 y=0 num(x)=5 num(y)=2
+x-->y=false  y-->x=true
+x=4 y=1 num(x)=5 num(y)=3
+x-->y=false  y-->x=true
+x=4 y=2 num(x)=5 num(y)=4
+x-->y=false  y-->x=true
+x=4 y=3 num(x)=5 num(y)=1
+x-->y=false  y-->x=true
+x=4 y=4 num(x)=5 num(y)=5
+x-->y=true  y-->x=true
+0 1 2 3 4 5 6 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=0 y=3 num(x)=1 num(y)=4
+x-->y=true  y-->x=false
+x=0 y=4 num(x)=1 num(y)=5
+x-->y=true  y-->x=false
+x=0 y=5 num(x)=1 num(y)=6
+x-->y=true  y-->x=false
+x=0 y=6 num(x)=1 num(y)=7
+x-->y=true  y-->x=false
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=true  y-->x=false
+x=1 y=3 num(x)=2 num(y)=4
+x-->y=true  y-->x=false
+x=1 y=4 num(x)=2 num(y)=5
+x-->y=true  y-->x=false
+x=1 y=5 num(x)=2 num(y)=6
+x-->y=true  y-->x=false
+x=1 y=6 num(x)=2 num(y)=7
+x-->y=true  y-->x=false
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=false  y-->x=true
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=2 y=3 num(x)=3 num(y)=4
+x-->y=true  y-->x=true
+x=2 y=4 num(x)=3 num(y)=5
+x-->y=true  y-->x=false
+x=2 y=5 num(x)=3 num(y)=6
+x-->y=true  y-->x=false
+x=2 y=6 num(x)=3 num(y)=7
+x-->y=true  y-->x=false
+x=3 y=0 num(x)=4 num(y)=1
+x-->y=false  y-->x=true
+x=3 y=1 num(x)=4 num(y)=2
+x-->y=false  y-->x=true
+x=3 y=2 num(x)=4 num(y)=3
+x-->y=true  y-->x=true
+x=3 y=3 num(x)=4 num(y)=4
+x-->y=true  y-->x=true
+x=3 y=4 num(x)=4 num(y)=5
+x-->y=true  y-->x=false
+x=3 y=5 num(x)=4 num(y)=6
+x-->y=true  y-->x=false
+x=3 y=6 num(x)=4 num(y)=7
+x-->y=true  y-->x=false
+x=4 y=0 num(x)=5 num(y)=1
+x-->y=false  y-->x=true
+x=4 y=1 num(x)=5 num(y)=2
+x-->y=false  y-->x=true
+x=4 y=2 num(x)=5 num(y)=3
+x-->y=false  y-->x=true
+x=4 y=3 num(x)=5 num(y)=4
+x-->y=false  y-->x=true
+x=4 y=4 num(x)=5 num(y)=5
+x-->y=true  y-->x=true
+x=4 y=5 num(x)=5 num(y)=6
+x-->y=true  y-->x=true
+x=4 y=6 num(x)=5 num(y)=7
+x-->y=true  y-->x=true
+x=5 y=0 num(x)=6 num(y)=1
+x-->y=false  y-->x=true
+x=5 y=1 num(x)=6 num(y)=2
+x-->y=false  y-->x=true
+x=5 y=2 num(x)=6 num(y)=3
+x-->y=false  y-->x=true
+x=5 y=3 num(x)=6 num(y)=4
+x-->y=false  y-->x=true
+x=5 y=4 num(x)=6 num(y)=5
+x-->y=true  y-->x=true
+x=5 y=5 num(x)=6 num(y)=6
+x-->y=true  y-->x=true
+x=5 y=6 num(x)=6 num(y)=7
+x-->y=true  y-->x=true
+x=6 y=0 num(x)=7 num(y)=1
+x-->y=false  y-->x=true
+x=6 y=1 num(x)=7 num(y)=2
+x-->y=false  y-->x=true
+x=6 y=2 num(x)=7 num(y)=3
+x-->y=false  y-->x=true
+x=6 y=3 num(x)=7 num(y)=4
+x-->y=false  y-->x=true
+x=6 y=4 num(x)=7 num(y)=5
+x-->y=true  y-->x=true
+x=6 y=5 num(x)=7 num(y)=6
+x-->y=true  y-->x=true
+x=6 y=6 num(x)=7 num(y)=7
+x-->y=true  y-->x=true
+0 1 2 3 4 5 6 
+x=0 y=0 num(x)=1 num(y)=1
+x-->y=true  y-->x=true
+x=0 y=1 num(x)=1 num(y)=2
+x-->y=true  y-->x=true
+x=0 y=2 num(x)=1 num(y)=3
+x-->y=true  y-->x=false
+x=0 y=3 num(x)=1 num(y)=4
+x-->y=true  y-->x=false
+x=0 y=4 num(x)=1 num(y)=5
+x-->y=true  y-->x=false
+x=0 y=5 num(x)=1 num(y)=6
+x-->y=true  y-->x=false
+x=0 y=6 num(x)=1 num(y)=7
+x-->y=true  y-->x=false
+x=1 y=0 num(x)=2 num(y)=1
+x-->y=true  y-->x=true
+x=1 y=1 num(x)=2 num(y)=2
+x-->y=true  y-->x=true
+x=1 y=2 num(x)=2 num(y)=3
+x-->y=true  y-->x=false
+x=1 y=3 num(x)=2 num(y)=4
+x-->y=true  y-->x=false
+x=1 y=4 num(x)=2 num(y)=5
+x-->y=true  y-->x=false
+x=1 y=5 num(x)=2 num(y)=6
+x-->y=true  y-->x=false
+x=1 y=6 num(x)=2 num(y)=7
+x-->y=true  y-->x=false
+x=2 y=0 num(x)=3 num(y)=1
+x-->y=false  y-->x=true
+x=2 y=1 num(x)=3 num(y)=2
+x-->y=false  y-->x=true
+x=2 y=2 num(x)=3 num(y)=3
+x-->y=true  y-->x=true
+x=2 y=3 num(x)=3 num(y)=4
+x-->y=true  y-->x=true
+x=2 y=4 num(x)=3 num(y)=5
+x-->y=true  y-->x=true
+x=2 y=5 num(x)=3 num(y)=6
+x-->y=true  y-->x=true
+x=2 y=6 num(x)=3 num(y)=7
+x-->y=true  y-->x=true
+x=3 y=0 num(x)=4 num(y)=1
+x-->y=false  y-->x=true
+x=3 y=1 num(x)=4 num(y)=2
+x-->y=false  y-->x=true
+x=3 y=2 num(x)=4 num(y)=3
+x-->y=true  y-->x=true
+x=3 y=3 num(x)=4 num(y)=4
+x-->y=true  y-->x=true
+x=3 y=4 num(x)=4 num(y)=5
+x-->y=true  y-->x=true
+x=3 y=5 num(x)=4 num(y)=6
+x-->y=true  y-->x=true
+x=3 y=6 num(x)=4 num(y)=7
+x-->y=true  y-->x=true
+x=4 y=0 num(x)=5 num(y)=1
+x-->y=false  y-->x=true
+x=4 y=1 num(x)=5 num(y)=2
+x-->y=false  y-->x=true
+x=4 y=2 num(x)=5 num(y)=3
+x-->y=true  y-->x=true
+x=4 y=3 num(x)=5 num(y)=4
+x-->y=true  y-->x=true
+x=4 y=4 num(x)=5 num(y)=5
+x-->y=true  y-->x=true
+x=4 y=5 num(x)=5 num(y)=6
+x-->y=true  y-->x=true
+x=4 y=6 num(x)=5 num(y)=7
+x-->y=true  y-->x=true
+x=5 y=0 num(x)=6 num(y)=1
+x-->y=false  y-->x=true
+x=5 y=1 num(x)=6 num(y)=2
+x-->y=false  y-->x=true
+x=5 y=2 num(x)=6 num(y)=3
+x-->y=true  y-->x=true
+x=5 y=3 num(x)=6 num(y)=4
+x-->y=true  y-->x=true
+x=5 y=4 num(x)=6 num(y)=5
+x-->y=true  y-->x=true
+x=5 y=5 num(x)=6 num(y)=6
+x-->y=true  y-->x=true
+x=5 y=6 num(x)=6 num(y)=7
+x-->y=true  y-->x=true
+x=6 y=0 num(x)=7 num(y)=1
+x-->y=false  y-->x=true
+x=6 y=1 num(x)=7 num(y)=2
+x-->y=false  y-->x=true
+x=6 y=2 num(x)=7 num(y)=3
+x-->y=true  y-->x=true
+x=6 y=3 num(x)=7 num(y)=4
+x-->y=true  y-->x=true
+x=6 y=4 num(x)=7 num(y)=5
+x-->y=true  y-->x=true
+x=6 y=5 num(x)=7 num(y)=6
+x-->y=true  y-->x=true
+x=6 y=6 num(x)=7 num(y)=7
+x-->y=true  y-->x=true
+All tests succeeded.
+

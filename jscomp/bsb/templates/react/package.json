@@ -1,9 +1,6 @@
 {
   "name": "${bsb:name}",
-  "private": true,
   "version": "${bsb:proj-version}",
-  "description": "",
-  "main": "index.js",
   "scripts": {
     "build": "bsb -make-world",
     "start": "bsb -make-world -w",
@@ -11,9 +8,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w"
   },
-  "keywords": [],
+  "keywords": [
+    "BuckleScript"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
@@ -21,6 +20,6 @@
   },
   "devDependencies": {
     "bs-platform": "^${bsb:bs-version}",
-    "webpack": "^1.14.0"
+    "webpack": "^3.8.1"
   }
 }

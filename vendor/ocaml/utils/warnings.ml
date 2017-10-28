@@ -68,6 +68,9 @@ type t =
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string                   (* 49 *)
   | Bad_docstring of bool                   (* 50 *)
+
+  | Bs_unused_attribute of string           (* 101 *)
+  | Bs_polymorphic_comparison               (* 102 *) 
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -127,15 +130,20 @@ let number = function
   | Eliminated_optional_arguments _ -> 48
   | No_cmi_file _ -> 49
   | Bad_docstring _ -> 50
+
+  | Bs_unused_attribute _ -> 101
+  | Bs_polymorphic_comparison -> 102
 ;;
 
-let last_warning_number = 50
+let last_warning_number = 102
 (* Must be the max number returned by the [number] function. *)
+let letter_all = 
+  let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
+  loop last_warning_number
 
 let letter = function
   | 'a' ->
-     let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
-     loop last_warning_number
+    letter_all
   | 'b' -> []
   | 'c' -> [1; 2]
   | 'd' -> [3]
@@ -389,6 +397,10 @@ let message = function
   | Bad_docstring unattached ->
       if unattached then "unattached documentation comment (ignored)"
       else "ambiguous documentation comment"
+  | Bs_unused_attribute s ->
+      "Unused bucklescript attribute: " ^ s
+  | Bs_polymorphic_comparison ->
+      "polymorphic comparison introduced (maybe unsafe)"
 ;;
 
 let nerrors = ref 0;;
@@ -485,6 +497,7 @@ let descriptions =
    48, "Implicit elimination of optional arguments.";
    49, "Missing cmi file when looking up module alias.";
    50, "Unexpected documentation comment.";
+   101,"Unused bs attributes";
   ]
 ;;
 

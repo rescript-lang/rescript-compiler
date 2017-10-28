@@ -41,7 +41,7 @@ let emit_external_warnings : Bs_ast_iterator .iterator=
         match a with
         | {txt ; loc}, _ ->
           if is_bs_attribute txt  then
-            Bs_warnings.warn_unused_attribute loc txt 
+            Location.prerr_warning loc (Bs_unused_attribute txt)
       );
     expr = (fun self a -> 
       match a.Parsetree.pexp_desc with 

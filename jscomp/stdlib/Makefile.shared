@@ -21,7 +21,7 @@ CAMLC=$(CAMLRUN) $(COMPILER)
 
 #COMPFLAGS=-strict-sequence -w +33..39 -g -warn-error A -bin-annot -nostdlib \
 #          -safe-string
-BS_COMMON_FLAGS= -bs-no-version-header -bs-no-builtin-ppx-ml -bs-no-builtin-ppx-mli -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform
+BS_COMMON_FLAGS= -bs-no-version-header -bs-no-builtin-ppx-ml -bs-no-builtin-ppx-mli -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-package-name bs-platform -bs-no-warn-unimplemented-external
 
 include ../Makefile.shared
 
@@ -32,7 +32,7 @@ include ../Makefile.shared
 # endif
 
 BS_FLAGS= $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS) 
-COMPFLAGS= $(BS_FLAGS) -strict-sequence -w +33..39 -g -warn-error A  -nostdlib \
+COMPFLAGS= $(BS_FLAGS) -strict-sequence -w +33..39 -g  -nostdlib \
           -safe-string -I ../runtime $(PROD_BS_FLAGS)
 
 

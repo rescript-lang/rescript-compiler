@@ -63,6 +63,9 @@ type t =
   | Eliminated_optional_arguments of string list (* 48 *)
   | No_cmi_file of string                   (* 49 *)
   | Bad_docstring of bool                   (* 50 *)
+
+  | Bs_unused_attribute of string           (* 101 *)
+  | Bs_polymorphic_comparison               (* 102 *)
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -86,6 +89,7 @@ val backup: unit -> state
 val restore: state -> unit
 
 #if undefined BS_NO_COMPILER_PATCH then
+val message : t -> string 
 val number: t -> int
 val super_print : (t -> string) -> formatter -> t -> unit;;
 #end

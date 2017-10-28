@@ -146,14 +146,6 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    Arg.String set_eval_string, 
    " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
   )
-  ::("-bs-no-error-unused-attribute",
-    Arg.Set Js_config.no_error_unused_bs_attribute,
-    " No error when seeing unused attribute"
-    (* We introduce such flag mostly 
-      for work around 
-      in case some embarassing compiler bugs
-    *)
-  )
   ::
   (
     "-bs-sort-imports",
@@ -185,10 +177,9 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     Js_packages_state.update_npm_package_path, 
    " set npm-output-path: [opt_module]:path, for example: 'lib/cjs', 'amdjs:lib/amdjs', 'es6:lib/es6' ")
   ::
-  
-  ("-bs-no-warn-unused-bs-attribute",
-   Arg.Set Js_config.no_warn_unused_bs_attribute,
-   " disable warnings on unused bs. attribute"
+  ("-bs-no-warn-unimplemented-external",
+    Arg.Set Js_config.no_warn_unimplemented_external,
+    " disable warnings on unimplmented c externals"
   )
   ::
   ("-bs-no-warn-ffi-type", 

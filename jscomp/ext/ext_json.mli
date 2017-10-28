@@ -35,6 +35,7 @@ type callback =
     `Str of (string -> unit) 
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
+  | `Flo_loc of (string -> Lexing.position -> unit )
   | `Bool of (bool -> unit )
   | `Obj of (Ext_json_types.t String_map.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )

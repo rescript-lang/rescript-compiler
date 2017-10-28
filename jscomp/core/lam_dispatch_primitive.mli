@@ -35,7 +35,8 @@
 
 (** 
     @return None when the primitives are not handled in  pre-processing
- *)
+*)
 val translate : 
+  Location.t ->
   string ->
   J.expression list -> J.expression 

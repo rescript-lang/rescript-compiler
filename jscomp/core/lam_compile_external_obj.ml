@@ -40,9 +40,9 @@ module S = Js_stmt_make
 *)
 
 (* TODO: check stackoverflow *)
-let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list) 
+let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression list) 
   : J.block * J.expression = 
-   let rec aux (labels : Ast_arg.kind list) args 
+   let rec aux (labels : External_arg_spec.t list) args 
     : (Js_op.property_name * E.t ) list  * J.expression list * _ = 
     match labels, args with 
     | [] , []  ->  [], [], []
@@ -74,7 +74,7 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
         | Array ([x],_)
         | Caml_block ([x],_,_,_) ->
           let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
-            ({Ast_arg.arg_label = Ast_arg.label label None; arg_type}) x in 
+            ({External_arg_spec.arg_label = External_arg_spec.label label None; arg_type}) x in 
           begin match acc with 
           | [] -> assert false 
           | x::xs -> 
@@ -104,7 +104,7 @@ let assemble_args_obj (labels : Ast_arg.kind list)  (args : J.expression list)
       | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)     
     end) :: 
       (Ext_list.flat_map (fun 
-        ((label : Ast_arg.kind), (arg  : J.expression )) -> 
+        ((label : External_arg_spec.t), (arg  : J.expression )) -> 
       match label with 
       | {arg_label = Optional label } -> 
         (* Need make sure whether assignment is effectful or not

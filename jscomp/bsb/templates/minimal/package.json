@@ -9,6 +9,7 @@
   "keywords": [
     "BuckleScript"
   ],
+  "author": "",
   "license": "MIT",
   "devDependencies": {
     "bs-platform": "^${bsb:bs-version}"

@@ -5282,9 +5282,15 @@ let suites =
         bsc_check_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in 
       (* debug_output should_be_warning; *)
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring
-                                   should_be_warning.stderr Literals.unused_attribute)
+                                   should_be_warning.stderr "Unused")
     end;
-
+     __LOC__ >:: begin fun _ ->    
+      let should_be_warning = 
+        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "" [@@bs.val] |} in 
+        OUnit.assert_bool __LOC__ 
+        (Ext_string.contain_substring
+                                   should_be_warning.stderr "Unused")
+     end;
     __LOC__ >:: begin fun _ -> 
       let should_err = bsc_check_eval {|
 external ff : 
@@ -5436,6 +5442,17 @@ external ff :
         (not (Ext_string.is_empty should_err.stderr))
 
     end;
+    __LOC__ >:: begin fun _ -> 
+    let should_err = bsc_check_eval {|
+    external foo_bar :
+    (_ [@bs.as "foo"]) ->
+    string ->
+    string = "bar"
+  [@@bs.send]
+    |} in 
+    OUnit.assert_bool __LOC__ 
+    (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
+  end;
 
     (* __LOC__ >:: begin fun _ ->  *)
     (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
@@ -9778,6 +9795,7 @@ type callback =
     `Str of (string -> unit) 
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
+  | `Flo_loc of (string -> Lexing.position -> unit )
   | `Bool of (bool -> unit )
   | `Obj of (Ext_json_types.t String_map.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
@@ -9799,6 +9817,7 @@ val query : path -> Ext_json_types.t ->  status
 val loc_of : Ext_json_types.t -> Ext_position.t
 
 val equal : Ext_json_types.t -> Ext_json_types.t -> bool 
+
 end = struct
 #1 "ext_json.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9830,6 +9849,7 @@ type callback =
     `Str of (string -> unit) 
   | `Str_loc of (string -> Lexing.position -> unit)
   | `Flo of (string -> unit )
+  | `Flo_loc of (string -> Lexing.position -> unit )
   | `Bool of (bool -> unit )
   | `Obj of (Ext_json_types.t String_map.t -> unit)
   | `Arr of (Ext_json_types.t array -> unit )
@@ -9858,6 +9878,7 @@ let test   ?(fail=(fun () -> ())) key
     | True _, `Bool cb -> cb true
     | False _, `Bool cb  -> cb false 
     | Flo {flo = s} , `Flo cb  -> cb s 
+    | Flo {flo = s; loc} , `Flo_loc cb  -> cb s loc
     | Obj {map = b} , `Obj cb -> cb b 
     | Arr {content}, `Arr cb -> cb content 
     | Arr {content; loc_start ; loc_end}, `Arr_loc cb -> 

@@ -11,6 +11,7 @@
 <code class="code"><span class="keyword">sig</span><br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;result<br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;captures&nbsp;:&nbsp;<span class="constructor">Js_re</span>.result&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="constructor">Js</span>.nullable&nbsp;array&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;matches&nbsp;:&nbsp;<span class="constructor">Js_re</span>.result&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;array&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;index&nbsp;:&nbsp;<span class="constructor">Js_re</span>.result&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;input&nbsp;:&nbsp;<span class="constructor">Js_re</span>.result&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>

@@ -241,19 +241,19 @@ SYNTAX_SRCS= \
 	ast_derive_constructor \
 	ast_derive_util \
 	ast_exp \
-	ast_external \
+	ast_external_mk\
 	ast_lift \
 	ast_literal \
 	ast_pat \
-	ast_arg \
+	external_arg_spec\
 	ast_payload \
 	ast_signature \
 	ast_structure bs_ast_iterator  \
 	ast_derive ast_comb ast_attributes\
 	ast_core_type ast_derive_dyn\
 	ast_derive_projector \
-	ast_ffi_types\
-	ast_external_attributes\
+	external_ffi_types\
+	external_process\
 	ast_util\
 	ppx_entry\
 	bs_ast_invariant
@@ -370,6 +370,7 @@ BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
 SUPER_ERRORS_CMXS=$(addprefix super_errors/, $(addsuffix .cmx, $(SUPER_ERRORS_SRCS)))
 REASON_OUTCOME_PRINTER_CMXS=$(addprefix outcome_printer/, $(addsuffix .cmx, $(REASON_OUTCOME_PRINTER_SRCS)))
+REASON_OUTCOME_PRINTER_CMOS=$(addprefix outcome_printer/, $(addsuffix .cmo, $(REASON_OUTCOME_PRINTER_SRCS)))
 MAIN_SRCS= jsgen_main jscmj_main bsb/bsb_main bsb/bsb_helper_main
 MAIN_CMXS=$(addsuffix .cmx, $(MAIN_SRCS))
 
@@ -539,6 +540,10 @@ bin/bspp.ml:./bin/bspack.exe
 
 bin/js_compiler.ml:./bin/bspack.exe
 	 ./bin/bspack.exe -D BS_COMPILER_IN_BROWSER=true -U BS_DEBUG -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER) -I stubs -I ext -I syntax -I depends -I common -I core
+
+bin/jsoo_reactjs_jsx_ppx_v2.ml:./bin/reactjs_jsx_ppx_v2.bspp.ml
+	make -C bin bspp.exe
+	BS_COMPILER_IN_BROWSER=true ./bin/bspp.exe $^ > $@
 
 bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@

@@ -97,7 +97,7 @@ let bsc_flg_to_merlin_ocamlc_flg bsc_flags  =
 
 (* No need for [-warn-error] in merlin  *)     
 let warning_to_merlin_flg (warning: Bsb_warning.t option) : string=     
-    merlin_flg ^ Bsb_warning.get_warning_flag warning
+  merlin_flg ^ Bsb_warning.get_warning_flag warning
 
 
 let merlin_file_gen ~cwd
@@ -165,7 +165,7 @@ let merlin_file_gen ~cwd
         Buffer.add_string buffer path ;
       );
     bs_dev_dependencies (**TODO: shall we generate .merlin for dev packages ?*)
-    |> List.iter (fun package ->
+    |> List.iter (fun package ->    
         let path = package.Bsb_config_types.package_install_path in
         Buffer.add_string buffer merlin_s ;
         Buffer.add_string buffer path ;
@@ -174,10 +174,13 @@ let merlin_file_gen ~cwd
       );
 
     res_files |> List.iter (fun (x : Bsb_parse_sources.file_group) -> 
-        Buffer.add_string buffer merlin_s;
-        Buffer.add_string buffer x.dir ;
-        Buffer.add_string buffer merlin_b;
-        Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+        if not (Bsb_parse_sources.is_empty x) then 
+          begin
+            Buffer.add_string buffer merlin_s;
+            Buffer.add_string buffer x.dir ;
+            Buffer.add_string buffer merlin_b;
+            Buffer.add_string buffer (Bsb_config.lib_bs//x.dir) ;
+          end
       ) ;
     Buffer.add_string buffer "\n";
     revise_merlin (cwd // merlin) buffer 

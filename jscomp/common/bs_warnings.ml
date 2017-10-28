@@ -46,25 +46,30 @@ let to_string t =
 
 let warning_formatter = Format.err_formatter
 
-let print_string_warning loc x = 
-  Location.print warning_formatter loc ; 
-  Format.pp_print_string warning_formatter "Warning: ";
-  Format.pp_print_string warning_formatter x;
-  Format.pp_print_string warning_formatter "\n"
+let print_string_warning (loc : Location.t) x =   
+  if loc.loc_ghost then 
+    Format.fprintf warning_formatter "File %s@." 
+      (Js_config.get_current_file ())
+  else 
+    Location.print warning_formatter loc ; 
+  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
 
 let prerr_warning loc x =
   if not (!Js_config.no_warn_ffi_type ) then
     print_string_warning loc (to_string x) 
 
-
+let unimplemented_primitive = "Unimplemented primitive used:" 
 type error = 
   | Unused_attribute of string
   | Uninterpreted_delimiters of string
-
+  | Unimplemented_primitive of string 
 exception  Error of Location.t * error
 
 let pp_error fmt x =
   match x with 
+  | Unimplemented_primitive str -> 
+    Format.pp_print_string fmt unimplemented_primitive;
+    Format.pp_print_string fmt str
   | Unused_attribute str ->
     Format.pp_print_string fmt Literals.unused_attribute;
     Format.pp_print_string fmt str
@@ -76,21 +81,22 @@ let pp_error fmt x =
 
 let () = 
   Location.register_error_of_exn (function 
-    | Error (loc,err) -> 
-      Some (Location.error_of_printer loc pp_error err)
-    | _ -> None
+      | Error (loc,err) -> 
+        Some (Location.error_of_printer loc pp_error err)
+      | _ -> None
     )
 
 
 
-let warn_unused_attribute loc txt =
-  if !Js_config.no_error_unused_bs_attribute then 
+
+let warn_missing_primitive loc txt =      
+  if not @@ !Js_config.no_warn_unimplemented_external then
     begin 
-      print_string_warning loc ( Literals.unused_attribute  ^ txt ^ " \n" );
+      print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
       Format.pp_print_flush warning_formatter ()
     end
-  else 
-    raise (Error(loc, Unused_attribute txt))
+
+
 
 let error_unescaped_delimiter loc txt = 
   raise (Error(loc, Uninterpreted_delimiters txt))
@@ -101,26 +107,26 @@ let error_unescaped_delimiter loc txt =
 
 
 (**
-Note the standard way of reporting error in compiler:
+   Note the standard way of reporting error in compiler:
 
-val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
-val Location.error_of_printer : Location.t ->
-  (Format.formatter -> error -> unit) -> error -> Location.error
+   val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
+   val Location.error_of_printer : Location.t ->
+   (Format.formatter -> error -> unit) -> error -> Location.error
 
-Define an error type
+   Define an error type
 
-type error 
-exception Error of Location.t * error 
+   type error 
+   exception Error of Location.t * error 
 
-Provide a printer to error
+   Provide a printer to error
 
-{[
-  let () = 
-    Location.register_error_of_exn
-      (function 
-        | Error(loc,err) -> 
-          Some (Location.error_of_printer loc pp_error err)
-        | _ -> None
-      )
-]}
+   {[
+     let () = 
+       Location.register_error_of_exn
+         (function 
+           | Error(loc,err) -> 
+             Some (Location.error_of_printer loc pp_error err)
+           | _ -> None
+         )
+   ]}
 *)

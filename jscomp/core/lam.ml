@@ -85,9 +85,9 @@ type primitive =
   | Pccall of  Primitive.description
   | Pjs_call of
       string *  (* prim_name *)
-      Ast_arg.kind list * (* arg_types *)
-      Ast_ffi_types.ffi  (* ffi *)
-  | Pjs_object_create of Ast_ffi_types.obj_create
+      External_arg_spec.t list * (* arg_types *)
+      External_ffi_types.attr  (* ffi *)
+  | Pjs_object_create of External_ffi_types.obj_create
   (* Exceptions *)
   | Praise
   (* Boolean operations *)
@@ -1136,18 +1136,30 @@ let if_ (a : t) (b : t) c =
     end
   | _ ->  Lifthenelse (a,b,c)
 
+
+let abs_int x = if x < 0 then - x else x   
+let no_over_flow x  = abs_int x < 0x1fff_ffff
+
+(** Make sure no int range overflow happens
+    also we only check [int]
+*)  
 let happens_to_be_diff 
     (sw_consts :
        (int * Lambda.lambda) list) : int option =   
   match sw_consts with 
   | (a, Lconst (Const_pointer (a0,_)| Const_base (Const_int a0)))::
     (b, Lconst (Const_pointer (b0,_)| Const_base (Const_int b0)))::
-    rest ->
+    rest when
+     no_over_flow a  && 
+     no_over_flow a0 && 
+     no_over_flow b && 
+     no_over_flow b0 -> 
     let diff = a0 - a in 
     if b0 - b = diff then 
       if List.for_all (fun (x, (lam : Lambda.lambda )) -> 
           match lam with 
-          | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0)) ->
+          | Lconst (Const_pointer(x0,_) | Const_base(Const_int x0)) 
+            when no_over_flow x0 && no_over_flow x ->
             x0 - x = diff 
           | _ -> false
         ) rest  then 
@@ -1430,7 +1442,7 @@ let not_ loc x  : t =
    if it does not we wrap it in a nomral way otherwise
 *)
 let rec no_auto_uncurried_arg_types 
-    (xs : Ast_arg.kind list)  = 
+    (xs : External_arg_spec.t list)  = 
   match xs with 
   | [] -> true 
   | {arg_type = Fn_uncurry_arity _ } :: _ ->
@@ -1438,7 +1450,7 @@ let rec no_auto_uncurried_arg_types
   | _ :: xs -> no_auto_uncurried_arg_types xs 
 
 
-let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  = 
+let result_wrap loc (result_type : External_ffi_types.return_wrapper) result  = 
   match result_type with 
   | Return_replaced_with_unit  
     -> append_unit result              
@@ -1451,14 +1463,14 @@ let result_wrap loc (result_type : Ast_ffi_types.return_wrapper) result  =
 (* TODO: sort out the order here
    consolidate {!Lam_compile_external_call.assemble_args_splice}
 *)
-let rec transform_uncurried_arg_type loc (arg_types : Ast_arg.kind list) 
+let rec transform_uncurried_arg_type loc (arg_types : External_arg_spec.t list) 
     (args : t list ) = 
   match arg_types,args with 
   | { arg_type = Fn_uncurry_arity n ; arg_label } :: xs,
     y::ys -> 
     let (o_arg_types, o_args) = 
       transform_uncurried_arg_type loc xs ys in 
-    { Ast_arg.arg_type = Nothing ; arg_label } :: o_arg_types , 
+    { External_arg_spec.arg_type = Nothing ; arg_label } :: o_arg_types , 
     prim ~primitive:(Pjs_fn_make n) ~args:[y] loc :: o_args 
   |  x  ::xs, y::ys -> 
     begin match x with 
@@ -1475,8 +1487,8 @@ let rec transform_uncurried_arg_type loc (arg_types : Ast_arg.kind list)
 
 
 let handle_bs_non_obj_ffi 
-    (arg_types : Ast_arg.kind list) 
-    (result_type : Ast_ffi_types.return_wrapper) 
+    (arg_types : External_arg_spec.t list) 
+    (result_type : External_ffi_types.return_wrapper) 
     ffi 
     args 
     loc 
@@ -1764,7 +1776,7 @@ let convert exports lam : _ * _  =
     convert_ccall (a : Primitive.description)  (args : Lambda.lambda list) loc : t= 
     let prim_name = a.prim_name in    
     let prim_name_len  = String.length prim_name in 
-    match Ast_ffi_types.from_string a.prim_native_name with 
+    match External_ffi_types.from_string a.prim_native_name with 
     | Ffi_normal ->
       if prim_name_len > 0 && String.unsafe_get prim_name 0 = '#' then 
         convert_js_primitive a args loc 
@@ -2096,7 +2108,11 @@ let convert exports lam : _ * _  =
         } ->
           begin match happens_to_be_diff sw_consts with 
             | Some 0 -> e
-            | Some _ 
+            | Some i -> 
+              prim 
+              ~primitive:Paddint
+               ~args:[e; Lconst(Const_int i)]
+               Location.none
             | None ->
               Lswitch(e,  
                       {sw_failaction = None; 

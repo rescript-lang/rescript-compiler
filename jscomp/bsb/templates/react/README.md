@@ -1,9 +1,9 @@
-This is a repo with examples usages of [ReasonReact](https://github.com/reasonml/reason-react).
-Have something you don't understand? Join us on [Discord](https://discord.gg/reasonml)!
+# ${bsb:name}
 
 Run this project:
 
 ```
+npm link bs-platform
 npm install
 npm start
 # in another tab

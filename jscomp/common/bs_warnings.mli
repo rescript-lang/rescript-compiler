@@ -27,15 +27,10 @@ type t =
   | Unsafe_ffi_bool_type
   | Unsafe_poly_variant_type
 
-(* val print_string_warning : Location.t -> string -> unit *)
-
 val prerr_warning : Location.t -> t -> unit
 
-(**It will always warn not relevant to whether {!Js_config.warn_unused_attribute} set or not
-   User should check it first. 
-   The reason is that we will do a global check first, then start warning later
-*)
-val warn_unused_attribute : Location.t -> string -> unit
+
+val warn_missing_primitive : Location.t -> string -> unit 
 
 val error_unescaped_delimiter : 
   Location.t -> string  -> unit 
