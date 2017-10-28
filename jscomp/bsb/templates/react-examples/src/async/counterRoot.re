@@ -1,1 +1,1 @@
-ReactDOMRe.renderToElementWithId <Counter /> "index";
+ReactDOMRe.renderToElementWithId(<Counter />, "index");

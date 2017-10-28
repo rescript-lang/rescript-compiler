@@ -12,5 +12,6 @@
       "subdirs": ["async", "interop", "simple"]
     }
   ],
-  "namespace": true
+  "namespace": true,
+  "refmt": 3
 }
