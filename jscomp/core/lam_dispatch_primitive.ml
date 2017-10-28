@@ -568,19 +568,22 @@ let translate loc (prim_name : string)
     | _ -> assert false
     end
   | "caml_obj_truncate"
-  | "caml_lazy_make_forward"
-  | "caml_compare"
+  | "caml_lazy_make_forward"  
   | "caml_int_compare"
   | "caml_int32_compare"
   | "caml_nativeint_compare"
+    -> 
+    call Js_runtime_modules.obj_runtime
+  | "caml_compare"
   | "caml_equal"
   | "caml_notequal"
   | "caml_greaterequal"
   | "caml_greaterthan"
   | "caml_lessequal"
   | "caml_lessthan"
-
     -> 
+    if Warnings.is_active Warnings.Bs_polymorphic_comparison then 
+      Location.prerr_warning loc Warnings.Bs_polymorphic_comparison ; 
     call Js_runtime_modules.obj_runtime
   | "caml_obj_set_tag" 
     -> begin match args with 
