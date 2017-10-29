@@ -218,7 +218,7 @@ Below is a json configuration for the https://github.com/OvermindDL1/bucklescrip
 -----------
 <1> Here we list `bs-platform` as a peer dependency so that different repos shares the same compiler.
 
-Now, we have a repo https://github.com/bobzhang/bucklescript-have-tea[bucklescript-have-tea] to depend on `bucklescript-tea`, its configurations are as below:
+Now, if we have a repo https://github.com/bobzhang/bucklescript-have-tea[bucklescript-have-tea] which depends on `bucklescript-tea`, its configurations are as below:
 
 .bsconfig.json
 [source,js]
@@ -281,7 +281,7 @@ You will get both `commonjs` and `amdjs` support. In the end, we suggest you htt
 
 === namespace support (@since 1.9.0)
 
-OCaml treat file names as modules, so that users can only have unique file names in a project, BuckleScript solves 
+OCaml treats file names as modules, so that users can only have unique file names in a project, BuckleScript solves 
 the problem by scoping all modules by package.
 
 Below is the `bsconfig.json` for `liba`, `libb` (they share the same configuration in this example)
@@ -311,7 +311,7 @@ Now you have a library to use them
 }
 -----------
 
-Since `liba` and `libb` is configured using namespace, to use them in source code, it would be like
+Since `liba` and `libb` are configured using namespace, to use them in source code, it would be like
 
 [source,ocaml]
 --------------
@@ -321,14 +321,14 @@ let v =
 
 [NOTE]
 ======
-In the same package, everything works the same whether it uses namespace or not, it only affect 
+In the same package, everything works the same whether it uses namespace or not, it only affects
 people who use your library
 ======
 
 === In source build support (@since 1.9.0)
 
 When user has an existing JS project, it makes sense to output the JS file in the same directory as vanilla JS,
-the schema added  a key called `in-source` so that generate JS file next to ML file.
+so the schema added a key called `in-source` so that the JS file is generated next to ML file.
 
 Example:
 
@@ -394,7 +394,7 @@ such as https://facebook.github.io/watchman/[watchman] for example, will need th
     }
 ]
 -------------
-<1> whenever such files changed, it will trigger `command` field to be run
+<1> whenever such files are changed, it will trigger the `command` field to be run
 
 .build.sh
 [source,sh]
@@ -410,11 +410,11 @@ Now in your working directory, type `watchman -j < build.json` and enjoy the lig
 
 === Customize rules (generators support, @since 1.7.4) 
 
-It is quite common that programmers use some pre-processors to generate some bolierpolate code during developement.
+It is quite common for programmers to use some preprocessors to generate some boilerplate code during developement.
 
-Note pre-processors can be classified as two categories, one is system-dependent which should be delayed until running on user machines, the other is system-indepdent , lex, yacc, m4, re2c, etc, which could be executed anytime.
+Note preprocessors can be classified in two categories: one is system-dependent which must be delayed until running on the target machines and the other is system-independent (such as lex, yacc, m4, re2c, etc.) which could be executed anytime.
 
-BuckleScript has built in support for conditional compilation, this section is about the second part, since it is system-indepdent, we ask users to always generate such code and check in before shipping, this would help cut the dependencies for end users.
+BuckleScript has built in support for conditional compilation for the second category. Since it is system-independent, we ask users to always generate such code and check it in before shipping, which would cut the dependencies for end users.
 
 A typical example would be like this
 
@@ -440,11 +440,11 @@ A typical example would be like this
 -----------
 
 
-Note `ocamlyacc` will generate in `test.ml` and `test.mli` in the same directory with `test.mly`, user should check in generated file since then users would not need run  ocamlyacc again, this would apply to `menhir` as well.
+Note `ocamlyacc` will generate `test.ml` and `test.mli` in the same directory with `test.mly`. The developer should check in the generated file since then users would not need run `ocamlyacc` again. This would apply to `menhir` as well.
 
-When users are developing current project, `bsb` will track the dependencies between `test.ml` and `test.mly` properly, when released 
-as  a package, `bsb` will cut such dependency, so that users will 
-only need the generated `test.ml`, to help test such behavior in development mode, users could set it manually
+When a developer is working on their current project, `bsb` will track the dependencies between `test.ml` and `test.mly` properly. When released 
+as  a package, `bsb` will cut such a dependency, so that users will 
+only need the generated `test.ml`. To help test such behavior, developers can set it manually:
 
 [source,js]
 -----------
@@ -454,4 +454,4 @@ only need the generated `test.ml`, to help test such behavior in development mod
 }
 -----------
 
-Then `bsb` will not re-generate `test.ml` whenever `test.mly` changes.
+With this setting `bsb` will not regenerate `test.ml` whenever `test.mly` changes.
