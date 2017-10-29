@@ -127,7 +127,7 @@ external objectArray : t Js_dict.t array -> t = "%identity"
 (** {2 String conversion} *)
 
 external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
-(** [parse s] parses the string [s] into a JSON data structure
+(** [parseExn s] parses the string [s] into a JSON data structure
 
 {b Returns} a JSON data structure
 
@@ -136,45 +136,45 @@ external parseExn : string -> t = "parse" [@@bs.val] [@@bs.scope "JSON"]
 @example {[
 (* parse a simple JSON string *)
 
-let json = 
+let json =
   try
-    Js_json.parse {| "foo" |} 
+    Js.Json.parseExn {| "foo" |}
   with
   | _ -> failwith "Error parsing JSON string"
 in
-match Js.Json.reifyType json in
-| (Js.Json.String, value) -> Js.log value
-| _ -> failWith "Expected a string"
+match Js.Json.classify json with
+| Js.Json.JSONString value -> Js.log value
+| _ -> failwith "Expected a string"
 ]}
 
 @example {[
 (* parse a complex JSON string *)
 
 let getIds s =
-  let json = 
+  let json =
     try
-      Js.Json.parse s
+      Js.Json.parseExn s
     with
     | _ -> failwith "Error parsing JSON string"
-  in 
-  match Js.Json.reifyType json with
-  | (Js.Json.Object, value) ->
+  in
+  match Js.Json.classify json with
+  | Js.Json.JSONObject value ->
     (* In this branch, compiler infer value : Js.Json.t Js.Dict.t *)
     begin match Js.Dict.get value "ids" with
-    | Some ids -> 
-      begin match Js.Json.reifyType ids with
-      | (Js.Json.Array, ids) -> 
+    | Some ids ->
+      begin match Js.Json.classify ids with
+      | Js.Json.JSONArray ids ->
         (* In this branch compiler infer ids : Js.Json.t array *)
         ids
-      | _ -> failWith "Expected an array"
-      end 
-    | None -> failWith "Expected an `ids` property"
-    end 
-  | _ -> failWith "Expected an object"
+      | _ -> failwith "Expected an array"
+      end
+    | None -> failwith "Expected an `ids` property"
+    end
+  | _ -> failwith "Expected an object"
 
 (* prints `1, 2, 3` *)
 let _ =
-  Js.log \@\@ getIds {| { "ids" : [1, 2, 3 ] } |} 
+  Js.log \@\@ getIds {| { "ids" : [1, 2, 3 ] } |}
 ]}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse> MDN
