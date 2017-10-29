@@ -1096,6 +1096,7 @@ struct
 
   let default = Cexit (0,[])
   let make_const i =  Cconst_int i
+  let make_bool b = Cconst_int (if b then 1 else 0)
   let make_prim p args = Cop (p,args)
   let make_offset arg n = add_const arg n
   let make_isout h arg =  Cop (Ccmpa Clt, [h ; arg])

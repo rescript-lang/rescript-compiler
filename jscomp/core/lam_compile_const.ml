@@ -34,6 +34,7 @@ module E = Js_exp_make
 let rec translate (x : Lam.constant ) : J.expression = 
   match x with 
   | Const_int i -> E.int (Int32.of_int i)
+  | Const_bool b -> E.bool b
   | Const_char i ->
     Js_of_lam_string.const_char i
   | Const_int32 i -> E.int i 
