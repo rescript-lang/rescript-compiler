@@ -199,7 +199,8 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	esmodule_ref\
 	miss_colon_test\
 	gpr_1245_test\
-	gpr_2126_test
+	gpr_2126_test\
+	big_enum
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 
