@@ -9338,7 +9338,7 @@ var $$Error$2 = Caml_exceptions.create("Ocaml_parsetree_test.Lexer.Error");
 function assert_same_type(lexbuf, x, y) {
   var lhs = type_of_directive(x);
   var rhs = type_of_directive(y);
-  if (Caml_obj.caml_notequal(lhs, rhs)) {
+  if (lhs !== rhs) {
     throw [
           $$Error$2,
           /* Conditional_expr_expected_type */Block.__(7, [

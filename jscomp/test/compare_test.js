@@ -1,6 +1,5 @@
 'use strict';
 
-var Caml_obj = require("../../lib/js/caml_obj.js");
 
 function compare(x, y) {
   switch (x) {
@@ -38,7 +37,9 @@ function compare2(x, y) {
   }
 }
 
-var compare3 = Caml_obj.caml_equal;
+function compare3(x, y) {
+  return +(x === y);
+}
 
 exports.compare  = compare;
 exports.compare2 = compare2;

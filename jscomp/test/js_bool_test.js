@@ -1,8 +1,7 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
+var Mt    = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 
 function f(x) {
   if (x) {
@@ -60,7 +59,7 @@ var suites_001 = /* :: */[
       (function () {
           return /* Eq */Block.__(0, [
                     /* false */0,
-                    Caml_obj.caml_equal(f(true), (true))
+                    +(f(true) === (true))
                   ]);
         })
     ],
