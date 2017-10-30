@@ -363,7 +363,8 @@ let transl_prim loc prim args =
       when simplify_constant_constructor ->
         intcomp
     | [arg1; arg2] when has_base_type arg1 Predef.path_int
-                     || has_base_type arg1 Predef.path_char ->
+                     || has_base_type arg1 Predef.path_char
+                     || not (Typeopt.maybe_pointer arg1)->
         intcomp
     | [arg1; arg2] when has_base_type arg1 Predef.path_float ->
         floatcomp
