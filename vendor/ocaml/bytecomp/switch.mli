@@ -66,6 +66,7 @@ module type S =
         adding one integer, etc. *)
     val bind : act -> (act -> act) -> act
     val make_const : int -> act
+    val make_bool : bool -> act
     val make_offset : act -> int -> act
     val make_prim : primitive -> act list -> act
     val make_isout : act -> act -> act
@@ -98,6 +99,7 @@ module Make :
     sig
 (* Standard entry point, sharing is tracked *)
       val zyva :
+          ?bool:bool ->
           (int * int) ->
            Arg.act ->
            (int * int * int) array ->
