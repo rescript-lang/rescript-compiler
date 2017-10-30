@@ -76,7 +76,8 @@ val reset : unit -> unit
   Invariant: 
     any [id] as long as put in the [cached_tbl] should be always valid,
 *)  
-val add_js_module : hint_name:string option -> string  -> Ident.t 
+val add_js_module : 
+    External_ffi_types.module_bind_name -> string  -> Ident.t 
 
 
 (* The other dependencies are captured by querying 

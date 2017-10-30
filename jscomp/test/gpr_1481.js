@@ -1,9 +1,9 @@
 'use strict';
 
-var ModuleId = require("#moduleid");
+var Moduleid = require("#moduleid");
 
 function f() {
-  return ModuleId.name;
+  return Moduleid.name;
 }
 
 exports.f = f;

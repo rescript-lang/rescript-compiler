@@ -34,17 +34,11 @@ module E = Js_exp_make
    better names for external module 
 *)
 let handle_external 
-    ({bundle ; bind_name} : External_ffi_types.external_module_name)
+    ({bundle ; module_bind_name} : External_ffi_types.external_module_name)
   : Ident.t * string 
   =
-  match bind_name with 
-  | None -> 
-    Lam_compile_env.add_js_module ~hint_name:None bundle , bundle
-  | Some bind_name -> 
-    Lam_compile_env.add_js_module 
-      ~hint_name:(Some bind_name)
-      bundle,
-    bundle
+  Lam_compile_env.add_js_module module_bind_name bundle , 
+  bundle
 
 let handle_external_opt 
     (module_name : External_ffi_types.external_module_name option) 

@@ -57,7 +57,7 @@ val to_js_type :
   Location.t -> Parsetree.core_type -> Parsetree.core_type
 
 
-(** TODO: make it work for browser too *)
+
 val to_undefined_type :
   Location.t -> Parsetree.core_type -> Parsetree.core_type  
 

@@ -1,13 +1,13 @@
 'use strict';
 
-var Mk = require("xx/foo_class");
+var Foo_class = require("xx/foo_class");
 
 function f() {
-  return new Mk(3);
+  return new Foo_class(3);
 }
 
 function v() {
-  return Mk.ff(3);
+  return Foo_class.ff(3);
 }
 
 exports.f = f;

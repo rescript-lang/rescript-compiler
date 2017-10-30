@@ -81,32 +81,26 @@ let reset () =
 
 
 
-(* This is for a js exeternal module, we can change it when printing
-   for example
-   {[
-     var React$1 = require('react');
-     React$1.render(..)
-   ]}
 
-   Given a name, if duplicated, they should  have the same id
-   
+(** We should not provide "#moduleid" as output
+    since when we print it in the end, it will 
+    be escaped quite ugly
 *)
-
-let js_id_name_of_hint_name (hint_name : string)  = 
-
-  String.concat "" 
-    (Ext_list.map Ext_string.capitalize_ascii 
-       (Ext_string.split hint_name '-')) 
-
-(* TODO: #2163 *)
-let add_js_module ~hint_name module_name : Ident.t 
+let add_js_module 
+    (hint_name : External_ffi_types.module_bind_name)
+    module_name : Ident.t 
   = 
   let id = 
-    Ident.create @@ js_id_name_of_hint_name
-      (match hint_name with
-       | Some  hint_name
-         ->  hint_name
-       | None ->  module_name )
+    Ident.create @@ 
+      (match hint_name with 
+       | Phint_name hint_name -> 
+        Ext_string.capitalize_ascii hint_name 
+        (* make sure the module name is capitalized
+           TODO: maybe a warning if the user hint is not good
+        *)
+       | Phint_nothing -> 
+         Ext_modulename.js_id_name_of_hint_name module_name
+      )
   in
   let lam_module_ident = 
     Lam_module_ident.of_external id module_name in  

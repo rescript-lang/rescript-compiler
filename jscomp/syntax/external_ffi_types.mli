@@ -22,10 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type module_bind_name = 
+  | Phint_name of string 
+  (* explicit hint name *)
+  | Phint_nothing
 
 type external_module_name = 
   { bundle : string ; 
-    bind_name : string option
+    module_bind_name : module_bind_name
   }
 
 type pipe = bool 
