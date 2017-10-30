@@ -3443,7 +3443,7 @@ function equal_tag(t1, t2) {
               return /* false */0;
           case 2 : 
               if (same(t1[0], t2[0])) {
-                return Caml_obj.caml_equal(t1[1], t2[1]);
+                return +(t1[1] === t2[1]);
               } else {
                 return /* false */0;
               }
@@ -5112,7 +5112,7 @@ function find_expans(priv, p1, _param) {
       _param = rem;
       continue ;
       
-    } else if (Caml_obj.caml_greaterequal(param[0], priv) && same(p1, param[1])) {
+    } else if (param[0] >= priv && same(p1, param[1])) {
       return /* Some */[param[3]];
     } else {
       _param = param[4];
@@ -19437,7 +19437,7 @@ var $$Error$4 = Caml_exceptions.create("Ocaml_typedtree_test.Lexer.Error");
 function assert_same_type(lexbuf, x, y) {
   var lhs = type_of_directive(x);
   var rhs = type_of_directive(y);
-  if (Caml_obj.caml_notequal(lhs, rhs)) {
+  if (lhs !== rhs) {
     throw [
           $$Error$4,
           /* Conditional_expr_expected_type */Block.__(7, [
@@ -28060,7 +28060,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                       Unify,
                                       /* [] */0
                                     ];
-                              } else if (Caml_obj.caml_equal(match$4[1], match$5[1])) {
+                              } else if (match$4[1] === match$5[1]) {
                                 mcomp_list(type_pairs$1, env$1, tl1, tl2);
                                 return mcomp_record_description(type_pairs$1, env$1)(match$4[0], match$5[0]);
                               } else {
@@ -28578,7 +28578,7 @@ function mcomp_record_description(type_pairs, env) {
           var l2 = y[0];
           var l1 = x[0];
           mcomp(type_pairs, env, l1[/* ld_type */2], l2[/* ld_type */2]);
-          if (l1[/* ld_id */0][/* name */1] === l2[/* ld_id */0][/* name */1] && Caml_obj.caml_equal(l1[/* ld_mutable */1], l2[/* ld_mutable */1])) {
+          if (l1[/* ld_id */0][/* name */1] === l2[/* ld_id */0][/* name */1] && l1[/* ld_mutable */1] === l2[/* ld_mutable */1]) {
             _y = y[1];
             _x = x[1];
             continue ;
@@ -31850,7 +31850,7 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                               var match$6 = merge_row_fields(row1$1[/* row_fields */0], row2$1[/* row_fields */0]);
                               var r2 = match$6[1];
                               var r1 = match$6[0];
-                              if (Caml_obj.caml_notequal(row1$1[/* row_closed */3], row2$1[/* row_closed */3]) || !row1$1[/* row_closed */3] && (r1 !== /* [] */0 || r2 !== /* [] */0) || filter_row_fields(/* false */0, Pervasives.$at(r1, r2)) !== /* [] */0) {
+                              if (row1$1[/* row_closed */3] !== row2$1[/* row_closed */3] || !row1$1[/* row_closed */3] && (r1 !== /* [] */0 || r2 !== /* [] */0) || filter_row_fields(/* false */0, Pervasives.$at(r1, r2)) !== /* [] */0) {
                                 throw [
                                       Unify,
                                       /* [] */0
@@ -33121,7 +33121,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
             var match$1 = build_subtype(env, visited$1, loops, 1 - posi, level, match[1]);
             var match$2 = build_subtype(env, visited$1, loops, posi, level, match[2]);
             var c = Pervasives.max(match$1[1], match$2[1]);
-            if (Caml_obj.caml_greaterthan(c, /* Unchanged */0)) {
+            if (c > /* Unchanged */0) {
               return /* tuple */[
                       newty2(current_level[0], /* Tarrow */Block.__(1, [
                               match[0],
@@ -33154,7 +33154,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     return build_subtype(env, visited$2, loops, posi, level, param);
                   }), match[0]);
             var c$1 = collect(tlist$prime);
-            if (Caml_obj.caml_greaterthan(c$1, /* Unchanged */0)) {
+            if (c$1 > /* Unchanged */0) {
               var desc = /* Ttuple */Block.__(2, [List.map((function (prim) {
                           return prim[0];
                         }), tlist$prime)]);
@@ -33238,7 +33238,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                           ]
                         ];
                   }
-                  var nm = Caml_obj.caml_greaterthan(match$9[1], /* Equiv */1) || deep_occur(ty$1, ty1$prime) ? /* None */0 : /* Some */[/* tuple */[
+                  var nm = match$9[1] > /* Equiv */1 || deep_occur(ty$1, ty1$prime) ? /* None */0 : /* Some */[/* tuple */[
                         p,
                         tl1
                       ]];
@@ -33279,7 +33279,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
               if (exn$2 === Caml_builtin_exceptions.not_found) {
                 var match$10 = build_subtype(env, visited, loops, posi, level$prime, t$prime$1);
                 var c$2 = match$10[1];
-                if (Caml_obj.caml_greaterthan(c$2, /* Unchanged */0)) {
+                if (c$2 > /* Unchanged */0) {
                   return /* tuple */[
                           match$10[0],
                           c$2
@@ -33331,7 +33331,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                       }
                     }), decl[/* type_variance */5], tl);
               var c$3 = collect(tl$prime);
-              if (Caml_obj.caml_greaterthan(c$3, /* Unchanged */0)) {
+              if (c$3 > /* Unchanged */0) {
                 return /* tuple */[
                         newconstr(p, List.map((function (prim) {
                                     return prim[0];
@@ -33373,7 +33373,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
             ];
             var match$11 = build_subtype(env, visited$4, loops, posi, level$prime$1, t1);
             var c$4 = match$11[1];
-            if (Caml_obj.caml_greaterthan(c$4, /* Unchanged */0)) {
+            if (c$4 > /* Unchanged */0) {
               return /* tuple */[
                       newty2(current_level[0], /* Tobject */Block.__(4, [
                               match$11[0],
@@ -33393,7 +33393,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
           var match$12 = build_subtype(env, visited, loops, posi, level, match[2]);
           var match$13 = build_subtype(env, visited, loops, posi, level, match[3]);
           var c$5 = Pervasives.max(match$12[1], match$13[1]);
-          if (Caml_obj.caml_greaterthan(c$5, /* Unchanged */0)) {
+          if (c$5 > /* Unchanged */0) {
             return /* tuple */[
                     newty2(current_level[0], /* Tfield */Block.__(5, [
                             match[0],
@@ -33502,7 +33502,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     return prim[0];
                   }), fields$1);
             var row_001 = /* row_more */newvar(/* None */0, /* () */0);
-            var row_005 = /* row_name */Caml_obj.caml_greaterthan(c$6, /* Unchanged */0) ? /* None */0 : row[/* row_name */5];
+            var row_005 = /* row_name */c$6 > /* Unchanged */0 ? /* None */0 : row[/* row_name */5];
             var row$1 = /* record */[
               row_000,
               row_001,
@@ -33520,7 +33520,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
       case 10 : 
           var match$14 = build_subtype(env, visited, loops, posi, level, match[0]);
           var c$7 = match$14[1];
-          if (Caml_obj.caml_greaterthan(c$7, /* Unchanged */0)) {
+          if (c$7 > /* Unchanged */0) {
             return /* tuple */[
                     newty2(current_level[0], /* Tpoly */Block.__(10, [
                             match$14[0],
@@ -33849,7 +33849,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                     if (typeof match$7 === "number") {
                                       throw Pervasives.Exit;
                                     } else if (match$7.tag === 9) {
-                                      if (Caml_obj.caml_equal(row1$1[/* row_closed */3], row2$1[/* row_closed */3]) && r1 === /* [] */0 && match$5[1] === /* [] */0) {
+                                      if (row1$1[/* row_closed */3] === row2$1[/* row_closed */3] && r1 === /* [] */0 && match$5[1] === /* [] */0) {
                                         var cstrs$7 = subtype_rec(env$3, /* :: */[
                                               /* tuple */[
                                                 more1,
@@ -43834,7 +43834,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
                                     return /* false */0;
                                   } else if (match$1.tag) {
                                     var tl2 = match$1[1];
-                                    if (List.length(tl1) === List.length(tl2) && Caml_obj.caml_equal(match[0], match$1[0])) {
+                                    if (List.length(tl1) === List.length(tl2) && match[0] === match$1[0]) {
                                       to_equal[0] = Pervasives.$at(List.combine(tl1, tl2), to_equal[0]);
                                       return /* true */1;
                                     } else {
@@ -44289,7 +44289,7 @@ function compare_records(env, decl1, decl2, _n, _labels1, _labels2) {
                     ]),
                   /* [] */0
                 ];
-        } else if (Caml_obj.caml_notequal(l[/* ld_mutable */1], match[/* ld_mutable */1])) {
+        } else if (l[/* ld_mutable */1] !== match[/* ld_mutable */1]) {
           return /* :: */[
                   /* Field_mutable */Block.__(1, [lab1]),
                   /* [] */0
@@ -44402,7 +44402,7 @@ function type_declarations$1($staropt$star, env, name, decl1, id, decl2) {
       } else {
         var rep2 = match$1[1];
         var err$1 = compare_records(env, decl1, decl2, 1, match[0], match$1[0]);
-        err = err$1 !== /* [] */0 || Caml_obj.caml_equal(match[1], rep2) ? err$1 : /* :: */[
+        err = err$1 !== /* [] */0 || match[1] === rep2 ? err$1 : /* :: */[
             /* Record_representation */Block.__(5, [+(rep2 === /* Record_float */1)]),
             /* [] */0
           ];
@@ -44466,7 +44466,7 @@ function type_declarations$1($staropt$star, env, name, decl1, id, decl2) {
                   var cn2 = match$1[1];
                   var co2 = match$1[0];
                   if (abstr ? (1 - co1 || co2) && (1 - cn1 || cn2) : (
-                        opn || constrained(ty) ? Caml_obj.caml_equal(co1, co2) && Caml_obj.caml_equal(cn1, cn2) : /* true */1
+                        opn || constrained(ty) ? +(co1 === co2 && cn1 === cn2) : /* true */1
                       )) {
                     var match$2 = Curry._1(Types_003[/* get_lower */11], v1);
                     var match$3 = Curry._1(Types_003[/* get_lower */11], v2);
@@ -69667,7 +69667,7 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
   try {
     var match$1 = find(lab, vars[0]);
     var virt$prime = match$1[2];
-    if (Caml_obj.caml_notequal(match$1[1], mut)) {
+    if (match$1[1] !== mut) {
       throw [
             $$Error$9,
             loc,

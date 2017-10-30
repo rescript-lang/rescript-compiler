@@ -165,7 +165,7 @@ let root = OCamlRes.Res.([
        }") ;
     Dir ("src", [
       File ("demo.re",
-        "Js.log \"Hello, BuckleScript and Reason!\";\n\
+        "Js.log(\"Hello, BuckleScript and Reason!\");\n\
          ")]) ;
     File ("README.md",
       "# Basic Reason Template\n\
@@ -223,7 +223,8 @@ let root = OCamlRes.Res.([
       \  \"bs-dependencies\": [\n\
       \      // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.\n\
       \  ],\n\
-      \  \"namespace\": true\n\
+      \  \"namespace\": true,\n\
+      \  \"refmt\": 3\n\
        }\n\
        ") ;
     File (".gitignore",
@@ -464,12 +465,12 @@ let root = OCamlRes.Res.([
     Dir ("src", [
       File ("page.re",
         "/* This is the basic component. */\n\
-         let component = ReasonReact.statelessComponent \"Page\";\n\
+         let component = ReasonReact.statelessComponent(\"Page\");\n\
          \n\
          /* Your familiar handleClick from ReactJS. This mandatorily takes the payload,\n\
         \   then the `self` record, which contains state (none here), `handle`, `reduce`\n\
         \   and other utilities */\n\
-         let handleClick _event _self => Js.log \"clicked!\";\n\
+         let handleClick = (_event, _self) => Js.log(\"clicked!\");\n\
          \n\
          /* `make` is the function that mandatorily takes `children` (if you want to use\n\
         \   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:\n\
@@ -478,15 +479,15 @@ let root = OCamlRes.Res.([
          \n\
         \   Which desugars to\n\
          \n\
-        \   `ReasonReact.element (Page.make message::\"hello\" [||])` */\n\
-         let make ::message _children => {\n\
+        \   `ReasonReact.element(Page.make(~message=\"hello\", [||]))` */\n\
+         let make = (~message, _children) => {\n\
         \  ...component,\n\
-        \  render: fun self =>\n\
-        \    <div onClick=(self.handle handleClick)> (ReasonReact.stringToElement message) </div>\n\
+        \  render: (self) =>\n\
+        \    <div onClick=(self.handle(handleClick))> (ReasonReact.stringToElement(message)) </div>\n\
          };\n\
          ") ;
       File ("index.re",
-        "ReactDOMRe.renderToElementWithId <Page message=\"Hello!\" /> \"index\";\n\
+        "ReactDOMRe.renderToElementWithId(<Page message=\"Hello!\" />, \"index\");\n\
          ") ;
       File ("index.html",
         "<!DOCTYPE html>\n\
@@ -558,13 +559,22 @@ let root = OCamlRes.Res.([
       \    \"module\": \"commonjs\",\n\
       \    \"in-source\": true\n\
       \  }],\n\
+      \  \"refmt\": 3,\n\
       \  \"suffix\": \".bs.js\",\n\
       \  \"namespace\": true,\n\
       \  \"bs-dependencies\": [\n\
       \    \"reason-react\"\n\
-      \  ]\n\
+      \  ],\n\
+      \  \"refmt\": 3\n\
        }\n\
-       ")]) ;
+       ") ;
+    File (".gitignore",
+      ".DS_Store\n\
+       .merlin\n\
+       .bsb.lock\n\
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/")]) ;
   Dir ("react-examples", [
     File ("webpack.config.js",
       "const path = require('path');\n\
@@ -584,16 +594,16 @@ let root = OCamlRes.Res.([
     Dir ("src", [
       Dir ("simple", [
         File ("simpleRoot.re",
-          "ReactDOMRe.renderToElementWithId <Page message=\"Hello!\" /> \"index\";\n\
+          "ReactDOMRe.renderToElementWithId(<Page message=\"Hello!\" />, \"index\");\n\
            ") ;
         File ("page.re",
           "/* This is the basic component. */\n\
-           let component = ReasonReact.statelessComponent \"Page\";\n\
+           let component = ReasonReact.statelessComponent(\"Page\");\n\
            \n\
            /* Your familiar handleClick from ReactJS. This mandatorily takes the payload,\n\
           \   then the `self` record, which contains state (none here), `handle`, `reduce`\n\
           \   and other utilities */\n\
-           let handleClick _event _self => Js.log \"clicked!\";\n\
+           let handleClick = (event, _self) => Js.log(\"clicked!\");\n\
            \n\
            /* `make` is the function that mandatorily takes `children` (if you want to use\n\
           \   `JSX). `message` is a named argument, which simulates ReactJS props. Usage:\n\
@@ -602,11 +612,11 @@ let root = OCamlRes.Res.([
            \n\
           \   Which desugars to\n\
            \n\
-          \   `ReasonReact.element (Page.make message::\"hello\" [||])` */\n\
-           let make ::message _children => {\n\
+          \   `ReasonReact.element(Page.make(~message=\"hello\", [||]))` */\n\
+           let make = (~message, _children) => {\n\
           \  ...component,\n\
-          \  render: fun self =>\n\
-          \    <div onClick=(self.handle handleClick)> (ReasonReact.stringToElement message) </div>\n\
+          \  render: (self) =>\n\
+          \    <div onClick=(self.handle(handleClick))> (ReasonReact.stringToElement(message)) </div>\n\
            };\n\
            ") ;
         File ("index.html",
@@ -639,17 +649,17 @@ let root = OCamlRes.Res.([
            \n\
            /* Typing the myBanner.js component's output as a `reactClass`. */\n\
            /* Note that this file's JS output is located at reason-react-example/lib/js/src/interop/myBannerRe.js; we're specifying the relative path to myBanner.js in the string below */\n\
-           external myBanner : ReasonReact.reactClass = \"../../../../src/interop/myBanner\" [@@bs.module];\n\
+           [@bs.module] external myBanner : ReasonReact.reactClass = \"../../../../src/interop/myBanner\";\n\
            \n\
            /* This is like declaring a normal ReasonReact component's `make` function, except the body is a the interop hook wrapJsForReason */\n\
-           let make ::show ::message children =>\n\
-          \  ReasonReact.wrapJsForReason\n\
-          \    reactClass::myBanner\n\
-          \    props::{\n\
-          \      \"show\": Js.Boolean.to_js_boolean show, /* ^ don't forget to convert an OCaml bool into a JS boolean! */\n\
+           let make = (~show, ~message, children) =>\n\
+          \  ReasonReact.wrapJsForReason(\n\
+          \    ~reactClass = myBanner,\n\
+          \    ~props = {\n\
+          \      \"show\": Js.Boolean.to_js_boolean(show), /* ^ don't forget to convert an OCaml bool into a JS boolean! */\n\
           \      \"message\": message /* OCaml string maps to JS string, no conversion needed here */\n\
-          \    }\n\
-          \    children;\n\
+          \    },\n\
+          \    children);\n\
            ") ;
         File ("myBanner.js",
           "// This file isn't used directly by JS; it's used to myBanner.re, which is then\n\
@@ -708,20 +718,19 @@ let root = OCamlRes.Res.([
            ") ;
         File ("greetingRe.re",
           "/* ReasonReact used by ReactJS */\n\
-           \n\
            /* This is just a normal stateless component. The only change you need to turn\n\
           \   it into a ReactJS-compatible component is the wrapReasonForJs call below */\n\
-           let component = ReasonReact.statelessComponent \"PageReason\";\n\
+           let component = ReasonReact.statelessComponent(\"PageReason\");\n\
            \n\
-           let make ::message ::extraGreeting=? _children => {\n\
+           let make = (~message, ~extraGreeting=?, _children) => {\n\
           \  ...component,\n\
-          \  render: fun _self => {\n\
+          \  render: (_self) => {\n\
           \    let greeting =\n\
           \      switch extraGreeting {\n\
           \      | None => \"How are you?\"\n\
-          \      | Some g => g\n\
+          \      | Some(g) => g\n\
           \      };\n\
-          \    <div> <MyBannerRe show=true message=(message ^ \" \" ^ greeting) /> </div>\n\
+          \    <div> <MyBannerRe show=true message=(message ++ \" \" ++ greeting) /> </div>\n\
           \  }\n\
            };\n\
            \n\
@@ -732,15 +741,15 @@ let root = OCamlRes.Res.([
           \   the correct babel/webpack setup, you can also do `let default = ...` and use it\n\
           \   on the JS side as a default export. */\n\
            let jsComponent =\n\
-          \  ReasonReact.wrapReasonForJs\n\
-          \    ::component\n\
-          \    (\n\
-          \      fun jsProps =>\n\
-          \        make\n\
-          \          message::jsProps##message\n\
-          \          extraGreeting::?(Js.Null_undefined.to_opt jsProps##extraGreeting)\n\
-          \          [||]\n\
-          \    );\n\
+          \  ReasonReact.wrapReasonForJs(\n\
+          \    ~component,\n\
+          \    (jsProps) =>\n\
+          \      make(\n\
+          \        ~message=jsProps##message,\n\
+          \        ~extraGreeting=?Js.Null_undefined.to_opt(jsProps##extraGreeting),\n\
+          \        [||]\n\
+          \      )\n\
+          \  );\n\
            ")]) ;
       Dir ("async", [
         File ("index.html",
@@ -757,7 +766,7 @@ let root = OCamlRes.Res.([
            </html>\n\
            ") ;
         File ("counterRoot.re",
-          "ReactDOMRe.renderToElementWithId <Counter /> \"index\";\n\
+          "ReactDOMRe.renderToElementWithId(<Counter />, \"index\");\n\
            ") ;
         File ("counter.re",
           "/* This is a stateful component. In ReasonReact, we call them reducer components */\n\
@@ -769,27 +778,27 @@ let root = OCamlRes.Res.([
            /* The component's state type. It can be anything, including, commonly, being a record type */\n\
            type state = {\n\
           \  count: int,\n\
-          \  timerId: ref (option Js.Global.intervalId)\n\
+          \  timerId: ref(option(Js.Global.intervalId))\n\
            };\n\
            \n\
-           let component = ReasonReact.reducerComponent \"Counter\";\n\
+           let component = ReasonReact.reducerComponent(\"Counter\");\n\
            \n\
-           let make _children => {\n\
+           let make = (_children) => {\n\
           \  ...component,\n\
-          \  initialState: fun () => {count: 0, timerId: ref None},\n\
-          \  reducer: fun action state =>\n\
+          \  initialState: () => {count: 0, timerId: ref(None)},\n\
+          \  reducer: (action, state) =>\n\
           \    switch action {\n\
           \    | Tick => ReasonReact.Update {...state, count: state.count + 1}\n\
           \    },\n\
-          \  didMount: fun self => {\n\
+          \  didMount: (self) => {\n\
           \    /* this will call `reduce` every second */\n\
-          \    self.state.timerId := Some (Js.Global.setInterval (self.reduce (fun _ => Tick)) 1000);\n\
+          \    self.state.timerId := Some((Js.Global.setInterval (self.reduce((_) => Tick),1000)));\n\
           \    ReasonReact.NoUpdate\n\
           \  },\n\
-          \  render: fun {state: {count}} => {\n\
+          \  render: ({state: {count}}) => {\n\
           \    let timesMessage = count == 1 ? \"second\" : \"seconds\";\n\
           \    let greeting = {j|You've spent $count $timesMessage on this page!|j};\n\
-          \    <div> (ReasonReact.stringToElement greeting) </div>\n\
+          \    <div> (ReasonReact.stringToElement(greeting)) </div>\n\
           \  }\n\
            };\n\
            ")])]) ;
@@ -851,7 +860,8 @@ let root = OCamlRes.Res.([
       \      \"subdirs\": [\"async\", \"interop\", \"simple\"]\n\
       \    }\n\
       \  ],\n\
-      \  \"namespace\": true\n\
+      \  \"namespace\": true,\n\
+      \  \"refmt\": 3\n\
        }\n\
        ") ;
     File (".gitignore",

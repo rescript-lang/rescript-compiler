@@ -23,7 +23,4 @@ let compare2 (x : t) (y : t) =
     | (A|B|C),_ -> false 
 
 let compare3 (x : t) (y : t) = 
-    match x with 
-    | A -> x = y (* still polymoprhic equal *)
-    | B -> x = y
-    | C -> x = y    
+    x = y    

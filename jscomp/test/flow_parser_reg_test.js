@@ -865,7 +865,7 @@ function with_lexbuf(lexbuf, env) {
 }
 
 function in_comment_syntax(is_in, env) {
-  if (Caml_obj.caml_notequal(is_in, env[/* lex_in_comment_syntax */2])) {
+  if (is_in !== env[/* lex_in_comment_syntax */2]) {
     return /* record */[
             /* lex_source */env[/* lex_source */0],
             /* lex_lb */env[/* lex_lb */1],

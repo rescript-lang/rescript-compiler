@@ -1010,7 +1010,7 @@ function update_player(player, keys, context) {
                       /* Jumping */1
                     ]), player[/* dir */6], context)
             ]];
-  } else if (Caml_obj.caml_notequal(prev_dir, player[/* dir */6]) || prev_vx === 0 && Math.abs(player[/* vel */2][/* x */0]) > 0 && !player[/* jumping */4]) {
+  } else if (prev_dir !== player[/* dir */6] || prev_vx === 0 && Math.abs(player[/* vel */2][/* x */0]) > 0 && !player[/* jumping */4]) {
     return /* Some */[/* tuple */[
               pl_typ,
               make(/* SPlayer */Block.__(0, [
@@ -1018,7 +1018,7 @@ function update_player(player, keys, context) {
                       /* Running */2
                     ]), player[/* dir */6], context)
             ]];
-  } else if (Caml_obj.caml_notequal(prev_dir, player[/* dir */6]) && player[/* jumping */4] && prev_jumping) {
+  } else if (prev_dir !== player[/* dir */6] && player[/* jumping */4] && prev_jumping) {
     return /* Some */[/* tuple */[
               pl_typ,
               make(/* SPlayer */Block.__(0, [
