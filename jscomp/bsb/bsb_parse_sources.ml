@@ -394,7 +394,7 @@ let rec
          let lib_parent = 
            Filename.concat (Filename.concat cxt.root Bsb_config.lib_bs) 
              cxt.cwd in 
-         if not (String_map.mem (String.capitalize basename) cur_sources) then 
+         if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
            begin 
              Unix.unlink (Filename.concat parent f);
              let basename = 

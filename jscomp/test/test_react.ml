@@ -105,3 +105,26 @@ render (
 ;;
 
 let u = 33
+
+external make: unit -> unit = "xxx" [@@bs.module]
+external make2: unit -> unit = "xx" [@@bs.module "xxx"]
+external make3: unit -> unit = "xxx" [@@bs.module "xxx"]
+external make4: unit -> unit = "x" [@@bs.module "a/b/c"] 
+external make5: unit -> unit = "y" [@@bs.module "a/b/c"] 
+
+external make6: unit -> unit = "x" [@@bs.module "b/c"] 
+external make7: unit -> unit = "y" [@@bs.module "b/c"] 
+
+external make8: unit -> unit = "x" [@@bs.module "c"] 
+external make9: unit -> unit = "y" [@@bs.module "c"] 
+
+let f () =
+   make ();
+   make2 ();
+   make3 ();
+   make4 ();
+   make5 ();
+   make6 ();
+   make7 ();
+   make8 ();
+   make9 ()

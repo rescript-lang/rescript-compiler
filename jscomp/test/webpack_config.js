@@ -1,22 +1,22 @@
 'use strict';
 
-var List      = require("../../lib/js/list.js");
-var List$1    = require("List");
-var List$2    = require("reactV");
-var List$3    = require("reactX");
-var Configx   = require("../../../webpack.config.js");
-var Configx$1 = require("../../../webpack.middleware.config.js");
+var List                      = require("../../lib/js/list.js");
+var List$1                    = require("List");
+var List$2                    = require("reactV");
+var List$3                    = require("reactX");
+var WebpackConfigJs           = require("../../../webpack.config.js");
+var WebpackMiddlewareConfigJs = require("../../../webpack.middleware.config.js");
 
-var WebpackConfig = /* module */[/* ../../../webpack.config.js */Configx];
+var WebpackConfig = /* module */[/* ../../../webpack.config.js */WebpackConfigJs];
 
-var WebpackDevMiddlewareConfig = /* module */[/* ../../../webpack.middleware.config.js */Configx$1];
+var WebpackDevMiddlewareConfig = /* module */[/* ../../../webpack.middleware.config.js */WebpackMiddlewareConfigJs];
 
 function configX() {
-  return Configx$1.configX();
+  return WebpackMiddlewareConfigJs.configX();
 }
 
 var U = /* module */[(function () {
-      return Configx.configX();
+      return WebpackConfigJs.configX();
     })];
 
 var A = /* module */[];

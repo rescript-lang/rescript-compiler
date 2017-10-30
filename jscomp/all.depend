@@ -341,7 +341,8 @@ core/js_pass_flatten_and_mark_dead.cmi : core/j.cmx
 core/js_ast_util.cmi : core/j.cmx
 core/lam_dce.cmi : core/lam_group.cmi
 core/lam_compile_env.cmi : core/ocaml_types.cmi core/lam_module_ident.cmi \
-    core/lam.cmi core/js_packages_info.cmi core/js_cmj_format.cmi
+    core/lam.cmi core/js_packages_info.cmi core/js_cmj_format.cmi \
+    syntax/external_ffi_types.cmi
 core/lam_stats_util.cmi : core/lam_stats.cmi core/lam_arity.cmi core/lam.cmi
 core/lam_stats_export.cmi : core/lam_stats.cmi core/lam_module_ident.cmi \
     core/lam.cmi core/js_cmj_format.cmi ext/ident_map.cmi
@@ -517,8 +518,8 @@ core/lam_group_pass.cmx : core/lam.cmx
 core/lam_compile_env.cmx : ext/string_map.cmx core/ocaml_types.cmx \
     ext/literals.cmx core/lam_module_ident.cmx core/lam.cmx \
     core/js_stmt_make.cmx core/js_exp_make.cmx common/js_config.cmx \
-    core/js_cmj_load.cmx core/js_cmj_format.cmx ext/ext_string.cmx \
-    ext/ext_list.cmx core/lam_compile_env.cmi
+    core/js_cmj_load.cmx core/js_cmj_format.cmx syntax/external_ffi_types.cmx \
+    ext/ext_string.cmx ext/ext_modulename.cmx core/lam_compile_env.cmi
 core/lam_stats_util.cmx : core/lam_stats.cmx core/lam_compile_env.cmx \
     core/lam_arity.cmx core/lam.cmx ext/ident_hashtbl.cmx ext/ext_list.cmx \
     core/lam_stats_util.cmi
@@ -763,7 +764,8 @@ ounit_tests/ounit_vec_test.cmx : ext/set_int.cmx ounit/oUnit.cmx \
     ext/int_vec.cmx ext/ext_list.cmx ext/ext_json.cmx
 ounit_tests/ounit_data_random.cmx :
 ounit_tests/ounit_string_tests.cmx : ounit_tests/ounit_data_random.cmx \
-    ounit/oUnit.cmx ext/ext_string.cmx ext/ext_path.cmx ext/ext_namespace.cmx
+    ounit/oUnit.cmx ext/ext_string.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
+    ext/ext_modulename.cmx
 ounit_tests/ounit_utf8_test.cmx : ounit/oUnit.cmx ext/ext_utf8.cmx
 ounit_tests/ounit_js_regex_checker_tests.cmx : ounit/oUnit.cmx \
     ext/ext_js_regex.cmx

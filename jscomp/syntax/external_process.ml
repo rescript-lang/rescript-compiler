@@ -304,12 +304,12 @@ let process_external_attributes
 
             | "bs.module" -> 
               begin match Ast_payload.assert_strings loc payload with 
-                | [name] ->
+                | [bundle] ->
                   {st with external_module_name =
-                             Some {bundle=name; bind_name = None}}
+                             Some {bundle; module_bind_name = Phint_nothing}}
                 | [bundle;bind_name] -> 
                   {st with external_module_name =
-                             Some {bundle; bind_name = Some bind_name}}
+                             Some {bundle; module_bind_name = Phint_name bind_name}}
                 | [] ->
                   { st with
                     module_as_val = 
@@ -317,7 +317,7 @@ let process_external_attributes
                         { bundle =
                             string_of_bundle_source
                               (prim_name_or_pval_prim :> bundle_source) ;
-                          bind_name = Some pval_prim}
+                          module_bind_name = Phint_nothing}
                   }
                 | _  ->
                   Bs_syntaxerr.err loc Illegal_attribute

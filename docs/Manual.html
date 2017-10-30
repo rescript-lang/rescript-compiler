@@ -4839,7 +4839,7 @@ to build. In that case you can mark it as dev only:</p>
 </ol>
 </div>
 <div class="paragraph">
-<p>Now, we have a repo <a href="https://github.com/bobzhang/bucklescript-have-tea">bucklescript-have-tea</a> to depend on <code>bucklescript-tea</code>, its configurations are as below:</p>
+<p>Now, if we have a repo <a href="https://github.com/bobzhang/bucklescript-have-tea">bucklescript-have-tea</a> which depends on <code>bucklescript-tea</code>, its configurations are as below:</p>
 </div>
 <div class="listingblock">
 <div class="title">bsconfig.json</div>
@@ -4924,7 +4924,7 @@ npm install bs-platform <b class="conum">(2)</b>
 <div class="sect2">
 <h3 id="_namespace_support_since_1_9_0"><a class="anchor" href="#_namespace_support_since_1_9_0"></a>namespace support (@since 1.9.0)</h3>
 <div class="paragraph">
-<p>OCaml treat file names as modules, so that users can only have unique file names in a project, BuckleScript solves
+<p>OCaml treats file names as modules, so that users can only have unique file names in a project, BuckleScript solves
 the problem by scoping all modules by package.</p>
 </div>
 <div class="paragraph">
@@ -4957,7 +4957,7 @@ the problem by scoping all modules by package.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Since <code>liba</code> and <code>libb</code> is configured using namespace, to use them in source code, it would be like</p>
+<p>Since <code>liba</code> and <code>libb</code> are configured using namespace, to use them in source code, it would be like</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4973,7 +4973,7 @@ the problem by scoping all modules by package.</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>In the same package, everything works the same whether it uses namespace or not, it only affect
+<p>In the same package, everything works the same whether it uses namespace or not, it only affects
 people who use your library</p>
 </div>
 </td>
@@ -4985,7 +4985,7 @@ people who use your library</p>
 <h3 id="_in_source_build_support_since_1_9_0"><a class="anchor" href="#_in_source_build_support_since_1_9_0"></a>In source build support (@since 1.9.0)</h3>
 <div class="paragraph">
 <p>When user has an existing JS project, it makes sense to output the JS file in the same directory as vanilla JS,
-the schema added  a key called <code>in-source</code> so that generate JS file next to ML file.</p>
+so the schema added a key called <code>in-source</code> so that the JS file is generated next to ML file.</p>
 </div>
 <div class="paragraph">
 <p>Example:</p>
@@ -5079,7 +5079,7 @@ such as <a href="https://facebook.github.io/watchman/">watchman</a> for example,
 <div class="colist arabic">
 <ol>
 <li>
-<p>whenever such files changed, it will trigger <code>command</code> field to be run</p>
+<p>whenever such files are changed, it will trigger the <code>command</code> field to be run</p>
 </li>
 </ol>
 </div>
@@ -5107,13 +5107,13 @@ make depend <b class="conum">(2)</b></code></pre>
 <div class="sect2">
 <h3 id="_customize_rules_generators_support_since_1_7_4"><a class="anchor" href="#_customize_rules_generators_support_since_1_7_4"></a>Customize rules (generators support, @since 1.7.4)</h3>
 <div class="paragraph">
-<p>It is quite common that programmers use some pre-processors to generate some bolierpolate code during developement.</p>
+<p>It is quite common for programmers to use some preprocessors to generate some boilerplate code during developement.</p>
 </div>
 <div class="paragraph">
-<p>Note pre-processors can be classified as two categories, one is system-dependent which should be delayed until running on user machines, the other is system-indepdent , lex, yacc, m4, re2c, etc, which could be executed anytime.</p>
+<p>Note preprocessors can be classified in two categories: one is system-dependent which must be delayed until running on the target machines and the other is system-independent (such as lex, yacc, m4, re2c, etc.) which could be executed anytime.</p>
 </div>
 <div class="paragraph">
-<p>BuckleScript has built in support for conditional compilation, this section is about the second part, since it is system-indepdent, we ask users to always generate such code and check in before shipping, this would help cut the dependencies for end users.</p>
+<p>BuckleScript has built in support for conditional compilation for the second category. Since it is system-independent, we ask users to always generate such code and check it in before shipping, which would cut the dependencies for end users.</p>
 </div>
 <div class="paragraph">
 <p>A typical example would be like this</p>
@@ -5140,12 +5140,12 @@ make depend <b class="conum">(2)</b></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Note <code>ocamlyacc</code> will generate in <code>test.ml</code> and <code>test.mli</code> in the same directory with <code>test.mly</code>, user should check in generated file since then users would not need run  ocamlyacc again, this would apply to <code>menhir</code> as well.</p>
+<p>Note <code>ocamlyacc</code> will generate <code>test.ml</code> and <code>test.mli</code> in the same directory with <code>test.mly</code>. The developer should check in the generated file since then users would not need run <code>ocamlyacc</code> again. This would apply to <code>menhir</code> as well.</p>
 </div>
 <div class="paragraph">
-<p>When users are developing current project, <code>bsb</code> will track the dependencies between <code>test.ml</code> and <code>test.mly</code> properly, when released
-as  a package, <code>bsb</code> will cut such dependency, so that users will
-only need the generated <code>test.ml</code>, to help test such behavior in development mode, users could set it manually</p>
+<p>When a developer is working on their current project, <code>bsb</code> will track the dependencies between <code>test.ml</code> and <code>test.mly</code> properly. When released
+as  a package, <code>bsb</code> will cut such a dependency, so that users will
+only need the generated <code>test.ml</code>. To help test such behavior, developers can set it manually:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -5156,7 +5156,7 @@ only need the generated <code>test.ml</code>, to help test such behavior in deve
 </div>
 </div>
 <div class="paragraph">
-<p>Then <code>bsb</code> will not re-generate <code>test.ml</code> whenever <code>test.mly</code> changes.</p>
+<p>With this setting <code>bsb</code> will not regenerate <code>test.ml</code> whenever <code>test.mly</code> changes.</p>
 </div>
 </div>
 </div>

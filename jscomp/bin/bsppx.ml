@@ -8204,7 +8204,7 @@ val to_js_type :
   Location.t -> Parsetree.core_type -> Parsetree.core_type
 
 
-(** TODO: make it work for browser too *)
+
 val to_undefined_type :
   Location.t -> Parsetree.core_type -> Parsetree.core_type  
 
@@ -14156,10 +14156,14 @@ module External_ffi_types : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type module_bind_name = 
+  | Phint_name of string 
+  (* explicit hint name *)
+  | Phint_nothing
 
 type external_module_name = 
   { bundle : string ; 
-    bind_name : string option
+    module_bind_name : module_bind_name
   }
 
 type pipe = bool 
@@ -14290,10 +14294,16 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type module_bind_name = 
+  | Phint_name of string 
+    (* explicit hint name *)
+
+  | Phint_nothing
+  
 
 type external_module_name = 
   { bundle : string ; 
-    bind_name : string option
+    module_bind_name : module_bind_name
   }
 
 type pipe = bool 
@@ -14454,7 +14464,8 @@ let valid_method_name ?loc txt =
 
 let check_external_module_name ?loc x = 
   match x with 
-  | {bundle = ""; _ } | {bind_name = Some ""} -> 
+  | {bundle = ""; _ } 
+  | { module_bind_name = Phint_name "" } -> 
     Location.raise_errorf ?loc "empty name encountered"
   | _ -> ()
 let check_external_module_name_opt ?loc x = 
@@ -15469,12 +15480,12 @@ let process_external_attributes
 
             | "bs.module" -> 
               begin match Ast_payload.assert_strings loc payload with 
-                | [name] ->
+                | [bundle] ->
                   {st with external_module_name =
-                             Some {bundle=name; bind_name = None}}
+                             Some {bundle; module_bind_name = Phint_nothing}}
                 | [bundle;bind_name] -> 
                   {st with external_module_name =
-                             Some {bundle; bind_name = Some bind_name}}
+                             Some {bundle; module_bind_name = Phint_name bind_name}}
                 | [] ->
                   { st with
                     module_as_val = 
@@ -15482,7 +15493,7 @@ let process_external_attributes
                         { bundle =
                             string_of_bundle_source
                               (prim_name_or_pval_prim :> bundle_source) ;
-                          bind_name = Some pval_prim}
+                          module_bind_name = Phint_nothing}
                   }
                 | _  ->
                   Bs_syntaxerr.err loc Illegal_attribute
