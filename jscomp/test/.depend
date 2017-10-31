@@ -73,6 +73,7 @@ basic_module_test.cmj : ../stdlib/set.cmj pr6726.cmj offset.cmj \
 bb.cmj :
 bdd.cmj : ../stdlib/array.cmj
 bench.cmj : ../stdlib/array.cmj
+big_enum.cmj :
 bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
     ../stdlib/bigarray.cmj
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
