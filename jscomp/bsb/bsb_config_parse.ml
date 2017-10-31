@@ -24,6 +24,7 @@
 
 let config_file_bak = "bsconfig.json.bak"
 let refmt3_exe = "refmt3.exe"
+let refmt2_exe = "refmt.exe"
 let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_path.combine
 
@@ -126,11 +127,7 @@ let interpret_json
 
   let reason_react_jsx = ref None in 
   let config_json = (cwd // Literals.bsconfig_json) in
-  let refmt = ref None in
   let refmt_flags = ref Bsb_default.refmt_flags in
-
-  (* let package_name = ref None in 
-     let namespace = ref false in  *)
   let bs_external_includes = ref [] in 
   (** we should not resolve it too early,
       since it is external configuration, no {!Bsb_build_util.convert_and_resolve_path}
@@ -164,6 +161,26 @@ let interpret_json
   | Obj { map ; loc } ->
     let package_name, namespace = 
       extract_package_name_and_namespace loc  map in 
+    let refmt =   
+      match String_map.find_opt Bsb_build_schemas.refmt map with 
+      | Some (Flo {flo} as config) -> 
+        begin match flo with 
+        | "2" -> bsc_dir // refmt2_exe
+        | "3" -> bsc_dir // refmt3_exe
+        | _ -> Bsb_exception.config_error config "expect version 2 or 3"
+        end
+      | Some (Str {str}) 
+        -> 
+
+        (Bsb_build_util.resolve_bsb_magic_file 
+          ~cwd ~desc:Bsb_build_schemas.refmt str)
+      | Some config  -> 
+        Bsb_exception.config_error config "expect version 2 or 3"
+      | None ->
+        Bsb_log.warn "@{<warn>Warn:@} refmt version missed, it is recommended to set it explicitly since we may change the default in the future";
+        bsc_dir // refmt2_exe
+
+    in 
     (* The default situation is empty *)
     (match String_map.find_opt Bsb_build_schemas.use_stdlib map with      
      | Some (False _) -> 
@@ -241,16 +258,6 @@ let interpret_json
                   Bsb_exception.errorf ~loc {| generators exepect format like { "name" : "cppo",  "command"  : "cppo $in -o $out"} |}
                 end
               | _ -> acc ) String_map.empty  s  ))
-    |? (Bsb_build_schemas.refmt, `Str (fun s -> 
-        refmt := Some (Bsb_build_util.resolve_bsb_magic_file ~cwd ~desc:Bsb_build_schemas.refmt s) 
-      ))
-    |? (Bsb_build_schemas.refmt, `Flo_loc (fun version loc -> 
-      match version with
-      | "2" -> ()
-      | "3" -> refmt := Some (bsc_dir // refmt3_exe)
-      | _ -> 
-        Bsb_exception.errorf ~loc "Unexpected version for refmt. The it should be either 2 or 3."
-      ))
     |? (Bsb_build_schemas.refmt_flags, `Arr (fun s -> refmt_flags := get_list_string s))
     |? (Bsb_build_schemas.entries, `Arr (fun s -> entries := parse_entries s))
     |> ignore ;
@@ -307,7 +314,7 @@ let interpret_json
           ppx_flags = !ppx_flags ;
           bs_dependencies = !bs_dependencies;
           bs_dev_dependencies = !bs_dev_dependencies;
-          refmt = !refmt ;
+          refmt;
           refmt_flags = !refmt_flags ;
           js_post_build_cmd =  !js_post_build_cmd ;
           package_specs = 
