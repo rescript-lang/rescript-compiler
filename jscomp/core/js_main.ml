@@ -240,6 +240,7 @@ let buckle_script_flags : (string * Arg.spec * string) list =
 let _ = 
   (* Default configuration: sync up with 
     {!Jsoo_main}  *)
+  Clflags.bs_only := true;  
   Clflags.unsafe_string := false;
   Clflags.debug := true;
   Clflags.record_event_when_debug := false;

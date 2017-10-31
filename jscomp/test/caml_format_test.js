@@ -8,82 +8,81 @@ var Int64       = require("../../lib/js/int64.js");
 var Buffer      = require("../../lib/js/buffer.js");
 var Format      = require("../../lib/js/format.js");
 var Printf      = require("../../lib/js/printf.js");
-var Caml_obj    = require("../../lib/js/caml_obj.js");
 var Caml_float  = require("../../lib/js/caml_float.js");
 var Caml_int64  = require("../../lib/js/caml_int64.js");
 var Pervasives  = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
-var of_string = Caml_obj.caml_obj_dup(/* array */[
-      /* tuple */[
-        0,
-        "0"
-      ],
-      /* tuple */[
-        3,
-        "03"
-      ],
-      /* tuple */[
-        -3,
-        "-03"
-      ],
-      /* tuple */[
-        -63,
-        "-0x3f"
-      ],
-      /* tuple */[
-        -31,
-        "-0x1f"
-      ],
-      /* tuple */[
-        47,
-        "0X2f"
-      ],
-      /* tuple */[
-        11,
-        "0O13"
-      ],
-      /* tuple */[
-        8,
-        "0o10"
-      ],
-      /* tuple */[
-        3,
-        "0b11"
-      ],
-      /* tuple */[
-        1,
-        "0b01"
-      ],
-      /* tuple */[
-        0,
-        "0b00"
-      ],
-      /* tuple */[
-        -3,
-        "-0b11"
-      ],
-      /* tuple */[
-        -5,
-        "-0B101"
-      ],
-      /* tuple */[
-        332,
-        "0332"
-      ],
-      /* tuple */[
-        -32,
-        "-32"
-      ],
-      /* tuple */[
-        1,
-        "-0xffff_ffff"
-      ],
-      /* tuple */[
-        -1,
-        "0xffff_ffff"
-      ]
-    ]);
+var of_string = /* array */[
+  /* tuple */[
+    0,
+    "0"
+  ],
+  /* tuple */[
+    3,
+    "03"
+  ],
+  /* tuple */[
+    -3,
+    "-03"
+  ],
+  /* tuple */[
+    -63,
+    "-0x3f"
+  ],
+  /* tuple */[
+    -31,
+    "-0x1f"
+  ],
+  /* tuple */[
+    47,
+    "0X2f"
+  ],
+  /* tuple */[
+    11,
+    "0O13"
+  ],
+  /* tuple */[
+    8,
+    "0o10"
+  ],
+  /* tuple */[
+    3,
+    "0b11"
+  ],
+  /* tuple */[
+    1,
+    "0b01"
+  ],
+  /* tuple */[
+    0,
+    "0b00"
+  ],
+  /* tuple */[
+    -3,
+    "-0b11"
+  ],
+  /* tuple */[
+    -5,
+    "-0B101"
+  ],
+  /* tuple */[
+    332,
+    "0332"
+  ],
+  /* tuple */[
+    -32,
+    "-32"
+  ],
+  /* tuple */[
+    1,
+    "-0xffff_ffff"
+  ],
+  /* tuple */[
+    -1,
+    "0xffff_ffff"
+  ]
+];
 
 function from_float_of_string(xs) {
   return $$Array.mapi((function (_, _$1) {
@@ -146,28 +145,28 @@ var v = Curry._1(Printf.sprintf(/* Format */[
           "%3d"
         ]), 3333);
 
-var pairs = Caml_obj.caml_obj_dup(/* array */[
-      /* tuple */[
-        /* FP_infinite */3,
-        "infinity"
-      ],
-      /* tuple */[
-        /* FP_infinite */3,
-        "+infinity"
-      ],
-      /* tuple */[
-        /* FP_infinite */3,
-        "-infinity"
-      ],
-      /* tuple */[
-        /* FP_zero */2,
-        "0"
-      ],
-      /* tuple */[
-        /* FP_zero */2,
-        "0."
-      ]
-    ]);
+var pairs = /* array */[
+  /* tuple */[
+    /* FP_infinite */3,
+    "infinity"
+  ],
+  /* tuple */[
+    /* FP_infinite */3,
+    "+infinity"
+  ],
+  /* tuple */[
+    /* FP_infinite */3,
+    "-infinity"
+  ],
+  /* tuple */[
+    /* FP_zero */2,
+    "0"
+  ],
+  /* tuple */[
+    /* FP_zero */2,
+    "0."
+  ]
+];
 
 var pairs$1 = /* array */[
   /* tuple */[
@@ -2263,71 +2262,71 @@ var int64_suites = /* :: */[
   int64_suites_001
 ];
 
-var of_string_data = Caml_obj.caml_obj_dup(/* array */[
-      /* tuple */[
-        /* int64 */[
-          /* hi */0,
-          /* lo */0
-        ],
-        "0"
-      ],
-      /* tuple */[
-        /* int64 */[
-          /* hi */0,
-          /* lo */3
-        ],
-        "3"
-      ],
-      /* tuple */[
-        /* int64 */[
-          /* hi */0,
-          /* lo */33
-        ],
-        "33"
-      ],
-      /* tuple */[
-        /* int64 */[
-          /* hi */0,
-          /* lo */333
-        ],
-        "33_3"
-      ],
-      /* tuple */[
-        /* int64 */[
-          /* hi */0,
-          /* lo */33333
-        ],
-        "33_33_3"
-      ],
-      /* tuple */[
-        /* int64 */[
-          /* hi */77,
-          /* lo */2620851541
-        ],
-        "333333333333"
-      ],
-      /* tuple */[
-        /* int64 */[
-          /* hi */-1,
-          /* lo */4294967295
-        ],
-        "0xffff_ffff_ffff_ffff"
-      ],
-      /* tuple */[
-        /* int64 */[
-          /* hi */0,
-          /* lo */113
-        ],
-        "0b01110001"
-      ],
-      /* tuple */[
-        /* int64 */[
-          /* hi */0,
-          /* lo */1
-        ],
-        "-0xffff_ffff_ffff_ffff"
-      ]
-    ]);
+var of_string_data = /* array */[
+  /* tuple */[
+    /* int64 */[
+      /* hi */0,
+      /* lo */0
+    ],
+    "0"
+  ],
+  /* tuple */[
+    /* int64 */[
+      /* hi */0,
+      /* lo */3
+    ],
+    "3"
+  ],
+  /* tuple */[
+    /* int64 */[
+      /* hi */0,
+      /* lo */33
+    ],
+    "33"
+  ],
+  /* tuple */[
+    /* int64 */[
+      /* hi */0,
+      /* lo */333
+    ],
+    "33_3"
+  ],
+  /* tuple */[
+    /* int64 */[
+      /* hi */0,
+      /* lo */33333
+    ],
+    "33_33_3"
+  ],
+  /* tuple */[
+    /* int64 */[
+      /* hi */77,
+      /* lo */2620851541
+    ],
+    "333333333333"
+  ],
+  /* tuple */[
+    /* int64 */[
+      /* hi */-1,
+      /* lo */4294967295
+    ],
+    "0xffff_ffff_ffff_ffff"
+  ],
+  /* tuple */[
+    /* int64 */[
+      /* hi */0,
+      /* lo */113
+    ],
+    "0b01110001"
+  ],
+  /* tuple */[
+    /* int64 */[
+      /* hi */0,
+      /* lo */1
+    ],
+    "-0xffff_ffff_ffff_ffff"
+  ]
+];
 
 Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at(formatter_suites, Pervasives.$at(from_lambda_pairs(lambda_suites), Pervasives.$at(ksprintf_suites, Pervasives.$at($$Array.to_list($$Array.mapi((function (i, param) {
                                     var str_result = param[2];

@@ -39,6 +39,7 @@
      *  }
 *)
 let () = 
+  Clflags.bs_only := true;
   Oprint.out_ident := Outcome_printer_ns.out_ident;
   Clflags.assume_no_mli := Clflags.Mli_non_exists;
   Bs_conditional_initial.setup_env ();

@@ -228,7 +228,7 @@ clean::
 	rm -f  *.annot
 	rm -f $(TESTS)
 	rm -f *.rawlambda *.lam *.lambda *.map
-	rm arith_lexer.ml number_lexer.ml simple_lexer_test.ml
+	rm -f arith_lexer.ml number_lexer.ml simple_lexer_test.ml
 
 .mli.cmi:
 	$(CAMLC) $(INCLUDES) $(COMPFLAGS) -c $<
