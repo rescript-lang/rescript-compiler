@@ -576,8 +576,8 @@ core/lam_compile_global.cmx : core/ocaml_types.cmx core/lam_module_ident.cmx \
 core/lam_dispatch_primitive.cmx : core/js_stmt_make.cmx \
     core/js_runtime_modules.cmx core/js_of_lam_tuple.cmx \
     core/js_of_lam_exception.cmx core/js_of_lam_array.cmx core/js_long.cmx \
-    core/js_exp_make.cmx common/js_config.cmx core/js_analyzer.cmx core/j.cmx \
-    ext/ext_list.cmx common/bs_warnings.cmx core/lam_dispatch_primitive.cmi
+    core/js_exp_make.cmx common/js_config.cmx core/j.cmx ext/ext_list.cmx \
+    common/bs_warnings.cmx core/lam_dispatch_primitive.cmi
 core/lam_bounded_vars.cmx : core/lam.cmx ext/ident_hashtbl.cmx \
     ext/ext_list.cmx core/lam_bounded_vars.cmi
 core/lam_beta_reduce.cmx : core/lam_util.cmx core/lam_stats.cmx \
