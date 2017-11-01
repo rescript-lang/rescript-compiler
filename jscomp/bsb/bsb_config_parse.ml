@@ -177,7 +177,7 @@ let interpret_json
       | Some config  -> 
         Bsb_exception.config_error config "expect version 2 or 3"
       | None ->
-        Bsb_log.warn "@{<warn>Warn:@} refmt version missed, it is recommended to set it explicitly since we may change the default in the future";
+        Bsb_log.warn "@{<warn>Warning:@} refmt version missing. It is recommended to set it explicitly, since we may change the default in the future.@.";
         bsc_dir // refmt2_exe
 
     in 
