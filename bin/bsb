@@ -95,6 +95,7 @@ if (watch_mode) {
             process.on('SIGTERM', onExit)
             process.on('SIGHUP', onExit)
             process.on('uncaughtException', onExit)
+            process.stdin.on('close', onExit)
 
             return true
         } catch (exn) {
