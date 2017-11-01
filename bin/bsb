@@ -213,7 +213,7 @@ if (watch_mode) {
             watch_build(files)
         }
     }
-    var sub_config = { stdio: ['ignore', 'inherit', 'pipe'] }
+    var sub_config = { stdio: ['inherit', 'inherit', 'pipe'] }
 
 
     /**
