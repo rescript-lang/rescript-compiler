@@ -259,7 +259,7 @@ SYNTAX_SRCS= \
 	bs_ast_invariant
 # not a good name ast_util
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
-DEPENDS_SRCS= bs_exception ast_extract binary_ast 
+DEPENDS_SRCS= bs_exception ast_extract binary_ast
 DEPENDS_CMXS=$(addprefix depends/, $(addsuffix .cmx, $(DEPENDS_SRCS)))
 CORE_SRCS= js_runtime_modules \
 	config_util \
@@ -541,9 +541,11 @@ bin/bspp.ml:./bin/bspack.exe
 bin/js_compiler.ml:./bin/bspack.exe
 	 ./bin/bspack.exe -D BS_COMPILER_IN_BROWSER=true -U BS_DEBUG -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER) -I stubs -I ext -I syntax -I depends -I common -I core
 
-bin/jsoo_reactjs_jsx_ppx_v2.ml:./bin/reactjs_jsx_ppx_v2.bspp.ml
-	make -C bin bspp.exe
+bin/jsoo_reactjs_jsx_ppx_v2.ml:./bin/reactjs_jsx_ppx_v2.bspp.ml ./bin/bspp.exe
 	BS_COMPILER_IN_BROWSER=true ./bin/bspp.exe $^ > $@
+
+bin/reactjs_jsx_ppx_v2.ml:./bin/reactjs_jsx_ppx_v2.bspp.ml ./bin/bspp.exe
+	./bin/bspp.exe $^ > $@
 
 bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@
