@@ -24,7 +24,7 @@ bsb.exe:  bsb.mli bsb.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa str.cmxa $^ -o $@
 
 bsb_helper.exe:  bsb_helper.mli bsb_helper.ml
-	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa str.cmxa -w -a $^ -o $@
+	$(NATIVE) $(OCAMLOPT_FLAGS) unix.cmxa -w -a $^ -o $@
 
 refmt.exe: refmt_main.mli refmt_main.ml
 	$(NATIVE) -w -40-30 -no-alias-deps -I +compiler-libs ocamlcommon.cmxa $^ -o $@
