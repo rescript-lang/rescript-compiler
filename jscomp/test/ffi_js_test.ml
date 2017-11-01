@@ -3,13 +3,13 @@ let keys :  Obj.t -> string array [@bs] = [%bs.raw " function (x){return Object.
 
 
 [%%bs.raw{|
-  function $$high_order(x){
+  function $$higher_order(x){
    return function(y,z){
       return x + y + z 
    }
   }
 |}]
-external high_order: int -> (int -> int -> int  [@bs]) = "$$high_order" [@@bs.val]
+external higher_order: int -> (int -> int -> int  [@bs]) = "$$higher_order" [@@bs.val]
 
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
@@ -29,7 +29,7 @@ let int_config = config ~kind:Int ~hi:3  ~low:32
 let string_config = config ~kind:Str ~hi:3  ~low:"32"
 
 let () = 
-  eq __LOC__ (6, ((high_order 1 ) 2 3 [@bs]))
+  eq __LOC__ (6, ((higher_order 1 ) 2 3 [@bs]))
 
 
 let same_type = 
