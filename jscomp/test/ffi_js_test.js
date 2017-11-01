@@ -6,7 +6,7 @@ var Block = require("../../lib/js/block.js");
 var keys = ( function (x){return Object.keys(x)});
 
 
-  function $$high_order(x){
+  function $$higher_order(x){
    return function(y,z){
       return x + y + z 
    }
@@ -49,7 +49,7 @@ var string_config = {
 
 eq("File \"ffi_js_test.ml\", line 32, characters 5-12", /* tuple */[
       6,
-      $$high_order(1)(2, 3)
+      $$higher_order(1)(2, 3)
     ]);
 
 var same_type_000 = /* :: */[

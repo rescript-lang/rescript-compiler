@@ -97,7 +97,7 @@ since the type declarations are an integral part of OCaml.
 The FFI is divided into several components:
 
 - Binding to simple functions and values
-- Binding to high-order functions
+- Binding to higher-order functions
 - Binding to object literals
 - Binding to classes
 - Extensions to the language for debugger, regex, and embedding arbitrary JS
@@ -322,7 +322,7 @@ let test arr =
     |> map (fun [@bs] x -> x + 1)
     |> forEach (fun [@bs] x -> Js.log x)
 --------------
-<1> For the `[@bs]` attribute in the callback, see <<Binding to callbacks (high-order function)>>
+<1> For the `[@bs]` attribute in the callback, see <<Binding to callbacks (higher-order function)>>
 
 [NOTE]
 ======
@@ -728,9 +728,9 @@ let require : Node.node_require option = [%bs.node require]
 -------------
 
 
-### Binding to callbacks (high-order function)
+### Binding to callbacks (higher-order function)
 
-High order functions are functions where the callback can be another
+Higher order functions are functions where the callback can be another
 function. For example, suppose
 JS has a map function as below:
 
@@ -942,7 +942,7 @@ to infer the arity as much as it can.
 
 ##### Callback optimization
 
-However, such optimization will not work with _high-order_ functions,
+However, such optimization will not work with _higher-order_ functions,
 i.e, callbacks.
 
 For example,
