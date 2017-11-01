@@ -54,7 +54,9 @@ type result
 (** an array of the match and captures, the first is the full match and the remaining are the substring captures *)
 external captures : result -> string Js.nullable array = "%identity"
 
-(** an array of the matches, the first is the full match and the remaining are the substring matches *)
+(** an array of the matches, the first is the full match and the remaining are the substring matches
+ *  @deprecated Use [captures] instead.
+ *)
 external matches : result -> string array = "%identity"
 [@@deprecated "Use Js.Re.captures instead"]
 
