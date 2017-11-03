@@ -133,3 +133,22 @@ Error: This expression has type string but an expression was expected of type
   But was expected to be:
     [1;33mint[0m
 */
+
+let aaaaa = 10;
+let b = aaaab;
+/*
+File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_highlighting_case6.re", line 2, characters 8-13:
+Error: Unbound value aaaab
+Hint: Did you mean aaaaa?
+=====
+
+  [1;31mWe've found a bug for you![0m
+  [36m/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_highlighting_case6.re[0m [2m2:9-13[0m
+
+  1 [2m│[0m let aaaaa = 10;
+  [1;31m2[0m [2m│[0m let b = [1;31maaaab[0m;
+
+  The value aaaab can't be found
+
+  [1;33mHint: Did you mean aaaaa?[0m
+*/

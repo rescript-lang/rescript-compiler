@@ -4,6 +4,7 @@ const path = require('path')
 const child_process = require('child_process')
 
 const trimTrailingWhitespace = text => text.replace(/ *$/gm, '')
+const trimTmpNames = text => text.replace(/> \/var\/folders\/.+$/gim, '/var/folders/[elided]')
 
 const processFile = ([name, fullPath], colors, rebuild) => {
   const raw = fs.readFileSync(fullPath, 'utf8')
@@ -20,9 +21,9 @@ const processFile = ([name, fullPath], colors, rebuild) => {
       const runtime = path.join(__dirname, '../../runtime')
       const prefix = `bsc.exe -bs-re-out -I ${runtime} -pp 'refmt3.exe --print binary' -w +10-40+6+7+27+32..39+44+45`
       child_process.exec(`${prefix} -color ${colors ? 'always' : 'never'} -bs-super-errors -impl ${dest}`, (err, stdout, stderr) => {
-        const superErr = trimTrailingWhitespace(stderr).trimRight()
+        const superErr = trimTmpNames(trimTrailingWhitespace(stderr).trimRight())
         child_process.exec(`${prefix} -color never -impl ${dest}`, (err, stdout, stderr) => {
-          stderr = trimTrailingWhitespace(stderr).trimRight()
+          stderr = trimTmpNames(trimTrailingWhitespace(stderr).trimRight())
           fs.unlinkSync(dest)
           try {
             fs.unlinkSync(cmt)

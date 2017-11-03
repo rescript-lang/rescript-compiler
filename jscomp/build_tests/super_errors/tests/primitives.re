@@ -189,3 +189,22 @@ Error: This expression has type string but an expression was expected of type
   But was expected to be:
     int
 */
+
+let aaaaa = 10;
+let b = aaaab;
+/*
+File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_primitives_case9.re", line 2, characters 8-13:
+Error: Unbound value aaaab
+Hint: Did you mean aaaaa?
+=====
+
+  We've found a bug for you!
+  /Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_primitives_case9.re 2:9-13
+
+  1 │ let aaaaa = 10;
+  2 │ let b = aaaab;
+
+  The value aaaab can't be found
+
+  Hint: Did you mean aaaaa?
+*/

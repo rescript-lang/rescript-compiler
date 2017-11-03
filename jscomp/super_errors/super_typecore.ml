@@ -323,7 +323,6 @@ let report_error env ppf err =
 
 (* This will be called in super_main. This is how you'd override the default error printer from the compiler & register new error_of_exn handlers *)
 let setup () =
-  Misc.Color.setup !Clflags.color;
   Location.register_error_of_exn
     (function
       | Typecore.Error (loc, env, err) ->

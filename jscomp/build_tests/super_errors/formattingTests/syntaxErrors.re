@@ -4,7 +4,7 @@ File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/f
 Error: 869: syntax error, consider adding a `;' before
 File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re", line 1:
 Error: Error while running external preprocessor
-Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re' > /var/folders/fg/g6sqq3z109zcgm6t8lg1h3gc0000gp/T/ocamlpp9907d0
+Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re' /var/folders/[elided]
 =====
 File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re", line 1, characters 10-12:
 Error: 869: syntax error, consider adding a `;' before
@@ -15,7 +15,7 @@ Error: 869: syntax error, consider adding a `;' before
   [1;33mThere's been an error running Reason's refmt parser on a file.[0m
   This was the command:
 
-  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re' > /var/folders/fg/g6sqq3z109zcgm6t8lg1h3gc0000gp/T/ocamlpp696961
+  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case0.re' /var/folders/[elided]
 
   Please file an issue on github.com/facebook/reason. Thanks!
 */
@@ -26,7 +26,7 @@ File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/f
 Error: 1387: <UNKNOWN SYNTAX ERROR>
 File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re", line 1:
 Error: Error while running external preprocessor
-Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re' > /var/folders/fg/g6sqq3z109zcgm6t8lg1h3gc0000gp/T/ocamlpp90fb6b
+Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re' /var/folders/[elided]
 =====
 File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re", line 1, characters 13-13:
 Error: 1387: <UNKNOWN SYNTAX ERROR>
@@ -37,7 +37,7 @@ Error: 1387: <UNKNOWN SYNTAX ERROR>
   [1;33mThere's been an error running Reason's refmt parser on a file.[0m
   This was the command:
 
-  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re' > /var/folders/fg/g6sqq3z109zcgm6t8lg1h3gc0000gp/T/ocamlpp04ab02
+  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case1.re' /var/folders/[elided]
 
   Please file an issue on github.com/facebook/reason. Thanks!
 */
@@ -49,7 +49,7 @@ File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/f
 Error: 1378: syntax error, consider adding a `;' before
 File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re", line 1:
 Error: Error while running external preprocessor
-Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re' > /var/folders/fg/g6sqq3z109zcgm6t8lg1h3gc0000gp/T/ocamlppfc7f13
+Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re' /var/folders/[elided]
 =====
 File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re", line 2, characters 6-10:
 Error: 1378: syntax error, consider adding a `;' before
@@ -60,7 +60,7 @@ Error: 1378: syntax error, consider adding a `;' before
   [1;33mThere's been an error running Reason's refmt parser on a file.[0m
   This was the command:
 
-  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re' > /var/folders/fg/g6sqq3z109zcgm6t8lg1h3gc0000gp/T/ocamlpp58ee10
+  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case2.re' /var/folders/[elided]
 
   Please file an issue on github.com/facebook/reason. Thanks!
 */
@@ -71,7 +71,7 @@ File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/f
 Error: 864: <UNKNOWN SYNTAX ERROR>
 File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re", line 1:
 Error: Error while running external preprocessor
-Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re' > /var/folders/fg/g6sqq3z109zcgm6t8lg1h3gc0000gp/T/ocamlpp26d1d5
+Command line: refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re' /var/folders/[elided]
 =====
 File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re", line 1, characters 19-20:
 Error: 864: <UNKNOWN SYNTAX ERROR>
@@ -82,7 +82,7 @@ Error: 864: <UNKNOWN SYNTAX ERROR>
   [1;33mThere's been an error running Reason's refmt parser on a file.[0m
   This was the command:
 
-  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re' > /var/folders/fg/g6sqq3z109zcgm6t8lg1h3gc0000gp/T/ocamlppe497c6
+  refmt3.exe --print binary '/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/formatting_syntaxErrors_case3.re' /var/folders/[elided]
 
   Please file an issue on github.com/facebook/reason. Thanks!
 */

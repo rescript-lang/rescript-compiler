@@ -44,11 +44,11 @@ let print_loc ~normalizedRange ppf loc =
     if highlight_locations ppf [loc] then () else
       fprintf ppf "Characters %i-%i"
               loc.loc_start.pos_cnum loc.loc_end.pos_cnum
-  end else 
+  end else
     let dim_loc ppf = function
     | None -> ()
     | Some ((start_line, start_line_start_char), (end_line, end_line_end_char)) ->
-      if start_line = end_line then 
+      if start_line = end_line then
         if start_line_start_char = end_line_end_char then
           fprintf ppf " @{<dim>%i:%i@}" start_line start_line_start_char
         else
@@ -70,22 +70,22 @@ let print ~is_warning intro ppf loc =
       fprintf ppf "@[@{<error>%s@}@]@," intro
     end;
 
-    (* ocaml's reported line/col numbering is horrible and super error-prone 
-      when being handled programmatically (or humanly for that matter. If you're 
+    (* ocaml's reported line/col numbering is horrible and super error-prone
+      when being handled programmatically (or humanly for that matter. If you're
       an ocaml contributor reading this: who the heck reads the character count
       starting from the first erroring character?) *)
     let (file, start_line, start_char) = Location.get_pos_info loc.loc_start in
     let (_, end_line, end_char) = Location.get_pos_info loc.loc_end in
     (* line is 1-indexed, column is 0-indexed. We convert all of them to 1-indexed to avoid confusion *)
     (* start_char is inclusive, end_char is exclusive *)
-    let normalizedRange = 
+    let normalizedRange =
       if start_char == -1 || end_char == -1 then
         (* happens sometimes. Syntax error for example *)
         None
       else if start_line = end_line && start_char >= end_char then
         (* in some errors, starting char and ending char can be the same. But
-           since ending char was supposed to be exclusive, here it might end up 
-           smaller than the starting char if we naively did start_char + 1 to 
+           since ending char was supposed to be exclusive, here it might end up
+           smaller than the starting char if we naively did start_char + 1 to
            just the starting char and forget ending char *)
         let same_char = start_char + 1 in
         Some ((start_line, same_char), (end_line, same_char))
@@ -100,7 +100,7 @@ let print ~is_warning intro ppf loc =
       try
         let lines = file_lines file in
         (* we're putting the line break `@,` here rather than above, because this
-           branch might not be reached (aka no inline file content display) so 
+           branch might not be reached (aka no inline file content display) so
            we don't wanna end up with two line breaks in the the consequent *)
         fprintf ppf "@,%a"
           (Super_misc.print_file ~is_warning ~lines ~range)
