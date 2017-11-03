@@ -67,26 +67,6 @@ let rec collect_missing_arguments rettype targettype = match rettype with
   end
   | _ -> None
 
-let helpful_unification_error ppf env trace = begin
-  let missing_arguments = match bottom_aliases trace with
-  | Some (actual, expected) -> collect_missing_arguments actual expected
-  | None -> assert false
-  in
-  match missing_arguments with
-  | Some arguments ->
-    fprintf ppf "You're missing arguments: @[%a@]" (Format.pp_print_list ~pp_sep:(fun ppf _ -> fprintf ppf ", ") (fun ppf (label, argtype) ->
-      if label = "" then type_expr ppf argtype
-      else fprintf ppf "~%s: %a" label type_expr argtype
-    )) arguments
-  | None ->
-    super_report_unification_error ppf env trace
-      (function ppf ->
-          fprintf ppf "This value has type:")
-      (function ppf ->
-          fprintf ppf "But was expected to be:");
-    show_extra_help ppf env trace
-end
-
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
@@ -137,7 +117,25 @@ let report_error env ppf = function
           If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/docs/en/children.html@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]";
-      helpful_unification_error ppf env trace
+      begin
+        let missing_arguments = match bottom_aliases trace with
+        | Some (actual, expected) -> collect_missing_arguments actual expected
+        | None -> assert false
+        in
+        match missing_arguments with
+        | Some arguments ->
+          fprintf ppf "You're missing arguments: @[%a@]" (Format.pp_print_list ~pp_sep:(fun ppf _ -> fprintf ppf ", ") (fun ppf (label, argtype) ->
+            if label = "" then type_expr ppf argtype
+            else fprintf ppf "~%s: %a" label type_expr argtype
+          )) arguments
+        | None ->
+          super_report_unification_error ppf env trace
+            (function ppf ->
+                fprintf ppf "This value has type:")
+            (function ppf ->
+                fprintf ppf "But was expected to be:");
+          show_extra_help ppf env trace
+      end
   | Apply_non_function typ ->
       (* modified *)
       reset_and_mark_loops typ;

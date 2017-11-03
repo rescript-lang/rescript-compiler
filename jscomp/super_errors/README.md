@@ -45,7 +45,7 @@ If you've contributed to this part, but pulled in new changes and are now having
 
 Note: currently you can't test things with external libraries (e.g. ReasonReact).
 
-Format of test files (in `./tests` and `./formattingTests`)
+The fixture tests are located in `../build_tests/super_errors/` and look like:
 ```
 {some code}
 /*
@@ -62,11 +62,11 @@ etc
 */
 ```
 
-`./formattingTests` get printed with `-colors always` so we can test formatting. The other ones are printed with `-colors never` so that it's readable.
+Files in `formattingTests` get printed with `-colors always` so we can test formatting. The other ones are printed with `-colors never` so that it's readable.
 
-To add a new test case, add your code to the end of a file, and run `node ./runTests.js`. The output will be appended.
+To add a new test case, add your code to the end of a file, and run `./build_tests/super_errors/rebuild.sh`. The output will be appended.
 
-To recompile `bsc`, you can, from the `jscomp` directory, do `make bin/whole_compiler.ml && (cd bin; make bsc.exe);`.
+To recompile `bsc`, you can, from the `jscomp` directory, run `make bin/bsc.exe`. If this doesn't work, you likely have a problem with the ocaml installation -- go back to `Build` and make sure you followed everything to the letter.
 
 #### Testing on a dummy project
 
