@@ -8,7 +8,7 @@ npm run build
 # Watch
 
 ```
-npm run watch
+npm run start
 ```
 
 
