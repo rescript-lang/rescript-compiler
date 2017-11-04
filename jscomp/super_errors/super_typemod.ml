@@ -2,6 +2,7 @@ open Printtyp
 
 let fprintf = Format.fprintf
 
+
 let pp_component_type_not_generalizable_pre ppf =
   fprintf ppf "@[<v>\
     @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
@@ -61,7 +62,7 @@ let report_error ppf = Typemod.(function
       end;
       fprintf ppf
         "@[This expression's type contains type variables that can't be generalized:@,@{<error>%a@}@]@,@,\
-         %a"        
+         %a"
         type_scheme typ
         pp_component_type_not_generalizable_post ();
       fprintf ppf "@]"
@@ -78,10 +79,10 @@ let report_error ppf = Typemod.(function
       end;
       fprintf ppf
         "@[The type of this module contains type variables that cannot be generalized:@,@{<error>%a@}@]@,@,\
-         %a"        
+         %a"
         modtype mty
         pp_component_type_not_generalizable_post ();
-      fprintf ppf "@]"           
+      fprintf ppf "@]"
   | Implementation_is_required intf_name ->
       fprintf ppf
         "@[The interface %a@ declares values, not just types.@ \

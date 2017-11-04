@@ -13,6 +13,60 @@ let super_report_unification_error = Printtyp.super_report_unification_error
 let reset_and_mark_loops = Printtyp.reset_and_mark_loops
 let type_expr = Printtyp.type_expr
 
+let tagged tag fn ppf arg =
+    Format.pp_open_tag ppf tag;
+    fn ppf arg;
+    Format.pp_close_tag ppf ()
+
+let rec bottom_aliases = function
+  | (_, one) :: (_, two) :: rest -> begin match bottom_aliases rest with
+    | Some types -> Some types
+    | None -> Some (one, two)
+  end
+  | _ -> None
+
+let simple_conversions = [
+  (("float", "int"), "int_of_float");
+  (("int", "float"), "float_of_int");
+  (("int", "string"), "string_of_int");
+  (("float", "string"), "string_of_float");
+]
+
+let print_simple_conversion ppf (actual, expected) =
+  try (
+    let converter = List.assoc (actual, expected) simple_conversions in
+    Format.pp_print_newline ppf ();
+    Format.pp_print_newline ppf ();
+    fprintf ppf "You can convert a @{<info>%s@} to a @{<info>%s@} with @{<info>%s@}.@;" actual expected converter
+  ) with | Not_found -> ()
+
+let print_simple_message ppf = function
+  | ("float", "int") -> fprintf ppf "If this is a literal, you want a number without a trailing dot (e.g. @{<info>20@}).@;"
+  | ("int", "float") -> fprintf ppf "If this is a literal, you want a number with a trailing dot (e.g. @{<info>20.@}).@;"
+  | _ -> ()
+
+let show_extra_help ppf env trace = begin
+  match bottom_aliases trace with
+  | Some ({desc = Tconstr (actualPath, actualArgs, _)}, {desc = Tconstr (expectedPath, expextedArgs, _)}) -> begin
+    match (actualPath, actualArgs, expectedPath, expextedArgs) with
+    | (Pident {name = actualName}, [], Pident {name = expectedName}, []) -> begin
+      print_simple_conversion ppf (actualName, expectedName);
+      print_simple_message ppf (actualName, expectedName);
+    end
+    | _ -> ()
+  end;
+  | _ -> ();
+end
+
+let rec collect_missing_arguments rettype targettype = match rettype with
+  | {desc=Tarrow (label, argtype, rettype, _)} when rettype.desc = targettype.desc -> Some ((label, argtype) :: [])
+  | {desc=Tarrow (label, argtype, rettype, _)} -> begin
+  match collect_missing_arguments rettype targettype with
+    | Some res -> Some ((label, argtype) :: res)
+    | None -> None
+  end
+  | _ -> None
+
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
@@ -63,11 +117,25 @@ let report_error env ppf = function
           If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/docs/en/children.html@]@,@,\
           @[@{<info>Here's the original error message@}@]@,\
         @]";
-      super_report_unification_error ppf env trace
-        (function ppf ->
-           fprintf ppf "This is:")
-        (function ppf ->
-           fprintf ppf "But somewhere wanted:")
+      begin
+        let missing_arguments = match bottom_aliases trace with
+        | Some (actual, expected) -> collect_missing_arguments actual expected
+        | None -> assert false
+        in
+        match missing_arguments with
+        | Some arguments ->
+          fprintf ppf "You're missing arguments: @[%a@]" (Format.pp_print_list ~pp_sep:(fun ppf _ -> fprintf ppf ", ") (fun ppf (label, argtype) ->
+            if label = "" then type_expr ppf argtype
+            else fprintf ppf "~%s: %a" label type_expr argtype
+          )) arguments
+        | None ->
+          super_report_unification_error ppf env trace
+            (function ppf ->
+                fprintf ppf "This value has type:")
+            (function ppf ->
+                fprintf ppf "But was expected to be:");
+          show_extra_help ppf env trace
+      end
   | Apply_non_function typ ->
       (* modified *)
       reset_and_mark_loops typ;
@@ -79,14 +147,16 @@ let report_error env ppf = function
           in
           let countNumberOfArgs = countNumberOfArgs 1 in
           let acceptsCount = countNumberOfArgs returnType in
-          fprintf ppf "@[<v>@[<2>This function has type@ %a@]"
+          fprintf ppf "@[<v>@[<2>This function has type@ @{<info>%a@}@]"
             type_expr typ;
-          fprintf ppf "@ @[It only accepts %i %s; here, it's called with more.@ %s@]@]"
-                      acceptsCount (if acceptsCount == 1 then "argument" else "arguments") "Maybe you forgot a semicolon?"
+          fprintf ppf "@ @[It only accepts %i %s; here, it's called with more.@]@]"
+                      acceptsCount (if acceptsCount == 1 then "argument" else "arguments")
+      | Tconstr ((Path.Pdot (((Pdot (Path.Pident {name="Js"}, "Internal", _))| (Pident {name="Js_internal"})), ("fn" | "meth"), _)), _, _)
+        -> fprintf ppf "This is an uncurried bucklescript function. It must be applied with [@bs]."
       | _ ->
           fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
             type_expr typ
-            "It seems to have been called like a function? Maybe you forgot a semicolon somewhere?"
+            "It is not a function."
       end
   | Apply_wrong_label (l, ty) ->
       let print_label ppf = function
