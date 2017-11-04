@@ -661,7 +661,7 @@ install:
 	./runtime/js_typed_array.ml ./runtime/js_typed_array.cmi   $(DEST)
 	cp ./stdlib/*.ml ./stdlib/*.mli $(DEST)
 # ./runtime/js_null_undefined.ml ./runtime/js_null_undefined.cmi
-include all.depend
+-include all.depend
 -include $(SNAPSHOT_DEPS)
 
 clean:

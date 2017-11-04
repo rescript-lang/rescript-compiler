@@ -2,5 +2,6 @@
 {
     "debug.inlineValues": true,
     "ocaml.lintOnSave": false,
-    "ocaml.lintOnChange": false
+    "ocaml.lintOnChange": false,
+    "git.ignoreLimitWarning": true
 }
