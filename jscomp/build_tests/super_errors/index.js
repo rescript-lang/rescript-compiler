@@ -5,6 +5,8 @@ const child_process = require('child_process')
 
 const trimTrailingWhitespace = text => text.replace(/ *$/gm, '')
 const trimTmpNames = text => text.replace(/> \/var\/folders\/.+$/gim, '/var/folders/[elided]')
+const trimAbsFilename = text => text.replace(/\/.+?\/build_tests\/super_errors\/tmp\//g, '/[elided]/build_tests/super_errors/tmp/')
+const cleanUp = text => trimTrailingWhitespace(trimTmpNames(trimAbsFilename(text)))
 
 const processFile = ([name, fullPath], colors, rebuild) => {
   const raw = fs.readFileSync(fullPath, 'utf8')
@@ -19,11 +21,12 @@ const processFile = ([name, fullPath], colors, rebuild) => {
     return new Promise((res, rej) => {
       // we need this so we can reference Js_unsafe & other bucklescript goodies
       const runtime = path.join(__dirname, '../../runtime')
-      const prefix = `bsc.exe -bs-re-out -I ${runtime} -pp 'refmt3.exe --print binary' -w +10-40+6+7+27+32..39+44+45`
+      const stdlib = path.join(__dirname, '../../stdlib')
+      const prefix = `bsc.exe -bs-re-out -I ${stdlib} -I ${runtime} -pp 'refmt3.exe --print binary' -w +10-40+6+7+27+32..39+44+45`
       child_process.exec(`${prefix} -color ${colors ? 'always' : 'never'} -bs-super-errors -impl ${dest}`, (err, stdout, stderr) => {
-        const superErr = trimTmpNames(trimTrailingWhitespace(stderr).trimRight())
+        const superErr = cleanUp(stderr).trimRight()
         child_process.exec(`${prefix} -color never -impl ${dest}`, (err, stdout, stderr) => {
-          stderr = trimTmpNames(trimTrailingWhitespace(stderr).trimRight())
+          stderr = cleanUp(stderr).trimRight()
           fs.unlinkSync(dest)
           try {
             fs.unlinkSync(cmt)

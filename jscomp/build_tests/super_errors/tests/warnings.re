@@ -4,13 +4,13 @@ let z = () => {
   10
 };
 /*
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_warnings_case0.re", line 3, characters 2-7:
+File "/[elided]/build_tests/super_errors/tmp/normal_warnings_case0.re", line 3, characters 2-7:
 Warning 5: this function application is partial,
 maybe some arguments are missing.
 =====
 
   Warning number 5
-  /Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_warnings_case0.re 3:3-7
+  /[elided]/build_tests/super_errors/tmp/normal_warnings_case0.re 3:3-7
 
   1 │ let x = (a, b) => a + b;
   2 │ let z = () => {
@@ -27,12 +27,12 @@ let z = () => {
   10
 };
 /*
-File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_warnings_case1.re", line 2, characters 2-4:
+File "/[elided]/build_tests/super_errors/tmp/normal_warnings_case1.re", line 2, characters 2-4:
 Warning 10: this expression should have type unit.
 =====
 
   Warning number 10
-  /Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_warnings_case1.re 2:3-4
+  /[elided]/build_tests/super_errors/tmp/normal_warnings_case1.re 2:3-4
 
   1 │ let z = () => {
   2 │   10;
