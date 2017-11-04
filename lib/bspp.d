@@ -1,6 +1,6 @@
-../lib/bspp.ml : bspp/parser.ml
-../lib/bspp.ml : core/bspp_main.ml
-../lib/bspp.ml : core/bspp_main.mli
+../lib/bspp.ml : ./bspp/parser.ml
+../lib/bspp.ml : ./core/bspp_main.ml
+../lib/bspp.ml : ./core/bspp_main.mli
 ../lib/bspp.ml : ../vendor/ocaml/utils/misc.ml
 ../lib/bspp.ml : ../vendor/ocaml/utils/misc.mli
 ../lib/bspp.ml : ../lib/config_whole_compiler.ml
