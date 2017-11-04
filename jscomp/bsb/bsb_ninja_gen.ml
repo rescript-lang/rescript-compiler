@@ -164,7 +164,7 @@ let output_ninja_and_namespace_map
           (if namespace = None then source_dirs 
            else Filename.current_dir_name :: source_dirs) ))  oc 
   in   
-  let  bs_groups, bsc_lib_dirs, static_resources, has_reason_files =
+  let  bs_groups, bsc_lib_dirs, static_resources =
     let number_of_dev_groups = Bsb_dir_index.get_current_number_of_dev_groups () in
     if number_of_dev_groups = 0 then
       let bs_group, source_dirs,static_resources  =
@@ -176,8 +176,9 @@ let output_ninja_and_namespace_map
             ( if resources = [] then acc_resources
               else Ext_list.map_append (fun x -> dir // x ) resources  acc_resources)
           ) (String_map.empty,[],[]) bs_file_groups in
-      has_reason_files := Bsb_db.sanity_check bs_group;    
-      [|bs_group|], source_dirs, static_resources, !has_reason_files
+      has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;   
+  
+      [|bs_group|], source_dirs, static_resources
     else
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
       let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
@@ -189,7 +190,7 @@ let output_ninja_and_namespace_map
             Ext_list.map_append (fun x -> dir//x) resources  resources
           ) [] bs_file_groups in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
-      has_reason_files := Bsb_db.sanity_check lib;
+      has_reason_files := Bsb_db.sanity_check lib || !has_reason_files;
       for i = 1 to number_of_dev_groups  do
         let c = bs_groups.(i) in
         has_reason_files :=  Bsb_db.sanity_check c || !has_reason_files ;
@@ -198,7 +199,7 @@ let output_ninja_and_namespace_map
           (Bsb_dir_index.(string_of_bsb_dev_include (of_int i)))
           (Bsb_build_util.flag_concat dash_i @@ source_dirs.(i)) oc
       done  ;
-      bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources, !has_reason_files
+      bs_groups,source_dirs.((Bsb_dir_index.lib_dir_index:>int)), static_resources
   in
 
   output_reason_config ();
