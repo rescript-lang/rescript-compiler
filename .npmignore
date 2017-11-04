@@ -20,5 +20,4 @@ jscomp/*
 !jscomp/runtime
 !jscomp/others
 !jscomp/stubs
-!jscomp/Makefile
 !jscomp/Makefile.shared

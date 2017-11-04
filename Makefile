@@ -1,11 +1,21 @@
+# export BS_RELEASE_BUILD=1
+# so that amdjs is also set
+
 # Note we should not do snapshotml here
 # since in relese build, user may not have the sources available
 # -B is not necessary in CI, however, when dir is not clean..
+
 world:
 	@echo "Making compiler"
 	$(MAKE) -B -C lib -j 6 all
+	$(MAKE) libs
+
+libs:
 	@echo "Making compiler finished"
-	BS_RELEASE_BUILD=1 $(MAKE) -C jscomp -j8 libs
+	$(MAKE) -C jscomp/stdlib -j8 allcmis
+	$(MAKE) -C jscomp/runtime -j8 all
+	$(MAKE) -C jscomp/stdlib -j8 all
+	$(MAKE) -C jscomp/others -j8 all
 
 DEST=lib/ocaml
 RUNTIME=jscomp/runtime
@@ -28,3 +38,5 @@ install:
 	$(RUNTIME)/js_typed_array.ml $(RUNTIME)/js_typed_array.cmi  \
 	$(STDLIB)/*.cm* $(STDLIB)/*.ml $(STDLIB)/*.mli \
 	$(OTHERS)/*.ml $(OTHERS)/*.mli  $(OTHERS)/*.cm* $(DEST)
+
+.PHONY: libs world
