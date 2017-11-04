@@ -488,7 +488,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1><a href="https://github.com/bucklescript/bucklescript">BuckleScript</a> User Manual</h1>
 <div class="details">
 <span id="author" class="author">Hongbo Zhang</span><br>
-<span id="revnumber">version 1.9.0</span>
+<span id="revnumber">version 2.0.1</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -501,15 +501,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#_installation">Installation</a>
 <ul class="sectlevel2">
-<li><a href="#_windows_installation">Windows Installation</a></li>
-<li><a href="#__nix_installation">*nix installation</a></li>
-<li><a href="#__strong_recommended_strong_installation_with_opam"><strong>Recommended</strong> installation with OPAM</a></li>
-<li><a href="#_install_from_source">Install from source</a>
-<ul class="sectlevel3">
-<li><a href="#_using_npm">using NPM</a></li>
-<li><a href="#_minimal_dependencies">Minimal dependencies</a></li>
-</ul>
-</li>
+<li><a href="#_from_a_href_https_www_npmjs_com_package_bs_platform_npm_a_recommended_for_normal_users">From <a href="https://www.npmjs.com/package/bs-platform">npm</a> (recommended for normal users)</a></li>
+<li><a href="#_build_from_source_in_release_mode">Build from source in Release Mode</a></li>
+<li><a href="#_making_use_of_opam">Making use of OPAM</a></li>
 </ul>
 </li>
 <li><a href="#_get_started">Get Started</a>
@@ -892,56 +886,75 @@ runtime libraries are only needed when user actually calls it.</p>
 <div class="sect1">
 <h2 id="_installation"><a class="anchor" href="#_installation"></a>Installation</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Below is a list of different ways to install BuckleScript:</p>
-</div>
 <div class="sect2">
-<h3 id="_windows_installation"><a class="anchor" href="#_windows_installation"></a>Windows Installation</h3>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="sh">npm install bs-platform</code></pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="__nix_installation"><a class="anchor" href="#__nix_installation"></a>*nix installation</h3>
-<div class="ulist">
-<div class="title">Prerequisites</div>
-<ul>
-<li>
-<p>Standard C toolchain</p>
-</li>
-<li>
-<p><code>npm</code> (should be installed with Node)</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>The standard <code>npm</code> package management tool can be used to install
-BuckleScript. If you don&#8217;t already have <code>npm</code> installed, follow the
-directions listed
-<a href="https://docs.npmjs.com/getting-started/installing-node">here</a>. Once <code>npm</code>
-is installed, run the following command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="sh">npm install --save bs-platform</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or install it globally</p>
-</div>
+<h3 id="_from_a_href_https_www_npmjs_com_package_bs_platform_npm_a_recommended_for_normal_users"><a class="anchor" href="#_from_a_href_https_www_npmjs_com_package_bs_platform_npm_a_recommended_for_normal_users"></a>From <a href="https://www.npmjs.com/package/bs-platform">npm</a> (recommended for normal users)</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="sh">npm install -g bs-platform</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>It supports all platform including Windows</p>
+</div>
 </div>
 <div class="sect2">
-<h3 id="__strong_recommended_strong_installation_with_opam"><a class="anchor" href="#__strong_recommended_strong_installation_with_opam"></a><strong>Recommended</strong> installation with OPAM</h3>
+<h3 id="_build_from_source_in_release_mode"><a class="anchor" href="#_build_from_source_in_release_mode"></a>Build from source in Release Mode</h3>
+<div class="paragraph">
+<p>Note for dev mode, you are encouraged to work from <a href="https://github.com/BuckleScript/bucklescript/wiki/Contribute">there</a></p>
+</div>
+<div class="ulist">
+<div class="title">Prerequisites</div>
+<ul>
+<li>
+<p>Standard C toolchain(gcc,Makefile)</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">Get source</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh">git clone https://github.com/bucklescript/bucklescript</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The patched compiler is installed locally into your <code>$(pwd)/bin</code>
+directory. To start using it temporarily, check if <code>ocamlc.opt</code> and
+<code>ocamlopt.opt</code> exist in <code>$(pwd)/bin</code>, and temporarily add the location
+to your <code>$(PATH)</code> (e.g. <code>PATH=$(pwd)/bin:$PATH</code>).</p>
+</div>
+<div class="listingblock">
+<div class="title">Build Vendored OCaml compiler</div>
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd </span>bucklescript/vendor/ocaml
+./configure -prefix <span class="tok-sb">`</span><span class="tok-nb">pwd</span><span class="tok-sb">`</span>
+make world <span class="tok-o">&amp;&amp;</span> make install</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<div class="title">Build BuckleScript compiler and its toolchain</div>
+<p>The following directions assume you already have the correct version of
+<code>ocamlopt.opt</code> in your <code>$PATH</code>, having followed the process described in
+the previous section.</p>
+</div>
+<div class="paragraph">
+<p>Change <code>cwd</code> to project root directory</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">export </span><span class="tok-nv">BS_RELEASE_BUILD</span><span class="tok-o">=</span>1
+make world <span class="tok-o">&amp;&amp;</span> install</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>At the end, you should have a binary called <code>bsc.exe</code> under <code>lib/</code>
+directory, which you can add to your <code>$PATH</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_making_use_of_opam"><a class="anchor" href="#_making_use_of_opam"></a>Making use of OPAM</h3>
 <div class="paragraph">
 <p>When working with OCaml we also recommend using <a href="https://opam.ocaml.org">opam</a>
-package manager to install OCaml toolchains, available
+package manager to install OCaml native toolchains, available
 <a href="https://opam.ocaml.org/doc/Install.html">here</a>. You will benefit from the
 existing OCaml ecosystem.</p>
 </div>
@@ -953,100 +966,11 @@ version of the compiler:</p>
 <div class="content">
 <pre class="pygments highlight"><code data-lang="sh">opam update
 opam switch 4.02.3+buckle-master
-<span class="tok-nb">eval</span> <span class="tok-sb">`</span>opam config env<span class="tok-sb">`</span>
-npm install bs-platform</code></pre>
+<span class="tok-nb">eval</span> <span class="tok-sb">`</span>opam config env<span class="tok-sb">`</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Note that using this approach, the user can also install other OCaml tools easily.</p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_install_from_source"><a class="anchor" href="#_install_from_source"></a>Install from source</h3>
-<div class="sect3">
-<h4 id="_using_npm"><a class="anchor" href="#_using_npm"></a>using NPM</h4>
-<div class="olist arabic">
-<div class="title">Prerequisites:</div>
-<ol class="arabic">
-<li>
-<p>Standard C toolchain</p>
-</li>
-<li>
-<p><code>npm</code> (should be installed with Node)</p>
-</li>
-</ol>
-</div>
-<div class="listingblock">
-<div class="title">Instructions:</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="sh">git clone https://github.com/bucklescript/bucklescript
-<span class="tok-nb">cd </span>bucklescript
-npm install</code></pre>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_minimal_dependencies"><a class="anchor" href="#_minimal_dependencies"></a>Minimal dependencies</h4>
-<div class="olist arabic">
-<div class="title">Prerequisites:</div>
-<ol class="arabic">
-<li>
-<p>Standard C toolchain</p>
-</li>
-</ol>
-</div>
-<div class="paragraph">
-<p>BuckleScript has very few dependencies and building from source can
-easily be done.</p>
-</div>
-<div class="listingblock">
-<div class="title">Build OCaml compiler</div>
-<div class="content">
-<pre class="pygments highlight"><code data-lang="sh">git clone https://github.com/bucklescript/bucklescript
-<span class="tok-nb">cd </span>bucklescript/vendor/ocaml
-./configure -prefix <span class="tok-sb">`</span><span class="tok-nb">pwd</span><span class="tok-sb">`</span> <span class="tok-c"># put your preferred directory</span>
-make world.opt
-make install</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The patched compiler is installed locally into your <code>$(pwd)/bin</code>
-directory. To start using it temporarily, check if <code>ocamlc.opt</code> and
-<code>ocamlopt.opt</code> exist in <code>$(pwd)/bin</code>, and temporarily add the location
-to your <code>$(PATH)</code> (e.g. <code>PATH=$(pwd)/bin:$PATH</code>).</p>
-</div>
-<div class="paragraph">
-<div class="title">Building BuckleScript</div>
-<p>The following directions assume you already have the correct version of
-<code>ocamlopt.opt</code> in your <code>$PATH</code>, having followed the process described in
-the previous section.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="pygments highlight"><code data-lang="sh"><span class="tok-nb">cd</span> ../../jscomp
-make world</code></pre>
-</div>
-</div>
-<hr>
-<div class="paragraph">
-<p>At the end, you should have a binary called <code>bsc.exe</code> under <code>jscomp/bin</code>
-directory, which you can add to your <code>$PATH</code>.
-You could also set an environment variable
-pointing to the stdlib, e.g. <code>BSC_LIB=/path/to/jscomp/stdlib</code> for ease
-of use.</p>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Warning</div>
-</td>
-<td class="content">
-The built compiler is not <em>relocatable</em> out of box, please don&#8217;t move it around unless you know what you are doing
-</td>
-</tr>
-</table>
-</div>
 </div>
 </div>
 </div>
@@ -5838,7 +5762,7 @@ change <code>j.ml</code> (most likely you won&#8217;t), so you probably don&#821
 </ul>
 </div>
 <div class="paragraph">
-<p><strong>Below assume that you are working in <code>jscomp</code> directory, and that you&#8217;ve followed instructions from <a href="#_minimal_dependencies">Minimal dependencies</a> to build OCaml.</strong></p>
+<p><strong>Below assume that you are working in <code>jscomp</code> directory, and that you&#8217;ve followed instructions from <a href="#Minimal dependencies">[Minimal dependencies]</a> to build OCaml.</strong></p>
 </div>
 </div>
 <div class="sect2">
@@ -6316,7 +6240,7 @@ polymorphism <a href="https://github.com/bucklescript/bucklescript/issues/686">#
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.9.0<br>
+Version 2.0.1<br>
 </div>
 </div>
 </body>
