@@ -12,7 +12,7 @@ Error: This expression has type ((('a) => 'b, 'a, 'c) => 'b) [@bs]
   /Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_bucklescript_case0.re 4:1-3
 
   2 │ let app = [@bs] (f, x, y) => f(x);
-  3 │ 
+  3 │
   4 │ app(((x) => x + 1), 2);
 
   This is an uncurried bucklescript function. It must be applied with [@bs].

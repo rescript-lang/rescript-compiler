@@ -3,7 +3,7 @@ const fs = require('fs')
 const path = require('path')
 const child_process = require('child_process')
 
-const trimTrailingWhitespace = text => text.replace(/^ *$/gm, '')
+const trimTrailingWhitespace = text => text.replace(/ *$/gm, '')
 
 const processFile = ([name, fullPath], colors, rebuild) => {
   const raw = fs.readFileSync(fullPath, 'utf8')
@@ -11,7 +11,7 @@ const processFile = ([name, fullPath], colors, rebuild) => {
   const baseName = name.split('.')[0]
   const tasks = parts.map((part, i) => {
     let [code, _output] = part.split('\n/*\n')
-    code = code.trim()
+    code = trimTrailingWhitespace(code).trimRight().replace(/^\n*/, '')
     const dest = path.join(__dirname, `tmp/${baseName}_case${i}.re`)
     const cmt = path.join(__dirname, `tmp/${baseName}_case${i}.cmt`)
     fs.writeFileSync(dest, code)
@@ -34,7 +34,7 @@ const processFile = ([name, fullPath], colors, rebuild) => {
   })
 
   return Promise.all(tasks).then(newParts => {
-    const final = newParts.map(({code, superErr, stderr}) => `${code.trim()}\n/*\n${stderr}\n=====\n${superErr}\n*/\n`).join('\n')
+    const final = newParts.map(({code, superErr, stderr}) => `${code}\n/*\n${stderr}\n=====\n${superErr}\n*/\n`).join('\n')
     if (rebuild) {
       fs.writeFileSync(fullPath, final)
     } else if (final !== raw) {

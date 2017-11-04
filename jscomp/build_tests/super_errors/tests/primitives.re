@@ -157,3 +157,35 @@ Error: This expression has type list(int)
 You can convert a int to a float with float_of_int.
 If this is a literal, you want a number with a trailing dot (e.g. 20.).
 */
+
+let asd = aaa;
+/*
+File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_primitives_case7.re", line 1, characters 10-13:
+Error: Unbound value aaa
+=====
+
+  We've found a bug for you!
+  /Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_primitives_case7.re 1:11-13
+
+  1 │ let asd = aaa;
+
+  The value aaa can't be found
+*/
+
+let a: int = "hello"
+/*
+File "/Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_primitives_case8.re", line 1, characters 13-20:
+Error: This expression has type string but an expression was expected of type
+         int
+=====
+
+  We've found a bug for you!
+  /Users/jared/clone/fork/bucklescript/jscomp/build_tests/super_errors/tmp/normal_primitives_case8.re 1:14-20
+
+  1 │ let a: int = "hello"
+
+  This value has type:
+    string
+  But was expected to be:
+    int
+*/
