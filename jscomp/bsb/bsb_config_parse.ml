@@ -165,20 +165,20 @@ let interpret_json
       match String_map.find_opt Bsb_build_schemas.refmt map with 
       | Some (Flo {flo} as config) -> 
         begin match flo with 
-        | "2" -> bsc_dir // refmt2_exe
-        | "3" -> bsc_dir // refmt3_exe
+        | "2" -> Bsb_config_types.Refmt_v2
+        | "3" -> Refmt_v3
         | _ -> Bsb_exception.config_error config "expect version 2 or 3"
         end
       | Some (Str {str}) 
         -> 
-
+        Refmt_custom
         (Bsb_build_util.resolve_bsb_magic_file 
           ~cwd ~desc:Bsb_build_schemas.refmt str)
       | Some config  -> 
         Bsb_exception.config_error config "expect version 2 or 3"
       | None ->
-        Bsb_log.warn "@{<warn>Warning:@} refmt version missing. It is recommended to set it explicitly, since we may change the default in the future.@.";
-        bsc_dir // refmt2_exe
+        Refmt_none
+        
 
     in 
     (* The default situation is empty *)

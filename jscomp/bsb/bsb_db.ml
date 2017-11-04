@@ -130,14 +130,19 @@ let map_update ~dir (map : t)
 
 
 let sanity_check (map  : t ) = 
-  String_map.iter (fun k module_info ->
+  String_map.fold (fun k module_info has_re ->
       match module_info with 
-      |  { ml = Ml_source(file1,_,ml_case); 
-           mli = Mli_source(file2,_,mli_case) } ->
-        if ml_case != mli_case then 
-          Ext_pervasives.failwithf 
-            ~loc:__LOC__
-            "%S and %S have different cases"
-            file1 file2
-      | _ -> ()
-    )  map
+      |  { ml = Ml_source(file1,is_re,ml_case); 
+           mli = Mli_source(file2,is_rei,mli_case) } ->
+        (if ml_case != mli_case then 
+           Bsb_exception.invalid_spec
+             (Printf.sprintf          
+                "%S and %S have different cases"
+                file1 file2));
+        has_re || is_re || is_rei
+      | {ml = Ml_source(_,is_re,_); mli = Mli_empty}
+        -> has_re || is_re
+      | {mli = Mli_source(_,is_rei,_); ml = Ml_empty}
+        -> has_re || is_rei
+      | {ml = Ml_empty ; mli = Mli_empty } -> has_re
+    )  map false
