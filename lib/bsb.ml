@@ -13362,7 +13362,8 @@ let root = OCamlRes.Res.([
        \n\
        \n\
        # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
+       ") ;
     File ("package.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
