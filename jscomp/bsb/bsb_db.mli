@@ -89,4 +89,8 @@ val read_build_cache : dir:string -> ts
 val map_update : 
   dir:string -> t ->  string -> t
 
-val sanity_check : t -> unit   
+(**
+  return [boolean] to indicate whether reason file exists or not
+  will raise if it fails sanity check
+*)
+val sanity_check : t -> bool

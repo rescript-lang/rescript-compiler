@@ -826,7 +826,7 @@ bsb/bsb_config_types.cmx : ext/string_map.cmx ext/string_hash_set.cmx \
     bsb/bsb_warning.cmx bsb/bsb_parse_sources.cmx bsb/bsb_package_specs.cmx
 bsb/bsb_db.cmx : ext/string_map.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_modulename.cmx \
-    bsb/bsb_db.cmi
+    bsb/bsb_exception.cmx bsb/bsb_db.cmi
 bsb/bsb_default.cmx : bsb/bsb_config_types.cmx bsb/bsb_default.cmi
 bsb/bsb_dir_index.cmx : bsb/bsb_dir_index.cmi
 bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \

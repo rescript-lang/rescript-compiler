@@ -28,7 +28,9 @@ type error =
   | Package_not_found of string * string option (* json file *)
   | Json_config of Ext_position.t * string
   | Invalid_json of string
+  | Invalid_spec of string
   | Conflict_module of string * string * string 
+  
 
 exception Error of error 
 
@@ -63,7 +65,9 @@ let print (fmt : Format.formatter) (x : error) =
                         @{<error>Error:@} %s \n\
                         For more details, please checkout the schema http://bucklescript.github.io/bucklescript/docson/#build-schema.json" 
                         pos.pos_lnum s 
-
+  | Invalid_spec s -> 
+    Format.fprintf fmt 
+    "@{<error>Error: Invalid bsconfig.json%s@}" s 
   | Invalid_json s ->
     Format.fprintf fmt 
     "File %S, line 1\n\
@@ -79,6 +83,8 @@ let config_error config fmt =
   let loc = Ext_json.loc_of config in
 
   error (Json_config (loc,fmt))
+
+let invalid_spec s = error (Invalid_spec s)
 
 let invalid_json s = error (Invalid_json s)
 
