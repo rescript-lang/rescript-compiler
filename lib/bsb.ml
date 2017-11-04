@@ -10169,7 +10169,11 @@ type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of
 
 type reason_react_jsx = string option 
 
-
+type refmt = 
+  | Refmt_none
+  | Refmt_v2
+  | Refmt_v3 
+  | Refmt_custom of string 
 type t = 
   {
     package_name : string ; 
@@ -10187,7 +10191,7 @@ type t =
       so that we can calculate correct relative path in 
       [.merlin]
     *)
-    refmt : string;
+    refmt : refmt;
     refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
@@ -10799,20 +10803,20 @@ let interpret_json
       match String_map.find_opt Bsb_build_schemas.refmt map with 
       | Some (Flo {flo} as config) -> 
         begin match flo with 
-        | "2" -> bsc_dir // refmt2_exe
-        | "3" -> bsc_dir // refmt3_exe
+        | "2" -> Bsb_config_types.Refmt_v2
+        | "3" -> Refmt_v3
         | _ -> Bsb_exception.config_error config "expect version 2 or 3"
         end
       | Some (Str {str}) 
         -> 
-
+        Refmt_custom
         (Bsb_build_util.resolve_bsb_magic_file 
           ~cwd ~desc:Bsb_build_schemas.refmt str)
       | Some config  -> 
         Bsb_exception.config_error config "expect version 2 or 3"
       | None ->
-        Bsb_log.warn "@{<warn>Warning:@} refmt version missing. It is recommended to set it explicitly, since we may change the default in the future.@.";
-        bsc_dir // refmt2_exe
+        Refmt_none
+        
 
     in 
     (* The default situation is empty *)
@@ -12563,7 +12567,17 @@ let output_ninja_and_namespace_map
       in 
       Bsb_ninja_util.output_kvs
         [|
-          Bsb_ninja_global_vars.refmt, refmt;
+          Bsb_ninja_global_vars.refmt, 
+            (match refmt with 
+            | Refmt_v2 -> 
+              Bsb_log.warn "@{<warn>Warning:@} ReasonSyntax V2 is deprecated, please upgrade to V3.@.";
+              bsc_dir // "refmt.exe"
+            | Refmt_none -> 
+              Bsb_log.warn "@{<warn>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
+              bsc_dir // "refmt.exe"
+            | Refmt_v3 -> 
+              bsc_dir // "refmt3.exe"
+            | Refmt_custom x -> x );
           Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
         |] oc 
@@ -12617,8 +12631,7 @@ let output_ninja_and_namespace_map
             ( if resources = [] then acc_resources
               else Ext_list.map_append (fun x -> dir // x ) resources  acc_resources)
           ) (String_map.empty,[],[]) bs_file_groups in
-      has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;   
-  
+      has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;     
       [|bs_group|], source_dirs, static_resources
     else
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in

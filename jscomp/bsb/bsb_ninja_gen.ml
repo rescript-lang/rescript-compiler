@@ -122,7 +122,17 @@ let output_ninja_and_namespace_map
       in 
       Bsb_ninja_util.output_kvs
         [|
-          Bsb_ninja_global_vars.refmt, refmt;
+          Bsb_ninja_global_vars.refmt, 
+            (match refmt with 
+            | Refmt_v2 -> 
+              Bsb_log.warn "@{<warn>Warning:@} ReasonSyntax V2 is deprecated, please upgrade to V3.@.";
+              bsc_dir // "refmt.exe"
+            | Refmt_none -> 
+              Bsb_log.warn "@{<warn>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
+              bsc_dir // "refmt.exe"
+            | Refmt_v3 -> 
+              bsc_dir // "refmt3.exe"
+            | Refmt_custom x -> x );
           Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;
         |] oc 
@@ -176,8 +186,7 @@ let output_ninja_and_namespace_map
             ( if resources = [] then acc_resources
               else Ext_list.map_append (fun x -> dir // x ) resources  acc_resources)
           ) (String_map.empty,[],[]) bs_file_groups in
-      has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;   
-  
+      has_reason_files := Bsb_db.sanity_check bs_group || !has_reason_files;     
       [|bs_group|], source_dirs, static_resources
     else
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in

@@ -35,7 +35,11 @@ type entries_t = JsTarget of string | NativeTarget of string | BytecodeTarget of
 
 type reason_react_jsx = string option 
 
-
+type refmt = 
+  | Refmt_none
+  | Refmt_v2
+  | Refmt_v3 
+  | Refmt_custom of string 
 type t = 
   {
     package_name : string ; 
@@ -53,7 +57,7 @@ type t =
       so that we can calculate correct relative path in 
       [.merlin]
     *)
-    refmt : string;
+    refmt : refmt;
     refmt_flags : string list;
     js_post_build_cmd : string option;
     package_specs : Bsb_package_specs.t ; 
