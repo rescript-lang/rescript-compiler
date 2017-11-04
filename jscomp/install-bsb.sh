@@ -2,4 +2,4 @@
 
 # dev small utils
 # hot replace global bsb.exe for quick testing
-cp ../bin/bsb bin/bsb.exe bin/bsb_helper.exe /usr/local/lib/node_modules/bs-platform/bin/
+cp ../lib/bsb ../lib/bsb.exe ../lib/bsb_helper.exe /usr/local/lib/node_modules/bs-platform/lib/
