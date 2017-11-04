@@ -1,6 +1,6 @@
 include ../Makefile.shared
 
-COMPILER=../bin/bsc.exe
+COMPILER=../../lib/bsc.exe
 
 MAP_FILES= node bs
 

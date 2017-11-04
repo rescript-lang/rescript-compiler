@@ -4,13 +4,13 @@ var child_process = require('child_process')
 var fs = require('fs')
 var path = require('path')
 var os = require('os')
+var root = path.join(__dirname,'..')
+var dest_bin = path.join(root, 'lib')
+var dest_lib = path.join(root,'lib','ocaml')
 
-var dest_bin = path.join(__dirname, '..', 'bin')
-var dest_lib = path.join(__dirname,'..','lib','ocaml')
 
+var jscomp = path.join(root, 'jscomp')
 
-var jscomp = path.join(__dirname, '..', 'jscomp')
-var jscomp_bin = path.join(jscomp, 'bin')
 
 
 /*
@@ -31,7 +31,8 @@ function copyFile(file,target){
  */
 function renameAsync(from,to){
     console.log(from , '----->', to)
-    fs.rename(from,to)
+    // @ts-ignore
+	fs.rename(from,to)
     // fs.renameSync(from,to)
 
 }
@@ -78,7 +79,7 @@ function install(){
 
     var jscomp_runtime = path.join(jscomp,'runtime')
 
-    files = fs.readdirSync(jscomp_runtime)
+    var files = fs.readdirSync(jscomp_runtime)
     files.forEach(function(file){
 	var format_file = path.parse(file)
 	var special_files = ['js', 'js_unsafe', 'js_internal',  'js_null', 'js_undefined', 'js_typed_array', 'caml_exceptions', 'js_float']
@@ -96,21 +97,7 @@ function install(){
     })
 
     install_directory(path.join(jscomp,'stdlib'), dest_lib)
-    install_directory(path.join(jscomp,'others'), dest_lib)
-
-    var files = fs.readdirSync(jscomp_bin)
-    files.forEach(function(file){
-	var format_file = path.parse(file)
-	if(format_file &&
-	   format_file.ext === '.exe' || 
-	   format_file.ext === '.js'
-	  ){
-	    var from = path.join(jscomp_bin,file)
-	    var to = path.join(dest_bin,file)
-	    copyFile(from,to)
-	}
-
-    })
+    install_directory(path.join(jscomp,'others'), dest_lib)    
 }
 
 exports.install =  install;

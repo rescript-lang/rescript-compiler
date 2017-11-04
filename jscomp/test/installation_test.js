@@ -33,7 +33,7 @@ var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
 
 if (match !== undefined) {
   var root = App_root_finder.find_package_json(match);
-  var bsc_exe = Path.join(root, "jscomp", "bin", "bsc.exe");
+  var bsc_exe = Path.join(root, "lib", "bsc.exe");
   var exit = 0;
   var output;
   try {

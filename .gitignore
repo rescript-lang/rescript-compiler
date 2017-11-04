@@ -65,7 +65,7 @@ bin/*
 odoc_gen/*.cmxs
 
 # for npm publish
-bin/bsc.exe
+./lib/*.exe
 !bin/bsppx
 !bin/bspack
 !/bin/bsb
@@ -84,12 +84,11 @@ bin/bsc.exe
 .ninja_deps
 .bsdeps
 .bs_dir_cache
-*.d
+
 .bsbuild
 build.ninja
 jscomp/bin/bsb
 jscomp/bin/bsc
-jscomp/bin/config_whole_compiler.ml
 lib/bs
 lib/js/jscomp/test
 jscomp/build_tests/*/lib/

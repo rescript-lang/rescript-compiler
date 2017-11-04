@@ -15,18 +15,10 @@
     "should-equal": "^1.0.1",
     "uglify-js": "^3.0.10"
   },
-  "exportedEnvVars": {
-    "PATH": {
-      "global": true,
-      "globalCollisionBehavior": "joinPath",
-      "resolveAsRelativePath": true,
-      "val": "./bin/"
-    }
-  },
   "bin": {
-    "bsb": "bin/bsb",
-    "bsc": "bin/bsc",
-    "bsrefmt": "bin/bsrefmt"
+    "bsb": "lib/bsb",
+    "bsc": "lib/bsc",
+    "bsrefmt": "lib/bsrefmt"
   },
   "scripts": {
     "test": "go build -o test.exe scripts/test.go && ./test.exe",

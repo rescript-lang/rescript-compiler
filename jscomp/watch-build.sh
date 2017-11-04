@@ -10,7 +10,7 @@ export npm_package_name=bs-platform
 echo "Checking"
 make -r -j5  check 
 echo "Linking"
-make -r -j3 bin/bsc.exe bin/bsb.exe bin/cmjdump.exe bin/bsb_helper.exe
+make -r -j3 ../lib/bsc.exe ../lib/bsb.exe bin/cmjdump.exe ../lib/bsb_helper.exe
 echo "Making libs"
 make libs 
 echo "Making test"
