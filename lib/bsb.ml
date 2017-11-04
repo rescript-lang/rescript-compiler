@@ -3272,7 +3272,7 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let color_enabled = ref (Unix.isatty Unix.stdin)
+let color_enabled = ref (Unix.isatty Unix.stdout)
 
 let color_functions : Format.formatter_tag_functions = {
   mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;
@@ -12570,10 +12570,10 @@ let output_ninja_and_namespace_map
           Bsb_ninja_global_vars.refmt, 
             (match refmt with 
             | Refmt_v2 -> 
-              Bsb_log.warn "@{<warn>Warning:@} ReasonSyntax V2 is deprecated, please upgrade to V3.@.";
+              Bsb_log.warn "@{<warning>Warning:@} ReasonSyntax V2 is deprecated, please upgrade to V3.@.";
               bsc_dir // "refmt.exe"
             | Refmt_none -> 
-              Bsb_log.warn "@{<warn>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
+              Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
               bsc_dir // "refmt.exe"
             | Refmt_v3 -> 
               bsc_dir // "refmt3.exe"

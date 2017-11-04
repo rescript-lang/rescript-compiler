@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-let color_enabled = ref (Unix.isatty Unix.stdin)
+let color_enabled = ref (Unix.isatty Unix.stdout)
 
 let color_functions : Format.formatter_tag_functions = {
   mark_open_tag = (fun s ->  if !color_enabled then  Ext_color.ansi_of_tag s else Ext_string.empty) ;

@@ -125,10 +125,10 @@ let output_ninja_and_namespace_map
           Bsb_ninja_global_vars.refmt, 
             (match refmt with 
             | Refmt_v2 -> 
-              Bsb_log.warn "@{<warn>Warning:@} ReasonSyntax V2 is deprecated, please upgrade to V3.@.";
+              Bsb_log.warn "@{<warning>Warning:@} ReasonSyntax V2 is deprecated, please upgrade to V3.@.";
               bsc_dir // "refmt.exe"
             | Refmt_none -> 
-              Bsb_log.warn "@{<warn>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
+              Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
               bsc_dir // "refmt.exe"
             | Refmt_v3 -> 
               bsc_dir // "refmt3.exe"
