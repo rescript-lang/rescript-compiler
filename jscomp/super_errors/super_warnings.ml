@@ -3,7 +3,6 @@ let fprintf = Format.fprintf
 (* actual modified message branches are commented *)
 let message (warning : Warnings.t)  =
   match warning with
-  | Deprecated s -> s ^ " is deprecated. "
   | Partial_match "" ->
       "You forgot to handle a possible value here, though we don't have more information on the value."
   | Partial_match s ->
