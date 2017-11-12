@@ -2864,8 +2864,8 @@ its arguments all at the same time, since its semantics depends on <code>this</c
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">class</span> <span class="tok-k">type</span> <span class="tok-o">_</span><span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-k">object</span>
-  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>
-  <span class="tok-k">method</span> <span class="tok-n">width</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>
+  <span class="tok-k">method</span> <span class="tok-n">height</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span>
+  <span class="tok-k">method</span> <span class="tok-n">width</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">set</span><span class="tok-o">]</span>
   <span class="tok-k">method</span> <span class="tok-n">draw</span> <span class="tok-o">:</span> <span class="tok-kt">unit</span> <span class="tok-o">-&gt;</span> <span class="tok-kt">unit</span>
 <span class="tok-k">end</span> <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">]</span> <b class="conum">(1)</b>
 <span class="tok-k">type</span> <span class="tok-n">rect</span> <span class="tok-o">=</span> <span class="tok-o">_</span><span class="tok-n">rect</span> <span class="tok-nn">Js</span><span class="tok-p">.</span><span class="tok-n">t</span></code></pre>
@@ -2883,7 +2883,9 @@ it needs to be lifted to <code>Js.t</code> too.</p>
 <p>For JS classes, methods with arrow types are treated as real methods
 (automatically annotated with <code>[@bs.meth]</code>)
 while methods with non-arrow types
-are treated as properties.</p>
+are treated as properties. Adding <code>[@@bs.set]</code> to those methods will make them
+mutable, which enables you to set them using <code>#=</code> later. Dropping the <code>[@@bs.set]</code>
+attribute makes the method/property immutable.</p>
 </div>
 <div class="paragraph">
 <p>So the type <code>rect</code> is the same as below:</p>
