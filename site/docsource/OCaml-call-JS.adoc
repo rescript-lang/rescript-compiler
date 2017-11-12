@@ -1149,8 +1149,8 @@ Below is an example:
 [source,ocaml]
 --------------------------------
 class type _rect = object
-  method height : int
-  method width : int
+  method height : int [@@bs.set]
+  method width : int [@@bs.set]
   method draw : unit -> unit
 end [@bs] // <1>
 type rect = _rect Js.t
@@ -1161,7 +1161,9 @@ it needs to be lifted to `Js.t` too.
 For JS classes, methods with arrow types are treated as real methods
 (automatically annotated with `[@bs.meth]`)
 while methods with non-arrow types
-are treated as properties.
+are treated as properties. Adding `[@@bs.set]` to those methods will make them
+mutable, which enables you to set them using `#=` later. Dropping the `[@@bs.set]`
+attribute makes the method/property immutable.
 
 So the type `rect` is the same as below:
 [source,ocaml]
