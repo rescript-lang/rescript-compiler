@@ -7228,7 +7228,7 @@ let sanity_check (map  : t ) =
       match module_info with 
       |  { ml = Ml_source(file1,is_re,ml_case); 
            mli = Mli_source(file2,is_rei,mli_case) } ->
-        (if ml_case != mli_case then 
+        (if ml_case <> mli_case then 
            Bsb_exception.invalid_spec
              (Printf.sprintf          
                 "%S and %S have different cases"

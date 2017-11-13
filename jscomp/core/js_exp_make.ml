@@ -788,7 +788,7 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
   (*   econd ?comment { b with expression_desc = Bin (And , b0,b1)} t f *)
   | _ -> 
     let b  = ocaml_boolean_under_condition b in 
-    (* if b' != b then *)
+    (* if b' <> b then *)
     (*   econd ?comment b' t f  *)
     (* else  *)
     if Js_analyzer.eq_expression t f then
