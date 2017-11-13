@@ -62,10 +62,10 @@ function setUpNinja() {
     };
 
 
-    var ninja_os_path = path.join(ninja_build_dir,'ninja' + sys_extension )
+    var ninja_os_path = path.join(ninja_build_dir, 'ninja' + sys_extension)
     if (fs.existsSync(ninja_bin_output) && test_ninja_compatible(ninja_bin_output)) {
         console.log("ninja binary is already cached: ", ninja_bin_output)
-    } 
+    }
     else if (fs.existsSync(ninja_os_path)) {
         fs.renameSync(ninja_os_path, ninja_bin_output)
         if (test_ninja_compatible(ninja_bin_output)) {
@@ -92,10 +92,7 @@ function matchedCompilerExn() {
         throw ""
     }
 }
-
-
-function non_windows_npm_release() {
-
+function tryToProvideOCamlCompiler() {
     try {
         if (process.env.BS_ALWAYS_BUILD_YOUR_COMPILER) {
             throw 'FORCED TO REBUILD'
@@ -114,29 +111,52 @@ function non_windows_npm_release() {
         console.log('configure again with local ocaml installed')
         matchedCompilerExn()
         console.log("config finished")
-    }    
-    child_process.execSync(make + " world && " + make + " install", root_dir_config)    
+    }
 }
 
-var build_util = require('./build_util.js')
-setUpNinja()
-if (is_windows) {
-    process.env.WIN32 = '1'
-    console.log("Installing on Windows")
+function non_windows_npm_release() {
+
+    if (checkPrebuilt()) {
+        child_process.execSync(make + " libs && " + make + " install", root_dir_config)
+    } else {
+        tryToProvideOCamlCompiler()
+        child_process.execSync(make + " world && " + make + " install", root_dir_config)
+    }
+}
+function checkPrebuilt() {
+    try {
+        if(fs.existsSync(path.join(lib_dir,'bsc.exe'))){
+            console.log('Found bsc.exe, assume it was already built')
+            return true // already built before
+        }
+        var version = child_process.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
+        console.log("checkoutput:", String(version))
+        return copyBinToExe()
+    } catch (e) {
+        console.log("No working prebuilt compiler")
+        return false
+    }
+}
+
+function copyBinToExe() {
     var indeed_windows_release = 0
     fs.readdirSync(lib_dir).forEach(function (f) {
-        var last_index = f.lastIndexOf('.win')
+        var last_index = f.lastIndexOf(sys_extension)
         if (last_index !== -1) {
-            var new_file = f.slice(0, -4) + ".exe"
+            var new_file = f.slice(0, - sys_extension.length) + ".exe"
             build_util.poor_copy_sync(path.join(lib_dir, f), path.join(lib_dir, new_file));
             // we do have .win file which means windows npm release
             ++indeed_windows_release
         }
 
     })
-    if (indeed_windows_release > 1) {
-        // Make it more fault tolerant
-        // =1 can still be okay (only ninja.win in this case)
+    return indeed_windows_release > 1
+}
+var build_util = require('./build_util.js')
+
+setUpNinja()
+if (is_windows) {
+    if (copyBinToExe()) {
         child_process.execFileSync(
             path.join(__dirname, 'win_build.bat'),
             { cwd: path.join(root_dir, 'jscomp'), stdio: [0, 1, 2] }

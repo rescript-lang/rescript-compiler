@@ -1,9 +1,4 @@
-ifdef WIN32
-	EXE := .exe
-endif
-ifndef EXE
-	EXE := # empty
-endif
+
 .SECONDARY:
 NATIVE=ocamlopt.opt$(EXE)
 BYTE=ocamlc.opt$(EXE)

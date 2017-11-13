@@ -15,30 +15,7 @@ console.log("Working dir", working_dir)
 var jscomp_dir_config = { cwd: jscomp, stdio: [0, 1, 2] }
 var root_config = { cwd: root, stdio: [0, 1, 2] }
 process.env.BS_RELEASE_BUILD = 'true'
-function buildCompiler() {
-	child_process.execSync('make -j1 -B -C lib all', root_config)
 
-	if(is_windows){
-		fs.writeFileSync(
-			path.join(__dirname,
-			'win_build.bat'),
-			getLibCommands(),
-			'utf8'
-		)
-	}
-	
-	// rename exe to .win
-	fs.readdirSync(path.join(root, 'lib')).forEach(function (f) {
-		var last_index = f.lastIndexOf('.exe')
-		if (last_index !== -1) {
-			var new_file = f.slice(0, -4) + sys_extension
-			console.log(f + " --> " + new_file)
-			fs.renameSync(path.join(root, 'lib', f), path.join(root, 'lib', new_file))
-		}
-	})
-}
-
-buildCompiler()
 function getLibCommands() {
 	var result =
 		child_process.execSync(
@@ -89,5 +66,28 @@ function getLibCommands() {
 }
 
 
+function buildCompiler() {
+	child_process.execSync('make -j1 -B -C lib all', root_config)
 
+	if(is_windows){
+		fs.writeFileSync(
+			path.join(__dirname,
+			'win_build.bat'),
+			getLibCommands(),
+			'utf8'
+		)
+	}
+	
+	// rename exe to .win
+	fs.readdirSync(path.join(root, 'lib')).forEach(function (f) {
+		var last_index = f.lastIndexOf('.exe')
+		if (last_index !== -1) {
+			var new_file = f.slice(0, -4) + sys_extension
+			console.log(f + " --> " + new_file)
+			fs.renameSync(path.join(root, 'lib', f), path.join(root, 'lib', new_file))
+		}
+	})
+}
+
+buildCompiler()
 
