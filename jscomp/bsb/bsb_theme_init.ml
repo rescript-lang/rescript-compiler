@@ -36,14 +36,36 @@ let replace s env : string =
     ) s
 
 let (//) = Filename.concat 
-let npm_link = "npm link bs-platform"
 
-(*let no_such_directory dir = 
-    match Sys.is_directory dir with 
-    | true -> false 
-    | false -> true 
-    |*)
 
+let run_npm_link cwd name  = 
+  Format.fprintf Format.std_formatter 
+    "Symlink bs-platform in %s @."  (cwd//name);  
+  if Ext_sys.is_windows_or_cygwin then 
+    begin 
+      let npm_link = "npm link bs-platform" in 
+      let exit_code = Sys.command npm_link in 
+      if exit_code <> 0 then 
+        begin
+          prerr_endline ("failed to run : " ^ npm_link);
+          exit exit_code
+        end
+    end 
+  else 
+    begin 
+      let (//) = Filename.concat in 
+      let node_bin =  "node_modules" // ".bin" in
+      Bsb_build_util.mkp node_bin;
+      let p = ".." // "bs-platform" // "lib" in 
+      let link a = 
+        Unix.symlink (p//a) (node_bin // a) in 
+      link "bsb" ; 
+      link "bsc" ;
+      link "bsrefmt";          
+      Unix.symlink
+        (Filename.dirname (Filename.dirname Sys.executable_name))
+        (Filename.concat "node_modules" "bs-platform")
+    end
 let enter_dir cwd x action = 
   Unix.chdir x ; 
   match action () with 
@@ -95,13 +117,7 @@ let init_sample_project ~cwd ~theme name =
   ];
   let action = fun _ -> 
     process_themes env  theme Filename.current_dir_name Bsb_templates.root;         
-    Format.fprintf Format.std_formatter "Running %s in %s @." npm_link (cwd//name);
-    let exit_code = Sys.command npm_link in 
-    if exit_code <> 0 then 
-      begin
-        prerr_endline ("failed to run : " ^ npm_link);
-        exit exit_code
-      end
+    run_npm_link cwd name
   in   
   begin match name with 
     | "." -> 
