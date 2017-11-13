@@ -1,12 +1,3 @@
-# ifdef WIN32
-# 	EXE := .exe
-# endif
-# ifndef EXE
-# 	EXE := # empty
-# endif
-# NATIVE=ocamlopt.opt$(EXE)
-# BSC=./bsc.exe
-
 NATIVE=ocamlopt.opt
 
 OCAMLOPT_FLAGS= -g -w -40-30 ../jscomp/stubs/ext_basic_hash_stubs.c

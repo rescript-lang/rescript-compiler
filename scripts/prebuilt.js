@@ -4,7 +4,8 @@ var child_process = require('child_process')
 var fs = require('fs')
 var path = require('path')
 var os = require('os')
-
+var config = require('./config.js')
+var sys_extension = config.sys_extension
 var is_windows = !(os.type().indexOf('Windows') < 0)
 var root = path.join(__dirname, '..')
 var jscomp = path.join(root, 'jscomp')
@@ -17,6 +18,14 @@ process.env.BS_RELEASE_BUILD = 'true'
 function buildCompiler() {
 	child_process.execSync('make -j1 -B -C lib all', root_config)
 
+	if(is_windows){
+		fs.writeFileSync(
+			path.join(__dirname,
+			'win_build.bat'),
+			getLibCommands(),
+			'utf8'
+		)
+	}
 	
 	// rename exe to .win
 	fs.readdirSync(path.join(root, 'lib')).forEach(function (f) {
@@ -79,11 +88,6 @@ function getLibCommands() {
 	return bat_commands
 }
 
-if (is_windows) {
-	fs.writeFileSync(
-		path.join(__dirname, 'win_build.bat'),
-		getLibCommands(),
-		'utf8')
-}
+
 
 
