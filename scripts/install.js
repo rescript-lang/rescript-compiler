@@ -17,10 +17,6 @@ var path = require('path')
 var os = require('os')
 
 var os_type = os.type()
-
-
-
-
 var root_dir = path.join(__dirname, '..')
 var lib_dir = path.join(root_dir, 'lib')
 var root_dir_config = { cwd: root_dir, stdio: [0, 1, 2] }
@@ -28,7 +24,7 @@ var root_dir_config = { cwd: root_dir, stdio: [0, 1, 2] }
 var config = require('./config.js')
 var make = config.make
 var is_windows = config.is_windows
-var sys_extension = 
+var sys_extension = config.sys_extension
 // Add vendor bin path
 // So that second try will work
 process.env.PATH =
@@ -67,16 +63,10 @@ function setUpNinja() {
 
 
     var ninja_os_path = path.join(ninja_build_dir,'ninja' + sys_extension )
-    // if (is_windows) {
-    //     ninja_os_path = path.join(ninja_build_dir, 'ninja.win')
-    // } else if (os_type === 'Darwin') {
-    //     ninja_os_path = path.join(ninja_build_dir, 'ninja.darwin')
-    // } else if (os_type === 'Linux') {
-    //     ninja_os_path = path.join(ninja_build_dir, 'ninja.linux64')
-    // }
     if (fs.existsSync(ninja_bin_output) && test_ninja_compatible(ninja_bin_output)) {
         console.log("ninja binary is already cached: ", ninja_bin_output)
-    } else if (fs.existsSync(ninja_os_path)) {
+    } 
+    else if (fs.existsSync(ninja_os_path)) {
         fs.renameSync(ninja_os_path, ninja_bin_output)
         if (test_ninja_compatible(ninja_bin_output)) {
             console.log("ninja binary is copied from pre-distribution")
@@ -88,7 +78,7 @@ function setUpNinja() {
     }
 }
 
-setUpNinja()
+
 /**
  * raise an exception if not matched
  */
@@ -104,7 +94,6 @@ function matchedCompilerExn() {
 }
 
 
-
 function non_windows_npm_release() {
 
     try {
@@ -115,7 +104,7 @@ function non_windows_npm_release() {
     } catch (e) {
         console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
         try {
-            child_process.execSync(path.join(__dirname, 'buildocaml.sh')) // TODO: sh -c ? this will be wrong if we have white space in the path
+            child_process.execFileSync(path.join(__dirname, 'buildocaml.sh'))
         } catch (e) {
             console.log(e.stdout.toString());
             console.log(e.stderr.toString());
@@ -125,15 +114,12 @@ function non_windows_npm_release() {
         console.log('configure again with local ocaml installed')
         matchedCompilerExn()
         console.log("config finished")
-    }
-    console.log("Build the compiler and runtime .. ")
-    child_process.execSync(make + " world", root_dir_config)
-    console.log("Installing")
-    child_process.execSync(make + ' VERBOSE=true install', root_dir_config)
-
+    }    
+    child_process.execSync(make + " world && " + make + " install", root_dir_config)    
 }
 
 var build_util = require('./build_util.js')
+setUpNinja()
 if (is_windows) {
     process.env.WIN32 = '1'
     console.log("Installing on Windows")
