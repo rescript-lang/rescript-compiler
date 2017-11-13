@@ -114,30 +114,7 @@ function tryToProvideOCamlCompiler() {
     }
 }
 
-function non_windows_npm_release() {
-
-    if (checkPrebuilt()) {
-        child_process.execSync(make + " libs && " + make + " install", root_dir_config)
-    } else {
-        tryToProvideOCamlCompiler()
-        child_process.execSync(make + " world && " + make + " install", root_dir_config)
-    }
-}
-function checkPrebuilt() {
-    try {
-        if(fs.existsSync(path.join(lib_dir,'bsc.exe'))){
-            console.log('Found bsc.exe, assume it was already built')
-            return true // already built before
-        }
-        var version = child_process.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
-        console.log("checkoutput:", String(version))
-        return copyBinToExe()
-    } catch (e) {
-        console.log("No working prebuilt compiler")
-        return false
-    }
-}
-
+// copy all [*.sys_extension] files into [*.exe]
 function copyBinToExe() {
     var indeed_windows_release = 0
     fs.readdirSync(lib_dir).forEach(function (f) {
@@ -152,6 +129,33 @@ function copyBinToExe() {
     })
     return indeed_windows_release > 1
 }
+
+function checkPrebuilt() {
+    try {
+        var version = child_process.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
+        console.log("checkoutput:", String(version))
+        return copyBinToExe()
+    } catch (e) {
+        console.log("No working prebuilt compiler")
+        return false
+    }
+}
+
+
+
+function non_windows_npm_release() {
+    if (fs.existsSync(path.join(lib_dir, 'bsc.exe'))) {
+        console.log('Found bsc.exe, assume it was already built')
+        return true // already built before
+    }
+    if (checkPrebuilt()) {
+        child_process.execSync(make + " libs && " + make + " install", root_dir_config)
+    } else {
+        tryToProvideOCamlCompiler()
+        child_process.execSync(make + " world && " + make + " install", root_dir_config)
+    }
+}
+
 var build_util = require('./build_util.js')
 
 setUpNinja()
@@ -161,7 +165,6 @@ if (is_windows) {
             path.join(__dirname, 'win_build.bat'),
             { cwd: path.join(root_dir, 'jscomp'), stdio: [0, 1, 2] }
         )
-        // clean.clean()
         console.log("Installing")
         build_util.install()
     } else {
