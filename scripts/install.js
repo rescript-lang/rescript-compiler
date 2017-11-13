@@ -12,75 +12,72 @@
 // This will be run in npm postinstall, don't use too fancy features here
 
 var child_process = require('child_process')
-
 var fs = require('fs')
 var path = require('path')
 var os = require('os')
 
 var os_type = os.type()
-var os_arch = os.arch()
-var is_windows = !(os_type.indexOf('Windows') < 0)
-var is_bsd = !(os_type.indexOf('BSD') < 0)
 var root_dir = path.join(__dirname, '..')
 var lib_dir = path.join(root_dir, 'lib')
-var jscomp = path.join(root_dir, 'jscomp')
-
-
-var working_dir = process.cwd()
-console.log("Working dir", working_dir)
-var jscomp_dir_config = { cwd: jscomp, stdio: [0, 1, 2] }
 var root_dir_config = { cwd: root_dir, stdio: [0, 1, 2] }
-var build_util = require('./build_util')
-var vendor_ninja_version = '1.8.2'
 
-var ninja_bin_output = path.join(root_dir, 'lib', 'ninja.exe')
-var ninja_source_dir = path.join(root_dir, 'vendor', 'ninja')
-var ninja_build_dir = path.join(root_dir, 'vendor', 'ninja-build')
+var config = require('./config.js')
+var make = config.make
+var is_windows = config.is_windows
+var sys_extension = config.sys_extension
+// Add vendor bin path
+// So that second try will work
+process.env.PATH =
+    path.join(__dirname, '..', 'vendor', 'ocaml', 'bin') +
+    path.delimiter +
+    process.env.PATH
 
-function build_ninja() {
-    console.log('No prebuilt Ninja, building Ninja now')
-    var build_ninja_command = "./configure.py --bootstrap"
-    child_process.execSync(build_ninja_command, { cwd: ninja_source_dir, stdio: [0, 1, 2] })
-    fs.renameSync(path.join(ninja_source_dir, 'ninja'), ninja_bin_output)
-    console.log('ninja binary is ready: ', ninja_bin_output)
-}
+function setUpNinja() {
+    var vendor_ninja_version = '1.8.2'
+    var ninja_bin_output = path.join(root_dir, 'lib', 'ninja.exe')
+    var ninja_source_dir = path.join(root_dir, 'vendor', 'ninja')
+    var ninja_build_dir = path.join(root_dir, 'vendor', 'ninja-build')
 
-// sanity check to make sure the binary actually runs. Used for Linux. Too many variants
-function test_ninja_compatible(binary_path) {
-    var version;
-    try {
-        version = child_process.execSync(JSON.stringify(binary_path) + ' --version', {
-            encoding: 'utf8',
-            stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
-        }).trim();
-    } catch (e) {
-        console.log('ninja not compatible?', String(e))
-        return false;
+    function build_ninja() {
+        console.log('No prebuilt Ninja, building Ninja now')
+        var build_ninja_command = "./configure.py --bootstrap"
+        child_process.execSync(build_ninja_command, { cwd: ninja_source_dir, stdio: [0, 1, 2] })
+        fs.renameSync(path.join(ninja_source_dir, 'ninja'), ninja_bin_output)
+        console.log('ninja binary is ready: ', ninja_bin_output)
     }
-    return version === vendor_ninja_version;
-};
+
+    // sanity check to make sure the binary actually runs. Used for Linux. Too many variants
+    function test_ninja_compatible(binary_path) {
+        var version;
+        try {
+            version = child_process.execSync(JSON.stringify(binary_path) + ' --version', {
+                encoding: 'utf8',
+                stdio: ['pipe', 'pipe', 'ignore'] // execSync outputs to stdout even if we catch the error. Silent it here
+            }).trim();
+        } catch (e) {
+            console.log('ninja not compatible?', String(e))
+            return false;
+        }
+        return version === vendor_ninja_version;
+    };
 
 
-var ninja_os_path
-if (is_windows) {
-    ninja_os_path = path.join(ninja_build_dir, 'ninja.win')
-} else if (os_type === 'Darwin') {
-    ninja_os_path = path.join(ninja_build_dir, 'ninja.darwin')
-} else if (os_type === 'Linux') {
-    ninja_os_path = path.join(ninja_build_dir, 'ninja.linux64')
-}
-if (fs.existsSync(ninja_bin_output) && test_ninja_compatible(ninja_bin_output)) {
-    console.log("ninja binary is already cached: ", ninja_bin_output)
-} else if (fs.existsSync(ninja_os_path)) {
-    fs.renameSync(ninja_os_path, ninja_bin_output)
-    if (test_ninja_compatible(ninja_bin_output)) {
-        console.log("ninja binary is copied from pre-distribution")
+    var ninja_os_path = path.join(ninja_build_dir, 'ninja' + sys_extension)
+    if (fs.existsSync(ninja_bin_output) && test_ninja_compatible(ninja_bin_output)) {
+        console.log("ninja binary is already cached: ", ninja_bin_output)
+    }
+    else if (fs.existsSync(ninja_os_path)) {
+        fs.renameSync(ninja_os_path, ninja_bin_output)
+        if (test_ninja_compatible(ninja_bin_output)) {
+            console.log("ninja binary is copied from pre-distribution")
+        } else {
+            build_ninja()
+        }
     } else {
         build_ninja()
     }
-} else {
-    build_ninja()
 }
+
 
 /**
  * raise an exception if not matched
@@ -95,14 +92,7 @@ function matchedCompilerExn() {
         throw ""
     }
 }
-
-// Add vendor bin path
-// So that second try will work
-process.env.PATH = path.join(__dirname, '..', 'vendor', 'ocaml', 'bin') + path.delimiter + process.env.PATH
-var make = is_bsd ? 'gmake' : 'make';
-
-function non_windows_npm_release() {
-
+function tryToProvideOCamlCompiler() {
     try {
         if (process.env.BS_ALWAYS_BUILD_YOUR_COMPILER) {
             throw 'FORCED TO REBUILD'
@@ -111,7 +101,7 @@ function non_windows_npm_release() {
     } catch (e) {
         console.log('Build a local version of OCaml compiler, it may take a couple of minutes')
         try {
-            child_process.execSync(path.join(__dirname, 'buildocaml.sh')) // TODO: sh -c ? this will be wrong if we have white space in the path
+            child_process.execFileSync(path.join(__dirname, 'buildocaml.sh'))
         } catch (e) {
             console.log(e.stdout.toString());
             console.log(e.stderr.toString());
@@ -122,31 +112,55 @@ function non_windows_npm_release() {
         matchedCompilerExn()
         console.log("config finished")
     }
-    console.log("Build the compiler and runtime .. ")
-    child_process.execSync(make + " world", root_dir_config)
-    console.log("Installing")
-    child_process.execSync(make + ' VERBOSE=true install', root_dir_config)
-
 }
 
-if (is_windows) {
-    process.env.WIN32 = '1'
-    console.log("Installing on Windows")
+function non_windows_npm_release() {
+
+    if (checkPrebuilt()) {
+        child_process.execSync(make + " libs && " + make + " install", root_dir_config)
+    } else {
+        tryToProvideOCamlCompiler()
+        child_process.execSync(make + " world && " + make + " install", root_dir_config)
+    }
+}
+function checkPrebuilt() {
+    try {
+        if(fs.existsSync(path.join(lib_dir,'bsc.exe'))){
+            console.log('Found bsc.exe, assume it was already built')
+            return true // already built before
+        }
+        var version = child_process.execFileSync(path.join(lib_dir, 'bsc' + sys_extension), ['-v'])
+        console.log("checkoutput:", String(version))
+        return copyBinToExe()
+    } catch (e) {
+        console.log("No working prebuilt compiler")
+        return false
+    }
+}
+
+function copyBinToExe() {
     var indeed_windows_release = 0
     fs.readdirSync(lib_dir).forEach(function (f) {
-        var last_index = f.lastIndexOf('.win')
+        var last_index = f.lastIndexOf(sys_extension)
         if (last_index !== -1) {
-            var new_file = f.slice(0, -4) + ".exe"
+            var new_file = f.slice(0, - sys_extension.length) + ".exe"
             build_util.poor_copy_sync(path.join(lib_dir, f), path.join(lib_dir, new_file));
             // we do have .win file which means windows npm release
             ++indeed_windows_release
         }
 
     })
-    if (indeed_windows_release > 1) {
-        // Make it more fault tolerant
-        // =1 can still be okay (only ninja.win in this case)
-        child_process.execFileSync(path.join(__dirname, 'win_build.bat'), jscomp_dir_config)
+    return indeed_windows_release > 1
+}
+var build_util = require('./build_util.js')
+
+setUpNinja()
+if (is_windows) {
+    if (copyBinToExe()) {
+        child_process.execFileSync(
+            path.join(__dirname, 'win_build.bat'),
+            { cwd: path.join(root_dir, 'jscomp'), stdio: [0, 1, 2] }
+        )
         // clean.clean()
         console.log("Installing")
         build_util.install()

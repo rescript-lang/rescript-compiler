@@ -1,10 +1,5 @@
-ifdef WIN32
-	EXE := .exe
-endif
-ifndef EXE
-	EXE := # empty
-endif
-NATIVE=ocamlopt.opt$(EXE)
+
+NATIVE=ocamlopt.opt
 BSC_FLAGS= -w -40-30 -I ../runtime -I ../stdlib -bs-files
 BSC=../../lib/bsc.exe
 OCAMLOPT_FLAGS= -g -w -40-30 ../stubs/ext_basic_hash_stubs.c

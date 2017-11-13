@@ -1,12 +1,5 @@
-ifdef WIN32
-	EXE := .exe
-endif
-ifndef EXE
-	EXE := # empty
-endif
-NATIVE=ocamlopt.opt$(EXE)
-BSC_FLAGS= -w -40-30 -I ../jscomp/runtime -I ../jscomp/stdlib -bs-files
-BSC=./bsc.exe
+NATIVE=ocamlopt.opt
+
 OCAMLOPT_FLAGS= -g -w -40-30 ../jscomp/stubs/ext_basic_hash_stubs.c
 # -inline 1000 makes size too large
 # TODO: make sure it can be bootstrapped, at least is a very good

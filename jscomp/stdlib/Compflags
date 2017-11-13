@@ -15,14 +15,14 @@
 case $1 in
   pervasives.cm[ioxj]|pervasives.p.cmx) echo ' -nopervasives';;
   camlinternalOO.cmi) echo ' -nopervasives';;
-  camlinternalOO.cmx|camlinternalOO.p.cmx) echo ' -inline 0';;
-  buffer.cmx|buffer.p.cmx) echo ' -inline 3';;
+  #camlinternalOO.cmx|camlinternalOO.p.cmx) echo ' -inline 0';;
+  #buffer.cmx|buffer.p.cmx) echo ' -inline 3';;
                            # make sure add_char is inlined (PR#5872)
-  buffer.cm[ioj]) echo ' -w A';;
-  camlinternalFormat.cm[ioj]) echo ' -w Ae';;
+  #buffer.cm[ioj]) echo ' -w A';;
+  #camlinternalFormat.cm[ioj]) echo ' -w Ae';;
   camlinternalFormatBasics*.cm[ioxj]) echo ' -nopervasives';;
-  printf.cm[ioj]|format.cm[ioj]|scanf.cm[ioj]) echo ' -w Ae';;
-  scanf.cmx|scanf.p.cmx) echo ' -inline 9';;
+  #printf.cm[ioj]|format.cm[ioj]|scanf.cm[ioj]) echo ' -w Ae';;
+  #scanf.cmx|scanf.p.cmx) echo ' -inline 9';;
   *Labels.cm[oxj]|*Labels.p.cmx) echo ' -nolabels -no-alias-deps';;
   *) echo ' ';;
 esac
