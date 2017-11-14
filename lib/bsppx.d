@@ -85,6 +85,7 @@
 ../lib/bsppx.ml : ./syntax/ast_external_mk.ml
 ../lib/bsppx.ml : ./syntax/ast_utf8_string.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/location.ml
+../lib/bsppx.ml : ./syntax/ast_derive_util.mli
 ../lib/bsppx.ml : ./syntax/ast_external_mk.mli
 ../lib/bsppx.ml : ./syntax/ast_utf8_string.mli
 ../lib/bsppx.ml : ./syntax/external_process.ml

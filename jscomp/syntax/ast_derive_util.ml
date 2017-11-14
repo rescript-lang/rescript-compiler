@@ -24,11 +24,15 @@
 
 open Ast_helper
 
-let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) = 
+let core_type_of_type_declaration 
+    (tdcl : Parsetree.type_declaration) = 
   match tdcl with 
   | {ptype_name = {txt ; loc};
      ptype_params ;
-    } -> Typ.constr {txt = Lident txt ; loc} (Ext_list.map fst ptype_params)
+    } -> 
+    Typ.constr 
+      {txt = Lident txt ; loc}
+      (Ext_list.map fst ptype_params)
 
 let lift_string_list_to_array (labels : string list) = 
   Exp.array

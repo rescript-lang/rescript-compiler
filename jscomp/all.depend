@@ -184,7 +184,7 @@ syntax/ast_utf8_string_interp.cmx : ext/literals.cmx ext/ext_utf8.cmx \
     ext/ext_string.cmx ext/ext_char.cmx common/bs_loc.cmx \
     syntax/ast_utf8_string_interp.cmi
 syntax/ast_derive_constructor.cmx :
-syntax/ast_derive_util.cmx : ext/ext_list.cmx
+syntax/ast_derive_util.cmx : ext/ext_list.cmx syntax/ast_derive_util.cmi
 syntax/ast_exp.cmx : syntax/ast_exp.cmi
 syntax/ast_external_mk.cmx : syntax/ast_external_mk.cmi
 syntax/ast_lift.cmx : syntax/ast_lift.cmi
@@ -241,6 +241,7 @@ syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/ext_string.cmx \
 syntax/bs_syntaxerr.cmi :
 syntax/ast_utf8_string.cmi :
 syntax/ast_utf8_string_interp.cmi :
+syntax/ast_derive_util.cmi :
 syntax/ast_exp.cmi :
 syntax/ast_external_mk.cmi :
 syntax/ast_lift.cmi :

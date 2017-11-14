@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,37 +22,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type tdcls = Parsetree.type_declaration list 
-
-type gen = {
-  structure_gen : tdcls -> bool -> Ast_structure.t ;
-  signature_gen : tdcls -> bool -> Ast_signature.t ; 
-  expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
-}
-
-(**
-   [register name cb]
-   example: [register "accessors" cb]
-*)
-val register : 
-  string -> 
-  (Parsetree.expression option -> gen) -> 
-  unit
-
-val gen_structure: 
-  tdcls  ->
-  Ast_payload.action list ->
-  bool -> 
-  Ast_structure.t
-
-val gen_signature: 
-  tdcls ->
-  Ast_payload.action list -> 
-  bool -> 
-  Ast_signature.t
+(** Given a type declaration, extaract the type expression, mostly 
+  used in code gen later
+ *)
+ val core_type_of_type_declaration :
+  Parsetree.type_declaration -> Parsetree.core_type
 
 
-val gen_expression : 
-  string Asttypes.loc -> Parsetree.core_type -> Parsetree.expression
-
-
+val lift_string_list_to_array : string list -> Parsetree.expression
+val lift_int : int -> Parsetree.expression
+val lift_int_list_to_array : int list -> Parsetree.expression
+val mk_fun :
+  loc:Location.t ->
+  Parsetree.core_type ->
+  string -> Parsetree.expression -> Parsetree.expression
+val destruct_label_declarations :
+  loc:Location.t ->
+  string ->
+  Parsetree.label_declaration list ->
+  (Parsetree.core_type * Parsetree.expression) list * string list

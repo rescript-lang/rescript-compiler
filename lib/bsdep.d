@@ -99,6 +99,7 @@
 ../lib/bsdep.ml : ./syntax/ast_external_mk.ml
 ../lib/bsdep.ml : ./syntax/ast_utf8_string.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/location.ml
+../lib/bsdep.ml : ./syntax/ast_derive_util.mli
 ../lib/bsdep.ml : ./syntax/ast_external_mk.mli
 ../lib/bsdep.ml : ./syntax/ast_utf8_string.mli
 ../lib/bsdep.ml : ./syntax/external_process.ml
