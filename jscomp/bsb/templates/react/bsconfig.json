@@ -12,7 +12,6 @@
     "module": "commonjs",
     "in-source": true
   }],
-  "refmt": 3,
   "suffix": ".bs.js",
   "namespace": true,
   "bs-dependencies": [
