@@ -1,0 +1,4 @@
+
+
+module Foo = struct 
+end
