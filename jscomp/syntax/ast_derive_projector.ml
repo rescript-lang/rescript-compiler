@@ -2,7 +2,7 @@ open Ast_helper
 
 
 let init () =
-  Ast_derive.update 
+  Ast_derive.register
     "accessors" 
     begin fun (x : Parsetree.expression option) ->
        match x with 

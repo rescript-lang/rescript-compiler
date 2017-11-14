@@ -9048,29 +9048,37 @@ module Ast_derive : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type tdcls = Parsetree.type_declaration list 
 
 type gen = {
-  structure_gen : Parsetree.type_declaration list -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
+  structure_gen : tdcls -> bool -> Ast_structure.t ;
+  signature_gen : tdcls -> bool -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
-val type_deriving_structure: 
-  Parsetree.type_declaration list  ->
+(**
+  [register name cb]
+  example: [register "accessors" cb]
+*)
+val register : string -> (Parsetree.expression option -> gen) -> unit
+
+val gen_structure: 
+  tdcls  ->
   Ast_payload.action list ->
   bool -> 
   Ast_structure.t
-val type_deriving_signature: 
-  Parsetree.type_declaration list ->
+
+val gen_signature: 
+  tdcls ->
   Ast_payload.action list -> 
   bool -> 
   Ast_signature.t
 
 
-val dispatch_extension : 
+val gen_expression : 
   string Asttypes.loc -> Parsetree.core_type -> Parsetree.expression
 
-val update : string -> (Parsetree.expression option -> gen) -> unit
+
 
 end = struct
 #1 "ast_derive.ml"
@@ -9098,10 +9106,11 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type tdcls = Parsetree.type_declaration list
 
 type gen = {
-  structure_gen : Parsetree.type_declaration list  -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
+  structure_gen : tdcls -> bool -> Ast_structure.t ;
+  signature_gen : tdcls -> bool -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
@@ -9115,13 +9124,13 @@ type derive_table  =
 
 let derive_table : derive_table ref = ref String_map.empty
 
-let update key value = 
+let register key value = 
   derive_table := String_map.add key value !derive_table 
 
 
 
-let type_deriving_structure 
-    tdcls 
+let gen_structure 
+    (tdcls : tdcls)
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
   : Ast_structure.t = 
@@ -9130,7 +9139,7 @@ let type_deriving_structure
        (Ast_payload.table_dispatch !derive_table action).structure_gen 
          tdcls explict_nonrec) actions
 
-let type_deriving_signature
+let gen_signature
     tdcls
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
@@ -9140,14 +9149,15 @@ let type_deriving_signature
        (Ast_payload.table_dispatch !derive_table action).signature_gen
          tdcls explict_nonrec) actions
 
-let dispatch_extension ({Asttypes.txt ; loc}) typ =
+(** used for cases like [%sexp] *)         
+let gen_expression ({Asttypes.txt ; loc}) typ =
   let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
-    match (Ast_payload.table_dispatch !derive_table 
-            ({txt ; loc}, None)).expression_gen with 
-    | None ->
-      Bs_syntaxerr.err loc (Unregistered txt)
+  match (Ast_payload.table_dispatch !derive_table 
+           ({txt ; loc}, None)).expression_gen with 
+  | None ->
+    Bs_syntaxerr.err loc (Unregistered txt)
 
-    | Some f -> f typ
+  | Some f -> f typ
 
 end
 module Ast_derive_util
@@ -9477,7 +9487,7 @@ let record_exp  name core_type  labels : Ast_structure.t =
 
 
 let init ()  =
-  Ast_derive.update 
+  Ast_derive.register
     "dynval"
     begin fun (x : Parsetree.expression option) -> 
       match x with 
@@ -9587,7 +9597,7 @@ open Ast_helper
 
 
 let init () =
-  Ast_derive.update 
+  Ast_derive.register
     "accessors" 
     begin fun (x : Parsetree.expression option) ->
        match x with 
@@ -17608,7 +17618,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension({txt ; loc} as lid, PTyp typ) 
           when Ext_string.starts_with txt Literals.bs_deriving_dot -> 
           self.expr self @@ 
-          Ast_derive.dispatch_extension lid typ
+          Ast_derive.gen_expression lid typ
 
         (** End rewriting *)
         | Pexp_function cases -> 
@@ -17820,7 +17830,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                }
                (self.signature 
                   self @@ 
-                Ast_derive.type_deriving_signature tdcls actions explict_nonrec)
+                Ast_derive.gen_signature tdcls actions explict_nonrec)
         | {bs_deriving = `Nothing }, _ -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 
@@ -17888,7 +17898,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         else 
                           self.type_declaration self tdcl) tdcls)
               }
-              (self.structure self @@ Ast_derive.type_deriving_structure
+              (self.structure self @@ Ast_derive.gen_structure
                  tdcls actions explict_nonrec )
           | {bs_deriving = `Nothing}, _  -> 
             Ast_mapper.default_mapper.structure_item self str

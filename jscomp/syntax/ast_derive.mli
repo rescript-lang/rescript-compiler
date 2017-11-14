@@ -22,26 +22,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type tdcls = Parsetree.type_declaration list 
 
 type gen = {
-  structure_gen : Parsetree.type_declaration list -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
+  structure_gen : tdcls -> bool -> Ast_structure.t ;
+  signature_gen : tdcls -> bool -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
-val type_deriving_structure: 
-  Parsetree.type_declaration list  ->
+(**
+  [register name cb]
+  example: [register "accessors" cb]
+*)
+val register : string -> (Parsetree.expression option -> gen) -> unit
+
+val gen_structure: 
+  tdcls  ->
   Ast_payload.action list ->
   bool -> 
   Ast_structure.t
-val type_deriving_signature: 
-  Parsetree.type_declaration list ->
+
+val gen_signature: 
+  tdcls ->
   Ast_payload.action list -> 
   bool -> 
   Ast_signature.t
 
 
-val dispatch_extension : 
+val gen_expression : 
   string Asttypes.loc -> Parsetree.core_type -> Parsetree.expression
 
-val update : string -> (Parsetree.expression option -> gen) -> unit
+
