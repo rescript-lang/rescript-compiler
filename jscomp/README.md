@@ -136,7 +136,7 @@ however, it should also compile readable output code.
 ```
 opam switch 4.02.3
 eval `opam config env`
-opam install js_of_ocaml.2.8.4
+opam install js_of_ocaml
 which js_of_ocaml # symlink this into your $PATH, maybe /usr/local/bin or something
 ```
 

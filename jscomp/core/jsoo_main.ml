@@ -136,13 +136,13 @@ module Js = struct
   type js_string
   external string : string -> js_string t = "caml_js_from_string"
   external to_string : js_string t -> string = "caml_js_to_string"
-  external fs_register : js_string t -> js_string t -> unit = "caml_fs_register"
+  external create_file : js_string t -> js_string t -> unit = "caml_create_file"
   external to_bytestring : js_string t -> string = "caml_js_to_byte_string"
 end
 
 
 let load_module cmi_path cmi_content cmj_name cmj_content =
-  Js.fs_register cmi_path cmi_content;
+  Js.create_file cmi_path cmi_content;
   Js_cmj_datasets.data_sets :=
     String_map.add
       cmj_name (lazy (Js_cmj_format.from_string cmj_content))
@@ -160,7 +160,7 @@ let dir_directory d =
 
 
 let () = 
-  dir_directory "/cmis"
+  dir_directory "/static/cmis"
 
 
 
