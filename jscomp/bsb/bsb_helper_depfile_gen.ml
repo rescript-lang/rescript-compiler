@@ -58,7 +58,7 @@ type kind = Js | Bytecode | Native
 
 let output_file oc source namespace = 
   match namespace with 
-  | None -> output_string oc source ;
+  | None -> output_string oc source 
   | Some ns ->
     output_string oc ( Ext_namespace.make ~ns source)
 
@@ -69,10 +69,14 @@ let output_file oc source namespace =
     is [.cmi] if it has [mli]
 *)
 
-let oc_impl set input_file lhs_suffix rhs_suffix 
+let oc_impl 
+    (set : string array)
+    (input_file : string)
+    (lhs_suffix : string)
+    (rhs_suffix : string)
     (index : Bsb_dir_index.t)
     (data : Bsb_db.t array)
-    namespace
+    (namespace : string option)
     (oc : out_channel)
   = 
   output_file oc input_file namespace ; 
@@ -83,13 +87,19 @@ let oc_impl set input_file lhs_suffix rhs_suffix
     match String_map.find_opt k data.(0) with
     | Some {ml = Ml_source (source,_,_) }  
       -> 
-      output_string oc Ext_string.single_space ;  
-      output_file oc source namespace;
-      output_string oc rhs_suffix 
+      if source <> input_file then 
+        begin 
+          output_string oc Ext_string.single_space ;  
+          output_file oc source namespace;
+          output_string oc rhs_suffix 
+        end
     | Some {mli = Mli_source (source,_,_)  } -> 
-      output_string oc Ext_string.single_space ;  
-      output_file oc source namespace;
-      output_string oc Literals.suffix_cmi 
+      if source <> input_file then 
+        begin 
+          output_string oc Ext_string.single_space ;  
+          output_file oc source namespace;
+          output_string oc Literals.suffix_cmi 
+        end
     | Some {mli= Mli_empty; ml = Ml_empty} -> assert false
     | None  -> 
       if Bsb_dir_index.is_lib_dir index  then () 
@@ -97,13 +107,19 @@ let oc_impl set input_file lhs_suffix rhs_suffix
         begin match String_map.find_opt k data.((index  :> int)) with 
           | Some {ml = Ml_source (source,_,_) }
             -> 
-            output_string oc Ext_string.single_space ;  
-            output_file oc source namespace;
-            output_string oc rhs_suffix
+            if source <> input_file then 
+              begin 
+                output_string oc Ext_string.single_space ;  
+                output_file oc source namespace;
+                output_string oc rhs_suffix
+              end
           | Some {mli = Mli_source (source,_,_) } -> 
-            output_string oc Ext_string.single_space ;  
-            output_file oc source namespace;
-            output_string oc Literals.suffix_cmi 
+            if source <> input_file then 
+              begin 
+                output_string oc Ext_string.single_space ;  
+                output_file oc source namespace;
+                output_string oc Literals.suffix_cmi 
+              end 
           | Some {mli = Mli_empty; ml = Ml_empty} -> assert false
           | None -> ()
         end
@@ -129,9 +145,11 @@ let oc_intf
     match String_map.find_opt k data.(0) with 
     | Some ({ ml = Ml_source (source,_,_)  }
            | { mli = Mli_source (source,_,_) }) -> 
-      output_string oc Ext_string.single_space ; 
-      output_file oc source namespace ; 
-      output_string oc Literals.suffix_cmi 
+      if source <> input_file then begin              
+        output_string oc Ext_string.single_space ; 
+        output_file oc source namespace ; 
+        output_string oc Literals.suffix_cmi 
+      end 
     | Some {ml =  Ml_empty; mli = Mli_empty } -> assert false
     | None -> 
       if Bsb_dir_index.is_lib_dir index  then () 
@@ -139,9 +157,12 @@ let oc_intf
         match String_map.find_opt k data.((index :> int)) with 
         | Some ({ ml = Ml_source (source,_,_)  }
                | { mli = Mli_source (source,_,_)  }) -> 
-          output_string oc Ext_string.single_space ; 
-          output_file oc source namespace;
-          output_string oc Literals.suffix_cmi
+          if source <> input_file then      
+            begin 
+              output_string oc Ext_string.single_space ; 
+              output_file oc source namespace;
+              output_string oc Literals.suffix_cmi
+            end 
         | Some {ml = Ml_empty; mli = Mli_empty} -> assert false
         | None -> () 
   done  
@@ -160,11 +181,17 @@ let emit_dep_file
   let set = read_deps fn in 
   match Ext_string.ends_with_then_chop fn Literals.suffix_mlast with 
   | Some  input_file -> 
+#if BS_NATIVE then   
     let lhs_suffix, rhs_suffix =
       match compilation_kind with
       | Js       -> Literals.suffix_cmj, Literals.suffix_cmj
-      | Bytecode -> Literals.suffix_cmi, Literals.suffix_cmo
-      | Native   -> Literals.suffix_cmx, Literals.suffix_cmx in    
+      | Bytecode -> Literals.suffix_cmo, Literals.suffix_cmi
+      | Native   -> Literals.suffix_cmx, Literals.suffix_cmx 
+    in    
+#else     
+   let lhs_suffix = Literals.suffix_cmj in   
+   let rhs_suffix = Literals.suffix_cmj in 
+#end
     Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mlastd )
       (fun oc -> 
          oc_impl 
@@ -182,7 +209,13 @@ let emit_dep_file
       | Some input_file -> 
         Ext_pervasives.with_file_as_chan (input_file ^ Literals.suffix_mliastd)
           (fun oc -> 
-             oc_intf set input_file index data namespace oc 
+             oc_intf 
+               set 
+               input_file 
+               index 
+               data 
+               namespace 
+               oc 
           )
       | None -> 
         raise (Arg.Bad ("don't know what to do with  " ^ fn))
