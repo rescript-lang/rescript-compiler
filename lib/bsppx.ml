@@ -8254,6 +8254,15 @@ val to_undefined_type :
 
 val to_js_re_type : Location.t -> Parsetree.core_type
 
+val single_non_rec_value : 
+  Ast_helper.str -> 
+  Parsetree.expression -> 
+  Parsetree.structure_item
+
+val single_non_rec_val :   
+  Ast_helper.str -> 
+  Parsetree.core_type -> 
+  Parsetree.signature_item
 end = struct
 #1 "ast_comb.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -8340,7 +8349,13 @@ let to_undefined_type loc x =
     {txt = Ast_literal.Lid.js_undefined ; loc}
     [x]  
 
+let single_non_rec_value  name exp = 
+  Str.value Nonrecursive 
+    [Vb.mk (Pat.var name) exp]
 
+let single_non_rec_val name ty = 
+  Sig.value 
+    (Val.mk name ty)
 end
 module Ast_core_type : sig 
 #1 "ast_core_type.mli"
@@ -9650,121 +9665,214 @@ open Ast_helper
 let invalid_config (config : Parsetree.expression) = 
   Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
 
-let single_non_rec_value  name exp = 
-  Str.value Nonrecursive 
-    [Vb.mk (Pat.var name) exp]
 
-let single_non_rec_val name ty = 
-  Sig.value 
-    (Val.mk name ty)
 
+type tdcls = Parsetree.type_declaration list 
+let js_field (o : Parsetree.expression) m = 
+  Exp.apply 
+    (Exp.ident {txt = Lident "##"; loc = o.pexp_loc})
+    [ 
+      "",o; 
+      "", Exp.ident m
+    ]
 let init () =
   Ast_derive.register
-    "accessors" 
-    begin fun (x : Parsetree.expression option) ->
-      match x with 
-      | Some config -> invalid_config config
-      | None -> 
-        {structure_gen = 
-           begin fun (tdcls : Parsetree.type_declaration list) _explict_nonrec ->
-             let handle_tdcl tdcl = 
-               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
-               match tdcl.ptype_kind with 
-               | Ptype_record label_declarations 
-                 -> 
-                 label_declarations 
-                 |> Ext_list.map (
-                   fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
-                     let txt = "param" in
-                     single_non_rec_value pld_name
-                       (Exp.fun_ "" None
-                          (Pat.constraint_ (Pat.var {txt ; loc}) core_type )
-                          (Exp.field (Exp.ident {txt = Lident txt ; loc}) 
-                             {txt = Longident.Lident pld_label ; loc}) )
-                 )
-               | Ptype_variant constructor_declarations 
-                 -> 
-                 constructor_declarations
-                 |> Ext_list.map 
-                   (fun
-                     ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                         Parsetree.constructor_declaration)
-                     -> (* TODO: add type annotations *)
-                       let little_con_name = String.uncapitalize con_name  in
-                       let arity = List.length pcd_args in 
-                       single_non_rec_value {loc ; txt = little_con_name}
-                         (
-                           if arity = 0 then (*TODO: add a prefix, better inter-op with FFI *)
-                             (Exp.constraint_
-                                (Exp.construct {loc ; txt = Longident.Lident con_name } None)
-                                core_type
-                             )
-                           else 
-                             begin 
-                               let vars = 
-                                 Ext_list.init  arity (fun x -> "param_" ^ string_of_int x ) in 
-                               let exp = 
-                                 Exp.constraint_
-                                   ( 
-                                     Exp.construct {loc ; txt = Longident.Lident con_name} @@ 
-                                     Some
-                                       ( 
-                                         if  arity = 1 then 
-                                           Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
-                                         else 
-                                           Exp.tuple (Ext_list.map 
-                                                        (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
-                                                        vars 
-                                                     ) )) core_type
-                               in 
-                               Ext_list.fold_right  (fun var b -> 
-                                   Exp.fun_ "" None  (Pat.var {loc ; txt = var}) b 
-                                 ) vars exp  
-
-                             end)
-                   )
-               | Ptype_abstract | Ptype_open -> []
-               (* Location.raise_errorf "projector only works with record" *)
-             in Ext_list.flat_map handle_tdcl tdcls
-
-
-           end;
+    "jsMapper"
+    (fun ( x : Parsetree.expression option) -> 
+       (match x with 
+        | Some config -> invalid_config config 
+        | None -> ());
+       {
+         structure_gen = (fun (tdcls : tdcls) _ -> 
+             let handle_tdcl tdcl =
+               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl
+               in 
+               let name = tdcl.ptype_name.txt in 
+               let toJs = name ^ "ToJs" in 
+               let fromJs = name ^ "FromJs" in 
+               match tdcl.ptype_kind with  
+               | Ptype_record label_declarations -> 
+                 let record_arg = "record" in        
+                 let exp = 
+                   Exp.record
+                     (List.map 
+                        (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
+                           {Asttypes.loc; txt = Longident.Lident txt },
+                           Exp.field (Exp.ident {txt = Lident record_arg ; loc })
+                             {Asttypes.loc; txt = Longident.Lident txt }
+                        ) label_declarations) None in 
+                 let loc = tdcl.ptype_loc in        
+                 let toJs = Ast_comb.single_non_rec_value {loc; txt = toJs}
+                     (Exp.fun_ "" None (Pat.constraint_ (Pat.var {loc; txt = record_arg}) core_type) 
+                        (Exp.extension ({Asttypes.loc; txt = "bs.obj"}, (PStr [Str.eval exp  ])))) 
+                 in 
+                 let obj_arg = "obj" in 
+                 let obj_exp = 
+                   Exp.record
+                     (List.map 
+                        (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
+                           {Asttypes.loc; txt = Longident.Lident txt },
+                           js_field (Exp.ident {txt = Lident obj_arg ; loc })
+                             {Asttypes.loc; txt = Longident.Lident txt }
+                        ) label_declarations) None in 
+                 let fromJs = 
+                   Ast_comb.single_non_rec_value {loc; txt = fromJs}
+                     (Exp.fun_ "" None (Pat.var {loc; txt = obj_arg})
+                        (Exp.constraint_ obj_exp core_type) )
+                 in
+                 [
+                   toJs;
+                   fromJs
+                 ]
+               | Ptype_variant _
+               | Ptype_abstract | Ptype_open -> [] in 
+             Ext_list.flat_map handle_tdcl tdcls 
+           );
          signature_gen = 
-           begin fun (tdcls : Parsetree.type_declaration list) _explict_nonrec -> 
-             let handle_tdcl tdcl = 
-               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
-               match tdcl.ptype_kind with 
-               | Ptype_record label_declarations 
-                 -> 
-                 label_declarations 
-                 |> Ext_list.map 
-                   (fun 
-                     ({pld_name ;
-                       pld_type
-                      } : 
-                        Parsetree.label_declaration) -> 
-                     single_non_rec_val pld_name (Typ.arrow "" core_type pld_type )
-                   )
-               | Ptype_variant constructor_declarations 
-                 -> 
-                 constructor_declarations
-                 |>
-                 Ext_list.map
-                   (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                            Parsetree.constructor_declaration)
-                     -> 
-                       single_non_rec_val {loc ; txt = (String.uncapitalize con_name)}
-                         (Ext_list.fold_right 
-                            (fun x acc -> Typ.arrow "" x acc) 
-                            pcd_args
-                            core_type))
-               | Ptype_open | Ptype_abstract -> [] 
-             in 
-             Ext_list.flat_map handle_tdcl tdcls
-           end;
-         expression_gen = None
-        }
-    end
+           (fun (tdcls : tdcls) _ -> 
+              let handle_tdcl tdcl =
+                let core_type = Ast_derive_util.core_type_of_type_declaration tdcl 
+                in 
+                let name = tdcl.ptype_name.txt in 
+                let toJs = name ^ "ToJs" in 
+                let fromJs = name ^ "FromJs" in 
+                match tdcl.ptype_kind with  
+                | Ptype_record label_declarations ->            
+                  let loc = tdcl.ptype_loc in 
+                  let ty = 
+                    Ast_comb.to_js_type loc @@  
+                    Typ.object_
+                      (List.map 
+                         (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
+                            txt, [], pld_type
+                         ) label_declarations) 
+                      Closed in 
+                  let loc = tdcl.ptype_loc in        
+                  let toJs = 
+                    Ast_comb.single_non_rec_val {loc; txt = toJs}
+                      (Typ.arrow "" core_type ty) in 
+                  let fromJs =    
+                    Ast_comb.single_non_rec_val {loc; txt = fromJs}
+                      (Typ.arrow ""  ty core_type) in 
+                  [
+                    toJs;
+                    fromJs
+                  ]
+                | Ptype_variant _
+                | Ptype_abstract | Ptype_open -> [] in 
+              Ext_list.flat_map handle_tdcl tdcls 
+
+           );
+         expression_gen = None 
+       } 
+    )
+  ;
+  Ast_derive.register
+    "accessors" 
+    (fun (x : Parsetree.expression option) ->
+       (match x with 
+        | Some config -> invalid_config config
+        | None -> ());
+       {structure_gen = 
+          begin fun (tdcls : tdcls) _explict_nonrec ->
+            let handle_tdcl tdcl = 
+              let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
+              match tdcl.ptype_kind with 
+              | Ptype_record label_declarations 
+                -> 
+                label_declarations 
+                |> Ext_list.map (
+                  fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
+                    let txt = "param" in
+                    Ast_comb.single_non_rec_value pld_name
+                      (Exp.fun_ "" None
+                         (Pat.constraint_ (Pat.var {txt ; loc}) core_type )
+                         (Exp.field (Exp.ident {txt = Lident txt ; loc}) 
+                            {txt = Longident.Lident pld_label ; loc}) )
+                )
+              | Ptype_variant constructor_declarations 
+                -> 
+                constructor_declarations
+                |> Ext_list.map 
+                  (fun
+                    ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
+                        Parsetree.constructor_declaration)
+                    -> (* TODO: add type annotations *)
+                      let little_con_name = String.uncapitalize con_name  in
+                      let arity = List.length pcd_args in 
+                      Ast_comb.single_non_rec_value {loc ; txt = little_con_name}
+                        (
+                          if arity = 0 then (*TODO: add a prefix, better inter-op with FFI *)
+                            (Exp.constraint_
+                               (Exp.construct {loc ; txt = Longident.Lident con_name } None)
+                               core_type
+                            )
+                          else 
+                            begin 
+                              let vars = 
+                                Ext_list.init  arity (fun x -> "param_" ^ string_of_int x ) in 
+                              let exp = 
+                                Exp.constraint_
+                                  ( 
+                                    Exp.construct {loc ; txt = Longident.Lident con_name} @@ 
+                                    Some
+                                      ( 
+                                        if  arity = 1 then 
+                                          Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
+                                        else 
+                                          Exp.tuple (Ext_list.map 
+                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
+                                                       vars 
+                                                    ) )) core_type
+                              in 
+                              Ext_list.fold_right  (fun var b -> 
+                                  Exp.fun_ "" None  (Pat.var {loc ; txt = var}) b 
+                                ) vars exp  
+
+                            end)
+                  )
+              | Ptype_abstract | Ptype_open -> []
+              (* Location.raise_errorf "projector only works with record" *)
+            in Ext_list.flat_map handle_tdcl tdcls
+
+
+          end;
+        signature_gen = 
+          begin fun (tdcls : Parsetree.type_declaration list) _explict_nonrec -> 
+            let handle_tdcl tdcl = 
+              let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
+              match tdcl.ptype_kind with 
+              | Ptype_record label_declarations 
+                -> 
+                label_declarations 
+                |> Ext_list.map 
+                  (fun 
+                    ({pld_name ;
+                      pld_type
+                     } : 
+                       Parsetree.label_declaration) -> 
+                    Ast_comb.single_non_rec_val pld_name (Typ.arrow "" core_type pld_type )
+                  )
+              | Ptype_variant constructor_declarations 
+                -> 
+                constructor_declarations
+                |>
+                Ext_list.map
+                  (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
+                           Parsetree.constructor_declaration)
+                    -> 
+                      Ast_comb.single_non_rec_val {loc ; txt = (String.uncapitalize con_name)}
+                        (Ext_list.fold_right 
+                           (fun x acc -> Typ.arrow "" x acc) 
+                           pcd_args
+                           core_type))
+              | Ptype_open | Ptype_abstract -> [] 
+            in 
+            Ext_list.flat_map handle_tdcl tdcls
+          end;
+        expression_gen = None
+       }
+    )
 
 
 end

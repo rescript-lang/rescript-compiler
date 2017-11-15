@@ -64,7 +64,8 @@ let no_export = ref false
 
 let () = 
   Ast_derive_dyn.init  ();
-  Ast_derive_projector.init ()
+  Ast_derive_projector.init ();
+  Ast_derive_js_mapper.init ()
 
 let reset () = 
   record_as_js_object := false ;
