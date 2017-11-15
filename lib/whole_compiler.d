@@ -453,6 +453,7 @@
 ../lib/whole_compiler.ml : ./super_errors/super_typecore.ml
 ../lib/whole_compiler.ml : ./super_errors/super_typetexp.ml
 ../lib/whole_compiler.ml : ./super_errors/super_warnings.ml
+../lib/whole_compiler.ml : ./syntax/ast_derive_js_mapper.ml
 ../lib/whole_compiler.ml : ./syntax/ast_derive_projector.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/printlambda.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/translclass.mli
@@ -461,6 +462,7 @@
 ../lib/whole_compiler.ml : ./core/js_pass_tailcall_inline.ml
 ../lib/whole_compiler.ml : ./core/lam_dispatch_primitive.mli
 ../lib/whole_compiler.ml : ./core/lam_pass_eliminate_ref.mli
+../lib/whole_compiler.ml : ./syntax/ast_derive_js_mapper.mli
 ../lib/whole_compiler.ml : ./syntax/ast_derive_projector.mli
 ../lib/whole_compiler.ml : ./core/js_pass_tailcall_inline.mli
 ../lib/whole_compiler.ml : ./core/lam_compile_external_obj.ml

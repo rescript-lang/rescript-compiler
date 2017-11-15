@@ -122,8 +122,10 @@
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/docstrings.mli
 ../lib/bsdep.ml : ./syntax/external_ffi_types.mli
 ../lib/bsdep.ml : ./core/bs_conditional_initial.ml
+../lib/bsdep.ml : ./syntax/ast_derive_js_mapper.ml
 ../lib/bsdep.ml : ./syntax/ast_derive_projector.ml
 ../lib/bsdep.ml : ./core/bs_conditional_initial.mli
+../lib/bsdep.ml : ./syntax/ast_derive_js_mapper.mli
 ../lib/bsdep.ml : ./syntax/ast_derive_projector.mli
 ../lib/bsdep.ml : ./syntax/ast_utf8_string_interp.ml
 ../lib/bsdep.ml : ./syntax/ast_utf8_string_interp.mli

@@ -9654,20 +9654,65 @@ let init ()  =
      end
 
 end
-module Ast_derive_projector : sig 
-#1 "ast_derive_projector.mli"
-val init : unit -> unit
+module Ast_derive_js_mapper : sig 
+#1 "ast_derive_js_mapper.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+
+val init : unit -> unit
 end = struct
-#1 "ast_derive_projector.ml"
+#1 "ast_derive_js_mapper.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 open Ast_helper
 
-let invalid_config (config : Parsetree.expression) = 
-  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
-
-
-
 type tdcls = Parsetree.type_declaration list 
+
 let js_field (o : Parsetree.expression) m = 
   Exp.apply 
     (Exp.ident {txt = Lident "##"; loc = o.pexp_loc})
@@ -9675,7 +9720,11 @@ let js_field (o : Parsetree.expression) m =
       "",o; 
       "", Exp.ident m
     ]
-let init () =
+
+let invalid_config (config : Parsetree.expression) = 
+  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
+
+let init () =      
   Ast_derive.register
     "jsMapper"
     (fun ( x : Parsetree.expression option) -> 
@@ -9766,7 +9815,51 @@ let init () =
          expression_gen = None 
        } 
     )
-  ;
+;
+end
+module Ast_derive_projector : sig 
+#1 "ast_derive_projector.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val init : unit -> unit
+
+end = struct
+#1 "ast_derive_projector.ml"
+open Ast_helper
+
+let invalid_config (config : Parsetree.expression) = 
+  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
+
+
+
+type tdcls = Parsetree.type_declaration list 
+
+let init () =
+  
   Ast_derive.register
     "accessors" 
     (fun (x : Parsetree.expression option) ->
@@ -15426,6 +15519,63 @@ let variant_can_bs_unwrap_fields row_fields =
   | `No_fields
   | `Invalid_field -> false
 
+let map_row_fields_into_ints ptyp_loc
+    (row_fields : Parsetree.row_field list) 
+  = 
+  let _, acc, rev_row_fields = 
+    (List.fold_left 
+       (fun (i,acc, row_fields) rtag -> 
+          match rtag with 
+          | Parsetree.Rtag (label, attrs, true,  [])
+            -> 
+            begin match Ast_attributes.process_bs_int_as attrs with 
+              | Some i, new_attrs -> 
+                i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
+                Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
+              | None, _ -> 
+                i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
+            end
+
+          | _ -> 
+            Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
+
+       ) (0, [],[]) row_fields) in 
+  List.rev acc, List.rev rev_row_fields              
+
+let map_row_fields_into_strings ptyp_loc 
+    (row_fields : Parsetree.row_field list) = 
+  let case, result, row_fields  = 
+    (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
+         match nullary, tag with 
+         | (`Nothing | `Null), 
+           Parsetree.Rtag (label, attrs, true,  [])
+           -> 
+           begin match Ast_attributes.process_bs_string_as attrs with 
+             | Some name, new_attrs  -> 
+               `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
+               Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
+
+             | None, _ -> 
+               `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
+               tag :: row_fields
+           end
+         | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
+           -> 
+           begin match Ast_attributes.process_bs_string_as attrs with 
+             | Some name, new_attrs -> 
+               `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
+               Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
+             | None, _ -> 
+               `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
+               (tag :: row_fields)
+           end
+         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+
+       ) row_fields (`Nothing, [], [])) in 
+  (match case with 
+   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+   | `Null -> External_arg_spec.NullString result 
+   | `NonNull -> NonNullString result), row_fields
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type 
     and result type in [@@bs.obj]
@@ -15460,80 +15610,44 @@ let get_arg_type ~nolabel optional
 
     end 
   else (* ([`a|`b] [@bs.string]) *)
-    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with
-    | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
+    let ptyp_desc = ptyp.ptyp_desc in 
+    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
+    | (`String, ptyp_attributes)
       -> 
-      let case, result, row_fields  = 
-        (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
-             match nullary, tag with 
-             | (`Nothing | `Null), 
-               Parsetree.Rtag (label, attrs, true,  [])
-               -> 
-               begin match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name, new_attrs  -> 
-                   `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
-                   Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
-
-                 | None, _ -> 
-                   `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
-                   tag :: row_fields
-               end
-             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
-               -> 
-               begin match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name, new_attrs -> 
-                   `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
-                   Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
-                 | None, _ -> 
-                   `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
-                   (tag :: row_fields)
-               end
-             | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
-
-           ) row_fields (`Nothing, [], [])) in 
-      (match case with 
-       | `Nothing -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
-       | `Null -> NullString result 
-       | `NonNull -> NonNullString result) , 
-      {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
-                 ptyp_attributes ;
-      }
-    | (`String, _),  _ ->
-      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
-    | (`Ignore, ptyp_attributes), _  -> 
+      begin match ptyp_desc with 
+        | Ptyp_variant ( row_fields, Closed, None)
+          ->
+          let attr,row_fields = map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
+          attr, {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
+                     ptyp_attributes ;
+          }
+        | _ ->
+          Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
+      end 
+    | (`Ignore, ptyp_attributes)  -> 
       (Ignore, {ptyp with ptyp_attributes})
-    | (`Int , ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None) -> 
-      let _, acc, rev_row_fields = 
-        (List.fold_left 
-           (fun (i,acc, row_fields) rtag -> 
-              match rtag with 
-              | Parsetree.Rtag (label, attrs, true,  [])
-                -> 
-                begin match Ast_attributes.process_bs_int_as attrs with 
-                  | Some i, new_attrs -> 
-                    i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
-                    Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
-                  | None, _ -> 
-                    i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
-                end
+    | (`Int , ptyp_attributes) -> 
+      begin match ptyp_desc with 
+        | Ptyp_variant ( row_fields, Closed, None) -> 
+          let int_lists, new_row_fields = 
+            map_row_fields_into_ints ptyp.ptyp_loc row_fields in 
+          Int int_lists ,
+          {ptyp with 
+           ptyp_desc = Ptyp_variant(new_row_fields, Closed, None );
+           ptyp_attributes
+          }
+        | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type   
+      end
+    | (`Unwrap, ptyp_attributes) -> 
 
-              | _ -> 
-                Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
-
-           ) (0, [],[]) row_fields) in 
-      Int (List.rev acc),
-      {ptyp with 
-       ptyp_desc = Ptyp_variant(List.rev rev_row_fields, Closed, None );
-       ptyp_attributes
-      }
-    | (`Int, _), _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
-    | (`Unwrap, ptyp_attributes), (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
-      when variant_can_bs_unwrap_fields row_fields
-      ->
-      Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
-    | (`Unwrap, _), _ ->
-      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
-    | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
+      begin match ptyp_desc with 
+        | (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
+          when variant_can_bs_unwrap_fields row_fields ->
+          Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
+        | _ ->
+          Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
+      end 
+    | (`Uncurry opt_arity, ptyp_attributes) -> 
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
          | Some arity, `Not_function -> 
@@ -15548,7 +15662,7 @@ let get_arg_type ~nolabel optional
            else Fn_uncurry_arity arity 
 
        end, {ptyp with ptyp_attributes})
-    | (`Nothing, ptyp_attributes),  ptyp_desc ->
+    | (`Nothing, ptyp_attributes) ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"; _}, [])
           -> 
@@ -15700,12 +15814,12 @@ let process_external_attributes
               end
             | "bs.scope" ->
               begin match Ast_payload.assert_strings loc payload with 
-              | [] -> 
-                Bs_syntaxerr.err loc Illegal_attribute 
-                  (* We need err on empty scope, so we can tell the difference 
-                     between unset/set
-                  *)
-              | scopes ->  { st with scopes = scopes }
+                | [] -> 
+                  Bs_syntaxerr.err loc Illegal_attribute 
+                (* We need err on empty scope, so we can tell the difference 
+                   between unset/set
+                *)
+                | scopes ->  { st with scopes = scopes }
               end
             | "bs.splice" -> {st with splice = true}
             | "bs.send" -> 
@@ -15731,16 +15845,16 @@ let process_external_attributes
                   | "identity" -> Return_identity 
                   | _ ->
                     Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
-                  end in
-                  let actions = 
-                    Ast_payload.ident_or_record_as_config loc payload 
-                  in
-                  begin match actions with 
-                    | [ ({txt; _ },None) ] -> 
-                      { st with return_wrapper = aux loc txt}
-                    | _ ->
-                      Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
-                  end
+                end in
+              let actions = 
+                Ast_payload.ident_or_record_as_config loc payload 
+              in
+              begin match actions with 
+                | [ ({txt; _ },None) ] -> 
+                  { st with return_wrapper = aux loc txt}
+                | _ ->
+                  Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
+              end
             | _ -> (Location.prerr_warning loc (Bs_unused_attribute txt); st)
           end, attrs
         else (st , attr :: attrs)
@@ -17476,7 +17590,8 @@ let no_export = ref false
 
 let () = 
   Ast_derive_dyn.init  ();
-  Ast_derive_projector.init ()
+  Ast_derive_projector.init ();
+  Ast_derive_js_mapper.init ()
 
 let reset () = 
   record_as_js_object := false ;

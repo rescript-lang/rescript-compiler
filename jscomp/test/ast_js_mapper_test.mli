@@ -6,3 +6,4 @@ type 'a t = {
   zz : 'a * int 
 } [@@bs.deriving {jsMapper }]
 
+val searchForSureExists : (int * 'a) array -> int -> 'a

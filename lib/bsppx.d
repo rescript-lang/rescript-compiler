@@ -105,7 +105,9 @@
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_mapper.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/docstrings.mli
 ../lib/bsppx.ml : ./syntax/external_ffi_types.mli
+../lib/bsppx.ml : ./syntax/ast_derive_js_mapper.ml
 ../lib/bsppx.ml : ./syntax/ast_derive_projector.ml
+../lib/bsppx.ml : ./syntax/ast_derive_js_mapper.mli
 ../lib/bsppx.ml : ./syntax/ast_derive_projector.mli
 ../lib/bsppx.ml : ./syntax/ast_utf8_string_interp.ml
 ../lib/bsppx.ml : ./syntax/ast_utf8_string_interp.mli
