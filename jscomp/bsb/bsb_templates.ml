@@ -561,7 +561,6 @@ let root = OCamlRes.Res.([
       \    \"module\": \"commonjs\",\n\
       \    \"in-source\": true\n\
       \  }],\n\
-      \  \"refmt\": 3,\n\
       \  \"suffix\": \".bs.js\",\n\
       \  \"namespace\": true,\n\
       \  \"bs-dependencies\": [\n\
