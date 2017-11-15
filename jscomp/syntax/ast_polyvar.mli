@@ -31,7 +31,7 @@ val map_row_fields_into_ints:
 val map_row_fields_into_strings:
   Location.t -> 
   Parsetree.row_field list -> 
-  External_arg_spec.attr * Parsetree.row_field list   
+  External_arg_spec.attr
 
 
 val is_enum :   

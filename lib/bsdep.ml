@@ -28223,9 +28223,9 @@ type derive_attr = {
 val process_bs_string_int_unwrap_uncurry :
   t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
 
-val process_bs_string_as :
-  t -> string option * t 
 
+val iter_process_bs_string_as :
+  t -> string option 
 
 val iter_process_bs_int_as : 
   t -> int option 
@@ -28447,24 +28447,27 @@ let process_bs_string_int_unwrap_uncurry attrs =
       | _ , _ -> st, (attr :: attrs )
     ) (`Nothing, []) attrs
 
-let process_bs_string_as  attrs = 
-  List.fold_left 
-    (fun (st, attrs)
+
+let iter_process_bs_string_as  attrs = 
+  let st = ref None in 
+  List.iter 
+    (fun 
       (({txt ; loc}, payload ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.as", None
+      match  txt with
+      | "bs.as"
         ->
-        begin match Ast_payload.is_single_string payload with 
+        if !st = None then 
+          match Ast_payload.is_single_string payload with 
           | None -> 
             Bs_syntaxerr.err loc Expect_string_literal
-          | Some  (v,dec) ->  ( Some v, attrs)  
-        end
-      | "bs.as",  _ 
-        -> 
-        Bs_syntaxerr.err loc Duplicated_bs_as 
-      | _ , _ -> (st, attr::attrs) 
-    ) (None, []) attrs
-
+          | Some  (v,_dec) -> 
+            Bs_ast_invariant.mark_used_bs_attribute attr ; 
+            st:= Some v 
+        else 
+          Bs_syntaxerr.err loc Duplicated_bs_as 
+      | _  -> ()
+    ) attrs;
+  !st 
 
 let iter_process_bs_int_as  attrs = 
   let st = ref None in 
@@ -32564,7 +32567,7 @@ val map_row_fields_into_ints:
 val map_row_fields_into_strings:
   Location.t -> 
   Parsetree.row_field list -> 
-  External_arg_spec.attr * Parsetree.row_field list   
+  External_arg_spec.attr
 
 
 val is_enum :   
@@ -32625,38 +32628,34 @@ end = struct
 *)  
 let map_row_fields_into_strings ptyp_loc 
     (row_fields : Parsetree.row_field list) = 
-  let case, result, row_fields  = 
-    (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
+  let case, result = 
+    (Ext_list.fold_right (fun tag (nullary, acc) -> 
          match nullary, tag with 
          | (`Nothing | `Null), 
            Parsetree.Rtag (label, attrs, true,  [])
            -> 
-           begin match Ast_attributes.process_bs_string_as attrs with 
-             | Some name, new_attrs  -> 
-               `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
-               Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
+           begin match Ast_attributes.iter_process_bs_string_as attrs with 
+             | Some name -> 
+               `Null, ((Ext_pervasives.hash_variant label, name) :: acc )
 
-             | None, _ -> 
-               `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
-               tag :: row_fields
+             | None -> 
+               `Null, ((Ext_pervasives.hash_variant label, label) :: acc )
            end
-         | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
+         | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ])) 
            -> 
-           begin match Ast_attributes.process_bs_string_as attrs with 
-             | Some name, new_attrs -> 
-               `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
-               Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
-             | None, _ -> 
-               `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
-               (tag :: row_fields)
+           begin match Ast_attributes.iter_process_bs_string_as attrs with 
+             | Some name -> 
+               `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc)
+             | None -> 
+               `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc)
            end
          | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
 
-       ) row_fields (`Nothing, [], [])) in 
+       ) row_fields (`Nothing, [])) in 
   (match case with 
    | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
    | `Null -> External_arg_spec.NullString result 
-   | `NonNull -> NonNullString result), row_fields
+   | `NonNull -> NonNullString result)
 
   
   let is_enum row_fields = 
@@ -33558,10 +33557,11 @@ let get_arg_type ~nolabel optional
       begin match ptyp_desc with 
         | Ptyp_variant ( row_fields, Closed, None)
           ->
-          let attr,row_fields = 
+          let attr = 
               Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
-          attr, {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
-                     ptyp_attributes ;
+          attr, 
+          {ptyp with
+            ptyp_attributes 
           }
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
