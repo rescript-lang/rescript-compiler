@@ -148,7 +148,8 @@ let get_arg_type ~nolabel optional
       begin match ptyp_desc with 
         | Ptyp_variant ( row_fields, Closed, None)
           ->
-          let attr,row_fields = map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
+          let attr,row_fields = 
+              Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
           attr, {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
                      ptyp_attributes ;
           }
@@ -161,7 +162,7 @@ let get_arg_type ~nolabel optional
       begin match ptyp_desc with 
         | Ptyp_variant ( row_fields, Closed, None) -> 
           let int_lists, new_row_fields = 
-            map_row_fields_into_ints ptyp.ptyp_loc row_fields in 
+            Ast_polyvar.map_row_fields_into_ints ptyp.ptyp_loc row_fields in 
           Int int_lists ,
           {ptyp with 
            ptyp_desc = Ptyp_variant(new_row_fields, Closed, None );

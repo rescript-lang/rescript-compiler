@@ -106,10 +106,10 @@ let pp_error fmt err =
     "_ is not allowed in combination with external optional type"
   | Invalid_bs_string_type
     -> 
-    "Not a valid  type for [@bs.string]"
+    "Not a valid type for [@bs.string]"
   | Invalid_bs_int_type 
     -> 
-    "Not a valid  type for [@bs.int]"
+    "Not a valid type for [@bs.int]"
   | Invalid_bs_unwrap_type
     ->
     "Not a valid type for [@bs.unwrap]. Type must be an inline variant (closed), and\n\

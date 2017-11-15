@@ -7620,10 +7620,10 @@ let pp_error fmt err =
     "_ is not allowed in combination with external optional type"
   | Invalid_bs_string_type
     -> 
-    "Not a valid  type for [@bs.string]"
+    "Not a valid type for [@bs.string]"
   | Invalid_bs_int_type 
     -> 
-    "Not a valid  type for [@bs.int]"
+    "Not a valid type for [@bs.int]"
   | Invalid_bs_unwrap_type
     ->
     "Not a valid type for [@bs.unwrap]. Type must be an inline variant (closed), and\n\
@@ -9773,8 +9773,41 @@ let init () =
                    toJs;
                    fromJs
                  ]
+               | Ptype_abstract -> 
+                 [] 
+                 (* begin match tdcl.ptype_manifest with 
+                   | Some {
+                       ptyp_desc = 
+                         Ptyp_variant(row_fields, Closed,None);
+                       ptyp_loc
+                     }
+                     -> 
+                     if Ast_polyvar.is_enum row_fields then 
+
+                       let attr, new_row_field_list = 
+                         Ast_polyvar.map_row_fields_into_strings ptyp_loc row_fields 
+                       in (* how to mark attributes as used *)
+                       begin match attr with 
+                         | NullString result -> 
+                           [
+                             Ast_comb.single_non_rec_value 
+                               {loc = ptyp_loc; txt = "hi"}
+                               (Exp.array
+                                  (List.map (fun (i,str) -> 
+                                       Exp.tuple 
+                                         [
+                                           Exp.constant (Const_int i);
+                                           Exp.constant (Const_string (str, None))
+                                         ]
+                                     ) result))
+                           ]
+                         | _ -> assert false 
+                       end 
+                     else []
+                   | Some _ | None -> []
+                 end *)
                | Ptype_variant _
-               | Ptype_abstract | Ptype_open -> [] in 
+               | Ptype_open -> [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );
          signature_gen = 
@@ -12346,401 +12379,6 @@ let rec is_single_variable_pattern_conservative  (p : t ) =
   | _ -> false
 
 end
-module Js_config : sig 
-#1 "js_config.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-(* val get_packages_info :
-   unit -> Js_packages_info.t *)
-
-
-(** set/get header *)
-val no_version_header : bool ref 
-
-
-(** return [package_name] and [path] 
-    when in script mode: 
-*)
-
-(* val get_current_package_name_and_path : 
-  Js_packages_info.module_system -> 
-  Js_packages_info.info_query *)
-
-
-(* val set_package_name : string -> unit  
-val get_package_name : unit -> string option *)
-
-(** cross module inline option *)
-val cross_module_inline : bool ref
-val set_cross_module_inline : bool -> unit
-val get_cross_module_inline : unit -> bool
-  
-(** diagnose option *)
-val diagnose : bool ref 
-val get_diagnose : unit -> bool 
-val set_diagnose : bool -> unit 
-
-
-(** generate tds option *)
-val default_gen_tds : bool ref
-
-(** options for builtin ppx *)
-val no_builtin_ppx_ml : bool ref 
-val no_builtin_ppx_mli : bool ref 
-val no_warn_ffi_type : bool ref 
-
-
-val no_warn_unimplemented_external : bool ref 
-
-(** check-div-by-zero option *)
-val check_div_by_zero : bool ref 
-val get_check_div_by_zero : unit -> bool 
-
-(* It will imply [-noassert] be set too, note from the implementation point of view,
-   in the lambda layer, it is impossible to tell whether it is [assert (3 <> 2)] or
-   [if (3<>2) then assert false]
- *)
-val no_any_assert : bool ref 
-val set_no_any_assert : unit -> unit
-val get_no_any_assert : unit -> bool 
-
-
-
-(** Debugging utilies *)
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
-val get_module_name : unit -> string
-
-val iset_debug_file : string -> unit
-val set_debug_file : string -> unit
-val get_debug_file : unit -> string
-
-val is_same_file : unit -> bool 
-
-val tool_name : string
-
-
-val sort_imports : bool ref 
-val dump_js : bool ref
-val syntax_only  : bool ref
-val binary_ast : bool ref
-
-
-val bs_suffix : bool ref
-
-end = struct
-#1 "js_config.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-(* let add_npm_package_path s =
-  match !packages_info  with
-  | Empty ->
-    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
-  | NonBrowser(name,  envs) ->
-    let env, path =
-      match Ext_string.split ~keep_empty:false s ':' with
-      | [ package_name; path]  ->
-        (match Js_packages_info.module_system_of_string package_name with
-         | Some x -> x
-         | None ->
-           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
-      | [path] ->
-        NodeJS, path
-      | _ ->
-        Ext_pervasives.bad_argf "invalid npm package path: %s" s
-    in
-    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
-(** Browser is not set via command line only for internal use *)
-
-
-let no_version_header = ref false
-
-let cross_module_inline = ref false
-
-let get_cross_module_inline () = !cross_module_inline
-let set_cross_module_inline b =
-  cross_module_inline := b
-
-
-let diagnose = ref false
-let get_diagnose () = !diagnose
-let set_diagnose b = diagnose := b
-
-let (//) = Filename.concat
-
-(* let get_packages_info () = !packages_info *)
-
-let default_gen_tds = ref false
-let no_builtin_ppx_ml = ref false
-let no_builtin_ppx_mli = ref false
-let no_warn_ffi_type = ref false
-
-(** TODO: will flip the option when it is ready *)
-let no_warn_unimplemented_external = ref false 
-let current_file = ref ""
-let debug_file = ref ""
-
-let set_current_file f  = current_file := f
-let get_current_file () = !current_file
-let get_module_name () =
-  Filename.chop_extension
-    (Filename.basename (String.uncapitalize !current_file))
-
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
-
-let is_same_file () =
-  !debug_file <> "" &&  !debug_file = !current_file
-
-let tool_name = "BuckleScript"
-
-let check_div_by_zero = ref true
-let get_check_div_by_zero () = !check_div_by_zero
-
-let no_any_assert = ref false
-
-let set_no_any_assert () = no_any_assert := true
-let get_no_any_assert () = !no_any_assert
-
-let sort_imports = ref true
-let dump_js = ref false
-
-
-
-let syntax_only = ref false
-let binary_ast = ref false
-
-let bs_suffix = ref false 
-end
-module Bs_warnings : sig 
-#1 "bs_warnings.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = 
-  | Unsafe_ffi_bool_type
-  | Unsafe_poly_variant_type
-
-val prerr_warning : Location.t -> t -> unit
-
-
-val warn_missing_primitive : Location.t -> string -> unit 
-
-val error_unescaped_delimiter : 
-  Location.t -> string  -> unit 
-end = struct
-#1 "bs_warnings.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-type t = 
-  | Unsafe_ffi_bool_type
-
-  | Unsafe_poly_variant_type
-  (* for users write code like this:
-     {[ external f : [`a of int ] -> string = ""]}
-     Here users forget about `[@bs.string]` or `[@bs.int]`
-  *)    
-
-
-
-let to_string t =
-  match t with
-  | Unsafe_ffi_bool_type
-    ->   
-    "You are passing a OCaml bool type into JS, probably you want to pass Js.boolean"
-  | Unsafe_poly_variant_type 
-    -> 
-    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
-
-let warning_formatter = Format.err_formatter
-
-let print_string_warning (loc : Location.t) x =   
-  if loc.loc_ghost then 
-    Format.fprintf warning_formatter "File %s@." 
-      (Js_config.get_current_file ())
-  else 
-    Location.print warning_formatter loc ; 
-  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
-
-let prerr_warning loc x =
-  if not (!Js_config.no_warn_ffi_type ) then
-    print_string_warning loc (to_string x) 
-
-let unimplemented_primitive = "Unimplemented primitive used:" 
-type error = 
-  | Unused_attribute of string
-  | Uninterpreted_delimiters of string
-  | Unimplemented_primitive of string 
-exception  Error of Location.t * error
-
-let pp_error fmt x =
-  match x with 
-  | Unimplemented_primitive str -> 
-    Format.pp_print_string fmt unimplemented_primitive;
-    Format.pp_print_string fmt str
-  | Unused_attribute str ->
-    Format.pp_print_string fmt Literals.unused_attribute;
-    Format.pp_print_string fmt str
-  | Uninterpreted_delimiters str -> 
-    Format.pp_print_string fmt "Uninterpreted delimiters" ;
-    Format.pp_print_string fmt str
-
-
-
-let () = 
-  Location.register_error_of_exn (function 
-      | Error (loc,err) -> 
-        Some (Location.error_of_printer loc pp_error err)
-      | _ -> None
-    )
-
-
-
-
-let warn_missing_primitive loc txt =      
-  if not @@ !Js_config.no_warn_unimplemented_external then
-    begin 
-      print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
-      Format.pp_print_flush warning_formatter ()
-    end
-
-
-
-let error_unescaped_delimiter loc txt = 
-  raise (Error(loc, Uninterpreted_delimiters txt))
-
-
-
-
-
-
-(**
-   Note the standard way of reporting error in compiler:
-
-   val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
-   val Location.error_of_printer : Location.t ->
-   (Format.formatter -> error -> unit) -> error -> Location.error
-
-   Define an error type
-
-   type error 
-   exception Error of Location.t * error 
-
-   Provide a printer to error
-
-   {[
-     let () = 
-       Location.register_error_of_exn
-         (function 
-           | Error(loc,err) -> 
-             Some (Location.error_of_printer loc pp_error err)
-           | _ -> None
-         )
-   ]}
-*)
-
-end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14360,6 +13998,539 @@ let optional s = Optional s
 let empty_kind arg_type = { arg_label = empty_label ; arg_type }
 
 end
+module Ast_polyvar : sig 
+#1 "ast_polyvar.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ val map_row_fields_into_ints:
+  Location.t -> 
+  Parsetree.row_field list -> 
+  (int * int ) list * Parsetree.row_field list 
+
+val map_row_fields_into_strings:
+  Location.t -> 
+  Parsetree.row_field list -> 
+  External_arg_spec.attr * Parsetree.row_field list   
+
+
+val is_enum :   
+  Parsetree.row_field list -> 
+  bool
+end = struct
+#1 "ast_polyvar.ml"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+ let map_row_fields_into_ints ptyp_loc
+    (row_fields : Parsetree.row_field list) 
+  = 
+  let _, acc, rev_row_fields = 
+    (List.fold_left 
+       (fun (i,acc, row_fields) rtag -> 
+          match rtag with 
+          | Parsetree.Rtag (label, attrs, true,  [])
+            -> 
+            begin match Ast_attributes.process_bs_int_as attrs with 
+              | Some i, new_attrs -> 
+                i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
+                Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
+              | None, _ -> 
+                i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
+            end
+
+          | _ -> 
+            Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
+
+       ) (0, [],[]) row_fields) in 
+  List.rev acc, List.rev rev_row_fields              
+
+(** It also check in-consistency of cases like 
+    {[ [`a  | `c of int ] ]}       
+*)  
+let map_row_fields_into_strings ptyp_loc 
+    (row_fields : Parsetree.row_field list) = 
+  let case, result, row_fields  = 
+    (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
+         match nullary, tag with 
+         | (`Nothing | `Null), 
+           Parsetree.Rtag (label, attrs, true,  [])
+           -> 
+           begin match Ast_attributes.process_bs_string_as attrs with 
+             | Some name, new_attrs  -> 
+               `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
+               Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
+
+             | None, _ -> 
+               `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
+               tag :: row_fields
+           end
+         | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
+           -> 
+           begin match Ast_attributes.process_bs_string_as attrs with 
+             | Some name, new_attrs -> 
+               `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
+               Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
+             | None, _ -> 
+               `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
+               (tag :: row_fields)
+           end
+         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+
+       ) row_fields (`Nothing, [], [])) in 
+  (match case with 
+   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+   | `Null -> External_arg_spec.NullString result 
+   | `NonNull -> NonNullString result), row_fields
+
+  
+  let is_enum row_fields = 
+    List.for_all (fun (x : Parsetree.row_field) -> 
+      match x with 
+      | Rtag(_label,_attrs,true, []) -> true 
+      | _ -> false
+    ) row_fields
+
+end
+module Js_config : sig 
+#1 "js_config.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+(* val get_packages_info :
+   unit -> Js_packages_info.t *)
+
+
+(** set/get header *)
+val no_version_header : bool ref 
+
+
+(** return [package_name] and [path] 
+    when in script mode: 
+*)
+
+(* val get_current_package_name_and_path : 
+  Js_packages_info.module_system -> 
+  Js_packages_info.info_query *)
+
+
+(* val set_package_name : string -> unit  
+val get_package_name : unit -> string option *)
+
+(** cross module inline option *)
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
+(** diagnose option *)
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
+
+(** generate tds option *)
+val default_gen_tds : bool ref
+
+(** options for builtin ppx *)
+val no_builtin_ppx_ml : bool ref 
+val no_builtin_ppx_mli : bool ref 
+val no_warn_ffi_type : bool ref 
+
+
+val no_warn_unimplemented_external : bool ref 
+
+(** check-div-by-zero option *)
+val check_div_by_zero : bool ref 
+val get_check_div_by_zero : unit -> bool 
+
+(* It will imply [-noassert] be set too, note from the implementation point of view,
+   in the lambda layer, it is impossible to tell whether it is [assert (3 <> 2)] or
+   [if (3<>2) then assert false]
+ *)
+val no_any_assert : bool ref 
+val set_no_any_assert : unit -> unit
+val get_no_any_assert : unit -> bool 
+
+
+
+(** Debugging utilies *)
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
+val tool_name : string
+
+
+val sort_imports : bool ref 
+val dump_js : bool ref
+val syntax_only  : bool ref
+val binary_ast : bool ref
+
+
+val bs_suffix : bool ref
+
+end = struct
+#1 "js_config.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+(* let add_npm_package_path s =
+  match !packages_info  with
+  | Empty ->
+    Ext_pervasives.bad_argf "please set package name first using -bs-package-name ";
+  | NonBrowser(name,  envs) ->
+    let env, path =
+      match Ext_string.split ~keep_empty:false s ':' with
+      | [ package_name; path]  ->
+        (match Js_packages_info.module_system_of_string package_name with
+         | Some x -> x
+         | None ->
+           Ext_pervasives.bad_argf "invalid module system %s" package_name), path
+      | [path] ->
+        NodeJS, path
+      | _ ->
+        Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    in
+    packages_info := NonBrowser (name,  ((env,path) :: envs)) *)
+(** Browser is not set via command line only for internal use *)
+
+
+let no_version_header = ref false
+
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b =
+  cross_module_inline := b
+
+
+let diagnose = ref false
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b
+
+let (//) = Filename.concat
+
+(* let get_packages_info () = !packages_info *)
+
+let default_gen_tds = ref false
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+let no_warn_ffi_type = ref false
+
+(** TODO: will flip the option when it is ready *)
+let no_warn_unimplemented_external = ref false 
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f
+let get_current_file () = !current_file
+let get_module_name () =
+  Filename.chop_extension
+    (Filename.basename (String.uncapitalize !current_file))
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () =
+  !debug_file <> "" &&  !debug_file = !current_file
+
+let tool_name = "BuckleScript"
+
+let check_div_by_zero = ref true
+let get_check_div_by_zero () = !check_div_by_zero
+
+let no_any_assert = ref false
+
+let set_no_any_assert () = no_any_assert := true
+let get_no_any_assert () = !no_any_assert
+
+let sort_imports = ref true
+let dump_js = ref false
+
+
+
+let syntax_only = ref false
+let binary_ast = ref false
+
+let bs_suffix = ref false 
+end
+module Bs_warnings : sig 
+#1 "bs_warnings.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type t = 
+  | Unsafe_ffi_bool_type
+  | Unsafe_poly_variant_type
+
+val prerr_warning : Location.t -> t -> unit
+
+
+val warn_missing_primitive : Location.t -> string -> unit 
+
+val error_unescaped_delimiter : 
+  Location.t -> string  -> unit 
+end = struct
+#1 "bs_warnings.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+type t = 
+  | Unsafe_ffi_bool_type
+
+  | Unsafe_poly_variant_type
+  (* for users write code like this:
+     {[ external f : [`a of int ] -> string = ""]}
+     Here users forget about `[@bs.string]` or `[@bs.int]`
+  *)    
+
+
+
+let to_string t =
+  match t with
+  | Unsafe_ffi_bool_type
+    ->   
+    "You are passing a OCaml bool type into JS, probably you want to pass Js.boolean"
+  | Unsafe_poly_variant_type 
+    -> 
+    "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
+
+let warning_formatter = Format.err_formatter
+
+let print_string_warning (loc : Location.t) x =   
+  if loc.loc_ghost then 
+    Format.fprintf warning_formatter "File %s@." 
+      (Js_config.get_current_file ())
+  else 
+    Location.print warning_formatter loc ; 
+  Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
+
+let prerr_warning loc x =
+  if not (!Js_config.no_warn_ffi_type ) then
+    print_string_warning loc (to_string x) 
+
+let unimplemented_primitive = "Unimplemented primitive used:" 
+type error = 
+  | Unused_attribute of string
+  | Uninterpreted_delimiters of string
+  | Unimplemented_primitive of string 
+exception  Error of Location.t * error
+
+let pp_error fmt x =
+  match x with 
+  | Unimplemented_primitive str -> 
+    Format.pp_print_string fmt unimplemented_primitive;
+    Format.pp_print_string fmt str
+  | Unused_attribute str ->
+    Format.pp_print_string fmt Literals.unused_attribute;
+    Format.pp_print_string fmt str
+  | Uninterpreted_delimiters str -> 
+    Format.pp_print_string fmt "Uninterpreted delimiters" ;
+    Format.pp_print_string fmt str
+
+
+
+let () = 
+  Location.register_error_of_exn (function 
+      | Error (loc,err) -> 
+        Some (Location.error_of_printer loc pp_error err)
+      | _ -> None
+    )
+
+
+
+
+let warn_missing_primitive loc txt =      
+  if not @@ !Js_config.no_warn_unimplemented_external then
+    begin 
+      print_string_warning loc ( unimplemented_primitive ^ txt ^ " \n" );
+      Format.pp_print_flush warning_formatter ()
+    end
+
+
+
+let error_unescaped_delimiter loc txt = 
+  raise (Error(loc, Uninterpreted_delimiters txt))
+
+
+
+
+
+
+(**
+   Note the standard way of reporting error in compiler:
+
+   val Location.register_error_of_exn : (exn -> Location.error option) -> unit 
+   val Location.error_of_printer : Location.t ->
+   (Format.formatter -> error -> unit) -> error -> Location.error
+
+   Define an error type
+
+   type error 
+   exception Error of Location.t * error 
+
+   Provide a printer to error
+
+   {[
+     let () = 
+       Location.register_error_of_exn
+         (function 
+           | Error(loc,err) -> 
+             Some (Location.error_of_printer loc pp_error err)
+           | _ -> None
+         )
+   ]}
+*)
+
+end
 module Bs_version : sig 
 #1 "bs_version.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -15617,7 +15788,8 @@ let get_arg_type ~nolabel optional
       begin match ptyp_desc with 
         | Ptyp_variant ( row_fields, Closed, None)
           ->
-          let attr,row_fields = map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
+          let attr,row_fields = 
+              Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
           attr, {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
                      ptyp_attributes ;
           }
@@ -15630,7 +15802,7 @@ let get_arg_type ~nolabel optional
       begin match ptyp_desc with 
         | Ptyp_variant ( row_fields, Closed, None) -> 
           let int_lists, new_row_fields = 
-            map_row_fields_into_ints ptyp.ptyp_loc row_fields in 
+            Ast_polyvar.map_row_fields_into_ints ptyp.ptyp_loc row_fields in 
           Int int_lists ,
           {ptyp with 
            ptyp_desc = Ptyp_variant(new_row_fields, Closed, None );
