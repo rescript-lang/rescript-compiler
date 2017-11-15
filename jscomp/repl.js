@@ -48,7 +48,7 @@ function prepare() {
 
     e(`rm -rf  ${playground}/pre_load.js`)
     e(`cp ./pre_load.js ${playground}`)
-    e(`cp ../lib/es6/*.js ${playground}/stdlib`)
+    e(`cp ../lib/amdjs/*.js ${playground}/stdlib`)
 
     // Build JSX v2 PPX with jsoo
     try {
@@ -73,7 +73,7 @@ prepare()
 
 console.log(`playground : ${playground}`)
 
-var includes = [`stdlib`, `runtime`, `others`, `ext`].map(x => path.join(__dirname, x)).map(x => `-I ${x}`).join(` `)
+var includes = [`stdlib`, `runtime`, `others`].map(x => path.join(__dirname, x)).map(x => `-I ${x}`).join(` `)
 
 var cmi_files =
     [
