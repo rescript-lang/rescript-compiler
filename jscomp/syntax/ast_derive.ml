@@ -22,10 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type tdcls = Parsetree.type_declaration list
 
 type gen = {
-  structure_gen : Parsetree.type_declaration list  -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
+  structure_gen : tdcls -> bool -> Ast_structure.t ;
+  signature_gen : tdcls -> bool -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
@@ -39,13 +40,13 @@ type derive_table  =
 
 let derive_table : derive_table ref = ref String_map.empty
 
-let update key value = 
+let register key value = 
   derive_table := String_map.add key value !derive_table 
 
 
 
-let type_deriving_structure 
-    tdcls 
+let gen_structure 
+    (tdcls : tdcls)
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
   : Ast_structure.t = 
@@ -54,7 +55,7 @@ let type_deriving_structure
        (Ast_payload.table_dispatch !derive_table action).structure_gen 
          tdcls explict_nonrec) actions
 
-let type_deriving_signature
+let gen_signature
     tdcls
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
@@ -64,11 +65,12 @@ let type_deriving_signature
        (Ast_payload.table_dispatch !derive_table action).signature_gen
          tdcls explict_nonrec) actions
 
-let dispatch_extension ({Asttypes.txt ; loc}) typ =
+(** used for cases like [%sexp] *)         
+let gen_expression ({Asttypes.txt ; loc}) typ =
   let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
-    match (Ast_payload.table_dispatch !derive_table 
-            ({txt ; loc}, None)).expression_gen with 
-    | None ->
-      Bs_syntaxerr.err loc (Unregistered txt)
+  match (Ast_payload.table_dispatch !derive_table 
+           ({txt ; loc}, None)).expression_gen with 
+  | None ->
+    Bs_syntaxerr.err loc (Unregistered txt)
 
-    | Some f -> f typ
+  | Some f -> f typ

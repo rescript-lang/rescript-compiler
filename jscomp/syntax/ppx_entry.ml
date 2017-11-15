@@ -64,7 +64,8 @@ let no_export = ref false
 
 let () = 
   Ast_derive_dyn.init  ();
-  Ast_derive_projector.init ()
+  Ast_derive_projector.init ();
+  Ast_derive_js_mapper.init ()
 
 let reset () = 
   record_as_js_object := false ;
@@ -352,7 +353,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension({txt ; loc} as lid, PTyp typ) 
           when Ext_string.starts_with txt Literals.bs_deriving_dot -> 
           self.expr self @@ 
-          Ast_derive.dispatch_extension lid typ
+          Ast_derive.gen_expression lid typ
 
         (** End rewriting *)
         | Pexp_function cases -> 
@@ -564,7 +565,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                }
                (self.signature 
                   self @@ 
-                Ast_derive.type_deriving_signature tdcls actions explict_nonrec)
+                Ast_derive.gen_signature tdcls actions explict_nonrec)
         | {bs_deriving = `Nothing }, _ -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 
@@ -632,7 +633,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         else 
                           self.type_declaration self tdcl) tdcls)
               }
-              (self.structure self @@ Ast_derive.type_deriving_structure
+              (self.structure self @@ Ast_derive.gen_structure
                  tdcls actions explict_nonrec )
           | {bs_deriving = `Nothing}, _  -> 
             Ast_mapper.default_mapper.structure_item self str

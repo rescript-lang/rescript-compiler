@@ -363,6 +363,7 @@
 ../lib/whole_compiler.ml : ./ext/hash_set_ident_mask.ml
 ../lib/whole_compiler.ml : ./super_errors/super_main.ml
 ../lib/whole_compiler.ml : ./super_errors/super_misc.ml
+../lib/whole_compiler.ml : ./syntax/ast_derive_util.mli
 ../lib/whole_compiler.ml : ./syntax/ast_external_mk.mli
 ../lib/whole_compiler.ml : ./syntax/ast_utf8_string.mli
 ../lib/whole_compiler.ml : ./syntax/bs_ast_invariant.ml

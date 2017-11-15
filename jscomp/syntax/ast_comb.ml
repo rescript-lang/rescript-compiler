@@ -82,3 +82,10 @@ let to_undefined_type loc x =
     {txt = Ast_literal.Lid.js_undefined ; loc}
     [x]  
 
+let single_non_rec_value  name exp = 
+  Str.value Nonrecursive 
+    [Vb.mk (Pat.var name) exp]
+
+let single_non_rec_val name ty = 
+  Sig.value 
+    (Val.mk name ty)

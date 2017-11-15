@@ -62,3 +62,13 @@ val to_undefined_type :
   Location.t -> Parsetree.core_type -> Parsetree.core_type  
 
 val to_js_re_type : Location.t -> Parsetree.core_type
+
+val single_non_rec_value : 
+  Ast_helper.str -> 
+  Parsetree.expression -> 
+  Parsetree.structure_item
+
+val single_non_rec_val :   
+  Ast_helper.str -> 
+  Parsetree.core_type -> 
+  Parsetree.signature_item

@@ -26305,6 +26305,15 @@ val to_undefined_type :
 
 val to_js_re_type : Location.t -> Parsetree.core_type
 
+val single_non_rec_value : 
+  Ast_helper.str -> 
+  Parsetree.expression -> 
+  Parsetree.structure_item
+
+val single_non_rec_val :   
+  Ast_helper.str -> 
+  Parsetree.core_type -> 
+  Parsetree.signature_item
 end = struct
 #1 "ast_comb.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -26391,7 +26400,13 @@ let to_undefined_type loc x =
     {txt = Ast_literal.Lid.js_undefined ; loc}
     [x]  
 
+let single_non_rec_value  name exp = 
+  Str.value Nonrecursive 
+    [Vb.mk (Pat.var name) exp]
 
+let single_non_rec_val name ty = 
+  Sig.value 
+    (Val.mk name ty)
 end
 module Ast_core_type : sig 
 #1 "ast_core_type.mli"
@@ -27099,29 +27114,40 @@ module Ast_derive : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type tdcls = Parsetree.type_declaration list 
 
 type gen = {
-  structure_gen : Parsetree.type_declaration list -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
+  structure_gen : tdcls -> bool -> Ast_structure.t ;
+  signature_gen : tdcls -> bool -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
-val type_deriving_structure: 
-  Parsetree.type_declaration list  ->
+(**
+   [register name cb]
+   example: [register "accessors" cb]
+*)
+val register : 
+  string -> 
+  (Parsetree.expression option -> gen) -> 
+  unit
+
+val gen_structure: 
+  tdcls  ->
   Ast_payload.action list ->
   bool -> 
   Ast_structure.t
-val type_deriving_signature: 
-  Parsetree.type_declaration list ->
+
+val gen_signature: 
+  tdcls ->
   Ast_payload.action list -> 
   bool -> 
   Ast_signature.t
 
 
-val dispatch_extension : 
+val gen_expression : 
   string Asttypes.loc -> Parsetree.core_type -> Parsetree.expression
 
-val update : string -> (Parsetree.expression option -> gen) -> unit
+
 
 end = struct
 #1 "ast_derive.ml"
@@ -27149,10 +27175,11 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type tdcls = Parsetree.type_declaration list
 
 type gen = {
-  structure_gen : Parsetree.type_declaration list  -> bool -> Ast_structure.t ;
-  signature_gen : Parsetree.type_declaration list -> bool -> Ast_signature.t ; 
+  structure_gen : tdcls -> bool -> Ast_structure.t ;
+  signature_gen : tdcls -> bool -> Ast_signature.t ; 
   expression_gen : (Parsetree.core_type -> Parsetree.expression) option ; 
 }
 
@@ -27166,13 +27193,13 @@ type derive_table  =
 
 let derive_table : derive_table ref = ref String_map.empty
 
-let update key value = 
+let register key value = 
   derive_table := String_map.add key value !derive_table 
 
 
 
-let type_deriving_structure 
-    tdcls 
+let gen_structure 
+    (tdcls : tdcls)
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
   : Ast_structure.t = 
@@ -27181,7 +27208,7 @@ let type_deriving_structure
        (Ast_payload.table_dispatch !derive_table action).structure_gen 
          tdcls explict_nonrec) actions
 
-let type_deriving_signature
+let gen_signature
     tdcls
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
@@ -27191,18 +27218,64 @@ let type_deriving_signature
        (Ast_payload.table_dispatch !derive_table action).signature_gen
          tdcls explict_nonrec) actions
 
-let dispatch_extension ({Asttypes.txt ; loc}) typ =
+(** used for cases like [%sexp] *)         
+let gen_expression ({Asttypes.txt ; loc}) typ =
   let txt = Ext_string.tail_from txt (String.length Literals.bs_deriving_dot) in 
-    match (Ast_payload.table_dispatch !derive_table 
-            ({txt ; loc}, None)).expression_gen with 
-    | None ->
-      Bs_syntaxerr.err loc (Unregistered txt)
+  match (Ast_payload.table_dispatch !derive_table 
+           ({txt ; loc}, None)).expression_gen with 
+  | None ->
+    Bs_syntaxerr.err loc (Unregistered txt)
 
-    | Some f -> f typ
+  | Some f -> f typ
 
 end
-module Ast_derive_util
-= struct
+module Ast_derive_util : sig 
+#1 "ast_derive_util.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+(** Given a type declaration, extaract the type expression, mostly 
+  used in code gen later
+ *)
+ val core_type_of_type_declaration :
+  Parsetree.type_declaration -> Parsetree.core_type
+
+
+val lift_string_list_to_array : string list -> Parsetree.expression
+val lift_int : int -> Parsetree.expression
+val lift_int_list_to_array : int list -> Parsetree.expression
+val mk_fun :
+  loc:Location.t ->
+  Parsetree.core_type ->
+  string -> Parsetree.expression -> Parsetree.expression
+val destruct_label_declarations :
+  loc:Location.t ->
+  string ->
+  Parsetree.label_declaration list ->
+  (Parsetree.core_type * Parsetree.expression) list * string list
+
+end = struct
 #1 "ast_derive_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
@@ -27230,11 +27303,15 @@ module Ast_derive_util
 
 open Ast_helper
 
-let core_type_of_type_declaration (tdcl : Parsetree.type_declaration) = 
+let core_type_of_type_declaration 
+    (tdcl : Parsetree.type_declaration) = 
   match tdcl with 
   | {ptype_name = {txt ; loc};
      ptype_params ;
-    } -> Typ.constr {txt = Lident txt ; loc} (Ext_list.map fst ptype_params)
+    } -> 
+    Typ.constr 
+      {txt = Lident txt ; loc}
+      (Ext_list.map fst ptype_params)
 
 let lift_string_list_to_array (labels : string list) = 
   Exp.array
@@ -27528,7 +27605,7 @@ let record_exp  name core_type  labels : Ast_structure.t =
 
 
 let init ()  =
-  Ast_derive.update 
+  Ast_derive.register
     "dynval"
     begin fun (x : Parsetree.expression option) -> 
       match x with 
@@ -27636,138 +27713,217 @@ end = struct
 #1 "ast_derive_projector.ml"
 open Ast_helper
 
+let invalid_config (config : Parsetree.expression) = 
+  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
 
+
+
+type tdcls = Parsetree.type_declaration list 
+let js_field (o : Parsetree.expression) m = 
+  Exp.apply 
+    (Exp.ident {txt = Lident "##"; loc = o.pexp_loc})
+    [ 
+      "",o; 
+      "", Exp.ident m
+    ]
 let init () =
-  Ast_derive.update 
-    "accessors" 
-    begin fun (x : Parsetree.expression option) ->
-       match x with 
-       | Some {pexp_loc = loc} 
-         -> Location.raise_errorf ~loc "such configuration is not supported"
-       | None -> 
-         {structure_gen = 
-            begin fun (tdcls : Parsetree.type_declaration list) _explict_nonrec ->
-              let handle_tdcl tdcl = 
-                let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
-                match tdcl with 
-                | {ptype_kind = 
-                     Ptype_record label_declarations }
-                  -> 
-                  label_declarations 
-                  |> 
-                  Ext_list.map (fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
-                      let txt = "param" in
-                      Str.value Nonrecursive
+  Ast_derive.register
+    "jsMapper"
+    (fun ( x : Parsetree.expression option) -> 
+       (match x with 
+        | Some config -> invalid_config config 
+        | None -> ());
+       {
+         structure_gen = (fun (tdcls : tdcls) _ -> 
+             let handle_tdcl tdcl =
+               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl
+               in 
+               let name = tdcl.ptype_name.txt in 
+               let toJs = name ^ "ToJs" in 
+               let fromJs = name ^ "FromJs" in 
+               match tdcl.ptype_kind with  
+               | Ptype_record label_declarations -> 
+                 let record_arg = "record" in        
+                 let exp = 
+                   Exp.record
+                     (List.map 
+                        (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
+                           {Asttypes.loc; txt = Longident.Lident txt },
+                           Exp.field (Exp.ident {txt = Lident record_arg ; loc })
+                             {Asttypes.loc; txt = Longident.Lident txt }
+                        ) label_declarations) None in 
+                 let loc = tdcl.ptype_loc in        
+                 let toJs = Ast_comb.single_non_rec_value {loc; txt = toJs}
+                     (Exp.fun_ "" None (Pat.constraint_ (Pat.var {loc; txt = record_arg}) core_type) 
+                        (Exp.extension ({Asttypes.loc; txt = "bs.obj"}, (PStr [Str.eval exp  ])))) 
+                 in 
+                 let obj_arg = "obj" in 
+                 let obj_exp = 
+                   Exp.record
+                     (List.map 
+                        (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
+                           {Asttypes.loc; txt = Longident.Lident txt },
+                           js_field (Exp.ident {txt = Lident obj_arg ; loc })
+                             {Asttypes.loc; txt = Longident.Lident txt }
+                        ) label_declarations) None in 
+                 let fromJs = 
+                   Ast_comb.single_non_rec_value {loc; txt = fromJs}
+                     (Exp.fun_ "" None (Pat.var {loc; txt = obj_arg})
+                        (Exp.constraint_ obj_exp core_type) )
+                 in
+                 [
+                   toJs;
+                   fromJs
+                 ]
+               | Ptype_variant _
+               | Ptype_abstract | Ptype_open -> [] in 
+             Ext_list.flat_map handle_tdcl tdcls 
+           );
+         signature_gen = 
+           (fun (tdcls : tdcls) _ -> 
+              let handle_tdcl tdcl =
+                let core_type = Ast_derive_util.core_type_of_type_declaration tdcl 
+                in 
+                let name = tdcl.ptype_name.txt in 
+                let toJs = name ^ "ToJs" in 
+                let fromJs = name ^ "FromJs" in 
+                match tdcl.ptype_kind with  
+                | Ptype_record label_declarations ->            
+                  let loc = tdcl.ptype_loc in 
+                  let ty = 
+                    Ast_comb.to_js_type loc @@  
+                    Typ.object_
+                      (List.map 
+                         (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
+                            txt, [], pld_type
+                         ) label_declarations) 
+                      Closed in 
+                  let loc = tdcl.ptype_loc in        
+                  let toJs = 
+                    Ast_comb.single_non_rec_val {loc; txt = toJs}
+                      (Typ.arrow "" core_type ty) in 
+                  let fromJs =    
+                    Ast_comb.single_non_rec_val {loc; txt = fromJs}
+                      (Typ.arrow ""  ty core_type) in 
+                  [
+                    toJs;
+                    fromJs
+                  ]
+                | Ptype_variant _
+                | Ptype_abstract | Ptype_open -> [] in 
+              Ext_list.flat_map handle_tdcl tdcls 
 
-                        [Vb.mk (Pat.var pld_name) @@
-                         Exp.fun_ "" None
-                           (Pat.constraint_ (Pat.var {txt ; loc}) core_type )
-                           (Exp.field (Exp.ident {txt = Lident txt ; loc}) 
-                              {txt = Longident.Lident pld_label ; loc}) ]
-                    )
-                | {ptype_kind = 
-                     Ptype_variant constructor_declarations 
-                  } 
-                  -> 
-                  constructor_declarations
-                  |> 
-                  Ext_list.map 
-                    (fun
-                      ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                          Parsetree.constructor_declaration)
-                      -> (* TODO: add type annotations *)
-                        let little_con_name = String.uncapitalize con_name  in
-                        let arity = List.length pcd_args in 
-                        if arity = 0 then 
-                          Str.value Nonrecursive 
-                            [Vb.mk  
-                               (Pat.var  {loc ; txt = little_con_name})
-                               (Exp.constraint_
-                                  (Exp.construct {loc ; txt = Longident.Lident con_name } None)
-                                  core_type
-                               )
-                            ]
-                        else 
-                          begin 
-                            let vars = 
-                              Ext_list.init  arity (fun x -> "param_" ^ string_of_int x ) in 
-                            let exp = 
-                              Exp.constraint_
-                                ( 
-                                  Exp.construct {loc ; txt = Longident.Lident con_name} @@ 
-                                  Some
-                                    ( 
-                                      if  arity = 1 then 
-                                        Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
-                                      else 
-                                        Exp.tuple (Ext_list.map 
-                                                     (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
-                                                     vars 
-                                                  ) )) core_type
-                            in 
-                            let fun_ = 
+           );
+         expression_gen = None 
+       } 
+    )
+  ;
+  Ast_derive.register
+    "accessors" 
+    (fun (x : Parsetree.expression option) ->
+       (match x with 
+        | Some config -> invalid_config config
+        | None -> ());
+       {structure_gen = 
+          begin fun (tdcls : tdcls) _explict_nonrec ->
+            let handle_tdcl tdcl = 
+              let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
+              match tdcl.ptype_kind with 
+              | Ptype_record label_declarations 
+                -> 
+                label_declarations 
+                |> Ext_list.map (
+                  fun ({pld_name = {loc; txt = pld_label} as pld_name} : Parsetree.label_declaration) -> 
+                    let txt = "param" in
+                    Ast_comb.single_non_rec_value pld_name
+                      (Exp.fun_ "" None
+                         (Pat.constraint_ (Pat.var {txt ; loc}) core_type )
+                         (Exp.field (Exp.ident {txt = Lident txt ; loc}) 
+                            {txt = Longident.Lident pld_label ; loc}) )
+                )
+              | Ptype_variant constructor_declarations 
+                -> 
+                constructor_declarations
+                |> Ext_list.map 
+                  (fun
+                    ( {pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
+                        Parsetree.constructor_declaration)
+                    -> (* TODO: add type annotations *)
+                      let little_con_name = String.uncapitalize con_name  in
+                      let arity = List.length pcd_args in 
+                      Ast_comb.single_non_rec_value {loc ; txt = little_con_name}
+                        (
+                          if arity = 0 then (*TODO: add a prefix, better inter-op with FFI *)
+                            (Exp.constraint_
+                               (Exp.construct {loc ; txt = Longident.Lident con_name } None)
+                               core_type
+                            )
+                          else 
+                            begin 
+                              let vars = 
+                                Ext_list.init  arity (fun x -> "param_" ^ string_of_int x ) in 
+                              let exp = 
+                                Exp.constraint_
+                                  ( 
+                                    Exp.construct {loc ; txt = Longident.Lident con_name} @@ 
+                                    Some
+                                      ( 
+                                        if  arity = 1 then 
+                                          Exp.ident { loc ; txt = Longident.Lident (List.hd vars )}
+                                        else 
+                                          Exp.tuple (Ext_list.map 
+                                                       (fun x -> Exp.ident {loc ; txt = Longident.Lident x})
+                                                       vars 
+                                                    ) )) core_type
+                              in 
                               Ext_list.fold_right  (fun var b -> 
                                   Exp.fun_ "" None  (Pat.var {loc ; txt = var}) b 
-                                ) vars exp  in 
+                                ) vars exp  
 
-                            Str.value Nonrecursive
-                              [
-                                Vb.mk 
-                                  (Pat.var { loc ; txt  = little_con_name} )
-                                  fun_
-                              ]
-                          end
-                    )
-                | _ -> []
-                (* Location.raise_errorf "projector only works with record" *)
-              in Ext_list.flat_map handle_tdcl tdcls
+                            end)
+                  )
+              | Ptype_abstract | Ptype_open -> []
+              (* Location.raise_errorf "projector only works with record" *)
+            in Ext_list.flat_map handle_tdcl tdcls
 
 
-            end;
-          signature_gen = 
-            begin fun (tdcls : Parsetree.type_declaration list) _explict_nonrec -> 
-              let handle_tdcl tdcl = 
-                let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
-                match tdcl with 
-                | {ptype_kind = 
-                     Ptype_record label_declarations }
-                  -> 
-                  label_declarations 
-                  |> 
-                  Ext_list.map (fun 
-                             ({pld_name = {loc; txt = pld_label} as pld_name;
-                               pld_type
-                              } : 
-                                Parsetree.label_declaration) -> 
-                             Sig.value 
-                               (Val.mk pld_name 
-                                  (Typ.arrow "" core_type pld_type )))
-                | {ptype_kind = 
-                     Ptype_variant constructor_declarations 
-                  } -> 
-                  constructor_declarations
-                  |>
-                  Ext_list.map
-                    (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
-                             Parsetree.constructor_declaration)
-                      -> 
-                        Sig.value 
-                          (Val.mk {loc ; txt = (String.uncapitalize con_name)}
-                             
-                           (Ext_list.fold_right 
-                              (fun x acc -> Typ.arrow "" x acc) 
-                              pcd_args
-                              core_type)
-                          )
-                    )
-                           
-                  | _ -> [] 
-              in 
-              Ext_list.flat_map handle_tdcl tdcls
-            end;
-          expression_gen = None
-         }
-    end
+          end;
+        signature_gen = 
+          begin fun (tdcls : Parsetree.type_declaration list) _explict_nonrec -> 
+            let handle_tdcl tdcl = 
+              let core_type = Ast_derive_util.core_type_of_type_declaration tdcl in 
+              match tdcl.ptype_kind with 
+              | Ptype_record label_declarations 
+                -> 
+                label_declarations 
+                |> Ext_list.map 
+                  (fun 
+                    ({pld_name ;
+                      pld_type
+                     } : 
+                       Parsetree.label_declaration) -> 
+                    Ast_comb.single_non_rec_val pld_name (Typ.arrow "" core_type pld_type )
+                  )
+              | Ptype_variant constructor_declarations 
+                -> 
+                constructor_declarations
+                |>
+                Ext_list.map
+                  (fun  ({pcd_name = {loc ; txt = con_name} ; pcd_args ; pcd_loc }:
+                           Parsetree.constructor_declaration)
+                    -> 
+                      Ast_comb.single_non_rec_val {loc ; txt = (String.uncapitalize con_name)}
+                        (Ext_list.fold_right 
+                           (fun x acc -> Typ.arrow "" x acc) 
+                           pcd_args
+                           core_type))
+              | Ptype_open | Ptype_abstract -> [] 
+            in 
+            Ext_list.flat_map handle_tdcl tdcls
+          end;
+        expression_gen = None
+       }
+    )
 
 
 end
@@ -34490,7 +34646,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension({txt ; loc} as lid, PTyp typ) 
           when Ext_string.starts_with txt Literals.bs_deriving_dot -> 
           self.expr self @@ 
-          Ast_derive.dispatch_extension lid typ
+          Ast_derive.gen_expression lid typ
 
         (** End rewriting *)
         | Pexp_function cases -> 
@@ -34702,7 +34858,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                }
                (self.signature 
                   self @@ 
-                Ast_derive.type_deriving_signature tdcls actions explict_nonrec)
+                Ast_derive.gen_signature tdcls actions explict_nonrec)
         | {bs_deriving = `Nothing }, _ -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 
@@ -34770,7 +34926,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         else 
                           self.type_declaration self tdcl) tdcls)
               }
-              (self.structure self @@ Ast_derive.type_deriving_structure
+              (self.structure self @@ Ast_derive.gen_structure
                  tdcls actions explict_nonrec )
           | {bs_deriving = `Nothing}, _  -> 
             Ast_mapper.default_mapper.structure_item self str

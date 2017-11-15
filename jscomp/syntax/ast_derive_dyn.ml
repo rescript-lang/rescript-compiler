@@ -250,7 +250,7 @@ let record_exp  name core_type  labels : Ast_structure.t =
 
 
 let init ()  =
-  Ast_derive.update 
+  Ast_derive.register
     "dynval"
     begin fun (x : Parsetree.expression option) -> 
       match x with 
