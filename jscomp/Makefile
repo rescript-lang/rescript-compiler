@@ -247,16 +247,17 @@ SYNTAX_SRCS= \
 	bs_ast_iterator \
 	ast_derive \
 	ast_comb \
+	ast_core_type\		
+	bs_ast_invariant\
 	ast_attributes\
 	ast_polyvar\
-	ast_core_type ast_derive_dyn\
+	ast_derive_dyn\
 	ast_derive_projector \
 	ast_derive_js_mapper\
 	external_ffi_types\
 	external_process\
 	ast_util\
-	ppx_entry\
-	bs_ast_invariant
+	ppx_entry
 # not a good name ast_util
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= bs_exception ast_extract binary_ast

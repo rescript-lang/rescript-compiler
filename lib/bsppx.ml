@@ -14077,10 +14077,13 @@ end = struct
             -> 
             begin match Ast_attributes.process_bs_int_as attrs with 
               | Some i, new_attrs -> 
-                i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
+                i + 1, 
+                ((Ext_pervasives.hash_variant label , i):: acc ), 
                 Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
               | None, _ -> 
-                i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
+                i + 1 , 
+                ((Ext_pervasives.hash_variant label , i):: acc ),
+                 rtag::row_fields
             end
 
           | _ -> 

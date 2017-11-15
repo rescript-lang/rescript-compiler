@@ -33,14 +33,18 @@ let is_bs_attribute txt =
    String.unsafe_get txt 2 = '.'
   )
 
+let used_attributes : Parsetree.attribute Hash_set_poly.t = Hash_set_poly.create 16 
 
-let emit_external_warnings : Bs_ast_iterator .iterator=
+let mark_used_bs_attribute (x : Parsetree.attribute) = 
+  Hash_set_poly.add used_attributes x
+
+let emit_external_warnings : Bs_ast_iterator.iterator=
   {
     Bs_ast_iterator.default_iterator with
     attribute = (fun _ a ->
         match a with
         | {txt ; loc}, _ ->
-          if is_bs_attribute txt  then
+          if is_bs_attribute txt && Hash_set_poly.mem used_attributes a  then
             Location.prerr_warning loc (Bs_unused_attribute txt)
       );
     expr = (fun self a -> 

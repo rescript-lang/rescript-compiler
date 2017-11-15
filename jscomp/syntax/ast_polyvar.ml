@@ -26,25 +26,25 @@
  let map_row_fields_into_ints ptyp_loc
     (row_fields : Parsetree.row_field list) 
   = 
-  let _, acc, rev_row_fields = 
+  let _, acc
+    = 
     (List.fold_left 
-       (fun (i,acc, row_fields) rtag -> 
+       (fun (i,acc) rtag -> 
           match rtag with 
           | Parsetree.Rtag (label, attrs, true,  [])
             -> 
-            begin match Ast_attributes.process_bs_int_as attrs with 
-              | Some i, new_attrs -> 
-                i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
-                Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
-              | None, _ -> 
-                i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
+            begin match Ast_attributes.iter_process_bs_int_as attrs with 
+              | Some i -> 
+                i + 1, 
+                ((Ext_pervasives.hash_variant label , i):: acc ) 
+              | None -> 
+                i + 1 , 
+                ((Ext_pervasives.hash_variant label , i):: acc )
             end
-
           | _ -> 
             Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
-
-       ) (0, [],[]) row_fields) in 
-  List.rev acc, List.rev rev_row_fields              
+       ) (0, []) row_fields) in 
+  List.rev acc
 
 (** It also check in-consistency of cases like 
     {[ [`a  | `c of int ] ]}       
