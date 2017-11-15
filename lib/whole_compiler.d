@@ -188,6 +188,7 @@
 ../lib/whole_compiler.ml : ./syntax/ast_derive.mli
 ../lib/whole_compiler.ml : ./syntax/ast_literal.ml
 ../lib/whole_compiler.ml : ./syntax/ast_payload.ml
+../lib/whole_compiler.ml : ./syntax/ast_polyvar.ml
 ../lib/whole_compiler.ml : ../lib/config_whole_compiler.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/btype.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/ctype.ml
@@ -220,6 +221,7 @@
 ../lib/whole_compiler.ml : ./stubs/bs_hash_stubs.ml
 ../lib/whole_compiler.ml : ./syntax/ast_literal.mli
 ../lib/whole_compiler.ml : ./syntax/ast_payload.mli
+../lib/whole_compiler.ml : ./syntax/ast_polyvar.mli
 ../lib/whole_compiler.ml : ./syntax/bs_syntaxerr.ml
 ../lib/whole_compiler.ml : ../lib/config_whole_compiler.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/driver/pparse.ml

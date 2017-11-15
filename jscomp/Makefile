@@ -243,8 +243,12 @@ SYNTAX_SRCS= \
 	external_arg_spec\
 	ast_payload \
 	ast_signature \
-	ast_structure bs_ast_iterator  \
-	ast_derive ast_comb ast_attributes\
+	ast_structure \
+	bs_ast_iterator \
+	ast_derive \
+	ast_comb \
+	ast_attributes\
+	ast_polyvar\
 	ast_core_type ast_derive_dyn\
 	ast_derive_projector \
 	ast_derive_js_mapper\

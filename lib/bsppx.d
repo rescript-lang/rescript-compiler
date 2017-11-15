@@ -51,6 +51,7 @@
 ../lib/bsppx.ml : ./syntax/ast_derive.mli
 ../lib/bsppx.ml : ./syntax/ast_literal.ml
 ../lib/bsppx.ml : ./syntax/ast_payload.ml
+../lib/bsppx.ml : ./syntax/ast_polyvar.ml
 ../lib/bsppx.ml : ../lib/config_whole_compiler.ml
 ../lib/bsppx.ml : ./common/bs_warnings.mli
 ../lib/bsppx.ml : ./common/lam_methname.ml
@@ -60,6 +61,7 @@
 ../lib/bsppx.ml : ./stubs/bs_hash_stubs.ml
 ../lib/bsppx.ml : ./syntax/ast_literal.mli
 ../lib/bsppx.ml : ./syntax/ast_payload.mli
+../lib/bsppx.ml : ./syntax/ast_polyvar.mli
 ../lib/bsppx.ml : ./syntax/bs_syntaxerr.ml
 ../lib/bsppx.ml : ../lib/config_whole_compiler.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/clflags.ml

@@ -86,8 +86,41 @@ let init () =
                    toJs;
                    fromJs
                  ]
+               | Ptype_abstract -> 
+                 [] 
+                 (* begin match tdcl.ptype_manifest with 
+                   | Some {
+                       ptyp_desc = 
+                         Ptyp_variant(row_fields, Closed,None);
+                       ptyp_loc
+                     }
+                     -> 
+                     if Ast_polyvar.is_enum row_fields then 
+
+                       let attr, new_row_field_list = 
+                         Ast_polyvar.map_row_fields_into_strings ptyp_loc row_fields 
+                       in (* how to mark attributes as used *)
+                       begin match attr with 
+                         | NullString result -> 
+                           [
+                             Ast_comb.single_non_rec_value 
+                               {loc = ptyp_loc; txt = "hi"}
+                               (Exp.array
+                                  (List.map (fun (i,str) -> 
+                                       Exp.tuple 
+                                         [
+                                           Exp.constant (Const_int i);
+                                           Exp.constant (Const_string (str, None))
+                                         ]
+                                     ) result))
+                           ]
+                         | _ -> assert false 
+                       end 
+                     else []
+                   | Some _ | None -> []
+                 end *)
                | Ptype_variant _
-               | Ptype_abstract | Ptype_open -> [] in 
+               | Ptype_open -> [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );
          signature_gen = 

@@ -51,6 +51,7 @@
 ../lib/bsdep.ml : ./syntax/ast_derive.mli
 ../lib/bsdep.ml : ./syntax/ast_literal.ml
 ../lib/bsdep.ml : ./syntax/ast_payload.ml
+../lib/bsdep.ml : ./syntax/ast_polyvar.ml
 ../lib/bsdep.ml : ../lib/config_whole_compiler.ml
 ../lib/bsdep.ml : ../vendor/ocaml/utils/ccomp.mli
 ../lib/bsdep.ml : ./common/bs_warnings.mli
@@ -61,6 +62,7 @@
 ../lib/bsdep.ml : ./stubs/bs_hash_stubs.ml
 ../lib/bsdep.ml : ./syntax/ast_literal.mli
 ../lib/bsdep.ml : ./syntax/ast_payload.mli
+../lib/bsdep.ml : ./syntax/ast_polyvar.mli
 ../lib/bsdep.ml : ./syntax/bs_syntaxerr.ml
 ../lib/bsdep.ml : ../lib/config_whole_compiler.mli
 ../lib/bsdep.ml : ../vendor/ocaml/driver/pparse.ml
