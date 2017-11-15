@@ -44,7 +44,8 @@ let emit_external_warnings : Bs_ast_iterator.iterator=
     attribute = (fun _ a ->
         match a with
         | {txt ; loc}, _ ->
-          if is_bs_attribute txt && Hash_set_poly.mem used_attributes a  then
+          if is_bs_attribute txt && 
+            not (Hash_set_poly.mem used_attributes a)  then
             Location.prerr_warning loc (Bs_unused_attribute txt)
       );
     expr = (fun self a -> 

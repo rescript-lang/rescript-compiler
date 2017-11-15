@@ -40,6 +40,7 @@
 ../lib/bsppx.ml : ./common/js_config.mli
 ../lib/bsppx.ml : ./ext/ext_js_regex.mli
 ../lib/bsppx.ml : ./ext/ext_position.mli
+../lib/bsppx.ml : ./ext/hash_set_poly.ml
 ../lib/bsppx.ml : ./syntax/ast_derive.ml
 ../lib/bsppx.ml : ./syntax/ppx_entry.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/misc.mli
@@ -48,6 +49,7 @@
 ../lib/bsppx.ml : ./ext/ext_json_parse.ml
 ../lib/bsppx.ml : ./ext/ext_json_types.ml
 ../lib/bsppx.ml : ./ext/ext_pervasives.ml
+../lib/bsppx.ml : ./ext/hash_set_poly.mli
 ../lib/bsppx.ml : ./syntax/ast_derive.mli
 ../lib/bsppx.ml : ./syntax/ast_literal.ml
 ../lib/bsppx.ml : ./syntax/ast_payload.ml
@@ -86,14 +88,18 @@
 ../lib/bsppx.ml : ./syntax/ast_derive_util.ml
 ../lib/bsppx.ml : ./syntax/ast_external_mk.ml
 ../lib/bsppx.ml : ./syntax/ast_utf8_string.ml
+../lib/bsppx.ml : ./syntax/bs_ast_iterator.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/location.ml
 ../lib/bsppx.ml : ./syntax/ast_derive_util.mli
 ../lib/bsppx.ml : ./syntax/ast_external_mk.mli
 ../lib/bsppx.ml : ./syntax/ast_utf8_string.mli
+../lib/bsppx.ml : ./syntax/bs_ast_invariant.ml
+../lib/bsppx.ml : ./syntax/bs_ast_iterator.mli
 ../lib/bsppx.ml : ./syntax/external_process.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/asttypes.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/location.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/longident.ml
+../lib/bsppx.ml : ./syntax/bs_ast_invariant.mli
 ../lib/bsppx.ml : ./syntax/external_arg_spec.ml
 ../lib/bsppx.ml : ./syntax/external_process.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_helper.ml

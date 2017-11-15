@@ -228,7 +228,7 @@ let iter_process_bs_int_as  attrs =
             st := v
         else 
           Bs_syntaxerr.err loc Duplicated_bs_as
-      | _ , _ -> ()
+      | _  -> ()
     ) attrs; !st 
 
 
