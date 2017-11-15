@@ -50,6 +50,63 @@ let variant_can_bs_unwrap_fields row_fields =
   | `No_fields
   | `Invalid_field -> false
 
+let map_row_fields_into_ints ptyp_loc
+    (row_fields : Parsetree.row_field list) 
+  = 
+  let _, acc, rev_row_fields = 
+    (List.fold_left 
+       (fun (i,acc, row_fields) rtag -> 
+          match rtag with 
+          | Parsetree.Rtag (label, attrs, true,  [])
+            -> 
+            begin match Ast_attributes.process_bs_int_as attrs with 
+              | Some i, new_attrs -> 
+                i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
+                Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
+              | None, _ -> 
+                i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
+            end
+
+          | _ -> 
+            Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
+
+       ) (0, [],[]) row_fields) in 
+  List.rev acc, List.rev rev_row_fields              
+
+let map_row_fields_into_strings ptyp_loc 
+    (row_fields : Parsetree.row_field list) = 
+  let case, result, row_fields  = 
+    (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
+         match nullary, tag with 
+         | (`Nothing | `Null), 
+           Parsetree.Rtag (label, attrs, true,  [])
+           -> 
+           begin match Ast_attributes.process_bs_string_as attrs with 
+             | Some name, new_attrs  -> 
+               `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
+               Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
+
+             | None, _ -> 
+               `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
+               tag :: row_fields
+           end
+         | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
+           -> 
+           begin match Ast_attributes.process_bs_string_as attrs with 
+             | Some name, new_attrs -> 
+               `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
+               Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
+             | None, _ -> 
+               `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
+               (tag :: row_fields)
+           end
+         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+
+       ) row_fields (`Nothing, [], [])) in 
+  (match case with 
+   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
+   | `Null -> External_arg_spec.NullString result 
+   | `NonNull -> NonNullString result), row_fields
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type 
     and result type in [@@bs.obj]
@@ -84,80 +141,44 @@ let get_arg_type ~nolabel optional
 
     end 
   else (* ([`a|`b] [@bs.string]) *)
-    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes, ptyp.ptyp_desc with
-    | (`String, ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None)
+    let ptyp_desc = ptyp.ptyp_desc in 
+    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
+    | (`String, ptyp_attributes)
       -> 
-      let case, result, row_fields  = 
-        (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
-             match nullary, tag with 
-             | (`Nothing | `Null), 
-               Parsetree.Rtag (label, attrs, true,  [])
-               -> 
-               begin match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name, new_attrs  -> 
-                   `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
-                   Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
-
-                 | None, _ -> 
-                   `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
-                   tag :: row_fields
-               end
-             | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
-               -> 
-               begin match Ast_attributes.process_bs_string_as attrs with 
-                 | Some name, new_attrs -> 
-                   `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
-                   Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
-                 | None, _ -> 
-                   `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
-                   (tag :: row_fields)
-               end
-             | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
-
-           ) row_fields (`Nothing, [], [])) in 
-      (match case with 
-       | `Nothing -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
-       | `Null -> NullString result 
-       | `NonNull -> NonNullString result) , 
-      {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
-                 ptyp_attributes ;
-      }
-    | (`String, _),  _ ->
-      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
-    | (`Ignore, ptyp_attributes), _  -> 
+      begin match ptyp_desc with 
+        | Ptyp_variant ( row_fields, Closed, None)
+          ->
+          let attr,row_fields = map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
+          attr, {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
+                     ptyp_attributes ;
+          }
+        | _ ->
+          Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
+      end 
+    | (`Ignore, ptyp_attributes)  -> 
       (Ignore, {ptyp with ptyp_attributes})
-    | (`Int , ptyp_attributes),  Ptyp_variant ( row_fields, Closed, None) -> 
-      let _, acc, rev_row_fields = 
-        (List.fold_left 
-           (fun (i,acc, row_fields) rtag -> 
-              match rtag with 
-              | Parsetree.Rtag (label, attrs, true,  [])
-                -> 
-                begin match Ast_attributes.process_bs_int_as attrs with 
-                  | Some i, new_attrs -> 
-                    i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
-                    Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
-                  | None, _ -> 
-                    i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
-                end
+    | (`Int , ptyp_attributes) -> 
+      begin match ptyp_desc with 
+        | Ptyp_variant ( row_fields, Closed, None) -> 
+          let int_lists, new_row_fields = 
+            map_row_fields_into_ints ptyp.ptyp_loc row_fields in 
+          Int int_lists ,
+          {ptyp with 
+           ptyp_desc = Ptyp_variant(new_row_fields, Closed, None );
+           ptyp_attributes
+          }
+        | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type   
+      end
+    | (`Unwrap, ptyp_attributes) -> 
 
-              | _ -> 
-                Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
-
-           ) (0, [],[]) row_fields) in 
-      Int (List.rev acc),
-      {ptyp with 
-       ptyp_desc = Ptyp_variant(List.rev rev_row_fields, Closed, None );
-       ptyp_attributes
-      }
-    | (`Int, _), _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
-    | (`Unwrap, ptyp_attributes), (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
-      when variant_can_bs_unwrap_fields row_fields
-      ->
-      Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
-    | (`Unwrap, _), _ ->
-      Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
-    | (`Uncurry opt_arity, ptyp_attributes), ptyp_desc -> 
+      begin match ptyp_desc with 
+        | (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
+          when variant_can_bs_unwrap_fields row_fields ->
+          Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
+        | _ ->
+          Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
+      end 
+    | (`Uncurry opt_arity, ptyp_attributes) -> 
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in 
       (begin match opt_arity, real_arity with 
          | Some arity, `Not_function -> 
@@ -172,7 +193,7 @@ let get_arg_type ~nolabel optional
            else Fn_uncurry_arity arity 
 
        end, {ptyp with ptyp_attributes})
-    | (`Nothing, ptyp_attributes),  ptyp_desc ->
+    | (`Nothing, ptyp_attributes) ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"; _}, [])
           -> 
@@ -324,12 +345,12 @@ let process_external_attributes
               end
             | "bs.scope" ->
               begin match Ast_payload.assert_strings loc payload with 
-              | [] -> 
-                Bs_syntaxerr.err loc Illegal_attribute 
-                  (* We need err on empty scope, so we can tell the difference 
-                     between unset/set
-                  *)
-              | scopes ->  { st with scopes = scopes }
+                | [] -> 
+                  Bs_syntaxerr.err loc Illegal_attribute 
+                (* We need err on empty scope, so we can tell the difference 
+                   between unset/set
+                *)
+                | scopes ->  { st with scopes = scopes }
               end
             | "bs.splice" -> {st with splice = true}
             | "bs.send" -> 
@@ -355,16 +376,16 @@ let process_external_attributes
                   | "identity" -> Return_identity 
                   | _ ->
                     Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
-                  end in
-                  let actions = 
-                    Ast_payload.ident_or_record_as_config loc payload 
-                  in
-                  begin match actions with 
-                    | [ ({txt; _ },None) ] -> 
-                      { st with return_wrapper = aux loc txt}
-                    | _ ->
-                      Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
-                  end
+                end in
+              let actions = 
+                Ast_payload.ident_or_record_as_config loc payload 
+              in
+              begin match actions with 
+                | [ ({txt; _ },None) ] -> 
+                  { st with return_wrapper = aux loc txt}
+                | _ ->
+                  Bs_syntaxerr.err loc Not_supported_directive_in_bs_return
+              end
             | _ -> (Location.prerr_warning loc (Bs_unused_attribute txt); st)
           end, attrs
         else (st , attr :: attrs)

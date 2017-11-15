@@ -38,6 +38,24 @@ tFromJs({
       cc: 3
     });
 
-exports.tToJs   = tToJs;
-exports.tFromJs = tFromJs;
+function searchForSureExists(xs, k) {
+  var _i = 0;
+  var xs$1 = xs;
+  var k$1 = k;
+  while(true) {
+    var i = _i;
+    var match = xs$1[i];
+    if (match[0] === k$1) {
+      return match[1];
+    } else {
+      _i = i + 1 | 0;
+      continue ;
+      
+    }
+  };
+}
+
+exports.tToJs               = tToJs;
+exports.tFromJs             = tFromJs;
+exports.searchForSureExists = searchForSureExists;
 /* u Not a pure module */
