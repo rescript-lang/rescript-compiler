@@ -67,6 +67,8 @@ val process_bs_string_or_int_as :
 val process_derive_type : 
   t -> derive_attr * t 
 
+val iter_process_derive_type : 
+  t -> derive_attr  
 
 
 val bs : attr 
