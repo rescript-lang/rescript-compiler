@@ -78,13 +78,11 @@
 ../lib/bsppx.ml : ../vendor/ocaml/utils/warnings.ml
 ../lib/bsppx.ml : ./syntax/ast_attributes.ml
 ../lib/bsppx.ml : ./syntax/ast_core_type.mli
-../lib/bsppx.ml : ./syntax/ast_derive_dyn.ml
 ../lib/bsppx.ml : ./syntax/ast_signature.mli
 ../lib/bsppx.ml : ./syntax/ast_structure.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/terminfo.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/warnings.mli
 ../lib/bsppx.ml : ./syntax/ast_attributes.mli
-../lib/bsppx.ml : ./syntax/ast_derive_dyn.mli
 ../lib/bsppx.ml : ./syntax/ast_derive_util.ml
 ../lib/bsppx.ml : ./syntax/ast_external_mk.ml
 ../lib/bsppx.ml : ./syntax/ast_utf8_string.ml

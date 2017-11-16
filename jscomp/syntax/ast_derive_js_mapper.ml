@@ -134,21 +134,29 @@ let init () =
                 match tdcl.ptype_kind with  
                 | Ptype_record label_declarations ->            
                   let loc = tdcl.ptype_loc in 
-                  let ty = 
+                  let ty1 = 
                     Ast_comb.to_js_type loc @@  
                     Typ.object_
                       (List.map 
                          (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
                             txt, [], pld_type
                          ) label_declarations) 
-                      Closed in 
+                      Open in 
+                  let ty2 = 
+                    Ast_comb.to_js_type loc @@  
+                    Typ.object_
+                      (List.map 
+                         (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
+                            txt, [], pld_type
+                         ) label_declarations) 
+                      Closed in                       
                   let loc = tdcl.ptype_loc in        
                   let toJs = 
                     Ast_comb.single_non_rec_val {loc; txt = toJs}
-                      (Typ.arrow "" core_type ty) in 
+                      (Typ.arrow "" core_type ty2) in 
                   let fromJs =    
                     Ast_comb.single_non_rec_val {loc; txt = fromJs}
-                      (Typ.arrow ""  ty core_type) in 
+                      (Typ.arrow ""  ty1 core_type) in 
                   [
                     toJs;
                     fromJs

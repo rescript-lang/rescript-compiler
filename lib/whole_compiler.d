@@ -296,7 +296,6 @@
 ../lib/whole_compiler.ml : ./depends/bs_exception.mli
 ../lib/whole_compiler.ml : ./syntax/ast_attributes.ml
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.mli
-../lib/whole_compiler.ml : ./syntax/ast_derive_dyn.ml
 ../lib/whole_compiler.ml : ./syntax/ast_signature.mli
 ../lib/whole_compiler.ml : ./syntax/ast_structure.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/lambda.ml
@@ -334,7 +333,6 @@
 ../lib/whole_compiler.ml : ./core/lam_stats_export.mli
 ../lib/whole_compiler.ml : ./super_errors/super_env.ml
 ../lib/whole_compiler.ml : ./syntax/ast_attributes.mli
-../lib/whole_compiler.ml : ./syntax/ast_derive_dyn.mli
 ../lib/whole_compiler.ml : ./syntax/ast_derive_util.ml
 ../lib/whole_compiler.ml : ./syntax/ast_external_mk.ml
 ../lib/whole_compiler.ml : ./syntax/ast_utf8_string.ml

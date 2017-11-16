@@ -64,6 +64,7 @@ array_safe_get.cmj : ../stdlib/array.cmj
 array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj array_test.cmi
+ast_js_mapper_poly_test.cmj :
 ast_js_mapper_test.cmj : ../stdlib/array.cmj ast_js_mapper_test.cmi
 async_ideas.cmj :
 attr_test.cmj :

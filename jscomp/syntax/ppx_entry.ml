@@ -63,7 +63,6 @@ let record_as_js_object = ref false (* otherwise has an attribute *)
 let no_export = ref false 
 
 let () = 
-  Ast_derive_dyn.init  ();
   Ast_derive_projector.init ();
   Ast_derive_js_mapper.init ()
 
@@ -548,25 +547,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
     signature_item =  begin fun (self : Ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
       match sigi.psig_desc with 
       | Psig_type (_ :: _ as tdcls) -> 
-        begin match Ast_attributes.process_derive_type 
+        begin match Ast_attributes.iter_process_derive_type 
                       (Ext_list.last tdcls).ptype_attributes  with 
-        | {bs_deriving = `Has_deriving actions; explict_nonrec}, ptype_attributes
-          -> Ast_signature.fuse 
-               {sigi with 
-                psig_desc = Psig_type
-                    (
-                      Ext_list.map_last (fun last tdcl -> 
-                          if last then 
-                            self.type_declaration self {tdcl with ptype_attributes}
-                          else 
-                            self.type_declaration self tdcl                            
-                        ) tdcls
-                    )
-               }
+        | {bs_deriving = `Has_deriving actions; explict_nonrec}
+          -> Ast_signature.fuse sigi
                (self.signature 
-                  self @@ 
-                Ast_derive.gen_signature tdcls actions explict_nonrec)
-        | {bs_deriving = `Nothing }, _ -> 
+                  self 
+                  (Ast_derive.gen_signature tdcls actions explict_nonrec))
+        | {bs_deriving = `Nothing } -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 
         end
@@ -618,24 +606,26 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           -> 
           Ast_util.handle_raw_structure loc payload
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
-          begin match Ast_attributes.process_derive_type 
+          begin match Ast_attributes.iter_process_derive_type 
                         ((Ext_list.last tdcls).ptype_attributes) with 
           | {bs_deriving = `Has_deriving actions;
              explict_nonrec 
-            }, ptype_attributes -> 
-            Ast_structure.fuse 
-              {str with 
-               pstr_desc =
-                 Pstr_type 
-                   (Ext_list.map_last (fun last tdcl -> 
+            } -> 
+            (* let new_tdcls = (** FIXME: mark as used instead of dropping*)
+               (Ext_list.map_last (fun last tdcl -> 
                         if last then 
                           self.type_declaration self {tdcl with ptype_attributes}
                         else 
-                          self.type_declaration self tdcl) tdcls)
-              }
-              (self.structure self @@ Ast_derive.gen_structure
-                 tdcls actions explict_nonrec )
-          | {bs_deriving = `Nothing}, _  -> 
+                          self.type_declaration self tdcl) tdcls) in  *)
+            Ast_structure.fuse_with_constraint 
+              ~loc:str.pstr_loc
+              tdcls                                 
+              (self.structure self 
+                 (Ast_derive.gen_structure
+                    tdcls actions explict_nonrec ))
+              (self.signature self 
+                 (Ast_derive.gen_signature tdcls actions explict_nonrec))   
+          | {bs_deriving = `Nothing}  -> 
             Ast_mapper.default_mapper.structure_item self str
           end
         | Pstr_primitive 

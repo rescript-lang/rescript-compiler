@@ -162,6 +162,32 @@ let process_derive_type attrs =
         st, attr::acc
     ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
 
+let iter_process_derive_type attrs =
+  let st = ref {explict_nonrec = false; bs_deriving = `Nothing } in 
+  List.iter
+    (fun 
+      (({txt ; loc}, payload  as attr): attr)  ->
+      match  txt  with
+      |  "bs.deriving"
+        ->
+        let ost = !st in 
+        (match ost with 
+         | {bs_deriving = `Nothing} -> 
+           Bs_ast_invariant.mark_used_bs_attribute attr ; 
+           st := 
+             {ost with
+              bs_deriving = `Has_deriving 
+                  (Ast_payload.ident_or_record_as_config loc payload)}
+         | {bs_deriving = `Has_deriving _} ->       
+           Bs_syntaxerr.err loc Duplicated_bs_deriving)
+
+      | "nonrec" ->
+        st :=         
+          { !st with explict_nonrec = true }
+        (* non bs attribute, no need to mark its use *)  
+      | _ -> ()
+    )  attrs;
+  !st 
 
 
 let process_bs_string_int_unwrap_uncurry attrs =
