@@ -549,12 +549,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
       | Psig_type (_ :: _ as tdcls) -> 
         begin match Ast_attributes.iter_process_derive_type 
                       (Ext_list.last tdcls).ptype_attributes  with 
-        | {bs_deriving = `Has_deriving actions; explict_nonrec}
+        | {bs_deriving = Some actions; explict_nonrec}
           -> Ast_signature.fuse sigi
                (self.signature 
                   self 
                   (Ast_derive.gen_signature tdcls actions explict_nonrec))
-        | {bs_deriving = `Nothing } -> 
+        | {bs_deriving = None } -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 
         end
@@ -608,7 +608,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
           begin match Ast_attributes.iter_process_derive_type 
                         ((Ext_list.last tdcls).ptype_attributes) with 
-          | {bs_deriving = `Has_deriving actions;
+          | {bs_deriving = Some actions;
              explict_nonrec 
             } -> 
             (* let new_tdcls = (** FIXME: mark as used instead of dropping*)
@@ -625,7 +625,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                     tdcls actions explict_nonrec ))
               (self.signature self 
                  (Ast_derive.gen_signature tdcls actions explict_nonrec))   
-          | {bs_deriving = `Nothing}  -> 
+          | {bs_deriving = None }  -> 
             Ast_mapper.default_mapper.structure_item self str
           end
         | Pstr_primitive 

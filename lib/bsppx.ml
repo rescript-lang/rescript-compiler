@@ -10167,7 +10167,7 @@ val process_external : t -> bool
 
 type derive_attr = {
   explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+  bs_deriving : Ast_payload.action list option 
 }
 val process_bs_string_int_unwrap_uncurry :
   t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
@@ -10187,8 +10187,7 @@ val process_bs_string_or_int_as :
     (string Asttypes.loc * Parsetree.payload) list
 
 
-val process_derive_type : 
-  t -> derive_attr * t 
+
 
 val iter_process_derive_type : 
   t -> derive_attr  
@@ -10343,33 +10342,12 @@ let process_external attrs =
 
 type derive_attr = {
   explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+  bs_deriving : Ast_payload.action list option
 }
 
-let process_derive_type attrs =
-  List.fold_left 
-    (fun (st, acc) 
-      (({txt ; loc}, payload  as attr): attr)  ->
-      match  st, txt  with
-      |  {bs_deriving = `Nothing}, "bs.deriving"
-        ->
-        {st with
-         bs_deriving = `Has_deriving 
-             (Ast_payload.ident_or_record_as_config loc payload)}, acc 
-      | {bs_deriving = `Has_deriving _}, "bs.deriving"
-        -> 
-        Bs_syntaxerr.err loc Duplicated_bs_deriving
-
-      | _ , _ ->
-        let st = 
-          if txt = "nonrec" then 
-            { st with explict_nonrec = true }
-          else st in 
-        st, attr::acc
-    ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
 
 let iter_process_derive_type attrs =
-  let st = ref {explict_nonrec = false; bs_deriving = `Nothing } in 
+  let st = ref {explict_nonrec = false; bs_deriving = None } in 
   List.iter
     (fun 
       (({txt ; loc}, payload  as attr): attr)  ->
@@ -10378,13 +10356,13 @@ let iter_process_derive_type attrs =
         ->
         let ost = !st in 
         (match ost with 
-         | {bs_deriving = `Nothing} -> 
+         | {bs_deriving = None } -> 
            Bs_ast_invariant.mark_used_bs_attribute attr ; 
            st := 
              {ost with
-              bs_deriving = `Has_deriving 
+              bs_deriving = Some
                   (Ast_payload.ident_or_record_as_config loc payload)}
-         | {bs_deriving = `Has_deriving _} ->       
+         | {bs_deriving = Some _} ->       
            Bs_syntaxerr.err loc Duplicated_bs_deriving)
 
       | "nonrec" ->
@@ -18832,12 +18810,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
       | Psig_type (_ :: _ as tdcls) -> 
         begin match Ast_attributes.iter_process_derive_type 
                       (Ext_list.last tdcls).ptype_attributes  with 
-        | {bs_deriving = `Has_deriving actions; explict_nonrec}
+        | {bs_deriving = Some actions; explict_nonrec}
           -> Ast_signature.fuse sigi
                (self.signature 
                   self 
                   (Ast_derive.gen_signature tdcls actions explict_nonrec))
-        | {bs_deriving = `Nothing } -> 
+        | {bs_deriving = None } -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 
         end
@@ -18891,7 +18869,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
           begin match Ast_attributes.iter_process_derive_type 
                         ((Ext_list.last tdcls).ptype_attributes) with 
-          | {bs_deriving = `Has_deriving actions;
+          | {bs_deriving = Some actions;
              explict_nonrec 
             } -> 
             (* let new_tdcls = (** FIXME: mark as used instead of dropping*)
@@ -18908,7 +18886,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                     tdcls actions explict_nonrec ))
               (self.signature self 
                  (Ast_derive.gen_signature tdcls actions explict_nonrec))   
-          | {bs_deriving = `Nothing}  -> 
+          | {bs_deriving = None }  -> 
             Ast_mapper.default_mapper.structure_item self str
           end
         | Pstr_primitive 

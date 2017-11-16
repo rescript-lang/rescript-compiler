@@ -137,33 +137,12 @@ let process_external attrs =
 
 type derive_attr = {
   explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+  bs_deriving : Ast_payload.action list option
 }
 
-let process_derive_type attrs =
-  List.fold_left 
-    (fun (st, acc) 
-      (({txt ; loc}, payload  as attr): attr)  ->
-      match  st, txt  with
-      |  {bs_deriving = `Nothing}, "bs.deriving"
-        ->
-        {st with
-         bs_deriving = `Has_deriving 
-             (Ast_payload.ident_or_record_as_config loc payload)}, acc 
-      | {bs_deriving = `Has_deriving _}, "bs.deriving"
-        -> 
-        Bs_syntaxerr.err loc Duplicated_bs_deriving
-
-      | _ , _ ->
-        let st = 
-          if txt = "nonrec" then 
-            { st with explict_nonrec = true }
-          else st in 
-        st, attr::acc
-    ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
 
 let iter_process_derive_type attrs =
-  let st = ref {explict_nonrec = false; bs_deriving = `Nothing } in 
+  let st = ref {explict_nonrec = false; bs_deriving = None } in 
   List.iter
     (fun 
       (({txt ; loc}, payload  as attr): attr)  ->
@@ -172,13 +151,13 @@ let iter_process_derive_type attrs =
         ->
         let ost = !st in 
         (match ost with 
-         | {bs_deriving = `Nothing} -> 
+         | {bs_deriving = None } -> 
            Bs_ast_invariant.mark_used_bs_attribute attr ; 
            st := 
              {ost with
-              bs_deriving = `Has_deriving 
+              bs_deriving = Some
                   (Ast_payload.ident_or_record_as_config loc payload)}
-         | {bs_deriving = `Has_deriving _} ->       
+         | {bs_deriving = Some _} ->       
            Bs_syntaxerr.err loc Duplicated_bs_deriving)
 
       | "nonrec" ->
