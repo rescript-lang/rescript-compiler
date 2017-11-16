@@ -359,8 +359,8 @@ let compile  ~filename (output_prefix : string) env _sigs
              x
         )
       in
-
-      let v = 
+      Warnings.check_fatal ();  
+      let v : Js_cmj_format.t = 
         Lam_stats_export.export_to_cmj 
           meta  
           maybe_pure 
@@ -378,35 +378,23 @@ let compile  ~filename (output_prefix : string) env _sigs
 let (//) = Filename.concat  
 
 let lambda_as_module 
-    env 
-    (sigs : Types.signature)
+    finalenv 
+    (current_signature : Types.signature)
     (filename : string) 
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
-#if BS_DEBUG then    
-    Js_config.set_debug_file "gpr_1245_test.ml";
-#end    
-    let lambda_output = compile ~filename output_prefix env sigs lam in
+ 
+    let lambda_output = 
+        compile ~filename output_prefix finalenv current_signature lam in
     let basename =  
-      (* #758, output_prefix is already chopped *)
-      (* -o  filename, see #757  *)
        Ext_namespace.js_name_of_basename !Js_config.bs_suffix 
         (Filename.basename
          output_prefix) in
-      (* #913
-         only generate little-case js file
-      *)
- 
-    (* Not re-entrant *)
     let package_info = Js_packages_state.get_packages_info () in 
     if Js_packages_info.is_empty package_info  then 
     begin 
-#if BS_DEBUG then 
-      Ext_log.dwarn __LOC__ "@[script mode@]@.";
-#end
-    (* script mode *)
       let output_chan chan =         
         Js_dump_program.dump_deps_program ~output_prefix NodeJS lambda_output chan in
       (if !Js_config.dump_js then output_chan stdout);
