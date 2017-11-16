@@ -545,11 +545,14 @@ SNAPSHOT_DEPS=$(SNAPSHOT_SRCS:.ml=.d)
 ../lib/bspp.ml:./bin/bspack.exe
 	  $< -D BS_MIN_LEX_DEPS=true -U BS_DEBUG -bs-MD -module-alias Config=Config_whole_compiler   -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING)?parser  -I ../lib -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Bspp_main -o $@
 
+../lib/bspp.exe:../lib/bspp.mli ../lib/bspp.ml
+	make -C ../lib bspp.exe
+
 ../lib/reactjs_jsx_ppx_v2.ml:./bin/reactjs_jsx_ppx_v2.bspp.ml ../lib/bspp.exe
-	./bin/bspp.exe $^ > $@
+	../lib/bspp.exe $^ > $@
 
 bin/jsoo_reactjs_jsx_ppx_v2.ml:./bin/reactjs_jsx_ppx_v2.bspp.ml ../lib/bspp.exe
-	BS_COMPILER_IN_BROWSER=true ./bin/bspp.exe $^ > $@
+	BS_COMPILER_IN_BROWSER=true ../lib/bspp.exe $^ > $@
 
 bin/js_compiler.ml:./bin/bspack.exe
 	 ./bin/bspack.exe -D BS_COMPILER_IN_BROWSER=true -U BS_DEBUG -bs-MD  -prelude-str 'module Config = Config_whole_compiler' -bs-exclude-I config -o $@ -bs-main Jsoo_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER) -I stubs -I ext -I syntax -I depends -I common -I core

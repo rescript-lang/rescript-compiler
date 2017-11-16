@@ -44,7 +44,7 @@ function prepare() {
     e(`./bin/jsgen.exe --`)
     e(`./bin/jscmj.exe`)
 
-    e(`ocamlc.opt -w -30-40 -no-check-prims -I bin -I outcome_printer ext.cma outcome_printer.cma bin/config_whole_compiler.mli bin/config_whole_compiler.ml bin/js_compiler.mli bin/js_compiler.ml -o jsc.byte`)
+    e(`ocamlc.opt -w -30-40 -no-check-prims -I bin -I ../lib -I outcome_printer ext.cma outcome_printer.cma ../lib/config_whole_compiler.mli ../lib/config_whole_compiler.ml bin/js_compiler.mli bin/js_compiler.ml -o jsc.byte`)
 
     e(`rm -rf  ${playground}/pre_load.js`)
     e(`cp ./pre_load.js ${playground}`)
@@ -86,8 +86,8 @@ var cmi_files =
         `arrayLabels`, `bytesLabels`, `complex`, `gc`, `genlex`, `listLabels`,
         `moreLabels`, `queue`, `scanf`, `sort`,`stack`, `stdLabels`, `stream`,
         `stringLabels`
-    ].map(x => `${x}.cmi:/cmis/${x}.cmi`).map(x => `--file ${x}`).join(` `)
-e(`js_of_ocaml  --toplevel +weak.js   ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`)
+    ].map(x => `${x}.cmi:/static/cmis/${x}.cmi`).map(x => `--file ${x}`).join(` `)
+e(`js_of_ocaml --toplevel +weak.js ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`)
 
 
 
