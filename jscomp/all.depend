@@ -220,9 +220,9 @@ syntax/ast_derive_dyn.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
 syntax/ast_derive_projector.cmx : ext/ext_list.cmx \
     syntax/ast_derive_util.cmx syntax/ast_derive.cmx syntax/ast_comb.cmx \
     syntax/ast_derive_projector.cmi
-syntax/ast_derive_js_mapper.cmx : ext/ext_list.cmx \
-    syntax/ast_derive_util.cmx syntax/ast_derive.cmx syntax/ast_comb.cmx \
-    syntax/ast_derive_js_mapper.cmi
+syntax/ast_derive_js_mapper.cmx : ext/ext_list.cmx syntax/ast_polyvar.cmx \
+    syntax/ast_literal.cmx syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
+    syntax/ast_comb.cmx syntax/ast_derive_js_mapper.cmi
 syntax/external_ffi_types.cmx : syntax/external_arg_spec.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx common/bs_version.cmx \
     syntax/external_ffi_types.cmi
