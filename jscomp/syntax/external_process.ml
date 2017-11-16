@@ -68,18 +68,26 @@ let get_arg_type ~nolabel optional
     if optional then 
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin
-      match Ast_attributes.process_bs_string_or_int_as ptyp.Parsetree.ptyp_attributes with 
-      |  None, _ -> 
+      let ptyp_attrs = 
+        ptyp.Parsetree.ptyp_attributes 
+      in   
+      let result = 
+        Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs
+      in   
+      (* when ppx start dropping attributes
+        we should warn, there is a trade off whether
+        we should warn dropped non bs attribute or not
+      *) 
+      Bs_ast_invariant.warn_unused_attributes ptyp_attrs; 
+      match result with 
+      |  None -> 
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
 
-      | Some (`Int i), others -> 
-        Ast_attributes.warn_unused_attributes others;
+      | Some (`Int i) -> 
         Arg_cst(External_arg_spec.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
-      | Some (`Str i), others -> 
-        Ast_attributes.warn_unused_attributes others;
+      | Some (`Str i)-> 
         Arg_cst (External_arg_spec.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
-      | Some (`Json_str s), others ->
-        Ast_attributes.warn_unused_attributes others;
+      | Some (`Json_str s) ->
         Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s),
         Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
 
@@ -93,10 +101,10 @@ let get_arg_type ~nolabel optional
         | Ptyp_variant ( row_fields, Closed, None)
           ->
           let attr = 
-              Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
+            Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
           attr, 
           {ptyp with
-            ptyp_attributes 
+           ptyp_attributes 
           }
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type

@@ -28085,7 +28085,12 @@ module Bs_ast_invariant : sig
 
 val mark_used_bs_attribute : 
   Parsetree.attribute -> unit 
-  
+
+(** [warn_unused_attributes discarded]
+  warn if [discarded] has unused bs attribute
+*)  
+val warn_unused_attributes :   
+  Parsetree.attributes -> unit 
 (** Ast invariant checking for detecting errors *)
 val emit_external_warnings : Bs_ast_iterator.iterator
 
@@ -28131,6 +28136,14 @@ let used_attributes : Parsetree.attribute Hash_set_poly.t = Hash_set_poly.create
 let mark_used_bs_attribute (x : Parsetree.attribute) = 
   Hash_set_poly.add used_attributes x
 
+let warn_unused_attributes attrs = 
+  if attrs <> [] then 
+    List.iter (fun (({txt; loc}, _) as a : Parsetree.attribute) -> 
+        if is_bs_attribute txt && 
+           not (Hash_set_poly.mem used_attributes a) then 
+          Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
+      ) attrs
+
 let emit_external_warnings : Bs_ast_iterator.iterator=
   {
     Bs_ast_iterator.default_iterator with
@@ -28138,35 +28151,35 @@ let emit_external_warnings : Bs_ast_iterator.iterator=
         match a with
         | {txt ; loc}, _ ->
           if is_bs_attribute txt && 
-            not (Hash_set_poly.mem used_attributes a)  then
+             not (Hash_set_poly.mem used_attributes a)  then
             Location.prerr_warning loc (Bs_unused_attribute txt)
       );
     expr = (fun self a -> 
-      match a.Parsetree.pexp_desc with 
-      | Pexp_constant (Const_string (_, Some s)) 
-        when Ext_string.equal s Literals.unescaped_j_delimiter 
-        || Ext_string.equal s Literals.unescaped_js_delimiter -> 
-        Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-      | _ -> Bs_ast_iterator.default_iterator.expr self a 
-    );
+        match a.Parsetree.pexp_desc with 
+        | Pexp_constant (Const_string (_, Some s)) 
+          when Ext_string.equal s Literals.unescaped_j_delimiter 
+            || Ext_string.equal s Literals.unescaped_js_delimiter -> 
+          Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
+        | _ -> Bs_ast_iterator.default_iterator.expr self a 
+      );
     value_description =
-    (fun self v -> 
-       match v with 
-       | ( {
-            pval_loc;
-            pval_prim =
+      (fun self v -> 
+         match v with 
+         | ( {
+             pval_loc;
+             pval_prim =
                "%identity"::_;
-            pval_type
-        } : Parsetree.value_description)
-         when not
-             (Ast_core_type.is_arity_one pval_type)
-         -> 
+             pval_type
+           } : Parsetree.value_description)
+           when not
+               (Ast_core_type.is_arity_one pval_type)
+           -> 
            Location.raise_errorf
              ~loc:pval_loc
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
-       | _ ->
-         Bs_ast_iterator.default_iterator.value_description self v 
-         
+         | _ ->
+           Bs_ast_iterator.default_iterator.value_description self v 
+
       )
   }
 
@@ -28219,7 +28232,7 @@ val process_external : t -> bool
 
 type derive_attr = {
   explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+  bs_deriving : Ast_payload.action list option 
 }
 val process_bs_string_int_unwrap_uncurry :
   t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
@@ -28231,16 +28244,15 @@ val iter_process_bs_string_as :
 val iter_process_bs_int_as : 
   t -> int option 
 
-val process_bs_string_or_int_as : 
+
+val iter_process_bs_string_or_int_as : 
     t ->
     [ `Int of int 
     | `Str of string
-    | `Json_str of string  ] option *
-    (string Asttypes.loc * Parsetree.payload) list
+    | `Json_str of string  ] option 
+    
 
 
-val process_derive_type : 
-  t -> derive_attr * t 
 
 val iter_process_derive_type : 
   t -> derive_attr  
@@ -28252,7 +28264,7 @@ val bs_this : attr
 val bs_method : attr
 
 
-val warn_unused_attributes : t -> unit
+
 
 end = struct
 #1 "ast_attributes.ml"
@@ -28395,33 +28407,12 @@ let process_external attrs =
 
 type derive_attr = {
   explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+  bs_deriving : Ast_payload.action list option
 }
 
-let process_derive_type attrs =
-  List.fold_left 
-    (fun (st, acc) 
-      (({txt ; loc}, payload  as attr): attr)  ->
-      match  st, txt  with
-      |  {bs_deriving = `Nothing}, "bs.deriving"
-        ->
-        {st with
-         bs_deriving = `Has_deriving 
-             (Ast_payload.ident_or_record_as_config loc payload)}, acc 
-      | {bs_deriving = `Has_deriving _}, "bs.deriving"
-        -> 
-        Bs_syntaxerr.err loc Duplicated_bs_deriving
-
-      | _ , _ ->
-        let st = 
-          if txt = "nonrec" then 
-            { st with explict_nonrec = true }
-          else st in 
-        st, attr::acc
-    ) ( {explict_nonrec = false; bs_deriving = `Nothing }, []) attrs
 
 let iter_process_derive_type attrs =
-  let st = ref {explict_nonrec = false; bs_deriving = `Nothing } in 
+  let st = ref {explict_nonrec = false; bs_deriving = None } in 
   List.iter
     (fun 
       (({txt ; loc}, payload  as attr): attr)  ->
@@ -28430,19 +28421,19 @@ let iter_process_derive_type attrs =
         ->
         let ost = !st in 
         (match ost with 
-         | {bs_deriving = `Nothing} -> 
+         | {bs_deriving = None } -> 
            Bs_ast_invariant.mark_used_bs_attribute attr ; 
            st := 
              {ost with
-              bs_deriving = `Has_deriving 
+              bs_deriving = Some
                   (Ast_payload.ident_or_record_as_config loc payload)}
-         | {bs_deriving = `Has_deriving _} ->       
+         | {bs_deriving = Some _} ->       
            Bs_syntaxerr.err loc Duplicated_bs_deriving)
 
       | "nonrec" ->
         st :=         
           { !st with explict_nonrec = true }
-        (* non bs attribute, no need to mark its use *)  
+      (* non bs attribute, no need to mark its use *)  
       | _ -> ()
     )  attrs;
   !st 
@@ -28519,29 +28510,36 @@ let iter_process_bs_int_as  attrs =
     ) attrs; !st 
 
 
-let process_bs_string_or_int_as attrs = 
-  List.fold_left 
-    (fun (st, attrs)
+let iter_process_bs_string_or_int_as attrs = 
+  let st = ref None in 
+  List.iter
+    (fun 
       (({txt ; loc}, payload ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.as", None
+      match  txt with
+      | "bs.as"
         ->
-        begin match Ast_payload.is_single_int payload with 
-          | None -> 
-            begin match Ast_payload.is_single_string payload with 
-              | Some (s,None) -> (Some (`Str (s)), attrs)
-              | Some (s, Some "json") -> (Some (`Json_str s ), attrs)
-              | None | Some (_, Some _) -> 
-                Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
+        if !st = None then 
+          (Bs_ast_invariant.mark_used_bs_attribute attr ; 
+           match Ast_payload.is_single_int payload with 
+           | None -> 
+             begin match Ast_payload.is_single_string payload with 
+               | Some (s,None) -> 
+                 st := Some (`Str (s))                
+               | Some (s, Some "json") -> 
+                st := Some (`Json_str s )
+               | None | Some (_, Some _) -> 
+                 Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
 
-            end
-          | Some   v->  (Some (`Int v), attrs)  
-        end
-      | "bs.as",  _ 
-        -> 
-        Bs_syntaxerr.err loc Duplicated_bs_as
-      | _ , _ -> (st, attr::attrs) 
-    ) (None, []) attrs
+             end
+           | Some   v->  
+            st := (Some (`Int v))
+          )
+        else
+          Bs_syntaxerr.err loc Duplicated_bs_as
+      | _ -> ()
+
+    ) attrs;
+  !st 
 
 let bs : attr
   =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
@@ -28558,11 +28556,6 @@ let bs_method : attr
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
 
-let warn_unused_attributes attrs = 
-  if attrs <> [] then 
-    List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
-        Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
-      ) attrs
 
 end
 module Ast_signature : sig 
@@ -33232,18 +33225,26 @@ let get_arg_type ~nolabel optional
     if optional then 
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin
-      match Ast_attributes.process_bs_string_or_int_as ptyp.Parsetree.ptyp_attributes with 
-      |  None, _ -> 
+      let ptyp_attrs = 
+        ptyp.Parsetree.ptyp_attributes 
+      in   
+      let result = 
+        Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs
+      in   
+      (* when ppx start dropping attributes
+        we should warn, there is a trade off whether
+        we should warn dropped non bs attribute or not
+      *) 
+      Bs_ast_invariant.warn_unused_attributes ptyp_attrs; 
+      match result with 
+      |  None -> 
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
 
-      | Some (`Int i), others -> 
-        Ast_attributes.warn_unused_attributes others;
+      | Some (`Int i) -> 
         Arg_cst(External_arg_spec.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()  
-      | Some (`Str i), others -> 
-        Ast_attributes.warn_unused_attributes others;
+      | Some (`Str i)-> 
         Arg_cst (External_arg_spec.cst_string i), Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
-      | Some (`Json_str s), others ->
-        Ast_attributes.warn_unused_attributes others;
+      | Some (`Json_str s) ->
         Arg_cst (External_arg_spec.cst_json ptyp.ptyp_loc s),
         Ast_literal.type_string ~loc:ptyp.ptyp_loc () 
 
@@ -33257,10 +33258,10 @@ let get_arg_type ~nolabel optional
         | Ptyp_variant ( row_fields, Closed, None)
           ->
           let attr = 
-              Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
+            Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
           attr, 
           {ptyp with
-            ptyp_attributes 
+           ptyp_attributes 
           }
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
@@ -35583,7 +35584,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                      currently the pattern match is written in a top down style.
                      Another corner case: f##(g a b [@bs])
                   *)
-                  Ast_attributes.warn_unused_attributes attrs ;  
+                  Bs_ast_invariant.warn_unused_attributes attrs ;  
                   {e with pexp_desc = Ast_util.method_apply loc self obj name args}
                 | [("", obj) ;
                    ("", 
@@ -35715,12 +35716,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
       | Psig_type (_ :: _ as tdcls) -> 
         begin match Ast_attributes.iter_process_derive_type 
                       (Ext_list.last tdcls).ptype_attributes  with 
-        | {bs_deriving = `Has_deriving actions; explict_nonrec}
+        | {bs_deriving = Some actions; explict_nonrec}
           -> Ast_signature.fuse sigi
                (self.signature 
                   self 
                   (Ast_derive.gen_signature tdcls actions explict_nonrec))
-        | {bs_deriving = `Nothing } -> 
+        | {bs_deriving = None } -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 
         end
@@ -35774,7 +35775,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
           begin match Ast_attributes.iter_process_derive_type 
                         ((Ext_list.last tdcls).ptype_attributes) with 
-          | {bs_deriving = `Has_deriving actions;
+          | {bs_deriving = Some actions;
              explict_nonrec 
             } -> 
             (* let new_tdcls = (** FIXME: mark as used instead of dropping*)
@@ -35791,7 +35792,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                     tdcls actions explict_nonrec ))
               (self.signature self 
                  (Ast_derive.gen_signature tdcls actions explict_nonrec))   
-          | {bs_deriving = `Nothing}  -> 
+          | {bs_deriving = None }  -> 
             Ast_mapper.default_mapper.structure_item self str
           end
         | Pstr_primitive 

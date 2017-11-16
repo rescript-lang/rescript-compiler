@@ -44,7 +44,7 @@ val process_external : t -> bool
 
 type derive_attr = {
   explict_nonrec : bool;
-  bs_deriving : [`Has_deriving of Ast_payload.action list | `Nothing ]
+  bs_deriving : Ast_payload.action list option 
 }
 val process_bs_string_int_unwrap_uncurry :
   t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
@@ -56,16 +56,15 @@ val iter_process_bs_string_as :
 val iter_process_bs_int_as : 
   t -> int option 
 
-val process_bs_string_or_int_as : 
+
+val iter_process_bs_string_or_int_as : 
     t ->
     [ `Int of int 
     | `Str of string
-    | `Json_str of string  ] option *
-    (string Asttypes.loc * Parsetree.payload) list
+    | `Json_str of string  ] option 
+    
 
 
-val process_derive_type : 
-  t -> derive_attr * t 
 
 val iter_process_derive_type : 
   t -> derive_attr  
@@ -77,4 +76,4 @@ val bs_this : attr
 val bs_method : attr
 
 
-val warn_unused_attributes : t -> unit
+
