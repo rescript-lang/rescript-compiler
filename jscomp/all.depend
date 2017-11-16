@@ -229,9 +229,10 @@ syntax/external_ffi_types.cmx : syntax/external_arg_spec.cmx \
 syntax/external_process.cmx : common/lam_methname.cmx \
     syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
     ext/ext_string.cmx ext/ext_list.cmx common/bs_warnings.cmx \
-    syntax/bs_syntaxerr.cmx common/bs_loc.cmx syntax/ast_polyvar.cmx \
-    syntax/ast_payload.cmx syntax/ast_literal.cmx syntax/ast_core_type.cmx \
-    syntax/ast_comb.cmx syntax/ast_attributes.cmx syntax/external_process.cmi
+    syntax/bs_syntaxerr.cmx common/bs_loc.cmx syntax/bs_ast_invariant.cmx \
+    syntax/ast_polyvar.cmx syntax/ast_payload.cmx syntax/ast_literal.cmx \
+    syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
+    syntax/external_process.cmi
 syntax/ast_util.cmx : ext/literals.cmx syntax/external_process.cmx \
     ext/ext_string.cmx ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
     syntax/ast_payload.cmx syntax/ast_pat.cmx syntax/ast_literal.cmx \
@@ -239,12 +240,13 @@ syntax/ast_util.cmx : ext/literals.cmx syntax/external_process.cmx \
     syntax/ast_comb.cmx syntax/ast_attributes.cmx syntax/ast_util.cmi
 syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
     syntax/external_process.cmx ext/ext_string.cmx ext/ext_ref.cmx \
-    ext/ext_list.cmx syntax/ast_util.cmx syntax/ast_utf8_string_interp.cmx \
-    syntax/ast_utf8_string.cmx syntax/ast_structure.cmx \
-    syntax/ast_signature.cmx syntax/ast_payload.cmx syntax/ast_literal.cmx \
-    syntax/ast_derive_projector.cmx syntax/ast_derive_js_mapper.cmx \
-    syntax/ast_derive.cmx syntax/ast_core_type.cmx syntax/ast_comb.cmx \
-    syntax/ast_attributes.cmx syntax/ppx_entry.cmi
+    ext/ext_list.cmx syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
+    syntax/ast_utf8_string_interp.cmx syntax/ast_utf8_string.cmx \
+    syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
+    syntax/ast_literal.cmx syntax/ast_derive_projector.cmx \
+    syntax/ast_derive_js_mapper.cmx syntax/ast_derive.cmx \
+    syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
+    syntax/ppx_entry.cmi
 syntax/bs_syntaxerr.cmi :
 syntax/ast_utf8_string.cmi :
 syntax/ast_utf8_string_interp.cmi :

@@ -24,6 +24,11 @@
 
 val mark_used_bs_attribute : 
   Parsetree.attribute -> unit 
-  
+
+(** [warn_unused_attributes discarded]
+  warn if [discarded] has unused bs attribute
+*)  
+val warn_unused_attributes :   
+  Parsetree.attributes -> unit 
 (** Ast invariant checking for detecting errors *)
 val emit_external_warnings : Bs_ast_iterator.iterator

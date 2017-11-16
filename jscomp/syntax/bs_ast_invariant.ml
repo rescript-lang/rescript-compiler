@@ -38,6 +38,14 @@ let used_attributes : Parsetree.attribute Hash_set_poly.t = Hash_set_poly.create
 let mark_used_bs_attribute (x : Parsetree.attribute) = 
   Hash_set_poly.add used_attributes x
 
+let warn_unused_attributes attrs = 
+  if attrs <> [] then 
+    List.iter (fun (({txt; loc}, _) as a : Parsetree.attribute) -> 
+        if is_bs_attribute txt && 
+           not (Hash_set_poly.mem used_attributes a) then 
+          Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
+      ) attrs
+
 let emit_external_warnings : Bs_ast_iterator.iterator=
   {
     Bs_ast_iterator.default_iterator with
@@ -45,34 +53,34 @@ let emit_external_warnings : Bs_ast_iterator.iterator=
         match a with
         | {txt ; loc}, _ ->
           if is_bs_attribute txt && 
-            not (Hash_set_poly.mem used_attributes a)  then
+             not (Hash_set_poly.mem used_attributes a)  then
             Location.prerr_warning loc (Bs_unused_attribute txt)
       );
     expr = (fun self a -> 
-      match a.Parsetree.pexp_desc with 
-      | Pexp_constant (Const_string (_, Some s)) 
-        when Ext_string.equal s Literals.unescaped_j_delimiter 
-        || Ext_string.equal s Literals.unescaped_js_delimiter -> 
-        Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
-      | _ -> Bs_ast_iterator.default_iterator.expr self a 
-    );
+        match a.Parsetree.pexp_desc with 
+        | Pexp_constant (Const_string (_, Some s)) 
+          when Ext_string.equal s Literals.unescaped_j_delimiter 
+            || Ext_string.equal s Literals.unescaped_js_delimiter -> 
+          Bs_warnings.error_unescaped_delimiter a.pexp_loc s 
+        | _ -> Bs_ast_iterator.default_iterator.expr self a 
+      );
     value_description =
-    (fun self v -> 
-       match v with 
-       | ( {
-            pval_loc;
-            pval_prim =
+      (fun self v -> 
+         match v with 
+         | ( {
+             pval_loc;
+             pval_prim =
                "%identity"::_;
-            pval_type
-        } : Parsetree.value_description)
-         when not
-             (Ast_core_type.is_arity_one pval_type)
-         -> 
+             pval_type
+           } : Parsetree.value_description)
+           when not
+               (Ast_core_type.is_arity_one pval_type)
+           -> 
            Location.raise_errorf
              ~loc:pval_loc
              "%%identity expect its type to be of form 'a -> 'b (arity 1)"
-       | _ ->
-         Bs_ast_iterator.default_iterator.value_description self v 
-         
+         | _ ->
+           Bs_ast_iterator.default_iterator.value_description self v 
+
       )
   }

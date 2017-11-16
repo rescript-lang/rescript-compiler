@@ -163,7 +163,7 @@ let iter_process_derive_type attrs =
       | "nonrec" ->
         st :=         
           { !st with explict_nonrec = true }
-        (* non bs attribute, no need to mark its use *)  
+      (* non bs attribute, no need to mark its use *)  
       | _ -> ()
     )  attrs;
   !st 
@@ -240,29 +240,36 @@ let iter_process_bs_int_as  attrs =
     ) attrs; !st 
 
 
-let process_bs_string_or_int_as attrs = 
-  List.fold_left 
-    (fun (st, attrs)
+let iter_process_bs_string_or_int_as attrs = 
+  let st = ref None in 
+  List.iter
+    (fun 
       (({txt ; loc}, payload ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.as", None
+      match  txt with
+      | "bs.as"
         ->
-        begin match Ast_payload.is_single_int payload with 
-          | None -> 
-            begin match Ast_payload.is_single_string payload with 
-              | Some (s,None) -> (Some (`Str (s)), attrs)
-              | Some (s, Some "json") -> (Some (`Json_str s ), attrs)
-              | None | Some (_, Some _) -> 
-                Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
+        if !st = None then 
+          (Bs_ast_invariant.mark_used_bs_attribute attr ; 
+           match Ast_payload.is_single_int payload with 
+           | None -> 
+             begin match Ast_payload.is_single_string payload with 
+               | Some (s,None) -> 
+                 st := Some (`Str (s))                
+               | Some (s, Some "json") -> 
+                st := Some (`Json_str s )
+               | None | Some (_, Some _) -> 
+                 Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
 
-            end
-          | Some   v->  (Some (`Int v), attrs)  
-        end
-      | "bs.as",  _ 
-        -> 
-        Bs_syntaxerr.err loc Duplicated_bs_as
-      | _ , _ -> (st, attr::attrs) 
-    ) (None, []) attrs
+             end
+           | Some   v->  
+            st := (Some (`Int v))
+          )
+        else
+          Bs_syntaxerr.err loc Duplicated_bs_as
+      | _ -> ()
+
+    ) attrs;
+  !st 
 
 let bs : attr
   =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
@@ -279,8 +286,3 @@ let bs_method : attr
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
 
-let warn_unused_attributes attrs = 
-  if attrs <> [] then 
-    List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
-        Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
-      ) attrs
