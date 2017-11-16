@@ -63,7 +63,6 @@ let record_as_js_object = ref false (* otherwise has an attribute *)
 let no_export = ref false 
 
 let () = 
-  Ast_derive_dyn.init  ();
   Ast_derive_projector.init ();
   Ast_derive_js_mapper.init ()
 
@@ -623,18 +622,20 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           | {bs_deriving = `Has_deriving actions;
              explict_nonrec 
             }, ptype_attributes -> 
-            Ast_structure.fuse 
-              {str with 
-               pstr_desc =
-                 Pstr_type 
-                   (Ext_list.map_last (fun last tdcl -> 
+            let new_tdcls = (** FIXME: mark as used instead of dropping*)
+              (Ext_list.map_last (fun last tdcl -> 
                         if last then 
                           self.type_declaration self {tdcl with ptype_attributes}
                         else 
-                          self.type_declaration self tdcl) tdcls)
-              }
-              (self.structure self @@ Ast_derive.gen_structure
-                 tdcls actions explict_nonrec )
+                          self.type_declaration self tdcl) tdcls) in 
+            Ast_structure.fuse_with_constraint 
+              ~loc:str.pstr_loc
+              new_tdcls                                 
+              (self.structure self (Ast_derive.gen_structure
+                 tdcls actions explict_nonrec ))
+              (self.signature self 
+                (Ast_derive.gen_signature tdcls actions explict_nonrec))   
+
           | {bs_deriving = `Nothing}, _  -> 
             Ast_mapper.default_mapper.structure_item self str
           end

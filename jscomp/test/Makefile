@@ -58,7 +58,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	method_chain recursive_module recursive_module_test simplify_lambda_632o\
 	div_by_zero_test unsafe_this obj_type_test polymorphism_test class_error_message\
 	test_bs_this class_setter_getter gpr496_test local_class_type test_regex ffi_array_test\
-	derive_dyntype derive_type_test nested_include simple_derive_test simple_derive_use\
+	derive_dyntype nested_include \
 	mutual_non_recursive_type external_ppx \
 	optional_ffi_test poly_variant_test \
 	bs_rest_test infer_type_test fs_test module_as_function\
@@ -201,10 +201,13 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	gpr_1245_test\
 	gpr_2126_test\
 	big_enum\
-	ast_js_mapper_test
+	ast_js_mapper_test\
+	ast_js_mapper_poly_test
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
-
+# simple_derive_test
+# simple_derive_use
+# derive_type_test 
 
 
 

@@ -89,7 +89,6 @@
 ../lib/bsdep.ml : ../vendor/ocaml/utils/warnings.ml
 ../lib/bsdep.ml : ./syntax/ast_attributes.ml
 ../lib/bsdep.ml : ./syntax/ast_core_type.mli
-../lib/bsdep.ml : ./syntax/ast_derive_dyn.ml
 ../lib/bsdep.ml : ./syntax/ast_signature.mli
 ../lib/bsdep.ml : ./syntax/ast_structure.mli
 ../lib/bsdep.ml : ../vendor/ocaml/driver/compenv.mli
@@ -98,7 +97,6 @@
 ../lib/bsdep.ml : ../vendor/ocaml/utils/terminfo.mli
 ../lib/bsdep.ml : ../vendor/ocaml/utils/warnings.mli
 ../lib/bsdep.ml : ./syntax/ast_attributes.mli
-../lib/bsdep.ml : ./syntax/ast_derive_dyn.mli
 ../lib/bsdep.ml : ./syntax/ast_derive_util.ml
 ../lib/bsdep.ml : ./syntax/ast_external_mk.ml
 ../lib/bsdep.ml : ./syntax/ast_utf8_string.ml
