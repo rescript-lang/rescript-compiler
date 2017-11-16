@@ -10,3 +10,12 @@ val revSearch:
   (int * string) array ->
   string ->
   'poly_var option
+
+val toInt :   
+  'variant -> int array -> int 
+
+val fromInt :   
+  int ->
+  int array -> 
+  int -> 
+  'variant option 

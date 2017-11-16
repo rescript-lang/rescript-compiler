@@ -52,6 +52,7 @@ let init () =
                let name = tdcl.ptype_name.txt in 
                let toJs = name ^ "ToJs" in 
                let fromJs = name ^ "FromJs" in 
+               let constantArray = "constantArray" in 
                match tdcl.ptype_kind with  
                | Ptype_record label_declarations -> 
                  let record_arg = "record" in        
@@ -93,7 +94,7 @@ let init () =
                     let attr = 
                       Ast_polyvar.map_row_fields_into_strings loc row_fields 
                     in 
-                    let constantArray = "constantArray" in 
+                    
                     begin match attr with 
                       | NullString result -> 
                         [
@@ -151,7 +152,36 @@ let init () =
                   | None -> []
                  )
 
-               | Ptype_variant _
+               | Ptype_variant ctors -> 
+                    let loc = tdcl.ptype_loc in 
+                    if Ast_polyvar.is_enum_constructors ctors then 
+                      let xs = Ast_polyvar.map_constructor_declarations_into_ints ctors in 
+                      [
+                        Ast_comb.single_non_rec_value 
+                        {loc; txt = constantArray}
+                        (Exp.array (List.map (fun i -> Exp.constant (Const_int i)) xs ))
+                        ;
+                        let variant_arg = "variant" in 
+                        Ast_comb.single_non_rec_value
+                         {loc; txt = toJs}
+                         (Exp.fun_ "" None 
+                          (Pat.constraint_
+                            (Pat.var {loc; txt = variant_arg } )
+                            core_type
+                          )
+                          (
+                            Exp.apply
+                            (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.toInt"})
+                            
+                            [
+                              "", Exp.ident {loc; txt = Lident variant_arg};
+                              "", Exp.ident {loc; txt = Lident constantArray}
+                            ]
+                          )
+                         )
+                         ;
+                      ]
+                    else []  
                | Ptype_open -> [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );

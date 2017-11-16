@@ -28,6 +28,10 @@ val map_row_fields_into_ints:
   Parsetree.row_field list -> 
   (int * int ) list 
 
+val map_constructor_declarations_into_ints:
+  Parsetree.constructor_declaration list ->
+  int list 
+
 val map_row_fields_into_strings:
   Location.t -> 
   Parsetree.row_field list -> 
@@ -41,3 +45,7 @@ val is_enum :
 val is_enum_polyvar :   
   Parsetree.type_declaration ->
   Parsetree.row_field list option 
+
+val is_enum_constructors :   
+  Parsetree.constructor_declaration list ->
+  bool 

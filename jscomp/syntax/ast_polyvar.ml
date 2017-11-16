@@ -46,6 +46,31 @@
        ) (0, []) row_fields) in 
   List.rev acc
 
+(** Note this is okay with enums, for variants,
+    the underlying representation may change due to       
+    unbox
+*)
+let map_constructor_declarations_into_ints 
+    (row_fields : Parsetree.constructor_declaration list) : int list 
+  = 
+  let _, acc
+    = 
+    (List.fold_left 
+       (fun (i,acc) (rtag : Parsetree.constructor_declaration) -> 
+          
+          let attrs = rtag.pcd_attributes in 
+          begin match Ast_attributes.iter_process_bs_int_as attrs with 
+              | Some i -> 
+                i + 1, 
+                (i:: acc ) 
+              | None -> 
+                i + 1 , 
+                ( i:: acc )
+            end
+          
+       ) (0, []) row_fields) in 
+  List.rev acc  
+
 (** It also check in-consistency of cases like 
     {[ [`a  | `c of int ] ]}       
 *)  
@@ -95,3 +120,13 @@ let is_enum_polyvar (ty : Parsetree.type_declaration) =
     when is_enum row_fields ->
     Some row_fields 
   | _ -> None 
+
+let is_enum_constructors 
+  (constructors : Parsetree.constructor_declaration list) =   
+  List.for_all 
+  (fun (x : Parsetree.constructor_declaration) ->
+    match x with 
+    | {pcd_args = []} -> true 
+    | _ -> false 
+   )
+  constructors

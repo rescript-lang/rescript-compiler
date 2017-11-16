@@ -26,3 +26,16 @@ let rec revSearchAux
 let revSearch len array (x : string)  : 'poly_var option =  
 
   Obj.magic (revSearchAux 0 len array x)
+
+let toInt (i : 'enum) (xs : int array) =   
+  Array.unsafe_get xs ( Obj.magic i : int)
+
+let rec fromIntAux (enum : int) i len xs = 
+  if i = len then None
+  else 
+    let k = Array.unsafe_get xs i in 
+    if k = enum then Some i 
+    else fromIntAux enum (i + 1) len xs 
+
+let fromInt len (xs : int array) (enum : int )  : 'variant option =   
+    (Obj.magic (fromIntAux enum 0 len xs ))
