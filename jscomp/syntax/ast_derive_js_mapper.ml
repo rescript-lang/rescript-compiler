@@ -87,58 +87,70 @@ let init () =
                    fromJs
                  ]
                | Ptype_abstract -> 
-
-                  begin match tdcl.ptype_manifest with 
-                   | Some {
-                       ptyp_desc = 
-                         Ptyp_variant(row_fields, Closed,None);
-                       ptyp_loc
-                     }
-                     -> 
-                     if Ast_polyvar.is_enum row_fields then 
-
-                       let attr = 
-                         Ast_polyvar.map_row_fields_into_strings ptyp_loc row_fields 
-                       in (* how to mark attributes as used *)
-                       let constantArray = "constantArray" in 
-                       begin match attr with 
-                         | NullString result -> 
-                           [
-                             Ast_comb.single_non_rec_value 
-                               {loc = ptyp_loc; txt = constantArray}
-                               (Exp.array
-                                  (List.map (fun (i,str) -> 
-                                       Exp.tuple 
-                                         [
-                                           Exp.constant (Const_int i);
-                                           Exp.constant (Const_string (str, None))
-                                         ]
-                                     ) result));
-                             let polyvar_arg = "polyvar"   in 
-                             Ast_comb.single_non_rec_value        
-                              {loc = ptyp_loc; txt = toJs}
-                              (Exp.fun_ "" None 
+                 (match Ast_polyvar.is_enum_polyvar tdcl with 
+                  | Some row_fields -> 
+                    let loc = tdcl.ptype_loc in 
+                    let attr = 
+                      Ast_polyvar.map_row_fields_into_strings loc row_fields 
+                    in 
+                    let constantArray = "constantArray" in 
+                    begin match attr with 
+                      | NullString result -> 
+                        [
+                          Ast_comb.single_non_rec_value 
+                            {loc; txt = constantArray}
+                            (Exp.array
+                               (List.map (fun (i,str) -> 
+                                    Exp.tuple 
+                                      [
+                                        Exp.constant (Const_int i);
+                                        Exp.constant (Const_string (str, None))
+                                      ]
+                                  ) result));
+                          (let polyvar_arg = "polyvar"   in 
+                           Ast_comb.single_non_rec_value        
+                             {loc; txt = toJs}
+                             (Exp.fun_ "" None 
                                 (Pat.constraint_ 
-                                  (Pat.var {loc = ptyp_loc; txt = polyvar_arg })
-                                  core_type
+                                   (Pat.var {loc; txt = polyvar_arg })
+                                   core_type
                                 )
                                 (Exp.apply
-                                  (Exp.ident ({loc = ptyp_loc; 
-                                    txt = Longident.parse "Js.MapperRt.search" })
-                                  )
-                                [
-                                  "", (Exp.ident {loc = ptyp_loc; txt = Longident.Lident polyvar_arg});
-                                  "", Exp.ident {loc = ptyp_loc; txt = Longident.Lident constantArray}
-                                ]
-                              )
-                              )
+                                   (Exp.ident ({loc; 
+                                                txt = Longident.parse "Js.MapperRt.search" })
+                                   )
+                                   [
+                                     "", (Exp.ident {loc ; txt = Longident.Lident polyvar_arg});
+                                     "", Exp.ident {loc; txt = Longident.Lident constantArray}
+                                   ]
+                                )
+                             ));
 
-                           ]
-                         | _ -> assert false 
-                       end 
-                     else []
-                   | Some _ | None -> []
-                 end 
+                          let string_arg = "str" in 
+                          Ast_comb.single_non_rec_value
+                            {loc; txt = fromJs}
+                            (Exp.fun_ "" None 
+                               (Pat.var {loc; txt = string_arg})
+                               (Exp.constraint_
+                                  (
+                                    Exp.apply
+                                      (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.revSearch"})
+                                      [
+                                        "", Exp.constant (Const_int (List.length result));
+                                        "", Exp.ident {loc; txt = Longident.Lident constantArray};
+                                        "", Exp.ident {loc; txt = Longident.Lident string_arg}
+                                      ]
+                                  )
+                                  (Ast_core_type.lift_option_type core_type)
+                               )
+
+                            )
+                        ]
+                      | _ -> assert false 
+                    end 
+                  | None -> []
+                 )
+
                | Ptype_variant _
                | Ptype_open -> [] in 
              Ext_list.flat_map handle_tdcl tdcls 
@@ -182,21 +194,24 @@ let init () =
                     fromJs
                   ]
                 | Ptype_abstract ->   
-                  begin match tdcl.ptype_manifest with 
-                  | Some {
-                    ptyp_desc = Ptyp_variant(row_fields,Closed,None);
-                    ptyp_loc = loc
-                  } -> 
-                    if Ast_polyvar.is_enum row_fields then 
-                      [Ast_comb.single_non_rec_val
-                      {loc; txt = toJs}
-                      (Typ.arrow "" 
-                        core_type
-                        (Ast_literal.type_string ()))
-                      ]
-                    else []  
-                  | Some _ | None -> []
-                  end
+                  let loc = tdcl.ptype_loc in 
+                  (match Ast_polyvar.is_enum_polyvar tdcl with 
+                   | Some _ ->                     
+                     let ty1 = (Ast_literal.type_string ()) in 
+                     let ty2 = Ast_core_type.lift_option_type core_type in 
+                     [
+                       Ast_comb.single_non_rec_val
+                         {loc; txt = toJs}
+                         (Typ.arrow "" 
+                            core_type ty1);
+                       Ast_comb.single_non_rec_val     
+                       {loc; txt = fromJs}
+                       (Typ.arrow ""
+                        ty1 ty2
+                       )
+                     ]
+                   | None -> [])
+
                 | Ptype_variant _
                 | Ptype_open -> [] in 
               Ext_list.flat_map handle_tdcl tdcls 

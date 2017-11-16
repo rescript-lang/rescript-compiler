@@ -87,3 +87,11 @@ let map_row_fields_into_strings ptyp_loc
       | Rtag(_label,_attrs,true, []) -> true 
       | _ -> false
     ) row_fields
+
+
+let is_enum_polyvar (ty : Parsetree.type_declaration) =      
+  match ty.ptype_manifest with 
+  | Some {ptyp_desc = Ptyp_variant(row_fields,Closed,None)}
+    when is_enum row_fields ->
+    Some row_fields 
+  | _ -> None 
