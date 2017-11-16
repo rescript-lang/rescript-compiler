@@ -97,7 +97,7 @@ let init () =
                      -> 
                      if Ast_polyvar.is_enum row_fields then 
 
-                       let attr, new_row_field_list = 
+                       let attr = 
                          Ast_polyvar.map_row_fields_into_strings ptyp_loc row_fields 
                        in (* how to mark attributes as used *)
                        begin match attr with 

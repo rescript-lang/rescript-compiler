@@ -109,14 +109,13 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
           |> Translmod.transl_implementation modulename
           |> print_if ppf Clflags.dump_rawlambda Printlambda.lambda
           |> (fun lambda -> 
-              match           
+              try
                 Lam_compile_main.lambda_as_module
                   finalenv current_signature 
                   sourcefile  outputprefix lambda  with
-              | e -> e 
-              | exception e -> 
+              | e -> 
                 (* Save to a file instead so that it will not scare user *)
-                if Js_config.get_diagnose () then
+                (if Js_config.get_diagnose () then
                   begin              
                     let file = "bsc.dump" in
                     Ext_pervasives.with_file_as_chan file
@@ -126,9 +125,9 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
                       "Compilation fatal error, stacktrace saved into %s when compiling %s"
                       file sourcefile;
                   end;            
-                raise e             
+                raise e)             
             );
-          Warnings.check_fatal ()
+          
         end;
         Stypes.dump (Some (outputprefix ^ ".annot"));
       with x ->
