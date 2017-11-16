@@ -50,63 +50,7 @@ let variant_can_bs_unwrap_fields row_fields =
   | `No_fields
   | `Invalid_field -> false
 
-let map_row_fields_into_ints ptyp_loc
-    (row_fields : Parsetree.row_field list) 
-  = 
-  let _, acc, rev_row_fields = 
-    (List.fold_left 
-       (fun (i,acc, row_fields) rtag -> 
-          match rtag with 
-          | Parsetree.Rtag (label, attrs, true,  [])
-            -> 
-            begin match Ast_attributes.process_bs_int_as attrs with 
-              | Some i, new_attrs -> 
-                i + 1, ((Ext_pervasives.hash_variant label , i):: acc ), 
-                Parsetree.Rtag (label, new_attrs, true, []) :: row_fields
-              | None, _ -> 
-                i + 1 , ((Ext_pervasives.hash_variant label , i):: acc ), rtag::row_fields
-            end
 
-          | _ -> 
-            Bs_syntaxerr.err ptyp_loc Invalid_bs_int_type
-
-       ) (0, [],[]) row_fields) in 
-  List.rev acc, List.rev rev_row_fields              
-
-let map_row_fields_into_strings ptyp_loc 
-    (row_fields : Parsetree.row_field list) = 
-  let case, result, row_fields  = 
-    (Ext_list.fold_right (fun tag (nullary, acc, row_fields) -> 
-         match nullary, tag with 
-         | (`Nothing | `Null), 
-           Parsetree.Rtag (label, attrs, true,  [])
-           -> 
-           begin match Ast_attributes.process_bs_string_as attrs with 
-             | Some name, new_attrs  -> 
-               `Null, ((Ext_pervasives.hash_variant label, name) :: acc ), 
-               Parsetree.Rtag(label, new_attrs, true, []) :: row_fields
-
-             | None, _ -> 
-               `Null, ((Ext_pervasives.hash_variant label, label) :: acc ), 
-               tag :: row_fields
-           end
-         | (`Nothing | `NonNull), Parsetree.Rtag(label, attrs, false, ([ _ ] as vs)) 
-           -> 
-           begin match Ast_attributes.process_bs_string_as attrs with 
-             | Some name, new_attrs -> 
-               `NonNull, ((Ext_pervasives.hash_variant label, name) :: acc),
-               Parsetree.Rtag (label, new_attrs, false, vs) :: row_fields
-             | None, _ -> 
-               `NonNull, ((Ext_pervasives.hash_variant label, label) :: acc),
-               (tag :: row_fields)
-           end
-         | _ -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
-
-       ) row_fields (`Nothing, [], [])) in 
-  (match case with 
-   | `Nothing -> Bs_syntaxerr.err ptyp_loc Invalid_bs_string_type
-   | `Null -> External_arg_spec.NullString result 
-   | `NonNull -> NonNullString result), row_fields
 (** Given the type of argument, process its [bs.] attribute and new type,
     The new type is currently used to reconstruct the external type 
     and result type in [@@bs.obj]
@@ -148,10 +92,11 @@ let get_arg_type ~nolabel optional
       begin match ptyp_desc with 
         | Ptyp_variant ( row_fields, Closed, None)
           ->
-          let attr,row_fields = 
+          let attr = 
               Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in 
-          attr, {ptyp with ptyp_desc = Ptyp_variant(row_fields, Closed, None);
-                     ptyp_attributes ;
+          attr, 
+          {ptyp with
+            ptyp_attributes 
           }
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
@@ -161,11 +106,10 @@ let get_arg_type ~nolabel optional
     | (`Int , ptyp_attributes) -> 
       begin match ptyp_desc with 
         | Ptyp_variant ( row_fields, Closed, None) -> 
-          let int_lists, new_row_fields = 
+          let int_lists = 
             Ast_polyvar.map_row_fields_into_ints ptyp.ptyp_loc row_fields in 
           Int int_lists ,
-          {ptyp with 
-           ptyp_desc = Ptyp_variant(new_row_fields, Closed, None );
+          {ptyp with            
            ptyp_attributes
           }
         | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type   

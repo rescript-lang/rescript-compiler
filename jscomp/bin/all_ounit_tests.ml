@@ -5453,7 +5453,28 @@ external ff :
     OUnit.assert_bool __LOC__ 
     (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
   end;
-
+    __LOC__ >:: begin fun _ -> 
+    let should_err = bsc_check_eval {|
+      let bla4 foo x y = foo##(method1 x y [@bs])
+    |} in 
+    (* Ounit_cmd_util.debug_output should_err ;  *)
+    OUnit.assert_bool __LOC__ 
+    (Ext_string.contain_substring should_err.stderr
+    "Unused")
+  end;
+    __LOC__ >:: begin fun _ -> 
+    let should_err = bsc_check_eval {|
+    external mk : int -> 
+  (
+    [`a|`b] 
+     [@bs.string] 
+  ) = "" [@@bs.val]       
+    |} in 
+    (* Ounit_cmd_util.debug_output should_err ;  *)
+    OUnit.assert_bool __LOC__ 
+    (Ext_string.contain_substring should_err.stderr
+    "Unused")
+  end
     (* __LOC__ >:: begin fun _ ->  *)
     (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
     (*      let  f = fun [@bs] x -> let (a,b) = x in a + b  *)

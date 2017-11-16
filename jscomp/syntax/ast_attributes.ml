@@ -192,41 +192,48 @@ let process_bs_string_int_unwrap_uncurry attrs =
       | _ , _ -> st, (attr :: attrs )
     ) (`Nothing, []) attrs
 
-let process_bs_string_as  attrs = 
-  List.fold_left 
-    (fun (st, attrs)
+
+let iter_process_bs_string_as  attrs = 
+  let st = ref None in 
+  List.iter 
+    (fun 
       (({txt ; loc}, payload ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.as", None
+      match  txt with
+      | "bs.as"
         ->
-        begin match Ast_payload.is_single_string payload with 
+        if !st = None then 
+          match Ast_payload.is_single_string payload with 
           | None -> 
             Bs_syntaxerr.err loc Expect_string_literal
-          | Some  (v,dec) ->  ( Some v, attrs)  
-        end
-      | "bs.as",  _ 
-        -> 
-        Bs_syntaxerr.err loc Duplicated_bs_as 
-      | _ , _ -> (st, attr::attrs) 
-    ) (None, []) attrs
+          | Some  (v,_dec) -> 
+            Bs_ast_invariant.mark_used_bs_attribute attr ; 
+            st:= Some v 
+        else 
+          Bs_syntaxerr.err loc Duplicated_bs_as 
+      | _  -> ()
+    ) attrs;
+  !st 
 
-let process_bs_int_as  attrs = 
-  List.fold_left 
-    (fun (st, attrs)
+let iter_process_bs_int_as  attrs = 
+  let st = ref None in 
+  List.iter
+    (fun 
       (({txt ; loc}, payload ) as attr : attr)  ->
-      match  txt, st  with
-      | "bs.as", None
+      match  txt with
+      | "bs.as"
         ->
-        begin match Ast_payload.is_single_int payload with 
+        if !st =  None then 
+          match Ast_payload.is_single_int payload with 
           | None -> 
             Bs_syntaxerr.err loc Expect_int_literal
-          | Some  _ as v->  (v, attrs)  
-        end
-      | "bs.as",  _ 
-        -> 
-        Bs_syntaxerr.err loc Duplicated_bs_as
-      | _ , _ -> (st, attr::attrs) 
-    ) (None, []) attrs
+          | Some  _ as v->  
+            Bs_ast_invariant.mark_used_bs_attribute attr ; 
+            st := v
+        else 
+          Bs_syntaxerr.err loc Duplicated_bs_as
+      | _  -> ()
+    ) attrs; !st 
+
 
 let process_bs_string_or_int_as attrs = 
   List.fold_left 
@@ -270,5 +277,5 @@ let bs_method : attr
 let warn_unused_attributes attrs = 
   if attrs <> [] then 
     List.iter (fun (({txt; loc}, _) : Parsetree.attribute) -> 
-      Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
+        Location.prerr_warning loc (Warnings.Bs_unused_attribute txt)
       ) attrs

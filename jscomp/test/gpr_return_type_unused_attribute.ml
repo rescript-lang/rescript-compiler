@@ -2,7 +2,11 @@
 
 (* [@@@ocaml.warning "-101"] *)
 
-external mk : int -> ([`a|`b] [@bs.string]) = "" [@@bs.val] 
+external mk : int -> 
+  (
+    [`a|`b] 
+    (* [@bs.string] *)
+  ) = "" [@@bs.val] 
 
 
 

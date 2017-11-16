@@ -39,6 +39,7 @@
 ../lib/bsdep.ml : ./common/js_config.mli
 ../lib/bsdep.ml : ./ext/ext_js_regex.mli
 ../lib/bsdep.ml : ./ext/ext_position.mli
+../lib/bsdep.ml : ./ext/hash_set_poly.ml
 ../lib/bsdep.ml : ./syntax/ast_derive.ml
 ../lib/bsdep.ml : ./syntax/ppx_entry.mli
 ../lib/bsdep.ml : ../vendor/ocaml/utils/ccomp.ml
@@ -48,6 +49,7 @@
 ../lib/bsdep.ml : ./ext/ext_json_parse.ml
 ../lib/bsdep.ml : ./ext/ext_json_types.ml
 ../lib/bsdep.ml : ./ext/ext_pervasives.ml
+../lib/bsdep.ml : ./ext/hash_set_poly.mli
 ../lib/bsdep.ml : ./syntax/ast_derive.mli
 ../lib/bsdep.ml : ./syntax/ast_literal.ml
 ../lib/bsdep.ml : ./syntax/ast_payload.ml
@@ -100,15 +102,19 @@
 ../lib/bsdep.ml : ./syntax/ast_derive_util.ml
 ../lib/bsdep.ml : ./syntax/ast_external_mk.ml
 ../lib/bsdep.ml : ./syntax/ast_utf8_string.ml
+../lib/bsdep.ml : ./syntax/bs_ast_iterator.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/location.ml
 ../lib/bsdep.ml : ./syntax/ast_derive_util.mli
 ../lib/bsdep.ml : ./syntax/ast_external_mk.mli
 ../lib/bsdep.ml : ./syntax/ast_utf8_string.mli
+../lib/bsdep.ml : ./syntax/bs_ast_invariant.ml
+../lib/bsdep.ml : ./syntax/bs_ast_iterator.mli
 ../lib/bsdep.ml : ./syntax/external_process.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/asttypes.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/location.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/longident.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/syntaxerr.ml
+../lib/bsdep.ml : ./syntax/bs_ast_invariant.mli
 ../lib/bsdep.ml : ./syntax/external_arg_spec.ml
 ../lib/bsdep.ml : ./syntax/external_process.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/ast_helper.ml

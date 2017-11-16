@@ -154,6 +154,7 @@
 ../lib/whole_compiler.ml : ./ext/ext_namespace.ml
 ../lib/whole_compiler.ml : ./ext/ext_position.mli
 ../lib/whole_compiler.ml : ./ext/ext_pp_scope.mli
+../lib/whole_compiler.ml : ./ext/hash_set_poly.ml
 ../lib/whole_compiler.ml : ./ext/hashtbl_make.mli
 ../lib/whole_compiler.ml : ./ext/ident_hashtbl.ml
 ../lib/whole_compiler.ml : ./ext/int_vec_util.mli
@@ -182,6 +183,7 @@
 ../lib/whole_compiler.ml : ./ext/ext_modulename.ml
 ../lib/whole_compiler.ml : ./ext/ext_namespace.mli
 ../lib/whole_compiler.ml : ./ext/ext_pervasives.ml
+../lib/whole_compiler.ml : ./ext/hash_set_poly.mli
 ../lib/whole_compiler.ml : ./ext/ident_hash_set.ml
 ../lib/whole_compiler.ml : ./ext/ident_hashtbl.mli
 ../lib/whole_compiler.ml : ./ext/string_hashtbl.ml

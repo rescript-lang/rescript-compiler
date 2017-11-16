@@ -49,10 +49,12 @@ type derive_attr = {
 val process_bs_string_int_unwrap_uncurry :
   t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
 
-val process_bs_string_as :
-  t -> string option * t 
-val process_bs_int_as : 
-  t -> int option * t 
+
+val iter_process_bs_string_as :
+  t -> string option 
+
+val iter_process_bs_int_as : 
+  t -> int option 
 
 val process_bs_string_or_int_as : 
     t ->
