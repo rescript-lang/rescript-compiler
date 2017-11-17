@@ -157,53 +157,41 @@ module Exn = Js_exn
 (** Provide utilities for dealing with Js exceptions *)
 
 module Array = Js_array
-(** Provide bindings to Js array*)
-module String = Js_string
-(** Provide bindings to JS string *)
+(** Provide bindings to the JS array API *)
 module Boolean = Js_boolean
 (** Provide utilities for {!boolean} *)
-
-module Re = Js_re
-(** Provide bindings to Js regex expression *)
-
-module Promise = Js_promise
-(** Provide bindings to JS promise *)
-
 module Date = Js_date
-(** Provide bindings for JS Date *)
-
+(** Provide bindings to the JS Date API *)
 module Dict = Js_dict
-(** Provide utilities for JS dictionary object *)
-
-module Global = Js_global
-(** Provide bindings to JS global functions in global namespace*)
-
-module Json = Js_json
-(** Provide utilities for json *)
-
-module Math = Js_math
-(** Provide bindings for JS [Math] object *)
-
-module Obj  = Js_obj
-(** Provide utilities for {!Js.t} *)
-
-module Typed_array = Js_typed_array
-(** Provide bindings for JS typed array *)
-
-module Types = Js_types
-(** Provide utilities for manipulating JS types  *)
+(** Provide utilities for JS objects as dictionaries *)
+module Dom = Js_dom
+(** Provides types and bindings for DOM and browser-only APIs *)
 module Float = Js_float
 (** Provide utilities for JS float *)
+module Global = Js_global
+(** Provide bindings to JS global functions in global namespace *)
 module Int = Js_int
 (** Provide utilities for int *)
-
-module Option = Js_option
-(** Provide utilities for option *)
-
-module Result = Js_result
-(** Define the interface for result *)
-
+module Json = Js_json
+(** Provide utilities for handling JSON *)
 module List = Js_list 
-(** Provide utilities for list *)
-
+(** Provide utilities for the list type *)
+module Math = Js_math
+(** Provide bindings for JS [Math] object *)
+module Obj  = Js_obj
+(** Provide utilities for {!Js.t} *)
+module Option = Js_option
+(** Provide utilities for the option type *)
+module Promise = Js_promise
+(** Provide bindings to the JS Promise API *)
+module Re = Js_re
+(** Provide bindings to Jthe JS Regex API *)
+module Result = Js_result
+(** Defines the result type *)
+module String = Js_string
+(** Provide bindings to the JS string API *)
+module Typed_array = Js_typed_array
+(** Provide bindings for JS typed array *)
+module Types = Js_types
+(** Provide utilities for manipulating JS types  *)
 module Vector = Js_vector 

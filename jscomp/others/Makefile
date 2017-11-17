@@ -9,7 +9,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	js_vector js_list js_option js_result\
 	bs_dyn bs_dyn_lib  \
 	node_child_process js_boolean js_math js_dict js_date js_global js_cast js_promise \
-	dom dom_storage
+	js_dom dom dom_storage
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 
