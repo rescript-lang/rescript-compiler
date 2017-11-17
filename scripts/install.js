@@ -105,7 +105,7 @@ function tryToProvideOCamlCompiler() {
         } catch (e) {
             console.log(e.stdout.toString());
             console.log(e.stderr.toString());
-            console.log('Building a local version of the OCaml compiler failed, check the outut above for more information. A possible problem is that you don\'t have a compiler installed');
+            console.log('Building a local version of the OCaml compiler failed, check the output above for more information. A possible problem is that you don\'t have a compiler installed.');
             throw e;
         }
         console.log('configure again with local ocaml installed')
