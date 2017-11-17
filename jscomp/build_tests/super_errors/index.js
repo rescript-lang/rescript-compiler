@@ -19,7 +19,7 @@ const processFile = ([name, fullPath], colors, rebuild) => {
     return new Promise((res, rej) => {
       // we need this so we can reference Js_unsafe & other bucklescript goodies
       const runtime = path.join(__dirname, '../../runtime')
-      const prefix = `bsc.exe -bs-re-out -I ${runtime} -pp 'refmt3.exe --print binary' -w +10-40+6+7+27+32..39+44+45`
+      const prefix = `lib/bsc.exe -bs-re-out -I ${runtime} -pp 'lib/refmt3.exe --print binary' -w +10-40+6+7+27+32..39+44+45`
       child_process.exec(`${prefix} -color ${colors ? 'always' : 'never'} -bs-super-errors -impl ${dest}`, (err, stdout, stderr) => {
         const superErr = trimTmpNames(trimTrailingWhitespace(stderr).trimRight())
         child_process.exec(`${prefix} -color never -impl ${dest}`, (err, stdout, stderr) => {
