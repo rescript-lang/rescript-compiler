@@ -38,6 +38,7 @@ let print_filename ppf file =
   | real_file -> Format.fprintf ppf "%s" (Location.show_filename real_file)
 
 let print_loc ~normalizedRange ppf loc =
+  setup_colors ();
   let (file, _, _) = Location.get_pos_info loc.loc_start in
   if file = "//toplevel//" then begin
     if highlight_locations ppf [loc] then () else
@@ -59,6 +60,7 @@ let print_loc ~normalizedRange ppf loc =
 ;;
 
 let print ~is_warning intro ppf loc =
+  setup_colors ();
   if loc.loc_start.pos_fname = "//toplevel//"
   && highlight_locations ppf [loc] then ()
   else
@@ -135,6 +137,7 @@ let rec super_error_reporter ppf ({Location.loc; msg; sub; if_highlight} as err)
 (* This is the warning report entry point. We'll replace the default printer with this one *)
 let super_warning_printer loc ppf w =
   if Warnings.is_active w then begin
+    setup_colors ();
     (* open a vertical box. Everything in our message is indented 2 spaces *)
     Format.fprintf ppf "@[<v 2>@,%a@,%a@,@]"
       (print ~is_warning:true ("Warning number " ^ (Warnings.number w |> string_of_int)))

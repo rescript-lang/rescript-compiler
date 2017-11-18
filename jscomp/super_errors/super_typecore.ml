@@ -37,7 +37,7 @@ let print_simple_conversion ppf (actual, expected) =
     let converter = List.assoc (actual, expected) simple_conversions in
     Format.pp_print_newline ppf ();
     Format.pp_print_newline ppf ();
-    fprintf ppf "You can convert a @{<info>%s@} to a @{<info>%s@} with @{<info>%s@}.@;" actual expected converter
+    fprintf ppf "You can convert a @{<info>%s@} to a @{<info>%s@} with @{<info>%s@}." actual expected converter
   ) with | Not_found -> ()
 
 let print_simple_message ppf = function
@@ -131,9 +131,9 @@ let report_error env ppf = function
         | None ->
           super_report_unification_error ppf env trace
             (function ppf ->
-                fprintf ppf "This value has type:")
+                fprintf ppf "This has type:")
             (function ppf ->
-                fprintf ppf "But was expected to be:");
+                fprintf ppf "But somewhere wanted:");
           show_extra_help ppf env trace
       end
   | Apply_non_function typ ->
