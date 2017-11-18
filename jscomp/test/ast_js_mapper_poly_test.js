@@ -4,7 +4,7 @@ var $$Array     = require("../../lib/js/array.js");
 var Curry       = require("../../lib/js/curry.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
-var constantArray = /* array */[
+var jsMapperConstantArray = /* array */[
   /* tuple */[
     68,
     "D"
@@ -19,12 +19,12 @@ var constantArray = /* array */[
   ]
 ];
 
-function uToJs(polyvar) {
-  return Js_mapperRt.search(polyvar, constantArray);
+function uToJs(param) {
+  return Js_mapperRt.search(param, jsMapperConstantArray);
 }
 
 function uFromJs(str) {
-  return Js_mapperRt.revSearch(3, constantArray, str);
+  return Js_mapperRt.revSearch(3, jsMapperConstantArray, str);
 }
 
 function $neg$tilde(f, v) {
@@ -54,7 +54,7 @@ console.log(uToJs(/* f */102));
 
 console.log(v);
 
-var constantArray$1 = /* int array */[
+var jsMapperConstantArray$1 = /* int array */[
   0,
   3,
   4,
@@ -62,11 +62,11 @@ var constantArray$1 = /* int array */[
 ];
 
 function vToJs(variant) {
-  return constantArray$1[variant];
+  return jsMapperConstantArray$1[variant];
 }
 
 function vFromJs($$int) {
-  return Js_mapperRt.fromInt(4, constantArray$1, $$int);
+  return Js_mapperRt.fromInt(4, jsMapperConstantArray$1, $$int);
 }
 
 function s(param) {

@@ -30880,35 +30880,46 @@ let init () =
                let name = tdcl.ptype_name.txt in 
                let toJs = name ^ "ToJs" in 
                let fromJs = name ^ "FromJs" in 
-               let constantArray = "constantArray" in 
+               let constantArray = "jsMapperConstantArray" in 
+               let loc = tdcl.ptype_loc in 
+               let patToJs = {Asttypes.loc; txt = toJs} in 
+               let patFromJs = {Asttypes.loc; txt = fromJs} in 
+               let param = "param" in 
+
+               let ident_param = {Asttypes.txt = Longident.Lident param; loc} in 
+               let pat_param = {Asttypes.loc; txt = param} in 
+               let exp_param = Exp.ident ident_param in 
+               let toJsBody body = 
+                 Ast_comb.single_non_rec_value patToJs
+                   (Exp.fun_ "" None (Pat.constraint_ (Pat.var pat_param) core_type) 
+                      body )
+               in 
                match tdcl.ptype_kind with  
                | Ptype_record label_declarations -> 
-                 let record_arg = "record" in        
                  let exp = 
                    Exp.record
                      (List.map 
                         (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
-                           {Asttypes.loc; txt = Longident.Lident txt },
-                           Exp.field (Exp.ident {txt = Lident record_arg ; loc })
-                             {Asttypes.loc; txt = Longident.Lident txt }
+                           let label = 
+                             {Asttypes.loc; txt = Longident.Lident txt } in 
+                           label,Exp.field exp_param label
                         ) label_declarations) None in 
-                 let loc = tdcl.ptype_loc in        
-                 let toJs = Ast_comb.single_non_rec_value {loc; txt = toJs}
-                     (Exp.fun_ "" None (Pat.constraint_ (Pat.var {loc; txt = record_arg}) core_type) 
-                        (Exp.extension ({Asttypes.loc; txt = "bs.obj"}, (PStr [Str.eval exp  ])))) 
+                 let toJs = 
+                   toJsBody
+                     (Exp.extension ({Asttypes.loc; txt = "bs.obj"}, (PStr [Str.eval exp  ])))
                  in 
-                 let obj_arg = "obj" in 
                  let obj_exp = 
                    Exp.record
                      (List.map 
                         (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
-                           {Asttypes.loc; txt = Longident.Lident txt },
-                           js_field (Exp.ident {txt = Lident obj_arg ; loc })
-                             {Asttypes.loc; txt = Longident.Lident txt }
+                           let label = 
+                             {Asttypes.loc; txt = Longident.Lident txt } in 
+                           label,
+                           js_field exp_param  label
                         ) label_declarations) None in 
                  let fromJs = 
-                   Ast_comb.single_non_rec_value {loc; txt = fromJs}
-                     (Exp.fun_ "" None (Pat.var {loc; txt = obj_arg})
+                   Ast_comb.single_non_rec_value patFromJs
+                     (Exp.fun_ "" None (Pat.var pat_param)
                         (Exp.constraint_ obj_exp core_type) )
                  in
                  [
@@ -30918,7 +30929,6 @@ let init () =
                | Ptype_abstract -> 
                  (match Ast_polyvar.is_enum_polyvar tdcl with 
                   | Some row_fields -> 
-                    let loc = tdcl.ptype_loc in 
                     let attr = 
                       Ast_polyvar.map_row_fields_into_strings loc row_fields 
                     in 
@@ -30936,24 +30946,18 @@ let init () =
                                         Exp.constant (Const_string (str, None))
                                       ]
                                   ) result));
-                          (let polyvar_arg = "polyvar"   in 
-                           Ast_comb.single_non_rec_value        
-                             {loc; txt = toJs}
-                             (Exp.fun_ "" None 
-                                (Pat.constraint_ 
-                                   (Pat.var {loc; txt = polyvar_arg })
-                                   core_type
-                                )
+                          (
+                           toJsBody
                                 (Exp.apply
                                    (Exp.ident ({loc; 
                                                 txt = Longident.parse "Js.MapperRt.search" })
                                    )
                                    [
-                                     "", (Exp.ident {loc ; txt = Longident.Lident polyvar_arg});
+                                     "", exp_param;
                                      "", Exp.ident {loc; txt = Longident.Lident constantArray}
                                    ]
                                 )
-                             ));
+                             );
 
                           let string_arg = "str" in 
                           Ast_comb.single_non_rec_value
