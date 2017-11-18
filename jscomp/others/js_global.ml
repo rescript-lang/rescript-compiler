@@ -49,7 +49,7 @@ let procrastinate mins =
 *)
 
 
-external setInterval : (unit -> unit) -> int -> intervalId = "" [@@bs.val]
+external setInterval : ((unit -> unit) [@bs.uncurry]) -> int -> intervalId = "" [@@bs.val]
 (** {i repeatedly} executes a callback with a specified interval (in milliseconds) between calls
 
 {b returns} an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
@@ -70,7 +70,7 @@ let _ =
 *)
 
 
-external setTimeout : (unit -> unit) -> int -> timeoutId = "" [@@bs.val]
+external setTimeout : ((unit -> unit) [@bs.uncurry]) -> int -> timeoutId = "" [@@bs.val]
 (** executes a callback after a specified delay (in milliseconds)
 
 {b returns} a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
