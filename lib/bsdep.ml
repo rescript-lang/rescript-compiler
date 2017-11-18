@@ -30932,7 +30932,8 @@ let init () =
                     let attr = 
                       Ast_polyvar.map_row_fields_into_strings loc row_fields 
                     in 
-
+                    let expConstantArray =   
+                      Exp.ident {loc; txt = Longident.Lident constantArray} in 
                     begin match attr with 
                       | NullString result -> 
                         [
@@ -30947,31 +30948,29 @@ let init () =
                                       ]
                                   ) result));
                           (
-                           toJsBody
-                                (Exp.apply
-                                   (Exp.ident ({loc; 
-                                                txt = Longident.parse "Js.MapperRt.search" })
-                                   )
-                                   [
-                                     "", exp_param;
-                                     "", Exp.ident {loc; txt = Longident.Lident constantArray}
-                                   ]
-                                )
-                             );
-
-                          let string_arg = "str" in 
+                            toJsBody
+                              (Exp.apply
+                                 (Exp.ident ({loc; 
+                                              txt = Longident.parse "Js.MapperRt.search" })
+                                 )
+                                 [
+                                   "", exp_param;
+                                   "", expConstantArray
+                                 ]
+                              )
+                          );
                           Ast_comb.single_non_rec_value
-                            {loc; txt = fromJs}
+                            patFromJs
                             (Exp.fun_ "" None 
-                               (Pat.var {loc; txt = string_arg})
+                               (Pat.var pat_param)
                                (Exp.constraint_
                                   (
                                     Exp.apply
                                       (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.revSearch"})
                                       [
                                         "", Exp.constant (Const_int (List.length result));
-                                        "", Exp.ident {loc; txt = Longident.Lident constantArray};
-                                        "", Exp.ident {loc; txt = Longident.Lident string_arg}
+                                        "", expConstantArray;
+                                        "", exp_param
                                       ]
                                   )
                                   (Ast_core_type.lift_option_type core_type)
@@ -30985,7 +30984,6 @@ let init () =
                  )
 
                | Ptype_variant ctors -> 
-                 let loc = tdcl.ptype_loc in 
                  if Ast_polyvar.is_enum_constructors ctors then 
                    let xs = Ast_polyvar.map_constructor_declarations_into_ints ctors in 
                    match xs with 
@@ -30995,31 +30993,23 @@ let init () =
                          {loc; txt = constantArray}
                          (Exp.array (List.map (fun i -> Exp.constant (Const_int i)) xs ))
                        ;
-                       (let variant_arg = "variant" in 
-                        Ast_comb.single_non_rec_value
-                          {loc; txt = toJs}
-                          (Exp.fun_ "" None 
-                             (Pat.constraint_
-                                (Pat.var {loc; txt = variant_arg } )
-                                core_type
-                             )
-                             (
-                               Exp.apply
-                                 (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.toInt"})
-
-                                 [
-                                   "", Exp.ident {loc; txt = Lident variant_arg};
-                                   "", Exp.ident {loc; txt = Lident constantArray}
-                                 ]
-                             )
-                          ))
+                       (toJsBody                        
+                          (
+                            Exp.apply
+                              (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.toInt"})
+                              [
+                                "", exp_param;
+                                "", Exp.ident {loc; txt = Lident constantArray}
+                              ]
+                          )
+                       )
                        ;
-                       let int_arg = "int" in 
+
                        Ast_comb.single_non_rec_value
-                         {loc ; txt = fromJs}
+                         patFromJs
                          (Exp.fun_ "" None 
                             (Pat.constraint_ 
-                               (Pat.var {loc; txt  = int_arg})
+                               (Pat.var pat_param)
                                (Ast_literal.type_int ())
                             )
                             (Exp.constraint_
@@ -31028,7 +31018,7 @@ let init () =
                                   [
                                     "", Exp.constant(Const_int (List.length ctors));
                                     "", Exp.ident {loc; txt = Lident constantArray};
-                                    "", Exp.ident {loc; txt = Lident int_arg}
+                                    "", exp_param
                                   ]
                                )
                                (Ast_core_type.lift_option_type core_type)
@@ -31036,37 +31026,31 @@ let init () =
                          )
                      ]
                    | `Offset offset  ->                      
-                     let variant_arg = "variant" in 
-                     [(Ast_comb.single_non_rec_value 
-                         {loc; txt = toJs}
-                         (Exp.fun_ "" None 
-                            (Pat.constraint_
-                               (Pat.var {loc; txt = variant_arg } )
-                               core_type
-                            )
-                            (Exp.apply 
-                               (Exp.ident {loc; txt = Ldot (Lident "Pervasives", "+")})
-                               [
-                                 "",
-                                 (Exp.apply 
-                                    (Exp.ident {loc; txt = Ldot (Lident "Obj", "magic")})
-                                    ["",(Exp.ident {loc; txt = Lident variant_arg})]);
-                                 "", Exp.constant (Const_int offset)
-                               ]
-                            )
-                         )
+
+                     [(toJsBody
+                         (Exp.apply 
+                            (Exp.ident {loc; txt = Ldot (Lident "Pervasives", "+")})
+                            [
+                              "",
+                              (Exp.apply 
+                                 (Exp.ident {loc; txt = Ldot (Lident "Obj", "magic")})
+                                 ["",
+                                  exp_param]);
+                              "", Exp.constant (Const_int offset)
+                            ]
+                         )                         
                       );
-                      let int_arg = "int" in 
+
                       Ast_comb.single_non_rec_value
                         {loc ; txt = fromJs}
                         (Exp.fun_ "" None 
                            (Pat.constraint_ 
-                              (Pat.var {loc; txt  = int_arg})
+                              (Pat.var pat_param)
                               (Ast_literal.type_int ())
                            )
                            (Exp.constraint_
                               (
-                                let v = Exp.ident {loc; txt = Lident int_arg} in 
+
                                 let len = List.length ctors in 
                                 let range_low = Exp.constant (Const_int (offset + 0)) in 
                                 let range_upper = Exp.constant (Const_int (offset + len - 1)) in 
@@ -31079,16 +31063,20 @@ let init () =
                                           (Exp.ident {loc ; txt = Lident "&&"})
                                           ["",
                                            (Exp.apply (Exp.ident {loc; txt = Lident "<="})
-                                              ["", v; "", range_upper] )
+                                              ["", exp_param; "", range_upper] )
                                            ;
                                            "",
                                            (Exp.apply (Exp.ident {loc; txt = Lident "<="})
-                                              ["", range_low; "",v]
+                                              ["", range_low; "",exp_param]
                                            )
                                           ]
                                        )
-                                       (Exp.construct {loc; txt = Lident "Some"} (Some v ))
-
+                                       (Exp.construct {loc; txt = Lident "Some"} 
+                                          (Some 
+                                            (Exp.apply
+                                              (Exp.ident {loc; txt = Ldot(Lident "Pervasives","-")})
+                                              ["",exp_param ; "", Exp.constant (Const_int offset)])
+                                          ))
                                        (Some (Exp.construct {loc; txt = Lident "None"} None)))
                                   ]
                               )

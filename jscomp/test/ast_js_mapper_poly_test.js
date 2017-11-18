@@ -1,8 +1,9 @@
 'use strict';
 
-var $$Array     = require("../../lib/js/array.js");
-var Curry       = require("../../lib/js/curry.js");
-var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
+var $$Array                 = require("../../lib/js/array.js");
+var Curry                   = require("../../lib/js/curry.js");
+var Js_mapperRt             = require("../../lib/js/js_mapperRt.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var jsMapperConstantArray = /* array */[
   /* tuple */[
@@ -23,8 +24,8 @@ function uToJs(param) {
   return Js_mapperRt.search(param, jsMapperConstantArray);
 }
 
-function uFromJs(str) {
-  return Js_mapperRt.revSearch(3, jsMapperConstantArray, str);
+function uFromJs(param) {
+  return Js_mapperRt.revSearch(3, jsMapperConstantArray, param);
 }
 
 function $neg$tilde(f, v) {
@@ -61,12 +62,12 @@ var jsMapperConstantArray$1 = /* int array */[
   5
 ];
 
-function vToJs(variant) {
-  return jsMapperConstantArray$1[variant];
+function vToJs(param) {
+  return jsMapperConstantArray$1[param];
 }
 
-function vFromJs($$int) {
-  return Js_mapperRt.fromInt(4, jsMapperConstantArray$1, $$int);
+function vFromJs(param) {
+  return Js_mapperRt.fromInt(4, jsMapperConstantArray$1, param);
 }
 
 function s(param) {
@@ -101,25 +102,25 @@ console.log($$Array.map((function (x) {
           5
         ]));
 
-function v1ToJs(variant) {
-  return variant + 0 | 0;
+function v1ToJs(param) {
+  return param + 0 | 0;
 }
 
-function v1FromJs($$int) {
-  if ($$int <= 5 && 0 <= $$int) {
-    return /* Some */[$$int];
+function v1FromJs(param) {
+  if (param <= 5 && 0 <= param) {
+    return /* Some */[param - 0 | 0];
   } else {
     return /* None */0;
   }
 }
 
-function v2ToJs(variant) {
-  return variant + 2 | 0;
+function v2ToJs(param) {
+  return param + 2 | 0;
 }
 
-function v2FromJs($$int) {
-  if ($$int <= 7 && 2 <= $$int) {
-    return /* Some */[$$int];
+function v2FromJs(param) {
+  if (param <= 7 && 2 <= param) {
+    return /* Some */[param - 2 | 0];
   } else {
     return /* None */0;
   }
@@ -146,6 +147,21 @@ var xs = $$Array.map(v2ToJs, /* array */[
 console.log($$Array.map(v2FromJs, $$Array.map((function (prim) {
                 return prim + 1 | 0;
               }), xs)));
+
+var x = v2FromJs(3);
+
+if (!(
+    x && x[0] === 1 ? /* true */1 : /* false */0
+  )) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "ast_js_mapper_poly_test.ml",
+          71,
+          3
+        ]
+      ];
+}
 
 exports.uToJs      = uToJs;
 exports.uFromJs    = uFromJs;

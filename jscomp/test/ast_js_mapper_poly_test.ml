@@ -67,3 +67,5 @@ Js.log (Array.map v2ToJs [|C0; C1; C2 ; C3 ; C4; C5 |])
 let xs  = (Array.map v2ToJs [|C0; C1; C2 ; C3 ; C4; C5 |])
 ;;
 Js.log (Array.map v2FromJs (Array.map succ xs))
+
+;; assert (C1 |> v2ToJs |> v2FromJs|> (fun x -> match x with  Some C1 -> true | _ -> false ))
