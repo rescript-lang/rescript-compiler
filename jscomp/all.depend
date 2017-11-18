@@ -844,11 +844,11 @@ bsb/bsb_dir_index.cmx : bsb/bsb_dir_index.cmi
 bsb/bsb_exception.cmx : ext/ext_string.cmx ext/ext_position.cmx \
     ext/ext_json.cmx common/bs_version.cmx bsb/bsb_exception.cmi
 bsb/bsb_file.cmx : bsb/bsb_file.cmi
+bsb/bsb_helper_dep_graph.cmx : ext/string_set.cmx ext/string_map.cmx \
+    ext/string_hashtbl.cmx bsb/bsb_log.cmx bsb/bsb_helper_dep_graph.cmi
 bsb/bsb_helper_depfile_gen.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
     bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_helper_depfile_gen.cmi
-bsb/bsb_helper_dep_graph.cmx : ext/string_set.cmx ext/string_map.cmx \
-    ext/string_hashtbl.cmx bsb/bsb_log.cmx bsb/bsb_helper_dep_graph.cmi
 bsb/bsb_helper_extract.cmx : ext/string_set.cmx ext/ext_string.cmx \
     bsb/bsb_helper_extract.cmi
 bsb/bsb_helper_linker.cmx : ext/string_map.cmx ext/literals.cmx \
@@ -946,9 +946,9 @@ bsb/bsb_default.cmi : bsb/bsb_config_types.cmx
 bsb/bsb_dir_index.cmi :
 bsb/bsb_exception.cmi : ext/ext_position.cmi ext/ext_json_types.cmx
 bsb/bsb_file.cmi :
-bsb/bsb_helper_depfile_gen.cmi : bsb/bsb_dir_index.cmi
 bsb/bsb_helper_dep_graph.cmi : ext/string_set.cmi ext/string_map.cmi \
     ext/string_hashtbl.cmi
+bsb/bsb_helper_depfile_gen.cmi : bsb/bsb_dir_index.cmi
 bsb/bsb_helper_extract.cmi : ext/string_set.cmi
 bsb/bsb_helper_linker.cmi :
 bsb/bsb_helper_main.cmi :
