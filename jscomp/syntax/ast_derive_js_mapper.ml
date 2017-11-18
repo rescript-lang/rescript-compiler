@@ -245,9 +245,9 @@ let init () =
                                        )
                                        (Exp.construct {loc; txt = Lident "Some"} 
                                           (Some 
-                                            (Exp.apply
-                                              (Exp.ident {loc; txt = Ldot(Lident "Pervasives","-")})
-                                              ["",exp_param ; "", Exp.constant (Const_int offset)])
+                                             (Exp.apply
+                                                (Exp.ident {loc; txt = Ldot(Lident "Pervasives","-")})
+                                                ["",exp_param ; "", Exp.constant (Const_int offset)])
                                           ))
                                        (Some (Exp.construct {loc; txt = Lident "None"} None)))
                                   ]
@@ -268,9 +268,14 @@ let init () =
                 let name = tdcl.ptype_name.txt in 
                 let toJs = name ^ "ToJs" in 
                 let fromJs = name ^ "FromJs" in 
+                let loc = tdcl.ptype_loc in 
+                let patToJs = {Asttypes.loc; txt = toJs} in 
+                let patFromJs = {Asttypes.loc; txt = fromJs} in 
+                let toJsType result = 
+                  Ast_comb.single_non_rec_val patToJs (Typ.arrow "" core_type result) in
                 match tdcl.ptype_kind with  
                 | Ptype_record label_declarations ->            
-                  let loc = tdcl.ptype_loc in 
+
                   let ty1 = 
                     Ast_comb.to_js_type loc @@  
                     Typ.object_
@@ -287,28 +292,19 @@ let init () =
                             txt, [], pld_type
                          ) label_declarations) 
                       Closed in                       
-                  let loc = tdcl.ptype_loc in        
-                  let toJs = 
-                    Ast_comb.single_non_rec_val {loc; txt = toJs}
-                      (Typ.arrow "" core_type ty2) in 
                   let fromJs =    
-                    Ast_comb.single_non_rec_val {loc; txt = fromJs}
-                      (Typ.arrow ""  ty1 core_type) in 
+                    Ast_comb.single_non_rec_val patFromJs (Typ.arrow ""  ty1 core_type) in 
                   [
-                    toJs;
+                    toJsType ty2;
                     fromJs
                   ]
                 | Ptype_abstract ->   
-                  let loc = tdcl.ptype_loc in 
                   (match Ast_polyvar.is_enum_polyvar tdcl with 
                    | Some _ ->                     
                      let ty1 = (Ast_literal.type_string ()) in 
                      let ty2 = Ast_core_type.lift_option_type core_type in 
                      [
-                       Ast_comb.single_non_rec_val
-                         {loc; txt = toJs}
-                         (Typ.arrow "" 
-                            core_type ty1);
+                       toJsType ty1;
                        Ast_comb.single_non_rec_val     
                          {loc; txt = fromJs}
                          (Typ.arrow ""
@@ -319,16 +315,14 @@ let init () =
 
                 | Ptype_variant ctors 
                   -> 
-                  let loc  = tdcl.ptype_loc in 
+
                   if Ast_polyvar.is_enum_constructors ctors then 
                     let ty1 = Ast_literal.type_int() in 
                     let ty2 = Ast_core_type.lift_option_type core_type in 
                     [
+                      toJsType ty1;
                       Ast_comb.single_non_rec_val
-                        {loc; txt = toJs}
-                        (Typ.arrow "" core_type ty1);
-                      Ast_comb.single_non_rec_val
-                        {loc; txt = fromJs}
+                        patFromJs
                         (Typ.arrow "" ty1 ty2)
                     ]
                   else []
