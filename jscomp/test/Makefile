@@ -201,6 +201,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	gpr_1245_test\
 	gpr_2126_test\
 	big_enum\
+	js_dom_test\
 	ast_js_mapper_test\
 	ast_js_mapper_poly_test
 # bs_uncurry_test
