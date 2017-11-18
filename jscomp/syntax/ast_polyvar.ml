@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
- let map_row_fields_into_ints ptyp_loc
+let map_row_fields_into_ints ptyp_loc
     (row_fields : Parsetree.row_field list) 
   = 
   let _, acc
@@ -51,25 +51,35 @@
     unbox
 *)
 let map_constructor_declarations_into_ints 
-    (row_fields : Parsetree.constructor_declaration list) : int list 
+    (row_fields : Parsetree.constructor_declaration list)
   = 
+  let mark = ref `nothing in 
   let _, acc
     = 
     (List.fold_left 
        (fun (i,acc) (rtag : Parsetree.constructor_declaration) -> 
-          
+
           let attrs = rtag.pcd_attributes in 
           begin match Ast_attributes.iter_process_bs_int_as attrs with 
-              | Some i -> 
-                i + 1, 
-                (i:: acc ) 
-              | None -> 
-                i + 1 , 
-                ( i:: acc )
-            end
-          
+            | Some j -> 
+              if j <> i then 
+                (
+                  if i = 0 then mark := `offset j
+                  else mark := `complex
+                )
+              ;
+              (j + 1, 
+               (j:: acc ) )
+            | None -> 
+              i + 1 , 
+              ( i:: acc )
+          end
+
        ) (0, []) row_fields) in 
-  List.rev acc  
+  match !mark with 
+  | `nothing -> `Offset 0
+  | `offset j -> `Offset j 
+  | `complex -> `New (List.rev acc)
 
 (** It also check in-consistency of cases like 
     {[ [`a  | `c of int ] ]}       
@@ -105,9 +115,9 @@ let map_row_fields_into_strings ptyp_loc
    | `Null -> External_arg_spec.NullString result 
    | `NonNull -> NonNullString result)
 
-  
-  let is_enum row_fields = 
-    List.for_all (fun (x : Parsetree.row_field) -> 
+
+let is_enum row_fields = 
+  List.for_all (fun (x : Parsetree.row_field) -> 
       match x with 
       | Rtag(_label,_attrs,true, []) -> true 
       | _ -> false
@@ -122,11 +132,11 @@ let is_enum_polyvar (ty : Parsetree.type_declaration) =
   | _ -> None 
 
 let is_enum_constructors 
-  (constructors : Parsetree.constructor_declaration list) =   
+    (constructors : Parsetree.constructor_declaration list) =   
   List.for_all 
-  (fun (x : Parsetree.constructor_declaration) ->
-    match x with 
-    | {pcd_args = []} -> true 
-    | _ -> false 
-   )
-  constructors
+    (fun (x : Parsetree.constructor_declaration) ->
+       match x with 
+       | {pcd_args = []} -> true 
+       | _ -> false 
+    )
+    constructors

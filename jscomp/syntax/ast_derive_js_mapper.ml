@@ -94,7 +94,7 @@ let init () =
                     let attr = 
                       Ast_polyvar.map_row_fields_into_strings loc row_fields 
                     in 
-                    
+
                     begin match attr with 
                       | NullString result -> 
                         [
@@ -153,35 +153,118 @@ let init () =
                  )
 
                | Ptype_variant ctors -> 
-                    let loc = tdcl.ptype_loc in 
-                    if Ast_polyvar.is_enum_constructors ctors then 
-                      let xs = Ast_polyvar.map_constructor_declarations_into_ints ctors in 
-                      [
-                        Ast_comb.single_non_rec_value 
-                        {loc; txt = constantArray}
-                        (Exp.array (List.map (fun i -> Exp.constant (Const_int i)) xs ))
-                        ;
-                        let variant_arg = "variant" in 
+                 let loc = tdcl.ptype_loc in 
+                 if Ast_polyvar.is_enum_constructors ctors then 
+                   let xs = Ast_polyvar.map_constructor_declarations_into_ints ctors in 
+                   match xs with 
+                   | `New xs ->
+                     [
+                       Ast_comb.single_non_rec_value 
+                         {loc; txt = constantArray}
+                         (Exp.array (List.map (fun i -> Exp.constant (Const_int i)) xs ))
+                       ;
+                       (let variant_arg = "variant" in 
                         Ast_comb.single_non_rec_value
+                          {loc; txt = toJs}
+                          (Exp.fun_ "" None 
+                             (Pat.constraint_
+                                (Pat.var {loc; txt = variant_arg } )
+                                core_type
+                             )
+                             (
+                               Exp.apply
+                                 (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.toInt"})
+
+                                 [
+                                   "", Exp.ident {loc; txt = Lident variant_arg};
+                                   "", Exp.ident {loc; txt = Lident constantArray}
+                                 ]
+                             )
+                          ))
+                       ;
+                       let int_arg = "int" in 
+                       Ast_comb.single_non_rec_value
+                         {loc ; txt = fromJs}
+                         (Exp.fun_ "" None 
+                            (Pat.constraint_ 
+                               (Pat.var {loc; txt  = int_arg})
+                               (Ast_literal.type_int ())
+                            )
+                            (Exp.constraint_
+                               (Exp.apply
+                                  (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.fromInt"})
+                                  [
+                                    "", Exp.constant(Const_int (List.length ctors));
+                                    "", Exp.ident {loc; txt = Lident constantArray};
+                                    "", Exp.ident {loc; txt = Lident int_arg}
+                                  ]
+                               )
+                               (Ast_core_type.lift_option_type core_type)
+                            )
+                         )
+                     ]
+                   | `Offset offset  ->                      
+                     let variant_arg = "variant" in 
+                     [(Ast_comb.single_non_rec_value 
                          {loc; txt = toJs}
                          (Exp.fun_ "" None 
-                          (Pat.constraint_
-                            (Pat.var {loc; txt = variant_arg } )
-                            core_type
-                          )
-                          (
-                            Exp.apply
-                            (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.toInt"})
-                            
-                            [
-                              "", Exp.ident {loc; txt = Lident variant_arg};
-                              "", Exp.ident {loc; txt = Lident constantArray}
-                            ]
-                          )
+                            (Pat.constraint_
+                               (Pat.var {loc; txt = variant_arg } )
+                               core_type
+                            )
+                            (Exp.apply 
+                               (Exp.ident {loc; txt = Ldot (Lident "Pervasives", "+")})
+                               [
+                                 "",
+                                 (Exp.apply 
+                                    (Exp.ident {loc; txt = Ldot (Lident "Obj", "magic")})
+                                    ["",(Exp.ident {loc; txt = Lident variant_arg})]);
+                                 "", Exp.constant (Const_int offset)
+                               ]
+                            )
                          )
-                         ;
-                      ]
-                    else []  
+                      );
+                      let int_arg = "int" in 
+                      Ast_comb.single_non_rec_value
+                        {loc ; txt = fromJs}
+                        (Exp.fun_ "" None 
+                           (Pat.constraint_ 
+                              (Pat.var {loc; txt  = int_arg})
+                              (Ast_literal.type_int ())
+                           )
+                           (Exp.constraint_
+                              (
+                                let v = Exp.ident {loc; txt = Lident int_arg} in 
+                                let len = List.length ctors in 
+                                let range_low = Exp.constant (Const_int (offset + 0)) in 
+                                let range_upper = Exp.constant (Const_int (offset + len - 1)) in 
+                                Exp.apply 
+                                  (Exp.ident {loc; txt = Ldot (Lident "Obj", "magic")})  
+                                  ["",
+                                   (
+                                     Exp.ifthenelse
+                                       (Exp.apply
+                                          (Exp.ident {loc ; txt = Lident "&&"})
+                                          ["",
+                                           (Exp.apply (Exp.ident {loc; txt = Lident "<="})
+                                              ["", v; "", range_upper] )
+                                           ;
+                                           "",
+                                           (Exp.apply (Exp.ident {loc; txt = Lident "<="})
+                                              ["", range_low; "",v]
+                                           )
+                                          ]
+                                       )
+                                       (Exp.construct {loc; txt = Lident "Some"} (Some v ))
+
+                                       (Some (Exp.construct {loc; txt = Lident "None"} None)))
+                                  ]
+                              )
+                              (Ast_core_type.lift_option_type core_type)
+                           )
+                        )
+                     ]
+                 else []  
                | Ptype_open -> [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );
@@ -235,14 +318,28 @@ let init () =
                          (Typ.arrow "" 
                             core_type ty1);
                        Ast_comb.single_non_rec_val     
-                       {loc; txt = fromJs}
-                       (Typ.arrow ""
-                        ty1 ty2
-                       )
+                         {loc; txt = fromJs}
+                         (Typ.arrow ""
+                            ty1 ty2
+                         )
                      ]
                    | None -> [])
 
-                | Ptype_variant _
+                | Ptype_variant ctors 
+                  -> 
+                  let loc  = tdcl.ptype_loc in 
+                  if Ast_polyvar.is_enum_constructors ctors then 
+                    let ty1 = Ast_literal.type_int() in 
+                    let ty2 = Ast_core_type.lift_option_type core_type in 
+                    [
+                      Ast_comb.single_non_rec_val
+                        {loc; txt = toJs}
+                        (Typ.arrow "" core_type ty1);
+                      Ast_comb.single_non_rec_val
+                        {loc; txt = fromJs}
+                        (Typ.arrow "" ty1 ty2)
+                    ]
+                  else []
                 | Ptype_open -> [] in 
               Ext_list.flat_map handle_tdcl tdcls 
 

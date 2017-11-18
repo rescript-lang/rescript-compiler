@@ -30,7 +30,7 @@ val map_row_fields_into_ints:
 
 val map_constructor_declarations_into_ints:
   Parsetree.constructor_declaration list ->
-  int list 
+  [ `Offset of int | `New  of int list ]
 
 val map_row_fields_into_strings:
   Location.t -> 
