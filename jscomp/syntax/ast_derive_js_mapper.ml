@@ -306,7 +306,7 @@ let init () =
                      [
                        toJsType ty1;
                        Ast_comb.single_non_rec_val     
-                         {loc; txt = fromJs}
+                         patFromJs
                          (Typ.arrow ""
                             ty1 ty2
                          )
