@@ -1,11 +1,12 @@
 (** Contains functions available in the global scope ([window] in a browser context) *)
 
-(** identifies an interval started by {! setInterval} *)
 type intervalId
+(** identifies an interval started by {! setInterval} *)
 
-(** identifies a timeout started by {! setTimeout} *)
 type timeoutId
+(** identifies a timeout started by {! setTimeout} *)
 
+external clearInterval : intervalId -> unit = "" [@@bs.val]
 (** clears an interval started by {! setInterval}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval> MDN
@@ -26,9 +27,9 @@ let cancel () =
   Js.Undefined.iter Js.Global.clearInterval !interval
 ]}
 *)
-external clearInterval : intervalId -> unit = "" [@@bs.val]
 
 
+external clearTimeout : timeoutId -> unit = "" [@@bs.val]
 (** clears a timeout started by {! setTimeout}
 
 @see <https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout> MDN
@@ -46,9 +47,9 @@ let procrastinate mins =
   Js.Global.setTimeout work (mins * 60 * 1000)
 ]}
 *)
-external clearTimeout : timeoutId -> unit = "" [@@bs.val]
 
 
+external setInterval : ((unit -> unit) [@bs.uncurry]) -> int -> intervalId = "" [@@bs.val]
 (** {i repeatedly} executes a callback with a specified interval (in milliseconds) between calls
 
 {b returns} an {! intervalId} that can be passed to {! clearInterval} to cancel the timeout
@@ -67,9 +68,9 @@ let _ =
   Js.Global.setInterval tick 1000
 ]}
 *)
-external setInterval : (unit -> unit) -> int -> intervalId = "" [@@bs.val]
 
 
+external setTimeout : ((unit -> unit) [@bs.uncurry]) -> int -> timeoutId = "" [@@bs.val]
 (** executes a callback after a specified delay (in milliseconds)
 
 {b returns} a {! timeoutId} that can be passed to {! clearTimeout} to cancel the timeout
@@ -85,4 +86,28 @@ let _ =
   Js.Global.setTimeout (fun () -> Js.log message) 1000
 ]}
 *)
-external setTimeout : (unit -> unit) -> int -> timeoutId = "" [@@bs.val]
+
+
+external encodeURI : string -> string = "" [@@bs.val]
+(** URL-encodes a string.
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI> MDN
+*)
+
+external decodeURI : string -> string = "" [@@bs.val]
+(** Decodes a URL-enmcoded string produced by [encodeURI]
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI> MDN
+*)
+
+external encodeURIComponent : string -> string = "" [@@bs.val]
+(** URL-encodes a string, including characters with special meaning in a URI.
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent> MDN
+*)
+
+external decodeURIComponent : string -> string = "" [@@bs.val]
+(** Decodes a URL-enmcoded string produced by [encodeURIComponent]
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent> MDN
+*)

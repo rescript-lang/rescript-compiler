@@ -25,7 +25,51 @@ var suites_001 = /* :: */[
         return /* Ok */Block.__(4, [/* true */1]);
       })
   ],
-  /* [] */0
+  /* :: */[
+    /* tuple */[
+      "encodeURI",
+      (function () {
+          return /* Eq */Block.__(0, [
+                    encodeURI("[-=-]"),
+                    "%5B-=-%5D"
+                  ]);
+        })
+    ],
+    /* :: */[
+      /* tuple */[
+        "decodeURI",
+        (function () {
+            return /* Eq */Block.__(0, [
+                      decodeURI("%5B-=-%5D"),
+                      "[-=-]"
+                    ]);
+          })
+      ],
+      /* :: */[
+        /* tuple */[
+          "encodeURIComponent",
+          (function () {
+              return /* Eq */Block.__(0, [
+                        encodeURIComponent("[-=-]"),
+                        "%5B-%3D-%5D"
+                      ]);
+            })
+        ],
+        /* :: */[
+          /* tuple */[
+            "decodeURIComponent",
+            (function () {
+                return /* Eq */Block.__(0, [
+                          decodeURIComponent("%5B-%3D-%5D"),
+                          "[-=-]"
+                        ]);
+              })
+          ],
+          /* [] */0
+        ]
+      ]
+    ]
+  ]
 ];
 
 var suites = /* :: */[
