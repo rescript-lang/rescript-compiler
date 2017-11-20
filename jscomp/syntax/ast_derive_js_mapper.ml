@@ -33,9 +33,69 @@ let js_field (o : Parsetree.expression) m =
       "",o; 
       "", Exp.ident m
     ]
+let const_int i = Exp.constant (Const_int i)
+let const_string s = Exp.constant (Const_string (s,None))
 
 let invalid_config (config : Parsetree.expression) = 
   Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
+
+let noloc = Location.none
+(* [eraseType] will be instrumented, be careful about the name conflict*)  
+let eraseTypeLit = "eraseType"
+let eraseTypeExp = Exp.ident {loc = noloc; txt = Lident eraseTypeLit}
+let eraseType x = 
+  Exp.apply eraseTypeExp ["", x]
+let eraseTypeStr = 
+  let any = Typ.any () in 
+  Str.primitive 
+    (Val.mk ~prim:["%identity"] {loc = noloc; txt = eraseTypeLit}
+       (Typ.arrow "" any any)
+    )
+
+let app2 f arg1 arg2 = 
+  Exp.apply f ["",arg1; "", arg2]
+let app3 f arg1 arg2 arg3 = 
+  Exp.apply f ["", arg1; "", arg2; "", arg3]
+let (<=~) a b =   
+  app2 (Exp.ident {loc = noloc; txt = Lident "<="}) a b 
+let (-~) a b =   
+  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","-")})
+    a b 
+let (+~) a b =   
+  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","+")})
+    a b 
+let (&&~) a b =   
+  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
+    a b 
+
+let search polyvar array = 
+  app2
+    (Exp.ident ({loc = noloc; 
+                 txt = Longident.parse "Js.MapperRt.search" })
+    )                                 
+    (eraseType polyvar)
+    array
+
+let revSearch len constantArray exp =   
+  eraseType
+    (app3 
+       (Exp.ident {loc= noloc; txt = Longident.parse "Js.MapperRt.revSearch"})
+       len
+       constantArray
+       exp)
+
+let toInt exp array =     
+  app2
+    (Exp.ident {loc=noloc; txt = Longident.parse "Js.MapperRt.toInt"})
+    (eraseType exp)
+    array
+let fromInt len array exp = 
+  eraseType
+    (app3
+       (Exp.ident {loc = noloc; txt = Longident.parse "Js.MapperRt.fromInt"})
+       len
+       array
+       exp)
 
 let init () =      
   Ast_derive.register
@@ -52,34 +112,46 @@ let init () =
                let name = tdcl.ptype_name.txt in 
                let toJs = name ^ "ToJs" in 
                let fromJs = name ^ "FromJs" in 
+               let constantArray = "jsMapperConstantArray" in 
+               let loc = tdcl.ptype_loc in 
+               let patToJs = {Asttypes.loc; txt = toJs} in 
+               let patFromJs = {Asttypes.loc; txt = fromJs} in 
+               let param = "param" in 
+
+               let ident_param = {Asttypes.txt = Longident.Lident param; loc} in 
+               let pat_param = {Asttypes.loc; txt = param} in 
+               let exp_param = Exp.ident ident_param in 
+               let toJsBody body = 
+                 Ast_comb.single_non_rec_value patToJs
+                   (Exp.fun_ "" None (Pat.constraint_ (Pat.var pat_param) core_type) 
+                      body )
+               in 
                match tdcl.ptype_kind with  
                | Ptype_record label_declarations -> 
-                 let record_arg = "record" in        
                  let exp = 
                    Exp.record
                      (List.map 
                         (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
-                           {Asttypes.loc; txt = Longident.Lident txt },
-                           Exp.field (Exp.ident {txt = Lident record_arg ; loc })
-                             {Asttypes.loc; txt = Longident.Lident txt }
+                           let label = 
+                             {Asttypes.loc; txt = Longident.Lident txt } in 
+                           label,Exp.field exp_param label
                         ) label_declarations) None in 
-                 let loc = tdcl.ptype_loc in        
-                 let toJs = Ast_comb.single_non_rec_value {loc; txt = toJs}
-                     (Exp.fun_ "" None (Pat.constraint_ (Pat.var {loc; txt = record_arg}) core_type) 
-                        (Exp.extension ({Asttypes.loc; txt = "bs.obj"}, (PStr [Str.eval exp  ])))) 
+                 let toJs = 
+                   toJsBody
+                     (Exp.extension ({Asttypes.loc; txt = "bs.obj"}, (PStr [Str.eval exp  ])))
                  in 
-                 let obj_arg = "obj" in 
                  let obj_exp = 
                    Exp.record
                      (List.map 
                         (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
-                           {Asttypes.loc; txt = Longident.Lident txt },
-                           js_field (Exp.ident {txt = Lident obj_arg ; loc })
-                             {Asttypes.loc; txt = Longident.Lident txt }
+                           let label = 
+                             {Asttypes.loc; txt = Longident.Lident txt } in 
+                           label,
+                           js_field exp_param  label
                         ) label_declarations) None in 
                  let fromJs = 
-                   Ast_comb.single_non_rec_value {loc; txt = fromJs}
-                     (Exp.fun_ "" None (Pat.var {loc; txt = obj_arg})
+                   Ast_comb.single_non_rec_value patFromJs
+                     (Exp.fun_ "" None (Pat.var pat_param)
                         (Exp.constraint_ obj_exp core_type) )
                  in
                  [
@@ -87,39 +159,124 @@ let init () =
                    fromJs
                  ]
                | Ptype_abstract -> 
-                 [] 
-                 (* begin match tdcl.ptype_manifest with 
-                   | Some {
-                       ptyp_desc = 
-                         Ptyp_variant(row_fields, Closed,None);
-                       ptyp_loc
-                     }
-                     -> 
-                     if Ast_polyvar.is_enum row_fields then 
+                 (match Ast_polyvar.is_enum_polyvar tdcl with 
+                  | Some row_fields -> 
+                    let attr = 
+                      Ast_polyvar.map_row_fields_into_strings loc row_fields 
+                    in 
+                    let expConstantArray =   
+                      Exp.ident {loc; txt = Longident.Lident constantArray} in 
+                    begin match attr with 
+                      | NullString result -> 
+                        [
+                          eraseTypeStr;
+                          Ast_comb.single_non_rec_value 
+                            {loc; txt = constantArray}
+                            (Exp.array
+                               (List.map (fun (i,str) -> 
+                                    Exp.tuple 
+                                      [
+                                        const_int i;
+                                        const_string str
+                                      ]
+                                  ) result));
+                          (
+                            toJsBody
+                              (search
+                                 exp_param
+                                 expConstantArray
+                              )
+                          );
+                          Ast_comb.single_non_rec_value
+                            patFromJs
+                            (Exp.fun_ "" None 
+                               (Pat.var pat_param)
+                               (Exp.constraint_
+                                  (
+                                    revSearch                                      
+                                      (const_int (List.length result))
+                                      expConstantArray
+                                      exp_param                                      
+                                  )
+                                  (Ast_core_type.lift_option_type core_type)
+                               )
 
-                       let attr = 
-                         Ast_polyvar.map_row_fields_into_strings ptyp_loc row_fields 
-                       in (* how to mark attributes as used *)
-                       begin match attr with 
-                         | NullString result -> 
-                           [
-                             Ast_comb.single_non_rec_value 
-                               {loc = ptyp_loc; txt = "hi"}
-                               (Exp.array
-                                  (List.map (fun (i,str) -> 
-                                       Exp.tuple 
-                                         [
-                                           Exp.constant (Const_int i);
-                                           Exp.constant (Const_string (str, None))
-                                         ]
-                                     ) result))
-                           ]
-                         | _ -> assert false 
-                       end 
-                     else []
-                   | Some _ | None -> []
-                 end *)
-               | Ptype_variant _
+                            )
+                        ]
+                      | _ -> assert false 
+                    end 
+                  | None -> []
+                 )
+
+               | Ptype_variant ctors -> 
+                 if Ast_polyvar.is_enum_constructors ctors then 
+                   let xs = Ast_polyvar.map_constructor_declarations_into_ints ctors in 
+                   match xs with 
+                   | `New xs ->
+                     let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
+                     [
+                       eraseTypeStr;
+                       Ast_comb.single_non_rec_value 
+                         {loc; txt = constantArray}
+                         (Exp.array (List.map (fun i -> const_int i) xs ))
+                       ;
+                       toJsBody                        
+                         (
+                           toInt
+                             exp_param
+                             constantArrayExp
+                         )                       
+                       ;
+                       Ast_comb.single_non_rec_value
+                         patFromJs
+                         (Exp.fun_ "" None 
+                            (Pat.constraint_ 
+                               (Pat.var pat_param)
+                               (Ast_literal.type_int ())
+                            )
+                            (Exp.constraint_
+                               (fromInt                                 
+                                  (const_int (List.length ctors))
+                                  constantArrayExp
+                                  exp_param
+                               )
+                               (Ast_core_type.lift_option_type core_type)
+                            )
+                         )
+                     ]
+                   | `Offset offset  ->                      
+
+                     [  eraseTypeStr;
+                        toJsBody (eraseType exp_param +~ const_int offset)
+                        ;
+                        Ast_comb.single_non_rec_value
+                          {loc ; txt = fromJs}
+                          (Exp.fun_ "" None 
+                             (Pat.constraint_ 
+                                (Pat.var pat_param)
+                                (Ast_literal.type_int ())
+                             )
+                             (Exp.constraint_
+                                (
+
+                                  let len = List.length ctors in 
+                                  let range_low = const_int (offset + 0) in 
+                                  let range_upper = const_int (offset + len - 1) in 
+                                  eraseType
+
+                                    (
+                                      Exp.ifthenelse
+                                        ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
+                                        (Exp.construct {loc; txt = Lident "Some"} 
+                                           (
+                                             Some (exp_param -~ const_int offset)
+                                           ))
+                                        (Some (Exp.construct {loc; txt = Lident "None"} None))))                                
+                                (Ast_core_type.lift_option_type core_type)
+                             )
+                          )
+                     ]
+                 else []  
                | Ptype_open -> [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );
@@ -131,9 +288,14 @@ let init () =
                 let name = tdcl.ptype_name.txt in 
                 let toJs = name ^ "ToJs" in 
                 let fromJs = name ^ "FromJs" in 
+                let loc = tdcl.ptype_loc in 
+                let patToJs = {Asttypes.loc; txt = toJs} in 
+                let patFromJs = {Asttypes.loc; txt = fromJs} in 
+                let toJsType result = 
+                  Ast_comb.single_non_rec_val patToJs (Typ.arrow "" core_type result) in
                 match tdcl.ptype_kind with  
                 | Ptype_record label_declarations ->            
-                  let loc = tdcl.ptype_loc in 
+
                   let ty1 = 
                     Ast_comb.to_js_type loc @@  
                     Typ.object_
@@ -150,19 +312,41 @@ let init () =
                             txt, [], pld_type
                          ) label_declarations) 
                       Closed in                       
-                  let loc = tdcl.ptype_loc in        
-                  let toJs = 
-                    Ast_comb.single_non_rec_val {loc; txt = toJs}
-                      (Typ.arrow "" core_type ty2) in 
                   let fromJs =    
-                    Ast_comb.single_non_rec_val {loc; txt = fromJs}
-                      (Typ.arrow ""  ty1 core_type) in 
+                    Ast_comb.single_non_rec_val patFromJs (Typ.arrow ""  ty1 core_type) in 
                   [
-                    toJs;
+                    toJsType ty2;
                     fromJs
                   ]
-                | Ptype_variant _
-                | Ptype_abstract | Ptype_open -> [] in 
+                | Ptype_abstract ->   
+                  (match Ast_polyvar.is_enum_polyvar tdcl with 
+                   | Some _ ->                     
+                     let ty1 = (Ast_literal.type_string ()) in 
+                     let ty2 = Ast_core_type.lift_option_type core_type in 
+                     [
+                       toJsType ty1;
+                       Ast_comb.single_non_rec_val     
+                         patFromJs
+                         (Typ.arrow ""
+                            ty1 ty2
+                         )
+                     ]
+                   | None -> [])
+
+                | Ptype_variant ctors 
+                  -> 
+
+                  if Ast_polyvar.is_enum_constructors ctors then 
+                    let ty1 = Ast_literal.type_int() in 
+                    let ty2 = Ast_core_type.lift_option_type core_type in 
+                    [
+                      toJsType ty1;
+                      Ast_comb.single_non_rec_val
+                        patFromJs
+                        (Typ.arrow "" ty1 ty2)
+                    ]
+                  else []
+                | Ptype_open -> [] in 
               Ext_list.flat_map handle_tdcl tdcls 
 
            );

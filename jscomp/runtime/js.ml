@@ -38,7 +38,7 @@
 
 these types are not used by normal users}
 *)
-
+module MapperRt = Js_mapperRt
 module Internal = Js_internal
 
 (* {2 Types for JS objects} *)

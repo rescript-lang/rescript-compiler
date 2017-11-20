@@ -1,19 +1,19 @@
 'use strict';
 
 
-function tToJs(record) {
+function tToJs(param) {
   return {
-          xx: record[/* xx */0],
-          yy: record[/* yy */1],
-          zz: record[/* zz */2]
+          xx: param[/* xx */0],
+          yy: param[/* yy */1],
+          zz: param[/* zz */2]
         };
 }
 
-function tFromJs(obj) {
+function tFromJs(param) {
   return /* record */[
-          /* xx */obj.xx,
-          /* yy */obj.yy,
-          /* zz */obj.zz
+          /* xx */param.xx,
+          /* yy */param.yy,
+          /* zz */param.zz
         ];
 }
 
