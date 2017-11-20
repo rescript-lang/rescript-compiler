@@ -2074,7 +2074,7 @@ function equal$2(_x1, _x2) {
             if (typeof x2 === "number") {
               return /* false */0;
             } else if (x2.tag === 4) {
-              if (Caml_obj.caml_equal(x1[0], x2[0])) {
+              if (x1[0] === x2[0]) {
                 _x2 = x2[1];
                 _x1 = x1[1];
                 continue ;
@@ -2090,7 +2090,7 @@ function equal$2(_x1, _x2) {
             if (typeof x2 === "number") {
               return /* false */0;
             } else if (x2.tag === 5) {
-              if (Caml_obj.caml_equal(x1[0], x2[0])) {
+              if (x1[0] === x2[0]) {
                 _x2 = x2[1];
                 _x1 = x1[1];
                 continue ;
