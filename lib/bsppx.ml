@@ -12847,11 +12847,12 @@ let (&&~) a b =
 let jsMapperRt =     
   Longident.Ldot (Lident "Js", "MapperRt")
 
-let search polyvar array = 
-  app2
+let search upper polyvar array = 
+  app3
     (Exp.ident ({loc = noloc; 
-                 txt = Longident.Ldot (jsMapperRt,"search") })
+                 txt = Longident.Ldot (jsMapperRt,"binSearch") })
     )                                 
+    upper
     (eraseType polyvar)
     array
 
@@ -12953,6 +12954,8 @@ let init () =
                       Exp.ident {loc; txt = Longident.Lident constantArray} in 
                     begin match attr with 
                       | NullString result -> 
+                      let result_len = List.length result in 
+                      let exp_len = const_int result_len in 
                         [
                           eraseTypeStr;
                           Ast_comb.single_non_rec_value 
@@ -12964,10 +12967,11 @@ let init () =
                                         const_int i;
                                         const_string str
                                       ]
-                                  ) result));
+                                  ) (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)));
                           (
                             toJsBody
                               (search
+                                exp_len
                                  exp_param
                                  expConstantArray
                               )
@@ -12979,7 +12983,7 @@ let init () =
                                (Exp.constraint_
                                   (
                                     revSearch                                      
-                                      (const_int (List.length result))
+                                      exp_len
                                       expConstantArray
                                       exp_param                                      
                                   )

@@ -28,12 +28,12 @@ function eq(loc, x, y) {
 
 var jsMapperConstantArray = /* array */[
   /* tuple */[
-    68,
-    "D"
-  ],
-  /* tuple */[
     67,
     "C"
+  ],
+  /* tuple */[
+    68,
+    "D"
   ],
   /* tuple */[
     102,
@@ -42,7 +42,7 @@ var jsMapperConstantArray = /* array */[
 ];
 
 function uToJs(param) {
-  return Js_mapperRt.search(param, jsMapperConstantArray);
+  return Js_mapperRt.binSearch(3, param, jsMapperConstantArray);
 }
 
 function uFromJs(param) {
