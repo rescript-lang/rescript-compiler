@@ -27,7 +27,8 @@
    Search hashvariant of [polyvar] to get the returned string,
    assume that  [polvar] exists in the array
 *)
-val search:
+val binSearch:
+  int ->
   int -> 
   (int * 'a) array ->
   'a

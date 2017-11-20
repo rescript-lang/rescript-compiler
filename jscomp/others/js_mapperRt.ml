@@ -21,19 +21,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
- 
-
-let rec searchAux i (xs : (int * _) array) (k : int) =  
-  let (a,b) = Array.unsafe_get xs i in 
-  if a = k then b 
-  else searchAux (succ i) xs k 
-
-let searchForSureExists xs k =   
-  searchAux 0 xs k 
 
 
-let search (id : int) array =   
-  searchAux 0 array id 
+
+(*
+   [lower, upper) 
+   when [lower] = [upper], impossible
+   [upper - lower] = 1
+   [mid = lower], it should hit
+   [uper -lower > 1], [mid <> lower]
+ *)  
+let rec binSearchAux lower upper xs (k : int) = 
+  let mid = (lower + upper) / 2 in 
+  let i,v = Array.unsafe_get xs mid in 
+  if i = k then v
+  else if i < k then 
+    binSearchAux (mid + 1) upper xs k
+  else 
+    binSearchAux lower (mid - 1) xs k  
+
+
+
+let binSearch upper (id : int) array =   
+  binSearchAux 0 upper array id 
 
 let rec revSearchAux 
     i len (xs : (int * string) array) (k : string) = 
@@ -46,7 +56,7 @@ let rec revSearchAux
       revSearchAux (i + 1) len xs k 
 
 let revSearch len array (x : string)  : int option =  
-   (revSearchAux 0 len array x)
+  (revSearchAux 0 len array x)
 
 let toInt (i : int) (xs : int array) =   
   Array.unsafe_get xs i
@@ -59,4 +69,4 @@ let rec fromIntAux (enum : int) i len xs =
     else fromIntAux enum (i + 1) len xs 
 
 let fromInt len (xs : int array) (enum : int )  : 'variant option =   
-    fromIntAux enum 0 len xs 
+  fromIntAux enum 0 len xs 
