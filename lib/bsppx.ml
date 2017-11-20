@@ -12844,10 +12844,13 @@ let (&&~) a b =
   app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
     a b 
 
+let jsMapperRt =     
+  Longident.Ldot (Lident "Js", "MapperRt")
+
 let search polyvar array = 
   app2
     (Exp.ident ({loc = noloc; 
-                 txt = Longident.parse "Js.MapperRt.search" })
+                 txt = Longident.Ldot (jsMapperRt,"search") })
     )                                 
     (eraseType polyvar)
     array
@@ -12855,20 +12858,26 @@ let search polyvar array =
 let revSearch len constantArray exp =   
   eraseType
     (app3 
-       (Exp.ident {loc= noloc; txt = Longident.parse "Js.MapperRt.revSearch"})
+       (Exp.ident 
+          {loc= noloc; 
+           txt = Longident.Ldot (jsMapperRt, "revSearch")})
        len
        constantArray
        exp)
 
 let toInt exp array =     
   app2
-    (Exp.ident {loc=noloc; txt = Longident.parse "Js.MapperRt.toInt"})
+    (Exp.ident 
+       { loc=noloc; 
+         txt = Longident.Ldot (jsMapperRt, "toInt")})
     (eraseType exp)
     array
 let fromInt len array exp = 
   eraseType
     (app3
-       (Exp.ident {loc = noloc; txt = Longident.parse "Js.MapperRt.fromInt"})
+       (Exp.ident 
+          {loc = noloc; 
+           txt = Longident.Ldot (jsMapperRt,"fromInt")})
        len
        array
        exp)

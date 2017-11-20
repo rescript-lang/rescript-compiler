@@ -1,4 +1,12 @@
 
+(* let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites *)
+
+
 type u = 
   [ `D 
   | `C 
@@ -6,7 +14,8 @@ type u =
   ]
 [@@bs.deriving jsMapper]
 
-
+(* let eqU (x : u) (y : u) = x = y *)
+(* let f x = x = `D *)
 
 let (-~) f v =   
   match v with 
@@ -29,6 +38,7 @@ type v =
   | A3 
 [@@bs.deriving jsMapper]
 
+(* let eqV (x : v) (y : v) = x = y *)
 let s = function 
   | A0 -> "A0"
   | A1 -> "A1"
