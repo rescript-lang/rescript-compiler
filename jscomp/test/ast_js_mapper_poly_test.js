@@ -157,7 +157,7 @@ if (!(
         Caml_builtin_exceptions.assert_failure,
         [
           "ast_js_mapper_poly_test.ml",
-          71,
+          81,
           3
         ]
       ];
