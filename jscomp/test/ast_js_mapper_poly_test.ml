@@ -1,10 +1,10 @@
 
-(* let suites :  Mt.pair_suites ref  = ref []
+let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = 
   incr test_id ; 
   suites := 
-    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites *)
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 
 type u = 
@@ -14,22 +14,21 @@ type u =
   ]
 [@@bs.deriving jsMapper]
 
-(* let eqU (x : u) (y : u) = x = y *)
-(* let f x = x = `D *)
+let eqU (x : u) (y : u) = x = y
+let eqUOpt (x : u option) y = 
+  match x,y with 
+  | Some x, Some y -> x = y 
+  | None, None -> true
+  | _, _ -> false 
 
-let (-~) f v =   
-  match v with 
-  | None -> "None"
-  | Some x -> f x 
-let v = 
-  ( uToJs -~ uFromJs "x" ,
-    uToJs -~ uFromJs "D",
-    uToJs -~ uFromJs "C",
-    uToJs -~ uFromJs "N")
+let () =   
+  eq __LOC__ (eqUOpt (uFromJs "x") (Some `f )) true;
+  eq __LOC__ (eqUOpt (uFromJs "D") (Some `D )) true;
+  eq __LOC__ (eqUOpt (uFromJs "C") (Some `C )) true;
+  eq __LOC__ (eqUOpt (uFromJs "f") (None )) true;
+  eq __LOC__ (Array.map uToJs [|`D; `C ; `f|]) [|"D"; "C"; "x"|]
 
-;;Js.log (uToJs `f)
 
-;; Js.log v 
 
 type v = 
   | A0 
@@ -38,17 +37,24 @@ type v =
   | A3 
 [@@bs.deriving jsMapper]
 
-(* let eqV (x : v) (y : v) = x = y *)
+let eqV (x : v) (y : v) = x = y
+let eqVOpt (x : v option) y= 
+  match x,y with 
+  | Some x, Some y -> x = y 
+  | None, None -> true
+  | _, _ -> false 
+
 let s = function 
   | A0 -> "A0"
   | A1 -> "A1"
   | A2 -> "A2"
   | A3 -> "A3"
 
-;; Js.log (vToJs A3)
+let () = 
+  eq __LOC__ (Array.map vToJs [|A0;A1;A2;A3|]) [|0;3;4;5|];
+  eq __LOC__ (Array.map vFromJs [|0;1;2;3;4;5;6|])
+  [|Some A0; None; None; Some A1; Some A2; Some A3; None|]
 
-;; Js.log (Array.map ( fun x -> match vFromJs x with None -> "None" | Some x -> s x )
-    [|0;1;2;3;4;5|])
 
 type v1 =     
   | B0 
@@ -57,7 +63,11 @@ type v1 =
   | B3 
   | B4 
   | B5 
-  [@@bs.deriving jsMapper]
+[@@bs.deriving jsMapper]
+let () = 
+  eq __LOC__ (Array.map v1ToJs [|B0;B1;B2;B3;B4;B5|]) [|0;1;2;3;4;5|];
+  eq __LOC__ (Array.map v1FromJs [|-1;0;1;2;3;4;5;6|])
+  [|None;Some B0; Some B1; Some B2; Some B3; Some B4; Some B5; None|]
 
 (** TODO: add jsType support *)  
 type v2 =  
@@ -67,15 +77,21 @@ type v2 =
   | C3 
   | C4
   | C5 
-  [@@bs.deriving jsMapper ]
+[@@bs.deriving jsMapper ]
 
 
 ;;  
-Js.log (Array.map v2ToJs [|C0; C1; C2 ; C3 ; C4; C5 |])
+let (+>) = Array.append
+let () = 
+  eq __LOC__ 
+  (Array.map v2ToJs [|C0; C1; C2 ; C3 ; C4; C5 |])
+  [|2;3;4;5;6;7|];
+  eq __LOC__
+  (Array.map v2FromJs [|0;1;2;3;4;5;6;7;8|])
+  (
+    [|None;None|]+>
+    (Array.map (fun x -> Some x) [|C0; C1; C2 ; C3 ; C4; C5 |]) +>
+    [|None|]
+  )
 
-;;
-let xs  = (Array.map v2ToJs [|C0; C1; C2 ; C3 ; C4; C5 |])
-;;
-Js.log (Array.map v2FromJs (Array.map succ xs))
-
-;; assert (C1 |> v2ToJs |> v2FromJs|> (fun x -> match x with  Some C1 -> true | _ -> false ))
+;; Mt.from_pair_suites  __FILE__ !suites
