@@ -33,9 +33,69 @@ let js_field (o : Parsetree.expression) m =
       "",o; 
       "", Exp.ident m
     ]
+let const_int i = Exp.constant (Const_int i)
+let const_string s = Exp.constant (Const_string (s,None))
 
 let invalid_config (config : Parsetree.expression) = 
   Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
+
+let noloc = Location.none
+(* [eraseType] will be instrumented, be careful about the name conflict*)  
+let eraseTypeLit = "eraseType"
+let eraseTypeExp = Exp.ident {loc = noloc; txt = Lident eraseTypeLit}
+let eraseType x = 
+  Exp.apply eraseTypeExp ["", x]
+let eraseTypeStr = 
+  let any = Typ.any () in 
+  Str.primitive 
+    (Val.mk ~prim:["%identity"] {loc = noloc; txt = eraseTypeLit}
+       (Typ.arrow "" any any)
+    )
+
+let app2 f arg1 arg2 = 
+  Exp.apply f ["",arg1; "", arg2]
+let app3 f arg1 arg2 arg3 = 
+  Exp.apply f ["", arg1; "", arg2; "", arg3]
+let (<=~) a b =   
+  app2 (Exp.ident {loc = noloc; txt = Lident "<="}) a b 
+let (-~) a b =   
+  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","-")})
+    a b 
+let (+~) a b =   
+  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","+")})
+    a b 
+let (&&~) a b =   
+  app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
+    a b 
+
+let search polyvar array = 
+  app2
+    (Exp.ident ({loc = noloc; 
+                 txt = Longident.parse "Js.MapperRt.search" })
+    )                                 
+    (eraseType polyvar)
+    array
+
+let revSearch len constantArray exp =   
+  eraseType
+    (app3 
+       (Exp.ident {loc= noloc; txt = Longident.parse "Js.MapperRt.revSearch"})
+       len
+       constantArray
+       exp)
+
+let toInt exp array =     
+  app2
+    (Exp.ident {loc=noloc; txt = Longident.parse "Js.MapperRt.toInt"})
+    (eraseType exp)
+    array
+let fromInt len array exp = 
+  eraseType
+    (app3
+       (Exp.ident {loc = noloc; txt = Longident.parse "Js.MapperRt.fromInt"})
+       len
+       array
+       exp)
 
 let init () =      
   Ast_derive.register
@@ -109,26 +169,22 @@ let init () =
                     begin match attr with 
                       | NullString result -> 
                         [
+                          eraseTypeStr;
                           Ast_comb.single_non_rec_value 
                             {loc; txt = constantArray}
                             (Exp.array
                                (List.map (fun (i,str) -> 
                                     Exp.tuple 
                                       [
-                                        Exp.constant (Const_int i);
-                                        Exp.constant (Const_string (str, None))
+                                        const_int i;
+                                        const_string str
                                       ]
                                   ) result));
                           (
                             toJsBody
-                              (Exp.apply
-                                 (Exp.ident ({loc; 
-                                              txt = Longident.parse "Js.MapperRt.search" })
-                                 )
-                                 [
-                                   "", exp_param;
-                                   "", expConstantArray
-                                 ]
+                              (search
+                                 exp_param
+                                 expConstantArray
                               )
                           );
                           Ast_comb.single_non_rec_value
@@ -137,13 +193,10 @@ let init () =
                                (Pat.var pat_param)
                                (Exp.constraint_
                                   (
-                                    Exp.apply
-                                      (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.revSearch"})
-                                      [
-                                        "", Exp.constant (Const_int (List.length result));
-                                        "", expConstantArray;
-                                        "", exp_param
-                                      ]
+                                    revSearch                                      
+                                      (const_int (List.length result))
+                                      expConstantArray
+                                      exp_param                                      
                                   )
                                   (Ast_core_type.lift_option_type core_type)
                                )
@@ -160,23 +213,20 @@ let init () =
                    let xs = Ast_polyvar.map_constructor_declarations_into_ints ctors in 
                    match xs with 
                    | `New xs ->
+                     let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
                      [
+                       eraseTypeStr;
                        Ast_comb.single_non_rec_value 
                          {loc; txt = constantArray}
-                         (Exp.array (List.map (fun i -> Exp.constant (Const_int i)) xs ))
+                         (Exp.array (List.map (fun i -> const_int i) xs ))
                        ;
-                       (toJsBody                        
-                          (
-                            Exp.apply
-                              (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.toInt"})
-                              [
-                                "", exp_param;
-                                "", Exp.ident {loc; txt = Lident constantArray}
-                              ]
-                          )
-                       )
+                       toJsBody                        
+                         (
+                           toInt
+                             exp_param
+                             constantArrayExp
+                         )                       
                        ;
-
                        Ast_comb.single_non_rec_value
                          patFromJs
                          (Exp.fun_ "" None 
@@ -185,13 +235,10 @@ let init () =
                                (Ast_literal.type_int ())
                             )
                             (Exp.constraint_
-                               (Exp.apply
-                                  (Exp.ident {loc; txt = Longident.parse "Js.MapperRt.fromInt"})
-                                  [
-                                    "", Exp.constant(Const_int (List.length ctors));
-                                    "", Exp.ident {loc; txt = Lident constantArray};
-                                    "", exp_param
-                                  ]
+                               (fromInt                                 
+                                  (const_int (List.length ctors))
+                                  constantArrayExp
+                                  exp_param
                                )
                                (Ast_core_type.lift_option_type core_type)
                             )
@@ -199,62 +246,35 @@ let init () =
                      ]
                    | `Offset offset  ->                      
 
-                     [(toJsBody
-                         (Exp.apply 
-                            (Exp.ident {loc; txt = Ldot (Lident "Pervasives", "+")})
-                            [
-                              "",
-                              (Exp.apply 
-                                 (Exp.ident {loc; txt = Ldot (Lident "Obj", "magic")})
-                                 ["",
-                                  exp_param]);
-                              "", Exp.constant (Const_int offset)
-                            ]
-                         )                         
-                      );
+                     [  eraseTypeStr;
+                        toJsBody (eraseType exp_param +~ const_int offset)
+                        ;
+                        Ast_comb.single_non_rec_value
+                          {loc ; txt = fromJs}
+                          (Exp.fun_ "" None 
+                             (Pat.constraint_ 
+                                (Pat.var pat_param)
+                                (Ast_literal.type_int ())
+                             )
+                             (Exp.constraint_
+                                (
 
-                      Ast_comb.single_non_rec_value
-                        {loc ; txt = fromJs}
-                        (Exp.fun_ "" None 
-                           (Pat.constraint_ 
-                              (Pat.var pat_param)
-                              (Ast_literal.type_int ())
-                           )
-                           (Exp.constraint_
-                              (
+                                  let len = List.length ctors in 
+                                  let range_low = const_int (offset + 0) in 
+                                  let range_upper = const_int (offset + len - 1) in 
+                                  eraseType
 
-                                let len = List.length ctors in 
-                                let range_low = Exp.constant (Const_int (offset + 0)) in 
-                                let range_upper = Exp.constant (Const_int (offset + len - 1)) in 
-                                Exp.apply 
-                                  (Exp.ident {loc; txt = Ldot (Lident "Obj", "magic")})  
-                                  ["",
-                                   (
-                                     Exp.ifthenelse
-                                       (Exp.apply
-                                          (Exp.ident {loc ; txt = Lident "&&"})
-                                          ["",
-                                           (Exp.apply (Exp.ident {loc; txt = Lident "<="})
-                                              ["", exp_param; "", range_upper] )
-                                           ;
-                                           "",
-                                           (Exp.apply (Exp.ident {loc; txt = Lident "<="})
-                                              ["", range_low; "",exp_param]
-                                           )
-                                          ]
-                                       )
-                                       (Exp.construct {loc; txt = Lident "Some"} 
-                                          (Some 
-                                             (Exp.apply
-                                                (Exp.ident {loc; txt = Ldot(Lident "Pervasives","-")})
-                                                ["",exp_param ; "", Exp.constant (Const_int offset)])
-                                          ))
-                                       (Some (Exp.construct {loc; txt = Lident "None"} None)))
-                                  ]
-                              )
-                              (Ast_core_type.lift_option_type core_type)
-                           )
-                        )
+                                    (
+                                      Exp.ifthenelse
+                                        ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
+                                        (Exp.construct {loc; txt = Lident "Some"} 
+                                           (
+                                             Some (exp_param -~ const_int offset)
+                                           ))
+                                        (Some (Exp.construct {loc; txt = Lident "None"} None))))                                
+                                (Ast_core_type.lift_option_type core_type)
+                             )
+                          )
                      ]
                  else []  
                | Ptype_open -> [] in 

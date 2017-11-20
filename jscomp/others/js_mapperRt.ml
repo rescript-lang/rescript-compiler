@@ -9,8 +9,7 @@ let searchForSureExists xs k =
   searchAux 0 xs k 
 
 
-let search (x : 'poly_var) array = 
-  let id : int = Obj.magic x  in 
+let search (id : int) array =   
   searchAux 0 array id 
 
 let rec revSearchAux 
@@ -23,12 +22,11 @@ let rec revSearchAux
     else 
       revSearchAux (i + 1) len xs k 
 
-let revSearch len array (x : string)  : 'poly_var option =  
+let revSearch len array (x : string)  : int option =  
+   (revSearchAux 0 len array x)
 
-  Obj.magic (revSearchAux 0 len array x)
-
-let toInt (i : 'enum) (xs : int array) =   
-  Array.unsafe_get xs ( Obj.magic i : int)
+let toInt (i : int) (xs : int array) =   
+  Array.unsafe_get xs i
 
 let rec fromIntAux (enum : int) i len xs = 
   if i = len then None
@@ -38,4 +36,4 @@ let rec fromIntAux (enum : int) i len xs =
     else fromIntAux enum (i + 1) len xs 
 
 let fromInt len (xs : int array) (enum : int )  : 'variant option =   
-    (Obj.magic (fromIntAux enum 0 len xs ))
+    fromIntAux enum 0 len xs 
