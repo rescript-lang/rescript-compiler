@@ -41,6 +41,14 @@ let maybe_pointer exp =
            causing some .cmi files to be unavailable.
            Maybe we should emit a warning. *)
       end
+  | Tvariant row ->
+      let row = Btype.row_repr row in
+      not row.row_closed
+      || List.exists
+           (function
+             | _, (Rpresent (Some _)|Reither(false,_,_,_)) -> true
+             | _ -> false )
+           row.row_fields
   | _ -> true
 
 let array_element_kind env ty =
