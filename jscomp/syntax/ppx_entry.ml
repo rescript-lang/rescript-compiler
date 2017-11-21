@@ -550,7 +550,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         begin match Ast_attributes.iter_process_derive_type 
                       (Ext_list.last tdcls).ptype_attributes  with 
         | {bs_deriving = Some actions; explict_nonrec}
-          -> Ast_signature.fuse sigi
+          -> 
+           let loc = sigi.psig_loc in 
+            Ast_signature.fuse ~loc sigi
                (self.signature 
                   self 
                   (Ast_derive.gen_signature tdcls actions explict_nonrec))
@@ -610,21 +612,17 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         ((Ext_list.last tdcls).ptype_attributes) with 
           | {bs_deriving = Some actions;
              explict_nonrec 
-            } -> 
-            (* let new_tdcls = (** FIXME: mark as used instead of dropping*)
-               (Ext_list.map_last (fun last tdcl -> 
-                        if last then 
-                          self.type_declaration self {tdcl with ptype_attributes}
-                        else 
-                          self.type_declaration self tdcl) tdcls) in  *)
-            Ast_structure.fuse_with_constraint 
-              ~loc:str.pstr_loc
-              tdcls                                 
+            } ->                         
+            let loc = str.pstr_loc in      
+            Ast_structure.fuse ~loc                
+              str 
               (self.structure self 
-                 (Ast_derive.gen_structure
-                    tdcls actions explict_nonrec ))
-              (self.signature self 
-                 (Ast_derive.gen_signature tdcls actions explict_nonrec))   
+                 (List.map 
+                    (fun action -> 
+                       Ast_derive.gen_structure_signature 
+                         loc
+                         tdcls action explict_nonrec
+                    )    actions))
           | {bs_deriving = None }  -> 
             Ast_mapper.default_mapper.structure_item self str
           end

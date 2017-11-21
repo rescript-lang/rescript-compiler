@@ -53,8 +53,22 @@ type c =
   | D1
   | D2 
   | D3 
-[@@bs.deriving {jsMapper = {jsType = true}}]       
+[@@bs.deriving {jsMapper = {jsType }}]       
 
 let c0 = cToJs D0 
 
 
+type h = 
+   | JsMapperEraseType
+   | B [@@bs.deriving {accessors; jsMapper = {jsType = true}} ]
+
+
+type z =    
+  | ZFromJs 
+  | ZToJs
+  | ZXx (* not overridden *)
+  [@@bs.deriving {
+    accessors;
+    jsMapper
+    }
+  ]

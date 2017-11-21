@@ -97,23 +97,56 @@ function cFromJs(param) {
 
 var c0 = 3;
 
-exports.tToJs   = tToJs;
-exports.tFromJs = tFromJs;
-exports.v0      = v0;
-exports.v1      = v1;
-exports.xToJs   = xToJs;
-exports.xFromJs = xFromJs;
-exports.x0      = x0;
-exports.x1      = x1;
-exports.aToJs   = aToJs;
-exports.aFromJs = aFromJs;
-exports.a0      = a0;
-exports.a1      = a1;
-exports.bToJs   = bToJs;
-exports.bFromJs = bFromJs;
-exports.b0      = b0;
-exports.b1      = b1;
-exports.cToJs   = cToJs;
-exports.cFromJs = cFromJs;
-exports.c0      = c0;
+function hToJs(param) {
+  return param + 0 | 0;
+}
+
+function hFromJs(param) {
+  return param - 0 | 0;
+}
+
+function zToJs(param) {
+  return param + 0 | 0;
+}
+
+function zFromJs(param) {
+  if (param <= 2 && 0 <= param) {
+    return /* Some */[param - 0 | 0];
+  } else {
+    return /* None */0;
+  }
+}
+
+var jsMapperEraseType = /* JsMapperEraseType */0;
+
+var b = /* B */1;
+
+var zXx = /* ZXx */2;
+
+exports.tToJs             = tToJs;
+exports.tFromJs           = tFromJs;
+exports.v0                = v0;
+exports.v1                = v1;
+exports.xToJs             = xToJs;
+exports.xFromJs           = xFromJs;
+exports.x0                = x0;
+exports.x1                = x1;
+exports.aToJs             = aToJs;
+exports.aFromJs           = aFromJs;
+exports.a0                = a0;
+exports.a1                = a1;
+exports.bToJs             = bToJs;
+exports.bFromJs           = bFromJs;
+exports.b0                = b0;
+exports.b1                = b1;
+exports.cToJs             = cToJs;
+exports.cFromJs           = cFromJs;
+exports.c0                = c0;
+exports.jsMapperEraseType = jsMapperEraseType;
+exports.b                 = b;
+exports.hToJs             = hToJs;
+exports.hFromJs           = hFromJs;
+exports.zXx               = zXx;
+exports.zToJs             = zToJs;
+exports.zFromJs           = zFromJs;
 /* x0 Not a pure module */

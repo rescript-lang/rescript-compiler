@@ -39,11 +39,11 @@ val register :
   (Parsetree.expression option -> gen) -> 
   unit
 
-val gen_structure: 
+(* val gen_structure: 
   tdcls  ->
   Ast_payload.action list ->
   bool -> 
-  Ast_structure.t
+  Ast_structure.t *)
 
 val gen_signature: 
   tdcls ->
@@ -53,6 +53,15 @@ val gen_signature:
 
 
 val gen_expression : 
-  string Asttypes.loc -> Parsetree.core_type -> Parsetree.expression
+  string Asttypes.loc -> 
+  Parsetree.core_type -> 
+  Parsetree.expression
 
 
+
+val gen_structure_signature :  
+  Location.t -> 
+  Parsetree.type_declaration list ->
+  Ast_payload.action -> 
+  bool -> 
+  Parsetree.structure_item

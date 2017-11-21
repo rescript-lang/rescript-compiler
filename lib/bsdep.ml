@@ -28655,12 +28655,12 @@ type t = item list
 
 val fuse: ?loc:Ast_helper.loc -> item -> t -> item
 
-val fuse_with_constraint:
+(* val fuse_with_constraint:
   ?loc:Ast_helper.loc ->
   Parsetree.type_declaration list ->
   t   ->
   Ast_signature.t -> 
-  item
+  item *)
 
 val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
 
@@ -28700,7 +28700,7 @@ let fuse ?(loc=Location.none) (item : item ) (t : t) : item =
   Str.include_ ~loc 
     (Incl.mk ~loc (Mod.structure ~loc (item :: t) ))
 
-let fuse_with_constraint
+(* let fuse_with_constraint
     ?(loc=Location.none) 
     (item : Parsetree.type_declaration list ) (t : t) (coercion) = 
   Str.include_ ~loc 
@@ -28713,7 +28713,7 @@ let fuse_with_constraint
            ({psig_loc = loc; psig_desc = Psig_type item} :: coercion)
          )
          )
-    )     
+    )      *)
 let constraint_ ?(loc=Location.none) (stru : t) (sign : Ast_signature.t) = 
   Str.include_ ~loc
     (Incl.mk ~loc 
@@ -28763,11 +28763,11 @@ val register :
   (Parsetree.expression option -> gen) -> 
   unit
 
-val gen_structure: 
+(* val gen_structure: 
   tdcls  ->
   Ast_payload.action list ->
   bool -> 
-  Ast_structure.t
+  Ast_structure.t *)
 
 val gen_signature: 
   tdcls ->
@@ -28777,10 +28777,18 @@ val gen_signature:
 
 
 val gen_expression : 
-  string Asttypes.loc -> Parsetree.core_type -> Parsetree.expression
+  string Asttypes.loc -> 
+  Parsetree.core_type -> 
+  Parsetree.expression
 
 
 
+val gen_structure_signature :  
+  Location.t -> 
+  Parsetree.type_declaration list ->
+  Ast_payload.action -> 
+  bool -> 
+  Parsetree.structure_item
 end = struct
 #1 "ast_derive.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -28830,7 +28838,7 @@ let register key value =
 
 
 
-let gen_structure 
+(* let gen_structure 
     (tdcls : tdcls)
     (actions :  Ast_payload.action list ) 
     (explict_nonrec : bool )
@@ -28838,7 +28846,7 @@ let gen_structure
   Ext_list.flat_map
     (fun action -> 
        (Ast_payload.table_dispatch !derive_table action).structure_gen 
-         tdcls explict_nonrec) actions
+         tdcls explict_nonrec) actions *)
 
 let gen_signature
     tdcls
@@ -28860,6 +28868,25 @@ let gen_expression ({Asttypes.txt ; loc}) typ =
 
   | Some f -> f typ
 
+open Ast_helper  
+let gen_structure_signature 
+    loc
+    (tdcls : tdcls)   
+    (action : Ast_payload.action)
+    (explicit_nonrec : bool) = 
+  let derive_table = !derive_table in  
+  let u = 
+    Ast_payload.table_dispatch derive_table action in  
+
+  let a = u.structure_gen tdcls explicit_nonrec in
+  let b = u.signature_gen tdcls explicit_nonrec in
+  Str.include_ ~loc  
+    (Incl.mk ~loc 
+       (Mod.constraint_ ~loc
+          (Mod.structure ~loc a)
+          (Mty.signature ~loc b )
+       )
+    )
 end
 module Ast_derive_util : sig 
 #1 "ast_derive_util.mli"
@@ -30896,13 +30923,23 @@ let handle_config (config : Parsetree.expression option) =
      | Pexp_record (
          [ 
            {txt = Lident "jsType"}, 
-           {pexp_desc = Pexp_construct ({txt = Lident ("true" | "false" as x )}, None)}],None)
-       ->  x = "true"
+           {pexp_desc = 
+              (Pexp_construct 
+                 (
+                   {txt =
+                      Lident ("true" 
+                             | "false" 
+                               as x)}, None)
+              | Pexp_ident {txt = Lident ("jsType" as x)}
+              )
+           }
+         ],None)
+       ->  not (x = "false")
      | _ -> invalid_config config)
   | None -> false
 let noloc = Location.none
 (* [eraseType] will be instrumented, be careful about the name conflict*)  
-let eraseTypeLit = "eraseType"
+let eraseTypeLit = "jsMapperEraseType"
 let eraseTypeExp = Exp.ident {loc = noloc; txt = Lident eraseTypeLit}
 let eraseType x = 
   Exp.apply eraseTypeExp ["", x]
@@ -36073,7 +36110,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         begin match Ast_attributes.iter_process_derive_type 
                       (Ext_list.last tdcls).ptype_attributes  with 
         | {bs_deriving = Some actions; explict_nonrec}
-          -> Ast_signature.fuse sigi
+          -> 
+           let loc = sigi.psig_loc in 
+            Ast_signature.fuse ~loc sigi
                (self.signature 
                   self 
                   (Ast_derive.gen_signature tdcls actions explict_nonrec))
@@ -36133,21 +36172,17 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         ((Ext_list.last tdcls).ptype_attributes) with 
           | {bs_deriving = Some actions;
              explict_nonrec 
-            } -> 
-            (* let new_tdcls = (** FIXME: mark as used instead of dropping*)
-               (Ext_list.map_last (fun last tdcl -> 
-                        if last then 
-                          self.type_declaration self {tdcl with ptype_attributes}
-                        else 
-                          self.type_declaration self tdcl) tdcls) in  *)
-            Ast_structure.fuse_with_constraint 
-              ~loc:str.pstr_loc
-              tdcls                                 
+            } ->                         
+            let loc = str.pstr_loc in      
+            Ast_structure.fuse ~loc                
+              str 
               (self.structure self 
-                 (Ast_derive.gen_structure
-                    tdcls actions explict_nonrec ))
-              (self.signature self 
-                 (Ast_derive.gen_signature tdcls actions explict_nonrec))   
+                 (List.map 
+                    (fun action -> 
+                       Ast_derive.gen_structure_signature 
+                         loc
+                         tdcls action explict_nonrec
+                    )    actions))
           | {bs_deriving = None }  -> 
             Ast_mapper.default_mapper.structure_item self str
           end
