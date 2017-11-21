@@ -705,7 +705,7 @@ let rewrite_signature :
           unsafe_mapper.signature  unsafe_mapper x in 
       reset ();
       if Warnings.is_active dummy_unused_attribute then 
-        Bs_ast_invariant.emit_external_warnings.signature Bs_ast_invariant.emit_external_warnings ast ;
+        Bs_ast_invariant.emit_external_warnings.signature Bs_ast_invariant.emit_external_warnings result ;
       result 
     )
 

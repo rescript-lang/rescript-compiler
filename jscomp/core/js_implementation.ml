@@ -39,7 +39,9 @@ let after_parsing_sig ppf sourcefile outputprefix ast  =
         ast 
 
     end;
-  if !Js_config.syntax_only then () else 
+  if !Js_config.syntax_only then 
+    Warnings.check_fatal()
+  else 
     begin 
 
       if Js_config.get_diagnose () then
@@ -83,9 +85,11 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
     Binary_ast.write_ast ~fname:sourcefile 
       Ml ~output:(outputprefix ^ Literals.suffix_mlast)
       ast ;
-  if !Js_config.syntax_only then () else 
+  if !Js_config.syntax_only then 
+    Warnings.check_fatal ()
+  else 
     begin
-      
+
       if Js_config.get_diagnose () then
         Format.fprintf Format.err_formatter "Building %s@." sourcefile;      
       let modulename = Compenv.module_of_filename ppf sourcefile outputprefix in
@@ -113,18 +117,18 @@ let after_parsing_impl ppf sourcefile outputprefix ast =
               | e -> 
                 (* Save to a file instead so that it will not scare user *)
                 (if Js_config.get_diagnose () then
-                  begin              
-                    let file = "bsc.dump" in
-                    Ext_pervasives.with_file_as_chan file
-                      (fun ch -> output_string ch @@             
-                        Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
-                    Ext_log.err __LOC__
-                      "Compilation fatal error, stacktrace saved into %s when compiling %s"
-                      file sourcefile;
-                  end;            
-                raise e)             
+                   begin              
+                     let file = "bsc.dump" in
+                     Ext_pervasives.with_file_as_chan file
+                       (fun ch -> output_string ch @@             
+                         Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
+                     Ext_log.err __LOC__
+                       "Compilation fatal error, stacktrace saved into %s when compiling %s"
+                       file sourcefile;
+                   end;            
+                 raise e)             
             );
-          
+
         end;
         Stypes.dump (Some (outputprefix ^ ".annot"));
       with x ->
