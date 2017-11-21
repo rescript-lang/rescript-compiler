@@ -52,7 +52,7 @@ let handle_config (config : Parsetree.expression option) =
   | None -> false
 let noloc = Location.none
 (* [eraseType] will be instrumented, be careful about the name conflict*)  
-let eraseTypeLit = "eraseType"
+let eraseTypeLit = "jsMapperEraseType"
 let eraseTypeExp = Exp.ident {loc = noloc; txt = Lident eraseTypeLit}
 let eraseType x = 
   Exp.apply eraseTypeExp ["", x]

@@ -58,3 +58,17 @@ type c =
 let c0 = cToJs D0 
 
 
+type h = 
+   | JsMapperEraseType
+   | B [@@bs.deriving {accessors; jsMapper = {jsType = true}} ]
+
+
+type z =    
+  | ZFromJs 
+  | ZToJs
+  | ZXx (* not overridden *)
+  [@@bs.deriving {
+    accessors;
+    jsMapper
+    }
+  ]
