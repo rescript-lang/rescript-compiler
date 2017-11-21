@@ -43,6 +43,11 @@ val revSearch:
   string ->
   int option
 
+val revSearchAssert:  
+  (int * string) array ->
+  string ->
+  int 
+  
 (**
   [toInt enum array]
   Based on the value of [enum], return its mapped int
@@ -59,3 +64,8 @@ val fromInt :
   int array -> 
   int -> 
   int option 
+
+val fromIntAssert:   
+  int array -> 
+  int -> 
+  int 

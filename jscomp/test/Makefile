@@ -203,7 +203,8 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	big_enum\
 	ast_js_mapper_test\
 	ast_js_mapper_poly_test\
-	big_polyvar_test
+	big_polyvar_test\
+	ast_abstract_test
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test

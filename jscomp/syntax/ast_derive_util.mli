@@ -28,6 +28,10 @@
  val core_type_of_type_declaration :
   Parsetree.type_declaration -> Parsetree.core_type
 
+val new_type_of_type_declaration : 
+  Parsetree.type_declaration -> 
+  string -> 
+  Parsetree.core_type * Parsetree.type_declaration
 
 val lift_string_list_to_array : string list -> Parsetree.expression
 val lift_int : int -> Parsetree.expression

@@ -56,7 +56,18 @@ let rec revSearchAux
       revSearchAux (i + 1) len xs k 
 
 let revSearch len array (x : string)  : int option =  
-  (revSearchAux 0 len array x)
+  revSearchAux 0 len array x
+
+let rec revSearchAssertAux 
+    i  (xs : (int * string) array) (k : string) = 
+  let (idx,s) = Array.unsafe_get xs i  in 
+  if s = k then 
+    idx 
+  else 
+    revSearchAssertAux (i + 1)  xs k 
+
+let revSearchAssert  array (x : string) : int =  
+  revSearchAssertAux 0 array x
 
 let toInt (i : int) (xs : int array) =   
   Array.unsafe_get xs i
@@ -70,3 +81,13 @@ let rec fromIntAux (enum : int) i len xs =
 
 let fromInt len (xs : int array) (enum : int )  : 'variant option =   
   fromIntAux enum 0 len xs 
+
+let rec fromIntAssertAux (enum : int) i  xs = 
+    let k = Array.unsafe_get xs i in 
+    if k = enum then  i 
+    else fromIntAssertAux enum (i + 1)  xs 
+  
+(** [length] is not relevant any more *)    
+let fromIntAssert  (xs : int array) (enum : int )=   
+  fromIntAssertAux enum 0  xs 
+    

@@ -39,6 +39,17 @@ let const_string s = Exp.constant (Const_string (s,None))
 let invalid_config (config : Parsetree.expression) = 
   Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
 
+let handle_config (config : Parsetree.expression option) = 
+  match config with 
+  | Some config -> 
+    (match config.pexp_desc with 
+     | Pexp_record (
+         [ 
+           {txt = Lident "jsType"}, 
+           {pexp_desc = Pexp_construct ({txt = Lident ("true" | "false" as x )}, None)}],None)
+       ->  x = "true"
+     | _ -> invalid_config config)
+  | None -> false
 let noloc = Location.none
 (* [eraseType] will be instrumented, be careful about the name conflict*)  
 let eraseTypeLit = "eraseType"
@@ -67,7 +78,7 @@ let (+~) a b =
 let (&&~) a b =   
   app2 (Exp.ident {loc = noloc; txt = Ldot(Lident "Pervasives","&&")})
     a b 
-
+let (->~) a b = Typ.arrow "" a b 
 let jsMapperRt =     
   Longident.Ldot (Lident "Js", "MapperRt")
 
@@ -81,14 +92,21 @@ let search upper polyvar array =
     array
 
 let revSearch len constantArray exp =   
-  eraseType
-    (app3 
-       (Exp.ident 
-          {loc= noloc; 
-           txt = Longident.Ldot (jsMapperRt, "revSearch")})
-       len
-       constantArray
-       exp)
+  app3 
+    (Exp.ident 
+       {loc= noloc; 
+        txt = Longident.Ldot (jsMapperRt, "revSearch")})
+    len
+    constantArray
+    exp
+
+let revSearchAssert  constantArray exp =   
+  app2 
+    (Exp.ident 
+       {loc= noloc; 
+        txt = Longident.Ldot (jsMapperRt, "revSearchAssert")})
+    constantArray
+    exp
 
 let toInt exp array =     
   app2
@@ -98,22 +116,28 @@ let toInt exp array =
     (eraseType exp)
     array
 let fromInt len array exp = 
-  eraseType
-    (app3
-       (Exp.ident 
-          {loc = noloc; 
-           txt = Longident.Ldot (jsMapperRt,"fromInt")})
-       len
-       array
-       exp)
+  app3
+    (Exp.ident 
+       {loc = noloc; 
+        txt = Longident.Ldot (jsMapperRt,"fromInt")})
+    len
+    array
+    exp
+
+let fromIntAssert array exp = 
+  app2
+    (Exp.ident 
+       {loc = noloc; 
+        txt = Longident.Ldot (jsMapperRt,"fromIntAssert")})
+    array
+    exp
 
 let init () =      
   Ast_derive.register
     "jsMapper"
     (fun ( x : Parsetree.expression option) -> 
-       (match x with 
-        | Some config -> invalid_config config 
-        | None -> ());
+       let createType = handle_config x in 
+
        {
          structure_gen = (fun (tdcls : tdcls) _ -> 
              let handle_tdcl tdcl =
@@ -131,24 +155,41 @@ let init () =
                let ident_param = {Asttypes.txt = Longident.Lident param; loc} in 
                let pat_param = {Asttypes.loc; txt = param} in 
                let exp_param = Exp.ident ident_param in 
+               let newType,newTdcl =
+                 Ast_derive_util.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
+               let newTypeStr = Str.type_ [newTdcl] in   
                let toJsBody body = 
                  Ast_comb.single_non_rec_value patToJs
                    (Exp.fun_ "" None (Pat.constraint_ (Pat.var pat_param) core_type) 
                       body )
                in 
+               let (+>) a ty = 
+                 Exp.constraint_ (eraseType a) ty in 
+               let (+:) a ty =                  
+                 eraseType (Exp.constraint_ a ty) in 
+               let coerceResultToNewType e =
+                 if createType then 
+                   e +> newType
+                 else e    
+               in                  
                match tdcl.ptype_kind with  
                | Ptype_record label_declarations -> 
                  let exp = 
-                   Exp.record
-                     (List.map 
-                        (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
-                           let label = 
-                             {Asttypes.loc; txt = Longident.Lident txt } in 
-                           label,Exp.field exp_param label
-                        ) label_declarations) None in 
+                   coerceResultToNewType
+                     (Exp.extension 
+                        (
+                          {Asttypes.loc; txt = "bs.obj"},
+                          (PStr
+                             [Str.eval  
+                                (Exp.record
+                                   (List.map 
+                                      (fun ({pld_name = {loc; txt } } : Parsetree.label_declaration) -> 
+                                         let label = 
+                                           {Asttypes.loc; txt = Longident.Lident txt } in 
+                                         label,Exp.field exp_param label
+                                      ) label_declarations) None)]))) in 
                  let toJs = 
-                   toJsBody
-                     (Exp.extension ({Asttypes.loc; txt = "bs.obj"}, (PStr [Str.eval exp  ])))
+                   toJsBody exp
                  in 
                  let obj_exp = 
                    Exp.record
@@ -162,12 +203,21 @@ let init () =
                  let fromJs = 
                    Ast_comb.single_non_rec_value patFromJs
                      (Exp.fun_ "" None (Pat.var pat_param)
-                        (Exp.constraint_ obj_exp core_type) )
+                        (if createType then                                             
+                           (Exp.let_ Nonrecursive
+                              [Vb.mk 
+                                 (Pat.var pat_param) 
+                                 (exp_param +: newType)]
+                              (Exp.constraint_ obj_exp core_type) )
+                         else 
+                           (Exp.constraint_ obj_exp core_type) ))
                  in
-                 [
-                   toJs;
-                   fromJs
-                 ]
+                 let rest = 
+                   [
+                     toJs;
+                     fromJs
+                   ] in 
+                 if createType then eraseTypeStr:: newTypeStr :: rest else rest 
                | Ptype_abstract -> 
                  (match Ast_polyvar.is_enum_polyvar tdcl with 
                   | Some row_fields -> 
@@ -178,9 +228,9 @@ let init () =
                       Exp.ident {loc; txt = Longident.Lident constantArray} in 
                     begin match attr with 
                       | NullString result -> 
-                      let result_len = List.length result in 
-                      let exp_len = const_int result_len in 
-                        [
+                        let result_len = List.length result in 
+                        let exp_len = const_int result_len in 
+                        let v = [
                           eraseTypeStr;
                           Ast_comb.single_non_rec_value 
                             {loc; txt = constantArray}
@@ -194,28 +244,36 @@ let init () =
                                   ) (List.sort (fun (a,_) (b,_) -> compare (a:int) b) result)));
                           (
                             toJsBody
-                              (search
-                                exp_len
-                                 exp_param
-                                 expConstantArray
-                              )
+                              (coerceResultToNewType 
+                                 (search
+                                    exp_len
+                                    exp_param
+                                    expConstantArray 
+                                 ))
                           );
                           Ast_comb.single_non_rec_value
                             patFromJs
                             (Exp.fun_ "" None 
                                (Pat.var pat_param)
-                               (Exp.constraint_
-                                  (
-                                    revSearch                                      
-                                      exp_len
-                                      expConstantArray
-                                      exp_param                                      
-                                  )
-                                  (Ast_core_type.lift_option_type core_type)
+                               (if createType then 
+                                  revSearchAssert
+                                    expConstantArray
+                                    (exp_param +: newType)
+                                  +>
+                                  core_type
+                                else 
+                                  revSearch                                      
+                                    exp_len
+                                    expConstantArray
+                                    exp_param                                      
+                                  +>
+                                  Ast_core_type.lift_option_type core_type
                                )
-
                             )
-                        ]
+                        ] in 
+                        if createType then 
+                          newTypeStr :: v 
+                        else v 
                       | _ -> assert false 
                     end 
                   | None -> []
@@ -227,7 +285,7 @@ let init () =
                    match xs with 
                    | `New xs ->
                      let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
-                     [
+                     let v = [
                        eraseTypeStr;
                        Ast_comb.single_non_rec_value 
                          {loc; txt = constantArray}
@@ -235,6 +293,7 @@ let init () =
                        ;
                        toJsBody                        
                          (
+                           coerceResultToNewType @@
                            toInt
                              exp_param
                              constantArrayExp
@@ -243,52 +302,57 @@ let init () =
                        Ast_comb.single_non_rec_value
                          patFromJs
                          (Exp.fun_ "" None 
-                            (Pat.constraint_ 
-                               (Pat.var pat_param)
-                               (Ast_literal.type_int ())
-                            )
-                            (Exp.constraint_
-                               (fromInt                                 
+                            (Pat.var pat_param)
+                            (
+                              if createType then 
+                                fromIntAssert
+                                  constantArrayExp
+                                  (exp_param +: newType)
+                                +>
+                                core_type
+                              else 
+                                fromInt                                 
                                   (const_int (List.length ctors))
                                   constantArrayExp
                                   exp_param
-                               )
-                               (Ast_core_type.lift_option_type core_type)
+                                +>
+                                Ast_core_type.lift_option_type core_type
+
                             )
                          )
-                     ]
+                     ] in 
+                     if createType then newTypeStr :: v else v 
                    | `Offset offset  ->                      
-
-                     [  eraseTypeStr;
-                        toJsBody (eraseType exp_param +~ const_int offset)
-                        ;
-                        Ast_comb.single_non_rec_value
-                          {loc ; txt = fromJs}
-                          (Exp.fun_ "" None 
-                             (Pat.constraint_ 
-                                (Pat.var pat_param)
-                                (Ast_literal.type_int ())
-                             )
-                             (Exp.constraint_
-                                (
-
+                     let v = 
+                       [  eraseTypeStr;
+                          toJsBody (
+                            coerceResultToNewType
+                              (eraseType exp_param +~ const_int offset)
+                          )
+                          ;
+                          Ast_comb.single_non_rec_value
+                            {loc ; txt = fromJs}
+                            (Exp.fun_ "" None 
+                               (Pat.var pat_param)
+                               (if createType then 
+                                  (( exp_param +: newType) -~ const_int offset)
+                                  +>
+                                  core_type
+                                else
                                   let len = List.length ctors in 
                                   let range_low = const_int (offset + 0) in 
                                   let range_upper = const_int (offset + len - 1) in 
-                                  eraseType
-
-                                    (
-                                      Exp.ifthenelse
-                                        ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
-                                        (Exp.construct {loc; txt = Lident "Some"} 
-                                           (
-                                             Some (exp_param -~ const_int offset)
-                                           ))
-                                        (Some (Exp.construct {loc; txt = Lident "None"} None))))                                
-                                (Ast_core_type.lift_option_type core_type)
-                             )
-                          )
-                     ]
+                                  (Exp.ifthenelse
+                                     ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
+                                     (Exp.construct {loc; txt = Lident "Some"} 
+                                        ( Some (exp_param -~ const_int offset)))
+                                     (Some (Exp.construct {loc; txt = Lident "None"} None)))
+                                  +>
+                                  Ast_core_type.lift_option_type core_type
+                               )
+                            )
+                       ] in 
+                     if createType then newTypeStr :: v else v 
                  else []  
                | Ptype_open -> [] in 
              Ext_list.flat_map handle_tdcl tdcls 
@@ -306,58 +370,65 @@ let init () =
                 let patFromJs = {Asttypes.loc; txt = fromJs} in 
                 let toJsType result = 
                   Ast_comb.single_non_rec_val patToJs (Typ.arrow "" core_type result) in
+                let newType,newTdcl =
+                  Ast_derive_util.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
+                let newTypeStr = Sig.type_ [newTdcl] in                     
+                let (+?) v rest = if createType then v :: rest else rest in 
                 match tdcl.ptype_kind with  
                 | Ptype_record label_declarations ->            
 
-                  let ty1 = 
+                  let objType flag =                     
                     Ast_comb.to_js_type loc @@  
                     Typ.object_
                       (List.map 
                          (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
                             txt, [], pld_type
                          ) label_declarations) 
-                      Open in 
-                  let ty2 = 
-                    Ast_comb.to_js_type loc @@  
-                    Typ.object_
-                      (List.map 
-                         (fun ({pld_name = {loc; txt }; pld_type } : Parsetree.label_declaration) -> 
-                            txt, [], pld_type
-                         ) label_declarations) 
-                      Closed in                       
-                  let fromJs =    
-                    Ast_comb.single_non_rec_val patFromJs (Typ.arrow ""  ty1 core_type) in 
+                      flag in                   
+                  newTypeStr +? 
                   [
-                    toJsType ty2;
-                    fromJs
-                  ]
+                    toJsType (if createType then newType else  objType Closed);
+                    Ast_comb.single_non_rec_val patFromJs 
+                      ( (if createType then  newType else objType Open)->~ core_type)
+                  ] 
+
                 | Ptype_abstract ->   
                   (match Ast_polyvar.is_enum_polyvar tdcl with 
                    | Some _ ->                     
-                     let ty1 = (Ast_literal.type_string ()) in 
-                     let ty2 = Ast_core_type.lift_option_type core_type in 
+                     let ty1 =  
+                       if createType then newType else 
+                         (Ast_literal.type_string ()) in 
+                     let ty2 = 
+                       if createType then core_type
+                       else Ast_core_type.lift_option_type core_type in 
+                     newTypeStr +? 
                      [
                        toJsType ty1;
                        Ast_comb.single_non_rec_val     
                          patFromJs
-                         (Typ.arrow ""
-                            ty1 ty2
-                         )
-                     ]
+                         (ty1 ->~ ty2)
+                     ] 
+
                    | None -> [])
 
                 | Ptype_variant ctors 
                   -> 
 
                   if Ast_polyvar.is_enum_constructors ctors then 
-                    let ty1 = Ast_literal.type_int() in 
-                    let ty2 = Ast_core_type.lift_option_type core_type in 
+                    let ty1 = 
+                      if createType then newType 
+                      else Ast_literal.type_int() in 
+                    let ty2 = 
+                      if createType then core_type
+                      else Ast_core_type.lift_option_type core_type in 
+                    newTypeStr +? 
                     [
                       toJsType ty1;
                       Ast_comb.single_non_rec_val
                         patFromJs
-                        (Typ.arrow "" ty1 ty2)
-                    ]
+                        (ty1 ->~ ty2)
+                    ] 
+
                   else []
                 | Ptype_open -> [] in 
               Ext_list.flat_map handle_tdcl tdcls 
