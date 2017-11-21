@@ -25,9 +25,11 @@
 
 
 
-val rewrite_signature :   (Parsetree.signature -> Parsetree.signature) ref
+val rewrite_signature :   
+  (Parsetree.signature -> Parsetree.signature) ref
 
-val rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref
+val rewrite_implementation : 
+  (Parsetree.structure -> Parsetree.structure) ref
 
 
 

@@ -13133,7 +13133,7 @@ let init () =
                             (Exp.fun_ "" None 
                                (Pat.var pat_param)
                                (if createType then 
-                                  (eraseType (Exp.constraint_ exp_param newType) -~ const_int offset)
+                                  (( exp_param +: newType) -~ const_int offset)
                                   +>
                                   core_type
                                 else
@@ -18594,9 +18594,11 @@ module Ppx_entry : sig
 
 
 
-val rewrite_signature :   (Parsetree.signature -> Parsetree.signature) ref
+val rewrite_signature :   
+  (Parsetree.signature -> Parsetree.signature) ref
 
-val rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref
+val rewrite_implementation : 
+  (Parsetree.structure -> Parsetree.structure) ref
 
 
 
@@ -19365,7 +19367,9 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
           end
         | _ -> 
           unsafe_mapper.structure  unsafe_mapper x  in 
-      reset (); result )
+      reset (); 
+      result 
+      )
 
 
 end
