@@ -13133,7 +13133,7 @@ let init () =
                             (Exp.fun_ "" None 
                                (Pat.var pat_param)
                                (if createType then 
-                                  (eraseType (Exp.constraint_ exp_param newType) -~ const_int offset)
+                                  (( exp_param +: newType) -~ const_int offset)
                                   +>
                                   core_type
                                 else
@@ -18594,9 +18594,11 @@ module Ppx_entry : sig
 
 
 
-val rewrite_signature :   (Parsetree.signature -> Parsetree.signature) ref
+val rewrite_signature :   
+  (Parsetree.signature -> Parsetree.signature) ref
 
-val rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref
+val rewrite_implementation : 
+  (Parsetree.structure -> Parsetree.structure) ref
 
 
 
@@ -19325,7 +19327,7 @@ let signature_config_table :
   (Parsetree.expression option -> unit) String_map.t= 
   String_map.of_list common_actions_table
 
-
+let dummy_unused_attribute : Warnings.t = (Bs_unused_attribute "")
 
 let rewrite_signature : 
   (Parsetree.signature  -> Parsetree.signature) ref = 
@@ -19341,7 +19343,10 @@ let rewrite_signature :
           end
         | _ -> 
           unsafe_mapper.signature  unsafe_mapper x in 
-      reset (); result 
+      reset ();
+      if Warnings.is_active dummy_unused_attribute then 
+        Bs_ast_invariant.emit_external_warnings.signature Bs_ast_invariant.emit_external_warnings result ;
+      result 
     )
 
 let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref = 
@@ -19365,7 +19370,11 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
           end
         | _ -> 
           unsafe_mapper.structure  unsafe_mapper x  in 
-      reset (); result )
+      reset (); 
+      (if Warnings.is_active dummy_unused_attribute then 
+         Bs_ast_invariant.emit_external_warnings.structure Bs_ast_invariant.emit_external_warnings result);
+      result 
+    )
 
 
 end
