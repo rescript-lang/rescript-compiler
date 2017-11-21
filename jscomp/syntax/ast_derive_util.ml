@@ -34,6 +34,24 @@ let core_type_of_type_declaration
       {txt = Lident txt ; loc}
       (Ext_list.map fst ptype_params)
 
+let new_type_of_type_declaration 
+    (tdcl : Parsetree.type_declaration) newName = 
+  match tdcl with 
+  | {ptype_name = { loc};
+     ptype_params ;
+    } -> 
+    (Typ.constr 
+      {txt = Lident newName ; loc}
+      (Ext_list.map fst ptype_params),
+      { Parsetree.ptype_params = tdcl.ptype_params;
+        ptype_name = {txt = newName;loc};
+        ptype_kind = Ptype_abstract; 
+        ptype_attributes = [];
+        ptype_loc = tdcl.ptype_loc;
+        ptype_cstrs = []; ptype_private = Public; ptype_manifest = None}
+    )
+
+      
 let lift_string_list_to_array (labels : string list) = 
   Exp.array
     (Ext_list.map (fun s -> Exp.constant (Const_string (s, None)))
