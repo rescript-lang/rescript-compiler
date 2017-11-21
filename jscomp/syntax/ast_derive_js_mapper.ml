@@ -46,8 +46,18 @@ let handle_config (config : Parsetree.expression option) =
      | Pexp_record (
          [ 
            {txt = Lident "jsType"}, 
-           {pexp_desc = Pexp_construct ({txt = Lident ("true" | "false" as x )}, None)}],None)
-       ->  x = "true"
+           {pexp_desc = 
+              (Pexp_construct 
+                 (
+                   {txt =
+                      Lident ("true" 
+                             | "false" 
+                               as x)}, None)
+              | Pexp_ident {txt = Lident ("jsType" as x)}
+              )
+           }
+         ],None)
+       ->  not (x = "false")
      | _ -> invalid_config config)
   | None -> false
 let noloc = Location.none

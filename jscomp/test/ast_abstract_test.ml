@@ -53,7 +53,7 @@ type c =
   | D1
   | D2 
   | D3 
-[@@bs.deriving {jsMapper = {jsType = true}}]       
+[@@bs.deriving {jsMapper = {jsType }}]       
 
 let c0 = cToJs D0 
 
