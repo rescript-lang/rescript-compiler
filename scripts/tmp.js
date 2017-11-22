@@ -31,7 +31,7 @@ var code = (n) => {
 }
 
 var polyCode = (n) =>{
-    var content = `type t = [ \n ${polyConstructors(n)}\n ] [@@bs.deriving jsMapper] `
+    var content = `type t = [ \n ${polyConstructors(n)}\n ] [@@bs.deriving jsConverter] `
     var eq = `
         let eq (x : t option) (y: t option) = 
             match x with 

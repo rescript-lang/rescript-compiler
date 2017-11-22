@@ -300,7 +300,7 @@ type t = [
 | `variant298 
 | `variant299 
 
- ] [@@bs.deriving jsMapper] 
+ ] [@@bs.deriving jsConverter] 
         let eq (x : t option) (y: t option) = 
             match x with 
             | Some x -> 

@@ -45,7 +45,7 @@ let handle_config (config : Parsetree.expression option) =
     (match config.pexp_desc with 
      | Pexp_record (
          [ 
-           {txt = Lident "jsType"}, 
+           {txt = Lident "newType"}, 
            {pexp_desc = 
               (Pexp_construct 
                  (
@@ -53,12 +53,12 @@ let handle_config (config : Parsetree.expression option) =
                       Lident ("true" 
                              | "false" 
                                as x)}, None)
-              | Pexp_ident {txt = Lident ("jsType" as x)}
+              | Pexp_ident {txt = Lident ("newType" as x)}
               )
            }
          ],None)
        ->  not (x = "false")
-     | Pexp_ident {txt = Lident ("jsType")} 
+     | Pexp_ident {txt = Lident ("newType")} 
        -> true
      | _ -> invalid_config config)
   | None -> false
@@ -157,7 +157,7 @@ let assertExp e =
 
 let init () =      
   Ast_derive.register
-    "jsMapper"
+    "jsConverter"
     (fun ( x : Parsetree.expression option) -> 
        let createType = handle_config x in 
 

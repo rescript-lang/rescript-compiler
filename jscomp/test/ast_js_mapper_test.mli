@@ -4,7 +4,7 @@ type 'a t = {
   xx : int ; 
   yy : string ; 
   zz : 'a * int 
-} [@@bs.deriving {jsMapper }]
+} [@@bs.deriving {jsConverter }]
 
 val searchForSureExists : (int * 'a) array -> int -> 'a
 
@@ -20,4 +20,4 @@ and b =
   | `b2
   | `b3 
   ]
-[@@bs.deriving { jsMapper = {jsType} }]  
+[@@bs.deriving { jsConverter = newType }]  

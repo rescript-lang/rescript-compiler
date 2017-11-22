@@ -1640,7 +1640,7 @@ type t =
    | A2  
    | A3 
    | A4
-[@@bs.deriving jsMapper]   
+[@@bs.deriving jsConverter]   
 --------------
 
 This will derive two functions
@@ -1660,7 +1660,7 @@ type t =
    | A2 
    | A3  [@bs.as 7]
    | A4
-[@@bs.deriving jsMapper]
+[@@bs.deriving jsConverter]
 --------------
 
 In this case, `A0` is 0, `A1` is 3, `A2` is 4, `A3` is 7, `A4` is 8.
@@ -1676,10 +1676,11 @@ type t =
    | A2  
    | A3 
    | A4
-[@@bs.deriving {jsMapper = jsType} ] 
+[@@bs.deriving {jsConverter = newType} ] 
 --------------
 
-In this case, it would generate two functions of such type:
+In this case, it would generate two functions of such type, note `newType` means
+a new type declaration (by default to be abstract) is created:
 [source,ocaml]
 --------------
 val tToJs : t -> abs_t 
@@ -1704,7 +1705,7 @@ type t = [
    | `A3 
    | `A4
 ]
-[@@bs.deriving jsMapper]   
+[@@bs.deriving jsConverter]   
 --------------
 
 This will derive two functions
@@ -1725,7 +1726,7 @@ type t = [
    | `A3  [@bs.as "d"]
    | `A4
 ]
-[@@bs.deriving jsMapper]
+[@@bs.deriving jsConverter]
 --------------
 
 Note the above derived js type is transparent: `string`, if we want to 
@@ -1740,7 +1741,7 @@ type t = [
    | `A3 
    | `A4
 ]   
-[@@bs.deriving {jsMapper = jsType} ] 
+[@@bs.deriving {jsConverter = newType} ] 
 --------------
 
 In this case, it would generate two functions of such type:
@@ -1757,7 +1758,7 @@ we assume it is well structured value, so it should always return value of type
 The `bs.deriving` also applies to the signature file, so that users don't have to 
 write generate functions manually
 
-#### Mapping JS Int enums to OCaml enums (@since 2.1.0)
+#### Mapping JS objects to OCaml records (@since 2.1.0)
 
 [source,ocaml]
 --------------
@@ -1766,7 +1767,7 @@ type t =
     x : int ;
     y : int 
   }
-[@@bs.deriving jsMapper]  
+[@@bs.deriving jsConverter]  
 --------------
 
 This will derive two functions:
@@ -1789,7 +1790,7 @@ type t =
     x : int ;
     y : int 
   }
-[@@bs.deriving {jsMapper= jsType}]  
+[@@bs.deriving {jsConverter= newType}]  
 --------------
 
 This will derive two functions:

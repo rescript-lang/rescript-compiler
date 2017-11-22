@@ -12,7 +12,7 @@ type u =
   | `C 
   | `f [@bs.as "x"]
   ]
-[@@bs.deriving jsMapper]
+[@@bs.deriving jsConverter]
 
 let eqU (x : u) (y : u) = x = y
 let eqUOpt (x : u option) y = 
@@ -35,7 +35,7 @@ type v =
   | A1 [@bs.as 3]
   | A2
   | A3 
-[@@bs.deriving jsMapper]
+[@@bs.deriving jsConverter]
 
 let eqV (x : v) (y : v) = x = y
 let eqVOpt (x : v option) y= 
@@ -63,13 +63,13 @@ type v1 =
   | B3 
   | B4 
   | B5 
-[@@bs.deriving jsMapper]
+[@@bs.deriving jsConverter]
 let () = 
   eq __LOC__ (Array.map v1ToJs [|B0;B1;B2;B3;B4;B5|]) [|0;1;2;3;4;5|];
   eq __LOC__ (Array.map v1FromJs [|-1;0;1;2;3;4;5;6|])
   [|None;Some B0; Some B1; Some B2; Some B3; Some B4; Some B5; None|]
 
-(** TODO: add jsType support *)  
+(** TODO: add newType support *)  
 type v2 =  
   | C0  [@bs.as 2 ]
   | C1
@@ -77,7 +77,7 @@ type v2 =
   | C3 
   | C4
   | C5 
-[@@bs.deriving jsMapper ]
+[@@bs.deriving jsConverter ]
 
 
 ;;  
