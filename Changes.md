@@ -5,7 +5,7 @@ Features:
 - #2138, in combination of `.bs.js` suffix and `in-source` build,
   bsb is able to remove staled build artifact
 - #2091 bsc xx.cmi will print xx.mli so users can generate
-  mli in the beginning. `bsc -output-re xx.cmi` will print
+  mli in the beginning. `bsc -oure xx.cmi` will print
   it in reason syntax
 - #2096, clorized ninja build output
 
