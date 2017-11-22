@@ -1190,7 +1190,7 @@ f##js_method args0 args1 args2 <2>
 =====
 All JS method application is uncurried, JS's *method is not a function*, this invariant can
 be guaranteed by OCaml's type checker, a classic example shown below:
-
+ 
 [source,js]
 -----------
 console.log('fine')
@@ -1622,6 +1622,183 @@ is rarely used, but introduced here for debugging purpose.
 ======
 
 
+### Mapping between JS values and OCaml values (@since 2.1.0)
+
+BuckleScript already maps basic OCaml primitive types into JS primitive types, 
+however, there are some cases where such direct mapping is technically challenging, 
+we automate such process by providing a function to convert back and forth between 
+idiomatic JS values and idiomatic OCaml values, the generated code is optimized for 
+both performance and code size.
+
+#### Mapping JS Int enums to OCaml enums (@since 2.1.0)
+
+[source,ocaml]
+--------------
+type t = 
+   | A0 
+   | A1  
+   | A2  
+   | A3 
+   | A4
+[@@bs.deriving jsMapper]   
+--------------
+
+This will derive two functions
+[source,ocaml]
+--------------
+val tToJs : t -> int 
+val tFromJs : int -> t option
+--------------
+
+Note here by default `Ai` is mapped into `i`, but we can customie it 
+as follows:
+[source,ocaml]
+--------------
+type t = 
+   | A0 
+   | A1  [@bs.as 3]
+   | A2 
+   | A3  [@bs.as 7]
+   | A4
+[@@bs.deriving jsMapper]
+--------------
+
+In this case, `A0` is 0, `A1` is 3, `A2` is 4, `A3` is 7, `A4` is 8.
+
+Note the above derived js type is transparent: `int`, if we want to 
+provide more type safety, we can annotate it as below:
+
+[source,ocaml]
+--------------
+type t = 
+   | A0 
+   | A1  
+   | A2  
+   | A3 
+   | A4
+[@@bs.deriving {jsMapper = jsType} ] 
+--------------
+
+In this case, it would generate two functions of such type:
+[source,ocaml]
+--------------
+val tToJs : t -> abs_t 
+val tFromJs : abs_t -> t 
+--------------
+
+Note the derived type is slightly different, since `abs_t` is abstrac type, 
+we assume it is well structured value, so it should always return value of type `t`
+ instead of `t option`.
+
+The `bs.deriving` also applies to the signature file, so that users don't have to 
+write generate functions manually
+
+#### Mapping JS string enums to OCaml enums (@since 2.1.0)
+
+[source,ocaml]
+--------------
+type t = [
+   | `A0 
+   | `A1  
+   | `A2  
+   | `A3 
+   | `A4
+]
+[@@bs.deriving jsMapper]   
+--------------
+
+This will derive two functions
+[source,ocaml]
+--------------
+val tToJs : t -> string 
+val tFromJs : string -> t option
+--------------
+
+Note here by default `Ai` is mapped into `"Ai"`, but we can customie it 
+as follows:
+[source,ocaml]
+--------------
+type t = [
+   | `A0 
+   | `A1  [@bs.as "c"]
+   | `A2 
+   | `A3  [@bs.as "d"]
+   | `A4
+]
+[@@bs.deriving jsMapper]
+--------------
+
+Note the above derived js type is transparent: `string`, if we want to 
+provide more type safety, we can annotate it as below:
+
+[source,ocaml]
+--------------
+type t = [
+   | `A0 
+   | `A1  
+   | `A2  
+   | `A3 
+   | `A4
+]   
+[@@bs.deriving {jsMapper = jsType} ] 
+--------------
+
+In this case, it would generate two functions of such type:
+[source,ocaml]
+--------------
+val tToJs : t -> abs_t 
+val tFromJs : abs_t -> t 
+--------------
+
+Note the derived type is slightly different, since `abs_t` is abstrac type, 
+we assume it is well structured value, so it should always return value of type
+ `t` instead of type `t option`.
+
+The `bs.deriving` also applies to the signature file, so that users don't have to 
+write generate functions manually
+
+#### Mapping JS Int enums to OCaml enums (@since 2.1.0)
+
+[source,ocaml]
+--------------
+type t = 
+  {
+    x : int ;
+    y : int 
+  }
+[@@bs.deriving jsMapper]  
+--------------
+
+This will derive two functions:
+
+[source,ocaml]
+--------------
+val tToJs : t -> <x : int ; y : int > Js.t 
+val tFromJs : < x; int ; y : int ; .. > Js.t -> t 
+--------------
+
+Note that the input of `tFromJs` is open type so that it is more permissive.
+
+Note the above derived js type is transparent, if we want to 
+provide more type safety, we can annotate it as below:
+
+[source,ocaml]
+--------------
+type t = 
+  {
+    x : int ;
+    y : int 
+  }
+[@@bs.deriving {jsMapper= jsType}]  
+--------------
+
+This will derive two functions:
+
+[source,ocaml]
+--------------
+val tToJs : t -> abs_t 
+val tFromJs : abs_t -> t 
+--------------
 
 
 ### Embedding untyped Javascript code
