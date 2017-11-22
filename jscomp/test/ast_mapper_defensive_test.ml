@@ -21,7 +21,7 @@ and c = [
   | `c1 
   | `c2 
   ]   
-[@@bs.deriving { jsMapper =  jsType  }]
+[@@bs.deriving { jsConverter =  newType  }]
 
 
 (* ;; aFromJs (Obj.magic 3) *)

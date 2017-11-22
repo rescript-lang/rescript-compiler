@@ -14,7 +14,7 @@ type 'a t =
     z : 'a
   }
 
-[@@bs.deriving {jsMapper = {jsType = true} }]
+[@@bs.deriving {jsConverter = newType} ]
 
 
 let v0 = tToJs { x = 3 ; y  = false; z = false}
@@ -25,7 +25,7 @@ type x =
   [`a 
   |`b
   |`c]
-[@@bs.deriving {jsMapper = {jsType = true}}]    
+[@@bs.deriving {jsConverter = newType}]    
 
 
 
@@ -43,7 +43,7 @@ type a =
   | A
   | B [@bs.as 3]
   | C
-[@@bs.deriving {jsMapper = {jsType = true}}]      
+[@@bs.deriving {jsConverter = newType}]      
 
 let id  x = 
     eq  __LOC__ (aFromJs (aToJs x ))  x 
@@ -61,7 +61,7 @@ type b =
   | D1
   | D2 
   | D3 
-[@@bs.deriving {jsMapper = {jsType = true}}]       
+[@@bs.deriving {jsConverter = newType }]       
 
 
 let b0 = bToJs D0 
@@ -76,7 +76,7 @@ type c =
   | D1
   | D2 
   | D3 
-[@@bs.deriving {jsMapper = {jsType }}]       
+[@@bs.deriving {jsConverter = {newType }}]       
 
 let c0 = cToJs D0 
 
@@ -85,7 +85,7 @@ let idc v = eq __LOC__ (cFromJs (cToJs v)) v
 let () = idc D0; idc D1 ; idc D2; idc D3 
 type h = 
   | JsMapperEraseType
-  | B [@@bs.deriving {accessors; jsMapper = {jsType = true}} ]
+  | B [@@bs.deriving {accessors; jsConverter = newType} ]
 
 
 type z =    
@@ -94,7 +94,7 @@ type z =
   | ZXx (* not overridden *)
 [@@bs.deriving {
   accessors;
-  jsMapper
+  jsConverter
 }
 ]
 

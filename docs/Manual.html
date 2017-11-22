@@ -590,7 +590,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#_mapping_js_int_enums_to_ocaml_enums_since_2_1_0">Mapping JS Int enums to OCaml enums (@since 2.1.0)</a></li>
 <li><a href="#_mapping_js_string_enums_to_ocaml_enums_since_2_1_0">Mapping JS string enums to OCaml enums (@since 2.1.0)</a></li>
-<li><a href="#_mapping_js_int_enums_to_ocaml_enums_since_2_1_0_2">Mapping JS Int enums to OCaml enums (@since 2.1.0)</a></li>
+<li><a href="#_mapping_js_objects_to_ocaml_records_since_2_1_0">Mapping JS objects to OCaml records (@since 2.1.0)</a></li>
 </ul>
 </li>
 <li><a href="#_embedding_untyped_javascript_code">Embedding untyped Javascript code</a>
@@ -3557,7 +3557,7 @@ both performance and code size.</p>
    <span class="tok-o">|</span> <span class="tok-nc">A2</span>
    <span class="tok-o">|</span> <span class="tok-nc">A3</span>
    <span class="tok-o">|</span> <span class="tok-nc">A4</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsMapper</span><span class="tok-o">]</span></code></pre>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsConverter</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3581,7 +3581,7 @@ as follows:</p>
    <span class="tok-o">|</span> <span class="tok-nc">A2</span>
    <span class="tok-o">|</span> <span class="tok-nc">A3</span>  <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-mi">7</span><span class="tok-o">]</span>
    <span class="tok-o">|</span> <span class="tok-nc">A4</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsMapper</span><span class="tok-o">]</span></code></pre>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsConverter</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3599,11 +3599,12 @@ provide more type safety, we can annotate it as below:</p>
    <span class="tok-o">|</span> <span class="tok-nc">A2</span>
    <span class="tok-o">|</span> <span class="tok-nc">A3</span>
    <span class="tok-o">|</span> <span class="tok-nc">A4</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-o">{</span><span class="tok-n">jsMapper</span> <span class="tok-o">=</span> <span class="tok-n">jsType</span><span class="tok-o">}</span> <span class="tok-o">]</span></code></pre>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-o">{</span><span class="tok-n">jsConverter</span> <span class="tok-o">=</span> <span class="tok-n">newType</span><span class="tok-o">}</span> <span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>In this case, it would generate two functions of such type:</p>
+<p>In this case, it would generate two functions of such type, note <code>newType</code> means
+a new type declaration (by default to be abstract) is created:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3632,7 +3633,7 @@ write generate functions manually</p>
    <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-nc">A3</span>
    <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-nc">A4</span>
 <span class="tok-o">]</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsMapper</span><span class="tok-o">]</span></code></pre>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsConverter</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3657,7 +3658,7 @@ as follows:</p>
    <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-nc">A3</span>  <span class="tok-o">[@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-k">as</span> <span class="tok-s2">&quot;d&quot;</span><span class="tok-o">]</span>
    <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-nc">A4</span>
 <span class="tok-o">]</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsMapper</span><span class="tok-o">]</span></code></pre>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsConverter</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3673,7 +3674,7 @@ provide more type safety, we can annotate it as below:</p>
    <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-nc">A3</span>
    <span class="tok-o">|</span> <span class="tok-o">`</span><span class="tok-nc">A4</span>
 <span class="tok-o">]</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-o">{</span><span class="tok-n">jsMapper</span> <span class="tok-o">=</span> <span class="tok-n">jsType</span><span class="tok-o">}</span> <span class="tok-o">]</span></code></pre>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-o">{</span><span class="tok-n">jsConverter</span> <span class="tok-o">=</span> <span class="tok-n">newType</span><span class="tok-o">}</span> <span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3696,7 +3697,7 @@ write generate functions manually</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_mapping_js_int_enums_to_ocaml_enums_since_2_1_0_2"><a class="anchor" href="#_mapping_js_int_enums_to_ocaml_enums_since_2_1_0_2"></a>Mapping JS Int enums to OCaml enums (@since 2.1.0)</h4>
+<h4 id="_mapping_js_objects_to_ocaml_records_since_2_1_0"><a class="anchor" href="#_mapping_js_objects_to_ocaml_records_since_2_1_0"></a>Mapping JS objects to OCaml records (@since 2.1.0)</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="pygments highlight"><code data-lang="ocaml"><span class="tok-k">type</span> <span class="tok-n">t</span> <span class="tok-o">=</span>
@@ -3704,7 +3705,7 @@ write generate functions manually</p>
     <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span>
     <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>
   <span class="tok-o">}</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsMapper</span><span class="tok-o">]</span></code></pre>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-n">jsConverter</span><span class="tok-o">]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3730,7 +3731,7 @@ provide more type safety, we can annotate it as below:</p>
     <span class="tok-n">x</span> <span class="tok-o">:</span> <span class="tok-kt">int</span> <span class="tok-o">;</span>
     <span class="tok-n">y</span> <span class="tok-o">:</span> <span class="tok-kt">int</span>
   <span class="tok-o">}</span>
-<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-o">{</span><span class="tok-n">jsMapper</span><span class="tok-o">=</span> <span class="tok-n">jsType</span><span class="tok-o">}]</span></code></pre>
+<span class="tok-o">[@@</span><span class="tok-n">bs</span><span class="tok-o">.</span><span class="tok-n">deriving</span> <span class="tok-o">{</span><span class="tok-n">jsConverter</span><span class="tok-o">=</span> <span class="tok-n">newType</span><span class="tok-o">}]</span></code></pre>
 </div>
 </div>
 <div class="paragraph">

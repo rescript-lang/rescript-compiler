@@ -8,7 +8,7 @@ type 'a t = {
 } 
 [@@bs.deriving 
 
-    jsMapper
+    jsConverter
 
 ]
 
@@ -26,7 +26,7 @@ let vx = tFromJs [%obj{ xx = 3; yy = "2"; zz = 1,2; cc = 3}]
   | `C 
   | `f [@bs.as "x"]
   ]
-  [@@bs.deriving jsMapper] *)
+  [@@bs.deriving jsConverter] *)
 
 let rec searchAux i (xs : (int * _) array) (k : int) =  
   let (a,b) = Array.unsafe_get xs i in 
@@ -48,7 +48,7 @@ and b =
   | `b2
   | `b3 
   ]
-[@@bs.deriving {jsMapper = {jsType}}]  
+[@@bs.deriving {jsConverter = newType}]  
 
 let v = bToJs `b0
 
