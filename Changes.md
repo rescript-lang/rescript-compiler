@@ -27,6 +27,7 @@ Fixes:
 - #2207 nop rebuild to work around yarn bug
 - #2226 kill bsb -w when stdin is closed
 - #2184 bsb should exclude -I empty dirs
+
 # 2.0
 Features
 - update reason3 syntax
