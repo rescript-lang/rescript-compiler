@@ -44,6 +44,7 @@ val revSearch:
   int option
 
 val revSearchAssert:  
+  int -> (* len *)
   (int * string) array ->
   string ->
   int 
@@ -66,6 +67,7 @@ val fromInt :
   int option 
 
 val fromIntAssert:   
+  int -> (* len *)
   int array -> 
   int -> 
   int 

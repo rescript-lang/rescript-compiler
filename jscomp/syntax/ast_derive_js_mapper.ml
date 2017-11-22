@@ -58,6 +58,8 @@ let handle_config (config : Parsetree.expression option) =
            }
          ],None)
        ->  not (x = "false")
+     | Pexp_ident {txt = Lident ("jsType")} 
+       -> true
      | _ -> invalid_config config)
   | None -> false
 let noloc = Location.none
@@ -110,11 +112,12 @@ let revSearch len constantArray exp =
     constantArray
     exp
 
-let revSearchAssert  constantArray exp =   
-  app2 
+let revSearchAssert  len constantArray exp =   
+  app3 
     (Exp.ident 
        {loc= noloc; 
         txt = Longident.Ldot (jsMapperRt, "revSearchAssert")})
+    len
     constantArray
     exp
 
@@ -134,13 +137,23 @@ let fromInt len array exp =
     array
     exp
 
-let fromIntAssert array exp = 
-  app2
+let fromIntAssert len array exp = 
+  app3
     (Exp.ident 
        {loc = noloc; 
         txt = Longident.Ldot (jsMapperRt,"fromIntAssert")})
+    len
     array
     exp
+
+
+let assertExp e = 
+  Exp.extension 
+    ({Asttypes.loc = noloc; txt = "assert"},
+     (PStr 
+        [Str.eval e ]
+     )
+    )
 
 let init () =      
   Ast_derive.register
@@ -267,6 +280,7 @@ let init () =
                                (Pat.var pat_param)
                                (if createType then 
                                   revSearchAssert
+                                    exp_len
                                     expConstantArray
                                     (exp_param +: newType)
                                   +>
@@ -295,6 +309,7 @@ let init () =
                    match xs with 
                    | `New xs ->
                      let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
+                     let exp_len = const_int (List.length ctors) in
                      let v = [
                        eraseTypeStr;
                        Ast_comb.single_non_rec_value 
@@ -316,13 +331,14 @@ let init () =
                             (
                               if createType then 
                                 fromIntAssert
+                                  exp_len
                                   constantArrayExp
                                   (exp_param +: newType)
                                 +>
                                 core_type
                               else 
                                 fromInt                                 
-                                  (const_int (List.length ctors))
+                                  exp_len
                                   constantArrayExp
                                   exp_param
                                 +>
@@ -340,18 +356,30 @@ let init () =
                               (eraseType exp_param +~ const_int offset)
                           )
                           ;
+                          let len = List.length ctors in 
+                          let range_low = const_int (offset + 0) in 
+                          let range_upper = const_int (offset + len - 1) in 
+
                           Ast_comb.single_non_rec_value
                             {loc ; txt = fromJs}
                             (Exp.fun_ "" None 
                                (Pat.var pat_param)
                                (if createType then 
-                                  (( exp_param +: newType) -~ const_int offset)
+                                  (Exp.let_ Nonrecursive
+                                     [Vb.mk
+                                        (Pat.var pat_param)
+                                        (exp_param +: newType)
+                                     ]
+                                     (
+                                       Exp.sequence
+                                         (assertExp 
+                                            ((exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
+                                         )
+                                         (exp_param  -~ const_int offset))
+                                  )
                                   +>
                                   core_type
                                 else
-                                  let len = List.length ctors in 
-                                  let range_low = const_int (offset + 0) in 
-                                  let range_upper = const_int (offset + len - 1) in 
                                   (Exp.ifthenelse
                                      ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
                                      (Exp.construct {loc; txt = Lident "Some"} 

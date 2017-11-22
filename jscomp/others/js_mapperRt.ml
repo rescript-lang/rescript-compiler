@@ -32,13 +32,14 @@
    [uper -lower > 1], [mid <> lower]
  *)  
 let rec binSearchAux lower upper xs (k : int) = 
+  [%assert lower < upper];
   let mid = (lower + upper) / 2 in 
-  let i,v = Array.unsafe_get xs mid in 
+  let i,v = Array.unsafe_get xs mid in   
   if i = k then v
   else if i < k then 
     binSearchAux (mid + 1) upper xs k
   else 
-    binSearchAux lower (mid - 1) xs k  
+    binSearchAux lower mid  xs k  (*Invariant: mid < upper *)
 
 
 
@@ -58,16 +59,17 @@ let rec revSearchAux
 let revSearch len array (x : string)  : int option =  
   revSearchAux 0 len array x
 
-let rec revSearchAssertAux 
+let rec revSearchAssertAux len
     i  (xs : (int * string) array) (k : string) = 
+  [%assert i < len];  
   let (idx,s) = Array.unsafe_get xs i  in 
   if s = k then 
     idx 
   else 
-    revSearchAssertAux (i + 1)  xs k 
+    revSearchAssertAux len (i + 1)  xs k 
 
-let revSearchAssert  array (x : string) : int =  
-  revSearchAssertAux 0 array x
+let revSearchAssert len  array (x : string) : int =  
+  revSearchAssertAux len 0 array x
 
 let toInt (i : int) (xs : int array) =   
   Array.unsafe_get xs i
@@ -82,12 +84,13 @@ let rec fromIntAux (enum : int) i len xs =
 let fromInt len (xs : int array) (enum : int )  : 'variant option =   
   fromIntAux enum 0 len xs 
 
-let rec fromIntAssertAux (enum : int) i  xs = 
-    let k = Array.unsafe_get xs i in 
-    if k = enum then  i 
-    else fromIntAssertAux enum (i + 1)  xs 
-  
+let rec fromIntAssertAux len (enum : int) i  xs = 
+  [%assert i < len];
+  (*TODO: replaced by [%assert i < len ]*)
+  let k = Array.unsafe_get xs i in 
+  if k = enum then  i 
+  else fromIntAssertAux len enum (i + 1)  xs 
+
 (** [length] is not relevant any more *)    
-let fromIntAssert  (xs : int array) (enum : int )=   
-  fromIntAssertAux enum 0  xs 
-    
+let fromIntAssert  len (xs : int array) (enum : int )=   
+  fromIntAssertAux len enum 0  xs 

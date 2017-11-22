@@ -35,3 +35,20 @@ let rec searchAux i (xs : (int * _) array) (k : int) =
 
 let searchForSureExists xs k =   
   searchAux 0 xs k 
+
+
+type a =   
+  | A0 
+  | A1 [@bs.as 3]
+  | A2 
+  | A3 
+and b = 
+  [ `b0 
+  | `b1 
+  | `b2
+  | `b3 
+  ]
+[@@bs.deriving {jsMapper = {jsType}}]  
+
+let v = bToJs `b0
+
