@@ -13544,7 +13544,7 @@ let root = OCamlRes.Res.([
       \  \"dependencies\": {\n\
       \    \"react\": \"^15.4.2\",\n\
       \    \"react-dom\": \"^15.4.2\",\n\
-      \    \"reason-react\": \">=0.2.1\"\n\
+      \    \"reason-react\": \">=0.3.0\"\n\
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\

@@ -55,9 +55,9 @@ let pp_cmj fmt
             let non_saved = closed_lambda = None in 
             match arity with             
             | Single arity ->
-              p fmt "@[%s:@ %b@ @[%a@]@]@." 
+              p fmt "@[%s:@ %s@ @[%a@]@]@." 
                 k 
-                (not non_saved) 
+                 (if non_saved then "" else "saved") 
                 Lam_arity.print arity
             | Submodule xs -> 
               p fmt "@[<h 1>@[%s:@ %b@ @[<hov 2>%a@]@]@]" 

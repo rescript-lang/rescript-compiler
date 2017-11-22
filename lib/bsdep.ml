@@ -30935,6 +30935,8 @@ let handle_config (config : Parsetree.expression option) =
            }
          ],None)
        ->  not (x = "false")
+     | Pexp_ident {txt = Lident ("jsType")} 
+       -> true
      | _ -> invalid_config config)
   | None -> false
 let noloc = Location.none
@@ -30987,11 +30989,12 @@ let revSearch len constantArray exp =
     constantArray
     exp
 
-let revSearchAssert  constantArray exp =   
-  app2 
+let revSearchAssert  len constantArray exp =   
+  app3 
     (Exp.ident 
        {loc= noloc; 
         txt = Longident.Ldot (jsMapperRt, "revSearchAssert")})
+    len
     constantArray
     exp
 
@@ -31011,13 +31014,23 @@ let fromInt len array exp =
     array
     exp
 
-let fromIntAssert array exp = 
-  app2
+let fromIntAssert len array exp = 
+  app3
     (Exp.ident 
        {loc = noloc; 
         txt = Longident.Ldot (jsMapperRt,"fromIntAssert")})
+    len
     array
     exp
+
+
+let assertExp e = 
+  Exp.extension 
+    ({Asttypes.loc = noloc; txt = "assert"},
+     (PStr 
+        [Str.eval e ]
+     )
+    )
 
 let init () =      
   Ast_derive.register
@@ -31144,6 +31157,7 @@ let init () =
                                (Pat.var pat_param)
                                (if createType then 
                                   revSearchAssert
+                                    exp_len
                                     expConstantArray
                                     (exp_param +: newType)
                                   +>
@@ -31172,6 +31186,7 @@ let init () =
                    match xs with 
                    | `New xs ->
                      let constantArrayExp = Exp.ident {loc; txt = Lident constantArray} in
+                     let exp_len = const_int (List.length ctors) in
                      let v = [
                        eraseTypeStr;
                        Ast_comb.single_non_rec_value 
@@ -31193,13 +31208,14 @@ let init () =
                             (
                               if createType then 
                                 fromIntAssert
+                                  exp_len
                                   constantArrayExp
                                   (exp_param +: newType)
                                 +>
                                 core_type
                               else 
                                 fromInt                                 
-                                  (const_int (List.length ctors))
+                                  exp_len
                                   constantArrayExp
                                   exp_param
                                 +>
@@ -31217,18 +31233,30 @@ let init () =
                               (eraseType exp_param +~ const_int offset)
                           )
                           ;
+                          let len = List.length ctors in 
+                          let range_low = const_int (offset + 0) in 
+                          let range_upper = const_int (offset + len - 1) in 
+
                           Ast_comb.single_non_rec_value
                             {loc ; txt = fromJs}
                             (Exp.fun_ "" None 
                                (Pat.var pat_param)
                                (if createType then 
-                                  (( exp_param +: newType) -~ const_int offset)
+                                  (Exp.let_ Nonrecursive
+                                     [Vb.mk
+                                        (Pat.var pat_param)
+                                        (exp_param +: newType)
+                                     ]
+                                     (
+                                       Exp.sequence
+                                         (assertExp 
+                                            ((exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
+                                         )
+                                         (exp_param  -~ const_int offset))
+                                  )
                                   +>
                                   core_type
                                 else
-                                  let len = List.length ctors in 
-                                  let range_low = const_int (offset + 0) in 
-                                  let range_upper = const_int (offset + len - 1) in 
                                   (Exp.ifthenelse
                                      ( (exp_param <=~ range_upper) &&~ (range_low <=~ exp_param))
                                      (Exp.construct {loc; txt = Lident "Some"} 
@@ -35842,10 +35870,44 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               Location.raise_errorf ~loc 
                 "external expects a single identifier"
           end 
+        | Pexp_extension({txt = "bs.assert" | "assert";loc},payload) 
+          ->
+          (
+            match payload with 
+            | PStr [ {pstr_desc = Pstr_eval( e,_)}] -> 
+              let e = self.expr self  e in 
+              Exp.ifthenelse ~loc
+                (Exp.apply ~loc
+                   (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
+                   ["", e]
+                )
+                (Exp.apply ~loc 
+                   (Exp.ident ~loc {loc; txt = 
+                                           Ldot(Ldot (Lident "Js","Exn"),"raiseError")})
+                   ["",
+                    if loc.loc_ghost then 
+                      Exp.constant (Const_string ("ASSERT FAILURE",None))
+                    else 
+                      let loc_start = loc.loc_start in 
+                      let (file, lnum, cnum) = Location.get_pos_info loc_start in
+                      let enum = 
+                        loc.Location.loc_end.Lexing.pos_cnum -
+                        loc_start.Lexing.pos_cnum + cnum in
+                      let loc = Printf.sprintf "File %S, line %d, characters %d-%d"
+                          file lnum cnum enum in    
+                      Exp.constant (Const_string (loc,None))    
+                   ]
+
+                )
+                None
+            | _ -> 
+              Location.raise_errorf 
+                ~loc "expect a boolean expression in the payload"
+          )
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
              payload)
-          ->
+          ->          
           let strip s =
             match s with 
             | "_module" -> "module" 
@@ -36111,11 +36173,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                       (Ext_list.last tdcls).ptype_attributes  with 
         | {bs_deriving = Some actions; explict_nonrec}
           -> 
-           let loc = sigi.psig_loc in 
-            Ast_signature.fuse ~loc sigi
-               (self.signature 
-                  self 
-                  (Ast_derive.gen_signature tdcls actions explict_nonrec))
+          let loc = sigi.psig_loc in 
+          Ast_signature.fuse ~loc sigi
+            (self.signature 
+               self 
+               (Ast_derive.gen_signature tdcls actions explict_nonrec))
         | {bs_deriving = None } -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 

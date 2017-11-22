@@ -282,10 +282,44 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               Location.raise_errorf ~loc 
                 "external expects a single identifier"
           end 
+        | Pexp_extension({txt = "bs.assert" | "assert";loc},payload) 
+          ->
+          (
+            match payload with 
+            | PStr [ {pstr_desc = Pstr_eval( e,_)}] -> 
+              let e = self.expr self  e in 
+              Exp.ifthenelse ~loc
+                (Exp.apply ~loc
+                   (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
+                   ["", e]
+                )
+                (Exp.apply ~loc 
+                   (Exp.ident ~loc {loc; txt = 
+                                           Ldot(Ldot (Lident "Js","Exn"),"raiseError")})
+                   ["",
+                    if loc.loc_ghost then 
+                      Exp.constant (Const_string ("ASSERT FAILURE",None))
+                    else 
+                      let loc_start = loc.loc_start in 
+                      let (file, lnum, cnum) = Location.get_pos_info loc_start in
+                      let enum = 
+                        loc.Location.loc_end.Lexing.pos_cnum -
+                        loc_start.Lexing.pos_cnum + cnum in
+                      let loc = Printf.sprintf "File %S, line %d, characters %d-%d"
+                          file lnum cnum enum in    
+                      Exp.constant (Const_string (loc,None))    
+                   ]
+
+                )
+                None
+            | _ -> 
+              Location.raise_errorf 
+                ~loc "expect a boolean expression in the payload"
+          )
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
              payload)
-          ->
+          ->          
           let strip s =
             match s with 
             | "_module" -> "module" 
@@ -551,11 +585,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                       (Ext_list.last tdcls).ptype_attributes  with 
         | {bs_deriving = Some actions; explict_nonrec}
           -> 
-           let loc = sigi.psig_loc in 
-            Ast_signature.fuse ~loc sigi
-               (self.signature 
-                  self 
-                  (Ast_derive.gen_signature tdcls actions explict_nonrec))
+          let loc = sigi.psig_loc in 
+          Ast_signature.fuse ~loc sigi
+            (self.signature 
+               self 
+               (Ast_derive.gen_signature tdcls actions explict_nonrec))
         | {bs_deriving = None } -> 
           Ast_mapper.default_mapper.signature_item self sigi 
 
