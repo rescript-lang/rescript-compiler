@@ -1,3 +1,37 @@
+
+# 2.1.0
+Features:
+- #2282, #2280,#2272,#2271,#2270,#2262,#2260,#2255,#2253
+  Automatically derive js converter between ocaml and Js values
+  see docs: https://bucklescript.github.io/bucklescript/Manual.html#_mapping_between_js_values_and_ocaml_values_since_2_1_0  
+- #2238, #2225, #2221  
+  Make the compiler relocatable
+  prebuilt compiler (this release for Mac/Win)
+- #2276  update reason syntax@d0d18 
+- #2229 improve error message with regard to `@bs`
+- #2266, add Js_global.(encode|decode)URI(Component) bindings
+- #2220 make watcher mode in linux accept ninja progress animation
+- #2163 better hints for binding module name
+- #2187, #2186, #2179 add two warning numbers 101, 102 for polymorhic comparisons
+  and unused bs attributes
+
+Performance:
+- #2269 type specialized comparison also applied to nullable polymorphic variants
+- #2208 type specialized comparison allpied to nullable variants
+- #2213 refine caml_obj_dump into caml_array_dup better array initialization code
+
+Fixes:
+- #2278, #2274 fix fatal errors regression and syntactice fatal errors(-werror A) don't stop building
+- #2259 fix fatal errors don't stop generating cmj file
+- #1972 bsb -init does not rely on `npm link` on *nix platform
+- #2207 nop rebuild to work around yarn bug
+- #2226 kill bsb -w when stdin is closed
+- #2184 bsb should exclude -I empty dirs
+
+# 2.0
+Features
+- update reason3 syntax
+
 # 1.10.3
 Features:
 - #2112, introduced a key `suffix`, so that user can 
