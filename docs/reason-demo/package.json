@@ -6,7 +6,7 @@
     "license": "MIT",
     "directories": {"lib": "./lib"},
     "scripts": {"test": "node ./test/run.js"},
-    "devDependencies": {"node-static": "0.7.9",
+    "devDependencies": {"node-static": "0.7.10",
                         "phantomjs": "2.1.7",
                         "blint": ">=1.0.2"},
     "bugs": "http://github.com/codemirror/CodeMirror/issues",
