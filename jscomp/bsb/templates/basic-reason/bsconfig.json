@@ -3,9 +3,10 @@
 {
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
-  "sources": [
-    "src"
-  ],
+  "sources": {
+    "dir" : "src",
+    "subdirs" : true
+  },
   "package-specs": {
     "module": "commonjs",
     "in-source": true
@@ -14,6 +15,9 @@
   "bs-dependencies": [
       // add your dependencies here. You'd usually install them normally through `npm install my-dependency`. If my-dependency has a bsconfig.json too, then everything will work seamlessly.
   ],
+  "warnings": {
+    "error" : "+101"
+  },
   "namespace": true,
   "refmt": 3
 }

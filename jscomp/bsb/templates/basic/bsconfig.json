@@ -1,9 +1,10 @@
 {
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
-  "sources": [
-    "src"
-  ],
+  "sources": {
+    "dir" : "src",
+    "subdirs" : true
+  },
   "package-specs": {
     "module": "commonjs",
     "in-source": true
@@ -11,5 +12,8 @@
   "suffix": ".bs.js",
   "bs-dependencies": [
       // add your bs-dependencies here 
-  ]
+  ],
+  "warnings": {
+    "error" : "+101"
+  }
 }
