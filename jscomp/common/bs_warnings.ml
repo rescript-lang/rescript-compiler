@@ -54,9 +54,8 @@ let print_string_warning (loc : Location.t) x =
     Location.print warning_formatter loc ; 
   Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
 
-let prerr_warning loc x =
-  if not (!Js_config.no_warn_ffi_type ) then
-    print_string_warning loc (to_string x) 
+let prerr_bs_ffi_warning loc x =  
+    Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
 
 let unimplemented_primitive = "Unimplemented primitive used:" 
 type error = 

@@ -1432,6 +1432,8 @@ type t =
 
   | Bs_unused_attribute of string           (* 101 *)
   | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -1534,7 +1536,9 @@ type t =
   | Bad_docstring of bool                   (* 50 *)
 
   | Bs_unused_attribute of string           (* 101 *)
-  | Bs_polymorphic_comparison               (* 102 *) 
+  | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -1597,9 +1601,11 @@ let number = function
 
   | Bs_unused_attribute _ -> 101
   | Bs_polymorphic_comparison -> 102
+  | Bs_ffi_warning _ -> 103
+  | Bs_derive_warning _ -> 104
 ;;
 
-let last_warning_number = 102
+let last_warning_number = 104
 (* Must be the max number returned by the [number] function. *)
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
@@ -1862,9 +1868,13 @@ let message = function
       if unattached then "unattached documentation comment (ignored)"
       else "ambiguous documentation comment"
   | Bs_unused_attribute s ->
-      "Unused bucklescript attribute: " ^ s
+      "Unused BuckleScript attribute: " ^ s
   | Bs_polymorphic_comparison ->
       "polymorphic comparison introduced (maybe unsafe)"
+  | Bs_ffi_warning s ->
+      "BuckleScript FFI warning: " ^ s
+  | Bs_derive_warning s ->
+      "BuckleScript bs.deriving warning: " ^ s 
 ;;
 
 let nerrors = ref 0;;
@@ -27065,7 +27075,7 @@ val default_gen_tds : bool ref
 (** options for builtin ppx *)
 val no_builtin_ppx_ml : bool ref 
 val no_builtin_ppx_mli : bool ref 
-val no_warn_ffi_type : bool ref 
+
 
 
 val no_warn_unimplemented_external : bool ref 
@@ -27178,7 +27188,7 @@ let (//) = Filename.concat
 let default_gen_tds = ref false
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
-let no_warn_ffi_type = ref false
+
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unimplemented_external = ref false 
@@ -27219,275 +27229,6 @@ let binary_ast = ref false
 
 let bs_suffix = ref false 
 end
-module Literals : sig 
-#1 "literals.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val js_array_ctor : string 
-val js_type_number : string
-val js_type_string : string
-val js_type_object : string
-val js_undefined : string
-val js_prop_length : string
-
-val param : string
-val partial_arg : string
-val prim : string
-
-(**temporary varaible used in {!Js_ast_util} *)
-val tmp : string 
-
-val create : string 
-
-val app : string
-val app_array : string
-
-val runtime : string
-val stdlib : string
-val imul : string
-
-val setter_suffix : string
-val setter_suffix_len : int
-
-
-val debugger : string
-val raw_expr : string
-val raw_stmt : string
-val unsafe_downgrade : string
-val fn_run : string
-val method_run : string
-val fn_method : string
-val fn_mk : string
-
-(** callback actually, not exposed to user yet *)
-(* val js_fn_runmethod : string *)
-
-val bs_deriving : string
-val bs_deriving_dot : string
-val bs_type : string
-
-(** nodejs *)
-
-val node_modules : string
-val node_modules_length : int
-val package_json : string
-val bsconfig_json : string
-val build_ninja : string
-
-(* Name of the library file created for each external dependency. *)
-val library_file : string
-
-val suffix_a : string
-val suffix_cmj : string
-val suffix_cmo : string
-val suffix_cma : string
-val suffix_cmi : string
-val suffix_cmx : string
-val suffix_cmxa : string
-val suffix_ml : string
-val suffix_mlast : string 
-val suffix_mlast_simple : string
-val suffix_mliast : string
-val suffix_mliast_simple : string
-val suffix_mlmap : string
-val suffix_mll : string
-val suffix_re : string
-val suffix_rei : string 
-
-val suffix_d : string
-val suffix_mlastd : string
-val suffix_mliastd : string
-
-val suffix_mli : string 
-val suffix_cmt : string 
-val suffix_cmti : string 
-
-val commonjs : string 
-val amdjs : string 
-val es6 : string 
-val es6_global : string
-val amdjs_global : string 
-val unused_attribute : string 
-val dash_nostdlib : string
-
-val reactjs_jsx_ppx_2_exe : string 
-val reactjs_jsx_ppx_3_exe : string 
-val unescaped_j_delimiter : string 
-val escaped_j_delimiter : string 
-
-val unescaped_js_delimiter : string 
-
-val native : string
-val bytecode : string
-val js : string
-
-val node_sep : string 
-val node_parent : string 
-val node_current : string 
-
-end = struct
-#1 "literals.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
-
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
-
-let create = "create" (* {!Caml_exceptions.create}*)
-
-let app = "_"
-let app_array = "app" (* arguments are an array*)
-
-let runtime = "runtime" (* runtime directory *)
-
-let stdlib = "stdlib"
-
-let imul = "imul" (* signed int32 mul *)
-
-let setter_suffix = "#="
-let setter_suffix_len = String.length setter_suffix
-
-let debugger = "debugger"
-let raw_expr = "raw_expr"
-let raw_stmt = "raw_stmt"
-let unsafe_downgrade = "unsafe_downgrade"
-let fn_run = "fn_run"
-let method_run = "method_run"
-
-let fn_method = "fn_method"
-let fn_mk = "fn_mk"
-(*let js_fn_runmethod = "js_fn_runmethod"*)
-
-let bs_deriving = "bs.deriving"
-let bs_deriving_dot = "bs.deriving."
-let bs_type = "bs.type"
-
-
-(** nodejs *)
-let node_modules = "node_modules"
-let node_modules_length = String.length "node_modules"
-let package_json = "package.json"
-let bsconfig_json = "bsconfig.json"
-let build_ninja = "build.ninja"
-
-(* Name of the library file created for each external dependency. *)
-let library_file = "lib"
-
-let suffix_a = ".a"
-let suffix_cmj = ".cmj"
-let suffix_cmo = ".cmo"
-let suffix_cma = ".cma"
-let suffix_cmi = ".cmi"
-let suffix_cmx = ".cmx"
-let suffix_cmxa = ".cmxa"
-let suffix_mll = ".mll"
-let suffix_ml = ".ml"
-let suffix_mli = ".mli"
-let suffix_re = ".re"
-let suffix_rei = ".rei"
-let suffix_mlmap = ".mlmap"
-
-let suffix_cmt = ".cmt" 
-let suffix_cmti = ".cmti" 
-let suffix_mlast = ".mlast"
-let suffix_mlast_simple = ".mlast_simple"
-let suffix_mliast = ".mliast"
-let suffix_mliast_simple = ".mliast_simple"
-let suffix_d = ".d"
-let suffix_mlastd = ".mlast.d"
-let suffix_mliastd = ".mliast.d"
-
-
-let commonjs = "commonjs" 
-let amdjs = "amdjs"
-let es6 = "es6"
-let es6_global = "es6-global"
-let amdjs_global = "amdjs-global"
-let unused_attribute = "Unused attribute " 
-let dash_nostdlib = "-nostdlib"
-
-let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
-let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
-let unescaped_j_delimiter = "j"
-let unescaped_js_delimiter = "js"
-let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
-
-let native = "native"
-let bytecode = "bytecode"
-let js = "js"
-
-
-
-(** Used when produce node compatible paths *)
-let node_sep = "/"
-let node_parent = ".."
-let node_current = "."
-
-
-end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -27519,7 +27260,7 @@ type t =
   | Unsafe_ffi_bool_type
   | Unsafe_poly_variant_type
 
-val prerr_warning : Location.t -> t -> unit
+val prerr_bs_ffi_warning : Location.t -> t -> unit
 
 
 val warn_missing_primitive : Location.t -> string -> unit 
@@ -27584,13 +27325,11 @@ let print_string_warning (loc : Location.t) x =
     Location.print warning_formatter loc ; 
   Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
 
-let prerr_warning loc x =
-  if not (!Js_config.no_warn_ffi_type ) then
-    print_string_warning loc (to_string x) 
+let prerr_bs_ffi_warning loc x =  
+    Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
 
 let unimplemented_primitive = "Unimplemented primitive used:" 
 type error = 
-  | Unused_attribute of string
   | Uninterpreted_delimiters of string
   | Unimplemented_primitive of string 
 exception  Error of Location.t * error
@@ -27600,9 +27339,7 @@ let pp_error fmt x =
   | Unimplemented_primitive str -> 
     Format.pp_print_string fmt unimplemented_primitive;
     Format.pp_print_string fmt str
-  | Unused_attribute str ->
-    Format.pp_print_string fmt Literals.unused_attribute;
-    Format.pp_print_string fmt str
+  
   | Uninterpreted_delimiters str -> 
     Format.pp_print_string fmt "Uninterpreted delimiters" ;
     Format.pp_print_string fmt str
@@ -28055,6 +27792,275 @@ let mem (h :  _ Hash_set_gen.t) key =
   Hash_set_gen.small_bucket_mem eq_key key (Array.unsafe_get h.data (key_index h key)) 
 
   
+
+end
+module Literals : sig 
+#1 "literals.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val js_array_ctor : string 
+val js_type_number : string
+val js_type_string : string
+val js_type_object : string
+val js_undefined : string
+val js_prop_length : string
+
+val param : string
+val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 
+
+val create : string 
+
+val app : string
+val app_array : string
+
+val runtime : string
+val stdlib : string
+val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
+
+
+val debugger : string
+val raw_expr : string
+val raw_stmt : string
+val unsafe_downgrade : string
+val fn_run : string
+val method_run : string
+val fn_method : string
+val fn_mk : string
+
+(** callback actually, not exposed to user yet *)
+(* val js_fn_runmethod : string *)
+
+val bs_deriving : string
+val bs_deriving_dot : string
+val bs_type : string
+
+(** nodejs *)
+
+val node_modules : string
+val node_modules_length : int
+val package_json : string
+val bsconfig_json : string
+val build_ninja : string
+
+(* Name of the library file created for each external dependency. *)
+val library_file : string
+
+val suffix_a : string
+val suffix_cmj : string
+val suffix_cmo : string
+val suffix_cma : string
+val suffix_cmi : string
+val suffix_cmx : string
+val suffix_cmxa : string
+val suffix_ml : string
+val suffix_mlast : string 
+val suffix_mlast_simple : string
+val suffix_mliast : string
+val suffix_mliast_simple : string
+val suffix_mlmap : string
+val suffix_mll : string
+val suffix_re : string
+val suffix_rei : string 
+
+val suffix_d : string
+val suffix_mlastd : string
+val suffix_mliastd : string
+
+val suffix_mli : string 
+val suffix_cmt : string 
+val suffix_cmti : string 
+
+val commonjs : string 
+val amdjs : string 
+val es6 : string 
+val es6_global : string
+val amdjs_global : string 
+val unused_attribute : string 
+val dash_nostdlib : string
+
+val reactjs_jsx_ppx_2_exe : string 
+val reactjs_jsx_ppx_3_exe : string 
+val unescaped_j_delimiter : string 
+val escaped_j_delimiter : string 
+
+val unescaped_js_delimiter : string 
+
+val native : string
+val bytecode : string
+val js : string
+
+val node_sep : string 
+val node_parent : string 
+val node_current : string 
+
+end = struct
+#1 "literals.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let js_array_ctor = "Array"
+let js_type_number = "number"
+let js_type_string = "string"
+let js_type_object = "object" 
+let js_undefined = "undefined"
+let js_prop_length = "length"
+
+let prim = "prim"
+let param = "param"
+let partial_arg = "partial_arg"
+let tmp = "tmp"
+
+let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)
+
+let setter_suffix = "#="
+let setter_suffix_len = String.length setter_suffix
+
+let debugger = "debugger"
+let raw_expr = "raw_expr"
+let raw_stmt = "raw_stmt"
+let unsafe_downgrade = "unsafe_downgrade"
+let fn_run = "fn_run"
+let method_run = "method_run"
+
+let fn_method = "fn_method"
+let fn_mk = "fn_mk"
+(*let js_fn_runmethod = "js_fn_runmethod"*)
+
+let bs_deriving = "bs.deriving"
+let bs_deriving_dot = "bs.deriving."
+let bs_type = "bs.type"
+
+
+(** nodejs *)
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+let bsconfig_json = "bsconfig.json"
+let build_ninja = "build.ninja"
+
+(* Name of the library file created for each external dependency. *)
+let library_file = "lib"
+
+let suffix_a = ".a"
+let suffix_cmj = ".cmj"
+let suffix_cmo = ".cmo"
+let suffix_cma = ".cma"
+let suffix_cmi = ".cmi"
+let suffix_cmx = ".cmx"
+let suffix_cmxa = ".cmxa"
+let suffix_mll = ".mll"
+let suffix_ml = ".ml"
+let suffix_mli = ".mli"
+let suffix_re = ".re"
+let suffix_rei = ".rei"
+let suffix_mlmap = ".mlmap"
+
+let suffix_cmt = ".cmt" 
+let suffix_cmti = ".cmti" 
+let suffix_mlast = ".mlast"
+let suffix_mlast_simple = ".mlast_simple"
+let suffix_mliast = ".mliast"
+let suffix_mliast_simple = ".mliast_simple"
+let suffix_d = ".d"
+let suffix_mlastd = ".mlast.d"
+let suffix_mliastd = ".mliast.d"
+
+
+let commonjs = "commonjs" 
+let amdjs = "amdjs"
+let es6 = "es6"
+let es6_global = "es6-global"
+let amdjs_global = "amdjs-global"
+let unused_attribute = "Unused attribute " 
+let dash_nostdlib = "-nostdlib"
+
+let reactjs_jsx_ppx_2_exe = "reactjs_jsx_ppx_2.exe"
+let reactjs_jsx_ppx_3_exe  = "reactjs_jsx_ppx_3.exe"
+let unescaped_j_delimiter = "j"
+let unescaped_js_delimiter = "js"
+let escaped_j_delimiter =  "*j" (* not user level syntax allowed *)
+
+let native = "native"
+let bytecode = "bytecode"
+let js = "js"
+
+
+
+(** Used when produce node compatible paths *)
+let node_sep = "/"
+let node_parent = ".."
+let node_current = "."
+
 
 end
 module Bs_ast_invariant : sig 
@@ -31031,16 +31037,22 @@ let assertExp e =
         [Str.eval e ]
      )
     )
+let derivingName = "jsConverter"
+
+let notApplicable loc = 
+  Location.prerr_warning 
+    loc
+    (Warnings.Bs_derive_warning ( derivingName ^ "not applicable to this type"))
 
 let init () =      
   Ast_derive.register
-    "jsConverter"
+    derivingName
     (fun ( x : Parsetree.expression option) -> 
        let createType = handle_config x in 
 
        {
          structure_gen = (fun (tdcls : tdcls) _ -> 
-             let handle_tdcl tdcl =
+             let handle_tdcl (tdcl: Parsetree.type_declaration) =
                let core_type = Ast_derive_util.core_type_of_type_declaration tdcl
                in 
                let name = tdcl.ptype_name.txt in 
@@ -31177,7 +31189,9 @@ let init () =
                         else v 
                       | _ -> assert false 
                     end 
-                  | None -> []
+                  | None -> 
+                    notApplicable tdcl.Parsetree.ptype_loc ;
+                    []
                  )
 
                | Ptype_variant ctors -> 
@@ -31268,8 +31282,14 @@ let init () =
                             )
                        ] in 
                      if createType then newTypeStr :: v else v 
-                 else []  
-               | Ptype_open -> [] in 
+                 else 
+                   begin 
+                     notApplicable tdcl.Parsetree.ptype_loc ;
+                     []  
+                   end
+               | Ptype_open -> 
+                 notApplicable tdcl.Parsetree.ptype_loc ;
+                 [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );
          signature_gen = 
@@ -31324,7 +31344,9 @@ let init () =
                          (ty1 ->~ ty2)
                      ] 
 
-                   | None -> [])
+                   | None -> 
+                     notApplicable tdcl.Parsetree.ptype_loc ;
+                     [])
 
                 | Ptype_variant ctors 
                   -> 
@@ -31344,8 +31366,14 @@ let init () =
                         (ty1 ->~ ty2)
                     ] 
 
-                  else []
-                | Ptype_open -> [] in 
+                  else 
+                  begin
+                    notApplicable tdcl.Parsetree.ptype_loc ;
+                    []
+                  end
+                | Ptype_open -> 
+                  notApplicable tdcl.Parsetree.ptype_loc ;
+                  [] in 
               Ext_list.flat_map handle_tdcl tdcls 
 
            );
@@ -33726,14 +33754,14 @@ let get_arg_type ~nolabel optional
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"; _}, [])
           -> 
-          Bs_warnings.prerr_warning ptyp.ptyp_loc Unsafe_ffi_bool_type;
+          Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_ffi_bool_type;
           Nothing
         | Ptyp_constr ({txt = Lident "unit"; _}, [])
           -> if nolabel then Extern_unit else  Nothing
         | Ptyp_constr ({txt = Lident "array"; _}, [_])
           -> Array
         | Ptyp_variant _ ->
-          Bs_warnings.prerr_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
+          Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
           Nothing           
         | _ ->
           Nothing           
@@ -36324,6 +36352,7 @@ let rewrite_signature :
         | _ -> 
           unsafe_mapper.signature  unsafe_mapper x in 
       reset ();
+      (* Keep this check, since the check is not inexpensive*)
       if Warnings.is_active dummy_unused_attribute then 
         Bs_ast_invariant.emit_external_warnings.signature Bs_ast_invariant.emit_external_warnings result ;
       result 
@@ -36351,6 +36380,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
         | _ -> 
           unsafe_mapper.structure  unsafe_mapper x  in 
       reset (); 
+      (* Keep this check since it is not inexpensive*)    
       (if Warnings.is_active dummy_unused_attribute then 
          Bs_ast_invariant.emit_external_warnings.structure Bs_ast_invariant.emit_external_warnings result);
       result 

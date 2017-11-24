@@ -68,7 +68,7 @@ let (//) = Filename.concat
 let default_gen_tds = ref false
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
-let no_warn_ffi_type = ref false
+
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unimplemented_external = ref false 

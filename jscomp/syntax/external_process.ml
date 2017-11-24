@@ -150,14 +150,14 @@ let get_arg_type ~nolabel optional
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "bool"; _}, [])
           -> 
-          Bs_warnings.prerr_warning ptyp.ptyp_loc Unsafe_ffi_bool_type;
+          Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_ffi_bool_type;
           Nothing
         | Ptyp_constr ({txt = Lident "unit"; _}, [])
           -> if nolabel then Extern_unit else  Nothing
         | Ptyp_constr ({txt = Lident "array"; _}, [_])
           -> Array
         | Ptyp_variant _ ->
-          Bs_warnings.prerr_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
+          Bs_warnings.prerr_bs_ffi_warning ptyp.ptyp_loc Unsafe_poly_variant_type;
           Nothing           
         | _ ->
           Nothing           

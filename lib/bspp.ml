@@ -1369,6 +1369,8 @@ type t =
 
   | Bs_unused_attribute of string           (* 101 *)
   | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -1471,7 +1473,9 @@ type t =
   | Bad_docstring of bool                   (* 50 *)
 
   | Bs_unused_attribute of string           (* 101 *)
-  | Bs_polymorphic_comparison               (* 102 *) 
+  | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -1534,9 +1538,11 @@ let number = function
 
   | Bs_unused_attribute _ -> 101
   | Bs_polymorphic_comparison -> 102
+  | Bs_ffi_warning _ -> 103
+  | Bs_derive_warning _ -> 104
 ;;
 
-let last_warning_number = 102
+let last_warning_number = 104
 (* Must be the max number returned by the [number] function. *)
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
@@ -1799,9 +1805,13 @@ let message = function
       if unattached then "unattached documentation comment (ignored)"
       else "ambiguous documentation comment"
   | Bs_unused_attribute s ->
-      "Unused bucklescript attribute: " ^ s
+      "Unused BuckleScript attribute: " ^ s
   | Bs_polymorphic_comparison ->
       "polymorphic comparison introduced (maybe unsafe)"
+  | Bs_ffi_warning s ->
+      "BuckleScript FFI warning: " ^ s
+  | Bs_derive_warning s ->
+      "BuckleScript bs.deriving warning: " ^ s 
 ;;
 
 let nerrors = ref 0;;

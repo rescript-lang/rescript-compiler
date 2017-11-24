@@ -27,7 +27,7 @@ type t =
   | Unsafe_ffi_bool_type
   | Unsafe_poly_variant_type
 
-val prerr_warning : Location.t -> t -> unit
+val prerr_bs_ffi_warning : Location.t -> t -> unit
 
 
 val warn_missing_primitive : Location.t -> string -> unit 

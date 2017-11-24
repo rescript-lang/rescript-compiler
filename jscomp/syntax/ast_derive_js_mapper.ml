@@ -154,16 +154,22 @@ let assertExp e =
         [Str.eval e ]
      )
     )
+let derivingName = "jsConverter"
+
+let notApplicable loc = 
+  Location.prerr_warning 
+    loc
+    (Warnings.Bs_derive_warning ( derivingName ^ "not applicable to this type"))
 
 let init () =      
   Ast_derive.register
-    "jsConverter"
+    derivingName
     (fun ( x : Parsetree.expression option) -> 
        let createType = handle_config x in 
 
        {
          structure_gen = (fun (tdcls : tdcls) _ -> 
-             let handle_tdcl tdcl =
+             let handle_tdcl (tdcl: Parsetree.type_declaration) =
                let core_type = Ast_derive_util.core_type_of_type_declaration tdcl
                in 
                let name = tdcl.ptype_name.txt in 
@@ -300,7 +306,9 @@ let init () =
                         else v 
                       | _ -> assert false 
                     end 
-                  | None -> []
+                  | None -> 
+                    notApplicable tdcl.Parsetree.ptype_loc ;
+                    []
                  )
 
                | Ptype_variant ctors -> 
@@ -391,8 +399,14 @@ let init () =
                             )
                        ] in 
                      if createType then newTypeStr :: v else v 
-                 else []  
-               | Ptype_open -> [] in 
+                 else 
+                   begin 
+                     notApplicable tdcl.Parsetree.ptype_loc ;
+                     []  
+                   end
+               | Ptype_open -> 
+                 notApplicable tdcl.Parsetree.ptype_loc ;
+                 [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );
          signature_gen = 
@@ -447,7 +461,9 @@ let init () =
                          (ty1 ->~ ty2)
                      ] 
 
-                   | None -> [])
+                   | None -> 
+                     notApplicable tdcl.Parsetree.ptype_loc ;
+                     [])
 
                 | Ptype_variant ctors 
                   -> 
@@ -467,8 +483,14 @@ let init () =
                         (ty1 ->~ ty2)
                     ] 
 
-                  else []
-                | Ptype_open -> [] in 
+                  else 
+                  begin
+                    notApplicable tdcl.Parsetree.ptype_loc ;
+                    []
+                  end
+                | Ptype_open -> 
+                  notApplicable tdcl.Parsetree.ptype_loc ;
+                  [] in 
               Ext_list.flat_map handle_tdcl tdcls 
 
            );
