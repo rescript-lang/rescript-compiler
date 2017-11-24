@@ -66,6 +66,8 @@ type t =
 
   | Bs_unused_attribute of string           (* 101 *)
   | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 val parse_options : bool -> string -> unit;;
