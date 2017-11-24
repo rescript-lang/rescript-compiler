@@ -2553,6 +2553,18 @@ let combine_variant loc row arg partial ctx def (tag_lambda_list, total1, pats) 
     num_constr := max_int;
   let test_int_or_block arg if_int if_block =
     Lifthenelse(Lprim (Pisint, [arg], loc), if_int, if_block) in
+    
+  let test_string arg if_string if_not_string =
+    let tag = Ident.create "tag" in
+      Llet(Alias, tag, Lprim(Pccall prim_obj_tag, [arg], loc),
+        Lifthenelse(
+          (* if (tag == Obj.string_tag) *)
+          Lprim(Pintcomp Ceq,
+                    [Lvar tag; Lconst(Const_base(Const_int Obj.string_tag))],
+                   loc),
+              if_string,
+              if_not_string)) in
+
   let sig_complete =  List.length tag_lambda_list = !num_constr
   and one_action = same_actions tag_lambda_list in
   let fail, to_add, local_jumps =
@@ -2571,7 +2583,7 @@ let combine_variant loc row arg partial ctx def (tag_lambda_list, total1, pats) 
   | _,_ ->
       match (consts, nonconsts) with
       | ([n, act1], [m, act2]) when fail=None ->
-          test_int_or_block arg act1 act2
+          (if Clflags.compile_variants_to_strings () then test_string else test_int_or_block) arg act1 act2
       | (_, []) -> (* One can compare integers and pointers *)
           if Clflags.compile_variants_to_strings () then
             make_test_sequence_variant_constant2 fail arg consts2
@@ -2583,7 +2595,7 @@ let combine_variant loc row arg partial ctx def (tag_lambda_list, total1, pats) 
           (* One must not dereference integers *)
           begin match fail with
           | None -> lam
-          | Some fail -> test_int_or_block arg fail lam
+          | Some fail -> (if Clflags.compile_variants_to_strings () then test_string else test_int_or_block) arg fail lam
           end
       | (_, _) ->
           let lam_const =
@@ -2592,7 +2604,7 @@ let combine_variant loc row arg partial ctx def (tag_lambda_list, total1, pats) 
           and lam_nonconst =
             call_switcher_variant_constr loc
               fail arg nonconsts in
-          test_int_or_block arg lam_const lam_nonconst
+          (if Clflags.compile_variants_to_strings () then test_string else test_int_or_block) arg lam_const lam_nonconst
   in
   lambda1, jumps_union local_jumps total1
 
