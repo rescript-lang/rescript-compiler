@@ -590,8 +590,8 @@ let translate loc (prim_name : string)
     | "caml_lessequal"
     | "caml_lessthan"
       -> 
-      if Warnings.is_active Warnings.Bs_polymorphic_comparison then 
-        Location.prerr_warning loc Warnings.Bs_polymorphic_comparison ; 
+
+      Location.prerr_warning loc Warnings.Bs_polymorphic_comparison ; 
       call Js_runtime_modules.obj_runtime
     | "caml_obj_set_tag" 
       -> begin match args with 

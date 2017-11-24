@@ -165,8 +165,7 @@ common/bs_version.cmx : common/bs_version.cmi
 common/js_config.cmx : common/js_config.cmi
 common/ext_log.cmx : common/js_config.cmx common/ext_log.cmi
 common/bs_loc.cmx : common/bs_loc.cmi
-common/bs_warnings.cmx : ext/literals.cmx common/js_config.cmx \
-    common/bs_warnings.cmi
+common/bs_warnings.cmx : common/js_config.cmx common/bs_warnings.cmi
 common/lam_methname.cmx : ext/string_hash_set.cmx ext/ext_string.cmx \
     common/lam_methname.cmi
 common/ml_binary.cmx : common/ml_binary.cmi

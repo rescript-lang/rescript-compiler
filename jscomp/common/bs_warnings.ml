@@ -60,7 +60,6 @@ let prerr_warning loc x =
 
 let unimplemented_primitive = "Unimplemented primitive used:" 
 type error = 
-  | Unused_attribute of string
   | Uninterpreted_delimiters of string
   | Unimplemented_primitive of string 
 exception  Error of Location.t * error
@@ -70,9 +69,7 @@ let pp_error fmt x =
   | Unimplemented_primitive str -> 
     Format.pp_print_string fmt unimplemented_primitive;
     Format.pp_print_string fmt str
-  | Unused_attribute str ->
-    Format.pp_print_string fmt Literals.unused_attribute;
-    Format.pp_print_string fmt str
+  
   | Uninterpreted_delimiters str -> 
     Format.pp_print_string fmt "Uninterpreted delimiters" ;
     Format.pp_print_string fmt str
