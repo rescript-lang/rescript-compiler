@@ -206,6 +206,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	big_polyvar_test\
 	ast_abstract_test\
 	ast_mapper_defensive_test\
+	ast_mapper_unused_warning_test
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test
@@ -221,7 +222,7 @@ $(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi
 $(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj
 
 # It is okay to test deprecated API
-COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error A+8-3-30-26+101-102 
+COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error A+8-3-30-26+101-102-103-104 
 COMPFLAGS+=  -bs-no-version-header -absname -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform -bs-package-output commonjs:jscomp/test
 
 

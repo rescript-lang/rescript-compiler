@@ -54,13 +54,11 @@ let print_string_warning (loc : Location.t) x =
     Location.print warning_formatter loc ; 
   Format.fprintf warning_formatter "@{<error>Warning@}: %s@." x 
 
-let prerr_warning loc x =
-  if not (!Js_config.no_warn_ffi_type ) then
-    print_string_warning loc (to_string x) 
+let prerr_bs_ffi_warning loc x =  
+    Location.prerr_warning loc (Warnings.Bs_ffi_warning (to_string x))
 
 let unimplemented_primitive = "Unimplemented primitive used:" 
 type error = 
-  | Unused_attribute of string
   | Uninterpreted_delimiters of string
   | Unimplemented_primitive of string 
 exception  Error of Location.t * error
@@ -70,9 +68,7 @@ let pp_error fmt x =
   | Unimplemented_primitive str -> 
     Format.pp_print_string fmt unimplemented_primitive;
     Format.pp_print_string fmt str
-  | Unused_attribute str ->
-    Format.pp_print_string fmt Literals.unused_attribute;
-    Format.pp_print_string fmt str
+  
   | Uninterpreted_delimiters str -> 
     Format.pp_print_string fmt "Uninterpreted delimiters" ;
     Format.pp_print_string fmt str

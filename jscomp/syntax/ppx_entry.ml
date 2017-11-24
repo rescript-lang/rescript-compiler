@@ -736,6 +736,7 @@ let rewrite_signature :
         | _ -> 
           unsafe_mapper.signature  unsafe_mapper x in 
       reset ();
+      (* Keep this check, since the check is not inexpensive*)
       if Warnings.is_active dummy_unused_attribute then 
         Bs_ast_invariant.emit_external_warnings.signature Bs_ast_invariant.emit_external_warnings result ;
       result 
@@ -763,6 +764,7 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
         | _ -> 
           unsafe_mapper.structure  unsafe_mapper x  in 
       reset (); 
+      (* Keep this check since it is not inexpensive*)    
       (if Warnings.is_active dummy_unused_attribute then 
          Bs_ast_invariant.emit_external_warnings.structure Bs_ast_invariant.emit_external_warnings result);
       result 

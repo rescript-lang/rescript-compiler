@@ -68,6 +68,7 @@ ast_abstract_test.cmj : mt.cmj
 ast_js_mapper_poly_test.cmj : mt.cmj ../stdlib/array.cmj
 ast_js_mapper_test.cmj : ../stdlib/array.cmj ast_js_mapper_test.cmi
 ast_mapper_defensive_test.cmj : ../stdlib/obj.cmj mt.cmj
+ast_mapper_unused_warning_test.cmj :
 async_ideas.cmj :
 attr_test.cmj :
 b.cmj :

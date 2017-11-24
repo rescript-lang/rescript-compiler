@@ -182,11 +182,6 @@ let buckle_script_flags : (string * Arg.spec * string) list =
     " disable warnings on unimplmented c externals"
   )
   ::
-  ("-bs-no-warn-ffi-type", 
-   Arg.Set Js_config.no_warn_ffi_type,
-   " disable warnings for ffi type"
-  ) 
-  ::
   ("-bs-no-builtin-ppx-ml", 
    Arg.Set Js_config.no_builtin_ppx_ml,
    "disable built-in ppx for ml files (internal use)")
