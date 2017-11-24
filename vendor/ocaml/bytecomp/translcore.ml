@@ -761,7 +761,7 @@ and transl_exp0 e =
   | Texp_construct(_, cstr, args) ->
       let ll = transl_list args in
       begin match cstr.cstr_tag with
-        Cstr_constant n ->
+        Cstr_constant (n, _) ->
           Lconst(Const_pointer (n, Lambda.Pt_constructor cstr.cstr_name))
       | Cstr_block n ->
           let tag_info = (Lambda.Blk_constructor (cstr.cstr_name, cstr.cstr_nonconsts)) in
@@ -780,7 +780,11 @@ and transl_exp0 e =
   | Texp_variant(l, arg) ->
       let tag = Btype.hash_variant l in
       begin match arg with
-        None -> Lconst(Const_pointer (tag, Lambda.Pt_variant l))
+        None ->
+          if Clflags.compile_variants_to_strings () then
+            Lconst(Const_base (Const_string (l, None)))
+          else
+            Lconst(Const_pointer (tag, Lambda.Pt_variant l)) 
       | Some arg ->
           let lam = transl_exp arg in
           let tag_info = Lambda.Blk_variant l in

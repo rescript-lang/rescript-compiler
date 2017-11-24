@@ -56,7 +56,7 @@ let constructor_descrs ty_res cstrs priv =
         in
         let (tag, descr_rem) =
           match cd_args with
-            [] -> (Cstr_constant idx_const,
+            [] -> (Cstr_constant (idx_const, None),
                    describe_constructors (idx_const+1) idx_nonconst rem)
           | _  -> (Cstr_block idx_nonconst,
                    describe_constructors idx_const (idx_nonconst+1) rem) in
@@ -154,7 +154,7 @@ let rec find_constr tag num_const num_nonconst = function
     [] ->
       raise Constr_not_found
   | {cd_args = []; _} as c  :: rem ->
-      if tag = Cstr_constant num_const
+      if tag = Cstr_constant (num_const, None)
       then c
       else find_constr tag (num_const + 1) num_nonconst rem
   | c :: rem ->

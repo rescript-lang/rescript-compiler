@@ -1091,6 +1091,8 @@ struct
   let ltint = Ccmpi Clt
   let geint = Ccmpi Cge
   let gtint = Ccmpi Cgt
+  let prim_string_notequal = neint
+  let prim_string_greaterequal = geint
 
   type act = expression
 

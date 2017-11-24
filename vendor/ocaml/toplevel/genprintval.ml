@@ -366,7 +366,7 @@ module Make(O : OBJ)(EVP : EVALPATH with type valu = O.t) = struct
                     let tag =
                       if O.is_block obj
                       then Cstr_block(O.tag obj)
-                      else Cstr_constant(O.obj obj) in
+                      else Cstr_constant(O.obj obj, None) in
                     let {cd_id;cd_args;cd_res} =
                       Datarepr.find_constr_by_tag tag constr_list in
                     let type_params =

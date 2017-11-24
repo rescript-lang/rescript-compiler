@@ -136,3 +136,4 @@ let parse_color_setting = function
   | _ -> None
 let color = ref Auto ;; (* -color *)
 
+let compile_variants_to_strings () = not !native_code

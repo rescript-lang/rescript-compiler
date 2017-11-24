@@ -97,6 +97,8 @@ module type S =
    val ltint : primitive
    val geint : primitive
    val gtint : primitive
+   val prim_string_notequal : primitive
+   val prim_string_greaterequal: primitive
    type act
 
    val bind : act -> (act -> act) -> act
@@ -137,6 +139,7 @@ module Make (Arg : S) =
 
     type 'a inter =
         {cases : (int * int * int) array ;
+          values: (int * Arg.act) array;
           actions : 'a array}
 
 type 'a t_ctx =  {off : int ; arg : 'a}
@@ -547,6 +550,11 @@ and enum top cases =
         (Arg.make_prim test [arg ; Arg.make_const i])
         ifso ifnot
 
+    let make_if_test_const test arg c ifso ifnot =
+      Arg.make_if
+        (Arg.make_prim test [arg ; c])
+        ifso ifnot
+
     let make_if_lt arg i  ifso ifnot = match i with
     | 1 ->
         make_if_test Arg.leint arg 0 ifso ifnot
@@ -571,11 +579,17 @@ and enum top cases =
     | _ ->
         make_if_test Arg.geint arg i ifso ifnot
 
+    and make_if_ge_const ~string_values arg c  ifso ifnot =
+      make_if_test_const (if string_values then Arg.prim_string_greaterequal else Arg.geint) arg c ifso ifnot
+
     and make_if_eq  arg i ifso ifnot =
       make_if_test Arg.eqint arg i ifso ifnot
 
     and make_if_ne  arg i ifso ifnot =
       make_if_test Arg.neint arg i ifso ifnot
+
+    and make_if_ne_const ~string_values  arg c ifso ifnot =
+      make_if_test_const (if string_values then Arg.prim_string_notequal else Arg.neint) arg c ifso ifnot
     
     and make_if_ne_bool arg b ifso ifnot =
       Arg.make_if (Arg.make_prim Arg.neint [arg ; Arg.make_bool b]) ifso ifnot
@@ -613,11 +627,21 @@ and enum top cases =
 
     let rec c_test ?(bool=false) ctx ({cases=cases ; actions=actions} as s) =
       let lcases = Array.length cases in
+      (* Format.eprintf "c_test lcases:%d@." lcases; *)
       assert(lcases > 0) ;
       if lcases = 1 then
         actions.(get_act cases 0) ctx
 
       else begin
+
+        let string_values = Array.length s.values <> 0 in
+        let const_value x =
+          if not string_values
+          then Arg.make_const x
+          else
+            let l = Array.to_list s.values in
+            try List.assoc x l
+             with Not_found -> assert false in
 
         let w,c = opt_count false cases in
 (*
@@ -629,6 +653,7 @@ and enum top cases =
     | No ->
      actions.(get_act cases 0) ctx
     | Inter (i,j) ->
+        (* Format.eprintf "Inter(%d,%d)@." i j; *)
         let low,high,inside, outside = coupe_inter i j cases in
         let _,(cinside,_) = opt_count false inside
         and _,(coutside,_) = opt_count false outside in
@@ -642,9 +667,10 @@ and enum top cases =
               (c_test ctx {s with cases=inside})
               (c_test ctx {s with cases=outside})
           else
-            make_if_ne
+            (* let () = Format.eprintf "make_if_ne %d (low:%d ctx.off:%d)@." (low+ctx.off) low ctx.off in *)
+            make_if_ne_const ~string_values
               ctx.arg
-              (low+ctx.off)
+              (const_value (low+ctx.off))
               (c_test ctx {s with cases=outside})
               (c_test ctx {s with cases=inside})
         end else begin
@@ -664,6 +690,7 @@ and enum top cases =
               (fun ctx -> c_test ctx {s with cases=inside})
         end
     | Sep i ->
+        (* Format.eprintf "Sep %d@." i; *)
         let lim,left,right = coupe cases i in
         let _,(cleft,_) = opt_count false left
         and _,(cright,_) = opt_count false right in
@@ -685,8 +712,9 @@ and enum top cases =
             ctx.arg (lim+ctx.off)
             (c_test ctx left) (c_test ctx right)
         else
-          make_if_ge
-             ctx.arg (lim+ctx.off)
+          (* let () = Format.eprintf "make_if_ge %d (lim:%d ctx.off:%d)@." (lim+ctx.off) lim ctx.off in *)
+          make_if_ge_const ~string_values
+             ctx.arg (const_value (lim+ctx.off))
             (c_test ctx right) (c_test ctx left)
 
   end
@@ -834,7 +862,7 @@ let make_clusters ({cases=cases ; actions=actions} as s) n_clusters k =
   zyva (len-1) (n_clusters-1) ;
   let acts = Array.make !index (fun _ -> assert false) in
   Hashtbl.iter (fun _ (i,act) -> acts.(i) <- act) t ;
-  {cases = r ; actions = acts}
+  {cases = r ; values = [| |]; actions = acts}
 ;;
 
 
@@ -843,7 +871,7 @@ let do_zyva ?bool (low,high) arg cases actions =
   ok_inter := (abs low <= inter_limit && abs high <= inter_limit) ;
   if !ok_inter <> old_ok then Hashtbl.clear t ;
 
-  let s = {cases=cases ; actions=actions} in
+  let s = {cases=cases ; values = [| |]; actions=actions} in
 (*
   Printf.eprintf "ZYVA: %b\n" !ok_inter ;
   pcases stderr cases ;
@@ -873,7 +901,7 @@ let zyva ?bool lh arg cases actions =
   let hs,actions = abstract_shared actions in
   hs (do_zyva ?bool lh arg cases actions)
 
-and test_sequence arg cases actions =
+and test_sequence arg cases values actions =
   let actions = actions.act_get_shared () in
   let hs,actions = abstract_shared actions in
   let old_ok = !ok_inter in
@@ -881,6 +909,7 @@ and test_sequence arg cases actions =
   if !ok_inter <> old_ok then Hashtbl.clear t ;
   let s =
     {cases=cases ;
+    values;
     actions=Array.map (fun act -> (fun _ -> act)) actions} in
 (*
   Printf.eprintf "SEQUENCE: %b\n" !ok_inter ;

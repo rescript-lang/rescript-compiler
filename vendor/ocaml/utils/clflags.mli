@@ -112,3 +112,4 @@ type color_setting = Auto | Always | Never
 val parse_color_setting : string -> color_setting option
 val color : color_setting ref
 
+val compile_variants_to_strings : unit -> bool

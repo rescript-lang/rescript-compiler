@@ -1410,7 +1410,7 @@ let make_variant_matching_nonconst p lab def ctx = function
 
 let get_key_variant p = match p.pat_desc with
 | Tpat_variant(lab, Some _ , _) ->  Cstr_block (Btype.hash_variant lab)
-| Tpat_variant(lab, None , _) -> Cstr_constant (Btype.hash_variant lab)
+| Tpat_variant(lab, None , _) -> Cstr_constant ((Btype.hash_variant lab), Some lab)
 |  _ -> assert false
 
 let divide_variant row ctx {cases = cl; args = al; default=def} =
@@ -1427,7 +1427,7 @@ let divide_variant row ctx {cases = cl; args = al; default=def} =
           match pato with
             None ->
               add (make_variant_matching_constant p lab def ctx) variants
-                (=) (Cstr_constant tag) (patl, action) al
+                (=) (Cstr_constant (tag, Some lab)) (patl, action) al
           | Some pat ->
               add (make_variant_matching_nonconst p lab def ctx) variants
                 (=) (Cstr_block tag) (pat :: patl, action) al
@@ -1711,6 +1711,11 @@ let prim_string_notequal =
          prim_arity = 2; prim_alloc = false;
          prim_native_name = ""; prim_native_float = false}
 
+let prim_string_greaterequal =
+  Pccall{prim_name = "caml_string_greaterequal"; prim_arity = 2;
+         prim_alloc = false; prim_native_name = "";
+         prim_native_float = false}
+
 let prim_string_compare =
   Pccall{prim_name = "caml_string_compare";
          prim_arity = 2; prim_alloc = false;
@@ -1938,6 +1943,8 @@ module SArg = struct
   let ltint = Pintcomp Clt
   let geint = Pintcomp Cge
   let gtint = Pintcomp Cgt
+  let prim_string_notequal = prim_string_notequal
+  let prim_string_greaterequal = prim_string_greaterequal
 
   type act = Lambda.lambda
 
@@ -2357,12 +2364,32 @@ let split_cases tag_lambda_list =
     | (cstr, act) :: rem ->
         let (consts, nonconsts) = split_rec rem in
         match cstr with
-          Cstr_constant n -> ((n, act) :: consts, nonconsts)
+          Cstr_constant (n, _) -> ((n, act) :: consts, nonconsts)
         | Cstr_block n    -> (consts, (n, act) :: nonconsts)
         | _ -> assert false in
   let const, nonconst = split_rec tag_lambda_list in
   sort_int_lambda_list const,
   sort_int_lambda_list nonconst
+
+
+let sort_int_lambda_string_list l =
+  let cmp (i1, so1, _) (i2, so2, _) = compare (so1, i1) (so2, i2) in
+  List.sort cmp l
+
+
+let split_cases2 tag_lambda_list =
+  let rec split_rec = function
+      [] -> ([], [])
+    | (cstr, act) :: rem ->
+        let (consts, nonconsts) = split_rec rem in
+        match cstr with
+          Cstr_constant (n, so) -> ((n, so, act) :: consts, nonconsts)
+        | Cstr_block n    -> (consts, (n, act) :: nonconsts)
+        | _ -> assert false in
+  let const, nonconst = split_rec tag_lambda_list in
+  sort_int_lambda_string_list const,
+  sort_int_lambda_list nonconst
+
 
 let split_extension_cases tag_lambda_list =
   let rec split_rec = function
@@ -2475,10 +2502,32 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
     lambda1, jumps_union local_jumps total1
   end
 
+let as_separate_cases l =
+  let store = StoreExp.mk_store () in
+  let do_case (i,so,act) =
+    let act_index = store.act_store act in
+    (i, i, act_index) in
+  let do_value (i,so,_) =
+    let const_string s = Lconst (Const_base (Const_string (s, None))) in
+    let s = match so with None -> assert false | Some s -> s in
+    (i, const_string s) in
+  let cases = Array.of_list (List.map do_case l) in
+  let values = Array.of_list (List.map do_value l) in
+  cases, values, store
+
+let make_test_sequence_variant_constant2 fail arg int_lambda_str_list =
+  (* let cases = String.concat " " (List.map (fun (i,so,_) ->
+       string_of_int i ^ (match so with None -> "" | Some s -> s))
+     int_lambda_str_list) in
+  Format.eprintf "XXX seq cases:%s@." cases; *)
+  let (cases, values, actions) = as_separate_cases int_lambda_str_list in
+  Switcher.test_sequence arg cases values actions
+
 let make_test_sequence_variant_constant fail arg int_lambda_list =
   let _, (cases, actions) =
     as_interval fail min_int max_int int_lambda_list in
-  Switcher.test_sequence arg cases actions
+  Switcher.test_sequence arg cases [||] actions
+
 
 let call_switcher_variant_constant fail arg int_lambda_list =
   call_switcher fail arg min_int max_int int_lambda_list
@@ -2514,7 +2563,9 @@ let combine_variant loc row arg partial ctx def (tag_lambda_list, total1, pats) 
     else
       mk_failaction_neg partial ctx def in
   let tag_lambda_list = to_add@tag_lambda_list in
-  let (consts, nonconsts) = split_cases tag_lambda_list in
+  (* XXX *)
+  let (consts2, nonconsts) = split_cases2 tag_lambda_list in
+  let consts = List.map (fun (x,y,z) -> (x,z)) consts2 in 
   let lambda1 = match fail, one_action with
   | None, Some act -> act
   | _,_ ->
@@ -2522,7 +2573,10 @@ let combine_variant loc row arg partial ctx def (tag_lambda_list, total1, pats) 
       | ([n, act1], [m, act2]) when fail=None ->
           test_int_or_block arg act1 act2
       | (_, []) -> (* One can compare integers and pointers *)
-          make_test_sequence_variant_constant fail arg consts
+          if Clflags.compile_variants_to_strings () then
+            make_test_sequence_variant_constant2 fail arg consts2
+          else
+            make_test_sequence_variant_constant fail arg consts
       | ([], _) ->
           let lam = call_switcher_variant_constr loc
               fail arg nonconsts in
@@ -2845,6 +2899,7 @@ and do_compile_matching repr partial ctx arg pmh = match pmh with
         (divide_lazy (normalize_pat pat))
         ctx_combine repr partial ctx pm
   | Tpat_variant(lab, _, row) ->
+    (* XXX pattern matching for polymorphic variants *)
       compile_test (compile_match repr partial) partial
         (divide_variant !row)
         (combine_variant pat.pat_loc !row arg partial)

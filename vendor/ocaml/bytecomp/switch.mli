@@ -59,6 +59,8 @@ module type S =
     val ltint : primitive
     val geint : primitive
     val gtint : primitive
+    val prim_string_notequal : primitive
+    val prim_string_greaterequal: primitive
     (* type of actions *)
     type act
 
@@ -110,6 +112,7 @@ module Make :
      val test_sequence :
            Arg.act ->
            (int * int * int) array ->
+           (int * Arg.act) array ->
            Arg.act t_store ->
            Arg.act
     end
