@@ -53,7 +53,7 @@ function uFromJson(x) {
           Caml_builtin_exceptions.assert_failure,
           [
             "ast_to_json_test.ml",
-            56,
+            57,
             2
           ]
         ];
@@ -72,7 +72,7 @@ function vJsonValidate(x) {
               Caml_builtin_exceptions.assert_failure,
               [
                 "ast_to_json_test.ml",
-                83,
+                84,
                 13
               ]
             ];
@@ -118,7 +118,7 @@ function vFromJson(x) {
               Caml_builtin_exceptions.assert_failure,
               [
                 "ast_to_json_test.ml",
-                100,
+                101,
                 11
               ]
             ];
@@ -173,7 +173,7 @@ function hFromJson(x) {
           Caml_builtin_exceptions.assert_failure,
           [
             "ast_to_json_test.ml",
-            130,
+            131,
             2
           ]
         ];
@@ -197,7 +197,7 @@ function arrayToJson(_, _$1) {
         Caml_builtin_exceptions.assert_failure,
         [
           "ast_to_json_test.ml",
-          149,
+          150,
           2
         ]
       ];
@@ -208,7 +208,7 @@ function arrayFromJson(_, _$1) {
         Caml_builtin_exceptions.assert_failure,
         [
           "ast_to_json_test.ml",
-          152,
+          153,
           2
         ]
       ];
@@ -219,7 +219,7 @@ function intArrayFromJson() {
         Caml_builtin_exceptions.assert_failure,
         [
           "ast_to_json_test.ml",
-          154,
+          155,
           2
         ]
       ];
@@ -230,7 +230,7 @@ function arrayJsonValidate(_, _$1) {
         Caml_builtin_exceptions.assert_failure,
         [
           "ast_to_json_test.ml",
-          157,
+          158,
           2
         ]
       ];
@@ -241,7 +241,7 @@ function intArrayJsonValidate() {
         Caml_builtin_exceptions.assert_failure,
         [
           "ast_to_json_test.ml",
-          160,
+          161,
           2
         ]
       ];
@@ -325,7 +325,7 @@ function zFromJson(x) {
           Caml_builtin_exceptions.assert_failure,
           [
             "ast_to_json_test.ml",
-            213,
+            214,
             2
           ]
         ];
@@ -336,7 +336,7 @@ function zFromJson(x) {
           Caml_builtin_exceptions.assert_failure,
           [
             "ast_to_json_test.ml",
-            225,
+            226,
             9
           ]
         ];

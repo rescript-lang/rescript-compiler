@@ -51,6 +51,7 @@ let uJsonValidate ( x : Js.Json.t) =
       item of array  is of type int, seems quite expensive
     3. Check JSON schema validation (https://davidwalsh.name/json-validation)  
     4. Maybe we should generate a json schema per type
+    5. Validaation should be made optional (only needed for user input)
 *)  
 let uFromJson ( x : Js.Json.t) : u =     
   assert (uJsonValidate x);
