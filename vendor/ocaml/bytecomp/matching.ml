@@ -1954,7 +1954,7 @@ module SArg = struct
         newvar,Lvar newvar in
     bind Alias newvar arg (body newarg)
   let make_const i = Lconst (Const_base (Const_int i))
-  let make_bool b = Lconst (Const_base (Const_bool b))
+  let make_bool b = Lconst (Const_base_bool b)
   let make_isout h arg = Lprim (Pisout, [h ; arg], Location.none)
   let make_isin h arg = Lprim (Pnot,[make_isout h arg], Location.none)
   let make_if cond ifso ifnot = Lifthenelse (cond, ifso, ifnot)
@@ -2153,14 +2153,14 @@ let call_switcher fail arg low high int_lambda_list =
     as_interval fail low high int_lambda_list in
   Switcher.zyva edges arg cases actions
 
-let call_switcher_bool loc arg int_lambda_list =
-  let const_lambda_list =
-    let f (i, l) = (Const_bool (i <> 0), l) in
-    List.map f int_lambda_list in
-  make_test_sequence loc
-    None
-    (Pintcomp Cneq) (Pintcomp Clt)
-    arg const_lambda_list
+let call_switcher_bool loc arg = function
+  | [(i1, act1); (_,act2)] ->
+      let c1 = Const_base_bool (i1 <> 0) in
+      Lifthenelse
+        (Lprim ((Pintcomp Cneq), [arg ; Lconst c1], loc),
+         act2,
+         act1)
+  | _ -> fatal_error "Matching.call_switcher_bool"
 
 let exists_ctx ok ctx =
   List.exists
@@ -2310,8 +2310,7 @@ let combine_constant loc arg cst partial ctx def
   let const_lambda_list = to_add@const_lambda_list in
   let lambda1 =
     match cst with
-    | Const_int _
-    | Const_bool _ ->
+    | Const_int _ ->
         let int_lambda_list =
           List.map (function Const_int n, l -> n,l | _ -> assert false)
             const_lambda_list in

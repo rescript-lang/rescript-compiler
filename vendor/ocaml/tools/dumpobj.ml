@@ -81,7 +81,7 @@ let print_float f =
 
 let rec print_struct_const = function
     Const_base(Const_int i) -> printf "%d" i
-  | Const_base(Const_bool b) -> printf "%b" b
+  | Const_base_bool b -> printf "%b" b
   | Const_base(Const_float f) -> print_float f
   | Const_base(Const_string (s, _)) -> printf "%S" s
   | Const_immstring s -> printf "%S" s

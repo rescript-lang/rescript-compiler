@@ -199,6 +199,7 @@ and raise_kind =
 
 type structured_constant =
     Const_base of constant
+  | Const_base_bool of bool
   | Const_pointer of int * pointer_info
   | Const_block of int * tag_info * structured_constant list
   | Const_float_array of string list
