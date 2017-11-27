@@ -10,7 +10,7 @@ npm run build
 # Build + Watch
 
 ```
-npm run watch
+npm run start
 ```
 
 
