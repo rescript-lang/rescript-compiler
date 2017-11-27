@@ -1954,7 +1954,7 @@ module SArg = struct
         newvar,Lvar newvar in
     bind Alias newvar arg (body newarg)
   let make_const i = Lconst (Const_base (Const_int i))
-  let make_bool b = Lconst (Const_base_bool b)
+  let make_bool b = Lconst (Const_base (Const_bool b))
   let make_isout h arg = Lprim (Pisout, [h ; arg], Location.none)
   let make_isin h arg = Lprim (Pnot,[make_isout h arg], Location.none)
   let make_if cond ifso ifnot = Lifthenelse (cond, ifso, ifnot)
@@ -2148,11 +2148,19 @@ let as_interval fail low high l =
   | None -> as_interval_nofail l
   | Some act -> as_interval_canfail act low high l)
 
-let call_switcher ?bool fail arg low high int_lambda_list =
+let call_switcher fail arg low high int_lambda_list =
   let edges, (cases, actions) =
     as_interval fail low high int_lambda_list in
-  Switcher.zyva ?bool edges arg cases actions
+  Switcher.zyva edges arg cases actions
 
+let call_switcher_bool loc arg int_lambda_list =
+  let const_lambda_list =
+    let f (i, l) = (Const_bool (i <> 0), l) in
+    List.map f int_lambda_list in
+  make_test_sequence loc
+    None
+    (Pintcomp Cneq) (Pintcomp Clt)
+    arg const_lambda_list
 
 let exists_ctx ok ctx =
   List.exists
@@ -2302,7 +2310,8 @@ let combine_constant loc arg cst partial ctx def
   let const_lambda_list = to_add@const_lambda_list in
   let lambda1 =
     match cst with
-    | Const_int _ ->
+    | Const_int _
+    | Const_bool _ ->
         let int_lambda_list =
           List.map (function Const_int n, l -> n,l | _ -> assert false)
             const_lambda_list in
@@ -2447,13 +2456,9 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
               Lifthenelse(arg, act2, act1)
           | (n,_,_,[])  ->
               (* XXX booleans match this case with n=2 *)
-              let bool = cstr.cstr_name = "true" || cstr.cstr_name = "false" in
-              let lambda1 = call_switcher ~bool None arg 0 (n-1) consts in
-              let () = (* XXX sanity check: the boolean check was generated *)
-                if bool then match lambda1 with
-                | Lifthenelse (Lprim (Pintcomp Cneq, [_; Lconst (Const_base_bool false)], _), _, _) -> ()
-                | _ -> assert false in
-              lambda1
+              if cstr.cstr_name = "true" || cstr.cstr_name = "false"
+              then call_switcher_bool loc arg consts
+              else call_switcher None arg 0 (n-1) consts
           | (n, _, _, _) ->
               match same_actions nonconsts with
               | None ->

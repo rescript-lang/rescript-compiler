@@ -101,7 +101,6 @@ module type S =
 
    val bind : act -> (act -> act) -> act
    val make_const : int -> act
-   val make_bool : bool -> act
    val make_offset : act -> int -> act
    val make_prim : primitive -> act list -> act
    val make_isout : act -> act -> act
@@ -576,10 +575,6 @@ and enum top cases =
 
     and make_if_ne  arg i ifso ifnot =
       make_if_test Arg.neint arg i ifso ifnot
-    
-    and make_if_ne_bool arg b ifso ifnot =
-      Arg.make_if (Arg.make_prim Arg.neint [arg ; Arg.make_bool b]) ifso ifnot
-
 
     let do_make_if_out h arg ifso ifno =
       Arg.make_if (Arg.make_isout h arg) ifso ifno
@@ -611,7 +606,7 @@ and enum top cases =
             do_make_if_in
               (Arg.make_const d) arg (mk_ifso ctx) (mk_ifno ctx))
 
-    let rec c_test ?(bool=false) ctx ({cases=cases ; actions=actions} as s) =
+    let rec c_test ctx ({cases=cases ; actions=actions} as s) =
       let lcases = Array.length cases in
       assert(lcases > 0) ;
       if lcases = 1 then
@@ -626,8 +621,7 @@ and enum top cases =
   ctx.off pret w pcases cases ;
   *)
     match w with
-    | No ->
-     actions.(get_act cases 0) ctx
+    | No -> actions.(get_act cases 0) ctx
     | Inter (i,j) ->
         let low,high,inside, outside = coupe_inter i j cases in
         let _,(cinside,_) = opt_count false inside
@@ -671,15 +665,9 @@ and enum top cases =
         and right = {s with cases=right} in
 
         if i=1 && (lim+ctx.off)=1 && get_low cases 0+ctx.off=0 then
-          (* XXX code generation for booleans *)
-          if bool then
-            make_if_ne_bool
-              ctx.arg false
-              (c_test ctx right) (c_test ctx left)
-          else
-            make_if_ne
-              ctx.arg 0
-              (c_test ctx right) (c_test ctx left)
+          make_if_ne
+            ctx.arg 0
+            (c_test ctx right) (c_test ctx left)
         else if less_tests cright cleft then
           make_if_lt
             ctx.arg (lim+ctx.off)
@@ -838,7 +826,7 @@ let make_clusters ({cases=cases ; actions=actions} as s) n_clusters k =
 ;;
 
 
-let do_zyva ?bool (low,high) arg cases actions =
+let do_zyva (low,high) arg cases actions =
   let old_ok = !ok_inter in
   ok_inter := (abs low <= inter_limit && abs high <= inter_limit) ;
   if !ok_inter <> old_ok then Hashtbl.clear t ;
@@ -851,7 +839,7 @@ let do_zyva ?bool (low,high) arg cases actions =
 *)
   let n_clusters,k = comp_clusters s in
   let clusters = make_clusters s n_clusters k in
-  let r = c_test ?bool {arg=arg ; off=0} clusters in
+  let r = c_test {arg=arg ; off=0} clusters in
   r
 
 let abstract_shared actions =
@@ -868,10 +856,10 @@ let abstract_shared actions =
       actions in
   !handlers,actions
 
-let zyva ?bool lh arg cases actions =
+let zyva lh arg cases actions =
   let actions = actions.act_get_shared () in
   let hs,actions = abstract_shared actions in
-  hs (do_zyva ?bool lh arg cases actions)
+  hs (do_zyva lh arg cases actions)
 
 and test_sequence arg cases actions =
   let actions = actions.act_get_shared () in
