@@ -104,9 +104,8 @@ val min_binding: 'a t -> (key * 'a)
     @since 3.12.0
  *)
 
-val max_binding: 'a t -> (key * 'a)
-(** Same as {!Map.S.min_binding}, but returns the largest binding
-    of the given map.
+val max_binding: 'a t -> (key * 'a) option
+(** returns the largest binding of the given map.
     @since 3.12.0
  *)
 

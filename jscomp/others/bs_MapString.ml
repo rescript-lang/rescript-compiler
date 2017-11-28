@@ -79,8 +79,8 @@ let rec min_binding = function
   | Node(l, x, d, r, _) -> min_binding l
 
 let rec max_binding = function
-    Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
+    Empty -> None
+  | Node(l, x, d, Empty, _) -> Some (x, d)
   | Node(l, x, d, r, _) -> max_binding r
 
 let rec remove_min_binding = function
