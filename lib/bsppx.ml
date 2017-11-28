@@ -19020,31 +19020,40 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           (
             match payload with 
             | PStr [ {pstr_desc = Pstr_eval( e,_)}] -> 
-              let e = self.expr self  e in 
-              Exp.ifthenelse ~loc
-                (Exp.apply ~loc
-                   (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                   ["", e]
-                )
+
+              let locString = 
+                if loc.loc_ghost then 
+                  "ASSERT FAILURE"
+                else 
+                  let loc_start = loc.loc_start in 
+                  let (file, lnum, cnum) = Location.get_pos_info loc_start in
+                  let enum = 
+                    loc.Location.loc_end.Lexing.pos_cnum -
+                    loc_start.Lexing.pos_cnum + cnum in
+                  Printf.sprintf "File %S, line %d, characters %d-%d"
+                    file lnum cnum enum in   
+              let raiseWithString  =      
                 (Exp.apply ~loc 
                    (Exp.ident ~loc {loc; txt = 
                                            Ldot(Ldot (Lident "Js","Exn"),"raiseError")})
                    ["",
-                    if loc.loc_ghost then 
-                      Exp.constant (Const_string ("ASSERT FAILURE",None))
-                    else 
-                      let loc_start = loc.loc_start in 
-                      let (file, lnum, cnum) = Location.get_pos_info loc_start in
-                      let enum = 
-                        loc.Location.loc_end.Lexing.pos_cnum -
-                        loc_start.Lexing.pos_cnum + cnum in
-                      let loc = Printf.sprintf "File %S, line %d, characters %d-%d"
-                          file lnum cnum enum in    
-                      Exp.constant (Const_string (loc,None))    
-                   ]
 
-                )
-                None
+                    Exp.constant (Const_string (locString,None))    
+                   ])
+              in 
+              (match e with
+               | {pexp_desc = Pexp_construct({txt = Lident "false"},None)} -> 
+                   raiseWithString
+               | _ ->    
+                 let e = self.expr self  e in 
+                 Exp.ifthenelse ~loc
+                   (Exp.apply ~loc
+                      (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
+                      ["", e]
+                   )
+                   raiseWithString
+                   None
+              )
             | _ -> 
               Location.raise_errorf 
                 ~loc "expect a boolean expression in the payload"
