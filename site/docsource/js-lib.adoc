@@ -48,7 +48,7 @@ external set_or_unset_prop : string -> int Js.null -> unit = "" [@@bs.val]
 
 (* unset property if fond *)
 let s = get_prop_name_maybe ()
-let _ = Js.Null.iter s (function name -> set_or_unset_prop name Js.Null.empty)
+let _ = Js.Null.iter s ((fun name -> set_or_unset_prop name Js.Null.empty) [@bs])
 
 (* set some other property *)
 let _ = set_or_unset_prop "some_other_property" (Js.Null.return "")
@@ -62,7 +62,7 @@ to maintain:
 -------------
 external try_some_thing : string Js.null -> int Js.null = ...
 
-let try_some_thing_maybe ( v : string option) : int option =
+let try_some_thing_maybe (v : string option) : int option =
   Js.Null.to_opt (try_some_thing (Js.Null.from_opt v))
 -------------
 
