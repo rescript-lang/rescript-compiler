@@ -114,14 +114,14 @@ let rec remove x = function
 let rec iter f = function
     Empty -> ()
   | Node(l, v, d, r, _) ->
-    iter f l; f v d; iter f r
+    iter f l; f v d [@bs]; iter f r
 
 let rec map f = function
     Empty ->
     Empty
   | Node(l, v, d, r, h) ->
     let l' = map f l in
-    let d' = f d in
+    let d' = f d [@bs] in
     let r' = map f r in
     Node(l', v, d', r', h)
 
@@ -130,7 +130,7 @@ let rec mapi f = function
     Empty
   | Node(l, v, d, r, h) ->
     let l' = mapi f l in
-    let d' = f v d in
+    let d' = f v d [@bs] in
     let r' = mapi f r in
     Node(l', v, d', r', h)
 
@@ -138,15 +138,15 @@ let rec fold f m accu =
   match m with
     Empty -> accu
   | Node(l, v, d, r, _) ->
-    fold f r (f v d (fold f l accu))
+    fold f r (f v d (fold f l accu) [@bs])
 
 let rec for_all p = function
     Empty -> true
-  | Node(l, v, d, r, _) -> p v d && for_all p l && for_all p r
+  | Node(l, v, d, r, _) -> p v d [@bs] && for_all p l && for_all p r
 
 let rec exists p = function
     Empty -> false
-  | Node(l, v, d, r, _) -> p v d || exists p l || exists p r
+  | Node(l, v, d, r, _) -> p v d [@bs] || exists p l || exists p r
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -211,10 +211,10 @@ let rec merge f s1 s2 =
     (Empty, Empty) -> Empty
   | (Node (l1, v1, d1, r1, h1), _) when h1 >= height s2 ->
     let (l2, d2, r2) = split v1 s2 in
-    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2) (merge f r1 r2)
+    concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2 [@bs]) (merge f r1 r2)
   | (_, Node (l2, v2, d2, r2, h2)) ->
     let (l1, d1, r1) = split v2 s1 in
-    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2)) (merge f r1 r2)
+    concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2) [@bs]) (merge f r1 r2)
   | _ ->
     assert false
 
@@ -223,7 +223,7 @@ let rec filter p = function
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
     let l' = filter p l in
-    let pvd = p v d in
+    let pvd = p v d [@bs] in
     let r' = filter p r in
     if pvd then join l' v d r' else concat l' r'
 
@@ -232,7 +232,7 @@ let rec partition p = function
   | Node(l, v, d, r, _) ->
     (* call [p] in the expected left-to-right order *)
     let (lt, lf) = partition p l in
-    let pvd = p v d in
+    let pvd = p v d [@bs] in
     let (rt, rf) = partition p r in
     if pvd
     then (join lt v d rt, concat lf rf)
@@ -254,7 +254,7 @@ let compare cmp m1 m2 =
     | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
       let c = Pervasives.compare v1 v2 in
       if c <> 0 then c else
-        let c = cmp d1 d2 in
+        let c = cmp d1 d2 [@bs] in
         if c <> 0 then c else
           compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
   in compare_aux (cons_enum m1 End) (cons_enum m2 End)
@@ -266,7 +266,7 @@ let equal cmp m1 m2 =
     | (End, _)  -> false
     | (_, End) -> false
     | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      Pervasives.compare v1 v2 = 0 && cmp d1 d2 &&
+      Pervasives.compare v1 v2 = 0 && cmp d1 d2 [@bs] &&
       equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
   in equal_aux (cons_enum m1 End) (cons_enum m2 End)
 
