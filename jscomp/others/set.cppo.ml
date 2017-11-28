@@ -35,25 +35,25 @@ let bal l v r =
   let hr = match r with Empty -> 0 | Node(_,_,_,h) -> h in
   if hl > hr + 2 then begin
     match l with
-      Empty -> [%assert false]
+      Empty -> assert false
     | Node(ll, lv, lr, _) ->
       if height ll >= height lr then
         create ll lv (create lr v r)
       else begin
         match lr with
-          Empty -> [%assert false]
+          Empty -> assert false
         | Node(lrl, lrv, lrr, _)->
           create (create ll lv lrl) lrv (create lrr v r)
       end
   end else if hr > hl + 2 then begin
     match r with
-      Empty -> [%assert false]
+      Empty -> assert false
     | Node(rl, rv, rr, _) ->
       if height rr >= height rl then
         create (create l v rl) rv rr
       else begin
         match rl with
-          Empty -> [%assert false]
+          Empty -> assert false
         | Node(rll, rlv, rlr, _) ->
           create (create l v rll) rlv (create rlr rv rr)
       end
@@ -103,7 +103,7 @@ let rec join l v r =
   Invariant: input  is not Empty
 *)      
 let rec min_eltAssert =  function
-    Empty -> [%assert false]
+    Empty -> assert false
   | Node(Empty, v, r, _) -> v
   | Node(l, v, r, _) -> min_eltAssert l
 (* Smallest and greatest element of a set *)
@@ -121,7 +121,7 @@ let rec max = function
 (* Remove the smallest element of the given set *)
 
 let rec remove_min_elt = function
-  | Empty -> [%assert false]
+  | Empty -> assert false
   | Node(Empty, v, r, _) -> r
   | Node(l, v, r, _) -> bal (remove_min_elt l) v r
 
