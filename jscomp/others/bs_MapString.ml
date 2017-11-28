@@ -20,25 +20,25 @@ let bal l x d r =
   let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
   if hl > hr + 2 then begin
     match l with
-      Empty -> invalid_arg "Map.bal"
+      Empty -> [%assert false]
     | Node(ll, lv, ld, lr, _) ->
       if height ll >= height lr then
         create ll lv ld (create lr x d r)
       else begin
         match lr with
-          Empty -> invalid_arg "Map.bal"
+          Empty -> [%assert false]
         | Node(lrl, lrv, lrd, lrr, _)->
           create (create ll lv ld lrl) lrv lrd (create lrr x d r)
       end
   end else if hr > hl + 2 then begin
     match r with
-      Empty -> invalid_arg "Map.bal"
+      Empty -> [%assert false]
     | Node(rl, rv, rd, rr, _) ->
       if height rr >= height rl then
         create (create l x d rl) rv rd rr
       else begin
         match rl with
-          Empty -> invalid_arg "Map.bal"
+          Empty -> [%assert false]
         | Node(rll, rlv, rld, rlr, _) ->
           create (create l x d rll) rlv rld (create rlr rv rd rr)
       end
@@ -84,7 +84,7 @@ let rec max_binding = function
   | Node(l, x, d, r, _) -> max_binding r
 
 let rec remove_min_binding = function
-    Empty -> invalid_arg "Map.remove_min_elt"
+    Empty -> [%assert false]
   | Node(Empty, x, d, r, _) -> r
   | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
 
@@ -211,7 +211,7 @@ let rec merge f s1 s2 =
     let (l1, d1, r1) = split v2 s1 in
     concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2) [@bs]) (merge f r1 r2)
   | _ ->
-    assert false
+    [%assert false]
 
 let rec filter p = function
     Empty -> Empty
