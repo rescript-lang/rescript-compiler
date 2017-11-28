@@ -1,6 +1,10 @@
-# 4 "set.cppo.mli"
+#ifdef TYPE_STRING
+type elt = string
+#elif defined TYPE_INT
 type elt = int
-# 8
+#else 
+[%error "unknown type"]
+#endif 
 (** The type of the set elements. *)
 
 

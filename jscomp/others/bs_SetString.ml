@@ -1,5 +1,5 @@
-# 4 "set.cppo.ml"
-type elt = int
+# 2 "set.cppo.ml"
+type elt = string
   
 # 9
 type t = Empty | Node of t * elt * t * int

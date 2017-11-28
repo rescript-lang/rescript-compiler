@@ -1,7 +1,11 @@
-# 4 "set.cppo.ml"
+#ifdef TYPE_STRING
+type elt = string
+#elif defined TYPE_INT  
 type elt = int
+#else
+[%error "unknown type"]  
+#endif
   
-# 9
 type t = Empty | Node of t * elt * t * int
 
 (* Sets are represented by balanced binary trees (the heights of the

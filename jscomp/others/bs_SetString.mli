@@ -1,5 +1,5 @@
-# 4 "set.cppo.mli"
-type elt = int
+# 2 "set.cppo.mli"
+type elt = string
 # 8
 (** The type of the set elements. *)
 

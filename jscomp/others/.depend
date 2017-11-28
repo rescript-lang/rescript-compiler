@@ -18,6 +18,7 @@ js_mapperRt.cmj : js_mapperRt.cmi
 bs_MapString.cmj : bs_MapString.cmi
 bs_MapInt.cmj : bs_MapInt.cmi
 bs_SetInt.cmj : bs_SetInt.cmi
+bs_SetString.cmj :
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
 node_child_process.cmj : node.cmj
