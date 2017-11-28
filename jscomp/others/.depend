@@ -17,7 +17,7 @@ js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
 bs_MapString.cmj : bs_MapString.cmi
 bs_MapInt.cmj : bs_MapInt.cmi
-bs_SetInt.cmj :
+bs_SetInt.cmj : bs_SetInt.cmi
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
 node_child_process.cmj : node.cmj
@@ -40,6 +40,7 @@ js_result.cmi :
 js_mapperRt.cmi :
 bs_MapString.cmi :
 bs_MapInt.cmi :
+bs_SetInt.cmi :
 bs_dyn.cmi :
 bs_dyn_lib.cmi : bs_dyn.cmi
 js_boolean.cmi :
