@@ -62,9 +62,9 @@ let rec add x data = function
 
 let rec find x = function
     Empty ->
-    raise Not_found
+    None
   | Node(l, v, d, r, _) ->
-    if x = v then d
+    if x = v then Some d
     else find x (if x < v then l else r)
 
 let rec mem x = function
@@ -275,6 +275,6 @@ let rec bindings_aux accu = function
 let bindings s =
   bindings_aux [] s
 
-let choose = min_binding
+
 
 

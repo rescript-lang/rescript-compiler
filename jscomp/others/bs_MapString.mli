@@ -99,7 +99,7 @@ val bindings: 'a t -> (key * 'a) list
 
 val min_binding: 'a t -> (key * 'a)
 (** Return the smallest binding of the given map
-   (with respect to the [Ord.compare] ordering), or raise
+   or raise
    [Not_found] if the map is empty.
     @since 3.12.0
  *)
@@ -110,12 +110,7 @@ val max_binding: 'a t -> (key * 'a)
     @since 3.12.0
  *)
 
-val choose: 'a t -> (key * 'a)
-(** Return one binding of the given map, or raise [Not_found] if
-   the map is empty. Which binding is chosen is unspecified,
-   but equal bindings will be chosen for equal maps.
-    @since 3.12.0
- *)
+
 
 val split: key -> 'a t -> 'a t * 'a option * 'a t
 (** [split x m] returns a triple [(l, data, r)], where
@@ -128,9 +123,8 @@ val split: key -> 'a t -> 'a t * 'a option * 'a t
     @since 3.12.0
  *)
 
-val find: key -> 'a t -> 'a
-(** [find x m] returns the current binding of [x] in [m],
-   or raises [Not_found] if no such binding exists. *)
+val find: key -> 'a t -> 'a option
+(** [find x m] returns the current binding of [x] in [m] *)
 
 val map: ('a -> 'b [@bs]) -> 'a t -> 'b t
 (** [map f m] returns a map with same domain as [m], where the
