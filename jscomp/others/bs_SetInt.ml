@@ -248,27 +248,27 @@ let rec subset s1 s2 =
 
 let rec iter f = function
     Empty -> ()
-  | Node(l, v, r, _) -> iter f l; f v; iter f r
+  | Node(l, v, r, _) -> iter f l; f v [@bs]; iter f r
 
 let rec fold f s accu =
   match s with
     Empty -> accu
-  | Node(l, v, r, _) -> fold f r (f v (fold f l accu))
+  | Node(l, v, r, _) -> fold f r (f v (fold f l accu)[@bs])
 
 let rec for_all p = function
     Empty -> true
-  | Node(l, v, r, _) -> p v && for_all p l && for_all p r
+  | Node(l, v, r, _) -> p v [@bs] && for_all p l && for_all p r
 
 let rec exists p = function
     Empty -> false
-  | Node(l, v, r, _) -> p v || exists p l || exists p r
+  | Node(l, v, r, _) -> p v [@bs] || exists p l || exists p r
 
 let rec filter p = function
     Empty -> Empty
   | Node(l, v, r, _) ->
     (* call [p] in the expected left-to-right order *)
     let l' = filter p l in
-    let pv = p v in
+    let pv = p v [@bs] in
     let r' = filter p r in
     if pv then join l' v r' else concat l' r'
 
@@ -277,7 +277,7 @@ let rec partition p = function
   | Node(l, v, r, _) ->
     (* call [p] in the expected left-to-right order *)
     let (lt, lf) = partition p l in
-    let pv = p v in
+    let pv = p v [@bs] in
     let (rt, rf) = partition p r in
     if pv
     then (join lt v rt, concat lf rf)
