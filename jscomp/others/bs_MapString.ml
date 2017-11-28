@@ -53,10 +53,9 @@ let rec add x data = function
     Empty ->
     Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then
+    if x = v then
       Node(l, x, data, r, h)
-    else if c < 0 then
+    else if x < v then
       bal (add x data l) v d r
     else
       bal l v d (add x data r)
@@ -65,16 +64,14 @@ let rec find x = function
     Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then d
-    else find x (if c < 0 then l else r)
+    if x = v then d
+    else find x (if x < v then l else r)
 
 let rec mem x = function
     Empty ->
     false
   | Node(l, v, d, r, _) ->
-    let c = Pervasives.compare x v in
-    c = 0 || mem x (if c < 0 then l else r)
+    x = v || mem x (if x < v then l else r)
 
 let rec min_binding = function
     Empty -> raise Not_found
@@ -103,10 +100,9 @@ let rec remove x = function
     Empty ->
     Empty
   | Node(l, v, d, r, h) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then
+    if x = v then
       merge l r
-    else if c < 0 then
+    else if x < v then
       bal (remove x l) v d r
     else
       bal l v d (remove x r)
@@ -199,9 +195,8 @@ let rec split x = function
     Empty ->
     (Empty, None, Empty)
   | Node(l, v, d, r, _) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then (l, Some d, r)
-    else if c < 0 then
+    if x = v then (l, Some d, r)
+    else if x < v then
       let (ll, pres, rl) = split x l in (ll, pres, join rl v d r)
     else
       let (lr, pres, rr) = split x r in (join l v d lr, pres, rr)
@@ -252,8 +247,7 @@ let compare cmp m1 m2 =
     | (End, _)  -> -1
     | (_, End) -> 1
     | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = Pervasives.compare v1 v2 in
-      if c <> 0 then c else
+      if v1 <> v2 then if v1 < v2 then -1 else 1 else
         let c = cmp d1 d2 [@bs] in
         if c <> 0 then c else
           compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
@@ -266,7 +260,7 @@ let equal cmp m1 m2 =
     | (End, _)  -> false
     | (_, End) -> false
     | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      Pervasives.compare v1 v2 = 0 && cmp d1 d2 [@bs] &&
+      v1 = v2  && cmp d1 d2 [@bs] &&
       equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
   in equal_aux (cons_enum m1 End) (cons_enum m2 End)
 
