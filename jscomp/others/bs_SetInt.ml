@@ -59,9 +59,8 @@ let bal l v r =
 let rec add x = function
     Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
-    let c = Pervasives.compare x v in
-    if c = 0 then t else
-    if c < 0 then bal (add x l) v r else bal l v (add x r)
+    if x = v then t else
+    if x < v then bal (add x l) v r else bal l v (add x r)
 
 let singleton x = Node(Empty, x, Empty, 1)
 
@@ -142,10 +141,9 @@ let concat t1 t2 =
 let rec split x = function
     Empty ->
     (Empty, false, Empty)
-  | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then (l, true, r)
-    else if c < 0 then
+  | Node(l, v, r, _) ->    
+    if x = v then (l, true, r)
+    else if x < v then
       let (ll, pres, rl) = split x l in (ll, pres, join rl v r)
     else
       let (lr, pres, rr) = split x r in (join l v lr, pres, rr)
@@ -158,16 +156,14 @@ let is_empty = function Empty -> true | _ -> false
 
 let rec mem x = function
     Empty -> false
-  | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
-    c = 0 || mem x (if c < 0 then l else r)
+  | Node(l, v, r, _) ->    
+    x = v || mem x (if x < v then l else r)
 
 let rec remove x = function
     Empty -> Empty
   | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then merge l r else
-    if c < 0 then bal (remove x l) v r else bal l v (remove x r)
+    if x = v then merge l r else
+    if x < v then bal (remove x l) v r else bal l v (remove x r)
 
 let rec union s1 s2 =
   match (s1, s2) with
@@ -220,9 +216,8 @@ let rec compare_aux e1 e2 =
   | (End, _)  -> -1
   | (_, End) -> 1
   | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    let c = Pervasives.compare v1 v2 in
-    if c <> 0
-    then c
+    if v1 <> v2
+    then if v1 < v2 then -1 else 1
     else compare_aux (cons_enum r1 e1) (cons_enum r2 e2)
 
 let compare s1 s2 =
@@ -238,10 +233,9 @@ let rec subset s1 s2 =
   | _, Empty ->
     false
   | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
-    let c = Pervasives.compare v1 v2 in
-    if c = 0 then
+    if v1 = v2 then
       subset l1 l2 && subset r1 r2
-    else if c < 0 then
+    else if v1 < v2 then
       subset (Node (l1, v1, Empty, 0)) l2 && subset r1 t2
     else
       subset (Node (Empty, v1, r1, 0)) r2 && subset l1 t2
@@ -299,9 +293,8 @@ let choose = min_elt
 let rec find x = function
     Empty -> raise Not_found
   | Node(l, v, r, _) ->
-    let c = Pervasives.compare x v in
-    if c = 0 then v
-    else find x (if c < 0 then l else r)
+    if x = v then v
+    else find x (if x < v then l else r)
 (*
 let of_sorted_list l =
   let rec sub n l =
