@@ -7,7 +7,7 @@ type t
 val empty: t
 (** The empty set. *)
 
-val is_empty: t -> bool
+val isEmpty: t -> bool
 (** Test whether a set is empty or not. *)
 
 val mem: elt -> t -> bool
@@ -54,7 +54,7 @@ val fold: (elt -> 'a -> 'a [@bs]) -> t -> 'a -> 'a
 (** [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)],
    where [x1 ... xN] are the elements of [s], in increasing order. *)
 
-val for_all: (elt -> bool [@bs]) -> t -> bool
+val forAll: (elt -> bool [@bs]) -> t -> bool
 (** [for_all p s] checks if all elements of the set
    satisfy the predicate [p]. *)
 
@@ -81,12 +81,12 @@ val elements: t -> elt list
    to the ordering [Ord.compare], where [Ord] is the argument
    given to {!Set.Make}. *)
 
-val min_elt: t -> elt option
+val min: t -> elt option
 (** Return the smallest element of the given set
    (with respect to the [Ord.compare] ordering), or raise
    [Not_found] if the set is empty. *)
 
-val max_elt: t -> elt option
+val max: t -> elt option
 (** Same as {!Set.S.min_elt}, but returns the largest element of the
    given set. *)
 

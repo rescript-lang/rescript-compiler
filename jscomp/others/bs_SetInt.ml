@@ -102,15 +102,15 @@ let rec min_eltAssert =  function
   | Node(l, v, r, _) -> min_eltAssert l
 (* Smallest and greatest element of a set *)
 
-let rec min_elt = function
+let rec min = function
     Empty -> None
   | Node(Empty, v, r, _) -> Some v
-  | Node(l, v, r, _) -> min_elt l
+  | Node(l, v, r, _) -> min l
 
-let rec max_elt = function
+let rec max = function
     Empty -> None
   | Node(l, v, Empty, _) -> Some v
-  | Node(l, v, r, _) -> max_elt r
+  | Node(l, v, r, _) -> max r
 
 (* Remove the smallest element of the given set *)
 
@@ -159,7 +159,7 @@ let rec split x = function
 
 let empty = Empty
 
-let is_empty = function Empty -> true | _ -> false
+let isEmpty = function Empty -> true | _ -> false
 
 let rec mem x = function
     Empty -> false
@@ -256,9 +256,9 @@ let rec fold f s accu =
     Empty -> accu
   | Node(l, v, r, _) -> fold f r (f v (fold f l accu)[@bs])
 
-let rec for_all p = function
+let rec forAll p = function
     Empty -> true
-  | Node(l, v, r, _) -> p v [@bs] && for_all p l && for_all p r
+  | Node(l, v, r, _) -> p v [@bs] && forAll p l && forAll p r
 
 let rec exists p = function
     Empty -> false
