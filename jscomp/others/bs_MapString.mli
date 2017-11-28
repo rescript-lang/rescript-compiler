@@ -97,7 +97,7 @@ val bindings: 'a t -> (key * 'a) list
     @since 3.12.0
  *)
 
-val min_binding: 'a t -> (key * 'a)
+val min_binding: 'a t -> (key * 'a) option
 (** Return the smallest binding of the given map
    or raise
    [Not_found] if the map is empty.

@@ -73,9 +73,15 @@ let rec mem x = function
   | Node(l, v, d, r, _) ->
     x = v || mem x (if x < v then l else r)
 
-let rec min_binding = function
-    Empty -> raise Not_found
+(* Assert: input is not empty *)
+let rec min_bindingAssert = function
+    Empty -> [%assert false]
   | Node(Empty, x, d, r, _) -> (x, d)
+  | Node(l, x, d, r, _) -> min_bindingAssert l
+    
+let rec min_binding = function
+    Empty -> None
+  | Node(Empty, x, d, r, _) -> Some (x, d)
   | Node(l, x, d, r, _) -> min_binding l
 
 let rec max_binding = function
@@ -93,7 +99,7 @@ let merge t1 t2 =
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = min_binding t2 in
+    let (x, d) = min_bindingAssert t2 in
     bal t1 x d (remove_min_binding t2)
 
 let rec remove x = function
@@ -183,7 +189,7 @@ let concat t1 t2 =
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = min_binding t2 in
+    let (x, d) = min_bindingAssert t2 in
     join t1 x d (remove_min_binding t2)
 
 let concat_or_join t1 v d t2 =
