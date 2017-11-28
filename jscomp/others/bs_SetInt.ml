@@ -93,22 +93,29 @@ let rec join l v r =
     if rh > lh + 2 then bal (join l v rl) rv rr else
       create l v r
 
+(*
+  Invariant: input  is not Empty
+*)      
+let rec min_eltAssert =  function
+    Empty -> [%assert false]
+  | Node(Empty, v, r, _) -> v
+  | Node(l, v, r, _) -> min_eltAssert l
 (* Smallest and greatest element of a set *)
 
 let rec min_elt = function
-    Empty -> raise Not_found
-  | Node(Empty, v, r, _) -> v
+    Empty -> None
+  | Node(Empty, v, r, _) -> Some v
   | Node(l, v, r, _) -> min_elt l
 
 let rec max_elt = function
-    Empty -> raise Not_found
-  | Node(l, v, Empty, _) -> v
+    Empty -> None
+  | Node(l, v, Empty, _) -> Some v
   | Node(l, v, r, _) -> max_elt r
 
 (* Remove the smallest element of the given set *)
 
 let rec remove_min_elt = function
-    Empty -> invalid_arg "Set.remove_min_elt"
+  | Empty -> [%assert false]
   | Node(Empty, v, r, _) -> r
   | Node(l, v, r, _) -> bal (remove_min_elt l) v r
 
@@ -120,7 +127,7 @@ let merge t1 t2 =
   match (t1, t2) with
     (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> bal t1 (min_elt t2) (remove_min_elt t2)
+  | (_, _) -> bal t1 (min_eltAssert t2) (remove_min_elt t2)
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -130,7 +137,7 @@ let concat t1 t2 =
   match (t1, t2) with
     (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> join t1 (min_elt t2) (remove_min_elt t2)
+  | (_, _) -> join t1 (min_eltAssert t2) (remove_min_elt t2)
 
 (* Splitting.  split x s returns a triple (l, present, r) where
     - l is the set of elements of s that are < x
@@ -288,12 +295,11 @@ let rec elements_aux accu = function
 let elements s =
   elements_aux [] s
 
-let choose = min_elt
 
 let rec find x = function
-    Empty -> raise Not_found
+    Empty -> None
   | Node(l, v, r, _) ->
-    if x = v then v
+    if x = v then Some v
     else find x (if x < v then l else r)
 (*
 let of_sorted_list l =

@@ -81,19 +81,15 @@ val elements: t -> elt list
    to the ordering [Ord.compare], where [Ord] is the argument
    given to {!Set.Make}. *)
 
-val min_elt: t -> elt
+val min_elt: t -> elt option
 (** Return the smallest element of the given set
    (with respect to the [Ord.compare] ordering), or raise
    [Not_found] if the set is empty. *)
 
-val max_elt: t -> elt
+val max_elt: t -> elt option
 (** Same as {!Set.S.min_elt}, but returns the largest element of the
    given set. *)
 
-val choose: t -> elt
-(** Return one element of the given set, or raise [Not_found] if
-   the set is empty. Which element is chosen is unspecified,
-   but equal elements will be chosen for equal sets. *)
 
 val split: elt -> t -> t * bool * t
 (** [split x s] returns a triple [(l, present, r)], where
@@ -104,7 +100,7 @@ val split: elt -> t -> t * bool * t
       [present] is [false] if [s] contains no element equal to [x],
       or [true] if [s] contains an element equal to [x]. *)
 
-val find: elt -> t -> elt
+val find: elt -> t -> elt option
 (** [find x s] returns the element of [s] equal to [x] (according
     to [Ord.compare]), or raise [Not_found] if no such element
     exists.
