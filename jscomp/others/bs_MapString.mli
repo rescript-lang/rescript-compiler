@@ -7,7 +7,7 @@ type (+'a) t
 val empty: 'a t
 (** The empty map. *)
 
-val is_empty: 'a t -> bool
+val isEmpty: 'a t -> bool
 (** Test whether a map is empty or not. *)
 
 val mem: key -> 'a t -> bool
@@ -58,7 +58,7 @@ val fold: (key -> 'a -> 'b -> 'b [@bs]) -> 'a t -> 'b -> 'b
    where [k1 ... kN] are the keys of all bindings in [m]
    (in increasing order), and [d1 ... dN] are the associated data. *)
 
-val for_all: (key -> 'a -> bool [@bs]) -> 'a t -> bool
+val forAll: (key -> 'a -> bool [@bs]) -> 'a t -> bool
 (** [for_all p m] checks if all the bindings of the map
     satisfy the predicate [p].
     @since 3.12.0
@@ -97,14 +97,14 @@ val bindings: 'a t -> (key * 'a) list
     @since 3.12.0
  *)
 
-val min_binding: 'a t -> (key * 'a) option
+val minBinding: 'a t -> (key * 'a) option
 (** Return the smallest binding of the given map
    or raise
    [Not_found] if the map is empty.
     @since 3.12.0
  *)
 
-val max_binding: 'a t -> (key * 'a) option
+val maxBinding: 'a t -> (key * 'a) option
 (** returns the largest binding of the given map.
     @since 3.12.0
  *)

@@ -47,7 +47,7 @@ let bal l x d r =
 
 let empty = Empty
 
-let is_empty = function Empty -> true | _ -> false
+let isEmpty = function Empty -> true | _ -> false
 
 let rec add x data = function
     Empty ->
@@ -79,15 +79,15 @@ let rec min_bindingAssert = function
   | Node(Empty, x, d, r, _) -> (x, d)
   | Node(l, x, d, r, _) -> min_bindingAssert l
     
-let rec min_binding = function
+let rec minBinding = function
     Empty -> None
   | Node(Empty, x, d, r, _) -> Some (x, d)
-  | Node(l, x, d, r, _) -> min_binding l
+  | Node(l, x, d, r, _) -> minBinding l
 
-let rec max_binding = function
+let rec maxBinding = function
     Empty -> None
   | Node(l, x, d, Empty, _) -> Some (x, d)
-  | Node(l, x, d, r, _) -> max_binding r
+  | Node(l, x, d, r, _) -> maxBinding r
 
 let rec remove_min_binding = function
     Empty -> [%assert false]
@@ -142,9 +142,9 @@ let rec fold f m accu =
   | Node(l, v, d, r, _) ->
     fold f r (f v d (fold f l accu) [@bs])
 
-let rec for_all p = function
+let rec forAll p = function
     Empty -> true
-  | Node(l, v, d, r, _) -> p v d [@bs] && for_all p l && for_all p r
+  | Node(l, v, d, r, _) -> p v d [@bs] && forAll p l && forAll p r
 
 let rec exists p = function
     Empty -> false
