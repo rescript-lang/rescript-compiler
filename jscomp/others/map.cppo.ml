@@ -1,7 +1,11 @@
-# 2 "map.cppo.ml"
+#ifdef TYPE_STRING
 type key = string
+#elif defined TYPE_INT
+type key = int
+#else 
+[%error "unknown type"]
+#endif 
   
-# 9
 type 'a t =
     Empty
   | Node of 'a t * key * 'a * 'a t * int

@@ -1,5 +1,5 @@
-# 2 "map.cppo.ml"
-type key = string
+# 4 "map.cppo.ml"
+type key = int
   
 # 9
 type 'a t =

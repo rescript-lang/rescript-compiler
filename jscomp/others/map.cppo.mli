@@ -1,6 +1,10 @@
-# 2 "map.cppo.mli"
+#ifdef TYPE_STRING
 type key = string
-# 8
+#elif defined TYPE_INT
+type key = int
+#else
+[%error "unknown type"]
+#endif  
 type (+'a) t
 (** The type of maps from type [key] to type ['a]. *)
 

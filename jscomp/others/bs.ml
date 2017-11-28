@@ -30,3 +30,6 @@ module Dyn = Bs_dyn
 module Dyn_lib = Bs_dyn_lib
 (**/*)
 
+module MapInt = Bs_MapInt
+module MapString = Bs_MapString  
+
