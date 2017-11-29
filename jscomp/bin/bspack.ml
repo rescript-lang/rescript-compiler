@@ -1,5 +1,5 @@
-module ConfigDummy : sig 
-#1 "configDummy.mli"
+module Config_whole_compiler : sig 
+#1 "config_whole_compiler.mli"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -94,7 +94,7 @@ val architecture: string
         (* Name of processor type for the native-code compiler *)
 val model: string
         (* Name of processor submodel for the native-code compiler *)
-val system: string
+(* val system: string *)
         (* Name of operating system for the native-code compiler *)
 
 val asm: string
@@ -122,17 +122,17 @@ val default_executable_name: string
 val systhread_supported : bool
         (* Whether the system thread library is implemented *)
 
-val host : string
+(* val host : string *)
         (* Whether the compiler is a cross-compiler *)
 
-val target : string
+(* val target : string *)
         (* Whether the compiler is a cross-compiler *)
 
 val print_config : out_channel -> unit;;
 
 
 end = struct
-#1 "configDummy.ml"
+#1 "config_whole_compiler.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -157,25 +157,23 @@ end = struct
 
 (* The main OCaml version string has moved to ../VERSION *)
 let version = "4.02.3+BS"
-
-let standard_library_default = "/usr/local/lib/ocaml/lib/ocaml" (* does not matter *)
-
 let standard_library =
-    standard_library_default
+  Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
+let standard_library_default = standard_library
 
-let standard_runtime = "/usr/local/bin/ocaml/bin/ocamlrun"
-let ccomp_type = "cc"
-let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O "
-let bytecomp_c_libraries = "-lcurses -lpthread"
-let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT"
-let native_c_libraries = ""
-let native_pack_linker = "ld -r -arch x86_64  -o "
-let ranlib = "ranlib"
-let ar = "ar"
-let cc_profile = "-pg"
-let mkdll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
-let mkexe = "gcc -Wl,-no_compact_unwind"
-let mkmaindll = "gcc -bundle -flat_namespace -undefined suppress -Wl,-no_compact_unwind"
+let standard_runtime = "ocamlrun" (*dont care:path to ocamlrun*)
+let ccomp_type = "cc"(*dont care: cc or msvc*)
+let bytecomp_c_compiler = "gcc -O  -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O" (*dont care*)
+let bytecomp_c_libraries = "-lcurses -lpthread" (*dont care*)
+let native_c_compiler = "gcc -O  -D_FILE_OFFSET_BITS=64 -D_REENTRANT" (*dont care*)
+let native_c_libraries = ""(*dont care*)
+let native_pack_linker = "ld -r -arch x86_64  -o"(*dont care*) 
+let ranlib = "ranlib"(*dont care*)
+let ar = ""(*dont care*)
+let cc_profile = "-pg"(*dont care*)
+let mkdll = ""(*dont care*)
+let mkexe = ""(*dont care*)
+let mkmaindll = ""(*dont care*)
 
 let exec_magic_number = "Caml1999X011"
 and cmi_magic_number = "Caml1999I017"
@@ -201,21 +199,21 @@ let lazy_tag = 246
 let max_young_wosize = 256
 let stack_threshold = 256 (* see byterun/config.h *)
 
-let architecture = "amd64"
-let model = "default"
+let architecture = "amd64" (*dont care*)
+let model = "default"(*dont care*)
 let system = "macosx"
 
 let asm = "clang -arch x86_64 -c"
-let asm_cfi_supported = true
-let with_frame_pointers = false
+let asm_cfi_supported = false (*dont care*)
+let with_frame_pointers = false (*dontcare*)
 
-let ext_obj = ".o"
-let ext_asm = ".s"
-let ext_lib = ".a"
-let ext_dll = ".so"
+let ext_obj = ".o" (*dont care*)
+let ext_asm = ".s" (*dont care*)
+let ext_lib = ".a" (*dont caer*)
+let ext_dll = ".a" (*dont care*)
 
-let host = "x86_64-apple-darwin15.6.0"
-let target = "x86_64-apple-darwin15.6.0"
+let host = "%%HOST%%"
+let target = "%%TARGET%%"
 
 let default_executable_name =
   match Sys.os_type with
@@ -223,13 +221,57 @@ let default_executable_name =
   | "Win32" | "Cygwin" -> "camlprog.exe"
   | _ -> "camlprog"
 
-let systhread_supported = true;;
+let systhread_supported = false (*dontcare*);;
 
-let print_config oc = ()
+let print_config oc =
+  let p name valu = Printf.fprintf oc "%s: %s\n" name valu in
+  let p_bool name valu = Printf.fprintf oc "%s: %B\n" name valu in
+  p "version" version;
+  p "standard_library_default" standard_library_default;
+  p "standard_library" standard_library;
+  p "standard_runtime" standard_runtime;
+  p "ccomp_type" ccomp_type;
+  p "bytecomp_c_compiler" bytecomp_c_compiler;
+  p "bytecomp_c_libraries" bytecomp_c_libraries;
+  p "native_c_compiler" native_c_compiler;
+  p "native_c_libraries" native_c_libraries;
+  p "native_pack_linker" native_pack_linker;
+  p "ranlib" ranlib;
+  p "cc_profile" cc_profile;
+  p "architecture" architecture;
+  p "model" model;
+  p "system" system;
+  p "asm" asm;
+  p_bool "asm_cfi_supported" asm_cfi_supported;
+  p_bool "with_frame_pointers" with_frame_pointers;
+  p "ext_obj" ext_obj;
+  p "ext_asm" ext_asm;
+  p "ext_lib" ext_lib;
+  p "ext_dll" ext_dll;
+  p "os_type" Sys.os_type;
+  p "default_executable_name" default_executable_name;
+  p_bool "systhread_supported" systhread_supported;
+  p "host" host;
+  p "target" target;
+
+  (* print the magic number *)
+  p "exec_magic_number" exec_magic_number;
+  p "cmi_magic_number" cmi_magic_number;
+  p "cmo_magic_number" cmo_magic_number;
+  p "cma_magic_number" cma_magic_number;
+  p "cmx_magic_number" cmx_magic_number;
+  p "cmxa_magic_number" cmxa_magic_number;
+  p "ast_impl_magic_number" ast_impl_magic_number;
+  p "ast_intf_magic_number" ast_intf_magic_number;
+  p "cmxs_magic_number" cmxs_magic_number;
+  p "cmt_magic_number" cmt_magic_number;
+
+  flush oc;
 ;;
 
+
 end
-module Config = ConfigDummy 
+module Config = Config_whole_compiler 
 module Clflags : sig 
 #1 "clflags.mli"
 (***********************************************************************)
@@ -1327,6 +1369,8 @@ type t =
 
   | Bs_unused_attribute of string           (* 101 *)
   | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 val parse_options : bool -> string -> unit;;
@@ -1429,7 +1473,9 @@ type t =
   | Bad_docstring of bool                   (* 50 *)
 
   | Bs_unused_attribute of string           (* 101 *)
-  | Bs_polymorphic_comparison               (* 102 *) 
+  | Bs_polymorphic_comparison               (* 102 *)
+  | Bs_ffi_warning of string                (* 103 *)
+  | Bs_derive_warning of string             (* 104 *)
 ;;
 
 (* If you remove a warning, leave a hole in the numbering.  NEVER change
@@ -1492,9 +1538,11 @@ let number = function
 
   | Bs_unused_attribute _ -> 101
   | Bs_polymorphic_comparison -> 102
+  | Bs_ffi_warning _ -> 103
+  | Bs_derive_warning _ -> 104
 ;;
 
-let last_warning_number = 102
+let last_warning_number = 104
 (* Must be the max number returned by the [number] function. *)
 let letter_all = 
   let rec loop i = if i = 0 then [] else i :: loop (i - 1) in
@@ -1757,9 +1805,13 @@ let message = function
       if unattached then "unattached documentation comment (ignored)"
       else "ambiguous documentation comment"
   | Bs_unused_attribute s ->
-      "Unused bucklescript attribute: " ^ s
+      "Unused BuckleScript attribute: " ^ s
   | Bs_polymorphic_comparison ->
       "polymorphic comparison introduced (maybe unsafe)"
+  | Bs_ffi_warning s ->
+      "BuckleScript FFI warning: " ^ s
+  | Bs_derive_warning s ->
+      "BuckleScript bs.deriving warning: " ^ s 
 ;;
 
 let nerrors = ref 0;;
@@ -6798,7 +6850,7 @@ val default_gen_tds : bool ref
 (** options for builtin ppx *)
 val no_builtin_ppx_ml : bool ref 
 val no_builtin_ppx_mli : bool ref 
-val no_warn_ffi_type : bool ref 
+
 
 
 val no_warn_unimplemented_external : bool ref 
@@ -6911,7 +6963,7 @@ let (//) = Filename.concat
 let default_gen_tds = ref false
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
-let no_warn_ffi_type = ref false
+
 
 (** TODO: will flip the option when it is ready *)
 let no_warn_unimplemented_external = ref false 

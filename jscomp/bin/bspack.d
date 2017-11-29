@@ -16,13 +16,11 @@ bin/bspack.ml : ./ext/ext_format.ml
 bin/bspack.ml : ./ext/ext_string.ml
 bin/bspack.ml : ./ext/string_map.ml
 bin/bspack.ml : ./ext/string_set.ml
-bin/bspack.ml : ./bin/configDummy.ml
 bin/bspack.ml : ./ext/ext_format.mli
 bin/bspack.ml : ./ext/ext_string.mli
 bin/bspack.ml : ./ext/hashtbl_gen.ml
 bin/bspack.ml : ./ext/string_map.mli
 bin/bspack.ml : ./ext/string_set.mli
-bin/bspack.ml : ./bin/configDummy.mli
 bin/bspack.ml : ./common/js_config.ml
 bin/bspack.ml : ./common/ml_binary.ml
 bin/bspack.ml : ./core/bspack_main.ml
@@ -68,3 +66,5 @@ bin/bspack.ml : ../vendor/ocaml/parsing/parsetree.mli
 bin/bspack.ml : ../vendor/ocaml/parsing/syntaxerr.mli
 bin/bspack.ml : ../vendor/ocaml/parsing/ast_helper.mli
 bin/bspack.ml : ../vendor/ocaml/parsing/docstrings.mli
+bin/bspack.ml : ./core/config_whole_compiler.ml
+bin/bspack.ml : ./core/config_whole_compiler.mli

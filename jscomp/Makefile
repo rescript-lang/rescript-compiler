@@ -592,10 +592,10 @@ bin/js_compiler.byte:bin/js_compiler.mli bin/js_compiler.ml
 
 bootbspack:
 	@echo "Bootstrap bspack.exe"
-	./bin/bspack.exe -bs-MD -module-alias Config=ConfigDummy -I bin -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
+	./bin/bspack.exe -bs-MD -module-alias Config=Config_whole_compiler  -I bin -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
 	$(NATIVE) ./stubs/ext_basic_hash_stubs.c -w -40  unix.cmxa  -I bin  bin/bspack.mli bin/bspack.ml -o bin/bspack.exe
 	@echo "Using the bootstrapped bspack.exe to genreate new bspack.ml: `date`"
-	./bin/bspack.exe -bs-MD  -module-alias Config=ConfigDummy -I bin -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
+	./bin/bspack.exe -bs-MD  -module-alias Config=Config_whole_compiler -I bin -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_UTILS) -I stubs -I ext -I common -I depends -I core -bs-main Bspack_main -o bin/bspack.ml
 	@echo "Bootstrap seems finished, please check diffs in bspack.exe"
 	@echo "Rebuilding bspack.exe"
 	make -C bin -B bspack.exe
