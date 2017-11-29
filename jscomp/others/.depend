@@ -15,6 +15,10 @@ js_list.cmj : js_vector.cmj js_list.cmi
 js_option.cmj : js_option.cmi
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
+bs_MapString.cmj : bs_MapString.cmi
+bs_MapInt.cmj : bs_MapInt.cmi
+bs_SetInt.cmj : bs_SetInt.cmi
+bs_SetString.cmj : bs_SetString.cmi
 bs_dyn.cmj : bs_dyn.cmi
 bs_dyn_lib.cmj : bs_dyn.cmj bs_dyn_lib.cmi
 node_child_process.cmj : node.cmj
@@ -35,6 +39,10 @@ js_list.cmi : js_vector.cmi
 js_option.cmi :
 js_result.cmi :
 js_mapperRt.cmi :
+bs_MapString.cmi :
+bs_MapInt.cmi :
+bs_SetInt.cmi :
+bs_SetString.cmi :
 bs_dyn.cmi :
 bs_dyn_lib.cmi : bs_dyn.cmi
 js_boolean.cmi :

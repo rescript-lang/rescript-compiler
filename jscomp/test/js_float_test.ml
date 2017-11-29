@@ -73,7 +73,7 @@ let suites = Mt.[
   ("toStringWithRadix - radix:16", (fun _ ->
     Eq("7b.74bc6a7ef9dc", toStringWithRadix 123.456 ~radix:16)));
   ("toStringWithRadix - radix:36", (fun _ ->
-    Eq("3f.gez4w97ry0a18ymf6qadcxr", toStringWithRadix 123.456 ~radix:36)));
+    Eq("3f", toStringWithRadix 123. ~radix:36)));
   ("toStringWithRadix - radix:37", (fun _ ->
     ThrowAny(fun () -> ignore @@ toStringWithRadix 0. ~radix:37)));
   ("toStringWithRadix - radix:1", (fun _ ->

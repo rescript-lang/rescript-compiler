@@ -329,8 +329,8 @@ var suites_001 = /* :: */[
                                                                   "toStringWithRadix - radix:36",
                                                                   (function () {
                                                                       return /* Eq */Block.__(0, [
-                                                                                "3f.gez4w97ry0a18ymf6qadcxr",
-                                                                                (123.456).toString(36)
+                                                                                "3f",
+                                                                                (123).toString(36)
                                                                               ]);
                                                                     })
                                                                 ],

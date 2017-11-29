@@ -184,7 +184,7 @@ let root = OCamlRes.Res.([
        # Build + Watch\n\
        \n\
        ```\n\
-       npm run watch\n\
+       npm run start\n\
        ```\n\
        \n\
        \n\
