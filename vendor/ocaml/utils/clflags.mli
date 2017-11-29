@@ -107,6 +107,7 @@ val record_event_when_debug : bool ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_only : bool ref (* set true on bs top*)
+val no_assert_false : bool ref
 #end
 
 type color_setting = Auto | Always | Never

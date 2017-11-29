@@ -254,7 +254,7 @@ and lambda_event_kind =
   | Lev_function
 
 let const_unit = Const_pointer (0, default_pointer_info)
-
+let lambda_assert_false = Lconst (Const_pointer(0, Pt_constructor "assert false"))
 let lambda_unit = Lconst const_unit
 
 (* Build sharing keys *)
