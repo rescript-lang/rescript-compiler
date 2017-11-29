@@ -383,6 +383,7 @@ val record_event_when_debug : bool ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_only : bool ref (* set true on bs top*)
+val no_assert_false : bool ref
 
 
 type color_setting = Auto | Always | Never
@@ -520,7 +521,8 @@ let bs_vscode =
        we don't want to rebuild when flip on or off
     *)
 let dont_record_crc_unit : string option ref = ref None
-let bs_only = ref false    
+let bs_only = ref false
+let no_assert_false = ref false
 
 
 type color_setting = Auto | Always | Never
@@ -9032,13 +9034,7 @@ val no_warn_unimplemented_external : bool ref
 val check_div_by_zero : bool ref 
 val get_check_div_by_zero : unit -> bool 
 
-(* It will imply [-noassert] be set too, note from the implementation point of view,
-   in the lambda layer, it is impossible to tell whether it is [assert (3 <> 2)] or
-   [if (3<>2) then assert false]
- *)
-val no_any_assert : bool ref 
-val set_no_any_assert : unit -> unit
-val get_no_any_assert : unit -> bool 
+
 
 
 
@@ -9162,10 +9158,8 @@ let tool_name = "BuckleScript"
 let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
 
-let no_any_assert = ref false
 
-let set_no_any_assert () = no_any_assert := true
-let get_no_any_assert () = !no_any_assert
+
 
 let sort_imports = ref true
 let dump_js = ref false
@@ -19043,16 +19037,27 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               in 
               (match e with
                | {pexp_desc = Pexp_construct({txt = Lident "false"},None)} -> 
+                 (* The backend will convert [assert false] into a nop later *)
+                 if !Clflags.no_assert_false  then 
+                   Exp.assert_ ~loc 
+                     (Exp.construct ~loc {txt = Lident "false";loc} None)
+                 else 
                    raiseWithString
                | _ ->    
                  let e = self.expr self  e in 
-                 Exp.ifthenelse ~loc
-                   (Exp.apply ~loc
-                      (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                      ["", e]
-                   )
-                   raiseWithString
-                   None
+                 if !Clflags.noassert then 
+                   (* pass down so that it still type check, but the backend will
+                      make it a nop
+                   *)
+                   Exp.assert_ ~loc e
+                 else 
+                   Exp.ifthenelse ~loc
+                     (Exp.apply ~loc
+                        (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
+                        ["", e]
+                     )
+                     raiseWithString
+                     None
               )
             | _ -> 
               Location.raise_errorf 

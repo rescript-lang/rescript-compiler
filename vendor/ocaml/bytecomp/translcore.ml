@@ -876,7 +876,10 @@ and transl_exp0 e =
   | Texp_pack modl ->
       !transl_module Tcoerce_none None modl
   | Texp_assert {exp_desc=Texp_construct(_, {cstr_name="false"}, _)} ->
-      assert_failed e
+      if !Clflags.no_assert_false then
+        Lambda.lambda_assert_false
+      else 
+        assert_failed e
   | Texp_assert (cond) ->
       if !Clflags.noassert
       then lambda_unit

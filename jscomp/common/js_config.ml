@@ -94,10 +94,8 @@ let tool_name = "BuckleScript"
 let check_div_by_zero = ref true
 let get_check_div_by_zero () = !check_div_by_zero
 
-let no_any_assert = ref false
 
-let set_no_any_assert () = no_any_assert := true
-let get_no_any_assert () = !no_any_assert
+
 
 let sort_imports = ref true
 let dump_js = ref false
