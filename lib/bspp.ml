@@ -383,6 +383,7 @@ val record_event_when_debug : bool ref
 val bs_vscode : bool
 val dont_record_crc_unit : string option ref
 val bs_only : bool ref (* set true on bs top*)
+val no_assert_false : bool ref
 
 
 type color_setting = Auto | Always | Never
@@ -520,7 +521,8 @@ let bs_vscode =
        we don't want to rebuild when flip on or off
     *)
 let dont_record_crc_unit : string option ref = ref None
-let bs_only = ref false    
+let bs_only = ref false
+let no_assert_false = ref false
 
 
 type color_setting = Auto | Always | Never

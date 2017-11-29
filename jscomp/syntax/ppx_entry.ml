@@ -310,16 +310,27 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               in 
               (match e with
                | {pexp_desc = Pexp_construct({txt = Lident "false"},None)} -> 
+                 (* The backend will convert [assert false] into a nop later *)
+                 if !Clflags.no_assert_false  then 
+                   Exp.assert_ ~loc 
+                     (Exp.construct ~loc {txt = Lident "false";loc} None)
+                 else 
                    raiseWithString
                | _ ->    
                  let e = self.expr self  e in 
-                 Exp.ifthenelse ~loc
-                   (Exp.apply ~loc
-                      (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                      ["", e]
-                   )
-                   raiseWithString
-                   None
+                 if !Clflags.noassert then 
+                   (* pass down so that it still type check, but the backend will
+                      make it a nop
+                   *)
+                   Exp.assert_ ~loc e
+                 else 
+                   Exp.ifthenelse ~loc
+                     (Exp.apply ~loc
+                        (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
+                        ["", e]
+                     )
+                     raiseWithString
+                     None
               )
             | _ -> 
               Location.raise_errorf 

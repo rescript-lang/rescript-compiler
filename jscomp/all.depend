@@ -417,9 +417,9 @@ core/lam_module_ident.cmx : core/js_op.cmx core/j.cmx ext/hashtbl_make.cmx \
 core/lam_arity.cmx : core/lam_arity.cmi
 core/lam.cmx : ext/ordered_hash_map_local_ident.cmx \
     core/ocaml_stdlib_slots.cmx ext/literals.cmx core/lam_module_ident.cmx \
-    common/js_config.cmx ext/int_vec_vec.cmx ext/int_vec_util.cmx \
-    ext/int_vec.cmx ext/int_hashtbl.cmx ext/ident_set.cmx \
-    ext/ident_hashtbl.cmx ext/ident_hash_set.cmx ext/hash_set_ident_mask.cmx \
+    ext/int_vec_vec.cmx ext/int_vec_util.cmx ext/int_vec.cmx \
+    ext/int_hashtbl.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
+    ext/ident_hash_set.cmx ext/hash_set_ident_mask.cmx \
     syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
     ext/ext_string.cmx ext/ext_scc.cmx common/ext_log.cmx ext/ext_list.cmx \
     core/lam.cmi
