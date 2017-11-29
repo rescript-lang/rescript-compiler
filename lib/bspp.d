@@ -3,8 +3,6 @@
 ../lib/bspp.ml : ./core/bspp_main.mli
 ../lib/bspp.ml : ../vendor/ocaml/utils/misc.ml
 ../lib/bspp.ml : ../vendor/ocaml/utils/misc.mli
-../lib/bspp.ml : ../lib/config_whole_compiler.ml
-../lib/bspp.ml : ../lib/config_whole_compiler.mli
 ../lib/bspp.ml : ../vendor/ocaml/parsing/lexer.ml
 ../lib/bspp.ml : ../vendor/ocaml/utils/clflags.ml
 ../lib/bspp.ml : ../vendor/ocaml/parsing/lexer.mli
@@ -15,3 +13,5 @@
 ../lib/bspp.ml : ../vendor/ocaml/utils/warnings.mli
 ../lib/bspp.ml : ../vendor/ocaml/parsing/location.ml
 ../lib/bspp.ml : ../vendor/ocaml/parsing/location.mli
+../lib/bspp.ml : ./core/config_whole_compiler.ml
+../lib/bspp.ml : ./core/config_whole_compiler.mli

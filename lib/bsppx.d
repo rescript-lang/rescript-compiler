@@ -54,7 +54,6 @@
 ../lib/bsppx.ml : ./syntax/ast_literal.ml
 ../lib/bsppx.ml : ./syntax/ast_payload.ml
 ../lib/bsppx.ml : ./syntax/ast_polyvar.ml
-../lib/bsppx.ml : ../lib/config_whole_compiler.ml
 ../lib/bsppx.ml : ./common/bs_warnings.mli
 ../lib/bsppx.ml : ./common/lam_methname.ml
 ../lib/bsppx.ml : ./ext/ext_json_parse.mli
@@ -65,7 +64,6 @@
 ../lib/bsppx.ml : ./syntax/ast_payload.mli
 ../lib/bsppx.ml : ./syntax/ast_polyvar.mli
 ../lib/bsppx.ml : ./syntax/bs_syntaxerr.ml
-../lib/bsppx.ml : ../lib/config_whole_compiler.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/clflags.ml
 ../lib/bsppx.ml : ./common/lam_methname.mli
 ../lib/bsppx.ml : ./ext/string_hash_set.mli
@@ -110,7 +108,9 @@
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_helper.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_mapper.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/docstrings.mli
+../lib/bsppx.ml : ./core/config_whole_compiler.ml
 ../lib/bsppx.ml : ./syntax/external_ffi_types.mli
+../lib/bsppx.ml : ./core/config_whole_compiler.mli
 ../lib/bsppx.ml : ./syntax/ast_derive_js_mapper.ml
 ../lib/bsppx.ml : ./syntax/ast_derive_projector.ml
 ../lib/bsppx.ml : ./syntax/ast_derive_js_mapper.mli

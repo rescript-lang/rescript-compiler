@@ -54,7 +54,6 @@
 ../lib/bsdep.ml : ./syntax/ast_literal.ml
 ../lib/bsdep.ml : ./syntax/ast_payload.ml
 ../lib/bsdep.ml : ./syntax/ast_polyvar.ml
-../lib/bsdep.ml : ../lib/config_whole_compiler.ml
 ../lib/bsdep.ml : ../vendor/ocaml/utils/ccomp.mli
 ../lib/bsdep.ml : ./common/bs_warnings.mli
 ../lib/bsdep.ml : ./common/lam_methname.ml
@@ -66,7 +65,6 @@
 ../lib/bsdep.ml : ./syntax/ast_payload.mli
 ../lib/bsdep.ml : ./syntax/ast_polyvar.mli
 ../lib/bsdep.ml : ./syntax/bs_syntaxerr.ml
-../lib/bsdep.ml : ../lib/config_whole_compiler.mli
 ../lib/bsdep.ml : ../vendor/ocaml/driver/pparse.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/lexer.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/parse.ml
@@ -126,8 +124,10 @@
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/ast_helper.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/ast_mapper.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/docstrings.mli
+../lib/bsdep.ml : ./core/config_whole_compiler.ml
 ../lib/bsdep.ml : ./syntax/external_ffi_types.mli
 ../lib/bsdep.ml : ./core/bs_conditional_initial.ml
+../lib/bsdep.ml : ./core/config_whole_compiler.mli
 ../lib/bsdep.ml : ./syntax/ast_derive_js_mapper.ml
 ../lib/bsdep.ml : ./syntax/ast_derive_projector.ml
 ../lib/bsdep.ml : ./core/bs_conditional_initial.mli
