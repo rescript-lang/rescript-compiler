@@ -40,11 +40,11 @@ function prepare() {
       console.log(err)
     }
 
-    e(`make -j2 bin/jscmj.exe bin/jsgen.exe bin/js_compiler.ml ext.cma outcome_printer.cma`)
+    e(`make -j2 bin/jscmj.exe bin/jsgen.exe bin/js_compiler.ml`)
     e(`./bin/jsgen.exe --`)
     e(`./bin/jscmj.exe`)
 
-    e(`ocamlc.opt -w -30-40 -no-check-prims -I bin -I ../lib -I outcome_printer ext.cma outcome_printer.cma ../lib/config_whole_compiler.mli ../lib/config_whole_compiler.ml bin/js_compiler.mli bin/js_compiler.ml -o jsc.byte`)
+    e(`ocamlc.opt -w -30-40 -no-check-prims -I bin bin/js_compiler.mli bin/js_compiler.ml -o jsc.byte`)
 
     e(`rm -rf  ${playground}/pre_load.js`)
     e(`cp ./pre_load.js ${playground}`)

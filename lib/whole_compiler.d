@@ -191,7 +191,6 @@
 ../lib/whole_compiler.ml : ./syntax/ast_literal.ml
 ../lib/whole_compiler.ml : ./syntax/ast_payload.ml
 ../lib/whole_compiler.ml : ./syntax/ast_polyvar.ml
-../lib/whole_compiler.ml : ../lib/config_whole_compiler.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/btype.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/ctype.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/ident.ml
@@ -225,7 +224,6 @@
 ../lib/whole_compiler.ml : ./syntax/ast_payload.mli
 ../lib/whole_compiler.ml : ./syntax/ast_polyvar.mli
 ../lib/whole_compiler.ml : ./syntax/bs_syntaxerr.ml
-../lib/whole_compiler.ml : ../lib/config_whole_compiler.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/driver/pparse.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/parsing/lexer.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/parsing/parse.ml
@@ -430,6 +428,7 @@
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/includecore.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/outcometree.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/typedtreeMap.ml
+../lib/whole_compiler.ml : ./core/config_whole_compiler.ml
 ../lib/whole_compiler.ml : ./core/js_dump_import_export.ml
 ../lib/whole_compiler.ml : ./core/js_name_of_module_id.mli
 ../lib/whole_compiler.ml : ./core/lam_beta_reduce_util.mli
@@ -444,6 +443,7 @@
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/includeclass.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/typedtreeMap.mli
 ../lib/whole_compiler.ml : ./core/bs_conditional_initial.ml
+../lib/whole_compiler.ml : ./core/config_whole_compiler.mli
 ../lib/whole_compiler.ml : ./core/js_dump_import_export.mli
 ../lib/whole_compiler.ml : ./core/js_of_lam_float_record.ml
 ../lib/whole_compiler.ml : ./core/lam_compile_primitive.mli
