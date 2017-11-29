@@ -158,7 +158,7 @@ function non_windows_npm_release() {
 
 var build_util = require('./build_util.js')
 
-setUpNinja()
+
 if (is_windows) {
     if (copyBinToExe()) {
         child_process.execFileSync(
@@ -176,3 +176,4 @@ if (is_windows) {
 else {
     non_windows_npm_release()
 }
+setUpNinja()

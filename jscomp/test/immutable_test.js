@@ -1,7 +1,7 @@
 'use strict';
 
 var Immutable = require('immutable');
-var Map = Immutable.Map;
+var Map = Immutable.OrderedMap
 var m = new Map();
 function should(b){
     if (!b){
