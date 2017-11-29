@@ -1,7 +1,7 @@
 #include "caml/hash.h"
 #include "caml/mlvalues.h"
 #include <string.h>
-
+#include <stdint.h>
 typedef uint32_t uint32;
 
 #define FINAL_MIX(h) \
