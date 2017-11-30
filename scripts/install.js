@@ -25,6 +25,8 @@ var config = require('./config.js')
 var make = config.make
 var is_windows = config.is_windows
 var sys_extension = config.sys_extension
+
+process.env.BS_RELEASE_BUILD = 'true'
 // Add vendor bin path
 // So that second try will work
 process.env.PATH =
