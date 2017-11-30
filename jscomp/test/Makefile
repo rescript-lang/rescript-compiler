@@ -208,6 +208,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	ast_mapper_defensive_test\
 	ast_mapper_unused_warning_test\
 	bs_MapInt_test\
+	gpr_2316_test\
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test

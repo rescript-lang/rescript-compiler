@@ -199,7 +199,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
               (fun x y t -> Ident_map.add x (Lam.var y) t)
               xs ys Ident_map.empty in
           Ext_list.fold_right2
-            (fun y l r -> Lam.let_ Alias y l r)
+            (fun y l r -> Lam.let_ Strict y l r)
             ys ls 
             (Lam_subst.subst  env  handler)
         | None -> Lam.staticraise i ls
@@ -211,7 +211,7 @@ let subst_helper (subst : subst_tbl) (query : int -> int) lam =
         | 0,_ -> simplif l1
 
         | ( _ , Lvar _
-          | _, Lconst _) ->  
+          | _, Lconst _) (* when i >= 0  # 2316 *) ->  
           Int_hashtbl.add subst i (xs, Id (simplif l2)) ;
           simplif l1 (** l1 will inline *)
         | 1,_ when i >= 0 -> (** Ask: Note that we have predicate i >=0 *)
