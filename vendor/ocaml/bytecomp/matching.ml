@@ -2975,6 +2975,11 @@ let compile_matching loc repr handler_fun arg pat_act_list partial =
 let partial_function loc () =
   (* [Location.get_pos_info] is too expensive *)
   let (fname, line, char) = Location.get_pos_info loc.Location.loc_start in
+#if undefined BS_NO_COMPILER_PATCH then     
+  let fname = 
+    if  not !Location.absname then Filename.basename fname else fname 
+  in   
+#end  
   Lprim(Praise Raise_regular, [Lprim(Pmakeblock(0, Lambda.default_tag_info, Immutable),
           [transl_normal_path Predef.path_match_failure;
            Lconst(Const_block(0, Lambda.default_tag_info,
