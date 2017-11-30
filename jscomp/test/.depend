@@ -238,6 +238,7 @@ gpr_1170.cmj :
 gpr_1240_missing_unbox.cmj :
 gpr_1245_test.cmj : ../runtime/js.cmj
 gpr_1268.cmj : ../runtime/js.cmj
+gpr_1285_test.cmj : mt.cmj
 gpr_1409_test.cmj : string_set.cmj mt.cmj ../runtime/js.cmj \
     ../stdlib/array.cmj
 gpr_1423_app_test.cmj : mt.cmj ../runtime/js.cmj gpr_1423_nav.cmj
@@ -266,6 +267,7 @@ gpr_1822_test.cmj : mt.cmj
 gpr_1891_test.cmj : ../runtime/js.cmj
 gpr_1943_test.cmj : mt.cmj
 gpr_1946_test.cmj : ../stdlib/obj.cmj ../runtime/js.cmj
+gpr_2250_test.cmj : mt.cmj
 gpr_2316_test.cmj : mt.cmj ../runtime/js.cmj
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :

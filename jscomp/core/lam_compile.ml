@@ -1551,32 +1551,32 @@ and
                 end
             ) with  
       | _, ([] | [_]) -> assert false
-      | (args_code, label::obj'::args) 
+      | (args_code, label::nobj::args) 
         -> 
-        let cont3 obj' k = 
-          match Js_ast_util.named_expression obj' with 
+        let cont3 nobj k = 
+          match Js_ast_util.named_expression nobj with 
           | None -> 
             let cont =
               Js_output.handle_block_return 
                 st should_return lam (List.concat args_code)
             in
-            cont (k obj')
+            cont (k nobj)
           | Some (obj_code, v) -> 
             let cont2 obj_code v = 
               Js_output.handle_block_return 
                 st should_return lam 
-                (obj_code :: List.concat args_code) v in 
-            let obj' = E.var v in 
-            cont2 obj_code (k obj') 
+                ( List.concat args_code @ [obj_code]) v in 
+            let cobj = E.var v in 
+            cont2 obj_code (k cobj) 
         in
         begin
           match meth_kind with 
           | Self -> 
             (* TODO: horrible hack -- fixed later *)
-            cont3 obj' (fun obj' -> E.call ~info:Js_call_info.dummy 
+            cont3 nobj (fun aobj -> E.call ~info:Js_call_info.dummy 
                            (Js_of_lam_array.ref_array 
-                              (Js_of_lam_record.field Fld_na obj' 0l) label )
-                           (obj' :: args))
+                              (Js_of_lam_record.field Fld_na aobj 0l) label )
+                           (aobj :: args))
           (* [E.small_int 1] is because we use array, 
               when we change the runtime represenation, it needs to be adapted 
           *)
@@ -1587,7 +1587,7 @@ and
             let get = E.runtime_ref  Js_runtime_modules.oo "caml_get_public_method" in
             let cache = !method_cache_id in
             let () = incr method_cache_id  in
-            cont3 obj' (fun obj' -> 
+            cont3 nobj (fun obj' -> 
                 E.call ~info:Js_call_info.dummy 
                   (E.call ~info:Js_call_info.dummy get 
                      [obj'; label; E.small_int cache]) (obj'::args)
@@ -1597,8 +1597,8 @@ and
           | Public (Some name) -> 
             let cache = !method_cache_id in
             incr method_cache_id ;
-            cont3 obj' 
-              (fun obj' -> E.public_method_call name obj' label 
+            cont3 nobj 
+              (fun aobj -> E.public_method_call name aobj label 
                   (Int32.of_int cache) args )
 
         end
