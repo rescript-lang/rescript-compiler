@@ -25,7 +25,7 @@
 
 let setup_env () = 
 #if BS_DEBUG then    
-    Js_config.set_debug_file "gpr_2316_test.ml";
+    Js_config.set_debug_file "gpr_2250_test.ml";
 #end       
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
