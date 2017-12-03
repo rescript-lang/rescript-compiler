@@ -139,8 +139,8 @@ let make_block ?comment tag tag_info es mutable_flag : t =
     comment 
   }    
 
-let uninitialized_object ?comment tag size : t = 
-  { expression_desc = Caml_uninitialized_obj(tag,size); comment }
+(* let uninitialized_object ?comment tag size : t = 
+  { expression_desc = Caml_uninitialized_obj(tag,size); comment } *)
 
 let uninitialized_array ?comment (e : t) : t  = 
   match e.expression_desc with 

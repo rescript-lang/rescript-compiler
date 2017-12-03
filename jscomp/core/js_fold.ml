@@ -222,6 +222,7 @@ class virtual fold =
                  (* literally raw JS code 
   *)
                  (* The third argument is [tag] , forth is [tag_info] *)
+                 (* | Caml_uninitialized_obj of expression * expression *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
                  (* For setter, it still return the value of expression, 
      we can not use 
@@ -428,8 +429,6 @@ class virtual fold =
           let o = o#list (fun o -> o#expression) _x in
           let o = o#mutable_flag _x_i1 in
           let o = o#expression _x_i2 in let o = o#tag_info _x_i3 in o
-      | Caml_uninitialized_obj (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
       | Caml_block_tag _x -> let o = o#expression _x in o
       | Caml_block_set_tag (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o

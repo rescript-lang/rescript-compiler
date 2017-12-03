@@ -231,7 +231,7 @@ and expression_desc =
   | Array of expression list * mutable_flag
   | Caml_block of expression list * mutable_flag * expression * tag_info 
   (* The third argument is [tag] , forth is [tag_info] *)
-  | Caml_uninitialized_obj of expression * expression
+  (* | Caml_uninitialized_obj of expression * expression *)
   (* [tag] and [size] tailed  for [Obj.new_block] *)
 
   (* For setter, it still return the value of expression, 

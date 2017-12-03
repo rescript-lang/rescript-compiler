@@ -537,8 +537,9 @@ let translate loc (prim_name : string)
             (Ext_list.init (Int32.to_int i) 
                (fun _ -> E.zero_int_literal)) NA
 
-        | [ tag; size] -> 
-          E.uninitialized_object tag size
+        | [ _; _] -> 
+          call Js_runtime_modules.obj_runtime
+          (* E.uninitialized_object tag size *)
         | _ -> assert false
 
 

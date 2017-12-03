@@ -230,8 +230,8 @@ val make_block :
   ?comment:string ->
   J.expression -> J.tag_info -> J.expression list -> J.mutable_flag -> t
 
-val uninitialized_object : 
-  ?comment:string -> J.expression -> J.expression -> t
+(* val uninitialized_object : 
+  ?comment:string -> J.expression -> J.expression -> t *)
 
 val uninitialized_array : unary_op
 

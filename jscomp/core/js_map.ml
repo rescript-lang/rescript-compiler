@@ -235,6 +235,7 @@ class virtual map =
                  (* literally raw JS code 
   *)
                  (* The third argument is [tag] , forth is [tag_info] *)
+                 (* | Caml_uninitialized_obj of expression * expression *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
                  (* For setter, it still return the value of expression, 
      we can not use 
@@ -474,10 +475,6 @@ class virtual map =
           let _x_i2 = o#expression _x_i2 in
           let _x_i3 = o#tag_info _x_i3
           in Caml_block (_x, _x_i1, _x_i2, _x_i3)
-      | Caml_uninitialized_obj (_x, _x_i1) ->
-          let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1
-          in Caml_uninitialized_obj (_x, _x_i1)
       | Caml_block_tag _x -> let _x = o#expression _x in Caml_block_tag _x
       | Caml_block_set_tag (_x, _x_i1) ->
           let _x = o#expression _x in

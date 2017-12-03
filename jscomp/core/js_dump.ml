@@ -857,9 +857,9 @@ and
       | []| [ _ ] -> P.bracket_group f 1 @@ fun _ -> array_element_list  cxt f el 
       | _ -> P.bracket_vgroup f 1 @@ fun _ -> array_element_list  cxt f el 
     end
-  | Caml_uninitialized_obj (tag, size) 
+  (* | Caml_uninitialized_obj (tag, size) 
     ->  (* FIXME *)
-    expression_desc cxt l f (Object [Length, size ; Tag, tag])    
+    expression_desc cxt l f (Object [Length, size ; Tag, tag])     *)
   | Caml_block( el, mutable_flag, tag, tag_info) 
     -> 
     (* Note that, if we ignore more than tag [0] we loose some information 
@@ -987,11 +987,8 @@ and
     end
 
 and property_name cxt f (s : J.property_name) : unit =
-  match s with
-  | Tag -> P.string f L.tag
-  | Length -> P.string f L.length
-  | Key s -> Js_dump_property.property_key f s 
-  | Int_key i -> P.string f (string_of_int i)
+   Js_dump_property.property_key f s 
+
 
 and property_name_and_value_list cxt f l : Ext_pp_scope.t =
   match l with
@@ -1118,7 +1115,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
     let rec need_paren  (e : J.expression) =
       match e.expression_desc with
       | Call ({expression_desc = Fun _; },_,_) -> true
-      | Caml_uninitialized_obj _ 
+      (* | Caml_uninitialized_obj _  *)
       | Raw_js_code (_, Exp) 
       | Fun _ | Object _ -> true
       | Raw_js_code (_,Stmt)
