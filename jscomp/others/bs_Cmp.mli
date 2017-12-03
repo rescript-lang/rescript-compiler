@@ -1,14 +1,14 @@
 
 type 'a compare = 'a -> 'a -> int [@bs]
-type 'a cmp
+type ('a, 'id) cmp
 
 (** only used for data structures, not exported for client usage *)
-external getCmp : 'a cmp -> 'a compare = "%identity"
+external getCmp : ('a,'id) cmp -> 'a compare = "%identity"
 
 module type S = sig
   type id
   type t
-  val cmp : t cmp
+  val cmp : (t,id) cmp
 end
 
 type ('key, 'id) t = 

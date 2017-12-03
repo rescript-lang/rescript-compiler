@@ -1,7 +1,7 @@
 
-type ('key, 'a) t0 =
+type ('key, 'a, 'id) t0 =
     Empty
-  | Node of ('key, 'a) t0 * 'key * 'a * ('key, 'a) t0 * int
+  | Node of ('key, 'a, 'id) t0 * 'key * 'a * ('key, 'a, 'id) t0 * int
 
 let height = function
     Empty -> 0
@@ -51,7 +51,7 @@ let rec add0 ~cmp x data = function
     Empty ->
     Node(Empty, x, data, Empty, 1)
   | Node(l, v, d, r, h) ->
-    let c = cmp x v [@bs] in
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then
       Node(l, x, data, r, h)
     else if c < 0 then
@@ -63,7 +63,7 @@ let rec find0 ~cmp x = function
     Empty ->
     raise Not_found
   | Node(l, v, d, r, _) ->
-    let c = cmp x v [@bs] in
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then d
     else find0 ~cmp x (if c < 0 then l else r)
 
@@ -236,7 +236,7 @@ let rec partition0 p = function
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)
 
-type ('key, 'a) enumeration = End | More of 'key * 'a * ('key, 'a) t0 * ('key, 'a) enumeration
+type ('key, 'a, 'id) enumeration = End | More of 'key * 'a * ('key, 'a, 'id) t0 * ('key, 'a, 'id) enumeration
 
 let rec cons_enum m e =
   match m with
@@ -284,7 +284,7 @@ let choose = min_binding0
 
 type ('k,'v,'id) t = {
   cmp : ('k,'id) Bs_Cmp.t ;
-  data : ('k,'v) t0 
+  data : ('k,'v, 'id) t0 
 }
 
 
@@ -345,12 +345,12 @@ let add (type k) (type v) (type id) key data (map : (k,v,id) t) =
   let map_cmp = map.cmp in 
   let module X = (val map_cmp) in 
   { cmp = map_cmp ; 
-    data = add0 ~cmp:(Bs_Cmp.getCmp X.cmp) key data map.data
+    data = add0 ~cmp:X.cmp key data map.data
   }
 
 let find (type k) (type v) (type id) x (map : (k,v,id) t) = 
   let module X = (val map.cmp) in 
-  find0 ~cmp:(Bs_Cmp.getCmp X.cmp) x map.data
+  find0 ~cmp:X.cmp x map.data
 
 let mem (type k) (type v) (type id) x (map : (k,v,id) t) = 
   let module X = (val map.cmp) in 
