@@ -48,7 +48,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
     | [] , []  ->  [], [], []
     | {arg_label = Label (label, Some cst )} :: labels  , args -> 
       let accs, eff, assign = aux labels args in 
-      (Key label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
+      (label, Lam_compile_const.translate_arg_cst cst )::accs, eff, assign 
     | {arg_label = Empty (Some _) } :: rest  , args -> assert false 
     | {arg_label = Empty None }::labels, arg::args 
       ->  (* unit type*)
@@ -62,7 +62,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
       begin match acc with 
         | [ ] -> assert false
         | x::xs -> 
-          (Key label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
+          (label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
       end (* evaluation order is undefined *)
 
     | ({arg_label = Optional label; arg_type } as arg_kind)::labels, arg::args 
@@ -78,7 +78,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
           begin match acc with 
           | [] -> assert false 
           | x::xs -> 
-            (Key label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
+            (label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
           end   
         | _ ->                 
           accs, eff , (arg_kind,arg)::assign 

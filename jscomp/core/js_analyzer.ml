@@ -132,7 +132,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Call _ 
   | Dot _ 
   | New _ 
-  | Caml_uninitialized_obj _
+  (* | Caml_uninitialized_obj _ *)
   | String_access _
   | Raw_js_code _ 
   | Caml_block_set_tag _ 
@@ -293,7 +293,7 @@ let rec eq_expression
     | Raw_js_code _
     | Array _ 
     | Caml_block _ 
-    | Caml_uninitialized_obj _ 
+    (* | Caml_uninitialized_obj _  *)
     | Caml_block_tag _ 
     | Caml_block_set_tag _ 
     | Caml_block_set_length _ 

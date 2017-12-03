@@ -44,6 +44,10 @@
     we don't need fill fields, since it is not required by GC
 
 *)
+let caml_obj_block tag size = 
+  let v = Obj.repr (Caml_array.new_uninitialized size) in 
+  Obj.set_tag  v tag ; 
+  v
 
 (**
    Since now we change it back to use

@@ -148,10 +148,11 @@ type property = Lambda.let_kind =
 
 type property_name = (* private *)
   (* TODO: FIXME [caml_uninitialized_obj] seems to be a bug*)
-  | Key of string
-  | Int_key of int 
-  | Tag 
-  | Length
+  (* | Key of *)
+   string
+  (* | Int_key of int  *)
+  (* | Tag  *)
+  (* | Length *)
 
 type 'a access = 
   | Getter

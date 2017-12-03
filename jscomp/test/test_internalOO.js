@@ -2456,10 +2456,7 @@ function dummy_class(loc) {
 }
 
 function create_object(table) {
-  var obj = {
-    length: table[/* size */0],
-    tag: Obj.object_tag
-  };
+  var obj = Caml_obj.caml_obj_block(Obj.object_tag, table[/* size */0]);
   obj[0] = table[/* methods */1];
   return Caml_exceptions.caml_set_oo_id(obj);
 }
@@ -2468,10 +2465,7 @@ function create_object_opt(obj_0, table) {
   if (obj_0) {
     return obj_0;
   } else {
-    var obj = {
-      length: table[/* size */0],
-      tag: Obj.object_tag
-    };
+    var obj = Caml_obj.caml_obj_block(Obj.object_tag, table[/* size */0]);
     obj[0] = table[/* methods */1];
     return Caml_exceptions.caml_set_oo_id(obj);
   }
