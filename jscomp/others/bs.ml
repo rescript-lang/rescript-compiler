@@ -29,7 +29,8 @@ module Dyn = Bs_dyn
 
 module Dyn_lib = Bs_dyn_lib
 (**/*)
-
+module Cmp = Bs_Cmp
+module Map = Bs_Map
 module MapInt = Bs_MapInt
 module MapString = Bs_MapString  
 module SetInt = Bs_SetInt

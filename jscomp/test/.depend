@@ -138,6 +138,7 @@ custom_error_test.cmj : ../runtime/js.cmj
 debug_keep_test.cmj :
 debugger_test.cmj : ../runtime/js.cmj
 default_export_test.cmj :
+defunctor_make_test.cmj : ../stdlib/pervasives.cmj ../runtime/js.cmj
 demo.cmj : ../runtime/js.cmj demo_binding.cmj
 demo_binding.cmj : ../runtime/js.cmj
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi

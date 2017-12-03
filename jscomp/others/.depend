@@ -15,6 +15,8 @@ js_list.cmj : js_vector.cmj js_list.cmi
 js_option.cmj : js_option.cmi
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
+bs_Cmp.cmj : bs_Cmp.cmi
+bs_Map.cmj :
 bs_MapString.cmj : bs_MapString.cmi
 bs_MapInt.cmj : bs_MapInt.cmi
 bs_SetInt.cmj : bs_SetInt.cmi
@@ -39,6 +41,7 @@ js_list.cmi : js_vector.cmi
 js_option.cmi :
 js_result.cmi :
 js_mapperRt.cmi :
+bs_Cmp.cmi :
 bs_MapString.cmi :
 bs_MapInt.cmi :
 bs_SetInt.cmi :
