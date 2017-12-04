@@ -71,7 +71,7 @@ let rec mem0 ~cmp x = function
     Empty ->
     false
   | Node(l, v, d, r, _) ->
-    let c = cmp x v [@bs] in
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     c = 0 || mem0 ~cmp x (if c < 0 then l else r)
 
 let rec min_binding0 = function
@@ -101,7 +101,7 @@ let rec remove0 ~cmp x = function
     Empty ->
     Empty
   | Node(l, v, d, r, h) ->
-    let c = cmp x v [@bs] in
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then
       merge l r
     else if c < 0 then
@@ -197,7 +197,7 @@ let rec split0 ~cmp x = function
     Empty ->
     (Empty, None, Empty)
   | Node(l, v, d, r, _) ->
-    let c = cmp x v [@bs] in
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then (l, Some d, r)
     else if c < 0 then
       let (ll, pres, rl) = split0 ~cmp x l in (ll, pres, join rl v d r)
@@ -250,7 +250,7 @@ let compare0 ~cmp:keycmp cmp m1 m2 =
     | (End, _)  -> -1
     | (_, End) -> 1
     | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = keycmp v1 v2 [@bs] in
+      let c = (Bs_Cmp.getCmp keycmp) v1 v2 [@bs] in
       if c <> 0 then c else
         let c = cmp d1 d2 [@bs] in
         if c <> 0 then c else
@@ -264,7 +264,7 @@ let equal0 ~cmp:keycmp cmp m1 m2 =
     | (End, _)  -> false
     | (_, End) -> false
     | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      keycmp v1 v2 [@bs] = 0   && cmp d1 d2 [@bs] &&
+      (Bs_Cmp.getCmp keycmp) v1 v2 [@bs] = 0   && cmp d1 d2 [@bs] &&
       equal_aux (cons_enum r1 e1) (cons_enum r2 e2)
   in equal_aux (cons_enum m1 End) (cons_enum m2 End)
 
@@ -354,19 +354,19 @@ let find (type k) (type v) (type id) x (map : (k,v,id) t) =
 
 let mem (type k) (type v) (type id) x (map : (k,v,id) t) = 
   let module X = (val map.cmp) in 
-  mem0 ~cmp:(Bs_Cmp.getCmp X.cmp) x map.data
+  mem0 ~cmp:X.cmp x map.data
 
 let remove (type k) (type v) (type id) x (map : (k,v,id) t) =   
   let map_cmp = map.cmp in
   let module X = (val map_cmp) in 
-  { data = remove0 ~cmp:(Bs_Cmp.getCmp X.cmp) x map.data ;
+  { data = remove0 ~cmp:X.cmp x map.data ;
     cmp = map_cmp
   }
 
 let split (type k) (type v) (type id) x (map : (k,v,id) t) =   
   let map_cmp = map.cmp in 
   let module X = (val map_cmp) in 
-  let l,v,r = split0 ~cmp:(Bs_Cmp.getCmp X.cmp) x map.data in 
+  let l,v,r = split0 ~cmp:X.cmp x map.data in 
   { cmp = map_cmp ; 
     data = l
   }, 
@@ -379,15 +379,15 @@ let merge (type k) (type v) (type id) f (s1 : (k,v,id) t)
     (s2 : (k,_,id) t) = 
   let s1_cmp = s1.cmp in 
   let module X = (val s1_cmp) in 
-  { data = merge0 ~cmp:(Bs_Cmp.getCmp X.cmp) f s1.data s2.data ;
+  { data = merge0 ~cmp:X.cmp f s1.data s2.data ;
     cmp = s1_cmp
   }
 
 let compare (type k) (type v) (type id) cmp 
     (m1 : (k,v,id) t) (m2 : (k,v,id) t) = 
   let module X = (val m1.cmp) in 
-  compare0 ~cmp:(Bs_Cmp.getCmp X.cmp) cmp m1.data m2.data
+  compare0 ~cmp:X.cmp cmp m1.data m2.data
 
 let equal (type k) (type v) (type id) cmp (m1 : (k,v,id) t) (m2 : (k,v,id) t) = 
   let module X = (val m1.cmp) in   
-  equal0 ~cmp:(Bs_Cmp.getCmp X.cmp) cmp m1.data m2.data 
+  equal0 ~cmp:X.cmp cmp m1.data m2.data 

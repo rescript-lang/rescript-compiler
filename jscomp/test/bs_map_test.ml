@@ -46,11 +46,13 @@ let () =
   let newm = { m with data = !data} in 
   Js.log newm
 
-(* let () =     
+let () =     
   let  m = Bs.Map.empty0 in 
   let m1 = 
-    Bs.Map.add0 ~cmp:(fun[@bs] (x: int) y -> compare x y) 
+    Bs.Map.add0 ~cmp:I.cmp
     1 1 m 
   in  
+  (* let m2 = 
+    Bs.Map.add0 ~cmp:I2.cmp 1 3 m1 in *)
   let m20 = Bs.Map.empty (module I) in 
-  Js.log {m20 with data = m1} *)
+  Js.log {m20 with data = m1}

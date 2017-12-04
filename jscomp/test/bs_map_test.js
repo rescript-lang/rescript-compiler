@@ -36,6 +36,13 @@ var newm = /* record */[
 
 console.log(newm);
 
+var m1 = Bs_Map.add0(cmp, 1, 1, /* Empty */0);
+
+console.log(/* record */[
+      /* cmp */I,
+      /* data */m1
+    ]);
+
 exports.I  = I;
 exports.I2 = I2;
 exports.m  = m;

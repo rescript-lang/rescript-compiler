@@ -6,15 +6,40 @@ type ('k, +'a, 'id) t = {
   cmp : ('k,'id) Bs_Cmp.t ;
   data : ('k, 'a, 'id) t0 
 }
-(** The type of maps from type ['k] to type ['a]. *)
+(** [('k, 'a, id) t] 
+    ['k] the key type 
+    ['a] the value type
+    ['id] is a unique type for each keyed module
+*)
+(*
+    How we remain soundness:
+    The only way to create a value of type [_ t] from scratch 
+    is through [empty] which requires [_ Bs_Cmp.t]
+    The only way to create [_ Bs_Cmp.t] is using [Bs_Cmp.Make] which
+    will create a fresh type [id] per module
+
+    Generic operations over tree without [cmp] is still exported 
+    (for efficient reaosns) so that [data] does not need be boxed and unboxed.
+
+    The soundness is guarantted in two aspects:
+    When create a value of [_ t] it needs both [_ Bs_Cmp.t] and [_ t0].
+    [_ Bs_Cmp.t] is an abstract type. Note [add0] requires [_ Bs_Cmp.cmp] which 
+    is also an abtract type which can only come from [_ Bs_Cmp.t]
+
+    When destructing a value of [_ t], the ['id] parameter is threaded.
+
+*)
+
+(* should not export [Bs_Cmp.compare]. 
+   should only export [Bs_Cmp.t] or [Bs_Cmp.cmp] instead *)
 
 (** as long as we don't export [empty0], [singleton0]
     Then all elements of [('k,'a,'id) t0] has a bounded ['id]
     we can export generic operations destructing [t0], but 
     we can not export operations which build [t0] from zero
 *)
-(* val empty0 : ('k, 'a, 'id) t0 *)
-(* val singleton0 : 'k -> 'a -> ('k, 'a, 'id) t0     *)
+val empty0 : ('k, 'a, 'id) t0
+val singleton0 : 'k -> 'a -> ('k, 'a, 'id) t0    
 
 val empty: ('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
 (** The empty map. *)
@@ -23,7 +48,7 @@ val is_empty0 : ('k, 'a,'id) t0 -> bool
 val is_empty: ('k, 'a, 'id) t -> bool
 (** Test whether a map is empty or not. *)
 
-val mem0: cmp: 'k Bs_Cmp.compare -> 
+val mem0: cmp: ('k,'id) Bs_Cmp.cmp -> 
   'k -> ('k, 'a, 'id) t0 -> bool
 val mem: 
   'k -> ('k, 'a, 'id) t -> bool
@@ -45,13 +70,13 @@ val singleton: ('k,'id) Bs_Cmp.t ->
     @since 3.12.0
 *)
 
-val remove0: cmp:'k Bs_Cmp.compare -> 
+val remove0: cmp: ('k,'id) Bs_Cmp.cmp -> 
     'k -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0
 val remove: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t
 (** [remove x m] returns a map containing the same bindings as
     [m], except for [x] which is unbound in the returned map. *)
 
-val merge0: cmp: 'k Bs_Cmp.compare ->     
+val merge0: cmp: ('k,'id) Bs_Cmp.cmp ->     
     ('k -> 'a option -> 'b option -> 'c option [@bs]) -> ('k, 'a, 'id ) t0 -> ('k, 'b,'id) t0 -> ('k, 'c,'id) t0    
 val merge:
   ('k -> 'a option -> 'b option -> 'c option [@bs]) -> ('k, 'a, 'id ) t -> ('k, 'b,'id) t -> ('k, 'c,'id) t
@@ -61,13 +86,13 @@ val merge:
     @since 3.12.0
 *)
 
-val compare0: cmp:'k Bs_Cmp.compare -> 
+val compare0: cmp:('k,'id) Bs_Cmp.cmp -> 
      ('a -> 'a -> int [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 -> int
 val compare: ('a -> 'a -> int [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> int
 (** Total ordering between maps.  The first argument is a total ordering
     used to compare data associated with equal keys in the two maps. *)
 
-val equal0: cmp: 'k Bs_Cmp.compare ->     
+val equal0: cmp: ('k,'id) Bs_Cmp.cmp ->     
     ('a -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 -> bool
 val equal: ('a -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> bool
 (** [equal cmp m1 m2] tests whether the maps [m1] and [m2] are
@@ -151,7 +176,7 @@ val max_binding: ('k, 'a, 'id) t -> ('k * 'a)
 
 
 val split0: 
-    cmp: 'k Bs_Cmp.compare ->
+    cmp: ('k,'id) Bs_Cmp.cmp ->
     'k -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 * 'a option * ('k, 'a, 'id) t0
 val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t
 (** [split x m] returns a triple [(l, data, r)], where
@@ -164,7 +189,7 @@ val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) 
     @since 3.12.0
 *)
 
-(** BUG TODO: we should not export [Bs_Cmp.compare] we should export Bs_Cmp.t instead *)
+
 val find0: 
     cmp: ('k,'id) Bs_Cmp.cmp -> 
     'k -> ('k, 'a, 'id) t0 -> 'a
