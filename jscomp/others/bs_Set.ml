@@ -2,6 +2,10 @@
 
 type ('elt, 'id) t0 = Empty | Node of ('elt, 'id) t0 * 'elt * ('elt, 'id) t0 * int
 
+type ('elt, 'id) t = {
+  cmp : ('elt,'id) Bs_Cmp.t ; 
+  data : ('elt,'id) t0
+}
 (* Sets are represented by balanced binary trees (the heights of the
    children differ by at most 2 *)
 
@@ -302,32 +306,102 @@ let rec find0 ~cmp x = function
     if c = 0 then v
     else find0 ~cmp x (if c < 0 then l else r)
 
-(* let of_sorted_list l =
-  let rec sub n l =
-    match n, l with
-    | 0, l -> Empty, l
-    | 1, x0 :: l -> Node (Empty, x0, Empty, 1), l
-    | 2, x0 :: x1 :: l -> Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
-    | 3, x0 :: x1 :: x2 :: l ->
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
-    | n, l ->
-      let nl = n / 2 in
-      let left, l = sub nl l in
-      match l with
-      | [] -> assert false
-      | mid :: l ->
-        let right, l = sub (n - nl - 1) l in
-        create left mid right, l
-  in
-  fst (sub (List.length l) l)
+let empty cmp = {
+  cmp ;
+  data = empty0
+}  
 
-let of_list l =
-  match l with
-  | [] -> empty
-  | [x0] -> singleton x0
-  | [x0; x1] -> add x1 (singleton x0)
-  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-  | _ -> of_sorted_list (List.sort_uniq Ord.compare l) *)
+let is_empty m = is_empty0 m.data
 
+let mem (type elt) (type id) e (m : (elt,id) t) = 
+  let module M = (val m.cmp) in 
+  mem0 ~cmp:(M.cmp) e m.data
+
+let add (type elt) (type id) e (m : (elt,id) t) =   
+  let m_cmp = m.cmp in
+  let module M = (val m_cmp) in 
+  {data = add0 ~cmp:(M.cmp) e m.data ; cmp = m_cmp}
+
+let singleton cmp e =     
+  { cmp; 
+    data = singleton0 e
+  }
+
+let remove (type elt) (type id) e (m : (elt,id) t) =      
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  { data = remove0 ~cmp:M.cmp e m.data ; 
+    cmp = m_cmp
+  }
+
+let union (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  { data = union0 ~cmp:M.cmp m.data n.data ;
+    cmp = m_cmp
+  }
+
+let inter (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  { data = inter0 ~cmp:M.cmp m.data n.data ;
+    cmp = m_cmp
+  }  
+
+let diff (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  { data = diff0 ~cmp:M.cmp m.data n.data ;
+    cmp = m_cmp
+  }    
+
+let compare (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  compare0 ~cmp:M.cmp m.data n.data
+
+let equal (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  equal0 ~cmp:M.cmp m.data n.data  
+
+let subset (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  subset0 ~cmp:M.cmp m.data n.data  
+
+let iter f m = iter0 f m.data 
+
+let fold f m acc = fold0 f m.data acc 
+
+let for_all f m = for_all0 f m.data
+
+let exists f m = exists0 f m.data   
+
+let filter f m = {m with data = filter0 f m.data}
+
+let partition f m = 
+  let l,r = partition0 f m.data in 
+  let cmp = m.cmp in 
+  {data = l; cmp}, {data = r; cmp}
+
+let cardinal m = cardinal0 m.data  
+
+let elements m = elements0 m.data
+
+let min_elt m = min_elt0 m.data
+
+let max_elt m = max_elt0 m.data
+
+let split (type elt) (type id) e (m : (elt,id) t) = 
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  let l, b, r = split0 ~cmp:M.cmp e m.data in 
+  {cmp = m_cmp; data = l},
+  b,
+  {cmp = m_cmp ; data = r}
+
+let find (type elt) (type id) e (m : (elt,id) t) =   
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  find0 ~cmp:M.cmp e m.data
