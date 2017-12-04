@@ -1,4 +1,16 @@
-
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** Adapted by authors of BuckleScript without using functors          *)
 (** The type of the map keys. *)
 type ('k, + 'a, 'id) t0 
 
@@ -33,19 +45,14 @@ type ('k, +'a, 'id) t = {
 (* should not export [Bs_Cmp.compare]. 
    should only export [Bs_Cmp.t] or [Bs_Cmp.cmp] instead *)
 
-(** as long as we don't export [empty0], [singleton0]
-    Then all elements of [('k,'a,'id) t0] has a bounded ['id]
-    we can export generic operations destructing [t0], but 
-    we can not export operations which build [t0] from zero
-*)
-val empty0 : ('k, 'a, 'id) t0
-val singleton0 : 'k -> 'a -> ('k, 'a, 'id) t0    
 
+
+val empty0 : ('k, 'a, 'id) t0
 val empty: ('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
 (** The empty map. *)
 
-val is_empty0 : ('k, 'a,'id) t0 -> bool 
-val is_empty: ('k, 'a, 'id) t -> bool
+val isEmpty0 : ('k, 'a,'id) t0 -> bool 
+val isEmpty: ('k, 'a, 'id) t -> bool
 (** Test whether a map is empty or not. *)
 
 val mem0: cmp: ('k,'id) Bs_Cmp.cmp -> 
@@ -62,7 +69,7 @@ val add: 'k -> 'a -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t
     [m], plus a binding of [x] to [y]. If [x] was already bound
     in [m], its previous binding disappears. *)
 
-
+val singleton0 : 'k -> 'a -> ('k, 'a, 'id) t0    
 val singleton: ('k,'id) Bs_Cmp.t ->
   'k -> 'a -> ('k, 'a, 'id) t
 (** [singleton x y] returns the one-element map that contains a binding [y]
@@ -113,8 +120,8 @@ val fold: ('k -> 'a -> 'b -> 'b [@bs]) -> ('k, 'a, 'id) t -> 'b -> 'b
     where [k1 ... kN] are the keys of all bindings in [m]
     (in increasing order), and [d1 ... dN] are the associated data. *)
 
-val for_all0: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> bool
-val for_all: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> bool
+val forAll0: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> bool
+val forAll: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> bool
 (** [for_all p m] checks if all the bindings of the map
     satisfy the predicate [p].
     @since 3.12.0
@@ -158,16 +165,16 @@ val bindings: ('k, 'a, 'id) t -> ('k * 'a) list
     @since 3.12.0
 *)
 
-val min_binding0: ('k, 'a, 'id) t0 -> ('k * 'a)
-val min_binding: ('k, 'a, 'id) t -> ('k * 'a)
+val minBinding0: ('k, 'a, 'id) t0 -> ('k * 'a)
+val minBinding: ('k, 'a, 'id) t -> ('k * 'a)
 (** Return the smallest binding of the given map
     (with respect to the [Ord.compare] ordering), or raise
     [Not_found] if the map is empty.
     @since 3.12.0
 *)
 
-val max_binding0: ('k, 'a, 'id) t0 -> ('k * 'a)
-val max_binding: ('k, 'a, 'id) t -> ('k * 'a)
+val maxBinding0: ('k, 'a, 'id) t0 -> ('k * 'a)
+val maxBinding: ('k, 'a, 'id) t -> ('k * 'a)
 (** Same as {!Map.S.min_binding}, but returns the largest binding
     of the given map.
     @since 3.12.0

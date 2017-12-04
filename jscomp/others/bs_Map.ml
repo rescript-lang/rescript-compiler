@@ -1,4 +1,16 @@
-
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+(** Adapted by authors of BuckleScript without using functors          *)
 type ('key, 'a, 'id) t0 =
     Empty
   | Node of ('key, 'a, 'id) t0 * 'key * 'a * ('key, 'a, 'id) t0 * int
@@ -45,7 +57,7 @@ let bal l x d r =
 
 let empty0 = Empty
 
-let is_empty0 = function Empty -> true | _ -> false
+let isEmpty0 = function Empty -> true | _ -> false
 
 let rec add0 ~cmp x data = function
     Empty ->
@@ -74,28 +86,28 @@ let rec mem0 ~cmp x = function
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     c = 0 || mem0 ~cmp x (if c < 0 then l else r)
 
-let rec min_binding0 = function
+let rec minBinding0 = function
     Empty -> raise Not_found
   | Node(Empty, x, d, r, _) -> (x, d)
-  | Node(l, x, d, r, _) -> min_binding0 l
+  | Node(l, x, d, r, _) -> minBinding0 l
 
-let rec max_binding0 = function
+let rec maxBinding0 = function
     Empty -> raise Not_found
   | Node(l, x, d, Empty, _) -> (x, d)
-  | Node(l, x, d, r, _) -> max_binding0 r
+  | Node(l, x, d, r, _) -> maxBinding0 r
 
-let rec remove_min_binding = function
+let rec remove_minBinding = function
     Empty -> invalid_arg "Map.remove_min_elt"
   | Node(Empty, x, d, r, _) -> r
-  | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+  | Node(l, x, d, r, _) -> bal (remove_minBinding l) x d r
 
 let merge t1 t2 =
   match (t1, t2) with
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = min_binding0 t2 in
-    bal t1 x d (remove_min_binding t2)
+    let (x, d) = minBinding0 t2 in
+    bal t1 x d (remove_minBinding t2)
 
 let rec remove0 ~cmp x = function
     Empty ->
@@ -138,9 +150,9 @@ let rec fold0 f m accu =
   | Node(l, v, d, r, _) ->
     fold0 f r (f v d (fold0 f l accu) [@bs])
 
-let rec for_all0 p = function
+let rec forAll0 p = function
     Empty -> true
-  | Node(l, v, d, r, _) -> p v d [@bs] && for_all0 p l && for_all0 p r
+  | Node(l, v, d, r, _) -> p v d [@bs] && forAll0 p l && forAll0 p r
 
 let rec exists0 p = function
     Empty -> false
@@ -154,23 +166,23 @@ let rec exists0 p = function
    respects this precondition.
 *)
 
-let rec add_min_binding k v = function
+let rec add_minBinding k v = function
   | Empty -> singleton0 k v
   | Node (l, x, d, r, h) ->
-    bal (add_min_binding k v l) x d r
+    bal (add_minBinding k v l) x d r
 
-let rec add_max_binding k v = function
+let rec add_maxBinding k v = function
   | Empty -> singleton0 k v
   | Node (l, x, d, r, h) ->
-    bal l x d (add_max_binding k v r)
+    bal l x d (add_maxBinding k v r)
 
 (* Same as create and bal, but no assumptions are made on the
    relative heights of l and r. *)
 
 let rec join l v d r =
   match (l, r) with
-    (Empty, _) -> add_min_binding v d r
-  | (_, Empty) -> add_max_binding v d l
+    (Empty, _) -> add_minBinding v d r
+  | (_, Empty) -> add_maxBinding v d l
   | (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) ->
     if lh > rh + 2 then bal ll lv ld (join lr v d r) else
     if rh > lh + 2 then bal (join l v d rl) rv rd rr else
@@ -185,8 +197,8 @@ let concat t1 t2 =
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = min_binding0 t2 in
-    join t1 x d (remove_min_binding t2)
+    let (x, d) = minBinding0 t2 in
+    join t1 x d (remove_minBinding t2)
 
 let concat_or_join t1 v d t2 =
   match d with
@@ -279,7 +291,7 @@ let rec bindings_aux accu = function
 let bindings0 s =
   bindings_aux [] s
 
-let choose = min_binding0
+let choose = minBinding0
 
 
 type ('k,'v,'id) t = {
@@ -293,8 +305,8 @@ let empty cmp =
     cmp ;
     data = empty0
   }
-let is_empty map = 
-  is_empty0 map.data 
+let isEmpty map = 
+  isEmpty0 map.data 
 
 let singleton cmp k v = {
   cmp ; 
@@ -305,8 +317,8 @@ let iter f map =
   iter0 f map.data
 let fold f map = 
   fold0 f map.data   
-let for_all f map = 
-  for_all0 f map.data   
+let forAll f map = 
+  forAll0 f map.data   
 let exists f map =   
   exists0 f map.data 
 
@@ -327,10 +339,10 @@ let cardinal map =
 let bindings map = 
   bindings0 map.data 
 
-let min_binding map = 
-  min_binding0 map.data 
-let max_binding map =
-  max_binding0 map.data   
+let minBinding map = 
+  minBinding0 map.data 
+let maxBinding map =
+  maxBinding0 map.data   
 
 let map f m = 
   let m_cmp = m.cmp in 
