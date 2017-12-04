@@ -33,25 +33,25 @@ let bal l v r =
   let hr = match r with Empty -> 0 | Node(_,_,_,h) -> h in
   if hl > hr + 2 then begin
     match l with
-      Empty -> invalid_arg "Set.bal"
+      Empty -> assert false
     | Node(ll, lv, lr, _) ->
       if height ll >= height lr then
         create ll lv (create lr v r)
       else begin
         match lr with
-          Empty -> invalid_arg "Set.bal"
+          Empty -> assert false
         | Node(lrl, lrv, lrr, _)->
           create (create ll lv lrl) lrv (create lrr v r)
       end
   end else if hr > hl + 2 then begin
     match r with
-      Empty -> invalid_arg "Set.bal"
+      Empty -> assert false
     | Node(rl, rv, rr, _) ->
       if height rr >= height rl then
         create (create l v rl) rv rr
       else begin
         match rl with
-          Empty -> invalid_arg "Set.bal"
+          Empty -> assert false
         | Node(rll, rlv, rlr, _) ->
           create (create l v rll) rlv (create rlr rv rr)
       end
@@ -101,19 +101,25 @@ let rec join l v r =
 (* Smallest and greatest element of a set *)
 
 let rec min_elt0 = function
-    Empty -> raise Not_found
-  | Node(Empty, v, r, _) -> v
+    Empty -> None
+  | Node(Empty, v, r, _) -> Some v
   | Node(l, v, r, _) -> min_elt0 l
 
 let rec max_elt0 = function
-    Empty -> raise Not_found
-  | Node(l, v, Empty, _) -> v
+    Empty -> None
+  | Node(l, v, Empty, _) -> Some v
   | Node(l, v, r, _) -> max_elt0 r
 
 (* Remove the smallest element of the given set *)
 
+(* Input is non empty data *)
+let rec min_eltAssert0 = function
+    Empty -> assert false
+  | Node(Empty, v, r, _) -> v
+  | Node(l, v, r, _) -> min_eltAssert0 l
+(* Input is non empty data *)
 let rec remove_min_elt = function
-    Empty -> invalid_arg "Set.remove_min_elt"
+    Empty -> assert false
   | Node(Empty, v, r, _) -> r
   | Node(l, v, r, _) -> bal (remove_min_elt l) v r
 
@@ -125,7 +131,7 @@ let merge t1 t2 =
   match (t1, t2) with
     (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> bal t1 (min_elt0 t2) (remove_min_elt t2)
+  | (_, Node _) -> bal t1 (min_eltAssert0 t2) (remove_min_elt t2)
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -135,7 +141,7 @@ let concat t1 t2 =
   match (t1, t2) with
     (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> join t1 (min_elt0 t2) (remove_min_elt t2)
+  | (_, Node _) -> join t1 (min_eltAssert0 t2) (remove_min_elt t2)
 
 (* Splitting.  split x s returns a triple (l, present, r) where
     - l is the set of elements of s that are < x
@@ -300,10 +306,10 @@ let elements0 s =
 
 
 let rec find0 ~cmp x = function
-    Empty -> raise Not_found
+    Empty -> None
   | Node(l, v, r, _) ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then v
+    if c = 0 then Some v
     else find0 ~cmp x (if c < 0 then l else r)
 
 let empty cmp = {

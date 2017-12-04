@@ -135,14 +135,14 @@ val elements: ('elt, 'id) t -> 'elt list
     to the ordering [Ord.compare], where [Ord] is the argument
     given to {!Set.Make}. *)
 
-val min_elt0: ('elt, 'id) t0 -> 'elt
-val min_elt: ('elt, 'id) t -> 'elt
+val min_elt0: ('elt, 'id) t0 -> 'elt option
+val min_elt: ('elt, 'id) t -> 'elt option
 (** Return the smallest element of the given set
     (with respect to the [Ord.compare] ordering), or raise
     [Not_found] if the set is empty. *)
 
-val max_elt0: ('elt, 'id) t0 -> 'elt
-val max_elt: ('elt, 'id) t -> 'elt
+val max_elt0: ('elt, 'id) t0 -> 'elt option
+val max_elt: ('elt, 'id) t -> 'elt option
 (** Same as {!Set.S.min_elt}, but returns the largest element of the
     given set. *)
 
@@ -162,9 +162,9 @@ val split:
 
 val find0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  'elt -> ('elt, 'id) t0 -> 'elt
+  'elt -> ('elt, 'id) t0 -> 'elt option
 val find: 
-  'elt -> ('elt, 'id) t -> 'elt  
+  'elt -> ('elt, 'id) t -> 'elt option
 (** [find x s] returns the element of [s] equal to [x] (according
     to [Ord.compare]), or raise [Not_found] if no such element
     exists.
