@@ -1,6 +1,6 @@
 
 
-type ('elt, 'id) t = Empty | Node of ('elt, 'id) t * 'elt * ('elt, 'id) t * int
+type ('elt, 'id) t0 = Empty | Node of ('elt, 'id) t0 * 'elt * ('elt, 'id) t0 * int
 
 (* Sets are represented by balanced binary trees (the heights of the
    children differ by at most 2 *)
@@ -207,7 +207,7 @@ let rec diff ~cmp s1 s2 =
     | (l2, true, r2) ->
       concat (diff ~cmp l1 l2) (diff ~cmp r1 r2)
 
-type ('elt, 'id)enumeration = End | More of 'elt * ('elt, 'id) t * ('elt, 'id) enumeration
+type ('elt, 'id)enumeration = End | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration
 
 let rec cons_enum s e =
   match s with
