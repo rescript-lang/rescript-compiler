@@ -90,6 +90,7 @@ bs_auto_uncurry.cmj : ../runtime/js.cmj
 bs_auto_uncurry_test.cmj : mt.cmj ../others/js_array.cmj ../runtime/js.cmj
 bs_ignore_effect.cmj : mt.cmj
 bs_ignore_test.cmj : ../runtime/js.cmj
+bs_map_test.cmj : ../runtime/js.cmj ../others/bs.cmj
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
 bs_qualified.cmj : ../runtime/js.cmj
 bs_rest_test.cmj :
@@ -138,6 +139,7 @@ custom_error_test.cmj : ../runtime/js.cmj
 debug_keep_test.cmj :
 debugger_test.cmj : ../runtime/js.cmj
 default_export_test.cmj :
+defunctor_make_test.cmj : ../stdlib/pervasives.cmj ../runtime/js.cmj
 demo.cmj : ../runtime/js.cmj demo_binding.cmj
 demo_binding.cmj : ../runtime/js.cmj
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi

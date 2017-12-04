@@ -211,6 +211,8 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	gpr_2316_test\
 	gpr_2250_test\
 	gpr_1285_test\
+	defunctor_make_test\
+	bs_map_test\
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test
