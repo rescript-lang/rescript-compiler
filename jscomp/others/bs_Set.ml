@@ -56,14 +56,14 @@ let bal l v r =
 
 (* Insertion of one element *)
 
-let rec add ~cmp x  = function
+let rec add0 ~cmp x  = function
     Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then t else
-    if c < 0 then bal (add ~cmp x l) v r else bal l v (add ~cmp x r)
+    if c < 0 then bal (add0 ~cmp x l) v r else bal l v (add0 ~cmp x r)
 
-let singleton x = Node(Empty, x, Empty, 1)
+let singleton0 x = Node(Empty, x, Empty, 1)
 
 (* Beware: those two functions assume that the added v is *strictly*
    smaller (or bigger) than all the present elements in the tree; it
@@ -73,12 +73,12 @@ let singleton x = Node(Empty, x, Empty, 1)
 *)
 
 let rec add_min_element v = function
-  | Empty -> singleton v
+  | Empty -> singleton0 v
   | Node (l, x, r, h) ->
     bal (add_min_element v l) x r
 
 let rec add_max_element v = function
-  | Empty -> singleton v
+  | Empty -> singleton0 v
   | Node (l, x, r, h) ->
     bal l x (add_max_element v r)
 
@@ -96,15 +96,15 @@ let rec join l v r =
 
 (* Smallest and greatest element of a set *)
 
-let rec min_elt = function
+let rec min_elt0 = function
     Empty -> raise Not_found
   | Node(Empty, v, r, _) -> v
-  | Node(l, v, r, _) -> min_elt l
+  | Node(l, v, r, _) -> min_elt0 l
 
-let rec max_elt = function
+let rec max_elt0 = function
     Empty -> raise Not_found
   | Node(l, v, Empty, _) -> v
-  | Node(l, v, r, _) -> max_elt r
+  | Node(l, v, r, _) -> max_elt0 r
 
 (* Remove the smallest element of the given set *)
 
@@ -121,7 +121,7 @@ let merge t1 t2 =
   match (t1, t2) with
     (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> bal t1 (min_elt t2) (remove_min_elt t2)
+  | (_, _) -> bal t1 (min_elt0 t2) (remove_min_elt t2)
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -131,7 +131,7 @@ let concat t1 t2 =
   match (t1, t2) with
     (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) -> join t1 (min_elt t2) (remove_min_elt t2)
+  | (_, _) -> join t1 (min_elt0 t2) (remove_min_elt t2)
 
 (* Splitting.  split x s returns a triple (l, present, r) where
     - l is the set of elements of s that are < x
@@ -139,73 +139,73 @@ let concat t1 t2 =
     - present is false if s contains no element equal to x,
       or true if s contains an element equal to x. *)
 
-let rec split ~cmp x = function
+let rec split0 ~cmp x = function
     Empty ->
     (Empty, false, Empty)
   | Node(l, v, r, _) ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then (l, true, r)
     else if c < 0 then
-      let (ll, pres, rl) = split ~cmp x l in (ll, pres, join rl v r)
+      let (ll, pres, rl) = split0 ~cmp x l in (ll, pres, join rl v r)
     else
-      let (lr, pres, rr) = split ~cmp x r in (join l v lr, pres, rr)
+      let (lr, pres, rr) = split0 ~cmp x r in (join l v lr, pres, rr)
 
 (* Implementation of the set operations *)
 
-let empty = Empty
+let empty0 = Empty
 
-let is_empty = function Empty -> true | _ -> false
+let is_empty0 = function Empty -> true | _ -> false
 
-let rec mem ~cmp x = function
+let rec mem0 ~cmp x = function
     Empty -> false
   | Node(l, v, r, _) ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    c = 0 || mem ~cmp x (if c < 0 then l else r)
+    c = 0 || mem0 ~cmp x (if c < 0 then l else r)
 
-let rec remove ~cmp x = function
+let rec remove0 ~cmp x = function
     Empty -> Empty
   | Node(l, v, r, _) ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then merge l r else
-    if c < 0 then bal (remove ~cmp x l) v r else bal l v (remove ~cmp x r)
+    if c < 0 then bal (remove0 ~cmp x l) v r else bal l v (remove0 ~cmp x r)
 
-let rec union ~cmp s1 s2 =
+let rec union0 ~cmp s1 s2 =
   match (s1, s2) with
     (Empty, t2) -> t2
   | (t1, Empty) -> t1
   | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
     if h1 >= h2 then
-      if h2 = 1 then add ~cmp v2 s1 else begin
-        let (l2, _, r2) = split ~cmp v1 s2 in
-        join (union ~cmp l1 l2) v1 (union ~cmp r1 r2)
+      if h2 = 1 then add0 ~cmp v2 s1 else begin
+        let (l2, _, r2) = split0 ~cmp v1 s2 in
+        join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
       end
     else
-    if h1 = 1 then add ~cmp v1 s2 else begin
-      let (l1, _, r1) = split ~cmp v2 s1 in
-      join (union ~cmp l1 l2) v2 (union ~cmp r1 r2)
+    if h1 = 1 then add0 ~cmp v1 s2 else begin
+      let (l1, _, r1) = split0 ~cmp v2 s1 in
+      join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
     end
 
-let rec inter ~cmp s1 s2 =
+let rec inter0 ~cmp s1 s2 =
   match (s1, s2) with
     (Empty, t2) -> Empty
   | (t1, Empty) -> Empty
   | (Node(l1, v1, r1, _), t2) ->
-    match split ~cmp v1 t2 with
+    match split0 ~cmp v1 t2 with
       (l2, false, r2) ->
-      concat (inter ~cmp l1 l2) (inter ~cmp r1 r2)
+      concat (inter0 ~cmp l1 l2) (inter0 ~cmp r1 r2)
     | (l2, true, r2) ->
-      join (inter ~cmp l1 l2) v1 (inter ~cmp r1 r2)
+      join (inter0 ~cmp l1 l2) v1 (inter0 ~cmp r1 r2)
 
-let rec diff ~cmp s1 s2 =
+let rec diff0 ~cmp s1 s2 =
   match (s1, s2) with
     (Empty, t2) -> Empty
   | (t1, Empty) -> t1
   | (Node(l1, v1, r1, _), t2) ->
-    match split ~cmp v1 t2 with
+    match split0 ~cmp v1 t2 with
       (l2, false, r2) ->
-      join (diff ~cmp l1 l2) v1 (diff ~cmp r1 r2)
+      join (diff0 ~cmp l1 l2) v1 (diff0 ~cmp r1 r2)
     | (l2, true, r2) ->
-      concat (diff ~cmp l1 l2) (diff ~cmp r1 r2)
+      concat (diff0 ~cmp l1 l2) (diff0 ~cmp r1 r2)
 
 type ('elt, 'id)enumeration = End | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration
 
@@ -225,13 +225,13 @@ let rec compare_aux ~cmp e1 e2 =
     then c
     else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
 
-let compare ~cmp s1 s2 =
+let compare0 ~cmp s1 s2 =
   compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End)
 
-let equal ~cmp s1 s2 =
-  compare ~cmp s1 s2 = 0
+let equal0 ~cmp s1 s2 =
+  compare0 ~cmp s1 s2 = 0
 
-let rec subset ~cmp s1 s2 =
+let rec subset0 ~cmp s1 s2 =
   match (s1, s2) with
     Empty, _ ->
     true
@@ -240,68 +240,67 @@ let rec subset ~cmp s1 s2 =
   | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
     let c = (Bs_Cmp.getCmp cmp) v1 v2 [@bs] in
     if c = 0 then
-      subset ~cmp l1 l2 && subset ~cmp r1 r2
+      subset0 ~cmp l1 l2 && subset0 ~cmp r1 r2
     else if c < 0 then
-      subset ~cmp (Node (l1, v1, Empty, 0)) l2 && subset ~cmp r1 t2
+      subset0 ~cmp (Node (l1, v1, Empty, 0)) l2 && subset0 ~cmp r1 t2
     else
-      subset ~cmp (Node (Empty, v1, r1, 0)) r2 && subset ~cmp l1 t2
+      subset0 ~cmp (Node (Empty, v1, r1, 0)) r2 && subset0 ~cmp l1 t2
 
-let rec iter f = function
+let rec iter0 f = function
     Empty -> ()
-  | Node(l, v, r, _) -> iter f l; f v [@bs]; iter f r
+  | Node(l, v, r, _) -> iter0 f l; f v [@bs]; iter0 f r
 
-let rec fold f s accu =
+let rec fold0 f s accu =
   match s with
     Empty -> accu
-  | Node(l, v, r, _) -> fold f r (f v (fold f l accu) [@bs])
+  | Node(l, v, r, _) -> fold0 f r (f v (fold0 f l accu) [@bs])
 
-let rec for_all p = function
+let rec for_all0 p = function
     Empty -> true
-  | Node(l, v, r, _) -> p v [@bs] && for_all p l && for_all p r
+  | Node(l, v, r, _) -> p v [@bs] && for_all0 p l && for_all0 p r
 
-let rec exists p = function
+let rec exists0 p = function
     Empty -> false
-  | Node(l, v, r, _) -> p v [@bs] || exists p l || exists p r
+  | Node(l, v, r, _) -> p v [@bs] || exists0 p l || exists0 p r
 
-let rec filter p = function
+let rec filter0 p = function
     Empty -> Empty
   | Node(l, v, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let l' = filter p l in
+    let l' = filter0 p l in
     let pv = p v [@bs] in
-    let r' = filter p r in
+    let r' = filter0 p r in
     if pv then join l' v r' else concat l' r'
 
-let rec partition p = function
+let rec partition0 p = function
     Empty -> (Empty, Empty)
   | Node(l, v, r, _) ->
     (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition p l in
+    let (lt, lf) = partition0 p l in
     let pv = p v [@bs] in
-    let (rt, rf) = partition p r in
+    let (rt, rf) = partition0 p r in
     if pv
     then (join lt v rt, concat lf rf)
     else (concat lt rt, join lf v rf)
 
-let rec cardinal = function
+let rec cardinal0 = function
     Empty -> 0
-  | Node(l, v, r, _) -> cardinal l + 1 + cardinal r
+  | Node(l, v, r, _) -> cardinal0 l + 1 + cardinal0 r
 
 let rec elements_aux accu = function
     Empty -> accu
   | Node(l, v, r, _) -> elements_aux (v :: elements_aux accu r) l
 
-let elements s =
+let elements0 s =
   elements_aux [] s
 
-let choose = min_elt
 
-let rec find ~cmp x = function
+let rec find0 ~cmp x = function
     Empty -> raise Not_found
   | Node(l, v, r, _) ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then v
-    else find ~cmp x (if c < 0 then l else r)
+    else find0 ~cmp x (if c < 0 then l else r)
 
 (* let of_sorted_list l =
   let rec sub n l =
