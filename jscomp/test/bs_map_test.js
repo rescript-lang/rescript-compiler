@@ -1,6 +1,7 @@
 'use strict';
 
 var Bs_Map   = require("../../lib/js/bs_Map.js");
+var Bs_Set   = require("../../lib/js/bs_Set.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var cmp = Caml_obj.caml_int_compare;
@@ -25,7 +26,7 @@ var m2 = /* record */[
 
 var data = /* Empty */0;
 
-for(var i = 0; i <= 1000000; ++i){
+for(var i = 0; i <= 100000; ++i){
   data = Bs_Map.add0(cmp, i, i, data);
 }
 
@@ -41,6 +42,17 @@ var m1 = Bs_Map.add0(cmp, 1, 1, /* Empty */0);
 console.log(/* record */[
       /* cmp */I,
       /* data */m1
+    ]);
+
+var data$1 = /* Empty */0;
+
+for(var i$1 = 0; i$1 <= 100000; ++i$1){
+  data$1 = Bs_Set.add0(cmp, i$1, data$1);
+}
+
+console.log(/* record */[
+      /* cmp */I,
+      /* data */data$1
     ]);
 
 exports.I  = I;

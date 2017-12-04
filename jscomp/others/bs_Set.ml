@@ -100,15 +100,15 @@ let rec join l v r =
 
 (* Smallest and greatest element of a set *)
 
-let rec min_elt0 = function
+let rec min0 = function
     Empty -> None
   | Node(Empty, v, r, _) -> Some v
-  | Node(l, v, r, _) -> min_elt0 l
+  | Node(l, v, r, _) -> min0 l
 
-let rec max_elt0 = function
+let rec max0 = function
     Empty -> None
   | Node(l, v, Empty, _) -> Some v
-  | Node(l, v, r, _) -> max_elt0 r
+  | Node(l, v, r, _) -> max0 r
 
 (* Remove the smallest element of the given set *)
 
@@ -164,7 +164,7 @@ let rec split0 ~cmp x = function
 
 let empty0 = Empty
 
-let is_empty0 = function Empty -> true | _ -> false
+let isEmpty0 = function Empty -> true | _ -> false
 
 let rec mem0 ~cmp x = function
     Empty -> false
@@ -235,11 +235,11 @@ let rec compare_aux ~cmp e1 e2 =
     then c
     else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
 
-let compare0 ~cmp s1 s2 =
+let cmp0 ~cmp s1 s2 =
   compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End)
 
-let equal0 ~cmp s1 s2 =
-  compare0 ~cmp s1 s2 = 0
+let eq0 ~cmp s1 s2 =
+  cmp0 ~cmp s1 s2 = 0
 
 let rec subset0 ~cmp s1 s2 =
   match (s1, s2) with
@@ -265,9 +265,9 @@ let rec fold0 f s accu =
     Empty -> accu
   | Node(l, v, r, _) -> fold0 f r (f v (fold0 f l accu) [@bs])
 
-let rec for_all0 p = function
+let rec forAll0 p = function
     Empty -> true
-  | Node(l, v, r, _) -> p v [@bs] && for_all0 p l && for_all0 p r
+  | Node(l, v, r, _) -> p v [@bs] && forAll0 p l && forAll0 p r
 
 let rec exists0 p = function
     Empty -> false
@@ -317,7 +317,7 @@ let empty cmp = {
   data = empty0
 }  
 
-let is_empty m = is_empty0 m.data
+let isEmpty m = isEmpty0 m.data
 
 let mem (type elt) (type id) e (m : (elt,id) t) = 
   let module M = (val m.cmp) in 
@@ -361,15 +361,15 @@ let diff (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =
     cmp = m_cmp
   }    
 
-let compare (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
+let cmp (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
   let m_cmp = m.cmp in 
   let module M = (val m_cmp) in 
-  compare0 ~cmp:M.cmp m.data n.data
+  cmp0 ~cmp:M.cmp m.data n.data
 
-let equal (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
+let eq (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
   let m_cmp = m.cmp in 
   let module M = (val m_cmp) in 
-  equal0 ~cmp:M.cmp m.data n.data  
+  eq0 ~cmp:M.cmp m.data n.data  
 
 let subset (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
   let m_cmp = m.cmp in 
@@ -380,7 +380,7 @@ let iter f m = iter0 f m.data
 
 let fold f m acc = fold0 f m.data acc 
 
-let for_all f m = for_all0 f m.data
+let forAll f m = forAll0 f m.data
 
 let exists f m = exists0 f m.data   
 
@@ -395,9 +395,9 @@ let cardinal m = cardinal0 m.data
 
 let elements m = elements0 m.data
 
-let min_elt m = min_elt0 m.data
+let min m = min0 m.data
 
-let max_elt m = max_elt0 m.data
+let max m = max0 m.data
 
 let split (type elt) (type id) e (m : (elt,id) t) = 
   let m_cmp = m.cmp in 

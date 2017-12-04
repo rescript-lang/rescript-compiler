@@ -13,8 +13,8 @@ val empty0: ('elt, 'id) t0
 val empty : ('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
 (** The empty set. *)
 
-val is_empty0: ('elt, 'id) t0 -> bool
-val is_empty : ('elt, 'id) t -> bool
+val isEmpty0: ('elt, 'id) t0 -> bool
+val isEmpty : ('elt, 'id) t -> bool
 (** Test whether a set is empty or not. *)
 
 val mem0: 
@@ -67,18 +67,18 @@ val diff:
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
 (** Set difference. *)
 
-val compare0: 
+val cmp0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> ('elt, 'id) t0 -> int
-val compare:  
+val cmp:  
   ('elt, 'id) t -> ('elt, 'id) t -> int
 (** Total ordering between sets. Can be used as the ordering function
     for doing sets of sets. *)
 
-val equal0: 
+val eq0:
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> ('elt, 'id) t0 -> bool
-val equal:  
+val eq:  
   ('elt, 'id) t -> ('elt, 'id) t -> bool
 (** [equal s1 s2] tests whether the sets [s1] and [s2] are
     equal, that is, contain equal elements. *)
@@ -102,8 +102,8 @@ val fold: ('elt -> 'a -> 'a [@bs]) -> ('elt, 'id) t -> 'a -> 'a
 (** [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)],
     where [x1 ... xN] are the elements of [s], in increasing order. *)
 
-val for_all0: ('elt -> bool [@bs]) -> ('elt, 'id) t0 -> bool
-val for_all:('elt -> bool [@bs]) -> ('elt, 'id) t -> bool
+val forAll0: ('elt -> bool [@bs]) -> ('elt, 'id) t0 -> bool
+val forAll:('elt -> bool [@bs]) -> ('elt, 'id) t -> bool
 (** [for_all p s] checks if all elements of the set
     satisfy the predicate [p]. *)
 
@@ -135,14 +135,14 @@ val elements: ('elt, 'id) t -> 'elt list
     to the ordering [Ord.compare], where [Ord] is the argument
     given to {!Set.Make}. *)
 
-val min_elt0: ('elt, 'id) t0 -> 'elt option
-val min_elt: ('elt, 'id) t -> 'elt option
+val min0: ('elt, 'id) t0 -> 'elt option
+val min: ('elt, 'id) t -> 'elt option
 (** Return the smallest element of the given set
     (with respect to the [Ord.compare] ordering), or raise
     [Not_found] if the set is empty. *)
 
-val max_elt0: ('elt, 'id) t0 -> 'elt option
-val max_elt: ('elt, 'id) t -> 'elt option
+val max0: ('elt, 'id) t0 -> 'elt option
+val max: ('elt, 'id) t -> 'elt option
 (** Same as {!Set.S.min_elt}, but returns the largest element of the
     given set. *)
 

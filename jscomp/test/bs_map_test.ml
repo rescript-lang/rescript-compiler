@@ -25,7 +25,7 @@ let m2 = Bs.Map.empty (module I2)
 (* let () = 
   Js.log (m = m2) *)
 let () = 
-  let count = 1_000_000 in 
+  let count = 1_000_00 in 
   
   (* let {cmp; data} = m in  *)
   let data = ref m.data in 
@@ -56,3 +56,14 @@ let () =
     Bs.Map.add0 ~cmp:I2.cmp 1 3 m1 in *)
   let m20 = Bs.Map.empty (module I) in 
   Js.log {m20 with data = m1}
+
+let () =   
+  let count = 100_000 in 
+  let v = Bs.Set.empty (module I) in 
+  let module M = (val m.cmp) in 
+  let cmp = M.cmp in 
+  let data = ref v.data in 
+  for i = 0 to count do 
+    data := Bs.Set.add0 ~cmp i !data
+  done ;
+  Js.log { v with data = !data}
