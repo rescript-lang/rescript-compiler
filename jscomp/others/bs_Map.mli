@@ -165,16 +165,16 @@ val bindings: ('k, 'a, 'id) t -> ('k * 'a) list
     @since 3.12.0
 *)
 
-val minBinding0: ('k, 'a, 'id) t0 -> ('k * 'a)
-val minBinding: ('k, 'a, 'id) t -> ('k * 'a)
+val minBinding0: ('k, 'a, 'id) t0 -> ('k * 'a) option
+val minBinding: ('k, 'a, 'id) t -> ('k * 'a) option
 (** Return the smallest binding of the given map
     (with respect to the [Ord.compare] ordering), or raise
     [Not_found] if the map is empty.
     @since 3.12.0
 *)
 
-val maxBinding0: ('k, 'a, 'id) t0 -> ('k * 'a)
-val maxBinding: ('k, 'a, 'id) t -> ('k * 'a)
+val maxBinding0: ('k, 'a, 'id) t0 -> ('k * 'a) option
+val maxBinding: ('k, 'a, 'id) t -> ('k * 'a) option
 (** Same as {!Map.S.min_binding}, but returns the largest binding
     of the given map.
     @since 3.12.0
@@ -199,8 +199,8 @@ val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) 
 
 val find0: 
     cmp: ('k,'id) Bs_Cmp.cmp -> 
-    'k -> ('k, 'a, 'id) t0 -> 'a
-val find: 'k -> ('k, 'a, 'id) t -> 'a
+    'k -> ('k, 'a, 'id) t0 -> 'a option
+val find: 'k -> ('k, 'a, 'id) t -> 'a option
 (** [find x m] returns the current binding of [x] in [m],
     or raises [Not_found] if no such binding exists. *)
 

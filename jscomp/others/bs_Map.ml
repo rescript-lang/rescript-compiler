@@ -30,25 +30,25 @@ let bal l x d r =
   let hr = match r with Empty -> 0 | Node(_,_,_,_,h) -> h in
   if hl > hr + 2 then begin
     match l with
-      Empty -> invalid_arg "Map.bal"
+      Empty -> assert false
     | Node(ll, lv, ld, lr, _) ->
       if height ll >= height lr then
         create ll lv ld (create lr x d r)
       else begin
         match lr with
-          Empty -> invalid_arg "Map.bal"
+          Empty -> assert false
         | Node(lrl, lrv, lrd, lrr, _)->
           create (create ll lv ld lrl) lrv lrd (create lrr x d r)
       end
   end else if hr > hl + 2 then begin
     match r with
-      Empty -> invalid_arg "Map.bal"
+      Empty -> assert false
     | Node(rl, rv, rd, rr, _) ->
       if height rr >= height rl then
         create (create l x d rl) rv rd rr
       else begin
         match rl with
-          Empty -> invalid_arg "Map.bal"
+          Empty -> assert false
         | Node(rll, rlv, rld, rlr, _) ->
           create (create l x d rll) rlv rld (create rlr rv rd rr)
       end
@@ -73,10 +73,10 @@ let rec add0 ~cmp x data = function
 
 let rec find0 ~cmp x = function
     Empty ->
-    raise Not_found
+    None
   | Node(l, v, d, r, _) ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then d
+    if c = 0 then Some d
     else find0 ~cmp x (if c < 0 then l else r)
 
 let rec mem0 ~cmp x = function
@@ -87,17 +87,25 @@ let rec mem0 ~cmp x = function
     c = 0 || mem0 ~cmp x (if c < 0 then l else r)
 
 let rec minBinding0 = function
-    Empty -> raise Not_found
-  | Node(Empty, x, d, r, _) -> (x, d)
+    Empty -> None
+  | Node(Empty, x, d, r, _) -> Some (x, d)
   | Node(l, x, d, r, _) -> minBinding0 l
-
+  
 let rec maxBinding0 = function
-    Empty -> raise Not_found
-  | Node(l, x, d, Empty, _) -> (x, d)
+    Empty -> None
+  | Node(l, x, d, Empty, _) -> Some (x, d)
   | Node(l, x, d, r, _) -> maxBinding0 r
 
+(* only internal use for a non empty map*)
+let rec minBindingAssert0 = function
+    Empty -> assert false
+  | Node(Empty, x, d, r, _) -> (x, d)
+  | Node(l, x, d, r, _) -> minBindingAssert0 l
+
+  
+(* only internal use for a non empty map*)  
 let rec remove_minBinding = function
-    Empty -> invalid_arg "Map.remove_min_elt"
+    Empty -> assert false
   | Node(Empty, x, d, r, _) -> r
   | Node(l, x, d, r, _) -> bal (remove_minBinding l) x d r
 
@@ -106,7 +114,7 @@ let merge t1 t2 =
     (Empty, t) -> t
   | (t, Empty) -> t
   | (_, _) ->
-    let (x, d) = minBinding0 t2 in
+    let (x, d) = minBindingAssert0 t2 in
     bal t1 x d (remove_minBinding t2)
 
 let rec remove0 ~cmp x = function
@@ -196,8 +204,8 @@ let concat t1 t2 =
   match (t1, t2) with
     (Empty, t) -> t
   | (t, Empty) -> t
-  | (_, _) ->
-    let (x, d) = minBinding0 t2 in
+  | (_, Node _) ->
+    let (x, d) = minBindingAssert0 t2 in
     join t1 x d (remove_minBinding t2)
 
 let concat_or_join t1 v d t2 =
@@ -291,7 +299,6 @@ let rec bindings_aux accu = function
 let bindings0 s =
   bindings_aux [] s
 
-let choose = minBinding0
 
 
 type ('k,'v,'id) t = {
