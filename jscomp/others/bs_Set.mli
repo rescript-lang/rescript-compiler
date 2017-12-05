@@ -160,13 +160,19 @@ val split:
       [present] is [false] if [s] contains no element equal to [x],
       or [true] if [s] contains an element equal to [x]. *)
 
-val find0: 
+val findOpt0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   'elt -> ('elt, 'id) t0 -> 'elt option
-val find: 
+val findOpt: 
   'elt -> ('elt, 'id) t -> 'elt option
 (** [find x s] returns the element of [s] equal to [x] (according
     to [Ord.compare]), or raise [Not_found] if no such element
     exists.
     @since 4.01.0 *)
 
+val findAssert0:
+  cmp: ('elt,'id) Bs_Cmp.cmp ->
+  'elt -> ('elt, 'id) t0 -> 'elt 
+
+val findAssert:  
+  'elt -> ('elt, 'id) t -> 'elt 

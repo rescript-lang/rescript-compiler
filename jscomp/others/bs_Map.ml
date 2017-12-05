@@ -71,13 +71,22 @@ let rec add0 ~cmp x data = function
     else
       bal l v d (add0 ~cmp x data r)
 
-let rec find0 ~cmp x = function
+let rec findOpt0 ~cmp x = function
     Empty ->
     None
   | Node(l, v, d, r, _) ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then Some d
-    else find0 ~cmp x (if c < 0 then l else r)
+    else findOpt0 ~cmp x (if c < 0 then l else r)
+
+let rec findAssert0 ~cmp x = function
+    Empty ->
+    [%assert "Not_found"]
+  | Node(l, v, d, r, _) ->
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then d
+    else findAssert0 ~cmp x (if c < 0 then l else r)
+    
 
 let rec mem0 ~cmp x = function
     Empty ->
@@ -367,9 +376,14 @@ let add (type k) (type v) (type id) key data (map : (k,v,id) t) =
     data = add0 ~cmp:X.cmp key data map.data
   }
 
-let find (type k) (type v) (type id) x (map : (k,v,id) t) = 
+let findOpt (type k) (type v) (type id) x (map : (k,v,id) t) = 
   let module X = (val map.cmp) in 
-  find0 ~cmp:X.cmp x map.data
+  findOpt0 ~cmp:X.cmp x map.data
+
+let findAssert (type k) (type v) (type id) x (map : (k,v,id) t) = 
+  let module X = (val map.cmp) in 
+  findAssert0 ~cmp:X.cmp x map.data
+  
 
 let mem (type k) (type v) (type id) x (map : (k,v,id) t) = 
   let module X = (val map.cmp) in 
