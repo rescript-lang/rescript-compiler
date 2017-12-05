@@ -2,6 +2,7 @@
 
 var Mt         = require("./mt.js");
 var Block      = require("../../lib/js/block.js");
+var Js_list    = require("../../lib/js/js_list.js");
 var Js_vector  = require("../../lib/js/js_vector.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
@@ -40,10 +41,10 @@ console.log(/* int array */[
           }), 0));
 
 function id(x) {
-  return eq("File \"bs_array_test.ml\", line 21, characters 5-12", Js_vector.toList(Js_vector.ofList(x)), x);
+  return eq("File \"bs_array_test.ml\", line 21, characters 5-12", Js_vector.toList(Js_list.toVector(x)), x);
 }
 
-eq("File \"bs_array_test.ml\", line 25, characters 5-12", Js_vector.ofList(/* :: */[
+eq("File \"bs_array_test.ml\", line 25, characters 5-12", Js_list.toVector(/* :: */[
           1,
           /* :: */[
             2,
@@ -101,7 +102,7 @@ eq("File \"bs_array_test.ml\", line 38, characters 5-12", (Js_vector.filterInPla
       5
     ]);
 
-eq("File \"bs_array_test.ml\", line 45, characters 5-12", Js_vector.ofList(/* :: */[
+eq("File \"bs_array_test.ml\", line 45, characters 5-12", Js_list.toVector(/* :: */[
           1,
           /* :: */[
             2,
@@ -116,7 +117,7 @@ eq("File \"bs_array_test.ml\", line 45, characters 5-12", Js_vector.ofList(/* ::
       3
     ]);
 
-eq("File \"bs_array_test.ml\", line 47, characters 5-12", Js_vector.ofList(/* :: */[
+eq("File \"bs_array_test.ml\", line 47, characters 5-12", Js_list.toVector(/* :: */[
           1,
           /* [] */0
         ]), /* int array */[1]);

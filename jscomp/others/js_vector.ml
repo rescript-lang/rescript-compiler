@@ -70,15 +70,15 @@ let iteri f a =
 
 external createUnsafe : int -> 'a t = "Array" [@@bs.new]
 
-let ofList xs = 
-  match xs with 
-  | [] -> [||]
-  | l ->
-    let a = createUnsafe (List.length l) in 
-    let rec fill i = function
-        | [] -> a
-        | hd::tl -> Array.unsafe_set a i hd; fill (i+1) tl in
-    fill 0 l
+(* let ofList xs =  *)
+(*   match xs with  *)
+(*   | [] -> [||] *)
+(*   | l -> *)
+(*     let a = createUnsafe (Js.List.length l) in  *)
+(*     let rec fill i = function *)
+(*         | [] -> a *)
+(*         | hd::tl -> Array.unsafe_set a i hd; fill (i+1) tl in *)
+(*     fill 0 l *)
 
 let toList a =
   let rec tolist i res =

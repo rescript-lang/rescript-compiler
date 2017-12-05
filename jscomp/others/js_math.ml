@@ -83,8 +83,8 @@ let unsafe_ceil = unsafe_ceil_int
 [@@ocaml.deprecated "Please use `unsafe_ceil_int` instead"]
 (** smallest int greater than or equal to the argument *)
 let ceil_int f =
-  if f > float max_int then max_int
-  else if f < float min_int then min_int
+  if f > Pervasives.float Js_int.max then Js_int.max
+  else if f < Pervasives.float Js_int.min then Js_int.min
   else unsafe_ceil_int f
 let ceil = ceil_int
 [@@ocaml.deprecated "Please use `ceil_int` instead"]
@@ -113,8 +113,8 @@ let unsafe_floor = unsafe_floor_int
 [@@ocaml.deprecated "Please use `unsafe_floor_int` instead"]
 (** largest int greater than or equal to the arugment *)
 let floor_int f =
-  if f > float max_int then max_int
-  else if f < float min_int then min_int
+  if f > float Js_int.max then Js_int.max
+  else if f < float Js_int.min then Js_int.min
   else unsafe_floor f
 let floor = floor_int
 [@@ocaml.deprecated "Please use `floor_int` instead"]
