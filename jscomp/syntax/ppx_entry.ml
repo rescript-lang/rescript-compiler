@@ -299,7 +299,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                     loc_start.Lexing.pos_cnum + cnum in
                   Printf.sprintf "File %S, line %d, characters %d-%d"
                     file lnum cnum enum in   
-              let raiseWithString  =      
+              let raiseWithString  locString =      
                 (Exp.apply ~loc 
                    (Exp.ident ~loc {loc; txt = 
                                            Ldot(Ldot (Lident "Js","Exn"),"raiseError")})
@@ -308,14 +308,20 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                     Exp.constant (Const_string (locString,None))    
                    ])
               in 
-              (match e with
-               | {pexp_desc = Pexp_construct({txt = Lident "false"},None)} -> 
+              (match e.pexp_desc with
+               | Pexp_construct({txt = Lident "false"},None) -> 
                  (* The backend will convert [assert false] into a nop later *)
                  if !Clflags.no_assert_false  then 
                    Exp.assert_ ~loc 
                      (Exp.construct ~loc {txt = Lident "false";loc} None)
                  else 
-                   raiseWithString
+                   (raiseWithString locString)
+               | Pexp_constant (Const_string (r, _)) -> 
+                  if !Clflags.noassert then 
+                    Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
+                    (* Need special handling to make it type check*)
+                  else   
+                    raiseWithString r
                | _ ->    
                  let e = self.expr self  e in 
                  if !Clflags.noassert then 
@@ -329,7 +335,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
                         ["", e]
                      )
-                     raiseWithString
+                     (raiseWithString locString)
                      None
               )
             | _ -> 
