@@ -60,6 +60,8 @@ This will substitute the global `bsc.exe` & `bsb.exe` you just installed with th
 
 Did any of the above step not work?
 
+- If you get compilation errors even from a supposedly clean compilation, you might have skipped the opam reinstall step above: `opam switch reinstall 4.02.3+buckle-master`
+
 - Make sure you did "eval `opam config env`" In your CLI/bashrc/zshrc
 
 - **If the vendored ocaml changed between when you last iterated on the repo and now**, you probably skipped the `opam switch reinstall 4.02.3+buckle-master` part. You'll have to do `git clean -xdf` and then restart with the build instructions. Careful, as `git clean` removes your uncommitted changes.
