@@ -65,12 +65,25 @@ let rec add x data = function
     else
       bal l v d (add x data r)
 
-let rec find x = function
+let rec findOpt x = function
     Empty ->
     None
   | Node(l, v, d, r, _) ->
     if x = v then Some d
-    else find x (if x < v then l else r)
+    else findOpt x (if x < v then l else r)
+
+let rec findAssert x = function
+    Empty ->
+    [%assert "Not_found"]
+  | Node(l, v, d, r, _) ->
+    if x = v then d
+    else findAssert x (if x < v then l else r)
+
+let rec findWithDefault ~def x = function
+    Empty -> def    
+  | Node(l, v, d, r, _) ->
+    if x = v then d
+    else findWithDefault ~def x (if x < v then l else r)
 
 let rec mem x = function
     Empty ->

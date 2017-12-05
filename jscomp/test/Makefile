@@ -58,7 +58,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	method_chain recursive_module recursive_module_test simplify_lambda_632o\
 	div_by_zero_test unsafe_this obj_type_test polymorphism_test class_error_message\
 	test_bs_this class_setter_getter gpr496_test local_class_type test_regex ffi_array_test\
-	derive_dyntype nested_include \
+	nested_include \
 	mutual_non_recursive_type external_ppx \
 	optional_ffi_test poly_variant_test \
 	bs_rest_test infer_type_test fs_test module_as_function\
@@ -218,7 +218,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 # simple_derive_test
 # simple_derive_use
 # derive_type_test 
-
+# derive_dyntype 
 
 
 SOURCE_LIST :=  $(OTHERS)
@@ -235,7 +235,7 @@ COMPFLAGS+=  -bs-no-version-header -absname -bs-diagnose -bs-cross-module-opt -b
 $(TESTS): $(CAMLC)
 
 all: $(TESTS)
-
+.PHONY: all
 clean::
 	rm -f *.cm*
 	rm -f *~

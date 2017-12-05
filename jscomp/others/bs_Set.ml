@@ -305,13 +305,21 @@ let elements0 s =
   elements_aux [] s
 
 
-let rec find0 ~cmp x = function
+let rec findOpt0 ~cmp x = function
     Empty -> None
   | Node(l, v, r, _) ->
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then Some v
-    else find0 ~cmp x (if c < 0 then l else r)
+    else findOpt0 ~cmp x (if c < 0 then l else r)
 
+let rec findAssert0 ~cmp x = function
+    Empty -> [%assert "Not_found"]
+  | Node(l, v, r, _) ->
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then  v
+    else findAssert0 ~cmp x (if c < 0 then l else r)
+
+    
 let empty cmp = {
   cmp ;
   data = empty0
@@ -407,7 +415,13 @@ let split (type elt) (type id) e (m : (elt,id) t) =
   b,
   {cmp = m_cmp ; data = r}
 
-let find (type elt) (type id) e (m : (elt,id) t) =   
+let findOpt (type elt) (type id) e (m : (elt,id) t) =   
   let m_cmp = m.cmp in 
   let module M = (val m_cmp) in 
-  find0 ~cmp:M.cmp e m.data
+  findOpt0 ~cmp:M.cmp e m.data
+
+let findAssert (type elt) (type id) e (m : (elt,id) t) =   
+  let m_cmp = m.cmp in 
+  let module M = (val m_cmp) in 
+  findAssert0 ~cmp:M.cmp e m.data
+  

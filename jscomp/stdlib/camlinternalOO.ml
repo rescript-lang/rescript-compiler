@@ -86,14 +86,26 @@ let public_method_label s : tag =
 (**** Sparse array ****)
 
 module Vars =
+#if BS then
+  Bs.MapString
+#else
   Map.Make(struct type t = string let compare (x:t) y = compare x y end)
+#end  
 type vars = int Vars.t
 
 module Meths =
+#if BS then
+    Bs.MapString
+#else      
   Map.Make(struct type t = string let compare (x:t) y = compare x y end)
+#end    
 type meths = label Meths.t
 module Labs =
+#if BS then
+    Bs.MapInt
+#else      
   Map.Make(struct type t = label let compare (x:t) y = compare x y end)
+#end  
 type labs = bool Labs.t
 
 (* The compiler assumes that the first field of this structure is [size]. *)
@@ -172,9 +184,16 @@ let new_method table =
   index
 
 let get_method_label table name =
+#if BS then
+    match Meths.findOpt name table.methods_by_name
+    with
+    | Some x -> x
+    | None ->
+#else    
   try
     Meths.find name table.methods_by_name
   with Not_found ->
+#end  
     let label = new_method table in
     table.methods_by_name <- Meths.add name label table.methods_by_name;
     table.methods_by_label <- Labs.add label true table.methods_by_label;
@@ -185,7 +204,7 @@ let get_method_labels table names =
 
 let set_method table label element =
   incr method_count;
-  if Labs.find label table.methods_by_label then
+  if Labs.findAssert label table.methods_by_label then
     put table label element
   else
     table.hidden_meths <- (label, element) :: table.hidden_meths
@@ -209,7 +228,7 @@ let narrow table vars virt_meths concr_meths =
      :: table.previous_states;
   table.vars <-
     Vars.fold
-      (fun lab info tvars ->
+      (fun[@bs] lab info tvars ->
         if List.mem lab vars then Vars.add lab info tvars else tvars)
       table.vars Vars.empty;
   let by_name = ref Meths.empty in
@@ -219,7 +238,11 @@ let narrow table vars virt_meths concr_meths =
        by_name := Meths.add met label !by_name;
        by_label :=
           Labs.add label
+#if BS then
+            (Labs.findWithDefault ~def:true label table.methods_by_label)
+#else    
             (try Labs.find label table.methods_by_label with Not_found -> true)
+#end            
             !by_label)
     concr_meths concr_meth_labs;
   List.iter2
@@ -243,7 +266,11 @@ let widen table =
   table.previous_states <- List.tl table.previous_states;
   table.vars <-
      List.fold_left
+#if BS then
+       (fun s v -> Vars.add v (Vars.findAssert v table.vars) s)
+#else    
        (fun s v -> Vars.add v (Vars.find v table.vars) s)
+#end       
        saved_vars vars;
   table.methods_by_name <- by_name;
   table.methods_by_label <- by_label;
@@ -260,8 +287,14 @@ let new_slot table =
   index
 
 let new_variable table name =
+#if BS then
+    match Vars.findOpt name table.vars with
+    | Some x -> x
+    | None ->
+#else    
   try Vars.find name table.vars
   with Not_found ->
+#end  
     let index = new_slot table in
     if name <> "" then table.vars <- Vars.add name index table.vars;
     index
@@ -282,8 +315,11 @@ let new_methods_variables table meths vals =
   res
 
 let get_variable table name =
+#if BS then
+  Vars.findAssert name table.vars 
+#else    
   try Vars.find name table.vars with Not_found -> assert false
-
+#end
 let get_variables table names =
   Array.map (get_variable table) names
 

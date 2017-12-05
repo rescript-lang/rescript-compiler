@@ -19,10 +19,10 @@ let () =
 
 let id x = 
   eq __LOC__ 
-   (Js.Vector.toList @@ Js.Vector.ofList x ) x 
+   (Js.Vector.toList @@ Js.List.toVector x ) x 
 
 let () =
-  eq __LOC__ (Js.Vector.ofList [1;2;3]) [|1;2;3|];
+  eq __LOC__ (Js.List.toVector [1;2;3]) [|1;2;3|];
   eq  __LOC__ 
   ( Js.Vector.map (fun [@bs] x -> x + 1) [|1;2;3|] )
   [|2;3;4|];
@@ -43,9 +43,9 @@ let () =
   [|1;3;5|];
 
   eq __LOC__  
-    (Js.Vector.ofList [1;2;3] ) [|1;2;3|];
+    (Js.List.toVector [1;2;3] ) [|1;2;3|];
   eq __LOC__
-    (Js.Vector.ofList [1])   [|1|];
+    (Js.List.toVector [1])   [|1|];
   id []  ;
   id [1];
   id [1;2;3;4;5];

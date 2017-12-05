@@ -197,12 +197,26 @@ val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) 
 *)
 
 
-val find0: 
+val findOpt0: 
     cmp: ('k,'id) Bs_Cmp.cmp -> 
     'k -> ('k, 'a, 'id) t0 -> 'a option
-val find: 'k -> ('k, 'a, 'id) t -> 'a option
+val findOpt: 'k -> ('k, 'a, 'id) t -> 'a option
 (** [find x m] returns the current binding of [x] in [m],
     or raises [Not_found] if no such binding exists. *)
+
+val findAssert0: 
+    cmp: ('k,'id) Bs_Cmp.cmp -> 
+    'k -> ('k, 'a, 'id) t0 -> 'a 
+val findAssert: 'k -> ('k, 'a, 'id) t -> 'a
+
+val findWithDefault0: 
+    cmp: ('k,'id) Bs_Cmp.cmp -> 
+    def:'a -> 
+    'k -> ('k, 'a, 'id) t0 -> 'a 
+val findWithDefault:
+    def:'a -> 
+    'k -> ('k, 'a, 'id) t -> 'a 
+
 
 val map0: ('a -> 'b [@bs]) -> ('k, 'a, 'id) t0 -> ('k ,'b,'id ) t0    
 val map: ('a -> 'b [@bs]) -> ('k, 'a, 'id) t -> ('k ,'b,'id ) t
