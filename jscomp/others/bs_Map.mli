@@ -209,6 +209,14 @@ val findAssert0:
     'k -> ('k, 'a, 'id) t0 -> 'a 
 val findAssert: 'k -> ('k, 'a, 'id) t -> 'a
 
+val findWithDefault0: 
+    cmp: ('k,'id) Bs_Cmp.cmp -> 
+    def:'a -> 
+    'k -> ('k, 'a, 'id) t0 -> 'a 
+val findWithDefault:
+    def:'a -> 
+    'k -> ('k, 'a, 'id) t -> 'a 
+
 
 val map0: ('a -> 'b [@bs]) -> ('k, 'a, 'id) t0 -> ('k ,'b,'id ) t0    
 val map: ('a -> 'b [@bs]) -> ('k, 'a, 'id) t -> ('k ,'b,'id ) t

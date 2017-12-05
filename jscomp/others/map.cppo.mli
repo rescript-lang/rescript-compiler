@@ -132,6 +132,8 @@ val findOpt: key -> 'a t -> 'a option
 val findAssert: key -> 'a t -> 'a
 (** raise an exception if not there *)
   
+val findWithDefault: def:'a -> key -> 'a t -> 'a
+
 val map: ('a -> 'b [@bs]) -> 'a t -> 'b t
 (** [map f m] returns a map with same domain as [m], where the
    associated value [a] of all bindings of [m] has been

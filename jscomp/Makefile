@@ -610,14 +610,15 @@ libs:
 	cd runtime && $(MAKE) all
 	@echo "Making runtime finished"
 
+	@echo "Making others"
+	cd others && $(MAKE) all
+	@echo "Making others finished"
+
 
 	@echo "Making stdlib"
 	cd stdlib && $(MAKE) all
 	@echo "Making stdlib finished"
 
-	@echo "Making others"
-	cd others && $(MAKE) all
-	@echo "Making others finished"
 
 
 

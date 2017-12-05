@@ -79,6 +79,12 @@ let rec findAssert x = function
     if x = v then d
     else findAssert x (if x < v then l else r)
 
+let rec findWithDefault ~def x = function
+    Empty -> def    
+  | Node(l, v, d, r, _) ->
+    if x = v then d
+    else findWithDefault ~def x (if x < v then l else r)
+
 let rec mem x = function
     Empty ->
     false

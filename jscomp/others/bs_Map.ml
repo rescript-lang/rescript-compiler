@@ -87,6 +87,14 @@ let rec findAssert0 ~cmp x = function
     if c = 0 then d
     else findAssert0 ~cmp x (if c < 0 then l else r)
     
+let rec findWithDefault0 ~cmp ~def x = function
+    Empty ->
+    def
+  | Node(l, v, d, r, _) ->
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then d
+    else findWithDefault0 ~cmp ~def x (if c < 0 then l else r)
+    
 
 let rec mem0 ~cmp x = function
     Empty ->
@@ -383,6 +391,10 @@ let findOpt (type k) (type v) (type id) x (map : (k,v,id) t) =
 let findAssert (type k) (type v) (type id) x (map : (k,v,id) t) = 
   let module X = (val map.cmp) in 
   findAssert0 ~cmp:X.cmp x map.data
+  
+let findWithDefault (type k) (type v) (type id) ~def x (map : (k,v,id) t) = 
+  let module X = (val map.cmp) in 
+  findWithDefault0 ~cmp:X.cmp ~def x map.data
   
 
 let mem (type k) (type v) (type id) x (map : (k,v,id) t) = 
