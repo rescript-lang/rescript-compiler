@@ -19,3 +19,7 @@ module Make ( M : sig
     val cmp : t compare
   end) :
   S with type t = M.t
+
+val make:
+  ('a -> 'a -> int [@bs]) ->
+  (module S with type t = 'a)     
