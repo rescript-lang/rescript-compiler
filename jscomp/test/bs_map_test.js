@@ -4,6 +4,13 @@ var Bs_Map   = require("../../lib/js/bs_Map.js");
 var Bs_Set   = require("../../lib/js/bs_Set.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
+var N = /* module */[/* cmp */Caml_obj.caml_int_compare];
+
+var m0 = /* record */[
+  /* cmp */N,
+  /* data : Empty */0
+];
+
 var cmp = Caml_obj.caml_int_compare;
 
 var I = /* module */[/* cmp */cmp];
@@ -37,7 +44,7 @@ var newm = /* record */[
 
 console.log(newm);
 
-var m1 = Bs_Map.add0(cmp, 1, 1, /* Empty */0);
+var m1 = Bs_Map.add0(cmp, 1, 1, Bs_Map.empty0);
 
 console.log(/* record */[
       /* cmp */I,
@@ -55,6 +62,8 @@ console.log(/* record */[
       /* data */data$1
     ]);
 
+exports.N  = N;
+exports.m0 = m0;
 exports.I  = I;
 exports.I2 = I2;
 exports.m  = m;

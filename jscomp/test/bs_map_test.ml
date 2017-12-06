@@ -1,5 +1,13 @@
 
 
+module N = 
+  (val Bs.Cmp.make 
+    (fun[@bs] (x : int) y -> 
+      compare x y
+     )
+  )
+
+let m0 = Bs.Map.empty (module N)   
 
 module I = Bs.Cmp.Make(
   struct 
