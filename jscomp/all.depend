@@ -28,7 +28,6 @@ ext/string_hashtbl.cmx : ext/hashtbl_gen.cmx ext/ext_string.cmx \
 ext/ext_list.cmx : ext/ext_string.cmx ext/ext_list.cmi
 ext/ext_stack.cmx : ext/ext_stack.cmi
 ext/ext_color.cmx : ext/ext_list.cmx ext/ext_color.cmi
-ext/ext_map.cmx : ext/ext_map.cmi
 ext/ext_marshal.cmx : ext/ext_marshal.cmi
 ext/ext_option.cmx : ext/ext_option.cmi
 ext/ext_pervasives.cmx : ext/ext_list.cmx ext/ext_pervasives.cmi
@@ -119,7 +118,6 @@ ext/string_hashtbl.cmi : ext/hashtbl_gen.cmx
 ext/ext_list.cmi :
 ext/ext_stack.cmi :
 ext/ext_color.cmi :
-ext/ext_map.cmi :
 ext/ext_marshal.cmi :
 ext/ext_option.cmi :
 ext/ext_pervasives.cmi :

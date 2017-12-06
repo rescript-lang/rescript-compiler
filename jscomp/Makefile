@@ -177,7 +177,6 @@ EXT_SRCS = 	literals \
 	ext_list\
 	ext_stack\
 	ext_color\
-	ext_map\
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set \
