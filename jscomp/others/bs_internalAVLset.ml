@@ -2,12 +2,12 @@
 type ('elt, 'id) t0 =
     | Empty 
     | Node of ('elt, 'id) t0 * 'elt * ('elt, 'id) t0 * int
+(* Sets are represented by balanced binary trees (the heights of the
+   children differ by at most 2 *)
 
 type ('elt, 'id)enumeration0 = 
     | End 
     | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration0    
-(* Sets are represented by balanced binary trees (the heights of the
-   children differ by at most 2 *)
 
 let height = function
     Empty -> 0

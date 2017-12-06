@@ -40,11 +40,11 @@ val inter: t -> t -> t
 val diff: t -> t -> t
 (** Set difference. *)
 
-val compare: t -> t -> int
+val cmp: t -> t -> int
 (** Total ordering between sets. Can be used as the ordering function
    for doing sets of sets. *)
 
-val equal: t -> t -> bool
+val eq: t -> t -> bool
 (** [equal s1 s2] tests whether the sets [s1] and [s2] are
    equal, that is, contain equal elements. *)
 

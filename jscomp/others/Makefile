@@ -60,6 +60,8 @@ bs_SetInt.ml: set.cppo.ml
 	cppo -D TYPE_INT $^ > $@
 bs_SetInt.mli: set.cppo.mli
 	cppo -D TYPE_INT $^ > $@
+bs_SetString.ml: set.cppo.ml
+	cppo -D TYPE_STRING $^ > $@
 bs_SetString.mli: set.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 endif	

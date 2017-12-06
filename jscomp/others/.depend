@@ -22,8 +22,8 @@ bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Map.cmi
 bs_Set.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Set.cmi
 bs_MapString.cmj : bs_internalAVLtree.cmj bs_MapString.cmi
 bs_MapInt.cmj : bs_internalAVLtree.cmj bs_MapInt.cmi
-bs_SetInt.cmj : bs_SetInt.cmi
-bs_SetString.cmj : bs_SetString.cmi
+bs_SetInt.cmj : bs_internalAVLset.cmj bs_SetInt.cmi
+bs_SetString.cmj : bs_internalAVLset.cmj bs_SetString.cmi
 node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
