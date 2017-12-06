@@ -8,6 +8,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	js_re js_null_undefined node_buffer js_types js_json js_obj \
 	js_vector js_list js_option js_result\
 	js_mapperRt\
+	bs_internalAVLtree\
 	bs_Cmp\
 	bs_Map\
 	bs_Set\
