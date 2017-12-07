@@ -13,12 +13,12 @@
 
 (** balanced tree based on stdlib distribution *)
 
-type 'a t = 
+type ('a, 'id) t0 = 
   | Empty 
-  | Node of 'a t * 'a * 'a t * int 
+  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
 
-type 'a enumeration = 
-  | End | More of 'a * 'a t * 'a enumeration
+type ('a, 'id) enumeration0 = 
+  | End | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
 
 
 let rec cons_enum s e = 
@@ -132,90 +132,6 @@ let create l v r =
     Proof by indunction
 
     Lemma: the height of  [bal l v r] will bounded by [max l r] + 1 
-*)
-(*
-let internal_bal l v r =
-  match l with
-  | Empty ->
-    begin match r with 
-      | Empty -> Node(Empty,v,Empty,1)
-      | Node(rl,rv,rr,hr) -> 
-        if hr > 2 then
-          begin match rl with
-            | Empty -> create (* create l v rl *) (Node (Empty,v,Empty,1)) rv rr 
-            | Node(rll,rlv,rlr,hrl) -> 
-              let hrr = height rr in 
-              if hrr >= hrl then 
-                Node  
-                  ((Node (Empty,v,rl,hrl+1))(* create l v rl *),
-                   rv, rr, if hrr = hrl then hrr + 2 else hrr + 1) 
-              else 
-                let hrll = height rll in 
-                let hrlr = height rlr in 
-                create
-                  (Node(Empty,v,rll,hrll + 1)) 
-                  (* create l v rll *) 
-                  rlv 
-                  (Node (rlr,rv,rr, if hrlr > hrr then hrlr + 1 else hrr + 1))
-                  (* create rlr rv rr *)    
-          end 
-        else Node (l,v,r, hr + 1)  
-    end
-  | Node(ll,lv,lr,hl) ->
-    begin match r with 
-      | Empty ->
-        if hl > 2 then 
-          (*if height ll >= height lr then create ll lv (create lr v r)
-            else*)
-          begin match lr with 
-            | Empty -> 
-              create ll lv (Node (Empty,v,Empty, 1)) 
-            (* create lr v r *)  
-            | Node(lrl,lrv,lrr,hlr) -> 
-              if height ll >= hlr then 
-                create ll lv
-                  (Node(lr,v,Empty,hlr+1)) 
-                  (*create lr v r*)
-              else 
-                let hlrr = height lrr in  
-                create 
-                  (create ll lv lrl)
-                  lrv
-                  (Node(lrr,v,Empty,hlrr + 1)) 
-                  (*create lrr v r*)
-          end 
-        else Node(l,v,r, hl+1)    
-      | Node(rl,rv,rr,hr) ->
-        if hl > hr + 2 then           
-          begin match lr with 
-            | Empty ->   create ll lv (create lr v r)
-            | Node(lrl,lrv,lrr,_) ->
-              if height ll >= height lr then create ll lv (create lr v r)
-              else 
-                create (create ll lv lrl) lrv (create lrr v r)
-          end 
-        else
-        if hr > hl + 2 then             
-          begin match rl with 
-            | Empty ->
-              let hrr = height rr in   
-              Node(
-                (Node (l,v,Empty,hl + 1))
-                (*create l v rl*)
-                ,
-                rv,
-                rr,
-                if hrr > hr then hrr + 1 else hl + 2 
-              )
-            | Node(rll,rlv,rlr,_) ->
-              let hrr = height rr in 
-              let hrl = height rl in 
-              if hrr >= hrl then create (create l v rl) rv rr else 
-                create (create l v rll) rlv (create rlr rv rr)
-          end
-        else  
-          Node(l,v,r, if hl >= hr then hl+1 else hr + 1)
-    end
 *)
 let internal_bal l v r =
   let hl = match l with Empty -> 0 | Node(_,_,_,h) -> h in
@@ -390,7 +306,7 @@ let of_sorted_array l =
   in
   sub 0 (Array.length l) l 
 
-let is_ordered cmp tree =
+let is_ordered ~cmp tree =
   let rec is_ordered_min_max tree =
     match tree with
     | Empty -> `Empty
@@ -423,11 +339,11 @@ let is_ordered cmp tree =
       end  in 
   is_ordered_min_max tree <> `No 
 
-let invariant cmp t = 
+let invariant ~cmp t = 
   check t ; 
-  is_ordered cmp t 
+  is_ordered ~cmp t 
 
-let rec compare_aux cmp e1 e2 =
+let rec compare_aux ~cmp e1 e2 =
   match (e1, e2) with
     (End, End) -> 0
   | (End, _)  -> -1
@@ -436,10 +352,10 @@ let rec compare_aux cmp e1 e2 =
     let c = cmp v1 v2 in
     if c <> 0
     then c
-    else compare_aux cmp (cons_enum r1 e1) (cons_enum r2 e2)
+    else compare_aux ~cmp (cons_enum r1 e1) (cons_enum r2 e2)
 
-let compare cmp s1 s2 =
-  compare_aux cmp (cons_enum s1 End) (cons_enum s2 End)
+let compare ~cmp s1 s2 =
+  compare_aux ~cmp (cons_enum s1 End) (cons_enum s2 End)
 
 
 module type S = sig
@@ -477,6 +393,7 @@ module type S = sig
   val of_list: elt list -> t
   val of_sorted_list : elt list ->  t
   val of_sorted_array : elt array -> t 
+  val of_array : elt array -> t 
   val invariant : t -> bool 
   val print : Format.formatter -> t -> unit 
 end 

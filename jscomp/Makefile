@@ -54,16 +54,14 @@ ext/set_int.ml : ext/set.cppo.ml
 	cppo -D TYPE_INT $< -o $@
 ext/ident_set.ml : ext/set.cppo.ml
 	cppo -D TYPE_IDENT $< -o $@
-ext/set_poly.ml : ext/set.cppo.ml
-	cppo  -D TYPE_POLY $< -o $@
+# ext/set_poly.ml : ext/set.cppo.ml
+# 	cppo  -D TYPE_POLY $< -o $@
 
 
 ext/string_map.ml : ext/map.cppo.ml
 	cppo -D TYPE_STRING $< -o $@
 ext/int_map.ml : ext/map.cppo.ml
 	cppo -D TYPE_INT $< -o $@
-ext/map_make.ml : ext/map.cppo.ml
-	cppo -D TYPE_FUNCTOR $< -o $@
 ext/ident_map.ml : ext/map.cppo.ml
 	cppo -D TYPE_IDENT $< -o $@
 # ext/map_poly.ml : ext/map.cppo.ml
@@ -158,6 +156,7 @@ EXT_SRCS = 	literals \
 	ext_util\
 	ext_int\
 	ext_position\
+	ext_cmp\
 	ext_array ext_bytes ext_char\
 	vec_gen \
 	resize_array \
@@ -167,7 +166,6 @@ EXT_SRCS = 	literals \
 	int_vec_vec\
 	set_gen\
 	map_gen\
-	map_make\
 	ext_file_pp ext_format \
 	hashtbl_gen \
 	ext_string \
@@ -177,7 +175,6 @@ EXT_SRCS = 	literals \
 	ext_list\
 	ext_stack\
 	ext_color\
-	ext_map\
 	ext_marshal ext_option \
 	ext_pervasives ext_pp ext_ref  ext_sys \
 	hash_set_gen hash_set \
@@ -199,7 +196,6 @@ EXT_SRCS = 	literals \
 	string_map \
 	string_set\
 	set_int\
-	set_poly\
 	ext_scc \
 	ext_topsort\
 	ext_pp_scope\

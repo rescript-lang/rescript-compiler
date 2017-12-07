@@ -11,7 +11,7 @@ function should(b) {
 }
 
 function test() {
-  var m = /* Empty */0;
+  var m = Bs_MapInt.empty;
   for(var i = 0; i <= 999999; ++i){
     m = Bs_MapInt.add(i, i, m);
   }
