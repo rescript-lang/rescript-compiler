@@ -10,7 +10,7 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-
+(**  Adapted by Authors of BuckleScript 2017                           *)
 (* Hash tables *)
 
 (* We do dynamic hashing, and resize the table and rehash the elements
@@ -38,52 +38,50 @@ let create  initial_size =
 
 let clear h =
   h.size <- 0;
-  let len = Array.length h.data in
+  let h_data = h.data in 
+  let len = Array.length h_data in
   for i = 0 to len - 1 do
-    h.data.(i) <- Empty
+    Array.unsafe_set h_data i  Empty
   done
 
 let reset h =
   let len = Array.length h.data in
-  if Obj.size (Obj.repr h) < 4 (* compatibility with old hash tables *)
-  || len = h.initial_size then
+  let h_initial_size = h.initial_size in
+  if len = h_initial_size then
     clear h
   else begin
     h.size <- 0;
-    h.data <- Array.make h.initial_size Empty
+    h.data <- Array.make h_initial_size Empty
   end
 
 let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
-
-
-
-
+let rec do_bucket_iter ~f = function
+  | Empty ->
+    ()
+  | Cons(k, d, rest) ->
+    f k d [@bs]; do_bucket_iter ~f rest 
 
 let iter f h =
-  let rec do_bucket = function
-    | Empty ->
-      ()
-    | Cons(k, d, rest) ->
-      f k d [@bs]; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
-    do_bucket d.(i)
+    do_bucket_iter f (Array.unsafe_get d i)
   done
 
+let rec do_bucket_fold ~f b accu =
+  match b with
+    Empty ->
+    accu
+  | Cons(k, d, rest) ->
+    do_bucket_fold ~f rest (f k d accu [@bs]) 
+
 let fold f h init =
-  let rec do_bucket b accu =
-    match b with
-      Empty ->
-      accu
-    | Cons(k, d, rest) ->
-      do_bucket rest (f k d accu [@bs]) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
-    accu := do_bucket d.(i) !accu
+    accu := do_bucket_fold ~f (Array.unsafe_get d i) !accu
   done;
   !accu
 
