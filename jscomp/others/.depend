@@ -18,7 +18,7 @@ js_mapperRt.cmj : js_mapperRt.cmi
 bs_internalAVLset.cmj :
 bs_internalAVLtree.cmj :
 bs_Hash.cmj : bs_Hash.cmi
-bs_HashMap.cmj : bs_Hash.cmj
+bs_HashMap.cmj : bs_Hash.cmj bs_HashMap.cmi
 bs_Cmp.cmj : bs_Cmp.cmi
 bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Map.cmi
 bs_Set.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Set.cmi
@@ -45,6 +45,7 @@ js_option.cmi :
 js_result.cmi :
 js_mapperRt.cmi :
 bs_Hash.cmi :
+bs_HashMap.cmi : bs_Hash.cmi
 bs_Cmp.cmi :
 bs_Map.cmi : bs_Cmp.cmi
 bs_Set.cmi : bs_Cmp.cmi

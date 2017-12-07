@@ -112,25 +112,7 @@ let stats h =
     max_bucket_length = mbl;
     bucket_histogram = histo }
 
-module type S =
-sig
-  type key
-  type 'a t
-  val create: int -> 'a t
-  val clear : 'a t -> unit
-  val reset : 'a t -> unit
-  val copy: 'a t -> 'a t
-  val add: 'a t -> key -> 'a -> unit
-  val remove: 'a t -> key -> unit
-  val find: 'a t -> key -> 'a
-  val find_all: 'a t -> key -> 'a list
-  val replace : 'a t -> key -> 'a -> unit
-  val mem : 'a t -> key -> bool
-  val iter: (key -> 'a -> unit) -> 'a t -> unit
-  val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-  val length: 'a t -> int
-  val stats: 'a t -> statistics
-end
+
 
 type ('a,'b,'id) t = {
   hash : ('a, 'id) Bs_Hash.t;
@@ -139,8 +121,9 @@ type ('a,'b,'id) t = {
 }
 
 
-let key_index ~hash h key =
+let key_index ~hash (h : ('a, _,_) t0) (key : 'a) =
   ((Bs_Hash.getHash hash) key [@bs]) land (Array.length h.data - 1)
+
 let resize ~hash  h =
   let odata = h.data in
   let osize = Array.length odata in
@@ -159,12 +142,16 @@ let resize ~hash  h =
     done
   end
 
-let add ~hash h key info =
+let add0 ~hash h key info =
   let i = key_index ~hash h key in
   let bucket = Cons(key, info, h.data.(i)) in
   h.data.(i) <- bucket;
   h.size <- h.size + 1;
   if h.size > Array.length h.data lsl 1 then resize ~hash  h
+
+let add (type a) (type b ) (type id) (h : (a,b,id) t) (key:a) (info:b) = 
+  let module M = (val  h.hash) in 
+  add0 ~hash:M.hash h.table key info 
 
 let remove ~hash ~eq h key =
   let rec remove_bucket = function
@@ -207,7 +194,7 @@ let find_all ~hash ~eq h key =
       else find_in_bucket rest in
   find_in_bucket h.data.(key_index ~hash h key)
 
-let replace ~eq ~hash h key info =
+let replace ~hash ~eq  h key info =
   let rec replace_bucket = function
     | Empty ->
       raise Not_found
