@@ -46,7 +46,7 @@ let clear h =
 let reset h =
   let len = Array.length h.data in
   if Obj.size (Obj.repr h) < 4 (* compatibility with old hash tables *)
-    || len = h.initial_size then
+  || len = h.initial_size then
     clear h
   else begin
     h.size <- 0;
@@ -65,9 +65,9 @@ let length h = h.size
 let iter f h =
   let rec do_bucket = function
     | Empty ->
-        ()
+      ()
     | Cons(k, d, rest) ->
-        f k d [@bs]; do_bucket rest in
+      f k d [@bs]; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket d.(i)
@@ -77,9 +77,9 @@ let fold f h init =
   let rec do_bucket b accu =
     match b with
       Empty ->
-        accu
+      accu
     | Cons(k, d, rest) ->
-        do_bucket rest (f k d accu [@bs]) in
+      do_bucket rest (f k d accu [@bs]) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -98,87 +98,51 @@ let rec bucket_length accu = function
   | Empty -> accu
   | Cons(_, _, rest) -> bucket_length (accu + 1) rest
 
+let max (m : int) n = if m > n then m else n  
+
 let stats h =
   let mbl =
     Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
   Array.iter
     (fun b ->
-      let l = bucket_length 0 b in
-      histo.(l) <- histo.(l) + 1)
+       let l = bucket_length 0 b in
+       histo.(l) <- histo.(l) + 1)
     h.data;
   { num_bindings = h.size;
     num_buckets = Array.length h.data;
     max_bucket_length = mbl;
     bucket_histogram = histo }
 
-(* Functorial interface *)
-
-module type HashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: t -> int
-  end
-
-module type SeededHashedType =
-  sig
-    type t
-    val equal: t -> t -> bool
-    val hash: int -> t -> int
-  end
-
 module type S =
-  sig
-    type key
-    type 'a t
-    val create: int -> 'a t
-    val clear : 'a t -> unit
-    val reset : 'a t -> unit
-    val copy: 'a t -> 'a t
-    val add: 'a t -> key -> 'a -> unit
-    val remove: 'a t -> key -> unit
-    val find: 'a t -> key -> 'a
-    val find_all: 'a t -> key -> 'a list
-    val replace : 'a t -> key -> 'a -> unit
-    val mem : 'a t -> key -> bool
-    val iter: (key -> 'a -> unit) -> 'a t -> unit
-    val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-    val length: 'a t -> int
-    val stats: 'a t -> statistics
-  end
+sig
+  type key
+  type 'a t
+  val create: int -> 'a t
+  val clear : 'a t -> unit
+  val reset : 'a t -> unit
+  val copy: 'a t -> 'a t
+  val add: 'a t -> key -> 'a -> unit
+  val remove: 'a t -> key -> unit
+  val find: 'a t -> key -> 'a
+  val find_all: 'a t -> key -> 'a list
+  val replace : 'a t -> key -> 'a -> unit
+  val mem : 'a t -> key -> bool
+  val iter: (key -> 'a -> unit) -> 'a t -> unit
+  val fold: (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
+  val length: 'a t -> int
+  val stats: 'a t -> statistics
+end
 
-module type SeededS =
-  sig
-    type key
-    type 'a t
-    val create : ?random:bool -> int -> 'a t
-    val clear : 'a t -> unit
-    val reset : 'a t -> unit
-    val copy : 'a t -> 'a t
-    val add : 'a t -> key -> 'a -> unit
-    val remove : 'a t -> key -> unit
-    val find : 'a t -> key -> 'a
-    val find_all : 'a t -> key -> 'a list
-    val replace : 'a t -> key -> 'a -> unit
-    val mem : 'a t -> key -> bool
-    val iter : (key -> 'a -> unit) -> 'a t -> unit
-    val fold : (key -> 'a -> 'b -> 'b) -> 'a t -> 'b -> 'b
-    val length : 'a t -> int
-    val stats: 'a t -> statistics
-  end
+type ('a,'b,'id) t = {
+  hash : ('a, 'id) Bs_Hash.t;
+  table : ('a,'b,'id) t0;
 
-    
-    
-    type ('a,'b,'id) t = {
-      hash : ('a, 'id) Bs_Hash.t;
-      table : ('a,'b,'id) t0;
-      
-    }
+}
 
 
-    let key_index ~hash h key =
-      ((Bs_Hash.getHash hash) key [@bs]) land (Array.length h.data - 1)
+let key_index ~hash h key =
+  ((Bs_Hash.getHash hash) key [@bs]) land (Array.length h.data - 1)
 let resize ~hash  h =
   let odata = h.data in
   let osize = Array.length odata in
@@ -189,84 +153,84 @@ let resize ~hash  h =
     let rec insert_bucket = function
         Empty -> ()
       | Cons(key, data, rest) ->
-          insert_bucket rest; (* preserve original order of elements *)
-          let nidx = key_index ~hash h key in
-          ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
+        insert_bucket rest; (* preserve original order of elements *)
+        let nidx = key_index ~hash h key in
+        ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
     for i = 0 to osize - 1 do
       insert_bucket odata.(i)
     done
   end
 
-    let add ~hash h key info =
-      let i = key_index ~hash h key in
-      let bucket = Cons(key, info, h.data.(i)) in
-      h.data.(i) <- bucket;
-      h.size <- h.size + 1;
-      if h.size > Array.length h.data lsl 1 then resize ~hash  h
+let add ~hash h key info =
+  let i = key_index ~hash h key in
+  let bucket = Cons(key, info, h.data.(i)) in
+  h.data.(i) <- bucket;
+  h.size <- h.size + 1;
+  if h.size > Array.length h.data lsl 1 then resize ~hash  h
 
-    let remove ~hash ~eq h key =
-      let rec remove_bucket = function
-        | Empty ->
-            Empty
-        | Cons(k, i, next) ->
-            if (Bs_Hash.getEq eq) k key [@bs]
-            then begin h.size <- h.size - 1; next end
-            else Cons(k, i, remove_bucket next) in
-      let i = key_index ~hash h key in
-      h.data.(i) <- remove_bucket h.data.(i)
+let remove ~hash ~eq h key =
+  let rec remove_bucket = function
+    | Empty ->
+      Empty
+    | Cons(k, i, next) ->
+      if (Bs_Hash.getEq eq) k key [@bs]
+      then begin h.size <- h.size - 1; next end
+      else Cons(k, i, remove_bucket next) in
+  let i = key_index ~hash h key in
+  h.data.(i) <- remove_bucket h.data.(i)
 
-    let rec find_rec ~eq key = function
-      | Empty ->
-          raise Not_found
-      | Cons(k, d, rest) ->
-          if (Bs_Hash.getEq eq) key k [@bs] then d else find_rec ~eq key  rest
+let rec find_rec ~eq key = function
+  | Empty ->
+    raise Not_found
+  | Cons(k, d, rest) ->
+    if (Bs_Hash.getEq eq) key k [@bs] then d else find_rec ~eq key  rest
 
-    let find ~hash ~eq h key =
-      match h.data.(key_index ~hash h key) with
+let find ~hash ~eq h key =
+  match h.data.(key_index ~hash h key) with
+  | Empty -> raise Not_found
+  | Cons(k1, d1, rest1) ->
+    if (Bs_Hash.getEq eq) key k1 [@bs] then d1 else
+      match rest1 with
       | Empty -> raise Not_found
-      | Cons(k1, d1, rest1) ->
-          if (Bs_Hash.getEq eq) key k1 [@bs] then d1 else
-          match rest1 with
+      | Cons(k2, d2, rest2) ->
+        if (Bs_Hash.getEq eq) key k2 [@bs] then d2 else
+          match rest2 with
           | Empty -> raise Not_found
-          | Cons(k2, d2, rest2) ->
-              if (Bs_Hash.getEq eq) key k2 [@bs] then d2 else
-              match rest2 with
-              | Empty -> raise Not_found
-              | Cons(k3, d3, rest3) ->
-                  if (Bs_Hash.getEq eq) key k3 [@bs] then d3 else find_rec ~eq key rest3
+          | Cons(k3, d3, rest3) ->
+            if (Bs_Hash.getEq eq) key k3 [@bs] then d3 else find_rec ~eq key rest3
 
-    let find_all ~hash ~eq h key =
-      let rec find_in_bucket = function
-      | Empty ->
-          []
-      | Cons(k, d, rest) ->
-          if (Bs_Hash.getEq eq) k key [@bs]
-          then d :: find_in_bucket rest
-          else find_in_bucket rest in
-      find_in_bucket h.data.(key_index ~hash h key)
+let find_all ~hash ~eq h key =
+  let rec find_in_bucket = function
+    | Empty ->
+      []
+    | Cons(k, d, rest) ->
+      if (Bs_Hash.getEq eq) k key [@bs]
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket h.data.(key_index ~hash h key)
 
-    let replace ~eq ~hash h key info =
-      let rec replace_bucket = function
-        | Empty ->
-            raise Not_found
-        | Cons(k, i, next) ->
-            if (Bs_Hash.getEq eq) k key [@bs]
-            then Cons(key, info, next)
-            else Cons(k, i, replace_bucket next) in
-      let i = key_index ~hash h key in
-      let l = h.data.(i) in
-      try
-        h.data.(i) <- replace_bucket l
-      with Not_found ->
-        h.data.(i) <- Cons(key, info, l);
-        h.size <- h.size + 1;
-        if h.size > Array.length h.data lsl 1 then resize ~hash  h
+let replace ~eq ~hash h key info =
+  let rec replace_bucket = function
+    | Empty ->
+      raise Not_found
+    | Cons(k, i, next) ->
+      if (Bs_Hash.getEq eq) k key [@bs]
+      then Cons(key, info, next)
+      else Cons(k, i, replace_bucket next) in
+  let i = key_index ~hash h key in
+  let l = h.data.(i) in
+  try
+    h.data.(i) <- replace_bucket l
+  with Not_found ->
+    h.data.(i) <- Cons(key, info, l);
+    h.size <- h.size + 1;
+    if h.size > Array.length h.data lsl 1 then resize ~hash  h
 
-    let mem ~hash ~eq h key =
-      let rec mem_in_bucket = function
-      | Empty ->
-          false
-      | Cons(k, d, rest) ->
-          (Bs_Hash.getEq eq) k key [@bs] || mem_in_bucket rest in
-      mem_in_bucket h.data.(key_index ~hash h key)
+let mem ~hash ~eq h key =
+  let rec mem_in_bucket = function
+    | Empty ->
+      false
+    | Cons(k, d, rest) ->
+      (Bs_Hash.getEq eq) k key [@bs] || mem_in_bucket rest in
+  mem_in_bucket h.data.(key_index ~hash h key)
 
