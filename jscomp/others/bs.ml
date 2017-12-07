@@ -28,6 +28,8 @@
 (**/*)
 
 module Cmp = Bs_Cmp
+module Hash = Bs_Hash
+module Array = Bs_Array
 module Map = Bs_Map
 module Set = Bs_Set
 module MapInt = Bs_MapInt

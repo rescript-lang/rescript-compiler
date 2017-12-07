@@ -111,10 +111,10 @@ let max (m : int) n = if m > n then m else n
 
 let stats h =
   let mbl =
-    Array.fold_left (fun m b -> max m (bucket_length 0 b)) 0 h.data in
+    Bs_Array.fold_left (fun[@bs] m b -> max m (bucket_length 0 b)) 0 h.data in
   let histo = Array.make (mbl + 1) 0 in
-  Array.iter
-    (fun b ->
+  Bs_Array.iter
+    (fun[@bs] b ->
        let l = bucket_length 0 b in
        histo.(l) <- histo.(l) + 1)
     h.data;
@@ -186,7 +186,7 @@ let rec find_rec ~eq key = function
     if (Bs_Hash.getEq eq) key k [@bs] then d else find_rec ~eq key  rest
 
 let find0 ~hash ~eq h key =
-  match h.data.(key_index ~hash h key) with
+  match Array.unsafe_get h.data (key_index ~hash h key) with
   | Empty -> raise Not_found
   | Cons(k1, d1, rest1) ->
     if (Bs_Hash.getEq eq) key k1 [@bs] then d1 else
