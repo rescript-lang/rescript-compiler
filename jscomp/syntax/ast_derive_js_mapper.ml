@@ -159,7 +159,7 @@ let derivingName = "jsConverter"
 let notApplicable loc = 
   Location.prerr_warning 
     loc
-    (Warnings.Bs_derive_warning ( derivingName ^ "not applicable to this type"))
+    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type"))
 
 let init () =      
   Ast_derive.register

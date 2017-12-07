@@ -24,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-# 32
+# 31
 type elt = Ident.t
 let compare_elt (x : elt) (y : elt) = 
   let a =  Pervasives.compare (x.stamp : int) y.stamp in 
@@ -33,11 +33,20 @@ let compare_elt (x : elt) (y : elt) =
     let b = Pervasives.compare (x.name : string) y.name in 
     if b <> 0 then b 
     else Pervasives.compare (x.flags : int) y.flags     
-type  t = elt Set_gen.t 
+
 let print_elt = Ident.print
 
+# 49
+type ('a, 'id) t0 = ('a, 'id) Set_gen.t0 = 
+  | Empty 
+  | Node of ('a, 'id) t0 * 'a * ('a, 'id) t0 * int 
 
-# 67
+type ('a, 'id) enumeration0 = ('a, 'id) Set_gen.enumeration0 = 
+  | End 
+  | More of 'a * ('a, 'id) t0 * ('a, 'id) enumeration0
+    
+type  t = (elt, unit) t0
+type enumeration = (elt, unit) Set_gen.enumeration0
 let empty = Set_gen.empty 
 let is_empty = Set_gen.is_empty
 let iter = Set_gen.iter
@@ -57,7 +66,7 @@ let filter = Set_gen.filter
 let of_sorted_list = Set_gen.of_sorted_list
 let of_sorted_array = Set_gen.of_sorted_array
 
-let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  match tree with 
+let rec split x (tree : t) : t * bool * t =  match tree with 
   | Empty ->
     (Empty, false, Empty)
   | Node(l, v, r, _) ->
@@ -67,14 +76,14 @@ let rec split x (tree : _ Set_gen.t) : _ Set_gen.t * bool * _ Set_gen.t =  match
       let (ll, pres, rl) = split x l in (ll, pres, Set_gen.internal_join rl v r)
     else
       let (lr, pres, rr) = split x r in (Set_gen.internal_join l v lr, pres, rr)
-let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =  match tree with 
+let rec add x (tree : t) : t =  match tree with 
   | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
     let c = compare_elt x v in
     if c = 0 then t else
     if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
 
-let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
+let rec union (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, t2) -> t2
   | (t1, Empty) -> t1
@@ -90,7 +99,7 @@ let rec union (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
       Set_gen.internal_join (union l1 l2) v2 (union r1 r2)
     end    
 
-let rec inter (s1 : _ Set_gen.t)  (s2 : _ Set_gen.t) : _ Set_gen.t  =
+let rec inter (s1 : t)  (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, t2) -> Empty
   | (t1, Empty) -> Empty
@@ -102,7 +111,7 @@ let rec inter (s1 : _ Set_gen.t)  (s2 : _ Set_gen.t) : _ Set_gen.t  =
         Set_gen.internal_join (inter l1 l2) v1 (inter r1 r2)
     end 
 
-let rec diff (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
+let rec diff (s1 : t) (s2 : t) : t  =
   match (s1, s2) with
   | (Empty, t2) -> Empty
   | (t1, Empty) -> t1
@@ -115,26 +124,26 @@ let rec diff (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) : _ Set_gen.t  =
     end
 
 
-let rec mem x (tree : _ Set_gen.t) =  match tree with 
+let rec mem x (tree : t) =  match tree with 
   | Empty -> false
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
     c = 0 || mem x (if c < 0 then l else r)
 
-let rec remove x (tree : _ Set_gen.t) : _ Set_gen.t = match tree with 
+let rec remove x (tree : t) : t = match tree with 
   | Empty -> Empty
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
     if c = 0 then Set_gen.internal_merge l r else
     if c < 0 then Set_gen.internal_bal (remove x l) v r else Set_gen.internal_bal l v (remove x r)
 
-let compare s1 s2 = Set_gen.compare compare_elt s1 s2 
+let compare s1 s2 = Set_gen.compare ~cmp:compare_elt s1 s2 
 
 
 let equal s1 s2 =
   compare s1 s2 = 0
 
-let rec subset (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) =
+let rec subset (s1 : t) (s2 : t) =
   match (s1, s2) with
   | Empty, _ ->
     true
@@ -152,7 +161,7 @@ let rec subset (s1 : _ Set_gen.t) (s2 : _ Set_gen.t) =
 
 
 
-let rec find x (tree : _ Set_gen.t) = match tree with
+let rec find x (tree : t) = match tree with
   | Empty -> raise Not_found
   | Node(l, v, r, _) ->
     let c = compare_elt x v in
@@ -177,7 +186,7 @@ let of_array l =
 (* also check order *)
 let invariant t =
   Set_gen.check t ;
-  Set_gen.is_ordered compare_elt t          
+  Set_gen.is_ordered ~cmp:compare_elt t          
 
 let print fmt s = 
   Format.fprintf 
@@ -188,6 +197,7 @@ let print fmt s =
          print_elt e) s
     )
     s     
+
 
 
 

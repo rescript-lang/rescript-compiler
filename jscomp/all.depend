@@ -3,6 +3,7 @@ ext/literals.cmx : ext/literals.cmi
 ext/ext_util.cmx : ext/ext_util.cmi
 ext/ext_int.cmx : ext/ext_int.cmi
 ext/ext_position.cmx : ext/ext_position.cmi
+ext/ext_cmp.cmx : ext/ext_cmp.cmi
 ext/ext_array.cmx : ext/ext_array.cmi
 ext/ext_bytes.cmx : ext/ext_bytes.cmi
 ext/ext_char.cmx : ext/ext_char.cmi
@@ -16,7 +17,6 @@ ext/int_vec_vec.cmx : ext/resize_array.cmx ext/int_vec.cmx \
     ext/int_vec_vec.cmi
 ext/set_gen.cmx :
 ext/map_gen.cmx :
-ext/map_make.cmx : ext/map_gen.cmx ext/map_make.cmi
 ext/ext_file_pp.cmx : ext/string_vec.cmx ext/ext_file_pp.cmi
 ext/ext_format.cmx : ext/ext_format.cmi
 ext/hashtbl_gen.cmx : ext/ext_util.cmx
@@ -65,7 +65,6 @@ ext/int_map.cmx : ext/map_gen.cmx ext/ext_int.cmx ext/int_map.cmi
 ext/string_map.cmx : ext/map_gen.cmx ext/ext_string.cmx ext/string_map.cmi
 ext/string_set.cmx : ext/set_gen.cmx ext/ext_string.cmx ext/string_set.cmi
 ext/set_int.cmx : ext/set_gen.cmx ext/ext_int.cmx ext/set_int.cmi
-ext/set_poly.cmx : ext/set_gen.cmx ext/ext_pervasives.cmx ext/set_poly.cmi
 ext/ext_scc.cmx : ext/int_vec_vec.cmx ext/int_vec.cmx ext/ext_scc.cmi
 ext/ext_topsort.cmx : ext/set_int.cmx ext/resize_array.cmx ext/int_vec.cmx \
     ext/ext_topsort.cmi
@@ -100,6 +99,7 @@ ext/literals.cmi :
 ext/ext_util.cmi :
 ext/ext_int.cmi :
 ext/ext_position.cmi :
+ext/ext_cmp.cmi :
 ext/ext_array.cmi :
 ext/ext_bytes.cmi :
 ext/ext_char.cmi :
@@ -108,7 +108,6 @@ ext/string_vec.cmi : ext/vec_gen.cmx
 ext/int_vec.cmi : ext/vec_gen.cmx
 ext/int_vec_util.cmi : ext/int_vec.cmi
 ext/int_vec_vec.cmi : ext/vec_gen.cmx ext/int_vec.cmi
-ext/map_make.cmi : ext/map_gen.cmx
 ext/ext_file_pp.cmi : ext/string_vec.cmi
 ext/ext_format.cmi :
 ext/ext_string.cmi :
@@ -140,7 +139,6 @@ ext/int_map.cmi : ext/map_gen.cmx
 ext/string_map.cmi : ext/map_gen.cmx
 ext/string_set.cmi :
 ext/set_int.cmi : ext/set_gen.cmx
-ext/set_poly.cmi :
 ext/ext_scc.cmi : ext/int_vec_vec.cmi ext/int_vec.cmi
 ext/ext_topsort.cmi : ext/vec_gen.cmx ext/set_int.cmi ext/int_vec.cmi
 ext/ext_pp_scope.cmi : ext/ident_set.cmi ext/ext_pp.cmi
@@ -748,8 +746,8 @@ ounit_tests/ounit_tests_util.cmx :
 ounit_tests/ounit_array_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
     ext/ext_array.cmx
 ounit_tests/ounit_list_test.cmx : ounit/oUnit.cmx ext/ext_list.cmx
-ounit_tests/ounit_bal_tree_tests.cmx : ext/set_poly.cmx ext/set_int.cmx \
-    ext/set_gen.cmx ounit_tests/ounit_tests_util.cmx ounit/oUnit.cmx
+ounit_tests/ounit_bal_tree_tests.cmx : ext/set_int.cmx ext/set_gen.cmx \
+    ounit_tests/ounit_tests_util.cmx ounit/oUnit.cmx
 ounit_tests/ounit_path_tests.cmx : ounit/oUnit.cmx ext/ext_string.cmx \
     ext/ext_path.cmx
 ounit_tests/ounit_union_find_tests.cmx : ext/union_find.cmx ounit/oUnit.cmx \

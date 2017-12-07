@@ -21,7 +21,6 @@ bin/all_ounit_tests.ml : ./ext/int_map.mli
 bin/all_ounit_tests.ml : ./ext/int_vec.mli
 bin/all_ounit_tests.ml : ./ext/literals.ml
 bin/all_ounit_tests.ml : ./ext/set_int.mli
-bin/all_ounit_tests.ml : ./ext/set_poly.ml
 bin/all_ounit_tests.ml : ./ounit/oUnit.mli
 bin/all_ounit_tests.ml : ./bsb/bsb_regex.ml
 bin/all_ounit_tests.ml : ./common/bs_loc.ml
@@ -37,7 +36,6 @@ bin/all_ounit_tests.ml : ./ext/ext_utf8.mli
 bin/all_ounit_tests.ml : ./ext/ext_util.mli
 bin/all_ounit_tests.ml : ./ext/hash_set.mli
 bin/all_ounit_tests.ml : ./ext/literals.mli
-bin/all_ounit_tests.ml : ./ext/set_poly.mli
 bin/all_ounit_tests.ml : ./bsb/bsb_regex.mli
 bin/all_ounit_tests.ml : ./common/bs_loc.mli
 bin/all_ounit_tests.ml : ./ext/ext_array.mli

@@ -3,7 +3,7 @@ let ((>::),
 
 let (=~) = OUnit.assert_equal
 
-
+module Set_poly = Set_int
 let suites = 
   __FILE__ >:::
   [
@@ -81,7 +81,7 @@ let compare_ident x y =
     if b <> 0 then b 
     else compare (x.flags : int) y.flags     
 
-let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =
+let rec add x (tree : _ Set_gen.t0) : _ Set_gen.t0 =
   match tree with  
     | Empty -> Node(Empty, x, Empty, 1)
   | Node(l, v, r, _) as t ->
@@ -89,7 +89,7 @@ let rec add x (tree : _ Set_gen.t) : _ Set_gen.t =
     if c = 0 then t else
     if c < 0 then Set_gen.internal_bal (add x l) v r else Set_gen.internal_bal l v (add x r)
 
-let rec mem x (tree : _ Set_gen.t) = 
+let rec mem x (tree : _ Set_gen.t0) = 
   match tree with 
    | Empty -> false
    | Node(l, v, r, _) ->
@@ -122,6 +122,7 @@ let bench () =
   end ;
 
   Ounit_tests_util.time "poly set" begin fun _ -> 
+    let module Set_poly = Ident_set in 
     let v = ref Set_poly.empty in  
     for i = 0 to  times do
       v := Set_poly.add   {stamp = i ; name = "name"; flags = -1 } !v 
