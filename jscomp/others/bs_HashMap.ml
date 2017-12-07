@@ -26,17 +26,25 @@ and ('a, 'b) bucketlist =
     Empty
   | Cons of 'a * 'b * ('a, 'b) bucketlist
 
+type ('a,'b,'id) t = {
+  hash : ('a, 'id) Bs_Hash.t;
+  table : ('a,'b,'id) t0;
+
+}
 
 let rec power_2_above x n =
   if x >= n then x
   else if x * 2 < x then x (* overflow *)
   else power_2_above (x * 2) n
 
-let create  initial_size =
+let create0  initial_size =
   let s = power_2_above 16 initial_size in
   { initial_size = s; size = 0;  data = Array.make s Empty }
 
-let clear h =
+let create hash initialize_size = 
+  { table  = create0 initialize_size  ;
+    hash }
+let clear0 h =
   h.size <- 0;
   let h_data = h.data in 
   let len = Array.length h_data in
@@ -44,16 +52,18 @@ let clear h =
     Array.unsafe_set h_data i  Empty
   done
 
-let reset h =
+let clear h = clear0 h.table   
+
+let reset0 h =
   let len = Array.length h.data in
   let h_initial_size = h.initial_size in
   if len = h_initial_size then
-    clear h
+    clear0 h
   else begin
     h.size <- 0;
     h.data <- Array.make h_initial_size Empty
   end
-
+let reset h = reset0 h.table 
 
 let length h = h.size
 
@@ -63,11 +73,13 @@ let rec do_bucket_iter ~f = function
   | Cons(k, d, rest) ->
     f k d [@bs]; do_bucket_iter ~f rest 
 
-let iter f h =
+let iter0 f h =
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket_iter f (Array.unsafe_get d i)
   done
+let iter f h = 
+  iter0 f h.table 
 
 let rec do_bucket_fold ~f b accu =
   match b with
@@ -76,14 +88,14 @@ let rec do_bucket_fold ~f b accu =
   | Cons(k, d, rest) ->
     do_bucket_fold ~f rest (f k d accu [@bs]) 
 
-let fold f h init =
+let fold0 f h init =
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
     accu := do_bucket_fold ~f (Array.unsafe_get d i) !accu
   done;
   !accu
-
+let fold f h init = fold0 f h.table init 
 type statistics = {
   num_bindings: int;
   num_buckets: int;
@@ -113,11 +125,6 @@ let stats h =
 
 
 
-type ('a,'b,'id) t = {
-  hash : ('a, 'id) Bs_Hash.t;
-  table : ('a,'b,'id) t0;
-
-}
 
 
 let key_index ~hash (h : ('a, _,_) t0) (key : 'a) =

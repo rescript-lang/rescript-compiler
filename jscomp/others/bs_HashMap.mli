@@ -9,7 +9,8 @@ type ('a,'b,'id) t = {
 
 (** The type of hash tables from type ['a] to type ['b]. *)
 
-val create : int -> ('a, 'b, 'id) t0
+val create0 : int -> ('a, 'b, 'id) t0
+val create : ('a,'id) Bs_Hash.t -> int -> ('a,'b,'id) t
 (** [Hashtbl.create n] creates a new, empty hash table, with
     initial size [n].  For best results, [n] should be on the
     order of the expected number of elements that will be in
@@ -48,11 +49,13 @@ val create : int -> ('a, 'b, 'id) t0
     @before 4.00.0 the [random] parameter was not present and all
     hash tables were created in non-randomized mode. *)
 
-val clear : ('a, 'b, 'id) t0 -> unit
+val clear0 : ('a, 'b, 'id) t0 -> unit
+val clear : ('a, 'b, 'id) t -> unit
 (** Empty a hash table. Use [reset] instead of [clear] to shrink the
     size of the bucket table to its initial size. *)
 
-val reset : ('a, 'b, 'id) t0 -> unit
+val reset0 : ('a, 'b, 'id) t0 -> unit
+val reset : ('a, 'b, 'id) t -> unit
 (** Empty a hash table and shrink the size of the bucket table
     to its initial size.
     @since 4.00.0 *)
@@ -117,7 +120,8 @@ val replace:
     This is functionally equivalent to {!Hashtbl.remove}[ tbl x]
     followed by {!Hashtbl.add}[ tbl x y]. *)
 
-val iter : ('a -> 'b -> unit [@bs]) -> ('a, 'b, 'id) t0 -> unit
+val iter0 : ('a -> 'b -> unit [@bs]) -> ('a, 'b, 'id) t0 -> unit
+val iter : ('a -> 'b -> unit [@bs]) -> ('a, 'b, 'id) t -> unit
 (** [Hashtbl.iter f tbl] applies [f] to all bindings in table [tbl].
     [f] receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to [f].
@@ -133,7 +137,8 @@ val iter : ('a -> 'b -> unit [@bs]) -> ('a, 'b, 'id) t0 -> unit
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
-val fold : ('a -> 'b -> 'c -> 'c [@bs]) -> ('a, 'b, 'id) t0 -> 'c -> 'c
+val fold0 : ('a -> 'b -> 'c -> 'c [@bs]) -> ('a, 'b, 'id) t0 -> 'c -> 'c
+val fold : ('a -> 'b -> 'c -> 'c [@bs]) -> ('a, 'b, 'id) t -> 'c -> 'c
 (** [Hashtbl.fold f tbl init] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],
