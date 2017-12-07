@@ -57,8 +57,7 @@ val reset : ('a, 'b, 'id) t0 -> unit
     to its initial size.
     @since 4.00.0 *)
 
-val copy : ('a, 'b, 'id) t0 -> ('a, 'b, 'id) t0
-(** Return a copy of the given hashtable. *)
+
 
 val add0 : hash:('a,'id) Bs_Hash.hash -> ('a,'b,'id) t0 -> 'a -> 'b -> unit
 val add : ('a, 'b, 'id) t -> 'a -> 'b -> unit
@@ -68,29 +67,37 @@ val add : ('a, 'b, 'id) t -> 'a -> 'b -> unit
     the previous binding for [x], if any, is restored.
     (Same behavior as with association lists.) *)
 
-val find : 
+val find0: 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'b, 'id) t0 -> 'a -> 'b
+val find:  
+  ('a, 'b, 'id) t -> 'a -> 'b
 (** [Hashtbl.find tbl x] returns the current binding of [x] in [tbl],
     or raises [Not_found] if no such binding exists. *)
 
-val find_all : 
+val find_all0 : 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'b, 'id) t0 -> 'a -> 'b list
+
+val find_all:  ('a, 'b, 'id) t -> 'a -> 'b list  
 (** [Hashtbl.find_all tbl x] returns the list of all data
     associated with [x] in [tbl].
     The current binding is returned first, then the previous
     bindings, in reverse order of introduction in the table. *)
 
-val mem : 
+val mem0: 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'b, 'id) t0 -> 'a -> bool
+val mem:  
+  ('a, 'b, 'id) t -> 'a -> bool
 (** [Hashtbl.mem tbl x] checks if [x] is bound in [tbl]. *)
 
-val remove : 
+val remove:
+('a, 'b, 'id) t -> 'a -> unit
+val remove0: 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'b, 'id) t0 -> 'a -> unit
@@ -98,10 +105,12 @@ val remove :
     restoring the previous binding if it exists.
     It does nothing if [x] is not bound in [tbl]. *)
 
-val replace :
+val replace0 :
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'b, 'id) t0 -> 'a -> 'b -> unit
+val replace:  
+  ('a, 'b, 'id) t -> 'a -> 'b -> unit
 (** [Hashtbl.replace tbl x y] replaces the current binding of [x]
     in [tbl] by a binding of [x] to [y].  If [x] is unbound in [tbl],
     a binding of [x] to [y] is added to [tbl].

@@ -54,7 +54,6 @@ let reset h =
     h.data <- Array.make h_initial_size Empty
   end
 
-let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
@@ -124,6 +123,14 @@ type ('a,'b,'id) t = {
 let key_index ~hash (h : ('a, _,_) t0) (key : 'a) =
   ((Bs_Hash.getHash hash) key [@bs]) land (Array.length h.data - 1)
 
+let rec insert_bucket_list ~hash ~ndata h = function
+    Empty -> ()
+  | Cons(key, data, rest) ->
+    insert_bucket_list ~hash ~ndata h rest; (* preserve original order of elements *)
+    let nidx = key_index ~hash h key in
+    Array.unsafe_set ndata nidx 
+      (Cons(key, data, Array.unsafe_get ndata nidx )) 
+
 let resize ~hash  h =
   let odata = h.data in
   let osize = Array.length odata in
@@ -131,14 +138,8 @@ let resize ~hash  h =
   if  nsize >= osize then begin 
     let ndata = Array.make nsize Empty in
     h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons(key, data, rest) ->
-        insert_bucket rest; (* preserve original order of elements *)
-        let nidx = key_index ~hash h key in
-        ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
     for i = 0 to osize - 1 do
-      insert_bucket odata.(i)
+      insert_bucket_list ~hash ~ndata h (Array.unsafe_get odata i)
     done
   end
 
@@ -153,16 +154,23 @@ let add (type a) (type b ) (type id) (h : (a,b,id) t) (key:a) (info:b) =
   let module M = (val  h.hash) in 
   add0 ~hash:M.hash h.table key info 
 
-let remove ~hash ~eq h key =
-  let rec remove_bucket = function
-    | Empty ->
-      Empty
-    | Cons(k, i, next) ->
-      if (Bs_Hash.getEq eq) k key [@bs]
-      then begin h.size <- h.size - 1; next end
-      else Cons(k, i, remove_bucket next) in
+let rec remove_bucket ~eq key h = function
+  | Empty ->
+    Empty
+  | Cons(k, i, next) ->
+    if (Bs_Hash.getEq eq) k key [@bs]
+    then begin h.size <- h.size - 1; next end
+    else Cons(k, i, remove_bucket ~eq key h next) 
+
+let remove0 ~hash ~eq h key =
   let i = key_index ~hash h key in
-  h.data.(i) <- remove_bucket h.data.(i)
+  let h_data = h.data in 
+  Array.unsafe_set h_data i
+    (remove_bucket ~eq key h (Array.unsafe_get h_data i))
+
+let remove (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
+  let module M = (val h.hash) in   
+  remove0 ~hash:M.hash ~eq:M.eq h.table key 
 
 let rec find_rec ~eq key = function
   | Empty ->
@@ -170,7 +178,7 @@ let rec find_rec ~eq key = function
   | Cons(k, d, rest) ->
     if (Bs_Hash.getEq eq) key k [@bs] then d else find_rec ~eq key  rest
 
-let find ~hash ~eq h key =
+let find0 ~hash ~eq h key =
   match h.data.(key_index ~hash h key) with
   | Empty -> raise Not_found
   | Cons(k1, d1, rest1) ->
@@ -184,7 +192,11 @@ let find ~hash ~eq h key =
           | Cons(k3, d3, rest3) ->
             if (Bs_Hash.getEq eq) key k3 [@bs] then d3 else find_rec ~eq key rest3
 
-let find_all ~hash ~eq h key =
+let find (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
+  let module M = (val h.hash) in   
+  find0 ~hash:M.hash ~eq:M.eq h.table key 
+
+let find_all0 ~hash ~eq h key =
   let rec find_in_bucket = function
     | Empty ->
       []
@@ -194,7 +206,11 @@ let find_all ~hash ~eq h key =
       else find_in_bucket rest in
   find_in_bucket h.data.(key_index ~hash h key)
 
-let replace ~hash ~eq  h key info =
+let find_all (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
+  let module M = (val h.hash) in   
+  find_all0 ~hash:M.hash ~eq:M.eq h.table key   
+
+let replace0 ~hash ~eq  h key info =
   let rec replace_bucket = function
     | Empty ->
       raise Not_found
@@ -211,11 +227,21 @@ let replace ~hash ~eq  h key info =
     h.size <- h.size + 1;
     if h.size > Array.length h.data lsl 1 then resize ~hash  h
 
-let mem ~hash ~eq h key =
-  let rec mem_in_bucket = function
-    | Empty ->
-      false
-    | Cons(k, d, rest) ->
-      (Bs_Hash.getEq eq) k key [@bs] || mem_in_bucket rest in
-  mem_in_bucket h.data.(key_index ~hash h key)
+let replace (type a) (type b) (type id)  (h : (a,b,id) t) (key : a) (info : b) =
+  let module M = (val h.hash) in 
+  replace0 ~hash:M.hash ~eq:M.eq h.table key info
+    
+let rec mem_in_bucket ~eq key = function
+  | Empty ->
+    false
+  | Cons(k, d, rest) ->
+    (Bs_Hash.getEq eq) k key [@bs] || mem_in_bucket ~eq key rest     
+
+let mem0 ~hash ~eq h key =
+  mem_in_bucket ~eq key (Array.unsafe_get h.data (key_index ~hash h key))
+
+let mem (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
+  let module M = (val h.hash) in   
+  mem0 ~hash:M.hash ~eq:M.eq h.table key   
+  
 
