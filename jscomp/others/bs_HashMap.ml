@@ -57,23 +57,7 @@ let copy h = { h with data = Array.copy h.data }
 
 let length h = h.size
 
-let resize ~hash indexfun h =
-  let odata = h.data in
-  let osize = Array.length odata in
-  let nsize = osize * 2 in
-  if  nsize >= osize then begin 
-    let ndata = Array.make nsize Empty in
-    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket = function
-        Empty -> ()
-      | Cons(key, data, rest) ->
-          insert_bucket rest; (* preserve original order of elements *)
-          let nidx = indexfun ~hash h key in
-          ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
-    for i = 0 to osize - 1 do
-      insert_bucket odata.(i)
-    done
-  end
+
 
 
 
@@ -83,7 +67,7 @@ let iter f h =
     | Empty ->
         ()
     | Cons(k, d, rest) ->
-        f k d; do_bucket rest in
+        f k d [@bs]; do_bucket rest in
   let d = h.data in
   for i = 0 to Array.length d - 1 do
     do_bucket d.(i)
@@ -95,7 +79,7 @@ let fold f h init =
       Empty ->
         accu
     | Cons(k, d, rest) ->
-        do_bucket rest (f k d accu) in
+        do_bucket rest (f k d accu [@bs]) in
   let d = h.data in
   let accu = ref init in
   for i = 0 to Array.length d - 1 do
@@ -195,13 +179,30 @@ module type SeededS =
 
     let key_index ~hash h key =
       ((Bs_Hash.getHash hash) key [@bs]) land (Array.length h.data - 1)
+let resize ~hash  h =
+  let odata = h.data in
+  let osize = Array.length odata in
+  let nsize = osize * 2 in
+  if  nsize >= osize then begin 
+    let ndata = Array.make nsize Empty in
+    h.data <- ndata;          (* so that indexfun sees the new bucket count *)
+    let rec insert_bucket = function
+        Empty -> ()
+      | Cons(key, data, rest) ->
+          insert_bucket rest; (* preserve original order of elements *)
+          let nidx = key_index ~hash h key in
+          ndata.(nidx) <- Cons(key, data, ndata.(nidx)) in
+    for i = 0 to osize - 1 do
+      insert_bucket odata.(i)
+    done
+  end
 
     let add ~hash h key info =
       let i = key_index ~hash h key in
       let bucket = Cons(key, info, h.data.(i)) in
       h.data.(i) <- bucket;
       h.size <- h.size + 1;
-      if h.size > Array.length h.data lsl 1 then resize ~hash key_index h
+      if h.size > Array.length h.data lsl 1 then resize ~hash  h
 
     let remove ~hash ~eq h key =
       let rec remove_bucket = function
@@ -259,7 +260,7 @@ module type SeededS =
       with Not_found ->
         h.data.(i) <- Cons(key, info, l);
         h.size <- h.size + 1;
-        if h.size > Array.length h.data lsl 1 then resize ~hash key_index h
+        if h.size > Array.length h.data lsl 1 then resize ~hash  h
 
     let mem ~hash ~eq h key =
       let rec mem_in_bucket = function
