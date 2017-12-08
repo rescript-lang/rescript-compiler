@@ -10,7 +10,7 @@ let message (warning : Warnings.t)  =
   | Unerasable_optional_argument ->
       String.concat "\n\n"
         ["This is an optional argument at the final position of the function; omitting it while calling the function might be confused with currying. For example:";
-        "  let myTitle = displayTitle \"hello!\";";
+        "  let myTitle = displayTitle(\"hello!\");";
         "if `displayTitle` accepts an optional argument at the final position, it'd be unclear whether `myTitle` is a curried function or the final result.";
         "Here's the language's rule: an optional argument is erased as soon as the 1st positional (i.e. neither labeled nor optional) argument defined after it is passed in.";
         "To solve this, you'd conventionally add an extra () argument at the end of the function declaration."]
