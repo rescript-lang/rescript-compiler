@@ -1,7 +1,6 @@
 'use strict';
 
 var Bs_Map                  = require("../../lib/js/bs_Map.js");
-var Bs_Hash                 = require("../../lib/js/bs_Hash.js");
 var Hashtbl                 = require("../../lib/js/hashtbl.js");
 var Caml_hash               = require("../../lib/js/caml_hash.js");
 var Bs_HashMap              = require("../../lib/js/bs_HashMap.js");
