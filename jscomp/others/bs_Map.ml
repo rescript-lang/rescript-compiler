@@ -150,21 +150,21 @@ let equal0 ~cmp:keycmp cmp m1 m2 =
 
 
 type ('k,'v,'id) t = {
-  cmp : ('k,'id) Bs_Cmp.t ;
+  dict : ('k,'id) Bs_Cmp.t ;
   data : ('k,'v, 'id) t0 
 }
 
 
-let empty cmp = 
+let empty dict = 
   {
-    cmp ;
+    dict ;
     data = empty0
   }
 let isEmpty map = 
   isEmpty0 map.data 
 
-let singleton cmp k v = {
-  cmp ; 
+let singleton dict k v = {
+  dict ; 
   data = singleton0 k v 
 }
 
@@ -179,14 +179,14 @@ let exists f map =
 
 let filter f map = 
   {data = filter0 f map.data  ;
-   cmp = map.cmp
+   dict= map.dict
   } 
 
 let partition p map = 
   let l,r = partition0 p map.data in 
-  let map_cmp = map.cmp in 
-  { data = l; cmp = map_cmp },
-  { data = r; cmp = map_cmp}
+  let map_dict = map.dict in 
+  { data = l; dict = map_dict },
+  { data = r; dict = map_dict}
 
 let cardinal map = 
   cardinal0 map.data   
@@ -200,70 +200,70 @@ let maxBinding map =
   maxBinding0 map.data   
 
 let map f m = 
-  let m_cmp = m.cmp in 
-  { cmp = m_cmp  ; data = map0 f m.data}
+  let m_dict = m.dict in 
+  { dict = m_dict  ; data = map0 f m.data}
 
 let mapi f m  = 
-  let m_cmp = m.cmp in 
-  { cmp = m_cmp  ; data = mapi0 f m.data}
+  let m_dict = m.dict in 
+  { dict = m_dict  ; data = mapi0 f m.data}
 
 
 let add (type k) (type v) (type id) key data (map : (k,v,id) t) = 
-  let map_cmp = map.cmp in 
-  let module X = (val map_cmp) in 
-  { cmp = map_cmp ; 
+  let map_dict = map.dict in 
+  let module X = (val map_dict) in 
+  { dict = map_dict ; 
     data = add0 ~cmp:X.cmp key data map.data
   }
 
 let findOpt (type k) (type v) (type id) x (map : (k,v,id) t) = 
-  let module X = (val map.cmp) in 
+  let module X = (val map.dict) in 
   findOpt0 ~cmp:X.cmp x map.data
 
 let findAssert (type k) (type v) (type id) x (map : (k,v,id) t) = 
-  let module X = (val map.cmp) in 
+  let module X = (val map.dict) in 
   findAssert0 ~cmp:X.cmp x map.data
   
 let findWithDefault (type k) (type v) (type id) ~def x (map : (k,v,id) t) = 
-  let module X = (val map.cmp) in 
+  let module X = (val map.dict) in 
   findWithDefault0 ~cmp:X.cmp ~def x map.data
   
 
 let mem (type k) (type v) (type id) x (map : (k,v,id) t) = 
-  let module X = (val map.cmp) in 
+  let module X = (val map.dict) in 
   mem0 ~cmp:X.cmp x map.data
 
 let remove (type k) (type v) (type id) x (map : (k,v,id) t) =   
-  let map_cmp = map.cmp in
-  let module X = (val map_cmp) in 
+  let map_dict = map.dict in
+  let module X = (val map_dict) in 
   { data = remove0 ~cmp:X.cmp x map.data ;
-    cmp = map_cmp
+    dict = map_dict
   }
 
 let split (type k) (type v) (type id) x (map : (k,v,id) t) =   
-  let map_cmp = map.cmp in 
-  let module X = (val map_cmp) in 
+  let map_dict = map.dict in 
+  let module X = (val map_dict) in 
   let l,v,r = split0 ~cmp:X.cmp x map.data in 
-  { cmp = map_cmp ; 
+  { dict = map_dict ; 
     data = l
   }, 
   v ,
-  { cmp = map_cmp ; 
+  { dict = map_dict ; 
     data = r
   }
 
 let merge (type k) (type v) (type id) f (s1 : (k,v,id) t) 
     (s2 : (k,_,id) t) = 
-  let s1_cmp = s1.cmp in 
-  let module X = (val s1_cmp) in 
+  let s1_dict = s1.dict in 
+  let module X = (val s1_dict) in 
   { data = merge0 ~cmp:X.cmp f s1.data s2.data ;
-    cmp = s1_cmp
+    dict = s1_dict
   }
 
 let compare (type k) (type v) (type id) cmp 
     (m1 : (k,v,id) t) (m2 : (k,v,id) t) = 
-  let module X = (val m1.cmp) in 
+  let module X = (val m1.dict) in 
   compare0 ~cmp:X.cmp cmp m1.data m2.data
 
 let equal (type k) (type v) (type id) cmp (m1 : (k,v,id) t) (m2 : (k,v,id) t) = 
-  let module X = (val m1.cmp) in   
+  let module X = (val m1.dict) in   
   equal0 ~cmp:X.cmp cmp m1.data m2.data 

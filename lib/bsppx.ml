@@ -19009,6 +19009,46 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               Location.raise_errorf ~loc 
                 "external expects a single identifier"
           end 
+        | Pexp_extension ({txt = "bs.time"| "time"; loc}, payload)  
+          -> 
+          (
+            match payload with 
+            | PStr [{pstr_desc = Pstr_eval (e,_)}] -> 
+              let locString = 
+                if loc.loc_ghost then 
+                  "GHOST LOC"
+                else 
+                  let loc_start = loc.loc_start in 
+                  let (file, lnum, __) = Location.get_pos_info loc_start in                  
+                  Printf.sprintf "%s %d"
+                    file lnum in   
+              let e = self.expr self e in 
+              Exp.sequence ~loc
+                (Exp.apply ~loc     
+                   (Exp.ident ~loc {loc; 
+                                    txt = 
+                                      Ldot (Ldot (Lident "Js", "Console"), "timeStart")   
+                                   })
+                   ["", Exp.constant ~loc (Const_string (locString,None))]
+                )     
+                ( Exp.let_ ~loc Nonrecursive
+                    [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e ;
+                    ]
+                    (Exp.sequence ~loc
+                       (Exp.apply ~loc     
+                          (Exp.ident ~loc {loc; 
+                                           txt = 
+                                             Ldot (Ldot (Lident "Js", "Console"), "timeEnd")   
+                                          })
+                          ["", Exp.constant ~loc (Const_string (locString,None))]
+                       )    
+                       (Exp.ident ~loc {loc; txt = Lident "timed"})
+                    )
+                )
+            | _ -> 
+              Location.raise_errorf 
+                ~loc "expect a boolean expression in the payload"
+          )
         | Pexp_extension({txt = "bs.assert" | "assert";loc},payload) 
           ->
           (
@@ -19044,11 +19084,11 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                  else 
                    (raiseWithString locString)
                | Pexp_constant (Const_string (r, _)) -> 
-                  if !Clflags.noassert then 
-                    Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
-                    (* Need special handling to make it type check*)
-                  else   
-                    raiseWithString r
+                 if !Clflags.noassert then 
+                   Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
+                   (* Need special handling to make it type check*)
+                 else   
+                   raiseWithString r
                | _ ->    
                  let e = self.expr self  e in 
                  if !Clflags.noassert then 

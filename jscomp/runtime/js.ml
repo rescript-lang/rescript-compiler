@@ -146,3 +146,4 @@ module Option = Js_option
 module Result = Js_result
 module List = Js_list 
 module Vector = Js_vector
+module Console = Js_console

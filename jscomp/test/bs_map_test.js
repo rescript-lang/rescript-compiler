@@ -7,7 +7,7 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var N = /* module */[/* cmp */Caml_obj.caml_int_compare];
 
 var m0 = /* record */[
-  /* cmp */N,
+  /* dict */N,
   /* data : Empty */0
 ];
 
@@ -22,12 +22,12 @@ function cmp$1(x, y) {
 var I2 = /* module */[/* cmp */cmp$1];
 
 var m = /* record */[
-  /* cmp */I,
+  /* dict */I,
   /* data : Empty */0
 ];
 
 var m2 = /* record */[
-  /* cmp */I2,
+  /* dict */I2,
   /* data : Empty */0
 ];
 
@@ -38,7 +38,7 @@ for(var i = 0; i <= 100000; ++i){
 }
 
 var newm = /* record */[
-  /* cmp */I,
+  /* dict */I,
   /* data */data
 ];
 
@@ -47,7 +47,7 @@ console.log(newm);
 var m1 = Bs_Map.add0(cmp, 1, 1, Bs_Map.empty0);
 
 console.log(/* record */[
-      /* cmp */I,
+      /* dict */I,
       /* data */m1
     ]);
 

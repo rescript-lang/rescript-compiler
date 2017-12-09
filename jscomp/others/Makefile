@@ -6,10 +6,15 @@ MAP_FILES= node bs
 
 SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string \
 	js_re js_null_undefined node_buffer js_types js_json js_obj \
-	js_vector js_list js_option js_result\
+	js_vector js_list js_option \
+	js_console\
+	js_result\
 	js_mapperRt\
+	bs_Array\
 	bs_internalAVLset\
 	bs_internalAVLtree\
+	bs_Hash\
+	bs_HashMap\
 	bs_Cmp\
 	bs_Map\
 	bs_Set\
@@ -25,7 +30,7 @@ $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) $(addsuffix .cmi, $(SOURCE_LIST))
 
-BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -absname -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-noassertfalse -bs-package-name bs-platform
+BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -absname -bs-diagnose -bs-no-check-div-by-zero -bs-cross-module-opt -bs-noassertfalse -bs-package-name bs-platform 
 
 
 BS_FLAGS=  $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS)

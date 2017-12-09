@@ -15,7 +15,7 @@
 type ('k, + 'a, 'id) t0 
 
 type ('k, +'a, 'id) t = {
-  cmp : ('k,'id) Bs_Cmp.t ;
+  dict : ('k,'id) Bs_Cmp.t ;
   data : ('k, 'a, 'id) t0 
 }
 (** [('k, 'a, id) t] 

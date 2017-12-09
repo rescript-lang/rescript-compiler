@@ -208,3 +208,5 @@ module List = Js_list
 (** Provide utilities for list *)
 
 module Vector = Js_vector 
+
+module Console = Js_console

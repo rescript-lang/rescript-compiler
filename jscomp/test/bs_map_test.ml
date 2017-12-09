@@ -1,5 +1,4 @@
 
-
 module N = 
   (val Bs.Cmp.make 
     (fun[@bs] (x : int) y -> 
@@ -37,8 +36,8 @@ let () =
   
   (* let {cmp; data} = m in  *)
   let data = ref m.data in 
-  let module N = (val m2.cmp) in 
-  let module M = ( val m.cmp) in
+  let module N = (val m2.dict) in 
+  let module M = ( val m.dict) in
   (* let vcmp = Bs.Cmp.getCmp  M.cmp in  *)
   for i = 0 to count do 
     data := 
@@ -68,7 +67,7 @@ let () =
 let () =   
   let count = 100_000 in 
   let v = Bs.Set.empty (module I) in 
-  let module M = (val m.cmp) in 
+  let module M = (val m.dict) in 
   let cmp = M.cmp in 
   let data = ref v.data in 
   for i = 0 to count do 

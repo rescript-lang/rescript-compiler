@@ -88,6 +88,7 @@ bs_MapInt_test.cmj : ../runtime/js.cmj ../others/bs.cmj
 bs_array_test.cmj : mt.cmj ../runtime/js.cmj
 bs_auto_uncurry.cmj : ../runtime/js.cmj
 bs_auto_uncurry_test.cmj : mt.cmj ../others/js_array.cmj ../runtime/js.cmj
+bs_hashtbl_string_test.cmj : ../stdlib/hashtbl.cmj ../others/bs.cmj
 bs_ignore_effect.cmj : mt.cmj
 bs_ignore_test.cmj : ../runtime/js.cmj
 bs_map_test.cmj : ../runtime/js.cmj ../others/bs.cmj
@@ -128,6 +129,7 @@ complex_while_loop.cmj :
 condition_compilation_test.cmj : ../stdlib/unix.cmj mt.cmj
 config1_test.cmj :
 config2_test.cmj : ../runtime/js.cmj config2_test.cmi
+console_log_test.cmj : ../stdlib/pervasives.cmj
 const_block_test.cmj : mt.cmj ../stdlib/array.cmj const_block_test.cmi
 const_defs.cmj :
 const_defs_test.cmj : const_defs.cmj
