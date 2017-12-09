@@ -70,14 +70,14 @@ val add : ('a, 'b, 'id) t -> 'a -> 'b -> unit
     the previous binding for [x], if any, is restored.
     (Same behavior as with association lists.) *)
 
-val find0: 
+val findOpt0: 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> 'b
-val find:  
-  ('a, 'b, 'id) t -> 'a -> 'b
-(** [Hashtbl.find tbl x] returns the current binding of [x] in [tbl],
-    or raises [Not_found] if no such binding exists. *)
+  ('a, 'b, 'id) t0 -> 'a -> 'b option
+val findOpt:  
+  ('a, 'b, 'id) t -> 'a -> 'b option
+(** [findOpt tbl x] returns the current binding of [x] in [tbl],
+    *)
 
 val findAll0 : 
   hash:('a,'id) Bs_Hash.hash  -> 
@@ -156,7 +156,8 @@ val fold : ('a -> 'b -> 'c -> 'c [@bs]) -> ('a, 'b, 'id) t -> 'c -> 'c
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
-val length : ('a, 'b, 'id) t0 -> int
+val length0 : ('a, 'b, 'id) t0 -> int
+val length  : ('a, 'b, 'id) t -> int  
 (** [Hashtbl.length tbl] returns the number of bindings in [tbl].
     It takes constant time.  Multiple bindings are counted once each, so
     [Hashtbl.length] gives the number of times [Hashtbl.iter] calls its
