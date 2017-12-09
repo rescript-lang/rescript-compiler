@@ -13,6 +13,7 @@ js_obj.cmj :
 js_vector.cmj : js_array.cmj js_vector.cmi
 js_list.cmj : js_vector.cmj js_list.cmi
 js_option.cmj : js_option.cmi
+js_console.cmj :
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
 bs_Array.cmj : bs_Array.cmi

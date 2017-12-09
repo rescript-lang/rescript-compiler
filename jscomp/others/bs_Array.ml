@@ -25,28 +25,30 @@ external append_prim : 'a array -> 'a array -> 'a array = "caml_array_append"
 external concat : 'a array list -> 'a array = "caml_array_concat"
 external unsafe_blit :
   'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
-external make_float: int -> float array = "caml_make_float_vect"
+external makeFloat: int -> float array = "caml_make_float_vect"
 
+(*DOC: when l < 0 raise RangeError js excpetion *)
 let init l f =
   if l = 0 then [||] else
-  if l < 0 then invalid_arg "Array.init"
   (* See #6575. We could also check for maximum array size, but this depends
      on whether we create a float array or a regular one... *)
-  else
+  (* if l < 0 then invalid_arg "Array.init"
+  
+  else *)
    let res = create l (f 0 [@bs]) in
    for i = 1 to pred l do
      unsafe_set res i (f i [@bs])
    done;
    res
 
-let make_matrix sx sy init =
+let makeMatrix sx sy init =
   let res = create sx [||] in
   for x = 0 to pred sx do
     unsafe_set res x (create sy init)
   done;
   res
 
-let create_matrix = make_matrix
+
 
 let copy a =
   let l = length a in if l = 0 then [||] else unsafe_sub a 0 l
@@ -59,18 +61,24 @@ let append a1 a2 =
 
 let sub a ofs len =
   if len < 0 || ofs > length a - len
-  then invalid_arg "Array.sub"
+  then 
+    (* invalid_arg  *)
+    [%assert "Array.sub"]
   else unsafe_sub a ofs len
 
 let fill a ofs len v =
   if ofs < 0 || len < 0 || ofs > length a - len
-  then invalid_arg "Array.fill"
+  then 
+    (* invalid_arg  *)
+    [%assert "Array.fill"]
   else for i = ofs to ofs + len - 1 do unsafe_set a i v done
 
 let blit a1 ofs1 a2 ofs2 len =
   if len < 0 || ofs1 < 0 || ofs1 > length a1 - len
              || ofs2 < 0 || ofs2 > length a2 - len
-  then invalid_arg "Array.blit"
+  then 
+    (* invalid_arg  *)
+    [%assert "Array.blit"]
   else unsafe_blit a1 ofs1 a2 ofs2 len
 
 let iter f a =
@@ -99,7 +107,7 @@ let mapi f a =
     r
   end
 
-let to_list a =
+let toList a =
   let rec tolist i res =
     if i < 0 then res else tolist (i - 1) (unsafe_get a i :: res) in
   tolist (length a - 1) []
@@ -110,7 +118,7 @@ let rec list_length accu = function
   | h::t -> list_length (succ accu) t
 ;;
 
-let of_list = function
+let ofList = function
     [] -> [||]
   | hd::tl as l ->
       let a = create (list_length 0 l) hd in
@@ -119,14 +127,14 @@ let of_list = function
         | hd::tl -> unsafe_set a i hd; fill (i+1) tl in
       fill 1 tl
 
-let fold_left f x a =
+let foldLeft f x a =
   let r = ref x in
   for i = 0 to length a - 1 do
     r := f !r (unsafe_get a i) [@bs]
   done;
   !r
 
-let fold_right f a x =
+let foldRight f a x =
   let r = ref x in
   for i = length a - 1 downto 0 do
     r := f (unsafe_get a i) !r [@bs]
@@ -184,7 +192,7 @@ let sort cmp a =
 ;;
 
 let cutoff = 5;;
-let stable_sort cmp a =
+let stableSort cmp a =
   let merge src1ofs src1len src2 src2ofs src2len dst dstofs =
     let src1r = src1ofs + src1len and src2r = src2ofs + src2len in
     let rec loop i1 s1 i2 s2 d =
@@ -236,4 +244,4 @@ let stable_sort cmp a =
   end;
 ;;
 
-let fast_sort = stable_sort;;
+let fastSort = stableSort;;

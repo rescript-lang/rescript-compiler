@@ -763,6 +763,10 @@ let translate loc (prim_name : string)
       end
     | "caml_md5_string"
       -> call Js_runtime_modules.md5
+    | "caml_hash_mix_string"
+    | "caml_hash_mix_int"
+    | "caml_hash_final_mix"
+    
     | "caml_hash"
       -> call Js_runtime_modules.hash 
     | "caml_weak_set"

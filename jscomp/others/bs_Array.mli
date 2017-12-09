@@ -57,7 +57,7 @@ val init : int -> (int -> 'a [@bs]) -> 'a array
    If the return type of [f] is [float], then the maximum
    size is only [Sys.max_array_length / 2].*)
 
-val make_matrix : int -> int -> 'a -> 'a array array
+val makeMatrix : int -> int -> 'a -> 'a array array
 (** [Array.make_matrix dimx dimy e] returns a two-dimensional array
    (an array of arrays) with first dimension [dimx] and
    second dimension [dimy]. All the elements of this new matrix
@@ -109,10 +109,10 @@ val blit : 'a array -> int -> 'a array -> int -> int -> unit
    designate a valid subarray of [v1], or if [o2] and [len] do not
    designate a valid subarray of [v2]. *)
 
-val to_list : 'a array -> 'a list
+val toList : 'a array -> 'a list
 (** [Array.to_list a] returns the list of all the elements of [a]. *)
 
-val of_list : 'a list -> 'a array
+val ofList : 'a list -> 'a array
 (** [Array.of_list l] returns a fresh array containing the elements
    of [l]. *)
 
@@ -136,17 +136,17 @@ val mapi : (int -> 'a -> 'b [@bs]) -> 'a array -> 'b array
    function is applied to the index of the element as first argument,
    and the element itself as second argument. *)
 
-val fold_left : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b array -> 'a
+val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b array -> 'a
 (** [Array.fold_left f x a] computes
    [f (... (f (f x a.(0)) a.(1)) ...) a.(n-1)],
    where [n] is the length of the array [a]. *)
 
-val fold_right : ('b -> 'a -> 'a [@bs]) -> 'b array -> 'a -> 'a
+val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b array -> 'a -> 'a
 (** [Array.fold_right f a x] computes
    [f a.(0) (f a.(1) ( ... (f a.(n-1) x) ...))],
    where [n] is the length of the array [a]. *)
 
-external make_float: int -> float array = "caml_make_float_vect"
+external makeFloat: int -> float array = "caml_make_float_vect"
 (** [Array.make_float n] returns a fresh float array of length [n],
     with uninitialized data.
     @since 4.02 *)
@@ -180,7 +180,7 @@ val sort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
 -   [cmp a.(i) a.(j)] >= 0 if and only if i >= j
 *)
 
-val stable_sort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
+val stableSort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
 (** Same as {!Array.sort}, but the sorting algorithm is stable (i.e.
    elements that compare equal are kept in their original order) and
    not guaranteed to run in constant heap space.
@@ -190,7 +190,7 @@ val stable_sort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
    It is usually faster than the current implementation of {!Array.sort}.
 *)
 
-val fast_sort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
+val fastSort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
 (** Same as {!Array.sort} or {!Array.stable_sort}, whichever is faster
     on typical input.
 *)

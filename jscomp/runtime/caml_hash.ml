@@ -42,7 +42,7 @@ let rotl32 (x : nativeint) n  =
   (x << n) |~ (x >>> (32 - n))
 
 
-let mix h  d = 
+let caml_hash_mix_int h  d = 
   let d = ref d in 
   d := !d *~ 0xcc9e2d51n ;
   d := rotl32 !d 15 ;
@@ -51,7 +51,7 @@ let mix h  d =
   h := rotl32 !h 13 ;
   !h +~ (!h << 2)  +~ 0xe6546b64n  
 
-let final_mix h = 
+let caml_hash_final_mix h = 
   let h = ref (h ^ (h >>> 16)) in
   h := !h *~ 0x85ebca6bn ;
   h := !h ^ (!h >>> 13);
@@ -71,7 +71,7 @@ let caml_hash_mix_string h  s =
       (Char.code s.[j+2] lsl 16) lor 
       (Char.code s.[j+3] lsl 24)
     in
-    hash := mix !hash (Nativeint.of_int w)
+    hash := caml_hash_mix_int !hash (Nativeint.of_int w)
   done ;
   let modulo =  len land 0b11 in 
   if modulo <> 0 then 
@@ -86,7 +86,7 @@ let caml_hash_mix_string h  s =
           Char.code s.[len -2]
         else Char.code s.[len - 1] 
       in 
-      hash := mix !hash (Nativeint.of_int w)
+      hash := caml_hash_mix_int !hash (Nativeint.of_int w)
     end;
   hash := !hash ^ (Nativeint.of_int len) ;
   !hash 
@@ -97,13 +97,13 @@ let caml_hash count _limit seed obj =
   if Js.typeof obj = "number" then
     begin 
       let u = (Nativeint.of_float (Obj.magic obj)) in
-      hash := mix !hash (u +~ u +~ 1n) ;
-      final_mix !hash
+      hash := caml_hash_mix_int !hash (u +~ u +~ 1n) ;
+      caml_hash_final_mix !hash
     end
   else if Js.typeof obj = "string" then 
     begin 
       hash := caml_hash_mix_string !hash (Obj.magic obj : string);
-      final_mix !hash
+      caml_hash_final_mix !hash
     end
     (* TODO: hash [null] [undefined] as well *)
   else 
@@ -119,7 +119,7 @@ let caml_hash count _limit seed obj =
       if Js.typeof obj = "number" then
         begin 
           let u = Nativeint.of_float (Obj.magic obj) in
-          hash := mix !hash (u +~ u +~ 1n) ;
+          hash := caml_hash_mix_int !hash (u +~ u +~ 1n) ;
           decr num ;
         end
       else if Js.typeof obj = "string" then 
@@ -143,10 +143,10 @@ let caml_hash count _limit seed obj =
           let obj_tag = Obj.tag obj in
           let tag = (size lsl 10) lor obj_tag in 
           if tag = 248 (* Obj.object_tag*) then 
-            hash := mix !hash (Nativeint.of_int (Oo.id (Obj.magic obj)))
+            hash := caml_hash_mix_int !hash (Nativeint.of_int (Oo.id (Obj.magic obj)))
           else 
             begin 
-              hash := mix !hash (Nativeint.of_int tag) ;
+              hash := caml_hash_mix_int !hash (Nativeint.of_int tag) ;
               let block = 
                 let v = size - 1 in if v <  !num then v else !num in 
               for i = 0 to block do
@@ -154,5 +154,5 @@ let caml_hash count _limit seed obj =
               done 
             end
     done;
-    final_mix !hash 
+    caml_hash_final_mix !hash 
     

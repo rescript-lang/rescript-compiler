@@ -3,8 +3,8 @@
 type ('a, 'b, 'id) t0
 
 type ('a,'b,'id) t = {
-  hash : ('a, 'id) Bs_Hash.t;
-  table : ('a,'b,'id) t0;
+  dict : ('a, 'id) Bs_Hash.t;
+  data : ('a,'b,'id) t0;
 }
 
 (** The type of hash tables from type ['a] to type ['b]. *)
@@ -79,12 +79,12 @@ val find:
 (** [Hashtbl.find tbl x] returns the current binding of [x] in [tbl],
     or raises [Not_found] if no such binding exists. *)
 
-val find_all0 : 
+val findAll0 : 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'b, 'id) t0 -> 'a -> 'b list
 
-val find_all:  ('a, 'b, 'id) t -> 'a -> 'b list  
+val findAll:  ('a, 'b, 'id) t -> 'a -> 'b list  
 (** [Hashtbl.find_all tbl x] returns the list of all data
     associated with [x] in [tbl].
     The current binding is returned first, then the previous
@@ -178,7 +178,8 @@ type statistics = {
       [histo.(i)] is the number of buckets whose size is [i]. *)
 }
 
-val stats : ('a, 'b, 'id) t0 -> statistics
+val logStats0 : ('a, 'b, 'id) t0 -> unit
+val logStats : _ t -> unit
 (** [Hashtbl.stats tbl] returns statistics about the table [tbl]:
     number of buckets, size of the biggest bucket, distribution of
     buckets by size.
