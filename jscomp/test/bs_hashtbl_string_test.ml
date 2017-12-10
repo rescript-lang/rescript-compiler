@@ -55,7 +55,7 @@ let bench() =
 
 
 let count  = 1_000_000 
-let initial_size = 1_000
+let initial_size = 1_000_000
 (*
     (empty : _ Bs.HashMap.t)
     #.add (string_of_int i) i 

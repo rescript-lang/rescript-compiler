@@ -91,7 +91,7 @@ function bench() {
 }
 
 function bench2(m) {
-  var empty = Bs_HashMap.create(m, 1000);
+  var empty = Bs_HashMap.create(m, 1000000);
   var hash = m[/* hash */0];
   var eq = m[/* eq */1];
   var table = empty[/* data */1];
@@ -164,7 +164,7 @@ console.timeEnd("bs_hashtbl_string_test.ml 103");
 
 var count = 1000000;
 
-var initial_size = 1000;
+var initial_size = 1000000;
 
 exports.hash_string  = hash_string;
 exports.hashString   = hashString;

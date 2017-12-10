@@ -72,7 +72,7 @@ let rec power_2_above x n =
 let create0  initial_size =
   let s = power_2_above 16 initial_size in
   { initial_size = s; size = 0; 
-     buckets = makeSize s  }
+    buckets = makeSize s  }
 
 let clear0 h =
   h.size <- 0;
@@ -164,6 +164,25 @@ let rec insert_bucket_list ~hash ~ndata h buckets =
     Bs_Array.unsafe_set ndata nidx 
       ( return {key; value; next = Bs_Array.unsafe_get ndata nidx }) 
 
+let rec insert_bucket ~hash ~ndata ~ndata_tail h buckets = 
+  match toOpt buckets with 
+  | None -> ()
+  | Some ({key; next} as cell) ->
+    let nidx = key_index ~hash h key in
+    begin match toOpt (Bs_Array.unsafe_get ndata_tail nidx) with
+      | None -> 
+        let v = return cell in 
+        Bs_Array.unsafe_set ndata_tail nidx  v;
+        Bs_Array.unsafe_set ndata nidx  v
+
+      | Some tail ->
+        let v = return cell in 
+        Bs_Array.unsafe_set ndata_tail nidx  v;
+        tail.next <- v ; (* cell put at the end *)            
+    end;          
+    insert_bucket ~hash ~ndata ~ndata_tail h next
+
+
 let resize ~hash h =
   let odata = h.buckets in
   let osize = Array.length odata in
@@ -172,26 +191,8 @@ let resize ~hash h =
     let ndata = makeSize nsize  in
     let ndata_tail = makeSize nsize  in (* keep track of tail *)
     h.buckets <- ndata;          (* so that indexfun sees the new bucket count *)
-    let rec insert_bucket buckets = 
-      match toOpt buckets with 
-      | None -> ()
-      | Some ({key; next} as cell) ->
-          let nidx = key_index ~hash h key in
-          begin match toOpt (Bs_Array.unsafe_get ndata_tail nidx) with
-          | None -> 
-            let v = return cell in 
-            Bs_Array.unsafe_set ndata_tail nidx  v;
-            Bs_Array.unsafe_set ndata nidx  v
-            
-          | Some tail ->
-            let v = return cell in 
-            Bs_Array.unsafe_set ndata_tail nidx  v;
-            tail.next <- v ; (* cell put at the end *)            
-          end;          
-          insert_bucket next
-    in
     for i = 0 to osize - 1 do
-      insert_bucket (Bs_Array.unsafe_get odata i)
+      insert_bucket ~hash ~ndata ~ndata_tail h (Bs_Array.unsafe_get odata i)
     done;
     for i = 0 to nsize - 1 do
       match toOpt (Bs_Array.unsafe_get ndata_tail i) with
@@ -200,17 +201,6 @@ let resize ~hash h =
     done
   end
 
-(* let resize ~hash  h = *)
-(*   let odata = h.buckets in *)
-(*   let osize = Array.length odata in *)
-(*   let nsize = osize * 2 in *)
-(*   if  nsize >= osize then begin (\* no overflow *\) *)
-(*     let ndata = makeSize nsize in  *)
-(*     h.buckets <- ndata;          (\* so that indexfun sees the new bucket count *\) *)
-(*     for i = 0 to osize - 1 do *)
-(*       insert_bucket_list ~hash ~ndata h (Bs_Array.unsafe_get odata i) *)
-(*     done *)
-(*   end *)
 
 let add0 ~hash h key info =
   let i = key_index ~hash h key in
@@ -277,8 +267,8 @@ let rec replace_bucket ~eq  key info buckets =
   | Some {key = k; value =  i; next} ->
     return @@ 
     (if (Bs_Hash.getEq eq) k key [@bs]
-    then  { key; value =  info; next}
-    else {key = k; value =  i; next =  replace_bucket ~eq key info next})
+     then  { key; value =  info; next}
+     else {key = k; value =  i; next =  replace_bucket ~eq key info next})
 
 let replace0 ~hash ~eq  h key info =
   let i = key_index ~hash h key in
