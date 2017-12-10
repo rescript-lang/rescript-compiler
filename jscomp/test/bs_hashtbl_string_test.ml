@@ -55,7 +55,7 @@ let bench() =
 
 
 let count  = 1_000_000 
-
+let initial_size = 1_000
 (*
     (empty : _ Bs.HashMap.t)
     #.add (string_of_int i) i 
@@ -63,7 +63,7 @@ let count  = 1_000_000
 *)    
 let bench2 (type t) (m : (string,t) Bs.Hash.t) = 
   let empty = 
-    Bs.HashMap.create m 500_000 in
+    Bs.HashMap.create m initial_size in
   let module String = (val m) in     
   let hash = String.hash in 
   let eq = String.eq in 
@@ -79,7 +79,7 @@ let bench2 (type t) (m : (string,t) Bs.Hash.t) =
   done; 
   ()
   (* Bs.HashMap.logStats empty *)
-  
+
 let bench3 (type t) (m : (string,t) Bs.Cmp.t) = 
   let empty = Bs.Map.empty m in
   let module String = (val m) in 

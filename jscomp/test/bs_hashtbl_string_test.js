@@ -91,7 +91,7 @@ function bench() {
 }
 
 function bench2(m) {
-  var empty = Bs_HashMap.create(m, 500000);
+  var empty = Bs_HashMap.create(m, 1000);
   var hash = m[/* hash */0];
   var eq = m[/* eq */1];
   var table = empty[/* data */1];
@@ -164,16 +164,19 @@ console.timeEnd("bs_hashtbl_string_test.ml 103");
 
 var count = 1000000;
 
-exports.hash_string = hash_string;
-exports.hashString  = hashString;
-exports.$$String    = $$String;
-exports.String1     = String1;
-exports.String2     = String2;
-exports.Int         = Int;
-exports.empty       = empty;
-exports.bench       = bench;
-exports.count       = count;
-exports.bench2      = bench2;
-exports.bench3      = bench3;
-exports.S           = S;
+var initial_size = 1000;
+
+exports.hash_string  = hash_string;
+exports.hashString   = hashString;
+exports.$$String     = $$String;
+exports.String1      = String1;
+exports.String2      = String2;
+exports.Int          = Int;
+exports.empty        = empty;
+exports.bench        = bench;
+exports.count        = count;
+exports.initial_size = initial_size;
+exports.bench2       = bench2;
+exports.bench3       = bench3;
+exports.S            = S;
 /* hashString Not a pure module */
