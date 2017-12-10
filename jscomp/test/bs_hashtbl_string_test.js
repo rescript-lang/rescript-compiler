@@ -91,7 +91,7 @@ function bench() {
 }
 
 function bench2(m) {
-  var empty = Bs_HashMap.create(m, 500000);
+  var empty = Bs_HashMap.create(m, 1000000);
   var hash = m[/* hash */0];
   var eq = m[/* eq */1];
   var table = empty[/* data */1];
@@ -111,7 +111,21 @@ function bench2(m) {
     }
     
   }
-  return /* () */0;
+  for(var i$2 = 0; i$2 <= 1000000; ++i$2){
+    Bs_HashMap.remove0(hash, eq, table, "" + i$2);
+  }
+  if (table[/* size */0]) {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "bs_hashtbl_string_test.ml",
+            83,
+            2
+          ]
+        ];
+  } else {
+    return 0;
+  }
 }
 
 function bench3(m) {
@@ -126,54 +140,71 @@ function bench3(m) {
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              93,
+              97,
               4
             ]
           ];
     }
     
   }
-  return /* () */0;
+  for(var i$2 = 0; i$2 <= 1000000; ++i$2){
+    table = Bs_Map.remove0(cmp, "" + i$2, table);
+  }
+  if (Bs_Map.cardinal0(table)) {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "bs_hashtbl_string_test.ml",
+            104,
+            2
+          ]
+        ];
+  } else {
+    return 0;
+  }
 }
 
 var S = /* module */[/* cmp */Caml_string.caml_string_compare];
 
-console.time("bs_hashtbl_string_test.ml 100");
+console.time("bs_hashtbl_string_test.ml 108");
 
 bench2(String1);
 
-console.timeEnd("bs_hashtbl_string_test.ml 100");
+console.timeEnd("bs_hashtbl_string_test.ml 108");
 
-console.time("bs_hashtbl_string_test.ml 101");
+console.time("bs_hashtbl_string_test.ml 109");
 
 bench2($$String);
 
-console.timeEnd("bs_hashtbl_string_test.ml 101");
+console.timeEnd("bs_hashtbl_string_test.ml 109");
 
-console.time("bs_hashtbl_string_test.ml 102");
+console.time("bs_hashtbl_string_test.ml 110");
 
 bench2(String2);
 
-console.timeEnd("bs_hashtbl_string_test.ml 102");
+console.timeEnd("bs_hashtbl_string_test.ml 110");
 
-console.time("bs_hashtbl_string_test.ml 103");
+console.time("bs_hashtbl_string_test.ml 111");
 
 bench3(S);
 
-console.timeEnd("bs_hashtbl_string_test.ml 103");
+console.timeEnd("bs_hashtbl_string_test.ml 111");
 
 var count = 1000000;
 
-exports.hash_string = hash_string;
-exports.hashString  = hashString;
-exports.$$String    = $$String;
-exports.String1     = String1;
-exports.String2     = String2;
-exports.Int         = Int;
-exports.empty       = empty;
-exports.bench       = bench;
-exports.count       = count;
-exports.bench2      = bench2;
-exports.bench3      = bench3;
-exports.S           = S;
+var initial_size = 1000000;
+
+exports.hash_string  = hash_string;
+exports.hashString   = hashString;
+exports.$$String     = $$String;
+exports.String1      = String1;
+exports.String2      = String2;
+exports.Int          = Int;
+exports.empty        = empty;
+exports.bench        = bench;
+exports.count        = count;
+exports.initial_size = initial_size;
+exports.bench2       = bench2;
+exports.bench3       = bench3;
+exports.S            = S;
 /* hashString Not a pure module */

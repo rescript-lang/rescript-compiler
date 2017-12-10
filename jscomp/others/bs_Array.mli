@@ -46,6 +46,7 @@ external make : int -> 'a -> 'a array = "caml_make_vect"
    If the value of [x] is a floating-point number, then the maximum
    size is only [Sys.max_array_length / 2].*)
 
+external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 
 val init : int -> (int -> 'a [@bs]) -> 'a array
 (** [Array.init n f] returns a fresh array of length [n],

@@ -55,7 +55,7 @@ let bench() =
 
 
 let count  = 1_000_000 
-
+let initial_size = 1_000_000
 (*
     (empty : _ Bs.HashMap.t)
     #.add (string_of_int i) i 
@@ -63,7 +63,7 @@ let count  = 1_000_000
 *)    
 let bench2 (type t) (m : (string,t) Bs.Hash.t) = 
   let empty = 
-    Bs.HashMap.create m 500_000 in
+    Bs.HashMap.create m initial_size in
   let module String = (val m) in     
   let hash = String.hash in 
   let eq = String.eq in 
@@ -77,9 +77,13 @@ let bench2 (type t) (m : (string,t) Bs.Hash.t) =
       ~hash ~eq
       table (string_of_int i))
   done; 
-  ()
-  (* Bs.HashMap.logStats empty *)
+  for i = 0 to count do 
+    Bs.HashMap.remove0 ~hash ~eq table (string_of_int i)
+  done ;
+  assert (Bs.HashMap.length0 table = 0)  
   
+  (* Bs.HashMap.logStats empty *)
+
 let bench3 (type t) (m : (string,t) Bs.Cmp.t) = 
   let empty = Bs.Map.empty m in
   let module String = (val m) in 
@@ -94,6 +98,10 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
     
        (string_of_int i) !table)
   done; 
+  for i = 0 to count do  
+    table := Bs.Map.remove0 ~cmp (string_of_int i) !table
+  done ;
+  assert (Bs.Map.cardinal0 !table = 0)
   
 module S = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y )) 
 

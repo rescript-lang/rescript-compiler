@@ -11,7 +11,10 @@
 (*                                                                     *)
 (***********************************************************************)
 (**  Adapted by Authors of BuckleScript 2017                           *)
-(* Hash tables *)
+
+(* For JS backends, we use [undefined] as default value, so that buckets
+   could be allocated lazily
+*)
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
@@ -21,81 +24,37 @@ type ('a, 'b,'id) t0 =
     mutable buckets: ('a, 'b) bucketlist array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
   }
-
-and ('a, 'b) bucketlist =
-    Empty
-  | Cons of 'a * 'b * ('a, 'b) bucketlist
+(* and 'a opt = 'a option *) (* TODO: conditionally compiled into native*)
+#if BS then
+and 'a opt = 'a Js.undefined
+#else 
+and 'a opt = 'a option 
+#end
+and ('a,'b) buckets =  
+  
+{
+   mutable key : 'a ; 
+   mutable value : 'b ; 
+   mutable next : ('a, 'b) buckets opt
+   }
+and ('a,'b) bucketlist = ('a, 'b) buckets opt
 
 type ('a,'b,'id) t = {
   dict : ('a, 'id) Bs_Hash.t;
   data : ('a,'b,'id) t0;
 
 }
-
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 < x then x (* overflow *)
-  else power_2_above (x * 2) n
-
-let create0  initial_size =
-  let s = power_2_above 16 initial_size in
-  { initial_size = s; size = 0;  buckets = Array.make s Empty }
-
-let create dict initialize_size = 
-  { data  = create0 initialize_size  ;
-    dict }
-let clear0 h =
-  h.size <- 0;
-  let h_buckets = h.buckets in 
-  let len = Array.length h_buckets in
-  for i = 0 to len - 1 do
-    Array.unsafe_set h_buckets i  Empty
-  done
-
-let clear h = clear0 h.data
-
-let reset0 h =
-  let len = Array.length h.buckets in
-  let h_initial_size = h.initial_size in
-  if len = h_initial_size then
-    clear0 h
-  else begin
-    h.size <- 0;
-    h.buckets <- Array.make h_initial_size Empty
-  end
-let reset h = reset0 h.data
-
-let length h = h.size
-
-let rec do_bucket_iter ~f = function
-  | Empty ->
-    ()
-  | Cons(k, d, rest) ->
-    f k d [@bs]; do_bucket_iter ~f rest 
-
-let iter0 f h =
-  let d = h.buckets in
-  for i = 0 to Array.length d - 1 do
-    do_bucket_iter f (Array.unsafe_get d i)
-  done
-let iter f h = 
-  iter0 f h.data
-
-let rec do_bucket_fold ~f b accu =
-  match b with
-    Empty ->
-    accu
-  | Cons(k, d, rest) ->
-    do_bucket_fold ~f rest (f k d accu [@bs]) 
-
-let fold0 f h init =
-  let d = h.buckets in
-  let accu = ref init in
-  for i = 0 to Array.length d - 1 do
-    accu := do_bucket_fold ~f (Array.unsafe_get d i) !accu
-  done;
-  !accu
-let fold f h init = fold0 f h.data init 
+#if BS then
+let toOpt = Js.Undefined.to_opt
+let return = Js.Undefined.return
+let emptyOpt = Js.undefined               
+let makeSize s = Bs_Array.makeUninitialized s 
+#else 
+external toOpt : 'a -> 'a = "%identity"
+let return x = Some x 
+let emptyOpt = None
+let makeSize s = Bs_Array.make s emptyOpt
+#end
 
 type statistics = {
   num_bindings: int;
@@ -104,9 +63,73 @@ type statistics = {
   bucket_histogram: int array
 }
 
-let rec bucket_length accu = function
-  | Empty -> accu
-  | Cons(_, _, rest) -> bucket_length (accu + 1) rest
+
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 < x then x (* overflow *)
+  else power_2_above (x * 2) n
+
+let create0  initial_size =
+  let s = power_2_above 16 initial_size in
+  { initial_size = s; size = 0; 
+    buckets = makeSize s  }
+
+let clear0 h =
+  h.size <- 0;
+  let h_buckets = h.buckets in 
+  let len = Array.length h_buckets in
+  for i = 0 to len - 1 do
+    Bs_Array.unsafe_set h_buckets i  emptyOpt
+  done
+
+let reset0 h =
+  let len = Array.length h.buckets in
+  let h_initial_size = h.initial_size in
+  if len = h_initial_size then
+    clear0 h
+  else begin
+    h.size <- 0;
+    h.buckets <- makeSize h_initial_size 
+  end
+
+let length0 h = h.size
+
+
+let rec do_bucket_iter ~f buckets = 
+  match toOpt buckets with 
+  | None ->
+    ()
+  | Some {key ; value; next } ->
+    f key value [@bs]; do_bucket_iter ~f next
+
+let iter0 f h =
+  let d = h.buckets in
+  for i = 0 to Array.length d - 1 do
+    do_bucket_iter f (Bs_Array.unsafe_get d i)
+  done
+
+
+let rec do_bucket_fold ~f b accu =
+  match toOpt b with
+  | None ->
+    accu
+  | Some { key ;  value ; next } ->
+    do_bucket_fold ~f next (f key value accu [@bs]) 
+
+let fold0 f h init =
+  let d = h.buckets in
+  let accu = ref init in
+  for i = 0 to Array.length d - 1 do
+    accu := do_bucket_fold ~f (Bs_Array.unsafe_get d i) !accu
+  done;
+  !accu
+
+
+
+let rec bucket_length accu buckets = 
+  match toOpt buckets with 
+  | None -> accu
+  | Some { next } -> bucket_length (accu + 1) next
 
 let max (m : int) n = if m > n then m else n  
 
@@ -117,14 +140,14 @@ let logStats0 h =
   Bs_Array.iter
     (fun[@bs] b ->
        let l = bucket_length 0 b in
-       Array.unsafe_set histo l (Array.unsafe_get histo l + 1)
+       Bs_Array.unsafe_set histo l (Bs_Array.unsafe_get histo l + 1)
     )
     h.buckets;
   Js.log [%obj{ num_bindings = h.size;
-    num_buckets = Array.length h.buckets;
-    max_bucket_length = mbl;
-    bucket_histogram = histo }]
-let logStats h = logStats0 h.data
+                num_buckets = Array.length h.buckets;
+                max_bucket_length = mbl;
+                bucket_histogram = histo }]
+
 
 
 
@@ -132,127 +155,187 @@ let logStats h = logStats0 h.data
 let key_index ~hash (h : ('a, _,_) t0) (key : 'a) =
   ((Bs_Hash.getHash hash) key [@bs]) land (Array.length h.buckets - 1)
 
-let rec insert_bucket_list ~hash ~ndata h = function
-    Empty -> ()
-  | Cons(key, data, rest) ->
-    insert_bucket_list ~hash ~ndata h rest; (* preserve original order of elements *)
+let rec insert_bucket_list ~hash ~ndata h buckets = 
+  match toOpt buckets with 
+  | None -> ()
+  | Some { key; value ; next} ->
+    insert_bucket_list ~hash ~ndata h next; (* preserve original order of elements *)
     let nidx = key_index ~hash h key in
-    Array.unsafe_set ndata nidx 
-      (Cons(key, data, Array.unsafe_get ndata nidx )) 
+    Bs_Array.unsafe_set ndata nidx 
+      ( return {key; value; next = Bs_Array.unsafe_get ndata nidx }) 
 
-let resize ~hash  h =
+let rec insert_bucket ~hash ~ndata ~ndata_tail h buckets = 
+  match toOpt buckets with 
+  | None -> ()
+  | Some ({key; next} as cell) ->
+    let nidx = key_index ~hash h key in
+    begin match toOpt (Bs_Array.unsafe_get ndata_tail nidx) with
+      | None -> 
+        let v = return cell in 
+        Bs_Array.unsafe_set ndata_tail nidx  v;
+        Bs_Array.unsafe_set ndata nidx  v
+
+      | Some tail ->
+        let v = return cell in 
+        Bs_Array.unsafe_set ndata_tail nidx  v;
+        tail.next <- v ; (* cell put at the end *)            
+    end;          
+    insert_bucket ~hash ~ndata ~ndata_tail h next
+
+
+let resize ~hash h =
   let odata = h.buckets in
   let osize = Array.length odata in
   let nsize = osize * 2 in
-  if  nsize >= osize then begin 
-    let ndata = Array.make nsize Empty in
+  if nsize >= osize then begin (* no overflow *)
+    let ndata = makeSize nsize  in
+    let ndata_tail = makeSize nsize  in (* keep track of tail *)
     h.buckets <- ndata;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
-      insert_bucket_list ~hash ~ndata h (Array.unsafe_get odata i)
+      insert_bucket ~hash ~ndata ~ndata_tail h (Bs_Array.unsafe_get odata i)
+    done;
+    for i = 0 to nsize - 1 do
+      match toOpt (Bs_Array.unsafe_get ndata_tail i) with
+      | None -> ()
+      | Some tail -> tail.next <- emptyOpt
     done
   end
+
 
 let add0 ~hash h key info =
   let i = key_index ~hash h key in
   let h_buckets = h.buckets in  
-  let bucket = Cons(key, info, Array.unsafe_get h_buckets i) in  
-  Array.unsafe_set h_buckets i  bucket;
+  let bucket = {key; value = info; next= Bs_Array.unsafe_get h_buckets i} in  
+  Bs_Array.unsafe_set h_buckets i  (return bucket);
   h.size <- h.size + 1;
   if h.size > Array.length h_buckets lsl 1 then resize ~hash  h
+
+
+let rec remove_bucket ~eq h h_buckets  i key prec buckets =
+  match toOpt buckets with
+  | None -> ()
+  | Some {key=k; next} ->
+    if (Bs_Hash.getEq eq) k key [@bs]
+    then 
+      begin
+        (match toOpt prec with
+         | None -> Bs_Array.unsafe_set h_buckets i  next
+         | Some c -> c.next <- next);
+        h.size <- h.size - 1;        
+      end
+    else remove_bucket ~eq h h_buckets i key buckets next
+
+let remove0 ~hash ~eq h key =
+  let i = key_index ~hash h key in
+  let h_buckets = h.buckets in 
+  remove_bucket ~eq h h_buckets i key emptyOpt (Bs_Array.unsafe_get h_buckets i)
+
+
+(* TODO: add [removeAll] *)
+
+
+let rec find_rec ~eq key buckets = 
+  match toOpt buckets with 
+  | None ->
+    None
+  | Some { key = k; value = d; next =  rest} ->
+    if (Bs_Hash.getEq eq) key k [@bs] then Some d else find_rec ~eq key  rest
+
+let findOpt0 ~hash ~eq h key =
+  match toOpt @@ Bs_Array.unsafe_get h.buckets (key_index ~hash h key) with
+  | None -> None
+  | Some {key = k1; value  = d1; next =  rest1} ->
+    if (Bs_Hash.getEq eq) key k1 [@bs] then Some d1 else
+      match toOpt rest1 with
+      | None -> None
+      | Some {key = k2; value =  d2; next =  rest2} ->
+        if (Bs_Hash.getEq eq) key k2 [@bs] then Some d2 else
+          match toOpt rest2 with
+          | None -> None
+          | Some { key = k3; value = d3; next =  rest3} ->
+            if (Bs_Hash.getEq eq) key k3 [@bs] then Some d3 else find_rec ~eq key rest3
+
+
+let findAll0 ~hash ~eq h key =
+  let rec find_in_bucket buckets = 
+    match toOpt buckets with 
+    | None ->
+      []
+    | Some {key = k; value = d; next =  rest} ->
+      if (Bs_Hash.getEq eq) k key [@bs]
+      then d :: find_in_bucket rest
+      else find_in_bucket rest in
+  find_in_bucket (Bs_Array.unsafe_get h.buckets (key_index ~hash h key))
+
+let rec replace_bucket ~eq  key info buckets = 
+  match toOpt buckets with 
+  | None ->
+    true
+  | Some ({key = k; value =  i; next} as slot) ->
+    if (Bs_Hash.getEq eq) k key [@bs]
+    then
+      begin
+        slot.key <- key;
+        slot.value <- info;
+        false
+      end
+    else
+      replace_bucket ~eq key info next
+
+let replace0 ~hash ~eq  h key info =
+  let i = key_index ~hash h key in
+  let h_buckets = h.buckets in 
+  let l = Array.unsafe_get h_buckets i in  
+  if replace_bucket ~eq key info l then begin
+    Bs_Array.unsafe_set h_buckets i (return {key ; value = info; next = l});
+    h.size <- h.size + 1;
+    if h.size > Array.length h.buckets lsl 1 then resize ~hash h
+  end 
+
+let rec mem_in_bucket ~eq key buckets = 
+  match toOpt buckets with 
+  | None ->
+    false
+  | Some {key = k; value = d; next =  rest} ->
+    (Bs_Hash.getEq eq) k key [@bs] || mem_in_bucket ~eq key rest     
+let mem0 ~hash ~eq h key =
+  mem_in_bucket ~eq key (Bs_Array.unsafe_get h.buckets (key_index ~hash h key))
+
+
+
+(*  Wrapper  *)
+let create dict initialize_size = 
+  { data  = create0 initialize_size  ;
+    dict }
+let clear h = clear0 h.data
+let reset h = reset0 h.data
+let length h = length0 h.data                  
+let iter f h = iter0 f h.data
+let fold f h init = fold0 f h.data init 
+let logStats h = logStats0 h.data
 
 let add (type a) (type b ) (type id) (h : (a,b,id) t) (key:a) (info:b) = 
   let module M = (val  h.dict) in 
   add0 ~hash:M.hash h.data key info 
 
-let rec remove_bucket ~eq key h = function
-  | Empty ->
-    Empty
-  | Cons(k, i, next) ->
-    if (Bs_Hash.getEq eq) k key [@bs]
-    then begin h.size <- h.size - 1; next end
-    else Cons(k, i, remove_bucket ~eq key h next) 
-
-let remove0 ~hash ~eq h key =
-  let i = key_index ~hash h key in
-  let h_buckets = h.buckets in 
-  Array.unsafe_set h_buckets i
-    (remove_bucket ~eq key h (Array.unsafe_get h_buckets i))
-
 let remove (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
   let module M = (val h.dict) in   
   remove0 ~hash:M.hash ~eq:M.eq h.data key 
 
-let rec find_rec ~eq key = function
-  | Empty ->
-    raise Not_found
-  | Cons(k, d, rest) ->
-    if (Bs_Hash.getEq eq) key k [@bs] then d else find_rec ~eq key  rest
-
-let find0 ~hash ~eq h key =
-  match Array.unsafe_get h.buckets (key_index ~hash h key) with
-  | Empty -> raise Not_found
-  | Cons(k1, d1, rest1) ->
-    if (Bs_Hash.getEq eq) key k1 [@bs] then d1 else
-      match rest1 with
-      | Empty -> raise Not_found
-      | Cons(k2, d2, rest2) ->
-        if (Bs_Hash.getEq eq) key k2 [@bs] then d2 else
-          match rest2 with
-          | Empty -> raise Not_found
-          | Cons(k3, d3, rest3) ->
-            if (Bs_Hash.getEq eq) key k3 [@bs] then d3 else find_rec ~eq key rest3
-
-let find (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
+let findOpt (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
   let module M = (val h.dict) in   
-  find0 ~hash:M.hash ~eq:M.eq h.data key 
-
-let findAll0 ~hash ~eq h key =
-  let rec find_in_bucket = function
-    | Empty ->
-      []
-    | Cons(k, d, rest) ->
-      if (Bs_Hash.getEq eq) k key [@bs]
-      then d :: find_in_bucket rest
-      else find_in_bucket rest in
-  find_in_bucket (Array.unsafe_get h.buckets (key_index ~hash h key))
+  findOpt0 ~hash:M.hash ~eq:M.eq h.data key 
 
 let findAll (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
   let module M = (val h.dict) in   
   findAll0 ~hash:M.hash ~eq:M.eq h.data key   
 
-let replace0 ~hash ~eq  h key info =
-  let rec replace_bucket = function
-    | Empty ->
-      raise Not_found
-    | Cons(k, i, next) ->
-      if (Bs_Hash.getEq eq) k key [@bs]
-      then Cons(key, info, next)
-      else Cons(k, i, replace_bucket next) in
-  let i = key_index ~hash h key in
-  let h_buckets = h.buckets in 
-  let l = Array.unsafe_get h_buckets (i) in
-  try
-    Array.unsafe_set h_buckets (i)  (replace_bucket l)
-  with Not_found ->
-    Array.unsafe_set h_buckets (i)  (Cons(key, info, l));
-    h.size <- h.size + 1;
-    if h.size > Array.length h_buckets lsl 1 then resize ~hash  h
-
 let replace (type a) (type b) (type id)  (h : (a,b,id) t) (key : a) (info : b) =
   let module M = (val h.dict) in 
   replace0 ~hash:M.hash ~eq:M.eq h.data key info
-    
-let rec mem_in_bucket ~eq key = function
-  | Empty ->
-    false
-  | Cons(k, d, rest) ->
-    (Bs_Hash.getEq eq) k key [@bs] || mem_in_bucket ~eq key rest     
-
-let mem0 ~hash ~eq h key =
-  mem_in_bucket ~eq key (Array.unsafe_get h.buckets (key_index ~hash h key))
 
 let mem (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
   let module M = (val h.dict) in   
   mem0 ~hash:M.hash ~eq:M.eq h.data key   
-  
+
 
