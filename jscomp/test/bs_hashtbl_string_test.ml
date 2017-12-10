@@ -77,7 +77,11 @@ let bench2 (type t) (m : (string,t) Bs.Hash.t) =
       ~hash ~eq
       table (string_of_int i))
   done; 
-  ()
+  for i = 0 to count do 
+    Bs.HashMap.remove0 ~hash ~eq table (string_of_int i)
+  done ;
+  assert (Bs.HashMap.length0 table = 0)  
+  
   (* Bs.HashMap.logStats empty *)
 
 let bench3 (type t) (m : (string,t) Bs.Cmp.t) = 
@@ -94,6 +98,10 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
     
        (string_of_int i) !table)
   done; 
+  for i = 0 to count do  
+    table := Bs.Map.remove0 ~cmp (string_of_int i) !table
+  done ;
+  assert (Bs.Map.cardinal0 !table = 0)
   
 module S = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y )) 
 

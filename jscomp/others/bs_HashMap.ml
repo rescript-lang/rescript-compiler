@@ -211,20 +211,27 @@ let add0 ~hash h key info =
   if h.size > Array.length h_buckets lsl 1 then resize ~hash  h
 
 
-let rec remove_bucket ~eq key h buckets =
-  match toOpt buckets with  
-  | None ->
-    emptyOpt
-  | Some {key = k; value =  i; next} ->
+let rec remove_bucket ~eq h h_buckets  i key prec buckets =
+  match toOpt buckets with
+  | None -> ()
+  | Some {key=k; next} ->
     if (Bs_Hash.getEq eq) k key [@bs]
-    then begin h.size <- h.size - 1; next end
-    else  return { key = k; value = i; next =  remove_bucket ~eq key h next}
+    then 
+      begin
+        (match toOpt prec with
+         | None -> Bs_Array.unsafe_set h_buckets i  next
+         | Some c -> c.next <- next);
+        h.size <- h.size - 1;        
+      end
+    else remove_bucket ~eq h h_buckets i key buckets next
 
 let remove0 ~hash ~eq h key =
   let i = key_index ~hash h key in
   let h_buckets = h.buckets in 
-  Bs_Array.unsafe_set h_buckets i
-    (remove_bucket ~eq key h (Bs_Array.unsafe_get h_buckets i))
+  remove_bucket ~eq h h_buckets i key emptyOpt (Bs_Array.unsafe_get h_buckets i)
+
+
+(* TODO: add [removeAll] *)
 
 
 let rec find_rec ~eq key buckets = 
@@ -263,23 +270,27 @@ let findAll0 ~hash ~eq h key =
 let rec replace_bucket ~eq  key info buckets = 
   match toOpt buckets with 
   | None ->
-    raise Not_found
-  | Some {key = k; value =  i; next} ->
-    return @@ 
-    (if (Bs_Hash.getEq eq) k key [@bs]
-     then  { key; value =  info; next}
-     else {key = k; value =  i; next =  replace_bucket ~eq key info next})
+    true
+  | Some ({key = k; value =  i; next} as slot) ->
+    if (Bs_Hash.getEq eq) k key [@bs]
+    then
+      begin
+        slot.key <- key;
+        slot.value <- info;
+        false
+      end
+    else
+      replace_bucket ~eq key info next
 
 let replace0 ~hash ~eq  h key info =
   let i = key_index ~hash h key in
   let h_buckets = h.buckets in 
-  let l = Array.unsafe_get h_buckets (i) in
-  try
-    Array.unsafe_set h_buckets (i)  (replace_bucket ~eq  key info l)
-  with Not_found ->
-    Array.unsafe_set h_buckets (i)  (return {key; value = info; next = l});
+  let l = Array.unsafe_get h_buckets i in  
+  if replace_bucket ~eq key info l then begin
+    Bs_Array.unsafe_set h_buckets i (return {key ; value = info; next = l});
     h.size <- h.size + 1;
-    if h.size > Array.length h_buckets lsl 1 then resize ~hash  h
+    if h.size > Array.length h.buckets lsl 1 then resize ~hash h
+  end 
 
 let rec mem_in_bucket ~eq key buckets = 
   match toOpt buckets with 
