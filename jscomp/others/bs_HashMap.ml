@@ -31,32 +31,22 @@ type ('a,'b,'id) t = {
   data : ('a,'b,'id) t0;
 }
 
-let key_index ~hash (h : ('a, _,_) t0) (key : 'a) =
-  ((Bs_Hash.getHash hash) key [@bs]) land (Array.length h.buckets - 1)
 
-let rec insert_bucket_list ~hash ~ndata h buckets = 
-  match Bs_internalBuckets.toOpt buckets with 
-  | None -> ()
-  | Some { key; value ; next} ->
-    insert_bucket_list ~hash ~ndata h next; (* preserve original order of elements *)
-    let nidx = key_index ~hash h key in
-    Bs_Array.unsafe_set ndata nidx 
-      (Bs_internalBuckets.return {key; value; next = Bs_Array.unsafe_get ndata nidx }) 
-
-let rec insert_bucket ~hash ~ndata ~ndata_tail h buckets = 
-  match Bs_internalBuckets.toOpt buckets with 
+let rec insert_bucket ~hash ~h_buckets ~ndata_tail h old_bucket = 
+  match Bs_internalBuckets.toOpt old_bucket with 
   | None -> ()
   | Some ({key; next} as cell) ->
-    let nidx = key_index ~hash h key in
+    (* let nidx = key_index ~hash h key in *)
+    let nidx = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
     let v = Bs_internalBuckets.return cell in 
     begin match Bs_internalBuckets.toOpt (Bs_Array.unsafe_get ndata_tail nidx) with
       | None -> 
-        Bs_Array.unsafe_set ndata nidx  v
+        Bs_Array.unsafe_set h_buckets nidx  v
       | Some tail ->
         tail.next <- v ; (* cell put at the end *)            
     end;          
     Bs_Array.unsafe_set ndata_tail nidx  v;
-    insert_bucket ~hash ~ndata ~ndata_tail h next
+    insert_bucket ~hash ~h_buckets ~ndata_tail h next
 
 
 let resize ~hash h =
@@ -64,11 +54,11 @@ let resize ~hash h =
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize >= osize then begin (* no overflow *)
-    let ndata = Bs_internalBuckets.makeSize nsize  in
+    let h_buckets = Bs_internalBuckets.makeSize nsize  in
     let ndata_tail = Bs_internalBuckets.makeSize nsize  in (* keep track of tail *)
-    h.buckets <- ndata;          (* so that indexfun sees the new bucket count *)
+    h.buckets <- h_buckets;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
-      insert_bucket ~hash ~ndata ~ndata_tail h (Bs_Array.unsafe_get odata i)
+      insert_bucket ~hash ~h_buckets ~ndata_tail h (Bs_Array.unsafe_get odata i)
     done;
     for i = 0 to nsize - 1 do
       match Bs_internalBuckets.toOpt (Bs_Array.unsafe_get ndata_tail i) with
@@ -78,13 +68,15 @@ let resize ~hash h =
   end
 
 
-let add0 ~hash h key info =
-  let i = key_index ~hash h key in
+let add0 ~hash h key value =
   let h_buckets = h.buckets in  
-  let bucket = {key; value = info; next= Bs_Array.unsafe_get h_buckets i} in  
+  let h_buckets_lenth = Array.length h_buckets in 
+  let i = (Bs_Hash.getHash hash) key [@bs] land (h_buckets_lenth - 1) in 
+  let bucket = {key; value; next= Bs_Array.unsafe_get h_buckets i} in  
   Bs_Array.unsafe_set h_buckets i  (Bs_internalBuckets.return bucket);
-  h.size <- h.size + 1;
-  if h.size > Array.length h_buckets lsl 1 then resize ~hash  h
+  let h_new_size = h.size + 1 in 
+  h.size <- h_new_size;
+  if h_new_size > h_buckets_lenth lsl 1 then resize ~hash  h
 
 
 let rec remove_bucket ~eq h h_buckets  i key prec buckets =
@@ -101,9 +93,10 @@ let rec remove_bucket ~eq h h_buckets  i key prec buckets =
       end
     else remove_bucket ~eq h h_buckets i key buckets next
 
-let remove0 ~hash ~eq h key =
-  let i = key_index ~hash h key in
+let remove0 ~hash ~eq h key =  
   let h_buckets = h.buckets in 
+  (* let i = key_index ~hash h key in *)
+  let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in  
   remove_bucket ~eq h h_buckets i key Bs_internalBuckets.emptyOpt (Bs_Array.unsafe_get h_buckets i)
 
 let rec removeAllBuckets ~eq h h_buckets  i key prec buckets =
@@ -121,8 +114,9 @@ let rec removeAllBuckets ~eq h h_buckets  i key prec buckets =
     removeAllBuckets ~eq h h_buckets i key buckets next
 
 let removeAll0 ~hash ~eq h key =
-  let i = key_index ~hash h key in
   let h_buckets = h.buckets in 
+  (* let i = key_index ~hash h key in *)
+  let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in  
   removeAllBuckets ~eq h h_buckets i key Bs_internalBuckets.emptyOpt (Bs_Array.unsafe_get h_buckets i)
 
 
@@ -137,7 +131,10 @@ let rec find_rec ~eq key buckets =
     if (Bs_Hash.getEq eq) key k [@bs] then Some d else find_rec ~eq key  rest
 
 let findOpt0 ~hash ~eq h key =
-  match Bs_internalBuckets.toOpt @@ Bs_Array.unsafe_get h.buckets (key_index ~hash h key) with
+  let h_buckets = h.buckets in 
+  (* let nid = key_index ~hash h key in  *)
+  let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
+  match Bs_internalBuckets.toOpt @@ Bs_Array.unsafe_get h_buckets nid with
   | None -> None
   | Some {key = k1; value  = d1; next =  rest1} ->
     if (Bs_Hash.getEq eq) key k1 [@bs] then Some d1 else
@@ -160,7 +157,10 @@ let findAll0 ~hash ~eq h key =
       if (Bs_Hash.getEq eq) k key [@bs]
       then d :: find_in_bucket rest
       else find_in_bucket rest in
-  find_in_bucket (Bs_Array.unsafe_get h.buckets (key_index ~hash h key))
+  let h_buckets = h.buckets in     
+  (* let nid = key_index ~hash h key in  *)
+  let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
+  find_in_bucket (Bs_Array.unsafe_get h_buckets nid)
 
 let rec replace_bucket ~eq  key info buckets = 
   match Bs_internalBuckets.toOpt buckets with 
@@ -178,8 +178,9 @@ let rec replace_bucket ~eq  key info buckets =
       replace_bucket ~eq key info next
 
 let replace0 ~hash ~eq  h key info =
-  let i = key_index ~hash h key in
   let h_buckets = h.buckets in 
+  (* let i = key_index ~hash h key in *)
+  let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
   if replace_bucket ~eq key info l then begin
     Bs_Array.unsafe_set h_buckets i (Bs_internalBuckets.return {key ; value = info; next = l});
@@ -194,7 +195,10 @@ let rec mem_in_bucket ~eq key buckets =
   | Some {key = k; value = d; next =  rest} ->
     (Bs_Hash.getEq eq) k key [@bs] || mem_in_bucket ~eq key rest     
 let mem0 ~hash ~eq h key =
-  mem_in_bucket ~eq key (Bs_Array.unsafe_get h.buckets (key_index ~hash h key))
+  let h_buckets = h.buckets in 
+  (* let nid = (key_index ~hash h key) in  *)
+  let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
+  mem_in_bucket ~eq key (Bs_Array.unsafe_get h_buckets nid)
 
 
 let create0 = Bs_internalBuckets.create0
