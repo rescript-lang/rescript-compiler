@@ -254,5 +254,5 @@ let from_string s : t =
     else 
       Ext_pervasives.failwithf 
         ~loc:__LOC__
-        "compiler version mismatch, please do a clean build"
+        "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
   else Ffi_normal    
