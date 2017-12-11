@@ -73,7 +73,7 @@ external unshiftMany : 'a array -> int = "unshift" [@@bs.send.pipe: 'a t as 'thi
 (* Accessor functions
 *)
 external append : 'a -> 'this = "concat" [@@bs.send.pipe: 'a t as 'this]
-[@@ocaml.deprecate "append is not type-safe. Use `concat` instead, and see #1884"]
+[@@ocaml.deprecated "append is not type-safe. Use `concat` instead, and see #1884"]
 external concat : 'this -> 'this = "" [@@bs.send.pipe: 'a t as 'this]
 external concatMany : 'this array -> 'this = "concat" [@@bs.send.pipe: 'a t as 'this] [@@bs.splice]
 
