@@ -175,7 +175,7 @@ val length  : ('a, 'b, 'id) t -> int
     first argument. *)
 
 
-
+(* 
 type statistics = {
   num_bindings: int;
   (** Number of bindings present in the table.
@@ -188,7 +188,7 @@ type statistics = {
   (** Histogram of bucket sizes.  This array [histo] has
       length [max_bucket_length + 1].  The value of
       [histo.(i)] is the number of buckets whose size is [i]. *)
-}
+} *)
 
 val logStats0 : ('a, 'b, 'id) t0 -> unit
 val logStats : _ t -> unit
