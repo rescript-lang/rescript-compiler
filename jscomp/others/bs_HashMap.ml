@@ -48,17 +48,14 @@ let rec insert_bucket ~hash ~ndata ~ndata_tail h buckets =
   | None -> ()
   | Some ({key; next} as cell) ->
     let nidx = key_index ~hash h key in
+    let v = Bs_internalBuckets.return cell in 
     begin match Bs_internalBuckets.toOpt (Bs_Array.unsafe_get ndata_tail nidx) with
       | None -> 
-        let v = Bs_internalBuckets.return cell in 
-        Bs_Array.unsafe_set ndata_tail nidx  v;
         Bs_Array.unsafe_set ndata nidx  v
-
       | Some tail ->
-        let v = Bs_internalBuckets.return cell in 
-        Bs_Array.unsafe_set ndata_tail nidx  v;
         tail.next <- v ; (* cell put at the end *)            
     end;          
+    Bs_Array.unsafe_set ndata_tail nidx  v;
     insert_bucket ~hash ~ndata ~ndata_tail h next
 
 
