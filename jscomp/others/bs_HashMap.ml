@@ -149,8 +149,32 @@ let logStats0 h =
                 bucket_histogram = histo }]
 
 
+let rec filterMapInplaceBucket f h i prec buckets =
+  match toOpt buckets with 
+  | None ->
+    begin match toOpt prec with
+      | None -> Bs_Array.unsafe_set h.buckets i emptyOpt
+      | Some c -> c.next <- emptyOpt
+    end
+  | (Some ({key; value = data} as c)) ->
+    begin match f key data [@bs] with
+      | None ->
+        h.size <- h.size - 1; (* delete *)
+        filterMapInplaceBucket f h i prec c.next
+      | Some data -> (* replace *)
+        begin match toOpt prec with
+          | None -> Bs_Array.unsafe_set h.buckets i  buckets 
+          | Some c -> c.next <- buckets
+        end;
+        c.value <- data;
+        filterMapInplaceBucket f h i buckets c.next
+    end
 
-
+let filterMapInplace0 f h =
+  let h_buckets = h.buckets in
+  for i = 0 to Array.length h_buckets - 1 do
+    filterMapInplaceBucket f h i emptyOpt (Bs_Array.unsafe_get h_buckets i)
+  done
 
 let key_index ~hash (h : ('a, _,_) t0) (key : 'a) =
   ((Bs_Hash.getHash hash) key [@bs]) land (Array.length h.buckets - 1)
@@ -229,6 +253,25 @@ let remove0 ~hash ~eq h key =
   let i = key_index ~hash h key in
   let h_buckets = h.buckets in 
   remove_bucket ~eq h h_buckets i key emptyOpt (Bs_Array.unsafe_get h_buckets i)
+
+let rec removeAllBuckets ~eq h h_buckets  i key prec buckets =
+  match toOpt buckets with
+  | None -> ()
+  | Some {key=k; next} ->
+    if (Bs_Hash.getEq eq) k key [@bs]
+    then 
+      begin
+        (match toOpt prec with
+         | None -> Bs_Array.unsafe_set h_buckets i  next
+         | Some c -> c.next <- next);
+        h.size <- h.size - 1;        
+      end;
+    removeAllBuckets ~eq h h_buckets i key buckets next
+
+let removeAll0 ~hash ~eq h key =
+  let i = key_index ~hash h key in
+  let h_buckets = h.buckets in 
+  removeAllBuckets ~eq h h_buckets i key emptyOpt (Bs_Array.unsafe_get h_buckets i)
 
 
 (* TODO: add [removeAll] *)
@@ -322,6 +365,10 @@ let remove (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =
   let module M = (val h.dict) in   
   remove0 ~hash:M.hash ~eq:M.eq h.data key 
 
+let removeAll (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
+  let module M = (val h.dict) in   
+  removeAll0 ~hash:M.hash ~eq:M.eq h.data key 
+  
 let findOpt (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
   let module M = (val h.dict) in   
   findOpt0 ~hash:M.hash ~eq:M.eq h.data key 
@@ -338,4 +385,5 @@ let mem (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =
   let module M = (val h.dict) in   
   mem0 ~hash:M.hash ~eq:M.eq h.data key   
 
-
+let filterMapInplace  f h =
+  filterMapInplace0 f h.data
