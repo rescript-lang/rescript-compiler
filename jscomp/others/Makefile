@@ -16,8 +16,6 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Hash\
 	bs_internalBuckets\
 	bs_HashMap\
-	bs_HashMapInt\
-	bs_HashMapString\
 	bs_Cmp\
 	bs_Map\
 	bs_Set\
@@ -26,6 +24,8 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	node_child_process js_boolean js_math\
 	js_dict js_date js_global js_cast js_promise\
 	dom dom_storage\
+	bs_HashMapInt\
+	bs_HashMapString\
 
 # bs_dyn bs_dyn_lib\
 

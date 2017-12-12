@@ -18,31 +18,48 @@
 
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
+(* and ('a,'b) buckets 
+=    
+ < key : 'a [@bs.set]; 
+   value : 'b [@bs.set];
+   next : ('a,'b) buckets opt [@bs.set]
+  > Js.t *)
+    (* {
+      mutable key : 'a ; 
+      mutable value : 'b ; 
+      mutable next : ('a, 'b) buckets opt
+    } *)
+
+#if BS then
+type 'a opt = 'a Js.undefined
+#else 
+type 'a opt = 'a option 
+#end
+
+type ('a,'b) buckets    
+
+type ('a,'b) bucketlist = ('a, 'b) buckets opt
 
 type ('a, 'b,'id) t0 =
   { mutable size: int;                        (* number of entries *)
     mutable buckets: ('a, 'b) bucketlist array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
   }
-(* and 'a opt = 'a option *) (* TODO: conditionally compiled into native*)
-#if BS then
-and 'a opt = 'a Js.undefined
-#else 
-and 'a opt = 'a option 
-#end
-and ('a,'b) buckets =    
-    {
-      mutable key : 'a ; 
-      mutable value : 'b ; 
-      mutable next : ('a, 'b) buckets opt
-    }
-and ('a,'b) bucketlist = ('a, 'b) buckets opt
 
 #if BS then
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a opt = "%identity"              
 let emptyOpt = Js.undefined               
 external makeSize : int -> 'a Js.undefined array = "Array" [@@bs.new]    
+external newBuckets :
+  key : 'a -> value : 'b -> next : ('a,'b) buckets opt ->
+  ('a,'b) buckets = "" [@@bs.obj]
+external key : ('a,'b) buckets -> 'a = "key" [@@bs.get]
+external keySet : ('a,'b) buckets -> 'a -> unit = "key" [@@bs.set]
+external value : ('a,' b) buckets -> 'b = "value" [@@bs.get]
+external valueSet : ('a,' b) buckets -> 'b -> unit = "value" [@@bs.set]
+external next : ('a, 'b) buckets -> ('a, 'b) buckets opt = "next" [@@bs.get] 
+external nextSet : ('a, 'b) buckets -> ('a, 'b) buckets opt -> unit = "next" [@@bs.set] 
 #else 
 external toOpt : 'a -> 'a = "%identity"
 let return x = Some x 
@@ -93,8 +110,8 @@ let rec do_bucket_iter ~f buckets =
   match toOpt buckets with 
   | None ->
     ()
-  | Some {key ; value; next } ->
-    f key value [@bs]; do_bucket_iter ~f next
+  | Some cell ->
+    f (key cell)  (value cell) [@bs]; do_bucket_iter ~f (next cell)
 
 let iter0 f h =
   let d = h.buckets in
@@ -107,8 +124,8 @@ let rec do_bucket_fold ~f b accu =
   match toOpt b with
   | None ->
     accu
-  | Some { key ;  value ; next } ->
-    do_bucket_fold ~f next (f key value accu [@bs]) 
+  | Some cell ->
+    do_bucket_fold ~f (next cell) (f (key cell) (value cell) accu [@bs]) 
 
 let fold0 f h init =
   let d = h.buckets in
@@ -123,7 +140,7 @@ let fold0 f h init =
 let rec bucket_length accu buckets = 
   match toOpt buckets with 
   | None -> accu
-  | Some { next } -> bucket_length (accu + 1) next
+  | Some cell -> bucket_length (accu + 1) (next cell)
 
 let max (m : int) n = if m > n then m else n  
 
@@ -143,25 +160,25 @@ let logStats0 h =
                 bucket_histogram = histo }]
 
 
-let rec filterMapInplaceBucket f h i prec buckets =
+let rec filterMapInplaceBucket f h i prec (buckets : _ bucketlist) =
   match toOpt buckets with 
   | None ->
     begin match toOpt prec with
       | None -> Bs_Array.unsafe_set h.buckets i emptyOpt
-      | Some c -> c.next <- emptyOpt
+      | Some cell -> nextSet  cell emptyOpt
     end
-  | (Some ({key; value = data} as c)) ->
-    begin match f key data [@bs] with
+  | (Some  cell) ->
+    begin match f (key cell) (value cell) [@bs] with
       | None ->
         h.size <- h.size - 1; (* delete *)
-        filterMapInplaceBucket f h i prec c.next
+        filterMapInplaceBucket f h i prec (next cell)
       | Some data -> (* replace *)
         begin match toOpt prec with
           | None -> Bs_Array.unsafe_set h.buckets i  buckets 
-          | Some c -> c.next <- buckets
+          | Some c -> nextSet cell buckets
         end;
-        c.value <- data;
-        filterMapInplaceBucket f h i buckets c.next
+        valueSet cell data;
+        filterMapInplaceBucket f h i buckets (next cell)
     end
 
 let filterMapInplace0 f h =

@@ -103,7 +103,7 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
   
 module S = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y )) 
 
-let bench4 () = 
+ let bench4 () = 
   let table = 
     Bs.HashMapString.create initial_size in
 
@@ -120,7 +120,26 @@ let bench4 () =
   done ;
   assert (Bs.HashMapString.length table = 0)  
 
-let bench5 () = 
+let bench5 () =   
+  let table = 
+    Bs.HashMap.create (module Int) initial_size in 
+  let table_data = table.data in   
+  let hash = Int.hash in 
+  let eq = Int.eq in 
+  [%time for i  = 0 to  count do  
+    Bs.HashMap.add0 ~hash
+       table_data i i 
+  done] ;
+  [%time for i = 0 to count do 
+    assert (Bs.HashMap.mem0 ~eq ~hash
+      table_data i)
+  done]; 
+  [%time for i = 0 to count do 
+    Bs.HashMap.remove0 ~eq ~hash table_data i
+  done ];
+  assert (Bs.HashMap.length table = 0)   
+
+ let bench6 () = 
   let table = 
     Bs.HashMapInt.create initial_size in
 
@@ -135,14 +154,17 @@ let bench5 () =
   for i = 0 to count do 
     Bs.HashMapInt.remove table i
   done ;
-  assert (Bs.HashMapInt.length table = 0)  
-;; [%time bench5 ()]
-(*;; [%time bench4 ()]
+  assert (Bs.HashMapString.length table = 0)  
+  
+
+(* ;; [%time bench4 ()]
 ;; [%time bench4 ()]
-;; [%time bench5 ()]   *)
-(* ;; [%time bench5 ()]   *)
-(* ;; [%time bench2 (module String1)]
-;; [%time bench2 (module String)]
+;; [%time bench2 (module String1)]
 ;; [%time bench2 (module String2)]
 
-;; [%time bench3 (module S)] *)
+;; [%time bench3 (module S)] 
+;; [%time bench5()] *)
+
+;; [%time bench6 ()]
+;; [%time bench6 ()]
+;; [%time bench6 ()]

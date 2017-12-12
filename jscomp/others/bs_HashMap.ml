@@ -19,12 +19,7 @@ type ('a, 'b,'id) t0 = ('a,'b,'id) Bs_internalBuckets.t0 =
   }
 
 
-type ('a,'b) buckets = ('a,'b) Bs_internalBuckets.buckets =
-  {
-    mutable key : 'a ; 
-    mutable value : 'b ; 
-    mutable next : ('a, 'b) buckets Bs_internalBuckets.opt
-  }
+type ('a,'b) buckets = ('a,'b) Bs_internalBuckets.buckets 
 
 type ('a,'b,'id) t = {
   dict : ('a, 'id) Bs_Hash.t;
@@ -36,16 +31,16 @@ let rec insert_bucket ~hash ~h_buckets ~ndata_tail h old_bucket =
   match Bs_internalBuckets.toOpt old_bucket with 
   | None -> ()
   | Some cell ->
-    let nidx = (Bs_Hash.getHash hash) cell.key [@bs] land (Array.length h_buckets - 1) in 
+    let nidx = (Bs_Hash.getHash hash) (Bs_internalBuckets.key cell) [@bs] land (Array.length h_buckets - 1) in 
     let v = Bs_internalBuckets.return cell in 
     begin match Bs_internalBuckets.toOpt (Bs_Array.unsafe_get ndata_tail nidx) with
       | None -> 
         Bs_Array.unsafe_set h_buckets nidx  v
       | Some tail ->
-        tail.next <- v ; (* cell put at the end *)            
+        Bs_internalBuckets.nextSet tail v  (* cell put at the end *)            
     end;          
     Bs_Array.unsafe_set ndata_tail nidx  v;
-    insert_bucket ~hash ~h_buckets ~ndata_tail h cell.next
+    insert_bucket ~hash ~h_buckets ~ndata_tail h (Bs_internalBuckets.next cell)
 
 
 let resize ~hash h =
@@ -62,7 +57,7 @@ let resize ~hash h =
     for i = 0 to nsize - 1 do
       match Bs_internalBuckets.toOpt (Bs_Array.unsafe_get ndata_tail i) with
       | None -> ()
-      | Some tail -> tail.next <- Bs_internalBuckets.emptyOpt
+      | Some tail -> Bs_internalBuckets.nextSet tail Bs_internalBuckets.emptyOpt
     done
   end
 
@@ -71,7 +66,8 @@ let add0 ~hash h key value =
   let h_buckets = h.buckets in  
   let h_buckets_lenth = Array.length h_buckets in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (h_buckets_lenth - 1) in 
-  let bucket = {key; value; next= Bs_Array.unsafe_get h_buckets i} in  
+  let bucket = 
+    Bs_internalBuckets.newBuckets ~key ~value ~next:(Bs_Array.unsafe_get h_buckets i) in  
   Bs_Array.unsafe_set h_buckets i  (Bs_internalBuckets.return bucket);
   let h_new_size = h.size + 1 in 
   h.size <- h_new_size;
@@ -82,13 +78,13 @@ let rec remove_bucket ~eq h h_buckets  i key prec buckets =
   match Bs_internalBuckets.toOpt buckets with
   | None -> ()
   | Some cell ->
-    let cell_next = cell.next in 
-    if (Bs_Hash.getEq eq) cell.key key [@bs]
+    let cell_next = Bs_internalBuckets.next cell in 
+    if (Bs_Hash.getEq eq) (Bs_internalBuckets.key cell) key [@bs]
     then 
       begin
         (match Bs_internalBuckets.toOpt prec with
          | None -> Bs_Array.unsafe_set h_buckets i  cell_next
-         | Some c -> c.next <- cell_next);
+         | Some c -> Bs_internalBuckets.nextSet c cell_next);
         h.size <- h.size - 1;        
       end
     else remove_bucket ~eq h h_buckets i key buckets cell_next
@@ -102,13 +98,13 @@ let rec removeAllBuckets ~eq h h_buckets  i key prec buckets =
   match Bs_internalBuckets.toOpt buckets with
   | None -> ()
   | Some cell ->
-    let cell_next = cell.next in 
-    if (Bs_Hash.getEq eq) cell.key key [@bs]
+    let cell_next = Bs_internalBuckets.next cell in 
+    if (Bs_Hash.getEq eq) (Bs_internalBuckets.key cell) key [@bs]
     then 
       begin
         (match Bs_internalBuckets.toOpt prec with
          | None -> Bs_Array.unsafe_set h_buckets i  cell_next
-         | Some c -> c.next <- cell_next);
+         | Some c -> Bs_internalBuckets.nextSet c cell_next);
         h.size <- h.size - 1;        
       end;
     removeAllBuckets ~eq h h_buckets i key buckets cell_next
@@ -119,15 +115,13 @@ let removeAll0 ~hash ~eq h key =
   removeAllBuckets ~eq h h_buckets i key Bs_internalBuckets.emptyOpt (Bs_Array.unsafe_get h_buckets i)
 
 
-(* TODO: add [removeAll] *)
-
-
 let rec find_rec ~eq key buckets = 
   match Bs_internalBuckets.toOpt buckets with 
   | None ->
     None
-  | Some { key = k; value = d; next =  rest} ->
-    if (Bs_Hash.getEq eq) key k [@bs] then Some d else find_rec ~eq key  rest
+  | Some cell ->
+    if (Bs_Hash.getEq eq) key (Bs_internalBuckets.key cell) [@bs] then Some (Bs_internalBuckets.value cell)
+    else find_rec ~eq key  (Bs_internalBuckets.next cell)
 
 let findOpt0 ~hash ~eq h key =
   let h_buckets = h.buckets in 
@@ -135,16 +129,23 @@ let findOpt0 ~hash ~eq h key =
   match Bs_internalBuckets.toOpt @@ Bs_Array.unsafe_get h_buckets nid with
   | None -> None
   | Some cell1  ->
-    if (Bs_Hash.getEq eq) key cell1.key [@bs] then Some cell1.value else
-      match Bs_internalBuckets.toOpt cell1.next with
+    if (Bs_Hash.getEq eq) key (Bs_internalBuckets.key cell1) [@bs] then 
+      Some  (Bs_internalBuckets.value cell1)
+    else
+      match Bs_internalBuckets.toOpt (Bs_internalBuckets.next  cell1) with
       | None -> None
       | Some cell2 ->
-        if (Bs_Hash.getEq eq) key cell2.key [@bs] then Some cell2.value else
-          match Bs_internalBuckets.toOpt cell2.next with
+        if (Bs_Hash.getEq eq) key 
+          (Bs_internalBuckets.key cell2) [@bs] then 
+            Some (Bs_internalBuckets.value cell2) else
+          match Bs_internalBuckets.toOpt (Bs_internalBuckets.next cell2) with
           | None -> None
           | Some cell3 ->
-            if (Bs_Hash.getEq eq) key cell3.key [@bs] then Some cell3.value 
-            else find_rec ~eq key cell3.next
+            if (Bs_Hash.getEq eq) key 
+              (Bs_internalBuckets.key cell3) [@bs] then 
+              Some (Bs_internalBuckets.value cell3)
+            else 
+              find_rec ~eq key (Bs_internalBuckets.next cell3)
 
 
 let findAll0 ~hash ~eq h key =
@@ -153,9 +154,10 @@ let findAll0 ~hash ~eq h key =
     | None ->
       []
     | Some cell ->
-      if (Bs_Hash.getEq eq) cell.key key [@bs]
-      then cell.value :: find_in_bucket cell.next
-      else find_in_bucket cell.next  in
+      if (Bs_Hash.getEq eq) 
+        (Bs_internalBuckets.key cell) key [@bs]
+      then (Bs_internalBuckets.value cell) :: find_in_bucket (Bs_internalBuckets.next cell)
+      else find_in_bucket (Bs_internalBuckets.next cell)  in
   let h_buckets = h.buckets in     
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   find_in_bucket (Bs_Array.unsafe_get h_buckets nid)
@@ -165,22 +167,23 @@ let rec replace_bucket ~eq  key info buckets =
   | None ->
     true
   | Some cell ->
-    if (Bs_Hash.getEq eq) cell.key key [@bs]
+    if (Bs_Hash.getEq eq) (Bs_internalBuckets.key cell) key [@bs]
     then
       begin
-        cell.key <- key;
-        cell.value <- info;
+        Bs_internalBuckets.keySet cell key;
+        Bs_internalBuckets.valueSet cell info;
         false
       end
     else
-      replace_bucket ~eq key info cell.next
+      replace_bucket ~eq key info (Bs_internalBuckets.next cell)
 
 let replace0 ~hash ~eq  h key info =
   let h_buckets = h.buckets in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
   if replace_bucket ~eq key info l then begin
-    Bs_Array.unsafe_set h_buckets i (Bs_internalBuckets.return {key ; value = info; next = l});
+    Bs_Array.unsafe_set h_buckets i (Bs_internalBuckets.return 
+                                       (Bs_internalBuckets.newBuckets ~key ~value:info ~next:l));
     h.size <- h.size + 1;
     if h.size > Array.length h.buckets lsl 1 then resize ~hash h
   end 
@@ -190,7 +193,9 @@ let rec mem_in_bucket ~eq key buckets =
   | None ->
     false
   | Some cell ->
-    (Bs_Hash.getEq eq) cell.key key [@bs] || mem_in_bucket ~eq key cell.next
+    (Bs_Hash.getEq eq) 
+    (Bs_internalBuckets.key cell) key [@bs] || 
+    mem_in_bucket ~eq key (Bs_internalBuckets.next cell)
 
 let mem0 ~hash ~eq h key =
   let h_buckets = h.buckets in 
@@ -229,7 +234,7 @@ let remove (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =
 let removeAll (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
   let module M = (val h.dict) in   
   removeAll0 ~hash:M.hash ~eq:M.eq h.data key 
-  
+
 let findOpt (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
   let module M = (val h.dict) in   
   findOpt0 ~hash:M.hash ~eq:M.eq h.data key 
