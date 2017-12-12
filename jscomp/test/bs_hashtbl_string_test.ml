@@ -3,10 +3,8 @@ type seed = int
 external caml_hash_mix_string : seed -> string -> seed  = "caml_hash_mix_string"
 external final_mix : seed -> seed = "caml_hash_final_mix"
 
-let hash_string  seed s = 
-  let hash = ref seed in 
-  hash := caml_hash_mix_string !hash s ;
-  final_mix !hash
+let hash_string  s = 
+  final_mix (caml_hash_mix_string 0 s) 
 
 let hashString : string -> int [@bs] = [%raw{|function (str) {
   var hash = 5381,
@@ -31,7 +29,7 @@ module String1 =
 module String2 = 
   (val Bs.Hash.make 
     ~eq:(fun[@bs] (x:string) y -> x = y )
-    ~hash:(fun [@bs] (x:string) -> hash_string 0 x))
+    ~hash:(fun [@bs] (x:string) -> hash_string x))
 
 module Int = 
   (val Bs.Hash.make 
@@ -105,7 +103,46 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
   
 module S = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y )) 
 
-;; [%time bench2 (module String1)]
+let bench4 () = 
+  let table = 
+    Bs.HashMapString.create initial_size in
+
+  for i  = 0 to  count do  
+    Bs.HashMapString.add 
+       table (string_of_int i) i 
+  done ;
+  for i = 0 to count do 
+    assert (Bs.HashMapString.mem
+      table (string_of_int i))
+  done; 
+  for i = 0 to count do 
+    Bs.HashMapString.remove table (string_of_int i)
+  done ;
+  assert (Bs.HashMapString.length table = 0)  
+
+let bench5 () = 
+  let table = 
+    Bs.HashMapInt.create initial_size in
+
+  for i  = 0 to  count do  
+    Bs.HashMapInt.add 
+       table i i 
+  done ;
+  for i = 0 to count do 
+    assert (Bs.HashMapInt.mem
+      table i)
+  done; 
+  for i = 0 to count do 
+    Bs.HashMapInt.remove table i
+  done ;
+  assert (Bs.HashMapInt.length table = 0)  
+;; [%time bench5 ()]
+(*;; [%time bench4 ()]
+;; [%time bench4 ()]
+;; [%time bench5 ()]   *)
+(* ;; [%time bench5 ()]   *)
+(* ;; [%time bench2 (module String1)]
 ;; [%time bench2 (module String)]
 ;; [%time bench2 (module String2)]
-;; [%time bench3 (module S)]
+
+;; [%time bench3 (module S)] *)
