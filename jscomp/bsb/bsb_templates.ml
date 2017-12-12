@@ -6,61 +6,6 @@ let root = OCamlRes.Res.([
         "\n\
          \n\
          let () = Js.log \"Hello, BuckleScript\"")]) ;
-    File ("README.md",
-      "\n\
-       \n\
-       # Build\n\
-       ```\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       # Watch\n\
-       \n\
-       ```\n\
-       npm run watch\n\
-       ```\n\
-       \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"scripts\": {\n\
-      \    \"clean\": \"bsb -clean-world\",\n\
-      \    \"build\": \"bsb -make-world\",\n\
-      \    \"watch\": \"bsb -make-world -w\"\n\
-      \  },\n\
-      \  \"keywords\": [\n\
-      \    \"BuckleScript\"\n\
-      \  ],\n\
-      \  \"author\": \"\",\n\
-      \  \"license\": \"MIT\",\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-      \  }\n\
-       }") ;
-    File ("bsconfig.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"sources\": {\n\
-      \    \"dir\" : \"src\",\n\
-      \    \"subdirs\" : true\n\
-      \  },\n\
-      \  \"package-specs\": {\n\
-      \    \"module\": \"commonjs\",\n\
-      \    \"in-source\": true\n\
-      \  },\n\
-      \  \"suffix\": \".bs.js\",\n\
-      \  \"bs-dependencies\": [\n\
-      \      // add your bs-dependencies here \n\
-      \  ],\n\
-      \  \"warnings\": {\n\
-      \    \"error\" : \"+101\"\n\
-      \  }\n\
-       }") ;
     Dir (".vscode", [
       File ("tasks.json",
         "{\n\
@@ -101,6 +46,44 @@ let root = OCamlRes.Res.([
         \        ]\n\
         \    }\n\
          }")]) ;
+    File ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"sources\": {\n\
+      \    \"dir\" : \"src\",\n\
+      \    \"subdirs\" : true\n\
+      \  },\n\
+      \  \"package-specs\": {\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  },\n\
+      \  \"suffix\": \".bs.js\",\n\
+      \  \"bs-dependencies\": [\n\
+      \      // add your bs-dependencies here \n\
+      \  ],\n\
+      \  \"warnings\": {\n\
+      \    \"error\" : \"+101\"\n\
+      \  }\n\
+       }") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"watch\": \"bsb -make-world -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+      \  }\n\
+       }") ;
     File (".gitignore",
       "*.exe\n\
        *.obj\n\
@@ -126,8 +109,29 @@ let root = OCamlRes.Res.([
        *.mlast\n\
        *.mliast\n\
        .vscode\n\
-       .merlin")]) ;
+       .merlin") ;
+    File ("README.md",
+      "\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically")]) ;
   Dir ("basic-reason", [
+    Dir ("src", [
+      File ("Demo.re",
+        "Js.log(\"Hello, BuckleScript and Reason!\");\n\
+         ")]) ;
     File ("tasks.json",
       "{\n\
       \    \"version\": \"${bsb:proj-version}\",\n\
@@ -167,49 +171,6 @@ let root = OCamlRes.Res.([
       \        ]\n\
       \    }\n\
        }") ;
-    Dir ("src", [
-      File ("demo.re",
-        "Js.log(\"Hello, BuckleScript and Reason!\");\n\
-         ")]) ;
-    File ("README.md",
-      "# Basic Reason Template\n\
-       \n\
-       Hello! This project allows you to quickly get started with Reason and BuckleScript. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).\n\
-       \n\
-       # Build\n\
-       ```\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       # Build + Watch\n\
-       \n\
-       ```\n\
-       npm run start\n\
-       ```\n\
-       \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
-       ") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"scripts\": {\n\
-      \    \"build\": \"bsb -make-world\",\n\
-      \    \"start\": \"bsb -make-world -w\",\n\
-      \    \"clean\": \"bsb -clean-world\"\n\
-      \  },\n\
-      \  \"keywords\": [\n\
-      \    \"BuckleScript\"\n\
-      \  ],\n\
-      \  \"author\": \"\",\n\
-      \  \"license\": \"MIT\",\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-      \  }\n\
-       }\n\
-       ") ;
     File ("bsconfig.json",
       "// This is the configuration file used by BuckleScript's build system bsb. Its documentation lives here: http://bucklescript.github.io/bucklescript/docson/#build-schema.json\n\
        // BuckleScript comes with its own parser for bsconfig.json, which is normal JSON, with the extra support of comments and trailing commas.\n\
@@ -235,6 +196,25 @@ let root = OCamlRes.Res.([
       \  \"refmt\": 3\n\
        }\n\
        ") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"start\": \"bsb -make-world -w\",\n\
+      \    \"clean\": \"bsb -clean-world\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+      \  }\n\
+       }\n\
+       ") ;
     File (".gitignore",
       ".DS_Store\n\
        .merlin\n\
@@ -242,6 +222,26 @@ let root = OCamlRes.Res.([
        npm-debug.log\n\
        /lib/bs/\n\
        /node_modules/\n\
+       ") ;
+    File ("README.md",
+      "# Basic Reason Template\n\
+       \n\
+       Hello! This project allows you to quickly get started with Reason and BuckleScript. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Build + Watch\n\
+       \n\
+       ```\n\
+       npm run start\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
        ")]) ;
   Dir ("generator", [
     Dir ("src", [
@@ -260,41 +260,6 @@ let root = OCamlRes.Res.([
         "\n\
          \n\
          let () = Js.log \"Hello, BuckleScript\"")]) ;
-    File ("README.md",
-      "\n\
-       \n\
-       # Build\n\
-       ```\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       # Watch\n\
-       \n\
-       ```\n\
-       npm run watch\n\
-       ```\n\
-       \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"scripts\": {\n\
-      \    \"clean\": \"bsb -clean-world\",\n\
-      \    \"build\": \"bsb -make-world\",\n\
-      \    \"watch\": \"bsb -make-world -w\"\n\
-      \  },\n\
-      \  \"keywords\": [\n\
-      \    \"BuckleScript\"\n\
-      \  ],\n\
-      \  \"author\": \"\",\n\
-      \  \"license\": \"MIT\",\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-      \  }\n\
-       }") ;
     File ("bsconfig.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
@@ -314,91 +279,6 @@ let root = OCamlRes.Res.([
       \      // add your bs-dependencies here \n\
       \  ]\n\
        }") ;
-    File (".gitignore",
-      "*.exe\n\
-       *.obj\n\
-       *.out\n\
-       *.compile\n\
-       *.native\n\
-       *.byte\n\
-       *.cmo\n\
-       *.annot\n\
-       *.cmi\n\
-       *.cmx\n\
-       *.cmt\n\
-       *.cmti\n\
-       *.cma\n\
-       *.a\n\
-       *.cmxa\n\
-       *.obj\n\
-       *~\n\
-       *.annot\n\
-       *.cmj\n\
-       *.bak\n\
-       lib/bs\n\
-       *.mlast\n\
-       *.mliast\n\
-       .vscode\n\
-       .merlin")]) ;
-  Dir ("minimal", [
-    Dir ("src", [ File ("main.ml", "")]) ;
-    File ("README.md",
-      "\n\
-      \  # ${bsb:name}") ;
-    File ("package.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"scripts\": {\n\
-      \    \"clean\": \"bsb -clean-world\",\n\
-      \    \"build\": \"bsb -make-world\",\n\
-      \    \"start\": \"bsb -make-world -w\"\n\
-      \  },\n\
-      \  \"keywords\": [\n\
-      \    \"BuckleScript\"\n\
-      \  ],\n\
-      \  \"author\": \"\",\n\
-      \  \"license\": \"MIT\",\n\
-      \  \"devDependencies\": {\n\
-      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
-      \  }\n\
-       }") ;
-    File ("bsconfig.json",
-      "{\n\
-      \  \"name\": \"${bsb:name}\",\n\
-      \  \"sources\": [\"src\"]\n\
-       }") ;
-    File (".gitignore",
-      ".DS_Store\n\
-       .merlin\n\
-       .bsb.lock\n\
-       npm-debug.log\n\
-       /lib/bs/\n\
-       /node_modules/")]) ;
-  Dir ("node", [
-    Dir ("src", [
-      File ("demo.ml",
-        "\n\
-         \n\
-         let () = Js.log \"Hello, BuckleScript\"")]) ;
-    File ("README.md",
-      "\n\
-       \n\
-       # Build\n\
-       ```\n\
-       npm run build\n\
-       ```\n\
-       \n\
-       # Watch\n\
-       \n\
-       ```\n\
-       npm run watch\n\
-       ```\n\
-       \n\
-       \n\
-       # Editor\n\
-       If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
-       ") ;
     File ("package.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
@@ -417,6 +297,90 @@ let root = OCamlRes.Res.([
       \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
       \  }\n\
        }") ;
+    File (".gitignore",
+      "*.exe\n\
+       *.obj\n\
+       *.out\n\
+       *.compile\n\
+       *.native\n\
+       *.byte\n\
+       *.cmo\n\
+       *.annot\n\
+       *.cmi\n\
+       *.cmx\n\
+       *.cmt\n\
+       *.cmti\n\
+       *.cma\n\
+       *.a\n\
+       *.cmxa\n\
+       *.obj\n\
+       *~\n\
+       *.annot\n\
+       *.cmj\n\
+       *.bak\n\
+       lib/bs\n\
+       *.mlast\n\
+       *.mliast\n\
+       .vscode\n\
+       .merlin") ;
+    File ("README.md",
+      "\n\
+       \n\
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically")]) ;
+  Dir ("minimal", [
+    Dir ("src", [ File ("main.ml", "")]) ;
+    File ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"sources\": [\"src\"]\n\
+       }") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"start\": \"bsb -make-world -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+      \  }\n\
+       }") ;
+    File (".gitignore",
+      ".DS_Store\n\
+       .merlin\n\
+       .bsb.lock\n\
+       npm-debug.log\n\
+       /lib/bs/\n\
+       /node_modules/") ;
+    File ("README.md",
+      "\n\
+      \  # ${bsb:name}")]) ;
+  Dir ("node", [
+    Dir ("src", [
+      File ("demo.ml",
+        "\n\
+         \n\
+         let () = Js.log \"Hello, BuckleScript\"")]) ;
     File ("bsconfig.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
@@ -432,6 +396,24 @@ let root = OCamlRes.Res.([
       \  \"bs-dependencies\": [\n\
       \      // add your bs-dependencies here \n\
       \  ]\n\
+       }") ;
+    File ("package.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"version\": \"${bsb:proj-version}\",\n\
+      \  \"scripts\": {\n\
+      \    \"clean\": \"bsb -clean-world\",\n\
+      \    \"build\": \"bsb -make-world\",\n\
+      \    \"watch\": \"bsb -make-world -w\"\n\
+      \  },\n\
+      \  \"keywords\": [\n\
+      \    \"BuckleScript\"\n\
+      \  ],\n\
+      \  \"author\": \"\",\n\
+      \  \"license\": \"MIT\",\n\
+      \  \"devDependencies\": {\n\
+      \    \"bs-platform\": \"^${bsb:bs-version}\"\n\
+      \  }\n\
        }") ;
     File (".gitignore",
       "*.exe\n\
@@ -458,21 +440,31 @@ let root = OCamlRes.Res.([
        *.mlast\n\
        *.mliast\n\
        .vscode\n\
-       .merlin")]) ;
-  Dir ("react", [
-    File ("webpack.config.js",
-      "const path = require('path');\n\
+       .merlin") ;
+    File ("README.md",
+      "\n\
        \n\
-       module.exports = {\n\
-      \  entry: './src/index.bs.js',\n\
-      \  output: {\n\
-      \    path: path.join(__dirname, \"build\"),\n\
-      \    filename: 'index.js',\n\
-      \  },\n\
-       };\n\
-       ") ;
+       # Build\n\
+       ```\n\
+       npm run build\n\
+       ```\n\
+       \n\
+       # Watch\n\
+       \n\
+       ```\n\
+       npm run watch\n\
+       ```\n\
+       \n\
+       \n\
+       # Editor\n\
+       If you use `vscode`, Press `Windows + Shift + B` it will build automatically\n\
+       ")]) ;
+  Dir ("react", [
     Dir ("src", [
-      File ("page.re",
+      File ("Index.re",
+        "ReactDOMRe.renderToElementWithId(<Page message=\"Hello!\" />, \"index\");\n\
+         ") ;
+      File ("Page.re",
         "/* This is the basic component. */\n\
          let component = ReasonReact.statelessComponent(\"Page\");\n\
          \n\
@@ -495,9 +487,6 @@ let root = OCamlRes.Res.([
         \    <div onClick=(self.handle(handleClick))> (ReasonReact.stringToElement(message)) </div>\n\
          };\n\
          ") ;
-      File ("index.re",
-        "ReactDOMRe.renderToElementWithId(<Page message=\"Hello!\" />, \"index\");\n\
-         ") ;
       File ("index.html",
         "<!DOCTYPE html>\n\
          <html lang=\"en\">\n\
@@ -507,25 +496,35 @@ let root = OCamlRes.Res.([
          </head>\n\
          <body>\n\
         \  <div id=\"index\"></div>\n\
-        \  <script src=\"../build/index.js\"></script>\n\
+        \  <script src=\"../build/Index.js\"></script>\n\
          </body>\n\
          </html>\n\
          ")]) ;
-    File ("README.md",
-      "# ${bsb:name}\n\
-       \n\
-       Run this project:\n\
-       \n\
-       ```\n\
-       npm install\n\
-       npm start\n\
-       # in another tab\n\
-       npm run webpack\n\
-       ```\n\
-       \n\
-       After you see the webpack compilation succeed (the `npm run webpack` step), open up the nested html files in `src/*` (**no server needed!**). Then modify whichever file in `src` and refresh the page to see the changes.\n\
-       \n\
-       **For more elaborate ReasonReact examples**, please see https://github.com/reasonml-community/reason-react-example\n\
+    File ("bsconfig.json",
+      "/* This is the BuckleScript configuration file. Note that this is a comment;\n\
+      \  BuckleScript comes with a JSON parser that supports comments and trailing\n\
+      \  comma. If this screws with your editor highlighting, please tell us by filing\n\
+      \  an issue! */\n\
+       {\n\
+      \  \"name\": \"react-template\",\n\
+      \  \"reason\": {\"react-jsx\" : 2},\n\
+      \  \"sources\": [\n\
+      \    \"src\"\n\
+      \  ],\n\
+      \  \"package-specs\": [{\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  }],\n\
+      \  \"suffix\": \".bs.js\",\n\
+      \  \"namespace\": true,\n\
+      \  \"bs-dependencies\": [\n\
+      \    \"reason-react\"\n\
+      \  ],\n\
+      \  \"refmt\": 3,\n\
+      \  \"warnings\": {\n\
+      \    \"error\": \"+5\"\n\
+      \  }\n\
+       }\n\
        ") ;
     File ("package.json",
       "{\n\
@@ -554,34 +553,38 @@ let root = OCamlRes.Res.([
       \  }\n\
        }\n\
        ") ;
-    File ("bsconfig.json",
-      "/* This is the BuckleScript configuration file. Note that this is a comment;\n\
-      \  BuckleScript comes with a JSON parser that supports comments and trailing\n\
-      \  comma. If this screws with your editor highlighting, please tell us by filing\n\
-      \  an issue! */\n\
-       {\n\
-      \  \"name\": \"react-template\",\n\
-      \  \"reason\": {\"react-jsx\" : 2},\n\
-      \  \"sources\": [\n\
-      \    \"src\"\n\
-      \  ],\n\
-      \  \"package-specs\": [{\n\
-      \    \"module\": \"commonjs\",\n\
-      \    \"in-source\": true\n\
-      \  }],\n\
-      \  \"suffix\": \".bs.js\",\n\
-      \  \"namespace\": true,\n\
-      \  \"bs-dependencies\": [\n\
-      \    \"reason-react\"\n\
-      \  ],\n\
-      \  \"refmt\": 3\n\
-       }\n\
-       ") ;
     File (".gitignore",
       ".DS_Store\n\
        .merlin\n\
        .bsb.lock\n\
        npm-debug.log\n\
        /lib/bs/\n\
-       /node_modules/")])
+       /node_modules/") ;
+    File ("README.md",
+      "# ${bsb:name}\n\
+       \n\
+       Run this project:\n\
+       \n\
+       ```\n\
+       npm install\n\
+       npm start\n\
+       # in another tab\n\
+       npm run webpack\n\
+       ```\n\
+       \n\
+       After you see the webpack compilation succeed (the `npm run webpack` step), open up the nested html files in `src/*` (**no server needed!**). Then modify whichever file in `src` and refresh the page to see the changes.\n\
+       \n\
+       **For more elaborate ReasonReact examples**, please see https://github.com/reasonml-community/reason-react-example\n\
+       ") ;
+    File ("webpack.config.js",
+      "const path = require('path');\n\
+       \n\
+       module.exports = {\n\
+      \  entry: './src/Index.bs.js',\n\
+      \  output: {\n\
+      \    path: path.join(__dirname, \"build\"),\n\
+      \    filename: 'Index.js',\n\
+      \  },\n\
+       };\n\
+       ")])
 ])
