@@ -1,9 +1,9 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.bs.js',
+  entry: './src/Index.bs.js',
   output: {
     path: path.join(__dirname, "build"),
-    filename: 'index.js',
+    filename: 'Index.js',
   },
 };
