@@ -98,16 +98,24 @@ val mem:
   ('a, 'b, 'id) t -> 'a -> bool
 (** [Hashtbl.mem tbl x] checks if [x] is bound in [tbl]. *)
 
-val remove:
-('a, 'b, 'id) t -> 'a -> unit
 val remove0: 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'b, 'id) t0 -> 'a -> unit
+val remove:
+('a, 'b, 'id) t -> 'a -> unit
 (** [Hashtbl.remove tbl x] removes the current binding of [x] in [tbl],
     restoring the previous binding if it exists.
     It does nothing if [x] is not bound in [tbl]. *)
 
+val removeAll0: 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a, 'b, 'id) t0 -> 'a -> unit    
+val removeAll:
+('a, 'b, 'id) t -> 'a -> unit
+
+    
 val replace0 :
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
@@ -156,6 +164,9 @@ val fold : ('a -> 'b -> 'c -> 'c [@bs]) -> ('a, 'b, 'id) t -> 'c -> 'c
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
+val filterMapInplace0 : ('a -> 'b -> 'b option [@bs]) -> ('a, 'b, 'id) t0 -> unit
+val filterMapInplace : ('a -> 'b -> 'b option [@bs]) -> ('a, 'b, 'id) t -> unit
+  
 val length0 : ('a, 'b, 'id) t0 -> int
 val length  : ('a, 'b, 'id) t -> int  
 (** [Hashtbl.length tbl] returns the number of bindings in [tbl].
@@ -164,7 +175,7 @@ val length  : ('a, 'b, 'id) t -> int
     first argument. *)
 
 
-
+(* 
 type statistics = {
   num_bindings: int;
   (** Number of bindings present in the table.
@@ -177,7 +188,7 @@ type statistics = {
   (** Histogram of bucket sizes.  This array [histo] has
       length [max_bucket_length + 1].  The value of
       [histo.(i)] is the number of buckets whose size is [i]. *)
-}
+} *)
 
 val logStats0 : ('a, 'b, 'id) t0 -> unit
 val logStats : _ t -> unit

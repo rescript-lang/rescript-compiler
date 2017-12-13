@@ -471,6 +471,7 @@ qcc.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
 queue_test.cmj : ../stdlib/queue.cmj mt.cmj ../stdlib/array.cmj
 random_test.cmj : ../stdlib/random.cmj ../stdlib/printf.cmj mt_global.cmj \
     mt.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
+raw_hash_tbl_bench.cmj : ../stdlib/hashtbl.cmj
 rebind_module.cmj :
 rebind_module_test.cmj : rebind_module.cmj
 rec_fun_test.cmj : mt.cmj

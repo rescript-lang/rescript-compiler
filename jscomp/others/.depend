@@ -20,7 +20,9 @@ bs_Array.cmj : bs_Array.cmi
 bs_internalAVLset.cmj :
 bs_internalAVLtree.cmj :
 bs_Hash.cmj : bs_Hash.cmi
-bs_HashMap.cmj : bs_Hash.cmj bs_Array.cmj bs_HashMap.cmi
+bs_internalBuckets.cmj : bs_Array.cmj
+bs_HashMap.cmj : bs_internalBuckets.cmj bs_Hash.cmj bs_Array.cmj \
+    bs_HashMap.cmi
 bs_Cmp.cmj : bs_Cmp.cmi
 bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Map.cmi
 bs_Set.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Set.cmi
@@ -36,6 +38,8 @@ js_date.cmj :
 js_global.cmj :
 js_cast.cmj : js_cast.cmi
 js_promise.cmj :
+bs_HashMapInt.cmj : bs_internalBuckets.cmj bs_Array.cmj
+bs_HashMapString.cmj : bs_internalBuckets.cmj bs_Array.cmj
 node_process.cmi : js_dict.cmi
 js_re.cmi :
 js_null_undefined.cmi :
