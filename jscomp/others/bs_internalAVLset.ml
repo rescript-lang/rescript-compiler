@@ -45,7 +45,7 @@ let create (l : _ t0) v (r : _ t0) =
    Assumes l and r balanced and | height l - height r | <= 3.
    Inline expansion of create for better speed in the most frequent case
    where no rebalancing is required. *)
-
+(* FIXME: bal should return [node] instead of [_ t0] *)
 let bal l v r =
   let hl = match toOpt l with None -> 0 | Some n -> h n in
   let hr = match toOpt r with None -> 0 | Some n -> h n in

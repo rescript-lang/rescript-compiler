@@ -1,6 +1,6 @@
 # 4 "set.cppo.ml"
 type elt = int
-  
+
 
 # 10
 module N = Bs_internalAVLset
@@ -9,27 +9,27 @@ type ('elt, 'id) t0 = ('elt, 'id) N.t0
 
 type ('elt, 'id) enumeration0 = 
   ('elt, 'id) N.enumeration0 
-  =
-  End 
+=
+    End 
   | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration0
 
- type t = (elt, unit) t0
- type enumeration = (elt,unit) enumeration0
+type t = (elt, unit) t0
+type enumeration = (elt,unit) enumeration0
 
- let empty = N.empty0      
- let isEmpty = N.isEmpty0
- let singleton = N.singleton0
- let min = N.min0
- let max = N.max0
- let iter = N.iter0      
- let fold = N.fold0
- let forAll = N.forAll0
- let exists = N.exists0    
- let filter = N.filter0
- let partition = N.partition0
- let cardinal = N.cardinal0
- let elements = N.elements0 
-  
+let empty = N.empty0      
+let isEmpty = N.isEmpty0
+let singleton = N.singleton0
+let min = N.min0
+let max = N.max0
+let iter = N.iter0      
+let fold = N.fold0
+let forAll = N.forAll0
+let exists = N.exists0    
+let filter = N.filter0
+let partition = N.partition0
+let cardinal = N.cardinal0
+let elements = N.elements0 
+
 (* Insertion of one element *)
 
 let rec add (x : elt) (t : t) : t =
@@ -50,20 +50,32 @@ let rec add (x : elt) (t : t) : t =
     - present is false if s contains no element equal to x,
       or true if s contains an element equal to x. *)
 
+let rec splitAux (x : elt) (n : _ N.node) : t * bool * t =   
+  let l = N.left n  
+  and v = N.value n  
+  and r = N.right n in 
+  if x = v then (l, true, r)
+  else if x < v then
+    match N.toOpt l with 
+    | None -> 
+      N.(empty , false, return n)
+    | Some l -> 
+      let (ll, pres, rl) = splitAux x l in (ll, pres, N.join rl v r)
+  else
+    match N.toOpt r with 
+    | None ->
+      N.(return n, false, empty)
+    | Some r -> 
+      let (lr, pres, rr) = splitAux x r in (N.join l v lr, pres, rr)
+
+
 let rec split (x : elt) (t : t) : t * bool *  t =
   match N.toOpt t with 
     None ->
     N.(empty, false, empty)
   | Some n (* Node(l, v, r, _)*) ->    
-    let l = N.left n  
-    and v = N.value n  
-    and r = N.right n in 
-    if x = v then (l, true, r)
-    else if x < v then
-      let (ll, pres, rl) = split x l in (ll, pres, N.join rl v r)
-    else
-      let (lr, pres, rr) = split x r in (N.join l v lr, pres, rr)
-
+    splitAux x n 
+      
 
 let rec mem (x : elt) (t : t) =
   match N.toOpt t with 
@@ -100,12 +112,12 @@ let rec union (s1 : t) (s2 : t) =
     and h2 = N.h n2 in 
     if h1 >= h2 then
       if h2 = 1 then add v2 s1 else begin
-        let (l2, _, r2) = split v1 s2 in
+        let (l2, _, r2) = splitAux v1 n2 in
         N.join (union l1 l2) v1 (union r1 r2)
       end
     else
     if h1 = 1 then add v1 s2 else begin
-      let (l1, _, r1) = split v2 s1 in
+      let (l1, _, r1) = splitAux v2 n1 in
       N.join (union l1 l2) v2 (union r1 r2)
     end
 
@@ -113,11 +125,11 @@ let rec inter (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
     (None, _) -> s1
   | (_, None) -> s2 
-  | Some n1, Some _ (* (Node(l1, v1, r1, _), t2) *) ->
+  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let l1 = N.left n1 
     and v1 = N.value n1 
     and r1 = N.right n1 in 
-    match split v1 s2 with
+    match splitAux v1 n2 with
       (l2, false, r2) ->
       N.concat (inter l1 l2) (inter r1 r2)
     | (l2, true, r2) ->
@@ -127,11 +139,11 @@ let rec diff (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
   | (None, _) 
   | (_, None) -> s1
-  | Some n1, Some _ (* (Node(l1, v1, r1, _), t2) *) ->
+  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let l1 = N.left n1 
     and v1 = N.value n1 
     and r1 = N.right n1 in 
-    match split v1 s2 with
+    match splitAux v1 n2 with
       (l2, false, r2) ->
       N.join (diff l1 l2) v1 (diff r1 r2)
     | (l2, true, r2) ->
@@ -185,7 +197,16 @@ let rec find (x : elt) (n :t)  =
     if x = v then Some v
     else find x (if x < v then l else r)
 
-(** FIXME: split *)    
+    
+(* FIXME: use [sorted] attribute *)    
+let ofArray (xs : elt array) : t =     
+  let result = ref N.empty in 
+  for i = 0 to Array.length xs - 1 do  
+    result := add (Bs_Array.unsafe_get xs i) !result
+  done ;
+  !result 
+
+
 (*
 let of_sorted_list l =
   let rec sub n l =

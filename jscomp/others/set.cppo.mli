@@ -113,3 +113,4 @@ val find: elt -> t -> elt option
     exists.
     @since 4.01.0 *)
 
+val ofArray : elt array -> t     
