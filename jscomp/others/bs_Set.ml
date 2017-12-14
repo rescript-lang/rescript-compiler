@@ -1,11 +1,9 @@
 
-
-type ('elt, 'id) t0 = ('elt, 'id) Bs_internalAVLset.t0 =
-  | Empty 
-  | Node of ('elt, 'id) t0 * 'elt * ('elt, 'id) t0 * int
+module N = Bs_internalAVLset
+type ('elt, 'id) t0 = ('elt, 'id) N.t0 
 
 type ('elt, 'id)enumeration = 
-    ('elt, 'id) Bs_internalAVLset.enumeration0 
+    ('elt, 'id) N.enumeration0 
     =
     End 
     | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration
@@ -15,28 +13,32 @@ type ('elt, 'id) t = {
   data : ('elt,'id) t0
 }
 
-let empty0 = Bs_internalAVLset.empty0      
-let isEmpty0 = Bs_internalAVLset.isEmpty0
-let singleton0 = Bs_internalAVLset.singleton0
-let min0 = Bs_internalAVLset.min0
-let max0 = Bs_internalAVLset.max0
-let iter0 = Bs_internalAVLset.iter0      
-let fold0 = Bs_internalAVLset.fold0
-let forAll0 = Bs_internalAVLset.forAll0
-let exists0 = Bs_internalAVLset.exists0    
-let filter0 = Bs_internalAVLset.filter0
-let partition0 = Bs_internalAVLset.partition0
-let cardinal0 = Bs_internalAVLset.cardinal0
-let elements0 = Bs_internalAVLset.elements0 
+let empty0 = N.empty0      
+let isEmpty0 = N.isEmpty0
+let singleton0 = N.singleton0
+let min0 = N.min0
+let max0 = N.max0
+let iter0 = N.iter0      
+let fold0 = N.fold0
+let forAll0 = N.forAll0
+let exists0 = N.exists0    
+let filter0 = N.filter0
+let partition0 = N.partition0
+let cardinal0 = N.cardinal0
+let elements0 = N.elements0 
 
 (* Insertion of one element *)
 
-let rec add0 ~cmp x  = function
-    Empty -> Node(Empty, x, Empty, 1)
-  | Node(l, v, r, _) as t ->
+let rec add0 ~cmp x  (t : _ t0) : _ t0 =
+  match N.toOpt t with 
+    None -> N.(return @@ node ~left:empty ~right:empty ~value:x  ~h:1)
+  | Some nt (* Node(l, v, r, _) as t *) ->
+    let l = N.left nt 
+    and v = N.value nt 
+    and r = N.right nt in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then t else
-    if c < 0 then Bs_internalAVLset.bal (add0 ~cmp x l) v r else Bs_internalAVLset.bal l v (add0 ~cmp x r)
+    if c < 0 then N.bal (add0 ~cmp x l) v r else N.bal l v (add0 ~cmp x r)
 
 
 (* Splitting.  split x s returns a triple (l, present, r) where
@@ -45,67 +47,93 @@ let rec add0 ~cmp x  = function
     - present is false if s contains no element equal to x,
       or true if s contains an element equal to x. *)
 
-let rec split0 ~cmp x = function
-    Empty ->
-    (Empty, false, Empty)
-  | Node(l, v, r, _) ->
+let rec split0 ~cmp x (t : _ t0) : _ t0 * bool * _ t0 =
+  match N.toOpt t with 
+    None ->
+    N.(empty, false, empty)
+  | Some n(* Node(l, v, r, _) *) ->
+    let l = N.left n
+    and v = N.value n 
+    and r = N.right n in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then (l, true, r)
     else if c < 0 then
-      let (ll, pres, rl) = split0 ~cmp x l in (ll, pres, Bs_internalAVLset.join rl v r)
+      let (ll, pres, rl) = split0 ~cmp x l in (ll, pres, N.join rl v r)
     else
-      let (lr, pres, rr) = split0 ~cmp x r in (Bs_internalAVLset.join l v lr, pres, rr)
+      let (lr, pres, rr) = split0 ~cmp x r in (N.join l v lr, pres, rr)
 
-let rec mem0 ~cmp x = function
-    Empty -> false
-  | Node(l, v, r, _) ->
+let rec mem0 ~cmp x (t: _ t0) =
+  match  N.toOpt t with 
+  | None -> false
+  | Some n (* Node(l, v, r, _) *) ->
+    let l = N.left n 
+    and v = N.value n 
+    and r = N.right n in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     c = 0 || mem0 ~cmp x (if c < 0 then l else r)
 
-let rec remove0 ~cmp x = function
-    Empty -> Empty
-  | Node(l, v, r, _) ->
+let rec remove0 ~cmp x (t : _ t0) : _ t0 = 
+  match N.toOpt t with 
+    None -> t
+  | Some n (* Node(l, v, r, _) *) ->
+    let l = N.left n 
+    and v = N.value n 
+    and r = N.right n in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then Bs_internalAVLset.merge l r else
-    if c < 0 then Bs_internalAVLset.bal (remove0 ~cmp x l) v r else Bs_internalAVLset.bal l v (remove0 ~cmp x r)
+    if c = 0 then N.merge l r else
+    if c < 0 then N.bal (remove0 ~cmp x l) v r else N.bal l v (remove0 ~cmp x r)
 
-let rec union0 ~cmp s1 s2 =
-  match (s1, s2) with
-    (Empty, t2) -> t2
-  | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) ->
+let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) -> s2
+  | (_, None) -> s1
+  | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->
+    let l1 = N.left n1 
+    and v1 = N.value n1 
+    and r1 = N.right n1 
+    and h1 = N.h n1 
+    and l2 = N.left n2 
+    and v2 = N.value n2
+    and r2 = N.right n2
+    and h2 = N.h n2 in 
     if h1 >= h2 then
       if h2 = 1 then add0 ~cmp v2 s1 else begin
         let (l2, _, r2) = split0 ~cmp v1 s2 in
-        Bs_internalAVLset.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
+        N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
       end
     else
     if h1 = 1 then add0 ~cmp v1 s2 else begin
       let (l1, _, r1) = split0 ~cmp v2 s1 in
-      Bs_internalAVLset.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
+      N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
     end
 
-let rec inter0 ~cmp s1 s2 =
-  match (s1, s2) with
-    (Empty, t2) -> Empty
-  | (t1, Empty) -> Empty
-  | (Node(l1, v1, r1, _), t2) ->
-    match split0 ~cmp v1 t2 with
+let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) -> s1
+  | (_, None) -> s2
+  | Some n1, Some _ (* (Node(l1, v1, r1, _), t2) *) ->
+    let l1 = N.left n1 
+    and v1 = N.value n1 
+    and r1 = N.right n1 in
+    match split0 ~cmp v1 s2 with
       (l2, false, r2) ->
-      Bs_internalAVLset.concat (inter0 ~cmp l1 l2) (inter0 ~cmp r1 r2)
+      N.concat (inter0 ~cmp l1 l2) (inter0 ~cmp r1 r2)
     | (l2, true, r2) ->
-      Bs_internalAVLset.join (inter0 ~cmp l1 l2) v1 (inter0 ~cmp r1 r2)
+      N.join (inter0 ~cmp l1 l2) v1 (inter0 ~cmp r1 r2)
 
 let rec diff0 ~cmp s1 s2 =
-  match (s1, s2) with
-    (Empty, t2) -> Empty
-  | (t1, Empty) -> t1
-  | (Node(l1, v1, r1, _), t2) ->
-    match split0 ~cmp v1 t2 with
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) 
+  | (_, None) -> s1
+  | Some n1, Some _ (* (Node(l1, v1, r1, _), t2) *) ->
+    let l1 = N.left n1 
+    and v1 = N.value n1
+    and r1 = N.right n1 in (* let l1,v1,r1 = N.(left, value, right) * n1  in *)
+    match split0 ~cmp v1 s2 with
       (l2, false, r2) ->
-      Bs_internalAVLset.join (diff0 ~cmp l1 l2) v1 (diff0 ~cmp r1 r2)
+      N.join (diff0 ~cmp l1 l2) v1 (diff0 ~cmp r1 r2)
     | (l2, true, r2) ->
-      Bs_internalAVLset.concat (diff0 ~cmp l1 l2) (diff0 ~cmp r1 r2)
+      N.concat (diff0 ~cmp l1 l2) (diff0 ~cmp r1 r2)
 
 
 
@@ -118,39 +146,53 @@ let rec compare_aux ~cmp e1 e2 =
     let c = (Bs_Cmp.getCmp cmp) v1 v2 [@bs] in
     if c <> 0
     then c
-    else compare_aux ~cmp (Bs_internalAVLset.cons_enum r1 e1) (Bs_internalAVLset.cons_enum r2 e2)
+    else compare_aux ~cmp (N.cons_enum r1 e1) (N.cons_enum r2 e2)
 
 let cmp0 ~cmp s1 s2 =
-  compare_aux ~cmp (Bs_internalAVLset.cons_enum s1 End) (Bs_internalAVLset.cons_enum s2 End)
+  compare_aux ~cmp (N.cons_enum s1 End) (N.cons_enum s2 End)
 
 let eq0 ~cmp s1 s2 =
   cmp0 ~cmp s1 s2 = 0
 
-let rec subset0 ~cmp s1 s2 =
-  match (s1, s2) with
-    Empty, _ ->
+let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
+  match N.(toOpt s1, toOpt s2) with
+    None, _ ->
     true
-  | _, Empty ->
+  | _, None ->
     false
-  | Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) ->
+  | Some t1 , Some t2 (* Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) *) ->
+    let l1 = N.left t1 
+    and v1 = N.value t1 
+    and r1 = N.right t1 
+    and l2 = N.left t2 
+    and v2 = N.value t2 
+    and r2 = N.right t2 in 
     let c = (Bs_Cmp.getCmp cmp) v1 v2 [@bs] in
     if c = 0 then
       subset0 ~cmp l1 l2 && subset0 ~cmp r1 r2
     else if c < 0 then
-      subset0 ~cmp (Node (l1, v1, Empty, 0)) l2 && subset0 ~cmp r1 t2
+      subset0 ~cmp N.(return @@ node ~left:l1 ~value:v1 ~right:empty ~h:0) l2 && subset0 ~cmp r1 s2
     else
-      subset0 ~cmp (Node (Empty, v1, r1, 0)) r2 && subset0 ~cmp l1 t2
+      subset0 ~cmp N.(return @@ node ~left:empty ~value:v1 ~right:r1 ~h:0) r2 && subset0 ~cmp l1 s2
 
-let rec findOpt0 ~cmp x = function
-    Empty -> None
-  | Node(l, v, r, _) ->
+let rec findOpt0 ~cmp x (n : _ t0) = 
+  match N.toOpt n with 
+    None -> None
+  | Some t (* Node(l, v, r, _) *) ->
+    let l = N.left t 
+    and v = N.value t 
+    and r = N.right t in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then Some v
     else findOpt0 ~cmp x (if c < 0 then l else r)
 
-let rec findAssert0 ~cmp x = function
-    Empty -> [%assert "Not_found"]
-  | Node(l, v, r, _) ->
+let rec findAssert0 ~cmp x (n : _ t0) =
+  match N.toOpt n with 
+    None -> [%assert "Not_found"]
+  | Some t (* Node(l, v, r, _) *) ->
+    let l = N.left t 
+    and v = N.value t 
+    and r = N.right t in
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then  v
     else findAssert0 ~cmp x (if c < 0 then l else r)

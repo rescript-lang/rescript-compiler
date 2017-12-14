@@ -89,4 +89,6 @@ val from_opt : 'a option -> 'a t
 </table>
 %}
 *)
+external toOption : 'a t -> 'a option = "#undefined_to_opt"
 external to_opt : 'a t -> 'a option = "#undefined_to_opt"
+[@@deprecated "use toOpt instead"]  

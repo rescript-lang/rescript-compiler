@@ -328,7 +328,7 @@ let handle_external loc x =
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
   in 
   let undefined_typeof = 
-    Exp.ident {loc ; txt = Ldot (Ldot(Lident "Js","Undefined"),"to_opt")} in 
+    Exp.ident {loc ; txt = Ldot(Lident "Js","undefinedToOption")} in 
   let typeof = 
     Exp.ident {loc ; txt = Ldot(Lident "Js","typeof")} in 
 

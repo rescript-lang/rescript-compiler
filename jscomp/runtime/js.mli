@@ -75,6 +75,8 @@ type + 'a nullable
 type + 'a null_undefined = 'a nullable    
 
 external toOption : 'a nullable  -> 'a option = "#null_undefined_to_opt"
+external undefinedToOption : 'a undefined -> 'a option = "#undefined_to_opt"
+external nullToOption : 'a t -> 'a option = "#null_to_opt"
 external test : 'a nullable -> bool = "#is_nil_undef"
 
 (** The same as {!test} except that it is more permissive on the types of input *)
