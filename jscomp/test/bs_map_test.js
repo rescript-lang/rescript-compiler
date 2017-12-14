@@ -1,8 +1,9 @@
 'use strict';
 
-var Bs_Map   = require("../../lib/js/bs_Map.js");
-var Bs_Set   = require("../../lib/js/bs_Set.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
+var Bs_Map            = require("../../lib/js/bs_Map.js");
+var Bs_Set            = require("../../lib/js/bs_Set.js");
+var Caml_obj          = require("../../lib/js/caml_obj.js");
+var Bs_internalAVLset = require("../../lib/js/bs_internalAVLset.js");
 
 var N = /* module */[/* cmp */Caml_obj.caml_int_compare];
 
@@ -51,7 +52,7 @@ console.log(/* record */[
       /* data */m1
     ]);
 
-var data$1 = /* Empty */0;
+var data$1 = Bs_internalAVLset.empty0;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
   data$1 = Bs_Set.add0(cmp, i$1, data$1);

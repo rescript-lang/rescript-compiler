@@ -53,18 +53,18 @@ val union:
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
 (** Set union. *)
 
-val inter0: 
+(* val inter0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> ('elt, 'id) t0 -> ('elt, 'id) t0
 val inter: 
-  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t *)
 (** Set intersection. *)
 
-val diff0: 
+(* val diff0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> ('elt, 'id) t0 -> ('elt, 'id) t0
 val diff:   
-  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t *)
 (** Set difference. *)
 
 val cmp0: 
@@ -83,11 +83,11 @@ val eq:
 (** [equal s1 s2] tests whether the sets [s1] and [s2] are
     equal, that is, contain equal elements. *)
 
-val subset0: 
+(* val subset0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> ('elt, 'id) t0 -> bool
 val subset:  
-  ('elt, 'id) t -> ('elt, 'id) t -> bool
+  ('elt, 'id) t -> ('elt, 'id) t -> bool *)
 (** [subset s1 s2] tests whether the set [s1] is a subset of
     the set [s2]. *)
 
@@ -160,19 +160,19 @@ val split:
       [present] is [false] if [s] contains no element equal to [x],
       or [true] if [s] contains an element equal to [x]. *)
 
-val findOpt0: 
+(* val findOpt0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   'elt -> ('elt, 'id) t0 -> 'elt option
 val findOpt: 
-  'elt -> ('elt, 'id) t -> 'elt option
+  'elt -> ('elt, 'id) t -> 'elt option *)
 (** [find x s] returns the element of [s] equal to [x] (according
     to [Ord.compare]), or raise [Not_found] if no such element
     exists.
     @since 4.01.0 *)
 
-val findAssert0:
+(* val findAssert0:
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   'elt -> ('elt, 'id) t0 -> 'elt 
 
 val findAssert:  
-  'elt -> ('elt, 'id) t -> 'elt 
+  'elt -> ('elt, 'id) t -> 'elt  *)

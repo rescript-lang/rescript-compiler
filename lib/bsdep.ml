@@ -33195,7 +33195,7 @@ let from_string s : t =
     else 
       Ext_pervasives.failwithf 
         ~loc:__LOC__
-        "compiler version mismatch, please do a clean build"
+        "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
   else Ffi_normal    
 
 end
@@ -35058,7 +35058,7 @@ let handle_external loc x =
     {txt = Ldot (Ldot(Lident"Js", "Undefined"), "empty");loc}    
   in 
   let undefined_typeof = 
-    Exp.ident {loc ; txt = Ldot (Ldot(Lident "Js","Undefined"),"to_opt")} in 
+    Exp.ident {loc ; txt = Ldot(Lident "Js","undefinedToOption")} in 
   let typeof = 
     Exp.ident {loc ; txt = Ldot(Lident "Js","typeof")} in 
 
