@@ -3262,7 +3262,7 @@ function test45() {
 
 test("File \"tscanf_test.ml\", line 1090, characters 5-12", test45(/* () */0));
 
-function match_000$1() {
+function test46() {
   return Curry._3(Printf.sprintf(/* Format */[
                   /* Int */Block.__(4, [
                       /* Int_i */3,
@@ -3293,7 +3293,7 @@ function match_000$1() {
             ], "in english");
 }
 
-function match_001$1() {
+function test47() {
   return Curry._3(Printf.sprintf(/* Format */[
                   /* Int */Block.__(4, [
                       /* Int_i */3,
@@ -3330,13 +3330,9 @@ function match_001$1() {
             ], "in english");
 }
 
-var test47 = match_001$1;
+test("File \"tscanf_test.ml\", line 1104, characters 5-12", +(test46(/* () */0) === "1 spells one, in english."));
 
-var test46 = match_000$1;
-
-test("File \"tscanf_test.ml\", line 1104, characters 5-12", +(Curry._1(test46, /* () */0) === "1 spells one, in english."));
-
-test("File \"tscanf_test.ml\", line 1106, characters 5-12", +(Curry._1(test47, /* () */0) === "1 %s, in english."));
+test("File \"tscanf_test.ml\", line 1106, characters 5-12", +(test47(/* () */0) === "1 %s, in english."));
 
 function test48() {
   var test_meta_read = function (s, fmt, efmt) {

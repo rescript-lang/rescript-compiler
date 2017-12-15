@@ -69,17 +69,11 @@ function test(x) {
 
 var test_poly = "a";
 
-var match_000 = f(/* a */97);
+var c = f(/* a */97);
 
-var match_001 = f(/* b */98);
+var d = f(/* b */98);
 
-var match_002 = f(/* c */99);
-
-var c = match_000;
-
-var d = match_001;
-
-var e = match_002;
+var e = f(/* c */99);
 
 exports.f         = f;
 exports.ff        = ff;
@@ -88,4 +82,4 @@ exports.test_poly = test_poly;
 exports.c         = c;
 exports.d         = d;
 exports.e         = e;
-/* match Not a pure module */
+/* c Not a pure module */

@@ -18481,50 +18481,44 @@ let rec destruct
   [ let a = M.N.c 
     and b = M.N.d ]
 *)  
-let simple_tuple_pattern 
+let flattern_tuple_pattern_vb 
     (self : Bs_ast_mapper.mapper)   
-    (vb :  Parsetree.value_binding)
+    ({pvb_loc } as vb :  Parsetree.value_binding)
     acc : Parsetree.value_binding list =
-  let pat = self.pat self vb.pvb_pat in 
-  let expr = self.expr self vb.pvb_expr in  
-  let attrs = self.attributes self vb.pvb_attributes in 
-  match destruct [] expr with 
-  | None -> 
-    {pvb_pat = pat; 
-     pvb_expr = expr;
-     pvb_loc = vb.pvb_loc; 
-     pvb_attributes = attrs} :: acc 
-  | Some (xacc, es) ->      
-    begin match pat.ppat_desc  with 
-      | Ppat_tuple xs 
-        -> 
-        if List.for_all is_simple_pattern xs then 
-          (Ext_list.map2 (fun x y -> (* FIXME exception *)
-               {Parsetree.
-                 pvb_pat = 
-                   x;
-                 pvb_expr =  List.fold_left (fun x (flag,lid,loc,attrs)  ->
+  let pvb_pat = self.pat self vb.pvb_pat in 
+  let pvb_expr = self.expr self vb.pvb_expr in  
+  let pvb_attributes = self.attributes self vb.pvb_attributes in 
+  match destruct [] pvb_expr, pvb_pat.ppat_desc with 
+  | Some (wholes, es), Ppat_tuple xs 
+    when 
+      List.for_all is_simple_pattern xs &&
+      Ext_list.same_length es xs 
+    -> 
+    (Ext_list.fold_right2 (fun pat exp acc-> (* FIXME exception *)
+         {Parsetree.
+           pvb_pat = 
+             pat;
+           pvb_expr =  
+             ( match wholes with 
+               | [] -> exp  
+               | _ ->
+                 List.fold_left (fun x (flag,lid,loc,attrs)  ->
                      {Parsetree.
                        pexp_desc = Pexp_open(flag,lid,x); 
                        pexp_attributes = attrs;
                        pexp_loc = loc
                      }
-                   ) y xacc ;
-                 pvb_attributes = attrs ; 
-                 pvb_loc = vb.pvb_loc 
-               }
-             ) xs es) @ acc 
-        else 
-          {pvb_pat = pat; 
-           pvb_expr = expr;
-           pvb_loc = vb.pvb_loc; 
-           pvb_attributes = attrs} :: acc 
-      | _ -> 
-        {pvb_pat = pat; 
-         pvb_expr = expr;
-         pvb_loc = vb.pvb_loc; 
-         pvb_attributes = attrs} :: acc 
-    end
+                   ) exp wholes) ;
+           pvb_attributes; 
+           pvb_loc ;
+         } :: acc 
+       ) xs es) acc
+  | _ -> 
+    {pvb_pat ; 
+     pvb_expr ;
+     pvb_loc ;
+     pvb_attributes} :: acc 
+
 
 
 let process_getter_setter ~no ~get ~set
@@ -19160,7 +19154,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
     value_bindings = begin  fun self (vbs : Parsetree.value_binding list) -> 
       (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
       List.fold_right (fun vb acc ->
-          simple_tuple_pattern self vb acc 
+          flattern_tuple_pattern_vb self vb acc 
         ) vbs []
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 

@@ -70,6 +70,68 @@ let reset () =
   record_as_js_object := false ;
   no_export  :=  false
 
+let rec is_simple_pattern (p : Parsetree.pattern) =   
+  match p.ppat_desc with 
+  | Ppat_any -> true 
+  | Ppat_var _ -> true 
+  | Ppat_constraint(p,_) -> is_simple_pattern p  
+  | _ -> false
+
+let rec destruct 
+    acc (e : Parsetree.expression) = 
+  match e.pexp_desc with 
+  | Pexp_open (flag, lid, cont)
+    -> 
+    destruct 
+      ((flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
+      cont 
+  | Pexp_tuple es -> Some (acc, es)
+  | _ -> None
+
+(*
+  [let (a,b) = M.N.(c,d) ]
+  => 
+  [ let a = M.N.c 
+    and b = M.N.d ]
+*)  
+let flattern_tuple_pattern_vb 
+    (self : Bs_ast_mapper.mapper)   
+    ({pvb_loc } as vb :  Parsetree.value_binding)
+    acc : Parsetree.value_binding list =
+  let pvb_pat = self.pat self vb.pvb_pat in 
+  let pvb_expr = self.expr self vb.pvb_expr in  
+  let pvb_attributes = self.attributes self vb.pvb_attributes in 
+  match destruct [] pvb_expr, pvb_pat.ppat_desc with 
+  | Some (wholes, es), Ppat_tuple xs 
+    when 
+      List.for_all is_simple_pattern xs &&
+      Ext_list.same_length es xs 
+    -> 
+    (Ext_list.fold_right2 (fun pat exp acc-> 
+         {Parsetree.
+           pvb_pat = 
+             pat;
+           pvb_expr =  
+             ( match wholes with 
+               | [] -> exp  
+               | _ ->
+                 List.fold_left (fun x (flag,lid,loc,attrs)  ->
+                     {Parsetree.
+                       pexp_desc = Pexp_open(flag,lid,x); 
+                       pexp_attributes = attrs;
+                       pexp_loc = loc
+                     }
+                   ) exp wholes) ;
+           pvb_attributes; 
+           pvb_loc ;
+         } :: acc 
+       ) xs es) acc
+  | _ -> 
+    {pvb_pat ; 
+     pvb_expr ;
+     pvb_loc ;
+     pvb_attributes} :: acc 
+
 
 
 let process_getter_setter ~no ~get ~set
@@ -701,6 +763,12 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           "Unicode string is not allowed in pattern match"
       | _  -> Bs_ast_mapper.default_mapper.pat self pat
 
+    end;
+    value_bindings = begin  fun self (vbs : Parsetree.value_binding list) -> 
+      (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
+      List.fold_right (fun vb acc ->
+          flattern_tuple_pattern_vb self vb acc 
+        ) vbs []
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
       begin match str.pstr_desc with 
