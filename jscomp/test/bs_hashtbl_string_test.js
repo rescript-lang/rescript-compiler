@@ -7,6 +7,7 @@ var Bs_HashMap              = require("../../lib/js/bs_HashMap.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
 var Bs_HashMapInt           = require("../../lib/js/bs_HashMapInt.js");
 var Bs_HashMapString        = require("../../lib/js/bs_HashMapString.js");
+var Bs_internalAVLtree      = require("../../lib/js/bs_internalAVLtree.js");
 var Bs_internalBuckets      = require("../../lib/js/bs_internalBuckets.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -136,7 +137,7 @@ function bench2(m) {
 
 function bench3(m) {
   var cmp = m[/* cmp */0];
-  var table = /* data : Empty */0;
+  var table = /* data */Bs_internalAVLtree.empty0;
   for(var i = 0; i <= 1000000; ++i){
     table = Bs_Map.add0(cmp, "" + i, i, table);
   }

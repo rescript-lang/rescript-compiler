@@ -18,7 +18,10 @@ function test() {
   for(var i$1 = 0; i$1 <= 999999; ++i$1){
     should(+(Bs_MapInt.findOpt(i$1, m) !== /* None */0));
   }
-  return /* () */0;
+  for(var i$2 = 0; i$2 <= 999999; ++i$2){
+    m = Bs_MapInt.remove(i$2, m);
+  }
+  return should(+(Bs_MapInt.cardinal(m) === 0));
 }
 
 test(/* () */0);

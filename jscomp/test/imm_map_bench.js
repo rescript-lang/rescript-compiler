@@ -16,6 +16,10 @@ function test() {
   for(var j = 0; j < count; ++j) {
     should(m.get(j) !== undefined);
   }
+  for (var j = 0; j < count; ++j){
+    m = m.delete(j)
+  }
+  should(m.size === 0)
 }
 
 test();

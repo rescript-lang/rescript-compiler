@@ -8,7 +8,11 @@ let test () =
   done;
   for i = 0 to count do
     should (Bs.MapInt.findOpt i !m <> None)
-  done
+  done; 
+  for i = 0 to count do 
+    m := Bs.MapInt.remove i !m ;
+  done ;
+  should (Bs.MapInt.cardinal !m = 0)
 
 let () =
   test ()
