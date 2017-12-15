@@ -53,36 +53,28 @@ let bal l v r =
     match toOpt l with
     | None -> assert false
     | Some n (* Node(ll, lv, lr, _) *) ->
-      let ll = left n in 
-      let lv = value n in       
-      let lr = right n in 
+      let ll,lv,lr = left n, value n, right n in 
       if height ll >= height lr then
         create ll lv (create lr v r)
       else begin
         match toOpt lr with
           None -> assert false
         | Some n (* (lrl, lrv, lrr, _) *) ->
-          let lrl = left n in 
-          let lrv = value n in 
-          let lrr = right n in 
+          let lrl, lrv, lrr = left n, value n, right n in 
           create (create ll lv lrl) lrv (create lrr v r)
       end
   end else if hr > hl + 2 then begin
     match toOpt r with
       None -> assert false
     | Some n (* (rl, rv, rr, _) *) ->
-      let rl = left n in 
-      let rv = value n in 
-      let rr = right n in 
+      let rl,rv,rr = left n, value n, right n in 
       if height rr >= height rl then
         create (create l v rl) rv rr
       else begin
         match toOpt rl with
           None -> assert false
         | Some n (* (rll, rlv, rlr, _)*) ->
-          let rll = left n in 
-          let rlv = value n in 
-          let rlr = right n in  
+          let rll, rlv, rlr = left n, value n, right n in 
           create (create l v rll) rlv (create rlr rv rr)
       end
   end else
@@ -146,24 +138,12 @@ let rec max0 n =
 
 (* Remove the smallest element of the given set *)
 
-(* Input is non empty data *)
-let rec min_eltAssert0 n =
-  match toOpt n with 
-  | None -> assert false
-  | Some n -> min0Aux n 
-
 let rec removeMinAux n = 
-  let rn = right n in 
-  let ln = left n in 
+  let rn, ln = right n, left n  in 
   match toOpt ln with   
   | None -> rn
   | Some ln -> bal (removeMinAux ln) (value n) rn
 
-(* Input is non empty data *)
-let rec remove_min_elt n =
-  match toOpt n with 
-  | None -> assert false
-  | Some n -> removeMinAux n   
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -242,11 +222,24 @@ let rec partition0 p n =
     then (join lt v rt, concat lf rf)
     else (concat lt rt, join lf v rf)
 
+let rec cardinalAux n = 
+  let l, r = left n, right n in  
+  let sizeL = 
+    match toOpt l with 
+    | None -> 0
+    | Some l -> 
+      cardinalAux l  in 
+  let sizeR = 
+    match toOpt r with 
+    | None -> 0
+    | Some r -> cardinalAux r in 
+  1 + sizeL + sizeR  
 
 let rec cardinal0 n =
   match toOpt n with 
   | None -> 0
-  | Some n (* Node(l, v, r, _) *) -> cardinal0 (left n) + 1 + cardinal0 (right n )
+  | Some n  ->
+    cardinalAux n 
 
 let rec elements_aux accu n = 
   match toOpt n with 
@@ -256,4 +249,12 @@ let rec elements_aux accu n =
 let elements0 s =
   elements_aux [] s
 
-
+(* TODO: binary search tree to array efficiency
+let toArray n =   
+   match toOpt n with 
+   | None -> [||]
+   | Some n ->  
+    let size = cardinalAux n in 
+    let v = Bs.Array.makeUninitialized size in 
+    let l,v,r = left n, value n, right n in 
+*)
