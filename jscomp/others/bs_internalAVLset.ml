@@ -138,24 +138,12 @@ let rec max0 n =
 
 (* Remove the smallest element of the given set *)
 
-(* Input is non empty data *)
-let rec min_eltAssert0 n =
-  match toOpt n with 
-  | None -> assert false
-  | Some n -> min0Aux n 
-
 let rec removeMinAux n = 
-  let rn = right n in 
-  let ln = left n in 
+  let rn, ln = right n, left n  in 
   match toOpt ln with   
   | None -> rn
   | Some ln -> bal (removeMinAux ln) (value n) rn
 
-(* Input is non empty data *)
-let rec remove_min_elt n =
-  match toOpt n with 
-  | None -> assert false
-  | Some n -> removeMinAux n   
 
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
@@ -234,11 +222,24 @@ let rec partition0 p n =
     then (join lt v rt, concat lf rf)
     else (concat lt rt, join lf v rf)
 
+let rec cardinalAux n = 
+  let l, r = left n, right n in  
+  let sizeL = 
+    match toOpt l with 
+    | None -> 0
+    | Some l -> 
+      cardinalAux l  in 
+  let sizeR = 
+    match toOpt r with 
+    | None -> 0
+    | Some r -> cardinalAux r in 
+  1 + sizeL + sizeR  
 
 let rec cardinal0 n =
   match toOpt n with 
   | None -> 0
-  | Some n (* Node(l, v, r, _) *) -> cardinal0 (left n) + 1 + cardinal0 (right n )
+  | Some n  ->
+    cardinalAux n 
 
 let rec elements_aux accu n = 
   match toOpt n with 
@@ -248,4 +249,12 @@ let rec elements_aux accu n =
 let elements0 s =
   elements_aux [] s
 
-
+(* TODO: binary search tree to array efficiency
+let toArray n =   
+   match toOpt n with 
+   | None -> [||]
+   | Some n ->  
+    let size = cardinalAux n in 
+    let v = Bs.Array.makeUninitialized size in 
+    let l,v,r = left n, value n, right n in 
+*)
