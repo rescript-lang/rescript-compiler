@@ -257,6 +257,7 @@
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.ml
 ../lib/whole_compiler.ml : ./syntax/ast_signature.ml
 ../lib/whole_compiler.ml : ./syntax/ast_structure.ml
+../lib/whole_compiler.ml : ./syntax/bs_ast_mapper.ml
 ../lib/whole_compiler.ml : ./syntax/bs_syntaxerr.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/driver/compenv.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/driver/pparse.mli
@@ -296,6 +297,7 @@
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.mli
 ../lib/whole_compiler.ml : ./syntax/ast_signature.mli
 ../lib/whole_compiler.ml : ./syntax/ast_structure.mli
+../lib/whole_compiler.ml : ./syntax/bs_ast_mapper.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/lambda.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/switch.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/driver/compenv.mli

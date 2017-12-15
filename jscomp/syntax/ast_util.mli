@@ -26,7 +26,7 @@
 type args = (string * Parsetree.expression) list
 type loc = Location.t 
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
-type 'a cxt = loc -> Ast_mapper.mapper -> 'a
+type 'a cxt = loc -> Bs_ast_mapper.mapper -> 'a
 
 (** In general three kinds of ast generation.
     - convert a curried to type to uncurried 

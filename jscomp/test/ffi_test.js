@@ -5,9 +5,13 @@ function u() {
   return xx(3);
 }
 
-var match_000 = true;
+var a = true;
 
-var match_001 = false;
+var b = false;
+
+var c = null;
+
+var d = undefined;
 
 var Textarea = /* module */[];
 
@@ -24,14 +28,6 @@ function f() {
   v[0] = 3;
   return v[0];
 }
-
-var a = match_000;
-
-var b = match_001;
-
-var c = null;
-
-var d = undefined;
 
 exports.u          = u;
 exports.a          = a;

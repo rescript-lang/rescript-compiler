@@ -51,22 +51,18 @@ function absolute_path(s) {
   var aux = function (_s) {
     while(true) {
       var s = _s;
-      var match_000 = Curry._1(Filename.basename, s);
-      var match_001 = Curry._1(Filename.dirname, s);
-      var dir = match_001;
+      var base = Curry._1(Filename.basename, s);
+      var dir = Curry._1(Filename.dirname, s);
       if (dir === s) {
         return dir;
+      } else if (base === Filename.current_dir_name) {
+        _s = dir;
+        continue ;
+        
+      } else if (base === Filename.parent_dir_name) {
+        return Curry._1(Filename.dirname, aux(dir));
       } else {
-        var base = match_000;
-        if (base === Filename.current_dir_name) {
-          _s = dir;
-          continue ;
-          
-        } else if (base === Filename.parent_dir_name) {
-          return Curry._1(Filename.dirname, aux(dir));
-        } else {
-          return Filename.concat(aux(dir), base);
-        }
+        return Filename.concat(aux(dir), base);
       }
     };
   };

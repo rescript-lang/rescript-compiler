@@ -9,13 +9,9 @@ var Mt_global  = require("./mt_global.js");
 var Caml_float = require("../../lib/js/caml_float.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
-var match_000 = [0];
+var test_id = [0];
 
-var match_001 = [/* [] */0];
-
-var suites = match_001;
-
-var test_id = match_000;
+var suites = [/* [] */0];
 
 function eq(loc) {
   return (function (param, param$1) {

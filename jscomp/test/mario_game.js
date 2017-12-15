@@ -1226,15 +1226,15 @@ function get_aabb(obj) {
   var spr = obj[1][/* params */0];
   var obj$1 = obj[2];
   var match = spr[/* bbox_offset */5];
-  var match_000 = obj$1[/* pos */1][/* x */0] + match[0];
-  var match_001 = obj$1[/* pos */1][/* y */1] + match[1];
+  var box = obj$1[/* pos */1][/* x */0] + match[0];
+  var boy = obj$1[/* pos */1][/* y */1] + match[1];
   var match$1 = spr[/* bbox_size */6];
   var sy = match$1[1];
   var sx = match$1[0];
   return /* record */[
           /* center : float array */[
-            match_000 + sx / 2,
-            match_001 + sy / 2
+            box + sx / 2,
+            boy + sy / 2
           ],
           /* half : float array */[
             sx / 2,
@@ -1549,16 +1549,14 @@ function calc_viewport_point(cc, vc, mc) {
 }
 
 function in_viewport(v, pos) {
-  var match_000 = v[/* pos */0][/* x */0] - 32;
-  var match_001 = v[/* pos */0][/* x */0] + v[/* v_dim */1][/* x */0];
-  var match_000$1 = v[/* pos */0][/* y */1] - 32;
-  var match_001$1 = v[/* pos */0][/* y */1] + v[/* v_dim */1][/* y */1];
-  var match_000$2 = pos[/* x */0];
-  var match_001$2 = pos[/* y */1];
-  var y = match_001$2;
-  var x = match_000$2;
-  if (x >= match_000 && x <= match_001 && y >= match_000$1) {
-    return +(y <= match_001$1);
+  var v_min_x = v[/* pos */0][/* x */0] - 32;
+  var v_max_x = v[/* pos */0][/* x */0] + v[/* v_dim */1][/* x */0];
+  var v_min_y = v[/* pos */0][/* y */1] - 32;
+  var v_max_y = v[/* pos */0][/* y */1] + v[/* v_dim */1][/* y */1];
+  var x = pos[/* x */0];
+  var y = pos[/* y */1];
+  if (x >= v_min_x && x <= v_max_x && y >= v_min_y) {
+    return +(y <= v_max_y);
   } else {
     return /* false */0;
   }

@@ -3,19 +3,15 @@
 
 var v = [0];
 
-function match_000() {
+function reset() {
   v[0] = 0;
   return /* () */0;
 }
 
-function match_001() {
+function incr() {
   v[0] = v[0] + 1 | 0;
   return /* () */0;
 }
-
-var reset = match_000;
-
-var incr = match_001;
 
 exports.v     = v;
 exports.reset = reset;

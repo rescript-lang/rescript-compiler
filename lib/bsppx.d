@@ -70,6 +70,7 @@
 ../lib/bsppx.ml : ./syntax/ast_core_type.ml
 ../lib/bsppx.ml : ./syntax/ast_signature.ml
 ../lib/bsppx.ml : ./syntax/ast_structure.ml
+../lib/bsppx.ml : ./syntax/bs_ast_mapper.ml
 ../lib/bsppx.ml : ./syntax/bs_syntaxerr.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/clflags.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/terminfo.ml
@@ -78,6 +79,7 @@
 ../lib/bsppx.ml : ./syntax/ast_core_type.mli
 ../lib/bsppx.ml : ./syntax/ast_signature.mli
 ../lib/bsppx.ml : ./syntax/ast_structure.mli
+../lib/bsppx.ml : ./syntax/bs_ast_mapper.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/terminfo.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/warnings.mli
 ../lib/bsppx.ml : ./syntax/ast_attributes.mli
@@ -99,14 +101,12 @@
 ../lib/bsppx.ml : ./syntax/external_arg_spec.ml
 ../lib/bsppx.ml : ./syntax/external_process.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_helper.ml
-../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_mapper.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/docstrings.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/longident.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/parsetree.mli
 ../lib/bsppx.ml : ./syntax/external_arg_spec.mli
 ../lib/bsppx.ml : ./syntax/external_ffi_types.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_helper.mli
-../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_mapper.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/docstrings.mli
 ../lib/bsppx.ml : ./core/config_whole_compiler.ml
 ../lib/bsppx.ml : ./syntax/external_ffi_types.mli

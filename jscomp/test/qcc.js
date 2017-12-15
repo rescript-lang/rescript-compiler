@@ -1289,9 +1289,8 @@ function stmt(brk, stk) {
     }
     return patch(/* true */1, loc$1, opos[0]);
   } else if (Caml_obj.caml_equal(t, tokwhile) || Caml_obj.caml_equal(t, tokfor)) {
-    var match_000 = [0];
-    var match_001 = align[0];
-    var bl = match_000;
+    var bl = [0];
+    var ba = align[0];
     var match;
     if (Caml_obj.caml_equal(t, tokwhile)) {
       var loc$2 = opos[0];
@@ -1331,7 +1330,7 @@ function stmt(brk, stk) {
     patch(/* true */1, match[0], opos[0]);
     stmt(/* tuple */[
           bl,
-          match_001
+          ba
         ], stk);
     out(233);
     le(32, (match[1] - opos[0] | 0) - 4 | 0);
