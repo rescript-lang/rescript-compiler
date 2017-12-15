@@ -241,6 +241,7 @@ SYNTAX_SRCS= \
 	ast_signature \
 	ast_structure\
 	bs_ast_iterator\
+	bs_ast_mapper\
 	ast_derive\
 	ast_comb\
 	ast_core_type\

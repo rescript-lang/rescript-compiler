@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 open Ast_helper 
-type 'a cxt = Ast_helper.loc -> Ast_mapper.mapper -> 'a
+type 'a cxt = Ast_helper.loc -> Bs_ast_mapper.mapper -> 'a
 type loc = Location.t 
 type args = (string * Parsetree.expression) list
 type label_exprs = (Longident.t Asttypes.loc * Parsetree.expression) list
@@ -104,7 +104,7 @@ let js_property loc obj name =
 
 
 let generic_apply  kind loc 
-    (self : Ast_mapper.mapper) 
+    (self : Bs_ast_mapper.mapper) 
     (obj : Parsetree.expression) 
     (args : args ) cb   =
   let obj = self.expr self obj in
@@ -161,7 +161,7 @@ let method_apply loc self obj name args =
   generic_apply `Method loc self obj args 
     (fun loc obj -> Exp.mk ~loc (js_property loc obj name))
 
-let generic_to_uncurry_type  kind loc (mapper : Ast_mapper.mapper) label
+let generic_to_uncurry_type  kind loc (mapper : Bs_ast_mapper.mapper) label
     (first_arg : Parsetree.core_type) 
     (typ : Parsetree.core_type)  =
   if label <> "" then
@@ -214,7 +214,7 @@ let to_method_type  =
 let to_method_callback_type  = 
   generic_to_uncurry_type `Method_callback 
 
-let generic_to_uncurry_exp kind loc (self : Ast_mapper.mapper)  pat body 
+let generic_to_uncurry_exp kind loc (self : Bs_ast_mapper.mapper)  pat body 
   = 
   let rec aux acc (body : Parsetree.expression) = 
     match Ast_attributes.process_attributes_rev body.pexp_attributes with 
@@ -369,7 +369,7 @@ let handle_raw_structure loc payload =
 
 
 let ocaml_obj_as_js_object
-    loc (mapper : Ast_mapper.mapper)
+    loc (mapper : Bs_ast_mapper.mapper)
     (self_pat : Parsetree.pattern)
     (clfs : Parsetree.class_field list) =
   let self_type_lit = "self_type"   in 
@@ -388,7 +388,7 @@ let ocaml_obj_as_js_object
   *)
 
   let generate_val_method_pair 
-      loc (mapper : Ast_mapper.mapper)
+      loc (mapper : Bs_ast_mapper.mapper)
       val_name  is_mutable = 
 
     let result = Typ.var ~loc val_name in 
@@ -405,7 +405,7 @@ let ocaml_obj_as_js_object
   *)  
   let self_type loc = Typ.var ~loc self_type_lit in 
 
-  let generate_arg_type loc (mapper  : Ast_mapper.mapper)
+  let generate_arg_type loc (mapper  : Bs_ast_mapper.mapper)
       method_name arity : Ast_core_type.t = 
     let result = Typ.var ~loc method_name in   
     if arity = 0 then
@@ -426,7 +426,7 @@ let ocaml_obj_as_js_object
 
   let generate_method_type
       loc
-      (mapper : Ast_mapper.mapper)
+      (mapper : Bs_ast_mapper.mapper)
       ?alias_type method_name arity =
     let result = Typ.var ~loc method_name in   
 
@@ -613,7 +613,7 @@ let ocaml_obj_as_js_object
 
 let record_as_js_object 
     loc 
-    (self : Ast_mapper.mapper)
+    (self : Bs_ast_mapper.mapper)
     (label_exprs : label_exprs)
   : Parsetree.expression_desc = 
 
@@ -645,7 +645,7 @@ and check_pat (pat : Parsetree.pattern) =
     check_pat l; check_pat r 
   | _ ->  Location.raise_errorf ~loc:pat.ppat_loc "Unsupported pattern in `bs.open`" 
 
-let convertBsErrorFunction loc  (self : Ast_mapper.mapper) attrs (cases : Parsetree.case list ) =
+let convertBsErrorFunction loc  (self : Bs_ast_mapper.mapper) attrs (cases : Parsetree.case list ) =
   let txt  = "match" in 
   let txt_expr = Exp.ident ~loc {txt = Lident txt; loc} in 
   let none = Exp.constraint_ ~loc 

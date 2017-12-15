@@ -163,7 +163,7 @@ let handle_class_type_field self
   | Pctf_constraint _
   | Pctf_attribute _ 
   | Pctf_extension _  -> 
-    Ast_mapper.default_mapper.class_type_field self ctf :: acc 
+    Bs_ast_mapper.default_mapper.class_type_field self ctf :: acc 
 
 (*
   Attributes are very hard to attribute
@@ -173,8 +173,8 @@ let handle_class_type_field self
 *)
 
 let handle_core_type 
-    (super : Ast_mapper.mapper) 
-    (self : Ast_mapper.mapper)
+    (super : Bs_ast_mapper.mapper) 
+    (self : Bs_ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
   | {ptyp_desc = Ptyp_extension({txt = ("bs.obj"|"obj")}, PTyp ty)}
@@ -196,7 +196,7 @@ let handle_core_type
       | `Method, ptyp_attributes ->
         Ast_util.to_method_type loc self label args body
       | `Nothing , _ -> 
-        Ast_mapper.default_mapper.typ self ty
+        Bs_ast_mapper.default_mapper.typ self ty
     end
   | {
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
@@ -254,8 +254,8 @@ let handle_core_type
     else inner_type
   | _ -> super.typ self ty
 
-let rec unsafe_mapper : Ast_mapper.mapper =   
-  { Ast_mapper.default_mapper with 
+let rec unsafe_mapper : Bs_ast_mapper.mapper =   
+  { Bs_ast_mapper.default_mapper with 
     expr = (fun self ({ pexp_loc = loc } as e) -> 
         match e.pexp_desc with 
         (** Its output should not be rewritten anymore *)        
@@ -458,7 +458,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_function cases -> 
           begin match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with 
             | `Nothing, _ -> 
-              Ast_mapper.default_mapper.expr self  e 
+              Bs_ast_mapper.default_mapper.expr self  e 
             | `Exn, pexp_attributes -> 
               Ast_util.convertBsErrorFunction loc self  pexp_attributes cases
           end
@@ -466,7 +466,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           ->
           begin match Ast_attributes.process_attributes_rev e.pexp_attributes with 
             | `Nothing, _ 
-              -> Ast_mapper.default_mapper.expr self e 
+              -> Bs_ast_mapper.default_mapper.expr self e 
             |   `Uncurry, pexp_attributes
               -> 
               {e with 
@@ -564,13 +564,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         Ast_util.method_apply loc self obj 
                           (name ^ Literals.setter_suffix) ["", arg ]  }
                     (Ast_literal.type_unit ~loc ())
-                | _ -> Ast_mapper.default_mapper.expr self e 
+                | _ -> Bs_ast_mapper.default_mapper.expr self e 
               end
             | _ -> 
               begin match 
                   Ext_list.exclude_with_val
                     Ast_attributes.is_bs e.pexp_attributes with 
-              | false, _ -> Ast_mapper.default_mapper.expr self e 
+              | false, _ -> Bs_ast_mapper.default_mapper.expr self e 
               | true, pexp_attributes -> 
                 {e with pexp_desc = Ast_util.uncurry_fn_apply loc self fn args ;
                         pexp_attributes }
@@ -595,7 +595,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                  constraint 'b :> 'a
                ]}
             *)
-            Ast_mapper.default_mapper.expr  self e
+            Bs_ast_mapper.default_mapper.expr  self e
         | Pexp_object {pcstr_self;  pcstr_fields} ->
           begin match Ast_attributes.process_bs e.pexp_attributes with
             | `Has, pexp_attributes
@@ -607,16 +607,16 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                pexp_attributes               
               }                          
             | `Nothing , _ ->
-              Ast_mapper.default_mapper.expr  self e              
+              Bs_ast_mapper.default_mapper.expr  self e              
           end            
-        | _ ->  Ast_mapper.default_mapper.expr self e
+        | _ ->  Bs_ast_mapper.default_mapper.expr self e
       );
-    typ = (fun self typ -> handle_core_type Ast_mapper.default_mapper self typ);
+    typ = (fun self typ -> handle_core_type Bs_ast_mapper.default_mapper self typ);
     class_type = 
       (fun self ({pcty_attributes; pcty_loc} as ctd) -> 
          match Ast_attributes.process_bs pcty_attributes with 
          | `Nothing,  _ -> 
-           Ast_mapper.default_mapper.class_type
+           Bs_ast_mapper.default_mapper.class_type
              self ctd 
          | `Has, pcty_attributes ->
            begin match ctd.pcty_desc with
@@ -644,7 +644,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                *)
            end             
       );
-    signature_item =  begin fun (self : Ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
+    signature_item =  begin fun (self : Bs_ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
       match sigi.psig_desc with 
       | Psig_type (_ :: _ as tdcls) -> 
         begin match Ast_attributes.iter_process_derive_type 
@@ -657,7 +657,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                self 
                (Ast_derive.gen_signature tdcls actions explict_nonrec))
         | {bs_deriving = None } -> 
-          Ast_mapper.default_mapper.signature_item self sigi 
+          Bs_ast_mapper.default_mapper.signature_item self sigi 
 
         end
       | Psig_value
@@ -692,14 +692,14 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               pval_attributes 
              }}
 
-      | _ -> Ast_mapper.default_mapper.signature_item self sigi
+      | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
     pat = begin fun self (pat : Parsetree.pattern) -> 
       match pat with 
       | { ppat_desc = Ppat_constant(Const_string (_, Some "j")); ppat_loc = loc} -> 
         Location.raise_errorf ~loc 
           "Unicode string is not allowed in pattern match"
-      | _  -> Ast_mapper.default_mapper.pat self pat
+      | _  -> Bs_ast_mapper.default_mapper.pat self pat
 
     end;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
@@ -724,7 +724,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                          tdcls action explict_nonrec
                     )    actions))
           | {bs_deriving = None }  -> 
-            Ast_mapper.default_mapper.structure_item self str
+            Bs_ast_mapper.default_mapper.structure_item self str
           end
         | Pstr_primitive 
             ({pval_attributes; 
@@ -754,8 +754,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 pval_prim;
                 pval_attributes 
                }}
-
-        | _ -> Ast_mapper.default_mapper.structure_item self str 
+        | _ -> Bs_ast_mapper.default_mapper.structure_item self str 
       end
     end
   }

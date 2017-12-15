@@ -74,6 +74,7 @@
 ../lib/bsdep.ml : ./syntax/ast_core_type.ml
 ../lib/bsdep.ml : ./syntax/ast_signature.ml
 ../lib/bsdep.ml : ./syntax/ast_structure.ml
+../lib/bsdep.ml : ./syntax/bs_ast_mapper.ml
 ../lib/bsdep.ml : ./syntax/bs_syntaxerr.mli
 ../lib/bsdep.ml : ../vendor/ocaml/driver/compenv.ml
 ../lib/bsdep.ml : ../vendor/ocaml/driver/pparse.mli
@@ -89,6 +90,7 @@
 ../lib/bsdep.ml : ./syntax/ast_core_type.mli
 ../lib/bsdep.ml : ./syntax/ast_signature.mli
 ../lib/bsdep.ml : ./syntax/ast_structure.mli
+../lib/bsdep.ml : ./syntax/bs_ast_mapper.mli
 ../lib/bsdep.ml : ../vendor/ocaml/driver/compenv.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/depend.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/parser.mli

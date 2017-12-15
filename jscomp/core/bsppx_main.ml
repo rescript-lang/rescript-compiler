@@ -31,7 +31,7 @@ let apply_lazy ~source ~target impl iface =
   in
   if magic <> Config.ast_impl_magic_number
   && magic <> Config.ast_intf_magic_number then
-    failwith "Ast_mapper: OCaml version mismatch or malformed input";
+    failwith "Bs_ast_mapper: OCaml version mismatch or malformed input";
   Location.input_name := input_value ic;
   let ast = input_value ic in
   close_in ic;
