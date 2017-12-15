@@ -36483,7 +36483,7 @@ let flattern_tuple_pattern_vb
       List.for_all is_simple_pattern xs &&
       Ext_list.same_length es xs 
     -> 
-    (Ext_list.fold_right2 (fun pat exp acc-> (* FIXME exception *)
+    (Ext_list.fold_right2 (fun pat exp acc-> 
          {Parsetree.
            pvb_pat = 
              pat;

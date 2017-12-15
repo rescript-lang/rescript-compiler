@@ -53,36 +53,28 @@ let bal l v r =
     match toOpt l with
     | None -> assert false
     | Some n (* Node(ll, lv, lr, _) *) ->
-      let ll = left n in 
-      let lv = value n in       
-      let lr = right n in 
+      let ll,lv,lr = left n, value n, right n in 
       if height ll >= height lr then
         create ll lv (create lr v r)
       else begin
         match toOpt lr with
           None -> assert false
         | Some n (* (lrl, lrv, lrr, _) *) ->
-          let lrl = left n in 
-          let lrv = value n in 
-          let lrr = right n in 
+          let lrl, lrv, lrr = left n, value n, right n in 
           create (create ll lv lrl) lrv (create lrr v r)
       end
   end else if hr > hl + 2 then begin
     match toOpt r with
       None -> assert false
     | Some n (* (rl, rv, rr, _) *) ->
-      let rl = left n in 
-      let rv = value n in 
-      let rr = right n in 
+      let rl,rv,rr = left n, value n, right n in 
       if height rr >= height rl then
         create (create l v rl) rv rr
       else begin
         match toOpt rl with
           None -> assert false
         | Some n (* (rll, rlv, rlr, _)*) ->
-          let rll = left n in 
-          let rlv = value n in 
-          let rlr = right n in  
+          let rll, rlv, rlr = left n, value n, right n in 
           create (create l v rll) rlv (create rlr rv rr)
       end
   end else
