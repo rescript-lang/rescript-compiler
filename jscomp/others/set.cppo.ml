@@ -81,11 +81,9 @@ let rec split (x : elt) (t : t) : t * bool *  t =
 let rec mem (x : elt) (t : t) =
   match N.toOpt t with 
   | None -> false
-  | Some n (* Node(l, v, r, _) *) ->    
-    let l = N.left n 
-    and v = N.value n 
-    and r = N.right n in 
-    x = v || mem x (if x < v then l else r)
+  | Some n (* Node(l, v, r, _) *) ->                
+    let v = N.value n in 
+    x = v || mem x N.(if x < v then (left n) else (right n))
 
 let rec remove (x : elt) (t : t) : t = 
   match N.toOpt t with 
@@ -101,16 +99,16 @@ let rec union (s1 : t) (s2 : t) =
     (None, _) -> s2
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
-    let h1, h2, v1,v2 = N.(h n1 , h n2, value n1, value n2) in             
+    let h1, h2 = N.(h n1 , h n2) in             
     if h1 >= h2 then
-      if h2 = 1 then add v2 s1 else begin
-        let l1, r1 = N.(left n1, right n1) in      
+      if h2 = 1 then add (N.value n2) s1 else begin
+        let l1, v1, r1 = N.(left n1, value n1, right n1) in      
         let (l2, _, r2) = splitAux v1 n2 in
         N.join (union l1 l2) v1 (union r1 r2)
       end
     else
-    if h1 = 1 then add v1 s2 else begin
-      let l2, r2 = N.(left n2 , right n2) in 
+    if h1 = 1 then add (N.value n1) s2 else begin
+      let l2, v2, r2 = N.(left n2 , value n2, right n2) in 
       let (l1, _, r1) = splitAux v2 n1 in
       N.join (union l1 l2) v2 (union r1 r2)
     end
