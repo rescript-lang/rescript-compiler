@@ -234,7 +234,17 @@ Bs_Array.shuffleInPlace(v$11);
 
 var u$1 = Bs_SetInt.ofArray(v$11);
 
-b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Bs_SetInt.checkInvariant(u$1));
+b("File \"bs_set_int_test.ml\", line 108, characters 4-11", Bs_SetInt.checkInvariant(u$1));
+
+var firstHalf = Bs_Array.sub(v$11, 0, 2000);
+
+var xx = Bs_Array.foldLeft((function (acc, x) {
+        return Bs_SetInt.remove(x, acc);
+      }), u$1, firstHalf);
+
+b("File \"bs_set_int_test.ml\", line 112, characters 4-11", Bs_SetInt.checkInvariant(u$1));
+
+b("File \"bs_set_int_test.ml\", line 113, characters 4-11", Bs_SetInt.eq(Bs_SetInt.union(Bs_SetInt.ofArray(firstHalf), xx), u$1));
 
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 

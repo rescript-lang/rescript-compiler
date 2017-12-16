@@ -80,15 +80,16 @@ let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
     (None, _) -> s2
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->
-    let l1,v1,r1,h1 = N.(left n1, value n1, right n1, h n1) in 
-    let l2,v2,r2,h2 = N.(left n2, value n2, right n2, h n2) in  
+    let h1, h2, v1,v2 = N.(h n1 , h n2, value n1, value n2) in                 
     if h1 >= h2 then
       if h2 = 1 then add0 ~cmp v2 s1 else begin
+        let l1, r1 = N.(left n1, right n1) in      
         let (l2, _, r2) = split0 ~cmp v1 s2 in
         N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
       end
     else
     if h1 = 1 then add0 ~cmp v1 s2 else begin
+      let l2, r2 = N.(left n2 , right n2) in 
       let (l1, _, r1) = split0 ~cmp v2 s1 in
       N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
     end
