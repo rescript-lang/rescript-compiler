@@ -5,6 +5,10 @@ let eq loc x y =
   incr test_id ; 
   suites := 
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
+let neq loc x y = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Neq(x,y))) :: !suites
 
 
 type 'a t = 'a Js.Array.t
@@ -51,5 +55,11 @@ let () =
   id [1;2;3;4;5];
   id (Js.Vector.(toList @@ init 100 (fun [@bs] i -> i  ) ))
   
-
+let () = 
+  let v = Bs.Array.init 3000 (fun[@bs] i -> i) in 
+  let u = Bs.Array.copy v  in 
+  Bs.Array.shuffleInPlace u ; 
+  neq __LOC__ u  v (* unlikely*);
+  let sum x = Bs.Array.foldLeft (fun[@bs] x y -> x + y) 0 x in 
+  eq __LOC__ ( sum u) (sum v)
 ;; Mt.from_pair_suites __LOC__ !suites  

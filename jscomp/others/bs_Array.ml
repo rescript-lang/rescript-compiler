@@ -42,6 +42,18 @@ let init l f =
    done;
    res
 
+let swapUnsafe xs i j =    
+  let tmp = unsafe_get xs i in 
+  unsafe_set xs i (unsafe_get xs j) ;
+  unsafe_set xs j tmp
+
+
+let shuffleInPlace xs =     
+  let len = length xs in 
+  for i = 0 to len - 1 do
+    swapUnsafe xs i (Js.Math.random_int i len) (* [i,len)*)
+  done 
+
 let makeMatrix sx sy init =
   let res = create sx [||] in
   for x = 0 to pred sx do

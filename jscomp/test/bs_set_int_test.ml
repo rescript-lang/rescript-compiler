@@ -99,6 +99,18 @@ let () =
   let v = N.remove 1 v in 
   b __LOC__ (N.isEmpty v )
 
-
+ 
+let ()  = 
+  let count = 1_000_000 in 
+  let v = Bs.Array.init count (fun [@bs] i -> i) in 
+  Bs.Array.shuffleInPlace v ;
+  let u = Bs.SetInt.ofArray v in 
+  b __LOC__ (Bs.SetInt.checkInvariant u );
+  let firstHalf = Bs.Array.sub v 0 2_000 in 
+  let xx = Bs.Array.foldLeft 
+    (fun[@bs] acc x -> Bs.SetInt.remove x acc) u firstHalf in 
+  b __LOC__ (Bs.SetInt.checkInvariant u);
+  b __LOC__ N.(eq (union (ofArray firstHalf) xx) u)
+  
 
 ;; Mt.from_pair_suites __FILE__ !suites    

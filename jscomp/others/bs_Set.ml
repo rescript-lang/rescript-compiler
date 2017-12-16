@@ -62,9 +62,9 @@ let rec mem0 ~cmp x (t: _ t0) =
   match  N.toOpt t with 
   | None -> false
   | Some n (* Node(l, v, r, _) *) ->
-    let l,v,r = N.(left n , value n, right n) in 
+    let v = N.value n in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    c = 0 || mem0 ~cmp x (if c < 0 then l else r)
+    c = 0 || mem0 ~cmp x N.(if c < 0 then (left n) else (right n))
 
 let rec remove0 ~cmp x (t : _ t0) : _ t0 = 
   match N.toOpt t with 
@@ -80,15 +80,16 @@ let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
     (None, _) -> s2
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->
-    let l1,v1,r1,h1 = N.(left n1, value n1, right n1, h n1) in 
-    let l2,v2,r2,h2 = N.(left n2, value n2, right n2, h n2) in  
+    let h1, h2 = N.(h n1 , h n2) in                 
     if h1 >= h2 then
-      if h2 = 1 then add0 ~cmp v2 s1 else begin
+      if h2 = 1 then add0 ~cmp (N.value n2) s1 else begin
+        let l1, v1, r1 = N.(left n1, value n1, right n1) in      
         let (l2, _, r2) = split0 ~cmp v1 s2 in
         N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
       end
     else
-    if h1 = 1 then add0 ~cmp v1 s2 else begin
+    if h1 = 1 then add0 ~cmp (N.value n1) s2 else begin
+      let l2, v2, r2 = N.(left n2 , value n2, right n2) in 
       let (l1, _, r1) = split0 ~cmp v2 s1 in
       N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
     end

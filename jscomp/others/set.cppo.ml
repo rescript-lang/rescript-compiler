@@ -1,10 +1,10 @@
 #ifdef TYPE_STRING
 type elt = string
-           #elif defined TYPE_INT  
+#elif defined TYPE_INT  
 type elt = int
-           #else
-  [%error "unknown type"]  
-  #endif
+#else
+[%error "unknown type"]  
+#endif
 
 
 module N = Bs_internalAVLset
@@ -33,7 +33,7 @@ let filter = N.filter0
 let partition = N.partition0
 let cardinal = N.cardinal0
 let elements = N.elements0 
-
+let checkInvariant = N.checkInvariant
 (* Insertion of one element *)
 
 let rec add (x : elt) (t : t) : t =
@@ -81,11 +81,9 @@ let rec split (x : elt) (t : t) : t * bool *  t =
 let rec mem (x : elt) (t : t) =
   match N.toOpt t with 
   | None -> false
-  | Some n (* Node(l, v, r, _) *) ->    
-    let l = N.left n 
-    and v = N.value n 
-    and r = N.right n in 
-    x = v || mem x (if x < v then l else r)
+  | Some n (* Node(l, v, r, _) *) ->                
+    let v = N.value n in 
+    x = v || mem x N.(if x < v then (left n) else (right n))
 
 let rec remove (x : elt) (t : t) : t = 
   match N.toOpt t with 
@@ -100,23 +98,17 @@ let rec union (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
     (None, _) -> s2
   | (_, None) -> s1
-  | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->
-    let l1 = N.left n1 
-    and v1 = N.value n1 
-    and r1 = N.right n1 
-    and h1 = N.h n1 
-
-    and l2 = N.left n2 
-    and v2 = N.value n2 
-    and r2 = N.right n2 
-    and h2 = N.h n2 in 
+  | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
+    let h1, h2 = N.(h n1 , h n2) in             
     if h1 >= h2 then
-      if h2 = 1 then add v2 s1 else begin
+      if h2 = 1 then add (N.value n2) s1 else begin
+        let l1, v1, r1 = N.(left n1, value n1, right n1) in      
         let (l2, _, r2) = splitAux v1 n2 in
         N.join (union l1 l2) v1 (union r1 r2)
       end
     else
-    if h1 = 1 then add v1 s2 else begin
+    if h1 = 1 then add (N.value n1) s2 else begin
+      let l2, v2, r2 = N.(left n2 , value n2, right n2) in 
       let (l1, _, r1) = splitAux v2 n1 in
       N.join (union l1 l2) v2 (union r1 r2)
     end
