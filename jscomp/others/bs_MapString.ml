@@ -32,6 +32,7 @@ let filter = N.filter0
 let partition = N.partition0
 let cardinal = N.cardinal0
 let bindings = N.bindings0  
+let checkInvariant = N.checkInvariant
 
 let rec add  (x : key) (data : _) t = 
   match N.toOpt t with
@@ -154,6 +155,13 @@ let equal cmp m1 m2 =
   in equal_aux (N.cons_enum m1 End) (N.cons_enum m2 End)
 
 
+let ofArray  (xs : _ array) : _ t0 =     
+  let result = ref N.empty in 
+  for i = 0 to Array.length xs - 1 do  
+    let k, v = (Bs_Array.unsafe_get xs i) in 
+    result := add  k v !result
+  done ;
+  !result 
 
 
 

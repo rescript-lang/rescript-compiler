@@ -51,6 +51,15 @@ val empty0 : ('k, 'a, 'id) t0
 val empty: ('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
 (** The empty map. *)
 
+val ofArray0:  
+    cmp: ('k,'id) Bs_Cmp.cmp -> 
+    ('k * 'a) array ->  
+    ('k,'a,'id) t0 
+val ofArray:      
+    ('k,'id) Bs_Cmp.t -> 
+    ('k * 'a) array ->  
+    ('k,'a,'id) t 
+    
 val isEmpty0 : ('k, 'a,'id) t0 -> bool 
 val isEmpty: ('k, 'a, 'id) t -> bool
 (** Test whether a map is empty or not. *)

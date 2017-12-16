@@ -24,10 +24,10 @@ bs_internalBuckets.cmj : bs_Array.cmj
 bs_HashMap.cmj : bs_internalBuckets.cmj bs_Hash.cmj bs_Array.cmj \
     bs_HashMap.cmi
 bs_Cmp.cmj : bs_Cmp.cmi
-bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Map.cmi
+bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Array.cmj bs_Map.cmi
 bs_Set.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Array.cmj bs_Set.cmi
-bs_MapString.cmj : bs_internalAVLtree.cmj bs_MapString.cmi
-bs_MapInt.cmj : bs_internalAVLtree.cmj bs_MapInt.cmi
+bs_MapString.cmj : bs_internalAVLtree.cmj bs_Array.cmj bs_MapString.cmi
+bs_MapInt.cmj : bs_internalAVLtree.cmj bs_Array.cmj bs_MapInt.cmi
 bs_SetInt.cmj : bs_internalAVLset.cmj bs_Array.cmj bs_SetInt.cmi
 bs_SetString.cmj : bs_internalAVLset.cmj bs_Array.cmj bs_SetString.cmi
 node_child_process.cmj : node.cmj

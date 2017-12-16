@@ -285,3 +285,14 @@ let rec bindings_aux accu n =
 
 let bindings0 s =
   bindings_aux [] s  
+
+
+let rec checkInvariant (v : _ t0) = 
+  match toOpt v with 
+  | None -> true 
+  | Some n -> 
+    let l,r = left n , right n in 
+    let diff = height l - height r  in 
+    diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
+
+  
