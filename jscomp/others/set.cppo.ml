@@ -40,11 +40,10 @@ let rec add (x : elt) (t : t) : t =
   match N.toOpt t with 
     None -> N.(return @@ node ~left:empty ~value:x ~right:empty ~h:1)
   | Some nt (* Node(l, v, r, _) as t *) ->
-    let l = N.left nt 
-    and v = N.value nt 
-    and r = N.right nt in 
+    let v = N.value nt in  
     if x = v then t else
-    if x < v then N.bal (add x l) v r else N.bal l v (add x r)
+    if x < v then N.(bal (add x (left nt)) v (right nt))
+    else N.(bal (left nt) v (add x (right nt)))
 
 
 
@@ -55,9 +54,7 @@ let rec add (x : elt) (t : t) : t =
       or true if s contains an element equal to x. *)
 
 let rec splitAux (x : elt) (n : _ N.node) : t * bool * t =   
-  let l = N.left n  
-  and v = N.value n  
-  and r = N.right n in 
+  let l,v,r = N.(left n , value n, right n) in  
   if x = v then (l, true, r)
   else if x < v then
     match N.toOpt l with 
@@ -94,11 +91,10 @@ let rec remove (x : elt) (t : t) : t =
   match N.toOpt t with 
   | None -> t
   | Some n (* Node(l, v, r, _) *) ->
-    let l = N.left n 
-    and v = N.value n 
-    and r = N.right n in 
+    let l,v,r = N.(left n, value n, right n) in 
     if x = v then N.merge l r else
-    if x < v then N.bal (remove x l) v r else N.bal l v (remove x r)
+    if x < v then N.bal (remove x l) v r 
+    else N.bal l v (remove x r)
 
 let rec union (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
