@@ -103,7 +103,7 @@ val split: elt -> t -> t * bool * t
       [present] is [false] if [s] contains no element equal to [x],
       or [true] if [s] contains an element equal to [x]. *)
 
-val find: elt -> t -> elt option
+val findOpt: elt -> t -> elt option
 (** [find x s] returns the element of [s] equal to [x] (according
     to [Ord.compare]), or raise [Not_found] if no such element
     exists.

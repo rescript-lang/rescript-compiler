@@ -13,6 +13,11 @@ val empty0: ('elt, 'id) t0
 val empty : ('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
 (** The empty set. *)
 
+
+val ofArray0: cmp:('k,'id) Bs_Cmp.cmp -> 'k array -> ('k, 'id) t0  
+val ofArray: ('k, 'id) Bs_Cmp.t -> 'k array -> ('k, 'id) t 
+
+
 val isEmpty0: ('elt, 'id) t0 -> bool
 val isEmpty : ('elt, 'id) t -> bool
 (** Test whether a set is empty or not. *)

@@ -114,9 +114,7 @@ let rec inter (s1 : t) (s2 : t) =
     (None, _) -> s1
   | (_, None) -> s2 
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1 = N.left n1 
-    and v1 = N.value n1 
-    and r1 = N.right n1 in 
+    let l1,v1,r1 = N.(left n1, value n1, right n1) in  
     match splitAux v1 n2 with
       (l2, false, r2) ->
       N.concat (inter l1 l2) (inter r1 r2)
@@ -128,9 +126,7 @@ let rec diff (s1 : t) (s2 : t) =
   | (None, _) 
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1 = N.left n1 
-    and v1 = N.value n1 
-    and r1 = N.right n1 in 
+    let l1,v1,r1 = N.(left n1, value n1, right n1) in
     match splitAux v1 n2 with
       (l2, false, r2) ->
       N.join (diff l1 l2) v1 (diff r1 r2)
@@ -151,8 +147,17 @@ let rec compare_aux e1 e2 =
 let cmp s1 s2 =
   compare_aux (N.cons_enum s1 End) (N.cons_enum s2 End)
 
-let eq s1 s2 =
-  cmp s1 s2 = 0
+let rec eq_aux e1 e2 =
+  match (e1, e2) with
+    (End, End) -> true
+  | (End, More _)  -> false
+  | (More _, End) -> false
+  | (More(v1, r1, e1), More(v2, r2, e2)) ->
+    (v1 : elt) = v2 &&
+     eq_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)  
+
+let eq s1 s2 = 
+  eq_aux (N.cons_enum s1 End) (N.cons_enum s2 End)
 
 let rec subset (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
@@ -161,12 +166,8 @@ let rec subset (s1 : t) (s2 : t) =
   | _, None ->
     false
   | Some t1, Some t2 (* Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) *) ->
-    let l1  = N.left t1 
-    and v1 = N.value t1 
-    and r1 = N.right t1 
-    and l2 = N.left t2 
-    and v2 = N.value t2 
-    and r2 = N.right t2 in 
+    let l1,v1,r1 = N.(left t1, value t1, right t1) in  
+    let l2,v2,r2 = N.(left t2, value t2, right t2) in 
     if (v1 : elt) = v2 then
       subset l1 l2 && subset r1 r2
     else if v1 < v2 then
@@ -175,16 +176,22 @@ let rec subset (s1 : t) (s2 : t) =
       subset N.(return @@ node ~left:empty ~value:v1 ~right:r1 ~h:0) r2 && subset l1 s2
 
 
-let rec find (x : elt) (n :t)  = 
+let rec findOpt (x : elt) (n :t)  = 
   match N.toOpt n with 
   | None -> None
-  | Some t (* Node(l, v, r, _) *) ->
-    let l = N.left t 
-    and v = N.value t 
-    and r = N.right t in 
+  | Some t (* Node(l, v, r, _) *) ->    
+    let v = N.value t in     
     if x = v then Some v
-    else find x (if x < v then l else r)
+    else findOpt x N.(if x < v then (left t) else (right t))
 
+let rec findAssert (x : elt) (n :t)  = 
+  match N.toOpt n with 
+  | None -> [%assert "Not_found"]
+  | Some t (* Node(l, v, r, _) *) ->    
+    let v = N.value t in     
+    if x = v then Some v
+    else findAssert x N.(if x < v then (left t) else (right t))
+    
     
 (* FIXME: use [sorted] attribute *)    
 let ofArray (xs : elt array) : t =     

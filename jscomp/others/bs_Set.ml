@@ -44,19 +44,29 @@ let rec add0 ~cmp x  (t : _ t0) : _ t0 =
     - r is the set of elements of s that are > x
     - present is false if s contains no element equal to x,
       or true if s contains an element equal to x. *)
+let rec splitAux ~cmp x (n : _ N.node) : _ * bool * _ =   
+  let l,v,r = N.(left n , value n, right n) in  
+  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  if c = 0 then (l, true, r)
+  else if c < 0 then
+    match N.toOpt l with 
+    | None -> 
+      N.(empty , false, return n)
+    | Some l -> 
+      let (ll, pres, rl) = splitAux ~cmp x l in (ll, pres, N.join rl v r)
+  else
+    match N.toOpt r with 
+    | None ->
+      N.(return n, false, empty)
+    | Some r -> 
+      let (lr, pres, rr) = splitAux ~cmp x r in (N.join l v lr, pres, rr)
 
 let rec split0 ~cmp x (t : _ t0) : _ t0 * bool * _ t0 =
   match N.toOpt t with 
     None ->
     N.(empty, false, empty)
   | Some n(* Node(l, v, r, _) *) ->
-    let l,v,r = N.(left n, value n, right n) in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then (l, true, r)
-    else if c < 0 then
-      let (ll, pres, rl) = split0 ~cmp x l in (ll, pres, N.join rl v r)
-    else
-      let (lr, pres, rr) = split0 ~cmp x r in (N.join l v lr, pres, rr)
+    splitAux ~cmp x n
 
 let rec mem0 ~cmp x (t: _ t0) =
   match  N.toOpt t with 
@@ -98,9 +108,9 @@ let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
   match N.(toOpt s1, toOpt s2) with
     (None, _) -> s1
   | (_, None) -> s2
-  | Some n1, Some _ (* (Node(l1, v1, r1, _), t2) *) ->
+  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let l1,v1,r1 = N.(left n1, value n1, right n1) in  
-    match split0 ~cmp v1 s2 with
+    match splitAux ~cmp v1 n2 with
       (l2, false, r2) ->
       N.concat (inter0 ~cmp l1 l2) (inter0 ~cmp r1 r2)
     | (l2, true, r2) ->
@@ -110,9 +120,9 @@ let rec diff0 ~cmp s1 s2 =
   match N.(toOpt s1, toOpt s2) with
     (None, _) 
   | (_, None) -> s1
-  | Some n1, Some _ (* (Node(l1, v1, r1, _), t2) *) ->
+  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let l1,v1,r1 = N.(left n1, value n1, right n1) in
-    match split0 ~cmp v1 s2 with
+    match splitAux ~cmp v1 n2 with
       (l2, false, r2) ->
       N.join (diff0 ~cmp l1 l2) v1 (diff0 ~cmp r1 r2)
     | (l2, true, r2) ->
@@ -158,10 +168,10 @@ let rec findOpt0 ~cmp x (n : _ t0) =
   match N.toOpt n with 
     None -> None
   | Some t (* Node(l, v, r, _) *) ->
-    let l,v,r = N.(left t , value t, right t) in 
+    let v = N.value t in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then Some v
-    else findOpt0 ~cmp x (if c < 0 then l else r)
+    else findOpt0 ~cmp x N.(if c < 0 then (left t) else (right t))
 
 let rec findAssert0 ~cmp x (n : _ t0) =
   match N.toOpt n with 
@@ -172,13 +182,27 @@ let rec findAssert0 ~cmp x (n : _ t0) =
     if c = 0 then  v
     else findAssert0 ~cmp x (if c < 0 then l else r)
 
+(* FIXME: use [sorted] attribute *)    
+let ofArray0 ~cmp (xs : _ array) : _ t0 =     
+  let result = ref N.empty in 
+  for i = 0 to Array.length xs - 1 do  
+    result := add0 ~cmp (Bs_Array.unsafe_get xs i) !result
+  done ;
+  !result 
 
 let empty cmp = {
   cmp ;
   data = empty0
 }  
+let ofArray (type elt) (type id) (cmp : (elt,id) Bs_Cmp.t) data = 
+  let module M = (val cmp ) in 
+  {
+  cmp ; 
+  data = ofArray0 ~cmp:M.cmp data
+}
 
 let isEmpty m = isEmpty0 m.data
+
 
 let mem (type elt) (type id) e (m : (elt,id) t) = 
   let module M = (val m.cmp) in 
