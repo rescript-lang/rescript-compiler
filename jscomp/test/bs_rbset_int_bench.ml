@@ -1,20 +1,20 @@
 
 let count = 1_000_000 
 
-
+module V = Rbset 
 let bench () = 
-  let data = ref Bs.SetInt.empty in 
+  let data = ref V.empty in 
   [%time for i = 0 to count do 
     data := 
-      Bs.SetInt.add i  !data 
+      V.add i  !data 
   done] ;
   [%time for i = 0 to count do  
-    assert (Bs.SetInt.mem i !data)
+    assert (V.mem i !data)
   done]; 
   [%time for i = 0 to count do 
-    data := Bs.SetInt.remove i !data  
-  done ];
-  assert  (Bs.SetInt.cardinal !data = 0)
+    data := V.remove i !data  
+  done ] ;
+  assert  (V.cardinal !data = 0)
 
 
 

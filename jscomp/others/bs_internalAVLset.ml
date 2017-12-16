@@ -16,9 +16,6 @@ external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "null" [@@bs.val]
 
 type ('elt, 'id) t0 =  'elt node Js.null
-(* | Empty 
-   | Node of ('elt, 'id) t0 * 'elt * ('elt, 'id) t0 * int *)
-
 (* Sets are represented by balanced binary trees (the heights of the
    children differ by at most 2 *)
 
@@ -249,6 +246,15 @@ let rec elements_aux accu n =
 let elements0 s =
   elements_aux [] s
 
+let rec checkInvariant (v : _ t0) = 
+  match toOpt v with 
+  | None -> true 
+  | Some n -> 
+    let l,r = left n , right n in 
+    let diff = height l - height r  in 
+    diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
+
+    
 (* TODO: binary search tree to array efficiency
 let toArray n =   
    match toOpt n with 

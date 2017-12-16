@@ -4,6 +4,7 @@ var Mt        = require("./mt.js");
 var List      = require("../../lib/js/list.js");
 var $$Array   = require("../../lib/js/array.js");
 var Block     = require("../../lib/js/block.js");
+var Bs_Array  = require("../../lib/js/bs_Array.js");
 var Bs_SetInt = require("../../lib/js/bs_SetInt.js");
 
 var suites = [/* [] */0];
@@ -224,6 +225,16 @@ var v$9 = Bs_SetInt.remove(4, v$8);
 var v$10 = Bs_SetInt.remove(1, v$9);
 
 b("File \"bs_set_int_test.ml\", line 100, characters 4-11", Bs_SetInt.isEmpty(v$10));
+
+var v$11 = Bs_Array.init(1000000, (function (i) {
+        return i;
+      }));
+
+Bs_Array.shuffleInPlace(v$11);
+
+var u$1 = Bs_SetInt.ofArray(v$11);
+
+b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Bs_SetInt.checkInvariant(u$1));
 
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 

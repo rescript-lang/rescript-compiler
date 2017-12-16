@@ -217,6 +217,9 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	console_log_test\
 	bs_set_bench\
 	bs_set_int_test\
+	rbset\
+	bs_rbset_int_bench\
+	bs_array_test
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test

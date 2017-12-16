@@ -58,6 +58,8 @@ val init : int -> (int -> 'a [@bs]) -> 'a array
    If the return type of [f] is [float], then the maximum
    size is only [Sys.max_array_length / 2].*)
 
+val shuffleInPlace : 'a array -> unit    
+
 val makeMatrix : int -> int -> 'a -> 'a array array
 (** [Array.make_matrix dimx dimy e] returns a two-dimensional array
    (an array of arrays) with first dimension [dimx] and

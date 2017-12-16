@@ -99,6 +99,10 @@ let () =
   let v = N.remove 1 v in 
   b __LOC__ (N.isEmpty v )
 
-
+let ()  = 
+  let v = Bs.Array.init 1_000_000 (fun [@bs] i -> i) in 
+  Bs.Array.shuffleInPlace v ;
+  let u = Bs.SetInt.ofArray v in 
+  b __LOC__ (Bs.SetInt.checkInvariant u )
 
 ;; Mt.from_pair_suites __FILE__ !suites    
