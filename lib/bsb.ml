@@ -13100,7 +13100,7 @@ let root = OCamlRes.Res.([
       \    }\n\
        }") ;
     Dir ("src", [
-      File ("demo.re",
+      File ("Demo.re",
         "Js.log(\"Hello, BuckleScript and Reason!\");\n\
          ")]) ;
     File ("README.md",
@@ -13396,15 +13396,15 @@ let root = OCamlRes.Res.([
       "const path = require('path');\n\
        \n\
        module.exports = {\n\
-      \  entry: './src/index.bs.js',\n\
+      \  entry: './src/Index.bs.js',\n\
       \  output: {\n\
       \    path: path.join(__dirname, \"build\"),\n\
-      \    filename: 'index.js',\n\
+      \    filename: 'Index.js',\n\
       \  },\n\
        };\n\
        ") ;
     Dir ("src", [
-      File ("page.re",
+      File ("Page.re",
         "/* This is the basic component. */\n\
          let component = ReasonReact.statelessComponent(\"Page\");\n\
          \n\
@@ -13427,7 +13427,7 @@ let root = OCamlRes.Res.([
         \    <div onClick=(self.handle(handleClick))> (ReasonReact.stringToElement(message)) </div>\n\
          };\n\
          ") ;
-      File ("index.re",
+      File ("Index.re",
         "ReactDOMRe.renderToElementWithId(<Page message=\"Hello!\" />, \"index\");\n\
          ") ;
       File ("index.html",
@@ -13439,7 +13439,7 @@ let root = OCamlRes.Res.([
          </head>\n\
          <body>\n\
         \  <div id=\"index\"></div>\n\
-        \  <script src=\"../build/index.js\"></script>\n\
+        \  <script src=\"../build/Index.js\"></script>\n\
          </body>\n\
          </html>\n\
          ")]) ;
@@ -13506,7 +13506,10 @@ let root = OCamlRes.Res.([
       \  \"bs-dependencies\": [\n\
       \    \"reason-react\"\n\
       \  ],\n\
-      \  \"refmt\": 3\n\
+      \  \"refmt\": 3,\n\
+      \  \"warnings\": {\n\
+      \    \"error\": \"+5\"\n\
+      \  }\n\
        }\n\
        ") ;
     File (".gitignore",

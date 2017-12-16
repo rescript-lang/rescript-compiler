@@ -4,7 +4,7 @@
 type ('elt, 'id) t0
 
 type ('elt, 'id) t = {
-  cmp : ('elt,'id) Bs_Cmp.t ; 
+  dict : ('elt,'id) Bs_Cmp.t ; 
   data : ('elt,'id) t0
 }
 (** The type of sets. *)
