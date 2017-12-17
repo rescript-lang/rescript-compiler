@@ -7,6 +7,8 @@ type (+'a) t
 val empty: 'a t
 (** The empty map. *)
 
+val ofArray: (key * 'a) array -> 'a t 
+
 val isEmpty: 'a t -> bool
 (** Test whether a map is empty or not. *)
 
@@ -140,3 +142,5 @@ val map: ('a -> 'b [@bs]) -> 'a t -> 'b t
 val mapi: (key -> 'a -> 'b [@bs]) -> 'a t -> 'b t
 (** Same as {!Map.S.map}, but the function receives as arguments both the
    key and the associated value for each binding of the map. *)
+
+val checkInvariant : _ t -> bool 

@@ -51,7 +51,7 @@ let swapUnsafe xs i j =
 let shuffleInPlace xs =     
   let len = length xs in 
   for i = 0 to len - 1 do
-    swapUnsafe xs i (Js.Math.random_int i len) (* [i,len)*)
+    swapUnsafe xs i (Js_math.random_int i len) (* [i,len)*)
   done 
 
 let makeMatrix sx sy init =

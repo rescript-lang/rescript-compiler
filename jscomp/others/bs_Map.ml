@@ -16,6 +16,12 @@ module N = Bs_internalAVLtree
 
 type ('key, + 'a, 'id) t0 = ('key,'a,'id) N.t0 
 
+type ('k,'v,'id) t = {
+  dict : ('k,'id) Bs_Cmp.t ;
+  data : ('k,'v, 'id) t0 
+}
+
+
 
 type ('key, 'a, 'id) enumeration = ('key, 'a, 'id) N.enumeration0 =
     End 
@@ -173,13 +179,14 @@ let equal0 ~cmp:keycmp cmp m1 m2 =
   in equal_aux (N.cons_enum m1 End) (N.cons_enum m2 End)
 
 
+let ofArray0 ~cmp (xs : _ array) : _ t0 =     
+  let result = ref N.empty in 
+  for i = 0 to Array.length xs - 1 do  
+    let k, v = (Bs_Array.unsafe_get xs i) in 
+    result := add0 ~cmp  k v !result
+  done ;
+  !result 
 
-
-
-type ('k,'v,'id) t = {
-  dict : ('k,'id) Bs_Cmp.t ;
-  data : ('k,'v, 'id) t0 
-}
 
 
 let empty dict = 
@@ -241,6 +248,14 @@ let add (type k) (type v) (type id) key data (map : (k,v,id) t) =
   { dict = map_dict ; 
     data = add0 ~cmp:X.cmp key data map.data
   }
+
+let ofArray (type k) (type v) (type id) (dict : (k,id) Bs_Cmp.t) data = 
+  let module M = (val dict ) in 
+  {
+  dict ; 
+  data = ofArray0 ~cmp:M.cmp data
+}
+  
 
 let findOpt (type k) (type v) (type id) x (map : (k,v,id) t) = 
   let module X = (val map.dict) in 

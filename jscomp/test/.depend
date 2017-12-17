@@ -91,6 +91,7 @@ bs_auto_uncurry_test.cmj : mt.cmj ../others/js_array.cmj ../runtime/js.cmj
 bs_hashtbl_string_test.cmj : ../stdlib/hashtbl.cmj ../others/bs.cmj
 bs_ignore_effect.cmj : mt.cmj
 bs_ignore_test.cmj : ../runtime/js.cmj
+bs_map_int_test.cmj : mt.cmj ../others/bs.cmj
 bs_map_test.cmj : ../runtime/js.cmj ../others/bs.cmj
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
 bs_qualified.cmj : ../runtime/js.cmj

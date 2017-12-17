@@ -51,10 +51,11 @@ val make_class :
 type init_table
 val make_class_store :
     string array -> (table -> t) -> init_table -> unit
+#if undefined BS then
 val dummy_class :
     string * int * int ->
     (t * (table -> Obj.t -> t) * (Obj.t -> t) * Obj.t)
-
+#end
 (** {6 Objects} *)
 
 val copy : (< .. > as 'a) -> 'a

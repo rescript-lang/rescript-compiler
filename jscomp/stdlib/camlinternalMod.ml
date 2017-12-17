@@ -68,8 +68,11 @@ type shape =
 (*         update_mod comps.(i) (Obj.field o i) (Obj.field n i) *)
 (*       done *)
 (*   | Value v -> () (\* the value is already there *\) *)
-
-
+#if BS then 
+let dummy_class loc =
+  let undef = fun _ -> raise (Undefined_recursive_module loc) in
+  (Obj.magic undef, undef, undef, Obj.repr 0)
+#end  
 (** Note that we have to provide a drop in replacement, since compiler internally will
     spit out ("CamlinternalMod".[init_mod|update_mod] unless we intercept it 
     in the lambda layer
@@ -80,7 +83,12 @@ let init_mod (loc : string * int * int) (shape : shape) =
     match shape with 
     | Function -> struct_.(idx)<-(Obj.magic undef_module)
     | Lazy -> struct_.(idx)<- (Obj.magic (lazy undef_module))
-    | Class ->  struct_.(idx)<- (Obj.magic (CamlinternalOO.dummy_class loc))
+    | Class ->  struct_.(idx)<-
+#if BS then
+        (Obj.magic (dummy_class loc))
+#else    
+        (Obj.magic (CamlinternalOO.dummy_class loc))
+#end                
     | Module comps 
       -> 
       let v =  (Obj.magic [||]) in
