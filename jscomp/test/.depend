@@ -155,7 +155,7 @@ demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmj :
 demo_pipe.cmj : ../runtime/js.cmj
 derive_dyntype.cmj : ../others/bs_dyn.cmj
-derive_projector_test.cmj : derive_projector_test.cmi
+derive_projector_test.cmj : ../runtime/js.cmj derive_projector_test.cmi
 derive_type_test.cmj :
 digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
     ext_array_test.cmj ../stdlib/digest.cmj ../stdlib/array.cmj

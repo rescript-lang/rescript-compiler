@@ -7,10 +7,11 @@ let invalid_config (config : Parsetree.expression) =
 
 type tdcls = Parsetree.type_declaration list 
 
+let derivingName = "accessors" 
 let init () =
   
   Ast_derive.register
-    "accessors" 
+    derivingName
     (fun (x : Parsetree.expression option) ->
        (match x with 
         | Some config -> invalid_config config
@@ -73,7 +74,9 @@ let init () =
 
                             end)
                   )
-              | Ptype_abstract | Ptype_open -> []
+              | Ptype_abstract | Ptype_open ->
+                Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
+               []
               (* Location.raise_errorf "projector only works with record" *)
             in Ext_list.flat_map handle_tdcl tdcls
 
@@ -108,7 +111,9 @@ let init () =
                            (fun x acc -> Typ.arrow "" x acc) 
                            pcd_args
                            core_type))
-              | Ptype_open | Ptype_abstract -> [] 
+              | Ptype_open | Ptype_abstract -> 
+              Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
+              [] 
             in 
             Ext_list.flat_map handle_tdcl tdcls
           end;

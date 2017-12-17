@@ -156,10 +156,10 @@ let assertExp e =
     )
 let derivingName = "jsConverter"
 
-let notApplicable loc = 
+(* let notApplicable loc = 
   Location.prerr_warning 
     loc
-    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type"))
+    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type")) *)
 
 let init () =      
   Ast_derive.register
@@ -307,7 +307,9 @@ let init () =
                       | _ -> assert false 
                     end 
                   | None -> 
-                    notApplicable tdcl.Parsetree.ptype_loc ;
+                    Ast_derive_util.notApplicable 
+                      tdcl.Parsetree.ptype_loc 
+                      derivingName;
                     []
                  )
 
@@ -401,11 +403,14 @@ let init () =
                      if createType then newTypeStr :: v else v 
                  else 
                    begin 
-                     notApplicable tdcl.Parsetree.ptype_loc ;
+                     Ast_derive_util.notApplicable 
+                     tdcl.Parsetree.ptype_loc 
+                     derivingName;
                      []  
                    end
                | Ptype_open -> 
-                 notApplicable tdcl.Parsetree.ptype_loc ;
+                 Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                 derivingName;
                  [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );
@@ -462,7 +467,8 @@ let init () =
                      ] 
 
                    | None -> 
-                     notApplicable tdcl.Parsetree.ptype_loc ;
+                     Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                     derivingName;
                      [])
 
                 | Ptype_variant ctors 
@@ -485,11 +491,13 @@ let init () =
 
                   else 
                   begin
-                    notApplicable tdcl.Parsetree.ptype_loc ;
+                    Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                    derivingName;
                     []
                   end
                 | Ptype_open -> 
-                  notApplicable tdcl.Parsetree.ptype_loc ;
+                  Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                  derivingName;
                   [] in 
               Ext_list.flat_map handle_tdcl tdcls 
 

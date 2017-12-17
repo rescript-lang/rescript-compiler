@@ -83,3 +83,10 @@ let destruct_label_declarations ~loc
           {txt = Lident txt ; loc}) :: core_type_exps),
       txt :: labels 
     ) labels ([], [])
+
+let notApplicable 
+  loc derivingName = 
+  Location.prerr_warning 
+    loc
+    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type"))
+    

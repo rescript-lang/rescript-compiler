@@ -10886,6 +10886,11 @@ val destruct_label_declarations :
   Parsetree.label_declaration list ->
   (Parsetree.core_type * Parsetree.expression) list * string list
 
+val notApplicable:   
+  Location.t ->
+  string -> 
+  unit 
+
 end = struct
 #1 "ast_derive_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10974,6 +10979,12 @@ let destruct_label_declarations ~loc
       txt :: labels 
     ) labels ([], [])
 
+let notApplicable 
+  loc derivingName = 
+  Location.prerr_warning 
+    loc
+    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type"))
+    
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -12981,10 +12992,10 @@ let assertExp e =
     )
 let derivingName = "jsConverter"
 
-let notApplicable loc = 
+(* let notApplicable loc = 
   Location.prerr_warning 
     loc
-    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type"))
+    (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type")) *)
 
 let init () =      
   Ast_derive.register
@@ -13132,7 +13143,9 @@ let init () =
                       | _ -> assert false 
                     end 
                   | None -> 
-                    notApplicable tdcl.Parsetree.ptype_loc ;
+                    Ast_derive_util.notApplicable 
+                      tdcl.Parsetree.ptype_loc 
+                      derivingName;
                     []
                  )
 
@@ -13226,11 +13239,14 @@ let init () =
                      if createType then newTypeStr :: v else v 
                  else 
                    begin 
-                     notApplicable tdcl.Parsetree.ptype_loc ;
+                     Ast_derive_util.notApplicable 
+                     tdcl.Parsetree.ptype_loc 
+                     derivingName;
                      []  
                    end
                | Ptype_open -> 
-                 notApplicable tdcl.Parsetree.ptype_loc ;
+                 Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                 derivingName;
                  [] in 
              Ext_list.flat_map handle_tdcl tdcls 
            );
@@ -13287,7 +13303,8 @@ let init () =
                      ] 
 
                    | None -> 
-                     notApplicable tdcl.Parsetree.ptype_loc ;
+                     Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                     derivingName;
                      [])
 
                 | Ptype_variant ctors 
@@ -13310,11 +13327,13 @@ let init () =
 
                   else 
                   begin
-                    notApplicable tdcl.Parsetree.ptype_loc ;
+                    Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                    derivingName;
                     []
                   end
                 | Ptype_open -> 
-                  notApplicable tdcl.Parsetree.ptype_loc ;
+                  Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                  derivingName;
                   [] in 
               Ext_list.flat_map handle_tdcl tdcls 
 
@@ -13365,10 +13384,11 @@ let invalid_config (config : Parsetree.expression) =
 
 type tdcls = Parsetree.type_declaration list 
 
+let derivingName = "accessors" 
 let init () =
   
   Ast_derive.register
-    "accessors" 
+    derivingName
     (fun (x : Parsetree.expression option) ->
        (match x with 
         | Some config -> invalid_config config
@@ -13431,7 +13451,9 @@ let init () =
 
                             end)
                   )
-              | Ptype_abstract | Ptype_open -> []
+              | Ptype_abstract | Ptype_open ->
+                Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
+               []
               (* Location.raise_errorf "projector only works with record" *)
             in Ext_list.flat_map handle_tdcl tdcls
 
@@ -13466,7 +13488,9 @@ let init () =
                            (fun x acc -> Typ.arrow "" x acc) 
                            pcd_args
                            core_type))
-              | Ptype_open | Ptype_abstract -> [] 
+              | Ptype_open | Ptype_abstract -> 
+              Ast_derive_util.notApplicable tdcl.ptype_loc derivingName ; 
+              [] 
             in 
             Ext_list.flat_map handle_tdcl tdcls
           end;
