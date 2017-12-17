@@ -31,9 +31,9 @@ let elements0 = N.elements0
 
 let rec add0 ~cmp x  (t : _ t0) : _ t0 =
   match N.toOpt t with 
-    None -> N.(return @@ node ~left:empty ~right:empty ~value:x  ~h:1)
+    None -> N.(return @@ node ~left:empty ~right:empty ~key:x  ~h:1)
   | Some nt (* Node(l, v, r, _) as t *) ->
-    let l,v,r = N.(left nt, value nt, right nt) in 
+    let l,v,r = N.(left nt, key nt, right nt) in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then t else
     if c < 0 then N.bal (add0 ~cmp x l) v r else N.bal l v (add0 ~cmp x r)
@@ -45,7 +45,7 @@ let rec add0 ~cmp x  (t : _ t0) : _ t0 =
     - present is false if s contains no element equal to x,
       or true if s contains an element equal to x. *)
 let rec splitAux ~cmp x (n : _ N.node) : _ * bool * _ =   
-  let l,v,r = N.(left n , value n, right n) in  
+  let l,v,r = N.(left n , key n, right n) in  
   let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
   if c = 0 then (l, true, r)
   else if c < 0 then
@@ -72,7 +72,7 @@ let rec mem0 ~cmp x (t: _ t0) =
   match  N.toOpt t with 
   | None -> false
   | Some n (* Node(l, v, r, _) *) ->
-    let v = N.value n in 
+    let v = N.key n in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     c = 0 || mem0 ~cmp x N.(if c < 0 then (left n) else (right n))
 
@@ -80,7 +80,7 @@ let rec remove0 ~cmp x (t : _ t0) : _ t0 =
   match N.toOpt t with 
     None -> t
   | Some n (* Node(l, v, r, _) *) ->
-    let l,v,r = N.(left n , value n, right n) in 
+    let l,v,r = N.(left n , key n, right n) in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then N.merge l r else
     if c < 0 then N.bal (remove0 ~cmp x l) v r else N.bal l v (remove0 ~cmp x r)
@@ -92,14 +92,14 @@ let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->
     let h1, h2 = N.(h n1 , h n2) in                 
     if h1 >= h2 then
-      if h2 = 1 then add0 ~cmp (N.value n2) s1 else begin
-        let l1, v1, r1 = N.(left n1, value n1, right n1) in      
+      if h2 = 1 then add0 ~cmp (N.key n2) s1 else begin
+        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
         let (l2, _, r2) = split0 ~cmp v1 s2 in
         N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
       end
     else
-    if h1 = 1 then add0 ~cmp (N.value n1) s2 else begin
-      let l2, v2, r2 = N.(left n2 , value n2, right n2) in 
+    if h1 = 1 then add0 ~cmp (N.key n1) s2 else begin
+      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
       let (l1, _, r1) = split0 ~cmp v2 s1 in
       N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
     end
@@ -109,7 +109,7 @@ let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
     (None, _) -> s1
   | (_, None) -> s2
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, value n1, right n1) in  
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
     match splitAux ~cmp v1 n2 with
       (l2, false, r2) ->
       N.concat (inter0 ~cmp l1 l2) (inter0 ~cmp r1 r2)
@@ -121,7 +121,7 @@ let rec diff0 ~cmp s1 s2 =
     (None, _) 
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, value n1, right n1) in
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in
     match splitAux ~cmp v1 n2 with
       (l2, false, r2) ->
       N.join (diff0 ~cmp l1 l2) v1 (diff0 ~cmp r1 r2)
@@ -154,21 +154,21 @@ let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
   | _, None ->
     false
   | Some t1 , Some t2 (* Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) *) ->
-    let l1,v1,r1 = N.(left t1, value t1, right t1) in  
-    let l2,v2,r2 = N.(left t2, value t2, right t2) in 
+    let l1,v1,r1 = N.(left t1, key t1, right t1) in  
+    let l2,v2,r2 = N.(left t2, key t2, right t2) in 
     let c = (Bs_Cmp.getCmp cmp) v1 v2 [@bs] in
     if c = 0 then
       subset0 ~cmp l1 l2 && subset0 ~cmp r1 r2
     else if c < 0 then
-      subset0 ~cmp N.(return @@ node ~left:l1 ~value:v1 ~right:empty ~h:0) l2 && subset0 ~cmp r1 s2
+      subset0 ~cmp N.(return @@ node ~left:l1 ~key:v1 ~right:empty ~h:0) l2 && subset0 ~cmp r1 s2
     else
-      subset0 ~cmp N.(return @@ node ~left:empty ~value:v1 ~right:r1 ~h:0) r2 && subset0 ~cmp l1 s2
+      subset0 ~cmp N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && subset0 ~cmp l1 s2
 
 let rec findOpt0 ~cmp x (n : _ t0) = 
   match N.toOpt n with 
     None -> None
   | Some t (* Node(l, v, r, _) *) ->
-    let v = N.value t in 
+    let v = N.key t in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then Some v
     else findOpt0 ~cmp x N.(if c < 0 then (left t) else (right t))
@@ -177,7 +177,7 @@ let rec findAssert0 ~cmp x (n : _ t0) =
   match N.toOpt n with 
     None -> [%assert "Not_found"]
   | Some t (* Node(l, v, r, _) *) ->
-    let l, v, r = N.(left t , value t, right t) in 
+    let l, v, r = N.(left t , key t, right t) in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then  v
     else findAssert0 ~cmp x (if c < 0 then l else r)

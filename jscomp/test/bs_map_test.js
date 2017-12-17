@@ -60,7 +60,7 @@ for(var i$1 = 0; i$1 <= 100000; ++i$1){
 }
 
 console.log(/* record */[
-      /* cmp */I,
+      /* dict */I,
       /* data */data$1
     ]);
 

@@ -34,9 +34,9 @@ let checkInvariant = N.checkInvariant
 
 let rec add (x : elt) (t : t) : t =
   match N.toOpt t with 
-    None -> N.(return @@ node ~left:empty ~value:x ~right:empty ~h:1)
+    None -> N.(return @@ node ~left:empty ~key:x ~right:empty ~h:1)
   | Some nt (* Node(l, v, r, _) as t *) ->
-    let v = N.value nt in  
+    let v = N.key nt in  
     if x = v then t else
     if x < v then N.(bal (add x (left nt)) v (right nt))
     else N.(bal (left nt) v (add x (right nt)))
@@ -50,7 +50,7 @@ let rec add (x : elt) (t : t) : t =
       or true if s contains an element equal to x. *)
 
 let rec splitAux (x : elt) (n : _ N.node) : t * bool * t =   
-  let l,v,r = N.(left n , value n, right n) in  
+  let l,v,r = N.(left n , key n, right n) in  
   if x = v then (l, true, r)
   else if x < v then
     match N.toOpt l with 
@@ -78,14 +78,14 @@ let rec mem (x : elt) (t : t) =
   match N.toOpt t with 
   | None -> false
   | Some n (* Node(l, v, r, _) *) ->                
-    let v = N.value n in 
+    let v = N.key n in 
     x = v || mem x N.(if x < v then (left n) else (right n))
 
 let rec remove (x : elt) (t : t) : t = 
   match N.toOpt t with 
   | None -> t
   | Some n (* Node(l, v, r, _) *) ->
-    let l,v,r = N.(left n, value n, right n) in 
+    let l,v,r = N.(left n, key n, right n) in 
     if x = v then N.merge l r else
     if x < v then N.bal (remove x l) v r 
     else N.bal l v (remove x r)
@@ -97,14 +97,14 @@ let rec union (s1 : t) (s2 : t) =
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
     let h1, h2 = N.(h n1 , h n2) in             
     if h1 >= h2 then
-      if h2 = 1 then add (N.value n2) s1 else begin
-        let l1, v1, r1 = N.(left n1, value n1, right n1) in      
+      if h2 = 1 then add (N.key n2) s1 else begin
+        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
         let (l2, _, r2) = splitAux v1 n2 in
         N.join (union l1 l2) v1 (union r1 r2)
       end
     else
-    if h1 = 1 then add (N.value n1) s2 else begin
-      let l2, v2, r2 = N.(left n2 , value n2, right n2) in 
+    if h1 = 1 then add (N.key n1) s2 else begin
+      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
       let (l1, _, r1) = splitAux v2 n1 in
       N.join (union l1 l2) v2 (union r1 r2)
     end
@@ -114,7 +114,7 @@ let rec inter (s1 : t) (s2 : t) =
     (None, _) -> s1
   | (_, None) -> s2 
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, value n1, right n1) in  
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
     match splitAux v1 n2 with
       (l2, false, r2) ->
       N.concat (inter l1 l2) (inter r1 r2)
@@ -126,7 +126,7 @@ let rec diff (s1 : t) (s2 : t) =
   | (None, _) 
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, value n1, right n1) in
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in
     match splitAux v1 n2 with
       (l2, false, r2) ->
       N.join (diff l1 l2) v1 (diff r1 r2)
@@ -166,21 +166,21 @@ let rec subset (s1 : t) (s2 : t) =
   | _, None ->
     false
   | Some t1, Some t2 (* Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) *) ->
-    let l1,v1,r1 = N.(left t1, value t1, right t1) in  
-    let l2,v2,r2 = N.(left t2, value t2, right t2) in 
+    let l1,v1,r1 = N.(left t1, key t1, right t1) in  
+    let l2,v2,r2 = N.(left t2, key t2, right t2) in 
     if (v1 : elt) = v2 then
       subset l1 l2 && subset r1 r2
     else if v1 < v2 then
-      subset N.(return @@ node ~left:l1 ~value:v1 ~right:empty ~h:0) l2 && subset r1 s2
+      subset N.(return @@ node ~left:l1 ~key:v1 ~right:empty ~h:0) l2 && subset r1 s2
     else
-      subset N.(return @@ node ~left:empty ~value:v1 ~right:r1 ~h:0) r2 && subset l1 s2
+      subset N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && subset l1 s2
 
 
 let rec findOpt (x : elt) (n :t)  = 
   match N.toOpt n with 
   | None -> None
   | Some t (* Node(l, v, r, _) *) ->    
-    let v = N.value t in     
+    let v = N.key t in     
     if x = v then Some v
     else findOpt x N.(if x < v then (left t) else (right t))
 
@@ -188,7 +188,7 @@ let rec findAssert (x : elt) (n :t)  =
   match N.toOpt n with 
   | None -> [%assert "Not_found"]
   | Some t (* Node(l, v, r, _) *) ->    
-    let v = N.value t in     
+    let v = N.key t in     
     if x = v then Some v
     else findAssert x N.(if x < v then (left t) else (right t))
     
