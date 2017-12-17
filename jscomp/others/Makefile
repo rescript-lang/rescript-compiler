@@ -13,6 +13,8 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Array\
 	bs_internalAVLset\
 	bs_internalAVLtree\
+	bs_internalMutableAVLSet\
+	bs_internalMutableAVL\
 	bs_Hash\
 	bs_internalBuckets\
 	bs_HashMap\
