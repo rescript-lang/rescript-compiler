@@ -273,7 +273,7 @@ function bench6() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMapInt.remove(table, i$2);
   }
-  if (Bs_HashMapString.length(table)) {
+  if (Bs_HashMapInt.length(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

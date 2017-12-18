@@ -154,7 +154,7 @@ let bench5 () =
   for i = 0 to count do 
     Bs.HashMapInt.remove table i
   done ;
-  assert (Bs.HashMapString.length table = 0)  
+  assert (Bs.HashMapInt.length table = 0)  
   
 
 (* ;; [%time bench4 ()]
