@@ -409,7 +409,8 @@ core/ocaml_types.cmx : common/ext_log.cmx ext/ext_list.cmx \
 core/ocaml_stdlib_slots.cmx :
 core/bs_conditional_initial.cmx : common/js_config.cmx common/bs_version.cmx \
     core/bs_conditional_initial.cmi
-core/ocaml_options.cmx : common/bs_version.cmx core/ocaml_options.cmi
+core/ocaml_options.cmx : common/bs_version.cmx \
+    core/bs_conditional_initial.cmx core/ocaml_options.cmi
 core/ocaml_parse.cmx : syntax/ppx_entry.cmx common/js_config.cmx \
     ext/ext_path.cmx core/ocaml_parse.cmi
 core/js_op.cmx :

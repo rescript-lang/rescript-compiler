@@ -20503,6 +20503,7 @@ module Bs_conditional_initial : sig
 *)
 val setup_env : unit -> unit
 
+val standard_library : string 
 end = struct
 #1 "bs_conditional_initial.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -20534,6 +20535,10 @@ let setup_env () =
        
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
+
+let standard_library =   
+   
+  Config.standard_library
 
 end
 module Compenv : sig 

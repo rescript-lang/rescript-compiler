@@ -32,3 +32,5 @@
     Is understood, also make sure the playground do the same initialization. 
 *)
 val setup_env : unit -> unit
+
+val standard_library : string 
