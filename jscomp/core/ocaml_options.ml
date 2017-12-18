@@ -253,32 +253,34 @@ let show_config () =
   exit 0;
 ;;
 
+let bs_version_string = 
+  "BuckleScript " ^ Bs_version.version ^
+  " (Using OCaml" ^ Config.version ^ " )" 
+
+let print_version_string () = 
+  print_string bs_version_string;
+  print_newline (); 
+  exit 0 
+
+  
+let print_standard_library () = 
+  print_string Bs_conditional_initial.standard_library; print_newline(); exit 0
+
+let print_version_and_library compiler =
+  Printf.printf "The OCaml %s, version " compiler;
+  print_string bs_version_string; print_newline();
+  print_string "Standard library directory: ";
+  print_string Bs_conditional_initial.standard_library; print_newline();
+  exit 0 
+
 let ocaml_options = 
-  let bs_version_string = 
-    "BuckleScript " ^ Bs_version.version ^
-    " (Using OCaml" ^ Config.version ^ " )" in
-
-  let print_version_and_library compiler =
-    Printf.printf "The OCaml %s, version " compiler;
-    print_string bs_version_string; print_newline();
-    print_string "Standard library directory: ";
-    print_string Config.standard_library; print_newline();
-    exit 0 in
-
-  let print_standard_library = Compenv.print_standard_library in
-
-  let print_version_string () = 
-    print_string bs_version_string;
-    print_newline (); 
-    exit 0 in
-
   let set r () = r := true in 
   let unset r () = r := false in 
   let _absname = set Location.absname in 
   let _color option = 
-      match Clflags.parse_color_setting option with
-      | None -> ()
-      | Some setting -> Clflags.color := setting in 
+    match Clflags.parse_color_setting option with
+    | None -> ()
+    | Some setting -> Clflags.color := setting in 
   let _annot = set annotations in 
   let _binannot = set binary_annotations in 
   let _c = set compile_only in 

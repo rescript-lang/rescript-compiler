@@ -29,3 +29,10 @@ let setup_env () =
 #end       
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
+
+let standard_library =   
+#if BS_DEBUG then   
+  Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
+#else   
+  Config.standard_library
+#end
