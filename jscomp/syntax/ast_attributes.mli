@@ -64,7 +64,8 @@ val iter_process_bs_string_or_int_as :
     | `Json_str of string  ] option 
     
 
-
+val process_derive_type : 
+  t -> derive_attr * t 
 
 val iter_process_derive_type : 
   t -> derive_attr  
@@ -74,6 +75,6 @@ val bs : attr
 val is_bs : attr -> bool
 val bs_this : attr
 val bs_method : attr
-
+val bs_obj : attr 
 
 

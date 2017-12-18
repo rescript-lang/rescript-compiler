@@ -27,7 +27,8 @@ type item = Parsetree.structure_item
 
 type t = item list 
 
-val fuse: ?loc:Ast_helper.loc -> item -> t -> item
+
+val fuseAll: ?loc:Ast_helper.loc ->  t -> item
 
 (* val fuse_with_constraint:
   ?loc:Ast_helper.loc ->

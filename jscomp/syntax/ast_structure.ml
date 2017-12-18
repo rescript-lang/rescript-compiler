@@ -28,10 +28,11 @@ type t = item list
 
 open Ast_helper
 
-let fuse ?(loc=Location.none) (item : item ) (t : t) : item = 
-  Str.include_ ~loc 
-    (Incl.mk ~loc (Mod.structure ~loc (item :: t) ))
 
+let fuseAll ?(loc=Location.none)  (t : t) : item = 
+  Str.include_ ~loc 
+    (Incl.mk ~loc (Mod.structure ~loc t ))
+    
 (* let fuse_with_constraint
     ?(loc=Location.none) 
     (item : Parsetree.type_declaration list ) (t : t) (coercion) = 

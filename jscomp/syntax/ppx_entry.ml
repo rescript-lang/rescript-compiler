@@ -88,6 +88,15 @@ let rec destruct
   | Pexp_tuple es -> Some (acc, es)
   | _ -> None
 
+let newTdcls tdcls newAttrs =   
+  match tdcls with 
+  | [ x ] -> 
+    [{ x with Parsetree.ptype_attributes = newAttrs}]
+  | _ -> 
+    Ext_list.map_last 
+      (fun last x -> 
+         if last then { x with Parsetree.ptype_attributes = newAttrs} else x )
+      tdcls 
 (*
   [let (a,b) = M.N.(c,d) ]
   => 
@@ -709,16 +718,25 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
     signature_item =  begin fun (self : Bs_ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
       match sigi.psig_desc with 
       | Psig_type (_ :: _ as tdcls) -> 
-        begin match Ast_attributes.iter_process_derive_type 
+        begin match Ast_attributes.process_derive_type 
                       (Ext_list.last tdcls).ptype_attributes  with 
-        | {bs_deriving = Some actions; explict_nonrec}
+        | {bs_deriving = Some actions; explict_nonrec}, newAttrs
           -> 
           let loc = sigi.psig_loc in 
-          Ast_signature.fuse ~loc sigi
+          (* if Ast_payload.isAbstract actions then 
+             let type_, codes = Ast_derive_abstract.handleTdclsInSig tdcls in 
+             Ast_signature.fuseAll ~loc 
+              (type_ ::
+               self.signature self
+                 codes)
+             else  *)
+          let newTdcls = newTdcls tdcls newAttrs in             
+          Ast_signature.fuseAll ~loc 
             (self.signature 
                self 
-               (Ast_derive.gen_signature tdcls actions explict_nonrec))
-        | {bs_deriving = None } -> 
+               ({sigi with psig_desc = Psig_type newTdcls} 
+                :: Ast_derive.gen_signature tdcls actions explict_nonrec))
+        | {bs_deriving = None }, _  -> 
           Bs_ast_mapper.default_mapper.signature_item self sigi 
 
         end
@@ -776,22 +794,31 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           -> 
           Ast_util.handle_raw_structure loc payload
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
-          begin match Ast_attributes.iter_process_derive_type 
+          begin match Ast_attributes.process_derive_type 
                         ((Ext_list.last tdcls).ptype_attributes) with 
           | {bs_deriving = Some actions;
              explict_nonrec 
-            } ->                         
+            }, newAttrs ->                         
             let loc = str.pstr_loc in      
-            Ast_structure.fuse ~loc                
-              str 
+            (* if Ast_payload.isAbstract actions then 
+               let type_, codes = Ast_derive_abstract.handleTdcls tdcls in 
+               Ast_structure.fuseAll ~loc 
+                (type_::
+                  self.structure self 
+                    codes)
+               else *)
+            let tdcls2 = newTdcls tdcls newAttrs in 
+            Ast_structure.fuseAll ~loc                                
               (self.structure self 
-                 (List.map 
-                    (fun action -> 
-                       Ast_derive.gen_structure_signature 
-                         loc
-                         tdcls action explict_nonrec
-                    )    actions))
-          | {bs_deriving = None }  -> 
+                 (
+                   {str with pstr_desc = Pstr_type tdcls2} :: 
+                   List.map 
+                     (fun action -> 
+                        Ast_derive.gen_structure_signature 
+                          loc
+                          tdcls action explict_nonrec
+                     )    actions))
+          | {bs_deriving = None }, _  -> 
             Bs_ast_mapper.default_mapper.structure_item self str
           end
         | Pstr_primitive 
