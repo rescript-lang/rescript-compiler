@@ -184,7 +184,7 @@ let rec walk_all_deps_aux visited paths top dir cb =
     in 
     if List.mem cur_package_name paths then
       begin
-        Bsb_log.error "@{<error>Cyclc dependencies in package stack@}@.";
+        Bsb_log.error "@{<error>Cyclic dependencies in package stack@}@.";
         exit 2 
       end;
     if String_hashtbl.mem visited cur_package_name then 
