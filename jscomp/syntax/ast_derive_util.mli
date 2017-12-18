@@ -50,3 +50,5 @@ val notApplicable:
   Location.t ->
   string -> 
   unit 
+
+val invalid_config : Parsetree.expression -> 'a   

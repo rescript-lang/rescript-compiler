@@ -45,6 +45,11 @@ val raw_string_payload : Location.t -> string -> t
 val assert_strings :
   Location.t -> t -> string list  
 
+(** if only [abstract] happens  [true]
+    if [abstract] does not appear [false]
+    if [abstract] happens with other, raise exception
+*)  
+val isAbstract : action list -> bool   
 (** as a record or empty 
     it will accept 
 

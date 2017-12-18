@@ -26,5 +26,7 @@ type item = Parsetree.signature_item
 type t = item list 
 
 open Ast_helper
-let fuse ?(loc=Location.none) (item : item) (t : t) : item = 
-  Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc (item::t)))
+
+let fuseAll ?(loc=Location.none)  (t : t) : item = 
+  Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc t))
+  

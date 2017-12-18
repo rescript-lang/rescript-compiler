@@ -90,3 +90,6 @@ let notApplicable
     loc
     (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type"))
     
+let invalid_config (config : Parsetree.expression) = 
+  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
+    

@@ -72,6 +72,10 @@ function xx(param_0) {
   return /* Xx */[param_0];
 }
 
+function a(param_0) {
+  return /* A */[param_0];
+}
+
 var d_empty = /* D_empty */0;
 
 var hei = /* Hei */0;
@@ -90,4 +94,5 @@ exports.d          = d;
 exports.v          = v;
 exports.h          = h;
 exports.xx         = xx;
+exports.a          = a;
 /* No side effect */

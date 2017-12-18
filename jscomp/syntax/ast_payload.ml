@@ -100,6 +100,23 @@ type action =
     {[ { x = exp }]}
 *)
 
+let  isAbstract (xs : action list) = 
+  match xs with 
+  | [{loc; txt = "abstract"}, None]  -> 
+    true 
+  | [{loc; txt = "abstract"}, Some _ ]
+    -> 
+      Location.raise_errorf ~loc "invalid config for abstract"
+  | xs -> 
+    List.iter (function (({loc; txt} : lid),_) ->  
+      match txt with 
+      | "abstract" -> 
+        Location.raise_errorf ~loc 
+          "bs.deriving abstract does not work with any other deriving"
+      | _ -> ()
+    ) xs ;
+    false
+
 
 let ident_or_record_as_config     
     loc

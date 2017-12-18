@@ -207,6 +207,8 @@ syntax/bs_ast_invariant.cmx : ext/literals.cmx ext/hash_set_poly.cmx \
 syntax/ast_attributes.cmx : ext/ext_string.cmx syntax/bs_syntaxerr.cmx \
     syntax/bs_ast_invariant.cmx syntax/ast_payload.cmx \
     syntax/ast_attributes.cmi
+syntax/ast_derive_abstract.cmx : ext/ext_list.cmx syntax/ast_derive_util.cmx \
+    syntax/ast_attributes.cmx
 syntax/ast_polyvar.cmx : syntax/external_arg_spec.cmx ext/ext_pervasives.cmx \
     ext/ext_list.cmx syntax/bs_syntaxerr.cmx syntax/ast_attributes.cmx \
     syntax/ast_polyvar.cmi

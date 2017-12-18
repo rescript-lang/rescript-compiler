@@ -7226,6 +7226,11 @@ val raw_string_payload : Location.t -> string -> t
 val assert_strings :
   Location.t -> t -> string list  
 
+(** if only [abstract] happens  [true]
+    if [abstract] does not appear [false]
+    if [abstract] happens with other, raise exception
+*)  
+val isAbstract : action list -> bool   
 (** as a record or empty 
     it will accept 
 
@@ -7358,6 +7363,23 @@ type action =
     otherwise it comes with a payload 
     {[ { x = exp }]}
 *)
+
+let  isAbstract (xs : action list) = 
+  match xs with 
+  | [{loc; txt = "abstract"}, None]  -> 
+    true 
+  | [{loc; txt = "abstract"}, Some _ ]
+    -> 
+      Location.raise_errorf ~loc "invalid config for abstract"
+  | xs -> 
+    List.iter (function (({loc; txt} : lid),_) ->  
+      match txt with 
+      | "abstract" -> 
+        Location.raise_errorf ~loc 
+          "bs.deriving abstract does not work with any other deriving"
+      | _ -> ()
+    ) xs ;
+    false
 
 
 let ident_or_record_as_config     
@@ -10200,7 +10222,8 @@ val iter_process_bs_string_or_int_as :
     | `Json_str of string  ] option 
     
 
-
+val process_derive_type : 
+  t -> derive_attr * t 
 
 val iter_process_derive_type : 
   t -> derive_attr  
@@ -10210,7 +10233,7 @@ val bs : attr
 val is_bs : attr -> bool
 val bs_this : attr
 val bs_method : attr
-
+val bs_obj : attr 
 
 
 
@@ -10358,6 +10381,27 @@ type derive_attr = {
   bs_deriving : Ast_payload.action list option
 }
 
+let process_derive_type attrs : derive_attr * t =
+  List.fold_left 
+    (fun (st, acc) 
+      (({txt ; loc}, payload  as attr): attr)  ->
+      match  st, txt  with
+      |  {bs_deriving = None}, "bs.deriving"
+        ->
+        {st with
+         bs_deriving = Some
+             (Ast_payload.ident_or_record_as_config loc payload)}, acc 
+      | {bs_deriving = Some _}, "bs.deriving"
+        -> 
+        Bs_syntaxerr.err loc Duplicated_bs_deriving
+
+      | _ , _ ->
+        let st = 
+          if txt = "nonrec" then 
+            { st with explict_nonrec = true }
+          else st in 
+        st, attr::acc
+    ) ( {explict_nonrec = false; bs_deriving = None }, []) attrs
 
 let iter_process_derive_type attrs =
   let st = ref {explict_nonrec = false; bs_deriving = None } in 
@@ -10474,13 +10518,13 @@ let iter_process_bs_string_or_int_as attrs =
                | Some (s,None) -> 
                  st := Some (`Str (s))                
                | Some (s, Some "json") -> 
-                st := Some (`Json_str s )
+                 st := Some (`Json_str s )
                | None | Some (_, Some _) -> 
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
 
              end
            | Some   v->  
-            st := (Some (`Int v))
+             st := (Some (`Int v))
           )
         else
           Bs_syntaxerr.err loc Duplicated_bs_as
@@ -10503,6 +10547,8 @@ let bs_this : attr
 let bs_method : attr 
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
+let bs_obj : attr  
+  =  {txt = "bs.obj"; loc = Location.none}, Ast_payload.empty
 
 
 end
@@ -10534,8 +10580,9 @@ module Ast_signature : sig
 
 type item = Parsetree.signature_item
 type t = item list 
-val fuse : ?loc:Ast_helper.loc -> item -> t -> item
 
+
+val fuseAll : ?loc:Ast_helper.loc ->  t -> item
 end = struct
 #1 "ast_signature.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10566,9 +10613,10 @@ type item = Parsetree.signature_item
 type t = item list 
 
 open Ast_helper
-let fuse ?(loc=Location.none) (item : item) (t : t) : item = 
-  Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc (item::t)))
 
+let fuseAll ?(loc=Location.none)  (t : t) : item = 
+  Sig.include_ ~loc (Incl.mk ~loc (Mty.signature ~loc t))
+  
 end
 module Ast_structure : sig 
 #1 "ast_structure.mli"
@@ -10601,7 +10649,8 @@ type item = Parsetree.structure_item
 
 type t = item list 
 
-val fuse: ?loc:Ast_helper.loc -> item -> t -> item
+
+val fuseAll: ?loc:Ast_helper.loc ->  t -> item
 
 (* val fuse_with_constraint:
   ?loc:Ast_helper.loc ->
@@ -10644,10 +10693,11 @@ type t = item list
 
 open Ast_helper
 
-let fuse ?(loc=Location.none) (item : item ) (t : t) : item = 
-  Str.include_ ~loc 
-    (Incl.mk ~loc (Mod.structure ~loc (item :: t) ))
 
+let fuseAll ?(loc=Location.none)  (t : t) : item = 
+  Str.include_ ~loc 
+    (Incl.mk ~loc (Mod.structure ~loc t ))
+    
 (* let fuse_with_constraint
     ?(loc=Location.none) 
     (item : Parsetree.type_declaration list ) (t : t) (coercion) = 
@@ -10891,6 +10941,7 @@ val notApplicable:
   string -> 
   unit 
 
+val invalid_config : Parsetree.expression -> 'a   
 end = struct
 #1 "ast_derive_util.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10984,6 +11035,9 @@ let notApplicable
   Location.prerr_warning 
     loc
     (Warnings.Bs_derive_warning ( derivingName ^ " not applicable to this type"))
+    
+let invalid_config (config : Parsetree.expression) = 
+  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
     
 end
 module Ext_pervasives : sig 
@@ -12859,7 +12913,7 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 open Ast_helper
-
+module U = Ast_derive_util
 type tdcls = Parsetree.type_declaration list 
 
 let js_field (o : Parsetree.expression) m = 
@@ -12872,8 +12926,6 @@ let js_field (o : Parsetree.expression) m =
 let const_int i = Exp.constant (Const_int i)
 let const_string s = Exp.constant (Const_string (s,None))
 
-let invalid_config (config : Parsetree.expression) = 
-  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
 
 let handle_config (config : Parsetree.expression option) = 
   match config with 
@@ -12896,7 +12948,7 @@ let handle_config (config : Parsetree.expression option) =
        ->  not (x = "false")
      | Pexp_ident {txt = Lident ("newType")} 
        -> true
-     | _ -> invalid_config config)
+     | _ -> U.invalid_config config)
   | None -> false
 let noloc = Location.none
 (* [eraseType] will be instrumented, be careful about the name conflict*)  
@@ -13006,7 +13058,7 @@ let init () =
        {
          structure_gen = (fun (tdcls : tdcls) _ -> 
              let handle_tdcl (tdcl: Parsetree.type_declaration) =
-               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl
+               let core_type = U.core_type_of_type_declaration tdcl
                in 
                let name = tdcl.ptype_name.txt in 
                let toJs = name ^ "ToJs" in 
@@ -13021,7 +13073,7 @@ let init () =
                let pat_param = {Asttypes.loc; txt = param} in 
                let exp_param = Exp.ident ident_param in 
                let newType,newTdcl =
-                 Ast_derive_util.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
+                 U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
                let newTypeStr = Str.type_ [newTdcl] in   
                let toJsBody body = 
                  Ast_comb.single_non_rec_value patToJs
@@ -13143,7 +13195,7 @@ let init () =
                       | _ -> assert false 
                     end 
                   | None -> 
-                    Ast_derive_util.notApplicable 
+                    U.notApplicable 
                       tdcl.Parsetree.ptype_loc 
                       derivingName;
                     []
@@ -13239,13 +13291,13 @@ let init () =
                      if createType then newTypeStr :: v else v 
                  else 
                    begin 
-                     Ast_derive_util.notApplicable 
+                     U.notApplicable 
                      tdcl.Parsetree.ptype_loc 
                      derivingName;
                      []  
                    end
                | Ptype_open -> 
-                 Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                 U.notApplicable tdcl.Parsetree.ptype_loc 
                  derivingName;
                  [] in 
              Ext_list.flat_map handle_tdcl tdcls 
@@ -13253,7 +13305,7 @@ let init () =
          signature_gen = 
            (fun (tdcls : tdcls) _ -> 
               let handle_tdcl tdcl =
-                let core_type = Ast_derive_util.core_type_of_type_declaration tdcl 
+                let core_type = U.core_type_of_type_declaration tdcl 
                 in 
                 let name = tdcl.ptype_name.txt in 
                 let toJs = name ^ "ToJs" in 
@@ -13264,7 +13316,7 @@ let init () =
                 let toJsType result = 
                   Ast_comb.single_non_rec_val patToJs (Typ.arrow "" core_type result) in
                 let newType,newTdcl =
-                  Ast_derive_util.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
+                  U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
                 let newTypeStr = Sig.type_ [newTdcl] in                     
                 let (+?) v rest = if createType then v :: rest else rest in 
                 match tdcl.ptype_kind with  
@@ -13303,7 +13355,7 @@ let init () =
                      ] 
 
                    | None -> 
-                     Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                     U.notApplicable tdcl.Parsetree.ptype_loc 
                      derivingName;
                      [])
 
@@ -13327,12 +13379,12 @@ let init () =
 
                   else 
                   begin
-                    Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                    U.notApplicable tdcl.Parsetree.ptype_loc 
                     derivingName;
                     []
                   end
                 | Ptype_open -> 
-                  Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                  U.notApplicable tdcl.Parsetree.ptype_loc 
                   derivingName;
                   [] in 
               Ext_list.flat_map handle_tdcl tdcls 
@@ -18499,6 +18551,15 @@ let rec destruct
   | Pexp_tuple es -> Some (acc, es)
   | _ -> None
 
+let newTdcls tdcls newAttrs =   
+  match tdcls with 
+  | [ x ] -> 
+    [{ x with Parsetree.ptype_attributes = newAttrs}]
+  | _ -> 
+    Ext_list.map_last 
+      (fun last x -> 
+         if last then { x with Parsetree.ptype_attributes = newAttrs} else x )
+      tdcls 
 (*
   [let (a,b) = M.N.(c,d) ]
   => 
@@ -19120,16 +19181,25 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
     signature_item =  begin fun (self : Bs_ast_mapper.mapper) (sigi : Parsetree.signature_item) -> 
       match sigi.psig_desc with 
       | Psig_type (_ :: _ as tdcls) -> 
-        begin match Ast_attributes.iter_process_derive_type 
+        begin match Ast_attributes.process_derive_type 
                       (Ext_list.last tdcls).ptype_attributes  with 
-        | {bs_deriving = Some actions; explict_nonrec}
+        | {bs_deriving = Some actions; explict_nonrec}, newAttrs
           -> 
           let loc = sigi.psig_loc in 
-          Ast_signature.fuse ~loc sigi
+          (* if Ast_payload.isAbstract actions then 
+             let type_, codes = Ast_derive_abstract.handleTdclsInSig tdcls in 
+             Ast_signature.fuseAll ~loc 
+              (type_ ::
+               self.signature self
+                 codes)
+             else  *)
+          let newTdcls = newTdcls tdcls newAttrs in             
+          Ast_signature.fuseAll ~loc 
             (self.signature 
                self 
-               (Ast_derive.gen_signature tdcls actions explict_nonrec))
-        | {bs_deriving = None } -> 
+               ({sigi with psig_desc = Psig_type newTdcls} 
+                :: Ast_derive.gen_signature tdcls actions explict_nonrec))
+        | {bs_deriving = None }, _  -> 
           Bs_ast_mapper.default_mapper.signature_item self sigi 
 
         end
@@ -19187,22 +19257,31 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           -> 
           Ast_util.handle_raw_structure loc payload
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)-> 
-          begin match Ast_attributes.iter_process_derive_type 
+          begin match Ast_attributes.process_derive_type 
                         ((Ext_list.last tdcls).ptype_attributes) with 
           | {bs_deriving = Some actions;
              explict_nonrec 
-            } ->                         
+            }, newAttrs ->                         
             let loc = str.pstr_loc in      
-            Ast_structure.fuse ~loc                
-              str 
+            (* if Ast_payload.isAbstract actions then 
+               let type_, codes = Ast_derive_abstract.handleTdcls tdcls in 
+               Ast_structure.fuseAll ~loc 
+                (type_::
+                  self.structure self 
+                    codes)
+               else *)
+            let tdcls2 = newTdcls tdcls newAttrs in 
+            Ast_structure.fuseAll ~loc                                
               (self.structure self 
-                 (List.map 
-                    (fun action -> 
-                       Ast_derive.gen_structure_signature 
-                         loc
-                         tdcls action explict_nonrec
-                    )    actions))
-          | {bs_deriving = None }  -> 
+                 (
+                   {str with pstr_desc = Pstr_type tdcls2} :: 
+                   List.map 
+                     (fun action -> 
+                        Ast_derive.gen_structure_signature 
+                          loc
+                          tdcls action explict_nonrec
+                     )    actions))
+          | {bs_deriving = None }, _  -> 
             Bs_ast_mapper.default_mapper.structure_item self str
           end
         | Pstr_primitive 

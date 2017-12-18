@@ -140,6 +140,27 @@ type derive_attr = {
   bs_deriving : Ast_payload.action list option
 }
 
+let process_derive_type attrs : derive_attr * t =
+  List.fold_left 
+    (fun (st, acc) 
+      (({txt ; loc}, payload  as attr): attr)  ->
+      match  st, txt  with
+      |  {bs_deriving = None}, "bs.deriving"
+        ->
+        {st with
+         bs_deriving = Some
+             (Ast_payload.ident_or_record_as_config loc payload)}, acc 
+      | {bs_deriving = Some _}, "bs.deriving"
+        -> 
+        Bs_syntaxerr.err loc Duplicated_bs_deriving
+
+      | _ , _ ->
+        let st = 
+          if txt = "nonrec" then 
+            { st with explict_nonrec = true }
+          else st in 
+        st, attr::acc
+    ) ( {explict_nonrec = false; bs_deriving = None }, []) attrs
 
 let iter_process_derive_type attrs =
   let st = ref {explict_nonrec = false; bs_deriving = None } in 
@@ -256,13 +277,13 @@ let iter_process_bs_string_or_int_as attrs =
                | Some (s,None) -> 
                  st := Some (`Str (s))                
                | Some (s, Some "json") -> 
-                st := Some (`Json_str s )
+                 st := Some (`Json_str s )
                | None | Some (_, Some _) -> 
                  Bs_syntaxerr.err loc Expect_int_or_string_or_json_literal
 
              end
            | Some   v->  
-            st := (Some (`Int v))
+             st := (Some (`Int v))
           )
         else
           Bs_syntaxerr.err loc Duplicated_bs_as
@@ -285,4 +306,6 @@ let bs_this : attr
 let bs_method : attr 
   =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
 
+let bs_obj : attr  
+  =  {txt = "bs.obj"; loc = Location.none}, Ast_payload.empty
 

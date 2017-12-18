@@ -32,3 +32,7 @@ val h : d list
 
 type hh = Xx of int 
 [@@bs.deriving accessors]
+
+type t = 
+  | A of (int -> int [@bs]) 
+  [@@bs.deriving accessors]

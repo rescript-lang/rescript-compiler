@@ -230,7 +230,7 @@ SYNTAX_SRCS= \
 	ast_utf8_string\
 	ast_utf8_string_interp\
 	ast_derive_constructor \
-	ast_derive_util \
+	ast_derive_util\
 	ast_exp \
 	ast_external_mk\
 	ast_lift \
@@ -247,6 +247,7 @@ SYNTAX_SRCS= \
 	ast_core_type\
 	bs_ast_invariant\
 	ast_attributes\
+	ast_derive_abstract\
 	ast_polyvar\
 	ast_derive_dyn\
 	ast_derive_projector \
@@ -254,7 +255,7 @@ SYNTAX_SRCS= \
 	external_ffi_types\
 	external_process\
 	ast_util\
-	ppx_entry
+	ppx_entry\
 # not a good name ast_util
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
 DEPENDS_SRCS= bs_exception ast_extract binary_ast

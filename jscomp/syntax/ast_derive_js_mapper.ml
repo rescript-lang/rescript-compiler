@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 open Ast_helper
-
+module U = Ast_derive_util
 type tdcls = Parsetree.type_declaration list 
 
 let js_field (o : Parsetree.expression) m = 
@@ -36,8 +36,6 @@ let js_field (o : Parsetree.expression) m =
 let const_int i = Exp.constant (Const_int i)
 let const_string s = Exp.constant (Const_string (s,None))
 
-let invalid_config (config : Parsetree.expression) = 
-  Location.raise_errorf ~loc:config.pexp_loc "such configuration is not supported"
 
 let handle_config (config : Parsetree.expression option) = 
   match config with 
@@ -60,7 +58,7 @@ let handle_config (config : Parsetree.expression option) =
        ->  not (x = "false")
      | Pexp_ident {txt = Lident ("newType")} 
        -> true
-     | _ -> invalid_config config)
+     | _ -> U.invalid_config config)
   | None -> false
 let noloc = Location.none
 (* [eraseType] will be instrumented, be careful about the name conflict*)  
@@ -170,7 +168,7 @@ let init () =
        {
          structure_gen = (fun (tdcls : tdcls) _ -> 
              let handle_tdcl (tdcl: Parsetree.type_declaration) =
-               let core_type = Ast_derive_util.core_type_of_type_declaration tdcl
+               let core_type = U.core_type_of_type_declaration tdcl
                in 
                let name = tdcl.ptype_name.txt in 
                let toJs = name ^ "ToJs" in 
@@ -185,7 +183,7 @@ let init () =
                let pat_param = {Asttypes.loc; txt = param} in 
                let exp_param = Exp.ident ident_param in 
                let newType,newTdcl =
-                 Ast_derive_util.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
+                 U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
                let newTypeStr = Str.type_ [newTdcl] in   
                let toJsBody body = 
                  Ast_comb.single_non_rec_value patToJs
@@ -307,7 +305,7 @@ let init () =
                       | _ -> assert false 
                     end 
                   | None -> 
-                    Ast_derive_util.notApplicable 
+                    U.notApplicable 
                       tdcl.Parsetree.ptype_loc 
                       derivingName;
                     []
@@ -403,13 +401,13 @@ let init () =
                      if createType then newTypeStr :: v else v 
                  else 
                    begin 
-                     Ast_derive_util.notApplicable 
+                     U.notApplicable 
                      tdcl.Parsetree.ptype_loc 
                      derivingName;
                      []  
                    end
                | Ptype_open -> 
-                 Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                 U.notApplicable tdcl.Parsetree.ptype_loc 
                  derivingName;
                  [] in 
              Ext_list.flat_map handle_tdcl tdcls 
@@ -417,7 +415,7 @@ let init () =
          signature_gen = 
            (fun (tdcls : tdcls) _ -> 
               let handle_tdcl tdcl =
-                let core_type = Ast_derive_util.core_type_of_type_declaration tdcl 
+                let core_type = U.core_type_of_type_declaration tdcl 
                 in 
                 let name = tdcl.ptype_name.txt in 
                 let toJs = name ^ "ToJs" in 
@@ -428,7 +426,7 @@ let init () =
                 let toJsType result = 
                   Ast_comb.single_non_rec_val patToJs (Typ.arrow "" core_type result) in
                 let newType,newTdcl =
-                  Ast_derive_util.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
+                  U.new_type_of_type_declaration tdcl ("abs_" ^ name) in 
                 let newTypeStr = Sig.type_ [newTdcl] in                     
                 let (+?) v rest = if createType then v :: rest else rest in 
                 match tdcl.ptype_kind with  
@@ -467,7 +465,7 @@ let init () =
                      ] 
 
                    | None -> 
-                     Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                     U.notApplicable tdcl.Parsetree.ptype_loc 
                      derivingName;
                      [])
 
@@ -491,12 +489,12 @@ let init () =
 
                   else 
                   begin
-                    Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                    U.notApplicable tdcl.Parsetree.ptype_loc 
                     derivingName;
                     []
                   end
                 | Ptype_open -> 
-                  Ast_derive_util.notApplicable tdcl.Parsetree.ptype_loc 
+                  U.notApplicable tdcl.Parsetree.ptype_loc 
                   derivingName;
                   [] in 
               Ext_list.flat_map handle_tdcl tdcls 
