@@ -53,21 +53,26 @@ console.log(/* record */[
       /* data */m1
     ]);
 
-var data$1 = Bs_internalAVLset.empty0;
+var v = {
+  dict: I,
+  data: Bs_internalAVLset.empty0
+};
+
+var data$1 = v.data;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
   data$1 = Bs_Set.add0(cmp, i$1, data$1);
 }
 
-console.log(/* record */[
-      /* dict */I,
-      /* data */data$1
-    ]);
+console.log(data$1);
 
-exports.N  = N;
-exports.m0 = m0;
-exports.I  = I;
-exports.I2 = I2;
-exports.m  = m;
-exports.m2 = m2;
+var ISet = 0;
+
+exports.N    = N;
+exports.m0   = m0;
+exports.I    = I;
+exports.I2   = I2;
+exports.m    = m;
+exports.m2   = m2;
+exports.ISet = ISet;
 /*  Not a pure module */

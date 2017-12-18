@@ -3,15 +3,15 @@ module N = Bs_internalAVLset
 type ('elt, 'id) t0 = ('elt, 'id) N.t0 
 
 type ('elt, 'id)enumeration = 
-    ('elt, 'id) N.enumeration0 
-    =
+  ('elt, 'id) N.enumeration0 
+=
     End 
-    | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration
+  | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration
 
 type ('elt, 'id) t = {
   dict : ('elt,'id) Bs_Cmp.t ; 
   data : ('elt,'id) t0
-}
+} [@@bs.deriving abstract]
 
 let empty0 = N.empty0      
 let isEmpty0 = N.isEmpty0
@@ -190,115 +190,116 @@ let ofArray0 ~cmp (xs : _ array) : _ t0 =
   done ;
   !result 
 
-let empty dict = {
-  dict ;
-  data = empty0
-}  
+let empty dict = 
+  t
+    ~dict 
+    ~data:empty0
+
 let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data = 
   let module M = (val dict ) in 
-  {
-  dict ; 
-  data = ofArray0 ~cmp:M.cmp data
-}
+  t
+    ~dict 
+    ~data:(ofArray0 ~cmp:M.cmp data)
 
-let isEmpty m = isEmpty0 m.data
+let isEmpty m = isEmpty0 (data m)
 
 
 let mem (type elt) (type id) e (m : (elt,id) t) = 
-  let module M = (val m.dict) in 
-  mem0 ~cmp:(M.cmp) e m.data
+  let dict, data = dict m, data m in 
+  let module M = (val dict) in 
+  mem0 ~cmp:(M.cmp) e data
 
 let add (type elt) (type id) e (m : (elt,id) t) =   
-  let m_cmp = m.dict in
-  let module M = (val m_cmp) in 
-  {data = add0 ~cmp:(M.cmp) e m.data ; dict = m_cmp}
+  let dict, data = dict m, data m in
+  let module M = (val dict) in 
+  t ~dict 
+    ~data:(add0 ~cmp:(M.cmp) e data)
 
 let singleton dict e =     
-  { dict; 
-    data = singleton0 e
-  }
+  t ~dict
+    ~data:(singleton0 e)
+
 
 let remove (type elt) (type id) e (m : (elt,id) t) =      
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  { data = remove0 ~cmp:M.cmp e m.data ; 
-    dict = m_cmp
-  }
+  let dict, data = dict m, data m in   
+  let module M = (val dict) in 
+  t ~dict ~data:(remove0 ~cmp:M.cmp e data)
 
 let union (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  { data = union0 ~cmp:M.cmp m.data n.data ;
-    dict = m_cmp
-  }
+  let dict, mdata, ndata = dict m, data m, data n in   
+  let module M = (val dict) in 
+  t ~data:(union0 ~cmp:M.cmp mdata ndata)
+    ~dict
+
 
 let inter (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  { data = inter0 ~cmp:M.cmp m.data n.data ;
-    dict = m_cmp
-  }  
+  let dict, mdata, ndata = dict m, data m, data n in 
+  let module M = (val dict) in 
+  t ~data:(inter0 ~cmp:M.cmp mdata ndata)
+    ~dict 
+
 
 let diff (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  { data = diff0 ~cmp:M.cmp m.data n.data ;
-    dict = m_cmp
-  }    
+  let dict, mdata, ndata = dict m, data m, data n in 
+  let module M = (val dict) in 
+  t ~dict ~data:(diff0 ~cmp:M.cmp mdata ndata )
+
 
 let cmp (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  cmp0 ~cmp:M.cmp m.data n.data
+  let dict, mdata, ndata = dict m, data m, data n in 
+  let module M = (val dict) in 
+  cmp0 ~cmp:M.cmp mdata ndata
 
 let eq (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  eq0 ~cmp:M.cmp m.data n.data  
+  let dict, mdata, ndata = dict m, data m, data n in 
+  let module M = (val dict) in 
+  eq0 ~cmp:M.cmp mdata ndata  
 
 let subset (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  subset0 ~cmp:M.cmp m.data n.data  
+  let dict, mdata, ndata = dict m, data m, data n in 
+  let module M = (val dict) in 
+  subset0 ~cmp:M.cmp mdata ndata  
 
-let iter f m = iter0 f m.data 
+let iter f m = iter0 f (data m)
 
-let fold f m acc = fold0 f m.data acc 
+let fold f m acc = fold0 f (data m) acc 
 
-let forAll f m = forAll0 f m.data
+let forAll f m = forAll0 f (data m)
 
-let exists f m = exists0 f m.data   
+let exists f m = exists0 f (data m)
 
-let filter f m = {m with data = filter0 f m.data}
+let filter f m = 
+  let data, dict = data m, dict m in 
+  t ~dict ~data:(filter0 f data)
 
 let partition f m = 
-  let l,r = partition0 f m.data in 
-  let dict = m.dict in 
-  {data = l; dict }, {data = r; dict }
+  let mdata, dict = data m, dict m in   
+  let l,r = partition0 f mdata in   
+  t ~data:l ~dict, t ~data:r ~dict 
 
-let cardinal m = cardinal0 m.data  
+let cardinal m = cardinal0 (data m) 
 
-let elements m = elements0 m.data
+let elements m = elements0 (data m)
 
-let min m = min0 m.data
+let min m = min0 (data m)
 
-let max m = max0 m.data
+let max m = max0 (data m)
 
 let split (type elt) (type id) e (m : (elt,id) t) = 
-  let dict = m.dict in 
+  let dict, data = dict m, data m in  
   let module M = (val dict) in 
-  let l, b, r = split0 ~cmp:M.cmp e m.data in 
-  {dict; data = l},
+  let l, b, r = split0 ~cmp:M.cmp e data in 
+  t ~dict ~data:l,
   b,
-  {dict; data = r}
+  t ~dict ~data:r
 
 let findOpt (type elt) (type id) e (m : (elt,id) t) =   
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  findOpt0 ~cmp:M.cmp e m.data
+  let dict, data = dict m, data m in   
+  let module M = (val dict) in 
+  findOpt0 ~cmp:M.cmp e data
 
 let findAssert (type elt) (type id) e (m : (elt,id) t) =   
-  let m_cmp = m.dict in 
-  let module M = (val m_cmp) in 
-  findAssert0 ~cmp:M.cmp e m.data
+  let dict, data = dict m, data m in 
+  let module M = (val dict) in 
+  findAssert0 ~cmp:M.cmp e data
 
