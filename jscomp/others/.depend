@@ -39,8 +39,9 @@ js_date.cmj :
 js_global.cmj :
 js_cast.cmj : js_cast.cmi
 js_promise.cmj :
-bs_HashMapInt.cmj : bs_internalBuckets.cmj bs_Array.cmj
-bs_HashMapString.cmj : bs_internalBuckets.cmj bs_Array.cmj
+bs_HashMapInt.cmj : bs_internalBuckets.cmj bs_Array.cmj bs_HashMapInt.cmi
+bs_HashMapString.cmj : bs_internalBuckets.cmj bs_Array.cmj \
+    bs_HashMapString.cmi
 node_process.cmi : js_dict.cmi
 js_re.cmi :
 js_null_undefined.cmi :
@@ -66,3 +67,5 @@ js_dict.cmi :
 js_cast.cmi :
 dom.cmi : dom_storage.cmi
 dom_storage.cmi :
+bs_HashMapInt.cmi :
+bs_HashMapString.cmi :

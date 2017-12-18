@@ -6,7 +6,7 @@ type ('elt, 'id) t0
 type ('elt, 'id) t = {
   dict : ('elt,'id) Bs_Cmp.t ; 
   data : ('elt,'id) t0
-}
+} [@@bs.deriving abstract]
 (** The type of sets. *)
 
 val empty0: ('elt, 'id) t0

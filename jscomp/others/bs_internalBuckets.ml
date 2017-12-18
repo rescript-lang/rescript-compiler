@@ -36,7 +36,11 @@ type 'a opt = 'a Js.undefined
 type 'a opt = 'a option 
 #end
 
-type ('a,'b) buckets    
+type ('a,'b) buckets = {
+  mutable key : 'a;
+  mutable value : 'b;
+  mutable next : ('a,'b) buckets opt
+}  [@@bs.deriving abstract]  
 
 type ('a,'b) bucketlist = ('a, 'b) buckets opt
 
@@ -51,15 +55,6 @@ external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a opt = "%identity"              
 let emptyOpt = Js.undefined               
 external makeSize : int -> 'a Js.undefined array = "Array" [@@bs.new]    
-external newBuckets :
-  key : 'a -> value : 'b -> next : ('a,'b) buckets opt ->
-  ('a,'b) buckets = "" [@@bs.obj]
-external key : ('a,'b) buckets -> 'a = "key" [@@bs.get]
-external keySet : ('a,'b) buckets -> 'a -> unit = "key" [@@bs.set]
-external value : ('a,' b) buckets -> 'b = "value" [@@bs.get]
-external valueSet : ('a,' b) buckets -> 'b -> unit = "value" [@@bs.set]
-external next : ('a, 'b) buckets -> ('a, 'b) buckets opt = "next" [@@bs.get] 
-external nextSet : ('a, 'b) buckets -> ('a, 'b) buckets opt -> unit = "next" [@@bs.set] 
 #else 
 external toOpt : 'a -> 'a = "%identity"
 let return x = Some x 

@@ -62,6 +62,10 @@ bs_HashMapString.ml: hashmap.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
 bs_HashMapInt.ml: hashmap.cppo.ml
 	cppo -D TYPE_INT $^ > $@
+bs_HashMapString.mli: hashmap.cppo.mli
+	cppo -D TYPE_STRING $^ > $@
+bs_HashMapInt.mli: hashmap.cppo.mli
+	cppo -D TYPE_INT $^ > $@
 bs_MapString.ml: map.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
 bs_MapInt.ml: map.cppo.ml
