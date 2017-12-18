@@ -127,6 +127,7 @@
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/ast_mapper.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/docstrings.mli
 ../lib/bsdep.ml : ./core/config_whole_compiler.ml
+../lib/bsdep.ml : ./syntax/ast_derive_abstract.ml
 ../lib/bsdep.ml : ./syntax/external_ffi_types.mli
 ../lib/bsdep.ml : ./core/bs_conditional_initial.ml
 ../lib/bsdep.ml : ./core/config_whole_compiler.mli

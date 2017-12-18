@@ -438,6 +438,7 @@
 ../lib/whole_compiler.ml : ./core/lam_pass_deep_flatten.ml
 ../lib/whole_compiler.ml : ./core/lam_pass_remove_alias.ml
 ../lib/whole_compiler.ml : ./super_errors/super_typemod.ml
+../lib/whole_compiler.ml : ./syntax/ast_derive_abstract.ml
 ../lib/whole_compiler.ml : ./syntax/external_ffi_types.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/printlambda.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/translclass.ml

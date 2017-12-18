@@ -1,16 +1,13 @@
 
-type 'elt node 
+type 'elt node  = {
+  mutable left : 'elt node Js.null;
+  mutable key : 'elt ; 
+  mutable right : 'elt node Js.null;
+  mutable h : int 
+}
+[@@bs.deriving abstract]
 
-external node : 
-  left:'elt node Js.null -> 
-  key:'elt -> 
-  right:'elt node Js.null ->
-  h:int -> 'elt node = "" [@@bs.obj] 
 
-external left : 'elt node -> 'elt node Js.null = "left" [@@bs.get]
-external key : 'elt node -> 'elt = "key" [@@bs.get]
-external right : 'elt node -> 'elt node Js.null = "right" [@@bs.get]
-external h : 'elt node -> int = "h" [@@bs.get] 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "null" [@@bs.val]

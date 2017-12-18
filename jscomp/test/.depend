@@ -85,7 +85,7 @@ bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
     ../stdlib/bigarray.cmj
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
 bs_MapInt_test.cmj : ../runtime/js.cmj ../others/bs.cmj
-bs_abstract_test.cmj :
+bs_abstract_test.cmj : ../runtime/js.cmj
 bs_array_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj
 bs_auto_uncurry.cmj : ../runtime/js.cmj
 bs_auto_uncurry_test.cmj : mt.cmj ../others/js_array.cmj ../runtime/js.cmj

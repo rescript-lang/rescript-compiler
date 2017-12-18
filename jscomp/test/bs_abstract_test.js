@@ -1,1 +1,12 @@
-/* This output is empty. Its source's type definitions, externals and/or unused code got optimized away. */
+'use strict';
+
+
+var v = {
+  hd: 3,
+  tl: null
+};
+
+v.tl = v;
+
+exports.v = v;
+/* v Not a pure module */

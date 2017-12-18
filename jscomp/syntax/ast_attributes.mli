@@ -78,3 +78,5 @@ val bs_method : attr
 val bs_obj : attr 
 
 
+val bs_get : attr 
+val bs_set : attr 
