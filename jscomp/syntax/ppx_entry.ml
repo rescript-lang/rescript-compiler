@@ -723,19 +723,19 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | {bs_deriving = Some actions; explict_nonrec}, newAttrs
           -> 
           let loc = sigi.psig_loc in 
-          (* if Ast_payload.isAbstract actions then 
-             let type_, codes = Ast_derive_abstract.handleTdclsInSig tdcls in 
-             Ast_signature.fuseAll ~loc 
+          if Ast_payload.isAbstract actions then 
+            let type_, codes = Ast_derive_abstract.handleTdclsInSig tdcls in 
+            Ast_signature.fuseAll ~loc 
               (type_ ::
                self.signature self
                  codes)
-             else  *)
-          let newTdcls = newTdcls tdcls newAttrs in             
-          Ast_signature.fuseAll ~loc 
-            (self.signature 
-               self 
-               ({sigi with psig_desc = Psig_type newTdcls} 
-                :: Ast_derive.gen_signature tdcls actions explict_nonrec))
+          else 
+            let newTdcls = newTdcls tdcls newAttrs in             
+            Ast_signature.fuseAll ~loc 
+              (self.signature 
+                 self 
+                 ({sigi with psig_desc = Psig_type newTdcls} 
+                  :: Ast_derive.gen_signature tdcls actions explict_nonrec))
         | {bs_deriving = None }, _  -> 
           Bs_ast_mapper.default_mapper.signature_item self sigi 
 
@@ -800,24 +800,24 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
              explict_nonrec 
             }, newAttrs ->                         
             let loc = str.pstr_loc in      
-            (* if Ast_payload.isAbstract actions then 
-               let type_, codes = Ast_derive_abstract.handleTdcls tdcls in 
-               Ast_structure.fuseAll ~loc 
+            if Ast_payload.isAbstract actions then 
+              let type_, codes = Ast_derive_abstract.handleTdcls tdcls in 
+              Ast_structure.fuseAll ~loc 
                 (type_::
-                  self.structure self 
-                    codes)
-               else *)
-            let tdcls2 = newTdcls tdcls newAttrs in 
-            Ast_structure.fuseAll ~loc                                
-              (self.structure self 
-                 (
-                   {str with pstr_desc = Pstr_type tdcls2} :: 
-                   List.map 
-                     (fun action -> 
-                        Ast_derive.gen_structure_signature 
-                          loc
-                          tdcls action explict_nonrec
-                     )    actions))
+                 self.structure self 
+                   codes)
+            else
+              let tdcls2 = newTdcls tdcls newAttrs in 
+              Ast_structure.fuseAll ~loc                                
+                (self.structure self 
+                   (
+                     {str with pstr_desc = Pstr_type tdcls2} :: 
+                     List.map 
+                       (fun action -> 
+                          Ast_derive.gen_structure_signature 
+                            loc
+                            tdcls action explict_nonrec
+                       )    actions))
           | {bs_deriving = None }, _  -> 
             Bs_ast_mapper.default_mapper.structure_item self str
           end

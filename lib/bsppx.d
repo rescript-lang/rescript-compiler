@@ -109,6 +109,7 @@
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_helper.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/docstrings.mli
 ../lib/bsppx.ml : ./core/config_whole_compiler.ml
+../lib/bsppx.ml : ./syntax/ast_derive_abstract.ml
 ../lib/bsppx.ml : ./syntax/external_ffi_types.mli
 ../lib/bsppx.ml : ./core/config_whole_compiler.mli
 ../lib/bsppx.ml : ./syntax/ast_derive_js_mapper.ml

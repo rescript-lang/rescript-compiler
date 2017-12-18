@@ -309,3 +309,9 @@ let bs_method : attr
 let bs_obj : attr  
   =  {txt = "bs.obj"; loc = Location.none}, Ast_payload.empty
 
+let bs_get : attr  
+  =  {txt = "bs.get"; loc = Location.none}, Ast_payload.empty
+
+let bs_set : attr
+  =  {txt = "bs.set"; loc = Location.none}, Ast_payload.empty 
+
