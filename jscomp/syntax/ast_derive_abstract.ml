@@ -35,7 +35,7 @@ let handle_config (config : Parsetree.expression option) =
   | None -> ()
 
 (* see #2337 
-  TODO: relax it to allow (int -> int [@bs])
+   TODO: relax it to allow (int -> int [@bs])
 *)  
 let rec checkNotFunciton (ty : Parsetree.core_type) = 
   match ty.ptyp_desc with 
@@ -43,8 +43,8 @@ let rec checkNotFunciton (ty : Parsetree.core_type) =
   | Ptyp_alias (ty,_) -> checkNotFunciton ty 
   | Ptyp_arrow _ -> 
     Location.raise_errorf 
-    ~loc:ty.ptyp_loc 
-    "syntactic function type is not allowed when working with abstract bs.deriving, create a named type as work around"
+      ~loc:ty.ptyp_loc 
+      "syntactic function type is not allowed when working with abstract bs.deriving, create a named type as work around"
   | Ptyp_any 
   | Ptyp_var _
   | Ptyp_tuple _ 
@@ -104,7 +104,8 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
   | Ptype_abstract 
   | Ptype_variant _ 
   | Ptype_open -> 
-    U.notApplicable tdcl.ptype_loc derivingName; 
+    (* Looks obvious that it does not make sense to warn *)
+    (* U.notApplicable tdcl.ptype_loc derivingName;  *)
     tdcl, []
 
 let handleTdcls tdcls =     
@@ -117,5 +118,5 @@ let handleTdcls tdcls =
 
       ) tdcls ([],[])  in 
   Str.type_ tdcls :: code  
-  (* still need perform transformation for non-abstract type*)
+(* still need perform transformation for non-abstract type*)
 

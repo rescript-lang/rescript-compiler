@@ -112,6 +112,7 @@
 ../lib/bsppx.ml : ./syntax/ast_derive_abstract.ml
 ../lib/bsppx.ml : ./syntax/external_ffi_types.mli
 ../lib/bsppx.ml : ./core/config_whole_compiler.mli
+../lib/bsppx.ml : ./syntax/ast_derive_abstract.mli
 ../lib/bsppx.ml : ./syntax/ast_derive_js_mapper.ml
 ../lib/bsppx.ml : ./syntax/ast_derive_projector.ml
 ../lib/bsppx.ml : ./syntax/ast_derive_js_mapper.mli

@@ -131,6 +131,7 @@
 ../lib/bsdep.ml : ./syntax/external_ffi_types.mli
 ../lib/bsdep.ml : ./core/bs_conditional_initial.ml
 ../lib/bsdep.ml : ./core/config_whole_compiler.mli
+../lib/bsdep.ml : ./syntax/ast_derive_abstract.mli
 ../lib/bsdep.ml : ./syntax/ast_derive_js_mapper.ml
 ../lib/bsdep.ml : ./syntax/ast_derive_projector.ml
 ../lib/bsdep.ml : ./core/bs_conditional_initial.mli
