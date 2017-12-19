@@ -21,6 +21,7 @@ bs_internalAVLset.cmj :
 bs_internalAVLtree.cmj :
 bs_internalMutableAVLSet.cmj : bs_internalAVLset.cmj
 bs_Hash.cmj : bs_Hash.cmi
+bs_Queue.cmj : bs_Queue.cmi
 bs_internalBuckets.cmj : bs_Array.cmj
 bs_HashMap.cmj : bs_internalBuckets.cmj bs_Hash.cmj bs_Bag.cmj bs_Array.cmj \
     bs_HashMap.cmi
@@ -57,6 +58,7 @@ js_result.cmi :
 js_mapperRt.cmi :
 bs_Array.cmi :
 bs_Hash.cmi :
+bs_Queue.cmi :
 bs_HashMap.cmi : bs_Hash.cmi bs_Bag.cmj
 bs_Cmp.cmi :
 bs_Map.cmi : bs_Cmp.cmi bs_Bag.cmj
