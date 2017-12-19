@@ -28,16 +28,17 @@ let m = Bs.Map.empty (module I)
 
 let m2 = Bs.Map.empty (module I2)
 
-
+module B = Bs.Bag
 (* let () = 
   Js.log (m = m2) *)
 let () = 
   let count = 1_000_00 in 
   
   (* let {cmp; data} = m in  *)
-  let data = ref m.data in 
-  let module N = (val m2.dict) in 
-  let module M = ( val m.dict) in
+  let data = ref (B.data m) in 
+  let m2_dict, m_dict = B.(dict m2, dict m) in 
+  let module N = (val m2_dict) in 
+  let module M = ( val m_dict) in
   (* let vcmp = Bs.Cmp.getCmp  M.cmp in  *)
   for i = 0 to count do 
     data := 
@@ -50,26 +51,27 @@ let () =
 
       i i !data 
   done ;
-  let newm = { m with data = !data} in 
+  let newm = B.bag ~data:!data ~dict:m_dict in 
   Js.log newm
 
 let () =     
   let  m = Bs.Map.empty0 in 
-  let m1 = 
+  let m11 = 
     Bs.Map.add0 ~cmp:I.cmp
     1 1 m 
   in  
   (* let m2 = 
     Bs.Map.add0 ~cmp:I2.cmp 1 3 m1 in *)
-  let m20 = Bs.Map.empty (module I) in 
-  Js.log {m20 with data = m1}
+  let _m20 = Bs.Map.empty (module I) in 
+  Js.log m11
 module ISet = Bs.Set 
 let () =   
   let count = 100_000 in 
   let v = ISet.empty (module I) in 
-  let module M = (val m.dict) in 
+  let m_dict = B.dict m in 
+  let module M = (val m_dict) in 
   let cmp = M.cmp in 
-  let data = ref (ISet.data v) in 
+  let data = ref (B.data v) in 
   for i = 0 to count do 
     data := Bs.Set.add0 ~cmp i !data
   done ;

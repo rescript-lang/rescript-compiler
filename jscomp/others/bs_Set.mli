@@ -3,14 +3,11 @@
 
 type ('elt, 'id) t0
 
-type ('elt, 'id) t 
 
+type ('k,'id) t = 
+  (('k,'id) Bs_Cmp.t,
+   ('k, 'id) t0 ) Bs_Bag.bag
 
-external t : 
-  dict:('elt,'id) Bs_Cmp.t  -> 
-  data : ('elt,'id) t0 -> ('elt, 'id) t = "" [@@bs.obj]
-external data : ('elt,'id) t -> ('elt,'id) t0 = "data" [@@bs.get]  
-external dict : ('elt,'id) t -> ('elt,'id) Bs_Cmp.t = "dict" [@@bs.get]
 (** The type of sets. *)
 
 val empty0: ('elt, 'id) t0

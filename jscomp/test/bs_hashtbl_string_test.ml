@@ -81,12 +81,12 @@ let bench2 (type t) (m : (string,t) Bs.Hash.t) =
   assert (Bs.HashMap.length0 table = 0)  
   
   (* Bs.HashMap.logStats empty *)
-
+module B = Bs.Bag 
 let bench3 (type t) (m : (string,t) Bs.Cmp.t) = 
   let empty = Bs.Map.empty m in
   let module String = (val m) in 
   let cmp = String.cmp in 
-  let table = ref empty.data in 
+  let table = ref (B.data empty) in 
   for i  = 0 to  count do  
     table := Bs.Map.add0 ~cmp
         (string_of_int i) i !table

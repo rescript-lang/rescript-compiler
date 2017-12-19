@@ -136,8 +136,12 @@ function bench2(m) {
 }
 
 function bench3(m) {
+  var empty = {
+    dict: m,
+    data: Bs_internalAVLtree.empty0
+  };
   var cmp = m[/* cmp */0];
-  var table = /* data */Bs_internalAVLtree.empty0;
+  var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
     table = Bs_Map.add0(cmp, "" + i, i, table);
   }
@@ -309,6 +313,8 @@ var count = 1000000;
 
 var initial_size = 1000000;
 
+var B = 0;
+
 exports.hash_string  = hash_string;
 exports.hashString   = hashString;
 exports.$$String     = $$String;
@@ -320,6 +326,7 @@ exports.bench        = bench;
 exports.count        = count;
 exports.initial_size = initial_size;
 exports.bench2       = bench2;
+exports.B            = B;
 exports.bench3       = bench3;
 exports.S            = S;
 exports.bench4       = bench4;

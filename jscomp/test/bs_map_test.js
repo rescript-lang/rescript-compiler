@@ -8,10 +8,10 @@ var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
 
 var N = /* module */[/* cmp */Caml_obj.caml_int_compare];
 
-var m0 = /* record */[
-  /* dict */N,
-  /* data */Bs_internalAVLtree.empty0
-];
+var m0 = {
+  dict: N,
+  data: Bs_internalAVLtree.empty0
+};
 
 var cmp = Caml_obj.caml_int_compare;
 
@@ -23,48 +23,55 @@ function cmp$1(x, y) {
 
 var I2 = /* module */[/* cmp */cmp$1];
 
-var m = /* record */[
-  /* dict */I,
-  /* data */Bs_internalAVLtree.empty0
-];
+var m = {
+  dict: I,
+  data: Bs_internalAVLtree.empty0
+};
 
-var m2 = /* record */[
-  /* dict */I2,
-  /* data */Bs_internalAVLtree.empty0
-];
+var m2 = {
+  dict: I2,
+  data: Bs_internalAVLtree.empty0
+};
 
-var data = Bs_internalAVLtree.empty0;
+var data = m.data;
+
+m2.dict;
+
+var m_dict = m.dict;
 
 for(var i = 0; i <= 100000; ++i){
-  data = Bs_Map.add0(cmp, i, i, data);
+  data = Bs_Map.add0(m_dict[/* cmp */0], i, i, data);
 }
 
-var newm = /* record */[
-  /* dict */I,
-  /* data */data
-];
+var newm = {
+  dict: m_dict,
+  data: data
+};
 
 console.log(newm);
 
-var m1 = Bs_Map.add0(cmp, 1, 1, Bs_Map.empty0);
+var m11 = Bs_Map.add0(cmp, 1, 1, Bs_Map.empty0);
 
-console.log(/* record */[
-      /* dict */I,
-      /* data */m1
-    ]);
+console.log(m11);
 
 var v = {
   dict: I,
   data: Bs_internalAVLset.empty0
 };
 
+var m_dict$1 = m.dict;
+
+var cmp$2 = m_dict$1[/* cmp */0];
+
 var data$1 = v.data;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
-  data$1 = Bs_Set.add0(cmp, i$1, data$1);
+  data$1 = Bs_Set.add0(cmp$2, i$1, data$1);
 }
 
 console.log(data$1);
+
+var B = 0;
 
 var ISet = 0;
 
@@ -74,5 +81,6 @@ exports.I    = I;
 exports.I2   = I2;
 exports.m    = m;
 exports.m2   = m2;
+exports.B    = B;
 exports.ISet = ISet;
-/*  Not a pure module */
+/* data Not a pure module */

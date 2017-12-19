@@ -26,7 +26,7 @@
 
 (**/*)
 (**/*)
-
+module Bag = Bs_Bag
 module Cmp = Bs_Cmp
 module Hash = Bs_Hash
 module Array = Bs_Array

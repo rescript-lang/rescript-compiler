@@ -22,14 +22,7 @@ let hash (s : key) =
 (**  Adapted by Authors of BuckleScript 2017                           *)
 module N = Bs_internalBuckets
 
-type ('a, 'b,'id) t0 = ('a,'b,'id) N.t0 =
-  {
-    mutable size: int;                        (* number of entries *)
-    mutable buckets: ('a, 'b) N.bucketlist array;  (* the buckets *)
-    initial_size: int;                        (* initial array size *)
-  }
-
-type ('a,'b) buckets 
+type ('a, 'b,'id) t0 = ('a,'b,'id) N.t0 
 
 type 'b t = (key,'b,unit) t0
 
@@ -51,13 +44,13 @@ let rec insert_bucket  ~h_buckets ~ndata_tail h old_bucket =
 
 
 let resize  h =
-  let odata = h.buckets in
+  let odata = N.buckets h in
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize >= osize then begin (* no overflow *)
     let h_buckets = N.makeSize nsize  in
     let ndata_tail = N.makeSize nsize  in (* keep track of tail *)
-    h.buckets <- h_buckets;          (* so that indexfun sees the new bucket count *)
+    N.bucketsSet h  h_buckets;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
       insert_bucket  ~h_buckets ~ndata_tail h (Bs_Array.unsafe_get odata i)
     done;
@@ -70,14 +63,14 @@ let resize  h =
 
 
 let add  h key value =
-  let h_buckets = h.buckets in  
+  let h_buckets = N.buckets h in  
   let h_buckets_lenth = Array.length h_buckets in 
   let i =  hash key land (h_buckets_lenth - 1) in 
   let bucket = 
-    N.buckets ~key ~value ~next:(Bs_Array.unsafe_get h_buckets i) in  
+    N.bucket ~key ~value ~next:(Bs_Array.unsafe_get h_buckets i) in  
   Bs_Array.unsafe_set h_buckets i  (N.return bucket);
-  let h_new_size = h.size + 1 in 
-  h.size <- h_new_size;
+  let h_new_size = N.size h + 1 in 
+  N.sizeSet h  h_new_size;
   if h_new_size > h_buckets_lenth lsl 1 then resize  h
 
 
@@ -92,12 +85,12 @@ let rec remove_bucket h h_buckets  i (key : key) prec buckets =
         (match N.toOpt prec with
          | None -> Bs_Array.unsafe_set h_buckets i  cell_next
          | Some c -> N.nextSet c cell_next);
-        h.size <- h.size - 1;        
+        N.sizeSet h (N.size h - 1);        
       end
     else remove_bucket  h h_buckets i key buckets cell_next
 
 let remove  h key =  
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let i = hash key land (Array.length h_buckets - 1) in  
   remove_bucket  h h_buckets i key N.emptyOpt (Bs_Array.unsafe_get h_buckets i)
 
@@ -112,12 +105,12 @@ let rec removeAllBuckets h h_buckets  i (key : key) prec buckets =
         (match N.toOpt prec with
          | None -> Bs_Array.unsafe_set h_buckets i  cell_next
          | Some c -> N.nextSet c cell_next);
-        h.size <- h.size - 1;        
+        N.sizeSet h (N.size h - 1);        
       end;
     removeAllBuckets h h_buckets i key buckets cell_next
 
 let removeAll  h key =
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let i = hash key  land (Array.length h_buckets - 1) in  
   removeAllBuckets h h_buckets i key N.emptyOpt (Bs_Array.unsafe_get h_buckets i)
 
@@ -134,7 +127,7 @@ let rec find_rec  (key : key) buckets =
     else find_rec key  (N.next cell)
 
 let findOpt  h (key : key) =
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let nid = hash key  land (Array.length h_buckets - 1) in 
   match N.toOpt @@ Bs_Array.unsafe_get h_buckets nid with
   | None -> None
@@ -160,7 +153,7 @@ let findAll  h (key : key) =
       if  (N.key cell) = key 
       then (N.value cell) :: find_in_bucket (N.next cell)
       else find_in_bucket (N.next cell) in
-  let h_buckets = h.buckets in     
+  let h_buckets = N.buckets h in     
   let nid = hash key land (Array.length h_buckets - 1) in 
   find_in_bucket (Bs_Array.unsafe_get h_buckets nid)
 
@@ -180,14 +173,14 @@ let rec replace_bucket  (key : key) info buckets =
       replace_bucket key info (N.next cell)
 
 let replace  h (key : key) info =
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let i = hash key land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
   if replace_bucket  key info l then begin
     Bs_Array.unsafe_set h_buckets i (N.return 
-                                       (N.buckets ~key ~value:info ~next:l));
-    h.size <- h.size + 1;
-    if h.size > Array.length h.buckets lsl 1 then resize  h
+                                       (N.bucket ~key ~value:info ~next:l));
+    N.sizeSet h (N.size h + 1);
+    if N.size h > Array.length (N.buckets h) lsl 1 then resize  h
   end 
 
 let rec mem_in_bucket (key : key) buckets = 
@@ -197,7 +190,7 @@ let rec mem_in_bucket (key : key) buckets =
   | Some cell ->
     (N.key cell)  = key  || mem_in_bucket  key (N.next cell)
 let mem  h key =
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let nid = hash key land (Array.length h_buckets - 1) in 
   mem_in_bucket  key (Bs_Array.unsafe_get h_buckets nid)
 
