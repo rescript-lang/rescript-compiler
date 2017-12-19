@@ -724,11 +724,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           -> 
           let loc = sigi.psig_loc in 
           if Ast_payload.isAbstract actions then 
-            let type_, codes = Ast_derive_abstract.handleTdclsInSig tdcls in 
-            Ast_signature.fuseAll ~loc 
-              (type_ ::
-               self.signature self
-                 codes)
+            Location.raise_errorf ~loc "bs.deriving abstract is not supported in signature language"
           else 
             let newTdcls = newTdcls tdcls newAttrs in             
             Ast_signature.fuseAll ~loc 
@@ -800,24 +796,30 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
              explict_nonrec 
             }, newAttrs ->                         
             let loc = str.pstr_loc in      
+            let tdcls2 = newTdcls tdcls newAttrs in 
+            let newStr = 
+              self.structure_item self 
+                {str with pstr_desc = Pstr_type tdcls2} in 
             if Ast_payload.isAbstract actions then 
-              let type_, codes = Ast_derive_abstract.handleTdcls tdcls in 
+              let codes = Ast_derive_abstract.handleTdcls tdcls in 
               Ast_structure.fuseAll ~loc 
-                (type_::
-                 self.structure self 
-                   codes)
+                ( 
+                  Ast_structure.constraint_ ~loc
+                    [newStr] []::
+                  self.structure self 
+                    codes)
             else
-              let tdcls2 = newTdcls tdcls newAttrs in 
               Ast_structure.fuseAll ~loc                                
-                (self.structure self 
+                (newStr :: 
+                 self.structure self 
                    (
-                     {str with pstr_desc = Pstr_type tdcls2} :: 
                      List.map 
                        (fun action -> 
                           Ast_derive.gen_structure_signature 
                             loc
                             tdcls action explict_nonrec
-                       )    actions))
+                       )    actions
+                   ))
           | {bs_deriving = None }, _  -> 
             Bs_ast_mapper.default_mapper.structure_item self str
           end

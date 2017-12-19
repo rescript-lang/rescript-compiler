@@ -458,6 +458,7 @@
 ../lib/whole_compiler.ml : ./super_errors/super_typecore.ml
 ../lib/whole_compiler.ml : ./super_errors/super_typetexp.ml
 ../lib/whole_compiler.ml : ./super_errors/super_warnings.ml
+../lib/whole_compiler.ml : ./syntax/ast_derive_abstract.mli
 ../lib/whole_compiler.ml : ./syntax/ast_derive_js_mapper.ml
 ../lib/whole_compiler.ml : ./syntax/ast_derive_projector.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/printlambda.mli
