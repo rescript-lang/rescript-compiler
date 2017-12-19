@@ -98,6 +98,7 @@ bs_mutable_set_test.cmj : ../runtime/js.cmj \
     ../others/bs_internalMutableAVLSet.cmj
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
 bs_qualified.cmj : ../runtime/js.cmj
+bs_queue_test.cmj : ../runtime/js.cmj ../others/bs.cmj
 bs_rbset_int_bench.cmj : rbset.cmj
 bs_rest_test.cmj :
 bs_set_bench.cmj : ../others/bs.cmj
