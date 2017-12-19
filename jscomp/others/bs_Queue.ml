@@ -14,57 +14,55 @@
 (*                                                                        *)
 (**************************************************************************)
 
-(* exception Empty *)
-
 type 'a node =
   { content: 'a; mutable next: 'a cell }
 and 'a cell = 'a node Js.null
-[@@bs.deriving abstract ]
-
-type 'a t = {
+and 'a t = {
   mutable length: int;
   mutable first: 'a cell;
   mutable last: 'a cell
-}
+} [@@bs.deriving abstract]
 let null  = Js.null 
 let return = Js.Null.return 
-let create () = {
-  length = 0;
-  first = null;
-  last = null
-}
+
+let create () = 
+  t 
+  ~length: 0
+  ~first:null
+  ~last:null
+
 
 let clear q =
-  q.length <- 0;
-  q.first <- null;
-  q.last <- null
+  lengthSet q  0;
+  firstSet q  null;
+  lastSet q  null
 
 let add x (q : _ t) =
   let cell = return @@ node 
     ~content:x
     ~next:null
    in
-  match Js.nullToOption q.last with
+  match Js.nullToOption (last q )with
   | None ->
-    q.length <- 1;
-    q.first <- cell;
-    q.last <- cell
+    lengthSet  q 1;
+    firstSet q cell;
+    lastSet q cell
   | Some last ->
-    q.length <- q.length + 1;
+    lengthSet q (length q + 1);
     nextSet last  cell;
-    q.last <- cell
+    lastSet q  cell
 
 let push =
   add
 
 let peekOpt q =
-  match Js.nullToOption q.first with
+  match Js.nullToOption (first q ) with
   | None -> None
   | Some v -> Some (content v)
 
 
 let popOpt q =
-  match Js.nullToOption q.first with
+  match Js.nullToOption (first q ) with
   | None -> None
   | Some x  ->
 
@@ -75,8 +73,8 @@ let popOpt q =
       Some (content x)
     end
     else begin 
-    q.length <- q.length - 1;
-    q.first <- next;
+    lengthSet q (length q - 1);
+    firstSet q next;
     Some(content x) 
     end
 
@@ -84,24 +82,24 @@ let popOpt q =
 let copy =
   let rec copy q_res prev cell =
     match Js.nullToOption cell with
-    | None -> q_res.last <- prev; q_res
+    | None -> lastSet q_res  prev; q_res
     | Some x  ->
     (* Cons { content; next } *)
       let content = content x in 
       let res = return @@ node ~content ~next:null in
       begin match Js.nullToOption prev with
-      | None -> q_res.first <- res
+      | None -> firstSet q_res res
       | Some p -> nextSet p  res
       end;
       copy q_res res (next x)
   in
-  fun q -> copy { length = q.length; first = null; last = null } null q.first
+  fun q -> copy (t  ~length:(length q) ~first:null ~last:null)  null (first q)
 
 let isEmpty q =
-  q.length = 0
+  length q = 0
 
 let length q =
-  q.length
+  length q
 
 let iter =
   let rec iter f cell =
@@ -111,7 +109,7 @@ let iter =
       f (content x) [@bs];
       iter f (next x)
   in
-  fun f q -> iter f q.first
+  fun f q -> iter f (first q)
 
 let fold =
   let rec fold f accu cell =
@@ -121,18 +119,18 @@ let fold =
       let accu = f accu (content x) [@bs] in
       fold f accu (next x)
   in
-  fun f accu q -> fold f accu q.first
+  fun f accu q -> fold f accu (first q)
 
 let transfer q1 q2 =
-  if q1.length > 0 then
-    match Js.nullToOption q2.last with
+  if length q1 > 0 then
+    match Js.nullToOption (last q2) with
     | None ->
-      q2.length <- q1.length;
-      q2.first <- q1.first;
-      q2.last <- q1.last;
+      lengthSet q2 (length q1);
+      firstSet q2 (first q1);
+      lastSet q2 (last q1);
       clear q1
-    | Some last ->
-      q2.length <- q2.length + q1.length;
-      nextSet last q1.first;
-      q2.last <- q1.last;
+    | Some l ->
+      lengthSet q2  (length q2 + length q1);
+      nextSet l (first q1);
+      lastSet q2 (last  q1);
       clear q1
