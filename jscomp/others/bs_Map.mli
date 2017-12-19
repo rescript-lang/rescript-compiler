@@ -13,16 +13,17 @@
 (** Adapted by authors of BuckleScript without using functors          *)
 (** The type of the map keys. *)
 type ('k, + 'a, 'id) t0 
-
-type ('k, +'a, 'id) t = {
-  dict : ('k,'id) Bs_Cmp.t ;
-  data : ('k, 'a, 'id) t0 
-}
 (** [('k, 'a, id) t] 
     ['k] the key type 
     ['a] the value type
     ['id] is a unique type for each keyed module
 *)
+
+
+type ('k,'v,'id) t = 
+  (('k,'id) Bs_Cmp.t,
+   ('k,'v, 'id) t0 ) Bs_Bag.bag
+
 (*
     How we remain soundness:
     The only way to create a value of type [_ t] from scratch 
@@ -52,14 +53,14 @@ val empty: ('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t
 (** The empty map. *)
 
 val ofArray0:  
-    cmp: ('k,'id) Bs_Cmp.cmp -> 
-    ('k * 'a) array ->  
-    ('k,'a,'id) t0 
+  cmp: ('k,'id) Bs_Cmp.cmp -> 
+  ('k * 'a) array ->  
+  ('k,'a,'id) t0 
 val ofArray:      
-    ('k,'id) Bs_Cmp.t -> 
-    ('k * 'a) array ->  
-    ('k,'a,'id) t 
-    
+  ('k,'id) Bs_Cmp.t -> 
+  ('k * 'a) array ->  
+  ('k,'a,'id) t 
+
 val isEmpty0 : ('k, 'a,'id) t0 -> bool 
 val isEmpty: ('k, 'a, 'id) t -> bool
 (** Test whether a map is empty or not. *)
@@ -87,13 +88,13 @@ val singleton: ('k,'id) Bs_Cmp.t ->
 *)
 
 val remove0: cmp: ('k,'id) Bs_Cmp.cmp -> 
-    'k -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0
+  'k -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0
 val remove: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t
 (** [remove x m] returns a map containing the same bindings as
     [m], except for [x] which is unbound in the returned map. *)
 
 val merge0: cmp: ('k,'id) Bs_Cmp.cmp ->     
-    ('k -> 'a option -> 'b option -> 'c option [@bs]) -> ('k, 'a, 'id ) t0 -> ('k, 'b,'id) t0 -> ('k, 'c,'id) t0    
+  ('k -> 'a option -> 'b option -> 'c option [@bs]) -> ('k, 'a, 'id ) t0 -> ('k, 'b,'id) t0 -> ('k, 'c,'id) t0    
 val merge:
   ('k -> 'a option -> 'b option -> 'c option [@bs]) -> ('k, 'a, 'id ) t -> ('k, 'b,'id) t -> ('k, 'c,'id) t
 (** [merge f m1 m2] computes a map whose keys is a subset of keys of [m1]
@@ -103,13 +104,13 @@ val merge:
 *)
 
 val compare0: cmp:('k,'id) Bs_Cmp.cmp -> 
-     ('a -> 'a -> int [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 -> int
+  ('a -> 'a -> int [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 -> int
 val compare: ('a -> 'a -> int [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> int
 (** Total ordering between maps.  The first argument is a total ordering
     used to compare data associated with equal keys in the two maps. *)
 
 val equal0: cmp: ('k,'id) Bs_Cmp.cmp ->     
-    ('a -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 -> bool
+  ('a -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 -> bool
 val equal: ('a -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> bool
 (** [equal cmp m1 m2] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
@@ -192,8 +193,8 @@ val maxBinding: ('k, 'a, 'id) t -> ('k * 'a) option
 
 
 val split0: 
-    cmp: ('k,'id) Bs_Cmp.cmp ->
-    'k -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 * 'a option * ('k, 'a, 'id) t0
+  cmp: ('k,'id) Bs_Cmp.cmp ->
+  'k -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 * 'a option * ('k, 'a, 'id) t0
 val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t
 (** [split x m] returns a triple [(l, data, r)], where
       [l] is the map with all the bindings of [m] whose 'k
@@ -207,24 +208,24 @@ val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) 
 
 
 val findOpt0: 
-    cmp: ('k,'id) Bs_Cmp.cmp -> 
-    'k -> ('k, 'a, 'id) t0 -> 'a option
+  cmp: ('k,'id) Bs_Cmp.cmp -> 
+  'k -> ('k, 'a, 'id) t0 -> 'a option
 val findOpt: 'k -> ('k, 'a, 'id) t -> 'a option
 (** [find x m] returns the current binding of [x] in [m],
     or raises [Not_found] if no such binding exists. *)
 
 val findAssert0: 
-    cmp: ('k,'id) Bs_Cmp.cmp -> 
-    'k -> ('k, 'a, 'id) t0 -> 'a 
+  cmp: ('k,'id) Bs_Cmp.cmp -> 
+  'k -> ('k, 'a, 'id) t0 -> 'a 
 val findAssert: 'k -> ('k, 'a, 'id) t -> 'a
 
 val findWithDefault0: 
-    cmp: ('k,'id) Bs_Cmp.cmp -> 
-    def:'a -> 
-    'k -> ('k, 'a, 'id) t0 -> 'a 
+  cmp: ('k,'id) Bs_Cmp.cmp -> 
+  def:'a -> 
+  'k -> ('k, 'a, 'id) t0 -> 'a 
 val findWithDefault:
-    def:'a -> 
-    'k -> ('k, 'a, 'id) t -> 'a 
+  def:'a -> 
+  'k -> ('k, 'a, 'id) t -> 'a 
 
 
 val map0: ('a -> 'b [@bs]) -> ('k, 'a, 'id) t0 -> ('k ,'b,'id ) t0    

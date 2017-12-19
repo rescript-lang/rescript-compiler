@@ -13,21 +13,16 @@
 (**  Adapted by Authors of BuckleScript 2017                           *)
 
 module N = Bs_internalBuckets 
-
-type ('a, 'b,'id) t0 = ('a,'b,'id) N.t0 =
-  {
-    mutable size: int;                        (* number of entries *)
-    mutable buckets: ('a, 'b) N.bucketlist array;  (* the buckets *)
-    initial_size: int;                        (* initial array size *)
-  }
+module B = Bs_Bag 
+type ('a, 'b,'id) t0 = ('a,'b,'id) N.t0 
 
 
-type ('a,'b) buckets = ('a,'b) N.buckets 
+type ('a,'b) bucket = ('a,'b) N.bucket
 
-type ('a,'b,'id) t = {
-  dict : ('a, 'id) Bs_Hash.t;
-  data : ('a,'b,'id) t0;
-}
+type ('a,'b,'id) t = 
+  (('a, 'id) Bs_Hash.t,
+   ('a,'b,'id) t0) B.bag 
+
 
 
 let rec insert_bucket ~hash ~h_buckets ~ndata_tail h old_bucket = 
@@ -47,13 +42,13 @@ let rec insert_bucket ~hash ~h_buckets ~ndata_tail h old_bucket =
 
 
 let resize ~hash h =
-  let odata = h.buckets in
+  let odata = N.buckets h in
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize >= osize then begin (* no overflow *)
     let h_buckets = N.makeSize nsize  in
     let ndata_tail = N.makeSize nsize  in (* keep track of tail *)
-    h.buckets <- h_buckets;          (* so that indexfun sees the new bucket count *)
+    N.bucketsSet h  h_buckets;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
       insert_bucket ~hash ~h_buckets ~ndata_tail h (Bs_Array.unsafe_get odata i)
     done;
@@ -66,14 +61,14 @@ let resize ~hash h =
 
 
 let add0 ~hash h key value =
-  let h_buckets = h.buckets in  
+  let h_buckets = N.buckets h in  
   let h_buckets_lenth = Array.length h_buckets in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (h_buckets_lenth - 1) in 
   let bucket = 
-    N.buckets ~key ~value ~next:(Bs_Array.unsafe_get h_buckets i) in  
+    N.bucket ~key ~value ~next:(Bs_Array.unsafe_get h_buckets i) in  
   Bs_Array.unsafe_set h_buckets i  (N.return bucket);
-  let h_new_size = h.size + 1 in 
-  h.size <- h_new_size;
+  let h_new_size = N.size h + 1 in 
+  N.sizeSet h  h_new_size;
   if h_new_size > h_buckets_lenth lsl 1 then resize ~hash  h
 
 
@@ -88,12 +83,12 @@ let rec remove_bucket ~eq h h_buckets  i key prec buckets =
         (match N.toOpt prec with
          | None -> Bs_Array.unsafe_set h_buckets i  cell_next
          | Some c -> N.nextSet c cell_next);
-        h.size <- h.size - 1;        
+        N.sizeSet h (N.size h - 1);        
       end
     else remove_bucket ~eq h h_buckets i key buckets cell_next
 
 let remove0 ~hash ~eq h key =  
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in  
   remove_bucket ~eq h h_buckets i key N.emptyOpt (Bs_Array.unsafe_get h_buckets i)
 
@@ -108,12 +103,12 @@ let rec removeAllBuckets ~eq h h_buckets  i key prec buckets =
         (match N.toOpt prec with
          | None -> Bs_Array.unsafe_set h_buckets i  cell_next
          | Some c -> N.nextSet c cell_next);
-        h.size <- h.size - 1;        
+        N.sizeSet h  (N.size h - 1);        
       end;
     removeAllBuckets ~eq h h_buckets i key buckets cell_next
 
 let removeAll0 ~hash ~eq h key =
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in  
   removeAllBuckets ~eq h h_buckets i key N.emptyOpt (Bs_Array.unsafe_get h_buckets i)
 
@@ -127,7 +122,7 @@ let rec find_rec ~eq key buckets =
     else find_rec ~eq key  (N.next cell)
 
 let findOpt0 ~hash ~eq h key =
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   match N.toOpt @@ Bs_Array.unsafe_get h_buckets nid with
   | None -> None
@@ -139,13 +134,13 @@ let findOpt0 ~hash ~eq h key =
       | None -> None
       | Some cell2 ->
         if (Bs_Hash.getEq eq) key 
-          (N.key cell2) [@bs] then 
-            Some (N.value cell2) else
+            (N.key cell2) [@bs] then 
+          Some (N.value cell2) else
           match N.toOpt (N.next cell2) with
           | None -> None
           | Some cell3 ->
             if (Bs_Hash.getEq eq) key 
-              (N.key cell3) [@bs] then 
+                (N.key cell3) [@bs] then 
               Some (N.value cell3)
             else 
               find_rec ~eq key (N.next cell3)
@@ -158,10 +153,10 @@ let findAll0 ~hash ~eq h key =
       []
     | Some cell ->
       if (Bs_Hash.getEq eq) 
-        (N.key cell) key [@bs]
+          (N.key cell) key [@bs]
       then (N.value cell) :: find_in_bucket (N.next cell)
       else find_in_bucket (N.next cell)  in
-  let h_buckets = h.buckets in     
+  let h_buckets = N.buckets h in     
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   find_in_bucket (Bs_Array.unsafe_get h_buckets nid)
 
@@ -181,14 +176,15 @@ let rec replace_bucket ~eq  key info buckets =
       replace_bucket ~eq key info (N.next cell)
 
 let replace0 ~hash ~eq  h key info =
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
   if replace_bucket ~eq key info l then begin
     Bs_Array.unsafe_set h_buckets i (N.return 
-                                       (N.buckets ~key ~value:info ~next:l));
-    h.size <- h.size + 1;
-    if h.size > Array.length h.buckets lsl 1 then resize ~hash h
+                                       (N.bucket ~key ~value:info ~next:l));
+    N.sizeSet h (N.size  h + 1);
+    if N.size h > Array.length (N.buckets h) lsl 1 then resize ~hash h
+    (* TODO: duplicate bucklets ? *)
   end 
 
 let rec mem_in_bucket ~eq key buckets = 
@@ -197,11 +193,11 @@ let rec mem_in_bucket ~eq key buckets =
     false
   | Some cell ->
     (Bs_Hash.getEq eq) 
-    (N.key cell) key [@bs] || 
+      (N.key cell) key [@bs] || 
     mem_in_bucket ~eq key (N.next cell)
 
 let mem0 ~hash ~eq h key =
-  let h_buckets = h.buckets in 
+  let h_buckets = N.buckets h in 
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   mem_in_bucket ~eq key (Bs_Array.unsafe_get h_buckets nid)
 
@@ -217,42 +213,49 @@ let filterMapInplace0 = N.filterMapInplace0
 
 (*  Wrapper  *)
 let create dict initialize_size = 
-  { data  = create0 initialize_size  ;
-    dict }
-let clear h = clear0 h.data
-let reset h = reset0 h.data
-let length h = length0 h.data                  
-let iter f h = iter0 f h.data
-let fold f h init = fold0 f h.data init 
-let logStats h = logStats0 h.data
+  B.bag ~data:(create0 initialize_size)
+    ~dict 
+let clear h = clear0 (B.data h)
+let reset h = reset0 (B.data h)
+let length h = length0 (B.data h)                 
+let iter f h = iter0 f (B.data h)
+let fold f h init = fold0 f (B.data h) init 
+let logStats h = logStats0 (B.data h)
 
 let add (type a) (type b ) (type id) (h : (a,b,id) t) (key:a) (info:b) = 
-  let module M = (val  h.dict) in 
-  add0 ~hash:M.hash h.data key info 
+  let dict,data = B.(dict h, data h) in 
+  let module M = (val  dict) in 
+  add0 ~hash:M.hash data key info 
 
 let remove (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
-  let module M = (val h.dict) in   
-  remove0 ~hash:M.hash ~eq:M.eq h.data key 
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  remove0 ~hash:M.hash ~eq:M.eq data key 
 
 let removeAll (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
-  let module M = (val h.dict) in   
-  removeAll0 ~hash:M.hash ~eq:M.eq h.data key 
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  removeAll0 ~hash:M.hash ~eq:M.eq data key 
 
 let findOpt (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
-  let module M = (val h.dict) in   
-  findOpt0 ~hash:M.hash ~eq:M.eq h.data key 
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  findOpt0 ~hash:M.hash ~eq:M.eq data key 
 
 let findAll (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
-  let module M = (val h.dict) in   
-  findAll0 ~hash:M.hash ~eq:M.eq h.data key   
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  findAll0 ~hash:M.hash ~eq:M.eq data key   
 
 let replace (type a) (type b) (type id)  (h : (a,b,id) t) (key : a) (info : b) =
-  let module M = (val h.dict) in 
-  replace0 ~hash:M.hash ~eq:M.eq h.data key info
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in 
+  replace0 ~hash:M.hash ~eq:M.eq data key info
 
 let mem (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
-  let module M = (val h.dict) in   
-  mem0 ~hash:M.hash ~eq:M.eq h.data key   
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  mem0 ~hash:M.hash ~eq:M.eq data key   
 
 let filterMapInplace  f h =
-  filterMapInplace0 f h.data
+  filterMapInplace0 f (B.data h)

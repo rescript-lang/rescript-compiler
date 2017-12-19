@@ -26,10 +26,11 @@
 
 (**/*)
 (**/*)
-
+module Bag = Bs_Bag
 module Cmp = Bs_Cmp
 module Hash = Bs_Hash
 module Array = Bs_Array
+module Queue = Bs_Queue
 module HashMap = Bs_HashMap
 module HashMapString = Bs_HashMapString
 module HashMapInt = Bs_HashMapInt

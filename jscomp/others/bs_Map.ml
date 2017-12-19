@@ -13,13 +13,14 @@
 (** Adapted by authors of BuckleScript without using functors          *)
 
 module N = Bs_internalAVLtree
-
+module B = Bs_Bag 
 type ('key, + 'a, 'id) t0 = ('key,'a,'id) N.t0 
 
-type ('k,'v,'id) t = {
-  dict : ('k,'id) Bs_Cmp.t ;
-  data : ('k,'v, 'id) t0 
-}
+type ('k,'v,'id) t = 
+  (('k,'id) Bs_Cmp.t,
+   ('k,'v, 'id) t0 ) B.bag 
+
+
 
 
 
@@ -116,18 +117,18 @@ let rec splitAux ~cmp x (n : _ N.node) : _ t0 * _ option  * _ t0 =
   let c = (Bs_Cmp.getCmp cmp) x v [@bs] in 
   if c = 0 then (l, Some d, r)
   else     
-    if c < 0 then
-      match N.toOpt l with 
-      | None -> 
-        N.(empty , None, return n)
-      | Some l -> 
-        let (ll, pres, rl) = splitAux ~cmp x l in (ll, pres, N.join rl v d r)
-    else
-      match N.toOpt r with 
-      | None ->
-        N.(return n, None, empty)
-      | Some r -> 
-        let (lr, pres, rr) = splitAux ~cmp x r in (N.join l v d lr, pres, rr)
+  if c < 0 then
+    match N.toOpt l with 
+    | None -> 
+      N.(empty , None, return n)
+    | Some l -> 
+      let (ll, pres, rl) = splitAux ~cmp x l in (ll, pres, N.join rl v d r)
+  else
+    match N.toOpt r with 
+    | None ->
+      N.(return n, None, empty)
+    | Some r -> 
+      let (lr, pres, rr) = splitAux ~cmp x r in (N.join l v d lr, pres, rr)
 
 
 let split0 ~cmp x n = 
@@ -190,122 +191,126 @@ let ofArray0 ~cmp (xs : _ array) : _ t0 =
 
 
 let empty dict = 
-  {
-    dict ;
-    data = empty0
-  }
-let isEmpty map = 
-  isEmpty0 map.data 
+  B.bag 
+    ~dict 
+    ~data:empty0
 
-let singleton dict k v = {
-  dict ; 
-  data = singleton0 k v 
-}
+let isEmpty map = 
+  isEmpty0 (B.data map)
+
+let singleton dict k v = 
+  B.bag ~dict 
+    ~data:(singleton0 k v)
+
 
 let iter f map = 
-  iter0 f map.data
-let fold f map = 
-  fold0 f map.data   
+  iter0 f (B.data map)
+let fold f map acc = 
+  fold0 f (B.data map) acc   
 let forAll f map = 
-  forAll0 f map.data   
+  forAll0 f (B.data map)   
 let exists f map =   
-  exists0 f map.data 
+  exists0 f (B.data map) 
 
 let filter f map = 
-  {data = filter0 f map.data  ;
-   dict= map.dict
-  } 
+  let dict, map = B.(dict map, data map) in 
+  B.bag ~dict ~data:(filter0 f map)
 
-let partition p map = 
-  let l,r = partition0 p map.data in 
-  let map_dict = map.dict in 
-  { data = l; dict = map_dict },
-  { data = r; dict = map_dict}
+let partition p map =   
+  let dict, map = B.(dict map, data map) in 
+  let l,r = partition0 p map in 
+  B.bag ~dict ~data:l, B.bag ~dict ~data:r 
 
 let cardinal map = 
-  cardinal0 map.data   
+  cardinal0 (B.data map)   
 
 let bindings map = 
-  bindings0 map.data 
+  bindings0 (B.data map) 
 
 let minBinding map = 
-  minBinding0 map.data 
+  minBinding0 (B.data map) 
 let maxBinding map =
-  maxBinding0 map.data   
+  maxBinding0 (B.data map)   
 
-let map f m = 
-  let m_dict = m.dict in 
-  { dict = m_dict  ; data = map0 f m.data}
+let map f map = 
+  let dict, map = B.(dict map, data map) in 
+  B.bag ~dict ~data:(map0 f map)
+  
 
-let mapi f m  = 
-  let m_dict = m.dict in 
-  { dict = m_dict  ; data = mapi0 f m.data}
+let mapi f map  = 
+  let dict,map = B.(dict map, data map) in 
+  B.bag ~dict ~data:(mapi0 f map )
+  
 
 
 let add (type k) (type v) (type id) key data (map : (k,v,id) t) = 
-  let map_dict = map.dict in 
-  let module X = (val map_dict) in 
-  { dict = map_dict ; 
-    data = add0 ~cmp:X.cmp key data map.data
-  }
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  B.bag ~dict ~data:(add0 ~cmp:X.cmp key data map)
 
+  
 let ofArray (type k) (type v) (type id) (dict : (k,id) Bs_Cmp.t) data = 
   let module M = (val dict ) in 
-  {
-  dict ; 
-  data = ofArray0 ~cmp:M.cmp data
-}
+  B.bag
+    ~dict 
+    ~data:(ofArray0 ~cmp:M.cmp data)
   
 
+
 let findOpt (type k) (type v) (type id) x (map : (k,v,id) t) = 
-  let module X = (val map.dict) in 
-  findOpt0 ~cmp:X.cmp x map.data
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  findOpt0 ~cmp:X.cmp x map
 
 let findAssert (type k) (type v) (type id) x (map : (k,v,id) t) = 
-  let module X = (val map.dict) in 
-  findAssert0 ~cmp:X.cmp x map.data
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  findAssert0 ~cmp:X.cmp x map
 
 let findWithDefault (type k) (type v) (type id) ~def x (map : (k,v,id) t) = 
-  let module X = (val map.dict) in 
-  findWithDefault0 ~cmp:X.cmp ~def x map.data
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  findWithDefault0 ~cmp:X.cmp ~def x map
 
 
 let mem (type k) (type v) (type id) x (map : (k,v,id) t) = 
-  let module X = (val map.dict) in 
-  mem0 ~cmp:X.cmp x map.data
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  mem0 ~cmp:X.cmp x map
 
 let remove (type k) (type v) (type id) x (map : (k,v,id) t) =   
-  let map_dict = map.dict in
-  let module X = (val map_dict) in 
-  { data = remove0 ~cmp:X.cmp x map.data ;
-    dict = map_dict
-  }
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  B.bag ~dict ~data:(remove0 ~cmp:X.cmp x map)
 
 let split (type k) (type v) (type id) x (map : (k,v,id) t) =   
-  let map_dict = map.dict in 
-  let module X = (val map_dict) in 
-  let l,v,r = split0 ~cmp:X.cmp x map.data in 
-  { dict = map_dict ; 
-    data = l
-  }, 
+    let dict,map = B.(dict map, data map) in 
+  
+  let module X = (val dict) in 
+  let l,v,r = split0 ~cmp:X.cmp x map in 
+  B.bag ~dict 
+    ~data:l
+  , 
   v ,
-  { dict = map_dict ; 
-    data = r
-  }
+  B.bag ~dict
+    ~data:r
+  
 
 let merge (type k) (type v) (type id) f (s1 : (k,v,id) t) 
     (s2 : (k,_,id) t) = 
-  let s1_dict = s1.dict in 
-  let module X = (val s1_dict) in 
-  { data = merge0 ~cmp:X.cmp f s1.data s2.data ;
-    dict = s1_dict
-  }
+  let dict, s1_data, s2_data = B.(dict s1, data s1, data s2) in 
+  let module X = (val dict) in 
+  B.bag ~data:(merge0 ~cmp:X.cmp f s1_data s2_data )
+    ~dict
+  
 
 let compare (type k) (type v) (type id) cmp 
     (m1 : (k,v,id) t) (m2 : (k,v,id) t) = 
-  let module X = (val m1.dict) in 
-  compare0 ~cmp:X.cmp cmp m1.data m2.data
+  let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
+  let module X = (val dict) in 
+  compare0 ~cmp:X.cmp cmp m1_data m2_data
 
 let equal (type k) (type v) (type id) cmp (m1 : (k,v,id) t) (m2 : (k,v,id) t) = 
-  let module X = (val m1.dict) in   
-  equal0 ~cmp:X.cmp cmp m1.data m2.data 
+  let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
+  let module X = (val dict) in 
+  equal0 ~cmp:X.cmp cmp m1_data m2_data 

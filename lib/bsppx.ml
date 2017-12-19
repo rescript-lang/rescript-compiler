@@ -19424,7 +19424,8 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
               self.structure_item self 
                 {str with pstr_desc = Pstr_type tdcls2} in 
             if Ast_payload.isAbstract actions then 
-              let codes = Ast_derive_abstract.handleTdcls tdcls in 
+              let codes = Ast_derive_abstract.handleTdcls tdcls2 in 
+              (* use [tdcls2] avoid nonterminating *)
               Ast_structure.fuseAll ~loc 
                 ( 
                   Ast_structure.constraint_ ~loc

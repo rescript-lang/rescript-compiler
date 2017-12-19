@@ -36,19 +36,21 @@ type 'a opt = 'a Js.undefined
 type 'a opt = 'a option 
 #end
 
-type ('a,'b) buckets = {
+type ('a,'b) bucket = {
   mutable key : 'a;
   mutable value : 'b;
-  mutable next : ('a,'b) buckets opt
-}  [@@bs.deriving abstract]  
+  mutable next : ('a,'b) bucket opt
+}  
 
-type ('a,'b) bucketlist = ('a, 'b) buckets opt
+and ('a,'b) bucket_opt = ('a, 'b) bucket opt
 
-type ('a, 'b,'id) t0 =
+
+and ('a, 'b,'id) t0 =
   { mutable size: int;                        (* number of entries *)
-    mutable buckets: ('a, 'b) bucketlist array;  (* the buckets *)
+    mutable buckets: ('a, 'b) bucket_opt array;  (* the buckets *)
     initial_size: int;                        (* initial array size *)
-  }
+  } 
+[@@bs.deriving abstract]
 
 #if BS then
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
@@ -76,29 +78,29 @@ let rec power_2_above x n =
   else power_2_above (x * 2) n
 
 let create0  initial_size =
-  let s = power_2_above 16 initial_size in
-  { initial_size = s; size = 0; 
-    buckets = makeSize s  }
+  let s = power_2_above 16 initial_size in  
+  t0  ~initial_size:s ~size:0
+    ~buckets:(makeSize s)
 
 let clear0 h =
-  h.size <- 0;
-  let h_buckets = h.buckets in 
+  sizeSet h 0;
+  let h_buckets = buckets h in 
   let len = Bs_Array.length h_buckets in
   for i = 0 to len - 1 do
     Bs_Array.unsafe_set h_buckets i  emptyOpt
   done
 
 let reset0 h =
-  let len = Bs_Array.length h.buckets in
-  let h_initial_size = h.initial_size in
+  let len = Bs_Array.length (buckets h) in
+  let h_initial_size = initial_size h in
   if len = h_initial_size then
     clear0 h
   else begin
-    h.size <- 0;
-    h.buckets <- makeSize h_initial_size 
+    sizeSet h 0;
+    bucketsSet h (makeSize h_initial_size)
   end
 
-let length0 h = h.size
+let length0 h = size h
 
 
 let rec do_bucket_iter ~f buckets = 
@@ -109,7 +111,7 @@ let rec do_bucket_iter ~f buckets =
     f (key cell)  (value cell) [@bs]; do_bucket_iter ~f (next cell)
 
 let iter0 f h =
-  let d = h.buckets in
+  let d = buckets h in
   for i = 0 to Bs_Array.length d - 1 do
     do_bucket_iter f (Bs_Array.unsafe_get d i)
   done
@@ -123,7 +125,7 @@ let rec do_bucket_fold ~f b accu =
     do_bucket_fold ~f (next cell) (f (key cell) (value cell) accu [@bs]) 
 
 let fold0 f h init =
-  let d = h.buckets in
+  let d = buckets h in
   let accu = ref init in
   for i = 0 to Bs_Array.length d - 1 do
     accu := do_bucket_fold ~f (Bs_Array.unsafe_get d i) !accu
@@ -141,43 +143,43 @@ let max (m : int) n = if m > n then m else n
 
 let logStats0 h =
   let mbl =
-    Bs_Array.foldLeft (fun[@bs] m b -> max m (bucket_length 0 b)) 0 h.buckets in
+    Bs_Array.foldLeft (fun[@bs] m b -> max m (bucket_length 0 b)) 0 (buckets h) in
   let histo = Bs_Array.make (mbl + 1) 0 in
   Bs_Array.iter
     (fun[@bs] b ->
        let l = bucket_length 0 b in
        Bs_Array.unsafe_set histo l (Bs_Array.unsafe_get histo l + 1)
     )
-    h.buckets;
-  Js.log [%obj{ num_bindings = h.size;
-                num_buckets = Bs_Array.length h.buckets;
+    (buckets h);
+  Js.log [%obj{ num_bindings = (size h);
+                num_buckets = Bs_Array.length (buckets h);
                 max_bucket_length = mbl;
                 bucket_histogram = histo }]
 
 
-let rec filterMapInplaceBucket f h i prec (buckets : _ bucketlist) =
-  match toOpt buckets with 
+let rec filterMapInplaceBucket f h i prec bucket =
+  match toOpt bucket with 
   | None ->
     begin match toOpt prec with
-      | None -> Bs_Array.unsafe_set h.buckets i emptyOpt
+      | None -> Bs_Array.unsafe_set (buckets h ) i emptyOpt
       | Some cell -> nextSet  cell emptyOpt
     end
   | (Some  cell) ->
     begin match f (key cell) (value cell) [@bs] with
       | None ->
-        h.size <- h.size - 1; (* delete *)
+        sizeSet h (size h - 1); (* delete *)
         filterMapInplaceBucket f h i prec (next cell)
       | Some data -> (* replace *)
         begin match toOpt prec with
-          | None -> Bs_Array.unsafe_set h.buckets i  buckets 
-          | Some c -> nextSet cell buckets
+          | None -> Bs_Array.unsafe_set (buckets h) i  bucket 
+          | Some c -> nextSet cell bucket
         end;
         valueSet cell data;
-        filterMapInplaceBucket f h i buckets (next cell)
+        filterMapInplaceBucket f h i bucket (next cell)
     end
 
 let filterMapInplace0 f h =
-  let h_buckets = h.buckets in
+  let h_buckets = buckets h in
   for i = 0 to Bs_Array.length h_buckets - 1 do
     filterMapInplaceBucket f h i emptyOpt (Bs_Array.unsafe_get h_buckets i)
   done
