@@ -4135,6 +4135,13 @@ external ff :
     OUnit.assert_bool __LOC__ 
     (Ext_string.contain_substring should_err.stderr
     "Unused")
+  end;
+  __LOC__ >:: begin fun _ -> 
+    let should_err = bsc_check_eval {|
+    type -'a t = {k : 'a } [@@bs.deriving abstract]
+    |} in 
+    OUnit.assert_bool __LOC__
+    (Ext_string.contain_substring should_err.stderr "contravariant")
   end
     (* __LOC__ >:: begin fun _ ->  *)
     (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)

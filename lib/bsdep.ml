@@ -29143,6 +29143,26 @@ let handle_config (config : Parsetree.expression option) =
     U.invalid_config config
   | None -> ()
 
+(* see #2337 
+  TODO: relax it to allow (int -> int [@bs])
+*)  
+let rec checkNotFunciton (ty : Parsetree.core_type) = 
+  match ty.ptyp_desc with 
+  | Ptyp_poly (_,ty) -> checkNotFunciton ty 
+  | Ptyp_alias (ty,_) -> checkNotFunciton ty 
+  | Ptyp_arrow _ -> 
+    Location.raise_errorf 
+    ~loc:ty.ptyp_loc 
+    "syntactic function type is not allowed when working with abstract bs.deriving, create a named type as work around"
+  | Ptyp_any 
+  | Ptyp_var _
+  | Ptyp_tuple _ 
+  | Ptyp_constr _
+  | Ptyp_object _  
+  | Ptyp_class _ 
+  | Ptyp_variant _
+  | Ptyp_package _
+  | Ptyp_extension _ -> () 
 let handleTdcl (tdcl : Parsetree.type_declaration) =   
   let core_type = U.core_type_of_type_declaration tdcl in 
   let loc = tdcl.ptype_loc in 
@@ -29169,19 +29189,21 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
       Ext_list.fold_right (fun (x: Parsetree.label_declaration) acc -> 
           let pld_name = x.pld_name.txt in 
           let pld_loc = x.pld_name.loc in 
+          let pld_type = x.pld_type in
+          let () = checkNotFunciton pld_type in 
           let setter = 
             Val.mk 
               {loc = pld_loc; txt = pld_name}
               ~attrs:[Ast_attributes.bs_get]
               ~prim:[pld_name]
-              (Typ.arrow "" core_type x.pld_type) :: acc in 
+              (Typ.arrow "" core_type pld_type) :: acc in 
           match x.pld_mutable with 
           | Mutable -> 
             Val.mk 
               {loc = pld_loc; txt = pld_name ^ "Set"}
               ~attrs:[Ast_attributes.bs_set]
               ~prim:[pld_name]
-              (Typ.arrow "" core_type (Typ.arrow "" x.pld_type (Ast_literal.type_unit ()))) :: setter
+              (Typ.arrow "" core_type (Typ.arrow "" pld_type (Ast_literal.type_unit ()))) :: setter
           | Immutable -> setter 
         ) label_declarations []
     in 
@@ -37302,11 +37324,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           -> 
           let loc = sigi.psig_loc in 
           if Ast_payload.isAbstract actions then 
-            let type_, codes = Ast_derive_abstract.handleTdclsInSig tdcls in 
-            Ast_signature.fuseAll ~loc 
-              (type_ ::
-               self.signature self
-                 codes)
+            Location.raise_errorf ~loc "bs.deriving abstract is not supported in signature language"
           else 
             let newTdcls = newTdcls tdcls newAttrs in             
             Ast_signature.fuseAll ~loc 
@@ -37378,24 +37396,31 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
              explict_nonrec 
             }, newAttrs ->                         
             let loc = str.pstr_loc in      
+            let tdcls2 = newTdcls tdcls newAttrs in 
+            let newStr = 
+              self.structure_item self 
+                {str with pstr_desc = Pstr_type tdcls2} in 
             if Ast_payload.isAbstract actions then 
               let type_, codes = Ast_derive_abstract.handleTdcls tdcls in 
               Ast_structure.fuseAll ~loc 
-                (type_::
-                 self.structure self 
-                   codes)
+                ( 
+                  Ast_structure.constraint_ ~loc
+                    [newStr] []::
+                  type_::
+                  self.structure self 
+                    codes)
             else
-              let tdcls2 = newTdcls tdcls newAttrs in 
               Ast_structure.fuseAll ~loc                                
-                (self.structure self 
+                (newStr :: 
+                 self.structure self 
                    (
-                     {str with pstr_desc = Pstr_type tdcls2} :: 
                      List.map 
                        (fun action -> 
                           Ast_derive.gen_structure_signature 
                             loc
                             tdcls action explict_nonrec
-                       )    actions))
+                       )    actions
+                   ))
           | {bs_deriving = None }, _  -> 
             Bs_ast_mapper.default_mapper.structure_item self str
           end
