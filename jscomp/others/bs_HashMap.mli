@@ -2,11 +2,10 @@
 
 type ('a, 'b, 'id) t0
 
-type ('a,'b,'id) t = {
-  dict : ('a, 'id) Bs_Hash.t;
-  data : ('a,'b,'id) t0;
-}
-
+type ('a,'b,'id) t = 
+    (('a, 'id) Bs_Hash.t,
+     ('a,'b,'id) t0) Bs_Bag.bag 
+  
 (** The type of hash tables from type ['a] to type ['b]. *)
 
 val create0 : int -> ('a, 'b, 'id) t0

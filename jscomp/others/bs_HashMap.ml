@@ -13,16 +13,16 @@
 (**  Adapted by Authors of BuckleScript 2017                           *)
 
 module N = Bs_internalBuckets 
-
+module B = Bs_Bag 
 type ('a, 'b,'id) t0 = ('a,'b,'id) N.t0 
 
 
 type ('a,'b) bucket = ('a,'b) N.bucket
 
-type ('a,'b,'id) t = {
-  dict : ('a, 'id) Bs_Hash.t;
-  data : ('a,'b,'id) t0;
-}
+type ('a,'b,'id) t = 
+  (('a, 'id) Bs_Hash.t,
+   ('a,'b,'id) t0) B.bag 
+
 
 
 let rec insert_bucket ~hash ~h_buckets ~ndata_tail h old_bucket = 
@@ -134,13 +134,13 @@ let findOpt0 ~hash ~eq h key =
       | None -> None
       | Some cell2 ->
         if (Bs_Hash.getEq eq) key 
-          (N.key cell2) [@bs] then 
-            Some (N.value cell2) else
+            (N.key cell2) [@bs] then 
+          Some (N.value cell2) else
           match N.toOpt (N.next cell2) with
           | None -> None
           | Some cell3 ->
             if (Bs_Hash.getEq eq) key 
-              (N.key cell3) [@bs] then 
+                (N.key cell3) [@bs] then 
               Some (N.value cell3)
             else 
               find_rec ~eq key (N.next cell3)
@@ -153,7 +153,7 @@ let findAll0 ~hash ~eq h key =
       []
     | Some cell ->
       if (Bs_Hash.getEq eq) 
-        (N.key cell) key [@bs]
+          (N.key cell) key [@bs]
       then (N.value cell) :: find_in_bucket (N.next cell)
       else find_in_bucket (N.next cell)  in
   let h_buckets = N.buckets h in     
@@ -193,7 +193,7 @@ let rec mem_in_bucket ~eq key buckets =
     false
   | Some cell ->
     (Bs_Hash.getEq eq) 
-    (N.key cell) key [@bs] || 
+      (N.key cell) key [@bs] || 
     mem_in_bucket ~eq key (N.next cell)
 
 let mem0 ~hash ~eq h key =
@@ -213,42 +213,49 @@ let filterMapInplace0 = N.filterMapInplace0
 
 (*  Wrapper  *)
 let create dict initialize_size = 
-  { data  = create0 initialize_size  ;
-    dict }
-let clear h = clear0 h.data
-let reset h = reset0 h.data
-let length h = length0 h.data                  
-let iter f h = iter0 f h.data
-let fold f h init = fold0 f h.data init 
-let logStats h = logStats0 h.data
+  B.bag ~data:(create0 initialize_size)
+    ~dict 
+let clear h = clear0 (B.data h)
+let reset h = reset0 (B.data h)
+let length h = length0 (B.data h)                 
+let iter f h = iter0 f (B.data h)
+let fold f h init = fold0 f (B.data h) init 
+let logStats h = logStats0 (B.data h)
 
 let add (type a) (type b ) (type id) (h : (a,b,id) t) (key:a) (info:b) = 
-  let module M = (val  h.dict) in 
-  add0 ~hash:M.hash h.data key info 
+  let dict,data = B.(dict h, data h) in 
+  let module M = (val  dict) in 
+  add0 ~hash:M.hash data key info 
 
 let remove (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
-  let module M = (val h.dict) in   
-  remove0 ~hash:M.hash ~eq:M.eq h.data key 
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  remove0 ~hash:M.hash ~eq:M.eq data key 
 
 let removeAll (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
-  let module M = (val h.dict) in   
-  removeAll0 ~hash:M.hash ~eq:M.eq h.data key 
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  removeAll0 ~hash:M.hash ~eq:M.eq data key 
 
 let findOpt (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
-  let module M = (val h.dict) in   
-  findOpt0 ~hash:M.hash ~eq:M.eq h.data key 
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  findOpt0 ~hash:M.hash ~eq:M.eq data key 
 
 let findAll (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
-  let module M = (val h.dict) in   
-  findAll0 ~hash:M.hash ~eq:M.eq h.data key   
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  findAll0 ~hash:M.hash ~eq:M.eq data key   
 
 let replace (type a) (type b) (type id)  (h : (a,b,id) t) (key : a) (info : b) =
-  let module M = (val h.dict) in 
-  replace0 ~hash:M.hash ~eq:M.eq h.data key info
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in 
+  replace0 ~hash:M.hash ~eq:M.eq data key info
 
 let mem (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
-  let module M = (val h.dict) in   
-  mem0 ~hash:M.hash ~eq:M.eq h.data key   
+  let dict,data = B.(dict h, data h) in
+  let module M = (val dict) in   
+  mem0 ~hash:M.hash ~eq:M.eq data key   
 
 let filterMapInplace  f h =
-  filterMapInplace0 f h.data
+  filterMapInplace0 f (B.data h)
