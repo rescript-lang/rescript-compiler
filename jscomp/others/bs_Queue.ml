@@ -14,22 +14,25 @@
 (*                                                                        *)
 (**************************************************************************)
 
-type 'a node =
-  { content: 'a; mutable next: 'a cell }
+type 'a node = { 
+  content: 'a; 
+  mutable next: 'a cell 
+}
 and 'a cell = 'a node Js.null
 and 'a t = {
   mutable length: int;
   mutable first: 'a cell;
   mutable last: 'a cell
 } [@@bs.deriving abstract]
+
 let null  = Js.null 
 let return = Js.Null.return 
 
 let create () = 
   t 
-  ~length: 0
-  ~first:null
-  ~last:null
+    ~length: 0
+    ~first:null
+    ~last:null
 
 
 let clear q =
@@ -37,11 +40,11 @@ let clear q =
   firstSet q  null;
   lastSet q  null
 
-let add x (q : _ t) =
+let push x q  =
   let cell = return @@ node 
-    ~content:x
-    ~next:null
-   in
+      ~content:x
+      ~next:null
+  in
   match Js.nullToOption (last q )with
   | None ->
     lengthSet  q 1;
@@ -52,48 +55,87 @@ let add x (q : _ t) =
     nextSet last  cell;
     lastSet q  cell
 
-let push =
-  add
 
 let peekOpt q =
   match Js.nullToOption (first q ) with
   | None -> None
   | Some v -> Some (content v)
 
+let peekNull q =
+  match Js.nullToOption (first q ) with
+  | None -> null
+  | Some v -> return (content v)
+
+
+let peekAssert q =
+  match Js.nullToOption (first q ) with
+  | None -> [%assert "Bs.Queue.Empty"]
+  | Some v -> content v
 
 let popOpt q =
   match Js.nullToOption (first q ) with
   | None -> None
   | Some x  ->
-
     let next = next x in 
     if Js.Null.test next then 
-    begin 
-      clear q;
-      Some (content x)
-    end
+      begin (* only one element*)
+        clear q;
+        Some (content x)
+      end
     else begin 
-    lengthSet q (length q - 1);
-    firstSet q next;
-    Some(content x) 
+      lengthSet q (length q - 1);
+      firstSet q next;
+      Some(content x) 
     end
 
+let popAssert q =
+  match Js.nullToOption (first q ) with
+  | None -> [%assert "Bs.Queue.Empty"]
+  | Some x  ->
+    let next = next x in 
+    if Js.Null.test next then 
+      begin (* only one element*)
+        clear q;
+        content x
+      end
+    else begin 
+      lengthSet q (length q - 1);
+      firstSet q next;
+      content x 
+    end    
 
-let copy =
-  let rec copy q_res prev cell =
-    match Js.nullToOption cell with
-    | None -> lastSet q_res  prev; q_res
-    | Some x  ->
+let popNull q =
+  match Js.nullToOption (first q ) with
+  | None -> null
+  | Some x  ->
+    let next = next x in 
+    if Js.Null.test next then 
+      begin (* only one element*)
+        clear q;
+        return (content x)
+      end
+    else begin 
+      lengthSet q (length q - 1);
+      firstSet q next;
+      return (content x) 
+    end
+
+let rec copyAux qRes prev cell =
+  match Js.nullToOption cell with
+  | None -> lastSet qRes  prev; qRes
+  | Some x  ->
     (* Cons { content; next } *)
-      let content = content x in 
-      let res = return @@ node ~content ~next:null in
-      begin match Js.nullToOption prev with
-      | None -> firstSet q_res res
+    let content = content x in 
+    let res = return @@ node ~content ~next:null in
+    begin match Js.nullToOption prev with
+      | None -> firstSet qRes res
       | Some p -> nextSet p  res
-      end;
-      copy q_res res (next x)
-  in
-  fun q -> copy (t  ~length:(length q) ~first:null ~last:null)  null (first q)
+    end;
+    copyAux qRes res (next x)
+
+let copy q =
+
+  copyAux (t  ~length:(length q) ~first:null ~last:null)  null (first q)
 
 let isEmpty q =
   length q = 0
@@ -101,25 +143,25 @@ let isEmpty q =
 let length q =
   length q
 
-let iter =
-  let rec iter f cell =
-    match Js.nullToOption cell with
-    | None -> ()
-    | Some x  ->
-      f (content x) [@bs];
-      iter f (next x)
-  in
-  fun f q -> iter f (first q)
+let rec iterAux f cell =
+  match Js.nullToOption cell with
+  | None -> ()
+  | Some x  ->
+    f (content x) [@bs];
+    iterAux f (next x)
 
-let fold =
-  let rec fold f accu cell =
-    match Js.nullToOption cell with
-    | None -> accu
-    | Some x  ->
-      let accu = f accu (content x) [@bs] in
-      fold f accu (next x)
-  in
-  fun f accu q -> fold f accu (first q)
+let iter f q =
+  iterAux f (first q)
+
+let rec foldAux f accu cell =
+  match Js.nullToOption cell with
+  | None -> accu
+  | Some x  ->
+    let accu = f accu (content x) [@bs] in
+    foldAux f accu (next x)
+
+let fold f accu q =
+  foldAux f accu (first q)
 
 let transfer q1 q2 =
   if length q1 > 0 then
@@ -134,3 +176,15 @@ let transfer q1 q2 =
       nextSet l (first q1);
       lastSet q2 (last  q1);
       clear q1
+
+let rec fillAux i arr cell =       
+  match Js.nullToOption cell with 
+  | None -> ()
+  | Some x ->
+    Bs_Array.unsafe_set arr i (content x);
+    fillAux (i + 1) arr (next x) 
+
+let toArray x =         
+  let v = Bs_Array.makeUninitializedUnsafe (length x) in 
+  fillAux 0 v (first x);
+  v

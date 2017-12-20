@@ -47,7 +47,7 @@ external make : int -> 'a -> 'a array = "caml_make_vect"
    size is only [Sys.max_array_length / 2].*)
 
 external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
-
+external makeUninitializedUnsafe : int -> 'a array = "Array" [@@bs.new]
 val init : int -> (int -> 'a [@bs]) -> 'a array
 (** [Array.init n f] returns a fresh array of length [n],
    with element number [i] initialized to the result of [f i].
