@@ -21,8 +21,46 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+type 'a opt = 'a Js.undefined
 
-type (+ 'k, + 'v) bag = {
-  dict : 'k ;
-  data : 'v
-} [@@bs.deriving abstract]
+type 'c container =
+  { mutable size: int;                        (* number of entries *)
+    mutable buckets: 'c opt array;  (* the buckets *)
+    initialSize: int;                        (* initial array size *)
+  } [@@bs.deriving abstract]
+
+external makeSize : int -> 'a opt array = "Array" [@@bs.new]      
+external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
+external return : 'a -> 'a opt = "%identity" 
+let emptyOpt = Js.undefined   
+let rec power_2_above x n =
+  if x >= n then x
+  else if x * 2 < x then x (* overflow *)
+  else power_2_above (x * 2) n
+
+let create0  initialSize =
+  let s = power_2_above 16 initialSize in  
+  container  ~initialSize:s ~size:0
+    ~buckets:(makeSize s)
+
+let clear0 h =
+  sizeSet h 0;
+  let h_buckets = buckets h in 
+  let len = Bs_Array.length h_buckets in
+  for i = 0 to len - 1 do
+    Bs_Array.unsafe_set h_buckets i  emptyOpt
+  done
+
+let reset0 h =
+  let len = Bs_Array.length (buckets h) in
+  let h_initialSize = initialSize h in
+  if len = h_initialSize then
+    clear0 h
+  else begin
+    sizeSet h 0;
+    bucketsSet h (makeSize h_initialSize)
+  end
+
+let length0 h = size h
+  
+

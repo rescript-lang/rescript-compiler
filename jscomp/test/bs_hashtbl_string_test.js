@@ -9,6 +9,7 @@ var Bs_HashMapInt           = require("../../lib/js/bs_HashMapInt.js");
 var Bs_HashMapString        = require("../../lib/js/bs_HashMapString.js");
 var Bs_internalAVLtree      = require("../../lib/js/bs_internalAVLtree.js");
 var Bs_internalBuckets      = require("../../lib/js/bs_internalBuckets.js");
+var Bs_internalBucketsType  = require("../../lib/js/bs_internalBucketsType.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function hash_string(s) {
@@ -72,7 +73,7 @@ var Int = /* module */[
 
 var empty = {
   dict: Int,
-  data: Bs_internalBuckets.create0(500000)
+  data: Bs_internalBucketsType.create0(500000)
 };
 
 function bench() {
@@ -98,7 +99,7 @@ function bench() {
 function bench2(m) {
   var empty = {
     dict: m,
-    data: Bs_internalBuckets.create0(1000000)
+    data: Bs_internalBucketsType.create0(1000000)
   };
   var hash = m[/* hash */0];
   var eq = m[/* eq */1];
@@ -216,7 +217,7 @@ function bench4() {
 function bench5() {
   var table = {
     dict: Int,
-    data: Bs_internalBuckets.create0(1000000)
+    data: Bs_internalBucketsType.create0(1000000)
   };
   var table_data = table.data;
   var hash = Int_000;

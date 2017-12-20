@@ -13,7 +13,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-
+(* Adapted siginifcantly by BuckleScript Authors                          *)
 type 'a node = { 
   content: 'a; 
   mutable next: 'a cell 
