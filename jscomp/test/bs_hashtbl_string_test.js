@@ -6,6 +6,7 @@ var Caml_hash               = require("../../lib/js/caml_hash.js");
 var Bs_HashMap              = require("../../lib/js/bs_HashMap.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
 var Bs_HashMapInt           = require("../../lib/js/bs_HashMapInt.js");
+var Bs_HashSetInt           = require("../../lib/js/bs_HashSetInt.js");
 var Bs_HashMapString        = require("../../lib/js/bs_HashMapString.js");
 var Bs_internalAVLtree      = require("../../lib/js/bs_internalAVLtree.js");
 var Bs_internalBuckets      = require("../../lib/js/bs_internalBuckets.js");
@@ -17,15 +18,15 @@ function hash_string(s) {
 }
 
 var hashString = (function (str) {
-  var hash = 5381,
-      i    = str.length | 0;
+                                              var hash = 5381,
+                                              i    = str.length | 0;
 
-  while(i !== 0) {
-    hash = (hash * 33) ^ str.charCodeAt(--i);
-  }
-  return hash  
-}
-);
+                                              while(i !== 0) {
+                                              hash = (hash * 33) ^ str.charCodeAt(--i);
+                                              }
+                                              return hash  
+                                              }
+                                            );
 
 var String_000 = Hashtbl.hash;
 
@@ -177,7 +178,7 @@ function bench3(m) {
   }
 }
 
-var S = /* module */[/* cmp */Caml_string.caml_string_compare];
+var Sx = /* module */[/* cmp */Caml_string.caml_string_compare];
 
 function bench4() {
   var table = Bs_HashMapString.create(1000000);
@@ -235,7 +236,7 @@ function bench5() {
             [
               "bs_hashtbl_string_test.ml",
               135,
-              4
+              6
             ]
           ];
     }
@@ -296,29 +297,74 @@ function bench6() {
   }
 }
 
-console.time("bs_hashtbl_string_test.ml 169");
+function bench7() {
+  console.time("bs_hashtbl_string_test.ml 163");
+  var timed = Bs_HashSetInt.create(2000000);
+  console.timeEnd("bs_hashtbl_string_test.ml 163");
+  console.time("bs_hashtbl_string_test.ml 165");
+  for(var i = 0; i <= 1000000; ++i){
+    Bs_HashSetInt.add(timed, i);
+  }
+  console.timeEnd("bs_hashtbl_string_test.ml 165");
+  console.time("bs_hashtbl_string_test.ml 169");
+  for(var i$1 = 0; i$1 <= 1000000; ++i$1){
+    if (!Bs_HashSetInt.mem(timed, i$1)) {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            [
+              "bs_hashtbl_string_test.ml",
+              170,
+              4
+            ]
+          ];
+    }
+    
+  }
+  console.timeEnd("bs_hashtbl_string_test.ml 169");
+  console.time("bs_hashtbl_string_test.ml 173");
+  for(var i$2 = 0; i$2 <= 1000000; ++i$2){
+    Bs_HashSetInt.remove(timed, i$2);
+  }
+  console.timeEnd("bs_hashtbl_string_test.ml 173");
+  if (Bs_HashSetInt.length(timed)) {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "bs_hashtbl_string_test.ml",
+            176,
+            2
+          ]
+        ];
+  } else {
+    return 0;
+  }
+}
 
-bench6(/* () */0);
+console.time("bs_hashtbl_string_test.ml 187");
 
-console.timeEnd("bs_hashtbl_string_test.ml 169");
+bench7(/* () */0);
 
-console.time("bs_hashtbl_string_test.ml 170");
+console.timeEnd("bs_hashtbl_string_test.ml 187");
 
-bench6(/* () */0);
+console.time("bs_hashtbl_string_test.ml 188");
 
-console.timeEnd("bs_hashtbl_string_test.ml 170");
+bench7(/* () */0);
 
-console.time("bs_hashtbl_string_test.ml 171");
+console.timeEnd("bs_hashtbl_string_test.ml 188");
 
-bench6(/* () */0);
+console.time("bs_hashtbl_string_test.ml 189");
 
-console.timeEnd("bs_hashtbl_string_test.ml 171");
+bench7(/* () */0);
+
+console.timeEnd("bs_hashtbl_string_test.ml 189");
 
 var count = 1000000;
 
 var initial_size = 1000000;
 
 var B = 0;
+
+var S = 0;
 
 exports.hash_string  = hash_string;
 exports.hashString   = hashString;
@@ -333,8 +379,10 @@ exports.initial_size = initial_size;
 exports.B            = B;
 exports.bench2       = bench2;
 exports.bench3       = bench3;
-exports.S            = S;
+exports.Sx           = Sx;
 exports.bench4       = bench4;
 exports.bench5       = bench5;
 exports.bench6       = bench6;
+exports.S            = S;
+exports.bench7       = bench7;
 /* hashString Not a pure module */

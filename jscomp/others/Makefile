@@ -18,8 +18,12 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Hash\
 	bs_Queue\
 	bs_internalBucketsType\
+	bs_internalSetBuckets\
 	bs_internalBuckets\
 	bs_HashMap\
+	bs_HashSet\
+	bs_HashSetString\
+	bs_HashSetInt\
 	bs_Bag\
 	bs_Cmp\
 	bs_Map\
@@ -61,6 +65,14 @@ clean::
 	rm -f *.rawlambda *.lam *.lambda *.map
 
 ifndef BS_RELEASE_BUILD
+bs_HashSetString.ml: hashset.cppo.ml
+	cppo -D TYPE_STRING $^ > $@
+bs_HashSetInt.ml: hashset.cppo.ml
+	cppo -D TYPE_INT $^ > $@
+bs_HashSetString.mli: hashset.cppo.mli
+	cppo -D TYPE_STRING $^ > $@
+bs_HashSetInt.mli: hashset.cppo.mli
+	cppo -D TYPE_INT $^ > $@
 bs_HashMapString.ml: hashmap.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
 bs_HashMapInt.ml: hashmap.cppo.ml

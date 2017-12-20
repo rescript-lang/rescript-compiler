@@ -19,16 +19,16 @@
 (* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 module C = Bs_internalBucketsType
-#if BS then
-type 'a opt = 'a Js.undefined
-#else 
-type 'a opt = 'a option 
-#end
+(* TODO:
+   the current implementation relies on the fact that bucket 
+   empty value is [undefined] in both places,
+   in theory, it can be different 
 
+*)
 type ('a,'b) bucket = {
   mutable key : 'a;
   mutable value : 'b;
-  mutable next : ('a,'b) bucket opt
+  mutable next : ('a,'b) bucket C.opt
 }  
 and ('a, 'b) t0 = ('a,'b) bucket C.container  
 [@@bs.deriving abstract]
@@ -97,29 +97,37 @@ let logStats0 h =
                 bucket_histogram = histo }]
 
 
-let rec filterMapInplaceBucket f h i prec bucket =
-  match C.toOpt bucket with 
-  | None ->
-    begin match C.toOpt prec with
-      | None -> Bs_Array.unsafe_set (C.buckets h ) i C.emptyOpt
-      | Some cell -> nextSet  cell C.emptyOpt
-    end
-  | (Some  cell) ->
-    begin match f (key cell) (value cell) [@bs] with
-      | None ->
-        C.sizeSet h (C.size h - 1); (* delete *)
-        filterMapInplaceBucket f h i prec (next cell)
-      | Some data -> (* replace *)
-        begin match C.toOpt prec with
-          | None -> Bs_Array.unsafe_set (C.buckets h) i  bucket 
-          | Some c -> nextSet cell bucket
-        end;
-        valueSet cell data;
-        filterMapInplaceBucket f h i bucket (next cell)
-    end
+let rec filterMapInplaceBucket f h i prec cell =
+  let n = next cell in
+  begin match f (key cell) (value cell) [@bs] with
+    | None ->
+      C.sizeSet h (C.size h - 1); (* delete *)
+      (match C.toOpt n with 
+       | Some nextCell -> 
+         filterMapInplaceBucket f h i prec nextCell
+       | None -> 
+         match C.toOpt prec with 
+         | None -> Bs_Array.unsafe_set (C.buckets h) i prec
+         | Some cell -> nextSet cell n
+      )
+    | Some data -> (* replace *)
+      let bucket = C.return cell in 
+      begin match C.toOpt prec with
+        | None -> Bs_Array.unsafe_set (C.buckets h) i  bucket 
+        | Some c -> nextSet cell bucket
+      end;
+      valueSet cell data;
+      match C.toOpt n with 
+      | None -> nextSet cell n 
+      | Some nextCell -> 
+        filterMapInplaceBucket f h i bucket nextCell
+  end
 
 let filterMapInplace0 f h =
   let h_buckets = C.buckets h in
   for i = 0 to Bs_Array.length h_buckets - 1 do
-    filterMapInplaceBucket f h i C.emptyOpt (Bs_Array.unsafe_get h_buckets i)
+    let v = Bs_Array.unsafe_get h_buckets i in 
+    match C.toOpt v with 
+    | None -> ()
+    | Some v -> filterMapInplaceBucket f h i C.emptyOpt v
   done

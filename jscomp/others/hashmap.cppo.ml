@@ -14,7 +14,7 @@ let hash (s : key) =
   final_mix (caml_hash_mix_int 0 s)
             #else 
   [%error "unknown type"]
-  #endif
+#endif
 
 (***********************************************************************)
 (*                                                                     *)

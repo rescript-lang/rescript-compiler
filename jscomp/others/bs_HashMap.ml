@@ -188,19 +188,22 @@ let replace0 ~hash ~eq  h key info =
     (* TODO: duplicate bucklets ? *)
   end 
 
-let rec mem_in_bucket ~eq key buckets = 
-  match C.toOpt buckets with 
-  | None ->
-    false
-  | Some cell ->
+let rec mem_in_bucket ~eq key cell = 
     (Bs_Hash.getEq eq) 
       (N.key cell) key [@bs] || 
-    mem_in_bucket ~eq key (N.next cell)
+      (match C.toOpt (N.next cell) with 
+      | None -> false 
+      | Some nextCell -> 
+      mem_in_bucket ~eq key nextCell)
 
 let mem0 ~hash ~eq h key =
   let h_buckets = C.buckets h in 
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
-  mem_in_bucket ~eq key (Bs_Array.unsafe_get h_buckets nid)
+  let bucket = (Bs_Array.unsafe_get h_buckets nid) in 
+  match C.toOpt bucket with 
+  | None -> false 
+  | Some bucket -> 
+    mem_in_bucket ~eq key bucket
 
 
 let create0 = C.create0
