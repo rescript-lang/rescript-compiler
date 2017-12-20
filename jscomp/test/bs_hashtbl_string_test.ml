@@ -160,19 +160,31 @@ let bench6 () =
 module S = Bs.HashSetInt
 let bench7 () = 
   let table = 
-    [%time S.create (initial_size* 2)] in
+    (* [%time  *)
+    S.create (initial_size* 2)
+    (* ]  *)
+    in
 
-  [%time for i  = 0 to  count do  
+  (* [%time  *)
+  for i  = 0 to  count do  
     S.add 
       table i 
-  done ];
-  [%time for i = 0 to count do 
+  done 
+  (* ] *)
+  ;
+  (* [%time  *)
+  for i = 0 to count do 
     assert (S.mem
               table i)
-  done]; 
-  [%time for i = 0 to count do 
+  done
+  (* ] *)
+  ; 
+  (* [%time *)
+   for i = 0 to count do 
     S.remove table i
-  done ];
+  done 
+  (* ] *)
+  ;
   assert (S.length table = 0)  
 
 
@@ -183,7 +195,10 @@ let bench7 () =
 
    ;; [%time bench3 (module S)] 
    ;; [%time bench5()] *)
-
+(* ;; [%time bench6 ()] *)
+;; [%time bench7 ()]
+(* ;; [%time bench7 ()]
 ;; [%time bench7 ()]
 ;; [%time bench7 ()]
 ;; [%time bench7 ()]
+;; [%time bench7 ()] *)

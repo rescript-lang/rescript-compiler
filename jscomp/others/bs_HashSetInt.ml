@@ -84,35 +84,35 @@ let remove h (key : key)=
 
 
 
-let rec addBucket  h (key : key)  cell = 
-  if (N.key cell) = key 
-  then
-    N.keySet cell key
-  else
+let rec addBucket  h buckets_len (key : key)  cell = 
+  if N.key cell <> key then
     let  n = N.next cell in 
     match C.toOpt n with 
     | None ->  
       C.sizeSet h (C.size h + 1);
-      N.nextSet cell (C.return @@ N.bucket ~key ~next:n)
-    | Some n -> addBucket  h key  n
+      N.nextSet cell (C.return @@ N.bucket ~key ~next:n);
+      if C.size h > buckets_len lsl 1 then resize  h
+    | Some n -> addBucket  h buckets_len key  n
 
 let add h  key  =
   let h_buckets = C.buckets h in 
-  let i = hash key land (Array.length h_buckets - 1) in 
+  let buckets_len = Array.length h_buckets in 
+  let i = hash key land (buckets_len - 1) in 
   let l = Array.unsafe_get h_buckets i in  
-  (match C.toOpt l with                                    
-   | None -> 
-     C.sizeSet h (C.size  h + 1);
-     Bs_Array.unsafe_set h_buckets i 
-       (C.return @@ N.bucket ~key ~next:C.emptyOpt)
-   | Some cell -> 
-     addBucket  h key cell);
-  if C.size h > Array.length (C.buckets h) lsl 1 then resize  h
+  match C.toOpt l with                                    
+  | None -> 
+    Bs_Array.unsafe_set h_buckets i 
+      (C.return @@ N.bucket ~key ~next:C.emptyOpt);
+    C.sizeSet h (C.size  h + 1);
+    if C.size h > buckets_len lsl 1 then resize  h
+  | Some cell -> 
+    addBucket  h buckets_len key cell
+
 
 
 let rec mem_in_bucket (key : key) cell = 
-  
-    (N.key cell) = key  || 
+
+  (N.key cell) = key  || 
   (match C.toOpt (N.next cell) with 
    | None -> false 
    | Some nextCell -> 
@@ -135,3 +135,12 @@ let length = C.length0
 let iter = N.iter0
 let fold = N.fold0
 let logStats = N.logStats0
+let toArray = N.toArray0
+
+let ofArray arr  = 
+  let len = Bs.Array.length arr in 
+  let v = create len in 
+  for i = 0 to len - 1 do 
+    add v (Bs.Array.unsafe_get arr i)
+  done ;
+  v

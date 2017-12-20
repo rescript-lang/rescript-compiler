@@ -178,5 +178,5 @@ val logStats : _ t -> unit
     [IntHashtbl.length].
 *)
 
-
-
+val toArray0 : ('a,'id) t0 -> 'a array
+val toArray : ('a,'id) t -> 'a array 

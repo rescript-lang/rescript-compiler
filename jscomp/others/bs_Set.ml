@@ -24,7 +24,7 @@ let filter0 = N.filter0
 let partition0 = N.partition0
 let cardinal0 = N.cardinal0
 let elements0 = N.elements0 
-
+let toArray0 = N.toArray0
 (* Insertion of one element *)
 
 let rec add0 ~cmp x  (t : _ t0) : _ t0 =
@@ -278,7 +278,7 @@ let partition f m =
 let cardinal m = cardinal0 (B.data m) 
 
 let elements m = elements0 (B.data m)
-
+let toArray m = toArray0 (B.data m)
 let min m = min0 (B.data m)
 
 let max m = max0 (B.data m)

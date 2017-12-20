@@ -88,6 +88,8 @@ val elements: t -> elt list
    to the ordering [Ord.compare], where [Ord] is the argument
    given to {!Set.Make}. *)
 
+val toArray: t -> elt array  
+
 val min: t -> elt option
 (** Return the smallest element of the given set
    (with respect to the [Ord.compare] ordering), or raise

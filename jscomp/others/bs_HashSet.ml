@@ -163,8 +163,8 @@ let length0 = C.length0
 let iter0 = N.iter0
 let fold0 = N.fold0
 let logStats0 = N.logStats0
-
-
+let toArray0 = N.toArray0 
+let toArray h = toArray0 (B.data h)
 (*  Wrapper  *)
 let create dict initialize_size = 
   B.bag ~data:(create0 initialize_size)

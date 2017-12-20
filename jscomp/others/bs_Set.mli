@@ -140,6 +140,8 @@ val elements: ('elt, 'id) t -> 'elt list
     The returned list is sorted in increasing order with respect
     to the ordering [Ord.compare], where [Ord] is the argument
     given to {!Set.Make}. *)
+val toArray0: ('elt, 'id) t0 -> 'elt array
+val toArray: ('elt, 'id) t -> 'elt array
 
 val min0: ('elt, 'id) t0 -> 'elt option
 val min: ('elt, 'id) t -> 'elt option

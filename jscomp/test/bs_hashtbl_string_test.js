@@ -298,40 +298,32 @@ function bench6() {
 }
 
 function bench7() {
-  console.time("bs_hashtbl_string_test.ml 163");
-  var timed = Bs_HashSetInt.create(2000000);
-  console.timeEnd("bs_hashtbl_string_test.ml 163");
-  console.time("bs_hashtbl_string_test.ml 165");
+  var table = Bs_HashSetInt.create(2000000);
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashSetInt.add(timed, i);
+    Bs_HashSetInt.add(table, i);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 165");
-  console.time("bs_hashtbl_string_test.ml 169");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_HashSetInt.mem(timed, i$1)) {
+    if (!Bs_HashSetInt.mem(table, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              170,
+              177,
               4
             ]
           ];
     }
     
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 169");
-  console.time("bs_hashtbl_string_test.ml 173");
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Bs_HashSetInt.remove(timed, i$2);
+    Bs_HashSetInt.remove(table, i$2);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 173");
-  if (Bs_HashSetInt.length(timed)) {
+  if (Bs_HashSetInt.length(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            176,
+            188,
             2
           ]
         ];
@@ -340,23 +332,11 @@ function bench7() {
   }
 }
 
-console.time("bs_hashtbl_string_test.ml 187");
+console.time("bs_hashtbl_string_test.ml 199");
 
 bench7(/* () */0);
 
-console.timeEnd("bs_hashtbl_string_test.ml 187");
-
-console.time("bs_hashtbl_string_test.ml 188");
-
-bench7(/* () */0);
-
-console.timeEnd("bs_hashtbl_string_test.ml 188");
-
-console.time("bs_hashtbl_string_test.ml 189");
-
-bench7(/* () */0);
-
-console.timeEnd("bs_hashtbl_string_test.ml 189");
+console.timeEnd("bs_hashtbl_string_test.ml 199");
 
 var count = 1000000;
 

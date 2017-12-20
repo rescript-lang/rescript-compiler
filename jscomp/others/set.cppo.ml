@@ -33,6 +33,7 @@ let filter = N.filter0
 let partition = N.partition0
 let cardinal = N.cardinal0
 let elements = N.elements0 
+let toArray = N.toArray0 
 let checkInvariant = N.checkInvariant
 (* Insertion of one element *)
 

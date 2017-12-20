@@ -252,12 +252,28 @@ let rec checkInvariant (v : _ t0) =
     diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
 
 
+let rec fillArray n i arr =     
+  let l,v,r = left n, key n, right n in 
+  let next = 
+    match toOpt l with 
+    | None -> i 
+    | Some l -> 
+      fillArray l i arr in 
+  Bs_Array.unsafe_set arr next v ;
+  let rnext = next + 1 in 
+  match toOpt r with 
+  | None -> rnext 
+  | Some r -> 
+    fillArray r rnext arr 
+
 (* TODO: binary search tree to array efficiency
-let toArray n =   
+*)
+let toArray0 n =   
    match toOpt n with 
    | None -> [||]
    | Some n ->  
     let size = cardinalAux n in 
-    let v = Bs.Array.makeUninitialized size in 
-    let l,v,r = left n, value n, right n in 
-*)
+    let v = Bs.Array.makeUninitializedUnsafe size in 
+    ignore (fillArray n 0 v : int);  (* may add assertion *)
+    v 
+

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- (* We do dynamic hashing, and resize the table and rehash the elements
+(* We do dynamic hashing, and resize the table and rehash the elements
    when buckets become too long. *)
 module C = Bs_internalBucketsType
 (* TODO:
@@ -58,6 +58,26 @@ let iter0 f h =
   for i = 0 to Bs_Array.length d - 1 do
     do_bucket_iter f (Bs_Array.unsafe_get d i)
   done
+
+let rec fillArray i arr cell =  
+  Bs_Array.unsafe_set arr i (key cell);
+  match C.toOpt (next cell) with 
+  | None -> i + 1
+  | Some v -> fillArray (i + 1) arr v 
+
+let toArray0 h = 
+  let d = C.buckets h in 
+  let current = ref 0 in 
+  let arr = Bs.Array.makeUninitializedUnsafe (C.size h) in 
+  for i = 0 to Bs_Array.length d - 1 do  
+    let cell = Bs_Array.unsafe_get d i in 
+    match C.toOpt cell with 
+    | None -> ()
+    | Some cell -> 
+      current := fillArray !current arr cell
+  done;
+  arr 
+
 
 
 let rec do_bucket_fold ~f b accu =
