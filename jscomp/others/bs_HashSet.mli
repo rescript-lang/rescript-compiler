@@ -1,11 +1,9 @@
-
-
 type ('a, 'id) t0
 
 type ('a, 'id) t = 
-    (('a, 'id) Bs_Hash.t,
-     ('a, 'id) t0) Bs_Bag.bag 
-  
+  (('a, 'id) Bs_Hash.t,
+   ('a, 'id) t0) Bs_Bag.bag 
+
 (** The type of hash tables from type ['a] to type ['b]. *)
 
 val create0 : int -> ('a, 'id) t0
@@ -62,9 +60,9 @@ val reset : ('a, 'id) t -> unit
 
 
 val add0 :
- hash:('a,'id) Bs_Hash.hash ->
- eq:('a,'id) Bs_Hash.eq -> 
- ('a,'id) t0 -> 'a ->  unit
+  hash:('a,'id) Bs_Hash.hash ->
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a,'id) t0 -> 'a ->  unit
 val add : ('a, 'id) t -> 'a -> unit
 (** [Hashtbl.add tbl x y] adds a binding of [x] to [y] in table [tbl].
     Previous bindings for [x] are not removed, but simply
@@ -85,13 +83,13 @@ val remove0:
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'id) t0 -> 'a -> unit
 val remove:
-('a, 'id) t -> 'a -> unit
+  ('a, 'id) t -> 'a -> unit
 (** [Hashtbl.remove tbl x] removes the current binding of [x] in [tbl],
     restoring the previous binding if it exists.
     It does nothing if [x] is not bound in [tbl]. *)
 
 
-    
+
 
 val iter0 : ('a -> unit [@bs]) -> ('a, 'id) t0 -> unit
 val iter : ('a  -> unit [@bs]) -> ('a, 'id) t -> unit
@@ -129,7 +127,7 @@ val fold : ('a  -> 'c -> 'c [@bs]) -> ('a, 'id) t -> 'c -> 'c
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
-  
+
 val length0 : ('a, 'id) t0 -> int
 val length  : ('a, 'id) t -> int  
 (** [Hashtbl.length tbl] returns the number of bindings in [tbl].
@@ -180,3 +178,22 @@ val logStats : _ t -> unit
 
 val toArray0 : ('a,'id) t0 -> 'a array
 val toArray : ('a,'id) t -> 'a array 
+
+val ofArray0 : 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  'a array -> 
+  ('a, 'id) t0      
+
+val ofArray :   
+  dict:('a,'id) Bs_Hash.t -> 
+  'a array -> 
+  ('a,'id) t 
+
+val addArray0 : 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a,'id) t0 -> 'a array -> unit     
+
+val addArray:   
+   ('a,'id) t -> 'a array -> unit   
