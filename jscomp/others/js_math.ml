@@ -153,13 +153,13 @@ external max_float : float -> float -> float = "max" [@@bs.val] [@@bs.scope "Mat
 (** max value *)
 external maxMany_float : float array -> float = "max" [@@bs.val] [@@bs.splice] [@@bs.scope "Math"]
 
-(** max value *)
+(** min value *)
 external min_int : int -> int -> int = "min" [@@bs.val] [@@bs.scope "Math"]
-(** max value *)
+(** min value *)
 external minMany_int : int array -> int = "min" [@@bs.val] [@@bs.splice] [@@bs.scope "Math"]
-(** max value *)
+(** min value *)
 external min_float : float -> float -> float = "min" [@@bs.val] [@@bs.scope "Math"]
-(** max value *)
+(** min value *)
 external minMany_float : float array -> float = "min" [@@bs.val] [@@bs.splice] [@@bs.scope "Math"]
 
 (** base to the power of the exponent *)
