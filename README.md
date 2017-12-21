@@ -1,8 +1,6 @@
 [BuckleScript](http://bucklescript.github.io/bucklescript/): A JavaScript backend for [OCaml](https://ocaml.org/) focused on smooth integration and clean generated code.
 
-[![NPM](https://nodei.co/npm/bs-platform.png?compact=true)](https://nodei.co/npm/bs-platform/)
-
-[![Build Status](https://travis-ci.org/BuckleScript/bucklescript.svg?branch=master)](https://travis-ci.org/bucklescript/bucklescript)
+[![NPM](https://nodei.co/npm/bs-platform.png?compact=true)](https://nodei.co/npm/bs-platform/) [![Build Status](https://travis-ci.org/BuckleScript/bucklescript.svg?branch=master)](https://travis-ci.org/bucklescript/bucklescript) [![Coverage Status](https://coveralls.io/repos/github/BuckleScript/bucklescript/badge.svg?branch=master)](https://coveralls.io/github/BuckleScript/bucklescript?branch=master)
 
 ## Documentation
 
