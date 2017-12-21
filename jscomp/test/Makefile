@@ -224,6 +224,9 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	bs_mutable_set_test\
 	bs_abstract_test\
 	bs_queue_test\
+	bs_hashmap_test\
+	bs_hashset_int_test\
+	array_data_util\
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test

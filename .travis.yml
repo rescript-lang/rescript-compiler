@@ -8,12 +8,12 @@ env:
   - BS_TRAVIS_CI=1
 node_js:
   - 6
-
+script: npm run coveralls
 #
 # - 6
 # This delays notification
 
 # Not a very reliable service..  
-# script: npm run coveralls
+
 # FIXME: instrumentation takes too much time
 

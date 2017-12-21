@@ -17,14 +17,22 @@ js_console.cmj :
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
 bs_Array.cmj : js_math.cmj bs_Array.cmi
-bs_internalAVLset.cmj :
+bs_internalAVLset.cmj : bs_Array.cmj bs.cmj
 bs_internalAVLtree.cmj :
 bs_internalMutableAVLSet.cmj : bs_internalAVLset.cmj
 bs_Hash.cmj : bs_Hash.cmi
 bs_Queue.cmj : bs_Array.cmj bs_Queue.cmi
-bs_internalBuckets.cmj : bs_Array.cmj
-bs_HashMap.cmj : bs_internalBuckets.cmj bs_Hash.cmj bs_Bag.cmj bs_Array.cmj \
-    bs_HashMap.cmi
+bs_internalBucketsType.cmj : bs_Array.cmj
+bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj
+bs_internalBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj
+bs_HashMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
+    bs_Hash.cmj bs_Bag.cmj bs_Array.cmj bs_HashMap.cmi
+bs_HashSet.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
+    bs_Hash.cmj bs_Bag.cmj bs_Array.cmj bs_HashSet.cmi
+bs_HashSetString.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
+    bs_Array.cmj bs.cmj bs_HashSetString.cmi
+bs_HashSetInt.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
+    bs_Array.cmj bs.cmj bs_HashSetInt.cmi
 bs_Bag.cmj :
 bs_Cmp.cmj : bs_Cmp.cmi
 bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Bag.cmj bs_Array.cmj \
@@ -43,9 +51,10 @@ js_date.cmj :
 js_global.cmj :
 js_cast.cmj : js_cast.cmi
 js_promise.cmj :
-bs_HashMapInt.cmj : bs_internalBuckets.cmj bs_Array.cmj bs_HashMapInt.cmi
-bs_HashMapString.cmj : bs_internalBuckets.cmj bs_Array.cmj \
-    bs_HashMapString.cmi
+bs_HashMapInt.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
+    bs_Array.cmj bs_HashMapInt.cmi
+bs_HashMapString.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
+    bs_Array.cmj bs_HashMapString.cmi
 node_process.cmi : js_dict.cmi
 js_re.cmi :
 js_null_undefined.cmi :
@@ -60,6 +69,9 @@ bs_Array.cmi :
 bs_Hash.cmi :
 bs_Queue.cmi :
 bs_HashMap.cmi : bs_Hash.cmi bs_Bag.cmj
+bs_HashSet.cmi : bs_Hash.cmi bs_Bag.cmj
+bs_HashSetString.cmi :
+bs_HashSetInt.cmi :
 bs_Cmp.cmi :
 bs_Map.cmi : bs_Cmp.cmi bs_Bag.cmj
 bs_Set.cmi : bs_Cmp.cmi bs_Bag.cmj
