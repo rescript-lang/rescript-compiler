@@ -38,6 +38,26 @@ var xs = Bs_SetInt.toArray(Bs_SetInt.ofArray(Bs_HashSetInt.toArray(v)));
 
 eq("File \"bs_hashset_int_test.ml\", line 19, characters 5-12", xs, Array_data_util.range(30, 120));
 
+var u$1 = Bs_Array.append(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
+
+var v$1 = Bs_HashSetInt.create(40);
+
+Bs_HashSetInt.addArray(v$1, u$1);
+
+eq("File \"bs_hashset_int_test.ml\", line 25, characters 5-12", Bs_HashSetInt.length(v$1), 100001);
+
+for(var i = 0; i <= 1000; ++i){
+  Bs_HashSetInt.remove(v$1, i);
+}
+
+eq("File \"bs_hashset_int_test.ml\", line 29, characters 5-12", Bs_HashSetInt.length(v$1), 99000);
+
+for(var i$1 = 0; i$1 <= 2000; ++i$1){
+  Bs_HashSetInt.remove(v$1, i$1);
+}
+
+eq("File \"bs_hashset_int_test.ml\", line 33, characters 5-12", Bs_HashSetInt.length(v$1), 98000);
+
 Mt.from_pair_suites("bs_hashset_int_test.ml", suites[0]);
 
 var N = 0;

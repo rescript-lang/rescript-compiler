@@ -197,3 +197,30 @@ let mem (type a) (type id) (h : (a,id) t) (key : a) =
   let module M = (val dict) in   
   mem0 ~hash:M.hash ~eq:M.eq data key   
 
+let ofArray0  ~hash ~eq arr  = 
+  let len = Bs.Array.length arr in 
+  let v = create0 len in 
+  for i = 0 to len - 1 do 
+    add0 ~eq ~hash v (Bs.Array.unsafe_get arr i)
+  done ;
+  v
+
+(* TOOD: optimize heuristics for resizing *)  
+let addArray0 ~hash ~eq  h arr =   
+  let len = Bs.Array.length arr in 
+  for i = 0 to len - 1 do 
+    add0 h  ~eq ~hash (Bs_Array.unsafe_get arr i)
+  done 
+
+let ofArray (type a) (type id)
+    ~dict:(dict:(a,id) Bs_Hash.t) arr =     
+  let module M = (val dict) in 
+  B.bag ~dict 
+    ~data:M.(ofArray0 ~eq~hash arr)
+
+let addArray (type a) (type id)
+    (h : (a,id) t) arr = 
+  let dict,data = B.(dict h, data h) in 
+  let module M = (val dict) in
+  M.(addArray0 ~hash ~eq data arr)
+

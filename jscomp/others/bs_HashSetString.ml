@@ -144,3 +144,10 @@ let ofArray arr  =
     add v (Bs.Array.unsafe_get arr i)
   done ;
   v
+
+(* TOOD: optimize heuristics for resizing *)  
+let addArray h arr =   
+  let len = Bs.Array.length arr in 
+  for i = 0 to len - 1 do 
+    add h (Bs_Array.unsafe_get arr i)
+done 

@@ -171,3 +171,5 @@ val logStats : t -> unit
 val toArray : t -> key array 
 
 val ofArray : key array -> t 
+
+val addArray : t -> key array -> unit 
