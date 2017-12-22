@@ -96,10 +96,10 @@ type (+'a, +'e) promise
 external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]
 
-external null : 'a null = "" [@@bs.val] 
+external null : 'a null = "#null" 
 (** The same as [empty] in {!Js.Null} will be compiled as [null]*)
 
-external undefined : 'a undefined = "" [@@bs.val] 
+external undefined : 'a undefined = "#undefined" 
 (** The same as  [empty] {!Js.Undefined} will be compiled as [undefined]*)
 
 

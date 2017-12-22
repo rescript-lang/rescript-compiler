@@ -1330,7 +1330,7 @@ let transl_value_decl env loc valdecl =
                             String.unsafe_get prim_native_name 0 = 'B' &&
                             String.unsafe_get prim_native_name 1 = 'S' &&
                             String.unsafe_get prim_native_name 2 = ':'
-                          ) && prim.prim_name.[0] <> '%' then
+                          ) && prim.prim_name.[0] <> '%' && prim.prim_name.[0] <> '#' then
         raise(Error(valdecl.pval_type.ptyp_loc, Null_arity_external));
       if !Clflags.native_code
       && prim.prim_arity > 5
