@@ -317,6 +317,7 @@ and size_constant x =
   | Const_nativeint _ 
   | Const_immstring _
   | Const_pointer _ 
+  | Const_js_null | Const_js_undefined
     -> 1 
   | Const_block (_, _, str) 
     ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str

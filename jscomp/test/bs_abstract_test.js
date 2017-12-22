@@ -17,4 +17,4 @@ var f = {
 
 exports.v = v;
 exports.f = f;
-/* v Not a pure module */
+/*  Not a pure module */

@@ -33,6 +33,8 @@ module E = Js_exp_make
 
 let rec translate (x : Lam.constant ) : J.expression = 
   match x with 
+  | Const_js_null -> E.nil
+  | Const_js_undefined -> E.undefined
   | Const_int i -> E.int (Int32.of_int i)
   | Const_char i ->
     Js_of_lam_string.const_char i

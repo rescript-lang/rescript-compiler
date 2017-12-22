@@ -52,6 +52,8 @@ type function_kind
    (* | Tupled *)
 
 type constant = 
+  | Const_js_null 
+  | Const_js_undefined 
   | Const_int of int
   | Const_char of char
   | Const_string of string 

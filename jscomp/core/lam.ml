@@ -53,6 +53,8 @@ type meth_kind = Lambda.meth_kind
 | Cached 
 
 type constant = 
+  | Const_js_null 
+  | Const_js_undefined 
   | Const_int of int
   | Const_char of char
   | Const_string of string  (* use record later *)
@@ -1125,6 +1127,8 @@ let if_ (a : t) (b : t) c =
         if x <> 0L then b else c
       | (Const_nativeint x) ->
         if x <> 0n then b else c
+      | Const_js_null 
+      | Const_js_undefined -> c         
       | Const_string _ 
       | Const_float _
       | Const_unicode _
@@ -1794,24 +1798,30 @@ let convert exports lam : _ * _  =
 
   and convert_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
-    if s = "#raw_expr" then 
+    match () with 
+    | () when s = "#raw_expr" ->
       begin match args with 
         | [Lconst( Const_base (Const_string(s,_)))] -> 
           prim ~primitive:(Praw_js_code_exp s)
             ~args:[] loc 
         | _ -> assert false 
       end  
-    else if s = "#raw_stmt" then 
+    | () when s = "#raw_stmt" ->
       begin match args with 
         | [Lconst( Const_base (Const_string(s,_)))] -> 
           prim ~primitive:(Praw_js_code_stmt s)
             ~args:[] loc         
         | _ -> assert false 
       end 
-    else if s =  "#debugger"  then 
+    | () when s =  "#debugger"  ->
       (* ATT: Currently, the arity is one due to PPX *)
       prim ~primitive:Pdebugger ~args:[] loc 
-    else      
+    | () when s = "#null" ->
+      Lconst (Const_js_null)
+
+    | () when s = "#undefined" ->
+      Lconst (Const_js_undefined)
+    | () -> 
       let primitive = 
         match s with 
         | "#apply" -> Pjs_runtime_apply

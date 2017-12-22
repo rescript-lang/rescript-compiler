@@ -81,10 +81,10 @@ type (+'a, +'e) promise
 (* tag::predefined_js_values[]*)
 external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]
-external null : 'a null = ""
-[@@bs.val] (* The same as {!Js.Null.empty} will be compiled as [null]*)
-external undefined : 'a undefined = ""
-[@@bs.val] (* The same as  {!Js.Undefined.empty} will be compiled as [undefined]*)
+external null : 'a null = "#null"
+(* The same as {!Js.Null.empty} will be compiled as [null]*)
+external undefined : 'a undefined = "#undefined"
+(* The same as  {!Js.Undefined.empty} will be compiled as [undefined]*)
 (* end::predefined_js_values[]*)
 
 (* tag::utility_functions[]*)

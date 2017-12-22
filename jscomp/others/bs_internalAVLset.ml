@@ -10,7 +10,7 @@ type 'elt node  = {
 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
-external empty : 'a Js.null = "null" [@@bs.val]
+external empty : 'a Js.null = "#null"
 
 type ('elt, 'id) t0 =  'elt node Js.null
 (* Sets are represented by balanced binary trees (the heights of the

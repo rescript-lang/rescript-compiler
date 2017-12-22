@@ -29,7 +29,7 @@ external right : ('k,'v) node -> ('k,'v) node Js.null = "right" [@@bs.get]
 external h : _ node -> int = "h" [@@bs.get] 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
-external empty : 'a Js.null = "null" [@@bs.val]
+external empty : 'a Js.null = "#null" 
 
 type ('key, 'a, 'id) t0 = ('key, 'a) node Js.null
 
