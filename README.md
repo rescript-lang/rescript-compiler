@@ -39,7 +39,7 @@ The attribute `[@bs]` used in the example below is one of the OCaml attributes m
 When BuckleScript generates code, it may use either a curried (OCaml) or uncurried (JavaScript)
 calling convention depending on how the code gets optimized. The `[@bs]` attribute can be used to
 decorate functions and call-sites so that generated code is guaranteed to use the uncurried style.
-This guarentee eases integration with existing JavaScript code and avoids unnecessary overhead.
+This guarantee eases integration with existing JavaScript code and avoids unnecessary overhead.
 
 ##### Input:
 
