@@ -13,20 +13,14 @@
 (** Adapted by authors of BuckleScript without using functors          *)
 
 
-type ('k, + 'v) node 
+type ('k, + 'v) node  = {
+  left : ('k,'v) node Js.null;
+  key : 'k; 
+  value : 'v; 
+  right : ('k,'v) node Js.null;
+  h : int 
+} [@@bs.deriving abstract]
 
-external node : 
-  left:('k,'v) node Js.null -> 
-  key: 'k ->
-  value:'v -> 
-  right:('k,'v) node Js.null ->
-  h:int -> ('k,'v) node = "" [@@bs.obj] 
-
-external left : ('k,'v) node -> ('k,'v) node Js.null = "left" [@@bs.get]
-external key : ('k,'v) node -> 'k = "key" [@@bs.get]
-external value : ('k,'v) node -> 'v = "value" [@@bs.get]
-external right : ('k,'v) node -> ('k,'v) node Js.null = "right" [@@bs.get]
-external h : _ node -> int = "h" [@@bs.get] 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null" 
