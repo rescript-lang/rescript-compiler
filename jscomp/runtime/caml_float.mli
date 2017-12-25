@@ -36,7 +36,7 @@ val caml_modf_float : float -> float * float
 
 val caml_ldexp_float : float -> int -> float
 val caml_frexp_float : float -> float * int
-val caml_float_compare : float -> float -> int
+
 val caml_copysign_float : float -> float -> float
 val caml_expm1_float : float -> float
 

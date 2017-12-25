@@ -2,23 +2,23 @@
 
 var Bs_Map             = require("../../lib/js/bs_Map.js");
 var Bs_Set             = require("../../lib/js/bs_Set.js");
-var Caml_obj           = require("../../lib/js/caml_obj.js");
+var Caml_primitive     = require("../../lib/js/caml_primitive.js");
 var Bs_internalAVLset  = require("../../lib/js/bs_internalAVLset.js");
 var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
 
-var N = /* module */[/* cmp */Caml_obj.caml_int_compare];
+var N = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
 var m0 = {
   dict: N,
   data: Bs_internalAVLtree.empty0
 };
 
-var cmp = Caml_obj.caml_int_compare;
+var cmp = Caml_primitive.caml_int_compare;
 
 var I = /* module */[/* cmp */cmp];
 
 function cmp$1(x, y) {
-  return Caml_obj.caml_int_compare(y, x);
+  return Caml_primitive.caml_int_compare(y, x);
 }
 
 var I2 = /* module */[/* cmp */cmp$1];

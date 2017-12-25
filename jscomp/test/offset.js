@@ -3,7 +3,7 @@
 var List                    = require("../../lib/js/list.js");
 var Curry                   = require("../../lib/js/curry.js");
 var $$String                = require("../../lib/js/string.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function height(param) {
@@ -85,7 +85,7 @@ function add(x, t) {
     var r = t[2];
     var v = t[1];
     var l = t[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, l), v, r);
@@ -219,7 +219,7 @@ function split(x, param) {
     var r = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split(x, l);
@@ -264,7 +264,7 @@ function mem(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
@@ -283,7 +283,7 @@ function remove(x, param) {
     var r = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(remove(x, l), v, r);
@@ -405,7 +405,7 @@ function compare(s1, s2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = Caml_string.caml_string_compare(e1[0], e2[0]);
+        var c = Caml_primitive.caml_string_compare(e1[0], e2[0]);
         if (c !== 0) {
           return c;
         } else {
@@ -440,7 +440,7 @@ function subset(_s1, _s2) {
         var r1 = s1[2];
         var v1 = s1[1];
         var l1 = s1[0];
-        var c = Caml_string.caml_string_compare(v1, s2[1]);
+        var c = Caml_primitive.caml_string_compare(v1, s2[1]);
         if (c) {
           if (c < 0) {
             if (subset(/* Node */[
@@ -634,7 +634,7 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var v = param[1];
-      var c = Caml_string.caml_string_compare(x, v);
+      var c = Caml_primitive.caml_string_compare(x, v);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;

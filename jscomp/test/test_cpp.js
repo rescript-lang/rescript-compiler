@@ -1,8 +1,8 @@
 'use strict';
 
-var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
-var f = Caml_obj.caml_int_compare;
+var f = Caml_primitive.caml_int_compare;
 
 exports.f = f;
 /* No side effect */

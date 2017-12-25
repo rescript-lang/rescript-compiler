@@ -125,15 +125,12 @@ let caml_update_dummy x y =
   let y_tag = Obj.tag y in 
   if y_tag <> 0 then
     Obj.set_tag x y_tag
-
 (* Bs_obj.set_length x   (Bs_obj.length y) *)
 (* [set_length] seems redundant here given that it is initialized as an array 
 *)
-let caml_int_compare (x : int) (y: int) : int =
-  if  x < y then -1 else if x = y then 0 else  1
 
-let caml_string_compare (x : string) (y: string) : int =
-  if  x < y then -1 else if x = y then 0 else  1
+type 'a selector = 'a -> 'a -> 'a 
+
 
 let unsafe_js_compare x y =
   if x == y then 0 else
@@ -162,13 +159,13 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   let a_type = Js.typeof a in 
   let b_type = Js.typeof b in 
   if a_type = "string" then
-    caml_string_compare (Obj.magic a) (Obj.magic b )
+    Pervasives.compare (Obj.magic a : string) (Obj.magic b )
   else 
     let is_a_number = a_type = "number" in 
     let is_b_number = b_type = "number" in 
     match is_a_number , is_b_number with 
     | true, true -> 
-      caml_int_compare (Obj.magic a) (Obj.magic b )
+      Pervasives.compare (Obj.magic a : int) (Obj.magic b : int)
     | true , false -> -1 (* Integer < Block in OCaml runtime GPR #1195 *)
     | false, true -> 1 
     | false, false -> 
@@ -193,7 +190,7 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
         else if tag_b = 250 then
           caml_compare a (Obj.field b 0)
         else if tag_a = 248 (* object/exception *)  then
-          caml_int_compare (Obj.magic @@ Obj.field a 1) (Obj.magic @@ Obj.field b 1 )
+          Pervasives.compare (Obj.magic @@ Obj.field a 1 : int) (Obj.magic @@ Obj.field b 1 )
         else if tag_a = 251 (* abstract_tag *) then
           raise (Invalid_argument "equal: abstract value")
         else if tag_a <> tag_b then
@@ -282,8 +279,6 @@ and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
 
 let caml_notequal a  b =  not (caml_equal a  b)
 
-let caml_int32_compare = caml_int_compare
-let caml_nativeint_compare = caml_int_compare
 let caml_greaterequal a b = caml_compare a b >= 0
 
 let caml_greaterthan a b = caml_compare a b > 0
@@ -291,3 +286,9 @@ let caml_greaterthan a b = caml_compare a b > 0
 let caml_lessequal a b = caml_compare a b <= 0
 
 let caml_lessthan a b = caml_compare a b < 0
+
+let caml_min (x : Obj.t) y =   
+  if caml_compare  x y <= 0 then x else y 
+
+let caml_max (x : Obj.t) y =    
+  if caml_compare x y >= 0 then x else y 

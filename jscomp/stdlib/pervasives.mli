@@ -95,6 +95,10 @@ external compare : 'a -> 'a -> int = "%compare"
    required by the {!Set.Make} and {!Map.Make} functors, as well as
    the {!List.sort} and {!Array.sort} functions. *)
 
+#if BS then 
+external min : 'a -> 'a -> 'a = "%bs_min"
+external max : 'a -> 'a -> 'a = "%bs_max"
+#else
 val min : 'a -> 'a -> 'a
 (** Return the smaller of the two arguments.
     The result is unspecified if one of the arguments contains
@@ -105,6 +109,7 @@ val max : 'a -> 'a -> 'a
     The result is unspecified if one of the arguments contains
     the float value [nan]. *)
 
+#end 
 external ( == ) : 'a -> 'a -> bool = "%eq"
 (** [e1 == e2] tests for physical equality of [e1] and [e2].
    On mutable types such as references, arrays, byte sequences, records with
@@ -502,7 +507,11 @@ external classify_float : float -> fpclass = "caml_classify_float"
    More string operations are provided in module {!String}.
 *)
 
+#if BS then
+external (^) : string -> string -> string = "#string_append"
+#else
 val ( ^ ) : string -> string -> string
+#end
 (** String concatenation. *)
 
 

@@ -128,7 +128,7 @@ let from_pair_suites name (suites :  pair_suites) =
           suites |>
           List.iter (fun (name, code) ->
               it name (fun _ ->
-                 handleCode (code ())
+                  handleCode (code ())
                 )
             )
         )
@@ -143,14 +143,14 @@ let from_promise_suites name (suites : (string * _ Js.Promise.t ) list) =
           suites |>
           List.iter (fun (name, code) ->
               it_promise name (fun _ ->
-                code |> Js.Promise.then_ (fun x -> handleCode x; val_unit)
-                 
+                  code |> Js.Promise.then_ (fun x -> handleCode x; val_unit)
+
                 )
             )
         )
     else Js.log "promise suites" (* TODO*)
   | _ -> ()
-  
+
 (*
 Note that [require] is a file local value,
 we need type [require]
@@ -171,3 +171,13 @@ let from_pair_suites_non_top name suites =
     if not @@ Js.to_bool @@ is_top () then
       from_pair_suites name suites
 *)
+
+let eq_suites ~test_id ~suites loc x y  = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Eq(x,y))) :: !suites
+
+let bool_suites  ~test_id ~suites loc x   = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Ok(x))) :: !suites  

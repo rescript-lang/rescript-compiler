@@ -4,7 +4,7 @@ var List                    = require("../../lib/js/list.js");
 var $$Array                 = require("../../lib/js/array.js");
 var $$String                = require("../../lib/js/string.js");
 var Set_gen                 = require("./set_gen.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(x, tree) {
@@ -12,7 +12,7 @@ function split(x, tree) {
     var r = tree[2];
     var v = tree[1];
     var l = tree[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split(x, l);
@@ -50,7 +50,7 @@ function add(x, tree) {
     var r = tree[2];
     var v = tree[1];
     var l = tree[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return Set_gen.internal_bal(add(x, l), v, r);
@@ -144,7 +144,7 @@ function mem(x, _tree) {
   while(true) {
     var tree = _tree;
     if (tree) {
-      var c = Caml_string.caml_string_compare(x, tree[1]);
+      var c = Caml_primitive.caml_string_compare(x, tree[1]);
       if (c) {
         _tree = c < 0 ? tree[0] : tree[2];
         continue ;
@@ -163,7 +163,7 @@ function remove(x, tree) {
     var r = tree[2];
     var v = tree[1];
     var l = tree[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return Set_gen.internal_bal(remove(x, l), v, r);
@@ -197,7 +197,7 @@ function subset(_s1, _s2) {
         var r1 = s1[2];
         var v1 = s1[1];
         var l1 = s1[0];
-        var c = Caml_string.caml_string_compare(v1, s2[1]);
+        var c = Caml_primitive.caml_string_compare(v1, s2[1]);
         if (c) {
           if (c < 0) {
             if (subset(/* Node */[
@@ -246,7 +246,7 @@ function find(x, _tree) {
     var tree = _tree;
     if (tree) {
       var v = tree[1];
-      var c = Caml_string.caml_string_compare(x, v);
+      var c = Caml_primitive.caml_string_compare(x, v);
       if (c) {
         _tree = c < 0 ? tree[0] : tree[2];
         continue ;

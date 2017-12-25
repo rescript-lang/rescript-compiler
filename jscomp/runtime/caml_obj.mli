@@ -37,9 +37,6 @@ val caml_lazy_make_forward : 'a -> 'a lazy_t
 
 val caml_update_dummy : Obj.t -> Obj.t -> unit
 
-val caml_int_compare : int -> int -> int
-val caml_int32_compare : int -> int -> int
-val caml_nativeint_compare : int -> int -> int
 
 val caml_compare : Obj.t -> Obj.t  -> int
 
@@ -52,3 +49,8 @@ val caml_greaterthan : eq
 val caml_lessthan : eq
 val caml_lessequal : eq
 
+type 'a selector = 'a -> 'a -> 'a 
+
+
+val caml_min : Obj.t selector
+val caml_max : Obj.t selector

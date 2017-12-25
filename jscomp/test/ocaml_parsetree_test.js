@@ -30,6 +30,7 @@ var Caml_int64              = require("../../lib/js/caml_int64.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_format             = require("../../lib/js/caml_format.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
 var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
@@ -718,7 +719,7 @@ function parse_opt(error, active, flags, s) {
             ];
       } else {
         var match$1 = get_range(i);
-        for(var n = match$1[1] ,n_finish = Pervasives.min(match$1[2], 50); n <= n_finish; ++n){
+        for(var n = match$1[1] ,n_finish = Caml_primitive.caml_int_min(match$1[2], 50); n <= n_finish; ++n){
           Curry._1(myset, n);
         }
         return loop(match$1[0]);

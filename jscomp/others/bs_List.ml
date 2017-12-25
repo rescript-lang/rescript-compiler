@@ -358,12 +358,13 @@ let rec fillAuxMap arr i x f =
     Bs_Array.unsafe_set arr i (f h [@bs]) ;
     fillAuxMap arr (i + 1) t f  
 
-module J = Js.Json
+module J = Js_json
+type json = J.t 
 let toJson x f =   
   let len = length x in
   let arr = Bs_Array.makeUninitializedUnsafe len in
   fillAuxMap arr 0 x f;
-  Js.Json.array arr
+  J.array arr
 
 (* TODO: best practice about raising excpetion 
    1. raise OCaml exception, no stacktrace 

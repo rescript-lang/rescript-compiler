@@ -57,6 +57,8 @@ val neq : comparison
 val lt : comparison
 val gt : comparison
 val le : comparison
+val min : t -> t -> t 
+val max : t -> t -> t
 
 val to_float : t -> float
 val of_float : float -> t

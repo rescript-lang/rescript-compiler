@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function getComapre(x) {
@@ -143,11 +143,11 @@ function empty(v) {
         ];
 }
 
-var compare = Caml_obj.caml_int_compare;
+var compare = Caml_primitive.caml_int_compare;
 
 var V0 = /* module */[/* compare */compare];
 
-var compare$1 = Caml_obj.caml_int_compare;
+var compare$1 = Caml_primitive.caml_int_compare;
 
 var V1 = /* module */[/* compare */compare$1];
 

@@ -1,8 +1,9 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
+var Mt             = require("./mt.js");
+var Block          = require("../../lib/js/block.js");
+var Caml_obj       = require("../../lib/js/caml_obj.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = [/* [] */0];
 
@@ -25,13 +26,13 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var expected_004 = Caml_obj.caml_int_compare(/* false */0, /* true */1);
+var expected_004 = Caml_primitive.caml_int_compare(/* false */0, /* true */1);
 
-var expected_005 = Caml_obj.caml_int_compare(/* true */1, /* false */0);
+var expected_005 = Caml_primitive.caml_int_compare(/* true */1, /* false */0);
 
-var expected_006 = Caml_obj.caml_int_compare(/* false */0, /* false */0);
+var expected_006 = Caml_primitive.caml_int_compare(/* false */0, /* false */0);
 
-var expected_007 = Caml_obj.caml_int_compare(/* true */1, /* true */1);
+var expected_007 = Caml_primitive.caml_int_compare(/* true */1, /* true */1);
 
 var expected = /* tuple */[
   /* false */0,

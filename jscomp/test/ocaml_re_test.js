@@ -16,6 +16,7 @@ var Caml_bytes              = require("../../lib/js/caml_bytes.js");
 var Caml_int32              = require("../../lib/js/caml_int32.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -73,7 +74,7 @@ function union(_l, _l$prime) {
         } else if (c2 < c2$prime) {
           _l$prime = /* :: */[
             /* tuple */[
-              Pervasives.min(c1, c1$prime),
+              c1 < c1$prime ? c1 : c1$prime,
               c2$prime
             ],
             r$prime
@@ -85,7 +86,7 @@ function union(_l, _l$prime) {
           _l$prime = r$prime;
           _l = /* :: */[
             /* tuple */[
-              Pervasives.min(c1, c1$prime),
+              c1 < c1$prime ? c1 : c1$prime,
               c2
             ],
             r
@@ -127,7 +128,7 @@ function inter(_l, _l$prime) {
         } else if (Caml_obj.caml_lessthan(c2, c2$prime)) {
           return /* :: */[
                   /* tuple */[
-                    Pervasives.max(c1, c1$prime),
+                    Caml_obj.caml_max(c1, c1$prime),
                     c2
                   ],
                   inter(r, l$prime)
@@ -135,7 +136,7 @@ function inter(_l, _l$prime) {
         } else {
           return /* :: */[
                   /* tuple */[
-                    Pervasives.max(c1, c1$prime),
+                    Caml_obj.caml_max(c1, c1$prime),
                     c2$prime
                   ],
                   inter(l, r$prime)
@@ -570,7 +571,7 @@ function add$1(x, t) {
     var r = t[2];
     var v = t[1];
     var l = t[0];
-    var c = Caml_obj.caml_int_compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$1(add$1(x, l), v, r);
@@ -1415,7 +1416,7 @@ function delta(tbl_ref, next_cat, $$char, st) {
 
 function flatten_match(m) {
   var ma = List.fold_left((function (ma, param) {
-          return Pervasives.max(ma, param[0]);
+          return Caml_primitive.caml_int_max(ma, param[0]);
         }), -1, m);
   var res = Caml_array.caml_make_vect(ma + 1 | 0, -1);
   List.iter((function (param) {

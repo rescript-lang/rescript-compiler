@@ -38,9 +38,58 @@ let transl_object =
   ref (fun id s cl -> assert false :
        Ident.t -> string list -> class_expr -> lambda)
 
+let more_bs_primitives ls =        
+  if !Clflags.bs_only then 
+      ("%bs_max",
+    (Pccall{prim_name = "caml_max"; prim_arity = 2; prim_alloc = true;
+            prim_native_name = ""; prim_native_float = false},
+     Pccall{prim_name = "caml_int_max"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_float_max"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_string_max"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_nativeint_max"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_int32_max"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_int64_max"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     false)) ::
+    ("%bs_min",
+    (Pccall{prim_name = "caml_min"; prim_arity = 2; prim_alloc = true;
+            prim_native_name = ""; prim_native_float = false},
+     Pccall{prim_name = "caml_int_min"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_float_min"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_string_min"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_nativeint_min"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_int32_min"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     Pccall{prim_name = "caml_int64_min"; prim_arity = 2;
+            prim_alloc = false; prim_native_name = "";
+            prim_native_float = false},
+     false)) :: ls
+     else ls 
+
 (* Translation of primitives *)
 
-let comparisons_table = create_hashtable 11 [
+let comparisons_table = Lazy.from_fun @@ fun _ ->
+  create_hashtable 11 @@ more_bs_primitives [
   "%equal",
       (Pccall{prim_name = "caml_equal"; prim_arity = 2; prim_alloc = true;
               prim_native_name = ""; prim_native_float = false},
@@ -351,7 +400,7 @@ let transl_prim loc prim args =
     let (gencomp, intcomp, floatcomp, stringcomp,
          nativeintcomp, int32comp, int64comp,
          simplify_constant_constructor) =
-      Hashtbl.find comparisons_table prim_name in
+      Hashtbl.find (Lazy.force comparisons_table) prim_name in
     begin match args with
       [arg1; {exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}]
       when simplify_constant_constructor ->
@@ -415,7 +464,7 @@ let transl_primitive loc p =
   let prim =
     try
       let (gencomp, _, _, _, _, _, _, _) =
-        Hashtbl.find comparisons_table p.prim_name in
+        Hashtbl.find (Lazy.force comparisons_table) p.prim_name in
       gencomp
     with Not_found ->
     try

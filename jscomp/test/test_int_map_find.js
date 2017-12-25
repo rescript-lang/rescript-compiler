@@ -1,7 +1,7 @@
 'use strict';
 
 var List                    = require("../../lib/js/list.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function height(param) {
@@ -88,7 +88,7 @@ function add(x, data, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_obj.caml_int_compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);

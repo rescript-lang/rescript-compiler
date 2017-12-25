@@ -394,11 +394,11 @@ let rec is_constant (x : J.expression)  =
   | _ -> false 
 
 
-let rec is_simple_no_side_effect_expression (e : J.expression) = 
+let rec is_okay_to_duplicate (e : J.expression) = 
   match e.expression_desc with  
   | Var _ 
   | Bool _ 
   | Str _ 
   | Number _ -> true
-  | Dot (e, (_ : string), _) -> is_simple_no_side_effect_expression e 
+  | Dot (e, (_ : string), _) -> is_okay_to_duplicate e 
   | _ -> false 

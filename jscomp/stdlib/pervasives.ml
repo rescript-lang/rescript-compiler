@@ -59,9 +59,14 @@ external ( <= ) : 'a -> 'a -> bool = "%lessequal"
 external ( >= ) : 'a -> 'a -> bool = "%greaterequal"
 external compare : 'a -> 'a -> int = "%compare"
 
+#if BS then 
+external min : 'a -> 'a -> 'a = "%bs_min"
+external max : 'a -> 'a -> 'a = "%bs_max"
+#else
 let min x y = if x <= y then x else y
 let max x y = if x >= y then x else y
 
+#end
 external ( == ) : 'a -> 'a -> bool = "%eq"
 external ( != ) : 'a -> 'a -> bool = "%noteq"
 
@@ -174,6 +179,9 @@ external bytes_blit : bytes -> int -> bytes -> int -> int -> unit
 external bytes_unsafe_to_string : bytes -> string = "%bytes_to_string"
 external bytes_unsafe_of_string : string -> bytes = "%bytes_of_string"
 
+#if BS then 
+external (^) : string -> string -> string = "#string_append"
+#else
 let ( ^ ) s1 s2 =
   let l1 = string_length s1 and l2 = string_length s2 in
   let s = bytes_create (l1 + l2) in
@@ -181,6 +189,7 @@ let ( ^ ) s1 s2 =
   string_blit s2 0 s l1 l2;
   bytes_unsafe_to_string s
 
+#end
 (* Character operations -- more in module Char *)
 
 external int_of_char : char -> int = "%identity"

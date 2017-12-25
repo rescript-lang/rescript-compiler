@@ -202,7 +202,7 @@ and compile_external_field_apply
                  (Determin (a, rest, b))
                  continue (len - x)
              else (* GPR #1423 *)
-             if List.for_all Js_analyzer.is_simple_no_side_effect_expression args then 
+             if List.for_all Js_analyzer.is_okay_to_duplicate args then 
                let params = Ext_list.init (x - len)
                    (fun _ -> Ext_ident.create "param") in
                E.ocaml_fun params 

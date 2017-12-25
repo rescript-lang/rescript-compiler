@@ -1,19 +1,19 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var List     = require("../../lib/js/list.js");
-var $$Array  = require("../../lib/js/array.js");
-var Block    = require("../../lib/js/block.js");
-var Curry    = require("../../lib/js/curry.js");
-var Hashtbl  = require("../../lib/js/hashtbl.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
+var Mt             = require("./mt.js");
+var List           = require("../../lib/js/list.js");
+var $$Array        = require("../../lib/js/array.js");
+var Block          = require("../../lib/js/block.js");
+var Curry          = require("../../lib/js/curry.js");
+var Hashtbl        = require("../../lib/js/hashtbl.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function f(H) {
   var tbl = Curry._1(H[/* create */0], 17);
   Curry._3(H[/* add */4], tbl, 1, /* "1" */49);
   Curry._3(H[/* add */4], tbl, 2, /* "2" */50);
   return List.sort((function (param, param$1) {
-                return Caml_obj.caml_int_compare(param[0], param$1[0]);
+                return Caml_primitive.caml_int_compare(param[0], param$1[0]);
               }), Curry._3(H[/* fold */11], (function (k, v, acc) {
                     return /* :: */[
                             /* tuple */[
@@ -44,7 +44,7 @@ function g(H) {
                     ];
             }), tbl, /* [] */0);
       return $$Array.of_list(List.sort((function (param, param$1) {
-                        return Caml_obj.caml_int_compare(param[0], param$1[0]);
+                        return Caml_primitive.caml_int_compare(param[0], param$1[0]);
                       }), v));
     });
 }

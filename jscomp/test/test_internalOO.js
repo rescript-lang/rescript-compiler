@@ -10,6 +10,7 @@ var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Caml_array              = require("../../lib/js/caml_array.js");
 var Caml_int32              = require("../../lib/js/caml_int32.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -142,7 +143,7 @@ function add(x, data, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
@@ -173,7 +174,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -191,7 +192,7 @@ function mem(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -269,7 +270,7 @@ function remove(x, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(remove(x, l), v, d, r);
@@ -463,7 +464,7 @@ function split(x, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split(x, l);
@@ -605,7 +606,7 @@ function compare(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = Caml_string.caml_string_compare(e1[0], e2[0]);
+        var c = Caml_primitive.caml_string_compare(e1[0], e2[0]);
         if (c !== 0) {
           return c;
         } else {
@@ -638,7 +639,7 @@ function equal(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        if (Caml_string.caml_string_compare(e1[0], e2[0])) {
+        if (Caml_primitive.caml_string_compare(e1[0], e2[0])) {
           return /* false */0;
         } else if (Curry._2(cmp, e1[1], e2[1])) {
           _e2 = cons_enum(e2[2], e2[3]);
@@ -821,7 +822,7 @@ function add$1(x, data, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$1(add$1(x, data, l), v, d, r);
@@ -852,7 +853,7 @@ function find$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -870,7 +871,7 @@ function mem$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -948,7 +949,7 @@ function remove$1(x, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$1(remove$1(x, l), v, d, r);
@@ -1142,7 +1143,7 @@ function split$1(x, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split$1(x, l);
@@ -1284,7 +1285,7 @@ function compare$1(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = Caml_string.caml_string_compare(e1[0], e2[0]);
+        var c = Caml_primitive.caml_string_compare(e1[0], e2[0]);
         if (c !== 0) {
           return c;
         } else {
@@ -1317,7 +1318,7 @@ function equal$1(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        if (Caml_string.caml_string_compare(e1[0], e2[0])) {
+        if (Caml_primitive.caml_string_compare(e1[0], e2[0])) {
           return /* false */0;
         } else if (Curry._2(cmp, e1[1], e2[1])) {
           _e2 = cons_enum$1(e2[2], e2[3]);
@@ -1500,7 +1501,7 @@ function add$2(x, data, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_obj.caml_int_compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$2(add$2(x, data, l), v, d, r);
@@ -1531,7 +1532,7 @@ function find$2(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_obj.caml_int_compare(x, param[1]);
+      var c = Caml_primitive.caml_int_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -1549,7 +1550,7 @@ function mem$2(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_obj.caml_int_compare(x, param[1]);
+      var c = Caml_primitive.caml_int_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -1627,7 +1628,7 @@ function remove$2(x, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_obj.caml_int_compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$2(remove$2(x, l), v, d, r);
@@ -1821,7 +1822,7 @@ function split$2(x, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_obj.caml_int_compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split$2(x, l);
@@ -1963,7 +1964,7 @@ function compare$2(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = Caml_obj.caml_int_compare(e1[0], e2[0]);
+        var c = Caml_primitive.caml_int_compare(e1[0], e2[0]);
         if (c !== 0) {
           return c;
         } else {

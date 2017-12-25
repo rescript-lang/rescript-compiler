@@ -17,6 +17,7 @@ var Caml_bytes              = require("../../lib/js/caml_bytes.js");
 var Caml_int32              = require("../../lib/js/caml_int32.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -348,7 +349,7 @@ var ID_MONAD = /* module */[
 
 function make($staropt$star, refill) {
   var bufsize = $staropt$star ? $staropt$star[0] : 1024;
-  var bufsize$1 = Pervasives.min(Pervasives.max(bufsize, 16), Sys.max_string_length);
+  var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
   return /* record */[
           /* buf */Caml_string.caml_create_string(bufsize$1),
           /* refill */refill,
@@ -988,7 +989,7 @@ function MakeDecode(funarg) {
   var $great$great$eq = funarg[/* >>= */1];
   var make = function ($staropt$star, refill) {
     var bufsize = $staropt$star ? $staropt$star[0] : 1024;
-    var bufsize$1 = Pervasives.min(Pervasives.max(bufsize, 16), Sys.max_string_length);
+    var bufsize$1 = Caml_primitive.caml_int_min(bufsize > 16 ? bufsize : 16, Sys.max_string_length);
     return /* record */[
             /* buf */Caml_string.caml_create_string(bufsize$1),
             /* refill */refill,

@@ -307,13 +307,17 @@ let translate loc (prim_name : string)
       -> Js_long.float_of_bits args 
     | "caml_int64_bswap"
       -> Js_long.swap args    
+    | "caml_int64_min"       
+      ->  Js_long.min args 
+    | "caml_int64_max" 
+      ->  Js_long.max args      
     | "caml_int32_float_of_bits"
     | "caml_int32_bits_of_float"
     | "caml_classify_float"
     | "caml_modf_float"
     | "caml_ldexp_float"
     | "caml_frexp_float"
-    | "caml_float_compare"
+
     | "caml_copysign_float"
     | "caml_expm1_float"
     | "caml_hypot_float"
@@ -388,8 +392,45 @@ let translate loc (prim_name : string)
           call Js_runtime_modules.string 
       end
 
-    | "caml_string_get"
-    | "caml_string_compare"
+    | "caml_int_compare"
+    | "caml_int32_compare"
+    | "caml_nativeint_compare"
+    | "caml_float_compare"
+    | "caml_string_compare" 
+    -> 
+      call Js_runtime_modules.caml_primitive
+
+    | "caml_int_min"
+    | "caml_float_min"
+    | "caml_string_min"
+    | "caml_nativeint_min"
+    | "caml_int32_min"
+    
+      -> 
+      begin match args with 
+        | [a;b] ->
+          if Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b then 
+            E.econd (E.js_comp Clt a b) a b 
+          else 
+            call Js_runtime_modules.caml_primitive
+        | _ -> assert false  
+      end
+    | "caml_int_max"
+    | "caml_float_max"
+    | "caml_string_max"
+    | "caml_nativeint_max"
+    | "caml_int32_max"    
+    -> 
+      begin match args with 
+        | [a;b] -> 
+          if Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b then 
+            E.econd (E.js_comp Cgt a b) a b 
+          else 
+            call Js_runtime_modules.caml_primitive
+        | _ -> assert false 
+      end
+      
+    | "caml_string_get"    
     | "string_of_bytes"
     | "bytes_of_string"
 
@@ -574,15 +615,17 @@ let translate loc (prim_name : string)
         | [e] -> E.is_caml_block e 
         | _ -> assert false
       end
+
+
     | "caml_obj_dup" 
     | "caml_update_dummy"
     | "caml_obj_truncate"
     | "caml_lazy_make_forward"  
-    | "caml_int_compare"
-    | "caml_int32_compare"
-    | "caml_nativeint_compare"
       -> 
       call Js_runtime_modules.obj_runtime
+
+    | "caml_min"
+    | "caml_max"
     | "caml_compare"
     | "caml_equal"
     | "caml_notequal"

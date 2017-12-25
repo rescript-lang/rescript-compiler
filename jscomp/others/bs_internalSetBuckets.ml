@@ -43,7 +43,6 @@ let rec bucket_length accu buckets =
   | None -> accu
   | Some cell -> bucket_length (accu + 1) (next cell)
 
-let max (m : int) n = if m > n then m else n  
 
 
 let rec do_bucket_iter ~f buckets = 
@@ -100,7 +99,9 @@ let fold0 f h init =
 
 let logStats0 h =
   let mbl =
-    Bs_Array.foldLeft (fun[@bs] m b -> max m (bucket_length 0 b)) 0 (C.buckets h) in
+    Bs_Array.foldLeft (fun[@bs] m b -> 
+      let len = (bucket_length 0 b) in
+      max m len) 0 (C.buckets h) in
   let histo = Bs_Array.make (mbl + 1) 0 in
   Bs_Array.iter
     (fun[@bs] b ->

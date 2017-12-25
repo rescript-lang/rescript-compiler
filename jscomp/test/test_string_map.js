@@ -1,7 +1,7 @@
 'use strict';
 
 var Curry                   = require("../../lib/js/curry.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function height(param) {
@@ -88,7 +88,7 @@ function add(x, data, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
@@ -119,7 +119,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;

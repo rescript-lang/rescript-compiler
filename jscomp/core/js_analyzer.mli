@@ -81,5 +81,5 @@ val is_constant : J.expression -> bool
     no computation involved so that  it is okay to be duplicated
 *)
 
-val is_simple_no_side_effect_expression 
+val is_okay_to_duplicate
   : J.expression -> bool

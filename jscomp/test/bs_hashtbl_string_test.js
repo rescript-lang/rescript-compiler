@@ -4,9 +4,9 @@ var Bs_Map                  = require("../../lib/js/bs_Map.js");
 var Hashtbl                 = require("../../lib/js/hashtbl.js");
 var Caml_hash               = require("../../lib/js/caml_hash.js");
 var Bs_HashMap              = require("../../lib/js/bs_HashMap.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
 var Bs_HashMapInt           = require("../../lib/js/bs_HashMapInt.js");
 var Bs_HashSetInt           = require("../../lib/js/bs_HashSetInt.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Bs_HashMapString        = require("../../lib/js/bs_HashMapString.js");
 var Bs_internalAVLtree      = require("../../lib/js/bs_internalAVLtree.js");
 var Bs_internalBuckets      = require("../../lib/js/bs_internalBuckets.js");
@@ -178,7 +178,7 @@ function bench3(m) {
   }
 }
 
-var Sx = /* module */[/* cmp */Caml_string.caml_string_compare];
+var Sx = /* module */[/* cmp */Caml_primitive.caml_string_compare];
 
 function bench4() {
   var table = Bs_HashMapString.create(1000000);
