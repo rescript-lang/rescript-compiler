@@ -8,7 +8,7 @@ type ('elt,'id) t0 = 'elt node Js.null
 
 external unsafeCoerce : 'a Js.null -> 'a = "%identity"
 
-let maxInt (x : int) y = if x > y then x else y  
+
 
 let empty = N.empty0      
 let isEmpty = N.isEmpty0
@@ -31,17 +31,21 @@ let rotateWithLeftChild k2 =
   let k1 = unsafeCoerce (N.left k2) in 
   N.(leftSet k2 (right k1)); 
   N.(rightSet k1 (return k2 ));
+  let hlk2, hrk2 = N.(height (left k2), (height (right k2))) in  
   N.(hSet k2 
-    (maxInt (height (left k2)) (height (right k2)) + 1));
-  N.(hSet k1 (maxInt (height (left k1)) (h k2) + 1));
+    (Pervasives.max hlk2 hrk2 + 1));
+  let hlk1, hk2 = N.(height (left k1), (h k2)) in 
+  N.(hSet k1 (Pervasives.max hlk1 hk2 + 1));
   k1  
 (* right rotation *)
 let rotateWithRightChild k1 =   
   let k2 = unsafeCoerce (N.right k1) in 
   N.(rightSet k1 (left k2));
   N.(leftSet k2 (return k1));
-  N.(hSet k1 (maxInt (height (left k1)) (height (right k1)) + 1));
-  N.(hSet k2 (maxInt (height (right k2)) (h k1) + 1));
+  let hlk1, hrk1 = N.((height (left k1)), (height (right k1))) in 
+  N.(hSet k1 (Pervasives.max  hlk1 hrk1 + 1));
+  let hrk2, hk1 = N.(height (right k2), (h k1)) in 
+  N.(hSet k2 (Pervasives.max  hrk2 hk1 + 1));
   k2 
 
 (*
@@ -91,7 +95,8 @@ let rec add (x : key) (t : _ t0) =
              )
            end
         ) in 
+        let hlt, hrt = N.(height (left t),(height (right t))) in 
         N.hSet t 
-          N.(maxInt (height (left t)) (height (right t))  + 1);
+          N.(Pervasives.max hlt hrt  + 1);
         N.return t
       end

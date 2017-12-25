@@ -23,15 +23,51 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+let caml_int_compare (x : int) (y: int) : int =
+  if  x < y then -1 else if x = y then 0 else  1
+
+
+let caml_int32_compare = caml_int_compare
+let caml_nativeint_compare = caml_int_compare
+
+let caml_float_compare (x : float) (y : float ) =
+  if x = y then 0
+  else if x < y then  -1
+  else if x > y then 1
+  else if x = x then 1
+  else if y = y then -1
+  else 0
+
+let caml_string_compare (s1 : string) (s2 : string) : int = 
+  if s1 = s2 then 0 
+  else if s1 < s2 then -1
+  else 1
+
+type 'a selector = 'a -> 'a -> 'a 
+
+(* could be replaced by [Math.min], but it seems those built-ins are slower *)
+let caml_int_min (x : int) (y : int) : int =
+  if x < y then x else y 
+let caml_float_min (x : float) y   =
+  if x < y then x else y   
+let caml_string_min (x : string) y =     
+  if x < y then x else y 
+let caml_nativeint_min (x : nativeint) y =   
+  if x < y then x else y 
+let caml_int32_min (x : int32) y   = 
+  if x < y then x else y 
+
+let caml_int_max (x : int) (y : int) : int =
+  if x > y then x else y 
+let caml_float_max (x : float) y   =
+  if x > y then x else y   
+let caml_string_max (x : string) y =     
+  if x > y then x else y 
+let caml_nativeint_max (x : nativeint) y =   
+  if x > y then x else y 
+let caml_int32_max (x : int32) y   = 
+  if x > y then x else y 
 
 
 
 
-
-
-
-
-
-
-
-(** *)

@@ -52,8 +52,10 @@ val length : 'a t -> int
 
 val toArray : 'a t -> 'a array
 
-val toJson : 'a t -> ('a -> Js.Json.t [@bs]) -> Js.Json.t
-val fromJson : Js.Json.t -> (Js.Json.t -> 'a [@bs]) -> 'a t 
+type json = Js_json.t 
+
+val toJson : 'a t -> ('a -> json  [@bs]) -> json
+val fromJson : json -> (json -> 'a [@bs]) -> 'a t 
 
 val revAppend : 'a t -> 'a t -> 'a t
 

@@ -57,10 +57,7 @@ let caml_create_string len : bytes =
   else new_uninitialized len 
 
 
-let caml_string_compare (s1 : string) (s2 : string) : int = 
-  if s1 = s2 then 0 
-  else if s1 < s2 then -1
-  else 1
+
 
 let caml_fill_string (s : bytes) i l (c : char) = 
   if l > 0 then

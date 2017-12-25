@@ -105,13 +105,7 @@ let caml_frexp_float (x: float): float * int =
     end
   end
 
-let caml_float_compare (x : float) (y : float ) =
-  if x = y then 0
-  else if x < y then  -1
-  else if x > y then 1
-  else if x = x then 1
-  else if y = y then -1
-  else 0
+
 
 let caml_copysign_float   (x : float) (y :  float) :  float =
   let x = abs_float x in

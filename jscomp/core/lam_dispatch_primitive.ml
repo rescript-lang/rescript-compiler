@@ -317,7 +317,7 @@ let translate loc (prim_name : string)
     | "caml_modf_float"
     | "caml_ldexp_float"
     | "caml_frexp_float"
-    | "caml_float_compare"
+
     | "caml_copysign_float"
     | "caml_expm1_float"
     | "caml_hypot_float"
@@ -392,8 +392,45 @@ let translate loc (prim_name : string)
           call Js_runtime_modules.string 
       end
 
-    | "caml_string_get"
-    | "caml_string_compare"
+    | "caml_int_compare"
+    | "caml_int32_compare"
+    | "caml_nativeint_compare"
+    | "caml_float_compare"
+    | "caml_string_compare" 
+    -> 
+      call Js_runtime_modules.caml_primitive
+
+    | "caml_int_min"
+    | "caml_float_min"
+    | "caml_string_min"
+    | "caml_nativeint_min"
+    | "caml_int32_min"
+    
+      -> 
+      begin match args with 
+        | [a;b] ->
+          if Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b then 
+            E.econd (E.js_comp Clt a b) a b 
+          else 
+            call Js_runtime_modules.caml_primitive
+        | _ -> assert false  
+      end
+    | "caml_int_max"
+    | "caml_float_max"
+    | "caml_string_max"
+    | "caml_nativeint_max"
+    | "caml_int32_max"    
+    -> 
+      begin match args with 
+        | [a;b] -> 
+          if Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b then 
+            E.econd (E.js_comp Cgt a b) a b 
+          else 
+            call Js_runtime_modules.caml_primitive
+        | _ -> assert false 
+      end
+      
+    | "caml_string_get"    
     | "string_of_bytes"
     | "bytes_of_string"
 
@@ -579,43 +616,11 @@ let translate loc (prim_name : string)
         | _ -> assert false
       end
 
-    | "caml_int_min"
-    | "caml_float_min"
-    | "caml_string_min"
-    | "caml_nativeint_min"
-    | "caml_int32_min"
-    
-      -> 
-      begin match args with 
-        | [a;b] ->
-          if Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b then 
-            E.econd (E.js_comp Clt a b) a b 
-          else 
-            call Js_runtime_modules.obj_runtime
-        | _ -> assert false  
-      end
-    | "caml_int_max"
-    | "caml_float_max"
-    | "caml_string_max"
-    | "caml_nativeint_max"
-    | "caml_int32_max"    
-    -> 
-      begin match args with 
-        | [a;b] -> 
-          if Js_analyzer.is_okay_to_duplicate a && Js_analyzer.is_okay_to_duplicate b then 
-            E.econd (E.js_comp Cgt a b) a b 
-          else 
-            call Js_runtime_modules.obj_runtime
-        | _ -> assert false 
-      end
 
     | "caml_obj_dup" 
     | "caml_update_dummy"
     | "caml_obj_truncate"
     | "caml_lazy_make_forward"  
-    | "caml_int_compare"
-    | "caml_int32_compare"
-    | "caml_nativeint_compare"
       -> 
       call Js_runtime_modules.obj_runtime
 
