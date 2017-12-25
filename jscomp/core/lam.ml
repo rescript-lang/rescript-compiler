@@ -1799,32 +1799,32 @@ let convert exports lam : _ * _  =
   and convert_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
     match () with 
-    | () when s = "#raw_expr" ->
+    | _ when s = "#raw_expr" ->
       begin match args with 
         | [Lconst( Const_base (Const_string(s,_)))] -> 
           prim ~primitive:(Praw_js_code_exp s)
             ~args:[] loc 
         | _ -> assert false 
       end  
-    | () when s = "#raw_stmt" ->
+    | _ when s = "#raw_stmt" ->
       begin match args with 
         | [Lconst( Const_base (Const_string(s,_)))] -> 
           prim ~primitive:(Praw_js_code_stmt s)
             ~args:[] loc         
         | _ -> assert false 
       end 
-    | () when s =  "#debugger"  ->
+    | _ when s =  "#debugger"  ->
       (* ATT: Currently, the arity is one due to PPX *)
       prim ~primitive:Pdebugger ~args:[] loc 
-    | () when s = "#null" ->
+    | _ when s = "#null" ->
       Lconst (Const_js_null)
 
-    | () when s = "#undefined" ->
+    | _ when s = "#undefined" ->
       Lconst (Const_js_undefined)
-    | () -> 
+    | _ -> 
       let primitive = 
         match s with 
-        | "#apply" -> Pjs_runtime_apply
+        | "#apply" -> Pjs_runtime_apply        
         | "#apply1"
         | "#apply2"
         | "#apply3"
@@ -1833,6 +1833,10 @@ let convert exports lam : _ * _  =
         | "#apply6"
         | "#apply7"
         | "#apply8" -> Pjs_apply
+        | "#makemutablelist" -> 
+          Pmakeblock(0,Lambda.Blk_constructor("::",1),Mutable)
+        | "#setfield1" ->   
+          Psetfield(1, true, Fld_set_na)
         | "#undefined_to_opt" -> Pundefined_to_opt
         | "#null_undefined_to_opt" -> Pnull_undefined_to_opt
         | "#null_to_opt" -> Pnull_to_opt

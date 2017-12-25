@@ -43,5 +43,5 @@ module MapInt = Bs_MapInt
 module MapString = Bs_MapString  
 module SetInt = Bs_SetInt
 module SetString = Bs_SetString
-    
+module List = Bs_List
 
