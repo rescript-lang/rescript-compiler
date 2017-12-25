@@ -22,8 +22,6 @@ bs_internalAVLtree.cmj :
 bs_internalMutableAVLSet.cmj : bs_internalAVLset.cmj
 bs_Hash.cmj : bs_Hash.cmi
 bs_Queue.cmj : bs_Array.cmj bs_Queue.cmi
-bs_internalLinkList.cmj :
-bs_LinkList.cmj : bs_Array.cmj bs.cmj
 bs_List.cmj : bs_Array.cmj bs_List.cmi
 bs_internalBucketsType.cmj : bs_Array.cmj
 bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj

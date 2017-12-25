@@ -4488,7 +4488,9 @@ function test58() {
                     ])
                 ]),
               "%s@%%%s"
-            ]), Pervasives.$caret) === "string1string2" && Curry._1(Scanf.sscanf("string1@string2", /* Format */[
+            ]), (function (prim, prim$1) {
+            return prim + prim$1;
+          })) === "string1string2" && Curry._1(Scanf.sscanf("string1@string2", /* Format */[
               /* Scan_char_set */Block.__(20, [
                   /* None */0,
                   "\0\0\0\0\0\0\xff\x03\0\0\0\0\xfe\xff\xff\x07\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -4501,7 +4503,9 @@ function test58() {
                     ])
                 ]),
               "%[a-z0-9]@%s"
-            ]), Pervasives.$caret) === "string1string2") {
+            ]), (function (prim, prim$1) {
+            return prim + prim$1;
+          })) === "string1string2") {
     return +(Curry._1(Scanf.sscanf("string1@%string2", /* Format */[
                       /* Scan_char_set */Block.__(20, [
                           /* None */0,
@@ -4518,7 +4522,9 @@ function test58() {
                             ])
                         ]),
                       "%[a-z0-9]%@%%%s"
-                    ]), Pervasives.$caret) === "string1string2");
+                    ]), (function (prim, prim$1) {
+                    return prim + prim$1;
+                  })) === "string1string2");
   } else {
     return /* false */0;
   }

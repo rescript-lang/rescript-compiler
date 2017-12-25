@@ -126,11 +126,36 @@ let caml_update_dummy x y =
   if y_tag <> 0 then
     Obj.set_tag x y_tag
 
+type 'a selector = 'a -> 'a -> 'a 
 (* Bs_obj.set_length x   (Bs_obj.length y) *)
 (* [set_length] seems redundant here given that it is initialized as an array 
 *)
 let caml_int_compare (x : int) (y: int) : int =
   if  x < y then -1 else if x = y then 0 else  1
+
+(* could be replaced by [Math.min], but it seems those built-ins are slower *)
+let caml_int_min (x : int) (y : int) : int =
+  if x < y then x else y 
+let caml_float_min (x : float) y   =
+  if x < y then x else y   
+let caml_string_min (x : string) y =     
+  if x < y then x else y 
+let caml_nativeint_min (x : nativeint) y =   
+  if x < y then x else y 
+let caml_int32_min (x : int32) y   = 
+  if x < y then x else y 
+
+let caml_int_max (x : int) (y : int) : int =
+  if x > y then x else y 
+let caml_float_max (x : float) y   =
+  if x > y then x else y   
+let caml_string_max (x : string) y =     
+  if x > y then x else y 
+let caml_nativeint_max (x : nativeint) y =   
+  if x > y then x else y 
+let caml_int32_max (x : int32) y   = 
+  if x > y then x else y 
+  
 
 let caml_string_compare (x : string) (y: string) : int =
   if  x < y then -1 else if x = y then 0 else  1
@@ -291,3 +316,9 @@ let caml_greaterthan a b = caml_compare a b > 0
 let caml_lessequal a b = caml_compare a b <= 0
 
 let caml_lessthan a b = caml_compare a b < 0
+
+let caml_min (x : Obj.t) y =   
+  if caml_compare  x y <= 0 then x else y 
+
+let caml_max (x : Obj.t) y =    
+  if caml_compare x y >= 0 then x else y 

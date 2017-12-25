@@ -2,7 +2,7 @@
 
 var Curry                   = require("../../lib/js/curry.js");
 var Hashtbl                 = require("../../lib/js/hashtbl.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
+var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function Make(funarg) {
@@ -67,7 +67,7 @@ function Make(funarg) {
           var successor = successors[0];
           if (find_default(already_processed, successor)) {
             var x = find_default(on_the_stack, successor) ? Curry._2(H[/* find */6], n_labels, successor) : Curry._2(H[/* find */6], l_labels, successor);
-            Curry._3(H[/* add */4], l_labels, top$1, Pervasives.max(Curry._2(H[/* find */6], l_labels, top$1), x));
+            Curry._3(H[/* add */4], l_labels, top$1, Caml_obj.caml_int_max(Curry._2(H[/* find */6], l_labels, top$1), x));
             _successors = successors[1];
             continue ;
             
@@ -97,7 +97,7 @@ function Make(funarg) {
             var match = rest_of_stack$1[0];
             var new_top = match[0];
             Curry._3(H[/* add */4], on_the_stack, top$1, /* false */0);
-            Curry._3(H[/* add */4], l_labels, new_top, Pervasives.max(Curry._2(H[/* find */6], l_labels, top$1), Curry._2(H[/* find */6], l_labels, new_top)));
+            Curry._3(H[/* add */4], l_labels, new_top, Caml_obj.caml_int_max(Curry._2(H[/* find */6], l_labels, top$1), Curry._2(H[/* find */6], l_labels, new_top)));
             _rest_of_stack = rest_of_stack$1[1];
             _top = new_top;
             _successors = match[1];

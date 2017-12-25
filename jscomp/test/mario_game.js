@@ -983,7 +983,7 @@ function update_player(player, keys, context) {
                 if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
                   player$1[/* jumping */4] = /* true */1;
                   player$1[/* grounded */5] = /* false */0;
-                  player$1[/* vel */2][/* y */1] = Pervasives.max(player$1[/* vel */2][/* y */1] - (5.7 + Math.abs(player$1[/* vel */2][/* x */0]) * 0.25), -6);
+                  player$1[/* vel */2][/* y */1] = Caml_obj.caml_float_max(player$1[/* vel */2][/* y */1] - (5.7 + Math.abs(player$1[/* vel */2][/* x */0]) * 0.25), -6);
                   return /* () */0;
                 } else {
                   return 0;
@@ -1052,7 +1052,7 @@ function update_vel$1(obj) {
     obj[/* vel */2][/* y */1] = 0;
     return /* () */0;
   } else if (obj[/* params */0][/* has_gravity */0]) {
-    obj[/* vel */2][/* y */1] = Pervasives.min(obj[/* vel */2][/* y */1] + 0.2 + Math.abs(obj[/* vel */2][/* y */1]) * 0.01, 4.5);
+    obj[/* vel */2][/* y */1] = Caml_obj.caml_float_min(obj[/* vel */2][/* y */1] + 0.2 + Math.abs(obj[/* vel */2][/* y */1]) * 0.01, 4.5);
     return /* () */0;
   } else {
     return 0;
@@ -1545,7 +1545,7 @@ function make$3(param, param$1) {
 
 function calc_viewport_point(cc, vc, mc) {
   var vc_half = vc / 2;
-  return Pervasives.min(Pervasives.max(cc - vc_half, 0), Pervasives.min(mc - vc, Math.abs(cc - vc_half)));
+  return Caml_obj.caml_float_min(Caml_obj.caml_float_max(cc - vc_half, 0), Caml_obj.caml_float_min(mc - vc, Math.abs(cc - vc_half)));
 }
 
 function in_viewport(v, pos) {

@@ -3643,7 +3643,7 @@ function min_value(param) {
   if (match) {
     var match$1 = param[1];
     if (match$1) {
-      return /* Some */[Pervasives.min(match[0], match$1[0])];
+      return /* Some */[Caml_obj.caml_min(match[0], match$1[0])];
     } else {
       throw [
             Caml_builtin_exceptions.failure,

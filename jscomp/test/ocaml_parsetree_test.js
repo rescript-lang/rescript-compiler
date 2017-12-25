@@ -718,7 +718,7 @@ function parse_opt(error, active, flags, s) {
             ];
       } else {
         var match$1 = get_range(i);
-        for(var n = match$1[1] ,n_finish = Pervasives.min(match$1[2], 50); n <= n_finish; ++n){
+        for(var n = match$1[1] ,n_finish = Caml_obj.caml_int_min(match$1[2], 50); n <= n_finish; ++n){
           Curry._1(myset, n);
         }
         return loop(match$1[0]);

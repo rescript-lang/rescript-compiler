@@ -258,7 +258,8 @@ let gt x y =
 
 
 let le x y = Pervasives.not (gt x y)
-
+let min x y = if lt x  y then x else y 
+let max x y = if gt x y then x else y 
 
 let to_float ({hi; lo} : t) = 
   Nativeint.to_float ( hi *~ [%raw{|0x100000000|}] +~ lo)
@@ -306,7 +307,7 @@ let rec of_float (x : float) : t =
 
 
 external log2 : float = "Math.LN2" [@@bs.val]  
-external max : float -> float -> float = "Math.max" [@@bs.val]
+(* external maxFloat : float -> float -> float = "Math.max" [@@bs.val] *)
 
 let rec div self other =
   match self, other with
@@ -348,7 +349,7 @@ let rec div self other =
       let rem = ref self in
       (* assert false *)
       while ge !rem other  do
-        let approx = ref ( max 1.
+        let approx = ref ( Pervasives.max 1.
              (floor (to_float !rem /. to_float other) )) in
         let log2 = ceil (log !approx /. log2) in
         let delta =

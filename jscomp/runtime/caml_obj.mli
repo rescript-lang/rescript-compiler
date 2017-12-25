@@ -52,3 +52,19 @@ val caml_greaterthan : eq
 val caml_lessthan : eq
 val caml_lessequal : eq
 
+type 'a selector = 'a -> 'a -> 'a 
+
+val caml_int_min : int selector
+val caml_float_min : float selector 
+val caml_string_min : string selector  
+val caml_nativeint_min : nativeint selector
+val caml_int32_min : int32 selector 
+
+val caml_int_max : int selector
+val caml_float_max : float selector 
+val caml_string_max : string selector  
+val caml_nativeint_max : nativeint selector
+val caml_int32_max : int32 selector 
+
+val caml_min : Obj.t selector
+val caml_max : Obj.t selector

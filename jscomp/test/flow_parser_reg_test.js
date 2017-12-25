@@ -52,7 +52,7 @@ function from_lb_p(source, start, _end) {
           ],
           /* _end : record */[
             /* line */_end[/* pos_lnum */1],
-            /* column */Pervasives.max(0, _end[/* pos_cnum */3] - _end[/* pos_bol */2] | 0),
+            /* column */Caml_obj.caml_int_max(0, _end[/* pos_cnum */3] - _end[/* pos_bol */2] | 0),
             /* offset */_end[/* pos_cnum */3]
           ]
         ];

@@ -1934,17 +1934,6 @@ let convert exports lam : _ * _  =
             | _ -> assert false
           end
 
-        | Lprim ( Pfield (id, _),
-                  [Lprim (Pgetglobal ({name  = "Pervasives"} ), _,_)],loc              
-                )
-          ->
-          let args = Ext_list.map convert_aux args in
-          begin match Ocaml_stdlib_slots.pervasives.(id) , args  with
-            | "^", [ l; r ] 
-              ->
-              prim ~primitive:Pstringadd ~args:[l;r] loc 
-            | _ ->  apply (convert_aux fn) args loc  App_na
-          end
         (*  
         | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
           when List.for_all2_no_exn (fun x y -> 

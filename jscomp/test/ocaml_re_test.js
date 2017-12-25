@@ -73,7 +73,7 @@ function union(_l, _l$prime) {
         } else if (c2 < c2$prime) {
           _l$prime = /* :: */[
             /* tuple */[
-              Pervasives.min(c1, c1$prime),
+              c1 < c1$prime ? c1 : c1$prime,
               c2$prime
             ],
             r$prime
@@ -85,7 +85,7 @@ function union(_l, _l$prime) {
           _l$prime = r$prime;
           _l = /* :: */[
             /* tuple */[
-              Pervasives.min(c1, c1$prime),
+              c1 < c1$prime ? c1 : c1$prime,
               c2
             ],
             r
@@ -127,7 +127,7 @@ function inter(_l, _l$prime) {
         } else if (Caml_obj.caml_lessthan(c2, c2$prime)) {
           return /* :: */[
                   /* tuple */[
-                    Pervasives.max(c1, c1$prime),
+                    Caml_obj.caml_max(c1, c1$prime),
                     c2
                   ],
                   inter(r, l$prime)
@@ -135,7 +135,7 @@ function inter(_l, _l$prime) {
         } else {
           return /* :: */[
                   /* tuple */[
-                    Pervasives.max(c1, c1$prime),
+                    Caml_obj.caml_max(c1, c1$prime),
                     c2$prime
                   ],
                   inter(l, r$prime)
@@ -1415,7 +1415,7 @@ function delta(tbl_ref, next_cat, $$char, st) {
 
 function flatten_match(m) {
   var ma = List.fold_left((function (ma, param) {
-          return Pervasives.max(ma, param[0]);
+          return Caml_obj.caml_int_max(ma, param[0]);
         }), -1, m);
   var res = Caml_array.caml_make_vect(ma + 1 | 0, -1);
   List.iter((function (param) {

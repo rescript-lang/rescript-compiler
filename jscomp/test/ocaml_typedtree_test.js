@@ -289,7 +289,7 @@ function get_ref(r) {
 function edit_distance(a, b, cutoff) {
   var la = a.length;
   var lb = b.length;
-  var cutoff$1 = Pervasives.min(Pervasives.max(la, lb), cutoff);
+  var cutoff$1 = Caml_obj.caml_int_min(la > lb ? la : lb, cutoff);
   if (Pervasives.abs(la - lb | 0) > cutoff$1) {
     return /* None */0;
   } else {
@@ -302,10 +302,10 @@ function edit_distance(a, b, cutoff) {
       Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), j, j);
     }
     for(var i$1 = 1; i$1 <= la; ++i$1){
-      for(var j$1 = Pervasives.max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Pervasives.min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
+      for(var j$1 = Caml_obj.caml_int_max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Caml_obj.caml_int_min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
         var cost = Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? 0 : 1;
-        var best = Pervasives.min(1 + Pervasives.min(Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1), Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
-        var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Pervasives.min(best, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
+        var best = Caml_obj.caml_int_min(1 + Caml_obj.caml_int_min(Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1), Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
+        var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_obj.caml_int_min(best, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
         Caml_array.caml_array_set(Caml_array.caml_array_get(m, i$1), j$1, best$1);
       }
     }
@@ -969,7 +969,7 @@ function parse_opt(error, active, flags, s) {
             ];
       } else {
         var match$1 = get_range(i);
-        for(var n = match$1[1] ,n_finish = Pervasives.min(match$1[2], 50); n <= n_finish; ++n){
+        for(var n = match$1[1] ,n_finish = Caml_obj.caml_int_min(match$1[2], 50); n <= n_finish; ++n){
           Curry._1(myset, n);
         }
         return loop(match$1[0]);
@@ -2123,7 +2123,7 @@ function equal(i1, i2) {
 }
 
 function set_current_time(t) {
-  currentstamp[0] = Pervasives.max(currentstamp[0], t);
+  currentstamp[0] = Caml_obj.caml_int_max(currentstamp[0], t);
   return /* () */0;
 }
 
@@ -2509,7 +2509,7 @@ function binding_time(_param) {
           _param = param[0];
           continue ;
           case 2 : 
-          return Pervasives.max(binding_time(param[0]), binding_time(param[1]));
+          return Caml_obj.caml_int_max(binding_time(param[0]), binding_time(param[1]));
       
     }
   };
@@ -26595,7 +26595,7 @@ function expand_abbrev_gen(kind, find_type_expansion, env, ty) {
         
       }
       if (trace_gadt_instances[0]) {
-        var match$4 = Pervasives.max(match$2[2], gadt_instance_level(env, ty));
+        var match$4 = Caml_obj.caml_max(match$2[2], gadt_instance_level(env, ty));
         if (match$4) {
           var lv = match$4[0];
           if (level < lv) {
@@ -29666,7 +29666,7 @@ function unify2(env, t1, t2) {
   var match = expand_both(t1, t2);
   var t2$prime = match[1];
   var t1$prime = match[0];
-  var lv = Pervasives.min(t1$prime[/* level */1], t2$prime[/* level */1]);
+  var lv = Caml_obj.caml_int_min(t1$prime[/* level */1], t2$prime[/* level */1]);
   update_level(env[0], lv, t2);
   update_level(env[0], lv, t1);
   if (unify_eq(env[0], t1$prime, t2$prime)) {
@@ -29865,7 +29865,7 @@ function unify_fields(env, ty1, ty2) {
   var miss1 = match$2[1];
   var l1 = repr(ty1)[/* level */1];
   var l2 = repr(ty2)[/* level */1];
-  var va = make_rowvar(Pervasives.min(l1, l2), +(miss2 === /* [] */0), rest1, +(miss1 === /* [] */0), rest2);
+  var va = make_rowvar(l1 < l2 ? l1 : l2, +(miss2 === /* [] */0), rest1, +(miss1 === /* [] */0), rest2);
   var d1 = rest1[/* desc */0];
   var d2 = rest2[/* desc */0];
   try {
@@ -29965,7 +29965,7 @@ function unify_row(env, row1, row2) {
     var fixed1 = row_fixed(row1$1);
     var fixed2 = row_fixed(row2$1);
     var more = fixed1 ? rm1 : (
-        fixed2 ? rm2 : newty2(Pervasives.min(rm1[/* level */1], rm2[/* level */1]), /* Tvar */Block.__(0, [/* None */0]))
+        fixed2 ? rm2 : newty2(Caml_obj.caml_int_min(rm1[/* level */1], rm2[/* level */1]), /* Tvar */Block.__(0, [/* None */0]))
       );
     var fixed = fixed1 || fixed2;
     var closed = row1$1[/* row_closed */3] || row2$1[/* row_closed */3];
@@ -32959,7 +32959,7 @@ function pred_enlarge(n) {
 
 function collect(l) {
   return List.fold_left((function (c1, param) {
-                return Pervasives.max(c1, param[1]);
+                return Caml_obj.caml_int_max(c1, param[1]);
               }), /* Unchanged */0, l);
 }
 
@@ -33118,7 +33118,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
             ];
             var match$1 = build_subtype(env, visited$1, loops, 1 - posi, level, match[1]);
             var match$2 = build_subtype(env, visited$1, loops, posi, level, match[2]);
-            var c = Pervasives.max(match$1[1], match$2[1]);
+            var c = Caml_obj.caml_int_max(match$1[1], match$2[1]);
             if (c > /* Unchanged */0) {
               return /* tuple */[
                       newty2(current_level[0], /* Tarrow */Block.__(1, [
@@ -33390,7 +33390,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
       case 5 : 
           var match$12 = build_subtype(env, visited, loops, posi, level, match[2]);
           var match$13 = build_subtype(env, visited, loops, posi, level, match[3]);
-          var c$5 = Pervasives.max(match$12[1], match$13[1]);
+          var c$5 = Caml_obj.caml_int_max(match$12[1], match$13[1]);
           if (c$5 > /* Unchanged */0) {
             return /* tuple */[
                     newty2(current_level[0], /* Tfield */Block.__(5, [
@@ -54913,7 +54913,7 @@ function spellcheck(ppf, fold, env, lid) {
         );
       return /* tuple */[
               choice,
-              Pervasives.min(dist, best_dist)
+              dist < best_dist ? dist : best_dist
             ];
     } else {
       return /* tuple */[
