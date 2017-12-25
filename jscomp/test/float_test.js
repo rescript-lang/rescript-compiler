@@ -1,13 +1,14 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var $$Array    = require("../../lib/js/array.js");
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
-var Printf     = require("../../lib/js/printf.js");
-var Mt_global  = require("./mt_global.js");
-var Caml_float = require("../../lib/js/caml_float.js");
-var Pervasives = require("../../lib/js/pervasives.js");
+var Mt             = require("./mt.js");
+var $$Array        = require("../../lib/js/array.js");
+var Block          = require("../../lib/js/block.js");
+var Curry          = require("../../lib/js/curry.js");
+var Printf         = require("../../lib/js/printf.js");
+var Mt_global      = require("./mt_global.js");
+var Caml_float     = require("../../lib/js/caml_float.js");
+var Pervasives     = require("../../lib/js/pervasives.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var test_id = [0];
 
@@ -138,7 +139,7 @@ function from_pairs(ps) {
                   }), ps));
 }
 
-var float_compare = Caml_float.caml_float_compare;
+var float_compare = Caml_primitive.caml_float_compare;
 
 var param = Caml_float.caml_classify_float(3);
 
@@ -182,7 +183,7 @@ var param$4 = $$Array.map((function (x) {
           return 0;
         }
       }), $$Array.map((function (param) {
-            return Caml_float.caml_float_compare(param[0], param[1]);
+            return Caml_primitive.caml_float_compare(param[0], param[1]);
           }), /* array */[
           /* tuple */[
             1,

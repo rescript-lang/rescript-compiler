@@ -31,12 +31,12 @@ var Caml_weak               = require("../../lib/js/caml_weak.js");
 var Nativeint               = require("../../lib/js/nativeint.js");
 var Caml_array              = require("../../lib/js/caml_array.js");
 var Caml_bytes              = require("../../lib/js/caml_bytes.js");
-var Caml_float              = require("../../lib/js/caml_float.js");
 var Caml_int32              = require("../../lib/js/caml_int32.js");
 var Caml_int64              = require("../../lib/js/caml_int64.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_format             = require("../../lib/js/caml_format.js");
 var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
 var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
 var CamlinternalFormat      = require("../../lib/js/camlinternalFormat.js");
@@ -289,7 +289,7 @@ function get_ref(r) {
 function edit_distance(a, b, cutoff) {
   var la = a.length;
   var lb = b.length;
-  var cutoff$1 = Caml_obj.caml_int_min(la > lb ? la : lb, cutoff);
+  var cutoff$1 = Caml_primitive.caml_int_min(la > lb ? la : lb, cutoff);
   if (Pervasives.abs(la - lb | 0) > cutoff$1) {
     return /* None */0;
   } else {
@@ -302,10 +302,10 @@ function edit_distance(a, b, cutoff) {
       Caml_array.caml_array_set(Caml_array.caml_array_get(m, 0), j, j);
     }
     for(var i$1 = 1; i$1 <= la; ++i$1){
-      for(var j$1 = Caml_obj.caml_int_max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Caml_obj.caml_int_min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
+      for(var j$1 = Caml_primitive.caml_int_max(1, (i$1 - cutoff$1 | 0) - 1 | 0) ,j_finish = Caml_primitive.caml_int_min(lb, (i$1 + cutoff$1 | 0) + 1 | 0); j$1 <= j_finish; ++j$1){
         var cost = Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? 0 : 1;
-        var best = Caml_obj.caml_int_min(1 + Caml_obj.caml_int_min(Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1), Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
-        var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_obj.caml_int_min(best, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
+        var best = Caml_primitive.caml_int_min(1 + Caml_primitive.caml_int_min(Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1), Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1), j$1 - 1 | 0)) | 0, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 1 | 0), j$1 - 1 | 0) + cost | 0);
+        var best$1 = i$1 > 1 && j$1 > 1 && Caml_string.get(a, i$1 - 1 | 0) === Caml_string.get(b, j$1 - 2 | 0) && Caml_string.get(a, i$1 - 2 | 0) === Caml_string.get(b, j$1 - 1 | 0) ? Caml_primitive.caml_int_min(best, Caml_array.caml_array_get(Caml_array.caml_array_get(m, i$1 - 2 | 0), j$1 - 2 | 0) + cost | 0) : best;
         Caml_array.caml_array_set(Caml_array.caml_array_get(m, i$1), j$1, best$1);
       }
     }
@@ -969,7 +969,7 @@ function parse_opt(error, active, flags, s) {
             ];
       } else {
         var match$1 = get_range(i);
-        for(var n = match$1[1] ,n_finish = Caml_obj.caml_int_min(match$1[2], 50); n <= n_finish; ++n){
+        for(var n = match$1[1] ,n_finish = Caml_primitive.caml_int_min(match$1[2], 50); n <= n_finish; ++n){
           Curry._1(myset, n);
         }
         return loop(match$1[0]);
@@ -2123,7 +2123,7 @@ function equal(i1, i2) {
 }
 
 function set_current_time(t) {
-  currentstamp[0] = Caml_obj.caml_int_max(currentstamp[0], t);
+  currentstamp[0] = Caml_primitive.caml_int_max(currentstamp[0], t);
   return /* () */0;
 }
 
@@ -2281,7 +2281,7 @@ function add(id, data, param) {
     var r = param[2];
     var k = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(id[/* name */1], k[/* ident */0][/* name */1]);
+    var c = Caml_primitive.caml_string_compare(id[/* name */1], k[/* ident */0][/* name */1]);
     if (c) {
       if (c < 0) {
         return balance(add(id, data, l), k, r);
@@ -2319,7 +2319,7 @@ function find_same(id, _param) {
     var param = _param;
     if (param) {
       var k = param[1];
-      var c = Caml_string.caml_string_compare(id[/* name */1], k[/* ident */0][/* name */1]);
+      var c = Caml_primitive.caml_string_compare(id[/* name */1], k[/* ident */0][/* name */1]);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
@@ -2356,7 +2356,7 @@ function find_name(name, _param) {
     var param = _param;
     if (param) {
       var k = param[1];
-      var c = Caml_string.caml_string_compare(name, k[/* ident */0][/* name */1]);
+      var c = Caml_primitive.caml_string_compare(name, k[/* ident */0][/* name */1]);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
@@ -2387,7 +2387,7 @@ function find_all(name, _param) {
     var param = _param;
     if (param) {
       var k = param[1];
-      var c = Caml_string.caml_string_compare(name, k[/* ident */0][/* name */1]);
+      var c = Caml_primitive.caml_string_compare(name, k[/* ident */0][/* name */1]);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
@@ -2509,7 +2509,7 @@ function binding_time(_param) {
           _param = param[0];
           continue ;
           case 2 : 
-          return Caml_obj.caml_int_max(binding_time(param[0]), binding_time(param[1]));
+          return Caml_primitive.caml_int_max(binding_time(param[0]), binding_time(param[1]));
       
     }
   };
@@ -2824,7 +2824,7 @@ function add$1(x, data, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add$1(x, data, l), v, d, r);
@@ -2855,7 +2855,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -2873,7 +2873,7 @@ function mem(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -3091,7 +3091,7 @@ function add$2(x, t) {
     var r = t[2];
     var v = t[1];
     var l = t[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$1(add$2(x, l), v, r);
@@ -3207,7 +3207,7 @@ function split(x, param) {
     var r = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split(x, l);
@@ -3244,7 +3244,7 @@ function mem$2(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
@@ -3355,7 +3355,7 @@ function compare$1(s1, s2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = Caml_string.caml_string_compare(e1[0], e2[0]);
+        var c = Caml_primitive.caml_string_compare(e1[0], e2[0]);
         if (c !== 0) {
           return c;
         } else {
@@ -9820,7 +9820,7 @@ function add$7(x, t) {
     var r = t[2];
     var v = t[1];
     var l = t[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$5(add$7(x, l), v, r);
@@ -24245,7 +24245,7 @@ function flatten_fields(ty) {
   var match = flatten(/* [] */0, ty);
   return /* tuple */[
           List.sort((function (param, param$1) {
-                  return Caml_string.caml_string_compare(param[0], param$1[0]);
+                  return Caml_primitive.caml_string_compare(param[0], param$1[0]);
                 }), match[0]),
           match[1]
         ];
@@ -24615,7 +24615,7 @@ function class_type_arity(_param) {
 
 function sort_row_fields(param) {
   return List.sort((function (param, param$1) {
-                return Caml_string.caml_string_compare(param[0], param$1[0]);
+                return Caml_primitive.caml_string_compare(param[0], param$1[0]);
               }), param);
 }
 
@@ -29666,7 +29666,7 @@ function unify2(env, t1, t2) {
   var match = expand_both(t1, t2);
   var t2$prime = match[1];
   var t1$prime = match[0];
-  var lv = Caml_obj.caml_int_min(t1$prime[/* level */1], t2$prime[/* level */1]);
+  var lv = Caml_primitive.caml_int_min(t1$prime[/* level */1], t2$prime[/* level */1]);
   update_level(env[0], lv, t2);
   update_level(env[0], lv, t1);
   if (unify_eq(env[0], t1$prime, t2$prime)) {
@@ -29965,7 +29965,7 @@ function unify_row(env, row1, row2) {
     var fixed1 = row_fixed(row1$1);
     var fixed2 = row_fixed(row2$1);
     var more = fixed1 ? rm1 : (
-        fixed2 ? rm2 : newty2(Caml_obj.caml_int_min(rm1[/* level */1], rm2[/* level */1]), /* Tvar */Block.__(0, [/* None */0]))
+        fixed2 ? rm2 : newty2(Caml_primitive.caml_int_min(rm1[/* level */1], rm2[/* level */1]), /* Tvar */Block.__(0, [/* None */0]))
       );
     var fixed = fixed1 || fixed2;
     var closed = row1$1[/* row_closed */3] || row2$1[/* row_closed */3];
@@ -32959,7 +32959,7 @@ function pred_enlarge(n) {
 
 function collect(l) {
   return List.fold_left((function (c1, param) {
-                return Caml_obj.caml_int_max(c1, param[1]);
+                return Caml_primitive.caml_int_max(c1, param[1]);
               }), /* Unchanged */0, l);
 }
 
@@ -33118,7 +33118,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
             ];
             var match$1 = build_subtype(env, visited$1, loops, 1 - posi, level, match[1]);
             var match$2 = build_subtype(env, visited$1, loops, posi, level, match[2]);
-            var c = Caml_obj.caml_int_max(match$1[1], match$2[1]);
+            var c = Caml_primitive.caml_int_max(match$1[1], match$2[1]);
             if (c > /* Unchanged */0) {
               return /* tuple */[
                       newty2(current_level[0], /* Tarrow */Block.__(1, [
@@ -33390,7 +33390,7 @@ function build_subtype(env, visited, loops, posi, level, t) {
       case 5 : 
           var match$12 = build_subtype(env, visited, loops, posi, level, match[2]);
           var match$13 = build_subtype(env, visited, loops, posi, level, match[3]);
-          var c$5 = Caml_obj.caml_int_max(match$12[1], match$13[1]);
+          var c$5 = Caml_primitive.caml_int_max(match$12[1], match$13[1]);
           if (c$5 > /* Unchanged */0) {
             return /* tuple */[
                     newty2(current_level[0], /* Tfield */Block.__(5, [
@@ -34673,7 +34673,7 @@ function normalize_type_rec(env, visited, ty) {
                           ];
                   }), row[/* row_fields */0]);
             var fields$1 = List.sort((function (param, param$1) {
-                    return Caml_string.caml_string_compare(param[0], param$1[0]);
+                    return Caml_primitive.caml_string_compare(param[0], param$1[0]);
                   }), List.filter((function (param) {
                           return +(param[1] !== /* Rabsent */0);
                         }))(fields));
@@ -39475,7 +39475,7 @@ function compare$2(_p1, _p2) {
                 if (c !== 0) {
                   return c;
                 } else {
-                  return Caml_string.caml_string_compare(p1[1], p2[1]);
+                  return Caml_primitive.caml_string_compare(p1[1], p2[1]);
                 }
             case 0 : 
             case 2 : 
@@ -40669,7 +40669,7 @@ function tree_of_typobject(sch, fi, nm) {
               }
             }), match[0], /* [] */0);
       var sorted_fields = List.sort((function (param, param$1) {
-              return Caml_string.caml_string_compare(param[0], param$1[0]);
+              return Caml_primitive.caml_string_compare(param[0], param$1[0]);
             }), present_fields);
       return tree_of_typfields(sch, match[1], sorted_fields);
     };
@@ -48072,14 +48072,14 @@ function const_compare(x, y) {
   switch (x.tag | 0) {
     case 2 : 
         if (y.tag === 2) {
-          return Caml_string.caml_string_compare(x[0], y[0]);
+          return Caml_primitive.caml_string_compare(x[0], y[0]);
         } else {
           return Caml_obj.caml_compare(x, y);
         }
         break;
     case 3 : 
         if (y.tag === 3) {
-          return Caml_float.caml_float_compare(Caml_format.caml_float_of_string(x[0]), Caml_format.caml_float_of_string(y[0]));
+          return Caml_primitive.caml_float_compare(Caml_format.caml_float_of_string(x[0]), Caml_format.caml_float_of_string(y[0]));
         } else {
           return Caml_obj.caml_compare(x, y);
         }
@@ -56383,7 +56383,7 @@ function enter_variable($staropt$star, $staropt$star$1, loc, name, ty) {
 
 function sort_pattern_variables(vs) {
   return List.sort((function (param, param$1) {
-                return Caml_string.caml_string_compare(param[0][/* name */1], param$1[0][/* name */1]);
+                return Caml_primitive.caml_string_compare(param[0][/* name */1], param$1[0][/* name */1]);
               }), vs);
 }
 
@@ -57373,7 +57373,7 @@ function type_label_a_list(labels, loc, closed, env, type_lbl_a, opath, lid_a_li
     lbl_a_list = disambiguate_lid_a_list(loc, closed, env, opath, lid_a_list$1);
   }
   var lbl_a_list$1 = List.sort((function (param, param$1) {
-          return Caml_obj.caml_int_compare(param[1][/* lbl_pos */4], param$1[1][/* lbl_pos */4]);
+          return Caml_primitive.caml_int_compare(param[1][/* lbl_pos */4], param$1[1][/* lbl_pos */4]);
         }), lbl_a_list);
   return List.map(type_lbl_a, lbl_a_list$1);
 }
@@ -65687,7 +65687,7 @@ function add$12(x, t) {
     var r = t[2];
     var v = t[1];
     var l = t[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$10(add$12(x, l), v, r);
@@ -65711,7 +65711,7 @@ function mem$6(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
@@ -65990,7 +65990,7 @@ function add$13(x, data, param) {
     var d = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$11(add$13(x, data, l), v, d, r);
@@ -66021,7 +66021,7 @@ function find$6(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
@@ -74660,7 +74660,7 @@ function add$14(x, t) {
     var r = t[2];
     var v = t[1];
     var l = t[0];
-    var c = Caml_string.caml_string_compare(x, v);
+    var c = Caml_primitive.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$12(add$14(x, l), v, r);
@@ -74684,7 +74684,7 @@ function mem$7(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_string.caml_string_compare(x, param[1]);
+      var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;

@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var List     = require("../../lib/js/list.js");
-var $$Array  = require("../../lib/js/array.js");
-var Block    = require("../../lib/js/block.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
+var Mt             = require("./mt.js");
+var List           = require("../../lib/js/list.js");
+var $$Array        = require("../../lib/js/array.js");
+var Block          = require("../../lib/js/block.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var list_suites_000 = /* tuple */[
   "length",
@@ -67,7 +67,7 @@ var list_suites_001 = /* :: */[
         "sort",
         (function () {
             return /* Eq */Block.__(0, [
-                      List.sort(Caml_obj.caml_int_compare, /* :: */[
+                      List.sort(Caml_primitive.caml_int_compare, /* :: */[
                             4,
                             /* :: */[
                               1,

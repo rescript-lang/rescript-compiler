@@ -8,6 +8,7 @@ var $$String                = require("../../lib/js/string.js");
 var Caml_obj                = require("../../lib/js/caml_obj.js");
 var Pervasives              = require("../../lib/js/pervasives.js");
 var Caml_format             = require("../../lib/js/caml_format.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(delim, s) {
@@ -876,7 +877,7 @@ function compute_update_sequences(all_tickers) {
                                 "All nodes should be ranked"
                               ];
                         } else {
-                          return Caml_obj.caml_int_compare(lhs[0], rhs[0]);
+                          return Caml_primitive.caml_int_compare(lhs[0], rhs[0]);
                         }
                       }), l);
                 return add(k, l$1, map);

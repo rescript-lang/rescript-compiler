@@ -5,7 +5,7 @@ var List                    = require("../../lib/js/list.js");
 var Block                   = require("../../lib/js/block.js");
 var Curry                   = require("../../lib/js/curry.js");
 var Caml_module             = require("../../lib/js/caml_module.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_primitive          = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var A = Caml_module.init_mod([
@@ -946,7 +946,7 @@ function compare$1(t1, t2) {
   } else if (t2.tag) {
     return 1;
   } else {
-    return Caml_string.caml_string_compare(t1[0], t2[0]);
+    return Caml_primitive.caml_string_compare(t1[0], t2[0]);
   }
 }
 
