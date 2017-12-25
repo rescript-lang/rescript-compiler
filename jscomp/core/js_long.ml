@@ -113,8 +113,8 @@ let bit_op  op runtime_call args =
   match args  with 
   | [l;r] -> 
     (* Int64 is a block in ocaml, a little more conservative in inlining *)
-    if Js_analyzer.is_simple_no_side_effect_expression l  &&
-       Js_analyzer.is_simple_no_side_effect_expression r then 
+    if Js_analyzer.is_okay_to_duplicate l  &&
+       Js_analyzer.is_okay_to_duplicate r then 
       make ~lo:(op (get_lo l) (get_lo r))
         ~hi:(op (get_hi l) (get_hi r))
     else int64_call runtime_call args 
@@ -170,6 +170,10 @@ let to_hex (args : J.expression list) =
 let get64 = int64_call "get64"
 let float_of_bits  =  int64_call "float_of_bits" 
 let bits_of_float = int64_call "bits_of_float"
+let min args = 
+  int64_call "min" args 
+let max args = 
+  int64_call "max" args
 let to_float (args : J.expression list ) = 
   match args with
   (* | [ {expression_desc  *)

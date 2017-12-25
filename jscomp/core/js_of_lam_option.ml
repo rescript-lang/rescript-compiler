@@ -57,7 +57,7 @@ let get_default_undefined
   | Array ([x],_)
   | Caml_block([x],_,_,_) -> (map Static_unwrapped x) (* invariant: option encoding *)
   | _ ->
-    if Js_analyzer.is_simple_no_side_effect_expression arg then
+    if Js_analyzer.is_okay_to_duplicate arg then
       E.econd arg (map Static_unwrapped (E.index arg 0l)) E.undefined
     else
       map Runtime_maybe_unwrapped (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])

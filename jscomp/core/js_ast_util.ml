@@ -34,7 +34,7 @@ module S = Js_stmt_make
 
 let rec named_expression (e : J.expression)
   :  (J.statement  * Ident.t) option = 
-  if Js_analyzer.is_simple_no_side_effect_expression e then 
+  if Js_analyzer.is_okay_to_duplicate e then 
     None 
   else 
     let obj = Ext_ident.create_tmp () in 
