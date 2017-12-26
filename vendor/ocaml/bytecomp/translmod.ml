@@ -186,12 +186,32 @@ let record_primitive = function
   | _ -> ()
 
 (* Utilities for compiling "module rec" definitions *)
+let bs_init_mod args : Lambda.lambda =
+  Lprim(Pccall {prim_name = "#init_mod"; prim_arity = 2;
+                prim_alloc = true;
+                prim_native_name = "";
+                prim_native_float = false}, args, Location.none)
+let bs_update_mod args : Lambda.lambda =
+  Lprim (Pccall {prim_name = "#update_mod"; prim_arity = 3;
+                 prim_alloc = true;
+                 prim_native_name = "";
+                 prim_native_float = false}, args, Location.none)
 
-let mod_prim name =
+let mod_prim name args =
+  if !Clflags.bs_only then
+    if name = "init_mod" then
+      bs_init_mod args
+    else if name = "update_mod" then
+      bs_update_mod args
+    else assert false
+  else
   try
-    transl_normal_path
-      (fst (Env.lookup_value (Ldot (Lident "CamlinternalMod", name))
-                             Env.empty))
+    Lapply
+      (
+      transl_normal_path
+        (fst (Env.lookup_value (Ldot (Lident "CamlinternalMod", name))
+                Env.empty))
+      , args, Location.none)
   with Not_found ->
     fatal_error ("Primitive " ^ name ^ " not found.")
 
@@ -289,7 +309,7 @@ let eval_rec_bindings bindings cont =
   | (id, None, rhs) :: rem ->
       bind_inits rem
   | (id, Some(loc, shape), rhs) :: rem ->
-      Llet(Strict, id, Lapply(mod_prim "init_mod", [loc; shape], Location.none),
+      Llet(Strict, id, (mod_prim "init_mod" [loc; shape]),
            bind_inits rem)
   and bind_strict = function
     [] ->
@@ -304,8 +324,7 @@ let eval_rec_bindings bindings cont =
   | (id, None, rhs) :: rem ->
       patch_forwards rem
   | (id, Some(loc, shape), rhs) :: rem ->
-      Lsequence(Lapply(mod_prim "update_mod", [shape; Lvar id; rhs],
-                       Location.none),
+      Lsequence((mod_prim "update_mod" [shape; Lvar id; rhs]),
                 patch_forwards rem)
   in
     bind_inits bindings

@@ -1821,6 +1821,21 @@ let convert exports lam : _ * _  =
 
     | _ when s = "#undefined" ->
       Lconst (Const_js_undefined)
+    | _ when s = "#init_mod" -> 
+      let args = Ext_list.map convert_aux args in 
+      begin match args with 
+      | [_loc; Lconst(Const_block(0,_,[Const_block(0,_,[])]))] 
+        -> 
+        unit 
+      | _ -> prim ~primitive:Pinit_mod ~args loc 
+      end
+    | _ when s = "#update_mod" ->   
+      let args = Ext_list.map convert_aux args in 
+      begin match args with 
+      | [Lconst(Const_block(0,_,[Const_block(0,_,[])]));_;_]
+        -> unit 
+      | _ -> prim ~primitive:Pupdate_mod ~args loc 
+      end
     | _ -> 
       let primitive = 
         match s with 
@@ -1907,33 +1922,6 @@ let convert exports lam : _ * _  =
     | Lapply (fn,args,loc) 
       ->  
       begin match fn with 
-        | Lprim (
-            Pfield (id, _),
-            [
-              Lprim (
-                Pgetglobal { name = "CamlinternalMod" },
-                _,_
-              )
-            ],loc
-          ) -> (* replace all {!CamlinternalMod} function *)
-          let args = Ext_list.map convert_aux args in
-          begin match Ocaml_stdlib_slots.camlinternalMod.(id), args  with
-            | "init_mod" ,  [_loc ; shape]  -> 
-              begin match shape with 
-                | Lconst (Const_block (0, _, [Const_block (0, _, [])])) 
-                  -> unit  (* see {!Translmod.init_shape}*)
-                | _ ->  prim ~primitive:Pinit_mod ~args loc 
-              end
-            | "update_mod", [shape ;  _obj1; _obj2] -> 
-              (* here array access will have side effect .. *)
-              begin match shape with 
-                | Lconst (Const_block (0, _, [Const_block (0, _, [])]))
-                  -> unit (* see {!Translmod.init_shape}*)
-                | _ -> prim ~primitive:Pupdate_mod ~args loc
-              end
-            | _ -> assert false
-          end
-
         (*  
         | Lfunction(kind,params,Lprim(prim,inner_args,inner_loc))
           when List.for_all2_no_exn (fun x y -> 

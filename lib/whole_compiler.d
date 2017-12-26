@@ -361,7 +361,6 @@
 ../lib/whole_compiler.ml : ./core/lam_compile_global.ml
 ../lib/whole_compiler.ml : ./core/lam_eta_conversion.ml
 ../lib/whole_compiler.ml : ./core/lam_pass_lets_dce.mli
-../lib/whole_compiler.ml : ./core/ocaml_stdlib_slots.ml
 ../lib/whole_compiler.ml : ./ext/hash_set_ident_mask.ml
 ../lib/whole_compiler.ml : ./super_errors/super_main.ml
 ../lib/whole_compiler.ml : ./super_errors/super_misc.ml
