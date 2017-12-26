@@ -36,6 +36,7 @@ module HashSet = Bs_HashSet
 module HashSetInt = Bs_HashSetInt
 module HashSetString = Bs_HashSetInt
 module HashMapString = Bs_HashMapString
+module HashMultiMap = Bs_HashMultiMap
 module HashMapInt = Bs_HashMapInt
 module Map = Bs_Map
 module Set = Bs_Set
