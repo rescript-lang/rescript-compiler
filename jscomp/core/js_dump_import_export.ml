@@ -46,7 +46,7 @@ let exports cxt f (idents : Ident.t list) =
           P.string f L.exports;
           P.string f L.dot;
           P.string f s; 
-          P.nspace f (margin - String.length s +  1) ;
+          P.space f ;
           P.string f L.eq;
           P.space f;
           P.string f export;          
@@ -76,7 +76,7 @@ let es6_export cxt f (idents : Ident.t list) =
     Ext_list.rev_iter (fun (s,export) -> 
         P.group f 0 @@ (fun _ ->  
             P.string f export;          
-            P.nspace f (margin - String.length s +  1) ;
+            P.space f ;
             if not @@ Ext_string.equal export s then begin 
               P.string f L.as_ ;
               P.space f;
@@ -105,7 +105,7 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
       P.string f L.var;
       P.space f ;
       P.string f s ;
-      P.nspace f (margin - String.length s + 1) ;
+      P.space f ;
       P.string f L.eq;
       P.space f;
       P.string f require_lit;
@@ -133,11 +133,11 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.string f L.import;
       P.space f ;
       P.string f L.star ;
-      P.space f ; (* import * as xx \t from 'xx*) 
+      P.space f ; (* import * as xx from 'xx*) 
       P.string f L.as_ ; 
       P.space f ; 
       P.string f s ; 
-      P.nspace f (margin - String.length s + 1) ;      
+      P.space f ;
       P.string f L.from;
       P.space f;
       Js_dump_string.pp_string f file ;
@@ -145,5 +145,3 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.newline f ;
     ) reversed_list;
   outer_cxt
-
-  
