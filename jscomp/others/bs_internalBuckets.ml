@@ -124,7 +124,7 @@ let rec filterMapInplaceBucket f h i prec cell =
         filterMapInplaceBucket f h i bucket nextCell
   end
 
-let filterMapInplace0 f h =
+let filterMapInplace0 h f =
   let h_buckets = C.buckets h in
   for i = 0 to Bs_Array.length h_buckets - 1 do
     let v = Bs_Array.unsafe_get h_buckets i in 
@@ -132,3 +132,22 @@ let filterMapInplace0 f h =
     | None -> ()
     | Some v -> filterMapInplaceBucket f h i C.emptyOpt v
   done
+
+let rec fillArray i arr cell =  
+    Bs_Array.unsafe_set arr i (key cell, value cell);
+    match C.toOpt (next cell) with 
+    | None -> i + 1
+    | Some v -> fillArray (i + 1) arr v 
+
+let toArray0 h = 
+  let d = C.buckets h in 
+  let current = ref 0 in 
+  let arr = Bs.Array.makeUninitializedUnsafe (C.size h) in 
+  for i = 0 to Bs_Array.length d - 1 do  
+    let cell = Bs_Array.unsafe_get d i in 
+    match C.toOpt cell with 
+    | None -> ()
+    | Some cell -> 
+      current := fillArray !current arr cell
+  done;
+  arr 

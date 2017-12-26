@@ -163,8 +163,8 @@ val fold : ('a, 'b, 'id) t -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) ->  'c
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
-val filterMapInplace0 : ('a -> 'b -> 'b option [@bs]) -> ('a, 'b, 'id) t0 -> unit
-val filterMapInplace : ('a -> 'b -> 'b option [@bs]) -> ('a, 'b, 'id) t -> unit
+val filterMapInplace0 : ('a, 'b, 'id) t0 -> ('a -> 'b -> 'b option [@bs]) -> unit
+val filterMapInplace : ('a, 'b, 'id) t -> ('a -> 'b -> 'b option [@bs]) ->  unit
   
 val length0 : ('a, 'b, 'id) t0 -> int
 val length  : ('a, 'b, 'id) t -> int  
@@ -196,36 +196,7 @@ val logStats : _ t -> unit
     buckets by size.
     @since 4.00.0 *)
 
-(** {6 Functorial interface} *)
 
-(** The functorial interface allows the use of specific comparison
-    and hash functions, either for performance/security concerns,
-    or because keys are not hashable/comparable with the polymorphic builtins.
-
-    For instance, one might want to specialize a table for integer keys:
-    {[
-      module IntHash =
-      struct
-        type t = int
-        let equal i j = i=j
-        let hash i = i land max_int
-      end
-
-      module IntHashtbl = Hashtbl.Make(IntHash)
-
-      let h = IntHashtbl.create 17 in
-      IntHashtbl.add h 12 "hello";;
-    ]}
-
-    This creates a new module [IntHashtbl], with a new type ['a
-    IntHashtbl.t] of tables from [int] to ['a]. In this example, [h]
-    contains [string] values so its type is [string IntHashtbl.t].
-
-    Note that the new type ['a IntHashtbl.t] is not compatible with
-    the type [('a,'b) Hashtbl.t] of the generic interface. For
-    example, [Hashtbl.length h] would not type-check, you must use
-    [IntHashtbl.length].
-*)
 
 
 

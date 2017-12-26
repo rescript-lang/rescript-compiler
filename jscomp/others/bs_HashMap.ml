@@ -261,5 +261,5 @@ let mem (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =
   let module M = (val dict) in   
   mem0 ~hash:M.hash ~eq:M.eq data key   
 
-let filterMapInplace  f h =
-  filterMapInplace0 f (B.data h)
+let filterMapInplace h f =
+  filterMapInplace0 (B.data h) f
