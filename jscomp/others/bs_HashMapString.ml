@@ -203,4 +203,21 @@ let iter = N.iter0
 let fold = N.fold0
 let logStats = N.logStats0
 let filterMapInplace = N.filterMapInplace0
+let toArray = N.toArray0 
 
+let ofArray arr  = 
+  let len = Bs.Array.length arr in 
+  let v = create len in 
+  for i = 0 to len - 1 do 
+    let k,value = (Bs.Array.unsafe_get arr i) in
+    add v k value
+  done ;
+  v
+
+(* TOOD: optimize heuristics for resizing *)  
+let addArray h arr =   
+  let len = Bs.Array.length arr in 
+  for i = 0 to len - 1 do 
+    let k,v = (Bs_Array.unsafe_get arr i) in
+    add h k v 
+done 

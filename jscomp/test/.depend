@@ -90,7 +90,7 @@ bs_abstract_test.cmj : ../runtime/js.cmj
 bs_array_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj
 bs_auto_uncurry.cmj : ../runtime/js.cmj
 bs_auto_uncurry_test.cmj : mt.cmj ../others/js_array.cmj ../runtime/js.cmj
-bs_hashmap_test.cmj :
+bs_hashmap_test.cmj : mt.cmj ../others/bs.cmj array_data_util.cmj
 bs_hashset_int_test.cmj : mt.cmj ../others/bs.cmj array_data_util.cmj
 bs_hashtbl_string_test.cmj : ../stdlib/hashtbl.cmj ../others/bs.cmj
 bs_ignore_effect.cmj : mt.cmj
