@@ -100,7 +100,7 @@ val replace:
     followed by {!Hashtbl.add}[ tbl x y]. *)
 
 
-val iter : (key -> 'b -> unit [@bs]) -> 'b t -> unit
+val iter : 'b t -> (key -> 'b -> unit [@bs]) -> unit
 (** [Hashtbl.iter f tbl] applies [f] to all bindings in table [tbl].
     [f] receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to [f].
@@ -117,7 +117,7 @@ val iter : (key -> 'b -> unit [@bs]) -> 'b t -> unit
     is entirely random. *)
 
 
-val fold : (key -> 'b -> 'c -> 'c [@bs]) -> 'b t -> 'c -> 'c
+val fold : 'b t -> 'c -> (key -> 'b -> 'c -> 'c [@bs]) -> 'c
 (** [Hashtbl.fold f tbl init] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],

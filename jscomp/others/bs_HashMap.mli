@@ -127,8 +127,8 @@ val replace:
     This is functionally equivalent to {!Hashtbl.remove}[ tbl x]
     followed by {!Hashtbl.add}[ tbl x y]. *)
 
-val iter0 : ('a -> 'b -> unit [@bs]) -> ('a, 'b, 'id) t0 -> unit
-val iter : ('a -> 'b -> unit [@bs]) -> ('a, 'b, 'id) t -> unit
+val iter0 : ('a, 'b, 'id) t0 -> ('a -> 'b -> unit [@bs]) -> unit
+val iter : ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
 (** [Hashtbl.iter f tbl] applies [f] to all bindings in table [tbl].
     [f] receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to [f].
@@ -144,8 +144,8 @@ val iter : ('a -> 'b -> unit [@bs]) -> ('a, 'b, 'id) t -> unit
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
-val fold0 : ('a -> 'b -> 'c -> 'c [@bs]) -> ('a, 'b, 'id) t0 -> 'c -> 'c
-val fold : ('a -> 'b -> 'c -> 'c [@bs]) -> ('a, 'b, 'id) t -> 'c -> 'c
+val fold0 : ('a, 'b, 'id) t0 -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) -> 'c
+val fold : ('a, 'b, 'id) t -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) ->  'c
 (** [Hashtbl.fold f tbl init] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],

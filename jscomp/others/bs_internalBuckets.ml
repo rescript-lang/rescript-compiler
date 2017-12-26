@@ -55,7 +55,7 @@ let rec do_bucket_iter ~f buckets =
   | Some cell ->
     f (key cell)  (value cell) [@bs]; do_bucket_iter ~f (next cell)
 
-let iter0 f h =
+let iter0 h f =
   let d = C.buckets h in
   for i = 0 to Bs_Array.length d - 1 do
     do_bucket_iter f (Bs_Array.unsafe_get d i)
@@ -69,7 +69,7 @@ let rec do_bucket_fold ~f b accu =
   | Some cell ->
     do_bucket_fold ~f (next cell) (f (key cell) (value cell) accu [@bs]) 
 
-let fold0 f h init =
+let fold0  h init f =
   let d = C.buckets h in
   let accu = ref init in
   for i = 0 to Bs_Array.length d - 1 do

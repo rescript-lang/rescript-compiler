@@ -172,8 +172,8 @@ let create dict initialize_size =
 let clear h = clear0 (B.data h)
 let reset h = reset0 (B.data h)
 let length h = length0 (B.data h)                 
-let iter f h = iter0 f (B.data h)
-let fold f h init = fold0 f (B.data h) init 
+let iter h f  = iter0 (B.data h) f 
+let fold h init f = fold0 (B.data h) init f
 let logStats h = logStats0 (B.data h)
 
 let add (type a) (type id) (h : (a,id) t) (key:a)  = 
