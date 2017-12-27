@@ -114,11 +114,9 @@ val blit : 'a array -> int -> 'a array -> int -> int -> unit
    designate a valid subarray of [v2]. *)
 
 val toList : 'a array -> 'a list
-(** [Array.to_list a] returns the list of all the elements of [a]. *)
+
 
 val ofList : 'a list -> 'a array
-(** [Array.of_list l] returns a fresh array containing the elements
-   of [l]. *)
 
 val iter : ('a -> unit [@bs]) -> 'a array -> unit
 (** [Array.iter f a] applies function [f] in turn to all
@@ -150,56 +148,7 @@ val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b array -> 'a -> 'a
    [f a.(0) (f a.(1) ( ... (f a.(n-1) x) ...))],
    where [n] is the length of the array [a]. *)
 
-external makeFloat: int -> float array = "caml_make_float_vect"
-(** [Array.make_float n] returns a fresh float array of length [n],
-    with uninitialized data.
-    @since 4.02 *)
 
-(** {6 Sorting} *)
-
-
-val sort :  'a array -> ('a -> 'a -> int [@bs]) -> unit
-(** Sort an array in increasing order according to a comparison
-   function.  The comparison function must return 0 if its arguments
-   compare as equal, a positive integer if the first is greater,
-   and a negative integer if the first is smaller (see below for a
-   complete specification).  For example, {!Pervasives.compare} is
-   a suitable comparison function, provided there are no floating-point
-   NaN values in the data.  After calling [Array.sort], the
-   array is sorted in place in increasing order.
-   [Array.sort] is guaranteed to run in constant heap space
-   and (at most) logarithmic stack space.
-
-   The current implementation uses Heap Sort.  It runs in constant
-   stack space.
-
-   Specification of the comparison function:
-   Let [a] be the array and [cmp] the comparison function.  The following
-   must be true for all x, y, z in a :
--   [cmp x y] > 0 if and only if [cmp y x] < 0
--   if [cmp x y] >= 0 and [cmp y z] >= 0 then [cmp x z] >= 0
-
-   When [Array.sort] returns, [a] contains the same elements as before,
-   reordered in such a way that for all i and j valid indices of [a] :
--   [cmp a.(i) a.(j)] >= 0 if and only if i >= j
-*)
-
-val stableSort : 'a array -> ('a -> 'a -> int [@bs]) -> unit
-(** Same as {!Array.sort}, but the sorting algorithm is stable (i.e.
-   elements that compare equal are kept in their original order) and
-   not guaranteed to run in constant heap space.
-
-   The current implementation uses Merge Sort. It uses [n/2]
-   words of heap space, where [n] is the length of the array.
-   It is usually faster than the current implementation of {!Array.sort}.
-*)
-
-val fastSort :  'a array -> ('a -> 'a -> int [@bs]) -> unit
-(** Same as {!Array.sort} or {!Array.stable_sort}, whichever is faster
-    on typical input.
-*)
-
-val sortCont : 'a array -> ('a -> 'a -> int [@bs]) -> 'a array 
 val forAll : 'a array -> ('a -> bool [@bs]) -> bool
 
 (**/**)

@@ -32,13 +32,13 @@ let () =
   eqx __LOC__ (N.length empty) 3
   
 module A = Bs.Array 
-
+module So = Bs.Sort 
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = A.zip u u in 
   let xx = N.ofArray (module Y) v  in 
   eqx __LOC__ (N.length xx) 91;
-  eqx __LOC__ (A.sortCont (N.keys xx) cmp) (I.range 30 120)
+  eqx __LOC__ (So.sortByCont (N.keys xx) cmp) (I.range 30 120)
 
 let () = 
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 

@@ -229,6 +229,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	array_data_util\
 	bs_list_test\
 	bs_min_max_test\
+	bs_sort_test\
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test
