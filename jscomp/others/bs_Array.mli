@@ -36,39 +36,28 @@ external set : 'a array -> int -> 'a -> unit = "%array_safe_set"
 
 external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe : int -> 'a array = "Array" [@@bs.new]
-val init : int -> (int -> 'a [@bs]) -> 'a array
-(** [Array.init n f] returns a fresh array of length [n],
-   with element number [i] initialized to the result of [f i].
-   In other terms, [Array.init n f] tabulates the results of [f]
-   applied to the integers [0] to [n-1].
 
-   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].
-   If the return type of [f] is [float], then the maximum
-   size is only [Sys.max_array_length / 2].*)
+val init : int -> (int -> 'a [@bs]) -> 'a array
 
 val shuffleInPlace : 'a array -> unit    
 
 val zip : 'a array -> 'b array -> ('a * 'b) array
+(** [zip a b] stop with the shorter array *)
 
 val makeMatrix : int -> int -> 'a -> 'a array array
 
 
-
 val append : 'a array -> 'a array -> 'a array
-(** [Array.append v1 v2] returns a fresh array containing the
-   concatenation of the arrays [v1] and [v2]. *)
+(** Note it returns a fresh array containing the
+    concatenation of the arrays [v1] and [v2], so even if [v1] or [v2]
+    is empty, it can not be shared 
+*)
 
 val concat : 'a array list -> 'a array
 (** Same as [Array.append], but concatenates a list of arrays. *)
 
 val sub : 'a array -> int -> int -> 'a array
-(** [Array.sub a start len] returns a fresh array of length [len],
-   containing the elements number [start] to [start + len - 1]
-   of array [a].
 
-   Raise [Invalid_argument "Array.sub"] if [start] and [len] do not
-   designate a valid subarray of [a]; that is, if
-   [start < 0], or [len < 0], or [start + len > Array.length a]. *)
 
 val copy : 'a array -> 'a array
 (** [Array.copy a] returns a copy of [a], that is, a fresh array
@@ -98,9 +87,6 @@ val toList : 'a array -> 'a list
 val ofList : 'a list -> 'a array
 
 val iter : 'a array ->  ('a -> unit [@bs]) -> unit
-(** [Array.iter f a] applies function [f] in turn to all
-   the elements of [a].  It is equivalent to
-   [f a.(0); f a.(1); ...; f a.(Array.length a - 1); ()]. *)
 
 val map : 'a array ->  ('a -> 'b [@bs]) -> 'b array
 
@@ -111,7 +97,6 @@ val mapi : 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
 val foldLeft :  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
 
 val foldRight : 'b array -> 'a -> ('b -> 'a -> 'a [@bs]) ->  'a
-
 
 val forAll : 'a array -> ('a -> bool [@bs]) -> bool
 
