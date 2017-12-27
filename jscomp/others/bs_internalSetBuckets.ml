@@ -102,7 +102,7 @@ let logStats0 h =
     Bs_Array.foldLeft (C.buckets h) 0 (fun[@bs] m b -> 
       let len = (bucket_length 0 b) in
       max m len)  in
-  let histo = Bs_Array.make (mbl + 1) 0 in
+  let histo = Bs_Array.init (mbl + 1) (fun[@bs] _ -> 0) in
   Bs_Array.iter  (C.buckets h)
     (fun[@bs] b ->
        let l = bucket_length 0 b in

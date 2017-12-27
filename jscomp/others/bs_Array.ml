@@ -20,28 +20,24 @@ external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe : int -> 'a  array = "Array" [@@bs.new]
-external make: int -> 'a -> 'a array = "caml_make_vect"
-external create: int -> 'a -> 'a array = "caml_make_vect"
+
 external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 external append_prim : 'a array -> 'a array -> 'a array = "caml_array_append"
 external concat : 'a array list -> 'a array = "caml_array_concat"
 external unsafe_blit :
   'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
-external makeFloat: int -> float array = "caml_make_float_vect"
+
 
 (*DOC: when l < 0 raise RangeError js excpetion *)
-let init l f =
-  if l = 0 then [||] else
-  (* See #6575. We could also check for maximum array size, but this depends
+(* See #6575. We could also check for maximum array size, but this depends
      on whether we create a float array or a regular one... *)
-  (* if l < 0 then invalid_arg "Array.init"
-  
-  else *)
-   let res = create l (f 0 [@bs]) in
-   for i = 1 to pred l do
-     unsafe_set res i (f i [@bs])
-   done;
-   res
+let init l f =
+  [%assert l >= 0];
+  let res = makeUninitializedUnsafe l in 
+  for i = 0 to  l - 1 do
+    unsafe_set res i (f i [@bs])
+  done;
+  res
 
 let swapUnsafe xs i j =    
   let tmp = unsafe_get xs i in 
@@ -56,16 +52,27 @@ let shuffleInPlace xs =
   done 
 
 let makeMatrix sx sy init =
-  let res = create sx [||] in
-  for x = 0 to pred sx do
-    unsafe_set res x (create sy init)
+  [%assert sx >=0 && sy >=0 ];
+  let res = makeUninitializedUnsafe sx in 
+  for x = 0 to  sx - 1 do
+    let initY = makeUninitializedUnsafe sy in 
+    for y = 0 to sy - 1 do 
+      unsafe_set initY y init 
+    done ;
+    unsafe_set res x initY
   done;
   res
 
 
 
 let copy a =
-  let l = length a in if l = 0 then [||] else unsafe_sub a 0 l
+  let l = length a in 
+  let v = makeUninitializedUnsafe l in 
+  for i = 0 to l - 1 do 
+    unsafe_set v i (unsafe_get a i)
+  done ;
+  v
+
 
 let zip xs ys = 
   let lenx, leny = length xs, length ys in 
@@ -98,7 +105,7 @@ let fill a ofs len v =
 
 let blit a1 ofs1 a2 ofs2 len =
   if len < 0 || ofs1 < 0 || ofs1 > length a1 - len
-             || ofs2 < 0 || ofs2 > length a2 - len
+     || ofs2 < 0 || ofs2 > length a2 - len
   then 
     (* invalid_arg  *)
     [%assert "Array.blit"]
@@ -109,26 +116,24 @@ let iter a f =
 
 let map a f =
   let l = length a in
-  if l = 0 then [||] else begin
-    let r = create l (f(unsafe_get a 0) [@bs]) in
-    for i = 1 to l - 1 do
-      unsafe_set r i (f(unsafe_get a i) [@bs])
-    done;
-    r
-  end
+  let r = makeUninitializedUnsafe l in 
+  for i = 0 to l - 1 do
+    unsafe_set r i (f(unsafe_get a i) [@bs])
+  done;
+  r
+
 
 let iteri a f=
   for i = 0 to length a - 1 do f i (unsafe_get a i) [@bs] done
 
 let mapi  a f =
   let l = length a in
-  if l = 0 then [||] else begin
-    let r = create l (f 0 (unsafe_get a 0) [@bs]) in
-    for i = 1 to l - 1 do
-      unsafe_set r i (f i (unsafe_get a i) [@bs])
-    done;
-    r
-  end
+  let r = makeUninitializedUnsafe l in 
+  for i = 0 to l - 1 do
+    unsafe_set r i (f i (unsafe_get a i) [@bs])
+  done;
+  r
+
 
 let toList a =
   let rec tolist i res =
@@ -141,14 +146,16 @@ let rec list_length accu = function
   | h::t -> list_length (succ accu) t
 ;;
 
-let ofList = function
-    [] -> [||]
-  | hd::tl as l ->
-      let a = create (list_length 0 l) hd in
-      let rec fill i = function
-          [] -> a
-        | hd::tl -> unsafe_set a i hd; fill (i+1) tl in
-      fill 1 tl
+let rec fillAUx arr i xs =
+  match xs with 
+  |  [] -> ()
+  | hd::tl -> unsafe_set arr i hd; fillAUx arr (i+1) tl 
+
+let ofList xs = 
+  let len = list_length 0 xs in  
+  let a = makeUninitializedUnsafe len in 
+  fillAUx a 0 xs;
+  a
 
 let foldLeft a x f =
   let r = ref x in

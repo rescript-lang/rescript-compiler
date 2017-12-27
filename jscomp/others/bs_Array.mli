@@ -33,18 +33,6 @@ external set : 'a array -> int -> 'a -> unit = "%array_safe_set"
    Raise [Invalid_argument "index out of bounds"]
    if [n] is outside the range 0 to [Array.length a - 1]. *)
 
-external make : int -> 'a -> 'a array = "caml_make_vect"
-(** [Array.make n x] returns a fresh array of length [n],
-   initialized with [x].
-   All the elements of this new array are initially
-   physically equal to [x] (in the sense of the [==] predicate).
-   Consequently, if [x] is mutable, it is shared among all elements
-   of the array, and modifying [x] through one of the array entries
-   will modify all other entries at the same time.
-
-   Raise [Invalid_argument] if [n < 0] or [n > Sys.max_array_length].
-   If the value of [x] is a floating-point number, then the maximum
-   size is only [Sys.max_array_length / 2].*)
 
 external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe : int -> 'a array = "Array" [@@bs.new]
@@ -61,18 +49,9 @@ val init : int -> (int -> 'a [@bs]) -> 'a array
 val shuffleInPlace : 'a array -> unit    
 
 val zip : 'a array -> 'b array -> ('a * 'b) array
-val makeMatrix : int -> int -> 'a -> 'a array array
-(** [Array.make_matrix dimx dimy e] returns a two-dimensional array
-   (an array of arrays) with first dimension [dimx] and
-   second dimension [dimy]. All the elements of this new matrix
-   are initially physically equal to [e].
-   The element ([x,y]) of a matrix [m] is accessed
-   with the notation [m.(x).(y)].
 
-   Raise [Invalid_argument] if [dimx] or [dimy] is negative or
-   greater than [Sys.max_array_length].
-   If the value of [e] is a floating-point number, then the maximum
-   size is only [Sys.max_array_length / 2]. *)
+val makeMatrix : int -> int -> 'a -> 'a array array
+
 
 
 val append : 'a array -> 'a array -> 'a array
