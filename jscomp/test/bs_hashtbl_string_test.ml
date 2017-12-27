@@ -68,7 +68,7 @@ let bench2 (type t) (m : (string,t) Bs.Hash.t) =
   let eq = String.eq in 
   let table = B.data empty in 
   for i  = 0 to  count do  
-    Bs.HashMap.add0 ~hash
+    Bs.HashMap.add0 ~hash ~eq
       table (string_of_int i) i 
   done ;
   for i = 0 to count do 
@@ -128,7 +128,7 @@ let bench5 () =
   let hash = Int.hash in 
   let eq = Int.eq in 
   [%time for i  = 0 to  count do  
-      Bs.HashMap.add0 ~hash
+      Bs.HashMap.add0 ~hash ~eq
         table_data i i 
     done] ;
   [%time for i = 0 to count do 

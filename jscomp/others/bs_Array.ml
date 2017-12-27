@@ -67,6 +67,15 @@ let makeMatrix sx sy init =
 let copy a =
   let l = length a in if l = 0 then [||] else unsafe_sub a 0 l
 
+let zip xs ys = 
+  let lenx, leny = length xs, length ys in 
+  let len = Pervasives.min lenx leny  in 
+  let s = makeUninitializedUnsafe len in 
+  for i = 0 to len - 1 do 
+    unsafe_set s i (unsafe_get xs i, unsafe_get ys i)
+  done ; 
+  s 
+
 let append a1 a2 =
   let l1 = length a1 in
   if l1 = 0 then copy a2
@@ -156,7 +165,7 @@ let foldRight f a x =
   !r
 
 exception Bottom of int;;
-let sort cmp a =
+let sort  a cmp =
   let maxson l i =
     let i31 = i+i+i+1 in
     let x = ref i31 in
@@ -206,7 +215,7 @@ let sort cmp a =
 ;;
 
 let cutoff = 5;;
-let stableSort cmp a =
+let stableSort  a cmp =
   let merge src1ofs src1len src2 src2ofs src2len dst dstofs =
     let src1r = src1ofs + src1len and src2r = src2ofs + src2len in
     let rec loop i1 s1 i2 s2 d =
@@ -259,3 +268,17 @@ let stableSort cmp a =
 ;;
 
 let fastSort = stableSort;;
+
+let sortCont xs cmp = 
+  sort xs cmp ; 
+  xs 
+
+let rec forAllAux arr i b len =   
+  if i = len then true 
+  else if b (unsafe_get arr i) [@bs] then 
+    forAllAux arr (i + 1) b len
+  else false    
+
+let forAll arr b =   
+  let len = length arr in 
+  forAllAux arr 0 b len 

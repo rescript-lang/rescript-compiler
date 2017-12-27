@@ -83,8 +83,8 @@ let fold0  h init f =
 let logStats0 h =
   let mbl =
     Bs_Array.foldLeft (fun[@bs] m b -> 
-      let len = (bucket_length 0 b) in
-      Pervasives.max m len) 0 (C.buckets h) in
+        let len = (bucket_length 0 b) in
+        Pervasives.max m len) 0 (C.buckets h) in
   let histo = Bs_Array.make (mbl + 1) 0 in
   Bs_Array.iter
     (fun[@bs] b ->
@@ -98,19 +98,20 @@ let logStats0 h =
                 bucket_histogram = histo }]
 
 
+(** iterate the Buckets, in place remove the elements *)                
 let rec filterMapInplaceBucket f h i prec cell =
   let n = next cell in
   begin match f (key cell) (value cell) [@bs] with
     | None ->
       C.sizeSet h (C.size h - 1); (* delete *)
-      (match C.toOpt n with 
-       | Some nextCell -> 
-         filterMapInplaceBucket f h i prec nextCell
-       | None -> 
-         match C.toOpt prec with 
-         | None -> Bs_Array.unsafe_set (C.buckets h) i prec
-         | Some cell -> nextSet cell n
-      )
+      begin match C.toOpt n with 
+        | Some nextCell -> 
+          filterMapInplaceBucket f h i prec nextCell
+        | None -> 
+          match C.toOpt prec with 
+          | None -> Bs_Array.unsafe_set (C.buckets h) i prec
+          | Some cell -> nextSet cell n
+      end
     | Some data -> (* replace *)
       let bucket = C.return cell in 
       begin match C.toOpt prec with
@@ -134,10 +135,10 @@ let filterMapInplace0 h f =
   done
 
 let rec fillArray i arr cell =  
-    Bs_Array.unsafe_set arr i (key cell, value cell);
-    match C.toOpt (next cell) with 
-    | None -> i + 1
-    | Some v -> fillArray (i + 1) arr v 
+  Bs_Array.unsafe_set arr i (key cell, value cell);
+  match C.toOpt (next cell) with 
+  | None -> i + 1
+  | Some v -> fillArray (i + 1) arr v 
 
 let toArray0 h = 
   let d = C.buckets h in 
@@ -151,3 +152,26 @@ let toArray0 h =
       current := fillArray !current arr cell
   done;
   arr 
+
+let rec fillArrayMap i arr cell f =  
+  Bs_Array.unsafe_set arr i (f cell [@bs]);
+  match C.toOpt (next cell) with 
+  | None -> i + 1
+  | Some v -> fillArrayMap (i + 1) arr v f
+
+let linear h f = 
+  let d = C.buckets h in 
+  let current = ref 0 in 
+  let arr = Bs.Array.makeUninitializedUnsafe (C.size h) in 
+  for i = 0 to Bs_Array.length d - 1 do  
+    let cell = Bs_Array.unsafe_get d i in 
+    match C.toOpt cell with 
+    | None -> ()
+    | Some cell -> 
+      current := fillArrayMap !current arr cell f
+  done;
+  arr 
+
+let keys0 h = linear h (fun [@bs] x -> key x)  
+let values0 h = linear h (fun [@bs] x -> value x)  
+let toArray0 h = linear h (fun [@bs]x -> key x, value x)
