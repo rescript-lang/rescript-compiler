@@ -118,43 +118,24 @@ val toList : 'a array -> 'a list
 
 val ofList : 'a list -> 'a array
 
-val iter : ('a -> unit [@bs]) -> 'a array -> unit
+val iter : 'a array ->  ('a -> unit [@bs]) -> unit
 (** [Array.iter f a] applies function [f] in turn to all
    the elements of [a].  It is equivalent to
    [f a.(0); f a.(1); ...; f a.(Array.length a - 1); ()]. *)
 
-val map : ('a -> 'b [@bs]) -> 'a array -> 'b array
-(** [Array.map f a] applies function [f] to all the elements of [a],
-   and builds an array with the results returned by [f]:
-   [[| f a.(0); f a.(1); ...; f a.(Array.length a - 1) |]]. *)
+val map : 'a array ->  ('a -> 'b [@bs]) -> 'b array
 
-val iteri : (int -> 'a -> unit [@bs]) -> 'a array -> unit
-(** Same as {!Array.iter}, but the
-   function is applied to the index of the element as first argument,
-   and the element itself as second argument. *)
+val iteri : 'a array ->  (int -> 'a -> unit [@bs]) -> unit
 
-val mapi : (int -> 'a -> 'b [@bs]) -> 'a array -> 'b array
-(** Same as {!Array.map}, but the
-   function is applied to the index of the element as first argument,
-   and the element itself as second argument. *)
+val mapi : 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
 
-val foldLeft : ('a -> 'b -> 'a [@bs]) -> 'a -> 'b array -> 'a
-(** [Array.fold_left f x a] computes
-   [f (... (f (f x a.(0)) a.(1)) ...) a.(n-1)],
-   where [n] is the length of the array [a]. *)
+val foldLeft :  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
 
-val foldRight : ('b -> 'a -> 'a [@bs]) -> 'b array -> 'a -> 'a
-(** [Array.fold_right f a x] computes
-   [f a.(0) (f a.(1) ( ... (f a.(n-1) x) ...))],
-   where [n] is the length of the array [a]. *)
+val foldRight : 'b array -> 'a -> ('b -> 'a -> 'a [@bs]) ->  'a
 
 
 val forAll : 'a array -> ('a -> bool [@bs]) -> bool
 
-(**/**)
-(** {6 Undocumented functions} *)
-
-(* The following is for system use only. Do not call directly. *)
 
 external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"

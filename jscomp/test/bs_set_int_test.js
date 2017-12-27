@@ -238,9 +238,9 @@ b("File \"bs_set_int_test.ml\", line 108, characters 4-11", Bs_SetInt.checkInvar
 
 var firstHalf = Bs_Array.sub(v$11, 0, 2000);
 
-var xx = Bs_Array.foldLeft((function (acc, x) {
+var xx = Bs_Array.foldLeft(firstHalf, u$1, (function (acc, x) {
         return Bs_SetInt.remove(x, acc);
-      }), u$1, firstHalf);
+      }));
 
 b("File \"bs_set_int_test.ml\", line 112, characters 4-11", Bs_SetInt.checkInvariant(u$1));
 

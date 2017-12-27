@@ -104,10 +104,10 @@ let blit a1 ofs1 a2 ofs2 len =
     [%assert "Array.blit"]
   else unsafe_blit a1 ofs1 a2 ofs2 len
 
-let iter f a =
+let iter a f =
   for i = 0 to length a - 1 do f(unsafe_get a i) [@bs] done
 
-let map f a =
+let map a f =
   let l = length a in
   if l = 0 then [||] else begin
     let r = create l (f(unsafe_get a 0) [@bs]) in
@@ -117,10 +117,10 @@ let map f a =
     r
   end
 
-let iteri f a =
+let iteri a f=
   for i = 0 to length a - 1 do f i (unsafe_get a i) [@bs] done
 
-let mapi f a =
+let mapi  a f =
   let l = length a in
   if l = 0 then [||] else begin
     let r = create l (f 0 (unsafe_get a 0) [@bs]) in
@@ -150,14 +150,14 @@ let ofList = function
         | hd::tl -> unsafe_set a i hd; fill (i+1) tl in
       fill 1 tl
 
-let foldLeft f x a =
+let foldLeft a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
     r := f !r (unsafe_get a i) [@bs]
   done;
   !r
 
-let foldRight f a x =
+let foldRight a x f =
   let r = ref x in
   for i = length a - 1 downto 0 do
     r := f (unsafe_get a i) !r [@bs]

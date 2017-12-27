@@ -10,7 +10,7 @@ var suites = [/* [] */0];
 
 var test_id = [0];
 
-function eqx(loc, x, y) {
+function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
@@ -52,21 +52,163 @@ var u = Array_data_util.randomRange(0, 1000000);
 
 var u1 = Bs_Array.copy(u);
 
-console.time("bs_sort_test.ml 38");
+var u2 = Bs_Array.copy(u);
 
-Bs_Sort.stableSortBy(u, cmp);
-
-console.timeEnd("bs_sort_test.ml 38");
-
-b("File \"bs_sort_test.ml\", line 39, characters 4-11", Bs_Sort.isSorted(u, cmp));
+Bs_Array.map(u, (function (x) {
+        return x;
+      }));
 
 console.time("bs_sort_test.ml 40");
 
-u1.sort(cmp);
+Bs_Sort.stableSortBy(u, cmp);
 
 console.timeEnd("bs_sort_test.ml 40");
 
-b("File \"bs_sort_test.ml\", line 41, characters 4-11", Bs_Sort.isSorted(u1, cmp));
+b("File \"bs_sort_test.ml\", line 41, characters 4-11", Bs_Sort.isSorted(u, cmp));
+
+console.time("bs_sort_test.ml 42");
+
+Bs_Sort.stableSortInts(u2);
+
+console.timeEnd("bs_sort_test.ml 42");
+
+b("File \"bs_sort_test.ml\", line 43, characters 4-11", Bs_Sort.isSorted(u2, cmp));
+
+console.time("bs_sort_test.ml 44");
+
+u1.sort(cmp);
+
+console.timeEnd("bs_sort_test.ml 44");
+
+b("File \"bs_sort_test.ml\", line 45, characters 4-11", Bs_Sort.isSorted(u1, cmp));
+
+var u$1 = /* array */[
+  /* tuple */[
+    1,
+    "a"
+  ],
+  /* tuple */[
+    1,
+    "b"
+  ],
+  /* tuple */[
+    2,
+    "a"
+  ]
+];
+
+eq("File \"bs_sort_test.ml\", line 50, characters 5-12", (Bs_Sort.stableSortBy(u$1, (function (param, param$1) {
+              return param[0] - param$1[0] | 0;
+            })), u$1), /* array */[
+      /* tuple */[
+        1,
+        "a"
+      ],
+      /* tuple */[
+        1,
+        "b"
+      ],
+      /* tuple */[
+        2,
+        "a"
+      ]
+    ]);
+
+var u$2 = /* array */[
+  /* tuple */[
+    1,
+    "b"
+  ],
+  /* tuple */[
+    1,
+    "a"
+  ],
+  /* tuple */[
+    1,
+    "b"
+  ],
+  /* tuple */[
+    2,
+    "a"
+  ]
+];
+
+eq("File \"bs_sort_test.ml\", line 56, characters 5-12", (Bs_Sort.stableSortBy(u$2, (function (param, param$1) {
+              return param[0] - param$1[0] | 0;
+            })), u$2), /* array */[
+      /* tuple */[
+        1,
+        "b"
+      ],
+      /* tuple */[
+        1,
+        "a"
+      ],
+      /* tuple */[
+        1,
+        "b"
+      ],
+      /* tuple */[
+        2,
+        "a"
+      ]
+    ]);
+
+var u$3 = /* array */[
+  /* tuple */[
+    1,
+    "c"
+  ],
+  /* tuple */[
+    1,
+    "b"
+  ],
+  /* tuple */[
+    1,
+    "a"
+  ],
+  /* tuple */[
+    1,
+    "b"
+  ],
+  /* tuple */[
+    1,
+    "c"
+  ],
+  /* tuple */[
+    2,
+    "a"
+  ]
+];
+
+eq("File \"bs_sort_test.ml\", line 62, characters 5-12", (Bs_Sort.stableSortBy(u$3, (function (param, param$1) {
+              return param[0] - param$1[0] | 0;
+            })), u$3), /* array */[
+      /* tuple */[
+        1,
+        "c"
+      ],
+      /* tuple */[
+        1,
+        "b"
+      ],
+      /* tuple */[
+        1,
+        "a"
+      ],
+      /* tuple */[
+        1,
+        "b"
+      ],
+      /* tuple */[
+        1,
+        "c"
+      ],
+      /* tuple */[
+        2,
+        "a"
+      ]
+    ]);
 
 Mt.from_pair_suites("bs_sort_test.ml", suites[0]);
 
@@ -80,7 +222,7 @@ var A = 0;
 
 exports.suites  = suites;
 exports.test_id = test_id;
-exports.eqx     = eqx;
+exports.eq      = eq;
 exports.b       = b;
 exports.I       = I;
 exports.S       = S;

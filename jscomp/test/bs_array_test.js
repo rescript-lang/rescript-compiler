@@ -179,9 +179,9 @@ Bs_Array.shuffleInPlace(u);
 neq("File \"bs_array_test.ml\", line 62, characters 6-13", u, v);
 
 function sum(x) {
-  return Bs_Array.foldLeft((function (x, y) {
+  return Bs_Array.foldLeft(x, 0, (function (x, y) {
                 return x + y | 0;
-              }), 0, x);
+              }));
 }
 
 eq("File \"bs_array_test.ml\", line 64, characters 5-12", sum(u), sum(v));

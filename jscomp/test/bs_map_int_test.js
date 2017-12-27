@@ -55,9 +55,9 @@ b("File \"bs_map_int_test.ml\", line 20, characters 4-11", Bs_MapInt.checkInvari
 
 var firstHalf = Bs_Array.sub(v, 0, 2000);
 
-Bs_Array.foldLeft((function (acc, param) {
+Bs_Array.foldLeft(firstHalf, u, (function (acc, param) {
         return Bs_MapInt.remove(param[0], acc);
-      }), u, firstHalf);
+      }));
 
 b("File \"bs_map_int_test.ml\", line 24, characters 4-11", Bs_MapInt.checkInvariant(u));
 

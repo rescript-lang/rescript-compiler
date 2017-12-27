@@ -99,16 +99,16 @@ let fold0 h init f =
 
 let logStats0 h =
   let mbl =
-    Bs_Array.foldLeft (fun[@bs] m b -> 
+    Bs_Array.foldLeft (C.buckets h) 0 (fun[@bs] m b -> 
       let len = (bucket_length 0 b) in
-      max m len) 0 (C.buckets h) in
+      max m len)  in
   let histo = Bs_Array.make (mbl + 1) 0 in
-  Bs_Array.iter
+  Bs_Array.iter  (C.buckets h)
     (fun[@bs] b ->
        let l = bucket_length 0 b in
        Bs_Array.unsafe_set histo l (Bs_Array.unsafe_get histo l + 1)
     )
-    (C.buckets h);
+    ;
   Js.log [%obj{ num_bindings = (C.size h);
                 num_buckets = Bs_Array.length (C.buckets h);
                 max_bucket_length = mbl;

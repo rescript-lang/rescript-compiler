@@ -60,6 +60,6 @@ let () =
   let u = Bs.Array.copy v  in 
   Bs.Array.shuffleInPlace u ; 
   neq __LOC__ u  v (* unlikely*);
-  let sum x = Bs.Array.foldLeft (fun[@bs] x y -> x + y) 0 x in 
+  let sum x = Bs.Array.foldLeft x 0 (fun[@bs] x y -> x + y)   in 
   eq __LOC__ ( sum u) (sum v)
 ;; Mt.from_pair_suites __LOC__ !suites  

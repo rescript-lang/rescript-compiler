@@ -23,7 +23,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
- 
+
 
 external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
@@ -69,11 +69,78 @@ let merge src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   in 
   loop src1ofs (unsafe_get src src1ofs) src2ofs (unsafe_get src2 src2ofs) dstofs
 
+(* specialized for floats *)
+let mergeInts (src : int array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+  let src1r = src1ofs + src1len and src2r = src2ofs + src2len in
+  let rec loop i1 s1 i2 s2 d =
+    if  s1 <= s2  then begin
+      unsafe_set dst d s1;
+      let i1 = i1 + 1 in
+      if i1 < src1r then
+        loop i1 (unsafe_get src i1) i2 s2 (d + 1)
+      else
+        unsafe_blit src2 i2 dst (d + 1) (src2r - i2)
+    end else begin
+      unsafe_set dst d s2;
+      let i2 = i2 + 1 in
+      if i2 < src2r then
+        loop i1 s1 i2 (unsafe_get src2 i2) (d + 1)
+      else
+        unsafe_blit src i1 dst (d + 1) (src1r - i1)
+    end
+  in 
+  loop src1ofs (unsafe_get src src1ofs) src2ofs (unsafe_get src2 src2ofs) dstofs
+  
+(* specialized for floats *)
+let mergeFloats (src : float array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+  let src1r = src1ofs + src1len and src2r = src2ofs + src2len in
+  let rec loop i1 s1 i2 s2 d =
+    if  s1 <= s2  then begin
+      unsafe_set dst d s1;
+      let i1 = i1 + 1 in
+      if i1 < src1r then
+        loop i1 (unsafe_get src i1) i2 s2 (d + 1)
+      else
+        unsafe_blit src2 i2 dst (d + 1) (src2r - i2)
+    end else begin
+      unsafe_set dst d s2;
+      let i2 = i2 + 1 in
+      if i2 < src2r then
+        loop i1 s1 i2 (unsafe_get src2 i2) (d + 1)
+      else
+        unsafe_blit src i1 dst (d + 1) (src1r - i1)
+    end
+  in 
+  loop src1ofs (unsafe_get src src1ofs) src2ofs (unsafe_get src2 src2ofs) dstofs
+  
+(* [<=] alone is not enough for stable sort *)
 let insertionSort src srcofs dst dstofs len cmp =
   for i = 0 to len - 1 do
     let e = (unsafe_get src (srcofs + i)) in
     let j = ref (dstofs + i - 1) in
-    while (!j >= dstofs && cmp e (unsafe_get dst !j)  [@bs] <= 0) do
+    while (!j >= dstofs && cmp (unsafe_get dst !j) e [@bs] > 0) do
+      unsafe_set dst (!j + 1) (unsafe_get dst !j);
+      decr j;
+    done;
+    unsafe_set dst (!j + 1) e;
+  done    
+
+let insertionSortInts (src : int array) srcofs dst dstofs len  =
+  for i = 0 to len - 1 do
+    let e = (unsafe_get src (srcofs + i)) in
+    let j = ref (dstofs + i - 1) in
+    while (!j >= dstofs &&  (unsafe_get dst !j) > e  ) do
+      unsafe_set dst (!j + 1) (unsafe_get dst !j);
+      decr j;
+    done;
+    unsafe_set dst (!j + 1) e;
+  done    
+
+let insertionSortFloats (src : float array) srcofs dst dstofs len  =
+  for i = 0 to len - 1 do
+    let e = (unsafe_get src (srcofs + i)) in
+    let j = ref (dstofs + i - 1) in
+    while (!j >= dstofs &&  (unsafe_get dst !j) > e ) do
       unsafe_set dst (!j + 1) (unsafe_get dst !j);
       decr j;
     done;
@@ -90,6 +157,26 @@ let rec sortTo src srcofs dst dstofs len cmp =
     merge src (srcofs + l2) l1 dst (dstofs + l1) l2 dst dstofs cmp;
   end    
 
+let rec sortToInts (src : int array) srcofs dst dstofs len  =
+  if len <= cutoff then insertionSortInts src srcofs dst dstofs len  
+  else begin
+    let l1 = len / 2 in
+    let l2 = len - l1 in
+    sortToInts src (srcofs + l1) dst (dstofs + l1) l2 ;
+    sortToInts src srcofs src (srcofs + l2) l1 ;
+    mergeInts src (srcofs + l2) l1 dst (dstofs + l1) l2 dst dstofs ;
+  end    
+
+let rec sortToFloats (src : float array) srcofs dst dstofs len  =
+  if len <= cutoff then insertionSortFloats src srcofs dst dstofs len  
+  else begin
+    let l1 = len / 2 in
+    let l2 = len - l1 in
+    sortToFloats src (srcofs + l1) dst (dstofs + l1) l2 ;
+    sortToFloats src srcofs src (srcofs + l2) l1 ;
+    mergeFloats src (srcofs + l2) l1 dst (dstofs + l1) l2 dst dstofs ;
+  end      
+
 let stableSortBy  a cmp =
   let l = length a in
   if l <= cutoff then insertionSort a 0 a 0 l cmp 
@@ -100,6 +187,28 @@ let stableSortBy  a cmp =
     sortTo a l1 t 0 l2 cmp;
     sortTo a 0 a l2 l1 cmp;
     merge a l2 l1 t 0 l2 a 0 cmp;
+  end
+let stableSortInts  (a : int array)  =
+  let l = length a in
+  if l <= cutoff then insertionSortInts a 0 a 0 l  
+  else begin
+    let l1 = l / 2 in
+    let l2 = l - l1 in
+    let t = Bs_Array.makeUninitializedUnsafe l2 in 
+    sortToInts a l1 t 0 l2 ;
+    sortToInts a 0 a l2 l1 ;
+    mergeInts a l2 l1 t 0 l2 a 0 ;
+  end
+let stableSortFloats  (a : float array)  =
+  let l = length a in
+  if l <= cutoff then insertionSortFloats a 0 a 0 l  
+  else begin
+    let l1 = l / 2 in
+    let l2 = l - l1 in
+    let t = Bs_Array.makeUninitializedUnsafe l2 in 
+    sortToFloats a l1 t 0 l2 ;
+    sortToFloats a 0 a l2 l1 ;
+    mergeFloats a l2 l1 t 0 l2 a 0 ;
   end
 
 
