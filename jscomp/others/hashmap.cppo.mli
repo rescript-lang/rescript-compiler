@@ -26,20 +26,10 @@ val add : 'a t -> key -> 'a -> unit
 
 val findOpt:  'a t -> key -> 'a option
 
-val findAll:  'a t -> key -> 'a list  
-(** [Hashtbl.find_all tbl x] returns the list of all data
-    associated with [x] in [tbl].
-    The current binding is returned first, then the previous
-    bindings, in reverse order of introduction in the table. *)
 
 val mem:  'b  t -> key -> bool
 
 val remove: 'a t -> key -> unit
-
-val removeAll: 'b t -> key -> unit
-
-val replace:  'b t -> key -> 'b -> unit
-
 
 val iter : 'b t -> (key -> 'b -> unit [@bs]) -> unit
 

@@ -60,6 +60,7 @@ val init : int -> (int -> 'a [@bs]) -> 'a array
 
 val shuffleInPlace : 'a array -> unit    
 
+val zip : 'a array -> 'b array -> ('a * 'b) array
 val makeMatrix : int -> int -> 'a -> 'a array array
 (** [Array.make_matrix dimx dimy e] returns a two-dimensional array
    (an array of arrays) with first dimension [dimx] and
@@ -157,7 +158,7 @@ external makeFloat: int -> float array = "caml_make_float_vect"
 (** {6 Sorting} *)
 
 
-val sort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
+val sort :  'a array -> ('a -> 'a -> int [@bs]) -> unit
 (** Sort an array in increasing order according to a comparison
    function.  The comparison function must return 0 if its arguments
    compare as equal, a positive integer if the first is greater,
@@ -183,7 +184,7 @@ val sort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
 -   [cmp a.(i) a.(j)] >= 0 if and only if i >= j
 *)
 
-val stableSort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
+val stableSort : 'a array -> ('a -> 'a -> int [@bs]) -> unit
 (** Same as {!Array.sort}, but the sorting algorithm is stable (i.e.
    elements that compare equal are kept in their original order) and
    not guaranteed to run in constant heap space.
@@ -193,11 +194,13 @@ val stableSort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
    It is usually faster than the current implementation of {!Array.sort}.
 *)
 
-val fastSort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
+val fastSort :  'a array -> ('a -> 'a -> int [@bs]) -> unit
 (** Same as {!Array.sort} or {!Array.stable_sort}, whichever is faster
     on typical input.
 *)
 
+val sortCont : 'a array -> ('a -> 'a -> int [@bs]) -> 'a array 
+val forAll : 'a array -> ('a -> bool [@bs]) -> bool
 
 (**/**)
 (** {6 Undocumented functions} *)
@@ -206,3 +209,4 @@ val fastSort : ('a -> 'a -> int [@bs]) -> 'a array -> unit
 
 external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
+

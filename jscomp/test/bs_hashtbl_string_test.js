@@ -106,7 +106,7 @@ function bench2(m) {
   var eq = m[/* eq */1];
   var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMap.add0(hash, table, "" + i, i);
+    Bs_HashMap.add0(hash, eq, table, "" + i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_HashMap.mem0(hash, eq, table, "" + i$1)) {
@@ -225,7 +225,7 @@ function bench5() {
   var eq = Int_001;
   console.time("bs_hashtbl_string_test.ml 130");
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMap.add0(hash, table_data, i, i);
+    Bs_HashMap.add0(hash, eq, table_data, i, i);
   }
   console.timeEnd("bs_hashtbl_string_test.ml 130");
   console.time("bs_hashtbl_string_test.ml 134");

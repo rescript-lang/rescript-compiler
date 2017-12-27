@@ -61,7 +61,10 @@ val reset : ('a, 'b, 'id) t -> unit
 
 
 
-val add0 : hash:('a,'id) Bs_Hash.hash -> ('a,'b,'id) t0 -> 'a -> 'b -> unit
+val add0 : 
+    hash:('a,'id) Bs_Hash.hash ->
+    eq:('a,'id) Bs_Hash.eq -> 
+     ('a,'b,'id) t0 -> 'a -> 'b -> unit
 val add : ('a, 'b, 'id) t -> 'a -> 'b -> unit
 (** [Hashtbl.add tbl x y] adds a binding of [x] to [y] in table [tbl].
     Previous bindings for [x] are not removed, but simply
@@ -78,16 +81,6 @@ val findOpt:
 (** [findOpt tbl x] returns the current binding of [x] in [tbl],
     *)
 
-val findAll0 : 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> 'b list
-
-val findAll:  ('a, 'b, 'id) t -> 'a -> 'b list  
-(** [Hashtbl.find_all tbl x] returns the list of all data
-    associated with [x] in [tbl].
-    The current binding is returned first, then the previous
-    bindings, in reverse order of introduction in the table. *)
 
 val mem0: 
   hash:('a,'id) Bs_Hash.hash  -> 
@@ -107,25 +100,10 @@ val remove:
     restoring the previous binding if it exists.
     It does nothing if [x] is not bound in [tbl]. *)
 
-val removeAll0: 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> unit    
-val removeAll:
-('a, 'b, 'id) t -> 'a -> unit
+
 
     
-val replace0 :
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> 'b -> unit
-val replace:  
-  ('a, 'b, 'id) t -> 'a -> 'b -> unit
-(** [Hashtbl.replace tbl x y] replaces the current binding of [x]
-    in [tbl] by a binding of [x] to [y].  If [x] is unbound in [tbl],
-    a binding of [x] to [y] is added to [tbl].
-    This is functionally equivalent to {!Hashtbl.remove}[ tbl x]
-    followed by {!Hashtbl.add}[ tbl x y]. *)
+
 
 val iter0 : ('a, 'b, 'id) t0 -> ('a -> 'b -> unit [@bs]) -> unit
 val iter : ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
@@ -174,20 +152,6 @@ val length  : ('a, 'b, 'id) t -> int
     first argument. *)
 
 
-(* 
-type statistics = {
-  num_bindings: int;
-  (** Number of bindings present in the table.
-      Same value as returned by {!Hashtbl.length}. *)
-  num_buckets: int;
-  (** Number of buckets in the table. *)
-  max_bucket_length: int;
-  (** Maximal number of bindings per bucket. *)
-  bucket_histogram: int array
-  (** Histogram of bucket sizes.  This array [histo] has
-      length [max_bucket_length + 1].  The value of
-      [histo.(i)] is the number of buckets whose size is [i]. *)
-} *)
 
 val logStats0 : ('a, 'b, 'id) t0 -> unit
 val logStats : _ t -> unit
@@ -199,4 +163,35 @@ val logStats : _ t -> unit
 
 
 
+val toArray0 : ('a, 'b, 'id) t0 -> ('a * 'b) array
+val toArray : ('a, 'b, 'id) t -> ('a * 'b) array 
 
+
+val ofArray0 : 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a * 'b) array -> 
+  ('a, 'b, 'id) t0      
+
+val ofArray :   
+  dict:('a,'id) Bs_Hash.t -> 
+  ('a * 'b) array -> 
+  ('a, 'b, 'id) t 
+
+val addArray0 : 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a, 'b, 'id) t0 -> ('a * 'b) array -> unit     
+val addArray:   
+   ('a, 'b, 'id) t -> ('a * 'b) array -> unit   
+
+val keys0 :    
+    ('a,'b,'id) t0 -> 'a array
+val keys :    
+    ('a,'b,'id) t -> 'a array    
+
+val values0 :    
+    ('a,'b,'id) t0 -> 'b array
+val values :    
+    ('a,'b,'id) t -> 'b array    
+    
