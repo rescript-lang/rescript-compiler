@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt                     = require("./mt.js");
+var Bs_Sort                = require("../../lib/js/bs_Sort.js");
 var Hashtbl                = require("../../lib/js/hashtbl.js");
 var Bs_Array               = require("../../lib/js/bs_Array.js");
 var Bs_HashMap             = require("../../lib/js/bs_HashMap.js");
@@ -74,7 +75,7 @@ var xx = Bs_HashMap.ofArray(Y, v);
 
 eqx("File \"bs_hashmap_test.ml\", line 40, characters 6-13", xx.data.size, 91);
 
-eqx("File \"bs_hashmap_test.ml\", line 41, characters 6-13", Bs_Array.sortCont(Bs_internalBuckets.keys0(xx.data), cmp), Array_data_util.range(30, 120));
+eqx("File \"bs_hashmap_test.ml\", line 41, characters 6-13", Bs_Sort.sortByCont(Bs_internalBuckets.keys0(xx.data), cmp), Array_data_util.range(30, 120));
 
 var u$1 = Bs_Array.append(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
@@ -115,6 +116,8 @@ var $plus$plus = Bs_Array.append;
 
 var A = 0;
 
+var So = 0;
+
 exports.suites     = suites;
 exports.test_id    = test_id;
 exports.eqx        = eqx;
@@ -130,4 +133,5 @@ exports.I          = I;
 exports.$plus$plus = $plus$plus;
 exports.add        = add;
 exports.A          = A;
+exports.So         = So;
 /* empty Not a pure module */

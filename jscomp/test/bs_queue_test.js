@@ -1087,9 +1087,9 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$4), v)) {
 
 if (Bs_Queue.fold((function (x, y) {
           return x - y | 0;
-        }), 0, q2$4) !== Bs_Array.foldLeft((function (x, y) {
+        }), 0, q2$4) !== Bs_Array.foldLeft(v, 0, (function (x, y) {
           return x - y | 0;
-        }), 0, v)) {
+        }))) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [

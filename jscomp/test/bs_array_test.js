@@ -168,6 +168,10 @@ id(Js_vector.toList(Js_vector.init(100, (function (i) {
                 return i;
               }))));
 
+function add(x, y) {
+  return x + y | 0;
+}
+
 var v = Bs_Array.init(3000, (function (i) {
         return i;
       }));
@@ -176,21 +180,148 @@ var u = Bs_Array.copy(v);
 
 Bs_Array.shuffleInPlace(u);
 
-neq("File \"bs_array_test.ml\", line 62, characters 6-13", u, v);
+neq("File \"bs_array_test.ml\", line 63, characters 6-13", u, v);
 
-function sum(x) {
-  return Bs_Array.foldLeft((function (x, y) {
-                return x + y | 0;
-              }), 0, x);
+eq("File \"bs_array_test.ml\", line 65, characters 5-12", Bs_Array.foldLeft(u, 0, add), Bs_Array.foldLeft(v, 0, add));
+
+function addone(x) {
+  return x + 1 | 0;
 }
 
-eq("File \"bs_array_test.ml\", line 64, characters 5-12", sum(u), sum(v));
+eq("File \"bs_array_test.ml\", line 69, characters 5-12", Bs_Array.init(0, (function () {
+            return 1;
+          })), /* int array */[]);
 
-Mt.from_pair_suites("File \"bs_array_test.ml\", line 65, characters 23-30", suites[0]);
+eq("File \"bs_array_test.ml\", line 70, characters 5-12", Bs_Array.init(3, (function (i) {
+            return i;
+          })), /* int array */[
+      0,
+      1,
+      2
+    ]);
+
+eq("File \"bs_array_test.ml\", line 71, characters 5-12", Bs_Array.makeMatrix(3, 4, 1), /* array */[
+      /* int array */[
+        1,
+        1,
+        1,
+        1
+      ],
+      /* int array */[
+        1,
+        1,
+        1,
+        1
+      ],
+      /* int array */[
+        1,
+        1,
+        1,
+        1
+      ]
+    ]);
+
+eq("File \"bs_array_test.ml\", line 74, characters 5-12", Bs_Array.makeMatrix(3, 0, 0), /* array */[
+      /* int array */[],
+      /* int array */[],
+      /* int array */[]
+    ]);
+
+eq("File \"bs_array_test.ml\", line 75, characters 5-12", Bs_Array.makeMatrix(0, 3, 1), /* array */[]);
+
+eq("File \"bs_array_test.ml\", line 76, characters 5-12", Bs_Array.makeMatrix(1, 1, 1), /* array */[/* int array */[1]]);
+
+eq("File \"bs_array_test.ml\", line 77, characters 5-12", Bs_Array.copy(/* array */[]), /* array */[]);
+
+eq("File \"bs_array_test.ml\", line 78, characters 5-12", Bs_Array.map(/* int array */[], addone), /* int array */[]);
+
+eq("File \"bs_array_test.ml\", line 79, characters 5-12", Bs_Array.mapi(/* int array */[], add), /* int array */[]);
+
+eq("File \"bs_array_test.ml\", line 80, characters 5-12", Bs_Array.mapi(/* int array */[
+          1,
+          2,
+          3
+        ], add), /* int array */[
+      1,
+      3,
+      5
+    ]);
+
+eq("File \"bs_array_test.ml\", line 81, characters 5-12", Bs_Array.toList(/* array */[]), /* [] */0);
+
+eq("File \"bs_array_test.ml\", line 82, characters 5-12", Bs_Array.toList(/* int array */[1]), /* :: */[
+      1,
+      /* [] */0
+    ]);
+
+eq("File \"bs_array_test.ml\", line 83, characters 5-12", Bs_Array.toList(/* int array */[
+          1,
+          2,
+          3
+        ]), /* :: */[
+      1,
+      /* :: */[
+        2,
+        /* :: */[
+          3,
+          /* [] */0
+        ]
+      ]
+    ]);
+
+eq("File \"bs_array_test.ml\", line 84, characters 5-12", Bs_Array.map(/* int array */[
+          1,
+          2,
+          3
+        ], addone), /* int array */[
+      2,
+      3,
+      4
+    ]);
+
+eq("File \"bs_array_test.ml\", line 85, characters 5-12", Bs_Array.ofList(/* [] */0), /* array */[]);
+
+eq("File \"bs_array_test.ml\", line 86, characters 5-12", Bs_Array.ofList(/* :: */[
+          1,
+          /* [] */0
+        ]), /* int array */[1]);
+
+eq("File \"bs_array_test.ml\", line 87, characters 5-12", Bs_Array.ofList(/* :: */[
+          1,
+          /* :: */[
+            2,
+            /* [] */0
+          ]
+        ]), /* int array */[
+      1,
+      2
+    ]);
+
+eq("File \"bs_array_test.ml\", line 88, characters 5-12", Bs_Array.ofList(/* :: */[
+          1,
+          /* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ]
+        ]), /* int array */[
+      1,
+      2,
+      3
+    ]);
+
+Mt.from_pair_suites("File \"bs_array_test.ml\", line 91, characters 23-30", suites[0]);
+
+var A = 0;
 
 exports.suites  = suites;
 exports.test_id = test_id;
 exports.eq      = eq;
 exports.neq     = neq;
 exports.id      = id;
+exports.A       = A;
+exports.add     = add;
+exports.addone  = addone;
 /*  Not a pure module */

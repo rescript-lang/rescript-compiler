@@ -20,28 +20,24 @@ external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe : int -> 'a  array = "Array" [@@bs.new]
-external make: int -> 'a -> 'a array = "caml_make_vect"
-external create: int -> 'a -> 'a array = "caml_make_vect"
+
 external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 external append_prim : 'a array -> 'a array -> 'a array = "caml_array_append"
 external concat : 'a array list -> 'a array = "caml_array_concat"
 external unsafe_blit :
   'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
-external makeFloat: int -> float array = "caml_make_float_vect"
+
 
 (*DOC: when l < 0 raise RangeError js excpetion *)
-let init l f =
-  if l = 0 then [||] else
-  (* See #6575. We could also check for maximum array size, but this depends
+(* See #6575. We could also check for maximum array size, but this depends
      on whether we create a float array or a regular one... *)
-  (* if l < 0 then invalid_arg "Array.init"
-  
-  else *)
-   let res = create l (f 0 [@bs]) in
-   for i = 1 to pred l do
-     unsafe_set res i (f i [@bs])
-   done;
-   res
+let init l f =
+  [%assert l >= 0];
+  let res = makeUninitializedUnsafe l in 
+  for i = 0 to  l - 1 do
+    unsafe_set res i (f i [@bs])
+  done;
+  res
 
 let swapUnsafe xs i j =    
   let tmp = unsafe_get xs i in 
@@ -56,16 +52,27 @@ let shuffleInPlace xs =
   done 
 
 let makeMatrix sx sy init =
-  let res = create sx [||] in
-  for x = 0 to pred sx do
-    unsafe_set res x (create sy init)
+  [%assert sx >=0 && sy >=0 ];
+  let res = makeUninitializedUnsafe sx in 
+  for x = 0 to  sx - 1 do
+    let initY = makeUninitializedUnsafe sy in 
+    for y = 0 to sy - 1 do 
+      unsafe_set initY y init 
+    done ;
+    unsafe_set res x initY
   done;
   res
 
 
 
 let copy a =
-  let l = length a in if l = 0 then [||] else unsafe_sub a 0 l
+  let l = length a in 
+  let v = makeUninitializedUnsafe l in 
+  for i = 0 to l - 1 do 
+    unsafe_set v i (unsafe_get a i)
+  done ;
+  v
+
 
 let zip xs ys = 
   let lenx, leny = length xs, length ys in 
@@ -98,37 +105,35 @@ let fill a ofs len v =
 
 let blit a1 ofs1 a2 ofs2 len =
   if len < 0 || ofs1 < 0 || ofs1 > length a1 - len
-             || ofs2 < 0 || ofs2 > length a2 - len
+     || ofs2 < 0 || ofs2 > length a2 - len
   then 
     (* invalid_arg  *)
     [%assert "Array.blit"]
   else unsafe_blit a1 ofs1 a2 ofs2 len
 
-let iter f a =
+let iter a f =
   for i = 0 to length a - 1 do f(unsafe_get a i) [@bs] done
 
-let map f a =
+let map a f =
   let l = length a in
-  if l = 0 then [||] else begin
-    let r = create l (f(unsafe_get a 0) [@bs]) in
-    for i = 1 to l - 1 do
-      unsafe_set r i (f(unsafe_get a i) [@bs])
-    done;
-    r
-  end
+  let r = makeUninitializedUnsafe l in 
+  for i = 0 to l - 1 do
+    unsafe_set r i (f(unsafe_get a i) [@bs])
+  done;
+  r
 
-let iteri f a =
+
+let iteri a f=
   for i = 0 to length a - 1 do f i (unsafe_get a i) [@bs] done
 
-let mapi f a =
+let mapi  a f =
   let l = length a in
-  if l = 0 then [||] else begin
-    let r = create l (f 0 (unsafe_get a 0) [@bs]) in
-    for i = 1 to l - 1 do
-      unsafe_set r i (f i (unsafe_get a i) [@bs])
-    done;
-    r
-  end
+  let r = makeUninitializedUnsafe l in 
+  for i = 0 to l - 1 do
+    unsafe_set r i (f i (unsafe_get a i) [@bs])
+  done;
+  r
+
 
 let toList a =
   let rec tolist i res =
@@ -139,139 +144,36 @@ let toList a =
 let rec list_length accu = function
   | [] -> accu
   | h::t -> list_length (succ accu) t
-;;
 
-let ofList = function
-    [] -> [||]
-  | hd::tl as l ->
-      let a = create (list_length 0 l) hd in
-      let rec fill i = function
-          [] -> a
-        | hd::tl -> unsafe_set a i hd; fill (i+1) tl in
-      fill 1 tl
 
-let foldLeft f x a =
+let rec fillAUx arr i xs =
+  match xs with 
+  |  [] -> ()
+  | hd::tl -> unsafe_set arr i hd; fillAUx arr (i+1) tl 
+
+let ofList xs = 
+  let len = list_length 0 xs in  
+  let a = makeUninitializedUnsafe len in 
+  fillAUx a 0 xs;
+  a
+
+let foldLeft a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
     r := f !r (unsafe_get a i) [@bs]
   done;
   !r
 
-let foldRight f a x =
+let foldRight a x f =
   let r = ref x in
   for i = length a - 1 downto 0 do
     r := f (unsafe_get a i) !r [@bs]
   done;
   !r
 
-exception Bottom of int;;
-let sort  a cmp =
-  let maxson l i =
-    let i31 = i+i+i+1 in
-    let x = ref i31 in
-    if i31+2 < l then begin
-      if cmp (get a i31) (get a (i31+1)) [@bs] < 0 then x := i31+1;
-      if cmp (get a !x) (get a (i31+2)) [@bs] < 0 then x := i31+2;
-      !x
-    end else
-      if i31+1 < l && cmp (get a i31) (get a (i31+1)) [@bs] < 0
-      then i31+1
-      else if i31 < l then i31 else raise (Bottom i)
-  in
-  let rec trickledown l i e =
-    let j = maxson l i in
-    if cmp (get a j) e [@bs] > 0 then begin
-      set a i (get a j);
-      trickledown l j e;
-    end else begin
-      set a i e;
-    end;
-  in
-  let trickle l i e = try trickledown l i e with Bottom i -> set a i e in
-  let rec bubbledown l i =
-    let j = maxson l i in
-    set a i (get a j);
-    bubbledown l j
-  in
-  let bubble l i = try bubbledown l i with Bottom i -> i in
-  let rec trickleup i e =
-    let father = (i - 1) / 3 in
-    assert (i <> father);
-    if cmp (get a father) e [@bs] < 0 then begin
-      set a i (get a father);
-      if father > 0 then trickleup father e else set a 0 e;
-    end else begin
-      set a i e;
-    end;
-  in
-  let l = length a in
-  for i = (l + 1) / 3 - 1 downto 0 do trickle l i (get a i); done;
-  for i = l - 1 downto 2 do
-    let e = (get a i) in
-    set a i (get a 0);
-    trickleup (bubble i 0) e;
-  done;
-  if l > 1 then (let e = (get a 1) in set a 1 (get a 0); set a 0 e);
-;;
 
-let cutoff = 5;;
-let stableSort  a cmp =
-  let merge src1ofs src1len src2 src2ofs src2len dst dstofs =
-    let src1r = src1ofs + src1len and src2r = src2ofs + src2len in
-    let rec loop i1 s1 i2 s2 d =
-      if cmp s1 s2 [@bs] <= 0 then begin
-        set dst d s1;
-        let i1 = i1 + 1 in
-        if i1 < src1r then
-          loop i1 (get a i1) i2 s2 (d + 1)
-        else
-          blit src2 i2 dst (d + 1) (src2r - i2)
-      end else begin
-        set dst d s2;
-        let i2 = i2 + 1 in
-        if i2 < src2r then
-          loop i1 s1 i2 (get src2 i2) (d + 1)
-        else
-          blit a i1 dst (d + 1) (src1r - i1)
-      end
-    in loop src1ofs (get a src1ofs) src2ofs (get src2 src2ofs) dstofs;
-  in
-  let isortto srcofs dst dstofs len =
-    for i = 0 to len - 1 do
-      let e = (get a (srcofs + i)) in
-      let j = ref (dstofs + i - 1) in
-      while (!j >= dstofs && cmp (get dst !j) e [@bs] > 0) do
-        set dst (!j + 1) (get dst !j);
-        decr j;
-      done;
-      set dst (!j + 1) e;
-    done;
-  in
-  let rec sortto srcofs dst dstofs len =
-    if len <= cutoff then isortto srcofs dst dstofs len else begin
-      let l1 = len / 2 in
-      let l2 = len - l1 in
-      sortto (srcofs + l1) dst (dstofs + l1) l2;
-      sortto srcofs a (srcofs + l2) l1;
-      merge (srcofs + l2) l1 dst (dstofs + l1) l2 dst dstofs;
-    end;
-  in
-  let l = length a in
-  if l <= cutoff then isortto 0 a 0 l else begin
-    let l1 = l / 2 in
-    let l2 = l - l1 in
-    let t = make l2 (get a 0) in
-    sortto l1 t 0 l2;
-    sortto 0 a l2 l1;
-    merge l2 l1 t 0 l2 a 0;
-  end;
-;;
 
-let fastSort = stableSort;;
 
-let sortCont xs cmp = 
-  sort xs cmp ; 
-  xs 
 
 let rec forAllAux arr i b len =   
   if i = len then true 

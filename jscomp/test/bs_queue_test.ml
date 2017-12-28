@@ -135,7 +135,7 @@ let () =
   assert (Q.length q2 = 8); assert (Q.toArray q2 = v );
 
   assert (Q.fold (fun[@bs] x y -> x - y ) 0 q2 = 
-          Bs.Array.foldLeft (fun [@bs] x y -> x - y) 0 v)
+          Bs.Array.foldLeft v 0 (fun [@bs] x y -> x - y) )
 
 ;;
 

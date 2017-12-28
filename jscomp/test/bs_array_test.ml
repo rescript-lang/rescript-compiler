@@ -54,12 +54,38 @@ let () =
   id [1];
   id [1;2;3;4;5];
   id (Js.Vector.(toList @@ init 100 (fun [@bs] i -> i  ) ))
-  
+module A = Bs.Array  
+let add = fun [@bs] x y -> x + y
 let () = 
   let v = Bs.Array.init 3000 (fun[@bs] i -> i) in 
   let u = Bs.Array.copy v  in 
   Bs.Array.shuffleInPlace u ; 
   neq __LOC__ u  v (* unlikely*);
-  let sum x = Bs.Array.foldLeft (fun[@bs] x y -> x + y) 0 x in 
+  let sum x = Bs.Array.foldLeft x 0 add in 
   eq __LOC__ ( sum u) (sum v)
+let addone = fun [@bs] x -> x + 1
+
+let () =   
+  eq __LOC__ (A.init 0 begin fun[@bs] _ ->1 end ) [||];
+  eq __LOC__ (A.init 3 begin fun [@bs] i -> i end) [|0;1;2|];
+  eq __LOC__ (A.makeMatrix 3 4 1 
+    
+  ) [| [|1;1;1;1|]; [|1;1;1;1|]; [|1;1;1;1|]|];
+  eq __LOC__ (A.makeMatrix 3 0 0 ) [| [||] ; [||]; [||] |];
+  eq __LOC__ (A.makeMatrix  0 3 1 ) [||];
+  eq __LOC__ (A.makeMatrix 1 1 1) [| [|1 |] |];
+  eq __LOC__ (A.copy [||]) [||];
+  eq __LOC__ (A.map [||] addone) [||];
+  eq __LOC__ (A.mapi [||] add) [||];
+  eq __LOC__ (A.mapi [|1;2;3|] add) [|1;3;5|];
+  eq __LOC__ (A.toList [||]) [];
+  eq __LOC__ (A.toList [|1|]) [1];
+  eq __LOC__ (A.toList [|1;2;3|]) [1;2;3];
+  eq __LOC__ (A.map [|1;2;3|] addone) [|2;3;4|];
+  eq __LOC__ (A.ofList []) [||];
+  eq __LOC__ (A.ofList [1]) [|1|];
+  eq __LOC__ (A.ofList [1;2]) [|1;2|];
+  eq __LOC__ (A.ofList [1;2;3]) [|1;2;3|];
+
+
 ;; Mt.from_pair_suites __LOC__ !suites  
