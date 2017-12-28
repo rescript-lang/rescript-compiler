@@ -174,6 +174,7 @@ dollar_escape_test.cmj : mt.cmj
 earger_curry_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 empty_obj.cmj :
 epsilon_test.cmj : mt.cmj
+equal_box_test.cmj : mt.cmj ../runtime/js.cmj
 equal_exception_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj
 equal_test.cmj :
 es6_module_test.cmj : mt.cmj ../stdlib/list.cmj

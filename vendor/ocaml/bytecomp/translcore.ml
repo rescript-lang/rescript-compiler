@@ -83,7 +83,74 @@ let more_bs_primitives ls =
      Pccall{prim_name = "caml_int64_min"; prim_arity = 2;
             prim_alloc = false; prim_native_name = "";
             prim_native_float = false},
-     false)) :: ls
+     false)) ::
+     (
+       "%bs_equal_null",
+       (Pccall{prim_name = "caml_equal_null"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_int_equal_null"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_float_equal_null"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_string_equal_null"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_nativeint_equal_null"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_int32_equal_null"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_int64_equal_null"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},       
+       true)
+     ) :: 
+     (
+       "%bs_equal_undefined",
+       (Pccall{prim_name = "caml_equal_undefined"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_int_equal_undefined"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_float_equal_undefined"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_string_equal_undefined"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_nativeint_equal_undefined"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_int32_equal_undefined"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_int64_equal_undefined"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},       
+       true)
+     ) :: 
+     (
+       "%bs_equal_nullable",
+       (Pccall{prim_name = "caml_equal_nullable"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_int_equal_nullable"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_float_equal_nullable"; prim_arity = 2; prim_alloc = true;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_string_equal_nullable"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_nativeint_equal_nullable"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},
+       Pccall{prim_name = "caml_int32_equal_nullable"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},       
+       Pccall{prim_name = "caml_int64_equal_nullable"; prim_arity = 2;
+              prim_alloc = false;
+              prim_native_name = ""; prim_native_float = false},       
+       true)
+     ) ::     
+     ls
      else ls 
 
 (* Translation of primitives *)

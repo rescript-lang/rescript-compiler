@@ -124,6 +124,10 @@ external logMany : 'a array -> unit = "log"
 [@@bs.val] [@@bs.scope "console"] [@@bs.splice]
 (** A convenience function to log more than 4 arguments *)
 
+external eqNull : 'a -> 'a null -> bool = "%bs_equal_null"
+external eqUndefined : 'a -> 'a undefined -> bool = "%bs_equal_undefined"
+external eqNullable : 'a -> 'a nullable -> bool = "%bs_equal_nullable" 
+
 (** {4 operators }*)
 
 external unsafe_lt : 'a -> 'a -> bool = "#unsafe_lt"

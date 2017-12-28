@@ -277,6 +277,22 @@ and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
     caml_equal (Obj.field a i) (Obj.field b i)
     && aux_equal_length  a b (i + 1) same_length
 
+
+let caml_equal_null (x : Obj.t) (y : Obj.t Js.null) = 
+  match Js.nullToOption y with    
+  | None -> x == (Obj.magic y)
+  | Some y -> caml_equal x y 
+
+let caml_equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =    
+  match Js.undefinedToOption y with 
+  | None -> x == (Obj.magic y)
+  | Some y -> caml_equal x y 
+
+let caml_equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
+  match Js.toOption  y with 
+  | None -> x == (Obj.magic y)
+  | Some y -> caml_equal x y
+
 let caml_notequal a  b =  not (caml_equal a  b)
 
 let caml_greaterequal a b = caml_compare a b >= 0
