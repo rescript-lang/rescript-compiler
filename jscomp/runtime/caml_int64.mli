@@ -57,6 +57,12 @@ val neq : comparison
 val lt : comparison
 val gt : comparison
 val le : comparison
+
+
+val equal_null : t -> t Js.null -> bool 
+val equal_undefined : t -> t Js.undefined -> bool 
+val equal_nullable : t -> t Js.nullable -> bool 
+
 val min : t -> t -> t 
 val max : t -> t -> t
 

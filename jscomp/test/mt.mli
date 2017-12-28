@@ -23,8 +23,8 @@ val from_promise_suites :
 
 val eq_suites :   
   test_id:int ref ->
-  suites:(string * ('a -> eq)) list ref -> string -> 'b -> 'b -> unit
+  suites:pair_suites ref -> string -> 'b -> 'b -> unit
   
 val bool_suites :
   test_id:int ref ->
-  suites: (string * ('a -> eq)) list ref -> string -> bool -> unit
+  suites: pair_suites ref -> string -> bool -> unit

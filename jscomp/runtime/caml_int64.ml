@@ -84,6 +84,19 @@ let not {lo; hi }  = mk ~lo:(lognot lo) ~hi:(lognot hi)
 
 let eq x y = x.hi = y.hi && x.lo = y.lo
 
+let equal_null x y =    
+  match Js.nullToOption y with 
+  | None -> false 
+  | Some y -> eq x y 
+let equal_undefined x y =   
+  match Js.undefinedToOption y with 
+  | None -> false 
+  | Some y -> eq x y   
+let equal_nullable x y =   
+  match Js.toOption y with 
+  | None -> false 
+  | Some y -> eq x y 
+
 let neg ({lo; hi} as x) =
   if eq x  min_int then
     min_int

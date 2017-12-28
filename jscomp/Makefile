@@ -265,7 +265,6 @@ CORE_SRCS= js_runtime_modules \
 	js_packages_info\
 	js_packages_state\
 	ocaml_types  \
-	ocaml_stdlib_slots \
 	bs_conditional_initial \
 	ocaml_options \
 	ocaml_parse\

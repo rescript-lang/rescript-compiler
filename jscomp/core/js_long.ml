@@ -174,6 +174,15 @@ let min args =
   int64_call "min" args 
 let max args = 
   int64_call "max" args
+
+
+let equal_null args =   
+  int64_call "equal_null" args  
+let equal_undefined args =   
+  int64_call "equal_undefined" args
+let equal_nullable args =   
+  int64_call "equal_nullable" args
+
 let to_float (args : J.expression list ) = 
   match args with
   (* | [ {expression_desc  *)

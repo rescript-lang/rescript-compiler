@@ -52,6 +52,11 @@ val or_ : int64_call
 val swap : int64_call
 val min : int64_call
 val max : int64_call
+
+val equal_null : int64_call
+val equal_undefined : int64_call
+val equal_nullable : int64_call
+
 val discard_sign : int64_call
 val div_mod : int64_call
 val to_hex : int64_call  
