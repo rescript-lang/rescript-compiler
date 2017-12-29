@@ -17,7 +17,7 @@ val empty: t
 val isEmpty: t -> bool
 (** Test whether a set is empty or not. *)
 
-val mem: elt -> t -> bool
+val mem: t -> elt -> bool
 (** [mem x s] tests whether [x] belongs to the set [s]. *)
 
 val add: elt -> t -> t
@@ -79,8 +79,7 @@ val partition: (elt -> bool [@bs]) -> t -> t * t
    predicate [p], and [s2] is the set of all the elements of
    [s] that do not satisfy [p]. *)
 
-val cardinal: t -> int
-(** Return the number of elements of a set. *)
+val length: t -> int
 
 val elements: t -> elt list
 (** Return the list of all elements of the given set.

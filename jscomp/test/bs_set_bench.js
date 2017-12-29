@@ -30,7 +30,7 @@ function bench() {
     data = Bs_SetInt.remove(i$2, data);
   }
   console.timeEnd("bs_set_bench.ml 14");
-  if (Bs_SetInt.cardinal(data)) {
+  if (Bs_SetInt.length(data)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

@@ -45,6 +45,7 @@ module Set = Bs_Set
 module MapInt = Bs_MapInt
 module MapString = Bs_MapString  
 module SetInt = Bs_SetInt
+module SetIntM = Bs_SetIntM
 module SetString = Bs_SetString
 module List = Bs_List
 

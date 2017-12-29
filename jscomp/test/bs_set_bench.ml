@@ -14,7 +14,7 @@ let bench () =
   [%time for i = 0 to count do 
     data := Bs.SetInt.remove i !data  
   done ];
-  assert  (Bs.SetInt.cardinal !data = 0)
+  assert  (Bs.SetInt.length !data = 0)
 
 
 

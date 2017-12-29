@@ -1,5 +1,9 @@
+
+
 module N = Bs_internalAVLset
-module I = Bs_internalSetString
+
+
+module I = Bs_internalSetInt
 
 type elt = I.elt
 type t = I.t 
@@ -21,7 +25,7 @@ let elements = N.elements0
 let toArray = N.toArray0 
 let checkInvariant = N.checkInvariant
 
-let add = I.add
+let add = I.addMutate
 let ofArray = I.ofArray
 let cmp = I.cmp 
 let diff = I.diff

@@ -1,7 +1,6 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
@@ -20,20 +19,7 @@ var suites = [/* [] */0];
 var test_id = [0];
 
 function eq(loc, x, y) {
-  test_id[0] = test_id[0] + 1 | 0;
-  suites[0] = /* :: */[
-    /* tuple */[
-      loc + (" id " + test_id[0]),
-      (function () {
-          return /* Eq */Block.__(0, [
-                    x,
-                    y
-                  ]);
-        })
-    ],
-    suites[0]
-  ];
-  return /* () */0;
+  return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
 function comparable_001($$class) {
@@ -113,11 +99,11 @@ function min(x, y) {
 
 var tmp = min(Curry._2(money[0], 0, 1.0), Curry._2(money[0], 0, 3.0));
 
-eq("File \"class8_test.ml\", line 34, characters 5-12", 1, Caml_oo_curry.js1(834174833, 3, tmp));
+eq("File \"class8_test.ml\", line 30, characters 5-12", 1, Caml_oo_curry.js1(834174833, 3, tmp));
 
 var tmp$1 = min(Curry._2(money2[0], 0, 5.0), Curry._2(money2[0], 0, 3));
 
-eq("File \"class8_test.ml\", line 39, characters 5-12", 3, Caml_oo_curry.js1(834174833, 4, tmp$1));
+eq("File \"class8_test.ml\", line 35, characters 5-12", 3, Caml_oo_curry.js1(834174833, 4, tmp$1));
 
 Mt.from_pair_suites("class8_test.ml", suites[0]);
 

@@ -229,7 +229,7 @@ let rec cardinalAux n =
     | Some r -> cardinalAux r in 
   1 + sizeL + sizeR  
 
-let rec cardinal0 n =
+let rec length0 n =
   match toOpt n with 
   | None -> 0
   | Some n  ->

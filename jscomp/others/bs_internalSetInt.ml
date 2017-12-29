@@ -1,12 +1,8 @@
-#ifdef TYPE_STRING
-type elt = string
-#elif defined TYPE_INT  
+# 4 "set.cppo.ml"
 type elt = int
-#else
-[%error "unknown type"]  
-#endif
 
 
+# 10
 module N = Bs_internalAVLset
 
 type ('elt, 'id) t0 = ('elt, 'id) N.t0 

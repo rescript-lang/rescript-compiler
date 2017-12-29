@@ -13,7 +13,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Array\
 	bs_internalAVLset\
 	bs_internalAVLtree\
-	bs_internalMutableAVLSet\
+	bs_SetIntM\
 	bs_internalMutableAVL\
 	bs_Hash\
 	bs_Queue\
@@ -33,7 +33,10 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Map\
 	bs_Set\
 	bs_MapString bs_MapInt\
-	bs_SetInt bs_SetString\
+	bs_internalSetInt\
+	bs_internalSetString\
+	bs_SetInt\
+	bs_SetString\
 	node_child_process js_boolean js_math\
 	js_dict js_date js_global js_cast js_promise\
 	dom dom_storage\
@@ -93,11 +96,11 @@ bs_MapString.mli: map.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 bs_MapInt.mli: map.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_SetInt.ml: set.cppo.ml
+bs_internalSetInt.ml: set.cppo.ml
 	cppo -D TYPE_INT $^ > $@
 bs_SetInt.mli: set.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_SetString.ml: set.cppo.ml
+bs_internalSetString.ml: set.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
 bs_SetString.mli: set.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
