@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var function_equal_test;
@@ -523,5 +523,5 @@ var suites = /* :: */[
 Mt.from_pair_suites("caml_compare_test.ml", suites);
 
 exports.function_equal_test = function_equal_test;
-exports.suites              = suites;
+exports.suites = suites;
 /* function_equal_test Not a pure module */

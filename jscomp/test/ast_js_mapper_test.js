@@ -100,11 +100,11 @@ function bFromJs(param) {
 
 bToJs(/* b0 */21902);
 
-exports.tToJs               = tToJs;
-exports.tFromJs             = tFromJs;
+exports.tToJs = tToJs;
+exports.tFromJs = tFromJs;
 exports.searchForSureExists = searchForSureExists;
-exports.aToJs               = aToJs;
-exports.aFromJs             = aFromJs;
-exports.bToJs               = bToJs;
-exports.bFromJs             = bFromJs;
+exports.aToJs = aToJs;
+exports.aFromJs = aFromJs;
+exports.bToJs = bToJs;
+exports.bFromJs = bFromJs;
 /* u Not a pure module */

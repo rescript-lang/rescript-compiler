@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt           = require("./mt.js");
-var Block        = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = [/* [] */0];
@@ -84,13 +84,13 @@ eq("File \"undef_regression2_test.ml\", line 45, characters 5-12", a, 1);
 
 Mt.from_pair_suites("undef_regression2_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.ok      = ok;
-exports.a       = a;
-exports.test    = test;
-exports.test2   = test2;
-exports.test3   = test3;
-exports.f       = f;
+exports.eq = eq;
+exports.ok = ok;
+exports.a = a;
+exports.test = test;
+exports.test2 = test2;
+exports.test3 = test3;
+exports.f = f;
 /* match Not a pure module */

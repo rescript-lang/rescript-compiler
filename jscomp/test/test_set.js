@@ -1,7 +1,7 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Curry                   = require("../../lib/js/curry.js");
+var List = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function Make(Ord) {
@@ -812,5 +812,5 @@ function Make(Ord) {
 var N = /* module */[/* a */3];
 
 exports.Make = Make;
-exports.N    = N;
+exports.N = N;
 /* No side effect */

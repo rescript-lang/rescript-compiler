@@ -1,12 +1,12 @@
 'use strict';
 
-import * as Fs            from "fs";
-import * as Path          from "path";
-import * as Process       from "process";
-import * as Js_option     from "../../lib/es6/js_option.js";
-import * as Js_vector     from "../../lib/es6/js_vector.js";
-import * as Js_primitive  from "../../lib/es6/js_primitive.js";
-import * as Node_process  from "../../lib/es6/node_process.js";
+import * as Fs from "fs";
+import * as Path from "path";
+import * as Process from "process";
+import * as Js_option from "../../lib/es6/js_option.js";
+import * as Js_vector from "../../lib/es6/js_vector.js";
+import * as Js_primitive from "../../lib/es6/js_primitive.js";
+import * as Node_process from "../../lib/es6/node_process.js";
 import * as Xwatcher_util from "./xwatcher_util.js";
 import * as Child_process from "child_process";
 

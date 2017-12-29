@@ -1,6 +1,6 @@
 'use strict';
 
-var Curry           = require("../../lib/js/curry.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var x = [1];
@@ -47,12 +47,12 @@ var a = 1;
 
 var b = 2;
 
-exports.a  = a;
-exports.b  = b;
-exports.x  = x;
-exports.y  = y;
-exports.f  = f;
-exports.g  = g;
+exports.a = a;
+exports.b = b;
+exports.x = x;
+exports.y = y;
+exports.f = f;
+exports.g = g;
 exports.a0 = a0;
 exports.a1 = a1;
 /* No side effect */

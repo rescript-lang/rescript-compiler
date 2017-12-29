@@ -1,6 +1,6 @@
 'use strict';
 
-var Bs_SetInt               = require("../../lib/js/bs_SetInt.js");
+var Bs_SetInt = require("../../lib/js/bs_SetInt.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function bench() {

@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Stream                  = require("../../lib/js/stream.js");
-var Caml_bytes              = require("../../lib/js/caml_bytes.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Stream = require("../../lib/js/stream.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function classify(chr) {
@@ -313,11 +313,11 @@ eq("File \"utf8_decode_test.ml\", line 125, characters 5-12", /* tuple */[
 
 Mt.from_pair_suites("utf8_decode_test.ml", suites[0]);
 
-exports.classify    = classify;
+exports.classify = classify;
 exports.utf8_decode = utf8_decode;
-exports.decode      = decode;
-exports.eq_list     = eq_list;
-exports.suites      = suites;
-exports.test_id     = test_id;
-exports.eq          = eq;
+exports.decode = decode;
+exports.eq_list = eq_list;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 /*  Not a pure module */

@@ -1,7 +1,7 @@
 'use strict';
 
-var Caml_oo_curry           = require("../../lib/js/caml_oo_curry.js");
-var CamlinternalOO          = require("../../lib/js/camlinternalOO.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var shared = ["add"];
@@ -162,9 +162,9 @@ function test() {
   }
 }
 
-exports.u    = u;
-exports.uu   = uu;
-exports.uuu  = uuu;
-exports.v    = v;
+exports.u = u;
+exports.uu = uu;
+exports.uuu = uuu;
+exports.v = v;
 exports.test = test;
 /* class Not a pure module */

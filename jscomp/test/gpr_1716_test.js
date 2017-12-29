@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = [/* [] */0];
@@ -41,10 +41,10 @@ eq("File \"gpr_1716_test.ml\", line 26, characters 6-13", /* true */1, is_inifit
 
 Mt.from_pair_suites("gpr_1716_test.ml", suites[0]);
 
-exports.suites     = suites;
-exports.test_id    = test_id;
-exports.eq         = eq;
-exports.a          = a;
-exports.b          = b;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.a = a;
+exports.b = b;
 exports.is_inifite = is_inifite;
 /*  Not a pure module */

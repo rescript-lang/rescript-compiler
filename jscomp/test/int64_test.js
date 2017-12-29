@@ -1,15 +1,15 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var $$Array        = require("../../lib/js/array.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Int32          = require("../../lib/js/int32.js");
-var Int64          = require("../../lib/js/int64.js");
-var Format         = require("../../lib/js/format.js");
-var Caml_obj       = require("../../lib/js/caml_obj.js");
-var Caml_int64     = require("../../lib/js/caml_int64.js");
-var Pervasives     = require("../../lib/js/pervasives.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Int32 = require("../../lib/js/int32.js");
+var Int64 = require("../../lib/js/int64.js");
+var Format = require("../../lib/js/format.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
 
 function f(u, v) {
@@ -2349,16 +2349,16 @@ var suites = Pervasives.$at(/* :: */[
 
 Mt.from_pair_suites("int64_test.ml", suites);
 
-exports.f                          = f;
-exports.v                          = v;
-exports.h                          = h;
-exports.a                          = a;
-exports.commutative_add            = commutative_add;
-exports.generic_compare            = generic_compare;
-exports.shift_left_tests           = shift_left_tests;
-exports.shift_right_tests          = shift_right_tests;
+exports.f = f;
+exports.v = v;
+exports.h = h;
+exports.a = a;
+exports.commutative_add = commutative_add;
+exports.generic_compare = generic_compare;
+exports.shift_left_tests = shift_left_tests;
+exports.shift_right_tests = shift_right_tests;
 exports.shift_right_logical_suites = shift_right_logical_suites;
-exports.fib                        = fib;
-exports.fac                        = fac;
-exports.suites                     = suites;
+exports.fib = fib;
+exports.fac = fac;
+exports.suites = suites;
 /* shift_left_tests Not a pure module */

@@ -1,7 +1,7 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var List = require("../../lib/js/list.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function height(param) {

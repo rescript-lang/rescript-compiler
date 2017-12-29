@@ -1,6 +1,6 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var delayed = [(function () {

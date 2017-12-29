@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt.js");
-var Obj   = require("../../lib/js/obj.js");
+var Mt = require("./mt.js");
+var Obj = require("../../lib/js/obj.js");
 var Block = require("../../lib/js/block.js");
 
 var empty_backtrace = Block.__(Obj.abstract_tag, []);
@@ -66,6 +66,6 @@ var suites = /* :: */[
 Mt.from_pair_suites("obj_magic_test.ml", suites);
 
 exports.empty_backtrace = empty_backtrace;
-exports.is_block        = is_block;
-exports.suites          = suites;
+exports.is_block = is_block;
+exports.suites = suites;
 /*  Not a pure module */

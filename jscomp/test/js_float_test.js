@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 var suites_000 = /* tuple */[

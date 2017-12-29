@@ -54,12 +54,12 @@ function fff(_, _$1) {
 }
 
 exports.$pipe$great = $pipe$great;
-exports.hello1      = hello1;
-exports.hello2      = hello2;
-exports.hello3      = hello3;
-exports.hello4      = hello4;
-exports.hello5      = hello5;
-exports.f           = f;
-exports.ff          = ff;
-exports.fff         = fff;
+exports.hello1 = hello1;
+exports.hello2 = hello2;
+exports.hello3 = hello3;
+exports.hello4 = hello4;
+exports.hello5 = hello5;
+exports.f = f;
+exports.ff = ff;
+exports.fff = fff;
 /* No side effect */

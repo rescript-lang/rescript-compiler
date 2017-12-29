@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var $$Array        = require("../../lib/js/array.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Printf         = require("../../lib/js/printf.js");
-var Mt_global      = require("./mt_global.js");
-var Caml_float     = require("../../lib/js/caml_float.js");
-var Pervasives     = require("../../lib/js/pervasives.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Printf = require("../../lib/js/printf.js");
+var Mt_global = require("./mt_global.js");
+var Caml_float = require("../../lib/js/caml_float.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var test_id = [0];
@@ -279,12 +279,12 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
 
 var epsilon_float = 2.22044604925031308e-16;
 
-exports.test_id       = test_id;
-exports.suites        = suites;
-exports.eq            = eq;
-exports.approx        = approx;
+exports.test_id = test_id;
+exports.suites = suites;
+exports.eq = eq;
+exports.approx = approx;
 exports.epsilon_float = epsilon_float;
-exports.results       = results;
-exports.from_pairs    = from_pairs;
+exports.results = results;
+exports.from_pairs = from_pairs;
 exports.float_compare = float_compare;
 /* results Not a pure module */

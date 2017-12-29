@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt        = require("./mt.js");
-var List      = require("../../lib/js/list.js");
-var $$Array   = require("../../lib/js/array.js");
-var Block     = require("../../lib/js/block.js");
-var Bs_Array  = require("../../lib/js/bs_Array.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_SetInt = require("../../lib/js/bs_SetInt.js");
 
 var suites = [/* [] */0];
@@ -252,15 +252,15 @@ var N = 0;
 
 var ofA = Bs_SetInt.ofArray;
 
-exports.suites    = suites;
-exports.test_id   = test_id;
-exports.eq        = eq;
-exports.b         = b;
-exports.N         = N;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.b = b;
+exports.N = N;
 exports.$eq$tilde = $eq$tilde;
-exports.$eq$star  = $eq$star;
-exports.ofA       = ofA;
-exports.u         = u;
-exports.range     = range;
-exports.revRange  = revRange;
+exports.$eq$star = $eq$star;
+exports.ofA = ofA;
+exports.u = u;
+exports.range = range;
+exports.revRange = revRange;
 /*  Not a pure module */

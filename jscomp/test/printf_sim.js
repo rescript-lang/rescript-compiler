@@ -1,7 +1,7 @@
 'use strict';
 
-var Block  = require("../../lib/js/block.js");
-var Curry  = require("../../lib/js/curry.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 
 Curry._1(Printf.printf(/* Format */[

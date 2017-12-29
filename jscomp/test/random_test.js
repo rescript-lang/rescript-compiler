@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
-var Int64      = require("../../lib/js/int64.js");
-var Printf     = require("../../lib/js/printf.js");
-var Random     = require("../../lib/js/random.js");
-var Mt_global  = require("./mt_global.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Int64 = require("../../lib/js/int64.js");
+var Printf = require("../../lib/js/printf.js");
+var Random = require("../../lib/js/random.js");
+var Mt_global = require("./mt_global.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 var id = [0];
@@ -124,15 +124,15 @@ Curry._5(Printf.printf(/* Format */[
 
 Mt.from_pair_suites("random_test.ml", suites[0]);
 
-exports.id     = id;
+exports.id = id;
 exports.suites = suites;
-exports.eq     = eq;
-exports.neq    = neq;
+exports.eq = eq;
+exports.neq = neq;
 exports.approx = approx;
-exports.v      = v;
-exports.f      = f;
-exports.h      = h;
-exports.vv     = vv;
-exports.xx     = xx;
-exports.xxx    = xxx;
+exports.v = v;
+exports.f = f;
+exports.h = h;
+exports.vv = vv;
+exports.xx = xx;
+exports.xxx = xxx;
 /*  Not a pure module */

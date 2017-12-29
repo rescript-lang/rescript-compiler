@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var v = [1];
@@ -48,15 +48,15 @@ var version = -1;
 
 var ocaml_veriosn = "4.02.3";
 
-exports.b             = b;
-exports.buffer_size   = buffer_size;
-exports.vv            = vv;
-exports.v             = v;
-exports.a             = a;
-exports.version_gt_3  = version_gt_3;
-exports.version       = version;
+exports.b = b;
+exports.buffer_size = buffer_size;
+exports.vv = vv;
+exports.v = v;
+exports.a = a;
+exports.version_gt_3 = version_gt_3;
+exports.version = version;
 exports.ocaml_veriosn = ocaml_veriosn;
-exports.suites        = suites;
-exports.test_id       = test_id;
-exports.eq            = eq;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 /*  Not a pure module */

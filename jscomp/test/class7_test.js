@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt              = require("./mt.js");
-var Oo              = require("../../lib/js/oo.js");
-var Block           = require("../../lib/js/block.js");
-var Curry           = require("../../lib/js/curry.js");
-var Caml_obj        = require("../../lib/js/caml_obj.js");
-var Caml_oo_curry   = require("../../lib/js/caml_oo_curry.js");
-var CamlinternalOO  = require("../../lib/js/camlinternalOO.js");
+var Mt = require("./mt.js");
+var Oo = require("../../lib/js/oo.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var shared = [
@@ -340,16 +340,16 @@ var widget = CamlinternalOO.make_class(shared$2, widget_init);
 
 Mt.from_pair_suites("class7_test.ml", suites[0]);
 
-exports.suites      = suites;
-exports.test_id     = test_id;
-exports.eq          = eq;
-exports.point       = point;
-exports.ref         = ref;
-exports.backup      = backup;
-exports.backup_ref  = backup_ref;
-exports.get         = get;
-exports.backup2     = backup2;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.point = point;
+exports.ref = ref;
+exports.backup = backup;
+exports.backup_ref = backup_ref;
+exports.get = get;
+exports.backup2 = backup2;
 exports.backup_ref2 = backup_ref2;
-exports.$$window    = $$window;
-exports.widget      = widget;
+exports.$$window = $$window;
+exports.widget = widget;
 /* point Not a pure module */

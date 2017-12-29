@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var Block          = require("../../lib/js/block.js");
-var Caml_obj       = require("../../lib/js/caml_obj.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = [/* [] */0];
@@ -76,9 +76,9 @@ eq("File \"gpr496_test.ml\", line 32, characters 12-19", expected, u);
 
 Mt.from_pair_suites("gpr496_test.ml", suites[0]);
 
-exports.suites   = suites;
-exports.test_id  = test_id;
-exports.eq       = eq;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 exports.expected = expected;
-exports.u        = u;
+exports.u = u;
 /* expected Not a pure module */

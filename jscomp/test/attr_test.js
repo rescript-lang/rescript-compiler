@@ -13,8 +13,8 @@ function max2(x, y) {
 
 var hh = max2(1, 2);
 
-exports.u    = u;
-exports.h    = h;
+exports.u = u;
+exports.h = h;
 exports.max2 = max2;
-exports.hh   = hh;
+exports.hh = hh;
 /* h Not a pure module */

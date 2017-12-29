@@ -29,11 +29,11 @@ var v = f(b);
 
 var vv = h(b);
 
-exports.a  = a;
-exports.b  = b;
-exports.f  = f;
-exports.h  = h;
-exports.u  = u;
-exports.v  = v;
+exports.a = a;
+exports.b = b;
+exports.f = f;
+exports.h = h;
+exports.u = u;
+exports.v = v;
 exports.vv = vv;
 /* u Not a pure module */

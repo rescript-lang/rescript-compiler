@@ -16,7 +16,7 @@ var CRS = /* () */0;
 
 var Layer = /* () */0;
 
-exports.CRS   = CRS;
+exports.CRS = CRS;
 exports.Layer = Layer;
 exports.Point = Point;
 /* Point Not a pure module */

@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_bytes  = require("../../lib/js/caml_bytes.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 var v = "ghos";
@@ -25,7 +25,7 @@ function u_g() {
 
 var u_c = /* "g" */103;
 
-exports.v   = v;
+exports.v = v;
 exports.u_a = u_a;
 exports.u_b = u_b;
 exports.u_c = u_c;

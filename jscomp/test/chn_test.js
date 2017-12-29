@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var $$Array                 = require("../../lib/js/array.js");
-var Block                   = require("../../lib/js/block.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
@@ -264,8 +264,8 @@ eq("File \"chn_test.ml\", line 89, characters 6-13", convert(" \b\t\n\v\f\r\"\'\
 
 Mt.from_pair_suites("chn_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 exports.convert = convert;
 /*  Not a pure module */

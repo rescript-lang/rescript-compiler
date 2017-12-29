@@ -1,14 +1,14 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Printf                  = require("../../lib/js/printf.js");
-var $$String                = require("../../lib/js/string.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_format             = require("../../lib/js/caml_format.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Printf = require("../../lib/js/printf.js");
+var $$String = require("../../lib/js/string.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_format = require("../../lib/js/caml_format.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split(delim, s) {
@@ -1138,14 +1138,14 @@ var lines = /* :: */[
   ]
 ];
 
-exports.Util                     = Util;
-exports.string_of_rank           = string_of_rank;
-exports.find_ticker_by_name      = find_ticker_by_name;
-exports.print_all_composite      = print_all_composite;
-exports.Ticker_map               = Ticker_map;
+exports.Util = Util;
+exports.string_of_rank = string_of_rank;
+exports.find_ticker_by_name = find_ticker_by_name;
+exports.print_all_composite = print_all_composite;
+exports.Ticker_map = Ticker_map;
 exports.compute_update_sequences = compute_update_sequences;
-exports.process_quote            = process_quote;
-exports.process_input_line       = process_input_line;
-exports.lines                    = lines;
-exports.loop                     = loop;
+exports.process_quote = process_quote;
+exports.process_input_line = process_input_line;
+exports.lines = lines;
+exports.loop = loop;
 /* No side effect */

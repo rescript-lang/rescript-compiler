@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Scanf                   = require("../../lib/js/scanf.js");
-var Printf                  = require("../../lib/js/printf.js");
-var Mt_global               = require("./mt_global.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Scanf = require("../../lib/js/scanf.js");
+var Printf = require("../../lib/js/printf.js");
+var Mt_global = require("./mt_global.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];

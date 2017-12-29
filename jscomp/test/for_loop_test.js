@@ -1,9 +1,9 @@
 'use strict';
 
-var List       = require("../../lib/js/list.js");
-var $$Array    = require("../../lib/js/array.js");
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
+var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
@@ -305,12 +305,12 @@ var suites = /* :: */[
   suites_001
 ];
 
-exports.for_3  = for_3;
-exports.for_4  = for_4;
-exports.for_5  = for_5;
-exports.for_6  = for_6;
-exports.for_7  = for_7;
-exports.for_8  = for_8;
-exports.for_9  = for_9;
+exports.for_3 = for_3;
+exports.for_4 = for_4;
+exports.for_5 = for_5;
+exports.for_6 = for_6;
+exports.for_7 = for_7;
+exports.for_8 = for_8;
+exports.for_9 = for_9;
 exports.suites = suites;
 /* No side effect */

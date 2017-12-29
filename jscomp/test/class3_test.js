@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var List           = require("../../lib/js/list.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Caml_array     = require("../../lib/js/caml_array.js");
-var Caml_int32     = require("../../lib/js/caml_int32.js");
-var Pervasives     = require("../../lib/js/pervasives.js");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
@@ -537,28 +537,28 @@ eq("File \"class3_test.ml\", line 195, characters 12-19", hhhh, 305);
 
 Mt.from_pair_suites("class3_test.ml", suites[0]);
 
-exports.suites           = suites;
-exports.test_id          = test_id;
-exports.eq               = eq;
-exports.point            = point;
-exports.adjusted_point   = adjusted_point;
-exports.adjusted_point2  = adjusted_point2;
-exports.printable_point  = printable_point;
-exports.my_int           = my_int;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.point = point;
+exports.adjusted_point = adjusted_point;
+exports.adjusted_point2 = adjusted_point2;
+exports.printable_point = printable_point;
+exports.my_int = my_int;
 exports.printable_point2 = printable_point2;
-exports.abstract_point   = abstract_point;
-exports.vpoint           = vpoint;
-exports.v                = v$1;
-exports.abstract_point2  = abstract_point2;
-exports.point2           = point2;
-exports.vv               = vv;
+exports.abstract_point = abstract_point;
+exports.vpoint = vpoint;
+exports.v = v$1;
+exports.abstract_point2 = abstract_point2;
+exports.point2 = point2;
+exports.vv = vv;
 exports.restricted_point = restricted_point;
-exports.p                = p$2;
-exports.h                = h$2;
-exports.point_again      = point_again;
-exports.hh               = hh;
-exports.point_again2     = point_again2;
-exports.hhh              = hhh;
-exports.point_again3     = point_again3;
-exports.hhhh             = hhhh;
+exports.p = p$2;
+exports.h = h$2;
+exports.point_again = point_again;
+exports.hh = hh;
+exports.point_again2 = point_again2;
+exports.hhh = hhh;
+exports.point_again3 = point_again3;
+exports.hhhh = hhhh;
 /* point Not a pure module */

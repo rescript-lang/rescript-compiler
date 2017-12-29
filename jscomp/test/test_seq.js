@@ -1,10 +1,10 @@
 'use strict';
 
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Bad = Caml_exceptions.create("Test_seq.Bad");
@@ -89,12 +89,12 @@ function add_help(speclist) {
   return Pervasives.$at(speclist, Pervasives.$at(add1, add2));
 }
 
-exports.Bad         = Bad;
-exports.Help        = Help;
-exports.Stop        = Stop;
-exports.assoc3      = assoc3;
+exports.Bad = Bad;
+exports.Help = Help;
+exports.Stop = Stop;
+exports.assoc3 = assoc3;
 exports.help_action = help_action;
-exports.v           = v;
-exports.f           = f;
-exports.add_help    = add_help;
+exports.v = v;
+exports.f = f;
+exports.add_help = add_help;
 /* No side effect */

@@ -1,24 +1,24 @@
 'use strict';
 
-var Sys                     = require("../../lib/js/sys.js");
-var Char                    = require("../../lib/js/char.js");
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Bytes                   = require("../../lib/js/bytes.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Buffer                  = require("../../lib/js/buffer.js");
-var Format                  = require("../../lib/js/format.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Printf                  = require("../../lib/js/printf.js");
-var $$String                = require("../../lib/js/string.js");
-var Caml_io                 = require("../../lib/js/caml_io.js");
-var Printexc                = require("../../lib/js/printexc.js");
-var Caml_bytes              = require("../../lib/js/caml_bytes.js");
-var Caml_int32              = require("../../lib/js/caml_int32.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
-var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
+var Sys = require("../../lib/js/sys.js");
+var Char = require("../../lib/js/char.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Bytes = require("../../lib/js/bytes.js");
+var Curry = require("../../lib/js/curry.js");
+var Buffer = require("../../lib/js/buffer.js");
+var Format = require("../../lib/js/format.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Printf = require("../../lib/js/printf.js");
+var $$String = require("../../lib/js/string.js");
+var Caml_io = require("../../lib/js/caml_io.js");
+var Printexc = require("../../lib/js/printexc.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_string = require("../../lib/js/caml_string.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
+var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function _with_in(filename, f) {
@@ -1528,20 +1528,20 @@ var D = [
   next
 ];
 
-exports.to_buf          = to_buf;
-exports.to_string       = to_string;
-exports.to_file         = to_file;
-exports.to_file_seq     = to_file_seq;
-exports.to_chan         = to_chan;
-exports.print           = print;
-exports.print_noindent  = print_noindent;
-exports.MakeDecode      = MakeDecode;
-exports.ID_MONAD        = ID_MONAD;
-exports.D               = D;
-exports.parse_string    = parse_string;
-exports.parse_chan      = parse_chan;
-exports.parse_chan_gen  = parse_chan_gen;
+exports.to_buf = to_buf;
+exports.to_string = to_string;
+exports.to_file = to_file;
+exports.to_file_seq = to_file_seq;
+exports.to_chan = to_chan;
+exports.print = print;
+exports.print_noindent = print_noindent;
+exports.MakeDecode = MakeDecode;
+exports.ID_MONAD = ID_MONAD;
+exports.D = D;
+exports.parse_string = parse_string;
+exports.parse_chan = parse_chan;
+exports.parse_chan_gen = parse_chan_gen;
 exports.parse_chan_list = parse_chan_list;
-exports.parse_file      = parse_file;
+exports.parse_file = parse_file;
 exports.parse_file_list = parse_file_list;
 /* Format Not a pure module */

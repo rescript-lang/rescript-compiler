@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt                = require("./mt.js");
-var $$Array           = require("../../lib/js/array.js");
-var Block             = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
 var Ext_filename_test = require("./ext_filename_test.js");
 
 var suites = [/* [] */0];
@@ -128,8 +128,8 @@ eq("File \"a_filename_test.ml\", line 73, characters 5-12", $$Array.map(Ext_file
 
 Mt.from_pair_suites("a_filename_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.test    = test;
+exports.eq = eq;
+exports.test = test;
 /*  Not a pure module */

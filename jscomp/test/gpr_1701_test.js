@@ -1,8 +1,8 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var List = require("../../lib/js/list.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Foo = Caml_exceptions.create("Gpr_1701_test.Foo");
@@ -103,9 +103,9 @@ function read_lines3(inc) {
   return loop(/* [] */0);
 }
 
-exports.Foo         = Foo;
-exports.test        = test;
-exports.read_lines  = read_lines;
+exports.Foo = Foo;
+exports.test = test;
+exports.read_lines = read_lines;
 exports.read_lines2 = read_lines2;
 exports.read_lines3 = read_lines3;
 /*  Not a pure module */

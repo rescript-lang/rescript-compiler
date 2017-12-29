@@ -62,7 +62,7 @@ var f3 = {
 var f_record = /* record */[/* x : record */[/* y : record */[/* z */3]]];
 
 exports.f_record = f_record;
-exports.f        = f;
-exports.f2       = f2;
-exports.f3       = f3;
+exports.f = f;
+exports.f2 = f2;
+exports.f3 = f3;
 /* No side effect */

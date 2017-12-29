@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
@@ -182,13 +182,13 @@ eq("File \"js_exception_catch_test.ml\", line 53, characters 5-12", test((functi
 
 Mt.from_pair_suites("js_exception_catch_test.ml", suites[0]);
 
-exports.suites   = suites;
+exports.suites = suites;
 exports.add_test = add_test;
-exports.eq       = eq;
-exports.false_   = false_;
-exports.true_    = true_;
-exports.A        = A;
-exports.B        = B;
-exports.C        = C;
-exports.test     = test;
+exports.eq = eq;
+exports.false_ = false_;
+exports.true_ = true_;
+exports.A = A;
+exports.B = B;
+exports.C = C;
+exports.test = test;
 /*  Not a pure module */

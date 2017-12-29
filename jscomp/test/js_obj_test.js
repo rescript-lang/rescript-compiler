@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 function f(u) {
@@ -107,7 +107,7 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("js_obj_test.ml", suites);
 
-exports.f      = f;
-exports.f_js   = f_js;
+exports.f = f;
+exports.f_js = f_js;
 exports.suites = suites;
 /*  Not a pure module */

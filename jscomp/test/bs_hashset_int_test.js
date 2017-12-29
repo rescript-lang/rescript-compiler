@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt              = require("./mt.js");
-var Bs_Array        = require("../../lib/js/bs_Array.js");
-var Bs_SetInt       = require("../../lib/js/bs_SetInt.js");
-var Bs_HashSetInt   = require("../../lib/js/bs_HashSetInt.js");
+var Mt = require("./mt.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
+var Bs_SetInt = require("../../lib/js/bs_SetInt.js");
+var Bs_HashSetInt = require("../../lib/js/bs_HashSetInt.js");
 var Array_data_util = require("./array_data_util.js");
 
 var suites = [/* [] */0];
@@ -71,13 +71,13 @@ var I = 0;
 
 var $plus$plus = Bs_Array.append;
 
-exports.suites     = suites;
-exports.test_id    = test_id;
-exports.eq         = eq;
-exports.N          = N;
-exports.S          = S;
-exports.I          = I;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.N = N;
+exports.S = S;
+exports.I = I;
 exports.$plus$plus = $plus$plus;
-exports.add        = add;
-exports.sum2       = sum2;
+exports.add = add;
+exports.sum2 = sum2;
 /* u Not a pure module */

@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
 var suites = [/* [] */0];
@@ -41,9 +41,9 @@ eq("File \"gpr_1728_test.ml\", line 17, characters 6-13", badInlining({
 
 Mt.from_pair_suites("gpr_1728_test.ml", suites[0]);
 
-exports.suites      = suites;
-exports.test_id     = test_id;
-exports.eq          = eq;
-exports.foo         = foo;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.foo = foo;
 exports.badInlining = badInlining;
 /*  Not a pure module */

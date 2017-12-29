@@ -1,8 +1,8 @@
 'use strict';
 
-var Sys        = require("../../lib/js/sys.js");
-var Curry      = require("../../lib/js/curry.js");
-var Lexing     = require("../../lib/js/lexing.js");
+var Sys = require("../../lib/js/sys.js");
+var Curry = require("../../lib/js/curry.js");
+var Lexing = require("../../lib/js/lexing.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 var l = Sys.is_js ? (function (prim) {
@@ -87,8 +87,8 @@ function token(l, lexbuf) {
   return __ocaml_lex_token_rec(l, lexbuf, 0);
 }
 
-exports.l                     = l;
-exports.__ocaml_lex_tables    = __ocaml_lex_tables;
-exports.token                 = token;
+exports.l = l;
+exports.__ocaml_lex_tables = __ocaml_lex_tables;
+exports.token = token;
 exports.__ocaml_lex_token_rec = __ocaml_lex_token_rec;
 /* No side effect */

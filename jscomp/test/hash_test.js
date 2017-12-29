@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Char        = require("../../lib/js/char.js");
-var $$Array     = require("../../lib/js/array.js");
-var Bytes       = require("../../lib/js/bytes.js");
-var Hashtbl     = require("../../lib/js/hashtbl.js");
-var Mt_global   = require("./mt_global.js");
+var Mt = require("./mt.js");
+var Char = require("../../lib/js/char.js");
+var $$Array = require("../../lib/js/array.js");
+var Bytes = require("../../lib/js/bytes.js");
+var Hashtbl = require("../../lib/js/hashtbl.js");
+var Mt_global = require("./mt_global.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 var suites = [/* [] */0];
@@ -168,11 +168,11 @@ Mt_global.collect_eq(test_id, suites, "File \"hash_test.ml\", line 39, character
 
 Mt.from_pair_suites("hash_test.ml", suites[0]);
 
-exports.suites                    = suites;
-exports.test_id                   = test_id;
-exports.eq                        = eq;
-exports.test_strings              = test_strings;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.test_strings = test_strings;
 exports.test_strings_hash_results = test_strings_hash_results;
-exports.normalize                 = normalize;
-exports.caml_hash                 = caml_hash;
+exports.normalize = normalize;
+exports.caml_hash = caml_hash;
 /* test_strings Not a pure module */

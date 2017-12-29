@@ -10,6 +10,6 @@ var U = /* module */[];
 var V = /* module */[];
 
 exports.Make = Make;
-exports.U    = U;
-exports.V    = V;
+exports.U = U;
+exports.V = V;
 /* No side effect */

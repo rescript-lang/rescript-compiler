@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = [/* [] */0];
@@ -47,8 +47,8 @@ eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */
 
 Mt.from_pair_suites("update_record_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.f       = f;
+exports.eq = eq;
+exports.f = f;
 /*  Not a pure module */

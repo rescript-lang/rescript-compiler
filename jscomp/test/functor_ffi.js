@@ -22,7 +22,7 @@ function f(v) {
         ];
 }
 
-exports.Make    = Make;
+exports.Make = Make;
 exports.Int_arr = Int_arr;
-exports.f       = f;
+exports.f = f;
 /* No side effect */

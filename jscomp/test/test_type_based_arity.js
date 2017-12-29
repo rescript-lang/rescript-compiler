@@ -69,21 +69,21 @@ function f14(h, g, x) {
   return Curry._2(h, g, x);
 }
 
-exports.f0  = f0;
-exports.f1  = f1;
-exports.X   = X;
-exports.f2  = f2;
-exports.f3  = f3;
-exports.f4  = f4;
-exports.f5  = f5;
-exports.f6  = f6;
-exports.f7  = f7;
-exports.X0  = X0;
-exports.f8  = f8;
-exports.f9  = f9;
+exports.f0 = f0;
+exports.f1 = f1;
+exports.X = X;
+exports.f2 = f2;
+exports.f3 = f3;
+exports.f4 = f4;
+exports.f5 = f5;
+exports.f6 = f6;
+exports.f7 = f7;
+exports.X0 = X0;
+exports.f8 = f8;
+exports.f9 = f9;
 exports.f10 = f10;
 exports.f11 = f11;
 exports.f12 = f12;
-exports.X2  = X2;
+exports.X2 = X2;
 exports.f14 = f14;
 /* No side effect */

@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt           = require("./mt.js");
-var Block        = require("../../lib/js/block.js");
-var Caml_sys     = require("../../lib/js/caml_sys.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Caml_sys = require("../../lib/js/caml_sys.js");
 var Node_process = require("../../lib/js/node_process.js");
 
 var suites = [/* [] */0];
@@ -53,7 +53,7 @@ eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);
 
 Mt.from_pair_suites("caml_sys_poly_fill_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 /*  Not a pure module */

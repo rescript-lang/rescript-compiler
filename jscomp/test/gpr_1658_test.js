@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Js_types = require("../../lib/js/js_types.js");
 
 var suites = [/* [] */0];
@@ -39,7 +39,7 @@ eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", /* true */1, Js_types.
 
 Mt.from_pair_suites("File \"gpr_1658_test.ml\", line 19, characters 22-29", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 /*  Not a pure module */

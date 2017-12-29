@@ -1,6 +1,6 @@
 'use strict';
 
-var List  = require("../../lib/js/list.js");
+var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 
 function fib(n) {
@@ -73,15 +73,15 @@ var nil = /* Nil */0;
 
 var len = List.length;
 
-exports.fib  = fib;
-exports.nil  = nil;
+exports.fib = fib;
+exports.nil = nil;
 exports.cons = cons;
-exports.map  = map;
-exports.sum  = sum;
-exports.len  = len;
-exports.f    = f;
-exports.g    = g;
-exports.g1   = g1;
-exports.x    = x;
-exports.v    = v;
+exports.map = map;
+exports.sum = sum;
+exports.len = len;
+exports.f = f;
+exports.g = g;
+exports.g1 = g1;
+exports.x = x;
+exports.v = v;
 /* x Not a pure module */

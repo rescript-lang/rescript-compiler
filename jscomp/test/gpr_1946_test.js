@@ -23,6 +23,6 @@ console.log(({
           "5": 3
         }).tag | 0);
 
-exports.x  = x;
+exports.x = x;
 exports.zz = zz;
 /* x Not a pure module */

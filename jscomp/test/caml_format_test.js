@@ -1,16 +1,16 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var $$Array     = require("../../lib/js/array.js");
-var Block       = require("../../lib/js/block.js");
-var Curry       = require("../../lib/js/curry.js");
-var Int64       = require("../../lib/js/int64.js");
-var Buffer      = require("../../lib/js/buffer.js");
-var Format      = require("../../lib/js/format.js");
-var Printf      = require("../../lib/js/printf.js");
-var Caml_float  = require("../../lib/js/caml_float.js");
-var Caml_int64  = require("../../lib/js/caml_int64.js");
-var Pervasives  = require("../../lib/js/pervasives.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Int64 = require("../../lib/js/int64.js");
+var Buffer = require("../../lib/js/buffer.js");
+var Format = require("../../lib/js/format.js");
+var Printf = require("../../lib/js/printf.js");
+var Caml_float = require("../../lib/js/caml_float.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
 var of_string = /* array */[
@@ -2397,24 +2397,24 @@ var hhh = /* int64 */[
   /* lo */0
 ];
 
-exports.of_string            = of_string;
+exports.of_string = of_string;
 exports.from_float_of_string = from_float_of_string;
-exports.from_of_string       = from_of_string;
-exports.u                    = u;
-exports.to_str               = to_str;
-exports.v                    = v;
-exports.suites               = suites;
-exports.ff                   = ff;
-exports.a                    = a;
-exports.formatter_suites     = formatter_suites;
-exports.float_data           = float_data;
-exports.float_suites         = float_suites;
-exports.Lambda_suites        = Lambda_suites;
-exports.lambda_suites        = lambda_suites;
-exports.from_lambda_pairs    = from_lambda_pairs;
-exports.ksprintf_suites      = ksprintf_suites;
-exports.int64_suites         = int64_suites;
-exports.hh                   = hh;
-exports.hhh                  = hhh;
-exports.of_string_data       = of_string_data;
+exports.from_of_string = from_of_string;
+exports.u = u;
+exports.to_str = to_str;
+exports.v = v;
+exports.suites = suites;
+exports.ff = ff;
+exports.a = a;
+exports.formatter_suites = formatter_suites;
+exports.float_data = float_data;
+exports.float_suites = float_suites;
+exports.Lambda_suites = Lambda_suites;
+exports.lambda_suites = lambda_suites;
+exports.from_lambda_pairs = from_lambda_pairs;
+exports.ksprintf_suites = ksprintf_suites;
+exports.int64_suites = int64_suites;
+exports.hh = hh;
+exports.hhh = hhh;
+exports.of_string_data = of_string_data;
 /* v Not a pure module */

@@ -1,6 +1,6 @@
 'use strict';
 
-var Printexc        = require("../../lib/js/printexc.js");
+var Printexc = require("../../lib/js/printexc.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var A = Caml_exceptions.create("Exception_def.A");
@@ -29,12 +29,12 @@ var a = 3;
 
 var u = Bx;
 
-exports.A   = A;
-exports.U   = U;
-exports.H   = H;
-exports.Bx  = Bx;
-exports.a   = a;
-exports.u   = u;
-exports.Ax  = Ax;
+exports.A = A;
+exports.U = U;
+exports.H = H;
+exports.Bx = Bx;
+exports.a = a;
+exports.u = u;
+exports.Ax = Ax;
 exports.XXX = XXX;
 /*  Not a pure module */

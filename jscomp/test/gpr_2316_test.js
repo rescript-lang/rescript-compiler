@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
@@ -73,9 +73,9 @@ eq("File \"gpr_2316_test.ml\", line 21, characters 5-12", x, /* Some */["boo"]);
 
 Mt.from_pair_suites("gpr_2316_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.y       = y;
-exports.x       = x;
+exports.eq = eq;
+exports.y = y;
+exports.x = x;
 /* y Not a pure module */

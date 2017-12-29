@@ -29,9 +29,9 @@ function f4(x, y) {
 }
 
 exports.f_add2 = f_add2;
-exports.f      = f;
-exports.f1     = f1;
-exports.f2     = f2;
-exports.f3     = f3;
-exports.f4     = f4;
+exports.f = f;
+exports.f1 = f1;
+exports.f2 = f2;
+exports.f3 = f3;
+exports.f4 = f4;
 /* No side effect */

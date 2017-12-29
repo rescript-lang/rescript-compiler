@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt           = require("./mt.js");
-var Block        = require("../../lib/js/block.js");
-var Curry        = require("../../lib/js/curry.js");
-var Functor_def  = require("./functor_def.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Functor_def = require("./functor_def.js");
 var Functor_inst = require("./functor_inst.js");
 
 var suites = [/* [] */0];
@@ -41,10 +41,10 @@ eq("File \"functor_app_test.ml\", line 29, characters 6-13", v, 2);
 
 Mt.from_pair_suites("functor_app_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.Y0      = Y0;
-exports.Y1      = Y1;
-exports.v       = v;
+exports.eq = eq;
+exports.Y0 = Y0;
+exports.Y1 = Y1;
+exports.v = v;
 /* Y0 Not a pure module */

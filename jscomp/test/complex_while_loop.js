@@ -29,6 +29,6 @@ function ff() {
   return /* () */0;
 }
 
-exports.f  = f;
+exports.f = f;
 exports.ff = ff;
 /* No side effect */

@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt        = require("./mt.js");
-var Block     = require("../../lib/js/block.js");
-var Bs_Array  = require("../../lib/js/bs_Array.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
 
 var suites = [/* [] */0];
@@ -65,9 +65,9 @@ Mt.from_pair_suites("bs_map_int_test.ml", suites[0]);
 
 var N = 0;
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.b       = b;
-exports.N       = N;
+exports.eq = eq;
+exports.b = b;
+exports.N = N;
 /* v Not a pure module */

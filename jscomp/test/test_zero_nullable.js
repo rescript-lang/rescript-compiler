@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
@@ -294,10 +294,10 @@ eq("File \"test_zero_nullable.ml\", line 235, characters 7-14", f1$1((undefined)
 
 Mt.from_pair_suites("test_zero_nullable.ml", suites[0]);
 
-exports.suites        = suites;
-exports.test_id       = test_id;
-exports.eq            = eq;
-exports.Test_null     = Test_null;
-exports.Test_def      = Test_def;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.Test_null = Test_null;
+exports.Test_def = Test_def;
 exports.Test_null_def = Test_null_def;
 /* u Not a pure module */

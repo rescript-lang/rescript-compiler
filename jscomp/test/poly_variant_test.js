@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt.js");
-var Fs    = require("fs");
+var Mt = require("./mt.js");
+var Fs = require("fs");
 var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
@@ -149,11 +149,11 @@ function on2(prim, prim$1) {
 
 var readN = read$1;
 
-exports.uu       = uu;
-exports.vv       = vv;
+exports.uu = uu;
+exports.vv = vv;
 exports.register = register;
-exports.test     = test;
-exports.on2      = on2;
-exports.read     = read;
-exports.readN    = readN;
+exports.test = test;
+exports.on2 = on2;
+exports.read = read;
+exports.readN = readN;
 /*  Not a pure module */

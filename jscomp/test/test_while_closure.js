@@ -1,8 +1,8 @@
 'use strict';
 
-var $$Array                 = require("../../lib/js/array.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_array              = require("../../lib/js/caml_array.js");
+var $$Array = require("../../lib/js/array.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var v = [0];
@@ -47,8 +47,8 @@ if (v[0] !== 45) {
 
 var count = 10;
 
-exports.v     = v;
+exports.v = v;
 exports.count = count;
-exports.arr   = arr;
-exports.f     = f;
+exports.arr = arr;
+exports.f = f;
 /*  Not a pure module */

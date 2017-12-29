@@ -21,8 +21,8 @@ function Make(U) {
   return /* module */[/* h */h];
 }
 
-exports.v        = v;
-exports.f        = f;
+exports.v = v;
+exports.f = f;
 exports.$$return = $$return;
-exports.Make     = Make;
+exports.Make = Make;
 /* No side effect */

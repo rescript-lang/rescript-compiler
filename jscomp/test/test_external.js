@@ -9,5 +9,5 @@ alert("hehha");
 var b = Curry._1(ff("x"), 3);
 
 exports.xx = xx;
-exports.b  = b;
+exports.b = b;
 /* xx Not a pure module */

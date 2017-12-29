@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
-var Curry       = require("../../lib/js/curry.js");
-var Pervasives  = require("../../lib/js/pervasives.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Ffi_js_test = require("./ffi_js_test.js");
 
 var x = ("\x01\x02\x03");
@@ -102,16 +102,16 @@ Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
       ]
     ]);
 
-exports.x           = x;
-exports.max         = max;
+exports.x = x;
+exports.max = max;
 exports.regression3 = regression3;
 exports.regression4 = regression4;
-exports.g           = g;
-exports.max2        = max2;
-exports.umax        = umax;
-exports.u           = u;
-exports.max3        = max3;
-exports.uu          = uu;
-exports.empty       = empty;
-exports.v           = v;
+exports.g = g;
+exports.max2 = max2;
+exports.umax = umax;
+exports.u = u;
+exports.max3 = max3;
+exports.uu = uu;
+exports.empty = empty;
+exports.v = v;
 /* x Not a pure module */

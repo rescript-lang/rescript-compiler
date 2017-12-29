@@ -41,7 +41,7 @@ function compare3(x, y) {
   return +(x === y);
 }
 
-exports.compare  = compare;
+exports.compare = compare;
 exports.compare2 = compare2;
 exports.compare3 = compare3;
 /* No side effect */

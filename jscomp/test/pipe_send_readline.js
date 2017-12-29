@@ -19,7 +19,7 @@ function yy(h) {
   return h.send("x");
 }
 
-exports.u  = u;
+exports.u = u;
 exports.xx = xx;
 exports.yy = yy;
 /* No side effect */

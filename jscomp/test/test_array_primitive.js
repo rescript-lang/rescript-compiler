@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_array              = require("../../lib/js/caml_array.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function caml_array_sub(x, offset, len) {

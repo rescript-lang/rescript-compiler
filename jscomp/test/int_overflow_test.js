@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
-var Int32       = require("../../lib/js/int32.js");
-var Caml_int32  = require("../../lib/js/caml_int32.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Int32 = require("../../lib/js/int32.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 function hash_variant(s) {
@@ -195,7 +195,7 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
       ]
     ]);
 
-exports.hash_variant  = hash_variant;
+exports.hash_variant = hash_variant;
 exports.hash_variant2 = hash_variant2;
-exports.fib           = fib;
+exports.fib = fib;
 /*  Not a pure module */

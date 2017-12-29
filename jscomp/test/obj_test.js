@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
@@ -323,11 +323,11 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("obj_test.ml", suites);
 
-exports.vv     = vv;
-exports.v      = v;
-exports.u      = u;
-exports.uu     = uu;
-exports.uuu    = uuu;
-exports.vvvv   = vvvv;
+exports.vv = vv;
+exports.v = v;
+exports.u = u;
+exports.uu = uu;
+exports.uuu = uuu;
+exports.vvvv = vvvv;
 exports.suites = suites;
 /* class Not a pure module */

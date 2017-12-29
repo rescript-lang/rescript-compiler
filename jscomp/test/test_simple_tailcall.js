@@ -36,7 +36,7 @@ function length(_acc, _x) {
   };
 }
 
-exports.tailcall   = tailcall;
+exports.tailcall = tailcall;
 exports.non_length = non_length;
-exports.length     = length;
+exports.length = length;
 /* No side effect */

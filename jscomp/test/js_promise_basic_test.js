@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_array              = require("../../lib/js/caml_array.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
@@ -319,31 +319,31 @@ Mt.from_promise_suites("js_promise_basic_test.ml", /* :: */[
       ]
     ]);
 
-exports.suites                     = suites;
-exports.test_id                    = test_id;
-exports.eq                         = eq;
-exports.assert_bool                = assert_bool;
-exports.fail                       = fail;
-exports.thenTest                   = thenTest;
-exports.andThenTest                = andThenTest;
-exports.h                          = h;
-exports.assertIsNotFound           = assertIsNotFound;
-exports.catchTest                  = catchTest;
-exports.orResolvedTest             = orResolvedTest;
-exports.orRejectedTest             = orRejectedTest;
-exports.orElseResolvedTest         = orElseResolvedTest;
-exports.orElseRejectedResolveTest  = orElseRejectedResolveTest;
-exports.orElseRejectedRejectTest   = orElseRejectedRejectTest;
-exports.resolveTest                = resolveTest;
-exports.rejectTest                 = rejectTest;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.assert_bool = assert_bool;
+exports.fail = fail;
+exports.thenTest = thenTest;
+exports.andThenTest = andThenTest;
+exports.h = h;
+exports.assertIsNotFound = assertIsNotFound;
+exports.catchTest = catchTest;
+exports.orResolvedTest = orResolvedTest;
+exports.orRejectedTest = orRejectedTest;
+exports.orElseResolvedTest = orElseResolvedTest;
+exports.orElseRejectedResolveTest = orElseRejectedResolveTest;
+exports.orElseRejectedRejectTest = orElseRejectedRejectTest;
+exports.resolveTest = resolveTest;
+exports.rejectTest = rejectTest;
 exports.thenCatchChainResolvedTest = thenCatchChainResolvedTest;
 exports.thenCatchChainRejectedTest = thenCatchChainRejectedTest;
-exports.allResolvedTest            = allResolvedTest;
-exports.allRejectTest              = allRejectTest;
-exports.raceTest                   = raceTest;
-exports.createPromiseRejectTest    = createPromiseRejectTest;
-exports.createPromiseFulfillTest   = createPromiseFulfillTest;
-exports.twop                       = twop;
-exports.then_                      = then_;
-exports.re                         = re;
+exports.allResolvedTest = allResolvedTest;
+exports.allRejectTest = allRejectTest;
+exports.raceTest = raceTest;
+exports.createPromiseRejectTest = createPromiseRejectTest;
+exports.createPromiseFulfillTest = createPromiseFulfillTest;
+exports.twop = twop;
+exports.then_ = then_;
+exports.re = re;
 /* h Not a pure module */

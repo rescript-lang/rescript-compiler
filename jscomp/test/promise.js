@@ -25,8 +25,8 @@ var uu = {
 
 var hh = uu["'x"];
 
-exports.f  = f;
-exports.u  = u;
+exports.f = f;
+exports.u = u;
 exports.uu = uu;
 exports.hh = hh;
 /* p Not a pure module */

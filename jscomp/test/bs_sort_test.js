@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt              = require("./mt.js");
-var Bs_Sort         = require("../../lib/js/bs_Sort.js");
-var Bs_Array        = require("../../lib/js/bs_Array.js");
-var Bs_Range        = require("../../lib/js/bs_Range.js");
+var Mt = require("./mt.js");
+var Bs_Sort = require("../../lib/js/bs_Sort.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
+var Bs_Range = require("../../lib/js/bs_Range.js");
 var Array_data_util = require("./array_data_util.js");
 
 var suites = [/* [] */0];
@@ -220,13 +220,13 @@ var R = 0;
 
 var A = 0;
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.b       = b;
-exports.I       = I;
-exports.S       = S;
-exports.R       = R;
-exports.cmp     = cmp;
-exports.A       = A;
+exports.eq = eq;
+exports.b = b;
+exports.I = I;
+exports.S = S;
+exports.R = R;
+exports.cmp = cmp;
+exports.A = A;
 /*  Not a pure module */

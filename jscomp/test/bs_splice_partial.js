@@ -32,8 +32,8 @@ function f(x) {
   return /* () */0;
 }
 
-exports.test_hi    = test_hi;
+exports.test_hi = test_hi;
 exports.test_hi__2 = test_hi__2;
-exports.test_cb    = test_cb;
-exports.f          = f;
+exports.test_cb = test_cb;
+exports.f = f;
 /* No side effect */

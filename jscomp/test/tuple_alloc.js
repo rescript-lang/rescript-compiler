@@ -13,7 +13,7 @@ function incr() {
   return /* () */0;
 }
 
-exports.v     = v;
+exports.v = v;
 exports.reset = reset;
-exports.incr  = incr;
+exports.incr = incr;
 /* No side effect */

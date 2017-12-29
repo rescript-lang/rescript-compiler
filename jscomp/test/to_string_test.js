@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 var ff = Pervasives.string_of_float;
@@ -35,5 +35,5 @@ Mt.from_pair_suites("to_string_test.ml", /* :: */[
     ]);
 
 exports.ff = ff;
-exports.f  = f;
+exports.f = f;
 /*  Not a pure module */

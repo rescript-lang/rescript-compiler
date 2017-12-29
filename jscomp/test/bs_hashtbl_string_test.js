@@ -1,16 +1,16 @@
 'use strict';
 
-var Bs_Map                  = require("../../lib/js/bs_Map.js");
-var Hashtbl                 = require("../../lib/js/hashtbl.js");
-var Caml_hash               = require("../../lib/js/caml_hash.js");
-var Bs_HashMap              = require("../../lib/js/bs_HashMap.js");
-var Bs_HashMapInt           = require("../../lib/js/bs_HashMapInt.js");
-var Bs_HashSetInt           = require("../../lib/js/bs_HashSetInt.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
-var Bs_HashMapString        = require("../../lib/js/bs_HashMapString.js");
-var Bs_internalAVLtree      = require("../../lib/js/bs_internalAVLtree.js");
-var Bs_internalBuckets      = require("../../lib/js/bs_internalBuckets.js");
-var Bs_internalBucketsType  = require("../../lib/js/bs_internalBucketsType.js");
+var Bs_Map = require("../../lib/js/bs_Map.js");
+var Hashtbl = require("../../lib/js/hashtbl.js");
+var Caml_hash = require("../../lib/js/caml_hash.js");
+var Bs_HashMap = require("../../lib/js/bs_HashMap.js");
+var Bs_HashMapInt = require("../../lib/js/bs_HashMapInt.js");
+var Bs_HashSetInt = require("../../lib/js/bs_HashSetInt.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
+var Bs_HashMapString = require("../../lib/js/bs_HashMapString.js");
+var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
+var Bs_internalBuckets = require("../../lib/js/bs_internalBuckets.js");
+var Bs_internalBucketsType = require("../../lib/js/bs_internalBucketsType.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function hash_string(s) {
@@ -346,23 +346,23 @@ var B = 0;
 
 var S = 0;
 
-exports.hash_string  = hash_string;
-exports.hashString   = hashString;
-exports.$$String     = $$String;
-exports.String1      = String1;
-exports.String2      = String2;
-exports.Int          = Int;
-exports.empty        = empty;
-exports.bench        = bench;
-exports.count        = count;
+exports.hash_string = hash_string;
+exports.hashString = hashString;
+exports.$$String = $$String;
+exports.String1 = String1;
+exports.String2 = String2;
+exports.Int = Int;
+exports.empty = empty;
+exports.bench = bench;
+exports.count = count;
 exports.initial_size = initial_size;
-exports.B            = B;
-exports.bench2       = bench2;
-exports.bench3       = bench3;
-exports.Sx           = Sx;
-exports.bench4       = bench4;
-exports.bench5       = bench5;
-exports.bench6       = bench6;
-exports.S            = S;
-exports.bench7       = bench7;
+exports.B = B;
+exports.bench2 = bench2;
+exports.bench3 = bench3;
+exports.Sx = Sx;
+exports.bench4 = bench4;
+exports.bench5 = bench5;
+exports.bench6 = bench6;
+exports.S = S;
+exports.bench7 = bench7;
 /* hashString Not a pure module */

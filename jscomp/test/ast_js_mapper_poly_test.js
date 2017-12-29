@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var $$Array     = require("../../lib/js/array.js");
-var Block       = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
 var suites = [/* [] */0];
@@ -266,21 +266,21 @@ Mt.from_pair_suites("ast_js_mapper_poly_test.ml", suites[0]);
 
 var $plus$great = $$Array.append;
 
-exports.suites      = suites;
-exports.test_id     = test_id;
-exports.eq          = eq;
-exports.uToJs       = uToJs;
-exports.uFromJs     = uFromJs;
-exports.eqU         = eqU;
-exports.eqUOpt      = eqUOpt;
-exports.vToJs       = vToJs;
-exports.vFromJs     = vFromJs;
-exports.eqV         = eqV;
-exports.eqVOpt      = eqVOpt;
-exports.s           = s;
-exports.v1ToJs      = v1ToJs;
-exports.v1FromJs    = v1FromJs;
-exports.v2ToJs      = v2ToJs;
-exports.v2FromJs    = v2FromJs;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.uToJs = uToJs;
+exports.uFromJs = uFromJs;
+exports.eqU = eqU;
+exports.eqUOpt = eqUOpt;
+exports.vToJs = vToJs;
+exports.vFromJs = vFromJs;
+exports.eqV = eqV;
+exports.eqVOpt = eqVOpt;
+exports.s = s;
+exports.v1ToJs = v1ToJs;
+exports.v1FromJs = v1FromJs;
+exports.v2ToJs = v2ToJs;
+exports.v2FromJs = v2FromJs;
 exports.$plus$great = $plus$great;
 /*  Not a pure module */

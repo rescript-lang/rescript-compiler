@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var $$Array    = require("../../lib/js/array.js");
-var Block      = require("../../lib/js/block.js");
-var Queue      = require("../../lib/js/queue.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Queue = require("../../lib/js/queue.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 function to_array(q) {
@@ -50,6 +50,6 @@ var suites = /* :: */[
 Mt.from_pair_suites("queue_test.ml", suites);
 
 exports.to_array = to_array;
-exports.queue_1  = queue_1;
-exports.suites   = suites;
+exports.queue_1 = queue_1;
+exports.suites = suites;
 /*  Not a pure module */

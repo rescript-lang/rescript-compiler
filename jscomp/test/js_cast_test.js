@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
@@ -41,7 +41,7 @@ eq("File \"js_cast_test.ml\", line 21, characters 12-19", 123456789, 123456789.0
 
 Mt.from_pair_suites("js_cast_test.ml", suites[0]);
 
-exports.suites   = suites;
+exports.suites = suites;
 exports.add_test = add_test;
-exports.eq       = eq;
+exports.eq = eq;
 /*  Not a pure module */

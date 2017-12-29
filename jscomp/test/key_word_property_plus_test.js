@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var Block          = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Global_mangles = require("./global_mangles.js");
 
 var suites = [/* [] */0];
@@ -46,7 +46,7 @@ eq("File \"key_word_property_plus_test.ml\", line 10, characters 5-12", /* array
 
 Mt.from_pair_suites("key_word_property_plus_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 /*  Not a pure module */

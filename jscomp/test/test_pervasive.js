@@ -1,6 +1,6 @@
 'use strict';
 
-var List       = require("../../lib/js/list.js");
+var List = require("../../lib/js/list.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 var Pervasives$1 = /* module */[
@@ -136,5 +136,5 @@ var Pervasives$1 = /* module */[
 var f = Pervasives.$at;
 
 exports.Pervasives = Pervasives$1;
-exports.f          = f;
+exports.f = f;
 /* No side effect */

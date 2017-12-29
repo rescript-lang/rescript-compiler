@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
-var Js_list    = require("../../lib/js/js_list.js");
-var Js_vector  = require("../../lib/js/js_vector.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Js_list = require("../../lib/js/js_list.js");
+var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 var suites = [/* [] */0];
@@ -209,7 +209,7 @@ eq("File \"js_list_test.ml\", line 32, characters 7-14", /* true */1, Js_list.eq
 
 Mt.from_pair_suites("js_list_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 /*  Not a pure module */

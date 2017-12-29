@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Js_types = require("../../lib/js/js_types.js");
 
 function string_or_number(x) {
@@ -174,5 +174,5 @@ var suites = /* :: */[
 Mt.from_pair_suites("typeof_test.ml", suites);
 
 exports.string_or_number = string_or_number;
-exports.suites           = suites;
+exports.suites = suites;
 /*  Not a pure module */

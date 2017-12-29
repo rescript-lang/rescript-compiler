@@ -1,6 +1,6 @@
 'use strict';
 
-var Js_exn       = require("../../lib/js/js_exn.js");
+var Js_exn = require("../../lib/js/js_exn.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
 function test_js_error() {
@@ -76,8 +76,8 @@ function example2() {
   }
 }
 
-exports.test_js_error  = test_js_error;
+exports.test_js_error = test_js_error;
 exports.test_js_error2 = test_js_error2;
-exports.example1       = example1;
-exports.example2       = example2;
+exports.example1 = example1;
+exports.example2 = example2;
 /* No side effect */

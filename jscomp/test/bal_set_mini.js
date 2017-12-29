@@ -200,14 +200,14 @@ if (match) {
   console.log("impossible");
 }
 
-exports.height         = height;
-exports.create         = create;
-exports.bal            = bal;
-exports.compare_int    = compare_int;
-exports.add            = add;
-exports.min_elt        = min_elt;
+exports.height = height;
+exports.create = create;
+exports.bal = bal;
+exports.compare_int = compare_int;
+exports.add = add;
+exports.min_elt = min_elt;
 exports.remove_min_elt = remove_min_elt;
 exports.internal_merge = internal_merge;
-exports.remove         = remove;
-exports.mem            = mem;
+exports.remove = remove;
+exports.mem = mem;
 /*  Not a pure module */

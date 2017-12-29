@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Js_option               = require("../../lib/js/js_option.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Js_option = require("../../lib/js/js_option.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
@@ -93,10 +93,10 @@ if (exit === 1) {
 
 Mt.from_pair_suites("promise_catch_test.ml", suites[0]);
 
-exports.suites    = suites;
-exports.test_id   = test_id;
-exports.eq        = eq;
-exports.handler   = handler;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.handler = handler;
 exports.myHandler = myHandler;
-exports.f         = f;
+exports.f = f;
 /*  Not a pure module */

@@ -1,6 +1,6 @@
 'use strict';
 
-var $$Array    = require("../../lib/js/array.js");
+var $$Array = require("../../lib/js/array.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 function f(a, b, _) {
@@ -33,9 +33,9 @@ console.log(/* tuple */[
 
 var c = arr;
 
-exports.f  = f;
+exports.f = f;
 exports.f2 = f2;
-exports.a  = a;
-exports.b  = b;
-exports.c  = c;
+exports.a = a;
+exports.b = b;
+exports.c = c;
 /* a Not a pure module */

@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var v = Caml_builtin_exceptions.not_found;
@@ -40,8 +40,8 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("global_exception_regression_test.ml", suites);
 
-exports.v      = v;
-exports.u      = u;
-exports.s      = s;
+exports.v = v;
+exports.u = u;
+exports.s = s;
 exports.suites = suites;
 /*  Not a pure module */

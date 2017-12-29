@@ -1,7 +1,7 @@
 'use strict';
 
-var List       = require("../../lib/js/list.js");
-var Stack      = require("../../lib/js/stack.js");
+var List = require("../../lib/js/list.js");
+var Stack = require("../../lib/js/stack.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 var List$1 = /* module */[
@@ -237,8 +237,8 @@ var ff = List.length;
 var fff = Pervasives.$at;
 
 exports.List = List$1;
-exports.U    = U;
-exports.f    = f;
-exports.ff   = ff;
-exports.fff  = fff;
+exports.U = U;
+exports.f = f;
+exports.ff = ff;
+exports.fff = fff;
 /* No side effect */

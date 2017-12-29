@@ -23,8 +23,8 @@ function real_escape(f, _) {
 
 var u = h;
 
-exports.u               = u;
-exports.gen             = gen;
+exports.u = u;
+exports.gen = gen;
 exports.not_real_escape = not_real_escape;
-exports.real_escape     = real_escape;
+exports.real_escape = real_escape;
 /* No side effect */

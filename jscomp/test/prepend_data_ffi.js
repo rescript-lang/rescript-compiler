@@ -64,9 +64,9 @@ var config = {
   cwd: "."
 };
 
-exports.v1       = v1;
-exports.v2       = v2;
-exports.f        = f;
+exports.v1 = v1;
+exports.v2 = v2;
+exports.f = f;
 exports.register = register;
-exports.config   = config;
+exports.config = config;
 /*  Not a pure module */

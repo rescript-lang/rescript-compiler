@@ -31,5 +31,5 @@ var Int3 = Caml_module.init_mod([
 Caml_module.update_mod([[0]], Int3, Int3);
 
 exports.Int32 = Int32;
-exports.Int3  = Int3;
+exports.Int3 = Int3;
 /* Int32 Not a pure module */

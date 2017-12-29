@@ -1,7 +1,7 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
+var Curry = require("../../lib/js/curry.js");
+var Js_exn = require("../../lib/js/js_exn.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function ff(g, x) {
@@ -129,8 +129,8 @@ var u1 = "bad character decimal encoding \\";
 var v = "bad character decimal encoding \\%c%c%c";
 
 exports.ff = ff;
-exports.u  = u;
+exports.u = u;
 exports.u1 = u1;
-exports.v  = v;
-exports.f  = f;
+exports.v = v;
+exports.f = f;
 /* No side effect */

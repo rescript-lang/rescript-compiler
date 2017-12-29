@@ -1,6 +1,6 @@
 'use strict';
 
-var $$Array  = require("../../lib/js/array.js");
+var $$Array = require("../../lib/js/array.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 
 function range(i, j) {
@@ -17,6 +17,6 @@ function randomRange(i, j) {
   return v;
 }
 
-exports.range       = range;
+exports.range = range;
 exports.randomRange = randomRange;
 /* No side effect */

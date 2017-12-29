@@ -1,14 +1,14 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Lexing                  = require("../../lib/js/lexing.js");
-var Arith_lexer             = require("./arith_lexer.js");
-var Arith_parser            = require("./arith_parser.js");
-var Arith_syntax            = require("./arith_syntax.js");
-var Number_lexer            = require("./number_lexer.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Lexing = require("../../lib/js/lexing.js");
+var Arith_lexer = require("./arith_lexer.js");
+var Arith_parser = require("./arith_parser.js");
+var Arith_syntax = require("./arith_syntax.js");
+var Number_lexer = require("./number_lexer.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function get_tokens(lex, str) {
@@ -191,8 +191,8 @@ var lexer_suites = /* :: */[
 
 Mt.from_pair_suites("lexer_test.ml", lexer_suites);
 
-exports.get_tokens   = get_tokens;
-exports.f            = f;
-exports.from_tokens  = from_tokens;
+exports.get_tokens = get_tokens;
+exports.f = f;
+exports.from_tokens = from_tokens;
 exports.lexer_suites = lexer_suites;
 /*  Not a pure module */

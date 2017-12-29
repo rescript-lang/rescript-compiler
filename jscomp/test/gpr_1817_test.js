@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = [/* [] */0];
@@ -49,11 +49,11 @@ eq("File \"gpr_1817_test.ml\", line 19, characters 6-13", a2, /* true */1);
 
 Mt.from_pair_suites("gpr_1817_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.f       = f;
-exports.a0      = a0;
-exports.a1      = a1;
-exports.a2      = a2;
+exports.eq = eq;
+exports.f = f;
+exports.a0 = a0;
+exports.a1 = a1;
+exports.a2 = a2;
 /* match Not a pure module */

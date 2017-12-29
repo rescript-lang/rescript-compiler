@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt              = require("./mt.js");
-var Block           = require("../../lib/js/block.js");
-var Curry           = require("../../lib/js/curry.js");
-var Queue           = require("../../lib/js/queue.js");
-var Genlex          = require("../../lib/js/genlex.js");
-var Stream          = require("../../lib/js/stream.js");
-var Caml_int32      = require("../../lib/js/caml_int32.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Queue = require("../../lib/js/queue.js");
+var Genlex = require("../../lib/js/genlex.js");
+var Stream = require("../../lib/js/stream.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var Parse_error = Caml_exceptions.create("Stream_parser_test.Parse_error");
@@ -301,11 +301,11 @@ eq("File \"stream_parser_test.ml\", line 134, characters 5-12", /* tuple */[
 Mt.from_pair_suites("stream_parser_test.ml", suites[0]);
 
 exports.Parse_error = Parse_error;
-exports.parse       = parse;
-exports.lexer       = lexer;
-exports.token       = token;
-exports.l_parse     = l_parse;
-exports.suites      = suites;
-exports.test_id     = test_id;
-exports.eq          = eq;
+exports.parse = parse;
+exports.lexer = lexer;
+exports.token = token;
+exports.l_parse = l_parse;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 /* lexer Not a pure module */

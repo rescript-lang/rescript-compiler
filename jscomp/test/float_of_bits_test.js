@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var List       = require("../../lib/js/list.js");
-var $$Array    = require("../../lib/js/array.js");
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
-var Printf     = require("../../lib/js/printf.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Printf = require("../../lib/js/printf.js");
 var Caml_float = require("../../lib/js/caml_float.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -104,8 +104,8 @@ var suites = Pervasives.$at(/* :: */[
 
 Mt.from_pair_suites("float_of_bits_test.ml", suites);
 
-exports.one_float   = one_float;
+exports.one_float = one_float;
 exports.int32_pairs = int32_pairs;
-exports.from_pairs  = from_pairs;
-exports.suites      = suites;
+exports.from_pairs = from_pairs;
+exports.suites = suites;
 /* suites Not a pure module */

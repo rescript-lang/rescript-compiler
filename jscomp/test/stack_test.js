@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt.js");
-var List  = require("../../lib/js/list.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Stack = require("../../lib/js/stack.js");
 
@@ -51,6 +51,6 @@ var suites = /* :: */[
 Mt.from_pair_suites("stack_test.ml", suites);
 
 exports.to_list = to_list;
-exports.v       = v;
-exports.suites  = suites;
+exports.v = v;
+exports.suites = suites;
 /*  Not a pure module */

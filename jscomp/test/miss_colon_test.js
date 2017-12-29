@@ -1,6 +1,6 @@
 'use strict';
 
-var Block      = require("../../lib/js/block.js");
+var Block = require("../../lib/js/block.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function $plus$colon(_f, _g) {
@@ -132,5 +132,5 @@ function simplify(f) {
 
 exports.$plus$colon = $plus$colon;
 exports.$star$colon = $star$colon;
-exports.simplify    = simplify;
+exports.simplify = simplify;
 /* No side effect */

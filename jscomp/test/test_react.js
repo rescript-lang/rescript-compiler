@@ -1,10 +1,10 @@
 'use strict';
 
-var C        = require("c");
-var C$1      = require("b/c");
-var Xxx      = require("xxx");
-var C$2      = require("a/b/c");
-var React    = require("react");
+var C = require("c");
+var C$1 = require("b/c");
+var Xxx = require("xxx");
+var C$2 = require("a/b/c");
+var React = require("react");
 var ReactDom = require("react-dom");
 
 console.log("hey");

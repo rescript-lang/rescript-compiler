@@ -1,8 +1,8 @@
 'use strict';
 
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
-var Format     = require("../../lib/js/format.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Format = require("../../lib/js/format.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 function err(str, f) {
@@ -152,10 +152,10 @@ function iinfo(b, str, f) {
   }
 }
 
-exports.err   = err;
-exports.ierr  = ierr;
-exports.warn  = warn;
+exports.err = err;
+exports.ierr = ierr;
+exports.warn = warn;
 exports.iwarn = iwarn;
-exports.info  = info;
+exports.info = info;
 exports.iinfo = iinfo;
 /* Format Not a pure module */

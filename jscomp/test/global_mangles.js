@@ -29,18 +29,18 @@ var $$setInterval = 13;
 
 var $$setTimeout = 14;
 
-exports.$$__dirname      = $$__dirname;
-exports.$$__filename     = $$__filename;
+exports.$$__dirname = $$__dirname;
+exports.$$__filename = $$__filename;
 exports.$$clearImmediate = $$clearImmediate;
-exports.$$clearInterval  = $$clearInterval;
-exports.$$clearTimeout   = $$clearTimeout;
-exports.$$console        = $$console;
-exports.$$exports        = $$exports;
-exports.$$global         = $$global;
-exports._module          = _module;
-exports.$$process        = $$process;
-exports.$$require        = $$require;
-exports.$$setImmediate   = $$setImmediate;
-exports.$$setInterval    = $$setInterval;
-exports.$$setTimeout     = $$setTimeout;
+exports.$$clearInterval = $$clearInterval;
+exports.$$clearTimeout = $$clearTimeout;
+exports.$$console = $$console;
+exports.$$exports = $$exports;
+exports.$$global = $$global;
+exports._module = _module;
+exports.$$process = $$process;
+exports.$$require = $$require;
+exports.$$setImmediate = $$setImmediate;
+exports.$$setInterval = $$setInterval;
+exports.$$setTimeout = $$setTimeout;
 /* No side effect */

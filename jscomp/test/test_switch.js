@@ -33,6 +33,6 @@ function bind(x, f) {
   }
 }
 
-exports.f    = f;
+exports.f = f;
 exports.bind = bind;
 /* No side effect */

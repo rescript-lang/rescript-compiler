@@ -37,9 +37,9 @@ function compare(c1, c2) {
   return c1 - c2 | 0;
 }
 
-exports.f         = f;
-exports.chr       = chr;
+exports.f = f;
+exports.chr = chr;
 exports.lowercase = lowercase;
 exports.uppercase = uppercase;
-exports.compare   = compare;
+exports.compare = compare;
 /* No side effect */

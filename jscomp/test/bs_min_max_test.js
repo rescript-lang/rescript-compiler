@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var Caml_obj       = require("../../lib/js/caml_obj.js");
-var Caml_int64     = require("../../lib/js/caml_int64.js");
+var Mt = require("./mt.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = [/* [] */0];
@@ -84,14 +84,14 @@ b("File \"bs_min_max_test.ml\", line 35, characters 4-11", Caml_obj.caml_greater
 
 Mt.from_pair_suites("bs_min_max_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.b       = b;
-exports.f       = f;
-exports.f2      = f2;
-exports.f3      = f3;
-exports.f4      = f4;
-exports.f5_min  = f5_min;
-exports.f5_max  = f5_max;
+exports.eq = eq;
+exports.b = b;
+exports.f = f;
+exports.f2 = f2;
+exports.f3 = f3;
+exports.f4 = f4;
+exports.f5_min = f5_min;
+exports.f5_max = f5_max;
 /*  Not a pure module */

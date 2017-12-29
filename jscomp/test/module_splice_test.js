@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var JoinClasses = require("./joinClasses");
 
 var suites = [/* [] */0];
@@ -40,8 +40,8 @@ eq("File \"module_splice_test.ml\", line 21, characters 5-12", pair);
 
 Mt.from_pair_suites("module_splice_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.a       = a;
+exports.eq = eq;
+exports.a = a;
 /* a Not a pure module */

@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt      = require("./mt.js");
+var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
-var Block   = require("../../lib/js/block.js");
-var Curry   = require("../../lib/js/curry.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
 
 function mkI8(a) {
   return new Int8Array(a);
@@ -2214,9 +2214,9 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("js_typed_array_test.ml", suites);
 
-exports.mkI8    = mkI8;
-exports.via     = via;
+exports.mkI8 = mkI8;
+exports.via = via;
 exports.viaInt8 = viaInt8;
-exports.x       = x;
-exports.suites  = suites;
+exports.x = x;
+exports.suites = suites;
 /* x Not a pure module */

@@ -16,5 +16,5 @@ function ff(x, z) {
 }
 
 exports.fff = fff;
-exports.ff  = ff;
+exports.ff = ff;
 /* No side effect */

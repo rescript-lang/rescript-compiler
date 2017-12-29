@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 function f(b, _, _n) {
@@ -63,7 +63,7 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("and_or_tailcall_test.ml", suites);
 
-exports.f      = f;
-exports.or_f   = or_f;
+exports.f = f;
+exports.or_f = or_f;
 exports.suites = suites;
 /*  Not a pure module */

@@ -1,7 +1,7 @@
 'use strict';
 
-var Block                   = require("../../lib/js/block.js");
-var Parsing                 = require("../../lib/js/parsing.js");
+var Block = require("../../lib/js/block.js");
+var Parsing = require("../../lib/js/parsing.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var yytransl_const = /* array */[
@@ -136,19 +136,19 @@ var yytablesize = 272;
 
 exports.yytransl_const = yytransl_const;
 exports.yytransl_block = yytransl_block;
-exports.yylhs          = yylhs;
-exports.yylen          = yylen;
-exports.yydefred       = yydefred;
-exports.yydgoto        = yydgoto;
-exports.yysindex       = yysindex;
-exports.yyrindex       = yyrindex;
-exports.yygindex       = yygindex;
-exports.yytablesize    = yytablesize;
-exports.yytable        = yytable;
-exports.yycheck        = yycheck;
-exports.yynames_const  = yynames_const;
-exports.yynames_block  = yynames_block;
-exports.yyact          = yyact;
-exports.yytables       = yytables;
-exports.toplevel       = toplevel;
+exports.yylhs = yylhs;
+exports.yylen = yylen;
+exports.yydefred = yydefred;
+exports.yydgoto = yydgoto;
+exports.yysindex = yysindex;
+exports.yyrindex = yyrindex;
+exports.yygindex = yygindex;
+exports.yytablesize = yytablesize;
+exports.yytable = yytable;
+exports.yycheck = yycheck;
+exports.yynames_const = yynames_const;
+exports.yynames_block = yynames_block;
+exports.yyact = yyact;
+exports.yytables = yytables;
+exports.toplevel = toplevel;
 /* No side effect */

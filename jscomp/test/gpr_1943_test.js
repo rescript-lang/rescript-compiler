@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
@@ -58,9 +58,9 @@ eq("File \"gpr_1943_test.ml\", line 30, characters 6-13", /* tuple */[
 
 Mt.from_pair_suites("gpr_1943_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.f       = f;
-exports.v       = v;
+exports.eq = eq;
+exports.f = f;
+exports.v = v;
 /* v Not a pure module */

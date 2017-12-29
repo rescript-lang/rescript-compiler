@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
-var Format     = require("../../lib/js/format.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Format = require("../../lib/js/format.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 var suites = [/* [] */0];
@@ -50,8 +50,8 @@ eq("File \"format_test.ml\", line 12, characters 5-12", Curry._1(Format.asprintf
 
 Mt.from_pair_suites("format_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.u       = u;
+exports.eq = eq;
+exports.u = u;
 /*  Not a pure module */

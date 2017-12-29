@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt    = require("./mt.js");
-var List  = require("../../lib/js/list.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
@@ -101,12 +101,12 @@ var V = 0;
 
 var J = 0;
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.N       = N;
-exports.V       = V;
-exports.J       = J;
-exports.f       = f;
-exports.a       = a;
+exports.eq = eq;
+exports.N = N;
+exports.V = V;
+exports.J = J;
+exports.f = f;
+exports.a = a;
 /* h Not a pure module */

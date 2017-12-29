@@ -1,9 +1,9 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Queue                   = require("../../lib/js/queue.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
+var List = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
+var Queue = require("../../lib/js/queue.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function to_list(q) {
@@ -1289,6 +1289,6 @@ if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
 
 console.log("OK");
 
-exports.Q          = Q;
+exports.Q = Q;
 exports.does_raise = does_raise;
 /* q Not a pure module */

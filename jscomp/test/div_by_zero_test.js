@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 
@@ -112,9 +112,9 @@ function div(x, y) {
 
 Mt.from_pair_suites("div_by_zero_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.add     = add;
-exports.div     = div;
+exports.eq = eq;
+exports.add = add;
+exports.div = div;
 /*  Not a pure module */

@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var List           = require("../../lib/js/list.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Pervasives     = require("../../lib/js/pervasives.js");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
@@ -313,19 +313,19 @@ eq("File \"class5_test.ml\", line 94, characters 5-12", /* tuple */[
 
 Mt.from_pair_suites("class5_test.ml", suites[0]);
 
-exports.suites                  = suites;
-exports.test_id                 = test_id;
-exports.eq                      = eq;
-exports.printable_point         = printable_point;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.printable_point = printable_point;
 exports.printable_colored_point = printable_colored_point;
-exports.p                       = p;
-exports.ref                     = ref;
-exports.v                       = v;
-exports.intlist                 = intlist;
-exports.intlist2                = intlist2;
-exports.l                       = l$1;
-exports.point                   = point;
-exports.distance_point          = distance_point;
-exports.a                       = a;
-exports.b                       = b;
+exports.p = p;
+exports.ref = ref;
+exports.v = v;
+exports.intlist = intlist;
+exports.intlist2 = intlist2;
+exports.l = l$1;
+exports.point = point;
+exports.distance_point = distance_point;
+exports.a = a;
+exports.b = b;
 /* printable_point Not a pure module */

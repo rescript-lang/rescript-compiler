@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var d = new Date(2016, 2);
@@ -54,8 +54,8 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("oo_js_test_date.ml", suites);
 
-exports.d      = d;
-exports.d2     = d2;
-exports.d3     = d3;
+exports.d = d;
+exports.d2 = d2;
+exports.d3 = d3;
 exports.suites = suites;
 /* d Not a pure module */

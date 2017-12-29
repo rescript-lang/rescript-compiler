@@ -27,7 +27,7 @@ while((function () {
   console.log("" + 3);
 };
 
-exports.v   = v;
+exports.v = v;
 exports.fib = fib;
-exports.x   = x;
+exports.x = x;
 /*  Not a pure module */

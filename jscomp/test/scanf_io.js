@@ -1,19 +1,19 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Bytes                   = require("../../lib/js/bytes.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Scanf                   = require("../../lib/js/scanf.js");
-var Buffer                  = require("../../lib/js/buffer.js");
-var Digest                  = require("../../lib/js/digest.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Printf                  = require("../../lib/js/printf.js");
-var Caml_io                 = require("../../lib/js/caml_io.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
-var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Bytes = require("../../lib/js/bytes.js");
+var Curry = require("../../lib/js/curry.js");
+var Scanf = require("../../lib/js/scanf.js");
+var Buffer = require("../../lib/js/buffer.js");
+var Digest = require("../../lib/js/digest.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Printf = require("../../lib/js/printf.js");
+var Caml_io = require("../../lib/js/caml_io.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_string = require("../../lib/js/caml_string.js");
+var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var tscanf_data_file = "tscanf_data";
@@ -198,13 +198,13 @@ function test55() {
   return +(digest_file(tscanf_data_file) === tscanf_data_file_lines_digest);
 }
 
-exports.tscanf_data_file       = tscanf_data_file;
+exports.tscanf_data_file = tscanf_data_file;
 exports.tscanf_data_file_lines = tscanf_data_file_lines;
-exports.create_tscanf_data     = create_tscanf_data;
+exports.create_tscanf_data = create_tscanf_data;
 exports.write_tscanf_data_file = write_tscanf_data_file;
-exports.get_lines              = get_lines;
-exports.add_digest_ib          = add_digest_ib;
-exports.digest_file            = digest_file;
-exports.test54                 = test54;
-exports.test55                 = test55;
+exports.get_lines = get_lines;
+exports.add_digest_ib = add_digest_ib;
+exports.digest_file = digest_file;
+exports.test54 = test54;
+exports.test55 = test55;
 /* Scanf Not a pure module */

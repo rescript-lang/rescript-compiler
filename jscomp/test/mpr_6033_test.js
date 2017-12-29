@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt               = require("./mt.js");
-var Block            = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 var suites = [/* [] */0];
@@ -50,9 +50,9 @@ eq("File \"mpr_6033_test.ml\", line 20, characters 6-13", u, "defabc");
 
 Mt.from_pair_suites("mpr_6033_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.f       = f;
-exports.u       = u;
+exports.eq = eq;
+exports.f = f;
+exports.u = u;
 /*  Not a pure module */
