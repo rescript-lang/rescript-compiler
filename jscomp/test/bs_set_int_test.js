@@ -100,9 +100,9 @@ var r = Bs_SetInt.empty;
 
 for(var i$1 = 100; i$1 <= 1500; ++i$1){
   if (i$1 % 3) {
-    r = Bs_SetInt.add(i$1, r);
+    r = Bs_SetInt.add(r, i$1);
   } else {
-    l = Bs_SetInt.add(i$1, l);
+    l = Bs_SetInt.add(l, i$1);
   }
 }
 
@@ -182,7 +182,7 @@ eq("File \"bs_set_int_test.ml\", line 80, characters 5-12", minv, /* Some */[-1]
 
 eq("File \"bs_set_int_test.ml\", line 81, characters 5-12", maxv, /* Some */[222]);
 
-var v$2 = Bs_SetInt.remove(3, v$1);
+var v$2 = Bs_SetInt.remove(v$1, 3);
 
 var minv$1 = Bs_SetInt.min(v$2);
 
@@ -192,7 +192,7 @@ eq("File \"bs_set_int_test.ml\", line 84, characters 5-12", minv$1, /* Some */[-
 
 eq("File \"bs_set_int_test.ml\", line 85, characters 5-12", maxv$1, /* Some */[222]);
 
-var v$3 = Bs_SetInt.remove(222, v$2);
+var v$3 = Bs_SetInt.remove(v$2, 222);
 
 var minv$2 = Bs_SetInt.min(v$3);
 
@@ -202,7 +202,7 @@ eq("File \"bs_set_int_test.ml\", line 88, characters 5-12", minv$2, /* Some */[-
 
 eq("File \"bs_set_int_test.ml\", line 89, characters 5-12", maxv$2, /* Some */[33]);
 
-var v$4 = Bs_SetInt.remove(-1, v$3);
+var v$4 = Bs_SetInt.remove(v$3, -1);
 
 var minv$3 = Bs_SetInt.min(v$4);
 
@@ -212,17 +212,17 @@ eq("File \"bs_set_int_test.ml\", line 92, characters 5-12", minv$3, /* Some */[0
 
 eq("File \"bs_set_int_test.ml\", line 93, characters 5-12", maxv$3, /* Some */[33]);
 
-var v$5 = Bs_SetInt.remove(0, v$4);
+var v$5 = Bs_SetInt.remove(v$4, 0);
 
-var v$6 = Bs_SetInt.remove(33, v$5);
+var v$6 = Bs_SetInt.remove(v$5, 33);
 
-var v$7 = Bs_SetInt.remove(2, v$6);
+var v$7 = Bs_SetInt.remove(v$6, 2);
 
-var v$8 = Bs_SetInt.remove(3, v$7);
+var v$8 = Bs_SetInt.remove(v$7, 3);
 
-var v$9 = Bs_SetInt.remove(4, v$8);
+var v$9 = Bs_SetInt.remove(v$8, 4);
 
-var v$10 = Bs_SetInt.remove(1, v$9);
+var v$10 = Bs_SetInt.remove(v$9, 1);
 
 b("File \"bs_set_int_test.ml\", line 100, characters 4-11", Bs_SetInt.isEmpty(v$10));
 
@@ -238,9 +238,7 @@ b("File \"bs_set_int_test.ml\", line 108, characters 4-11", Bs_SetInt.checkInvar
 
 var firstHalf = Bs_Array.sub(v$11, 0, 2000);
 
-var xx = Bs_Array.foldLeft(firstHalf, u$1, (function (acc, x) {
-        return Bs_SetInt.remove(x, acc);
-      }));
+var xx = Bs_Array.foldLeft(firstHalf, u$1, Bs_SetInt.remove);
 
 b("File \"bs_set_int_test.ml\", line 112, characters 4-11", Bs_SetInt.checkInvariant(u$1));
 

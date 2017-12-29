@@ -8,7 +8,7 @@ type elt = int
 
 
 module N = Bs_internalAVLset
-
+module A = Bs_Array 
 type ('elt, 'id) t0 = ('elt, 'id) N.t0 
 
 type ('elt, 'id) enumeration0 = 
@@ -21,14 +21,14 @@ type t = (elt, unit) t0
 type enumeration = (elt,unit) enumeration0
 
 
-let rec add (x : elt) (t : t) : t =
+let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 
     None -> N.(return @@ node ~left:empty ~key:x ~right:empty ~h:1)
   | Some nt (* Node(l, v, r, _) as t *) ->
     let v = N.key nt in  
     if x = v then t else
-    if x < v then N.(bal (add x (left nt)) v (right nt))
-    else N.(bal (left nt) v (add x (right nt)))
+    if x < v then N.(bal (add (left nt) x) v (right nt))
+    else N.(bal (left nt) v (add  (right nt) x) )
 
 
 
@@ -70,14 +70,14 @@ let rec mem (t : t) (x : elt)  =
     let v = N.key n in 
     x = v || mem N.(if x < v then (left n) else (right n)) x
 
-let rec remove (x : elt) (t : t) : t = 
+let rec remove (t : t) (x : elt) : t = 
   match N.toOpt t with 
   | None -> t
   | Some n (* Node(l, v, r, _) *) ->
     let l,v,r = N.(left n, key n, right n) in 
     if x = v then N.merge l r else
-    if x < v then N.bal (remove x l) v r 
-    else N.bal l v (remove x r)
+    if x < v then N.bal (remove l x) v r 
+    else N.bal l v (remove r x)
 
 let rec union (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
@@ -86,13 +86,13 @@ let rec union (s1 : t) (s2 : t) =
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
     let h1, h2 = N.(h n1 , h n2) in             
     if h1 >= h2 then
-      if h2 = 1 then add (N.key n2) s1 else begin
+      if h2 = 1 then add  s1 (N.key n2) else begin
         let l1, v1, r1 = N.(left n1, key n1, right n1) in      
         let (l2, _, r2) = splitAux v1 n2 in
         N.join (union l1 l2) v1 (union r1 r2)
       end
     else
-    if h1 = 1 then add (N.key n1) s2 else begin
+    if h1 = 1 then add  s2 (N.key n1) else begin
       let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
       let (l1, _, r1) = splitAux v2 n1 in
       N.join (union l1 l2) v2 (union r1 r2)
@@ -182,13 +182,6 @@ let rec findAssert (x : elt) (n :t)  =
     else findAssert x N.(if x < v then (left t) else (right t))
     
     
-(* FIXME: use [sorted] attribute *)    
-let ofArray (xs : elt array) : t =     
-  let result = ref N.empty in 
-  for i = 0 to Array.length xs - 1 do  
-    result := add (Bs_Array.unsafe_get xs i) !result
-  done ;
-  !result 
 
 
 (*
@@ -255,17 +248,17 @@ let rotateWithRightChild k1 =
   double l rotation
 *)  
 let doubleWithLeftChild k3 =   
-  let v = rotateWithLeftChild (unsafeCoerce N.(left k3)) in 
+  let v = rotateWithRightChild (unsafeCoerce N.(left k3)) in 
   N.(leftSet k3 (return v ));
   rotateWithLeftChild k3 
 
 let doubleWithRightChild k2 = 
-  let v = rotateWithRightChild (unsafeCoerce N.(right k2)) in   
+  let v = rotateWithLeftChild (unsafeCoerce N.(right k2)) in   
   N.(rightSet k2 (return v));
   rotateWithRightChild k2
-type key = int 
 
-let rec addMutate  (t : _ t0) (x : key)=   
+
+let rec addMutate  (t : _ t0) (x : elt)=   
   match N.toOpt t with 
   | None -> N.(return @@ node ~left:empty ~right:empty ~key:x ~h:1)
   | Some nt -> 
@@ -303,3 +296,20 @@ let rec addMutate  (t : _ t0) (x : key)=
           N.(Pervasives.max hlt hrt  + 1);
         N.return t
       end
+
+
+let addArrayMutate (t : _ t0) xs =       
+  let v = ref t in 
+  for i = 0 to A.length xs - 1 do 
+    v := addMutate !v (A.unsafe_get xs i)
+  done ;
+  !v
+
+(* FIXME: improve, use [sorted] attribute *)    
+let ofArray (xs : elt array) : t =     
+  let result = ref N.empty in 
+  for i = 0 to A.length xs - 1 do  
+    result := addMutate !result (A.unsafe_get xs i) 
+  done ;
+  !result 
+  

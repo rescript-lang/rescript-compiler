@@ -1,8 +1,10 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_Range = require("../../lib/js/bs_Range.js");
 var Bs_SetIntM = require("../../lib/js/bs_SetIntM.js");
+var Array_data_util = require("./array_data_util.js");
 
 var suites = [/* [] */0];
 
@@ -28,7 +30,23 @@ b("File \"bs_mutable_set_test.ml\", line 20, characters 4-11", Bs_Range.forAll(0
             return Bs_SetIntM.mem(v[0], i);
           })));
 
-console.log(Bs_SetIntM.length(v[0]));
+eq("File \"bs_mutable_set_test.ml\", line 23, characters 5-12", Bs_SetIntM.length(v[0]), 100001);
+
+var u = Bs_Array.append(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
+
+var v$1 = Bs_SetIntM.empty;
+
+var v$2 = Bs_SetIntM.addArray(v$1, u);
+
+eq("File \"bs_mutable_set_test.ml\", line 29, characters 5-12", Bs_SetIntM.length(v$2), 91);
+
+eq("File \"bs_mutable_set_test.ml\", line 30, characters 5-12", Bs_SetIntM.toArray(v$2), Array_data_util.range(30, 120));
+
+var u$1 = Bs_Array.append(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
+
+var v$3 = Bs_SetIntM.ofArray(u$1);
+
+eq("File \"bs_mutable_set_test.ml\", line 35, characters 5-12", Bs_SetIntM.length(v$3), 100001);
 
 Mt.from_pair_suites("bs_mutable_set_test.ml", suites[0]);
 
@@ -38,6 +56,10 @@ var I = 0;
 
 var R = 0;
 
+var A = 0;
+
+var $plus$plus = Bs_Array.append;
+
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
@@ -45,4 +67,6 @@ exports.b = b;
 exports.N = N;
 exports.I = I;
 exports.R = R;
+exports.A = A;
+exports.$plus$plus = $plus$plus;
 /*  Not a pure module */

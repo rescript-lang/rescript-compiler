@@ -46,9 +46,9 @@ let () =
     let l,r = ref N.empty, ref N.empty in 
     for i = 100 to 1500 do 
       if i mod 3 = 0 then 
-        l := N.add i !l 
+        l := N.add !l i
       else 
-        r := N.add i !r
+        r := N.add !r i
     done; 
     !l, !r in 
   b __LOC__ (N.eq l nl);
@@ -79,24 +79,24 @@ let () =
   eq __LOC__ (N.fold (fun [@bs] x y -> x + y) v 0) (Array.fold_left (+) 0 ss) ;
   eq __LOC__ minv (Some (-1)); 
   eq __LOC__ maxv (Some 222);
-  let v = N.remove 3 v in 
+  let v = N.remove v 3 in 
   let minv, maxv = N.min v, N.max v in 
   eq __LOC__ minv (Some (-1)); 
   eq __LOC__ maxv (Some 222);
-  let v = N.remove 222 v in 
+  let v = N.remove v 222 in 
   let minv, maxv = N.min v, N.max v in 
   eq __LOC__ minv (Some (-1)); 
   eq __LOC__ maxv (Some 33);
-  let v = N.remove (-1) v in 
+  let v = N.remove  v (-1) in 
   let minv, maxv = N.min v, N.max v in 
   eq __LOC__ minv (Some (0)); 
   eq __LOC__ maxv (Some 33);
-  let v = N.remove 0  v in 
-  let v = N.remove 33 v in  
-  let v = N.remove 2  v in 
-  let v = N.remove 3 v in  
-  let v = N.remove 4 v in 
-  let v = N.remove 1 v in 
+  let v = N.remove  v 0 in 
+  let v = N.remove v 33  in  
+  let v = N.remove v 2 in 
+  let v = N.remove v 3  in  
+  let v = N.remove v 4  in 
+  let v = N.remove v 1  in 
   b __LOC__ (N.isEmpty v )
 
  
@@ -108,7 +108,7 @@ let ()  =
   b __LOC__ (N.checkInvariant u );
   let firstHalf = Bs.Array.sub v 0 2_000 in 
   let xx = Bs.Array.foldLeft firstHalf u
-    (fun[@bs] acc x -> N.remove x acc) in 
+    (fun[@bs] acc x -> N.remove acc x ) in 
   b __LOC__ (N.checkInvariant u);
   b __LOC__ N.(eq (union (ofArray firstHalf) xx) u)
   
