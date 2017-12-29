@@ -29,8 +29,8 @@ let esModule  = "__esModule", "true"
 (** Exports printer *)
 (** Print exports in Google module format, CommonJS format *)
 let exports cxt f (idents : Ident.t list) = 
-  let outer_cxt, reversed_list, margin = 
-    List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
+  let outer_cxt, reversed_list = 
+    List.fold_left (fun (cxt, acc) (id : Ident.t) -> 
         let id_name = id.name in 
         let s = Ext_ident.convert id_name in        
         let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
@@ -38,15 +38,15 @@ let exports cxt f (idents : Ident.t list) =
           if id_name = default_export then 
             (* TODO check how it will affect AMDJS*)
             esModule :: (default_export, str) :: (s,str)::acc 
-          else (s,str) :: acc ) , max len (String.length s)   )
-      (cxt, [], 0)  idents in    
+          else (s,str) :: acc ))
+      (cxt, []) idents in    
   P.newline f ;
   Ext_list.rev_iter (fun (s,export) -> 
       P.group f 0 @@ (fun _ ->  
           P.string f L.exports;
           P.string f L.dot;
           P.string f s; 
-          P.nspace f (margin - String.length s +  1) ;
+          P.space f ;
           P.string f L.eq;
           P.space f;
           P.string f export;          
@@ -58,8 +58,8 @@ let exports cxt f (idents : Ident.t list) =
 
 (** Print module in ES6 format, it is ES6, trailing comma is valid ES6 code *)
 let es6_export cxt f (idents : Ident.t list) = 
-  let outer_cxt, reversed_list, margin = 
-    List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
+  let outer_cxt, reversed_list = 
+    List.fold_left (fun (cxt, acc) (id : Ident.t) -> 
         let id_name = id.name in 
         let s = Ext_ident.convert id_name in        
         let str,cxt  = Ext_pp_scope.str_of_ident cxt id in         
@@ -67,8 +67,8 @@ let es6_export cxt f (idents : Ident.t list) =
           if id_name = default_export then 
             (default_export,str)::(s,str)::acc
           else 
-            (s,str) :: acc ) , max len (String.length s)   )
-      (cxt, [], 0)  idents in    
+            (s,str) :: acc ))
+      (cxt, []) idents in    
   P.newline f ;
   P.string f L.export ; 
   P.space f ; 
@@ -76,7 +76,7 @@ let es6_export cxt f (idents : Ident.t list) =
     Ext_list.rev_iter (fun (s,export) -> 
         P.group f 0 @@ (fun _ ->  
             P.string f export;          
-            P.nspace f (margin - String.length s +  1) ;
+            P.space f ;
             if not @@ Ext_string.equal export s then begin 
               P.string f L.as_ ;
               P.space f;
@@ -93,19 +93,19 @@ let es6_export cxt f (idents : Ident.t list) =
 let requires require_lit cxt f (modules : (Ident.t * string) list ) =
   P.newline f ; 
   (* the context used to print the following program *)  
-  let outer_cxt, reversed_list, margin  =
+  let outer_cxt, reversed_list  =
     List.fold_left
       (fun (cxt, acc, len) (id,s) ->
          let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
-         cxt, ((str,s) :: acc), (max len (String.length str))
+         cxt, ((str,s) :: acc))
       )
-      (cxt, [], 0)  modules in
+      (cxt, []) modules in
   P.force_newline f ;    
   Ext_list.rev_iter (fun (s,file) ->
       P.string f L.var;
       P.space f ;
       P.string f s ;
-      P.nspace f (margin - String.length s + 1) ;
+      P.space f ;
       P.string f L.eq;
       P.space f;
       P.string f require_lit;
@@ -120,24 +120,24 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
 let imports  cxt f (modules : (Ident.t * string) list ) =
   P.newline f ; 
   (* the context used to print the following program *)  
-  let outer_cxt, reversed_list, margin  =
+  let outer_cxt, reversed_list =
     List.fold_left
       (fun (cxt, acc, len) (id,s) ->
          let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
-         cxt, ((str,s) :: acc), (max len (String.length str))
+         cxt, ((str,s) :: acc))
       )
-      (cxt, [], 0)  modules in
+      (cxt, []) modules in
   P.force_newline f ;    
   Ext_list.rev_iter (fun (s,file) ->
 
       P.string f L.import;
       P.space f ;
       P.string f L.star ;
-      P.space f ; (* import * as xx \t from 'xx*) 
+      P.space f ; (* import * as xx from 'xx*) 
       P.string f L.as_ ; 
       P.space f ; 
       P.string f s ; 
-      P.nspace f (margin - String.length s + 1) ;      
+      P.space f ;
       P.string f L.from;
       P.space f;
       Js_dump_string.pp_string f file ;
@@ -145,5 +145,3 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
       P.newline f ;
     ) reversed_list;
   outer_cxt
-
-  
