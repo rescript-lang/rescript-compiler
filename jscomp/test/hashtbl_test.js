@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var List           = require("../../lib/js/list.js");
-var $$Array        = require("../../lib/js/array.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Hashtbl        = require("../../lib/js/hashtbl.js");
-var MoreLabels     = require("../../lib/js/moreLabels.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Hashtbl = require("../../lib/js/hashtbl.js");
+var MoreLabels = require("../../lib/js/moreLabels.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function to_list(tbl) {
@@ -105,7 +105,7 @@ var suites = /* :: */[
 Mt.from_pair_suites("hashtbl_test.ml", suites);
 
 exports.to_list = to_list;
-exports.f       = f;
-exports.g       = g;
-exports.suites  = suites;
+exports.f = f;
+exports.g = g;
+exports.suites = suites;
 /*  Not a pure module */

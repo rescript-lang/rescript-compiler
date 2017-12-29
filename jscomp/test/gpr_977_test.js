@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Int32 = require("../../lib/js/int32.js");
 
@@ -58,12 +58,12 @@ Mt.from_pair_suites("gpr_977_test.ml", suites[0]);
 
 var min_32_int = -2147483648;
 
-exports.suites     = suites;
-exports.test_id    = test_id;
-exports.eq         = eq;
-exports.f          = f;
-exports.int32_f    = int32_f;
-exports.nint32_f   = nint32_f;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.f = f;
+exports.int32_f = int32_f;
+exports.nint32_f = nint32_f;
 exports.min_32_int = min_32_int;
-exports.u          = u;
+exports.u = u;
 /* u Not a pure module */

@@ -1,6 +1,6 @@
 'use strict';
 
-var List  = require("../../lib/js/list.js");
+var List = require("../../lib/js/list.js");
 var Curry = require("../../lib/js/curry.js");
 
 function from_pair_suites(name, suites) {

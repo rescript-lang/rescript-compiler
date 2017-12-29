@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Caml_oo_curry  = require("../../lib/js/caml_oo_curry.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var suites = [/* [] */0];
@@ -88,12 +88,12 @@ eq("File \"gpr_2250_test.ml\", line 37, characters 5-12", result2, 2);
 
 Mt.from_pair_suites("gpr_2250_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.create  = create;
-exports.cxt1    = cxt1;
-exports.result  = result;
-exports.cxt2    = cxt2;
+exports.eq = eq;
+exports.create = create;
+exports.cxt1 = cxt1;
+exports.result = result;
+exports.cxt2 = cxt2;
 exports.result2 = result2;
 /* cxt1 Not a pure module */

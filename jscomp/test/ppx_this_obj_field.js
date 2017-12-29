@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
@@ -206,16 +206,16 @@ eq("File \"ppx_this_obj_field.ml\", line 103, characters 5-12", /* tuple */[
 
 Mt.from_pair_suites("ppx_this_obj_field.ml", suites[0]);
 
-exports.suites     = suites;
-exports.test_id    = test_id;
-exports.eq         = eq;
-exports.v5         = v5;
-exports.v          = v;
-exports.u          = u;
-exports.test_type  = test_type;
-exports.z          = z;
-exports.eventObj   = eventObj;
-exports.test__     = test__;
-exports.zz         = zz;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.v5 = v5;
+exports.v = v;
+exports.u = u;
+exports.test_type = test_type;
+exports.z = z;
+exports.eventObj = eventObj;
+exports.test__ = test__;
+exports.zz = zz;
 exports.test_type2 = test_type2;
 /* v5 Not a pure module */

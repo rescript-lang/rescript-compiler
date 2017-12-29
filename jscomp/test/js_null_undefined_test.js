@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt                = require("./mt.js");
-var Block             = require("../../lib/js/block.js");
-var Caml_obj          = require("../../lib/js/caml_obj.js");
-var Js_primitive      = require("../../lib/js/js_primitive.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
 var suites_000 = /* tuple */[

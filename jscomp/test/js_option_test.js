@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt        = require("./mt.js");
-var Block     = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Js_option = require("../../lib/js/js_option.js");
 
 function simpleEq(a, b) {
@@ -283,6 +283,6 @@ var option_suites = /* :: */[
 
 Mt.from_pair_suites("js_option_test.ml", option_suites);
 
-exports.simpleEq      = simpleEq;
+exports.simpleEq = simpleEq;
 exports.option_suites = option_suites;
 /*  Not a pure module */

@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt                     = require("./mt.js");
-var Bs_Sort                = require("../../lib/js/bs_Sort.js");
-var Hashtbl                = require("../../lib/js/hashtbl.js");
-var Bs_Array               = require("../../lib/js/bs_Array.js");
-var Bs_HashMap             = require("../../lib/js/bs_HashMap.js");
-var Caml_primitive         = require("../../lib/js/caml_primitive.js");
-var Array_data_util        = require("./array_data_util.js");
-var Bs_internalBuckets     = require("../../lib/js/bs_internalBuckets.js");
+var Mt = require("./mt.js");
+var Bs_Sort = require("../../lib/js/bs_Sort.js");
+var Hashtbl = require("../../lib/js/hashtbl.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
+var Bs_HashMap = require("../../lib/js/bs_HashMap.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
+var Array_data_util = require("./array_data_util.js");
+var Bs_internalBuckets = require("../../lib/js/bs_internalBuckets.js");
 var Bs_internalBucketsType = require("../../lib/js/bs_internalBucketsType.js");
 
 var suites = [/* [] */0];
@@ -118,20 +118,20 @@ var A = 0;
 
 var So = 0;
 
-exports.suites     = suites;
-exports.test_id    = test_id;
-exports.eqx        = eqx;
-exports.b          = b;
-exports.N          = N;
-exports.S          = S;
-exports.eq         = eq;
-exports.hash       = hash;
-exports.cmp        = cmp;
-exports.Y          = Y;
-exports.empty      = empty;
-exports.I          = I;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eqx = eqx;
+exports.b = b;
+exports.N = N;
+exports.S = S;
+exports.eq = eq;
+exports.hash = hash;
+exports.cmp = cmp;
+exports.Y = Y;
+exports.empty = empty;
+exports.I = I;
 exports.$plus$plus = $plus$plus;
-exports.add        = add;
-exports.A          = A;
-exports.So         = So;
+exports.add = add;
+exports.A = A;
+exports.So = So;
 /* empty Not a pure module */

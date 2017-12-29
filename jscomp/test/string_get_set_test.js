@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
-var Caml_int64  = require("../../lib/js/caml_int64.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 Mt.from_pair_suites("string_get_set_test.ml", /* :: */[

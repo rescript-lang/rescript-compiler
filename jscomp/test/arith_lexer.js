@@ -1,9 +1,9 @@
 'use strict';
 
-var Block       = require("../../lib/js/block.js");
-var Curry       = require("../../lib/js/curry.js");
-var Lexing      = require("../../lib/js/lexing.js");
-var Pervasives  = require("../../lib/js/pervasives.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Lexing = require("../../lib/js/lexing.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
 var __ocaml_lex_tables = /* record */[
@@ -82,8 +82,8 @@ function str(e) {
   }
 }
 
-exports.__ocaml_lex_tables     = __ocaml_lex_tables;
-exports.lexeme                 = lexeme;
+exports.__ocaml_lex_tables = __ocaml_lex_tables;
+exports.lexeme = lexeme;
 exports.__ocaml_lex_lexeme_rec = __ocaml_lex_lexeme_rec;
-exports.str                    = str;
+exports.str = str;
 /* No side effect */

@@ -20,5 +20,5 @@ function f(x, _) {
 }
 
 exports.test = test;
-exports.f    = f;
+exports.f = f;
 /* No side effect */

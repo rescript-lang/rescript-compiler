@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var $$Array        = require("../../lib/js/array.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Int32          = require("../../lib/js/int32.js");
-var Format         = require("../../lib/js/format.js");
-var Caml_int32     = require("../../lib/js/caml_int32.js");
-var Pervasives     = require("../../lib/js/pervasives.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Int32 = require("../../lib/js/int32.js");
+var Format = require("../../lib/js/format.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Ext_array_test = require("./ext_array_test.js");
 
 function f(x) {
@@ -241,10 +241,10 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
 
 var test_div = 30;
 
-exports.f                         = f;
+exports.f = f;
 exports.shift_right_logical_tests = shift_right_logical_tests;
-exports.shift_right_tests         = shift_right_tests;
-exports.shift_left_tests          = shift_left_tests;
-exports.test_div                  = test_div;
-exports.$star$tilde               = $star$tilde;
+exports.shift_right_tests = shift_right_tests;
+exports.shift_left_tests = shift_left_tests;
+exports.test_div = test_div;
+exports.$star$tilde = $star$tilde;
 /* shift_right_logical_tests Not a pure module */

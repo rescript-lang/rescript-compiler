@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt               = require("./mt.js");
-var Block            = require("../../lib/js/block.js");
-var Curry            = require("../../lib/js/curry.js");
-var Buffer           = require("../../lib/js/buffer.js");
-var Printf           = require("../../lib/js/printf.js");
-var Caml_obj         = require("../../lib/js/caml_obj.js");
-var Caml_int64       = require("../../lib/js/caml_int64.js");
-var Caml_format      = require("../../lib/js/caml_format.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Buffer = require("../../lib/js/buffer.js");
+var Printf = require("../../lib/js/printf.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
+var Caml_format = require("../../lib/js/caml_format.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 var n0 = /* int64 */[
@@ -277,29 +277,29 @@ Mt.from_pair_suites("hamming_test.ml", /* :: */[
       /* [] */0
     ]);
 
-exports.n0            = n0;
-exports.n1            = n1;
-exports.n2            = n2;
-exports.n3            = n3;
-exports.n5            = n5;
-exports.$percent      = $percent;
-exports.$star         = $star;
-exports.$slash        = $slash;
-exports.$plus         = $plus;
-exports.digit         = digit;
-exports.mul           = mul;
-exports.cmp           = cmp;
-exports.x2            = x2;
-exports.x3            = x3;
-exports.x5            = x5;
-exports.nn1           = nn1;
-exports.buf           = buf;
-exports.pr            = pr;
-exports.map           = map;
-exports.merge         = merge;
+exports.n0 = n0;
+exports.n1 = n1;
+exports.n2 = n2;
+exports.n3 = n3;
+exports.n5 = n5;
+exports.$percent = $percent;
+exports.$star = $star;
+exports.$slash = $slash;
+exports.$plus = $plus;
+exports.digit = digit;
+exports.mul = mul;
+exports.cmp = cmp;
+exports.x2 = x2;
+exports.x3 = x3;
+exports.x5 = x5;
+exports.nn1 = nn1;
+exports.buf = buf;
+exports.pr = pr;
+exports.map = map;
+exports.merge = merge;
 exports.iter_interval = iter_interval;
-exports.hamming       = hamming;
-exports.ham2          = ham2;
-exports.ham3          = ham3;
-exports.ham5          = ham5;
+exports.hamming = hamming;
+exports.ham2 = ham2;
+exports.ham3 = ham3;
+exports.ham5 = ham5;
 /* digit Not a pure module */

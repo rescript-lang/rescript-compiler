@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt             = require("./mt.js");
-var List           = require("../../lib/js/list.js");
-var $$Array        = require("../../lib/js/array.js");
-var Block          = require("../../lib/js/block.js");
-var Curry          = require("../../lib/js/curry.js");
-var Hashtbl        = require("../../lib/js/hashtbl.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 function f(H) {
@@ -107,8 +107,8 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("int_hashtbl_test.ml", suites);
 
-exports.f        = f;
-exports.g        = g;
+exports.f = f;
+exports.g = g;
 exports.Int_hash = Int_hash;
-exports.suites   = suites;
+exports.suites = suites;
 /* Int_hash Not a pure module */

@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Fs                      = require("fs");
-var Path                    = require("path");
-var Block                   = require("../../lib/js/block.js");
-var Child_process           = require("child_process");
-var App_root_finder         = require("./app_root_finder.js");
+var Mt = require("./mt.js");
+var Fs = require("fs");
+var Path = require("path");
+var Block = require("../../lib/js/block.js");
+var Child_process = require("child_process");
+var App_root_finder = require("./app_root_finder.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
@@ -74,7 +74,7 @@ if (match !== undefined) {
 
 Mt.from_pair_suites("installation_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 /* match Not a pure module */

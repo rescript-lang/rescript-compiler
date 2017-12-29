@@ -1,6 +1,6 @@
 'use strict';
 
-var Arg   = require("../../lib/js/arg.js");
+var Arg = require("../../lib/js/arg.js");
 var Block = require("../../lib/js/block.js");
 
 function anno_fun() {
@@ -35,9 +35,9 @@ var arg_spec = /* :: */[
 
 Arg.parse(arg_spec, anno_fun, usage_msg);
 
-exports.anno_fun  = anno_fun;
+exports.anno_fun = anno_fun;
 exports.usage_msg = usage_msg;
-exports.compile   = compile;
-exports.test      = test;
-exports.arg_spec  = arg_spec;
+exports.compile = compile;
+exports.test = test;
+exports.arg_spec = arg_spec;
 /*  Not a pure module */

@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
-var Bytes       = require("../../lib/js/bytes.js");
-var Curry       = require("../../lib/js/curry.js");
-var Lexing      = require("../../lib/js/lexing.js");
-var Caml_bytes  = require("../../lib/js/caml_bytes.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Bytes = require("../../lib/js/bytes.js");
+var Curry = require("../../lib/js/curry.js");
+var Lexing = require("../../lib/js/lexing.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 var __ocaml_lex_tables = /* record */[
@@ -67,8 +67,8 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("simple_lexer_test.mll", suites);
 
-exports.__ocaml_lex_tables        = __ocaml_lex_tables;
-exports.translate                 = translate;
+exports.__ocaml_lex_tables = __ocaml_lex_tables;
+exports.translate = translate;
 exports.__ocaml_lex_translate_rec = __ocaml_lex_translate_rec;
-exports.suites                    = suites;
+exports.suites = suites;
 /*  Not a pure module */

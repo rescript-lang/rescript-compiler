@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
-var Curry       = require("../../lib/js/curry.js");
-var $$String    = require("../../lib/js/string.js");
-var Filename    = require("../../lib/js/filename.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var $$String = require("../../lib/js/string.js");
+var Filename = require("../../lib/js/filename.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
@@ -64,6 +64,6 @@ var suites = /* :: */[
 Mt.from_pair_suites("inline_regression_test.ml", suites);
 
 exports.generic_basename = generic_basename;
-exports.basename         = basename;
-exports.suites           = suites;
+exports.basename = basename;
+exports.suites = suites;
 /*  Not a pure module */

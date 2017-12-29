@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_module             = require("../../lib/js/caml_module.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_module = require("../../lib/js/caml_module.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var A = Caml_module.init_mod([
@@ -1060,13 +1060,13 @@ var Even = /* () */0;
 
 var Odd = /* () */0;
 
-exports.A      = A;
-exports.B      = B;
-exports.AA     = AA;
-exports.BB     = BB;
-exports.Even   = Even;
-exports.Odd    = Odd;
-exports.AAA    = AAA;
-exports.ASet   = ASet;
+exports.A = A;
+exports.B = B;
+exports.AA = AA;
+exports.BB = BB;
+exports.Even = Even;
+exports.Odd = Odd;
+exports.AAA = AAA;
+exports.ASet = ASet;
 exports.suites = suites;
 /* A Not a pure module */

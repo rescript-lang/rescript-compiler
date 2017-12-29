@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
 var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
@@ -36,6 +36,6 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("epsilon_test.ml", suites);
 
-exports.v      = v;
+exports.v = v;
 exports.suites = suites;
 /* v Not a pure module */

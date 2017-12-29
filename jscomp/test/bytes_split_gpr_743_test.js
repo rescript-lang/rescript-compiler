@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
-var Bytes       = require("../../lib/js/bytes.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Bytes = require("../../lib/js/bytes.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 var suites = [/* [] */0];
@@ -68,7 +68,7 @@ eq("File \"bytes_split_gpr_743_test.ml\", line 32, characters 5-12", /* tuple */
 
 Mt.from_pair_suites("bytes_split_gpr_743_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 /*  Not a pure module */

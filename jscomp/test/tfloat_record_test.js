@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var $$Array     = require("../../lib/js/array.js");
-var Block       = require("../../lib/js/block.js");
-var Curry       = require("../../lib/js/curry.js");
-var Buffer      = require("../../lib/js/buffer.js");
-var Format      = require("../../lib/js/format.js");
-var Mt_global   = require("./mt_global.js");
-var Pervasives  = require("../../lib/js/pervasives.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Buffer = require("../../lib/js/buffer.js");
+var Format = require("../../lib/js/format.js");
+var Mt_global = require("./mt_global.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Float_array = require("./float_array.js");
 
 var buf = Buffer.create(50);
@@ -68,15 +68,15 @@ eq("File \"tfloat_record_test.ml\", line 43, characters 5-12", Buffer.contents(b
 
 Mt.from_pair_suites("tfloat_record_test.ml", suites[0]);
 
-exports.buf           = buf;
-exports.fmt           = fmt;
-exports.print_float   = print_float;
+exports.buf = buf;
+exports.fmt = fmt;
+exports.print_float = print_float;
 exports.print_newline = print_newline;
-exports.s             = s;
-exports.b             = b;
-exports.c             = c;
-exports.print_array   = print_array;
-exports.suites        = suites;
-exports.test_id       = test_id;
-exports.eq            = eq;
+exports.s = s;
+exports.b = b;
+exports.c = c;
+exports.print_array = print_array;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 /* buf Not a pure module */

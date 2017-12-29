@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
@@ -37,9 +37,9 @@ eq("File \"ignore_test.ml\", line 16, characters 5-12", /* () */0, /* () */0);
 
 Mt.from_pair_suites("ignore_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.f       = f;
-exports.ff      = ff;
+exports.eq = eq;
+exports.f = f;
+exports.ff = ff;
 /*  Not a pure module */

@@ -1,7 +1,7 @@
 'use strict';
 
-var $$Array    = require("../../lib/js/array.js");
-var Curry      = require("../../lib/js/curry.js");
+var $$Array = require("../../lib/js/array.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
@@ -111,7 +111,7 @@ function for_6(x, u) {
   return v[0];
 }
 
-exports.for_  = for_;
+exports.for_ = for_;
 exports.for_2 = for_2;
 exports.for_3 = for_3;
 exports.for_4 = for_4;

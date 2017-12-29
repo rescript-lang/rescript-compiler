@@ -19,8 +19,8 @@ function h_ext(x) {
   return x.cse(3)(2);
 }
 
-exports.ff    = ff;
-exports.h     = h;
+exports.ff = ff;
+exports.h = h;
 exports.f_ext = f_ext;
 exports.h_ext = h_ext;
 /* No side effect */

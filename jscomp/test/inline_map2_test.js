@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function Make(Ord) {
@@ -2160,10 +2160,10 @@ Mt.from_pair_suites("inline_map2_test.ml", /* :: */[
 
 var empty = /* Empty */0;
 
-exports.Make   = Make;
+exports.Make = Make;
 exports.IntMap = IntMap;
-exports.empty  = empty;
-exports.m      = m;
-exports.SMap   = SMap;
-exports.s      = s;
+exports.empty = empty;
+exports.m = m;
+exports.SMap = SMap;
+exports.s = s;
 /* m Not a pure module */

@@ -1,6 +1,6 @@
 'use strict';
 
-var Block                   = require("../../lib/js/block.js");
+var Block = require("../../lib/js/block.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function is_number(_expr) {

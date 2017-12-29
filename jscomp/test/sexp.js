@@ -1,11 +1,11 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Hashtbl                 = require("../../lib/js/hashtbl.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_format             = require("../../lib/js/caml_format.js");
+var List = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
+var Hashtbl = require("../../lib/js/hashtbl.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var equal = Caml_obj.caml_equal;
@@ -569,21 +569,21 @@ var Traverse = [
   get_exn
 ];
 
-exports.equal       = equal;
-exports.compare     = compare;
-exports.hash        = hash;
-exports.atom        = atom;
-exports.of_int      = of_int;
-exports.of_bool     = of_bool;
-exports.of_list     = of_list;
+exports.equal = equal;
+exports.compare = compare;
+exports.hash = hash;
+exports.atom = atom;
+exports.of_int = of_int;
+exports.of_bool = of_bool;
+exports.of_list = of_list;
 exports.of_rev_list = of_rev_list;
-exports.of_float    = of_float;
-exports.of_unit     = of_unit;
-exports.of_pair     = of_pair;
-exports.of_triple   = of_triple;
-exports.of_quad     = of_quad;
-exports.of_variant  = of_variant;
-exports.of_field    = of_field;
-exports.of_record   = of_record;
-exports.Traverse    = Traverse;
+exports.of_float = of_float;
+exports.of_unit = of_unit;
+exports.of_pair = of_pair;
+exports.of_triple = of_triple;
+exports.of_quad = of_quad;
+exports.of_variant = of_variant;
+exports.of_field = of_field;
+exports.of_record = of_record;
+exports.Traverse = Traverse;
 /* No side effect */

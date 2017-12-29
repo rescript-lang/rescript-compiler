@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt     = require("./mt.js");
-var Block  = require("../../lib/js/block.js");
-var Curry  = require("../../lib/js/curry.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
 var Format = require("../../lib/js/format.js");
 var Printf = require("../../lib/js/printf.js");
 
@@ -105,6 +105,6 @@ var v = Format.asprintf(/* Format */[
 Mt.from_pair_suites("printf_test.ml", suites);
 
 exports.print_pair = print_pair;
-exports.suites     = suites;
-exports.v          = v;
+exports.suites = suites;
+exports.v = v;
 /* v Not a pure module */

@@ -1,6 +1,6 @@
 'use strict';
 
-var Exception_def   = require("./exception_def.js");
+var Exception_def = require("./exception_def.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var E = Caml_exceptions.create("Exception_rebind_test.A.E");

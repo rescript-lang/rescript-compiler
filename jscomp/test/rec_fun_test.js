@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
-var Curry    = require("../../lib/js/curry.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var suites = [/* [] */0];
@@ -62,11 +62,11 @@ eq("File \"rec_fun_test.ml\", line 27, characters 6-13", called[0], 2);
 
 Mt.from_pair_suites("rec_fun_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.called  = called;
-exports.g       = g;
-exports.x       = x;
-exports.y       = y;
+exports.eq = eq;
+exports.called = called;
+exports.g = g;
+exports.x = x;
+exports.y = y;
 /*  Not a pure module */

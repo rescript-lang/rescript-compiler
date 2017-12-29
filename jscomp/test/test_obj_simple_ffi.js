@@ -42,11 +42,11 @@ function f(x) {
   return x;
 }
 
-exports.v   = v;
-exports.v2  = v2;
-exports.v3  = v3;
-exports.u   = u;
-exports.ff  = ff;
+exports.v = v;
+exports.v2 = v2;
+exports.v3 = v3;
+exports.u = u;
+exports.ff = ff;
 exports.fff = fff;
-exports.f   = f;
+exports.f = f;
 /* No side effect */

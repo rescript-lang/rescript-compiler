@@ -41,10 +41,10 @@ function hh() {
 
 var g = h(/* A */65);
 
-exports.f   = f;
-exports.ff  = ff;
+exports.f = f;
+exports.ff = ff;
 exports.fff = fff;
-exports.h   = h;
-exports.hh  = hh;
-exports.g   = g;
+exports.h = h;
+exports.hh = hh;
+exports.g = g;
 /* g Not a pure module */

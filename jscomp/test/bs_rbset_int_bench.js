@@ -1,6 +1,6 @@
 'use strict';
 
-var Rbset                   = require("./rbset.js");
+var Rbset = require("./rbset.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function bench() {
@@ -55,6 +55,6 @@ var count = 1000000;
 var V = 0;
 
 exports.count = count;
-exports.V     = V;
+exports.V = V;
 exports.bench = bench;
 /*  Not a pure module */

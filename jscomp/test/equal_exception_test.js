@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Bytes                   = require("../../lib/js/bytes.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Caml_bytes              = require("../../lib/js/caml_bytes.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Mt = require("./mt.js");
+var Bytes = require("../../lib/js/bytes.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var v = "gso";
@@ -123,10 +123,10 @@ var suites = /* :: */[
 
 Mt.from_suites("exception", suites);
 
-exports.v                      = v;
-exports.is_equal               = is_equal;
-exports.is_exception           = is_exception;
-exports.is_normal_exception    = is_normal_exception;
+exports.v = v;
+exports.is_equal = is_equal;
+exports.is_exception = is_exception;
+exports.is_normal_exception = is_normal_exception;
 exports.is_arbitrary_exception = is_arbitrary_exception;
-exports.suites                 = suites;
+exports.suites = suites;
 /*  Not a pure module */

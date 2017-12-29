@@ -75,11 +75,11 @@ var d = f(/* b */98);
 
 var e = f(/* c */99);
 
-exports.f         = f;
-exports.ff        = ff;
-exports.test      = test;
+exports.f = f;
+exports.ff = ff;
+exports.test = test;
 exports.test_poly = test_poly;
-exports.c         = c;
-exports.d         = d;
-exports.e         = e;
+exports.c = c;
+exports.d = d;
+exports.e = e;
 /* c Not a pure module */

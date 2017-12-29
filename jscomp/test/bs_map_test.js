@@ -1,9 +1,9 @@
 'use strict';
 
-var Bs_Map             = require("../../lib/js/bs_Map.js");
-var Bs_Set             = require("../../lib/js/bs_Set.js");
-var Caml_primitive     = require("../../lib/js/caml_primitive.js");
-var Bs_internalAVLset  = require("../../lib/js/bs_internalAVLset.js");
+var Bs_Map = require("../../lib/js/bs_Map.js");
+var Bs_Set = require("../../lib/js/bs_Set.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
+var Bs_internalAVLset = require("../../lib/js/bs_internalAVLset.js");
 var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
 
 var N = /* module */[/* cmp */Caml_primitive.caml_int_compare];
@@ -75,12 +75,12 @@ var B = 0;
 
 var ISet = 0;
 
-exports.N    = N;
-exports.m0   = m0;
-exports.I    = I;
-exports.I2   = I2;
-exports.m    = m;
-exports.m2   = m2;
-exports.B    = B;
+exports.N = N;
+exports.m0 = m0;
+exports.I = I;
+exports.I2 = I2;
+exports.m = m;
+exports.m2 = m2;
+exports.B = B;
 exports.ISet = ISet;
 /* data Not a pure module */

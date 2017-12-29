@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_missing_polyfill   = require("../../lib/js/caml_missing_polyfill.js");
+var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function to_buffer(buff, ofs, len, _, _$1) {

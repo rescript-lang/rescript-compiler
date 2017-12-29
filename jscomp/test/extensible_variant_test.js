@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Str = Caml_exceptions.create("Extensible_variant_test.Str");
@@ -84,9 +84,9 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("extensible_variant_test.ml", suites);
 
-exports.Str    = Str;
-exports.N      = N;
-exports.Int    = Int$1;
+exports.Str = Str;
+exports.N = N;
+exports.Int = Int$1;
 exports.to_int = to_int;
 exports.suites = suites;
 /*  Not a pure module */

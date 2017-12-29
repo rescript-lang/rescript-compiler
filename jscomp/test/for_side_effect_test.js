@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 function tst() {
@@ -37,7 +37,7 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("for_side_effect_test.ml", suites);
 
-exports.tst    = tst;
-exports.test2  = test2;
+exports.tst = tst;
+exports.test2 = test2;
 exports.suites = suites;
 /*  Not a pure module */

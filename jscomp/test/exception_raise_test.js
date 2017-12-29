@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Local = Caml_exceptions.create("Exception_raise_test.Local");
@@ -181,15 +181,15 @@ Mt.from_pair_suites("exception_raise_test.ml", /* :: */[
     ]);
 
 exports.Local = Local;
-exports.B     = B;
-exports.C     = C;
-exports.D     = D;
-exports.appf  = appf;
-exports.A     = A;
-exports.f     = f;
-exports.ff    = ff;
-exports.fff   = fff;
-exports.a0    = a0;
-exports.a1    = a1;
-exports.a2    = a2;
+exports.B = B;
+exports.C = C;
+exports.D = D;
+exports.appf = appf;
+exports.A = A;
+exports.f = f;
+exports.ff = ff;
+exports.fff = fff;
+exports.a0 = a0;
+exports.a1 = a1;
+exports.a2 = a2;
 /* f Not a pure module */

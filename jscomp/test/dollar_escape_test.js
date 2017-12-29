@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 var suites = [/* [] */0];
@@ -41,11 +41,11 @@ var v = 3;
 
 var u = 3;
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.$$      = $$;
-exports.v       = v;
+exports.eq = eq;
+exports.$$ = $$;
+exports.v = v;
 exports.$$$plus = $$$plus;
-exports.u       = u;
+exports.u = u;
 /*  Not a pure module */

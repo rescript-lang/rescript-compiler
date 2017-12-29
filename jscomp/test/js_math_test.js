@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt      = require("./mt.js");
-var Block   = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Js_math = require("../../lib/js/js_math.js");
 
 var suites_000 = /* tuple */[

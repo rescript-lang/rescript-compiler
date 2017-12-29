@@ -1,8 +1,8 @@
 'use strict';
 
-var $$Array                 = require("../../lib/js/array.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_array              = require("../../lib/js/caml_array.js");
+var $$Array = require("../../lib/js/array.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var v = [0];

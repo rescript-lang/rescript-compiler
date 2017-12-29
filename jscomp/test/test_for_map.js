@@ -1,7 +1,7 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function height(param) {
@@ -696,6 +696,6 @@ function assertion_test() {
   return /* () */0;
 }
 
-exports.IntMap         = IntMap;
+exports.IntMap = IntMap;
 exports.assertion_test = assertion_test;
 /* No side effect */

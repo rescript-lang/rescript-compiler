@@ -23,9 +23,9 @@ function u(h) {
   return $plus$great(3, h);
 }
 
-exports.v           = v;
-exports.M           = M;
-exports.f           = f;
+exports.v = v;
+exports.M = M;
+exports.f = f;
 exports.$plus$great = $plus$great;
-exports.u           = u;
+exports.u = u;
 /* v Not a pure module */

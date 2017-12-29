@@ -1,8 +1,8 @@
 'use strict';
 
-var $$Array    = require("../../lib/js/array.js");
-var Curry      = require("../../lib/js/curry.js");
-var $$String   = require("../../lib/js/string.js");
+var $$Array = require("../../lib/js/array.js");
+var Curry = require("../../lib/js/curry.js");
+var $$String = require("../../lib/js/string.js");
 var MoreLabels = require("../../lib/js/moreLabels.js");
 
 function f(x) {
@@ -65,8 +65,8 @@ var ghh = Curry._2(MoreLabels.Hashtbl[/* create */0], /* None */0, 30);
 
 var hh = 1;
 
-exports.XX  = XX;
-exports.u   = u;
-exports.hh  = hh;
+exports.XX = XX;
+exports.u = u;
+exports.hh = hh;
 exports.ghh = ghh;
 /* ghh Not a pure module */

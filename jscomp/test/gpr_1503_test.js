@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
-var Int64       = require("../../lib/js/int64.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Int64 = require("../../lib/js/int64.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
 var suites = [/* [] */0];
@@ -47,8 +47,8 @@ eq("File \"gpr_1503_test.ml\", line 22, characters 7-14", Int64.min_int, Caml_fo
 
 Mt.from_pair_suites("gpr_1503_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.id      = id;
+exports.eq = eq;
+exports.id = id;
 /* s Not a pure module */

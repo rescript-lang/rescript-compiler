@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
@@ -53,9 +53,9 @@ var uv = /* record */[
 
 var u_v = newrecord;
 
-exports.v      = v;
-exports.uv     = uv;
-exports.u_v    = u_v;
-exports.f      = f;
+exports.v = v;
+exports.uv = uv;
+exports.u_v = u_v;
+exports.f = f;
 exports.suites = suites;
 /*  Not a pure module */

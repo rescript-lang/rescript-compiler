@@ -1,6 +1,6 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
+var List = require("../../lib/js/list.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var a0 = Caml_builtin_exceptions.not_found;
@@ -71,11 +71,11 @@ var a4 = a0;
 
 var a5 = a0;
 
-exports.a0   = a0;
-exports.a1   = a1;
-exports.a2   = a2;
-exports.a3   = a3;
-exports.a4   = a4;
-exports.a5   = a5;
+exports.a0 = a0;
+exports.a1 = a1;
+exports.a2 = a2;
+exports.a3 = a3;
+exports.a4 = a4;
+exports.a5 = a5;
 exports.List = List$1;
 /* b Not a pure module */

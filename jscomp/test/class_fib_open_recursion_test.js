@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Hashtbl                 = require("../../lib/js/hashtbl.js");
-var Caml_oo_curry           = require("../../lib/js/caml_oo_curry.js");
-var CamlinternalOO          = require("../../lib/js/camlinternalOO.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Hashtbl = require("../../lib/js/hashtbl.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var shared = ["calc"];
@@ -84,9 +84,9 @@ eq("File \"class_fib_open_recursion_test.ml\", line 33, characters 5-12", Caml_o
 
 Mt.from_pair_suites("class_fib_open_recursion_test.ml", suites[0]);
 
-exports.suites   = suites;
-exports.test_id  = test_id;
-exports.eq       = eq;
-exports.fib      = fib;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.fib = fib;
 exports.memo_fib = memo_fib;
 /* fib Not a pure module */

@@ -18,8 +18,8 @@ var u = xxx(3);
 
 var xx = xxx("3");
 
-exports.v   = v;
+exports.v = v;
 exports.xxx = xxx;
-exports.u   = u;
-exports.xx  = xx;
+exports.u = u;
+exports.xx = xx;
 /*  Not a pure module */

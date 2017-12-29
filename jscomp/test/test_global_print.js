@@ -9,7 +9,7 @@ var Hashtbl = 0;
 
 var V = 0;
 
-exports.X       = X;
+exports.X = X;
 exports.Hashtbl = Hashtbl;
-exports.V       = V;
+exports.V = V;
 /* No side effect */

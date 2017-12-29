@@ -38,7 +38,7 @@ var N1 = [
   f3$1
 ];
 
-exports.N  = N;
+exports.N = N;
 exports.N0 = N0;
 exports.N1 = N1;
 /* No side effect */

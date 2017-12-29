@@ -1,14 +1,14 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Printf                  = require("../../lib/js/printf.js");
-var Random                  = require("../../lib/js/random.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Caml_int32              = require("../../lib/js/caml_int32.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Printf = require("../../lib/js/printf.js");
+var Random = require("../../lib/js/random.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var Actors = /* module */[];
@@ -3379,14 +3379,14 @@ var Main = /* module */[
   /* preload */preload
 ];
 
-exports.Actors               = Actors;
-exports.Dom_html             = Dom_html;
-exports.Sprite               = Sprite;
-exports.Particle             = Particle;
-exports.$$Object             = $$Object;
-exports.Draw                 = Draw;
-exports.Viewport             = Viewport;
-exports.Director             = Director;
+exports.Actors = Actors;
+exports.Dom_html = Dom_html;
+exports.Sprite = Sprite;
+exports.Particle = Particle;
+exports.$$Object = $$Object;
+exports.Draw = Draw;
+exports.Viewport = Viewport;
+exports.Director = Director;
 exports.Procedural_generator = Procedural_generator;
-exports.Main                 = Main;
+exports.Main = Main;
 /*  Not a pure module */

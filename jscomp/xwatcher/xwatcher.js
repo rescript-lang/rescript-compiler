@@ -1,10 +1,10 @@
 'use strict';
 
-import * as Path          from "path";
-import * as Js_option     from "../../lib/es6/js_option.js";
-import * as Js_vector     from "../../lib/es6/js_vector.js";
-import * as Js_primitive  from "../../lib/es6/js_primitive.js";
-import * as Node_process  from "../../lib/es6/node_process.js";
+import * as Path from "path";
+import * as Js_option from "../../lib/es6/js_option.js";
+import * as Js_vector from "../../lib/es6/js_vector.js";
+import * as Js_primitive from "../../lib/es6/js_primitive.js";
+import * as Node_process from "../../lib/es6/node_process.js";
 import * as Xwatcher_util from "./xwatcher_util.js";
 
 var sourceDirs = Path.join("lib", "bs", ".sourcedirs.json");

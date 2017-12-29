@@ -80,19 +80,19 @@ var d_empty = /* D_empty */0;
 
 var hei = /* Hei */0;
 
-exports.u_x        = u_x;
-exports.b_x        = b_x;
-exports.c_x        = c_x;
-exports.d_empty    = d_empty;
-exports.d_int      = d_int;
-exports.d_tuple    = d_tuple;
+exports.u_x = u_x;
+exports.b_x = b_x;
+exports.c_x = c_x;
+exports.d_empty = d_empty;
+exports.d_int = d_int;
+exports.d_tuple = d_tuple;
 exports.newContent = newContent;
-exports.d_tweak    = d_tweak;
-exports.hei        = hei;
-exports.u_X        = u_X;
-exports.d          = d;
-exports.v          = v;
-exports.h          = h;
-exports.xx         = xx;
-exports.a          = a;
+exports.d_tweak = d_tweak;
+exports.hei = hei;
+exports.u_X = u_X;
+exports.d = d;
+exports.v = v;
+exports.h = h;
+exports.xx = xx;
+exports.a = a;
 /* No side effect */

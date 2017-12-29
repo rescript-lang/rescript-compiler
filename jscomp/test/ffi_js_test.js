@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var keys = ( function (x){return Object.keys(x)});
@@ -175,20 +175,20 @@ function ffff(x) {
 
 Mt.from_pair_suites("ffi_js_test.ml", suites[0]);
 
-exports.keys               = keys;
-exports.suites             = suites;
-exports.test_id            = test_id;
-exports.eq                 = eq;
-exports.int_config         = int_config;
-exports.string_config      = string_config;
-exports.same_type          = same_type;
-exports.v_obj              = v_obj;
-exports.u                  = u;
+exports.keys = keys;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.int_config = int_config;
+exports.string_config = string_config;
+exports.same_type = same_type;
+exports.v_obj = v_obj;
+exports.u = u;
 exports.side_effect_config = side_effect_config;
-exports.vv                 = vv;
-exports.v                  = v;
-exports.vvv                = vvv;
-exports.vvvv               = vvvv;
-exports.create_prim        = create_prim;
-exports.ffff               = ffff;
+exports.vv = vv;
+exports.v = v;
+exports.vvv = vvv;
+exports.vvvv = vvvv;
+exports.create_prim = create_prim;
+exports.ffff = ffff;
 /* keys Not a pure module */

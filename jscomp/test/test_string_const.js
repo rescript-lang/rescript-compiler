@@ -1,7 +1,7 @@
 'use strict';
 
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var hh;
@@ -21,6 +21,6 @@ catch (raw_exn){
 
 var f = /* "o" */111;
 
-exports.f  = f;
+exports.f = f;
 exports.hh = hh;
 /* hh Not a pure module */

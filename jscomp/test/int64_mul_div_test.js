@@ -1,13 +1,13 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var List        = require("../../lib/js/list.js");
-var $$Array     = require("../../lib/js/array.js");
-var Block       = require("../../lib/js/block.js");
-var Curry       = require("../../lib/js/curry.js");
-var Printf      = require("../../lib/js/printf.js");
-var Caml_int64  = require("../../lib/js/caml_int64.js");
-var Pervasives  = require("../../lib/js/pervasives.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Printf = require("../../lib/js/printf.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 
 function commutative_mul(result, a, b) {
@@ -1806,17 +1806,17 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                   ]
                                 ]))))))));
 
-exports.commutative_mul        = commutative_mul;
-exports.pairs                  = pairs;
-exports.from_pairs             = from_pairs;
-exports.small_pairs            = small_pairs;
-exports.to_floats              = to_floats;
+exports.commutative_mul = commutative_mul;
+exports.pairs = pairs;
+exports.from_pairs = from_pairs;
+exports.small_pairs = small_pairs;
+exports.to_floats = to_floats;
 exports.check_complete_compare = check_complete_compare;
-exports.of_float_pairs         = of_float_pairs;
-exports.simple_divs            = simple_divs;
-exports.from                   = from;
-exports.to_string              = to_string;
-exports.int64_compare_tests    = int64_compare_tests;
-exports.from_compare           = from_compare;
-exports.from_to_string         = from_to_string;
+exports.of_float_pairs = of_float_pairs;
+exports.simple_divs = simple_divs;
+exports.from = from;
+exports.to_string = to_string;
+exports.int64_compare_tests = int64_compare_tests;
+exports.from_compare = from_compare;
+exports.from_to_string = from_to_string;
 /*  Not a pure module */

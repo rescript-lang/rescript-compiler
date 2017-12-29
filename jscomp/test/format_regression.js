@@ -1,6 +1,6 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function peek_queue() {
@@ -66,10 +66,10 @@ function advance_loop(state) {
 
 var pp_infinity = 1000000010;
 
-exports.peek_queue      = peek_queue;
-exports.int_of_size     = int_of_size;
-exports.take_queue      = take_queue;
+exports.peek_queue = peek_queue;
+exports.int_of_size = int_of_size;
+exports.take_queue = take_queue;
 exports.format_pp_token = format_pp_token;
-exports.pp_infinity     = pp_infinity;
-exports.advance_loop    = advance_loop;
+exports.pp_infinity = pp_infinity;
+exports.advance_loop = advance_loop;
 /* No side effect */

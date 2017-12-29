@@ -23,6 +23,6 @@ var Test = /* module */[
 ];
 
 exports.ExtUnixAll = ExtUnixAll;
-exports.ExtUnix    = ExtUnix;
-exports.Test       = Test;
+exports.ExtUnix = ExtUnix;
+exports.Test = Test;
 /* v Not a pure module */

@@ -1,7 +1,7 @@
 'use strict';
 
-var List       = require("../../lib/js/list.js");
-var Curry      = require("../../lib/js/curry.js");
+var List = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 function h0(x) {
@@ -93,21 +93,21 @@ function xx() {
 
 var test_as = List.map;
 
-exports.h0        = h0;
-exports.h00       = h00;
-exports.h1        = h1;
-exports.h10       = h10;
-exports.h30       = h30;
-exports.h33       = h33;
-exports.h34       = h34;
+exports.h0 = h0;
+exports.h00 = h00;
+exports.h1 = h1;
+exports.h10 = h10;
+exports.h30 = h30;
+exports.h33 = h33;
+exports.h34 = h34;
 exports.ocaml_run = ocaml_run;
-exports.a0        = a0;
-exports.a1        = a1;
-exports.a2        = a2;
-exports.a3        = a3;
-exports.a4        = a4;
-exports.a44       = a44;
-exports.b44       = b44;
-exports.test_as   = test_as;
-exports.xx        = xx;
+exports.a0 = a0;
+exports.a1 = a1;
+exports.a2 = a2;
+exports.a3 = a3;
+exports.a4 = a4;
+exports.a44 = a44;
+exports.b44 = b44;
+exports.test_as = test_as;
+exports.xx = xx;
 /* No side effect */

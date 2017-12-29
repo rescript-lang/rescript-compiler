@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
-var Bs_List    = require("../../lib/js/bs_List.js");
-var Bs_Array   = require("../../lib/js/bs_Array.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Bs_List = require("../../lib/js/bs_List.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 
 var suites = [/* [] */0];
@@ -1244,19 +1244,19 @@ var A = 0;
 
 var J = 0;
 
-exports.suites       = suites;
-exports.test_id      = test_id;
-exports.eq           = eq;
-exports.b            = b;
-exports.N            = N;
-exports.A            = A;
-exports.J            = J;
-exports.sum          = sum;
-exports.sum2         = sum2;
-exports.mod2         = mod2;
-exports.id           = id;
-exports.add          = add;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.b = b;
+exports.N = N;
+exports.A = A;
+exports.J = J;
+exports.sum = sum;
+exports.sum2 = sum2;
+exports.mod2 = mod2;
+exports.id = id;
+exports.add = add;
 exports.length_10_id = length_10_id;
-exports.length_8_id  = length_8_id;
-exports.succx        = succx;
+exports.length_8_id = length_8_id;
+exports.succx = succx;
 /* u Not a pure module */

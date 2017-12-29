@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt    = require("./mt.js");
-var Fs    = require("fs");
-var Path  = require("path");
+var Mt = require("./mt.js");
+var Fs = require("fs");
+var Path = require("path");
 var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
@@ -57,7 +57,7 @@ if (match$2 !== undefined) {
 
 Mt.from_pair_suites("fs_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 /* match Not a pure module */

@@ -1,8 +1,8 @@
 'use strict';
 
-var ZZ       = require("X");
-var Z        = require("z");
-var Vscode   = require("vscode");
+var ZZ = require("X");
+var Z = require("z");
+var Vscode = require("vscode");
 var GlMatrix = require("gl-matrix");
 
 function f(a, b, c) {
@@ -46,7 +46,7 @@ function f3(x) {
   return GlMatrix.mat4.create();
 }
 
-exports.f  = f;
+exports.f = f;
 exports.f2 = f2;
 exports.f3 = f3;
 /* X Not a pure module */

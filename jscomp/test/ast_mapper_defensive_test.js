@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var Js_mapperRt = require("../../lib/js/js_mapperRt.js");
 
 var suites = [/* [] */0];
@@ -87,13 +87,13 @@ $$throw("File \"ast_mapper_defensive_test.ml\", line 30, characters 15-22", (fun
 
 Mt.from_pair_suites("ast_mapper_defensive_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
 exports.$$throw = $$throw;
-exports.aToJs   = aToJs;
+exports.aToJs = aToJs;
 exports.aFromJs = aFromJs;
-exports.bToJs   = bToJs;
+exports.bToJs = bToJs;
 exports.bFromJs = bFromJs;
-exports.cToJs   = cToJs;
+exports.cToJs = cToJs;
 exports.cFromJs = cFromJs;
 /*  Not a pure module */

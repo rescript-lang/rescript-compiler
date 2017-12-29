@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_array              = require("../../lib/js/caml_array.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function map(f, a) {
@@ -173,20 +173,20 @@ eq("File \"earger_curry_test.ml\", line 122, characters 7-14", all_v[0], /* :: *
 
 Mt.from_pair_suites("earger_curry_test.ml", suites[0]);
 
-exports.map       = map;
-exports.init      = init;
+exports.map = map;
+exports.init = init;
 exports.fold_left = fold_left;
-exports.f2        = f2;
-exports.suites    = suites;
-exports.test_id   = test_id;
-exports.eq        = eq;
-exports.v         = v;
-exports.all_v     = all_v;
-exports.add5      = add5;
-exports.f         = f;
-exports.g         = g;
-exports.a         = a;
-exports.b         = b;
-exports.c         = c;
-exports.d         = d;
+exports.f2 = f2;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.v = v;
+exports.all_v = all_v;
+exports.add5 = add5;
+exports.f = f;
+exports.g = g;
+exports.a = a;
+exports.b = b;
+exports.c = c;
+exports.d = d;
 /*  Not a pure module */

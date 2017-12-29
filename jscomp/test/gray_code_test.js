@@ -57,5 +57,5 @@ function next_power(v) {
 exports.gray_encode = gray_encode;
 exports.gray_decode = gray_decode;
 exports.bool_string = bool_string;
-exports.next_power  = next_power;
+exports.next_power = next_power;
 /* No side effect */

@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var $$Array                 = require("../../lib/js/array.js");
-var Block                   = require("../../lib/js/block.js");
-var Js_json                 = require("../../lib/js/js_json.js");
-var Caml_array              = require("../../lib/js/caml_array.js");
-var Js_boolean              = require("../../lib/js/js_boolean.js");
-var Js_primitive            = require("../../lib/js/js_primitive.js");
+var Mt = require("./mt.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Js_json = require("../../lib/js/js_json.js");
+var Caml_array = require("../../lib/js/caml_array.js");
+var Js_boolean = require("../../lib/js/js_boolean.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
@@ -603,11 +603,11 @@ eq("File \"js_json_test.ml\", line 390, characters 5-12", Js_json.decodeNull(1.2
 
 Mt.from_pair_suites("js_json_test.ml", suites[0]);
 
-exports.suites     = suites;
-exports.add_test   = add_test;
-exports.eq         = eq;
-exports.false_     = false_;
-exports.true_      = true_;
+exports.suites = suites;
+exports.add_test = add_test;
+exports.eq = eq;
+exports.false_ = false_;
+exports.true_ = true_;
 exports.option_get = option_get;
-exports.eq_at_i    = eq_at_i;
+exports.eq_at_i = eq_at_i;
 /* v Not a pure module */

@@ -1,6 +1,6 @@
 'use strict';
 
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function getComapre(x) {
@@ -166,14 +166,14 @@ var v3 = add$1(3, "a", v0);
 console.log(v3);
 
 exports.Comparable = Comparable;
-exports.height     = height;
-exports.create     = create;
-exports.bal        = bal;
-exports.add        = add$1;
-exports.empty      = empty;
-exports.V0         = V0;
-exports.V1         = V1;
-exports.v0         = v0;
-exports.v1         = v1;
-exports.v3         = v3;
+exports.height = height;
+exports.create = create;
+exports.bal = bal;
+exports.add = add$1;
+exports.empty = empty;
+exports.V0 = V0;
+exports.V1 = V1;
+exports.v0 = v0;
+exports.v1 = v1;
+exports.v3 = v3;
 /* v3 Not a pure module */

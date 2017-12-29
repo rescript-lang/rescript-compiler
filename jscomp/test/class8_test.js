@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt              = require("./mt.js");
-var Block           = require("../../lib/js/block.js");
-var Curry           = require("../../lib/js/curry.js");
-var Caml_obj        = require("../../lib/js/caml_obj.js");
-var Caml_oo_curry   = require("../../lib/js/caml_oo_curry.js");
-var CamlinternalOO  = require("../../lib/js/camlinternalOO.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
+var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var shared = ["repr"];
@@ -121,11 +121,11 @@ eq("File \"class8_test.ml\", line 39, characters 5-12", 3, Caml_oo_curry.js1(834
 
 Mt.from_pair_suites("class8_test.ml", suites[0]);
 
-exports.suites     = suites;
-exports.test_id    = test_id;
-exports.eq         = eq;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 exports.comparable = comparable;
-exports.money      = money;
-exports.money2     = money2;
-exports.min        = min;
+exports.money = money;
+exports.money2 = money2;
+exports.min = min;
 /* money Not a pure module */

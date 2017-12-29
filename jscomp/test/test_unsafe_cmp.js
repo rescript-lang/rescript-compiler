@@ -18,6 +18,6 @@ function ff(x, y) {
   }
 }
 
-exports.f  = f;
+exports.f = f;
 exports.ff = ff;
 /* No side effect */

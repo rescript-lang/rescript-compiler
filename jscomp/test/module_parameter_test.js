@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Block    = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
 var $$String = require("../../lib/js/string.js");
 
 function u(v) {
@@ -74,9 +74,9 @@ Mt.from_pair_suites("module_parameter_test.ml", suites);
 
 var v0 = 1;
 
-exports.u      = u;
-exports.N      = N;
-exports.v0     = v0;
-exports.v      = v;
+exports.u = u;
+exports.N = N;
+exports.v0 = v0;
+exports.v = v;
 exports.suites = suites;
 /*  Not a pure module */

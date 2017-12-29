@@ -1,6 +1,6 @@
 'use strict';
 
-var Vscode        = require("vscode");
+var Vscode = require("vscode");
 var SomeEs6Module = require("some-es6-module");
 
 var $$default = SomeEs6Module.default;
@@ -43,13 +43,13 @@ function u() {
 var $$case = 3;
 
 exports.$$default = $$default;
-exports.default   = $$default;
-exports.__esModule= true;
-exports.$$window  = $$window;
-exports.mk        = mk;
-exports.mk2       = mk2;
-exports.des       = des;
-exports.$$case    = $$case;
-exports.test      = test;
-exports.u         = u;
+exports.default = $$default;
+exports.__esModule = true;
+exports.$$window = $$window;
+exports.mk = mk;
+exports.mk2 = mk2;
+exports.des = des;
+exports.$$case = $$case;
+exports.test = test;
+exports.u = u;
 /* default Not a pure module */

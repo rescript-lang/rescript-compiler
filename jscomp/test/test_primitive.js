@@ -1,8 +1,8 @@
 'use strict';
 
-var Curry            = require("../../lib/js/curry.js");
-var Caml_array       = require("../../lib/js/caml_array.js");
-var Pervasives       = require("../../lib/js/pervasives.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 
 function a4(prim) {
@@ -107,24 +107,24 @@ var xx = /* tuple */[
   0
 ];
 
-exports.a0            = a0;
-exports.a1            = a1;
-exports.a2            = a2;
-exports.a3            = a3;
-exports.a4            = a4;
-exports.a5            = a5;
-exports.a6            = a6;
-exports.test_float    = test_float;
-exports.test_abs      = test_abs;
-exports.v             = v;
-exports.xxx           = xxx;
-exports.a             = a;
-exports.u             = u;
-exports.f2            = f2;
-exports.xx            = xx;
-exports.unboxed_x     = unboxed_x;
-exports.gg            = gg;
-exports.f             = f;
+exports.a0 = a0;
+exports.a1 = a1;
+exports.a2 = a2;
+exports.a3 = a3;
+exports.a4 = a4;
+exports.a5 = a5;
+exports.a6 = a6;
+exports.test_float = test_float;
+exports.test_abs = test_abs;
+exports.v = v;
+exports.xxx = xxx;
+exports.a = a;
+exports.u = u;
+exports.f2 = f2;
+exports.xx = xx;
+exports.unboxed_x = unboxed_x;
+exports.gg = gg;
+exports.f = f;
 exports.is_lazy_force = is_lazy_force;
-exports.fib           = fib;
+exports.fib = fib;
 /*  Not a pure module */

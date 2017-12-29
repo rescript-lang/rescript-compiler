@@ -37,7 +37,7 @@ function f3(x) {
   }
 }
 
-exports.f  = f;
+exports.f = f;
 exports.f2 = f2;
 exports.f3 = f3;
 /* No side effect */

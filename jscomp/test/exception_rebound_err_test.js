@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
@@ -95,12 +95,12 @@ eq("File \"exception_rebound_err_test.ml\", line 24, characters 6-13", test_js_e
 
 Mt.from_pair_suites("exception_rebound_err_test.ml", suites[0]);
 
-exports.suites         = suites;
-exports.test_id        = test_id;
-exports.eq             = eq;
-exports.A              = A;
-exports.B              = B;
-exports.C              = C;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.A = A;
+exports.B = B;
+exports.C = C;
 exports.test_js_error4 = test_js_error4;
-exports.f              = f;
+exports.f = f;
 /*  Not a pure module */

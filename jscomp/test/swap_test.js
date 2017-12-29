@@ -1,12 +1,12 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var List       = require("../../lib/js/list.js");
-var $$Array    = require("../../lib/js/array.js");
-var Block      = require("../../lib/js/block.js");
-var Curry      = require("../../lib/js/curry.js");
-var Format     = require("../../lib/js/format.js");
-var Printf     = require("../../lib/js/printf.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Format = require("../../lib/js/format.js");
+var Printf = require("../../lib/js/printf.js");
 var Caml_int32 = require("../../lib/js/caml_int32.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
@@ -1019,13 +1019,13 @@ function f(s, param) {
 
 Mt.from_pair_suites("swap_test.ml", Pervasives.$at(suites_16, Pervasives.$at(suites_32, Pervasives.$at(suites_64, Pervasives.$at(f("d16", d16), f("d32", d32))))));
 
-exports.tests_16  = tests_16;
-exports.tests_32  = tests_32;
-exports.tests_64  = tests_64;
+exports.tests_16 = tests_16;
+exports.tests_32 = tests_32;
+exports.tests_64 = tests_64;
 exports.suites_16 = suites_16;
 exports.suites_32 = suites_32;
 exports.suites_64 = suites_64;
-exports.d16       = d16;
-exports.d32       = d32;
-exports.f         = f;
+exports.d16 = d16;
+exports.d32 = d32;
+exports.f = f;
 /* suites_16 Not a pure module */

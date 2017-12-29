@@ -1,6 +1,6 @@
 'use strict';
 
-var Curry      = require("../../lib/js/curry.js");
+var Curry = require("../../lib/js/curry.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 function f(_n, _acc) {
@@ -41,6 +41,6 @@ f(10, (function () {
         return /* () */0;
       }));
 
-exports.f            = f;
+exports.f = f;
 exports.test_closure = test_closure;
 /*  Not a pure module */

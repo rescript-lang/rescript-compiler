@@ -1,13 +1,13 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var $$String                = require("../../lib/js/string.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var List = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var $$String = require("../../lib/js/string.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var graph = /* :: */[
@@ -1428,14 +1428,14 @@ catch (raw_exn){
   
 }
 
-exports.graph          = graph;
-exports.nexts          = nexts;
-exports.dfs1           = dfs1;
-exports.dfs2           = dfs2;
-exports.dfs3           = dfs3;
-exports.grwork         = grwork;
+exports.graph = graph;
+exports.nexts = nexts;
+exports.dfs1 = dfs1;
+exports.dfs2 = dfs2;
+exports.dfs3 = dfs3;
+exports.grwork = grwork;
 exports.unsafe_topsort = unsafe_topsort;
-exports.String_set     = String_set;
-exports.Cycle          = Cycle;
-exports.pathsort       = pathsort;
+exports.String_set = String_set;
+exports.Cycle = Cycle;
+exports.pathsort = pathsort;
 /*  Not a pure module */

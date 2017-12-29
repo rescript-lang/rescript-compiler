@@ -800,21 +800,21 @@ function cardinal(param) {
 
 var empty = /* Empty */0;
 
-exports.blackify         = blackify;
-exports.empty            = empty;
-exports.is_empty         = is_empty;
-exports.mem              = mem;
-exports.balance_left     = balance_left;
-exports.balance_right    = balance_right;
-exports.singleton        = singleton;
-exports.unbalanced_left  = unbalanced_left;
+exports.blackify = blackify;
+exports.empty = empty;
+exports.is_empty = is_empty;
+exports.mem = mem;
+exports.balance_left = balance_left;
+exports.balance_right = balance_right;
+exports.singleton = singleton;
+exports.unbalanced_left = unbalanced_left;
 exports.unbalanced_right = unbalanced_right;
-exports.lbalance         = lbalance;
-exports.rbalance         = rbalance;
-exports.ins              = ins;
-exports.add              = add;
-exports.remove_min       = remove_min;
-exports.remove_aux       = remove_aux;
-exports.remove           = remove;
-exports.cardinal         = cardinal;
+exports.lbalance = lbalance;
+exports.rbalance = rbalance;
+exports.ins = ins;
+exports.add = add;
+exports.remove_min = remove_min;
+exports.remove_aux = remove_aux;
+exports.remove = remove;
+exports.cardinal = cardinal;
 /* No side effect */

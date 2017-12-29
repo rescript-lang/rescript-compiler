@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
@@ -40,11 +40,11 @@ eq("File \"ppx_apply_test.ml\", line 17, characters 5-12", u, 3);
 
 Mt.from_pair_suites("ppx_apply_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.u       = u;
+exports.eq = eq;
+exports.u = u;
 exports.nullary = nullary;
-exports.unary   = unary;
-exports.xx      = xx;
+exports.unary = unary;
+exports.xx = xx;
 /* u Not a pure module */

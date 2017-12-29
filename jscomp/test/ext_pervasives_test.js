@@ -1,19 +1,19 @@
 'use strict';
 
-var Arg                     = require("../../lib/js/arg.js");
-var Obj                     = require("../../lib/js/obj.js");
-var List                    = require("../../lib/js/list.js");
-var $$Array                 = require("../../lib/js/array.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Format                  = require("../../lib/js/format.js");
-var Printf                  = require("../../lib/js/printf.js");
-var $$String                = require("../../lib/js/string.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Caml_int32              = require("../../lib/js/caml_int32.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Arg = require("../../lib/js/arg.js");
+var Obj = require("../../lib/js/obj.js");
+var List = require("../../lib/js/list.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Format = require("../../lib/js/format.js");
+var Printf = require("../../lib/js/printf.js");
+var $$String = require("../../lib/js/string.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_int32 = require("../../lib/js/caml_int32.js");
+var Pervasives = require("../../lib/js/pervasives.js");
+var Caml_string = require("../../lib/js/caml_string.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function $$finally(v, action, f) {
@@ -280,14 +280,14 @@ function hash_variant(s) {
   }
 }
 
-exports.$$finally         = $$finally;
+exports.$$finally = $$finally;
 exports.with_file_as_chan = with_file_as_chan;
-exports.with_file_as_pp   = with_file_as_pp;
-exports.is_pos_pow        = is_pos_pow;
-exports.failwithf         = failwithf;
-exports.invalid_argf      = invalid_argf;
-exports.bad_argf          = bad_argf;
-exports.dump              = dump$1;
-exports.pp_any            = pp_any;
-exports.hash_variant      = hash_variant;
+exports.with_file_as_pp = with_file_as_pp;
+exports.is_pos_pow = is_pos_pow;
+exports.failwithf = failwithf;
+exports.invalid_argf = invalid_argf;
+exports.bad_argf = bad_argf;
+exports.dump = dump$1;
+exports.pp_any = pp_any;
+exports.hash_variant = hash_variant;
 /* Format Not a pure module */

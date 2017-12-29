@@ -13,10 +13,10 @@ var g = 3;
 
 var gg = 4;
 
-exports.N  = N;
-exports.v  = v;
-exports.u  = u;
-exports.h  = h;
-exports.g  = g;
+exports.N = N;
+exports.v = v;
+exports.u = u;
+exports.h = h;
+exports.g = g;
 exports.gg = gg;
 /* No side effect */

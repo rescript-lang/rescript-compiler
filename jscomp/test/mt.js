@@ -1,11 +1,11 @@
 'use strict';
 
-var List    = require("../../lib/js/list.js");
-var Path    = require("path");
+var List = require("../../lib/js/list.js");
+var Path = require("path");
 var $$Array = require("../../lib/js/array.js");
-var Block   = require("../../lib/js/block.js");
-var Curry   = require("../../lib/js/curry.js");
-var Assert  = require("assert");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Assert = require("assert");
 var Process = require("process");
 
 function assert_fail(msg) {
@@ -261,9 +261,9 @@ function bool_suites(test_id, suites, loc, x) {
   return /* () */0;
 }
 
-exports.from_suites         = from_suites;
-exports.from_pair_suites    = from_pair_suites;
+exports.from_suites = from_suites;
+exports.from_pair_suites = from_pair_suites;
 exports.from_promise_suites = from_promise_suites;
-exports.eq_suites           = eq_suites;
-exports.bool_suites         = bool_suites;
+exports.eq_suites = eq_suites;
+exports.bool_suites = bool_suites;
 /* val_unit Not a pure module */

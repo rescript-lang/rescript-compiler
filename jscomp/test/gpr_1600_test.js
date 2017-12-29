@@ -32,7 +32,7 @@ function f() {
   return eventObj;
 }
 
-exports.obj      = obj;
+exports.obj = obj;
 exports.eventObj = eventObj;
-exports.f        = f;
+exports.f = f;
 /* obj Not a pure module */

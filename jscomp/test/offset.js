@@ -1,9 +1,9 @@
 'use strict';
 
-var List                    = require("../../lib/js/list.js");
-var Curry                   = require("../../lib/js/curry.js");
-var $$String                = require("../../lib/js/string.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var List = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
+var $$String = require("../../lib/js/string.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function height(param) {
@@ -833,7 +833,7 @@ var M = /* module */[
 
 var x = 1;
 
-exports.M     = M;
-exports.x     = x;
+exports.M = M;
+exports.x = x;
 exports.$$Set = $$Set;
 /* No side effect */

@@ -95,10 +95,9 @@ let requires require_lit cxt f (modules : (Ident.t * string) list ) =
   (* the context used to print the following program *)  
   let outer_cxt, reversed_list  =
     List.fold_left
-      (fun (cxt, acc, len) (id,s) ->
+      (fun (cxt, acc) (id,s) ->
          let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
          cxt, ((str,s) :: acc))
-      )
       (cxt, []) modules in
   P.force_newline f ;    
   Ext_list.rev_iter (fun (s,file) ->
@@ -122,10 +121,9 @@ let imports  cxt f (modules : (Ident.t * string) list ) =
   (* the context used to print the following program *)  
   let outer_cxt, reversed_list =
     List.fold_left
-      (fun (cxt, acc, len) (id,s) ->
+      (fun (cxt, acc) (id,s) ->
          let str, cxt = Ext_pp_scope.str_of_ident cxt id  in
          cxt, ((str,s) :: acc))
-      )
       (cxt, []) modules in
   P.force_newline f ;    
   Ext_list.rev_iter (fun (s,file) ->

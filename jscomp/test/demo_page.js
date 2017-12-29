@@ -1,7 +1,7 @@
 'use strict';
 
-var Curry    = require("../../lib/js/curry.js");
-var React    = require("react");
+var Curry = require("../../lib/js/curry.js");
+var React = require("react");
 var ReactDom = require("react-dom");
 
 function fib(n) {
@@ -47,9 +47,9 @@ ReactDom.render(React.createClass({
             })
         }), document.getElementById("hi"));
 
-exports.fib        = fib;
-exports.sum        = sum;
-exports.map        = map;
+exports.fib = fib;
+exports.sum = sum;
+exports.map = map;
 exports.test_curry = test_curry;
-exports.f          = f;
+exports.f = f;
 /*  Not a pure module */

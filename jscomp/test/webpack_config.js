@@ -1,10 +1,10 @@
 'use strict';
 
-var List                      = require("../../lib/js/list.js");
-var List$1                    = require("List");
-var List$2                    = require("reactV");
-var List$3                    = require("reactX");
-var WebpackConfigJs           = require("../../../webpack.config.js");
+var List = require("../../lib/js/list.js");
+var List$1 = require("List");
+var List$2 = require("reactV");
+var List$3 = require("reactX");
+var WebpackConfigJs = require("../../../webpack.config.js");
 var WebpackMiddlewareConfigJs = require("../../../webpack.middleware.config.js");
 
 var WebpackConfig = /* module */[/* ../../../webpack.config.js */WebpackConfigJs];
@@ -57,11 +57,11 @@ List$1.xx();
   List.length(/* [] */0)
 ];
 
-exports.WebpackConfig              = WebpackConfig;
+exports.WebpackConfig = WebpackConfig;
 exports.WebpackDevMiddlewareConfig = WebpackDevMiddlewareConfig;
-exports.configX                    = configX;
-exports.U                          = U;
-exports.A                          = A;
-exports.B                          = B;
-exports.f                          = f;
+exports.configX = configX;
+exports.U = U;
+exports.A = A;
+exports.B = B;
+exports.f = f;
 /* WebpackConfig Not a pure module */

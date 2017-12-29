@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 
 var suites = [/* [] */0];
@@ -130,20 +130,20 @@ eq("File \"name_mangle_test.ml\", line 97, characters 7-14", f12(({__:0})), 1);
 
 Mt.from_pair_suites("File \"name_mangle_test.ml\", line 101, characters 23-30", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.f0      = f0;
-exports.f1      = f1;
-exports.f2      = f2;
-exports.f3      = f3;
-exports.f4      = f4;
-exports.f5      = f5;
-exports.f6      = f6;
-exports.f7      = f7;
-exports.f8      = f8;
-exports.f9      = f9;
-exports.f10     = f10;
-exports.f11     = f11;
-exports.f12     = f12;
+exports.eq = eq;
+exports.f0 = f0;
+exports.f1 = f1;
+exports.f2 = f2;
+exports.f3 = f3;
+exports.f4 = f4;
+exports.f5 = f5;
+exports.f6 = f6;
+exports.f7 = f7;
+exports.f8 = f8;
+exports.f9 = f9;
+exports.f10 = f10;
+exports.f11 = f11;
+exports.f12 = f12;
 /*  Not a pure module */

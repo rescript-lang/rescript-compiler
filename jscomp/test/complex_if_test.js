@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt          = require("./mt.js");
-var Block       = require("../../lib/js/block.js");
-var Bytes       = require("../../lib/js/bytes.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Bytes = require("../../lib/js/bytes.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 
 function fib(n) {
@@ -141,8 +141,8 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("complex_if_test.ml", suites);
 
-exports.fib            = fib;
-exports.escaped        = escaped;
+exports.fib = fib;
+exports.escaped = escaped;
 exports.string_escaped = string_escaped;
-exports.suites         = suites;
+exports.suites = suites;
 /*  Not a pure module */

@@ -27,5 +27,5 @@ function test() {
 test(/* () */0);
 
 exports.should = should;
-exports.test   = test;
+exports.test = test;
 /*  Not a pure module */

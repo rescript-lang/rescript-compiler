@@ -163,7 +163,7 @@ function f_opion(x) {
   }
 }
 
-exports.f_list  = f_list;
-exports.f_arr   = f_arr;
+exports.f_list = f_list;
+exports.f_arr = f_arr;
 exports.f_opion = f_opion;
 /* No side effect */

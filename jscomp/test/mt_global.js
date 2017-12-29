@@ -53,7 +53,7 @@ function collect_approx(test_id, suites, loc, x, y) {
   return /* () */0;
 }
 
-exports.collect_eq     = collect_eq;
-exports.collect_neq    = collect_neq;
+exports.collect_eq = collect_eq;
+exports.collect_neq = collect_neq;
 exports.collect_approx = collect_approx;
 /* No side effect */

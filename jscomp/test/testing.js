@@ -1,13 +1,13 @@
 'use strict';
 
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Scanf                   = require("../../lib/js/scanf.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Printf                  = require("../../lib/js/printf.js");
-var Caml_io                 = require("../../lib/js/caml_io.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Scanf = require("../../lib/js/scanf.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Printf = require("../../lib/js/printf.js");
+var Caml_io = require("../../lib/js/caml_io.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var all_tests_ok = [/* true */1];
@@ -153,10 +153,10 @@ function scan_failure_test(f, x) {
               }), f, x);
 }
 
-exports.test                 = test;
-exports.failure_test         = failure_test;
+exports.test = test;
+exports.failure_test = failure_test;
 exports.test_raises_some_exc = test_raises_some_exc;
 exports.test_raises_this_exc = test_raises_this_exc;
-exports.test_raises_exc_p    = test_raises_exc_p;
-exports.scan_failure_test    = scan_failure_test;
+exports.test_raises_exc_p = test_raises_exc_p;
+exports.scan_failure_test = scan_failure_test;
 /*  Not a pure module */

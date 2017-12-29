@@ -20,7 +20,7 @@ var b15 = 111;
 exports.a15 = a15;
 exports.b15 = b15;
 exports.a21 = a21;
-exports.v   = v;
+exports.v = v;
 exports.a23 = a23;
-exports.ff  = ff;
+exports.ff = ff;
 /* a23 Not a pure module */

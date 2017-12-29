@@ -27,7 +27,7 @@ function exterme_g() {
   return 3;
 }
 
-exports.f         = f;
-exports.g         = g;
+exports.f = f;
+exports.g = g;
 exports.exterme_g = exterme_g;
 /* No side effect */

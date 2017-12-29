@@ -1,7 +1,7 @@
 'use strict';
 
-var Caml_bytes              = require("../../lib/js/caml_bytes.js");
-var Caml_string             = require("../../lib/js/caml_string.js");
+var Caml_bytes = require("../../lib/js/caml_bytes.js");
+var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f(param) {

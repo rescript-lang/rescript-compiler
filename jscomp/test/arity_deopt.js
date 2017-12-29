@@ -1,6 +1,6 @@
 'use strict';
 
-var Mt    = require("./mt.js");
+var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 
@@ -61,11 +61,11 @@ eq("File \"arity_deopt.ml\", line 48, characters 15-22", 6, (function (y, z) {
 
 Mt.from_pair_suites("arity_deopt.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.f0      = f0;
-exports.f1      = f1;
-exports.f2      = f2;
-exports.f3      = f3;
+exports.eq = eq;
+exports.f0 = f0;
+exports.f1 = f1;
+exports.f2 = f2;
+exports.f3 = f3;
 /*  Not a pure module */

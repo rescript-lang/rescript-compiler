@@ -10,6 +10,6 @@ function test_vv(h) {
   return hey(1, 2);
 }
 
-exports.test_v  = test_v;
+exports.test_v = test_v;
 exports.test_vv = test_vv;
 /* No side effect */

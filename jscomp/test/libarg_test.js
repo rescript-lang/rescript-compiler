@@ -1,11 +1,11 @@
 'use strict';
 
-var Mt       = require("./mt.js");
-var Arg      = require("../../lib/js/arg.js");
-var List     = require("../../lib/js/list.js");
-var Block    = require("../../lib/js/block.js");
-var Curry    = require("../../lib/js/curry.js");
-var Printf   = require("../../lib/js/printf.js");
+var Mt = require("./mt.js");
+var Arg = require("../../lib/js/arg.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Printf = require("../../lib/js/printf.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var current = [0];
@@ -468,27 +468,27 @@ var suites = /* :: */[
 
 Mt.from_pair_suites("libarg_test.ml", suites);
 
-exports.current  = current;
-exports.accum    = accum;
-exports.record   = record;
-exports.f_unit   = f_unit;
-exports.f_bool   = f_bool;
-exports.r_set    = r_set;
-exports.r_clear  = r_clear;
+exports.current = current;
+exports.accum = accum;
+exports.record = record;
+exports.f_unit = f_unit;
+exports.f_bool = f_bool;
+exports.r_set = r_set;
+exports.r_clear = r_clear;
 exports.f_string = f_string;
 exports.r_string = r_string;
-exports.f_int    = f_int;
-exports.r_int    = r_int;
-exports.f_float  = f_float;
-exports.r_float  = r_float;
+exports.f_int = f_int;
+exports.r_int = r_int;
+exports.f_float = f_float;
+exports.r_float = r_float;
 exports.f_symbol = f_symbol;
-exports.f_rest   = f_rest;
-exports.f_anon   = f_anon;
-exports.spec     = spec;
-exports.args1    = args1;
-exports.args2    = args2;
-exports.error    = error;
-exports.check    = check;
-exports.test     = test;
-exports.suites   = suites;
+exports.f_rest = f_rest;
+exports.f_anon = f_anon;
+exports.spec = spec;
+exports.args1 = args1;
+exports.args2 = args2;
+exports.error = error;
+exports.check = check;
+exports.test = test;
+exports.suites = suites;
 /*  Not a pure module */

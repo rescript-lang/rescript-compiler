@@ -1,8 +1,8 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_array              = require("../../lib/js/caml_array.js");
-var Pervasives              = require("../../lib/js/pervasives.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_array = require("../../lib/js/caml_array.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function map(f, a) {
@@ -68,8 +68,8 @@ function f2() {
 
 f2(/* () */0);
 
-exports.map       = map;
-exports.init      = init;
+exports.map = map;
+exports.init = init;
 exports.fold_left = fold_left;
-exports.f2        = f2;
+exports.f2 = f2;
 /*  Not a pure module */

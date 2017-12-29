@@ -1,6 +1,6 @@
 'use strict';
 
-var List     = require("../../lib/js/list.js");
+var List = require("../../lib/js/list.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 
 var ys = [];
@@ -72,9 +72,9 @@ var obj = /* record */[
   obj_001
 ];
 
-exports.xs    = xs;
-exports.even  = even;
+exports.xs = xs;
+exports.even = even;
 exports.even2 = even2;
-exports.v     = v;
-exports.obj   = obj;
+exports.v = v;
+exports.obj = obj;
 /* xs Not a pure module */

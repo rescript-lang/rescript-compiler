@@ -1,7 +1,7 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Caml_obj   = require("../../lib/js/caml_obj.js");
+var Mt = require("./mt.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 
 var aa = Caml_obj.caml_equal_null;
@@ -117,13 +117,13 @@ b("File \"equal_box_test.ml\", line 66, characters 4-11", 1 - Caml_obj.caml_equa
 
 Mt.from_pair_suites("File \"equal_box_test.ml\", line 71, characters 23-30", suites[0]);
 
-exports.aa           = aa;
-exports.bb           = bb;
-exports.cc           = cc;
-exports.suites       = suites;
-exports.test_id      = test_id;
-exports.eq           = eq;
-exports.b            = b;
-exports.f            = f;
+exports.aa = aa;
+exports.bb = bb;
+exports.cc = cc;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.b = b;
+exports.f = f;
 exports.shouldBeNull = shouldBeNull;
 /*  Not a pure module */

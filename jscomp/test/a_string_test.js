@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt              = require("./mt.js");
-var List            = require("../../lib/js/list.js");
-var Block           = require("../../lib/js/block.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Block = require("../../lib/js/block.js");
 var Ext_string_test = require("./ext_string_test.js");
 
 var suites_000 = /* tuple */[
@@ -116,7 +116,7 @@ var split = Ext_string_test.split;
 
 var split_by = Ext_string_test.split_by;
 
-exports.split    = split;
+exports.split = split;
 exports.split_by = split_by;
-exports.suites   = suites;
+exports.suites = suites;
 /*  Not a pure module */

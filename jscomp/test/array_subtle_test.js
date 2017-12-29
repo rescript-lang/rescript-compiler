@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt           = require("./mt.js");
-var Block        = require("../../lib/js/block.js");
-var Caml_array   = require("../../lib/js/caml_array.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 var Js_primitive = require("../../lib/js/js_primitive.js");
 
 var suites = [/* [] */0];
@@ -78,8 +78,8 @@ eq("File \"array_subtle_test.ml\", line 29, characters 5-12", /* tuple */[
 
 Mt.from_pair_suites("array_subtle_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.v       = v;
+exports.eq = eq;
+exports.v = v;
 /*  Not a pure module */

@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt        = require("./mt.js");
-var List      = require("../../lib/js/list.js");
-var Curry     = require("../../lib/js/curry.js");
-var Stack     = require("../../lib/js/stack.js");
-var Caml_obj  = require("../../lib/js/caml_obj.js");
+var Mt = require("./mt.js");
+var List = require("../../lib/js/list.js");
+var Curry = require("../../lib/js/curry.js");
+var Stack = require("../../lib/js/stack.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Mt_global = require("./mt_global.js");
 
 var suites = [/* [] */0];
@@ -404,10 +404,10 @@ assert_("File \"stack_comp_test.ml\", line 129, characters 45-52", Caml_obj.caml
 
 Mt.from_pair_suites("stack_comp_test.ml", suites[0]);
 
-exports.suites     = suites;
-exports.test_id    = test_id;
-exports.eq         = eq;
-exports.assert_    = assert_;
-exports.S          = S;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
+exports.assert_ = assert_;
+exports.S = S;
 exports.does_raise = does_raise;
 /* s Not a pure module */

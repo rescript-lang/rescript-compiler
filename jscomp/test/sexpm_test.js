@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt     = require("./mt.js");
-var Block  = require("../../lib/js/block.js");
-var Curry  = require("../../lib/js/curry.js");
-var Sexpm  = require("./sexpm.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Sexpm = require("./sexpm.js");
 var Format = require("../../lib/js/format.js");
 
 var suites = [/* [] */0];
@@ -129,8 +129,8 @@ eq("File \"sexpm_test.ml\", line 21, characters 7-14", /* tuple */[
 
 Mt.from_pair_suites("sexpm_test.ml", suites[0]);
 
-exports.suites         = suites;
-exports.test_id        = test_id;
-exports.eq             = eq;
+exports.suites = suites;
+exports.test_id = test_id;
+exports.eq = eq;
 exports.print_or_error = print_or_error;
 /* a Not a pure module */

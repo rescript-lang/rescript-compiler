@@ -1,7 +1,7 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
-var Caml_primitive          = require("../../lib/js/caml_primitive.js");
+var Curry = require("../../lib/js/curry.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function height(param) {
@@ -662,28 +662,28 @@ var empty = /* Empty */0;
 
 var choose = min_binding;
 
-exports.empty       = empty;
-exports.is_empty    = is_empty;
-exports.mem         = mem;
-exports.add         = add;
-exports.singleton   = singleton;
-exports.remove      = remove;
-exports.merge       = merge;
-exports.compare     = compare;
-exports.equal       = equal;
-exports.iter        = iter;
-exports.fold        = fold;
-exports.for_all     = for_all;
-exports.exists      = exists;
-exports.filter      = filter;
-exports.partition   = partition;
-exports.cardinal    = cardinal;
-exports.bindings    = bindings;
+exports.empty = empty;
+exports.is_empty = is_empty;
+exports.mem = mem;
+exports.add = add;
+exports.singleton = singleton;
+exports.remove = remove;
+exports.merge = merge;
+exports.compare = compare;
+exports.equal = equal;
+exports.iter = iter;
+exports.fold = fold;
+exports.for_all = for_all;
+exports.exists = exists;
+exports.filter = filter;
+exports.partition = partition;
+exports.cardinal = cardinal;
+exports.bindings = bindings;
 exports.min_binding = min_binding;
 exports.max_binding = max_binding;
-exports.choose      = choose;
-exports.split       = split;
-exports.find        = find;
-exports.map         = map;
-exports.mapi        = mapi;
+exports.choose = choose;
+exports.split = split;
+exports.find = find;
+exports.map = map;
+exports.mapi = mapi;
 /* No side effect */

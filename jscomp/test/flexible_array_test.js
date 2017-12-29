@@ -1,11 +1,11 @@
 'use strict';
 
-var $$Array                 = require("../../lib/js/array.js");
-var Block                   = require("../../lib/js/block.js");
-var Curry                   = require("../../lib/js/curry.js");
-var Format                  = require("../../lib/js/format.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
-var Caml_array              = require("../../lib/js/caml_array.js");
+var $$Array = require("../../lib/js/array.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Format = require("../../lib/js/format.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function sub(_tr, _k) {
@@ -337,11 +337,11 @@ $eq$tilde(sort(of_array(v)), $$Array.init(500, (function (i) {
             return i + 1 | 0;
           })));
 
-exports.sub       = sub;
-exports.update    = update;
-exports.$$delete  = $$delete;
-exports.loext     = loext;
-exports.lorem     = lorem;
+exports.sub = sub;
+exports.update = update;
+exports.$$delete = $$delete;
+exports.loext = loext;
+exports.lorem = lorem;
 exports.Int_array = Int_array;
 exports.$eq$tilde = $eq$tilde;
 /* u Not a pure module */

@@ -80,9 +80,9 @@ console.log({
 var none_arg = /* None */0;
 
 exports.arg_string = arg_string;
-exports.arg_pair   = arg_pair;
-exports.some_arg   = some_arg;
-exports.none_arg   = none_arg;
-exports.dyn_log3   = dyn_log3;
-exports.dyn_log4   = dyn_log4;
+exports.arg_pair = arg_pair;
+exports.some_arg = some_arg;
+exports.none_arg = none_arg;
+exports.dyn_log3 = dyn_log3;
+exports.dyn_log4 = dyn_log4;
 /*  Not a pure module */

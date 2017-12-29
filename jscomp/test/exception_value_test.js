@@ -1,9 +1,9 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var Js_primitive            = require("../../lib/js/js_primitive.js");
-var Caml_exceptions         = require("../../lib/js/caml_exceptions.js");
+var Curry = require("../../lib/js/curry.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var Js_primitive = require("../../lib/js/js_primitive.js");
+var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function f() {
@@ -77,13 +77,13 @@ function test_js_error3() {
   }
 }
 
-exports.f              = f;
-exports.assert_f       = assert_f;
-exports.hh             = hh;
-exports.A              = A;
-exports.B              = B;
-exports.C              = C;
-exports.u              = u;
+exports.f = f;
+exports.assert_f = assert_f;
+exports.hh = hh;
+exports.A = A;
+exports.B = B;
+exports.C = C;
+exports.u = u;
 exports.test_not_found = test_not_found;
 exports.test_js_error2 = test_js_error2;
 exports.test_js_error3 = test_js_error3;

@@ -29,13 +29,13 @@ function f() {
   return v[0];
 }
 
-exports.u          = u;
-exports.a          = a;
-exports.b          = b;
-exports.c          = c;
-exports.d          = d;
-exports.Textarea   = Textarea;
+exports.u = u;
+exports.a = a;
+exports.b = b;
+exports.c = c;
+exports.d = d;
+exports.Textarea = Textarea;
 exports.Int32Array = Int32Array;
-exports.v          = v;
-exports.f          = f;
+exports.v = v;
+exports.f = f;
 /*  Not a pure module */

@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
-var Js_list    = require("../../lib/js/js_list.js");
-var Bs_Array   = require("../../lib/js/bs_Array.js");
-var Js_vector  = require("../../lib/js/js_vector.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Js_list = require("../../lib/js/js_list.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
+var Js_vector = require("../../lib/js/js_vector.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
 var suites = [/* [] */0];
@@ -316,12 +316,12 @@ Mt.from_pair_suites("File \"bs_array_test.ml\", line 91, characters 23-30", suit
 
 var A = 0;
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.neq     = neq;
-exports.id      = id;
-exports.A       = A;
-exports.add     = add;
-exports.addone  = addone;
+exports.eq = eq;
+exports.neq = neq;
+exports.id = id;
+exports.A = A;
+exports.add = add;
+exports.addone = addone;
 /*  Not a pure module */

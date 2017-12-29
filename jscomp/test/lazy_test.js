@@ -1,10 +1,10 @@
 'use strict';
 
-var Mt                      = require("./mt.js");
-var Lazy                    = require("../../lib/js/lazy.js");
-var Block                   = require("../../lib/js/block.js");
-var Js_exn                  = require("../../lib/js/js_exn.js");
-var CamlinternalLazy        = require("../../lib/js/camlinternalLazy.js");
+var Mt = require("./mt.js");
+var Lazy = require("../../lib/js/lazy.js");
+var Block = require("../../lib/js/block.js");
+var Js_exn = require("../../lib/js/js_exn.js");
+var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var u = [3];
@@ -240,16 +240,16 @@ Mt.from_pair_suites("lazy_test.ml", /* :: */[
       ]
     ]);
 
-exports.v            = v;
-exports.lazy_test    = lazy_test;
-exports.f            = f;
-exports.s            = s;
-exports.set_true     = set_true;
-exports.set_false    = set_false;
-exports.h            = h;
-exports.u_v          = u_v;
-exports.u            = u$1;
-exports.exotic       = exotic;
-exports.l_from_fun   = l_from_fun;
+exports.v = v;
+exports.lazy_test = lazy_test;
+exports.f = f;
+exports.s = s;
+exports.set_true = set_true;
+exports.set_false = set_false;
+exports.h = h;
+exports.u_v = u_v;
+exports.u = u$1;
+exports.exotic = exotic;
+exports.l_from_fun = l_from_fun;
 exports.forward_test = forward_test;
 /* h Not a pure module */

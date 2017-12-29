@@ -10,8 +10,8 @@ var hhh = X.vv;
 
 var hhhh = X.vvvv;
 
-exports.h    = h;
-exports.hh   = hh;
-exports.hhh  = hhh;
+exports.h = h;
+exports.hh = hh;
+exports.hhh = hhh;
 exports.hhhh = hhhh;
 /* h Not a pure module */

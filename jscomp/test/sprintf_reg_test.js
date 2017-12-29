@@ -1,9 +1,9 @@
 'use strict';
 
-var Mt        = require("./mt.js");
-var Block     = require("../../lib/js/block.js");
-var Curry     = require("../../lib/js/curry.js");
-var Printf    = require("../../lib/js/printf.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Curry = require("../../lib/js/curry.js");
+var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
 
 var suites = [/* [] */0];
@@ -73,7 +73,7 @@ eq("File \"sprintf_reg_test.ml\", line 14, characters 5-12", /* tuple */[
 
 Mt.from_pair_suites("sprintf_reg_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
+exports.eq = eq;
 /* s Not a pure module */

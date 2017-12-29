@@ -1,8 +1,8 @@
 'use strict';
 
-var Mt         = require("./mt.js");
-var Block      = require("../../lib/js/block.js");
-var Int64      = require("../../lib/js/int64.js");
+var Mt = require("./mt.js");
+var Block = require("../../lib/js/block.js");
+var Int64 = require("../../lib/js/int64.js");
 var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 
@@ -53,13 +53,13 @@ eq("File \"gpr_1154_test.ml\", line 27, characters 12-19", v[0], 1);
 
 Mt.from_pair_suites("gpr_1154_test.ml", suites[0]);
 
-exports.suites  = suites;
+exports.suites = suites;
 exports.test_id = test_id;
-exports.eq      = eq;
-exports.f       = f;
-exports.g       = g;
-exports.v       = v;
-exports.f2      = f2;
-exports.g2      = g2;
-exports.a       = a;
+exports.eq = eq;
+exports.f = f;
+exports.g = g;
+exports.v = v;
+exports.f2 = f2;
+exports.g2 = g2;
+exports.a = a;
 /* a Not a pure module */

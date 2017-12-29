@@ -1,9 +1,9 @@
 'use strict';
 
-var Curry                   = require("../../lib/js/curry.js");
-var Bs_Array                = require("../../lib/js/bs_Array.js");
-var Bs_Queue                = require("../../lib/js/bs_Queue.js");
-var Caml_obj                = require("../../lib/js/caml_obj.js");
+var Curry = require("../../lib/js/curry.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
+var Bs_Queue = require("../../lib/js/bs_Queue.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function does_raise(f, q) {
@@ -1104,6 +1104,6 @@ console.log("OK");
 
 var Q = 0;
 
-exports.Q          = Q;
+exports.Q = Q;
 exports.does_raise = does_raise;
 /* q Not a pure module */
