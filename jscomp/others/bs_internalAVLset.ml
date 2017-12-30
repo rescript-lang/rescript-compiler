@@ -25,6 +25,14 @@ let height (n : _ t0) =
   | None -> 0
   | Some n -> h n 
 
+let rec copy n =   
+  match toOpt n with 
+  | None -> n 
+  | Some n -> 
+    let l,r = left n, right n in 
+    return @@ node 
+    ~left:(copy l) ~right:(copy r)
+    ~key:(key n) ~h:(h n)
 (* Creates a new node with left son l, value v and right son r.
    We must have all elements of l < v < all elements of r.
    l and r must be balanced and | height l - height r | <= 2.
