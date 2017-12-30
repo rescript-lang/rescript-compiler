@@ -90,9 +90,9 @@ var i = range(100, 1500);
 
 b("File \"bs_set_int_test.ml\", line 43, characters 4-11", Bs_SetInt.eq(Bs_SetInt.ofArray(i), v));
 
-var match = Bs_SetInt.partition((function (x) {
+var match = Bs_SetInt.partition(v, (function (x) {
         return +(x % 3 === 0);
-      }), v);
+      }));
 
 var l = Bs_SetInt.empty;
 
@@ -172,9 +172,9 @@ var minv = Bs_SetInt.min(v$1);
 
 var maxv = Bs_SetInt.max(v$1);
 
-eq("File \"bs_set_int_test.ml\", line 79, characters 5-12", Bs_SetInt.fold((function (x, y) {
+eq("File \"bs_set_int_test.ml\", line 79, characters 5-12", Bs_SetInt.fold(v$1, 0, (function (x, y) {
             return x + y | 0;
-          }), v$1, 0), $$Array.fold_left((function (prim, prim$1) {
+          })), $$Array.fold_left((function (prim, prim$1) {
             return prim + prim$1 | 0;
           }), 0, ss));
 

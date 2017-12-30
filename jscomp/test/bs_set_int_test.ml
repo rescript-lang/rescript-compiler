@@ -41,7 +41,7 @@ let revRange i j =
 let () = 
   let v = (ofA (Array.append (range 100 1000) (revRange  400 1500))) in     
   b __LOC__ (v =~ (range 100 1500));
-  let l, r = N.partition (fun[@bs] x -> x mod 3 = 0) v in 
+  let l, r = N.partition v (fun[@bs] x -> x mod 3 = 0)  in 
   let nl, nr = 
     let l,r = ref N.empty, ref N.empty in 
     for i = 100 to 1500 do 
@@ -76,7 +76,7 @@ let () =
   let ss = [|1;222;3;4;2;0;33;-1|] in 
   let v = ofA [|1;222;3;4;2;0;33;-1|] in 
   let minv, maxv = N.min v, N.max v in 
-  eq __LOC__ (N.fold (fun [@bs] x y -> x + y) v 0) (Array.fold_left (+) 0 ss) ;
+  eq __LOC__ (N.fold v 0 (fun [@bs] x y -> x + y) ) (Array.fold_left (+) 0 ss) ;
   eq __LOC__ minv (Some (-1)); 
   eq __LOC__ maxv (Some 222);
   let v = N.remove v 3 in 

@@ -31,8 +31,8 @@ let rec copy n =
   | Some n -> 
     let l,r = left n, right n in 
     return @@ node 
-    ~left:(copy l) ~right:(copy r)
-    ~key:(key n) ~h:(h n)
+      ~left:(copy l) ~right:(copy r)
+      ~key:(key n) ~h:(h n)
 (* Creates a new node with left son l, value v and right son r.
    We must have all elements of l < v < all elements of r.
    l and r must be balanced and | height l - height r | <= 2.
@@ -185,46 +185,57 @@ let rec cons_enum s e =
     -> cons_enum (left n) (More( key n, right n, e))
 
 
-let rec iter0 f n = 
+let rec iter0 n f = 
   match toOpt n with 
   | None -> ()
-  | Some n (* Node(l, v, r, _) *) -> iter0 f (left n); f (key n) [@bs]; iter0 f (right n)
+  | Some n  ->
+    iter0 (left n) f; f (key n) [@bs]; iter0  (right n) f
 
-let rec fold0 f s accu =
+let rec fold0 s accu f =
   match toOpt s with
   | None -> accu
-  | Some n (* Node(l, v, r, _) *) -> fold0 f (right n) (f (key n) (fold0 f (left n) accu) [@bs])
+  | Some n  -> 
+    let l,k,r = left n, key n , right n in 
+    fold0 
+      r
+      (f (fold0  l accu f) k [@bs]) f
 
-let rec forAll0 p n = 
+let rec forAll0 n p  = 
   match toOpt n with  
   | None -> true
-  | Some n (* (l, v, r, _) *) -> p (key n) [@bs] && forAll0 p (left n) && forAll0 p (right n)
+  | Some n  -> 
+    p (key n) [@bs] && 
+    forAll0  (left n) p &&
+    forAll0 (right n) p
 
-let rec exists0 p n = 
+let rec exists0 n p = 
   match toOpt n with 
   | None -> false
-  | Some n (* (l, v, r, _) *) -> p (key n) [@bs] || exists0 p (left n) || exists0 p (right n)
+  | Some n  -> 
+    p (key n) [@bs] || 
+    exists0 (left n) p || 
+    exists0 (right n) p 
 
-let rec filter0 p n =
+let rec filter0 n p =
   match toOpt n with 
   | None -> empty
-  | Some n (* (l, v, r, _) *) ->
+  | Some n  ->
     (* call [p] in the expected left-to-right order *)
-    let l' = filter0 p (left n) in
+    let newL = filter0 (left n) p in
     let v = key n in 
     let pv = p v [@bs] in
-    let r' = filter0 p (right n) in
-    if pv then join l' v r' else concat l' r'
+    let newR = filter0 (right n) p in
+    if pv then join newL v newR else concat newL newR
 
-let rec partition0 p n =
+let rec partition0  n p =
   match toOpt n with 
   |  None -> (empty, empty)
-  | Some n (* (l, v, r, _)*) ->
+  | Some n  ->
     (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition0 p (left n) in
+    let (lt, lf) = partition0 (left n) p in
     let v = key n in 
     let pv = p v [@bs] in
-    let (rt, rf) = partition0 p (right n) in
+    let (rt, rf) = partition0 (right n) p in
     if pv
     then (join lt v rt, concat lf rf)
     else (concat lt rt, join lf v rf)
@@ -251,9 +262,13 @@ let rec length0 n =
 let rec elements_aux accu n = 
   match toOpt n with 
   | None -> accu
-  | Some n (* Node(l, v, r, _) *) -> elements_aux (key n :: elements_aux accu (right n)) (left n)
+  | Some n  ->
+    let l,k,r = left n, key n, right n in 
+    elements_aux 
+    (k :: elements_aux accu r)
+    l
 
-let elements0 s =
+let toList0 s =
   elements_aux [] s
 
 let rec checkInvariant (v : _ t0) = 
@@ -282,9 +297,9 @@ let rec fillArray n i arr =
 (* TODO: binary search tree to array efficiency
 *)
 let toArray0 n =   
-   match toOpt n with 
-   | None -> [||]
-   | Some n ->  
+  match toOpt n with 
+  | None -> [||]
+  | Some n ->  
     let size = cardinalAux n in 
     let v = Bs.Array.makeUninitializedUnsafe size in 
     ignore (fillArray n 0 v : int);  (* may add assertion *)
@@ -303,7 +318,7 @@ let rotateWithLeftChild k2 =
   (rightSet k1 (return k2 ));
   let hlk2, hrk2 = (height (left k2), (height (right k2))) in  
   (hSet k2 
-    (Pervasives.max hlk2 hrk2 + 1));
+     (Pervasives.max hlk2 hrk2 + 1));
   let hlk1, hk2 = (height (left k1), (h k2)) in 
   (hSet k1 (Pervasives.max hlk1 hk2 + 1));
   k1  
@@ -335,7 +350,7 @@ let heightUpdateMutate t =
   let hlt, hrt = (height (left t),(height (right t))) in 
   hSet t (Pervasives.max hlt hrt  + 1);
   t
-  
+
 let balMutate nt  =  
   let l, r = (left nt, right nt) in  
   let hl, hr =  (height l, height r) in 
@@ -346,7 +361,7 @@ let balMutate nt  =
        heightUpdateMutate (rotateWithLeftChild nt)
      else 
        heightUpdateMutate (doubleWithLeftChild nt)
-      )
+    )
   else 
   if hr > 2 + hl  then 
     let r = unsafeCoerce r in 
@@ -357,11 +372,11 @@ let balMutate nt  =
        heightUpdateMutate (doubleWithRightChild nt)
     ) 
   else 
-  begin
-    hSet nt (max hl hr + 1);
-    nt
-  end
-    
+    begin
+      hSet nt (max hl hr + 1);
+      nt
+    end
+
 let rec removeMinAuxMutate n = 
   let rn, ln = right n, left n in 
   match toOpt ln with 

@@ -23,7 +23,7 @@ let exists0 = N.exists0
 let filter0 = N.filter0
 let partition0 = N.partition0
 let length0 = N.length0
-let elements0 = N.elements0 
+let toList0 = N.toList0
 let toArray0 = N.toArray0
 (* Insertion of one element *)
 
@@ -268,26 +268,26 @@ let subset (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =
   let module M = (val dict) in 
   subset0 ~cmp:M.cmp mdata ndata  
 
-let iter f m = iter0 f (B.data m)
+let iter m f  = iter0 (B.data m) f 
 
-let fold f m acc = fold0 f (B.data m) acc 
+let fold m acc f = fold0 (B.data m) acc f
 
-let forAll f m = forAll0 f (B.data m)
+let forAll m f  = forAll0  (B.data m) f
 
-let exists f m = exists0 f (B.data m)
+let exists m f = exists0  (B.data m) f 
 
-let filter f m = 
+let filter m f  = 
   let data, dict = B.(data m, dict m) in 
-  B.bag ~dict ~data:(filter0 f data)
+  B.bag ~dict ~data:(filter0 data f )
 
-let partition f m = 
+let partition m f  = 
   let mdata, dict = B.(data m, dict m) in   
-  let l,r = partition0 f mdata in   
+  let l,r = partition0 mdata f in   
   B.bag ~data:l ~dict, B.bag ~data:r ~dict
 
 let length m = length0 (B.data m) 
 
-let elements m = elements0 (B.data m)
+let toList m = toList0 (B.data m)
 let toArray m = toArray0 (B.data m)
 let min m = min0 (B.data m)
 

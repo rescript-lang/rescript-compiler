@@ -1,10 +1,10 @@
 #ifdef TYPE_STRING
 type elt = string
-           #elif defined TYPE_INT  
+#elif defined TYPE_INT  
 type elt = int
-           #else
+#else
   [%error "unknown type"]  
-  #endif
+#endif
 
 
 module N = Bs_internalAVLset

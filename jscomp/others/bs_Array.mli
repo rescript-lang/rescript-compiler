@@ -96,7 +96,7 @@ val mapi : 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
 
 val foldLeft :  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
 
-val foldRight : 'b array -> 'a -> ('b -> 'a -> 'a [@bs]) ->  'a
+val foldRight : 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
 
 val forAll : 'a array -> ('a -> bool [@bs]) -> bool
 
