@@ -167,7 +167,7 @@ let foldLeft a x f =
 let foldRight a x f =
   let r = ref x in
   for i = length a - 1 downto 0 do
-    r := f (unsafe_get a i) !r [@bs]
+    r := f  !r (unsafe_get a i) [@bs]
   done;
   !r
 

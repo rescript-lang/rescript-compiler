@@ -107,8 +107,8 @@ bs_queue_test.cmj : ../runtime/js.cmj ../others/bs.cmj
 bs_rbset_int_bench.cmj : rbset.cmj
 bs_rest_test.cmj :
 bs_set_bench.cmj : ../others/bs.cmj
-bs_set_int_test.cmj : mt.cmj ../stdlib/list.cmj ../others/bs.cmj \
-    ../stdlib/array.cmj
+bs_set_int_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \
+    ../others/bs.cmj ../stdlib/array.cmj
 bs_sort_test.cmj : mt.cmj ../others/bs_Range.cmj ../others/bs.cmj \
     array_data_util.cmj
 bs_splice_partial.cmj : ../runtime/js.cmj

@@ -14,8 +14,8 @@ type ('elt,'id) t = (('elt,'id) Bs_Cmp.t , ('elt,'id) t0) B.bag
 let empty0 = N.empty0      
 let isEmpty0 = N.isEmpty0
 let singleton0 = N.singleton0
-let min0 = N.min0
-let max0 = N.max0
+let minOpt0 = N.minOpt0
+let maxOpt0 = N.maxOpt0
 let iter0 = N.iter0      
 let fold0 = N.fold0
 let forAll0 = N.forAll0
@@ -23,7 +23,7 @@ let exists0 = N.exists0
 let filter0 = N.filter0
 let partition0 = N.partition0
 let length0 = N.length0
-let elements0 = N.elements0 
+let toList0 = N.toList0
 let toArray0 = N.toArray0
 (* Insertion of one element *)
 
@@ -268,30 +268,29 @@ let subset (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =
   let module M = (val dict) in 
   subset0 ~cmp:M.cmp mdata ndata  
 
-let iter f m = iter0 f (B.data m)
+let iter m f  = iter0 (B.data m) f 
 
-let fold f m acc = fold0 f (B.data m) acc 
+let fold m acc f = fold0 (B.data m) acc f
 
-let forAll f m = forAll0 f (B.data m)
+let forAll m f  = forAll0  (B.data m) f
 
-let exists f m = exists0 f (B.data m)
+let exists m f = exists0  (B.data m) f 
 
-let filter f m = 
+let filter m f  = 
   let data, dict = B.(data m, dict m) in 
-  B.bag ~dict ~data:(filter0 f data)
+  B.bag ~dict ~data:(filter0 data f )
 
-let partition f m = 
+let partition m f  = 
   let mdata, dict = B.(data m, dict m) in   
-  let l,r = partition0 f mdata in   
+  let l,r = partition0 mdata f in   
   B.bag ~data:l ~dict, B.bag ~data:r ~dict
 
 let length m = length0 (B.data m) 
 
-let elements m = elements0 (B.data m)
+let toList m = toList0 (B.data m)
 let toArray m = toArray0 (B.data m)
-let min m = min0 (B.data m)
-
-let max m = max0 (B.data m)
+let minOpt m = minOpt0 (B.data m)
+let maxOpt m = maxOpt0 (B.data m)
 
 let split (type elt) (type id) e (m : (elt,id) t) = 
   let dict, data = B.(dict m, data m) in  

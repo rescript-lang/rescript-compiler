@@ -97,34 +97,34 @@ val subset:
 (** [subset s1 s2] tests whether the set [s1] is a subset of
     the set [s2]. *)
 
-val iter0: ('elt -> unit [@bs]) -> ('elt, 'id) t0 -> unit
-val iter: ('elt -> unit [@bs]) -> ('elt, 'id) t -> unit
+val iter0: ('elt, 'id) t0 -> ('elt -> unit [@bs]) ->  unit
+val iter: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
 (** [iter f s] applies [f] in turn to all elements of [s].
     The elements of [s] are presented to [f] in increasing order
     with respect to the ordering over the type of the elements. *)
 
-val fold0: ('elt -> 'a -> 'a [@bs]) -> ('elt, 'id) t0 -> 'a -> 'a
-val fold: ('elt -> 'a -> 'a [@bs]) -> ('elt, 'id) t -> 'a -> 'a
+val fold0: ('elt, 'id) t0 -> 'a -> ('a -> 'elt ->  'a [@bs]) ->  'a
+val fold: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
 (** [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)],
     where [x1 ... xN] are the elements of [s], in increasing order. *)
 
-val forAll0: ('elt -> bool [@bs]) -> ('elt, 'id) t0 -> bool
-val forAll:('elt -> bool [@bs]) -> ('elt, 'id) t -> bool
+val forAll0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
+val forAll: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
 (** [for_all p s] checks if all elements of the set
     satisfy the predicate [p]. *)
 
-val exists0: ('elt -> bool [@bs]) -> ('elt, 'id) t0 -> bool
-val exists: ('elt -> bool [@bs]) -> ('elt, 'id) t -> bool
+val exists0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
+val exists: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 (** [exists p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
-val filter0: ('elt -> bool [@bs]) -> ('elt, 'id) t0 -> ('elt, 'id) t0
-val filter: ('elt -> bool [@bs]) -> ('elt, 'id) t -> ('elt, 'id) t
+val filter0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  ('elt, 'id) t0
+val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
 (** [filter p s] returns the set of all elements in [s]
     that satisfy predicate [p]. *)
 
-val partition0: ('elt -> bool [@bs]) -> ('elt, 'id) t0 -> ('elt, 'id) t0 * ('elt, 'id) t0
-val partition: ('elt -> bool [@bs]) -> ('elt, 'id) t -> ('elt, 'id) t * ('elt, 'id) t
+val partition0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) -> ('elt, 'id) t0 * ('elt, 'id) t0
+val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
 (** [partition p s] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
@@ -134,25 +134,16 @@ val length0: ('elt, 'id) t0 -> int
 val length:  ('elt, 'id) t -> int
 (** Return the number of elements of a set. *)
 
-val elements0: ('elt, 'id) t0 -> 'elt list
-val elements: ('elt, 'id) t -> 'elt list
-(** Return the list of all elements of the given set.
-    The returned list is sorted in increasing order with respect
-    to the ordering [Ord.compare], where [Ord] is the argument
-    given to {!Set.Make}. *)
+val toList0: ('elt, 'id) t0 -> 'elt list
+val toList: ('elt, 'id) t -> 'elt list
+(** In increasing order*)
 val toArray0: ('elt, 'id) t0 -> 'elt array
 val toArray: ('elt, 'id) t -> 'elt array
 
-val min0: ('elt, 'id) t0 -> 'elt option
-val min: ('elt, 'id) t -> 'elt option
-(** Return the smallest element of the given set
-    (with respect to the [Ord.compare] ordering), or raise
-    [Not_found] if the set is empty. *)
-
-val max0: ('elt, 'id) t0 -> 'elt option
-val max: ('elt, 'id) t -> 'elt option
-(** Same as {!Set.S.min_elt}, but returns the largest element of the
-    given set. *)
+val minOpt0: ('elt, 'id) t0 -> 'elt option
+val minOpt: ('elt, 'id) t -> 'elt option
+val maxOpt0: ('elt, 'id) t0 -> 'elt option
+val maxOpt: ('elt, 'id) t -> 'elt option
 
 
 val split0: 

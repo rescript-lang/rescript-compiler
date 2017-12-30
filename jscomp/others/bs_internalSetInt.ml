@@ -238,7 +238,8 @@ let rec removeMutateAux nt (x : elt)=
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
     | Some _,  Some nr ->  
-          N.rightSet nt (N.removeMinAuxMutateWithRoot nt nr );
+          N.keySet nt (N.min0Aux nr );
+          N.rightSet nt ( removeMutateAux nr x ); (* TODO specalized by removeMinAuxMutate*)
           N.return (N.balMutate nt)
     | None, Some _ ->
           r  

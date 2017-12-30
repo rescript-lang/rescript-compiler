@@ -13,8 +13,8 @@ let empty  = N.empty0
 (* No value restriction ? *)
 let isEmpty = N.isEmpty0
 let singleton = N.singleton0
-let min = N.min0
-let max = N.max0
+let minOpt = N.minOpt0
+let maxOpt = N.maxOpt0
 let iter = N.iter0      
 let fold = N.fold0
 let forAll = N.forAll0
@@ -22,7 +22,7 @@ let exists = N.exists0
 let filter = N.filter0
 let partition = N.partition0
 let length = N.length0
-let elements = N.elements0 
+let toList = N.toList0
 let toArray = N.toArray0 
 let checkInvariant = N.checkInvariant
 

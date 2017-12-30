@@ -1,15 +1,8 @@
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
-let eq loc x y = 
-  incr test_id ; 
-  suites := 
-    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
+let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y 
 
-let b loc v  = 
-  incr test_id ; 
-  suites := 
-    (loc ^" id " ^ (string_of_int !test_id), 
-     (fun _ -> Mt.Ok v)) :: !suites
+let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
 module N = Bs.SetInt
 
@@ -41,7 +34,7 @@ let revRange i j =
 let () = 
   let v = (ofA (Array.append (range 100 1000) (revRange  400 1500))) in     
   b __LOC__ (v =~ (range 100 1500));
-  let l, r = N.partition (fun[@bs] x -> x mod 3 = 0) v in 
+  let l, r = N.partition v (fun[@bs] x -> x mod 3 = 0)  in 
   let nl, nr = 
     let l,r = ref N.empty, ref N.empty in 
     for i = 100 to 1500 do 
@@ -75,20 +68,22 @@ let () =
 let () =     
   let ss = [|1;222;3;4;2;0;33;-1|] in 
   let v = ofA [|1;222;3;4;2;0;33;-1|] in 
-  let minv, maxv = N.min v, N.max v in 
-  eq __LOC__ (N.fold (fun [@bs] x y -> x + y) v 0) (Array.fold_left (+) 0 ss) ;
-  eq __LOC__ minv (Some (-1)); 
-  eq __LOC__ maxv (Some 222);
+  let minv, maxv = N.minNull v, N.maxNull v in 
+  let approx loc (x : int)  y = 
+    b loc (Js.eqNull x y) in 
+  eq __LOC__ (N.fold v 0 (fun [@bs] x y -> x + y) ) (Array.fold_left (+) 0 ss) ;
+  approx __LOC__ (-1) minv ;
+  approx __LOC__ 222 maxv;
   let v = N.remove v 3 in 
-  let minv, maxv = N.min v, N.max v in 
+  let minv, maxv = N.minOpt v, N.maxOpt v in 
   eq __LOC__ minv (Some (-1)); 
   eq __LOC__ maxv (Some 222);
   let v = N.remove v 222 in 
-  let minv, maxv = N.min v, N.max v in 
+  let minv, maxv = N.minOpt v, N.maxOpt v in 
   eq __LOC__ minv (Some (-1)); 
   eq __LOC__ maxv (Some 33);
   let v = N.remove  v (-1) in 
-  let minv, maxv = N.min v, N.max v in 
+  let minv, maxv = N.minOpt v, N.maxOpt v in 
   eq __LOC__ minv (Some (0)); 
   eq __LOC__ maxv (Some 33);
   let v = N.remove  v 0 in 
