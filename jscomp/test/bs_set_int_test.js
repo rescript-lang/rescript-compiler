@@ -144,19 +144,23 @@ var v$1 = Bs_SetInt.ofArray(/* array */[
       -1
     ]);
 
-var minv = Bs_SetInt.minOpt(v$1);
+var minv = Bs_SetInt.minNull(v$1);
 
-var maxv = Bs_SetInt.maxOpt(v$1);
+var maxv = Bs_SetInt.maxNull(v$1);
 
-eq("File \"bs_set_int_test.ml\", line 72, characters 5-12", Bs_SetInt.fold(v$1, 0, (function (x, y) {
+function approx(loc, x, y) {
+  return b(loc, +(x === y));
+}
+
+eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", Bs_SetInt.fold(v$1, 0, (function (x, y) {
             return x + y | 0;
           })), $$Array.fold_left((function (prim, prim$1) {
             return prim + prim$1 | 0;
           }), 0, ss));
 
-eq("File \"bs_set_int_test.ml\", line 73, characters 5-12", minv, /* Some */[-1]);
+approx("File \"bs_set_int_test.ml\", line 75, characters 9-16", -1, minv);
 
-eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", maxv, /* Some */[222]);
+approx("File \"bs_set_int_test.ml\", line 76, characters 9-16", 222, maxv);
 
 var v$2 = Bs_SetInt.remove(v$1, 3);
 
@@ -164,9 +168,9 @@ var minv$1 = Bs_SetInt.minOpt(v$2);
 
 var maxv$1 = Bs_SetInt.maxOpt(v$2);
 
-eq("File \"bs_set_int_test.ml\", line 77, characters 5-12", minv$1, /* Some */[-1]);
+eq("File \"bs_set_int_test.ml\", line 79, characters 5-12", minv$1, /* Some */[-1]);
 
-eq("File \"bs_set_int_test.ml\", line 78, characters 5-12", maxv$1, /* Some */[222]);
+eq("File \"bs_set_int_test.ml\", line 80, characters 5-12", maxv$1, /* Some */[222]);
 
 var v$3 = Bs_SetInt.remove(v$2, 222);
 
@@ -174,9 +178,9 @@ var minv$2 = Bs_SetInt.minOpt(v$3);
 
 var maxv$2 = Bs_SetInt.maxOpt(v$3);
 
-eq("File \"bs_set_int_test.ml\", line 81, characters 5-12", minv$2, /* Some */[-1]);
+eq("File \"bs_set_int_test.ml\", line 83, characters 5-12", minv$2, /* Some */[-1]);
 
-eq("File \"bs_set_int_test.ml\", line 82, characters 5-12", maxv$2, /* Some */[33]);
+eq("File \"bs_set_int_test.ml\", line 84, characters 5-12", maxv$2, /* Some */[33]);
 
 var v$4 = Bs_SetInt.remove(v$3, -1);
 
@@ -184,9 +188,9 @@ var minv$3 = Bs_SetInt.minOpt(v$4);
 
 var maxv$3 = Bs_SetInt.maxOpt(v$4);
 
-eq("File \"bs_set_int_test.ml\", line 85, characters 5-12", minv$3, /* Some */[0]);
+eq("File \"bs_set_int_test.ml\", line 87, characters 5-12", minv$3, /* Some */[0]);
 
-eq("File \"bs_set_int_test.ml\", line 86, characters 5-12", maxv$3, /* Some */[33]);
+eq("File \"bs_set_int_test.ml\", line 88, characters 5-12", maxv$3, /* Some */[33]);
 
 var v$5 = Bs_SetInt.remove(v$4, 0);
 
@@ -200,7 +204,7 @@ var v$9 = Bs_SetInt.remove(v$8, 4);
 
 var v$10 = Bs_SetInt.remove(v$9, 1);
 
-b("File \"bs_set_int_test.ml\", line 93, characters 4-11", Bs_SetInt.isEmpty(v$10));
+b("File \"bs_set_int_test.ml\", line 95, characters 4-11", Bs_SetInt.isEmpty(v$10));
 
 var v$11 = Bs_Array.init(1000000, (function (i) {
         return i;
@@ -210,15 +214,15 @@ Bs_Array.shuffleInPlace(v$11);
 
 var u$1 = Bs_SetInt.ofArray(v$11);
 
-b("File \"bs_set_int_test.ml\", line 101, characters 4-11", Bs_SetInt.checkInvariant(u$1));
+b("File \"bs_set_int_test.ml\", line 103, characters 4-11", Bs_SetInt.checkInvariant(u$1));
 
 var firstHalf = Bs_Array.sub(v$11, 0, 2000);
 
 var xx = Bs_Array.foldLeft(firstHalf, u$1, Bs_SetInt.remove);
 
-b("File \"bs_set_int_test.ml\", line 105, characters 4-11", Bs_SetInt.checkInvariant(u$1));
+b("File \"bs_set_int_test.ml\", line 107, characters 4-11", Bs_SetInt.checkInvariant(u$1));
 
-b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Bs_SetInt.eq(Bs_SetInt.union(Bs_SetInt.ofArray(firstHalf), xx), u$1));
+b("File \"bs_set_int_test.ml\", line 108, characters 4-11", Bs_SetInt.eq(Bs_SetInt.union(Bs_SetInt.ofArray(firstHalf), xx), u$1));
 
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 

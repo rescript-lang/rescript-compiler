@@ -68,10 +68,12 @@ let () =
 let () =     
   let ss = [|1;222;3;4;2;0;33;-1|] in 
   let v = ofA [|1;222;3;4;2;0;33;-1|] in 
-  let minv, maxv = N.minOpt v, N.maxOpt v in 
+  let minv, maxv = N.minNull v, N.maxNull v in 
+  let approx loc (x : int)  y = 
+    b loc (Js.eqNull x y) in 
   eq __LOC__ (N.fold v 0 (fun [@bs] x y -> x + y) ) (Array.fold_left (+) 0 ss) ;
-  eq __LOC__ minv (Some (-1)); 
-  eq __LOC__ maxv (Some 222);
+  approx __LOC__ (-1) minv ;
+  approx __LOC__ 222 maxv;
   let v = N.remove v 3 in 
   let minv, maxv = N.minOpt v, N.maxOpt v in 
   eq __LOC__ minv (Some (-1)); 
