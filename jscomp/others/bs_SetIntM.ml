@@ -1,11 +1,16 @@
+
+
 module N = Bs_internalAVLset
-module I = Bs_internalSetString
+
+
+module I = Bs_internalSetInt
 
 type elt = I.elt
 type t = I.t 
 
 
-let empty = N.empty0      
+let empty  = N.empty0      
+(* No value restriction ? *)
 let isEmpty = N.isEmpty0
 let singleton = N.singleton0
 let min = N.min0
@@ -21,7 +26,10 @@ let elements = N.elements0
 let toArray = N.toArray0 
 let checkInvariant = N.checkInvariant
 
-let add = I.add
+let add = I.addMutate
+let addArray = I.addArrayMutate
+
+let remove = I.removeMutate
 let ofArray = I.ofArray
 let cmp = I.cmp 
 let diff = I.diff
@@ -31,5 +39,4 @@ let split = I.split
 let subset = I.subset 
 let inter = I.inter 
 let union = I.union
-let remove = I.remove 
 let mem = I.mem 

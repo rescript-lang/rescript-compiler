@@ -22,19 +22,19 @@ let forAll0 = N.forAll0
 let exists0 = N.exists0    
 let filter0 = N.filter0
 let partition0 = N.partition0
-let cardinal0 = N.cardinal0
+let length0 = N.length0
 let elements0 = N.elements0 
 let toArray0 = N.toArray0
 (* Insertion of one element *)
 
-let rec add0 ~cmp x  (t : _ t0) : _ t0 =
+let rec add0 ~cmp (t : _ t0) x  : _ t0 =
   match N.toOpt t with 
     None -> N.(return @@ node ~left:empty ~right:empty ~key:x  ~h:1)
   | Some nt (* Node(l, v, r, _) as t *) ->
     let l,v,r = N.(left nt, key nt, right nt) in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then t else
-    if c < 0 then N.bal (add0 ~cmp x l) v r else N.bal l v (add0 ~cmp x r)
+    if c < 0 then N.bal (add0 ~cmp l x ) v r else N.bal l v (add0 ~cmp r x )
 
 
 (* Splitting.  split x s returns a triple (l, present, r) where
@@ -90,13 +90,13 @@ let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->
     let h1, h2 = N.(h n1 , h n2) in                 
     if h1 >= h2 then
-      if h2 = 1 then add0 ~cmp (N.key n2) s1 else begin
+      if h2 = 1 then add0 ~cmp s1 (N.key n2)  else begin
         let l1, v1, r1 = N.(left n1, key n1, right n1) in      
         let (l2, _, r2) = split0 ~cmp v1 s2 in
         N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
       end
     else
-    if h1 = 1 then add0 ~cmp (N.key n1) s2 else begin
+    if h1 = 1 then add0 s2 ~cmp (N.key n1)  else begin
       let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
       let (l1, _, r1) = split0 ~cmp v2 s1 in
       N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
@@ -184,9 +184,19 @@ let rec findAssert0 ~cmp x (n : _ t0) =
 let ofArray0 ~cmp (xs : _ array) : _ t0 =     
   let result = ref N.empty in 
   for i = 0 to Array.length xs - 1 do  
-    result := add0 ~cmp (Bs_Array.unsafe_get xs i) !result
+    result := add0 ~cmp !result (Bs_Array.unsafe_get xs i) 
   done ;
   !result 
+
+(* TOOD: optimize heuristics for resizing *)  
+let addArray0 ~cmp  h arr =   
+  let len = Bs.Array.length arr in 
+  let v = ref empty0 in  
+  for i = 0 to len - 1 do 
+    let key = (Bs_Array.unsafe_get arr i) in 
+    v := add0 !v  ~cmp key 
+  done ;
+  !v 
 
 let empty dict = 
   B.bag
@@ -207,11 +217,11 @@ let mem (type elt) (type id) e (m : (elt,id) t) =
   let module M = (val dict) in 
   mem0 ~cmp:(M.cmp) e data
 
-let add (type elt) (type id) e (m : (elt,id) t) =   
+let add (type elt) (type id) (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in
   let module M = (val dict) in 
   B.bag ~dict 
-    ~data:(add0 ~cmp:(M.cmp) e data)
+    ~data:(add0 ~cmp:(M.cmp)  data e)
 
 let singleton dict e =     
   B.bag ~dict
@@ -275,7 +285,7 @@ let partition f m =
   let l,r = partition0 f mdata in   
   B.bag ~data:l ~dict, B.bag ~data:r ~dict
 
-let cardinal m = cardinal0 (B.data m) 
+let length m = length0 (B.data m) 
 
 let elements m = elements0 (B.data m)
 let toArray m = toArray0 (B.data m)

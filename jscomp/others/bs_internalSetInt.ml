@@ -1,12 +1,8 @@
-#ifdef TYPE_STRING
-type elt = string
-           #elif defined TYPE_INT  
+# 4 "set.cppo.ml"
 type elt = int
-           #else
-  [%error "unknown type"]  
-  #endif
 
 
+# 10
 module N = Bs_internalAVLset
 module A = Bs_Array 
 type ('elt, 'id) t0 = ('elt, 'id) N.t0 
@@ -242,8 +238,7 @@ let rec removeMutateAux nt (x : elt)=
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
     | Some _,  Some nr ->  
-          N.keySet nt (N.min0Aux nr );
-          N.rightSet nt ( removeMutateAux nr x ); (* TODO specalized by removeMinAuxMutate*)
+          N.rightSet nt (N.removeMinAuxMutateWithRoot nt nr );
           N.return (N.balMutate nt)
     | None, Some _ ->
           r  

@@ -73,7 +73,7 @@ let () =
   let cmp = M.cmp in 
   let data = ref (B.data v) in 
   for i = 0 to count do 
-    data := Bs.Set.add0 ~cmp i !data
+    data := Bs.Set.add0 ~cmp !data i 
   done ;
   Js.log !data
   (* { v with data = !data} *)

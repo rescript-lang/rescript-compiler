@@ -66,7 +66,7 @@ var cmp$2 = m_dict$1[/* cmp */0];
 var data$1 = v.data;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
-  data$1 = Bs_Set.add0(cmp$2, i$1, data$1);
+  data$1 = Bs_Set.add0(cmp$2, data$1, i$1);
 }
 
 console.log(data$1);

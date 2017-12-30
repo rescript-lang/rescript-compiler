@@ -32,9 +32,9 @@ val mem:
 
 val add0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  'elt -> ('elt, 'id) t0 -> ('elt, 'id) t0
+  ('elt, 'id) t0 -> 'elt ->  ('elt, 'id) t0
 val add:   
-  'elt -> ('elt, 'id) t -> ('elt, 'id) t
+  ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [add x s] returns a set containing all elements of [s],
     plus [x]. If [x] was already in [s], [s] is returned unchanged. *)
 
@@ -130,8 +130,8 @@ val partition: ('elt -> bool [@bs]) -> ('elt, 'id) t -> ('elt, 'id) t * ('elt, '
     predicate [p], and [s2] is the set of all the elements of
     [s] that do not satisfy [p]. *)
 
-val cardinal0: ('elt, 'id) t0 -> int
-val cardinal:('elt, 'id) t -> int
+val length0: ('elt, 'id) t0 -> int
+val length:  ('elt, 'id) t -> int
 (** Return the number of elements of a set. *)
 
 val elements0: ('elt, 'id) t0 -> 'elt list
