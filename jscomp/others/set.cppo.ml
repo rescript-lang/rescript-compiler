@@ -218,71 +218,6 @@ let of_list l =
 
 
 
-external unsafeCoerce : 'a Js.null -> 'a = "%identity"
-
-(* 
-  L rotation, return root node
-*)
-let rotateWithLeftChild k2 = 
-  let k1 = unsafeCoerce (N.left k2) in 
-  N.(leftSet k2 (right k1)); 
-  N.(rightSet k1 (return k2 ));
-  let hlk2, hrk2 = N.(height (left k2), (height (right k2))) in  
-  N.(hSet k2 
-       (Pervasives.max hlk2 hrk2 + 1));
-  let hlk1, hk2 = N.(height (left k1), (h k2)) in 
-  N.(hSet k1 (Pervasives.max hlk1 hk2 + 1));
-  k1  
-(* right rotation *)
-let rotateWithRightChild k1 =   
-  let k2 = unsafeCoerce (N.right k1) in 
-  N.(rightSet k1 (left k2));
-  N.(leftSet k2 (return k1));
-  let hlk1, hrk1 = N.((height (left k1)), (height (right k1))) in 
-  N.(hSet k1 (Pervasives.max  hlk1 hrk1 + 1));
-  let hrk2, hk1 = N.(height (right k2), (h k1)) in 
-  N.(hSet k2 (Pervasives.max  hrk2 hk1 + 1));
-  k2 
-
-(*
-  double l rotation
-*)  
-let doubleWithLeftChild k3 =   
-  let v = rotateWithRightChild (unsafeCoerce N.(left k3)) in 
-  N.(leftSet k3 (return v ));
-  rotateWithLeftChild k3 
-
-let doubleWithRightChild k2 = 
-  let v = rotateWithLeftChild (unsafeCoerce N.(right k2)) in   
-  N.(rightSet k2 (return v));
-  rotateWithRightChild k2
-
-let heightUpdateMutate t = 
-  let hlt, hrt = N.(height (left t),(height (right t))) in 
-  N.hSet t (Pervasives.max hlt hrt  + 1);
-  t
-  
-let balMutate nt  =  
-  let l, r = N.(left nt, right nt) in  
-  if N.height l > 2 +  N.height r then 
-    let l = unsafeCoerce l in 
-    let ll, lr = N.(left l , right l)in
-    (if N.height ll >= N.height lr then 
-       heightUpdateMutate (rotateWithLeftChild nt)
-     else 
-       heightUpdateMutate (doubleWithLeftChild nt)
-      )
-  else 
-  if N.height r > 2 + N.height l  then 
-    let r = unsafeCoerce r in 
-    let rl,rr = N.(left r, right r) in 
-    (if N.height rr  >= N.height rl then 
-       heightUpdateMutate (rotateWithRightChild nt) 
-     else 
-       heightUpdateMutate (doubleWithRightChild nt)
-    ) 
-  else 
-    nt
 
 let rec addMutate  (t : _ t0) (x : elt)=   
   match N.toOpt t with 
@@ -297,7 +232,7 @@ let rec addMutate  (t : _ t0) (x : elt)=
      else   
        N.rightSet nt (addMutate r x);
      );
-    N.return (balMutate nt)
+    N.return (N.balMutate nt)
 
 
 
@@ -309,7 +244,7 @@ let rec removeMutateAux nt (x : elt)=
     | Some _,  Some nr ->  
           N.keySet nt (N.min0Aux nr );
           N.rightSet nt ( removeMutateAux nr x ); (* TODO specalized by removeMinAuxMutate*)
-          N.return (balMutate nt)
+          N.return (N.balMutate nt)
     | None, Some _ ->
           r  
     | (Some _ | None ), None ->  l 
@@ -320,13 +255,13 @@ let rec removeMutateAux nt (x : elt)=
            | None -> N.return nt 
            | Some l ->
              N.leftSet nt (removeMutateAux l x );
-             N.return (balMutate nt)
+             N.return (N.balMutate nt)
          else 
           match N.toOpt (N.right nt) with 
           | None -> N.return nt 
           | Some r -> 
             N.rightSet nt (removeMutateAux r x);
-            N.return (balMutate nt)
+            N.return (N.balMutate nt)
       end
   
 let removeMutate nt x = 

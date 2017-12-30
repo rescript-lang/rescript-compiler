@@ -35,6 +35,11 @@ let create (l : _ t0) v (r : _ t0) =
   let hr = match toOpt r with None -> 0 | Some n -> h n in
   return @@ node ~left:l ~key:v ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
+let heightGe l r = 
+  match toOpt l, toOpt r with 
+  | _ , None -> true 
+  | Some hl, Some hr -> h hl >= h hr 
+  | None, Some _ -> false
 (* Same as create, but performs one step of rebalancing if necessary.
    Assumes l and r balanced and | height l - height r | <= 3.
    Inline expansion of create for better speed in the most frequent case
@@ -48,7 +53,7 @@ let bal l v r =
     | None -> assert false
     | Some n (* Node(ll, lv, lr, _) *) ->
       let ll,lv,lr = left n, key n, right n in 
-      if height ll >= height lr then
+      if heightGe ll  lr then
         create ll lv (create lr v r)
       else begin
         match toOpt lr with
@@ -62,7 +67,7 @@ let bal l v r =
       None -> assert false
     | Some n (* (rl, rv, rr, _) *) ->
       let rl,rv,rr = left n, key n, right n in 
-      if height rr >= height rl then
+      if heightGe rr  rl then
         create (create l v rl) rv rr
       else begin
         match toOpt rl with
@@ -277,3 +282,94 @@ let toArray0 n =
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v 
 
+
+
+external unsafeCoerce : 'a Js.null -> 'a = "%identity"
+
+(* 
+  L rotation, return root node
+*)
+let rotateWithLeftChild k2 = 
+  let k1 = unsafeCoerce (left k2) in 
+  (leftSet k2 (right k1)); 
+  (rightSet k1 (return k2 ));
+  let hlk2, hrk2 = (height (left k2), (height (right k2))) in  
+  (hSet k2 
+    (Pervasives.max hlk2 hrk2 + 1));
+  let hlk1, hk2 = (height (left k1), (h k2)) in 
+  (hSet k1 (Pervasives.max hlk1 hk2 + 1));
+  k1  
+(* right rotation *)
+let rotateWithRightChild k1 =   
+  let k2 = unsafeCoerce (right k1) in 
+  (rightSet k1 (left k2));
+  (leftSet k2 (return k1));
+  let hlk1, hrk1 = ((height (left k1)), (height (right k1))) in 
+  (hSet k1 (Pervasives.max  hlk1 hrk1 + 1));
+  let hrk2, hk1 = (height (right k2), (h k1)) in 
+  (hSet k2 (Pervasives.max  hrk2 hk1 + 1));
+  k2 
+
+(*
+  double l rotation
+*)  
+let doubleWithLeftChild k3 =   
+  let v = rotateWithRightChild (unsafeCoerce (left k3)) in 
+  (leftSet k3 (return v ));
+  rotateWithLeftChild k3 
+
+let doubleWithRightChild k2 = 
+  let v = rotateWithLeftChild (unsafeCoerce (right k2)) in   
+  (rightSet k2 (return v));
+  rotateWithRightChild k2
+
+let heightUpdateMutate t = 
+  let hlt, hrt = (height (left t),(height (right t))) in 
+  hSet t (Pervasives.max hlt hrt  + 1);
+  t
+  
+let balMutate nt  =  
+  let l, r = (left nt, right nt) in  
+  let hl, hr =  (height l, height r) in 
+  if hl > 2 +  hr then 
+    let l = unsafeCoerce l in 
+    let ll, lr = (left l , right l)in
+    (if heightGe ll lr then 
+       heightUpdateMutate (rotateWithLeftChild nt)
+     else 
+       heightUpdateMutate (doubleWithLeftChild nt)
+      )
+  else 
+  if hr > 2 + hl  then 
+    let r = unsafeCoerce r in 
+    let rl,rr = (left r, right r) in 
+    (if heightGe rr rl then 
+       heightUpdateMutate (rotateWithRightChild nt) 
+     else 
+       heightUpdateMutate (doubleWithRightChild nt)
+    ) 
+  else 
+  begin
+    hSet nt (max hl hr + 1);
+    nt
+  end
+    
+let rec removeMinAuxMutate n = 
+  let rn, ln = right n, left n in 
+  match toOpt ln with 
+  | None -> rn 
+  | Some ln -> 
+    leftSet n (removeMinAuxMutate ln); 
+    return (balMutate n)
+
+
+
+let rec removeMinAuxMutateWithRoot nt n = 
+  let rn, ln = right n, left n in 
+  match toOpt ln with 
+  | None -> 
+    keySet nt (key n);
+    rn 
+  | Some ln -> 
+    leftSet n (removeMinAuxMutateWithRoot nt ln); 
+    return (balMutate n)    
