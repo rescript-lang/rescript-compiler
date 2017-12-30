@@ -128,21 +128,30 @@ let rec min0Aux n =
   | None -> key n
   | Some n -> min0Aux n 
 
-let rec min0 n =
+let  minOpt0 n =
   match toOpt n with 
     None -> None
   | Some n -> Some (min0Aux n)
+
+let minNull0 n =   
+  match toOpt n with 
+  | None -> Js.null
+  | Some n -> return (min0Aux n) 
 
 let rec max0Aux n =   
   match toOpt (right n) with 
   | None -> key n
   | Some n -> max0Aux n 
 
-let rec max0 n = 
+let  maxOpt0 n = 
   match toOpt n with 
   | None -> None
   | Some n -> Some (max0Aux n)
 
+let maxNull0 n =   
+  match toOpt n with 
+  | None -> Js.null
+  | Some n -> return (max0Aux n)
 (* Remove the smallest element of the given set *)
 
 let rec removeMinAux n = 

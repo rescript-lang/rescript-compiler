@@ -136,23 +136,14 @@ val length:  ('elt, 'id) t -> int
 
 val toList0: ('elt, 'id) t0 -> 'elt list
 val toList: ('elt, 'id) t -> 'elt list
-(** Return the list of all elements of the given set.
-    The returned list is sorted in increasing order with respect
-    to the ordering [Ord.compare], where [Ord] is the argument
-    given to {!Set.Make}. *)
+(** In increasing order*)
 val toArray0: ('elt, 'id) t0 -> 'elt array
 val toArray: ('elt, 'id) t -> 'elt array
 
-val min0: ('elt, 'id) t0 -> 'elt option
-val min: ('elt, 'id) t -> 'elt option
-(** Return the smallest element of the given set
-    (with respect to the [Ord.compare] ordering), or raise
-    [Not_found] if the set is empty. *)
-
-val max0: ('elt, 'id) t0 -> 'elt option
-val max: ('elt, 'id) t -> 'elt option
-(** Same as {!Set.S.min_elt}, but returns the largest element of the
-    given set. *)
+val minOpt0: ('elt, 'id) t0 -> 'elt option
+val minOpt: ('elt, 'id) t -> 'elt option
+val maxOpt0: ('elt, 'id) t0 -> 'elt option
+val maxOpt: ('elt, 'id) t -> 'elt option
 
 
 val split0: 

@@ -14,8 +14,8 @@ type ('elt,'id) t = (('elt,'id) Bs_Cmp.t , ('elt,'id) t0) B.bag
 let empty0 = N.empty0      
 let isEmpty0 = N.isEmpty0
 let singleton0 = N.singleton0
-let min0 = N.min0
-let max0 = N.max0
+let minOpt0 = N.minOpt0
+let maxOpt0 = N.maxOpt0
 let iter0 = N.iter0      
 let fold0 = N.fold0
 let forAll0 = N.forAll0
@@ -289,9 +289,8 @@ let length m = length0 (B.data m)
 
 let toList m = toList0 (B.data m)
 let toArray m = toArray0 (B.data m)
-let min m = min0 (B.data m)
-
-let max m = max0 (B.data m)
+let minOpt m = minOpt0 (B.data m)
+let maxOpt m = maxOpt0 (B.data m)
 
 let split (type elt) (type id) e (m : (elt,id) t) = 
   let dict, data = B.(dict m, data m) in  

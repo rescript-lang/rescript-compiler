@@ -53,8 +53,7 @@ val iter: t -> (elt -> unit [@bs]) ->  unit
    with respect to the ordering over the type of the elements. *)
 
 val fold: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
-(** [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)],
-   where [x1 ... xN] are the elements of [s], in increasing order. *)
+(** Iterate in increasing order. *)
 
 val forAll: t -> (elt -> bool [@bs]) ->  bool
 (** [for_all p s] checks if all elements of the set
@@ -84,11 +83,10 @@ val toList: t -> elt list
 
 val toArray: t -> elt array  
 
-val min: t -> elt option
-(** Return the smallest element of the given set
-   (with respect to the [Ord.compare] ordering) *)
-
-val max: t -> elt option
+val minOpt: t -> elt option
+val minNull: t -> elt Js.null
+val maxOpt: t -> elt option
+val maxNull: t -> elt Js.null
 
 
 val split: elt -> t -> t * bool * t
