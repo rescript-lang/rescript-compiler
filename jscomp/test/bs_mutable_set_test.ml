@@ -32,6 +32,13 @@ let () =
 let () =   
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
   let v = N.ofArray u in 
-  eq __LOC__ (N.length v) 100_001
-  
+  eq __LOC__ (N.length v) 100_001;
+  let u = I.randomRange 50_000 80_000 in 
+  let v = ref v in 
+  for i = 0 to A.length u - 1 do 
+    v := N.remove !v i 
+  done;
+  let v = !v in 
+  eq __LOC__ (N.length v) 70_000
+
 ;; Mt.from_pair_suites __FILE__ !suites  

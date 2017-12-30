@@ -28,6 +28,8 @@ let checkInvariant = N.checkInvariant
 
 let add = I.addMutate
 let addArray = I.addArrayMutate
+
+let remove = I.removeMutate
 let ofArray = I.ofArray
 let cmp = I.cmp 
 let diff = I.diff
@@ -37,5 +39,4 @@ let split = I.split
 let subset = I.subset 
 let inter = I.inter 
 let union = I.union
-let remove = I.remove 
 let mem = I.mem 

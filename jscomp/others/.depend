@@ -49,6 +49,7 @@ bs_MapInt.cmj : bs_internalAVLtree.cmj bs_Array.cmj bs_MapInt.cmi
 bs_internalSetInt.cmj : bs_internalAVLset.cmj bs_Array.cmj
 bs_internalSetString.cmj : bs_internalAVLset.cmj bs_Array.cmj
 bs_SetInt.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SetInt.cmi
+bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SetIntM.cmi
 bs_SetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_SetString.cmi
 node_child_process.cmj : node.cmj
@@ -90,6 +91,7 @@ bs_Set.cmi : bs_Cmp.cmi bs_Bag.cmj
 bs_MapString.cmi :
 bs_MapInt.cmi :
 bs_SetInt.cmi :
+bs_SetIntM.cmi :
 bs_SetString.cmi :
 js_boolean.cmi :
 js_dict.cmi :

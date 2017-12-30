@@ -11,7 +11,7 @@ val mem: t -> elt -> bool
 
 
 val add: t -> elt -> t
-
+val remove : t -> elt -> t
 val addArray : t -> elt array -> t 
 val ofArray : elt array -> t 
 val toArray : t -> elt array 

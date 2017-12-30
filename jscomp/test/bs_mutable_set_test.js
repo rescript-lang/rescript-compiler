@@ -48,6 +48,18 @@ var v$3 = Bs_SetIntM.ofArray(u$1);
 
 eq("File \"bs_mutable_set_test.ml\", line 35, characters 5-12", Bs_SetIntM.length(v$3), 100001);
 
+var u$2 = Array_data_util.randomRange(50000, 80000);
+
+var v$4 = v$3;
+
+for(var i$1 = 0 ,i_finish = u$2.length - 1 | 0; i$1 <= i_finish; ++i$1){
+  v$4 = Bs_SetIntM.remove(v$4, i$1);
+}
+
+var v$5 = v$4;
+
+eq("File \"bs_mutable_set_test.ml\", line 42, characters 5-12", Bs_SetIntM.length(v$5), 70000);
+
 Mt.from_pair_suites("bs_mutable_set_test.ml", suites[0]);
 
 var N = 0;

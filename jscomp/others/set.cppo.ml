@@ -1,10 +1,10 @@
 #ifdef TYPE_STRING
 type elt = string
-#elif defined TYPE_INT  
+           #elif defined TYPE_INT  
 type elt = int
-#else
-[%error "unknown type"]  
-#endif
+           #else
+  [%error "unknown type"]  
+  #endif
 
 
 module N = Bs_internalAVLset
@@ -61,7 +61,7 @@ let rec split (x : elt) (t : t) : t * bool *  t =
     N.(empty, false, empty)
   | Some n (* Node(l, v, r, _)*) ->    
     splitAux x n 
-      
+
 
 let rec mem (t : t) (x : elt)  =
   match N.toOpt t with 
@@ -143,7 +143,7 @@ let rec eq_aux e1 e2 =
   | (More _, End) -> false
   | (More(v1, r1, e1), More(v2, r2, e2)) ->
     (v1 : elt) = v2 &&
-     eq_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)  
+    eq_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)  
 
 let eq s1 s2 = 
   eq_aux (N.cons_enum s1 End) (N.cons_enum s2 End)
@@ -180,8 +180,8 @@ let rec findAssert (x : elt) (n :t)  =
     let v = N.key t in     
     if x = v then Some v
     else findAssert x N.(if x < v then (left t) else (right t))
-    
-    
+
+
 
 
 (*
@@ -229,7 +229,7 @@ let rotateWithLeftChild k2 =
   N.(rightSet k1 (return k2 ));
   let hlk2, hrk2 = N.(height (left k2), (height (right k2))) in  
   N.(hSet k2 
-    (Pervasives.max hlk2 hrk2 + 1));
+       (Pervasives.max hlk2 hrk2 + 1));
   let hlk1, hk2 = N.(height (left k1), (h k2)) in 
   N.(hSet k1 (Pervasives.max hlk1 hk2 + 1));
   k1  
@@ -257,6 +257,32 @@ let doubleWithRightChild k2 =
   N.(rightSet k2 (return v));
   rotateWithRightChild k2
 
+let heightUpdateMutate t = 
+  let hlt, hrt = N.(height (left t),(height (right t))) in 
+  N.hSet t (Pervasives.max hlt hrt  + 1);
+  t
+  
+let balMutate nt  =  
+  let l, r = N.(left nt, right nt) in  
+  if N.height l > 2 +  N.height r then 
+    let l = unsafeCoerce l in 
+    let ll, lr = N.(left l , right l)in
+    (if N.height ll >= N.height lr then 
+       heightUpdateMutate (rotateWithLeftChild nt)
+     else 
+       heightUpdateMutate (doubleWithLeftChild nt)
+      )
+  else 
+  if N.height r > 2 + N.height l  then 
+    let r = unsafeCoerce r in 
+    let rl,rr = N.(left r, right r) in 
+    (if N.height rr  >= N.height rl then 
+       heightUpdateMutate (rotateWithRightChild nt) 
+     else 
+       heightUpdateMutate (doubleWithRightChild nt)
+    ) 
+  else 
+    nt
 
 let rec addMutate  (t : _ t0) (x : elt)=   
   match N.toOpt t with 
@@ -265,37 +291,50 @@ let rec addMutate  (t : _ t0) (x : elt)=
     let k = N.key nt in 
     if x = k then t 
     else
-      begin 
-        let l, r = N.(left nt, right nt) in 
-        let t =
-        (if x < k then             
-           begin 
-             N.leftSet nt (addMutate l x);
-             (if N.height l > 2 +  N.height r then 
-                (if x < N.key (unsafeCoerce l) then 
-                    rotateWithLeftChild nt 
-                 else 
-                    doubleWithLeftChild nt )
-              else  nt )
-           end
-         else   
-           begin 
-             N.rightSet nt (addMutate r x);
-             (if N.height r > 2 + N.height l  then 
-                (if N.key (unsafeCoerce r) < x then 
-                   rotateWithRightChild nt 
-                 else 
-                   doubleWithRightChild nt
-                ) else 
-                nt
-             )
-           end
-        ) in 
-        let hlt, hrt = N.(height (left t),(height (right t))) in 
-        N.hSet t 
-          N.(Pervasives.max hlt hrt  + 1);
-        N.return t
+    let l, r = N.(left nt, right nt) in 
+    (if x < k then                   
+       N.leftSet nt (addMutate l x)       
+     else   
+       N.rightSet nt (addMutate r x);
+     );
+    N.return (balMutate nt)
+
+
+
+let rec removeMutateAux nt (x : elt)= 
+  let k = N.key nt in 
+  if x = k then 
+    let l,r = N.(left nt, right nt) in       
+    match N.(toOpt l, toOpt r) with 
+    | Some _,  Some nr ->  
+          N.keySet nt (N.min0Aux nr );
+          N.rightSet nt ( removeMutateAux nr x ); (* TODO specalized by removeMinAuxMutate*)
+          N.return (balMutate nt)
+    | None, Some _ ->
+          r  
+    | (Some _ | None ), None ->  l 
+  else 
+    begin 
+      if x < k then 
+           match N.toOpt (N.left nt) with         
+           | None -> N.return nt 
+           | Some l ->
+             N.leftSet nt (removeMutateAux l x );
+             N.return (balMutate nt)
+         else 
+          match N.toOpt (N.right nt) with 
+          | None -> N.return nt 
+          | Some r -> 
+            N.rightSet nt (removeMutateAux r x);
+            N.return (balMutate nt)
       end
+  
+let removeMutate nt x = 
+  match N.toOpt nt with 
+  | None -> nt 
+  | Some nt -> removeMutateAux nt x 
+
+
 
 
 let addArrayMutate (t : _ t0) xs =       
@@ -312,4 +351,3 @@ let ofArray (xs : elt array) : t =
     result := addMutate !result (A.unsafe_get xs i) 
   done ;
   !result 
-  

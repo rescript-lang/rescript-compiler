@@ -253,6 +253,37 @@ let doubleWithRightChild k2 =
   N.(rightSet k2 (return v));
   rotateWithRightChild k2
 
+let heightUpdateMutate t = 
+  let hlt, hrt = N.(height (left t),(height (right t))) in 
+  N.hSet t (Pervasives.max hlt hrt  + 1);
+  t
+  
+let balMutate nt  =  
+  let l, r = N.(left nt, right nt) in  
+  let hl, hr =  N.(height l, height r) in 
+  if hl > 2 +  hr then 
+    let l = unsafeCoerce l in 
+    let ll, lr = N.(left l , right l)in
+    (if N.height ll >= N.height lr then 
+       heightUpdateMutate (rotateWithLeftChild nt)
+     else 
+       heightUpdateMutate (doubleWithLeftChild nt)
+      )
+  else 
+  if hr > 2 + hl  then 
+    let r = unsafeCoerce r in 
+    let rl,rr = N.(left r, right r) in 
+    (if N.height rr  >= N.height rl then 
+       heightUpdateMutate (rotateWithRightChild nt) 
+     else 
+       heightUpdateMutate (doubleWithRightChild nt)
+    ) 
+  else 
+  begin
+    N.hSet nt (max hl hr + 1);
+    nt
+  end
+    (* heightUpdateMutate nt *)
 
 let rec addMutate  (t : _ t0) (x : elt)=   
   match N.toOpt t with 
@@ -261,37 +292,50 @@ let rec addMutate  (t : _ t0) (x : elt)=
     let k = N.key nt in 
     if x = k then t 
     else
-      begin 
-        let l, r = N.(left nt, right nt) in 
-        let t =
-        (if x < k then             
-           begin 
-             N.leftSet nt (addMutate l x);
-             (if N.height l > 2 +  N.height r then 
-                (if x < N.key (unsafeCoerce l) then 
-                    rotateWithLeftChild nt 
-                 else 
-                    doubleWithLeftChild nt )
-              else  nt )
-           end
-         else   
-           begin 
-             N.rightSet nt (addMutate r x);
-             (if N.height r > 2 + N.height l  then 
-                (if N.key (unsafeCoerce r) < x then 
-                   rotateWithRightChild nt 
-                 else 
-                   doubleWithRightChild nt
-                ) else 
-                nt
-             )
-           end
-        ) in 
-        let hlt, hrt = N.(height (left t),(height (right t))) in 
-        N.hSet t 
-          N.(Pervasives.max hlt hrt  + 1);
-        N.return t
+    let l, r = N.(left nt, right nt) in 
+    (if x < k then                   
+       N.leftSet nt (addMutate l x)       
+     else   
+       N.rightSet nt (addMutate r x);
+     );
+    N.return (balMutate nt)
+
+
+
+let rec removeMutateAux nt (x : elt)= 
+  let k = N.key nt in 
+  if x = k then 
+    let l,r = N.(left nt, right nt) in       
+    match N.(toOpt l, toOpt r) with 
+    | Some _,  Some nr ->  
+          N.keySet nt (N.min0Aux nr );
+          N.rightSet nt ( removeMutateAux nr x ); (* TODO specalized by removeMinAuxMutate*)
+          N.return (balMutate nt)
+    | None, Some _ ->
+          r  
+    | (Some _ | None ), None ->  l 
+  else 
+    begin 
+      if x < k then 
+           match N.toOpt (N.left nt) with         
+           | None -> N.return nt 
+           | Some l ->
+             N.leftSet nt (removeMutateAux l x );
+             N.return (balMutate nt)
+         else 
+          match N.toOpt (N.right nt) with 
+          | None -> N.return nt 
+          | Some r -> 
+            N.rightSet nt (removeMutateAux r x);
+            N.return (balMutate nt)
       end
+  
+let removeMutate nt x = 
+  match N.toOpt nt with 
+  | None -> nt 
+  | Some nt -> removeMutateAux nt x 
+
+
 
 
 let addArrayMutate (t : _ t0) xs =       
@@ -308,4 +352,3 @@ let ofArray (xs : elt array) : t =
     result := addMutate !result (A.unsafe_get xs i) 
   done ;
   !result 
-  
