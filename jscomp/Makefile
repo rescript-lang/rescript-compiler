@@ -361,7 +361,7 @@ BSB_SRCS= bsb_config\
 	oCamlRes\
 	bsb_templates\
 	bsb_theme_init
-SUPER_ERRORS_SRCS=super_reason_react super_misc super_warnings super_location super_env super_pparse super_typecore super_typemod super_typetexp super_main
+SUPER_ERRORS_SRCS=super_reason_react super_misc super_warnings super_location super_env super_pparse super_includemod super_typecore super_typemod super_typetexp super_main
 REASON_OUTCOME_PRINTER_SRCS= outcome_printer_ns tweaked_reason_oprint reason_outcome_printer_main
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
