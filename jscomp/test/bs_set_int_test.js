@@ -5,6 +5,7 @@ var List = require("../../lib/js/list.js");
 var $$Array = require("../../lib/js/array.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_SetInt = require("../../lib/js/bs_SetInt.js");
+var Array_data_util = require("./array_data_util.js");
 
 var suites = [/* [] */0];
 
@@ -224,9 +225,31 @@ b("File \"bs_set_int_test.ml\", line 107, characters 4-11", Bs_SetInt.checkInvar
 
 b("File \"bs_set_int_test.ml\", line 108, characters 4-11", Bs_SetInt.eq(Bs_SetInt.union(Bs_SetInt.ofArray(firstHalf), xx), u$1));
 
+var aa = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100));
+
+var bb = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 200));
+
+var cc = Bs_SetInt.ofArray(Array_data_util.randomRange(120, 200));
+
+var dd = Bs_SetInt.union(aa, cc);
+
+b("File \"bs_set_int_test.ml\", line 115, characters 4-11", Bs_SetInt.subset(aa, bb));
+
+b("File \"bs_set_int_test.ml\", line 116, characters 4-11", Bs_SetInt.subset(dd, bb));
+
+b("File \"bs_set_int_test.ml\", line 117, characters 4-11", Bs_SetInt.subset(Bs_SetInt.add(dd, 200), bb));
+
+b("File \"bs_set_int_test.ml\", line 118, characters 4-11", +(Bs_SetInt.add(dd, 200) === dd));
+
+b("File \"bs_set_int_test.ml\", line 119, characters 4-11", +(Bs_SetInt.add(dd, 0) === dd));
+
+b("File \"bs_set_int_test.ml\", line 120, characters 4-11", 1 - Bs_SetInt.subset(Bs_SetInt.add(dd, 201), bb));
+
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 
 var N = 0;
+
+var I = 0;
 
 var ofA = Bs_SetInt.ofArray;
 
@@ -235,6 +258,7 @@ exports.test_id = test_id;
 exports.eq = eq;
 exports.b = b;
 exports.N = N;
+exports.I = I;
 exports.$eq$tilde = $eq$tilde;
 exports.$eq$star = $eq$star;
 exports.ofA = ofA;
