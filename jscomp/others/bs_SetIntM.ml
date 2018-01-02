@@ -43,6 +43,8 @@ let toList d =
   N.toList0 (root d)
 let toArray d = 
   N.toArray0 (root d)
+let ofSortedArrayUnsafe xs =
+  t ~root:(N.ofSortedArrayUnsafe0 xs)    
 let checkInvariant d = 
   N.checkInvariant (root d)
 
@@ -85,6 +87,7 @@ let removeOnly d v =
   
 let ofArray xs = 
   t  ~root:(I.ofArray xs)
+
 let cmp d0 d1 = 
   I.cmp (root d0) (root d1)
 let diff d0 d1 = 

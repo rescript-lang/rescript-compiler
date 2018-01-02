@@ -103,6 +103,99 @@ for(var i$3 = 0 ,i_finish$2 = vv$1.length - 1 | 0; i$3 <= i_finish$2; ++i$3){
 
 eq("File \"bs_mutable_set_test.ml\", line 63, characters 5-12", Bs_internalAVLset.length0(v$3.root), 0);
 
+function id(loc, x) {
+  var u = {
+    root: Bs_internalAVLset.ofSortedArrayUnsafe0(x)
+  };
+  b(loc, Bs_internalAVLset.checkInvariant(u.root));
+  return b(loc, Bs_Array.forAll2(Bs_internalAVLset.toArray0(u.root), x, (function (x, y) {
+                    return +(x === y);
+                  })));
+}
+
+id("File \"bs_mutable_set_test.ml\", line 71, characters 5-12", /* int array */[]);
+
+id("File \"bs_mutable_set_test.ml\", line 72, characters 5-12", /* int array */[0]);
+
+id("File \"bs_mutable_set_test.ml\", line 73, characters 5-12", /* int array */[
+      0,
+      1
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 74, characters 5-12", /* int array */[
+      0,
+      1,
+      2
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 75, characters 5-12", /* int array */[
+      0,
+      1,
+      2,
+      3
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 76, characters 5-12", /* array */[
+      0,
+      1,
+      2,
+      3,
+      4
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 77, characters 5-12", /* array */[
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 78, characters 5-12", /* array */[
+      0,
+      1,
+      2,
+      3,
+      4,
+      6
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 79, characters 5-12", /* array */[
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 80, characters 5-12", /* array */[
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      8
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 81, characters 5-12", /* array */[
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      8,
+      9
+    ]);
+
+id("File \"bs_mutable_set_test.ml\", line 82, characters 5-12", Array_data_util.range(0, 1000));
+
 Mt.from_pair_suites("bs_mutable_set_test.ml", suites[0]);
 
 var N = 0;

@@ -151,6 +151,13 @@ val split0:
   'elt -> ('elt, 'id) t0 -> ('elt, 'id) t0 * bool * ('elt, 'id) t0
 val split: 
   'elt -> ('elt, 'id) t -> ('elt, 'id) t * bool * ('elt, 'id) t
+
+val ofSortedArrayUnsafe0:
+  'elt array -> ('elt,'id) t0
+val ofSortedArrayUnsafe:
+  dict:('elt, 'id) Bs_Cmp.t ->
+  'elt array -> ('elt,'id) t
+  
 (** [split x s] returns a triple [(l, present, r)], where
       [l] is the set of elements of [s] that are
       strictly less than [x];

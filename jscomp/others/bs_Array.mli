@@ -98,8 +98,10 @@ val foldLeft :  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
 
 val foldRight : 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
 
-val forAll : 'a array -> ('a -> bool [@bs]) -> bool
+val forAll: 'a array -> ('a -> bool [@bs]) -> bool
 
+(** [forAll2 a b] return false when [length a <> length b] *)
+val forAll2: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 
 external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"

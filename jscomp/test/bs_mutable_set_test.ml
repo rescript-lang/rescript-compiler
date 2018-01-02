@@ -62,4 +62,23 @@ let () =
   done  ;
   eq __LOC__ (N.length v) 0 
 
+let () =   
+  let id loc x = 
+    let u = (N.ofSortedArrayUnsafe x) in
+    b loc (N.checkInvariant u );
+    b loc (A.forAll2 (N.toArray u) x (fun[@bs] x y -> x = y) )
+  in 
+  id __LOC__ [||] ; 
+  id __LOC__ [|0|];
+  id __LOC__ [|0;1|];
+  id __LOC__ [|0;1;2|];
+  id __LOC__ [|0;1;2;3|];
+  id __LOC__ [|0;1;2;3;4|];
+  id __LOC__ [|0;1;2;3;4;5|];
+  id __LOC__ [|0;1;2;3;4;6|];
+  id __LOC__ [|0;1;2;3;4;6;7|];
+  id __LOC__ [|0;1;2;3;4;6;7;8|];
+  id __LOC__ [|0;1;2;3;4;6;7;8;9|];
+  id __LOC__ (I.range 0 1000)
+  
 ;; Mt.from_pair_suites __FILE__ !suites  

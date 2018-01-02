@@ -204,41 +204,6 @@ let rec findNull (n :t) (x : elt)   =
 
 
 
-(*
-let of_sorted_list l =
-  let rec sub n l =
-    match n, l with
-    | 0, l -> Empty, l
-    | 1, x0 :: l -> Node (Empty, x0, Empty, 1), l
-    | 2, x0 :: x1 :: l -> Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
-    | 3, x0 :: x1 :: x2 :: l ->
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
-    | n, l ->
-      let nl = n / 2 in
-      let left, l = sub nl l in
-      match l with
-      | [] -> assert false
-      | mid :: l ->
-        let right, l = sub (n - nl - 1) l in
-        create left mid right, l
-  in
-  fst (sub (List.length l) l)
-*)  
-(*
-let of_list l =
-  match l with
-  | [] -> empty
-  | [x0] -> singleton x0
-  | [x0; x1] -> add x1 (singleton x0)
-  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-  | _ -> of_sorted_list (List.sort_uniq Pervasives.compare l)
-*)
-
-
-
-
 let rec addMutate  (t : _ t0) (x : elt)=   
   match N.toOpt t with 
   | None -> N.(return @@ node ~left:empty ~right:empty ~key:x ~h:1)
@@ -298,10 +263,23 @@ let addArrayMutate (t : _ t0) xs =
   done ;
   !v
 
-(* FIXME: improve, use [sorted] attribute *)    
-let ofArray (xs : elt array) : t =     
-  let result = ref N.empty in 
-  for i = 0 to A.length xs - 1 do  
-    result := addMutate !result (A.unsafe_get xs i) 
-  done ;
-  !result 
+
+let rec sortedLengthAux (xs : elt array) prec acc len =    
+  if acc >= len then acc 
+  else 
+    let v = A.unsafe_get xs acc in 
+    if v > prec  then 
+      sortedLengthAux xs v (acc + 1) len 
+    else acc  
+  
+
+let ofArray (xs : elt array) =   
+  let len = A.length xs in 
+  if len = 0 then N.empty
+  else
+    let next = sortedLengthAux xs (A.unsafe_get xs 0) 1 len in 
+    let result  = ref (N.ofSortedArrayAux xs 0 next) in 
+    for i = next to len - 1 do 
+       result := addMutate !result (A.unsafe_get xs i) 
+    done ;
+    !result 

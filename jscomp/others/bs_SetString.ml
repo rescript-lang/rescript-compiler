@@ -23,7 +23,8 @@ let filter = N.filter0
 let partition = N.partition0
 let length = N.length0
 let toList = N.toList0
-let toArray = N.toArray0 
+let toArray = N.toArray0
+let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe0
 let checkInvariant = N.checkInvariant
 
 let add = I.add

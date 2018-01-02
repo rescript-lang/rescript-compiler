@@ -47,7 +47,8 @@ val length: t -> int
 val toList : t -> elt list
  (** In increasing order with respect *)
 val toArray: t -> elt array
-val ofArray: elt array -> t     
+val ofArray: elt array -> t
+val ofSortedArrayUnsafe: elt array -> t 
 val minOpt: t -> elt option
 val minNull: t -> elt Js.null
 val maxOpt: t -> elt option

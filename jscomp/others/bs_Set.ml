@@ -25,6 +25,9 @@ let partition0 = N.partition0
 let length0 = N.length0
 let toList0 = N.toList0
 let toArray0 = N.toArray0
+let ofSortedArrayUnsafe0 = N.ofSortedArrayUnsafe0
+let ofSortedArrayUnsafe ~dict xs  =
+  B.bag ~dict ~data:(N.ofSortedArrayUnsafe0 xs)
 (* Insertion of one element *)
 
 let rec add0 ~cmp (t : _ t0) x  : _ t0 =

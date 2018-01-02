@@ -274,8 +274,8 @@ let rec elements_aux accu n =
   | Some n  ->
     let l,k,r = left n, key n, right n in 
     elements_aux 
-    (k :: elements_aux accu r)
-    l
+      (k :: elements_aux accu r)
+      l
 
 let toList0 s =
   elements_aux [] s
@@ -288,6 +288,7 @@ let rec checkInvariant (v : _ t0) =
     let diff = height l - height r  in 
     diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
 
+module A = Bs_Array
 
 let rec fillArray n i arr =     
   let l,v,r = left n, key n, right n in 
@@ -296,7 +297,7 @@ let rec fillArray n i arr =
     | None -> i 
     | Some l -> 
       fillArray l i arr in 
-  Bs_Array.unsafe_set arr next v ;
+  A.unsafe_set arr next v ;
   let rnext = next + 1 in 
   match toOpt r with 
   | None -> rnext 
@@ -387,10 +388,10 @@ let balMutate nt  =
     end
 
 (* let rec removeMinAuxMutate n = 
-  let rn, ln = right n, left n in 
-  match toOpt ln with 
-  | None -> rn 
-  | Some ln -> 
+   let rn, ln = right n, left n in 
+   match toOpt ln with 
+   | None -> rn 
+   | Some ln -> 
     leftSet n (removeMinAuxMutate ln); 
     return (balMutate n) *)
 
@@ -405,3 +406,34 @@ let rec removeMinAuxMutateWithRoot nt n =
   | Some ln -> 
     leftSet n (removeMinAuxMutateWithRoot nt ln); 
     return (balMutate n)    
+
+
+let rec ofSortedArrayAux arr off len =     
+  match len with 
+  | 0 -> empty0
+  | 1 -> singleton0 (A.unsafe_get arr off)
+  | 2 ->  
+    let x0,x1 = A.(unsafe_get arr off, unsafe_get arr (off + 1) ) 
+    in 
+    return @@ node ~left:(singleton0 x0) ~key:x1 ~h:2 ~right:empty0
+  | 3 -> 
+    let x0,x1,x2 = 
+      A.(unsafe_get arr off, 
+         unsafe_get arr (off + 1), 
+         unsafe_get arr (off + 2)) in 
+    return @@ node ~left:(singleton0 x0)
+      ~right:(singleton0 x2)
+      ~key:x1
+      ~h:2
+  | _ ->  
+    let nl = len / 2 in 
+    let left = ofSortedArrayAux arr off nl in 
+    let mid = A.unsafe_get arr (off + nl) in 
+    let right = 
+      ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
+    create left mid right    
+
+
+    
+let ofSortedArrayUnsafe0 arr =     
+  ofSortedArrayAux arr 0 (A.length arr)
