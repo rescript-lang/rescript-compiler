@@ -94,7 +94,7 @@ val split: elt -> t -> t * bool * t
       [present] is [false] if [s] contains no element equal to [x],
       or [true] if [s] contains an element equal to [x]. *)
 
-val findOpt: elt -> t -> elt option
+val findOpt:  t -> elt -> elt option
 
 
 val ofArray : elt array -> t     

@@ -1,5 +1,5 @@
-# 2 "setm.cppo.ml"
-module I = Bs_internalSetInt
+# 4 "setm.cppo.ml"
+module I = Bs_internalSetString
 # 8
 module N = Bs_internalAVLset
 

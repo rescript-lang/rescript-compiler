@@ -1,4 +1,4 @@
-# 2 "set.cppo.ml"
+# 2 "internal_set.cppo.ml"
 type elt = string
 
 
@@ -20,11 +20,12 @@ type enumeration = (elt,unit) enumeration0
 let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 
     None -> N.(return @@ node ~left:empty ~key:x ~right:empty ~h:1)
-  | Some nt (* Node(l, v, r, _) as t *) ->
+  | Some nt  ->
     let v = N.key nt in  
     if x = v then t else
-    if x < v then N.(bal (add (left nt) x) v (right nt))
-    else N.(bal (left nt) v (add  (right nt) x) )
+    let l, r = N.(left nt , right nt) in 
+    if x < v then N.(bal (add l x) v r)
+    else N.(bal l v (add  r x) )
 
 
 
@@ -161,22 +162,29 @@ let rec subset (s1 : t) (s2 : t) =
       subset N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && subset l1 s2
 
 
-let rec findOpt (x : elt) (n :t)  = 
+let rec findOpt  (n :t) (x : elt) = 
   match N.toOpt n with 
   | None -> None
-  | Some t (* Node(l, v, r, _) *) ->    
+  | Some t  ->    
     let v = N.key t in     
     if x = v then Some v
-    else findOpt x N.(if x < v then (left t) else (right t))
+    else findOpt N.(if x < v then (left t) else (right t)) x
 
-let rec findAssert (x : elt) (n :t)  = 
+let rec findAssert (n :t) (x : elt)   = 
   match N.toOpt n with 
   | None -> [%assert "Not_found"]
-  | Some t (* Node(l, v, r, _) *) ->    
+  | Some t  ->    
     let v = N.key t in     
     if x = v then Some v
-    else findAssert x N.(if x < v then (left t) else (right t))
+    else findAssert  N.(if x < v then (left t) else (right t)) x
 
+let rec findNull (n :t) (x : elt)   = 
+  match N.toOpt n with 
+  | None -> Js.null
+  | Some t  ->    
+    let v = N.key t in     
+    if x = v then N.return v
+    else findNull  (if x < v then N.left t else N.right t) x
 
 
 

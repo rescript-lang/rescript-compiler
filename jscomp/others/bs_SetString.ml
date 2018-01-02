@@ -1,5 +1,8 @@
-module N = Bs_internalAVLset
+# 4 "set.cppo.ml"
 module I = Bs_internalSetString
+# 8
+module N = Bs_internalAVLset
+
 
 type elt = I.elt
 type t = I.t 
@@ -9,8 +12,8 @@ let empty = N.empty0
 let isEmpty = N.isEmpty0
 let singleton = N.singleton0
 let minOpt = N.minOpt0
-let maxOpt = N.maxOpt0
 let minNull = N.minNull0
+let maxOpt = N.maxOpt0
 let maxNull = N.maxNull0
 let iter = N.iter0      
 let fold = N.fold0
