@@ -18,8 +18,12 @@ let singleton x =
   t ~root:(N.singleton0 x)
 let minOpt d = 
   N.minOpt0 (root d)
+let minNull d =
+  N.minNull0 (root d)
 let maxOpt d = 
   N.maxOpt0 (root d)
+let maxNull d =
+  N.maxNull0 (root d)
 let iter d =
   N.iter0 (root d)     
 let fold d = 

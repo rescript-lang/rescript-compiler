@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_Range = require("../../lib/js/bs_Range.js");
 var Bs_SetIntM = require("../../lib/js/bs_SetIntM.js");
+var Caml_array = require("../../lib/js/caml_array.js");
 var Array_data_util = require("./array_data_util.js");
 var Bs_internalAVLset = require("../../lib/js/bs_internalAVLset.js");
 var Bs_internalSetInt = require("../../lib/js/bs_internalSetInt.js");
@@ -64,13 +65,43 @@ for(var i$1 = 0 ,i_finish = u$2.length - 1 | 0; i$1 <= i_finish; ++i$1){
 
 eq("File \"bs_mutable_set_test.ml\", line 42, characters 5-12", Bs_internalAVLset.length0(v$2.root), 70000);
 
-for(var i$2 = 0; i$2 <= 100000; ++i$2){
-  Bs_SetIntM.removeOnly(v$2, i$2);
+var vv = Array_data_util.randomRange(0, 100000);
+
+for(var i$2 = 0 ,i_finish$1 = vv.length - 1 | 0; i$2 <= i_finish$1; ++i$2){
+  Bs_SetIntM.removeOnly(v$2, Caml_array.caml_array_get(vv, i$2));
 }
 
 eq("File \"bs_mutable_set_test.ml\", line 48, characters 5-12", Bs_internalAVLset.length0(v$2.root), 0);
 
 b("File \"bs_mutable_set_test.ml\", line 49, characters 4-11", Bs_internalAVLset.isEmpty0(v$2.root));
+
+var xs = Bs_Array.init(30, (function (i) {
+        return i;
+      }));
+
+var v$3 = {
+  root: Bs_internalSetInt.ofArray(xs)
+};
+
+Bs_SetIntM.removeOnly(v$3, 30);
+
+Bs_SetIntM.removeOnly(v$3, 29);
+
+b("File \"bs_mutable_set_test.ml\", line 55, characters 4-11", +(28 === Bs_internalAVLset.maxNull0(v$3.root)));
+
+Bs_SetIntM.removeOnly(v$3, 0);
+
+b("File \"bs_mutable_set_test.ml\", line 57, characters 4-11", +(1 === Bs_internalAVLset.minNull0(v$3.root)));
+
+eq("File \"bs_mutable_set_test.ml\", line 58, characters 5-12", Bs_internalAVLset.length0(v$3.root), 28);
+
+var vv$1 = Array_data_util.randomRange(1, 28);
+
+for(var i$3 = 0 ,i_finish$2 = vv$1.length - 1 | 0; i$3 <= i_finish$2; ++i$3){
+  Bs_SetIntM.removeOnly(v$3, Caml_array.caml_array_get(vv$1, i$3));
+}
+
+eq("File \"bs_mutable_set_test.ml\", line 63, characters 5-12", Bs_internalAVLset.length0(v$3.root), 0);
 
 Mt.from_pair_suites("bs_mutable_set_test.ml", suites[0]);
 

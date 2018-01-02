@@ -24,8 +24,14 @@ let rec add  (t : t) (x : elt) : t =
     let v = N.key nt in  
     if x = v then t else
     let l, r = N.(left nt , right nt) in 
-    if x < v then N.(bal (add l x) v r)
-    else N.(bal l v (add  r x) )
+    if x < v then 
+      let ll = add l x in 
+      if ll == l then t 
+      else N.bal ll v r
+    else 
+      let rr = add r x in 
+      if rr == r then t
+      else N.bal l v (add  r x) 
 
 
 
@@ -63,18 +69,24 @@ let rec split (x : elt) (t : t) : t * bool *  t =
 let rec mem (t : t) (x : elt)  =
   match N.toOpt t with 
   | None -> false
-  | Some n (* Node(l, v, r, _) *) ->                
+  | Some n  ->                
     let v = N.key n in 
-    x = v || mem N.(if x < v then (left n) else (right n)) x
+    x = v || mem (if x < v then N.left n else N.right n) x
 
 let rec remove (t : t) (x : elt) : t = 
   match N.toOpt t with 
   | None -> t
-  | Some n (* Node(l, v, r, _) *) ->
+  | Some n  ->
     let l,v,r = N.(left n, key n, right n) in 
     if x = v then N.merge l r else
-    if x < v then N.bal (remove l x) v r 
-    else N.bal l v (remove r x)
+    if x < v then 
+      let ll = remove l x in  
+      if ll == l then t  
+      else N.bal ll v r 
+    else 
+      let rr = remove r x in 
+      if rr == r then t
+      else N.bal l v rr
 
 let rec union (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
@@ -246,8 +258,7 @@ let rec removeMutateAux nt (x : elt)=
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
     | Some _,  Some nr ->  
-          N.keySet nt (N.min0Aux nr );
-          N.rightSet nt ( removeMutateAux nr x ); (* TODO specalized by removeMinAuxMutate*)
+          N.rightSet nt (N.removeMinAuxMutateWithRoot nt nr);
           N.return (N.balMutate nt)
     | None, Some _ ->
           r  
@@ -260,7 +271,7 @@ let rec removeMutateAux nt (x : elt)=
            | Some l ->
              N.leftSet nt (removeMutateAux l x );
              N.return (N.balMutate nt)
-         else 
+      else 
           match N.toOpt (N.right nt) with 
           | None -> N.return nt 
           | Some r -> 

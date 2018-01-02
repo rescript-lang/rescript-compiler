@@ -40,13 +40,26 @@ let () =
   done;
   
   eq __LOC__ (N.length v) 70_000;
-  
-  for i = 0 to 100_000 do 
-    N.removeOnly v i  
-  done ;
-  
+  let count = 100_000 in 
+  let vv = I.randomRange 0 count in 
+  for i  = 0 to A.length vv - 1 do 
+    N.removeOnly v vv.(i)
+  done; 
   eq __LOC__ (N.length v) 0;
   b __LOC__ (N.isEmpty v )
 
+let () = 
+  let v = N.ofArray (A.init 30 (fun [@bs]i -> i)) in 
+  N.removeOnly v 30; 
+  N.removeOnly v 29 ;
+  b __LOC__ (Js.eqNull 28 (N.maxNull v ));
+  N.removeOnly v 0 ; 
+  b __LOC__ (Js.eqNull 1 (N.minNull v));
+  eq __LOC__ (N.length v ) 28;
+  let vv = I.randomRange 1 28 in 
+  for i = 0 to A.length vv - 1 do  
+    N.removeOnly v vv.(i)
+  done  ;
+  eq __LOC__ (N.length v) 0 
 
 ;; Mt.from_pair_suites __FILE__ !suites  

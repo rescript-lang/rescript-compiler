@@ -386,13 +386,13 @@ let balMutate nt  =
       nt
     end
 
-let rec removeMinAuxMutate n = 
+(* let rec removeMinAuxMutate n = 
   let rn, ln = right n, left n in 
   match toOpt ln with 
   | None -> rn 
   | Some ln -> 
     leftSet n (removeMinAuxMutate ln); 
-    return (balMutate n)
+    return (balMutate n) *)
 
 
 

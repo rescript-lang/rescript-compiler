@@ -18,7 +18,17 @@ val removeOnly : t -> elt -> unit
 val addArray : t -> elt array -> t 
 val addArrayOnly : t -> elt array -> unit 
 val ofArray : elt array -> t 
-val toArray : t -> elt array 
+val toArray : t -> elt array
+
+val length: t -> int
+val toList : t -> elt list 
+val toArray: t -> elt array  
+
+val minOpt: t -> elt option
+val minNull: t -> elt Js.null
+val maxOpt: t -> elt option
+val maxNull: t -> elt Js.null
+    
 val singleton: elt -> t
 (** [singleton x] returns the one-element set containing only [x]. *)
 

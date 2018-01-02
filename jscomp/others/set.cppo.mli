@@ -12,8 +12,6 @@ type t
 (** The type of sets. *)
 
 val empty: t
-
-
 val isEmpty: t -> bool
 
 val mem: t -> elt -> bool
@@ -74,12 +72,8 @@ val partition: t -> (elt -> bool [@bs]) ->  t * t
    [s] that do not satisfy [p]. *)
 
 val length: t -> int
-
 val toList: t -> elt list
-(** Return the list of all elements of the given set.
-   The returned list is sorted in increasing order with respect
-   to the ordering [Ord.compare], where [Ord] is the argument
-   given to {!Set.Make}. *)
+(** In increasing order with respect *)
 
 val toArray: t -> elt array  
 
