@@ -28,18 +28,19 @@ let maxOpt d =
   N.maxOpt0 (root d)
 let maxNull d =
   N.maxNull0 (root d)
-let iter d =
-  N.iter0 (root d)     
-let fold d = 
-  N.fold0 (root d)
-let forAll d = 
-  N.forAll0 (root d)
-let exists d = 
-  N.exists0 (root d)   
-let filter d = 
-  N.filter0 (root d)
-let partition d = 
-  N.partition0 (root d)
+let iter d f =
+  N.iter0 (root d) f     
+let fold d acc cb = 
+  N.fold0 (root d) acc cb 
+let forAll d p = 
+  N.forAll0 (root d) p 
+let exists d  p = 
+  N.exists0 (root d) p   
+let filter d p = 
+  t ~root:(N.filter0 (root d) p )
+let partition d p = 
+  let a , b = N.partition0 (root d) p in 
+  t ~root:a, t ~root:b
 let length d = 
   N.length0 (root d)
 let toList d =
@@ -96,8 +97,10 @@ let eq d0 d1 =
   I.eq (root d0) (root d1)
 let findOpt d x = 
   I.findOpt (root d) x 
-let split = I.split 
-let subset = I.subset 
-let inter = I.inter 
-let union = I.union
+let split d  p =  
+  let a,b,c =  I.split (root d) p  in 
+  t ~root:a, b, t ~root:c
+let subset a b = I.subset  (root a) (root b)
+let inter a b  = t ~root:(I.inter (root a) (root b))
+let union a b = t ~root:(I.union (root a) (root b))
 let mem d x = I.mem (root d) x 

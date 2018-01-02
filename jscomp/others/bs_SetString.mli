@@ -9,26 +9,17 @@ type t
 
 val empty: t
 val isEmpty: t -> bool
-
 val mem: t -> elt -> bool
-
-
 val add:  t -> elt -> t
 (** If [x] was already in [s], [s] is returned unchanged. *)
-
 val singleton: elt -> t
 (** [singleton x] returns the one-element set containing only [x]. *)
-
 val remove:  t -> elt -> t
 (**  If [x] was not in [s], [s] is returned unchanged. *)
 
 val union: t -> t -> t
-
 val inter: t -> t -> t
-
 val diff: t -> t -> t
-
-
 val cmp: t -> t -> int
 (** Total ordering between sets. Can be used as the ordering function
    for doing sets of sets. *)
@@ -42,9 +33,7 @@ val subset: t -> t -> bool
    the set [s2]. *)
 
 val iter: t -> (elt -> unit [@bs]) ->  unit
-(** [iter f s] applies [f] in turn to all elements of [s].
-   The elements of [s] are presented to [f] in increasing order
-   with respect to the ordering over the type of the elements. *)
+(** In increasing order*)
 
 val fold: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
 (** Iterate in increasing order. *)
@@ -70,16 +59,15 @@ val partition: t -> (elt -> bool [@bs]) ->  t * t
 val length: t -> int
 val toList: t -> elt list
 (** In increasing order with respect *)
-
-val toArray: t -> elt array  
-
+val toArray: t -> elt array
+val ofArray: elt array -> t         
 val minOpt: t -> elt option
 val minNull: t -> elt Js.null
 val maxOpt: t -> elt option
 val maxNull: t -> elt Js.null
 
 
-val split: elt -> t -> t * bool * t
+val split:  t -> elt -> t * bool * t
 (** [split x s] returns a triple [(l, present, r)], where
       [l] is the set of elements of [s] that are
       strictly less than [x];
@@ -91,6 +79,6 @@ val split: elt -> t -> t * bool * t
 val findOpt:  t -> elt -> elt option
 
 
-val ofArray : elt array -> t     
 
-val checkInvariant : t -> bool 
+
+val checkInvariant: t -> bool 

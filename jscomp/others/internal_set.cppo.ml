@@ -62,11 +62,11 @@ let rec splitAux (x : elt) (n : _ N.node) : t * bool * t =
       let (lr, pres, rr) = splitAux x r in (N.join l v lr, pres, rr)
 
 
-let rec split (x : elt) (t : t) : t * bool *  t =
+let split  (t : t) (x : elt) : t * bool *  t =
   match N.toOpt t with 
     None ->
     N.(empty, false, empty)
-  | Some n (* Node(l, v, r, _)*) ->    
+  | Some n  ->    
     splitAux x n 
 
 
