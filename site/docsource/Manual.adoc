@@ -20,6 +20,8 @@ v2.1.0
 :sectanchors:
 :sectlinks:
 
+## This is the old doc site and is now deprecated. The new one is https://bucklescript.github.io[here]
+
 ++++
 <input type="search" id="agolia-search" placeholder="Search docs...">
 <!-- at the end of the HEAD -->
