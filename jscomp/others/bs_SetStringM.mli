@@ -1,5 +1,5 @@
-# 4 "setm.cppo.mli"
-type elt = int
+# 2 "setm.cppo.mli"
+type elt = string
 
 # 9
 type t

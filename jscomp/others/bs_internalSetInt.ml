@@ -1,4 +1,4 @@
-# 4 "set.cppo.ml"
+# 4 "internal_set.cppo.ml"
 type elt = int
 
 
@@ -20,11 +20,18 @@ type enumeration = (elt,unit) enumeration0
 let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 
     None -> N.(return @@ node ~left:empty ~key:x ~right:empty ~h:1)
-  | Some nt (* Node(l, v, r, _) as t *) ->
+  | Some nt  ->
     let v = N.key nt in  
     if x = v then t else
-    if x < v then N.(bal (add (left nt) x) v (right nt))
-    else N.(bal (left nt) v (add  (right nt) x) )
+    let l, r = N.(left nt , right nt) in 
+    if x < v then 
+      let ll = add l x in 
+      if ll == l then t 
+      else N.bal ll v r
+    else 
+      let rr = add r x in 
+      if rr == r then t
+      else N.bal l v (add  r x) 
 
 
 
@@ -51,29 +58,35 @@ let rec splitAux (x : elt) (n : _ N.node) : t * bool * t =
       let (lr, pres, rr) = splitAux x r in (N.join l v lr, pres, rr)
 
 
-let rec split (x : elt) (t : t) : t * bool *  t =
+let split  (t : t) (x : elt) : t * bool *  t =
   match N.toOpt t with 
     None ->
     N.(empty, false, empty)
-  | Some n (* Node(l, v, r, _)*) ->    
+  | Some n  ->    
     splitAux x n 
 
 
 let rec mem (t : t) (x : elt)  =
   match N.toOpt t with 
   | None -> false
-  | Some n (* Node(l, v, r, _) *) ->                
+  | Some n  ->                
     let v = N.key n in 
-    x = v || mem N.(if x < v then (left n) else (right n)) x
+    x = v || mem (if x < v then N.left n else N.right n) x
 
 let rec remove (t : t) (x : elt) : t = 
   match N.toOpt t with 
   | None -> t
-  | Some n (* Node(l, v, r, _) *) ->
+  | Some n  ->
     let l,v,r = N.(left n, key n, right n) in 
     if x = v then N.merge l r else
-    if x < v then N.bal (remove l x) v r 
-    else N.bal l v (remove r x)
+    if x < v then 
+      let ll = remove l x in  
+      if ll == l then t  
+      else N.bal ll v r 
+    else 
+      let rr = remove r x in 
+      if rr == r then t
+      else N.bal l v rr
 
 let rec union (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
@@ -161,57 +174,29 @@ let rec subset (s1 : t) (s2 : t) =
       subset N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && subset l1 s2
 
 
-let rec findOpt (x : elt) (n :t)  = 
+let rec findOpt  (n :t) (x : elt) = 
   match N.toOpt n with 
   | None -> None
-  | Some t (* Node(l, v, r, _) *) ->    
+  | Some t  ->    
     let v = N.key t in     
     if x = v then Some v
-    else findOpt x N.(if x < v then (left t) else (right t))
+    else findOpt N.(if x < v then (left t) else (right t)) x
 
-let rec findAssert (x : elt) (n :t)  = 
+let rec findAssert (n :t) (x : elt)   = 
   match N.toOpt n with 
   | None -> [%assert "Not_found"]
-  | Some t (* Node(l, v, r, _) *) ->    
+  | Some t  ->    
     let v = N.key t in     
     if x = v then Some v
-    else findAssert x N.(if x < v then (left t) else (right t))
+    else findAssert  N.(if x < v then (left t) else (right t)) x
 
-
-
-
-(*
-let of_sorted_list l =
-  let rec sub n l =
-    match n, l with
-    | 0, l -> Empty, l
-    | 1, x0 :: l -> Node (Empty, x0, Empty, 1), l
-    | 2, x0 :: x1 :: l -> Node (Node(Empty, x0, Empty, 1), x1, Empty, 2), l
-    | 3, x0 :: x1 :: x2 :: l ->
-      Node (Node(Empty, x0, Empty, 1), x1, Node(Empty, x2, Empty, 1), 2),l
-    | n, l ->
-      let nl = n / 2 in
-      let left, l = sub nl l in
-      match l with
-      | [] -> assert false
-      | mid :: l ->
-        let right, l = sub (n - nl - 1) l in
-        create left mid right, l
-  in
-  fst (sub (List.length l) l)
-*)  
-(*
-let of_list l =
-  match l with
-  | [] -> empty
-  | [x0] -> singleton x0
-  | [x0; x1] -> add x1 (singleton x0)
-  | [x0; x1; x2] -> add x2 (add x1 (singleton x0))
-  | [x0; x1; x2; x3] -> add x3 (add x2 (add x1 (singleton x0)))
-  | [x0; x1; x2; x3; x4] -> add x4 (add x3 (add x2 (add x1 (singleton x0))))
-  | _ -> of_sorted_list (List.sort_uniq Pervasives.compare l)
-*)
-
+let rec findNull (n :t) (x : elt)   = 
+  match N.toOpt n with 
+  | None -> Js.null
+  | Some t  ->    
+    let v = N.key t in     
+    if x = v then N.return v
+    else findNull  (if x < v then N.left t else N.right t) x
 
 
 
@@ -238,8 +223,7 @@ let rec removeMutateAux nt (x : elt)=
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
     | Some _,  Some nr ->  
-          N.keySet nt (N.min0Aux nr );
-          N.rightSet nt ( removeMutateAux nr x ); (* TODO specalized by removeMinAuxMutate*)
+          N.rightSet nt (N.removeMinAuxMutateWithRoot nt nr);
           N.return (N.balMutate nt)
     | None, Some _ ->
           r  
@@ -252,7 +236,7 @@ let rec removeMutateAux nt (x : elt)=
            | Some l ->
              N.leftSet nt (removeMutateAux l x );
              N.return (N.balMutate nt)
-         else 
+      else 
           match N.toOpt (N.right nt) with 
           | None -> N.return nt 
           | Some r -> 
@@ -275,10 +259,23 @@ let addArrayMutate (t : _ t0) xs =
   done ;
   !v
 
-(* FIXME: improve, use [sorted] attribute *)    
-let ofArray (xs : elt array) : t =     
-  let result = ref N.empty in 
-  for i = 0 to A.length xs - 1 do  
-    result := addMutate !result (A.unsafe_get xs i) 
-  done ;
-  !result 
+
+let rec sortedLengthAux (xs : elt array) prec acc len =    
+  if acc >= len then acc 
+  else 
+    let v = A.unsafe_get xs acc in 
+    if v > prec  then 
+      sortedLengthAux xs v (acc + 1) len 
+    else acc  
+  
+
+let ofArray (xs : elt array) =   
+  let len = A.length xs in 
+  if len = 0 then N.empty
+  else
+    let next = sortedLengthAux xs (A.unsafe_get xs 0) 1 len in 
+    let result  = ref (N.ofSortedArrayAux xs 0 next) in 
+    for i = next to len - 1 do 
+       result := addMutate !result (A.unsafe_get xs i) 
+    done ;
+    !result 

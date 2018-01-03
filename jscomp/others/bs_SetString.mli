@@ -8,29 +8,18 @@ type t
 (** The type of sets. *)
 
 val empty: t
-
-
 val isEmpty: t -> bool
-
 val mem: t -> elt -> bool
-
-
 val add:  t -> elt -> t
 (** If [x] was already in [s], [s] is returned unchanged. *)
-
 val singleton: elt -> t
 (** [singleton x] returns the one-element set containing only [x]. *)
-
 val remove:  t -> elt -> t
 (**  If [x] was not in [s], [s] is returned unchanged. *)
 
 val union: t -> t -> t
-
 val inter: t -> t -> t
-
 val diff: t -> t -> t
-
-
 val cmp: t -> t -> int
 (** Total ordering between sets. Can be used as the ordering function
    for doing sets of sets. *)
@@ -44,9 +33,7 @@ val subset: t -> t -> bool
    the set [s2]. *)
 
 val iter: t -> (elt -> unit [@bs]) ->  unit
-(** [iter f s] applies [f] in turn to all elements of [s].
-   The elements of [s] are presented to [f] in increasing order
-   with respect to the ordering over the type of the elements. *)
+(** In increasing order*)
 
 val fold: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
 (** Iterate in increasing order. *)
@@ -70,22 +57,18 @@ val partition: t -> (elt -> bool [@bs]) ->  t * t
    [s] that do not satisfy [p]. *)
 
 val length: t -> int
-
 val toList: t -> elt list
-(** Return the list of all elements of the given set.
-   The returned list is sorted in increasing order with respect
-   to the ordering [Ord.compare], where [Ord] is the argument
-   given to {!Set.Make}. *)
-
-val toArray: t -> elt array  
-
+(** In increasing order with respect *)
+val toArray: t -> elt array
+val ofArray: elt array -> t
+val ofSortedArrayUnsafe: elt array -> t   
 val minOpt: t -> elt option
 val minNull: t -> elt Js.null
 val maxOpt: t -> elt option
 val maxNull: t -> elt Js.null
 
 
-val split: elt -> t -> t * bool * t
+val split:  t -> elt -> t * bool * t
 (** [split x s] returns a triple [(l, present, r)], where
       [l] is the set of elements of [s] that are
       strictly less than [x];
@@ -94,9 +77,9 @@ val split: elt -> t -> t * bool * t
       [present] is [false] if [s] contains no element equal to [x],
       or [true] if [s] contains an element equal to [x]. *)
 
-val findOpt: elt -> t -> elt option
+val findOpt:  t -> elt -> elt option
 
 
-val ofArray : elt array -> t     
 
-val checkInvariant : t -> bool 
+
+val checkInvariant: t -> bool 

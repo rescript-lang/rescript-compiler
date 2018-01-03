@@ -184,3 +184,16 @@ let rec forAllAux arr i b len =
 let forAll arr b =   
   let len = length arr in 
   forAllAux arr 0 b len 
+
+let rec forAllAux2 arr1 arr2 i b len =   
+  if i = len then true 
+  else if b (unsafe_get arr1 i) (unsafe_get arr2 i) [@bs] then 
+    forAllAux2 arr1 arr2 (i + 1) b len
+  else false      
+
+let forAll2  a b p =   
+  let lena = length a in  
+  let lenb = length b in 
+  if lena <> lenb then false
+  else 
+    forAllAux2  a b 0 p lena

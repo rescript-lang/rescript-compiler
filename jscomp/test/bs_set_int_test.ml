@@ -5,7 +5,7 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
 module N = Bs.SetInt
-
+module I = Array_data_util
 
 let (=~) s i = 
   N.(eq (ofArray i) s)
@@ -107,5 +107,16 @@ let ()  =
   b __LOC__ (N.checkInvariant u);
   b __LOC__ N.(eq (union (ofArray firstHalf) xx) u)
   
+let () =   
+  let aa = N.ofArray (I.randomRange 0 100) in
+  let bb = N.ofArray (I.randomRange 0 200) in 
+  let cc = N.ofArray (I.randomRange 120 200) in 
+  let dd = N.union aa cc in 
+  b __LOC__ (N.subset aa bb);
+  b __LOC__ (N.subset dd bb);
+  b __LOC__ (N.subset (N.add dd 200) bb);
+  b __LOC__ (N.add dd 200 == dd);
+  b __LOC__ (N.add dd 0 == dd);
+  b __LOC__ (not (N.subset (N.add dd 201) bb));
 
 ;; Mt.from_pair_suites __FILE__ !suites    

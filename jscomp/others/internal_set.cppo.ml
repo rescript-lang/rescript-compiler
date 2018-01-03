@@ -1,8 +1,12 @@
-# 2 "internal_set.cppo.ml"
+#ifdef TYPE_STRING
 type elt = string
+#elif defined TYPE_INT  
+type elt = int
+#else
+  [%error "unknown type"]  
+#endif
 
 
-# 10
 module N = Bs_internalAVLset
 module A = Bs_Array 
 type ('elt, 'id) t0 = ('elt, 'id) N.t0 

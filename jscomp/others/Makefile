@@ -38,6 +38,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_SetInt\
 	bs_SetIntM\
 	bs_SetString\
+	bs_SetStringM\
 	node_child_process js_boolean js_math\
 	js_dict js_date js_global js_cast js_promise\
 	dom dom_storage\
@@ -71,6 +72,12 @@ clean::
 	rm -f *~
 	rm -f  *.annot
 	rm -f *.rawlambda *.lam *.lambda *.map
+	rm -rf bs_HashSetString.ml bs_HashSetString.mli bs_HashSetInt.ml  bs_HashSetInt.mli \
+	bs_HashMapInt.ml bs_HashMapInt.mli  bs_HashMapString.ml bs_HashMapString.mli \
+	bs_MapInt.ml bs_MapInt.mli  bs_MapString.ml bs_MapString.mli \
+	bs_internalSetInt.ml bs_internalSetString.ml \
+	bs_SetInt.ml bs_SetInt.mli bs_SetString.ml  bs_SetString.mli \
+	bs_SetIntM.ml bs_SetIntM.mli bs_SetStringM.ml bs_SetStringM.mli
 
 ifndef BS_RELEASE_BUILD
 bs_HashSetString.ml: hashset.cppo.ml
@@ -97,13 +104,28 @@ bs_MapString.mli: map.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 bs_MapInt.mli: map.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_internalSetInt.ml: set.cppo.ml
+bs_internalSetInt.ml: internal_set.cppo.ml
 	cppo -D TYPE_INT $^ > $@
+bs_internalSetString.ml: internal_set.cppo.ml
+	cppo -D TYPE_STRING $^ > $@
+
+bs_SetInt.ml: set.cppo.ml
+	cppo -D TYPE_INT $^ > $@
+bs_SetString.ml: set.cppo.ml
+	cppo -D TYPE_STRING $^ > $@
+
 bs_SetInt.mli: set.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_internalSetString.ml: set.cppo.ml
-	cppo -D TYPE_STRING $^ > $@
 bs_SetString.mli: set.cppo.mli
+	cppo -D TYPE_STRING $^ > $@
+
+bs_SetIntM.ml: setm.cppo.ml
+	cppo -D TYPE_INT $^ > $@
+bs_SetStringM.ml: setm.cppo.ml
+	cppo -D TYPE_STRING $^ > $@
+bs_SetIntM.mli: setm.cppo.mli
+	cppo -D TYPE_INT $^ > $@
+bs_SetStringM.mli: setm.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 endif	
 

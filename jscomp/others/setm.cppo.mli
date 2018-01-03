@@ -1,7 +1,11 @@
-# 4 "setm.cppo.mli"
+#ifdef TYPE_STRING
+type elt = string
+#elif defined TYPE_INT
 type elt = int
+#else
+  [%error "unknown type"]
+#endif  
 
-# 9
 type t
 val empty: unit -> t
 val isEmpty: t -> bool
