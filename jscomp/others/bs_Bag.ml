@@ -26,3 +26,11 @@ type (+ 'k, + 'v) bag = {
   dict : 'k ;
   data : 'v
 } [@@bs.deriving abstract]
+
+(* without variance annotation
+
+  {[
+    let m = N.empty (module N)
+  ]}
+  will not be allowed if m is polymoprhic
+*)

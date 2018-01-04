@@ -3,7 +3,6 @@
 var Bs_Map = require("../../lib/js/bs_Map.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-var Bs_internalAVLset = require("../../lib/js/bs_internalAVLset.js");
 var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
 
 var N = /* module */[/* cmp */Caml_primitive.caml_int_compare];
@@ -54,10 +53,7 @@ var m11 = Bs_Map.add0(cmp, 1, 1, Bs_Map.empty0);
 
 console.log(m11);
 
-var v = {
-  dict: I,
-  data: Bs_internalAVLset.empty0
-};
+var v = Bs_Set.empty(I);
 
 var m_dict$1 = m.dict;
 
