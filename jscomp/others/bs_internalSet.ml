@@ -17,15 +17,15 @@ let rec add0 ~cmp (t : _ t0) x  : _ t0 =
     let k = N.key nt in 
     let c = (Bs_Cmp.getCmp cmp) x k [@bs] in
     if c = 0 then t else
-    let l,r = N.(left nt, right nt) in 
-    if c < 0 then 
-      let ll = add0 ~cmp l x in 
-      if ll == l then t 
-      else N.bal ll k r 
-    else 
-      let rr = add0 ~cmp r x in 
-      if rr == r then t 
-      else N.bal l k rr 
+      let l,r = N.(left nt, right nt) in 
+      if c < 0 then 
+        let ll = add0 ~cmp l x in 
+        if ll == l then t 
+        else N.bal ll k r 
+      else 
+        let rr = add0 ~cmp r x in 
+        if rr == r then t 
+        else N.bal l k rr 
 
 
 (* Splitting.  split x s returns a triple (l, present, r) where
@@ -33,7 +33,7 @@ let rec add0 ~cmp (t : _ t0) x  : _ t0 =
     - r is the set of elements of s that are > x
     - present is false if s contains no element equal to x,
       or true if s contains an element equal to x. *)
-let rec splitAux ~cmp x (n : _ N.node) : _ * bool * _ =   
+let rec splitAux ~cmp (n : _ N.node) x : _ * bool * _ =   
   let l,v,r = N.(left n , key n, right n) in  
   let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
   if c = 0 then (l, true, r)
@@ -42,20 +42,20 @@ let rec splitAux ~cmp x (n : _ N.node) : _ * bool * _ =
     | None -> 
       N.(empty , false, return n)
     | Some l -> 
-      let (ll, pres, rl) = splitAux ~cmp x l in (ll, pres, N.join rl v r)
+      let (ll, pres, rl) = splitAux ~cmp  l x in (ll, pres, N.join rl v r)
   else
     match N.toOpt r with 
     | None ->
       N.(return n, false, empty)
     | Some r -> 
-      let (lr, pres, rr) = splitAux ~cmp x r in (N.join l v lr, pres, rr)
+      let (lr, pres, rr) = splitAux ~cmp  r x in (N.join l v lr, pres, rr)
 
-let rec split0 ~cmp x (t : _ t0) : _ t0 * bool * _ t0 =
+let  split0 ~cmp  (t : _ t0) x : _ t0 * bool * _ t0 =
   match N.toOpt t with 
     None ->
     N.(empty, false, empty)
   | Some n ->
-    splitAux ~cmp x n
+    splitAux ~cmp n x
 
 let rec mem0 ~cmp  (t: _ t0) x =
   match  N.toOpt t with 
@@ -91,13 +91,13 @@ let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
     if h1 >= h2 then
       if h2 = 1 then add0 ~cmp s1 (N.key n2)  else begin
         let l1, v1, r1 = N.(left n1, key n1, right n1) in      
-        let (l2, _, r2) = split0 ~cmp v1 s2 in
+        let (l2, _, r2) = split0 ~cmp  s2 v1 in
         N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
       end
     else
     if h1 = 1 then add0 s2 ~cmp (N.key n1)  else begin
       let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
-      let (l1, _, r1) = split0 ~cmp v2 s1 in
+      let (l1, _, r1) = split0 ~cmp s1 v2  in
       N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
     end
 
@@ -107,7 +107,7 @@ let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
   | (_, None) -> s2
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let l1,v1,r1 = N.(left n1, key n1, right n1) in  
-    match splitAux ~cmp v1 n2 with
+    match splitAux ~cmp n2 v1 with
       (l2, false, r2) ->
       N.concat (inter0 ~cmp l1 l2) (inter0 ~cmp r1 r2)
     | (l2, true, r2) ->
@@ -119,7 +119,7 @@ let rec diff0 ~cmp s1 s2 =
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let l1,v1,r1 = N.(left n1, key n1, right n1) in
-    match splitAux ~cmp v1 n2 with
+    match splitAux ~cmp n2 v1  with
       (l2, false, r2) ->
       N.join (diff0 ~cmp l1 l2) v1 (diff0 ~cmp r1 r2)
     | (l2, true, r2) ->
@@ -161,32 +161,32 @@ let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
     else
       subset0 ~cmp N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && subset0 ~cmp l1 s2
 
-let rec findOpt0 ~cmp x (n : _ t0) = 
+let rec findOpt0 ~cmp (n : _ t0) x = 
   match N.toOpt n with 
     None -> None
   | Some t (* Node(l, v, r, _) *) ->
     let v = N.key t in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then Some v
-    else findOpt0 ~cmp x (if c < 0 then N.left t else N.right t)
+    else findOpt0 ~cmp  (if c < 0 then N.left t else N.right t) x
 
-let rec findAssert0 ~cmp x (n : _ t0) =
+let rec findAssert0 ~cmp (n : _ t0) x =
   match N.toOpt n with 
     None -> [%assert "Not_found"]
   | Some t (* Node(l, v, r, _) *) ->
     let v = N.key t in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then  v
-    else findAssert0 ~cmp x (if c < 0 then N.left t else N.right t)
+    else findAssert0 ~cmp (if c < 0 then N.left t else N.right t) x
 
-let rec findNull0 ~cmp x (n : _ t0) =
+let rec findNull0 ~cmp (n : _ t0) x =
   match N.toOpt n with 
     None -> Js.null
   | Some t (* Node(l, v, r, _) *) ->
     let v = N.key t in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then  N.return v
-    else findNull0 ~cmp x (if c < 0 then N.left t else N.right t)    
+    else findNull0 ~cmp  (if c < 0 then N.left t else N.right t) x 
 
 (* FIXME: use [sorted] attribute *)    
 let ofArray0 ~cmp (xs : _ array) : _ t0 =     
@@ -215,12 +215,44 @@ let rec addMutate ~cmp (t : _ t0) (x )=
     let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
     if c = 0 then t 
     else
-    let l, r = N.(left nt, right nt) in 
-    (if c < 0 then                   
-       N.leftSet nt (addMutate ~cmp l x)       
-     else   
-       N.rightSet nt (addMutate ~cmp r x);
-     );
-    N.return (N.balMutate nt)
+      let l, r = N.(left nt, right nt) in 
+      (if c < 0 then                   
+         N.leftSet nt (addMutate ~cmp l x)       
+       else   
+         N.rightSet nt (addMutate ~cmp r x);
+      );
+      N.return (N.balMutate nt)
 
 
+let rec removeMutateAux ~cmp nt x = 
+  let k = N.key nt in 
+  let c = (Bs_Cmp.getCmp cmp) x k [@bs] in 
+  if c = 0 then 
+    let l,r = N.(left nt, right nt) in       
+    match N.(toOpt l, toOpt r) with 
+    | Some _,  Some nr ->  
+      N.rightSet nt (N.removeMinAuxMutateWithRoot nt nr);
+      N.return (N.balMutate nt)
+    | None, Some _ ->
+      r  
+    | (Some _ | None ), None ->  l 
+  else 
+    begin 
+      if c < 0 then 
+        match N.toOpt (N.left nt) with         
+        | None -> N.return nt 
+        | Some l ->
+          N.leftSet nt (removeMutateAux ~cmp l x );
+          N.return (N.balMutate nt)
+      else 
+        match N.toOpt (N.right nt) with 
+        | None -> N.return nt 
+        | Some r -> 
+          N.rightSet nt (removeMutateAux ~cmp r x);
+          N.return (N.balMutate nt)
+    end
+
+let removeMutate ~cmp nt x = 
+  match N.toOpt nt with 
+  | None -> nt 
+  | Some nt -> removeMutateAux ~cmp nt x 

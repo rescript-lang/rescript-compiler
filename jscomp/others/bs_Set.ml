@@ -134,23 +134,23 @@ let toArray m = N.toArray0 (B.data m)
 let minOpt m = N.minOpt0 (B.data m)
 let maxOpt m = N.maxOpt0 (B.data m)
 
-let split (type elt) (type id) e (m : (elt,id) t) = 
+let split (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in  
   let module M = (val dict) in 
-  let l, b, r = split0 ~cmp:M.cmp e data in 
+  let l, b, r = split0 ~cmp:M.cmp data e in 
   B.bag ~dict ~data:l,
   b,
   B.bag ~dict ~data:r
 
-let findOpt (type elt) (type id) e (m : (elt,id) t) =   
+let findOpt (type elt) (type id)  (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in   
   let module M = (val dict) in 
-  findOpt0 ~cmp:M.cmp e data
+  findOpt0 ~cmp:M.cmp data e
 
-let findAssert (type elt) (type id) e (m : (elt,id) t) =   
+let findAssert (type elt) (type id) (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
-  findAssert0 ~cmp:M.cmp e data
+  findAssert0 ~cmp:M.cmp data e
 
 
 let ofSortedArrayUnsafe ~dict xs  =

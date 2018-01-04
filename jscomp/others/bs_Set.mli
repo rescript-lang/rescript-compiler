@@ -24,9 +24,11 @@ val singleton :
   ('elt,'id) Bs_Cmp.t -> 
   'elt -> ('elt, 'id) t
 (** [singleton x] returns the one-element set containing only [x]. *)
+
 val remove:  
    ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [remove x s] If [x] was not in [s], [s] is returned unchanged. *)
+
 val union:  
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
 val inter: 
@@ -35,6 +37,7 @@ val diff:
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
 val subset:  
   ('elt, 'id) t -> ('elt, 'id) t -> bool     
+
 val cmp:  
   ('elt, 'id) t -> ('elt, 'id) t -> int
 (** Total ordering between sets. Can be used as the ordering function
@@ -46,24 +49,23 @@ val iter: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
 (** [iter s f] applies [f] in turn to all elements of [s].
     In increasing order *)
 val fold: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
-(** [fold f s a] computes [(f xN ... (f x2 (f x1 a))...)],
-    where [x1 ... xN] are the elements of [s], in increasing order. *)
+(** In increasing order. *)
 val forAll: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
 (** [for_all p s] checks if all elements of the set
-    satisfy the predicate [p]. *)
+    satisfy the predicate [p]. Order unspecified *)
 
 val exists: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 (** [exists p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
 (** [filter p s] returns the set of all elements in [s]
-    that satisfy predicate [p]. *)
-    
+    that satisfy predicate [p]. *)    
 val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
 (** [partition p s] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
     [s] that do not satisfy [p]. *)
+
 val length:  ('elt, 'id) t -> int
 (** Return the number of elements of a set. *)
     
@@ -76,7 +78,7 @@ val minOpt: ('elt, 'id) t -> 'elt option
 val maxOpt: ('elt, 'id) t -> 'elt option
 
 val split: 
-  'elt -> ('elt, 'id) t -> ('elt, 'id) t * bool * ('elt, 'id) t
+  ('elt, 'id) t -> 'elt -> ('elt, 'id) t * bool * ('elt, 'id) t
 (** [split x s] returns a triple [(l, present, r)], where
       [l] is the set of elements of [s] that are
       strictly less than [x];
@@ -90,9 +92,9 @@ val ofSortedArrayUnsafe:
   'elt array -> ('elt,'id) t
 
 val findOpt: 
-  'elt -> ('elt, 'id) t -> 'elt option 
+  ('elt, 'id) t -> 'elt -> 'elt option 
 val findAssert:  
-  'elt -> ('elt, 'id) t -> 'elt  
+  ('elt, 'id) t -> 'elt -> 'elt  
 
 
 
@@ -158,7 +160,7 @@ val maxOpt0: ('elt, 'id) t0 -> 'elt option
 
 val split0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  'elt -> ('elt, 'id) t0 -> ('elt, 'id) t0 * bool * ('elt, 'id) t0
+  ('elt, 'id) t0 -> 'elt -> ('elt, 'id) t0 * bool * ('elt, 'id) t0
 
 val ofSortedArrayUnsafe0:
   'elt array -> ('elt,'id) t0
@@ -166,9 +168,9 @@ val ofSortedArrayUnsafe0:
 
 val findOpt0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  'elt -> ('elt, 'id) t0 -> 'elt option
+  ('elt, 'id) t0 -> 'elt -> 'elt option
 
 
 val findAssert0:
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  'elt -> ('elt, 'id) t0 -> 'elt 
+  ('elt, 'id) t0 -> 'elt -> 'elt 
