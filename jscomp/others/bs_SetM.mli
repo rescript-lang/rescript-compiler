@@ -45,12 +45,16 @@ val addCheck:
 
 val addArrayOnly:
   ('elt, 'id) t -> 'elt array -> unit 
-
+  
 val addArray:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
   
+val removeArrayOnly:
+  ('elt, 'id) t -> 'elt array -> unit 
 
-
+val removeArray:
+  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
+  
 val singleton : 
   ('elt,'id) Bs_Cmp.t -> 
   'elt -> ('elt, 'id) t
@@ -113,8 +117,9 @@ val toList: ('elt, 'id) t -> 'elt list
 val toArray: ('elt, 'id) t -> 'elt array
 
 val minOpt: ('elt, 'id) t -> 'elt option
+val minNull: ('elt, 'id) t -> 'elt Js.null
 val maxOpt: ('elt, 'id) t -> 'elt option
-
+val maxNull: ('elt, 'id) t -> 'elt Js.null
 val split: 
    ('elt, 'id) t -> 'elt ->  ('elt, 'id) t * bool * ('elt, 'id) t
 (** [split x s] returns a triple [(l, present, r)], where
@@ -131,8 +136,19 @@ val ofSortedArrayUnsafe:
 
 val findOpt: 
   ('elt, 'id) t -> 'elt -> 'elt option 
-val findAssert:  
-  ('elt, 'id) t -> 'elt -> 'elt  
+val findNull:   
+  ('elt, 'id) t -> 'elt -> 'elt Js.null
+(** [findOpt s ele] 
+    return the element in the collection 
+    which is semantically equal to it 
+ *)
+
+(* No need
+  could be made use of by 
+  [Js.assertNonNull (findNull s x)]
+ *)
+(* val findAssert:  
+  ('elt, 'id) t -> 'elt -> 'elt   *)
 
 (*
   [add0] was not exposed for various reasons:

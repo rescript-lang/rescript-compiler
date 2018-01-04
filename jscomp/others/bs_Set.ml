@@ -13,6 +13,7 @@ let add0 = I.add0
 let addArray0 = I.addArrayMutate
 let singleton0 = N.singleton0
 let remove0 = I.remove0
+let removeArray0 = I.removeArray0
 let union0 = I.union0 
 let inter0 = I.inter0
 let diff0 = I.diff0
@@ -33,7 +34,7 @@ let maxOpt0 = N.maxOpt0
 let split0 = I.split0
 let ofSortedArrayUnsafe0 = N.ofSortedArrayUnsafe0
 let findOpt0 = I.findOpt0
-let findAssert0 = I.findAssert0
+let findNull0 = I.findNull0
 
 let empty dict = 
   B.bag
@@ -70,6 +71,12 @@ let addArray (type elt) (type id) (m : (elt,id) t) e =
   let newData = I.addArray0 ~cmp:M.cmp data e in 
   B.bag ~dict ~data:newData
 
+let removeArray (type elt) (type id) (m : (elt,id) t) e = 
+  let dict, data = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  let newData = I.removeArray0 ~cmp:M.cmp data e in 
+  B.bag ~dict ~data:newData
+  
 let singleton dict e =     
   B.bag ~dict
     ~data:(N.singleton0 e)
@@ -138,8 +145,11 @@ let length m = N.length0 (B.data m)
 
 let toList m = N.toList0 (B.data m)
 let toArray m = N.toArray0 (B.data m)
+
 let minOpt m = N.minOpt0 (B.data m)
+let minNull m = N.minNull0 (B.data m) 
 let maxOpt m = N.maxOpt0 (B.data m)
+let maxNull m = N.maxNull0 (B.data m)
 
 let split (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in  
@@ -154,10 +164,10 @@ let findOpt (type elt) (type id)  (m : (elt,id) t) e =
   let module M = (val dict) in 
   findOpt0 ~cmp:M.cmp data e
 
-let findAssert (type elt) (type id) (m : (elt,id) t) e =   
+let findNull (type elt) (type id) (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
-  findAssert0 ~cmp:M.cmp data e
+  I.findNull0 ~cmp:M.cmp data e
 
 
 let ofSortedArrayUnsafe ~dict xs  =

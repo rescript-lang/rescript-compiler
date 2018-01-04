@@ -46,7 +46,7 @@ bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Bag.cmj bs_Array.cmj \
 bs_MapString.cmj : bs_internalAVLtree.cmj bs_Array.cmj bs_MapString.cmi
 bs_MapInt.cmj : bs_internalAVLtree.cmj bs_Array.cmj bs_MapInt.cmi
 bs_internalSet.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Bag.cmj \
-    bs_Array.cmj bs.cmj
+    bs_Array.cmj
 bs_Set.cmj : bs_internalSet.cmj bs_internalAVLset.cmj bs_Cmp.cmj bs_Bag.cmj \
     bs_Set.cmi
 bs_SetM.cmj : bs_internalSet.cmj bs_internalAVLset.cmj bs_Cmp.cmj \

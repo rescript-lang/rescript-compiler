@@ -32,14 +32,6 @@ let rec add0 ~cmp (t : _ t0) x  : _ t0 =
         if rr == r then t 
         else N.bal l k rr 
 
-let addArray0 ~cmp  h arr =   
-  let len = Bs.Array.length arr in 
-  let v = ref N.empty0 in  
-  for i = 0 to len - 1 do 
-    let key = A.unsafe_get arr i in 
-    v := add0 !v  ~cmp key 
-  done ;
-  !v 
 
 (* Splitting.  split x s returns a triple (l, present, r) where
     - l is the set of elements of s that are < x
@@ -93,6 +85,24 @@ let rec remove0 ~cmp (t : _ t0) x : _ t0 =
       let rr = remove0 ~cmp  r x in 
       if rr == r then t  
       else N.bal l v rr
+
+let addArray0 ~cmp  h arr =   
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key = A.unsafe_get arr i in 
+    v := add0 !v  ~cmp key 
+  done ;
+  !v 
+
+let removeArray0 h arr ~cmp = 
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key = A.unsafe_get arr i in 
+    v := remove0 !v  ~cmp key 
+  done ;
+  !v 
 
 (** FIXME: provide a [splitAux] which returns a tuple of two instead *)      
 let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
@@ -183,14 +193,6 @@ let rec findOpt0 ~cmp (n : _ t0) x =
     if c = 0 then Some v
     else findOpt0 ~cmp  (if c < 0 then N.left t else N.right t) x
 
-let rec findAssert0 ~cmp (n : _ t0) x =
-  match N.toOpt n with 
-    None -> [%assert "Not_found"]
-  | Some t (* Node(l, v, r, _) *) ->
-    let v = N.key t in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then  v
-    else findAssert0 ~cmp (if c < 0 then N.left t else N.right t) x
 
 let rec findNull0 ~cmp (n : _ t0) x =
   match N.toOpt n with 
@@ -296,6 +298,23 @@ let rec addMutateCheckAux  (t : _ t0) x added ~cmp  =
          N.rightSet nt (addMutateCheckAux ~cmp r x added );
       );
       N.return (N.balMutate nt)
+
+
+let rec removeArrayMutateAux t xs i len ~cmp  =  
+  if i < len then 
+    let ele = A.unsafe_get xs i in 
+    let u = removeMutateAux t ele ~cmp in 
+    match N.toOpt u with 
+    | None -> N.empty0
+    | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
+  else N.return t    
+
+let removeArrayMutate (t : _ t0) xs ~cmp =
+  match N.toOpt t with 
+  | None -> t
+  | Some nt -> 
+    let len = A.length xs in 
+    removeArrayMutateAux nt xs 0 len ~cmp 
 
 let rec removeMutateCheckAux  nt x removed ~cmp= 
   let k = N.key nt in 

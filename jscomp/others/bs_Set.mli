@@ -21,6 +21,8 @@ val add:
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
 val addArray:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
+val removeArray:
+  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 val singleton : 
   ('elt,'id) Bs_Cmp.t -> 
@@ -77,7 +79,9 @@ val toList: ('elt, 'id) t -> 'elt list
 val toArray: ('elt, 'id) t -> 'elt array
 
 val minOpt: ('elt, 'id) t -> 'elt option
+val minNull: ('elt, 'id) t -> 'elt Js.null
 val maxOpt: ('elt, 'id) t -> 'elt option
+val maxNull: ('elt, 'id) t -> 'elt Js.null
 
 val split: 
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t * bool * ('elt, 'id) t
@@ -95,8 +99,8 @@ val ofSortedArrayUnsafe:
 
 val findOpt: 
   ('elt, 'id) t -> 'elt -> 'elt option 
-val findAssert:  
-  ('elt, 'id) t -> 'elt -> 'elt  
+val findNull:  
+  ('elt, 'id) t -> 'elt -> 'elt Js.null 
 
 
 
@@ -116,6 +120,11 @@ val addArray0:
   ('elt, 'id) t0 -> 'elt array ->
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0
+val removeArray0:  
+  ('elt, 'id) t0 -> 'elt array ->
+  cmp: ('elt,'id) Bs_Cmp.cmp ->
+  ('elt, 'id) t0
+
 val singleton0: 'elt -> ('elt, 'id) t0
 val remove0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
@@ -179,6 +188,6 @@ val findOpt0:
   ('elt, 'id) t0 -> 'elt -> 'elt option
 
 
-val findAssert0:
+val findNull0:
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt -> 'elt 
+  ('elt, 'id) t0 -> 'elt -> 'elt Js.null

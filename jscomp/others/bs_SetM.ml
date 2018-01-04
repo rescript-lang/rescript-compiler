@@ -82,6 +82,16 @@ let addArray d xs =
   addArrayOnly d xs ; 
   d 
 
+let removeArrayOnly (type elt) (type id) (d : (elt,id) t) xs =  
+  let dict, oldRoot = B.dict d, B.data d in  
+  let module M = (val dict) in 
+  let newRoot = I.removeArrayMutate oldRoot xs ~cmp:M.cmp in 
+  if newRoot != oldRoot then 
+    B.dataSet d newRoot
+
+let removeArray d xs =      
+  removeArrayOnly d xs; 
+  d
 let removeOnly (type elt) (type id) (d : (elt,id) t) v =  
   let dict, oldRoot = B.(dict d, data d) in 
   let module M = (val dict) in 
@@ -130,10 +140,10 @@ let findOpt (type elt) (type id) (d : (elt,id) t) x =
   let module M = (val dict) in 
   I.findOpt0 ~cmp:M.cmp (B.data d) x 
 
-let findAssert (type elt) (type id) (d : (elt,id) t) x = 
+let findNull (type elt) (type id) (d : (elt,id) t) x = 
   let dict = B.dict d in 
   let module M = (val dict) in 
-  I.findAssert0 ~cmp:M.cmp (B.data d) x 
+  I.findNull0 ~cmp:M.cmp (B.data d) x 
   
 let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data =  
   let module M = (val dict) in 
