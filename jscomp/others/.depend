@@ -39,6 +39,7 @@ bs_HashSetString.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
 bs_HashSetInt.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
     bs_Array.cmj bs.cmj bs_HashSetInt.cmi
 bs_Bag.cmj :
+bs_BagM.cmj :
 bs_Cmp.cmj : bs_Cmp.cmi
 bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Bag.cmj bs_Array.cmj \
     bs_Map.cmi
@@ -49,7 +50,7 @@ bs_internalSet.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Bag.cmj \
 bs_Set.cmj : bs_internalSet.cmj bs_internalAVLset.cmj bs_Cmp.cmj bs_Bag.cmj \
     bs_Set.cmi
 bs_SetM.cmj : bs_internalSet.cmj bs_internalAVLset.cmj bs_Cmp.cmj \
-    bs_SetM.cmi
+    bs_BagM.cmj bs_SetM.cmi
 bs_internalSetInt.cmj : bs_internalAVLset.cmj bs_Array.cmj
 bs_internalSetString.cmj : bs_internalAVLset.cmj bs_Array.cmj
 bs_SetInt.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SetInt.cmi

@@ -57,15 +57,15 @@ let rec split0 ~cmp x (t : _ t0) : _ t0 * bool * _ t0 =
   | Some n ->
     splitAux ~cmp x n
 
-let rec mem0 ~cmp x (t: _ t0) =
+let rec mem0 ~cmp  (t: _ t0) x =
   match  N.toOpt t with 
   | None -> false
   | Some n ->
     let v = N.key n in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    c = 0 || mem0 ~cmp x (if c < 0 then N.left n else N.right n)
+    c = 0 || mem0 ~cmp (if c < 0 then N.left n else N.right n) x
 
-let rec remove0 ~cmp x (t : _ t0) : _ t0 = 
+let rec remove0 ~cmp (t : _ t0) x : _ t0 = 
   match N.toOpt t with 
     None -> t
   | Some n  ->
@@ -73,11 +73,11 @@ let rec remove0 ~cmp x (t : _ t0) : _ t0 =
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then N.merge l r else
     if c < 0 then 
-      let ll = remove0 ~cmp x l in 
+      let ll = remove0 ~cmp  l x in 
       if ll == l then t
       else N.bal ll v r 
     else
-      let rr = remove0 ~cmp x r in 
+      let rr = remove0 ~cmp  r x in 
       if rr == r then t  
       else N.bal l v rr
 

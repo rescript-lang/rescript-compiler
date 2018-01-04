@@ -6,21 +6,26 @@ type ('k,'id) t =
   (('k,'id) Bs_Cmp.t,
    ('k, 'id) t0 ) Bs_Bag.bag
 
-(** The type of sets. *)
+
 val empty : ('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
+
 val ofArray: ('k, 'id) Bs_Cmp.t -> 'k array -> ('k, 'id) t 
+
 val isEmpty : ('elt, 'id) t -> bool
+
 val mem:  
-  'elt -> ('elt, 'id) t -> bool
+   ('elt, 'id) t -> 'elt ->  bool
+
 val add:   
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
+
 val singleton : 
   ('elt,'id) Bs_Cmp.t -> 
   'elt -> ('elt, 'id) t
 (** [singleton x] returns the one-element set containing only [x]. *)
 val remove:  
-  'elt -> ('elt, 'id) t -> ('elt, 'id) t
+   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [remove x s] If [x] was not in [s], [s] is returned unchanged. *)
 val union:  
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
@@ -97,14 +102,14 @@ val ofArray0: cmp:('k,'id) Bs_Cmp.cmp -> 'k array -> ('k, 'id) t0
 val isEmpty0: ('elt, 'id) t0 -> bool
 val mem0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  'elt -> ('elt, 'id) t0 -> bool
+  ('elt, 'id) t0 -> 'elt -> bool
 val add0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> 'elt ->  ('elt, 'id) t0
 val singleton0: 'elt -> ('elt, 'id) t0
 val remove0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  'elt -> ('elt, 'id) t0 -> ('elt, 'id) t0
+  ('elt, 'id) t0 -> 'elt ->  ('elt, 'id) t0
 val union0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> ('elt, 'id) t0 -> ('elt, 'id) t0

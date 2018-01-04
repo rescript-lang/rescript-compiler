@@ -48,26 +48,32 @@ let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data =
 let isEmpty m = N.isEmpty0 (B.data m)
 
 
-let mem (type elt) (type id) e (m : (elt,id) t) = 
+let mem (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
-  mem0 ~cmp:(M.cmp) e data
+  mem0 ~cmp:(M.cmp) data e
 
 let add (type elt) (type id) (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in
   let module M = (val dict) in 
-  B.bag ~dict 
-    ~data:(add0 ~cmp:(M.cmp)  data e)
+  let newData = (add0 ~cmp:(M.cmp)  data e) in 
+  if newData == data then m 
+  else 
+    B.bag 
+      ~dict 
+      ~data:newData
 
 let singleton dict e =     
   B.bag ~dict
     ~data:(N.singleton0 e)
 
 
-let remove (type elt) (type id) e (m : (elt,id) t) =      
+let remove (type elt) (type id) (m : (elt,id) t) e =      
   let dict, data = B.(dict m, data m) in   
   let module M = (val dict) in 
-  B.bag ~dict ~data:(remove0 ~cmp:M.cmp e data)
+  let newData = remove0 ~cmp:M.cmp data e in 
+  if newData == data then m 
+  else B.bag ~dict ~data:newData
 
 let union (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
   let dict, mdata, ndata = B.(dict m, data m, data n) in   
