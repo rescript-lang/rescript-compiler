@@ -66,10 +66,7 @@ let addArrayOnly d arr =
     dataSet d v 
     
 let addArray d arr = 
-  let old_data = data d in 
-  let v = I.addArrayMutate old_data arr in 
-  if v != old_data then 
-    dataSet d v ;
+  addArrayOnly d arr; 
   d   
 
 let removeOnly d v = 

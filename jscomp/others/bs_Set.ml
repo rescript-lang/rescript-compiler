@@ -10,6 +10,7 @@ let ofArray0 = I.ofArray0
 let isEmpty0 = N.isEmpty0
 let mem0 = I.mem0
 let add0 = I.add0
+let addArray0 = I.addArrayMutate
 let singleton0 = N.singleton0
 let remove0 = I.remove0
 let union0 = I.union0 
@@ -62,6 +63,12 @@ let add (type elt) (type id) (m : (elt,id) t) e =
     B.bag 
       ~dict 
       ~data:newData
+
+let addArray (type elt) (type id) (m : (elt,id) t) e = 
+  let dict, data = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  let newData = I.addArray0 ~cmp:M.cmp data e in 
+  B.bag ~dict ~data:newData
 
 let singleton dict e =     
   B.bag ~dict

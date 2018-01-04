@@ -1,6 +1,7 @@
 
 module N = Bs_internalAVLset
 module B =  Bs_Bag
+module A = Bs_Array
 type ('elt, 'id) t0 = ('elt, 'id) N.t0 
 
 type ('elt, 'id)enumeration = 
@@ -10,6 +11,10 @@ type ('elt, 'id)enumeration =
   | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration
 
 
+(* here we relies on reference transparence
+   address equality means everything equal across time
+   no need to call [bal] again
+*)  
 let rec add0 ~cmp (t : _ t0) x  : _ t0 =
   match N.toOpt t with 
     None -> N.(return @@ node ~left:empty ~right:empty ~key:x  ~h:1)
@@ -27,6 +32,14 @@ let rec add0 ~cmp (t : _ t0) x  : _ t0 =
         if rr == r then t 
         else N.bal l k rr 
 
+let addArray0 ~cmp  h arr =   
+  let len = Bs.Array.length arr in 
+  let v = ref N.empty0 in  
+  for i = 0 to len - 1 do 
+    let key = A.unsafe_get arr i in 
+    v := add0 !v  ~cmp key 
+  done ;
+  !v 
 
 (* Splitting.  split x s returns a triple (l, present, r) where
     - l is the set of elements of s that are < x
@@ -86,7 +99,7 @@ let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
   match N.(toOpt s1, toOpt s2) with
     (None, _) -> s2
   | (_, None) -> s1
-  | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->
+  | Some n1, Some n2 ->
     let h1, h2 = N.(h n1 , h n2) in                 
     if h1 >= h2 then
       if h2 = 1 then add0 ~cmp s1 (N.key n2)  else begin
@@ -188,26 +201,9 @@ let rec findNull0 ~cmp (n : _ t0) x =
     if c = 0 then  N.return v
     else findNull0 ~cmp  (if c < 0 then N.left t else N.right t) x 
 
-(* FIXME: use [sorted] attribute *)    
-let ofArray0 ~cmp (xs : _ array) : _ t0 =     
-  let result = ref N.empty in 
-  for i = 0 to Array.length xs - 1 do  
-    result := add0 ~cmp !result (Bs_Array.unsafe_get xs i) 
-  done ;
-  !result 
-
-(* TOOD: optimize heuristics for resizing *)  
-let addArray0 ~cmp  h arr =   
-  let len = Bs.Array.length arr in 
-  let v = ref N.empty0 in  
-  for i = 0 to len - 1 do 
-    let key = (Bs_Array.unsafe_get arr i) in 
-    v := add0 !v  ~cmp key 
-  done ;
-  !v 
 
 
-let rec addMutate ~cmp (t : _ t0) (x )=   
+let rec addMutate ~cmp (t : _ t0) x =   
   match N.toOpt t with 
   | None -> N.(return @@ node ~left:empty ~right:empty ~key:x ~h:1)
   | Some nt -> 
@@ -217,12 +213,12 @@ let rec addMutate ~cmp (t : _ t0) (x )=
     else
       let l, r = N.(left nt, right nt) in 
       (if c < 0 then                   
-         N.leftSet nt (addMutate ~cmp l x)       
+         let ll = addMutate ~cmp l x in
+         N.leftSet nt ll
        else   
          N.rightSet nt (addMutate ~cmp r x);
       );
       N.return (N.balMutate nt)
-
 
 let rec removeMutateAux ~cmp nt x = 
   let k = N.key nt in 
@@ -252,7 +248,80 @@ let rec removeMutateAux ~cmp nt x =
           N.return (N.balMutate nt)
     end
 
-let removeMutate ~cmp nt x = 
-  match N.toOpt nt with 
-  | None -> nt 
-  | Some nt -> removeMutateAux ~cmp nt x 
+
+
+let rec sortedLengthAux ~cmp (xs : _ array) prec acc len =    
+  if  acc >= len then acc 
+  else 
+    let v = A.unsafe_get xs acc in 
+    if (Bs_Cmp.getCmp cmp) v  prec [@bs] >= 0 then 
+      sortedLengthAux ~cmp xs v (acc + 1) len 
+    else acc    
+
+let ofArray0 ~cmp (xs : _ array) =   
+  let len = A.length xs in 
+  if len = 0 then N.empty0
+  else
+    let next = sortedLengthAux ~cmp xs (A.unsafe_get xs 0) 1 len in 
+    let result  = ref (N.ofSortedArrayAux  xs 0 next) in 
+    for i = next to len - 1 do 
+      result := addMutate ~cmp !result (A.unsafe_get xs i) 
+    done ;
+    !result     
+
+
+let addArrayMutate (t : _ t0) xs ~cmp =     
+  let v = ref t in 
+  for i = 0 to A.length xs - 1 do 
+    v := addMutate !v (A.unsafe_get xs i)  ~cmp
+  done; 
+  !v 
+
+
+let rec addMutateCheckAux  (t : _ t0) x added ~cmp  =   
+  match N.toOpt t with 
+  | None -> 
+    added := true;
+    N.(return @@ node ~left:empty ~right:empty ~key:x ~h:1)
+  | Some nt -> 
+    let k = N.key nt in 
+    let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
+    if c = 0 then t 
+    else
+      let l, r = N.(left nt, right nt) in 
+      (if c < 0 then                   
+         let ll = addMutateCheckAux ~cmp l x added in
+         N.leftSet nt ll
+       else   
+         N.rightSet nt (addMutateCheckAux ~cmp r x added );
+      );
+      N.return (N.balMutate nt)
+
+let rec removeMutateCheckAux  nt x removed ~cmp= 
+  let k = N.key nt in 
+  let c = (Bs_Cmp.getCmp cmp) x k [@bs] in 
+  if c = 0 then 
+    let () = removed := true in  
+    let l,r = N.(left nt, right nt) in       
+    match N.(toOpt l, toOpt r) with 
+    | Some _,  Some nr ->  
+      N.rightSet nt (N.removeMinAuxMutateWithRoot nt nr);
+      N.return (N.balMutate nt)
+    | None, Some _ ->
+      r  
+    | (Some _ | None ), None ->  l 
+  else 
+    begin 
+      if c < 0 then 
+        match N.toOpt (N.left nt) with         
+        | None -> N.return nt 
+        | Some l ->
+          N.leftSet nt (removeMutateCheckAux ~cmp l x removed);
+          N.return (N.balMutate nt)
+      else 
+        match N.toOpt (N.right nt) with 
+        | None -> N.return nt 
+        | Some r -> 
+          N.rightSet nt (removeMutateCheckAux ~cmp r x removed);
+          N.return (N.balMutate nt)
+    end

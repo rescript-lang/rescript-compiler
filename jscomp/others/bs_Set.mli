@@ -1,6 +1,6 @@
 
 
-type ('elt, 'id) t0
+type (_,_) t0
 
 type ('k,'id) t = 
   (('k,'id) Bs_Cmp.t,
@@ -11,7 +11,7 @@ val empty : ('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
 
 val ofArray: ('k, 'id) Bs_Cmp.t -> 'k array -> ('k, 'id) t 
 
-val isEmpty : ('elt, 'id) t -> bool
+val isEmpty : _ t -> bool
 
 val mem:  
    ('elt, 'id) t -> 'elt ->  bool
@@ -19,6 +19,8 @@ val mem:
 val add:   
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
+val addArray:
+  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 val singleton : 
   ('elt,'id) Bs_Cmp.t -> 
@@ -67,7 +69,7 @@ val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 
     [s] that do not satisfy [p]. *)
 
 val length:  ('elt, 'id) t -> int
-(** Return the number of elements of a set. *)
+
     
 val toList: ('elt, 'id) t -> 'elt list
 (** In increasing order*)
@@ -98,7 +100,9 @@ val findAssert:
 
 
 
-
+(** Other operations only when better performance needed,
+  it is still safe API but more verbose
+ *)
 val empty0: ('elt, 'id) t0
 val ofArray0: cmp:('k,'id) Bs_Cmp.cmp -> 'k array -> ('k, 'id) t0  
 val isEmpty0: ('elt, 'id) t0 -> bool
@@ -108,6 +112,10 @@ val mem0:
 val add0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> 'elt ->  ('elt, 'id) t0
+val addArray0:  
+  ('elt, 'id) t0 -> 'elt array ->
+  cmp: ('elt,'id) Bs_Cmp.cmp ->
+  ('elt, 'id) t0
 val singleton0: 'elt -> ('elt, 'id) t0
 val remove0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->

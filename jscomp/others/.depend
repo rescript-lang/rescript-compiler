@@ -97,7 +97,7 @@ bs_Map.cmi : bs_Cmp.cmi bs_Bag.cmj
 bs_MapString.cmi :
 bs_MapInt.cmi :
 bs_Set.cmi : bs_Cmp.cmi bs_Bag.cmj
-bs_SetM.cmi : bs_Cmp.cmi bs_BagM.cmj
+bs_SetM.cmi : bs_Cmp.cmi
 bs_SetInt.cmi :
 bs_SetIntM.cmi :
 bs_SetString.cmi :

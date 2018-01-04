@@ -1,32 +1,71 @@
 
-type ('elt, 'id) t0
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type ('k,'id) t = 
-  (('k,'id) Bs_Cmp.t,
-   ('k, 'id) t0 ) Bs_BagM.bag
+type ('k,'id) t 
 
 
 val empty : ('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
 
 val ofArray: ('k, 'id) Bs_Cmp.t -> 'k array -> ('k, 'id) t 
 
-val isEmpty : ('elt, 'id) t -> bool
+val isEmpty : _ t -> bool
 
-val mem:  
-   ('elt, 'id) t -> 'elt ->  bool
+val mem:  ('elt, _) t -> 'elt ->  bool
+
+val addOnly:   
+  ('elt, 'id) t -> 'elt -> unit 
 
 val add:   
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
-(** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
+
+val addCheck:
+  ('elt, 'id) t -> 'elt -> bool 
+
+val addArrayOnly:
+  ('elt, 'id) t -> 'elt array -> unit 
+
+val addArray:
+  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
+  
+
 
 val singleton : 
   ('elt,'id) Bs_Cmp.t -> 
   'elt -> ('elt, 'id) t
 (** [singleton x] returns the one-element set containing only [x]. *)
 
+val removeOnly:
+   ('elt, 'id) t -> 'elt -> unit 
+
 val remove:  
    ('elt, 'id) t -> 'elt -> ('elt, 'id) t
-(** [remove x s] If [x] was not in [s], [s] is returned unchanged. *)
+
+val removeCheck:  
+   ('elt, 'id) t -> 'elt -> bool
+(* [b = removeCheck s e] [b] is true means one element removed *)   
+
 
 val union:  
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
@@ -66,7 +105,7 @@ val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 
     [s] that do not satisfy [p]. *)
 
 val length:  ('elt, 'id) t -> int
-(** Return the number of elements of a set. *)
+
     
 val toList: ('elt, 'id) t -> 'elt list
 (** In increasing order*)
@@ -95,81 +134,10 @@ val findOpt:
 val findAssert:  
   ('elt, 'id) t -> 'elt -> 'elt  
 
-
-
-
-val empty0: ('elt, 'id) t0
-val ofArray0: cmp:('k,'id) Bs_Cmp.cmp -> 'k array -> ('k, 'id) t0  
-val isEmpty0: ('elt, 'id) t0 -> bool
-val mem0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt -> bool
-val add0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt ->  ('elt, 'id) t0
-val singleton0: 'elt -> ('elt, 'id) t0
-val remove0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt ->  ('elt, 'id) t0
-val union0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> ('elt, 'id) t0 -> ('elt, 'id) t0
-val inter0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> ('elt, 'id) t0 -> ('elt, 'id) t0
-val diff0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> ('elt, 'id) t0 -> ('elt, 'id) t0
-
-
-val subset0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> ('elt, 'id) t0 -> bool
-
-val cmp0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> ('elt, 'id) t0 -> int
-
-val eq0:
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> ('elt, 'id) t0 -> bool
-
-val iter0: ('elt, 'id) t0 -> ('elt -> unit [@bs]) ->  unit
-
-val fold0: ('elt, 'id) t0 -> 'a -> ('a -> 'elt ->  'a [@bs]) ->  'a
-val forAll0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
-val exists0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
-
-val filter0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  ('elt, 'id) t0
-
-val partition0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) -> ('elt, 'id) t0 * ('elt, 'id) t0
-
-val length0: ('elt, 'id) t0 -> int
-
-val toList0: ('elt, 'id) t0 -> 'elt list
-
-val toArray0: ('elt, 'id) t0 -> 'elt array
-
-
-val minOpt0: ('elt, 'id) t0 -> 'elt option
-
-val maxOpt0: ('elt, 'id) t0 -> 'elt option
-
-
-
-val split0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt -> ('elt, 'id) t0 * bool * ('elt, 'id) t0
-
-val ofSortedArrayUnsafe0:
-  'elt array -> ('elt,'id) t0
-  
-
-val findOpt0: 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt -> 'elt option
-
-
-val findAssert0:
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt -> 'elt 
+(*
+  [add0] was not exposed for various reasons:
+  1. such api is dangerious
+  [ cmp: ('elt,'id) Bs_Cmp.cmp -> 
+    ('elt, 'id) t0 -> 'elt ->  
+    ('elt, 'id) t0]
+  2. It is not really significantly more *)
