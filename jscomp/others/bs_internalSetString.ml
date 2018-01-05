@@ -35,39 +35,6 @@ let rec add  (t : t) (x : elt) : t =
 
 
 
-(* Splitting.  split x s returns a triple (l, present, r) where
-    - l is the set of elements of s that are < x
-    - r is the set of elements of s that are > x
-    - present is false if s contains no element equal to x,
-      or true if s contains an element equal to x. *)
-
-let rec splitAux (n : _ N.node) (x : elt) : t * bool * t =   
-  let l,v,r = N.(left n , key n, right n) in  
-  if x = v then (l, true, r)
-  else if x < v then
-    match N.toOpt l with 
-    | None -> 
-      N.(empty , false, return n)
-    | Some l -> 
-      let (ll, pres, rl) = splitAux l x in 
-      ll, pres, N.join rl v r
-  else
-    match N.toOpt r with 
-    | None ->
-      N.return n, false, N.empty
-    | Some r -> 
-      let (lr, pres, rr) = splitAux r x in
-      N.join l v lr, pres, rr
-
-
-let split  (t : t) (x : elt) : t * bool *  t =
-  match N.toOpt t with 
-    None ->
-    N.(empty, false, empty)
-  | Some n  ->    
-    splitAux n  x
-
-
 let rec mem (t : t) (x : elt)  =
   match N.toOpt t with 
   | None -> false
@@ -98,49 +65,6 @@ let rec remove (t : t) (x : elt) : t =
       if rr == r then t
       else N.bal l v rr
 
-let rec union (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
-    (None, _) -> s2
-  | (_, None) -> s1
-  | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
-    let h1, h2 = N.(h n1 , h n2) in             
-    if h1 >= h2 then
-      if h2 = 1 then add  s1 (N.key n2) else begin
-        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
-        let (l2, _, r2) = splitAux n2 v1 in
-        N.join (union l1 l2) v1 (union r1 r2)
-      end
-    else
-    if h1 = 1 then add  s2 (N.key n1) else begin
-      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
-      let (l1, _, r1) = splitAux n1 v2 in
-      N.join (union l1 l2) v2 (union r1 r2)
-    end
-
-let rec inter (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
-    (None, _) -> s1
-  | (_, None) -> s2 
-  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
-    match splitAux n2 v1 with
-      (l2, false, r2) ->
-      N.concat (inter l1 l2) (inter r1 r2)
-    | (l2, true, r2) ->
-      N.join (inter l1 l2) v1 (inter r1 r2)
-
-let rec diff (s1 : t) (s2 : t) =
-  match N.(toOpt s1, toOpt s2) with
-  | (None, _) 
-  | (_, None) -> s1
-  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, key n1, right n1) in
-    match splitAux n2 v1  with
-      (l2, false, r2) ->
-      N.join (diff l1 l2) v1 (diff r1 r2)
-    | (l2, true, r2) ->
-      N.concat (diff l1 l2) (diff r1 r2)
-
 
 let rec compare_aux e1 e2 =
   match (e1, e2) with
@@ -166,6 +90,104 @@ let rec eqAux (e1 : enumeration) e2 =
 
 let eq s1 s2 = 
   eqAux (N.toEnum s1 End) (N.toEnum s2 End)
+
+let rec splitAuxNoPivot (n : _ N.node) (x : elt) : t * t =   
+  let l,v,r = N.(left n , key n, right n) in  
+  if x = v then l,  r
+  else if x < v then
+    match N.toOpt l with 
+    | None -> 
+      N.empty , N.return n
+    | Some l -> 
+      let ll,  rl = splitAuxNoPivot l x in 
+      ll,  N.join rl v r
+  else
+    match N.toOpt r with 
+    | None ->
+      N.return n,  N.empty
+    | Some r -> 
+      let lr,  rr = splitAuxNoPivot r x in
+      N.join l v lr,  rr
+
+
+let rec splitAuxPivot (n : _ N.node) (x : elt) pres : t  * t =   
+  let l,v,r = N.(left n , key n, right n) in  
+  if x = v then begin 
+    pres := true;  
+    (l, r)
+  end
+  else if x < v then
+    match N.toOpt l with 
+    | None -> 
+      N.empty, N.return n
+    | Some l -> 
+      let ll,  rl = splitAuxPivot l x pres in 
+      ll,  N.join rl v r
+  else
+    match N.toOpt r with 
+    | None ->
+      N.return n,  N.empty
+    | Some r -> 
+      let lr,  rr = splitAuxPivot r x pres in
+      N.join l v lr,  rr
+
+(* TODO: fix me, change the api to (t * t ) * bool *)
+let split  (t : t) (x : elt) : t * bool *  t =
+  match N.toOpt t with 
+    None ->
+    N.empty, false, N.empty
+  | Some n  ->    
+    let pres = ref false in 
+    let l,r = splitAuxPivot n  x pres in 
+    l, !pres, r 
+
+      
+let rec union (s1 : t) (s2 : t) =
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) -> s2
+  | (_, None) -> s1
+  | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
+    let h1, h2 = N.(h n1 , h n2) in             
+    if h1 >= h2 then
+      if h2 = 1 then add  s1 (N.key n2) else begin
+        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
+        let (l2,  r2) = splitAuxNoPivot n2 v1 in
+        N.join (union l1 l2) v1 (union r1 r2)
+      end
+    else
+    if h1 = 1 then add  s2 (N.key n1) else begin
+      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
+      let (l1, r1) = splitAuxNoPivot n1 v2 in
+      N.join (union l1 l2) v2 (union r1 r2)
+    end
+
+let rec inter (s1 : t) (s2 : t) =
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) 
+  | (_, None) -> N.empty
+  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
+    let pres = ref false in 
+    let l2,r2 =  splitAuxPivot n2 v1 pres in 
+    let ll = inter l1 l2 in 
+    let rr = inter r1 r2 in 
+    if !pres then N.join ll v1 rr 
+    else N.concat ll rr 
+
+let rec diff (s1 : t) (s2 : t) =
+  match N.(toOpt s1, toOpt s2) with
+  | (None, _) 
+  | (_, None) -> s1
+  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in
+    let pres = ref false in 
+    let l2, r2 = splitAuxPivot  n2 v1 pres in 
+    let ll = diff  l1 l2 in 
+    let rr = diff  r1 r2 in 
+    if !pres then N.concat ll rr 
+    else N.join ll v1 rr 
+
+
 
 (* This algorithm applies to BST, it does not need to be balanced tree *)  
 let rec subset (s1 : t) (s2 : t) =
