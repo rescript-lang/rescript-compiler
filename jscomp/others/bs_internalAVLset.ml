@@ -139,32 +139,6 @@ let rec removeMinAuxWithRef n v =
   
 
 
-(* [join ln v rn] return a balanced tree simliar to [create ln v rn]
-   bal, but no assumptions are made on the
-   relative heights of [ln] and [rn]. *)
-
-let rec join ln v rn =
-  match (toOpt ln, toOpt rn) with
-    (None, _) -> addMinElement v rn 
-  | (_, None) -> addMaxElement v ln 
-  | Some l, Some r ->   
-    let lh = h l in     
-    let rh = h r in 
-    if lh > rh + 2 then bal (left l) (key l) (join (right l) v rn) else
-    if rh > lh + 2 then bal (join ln v (left r)) (key r) (right r) else
-      create ln v rn
-  
-(* [concat l r]
-   No assumption on the heights of l and r. *)
-
-let concat t1 t2 =
-  match (toOpt t1, toOpt t2) with
-    (None, _) -> t2
-  | (_, None) -> t1
-  | (_, Some t2n) -> 
-    let v = ref (key t2n ) in 
-    let t2r = removeMinAuxWithRef t2n v in 
-    join t1 !v t2r  
 
 (* Implementation of the set operations *)
 
@@ -211,26 +185,53 @@ let rec exists0 n p =
     exists0 (left n) p || 
     exists0 (right n) p 
 
+
+(* [join ln v rn] return a balanced tree simliar to [create ln v rn]
+   bal, but no assumptions are made on the
+   relative heights of [ln] and [rn]. *)
+
+let rec join ln v rn =
+  match (toOpt ln, toOpt rn) with
+    (None, _) -> addMinElement v rn 
+  | (_, None) -> addMaxElement v ln 
+  | Some l, Some r ->   
+    let lh = h l in     
+    let rh = h r in 
+    if lh > rh + 2 then bal (left l) (key l) (join (right l) v rn) else
+    if rh > lh + 2 then bal (join ln v (left r)) (key r) (right r) else
+      create ln v rn
+  
+(* [concat l r]
+   No assumption on the heights of l and r. *)
+
+let concat t1 t2 =
+  match (toOpt t1, toOpt t2) with
+    (None, _) -> t2
+  | (_, None) -> t1
+  | (_, Some t2n) -> 
+    let v = ref (key t2n ) in 
+    let t2r = removeMinAuxWithRef t2n v in 
+    join t1 !v t2r  
+    
+    
 let rec filter0 n p =
   match toOpt n with 
   | None -> empty
   | Some n  ->
-    (* call [p] in the expected left-to-right order *)
-    let newL = filter0 (left n) p in
-    let v = key n in 
+    let l,v,r = left n, key n, right n in  
+    let newL = filter0 l p in
     let pv = p v [@bs] in
-    let newR = filter0 (right n) p in
+    let newR = filter0 r p in
     if pv then join newL v newR else concat newL newR
 
 let rec partition0  n p =
   match toOpt n with 
   |  None -> (empty, empty)
   | Some n  ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition0 (left n) p in
-    let v = key n in 
+    let l,v,r = left n, key n, right n in 
+    let (lt, lf) = partition0 l p in    
     let pv = p v [@bs] in
-    let (rt, rf) = partition0 (right n) p in
+    let (rt, rf) = partition0 r p in
     if pv
     then (join lt v rt, concat lf rf)
     else (concat lt rt, join lf v rf)
