@@ -69,13 +69,15 @@ let addArray (type elt) (type id) (m : (elt,id) t) e =
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newData = I.addArray0 ~cmp:M.cmp data e in 
-  B.bag ~dict ~data:newData
+  if newData == data then m
+  else B.bag ~dict ~data:newData
 
 let removeArray (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newData = I.removeArray0 ~cmp:M.cmp data e in 
-  B.bag ~dict ~data:newData
+  if newData == data then m
+  else B.bag ~dict ~data:newData
   
 let singleton dict e =     
   B.bag ~dict
