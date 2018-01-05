@@ -78,7 +78,13 @@ let rec remove (t : t) (x : elt) : t =
   | None -> t
   | Some n  ->
     let l,v,r = N.(left n, key n, right n) in 
-    if x = v then N.merge l r else
+    if x = v then 
+      match N.toOpt l, N.toOpt r with 
+      | None, _ -> r 
+      | _, None -> l 
+      | _, Some rn -> 
+        N.bal l (N.min0Aux rn) (N.removeMinAux rn)
+    else
     if x < v then 
       let ll = remove l x in  
       if ll == l then t  

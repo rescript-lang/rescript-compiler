@@ -53,7 +53,7 @@ let heightGe l r =
    Assumes l and r balanced and | height l - height r | <= 3.
    Inline expansion of create for better speed in the most frequent case
    where no rebalancing is required. *)
-(* FIXME: bal should return [node] instead of [_ t0] *)
+(* TODO: inline all [create] operation, save duplicated [h] calcuation *)
 let bal l v r =
   let hl = match toOpt l with None -> 0 | Some n -> h n in
   let hr = match toOpt r with None -> 0 | Some n -> h n in
@@ -82,40 +82,25 @@ let bal l v r =
 
 let singleton0 x = return @@ node ~left:empty ~key:x ~right:empty ~h:1
 
-(* Beware: those two functions assume that the added v is *strictly*
-   smaller (or bigger) than all the present elements in the tree; it
-   does not test for equality with the current min (or max) element.
-   Indeed, they are only used during the "join" operation which
+(* [addMinElement v n] and [addMaxElement v n] 
+   assume that the added v is *strictly*
+   smaller (or bigger) than all the present elements in the tree.
+   They are only used during the "join" operation which
    respects this precondition.
 *)
 
-let rec add_min_element v n =
+let rec addMinElement v n =
   match toOpt n with 
   | None -> singleton0 v
-  | Some n (* (l, x, r, h)*) ->
-    bal (add_min_element v (left n))  (key n) (right n)
+  | Some n  ->
+    bal (addMinElement v (left n))  (key n) (right n)
 
-let rec add_max_element v n = 
+let rec addMaxElement v n = 
   match toOpt n with 
   | None -> singleton0 v
-  | Some n (* (l, x, r, h)*) ->
-    bal (left n) (key n) (add_max_element v (right n))
+  | Some n  ->
+    bal (left n) (key n) (addMaxElement v (right n))
 
-(* Same as create and bal, but no assumptions are made on the
-   relative heights of l and r. *)
-
-let rec join ln v rn =
-  match (toOpt ln, toOpt rn) with
-    (None, _) -> add_min_element v rn (* could be inlined *)
-  | (_, None) -> add_max_element v ln (* could be inlined *)
-  | Some l, Some r ->   
-    let lh = h l in     
-    let rh = h r in 
-    if lh > rh + 2 then bal (left l) (key l) (join (right l) v rn) else
-    if rh > lh + 2 then bal (join ln v (left r)) (key r) (right r) else
-      create ln v rn
-
-(* Smallest and greatest element of a set *)
 let rec min0Aux n = 
   match toOpt (left n) with 
   | None -> key n
@@ -136,7 +121,7 @@ let rec max0Aux n =
   | None -> key n
   | Some n -> max0Aux n 
 
-let  maxOpt0 n = 
+let maxOpt0 n = 
   match toOpt n with 
   | None -> None
   | Some n -> Some (max0Aux n)
@@ -145,7 +130,6 @@ let maxNull0 n =
   match toOpt n with 
   | None -> Js.null
   | Some n -> return (max0Aux n)
-(* Remove the smallest element of the given set *)
 
 let rec removeMinAux n = 
   let rn, ln = right n, left n  in 
@@ -154,16 +138,21 @@ let rec removeMinAux n =
   | Some ln -> bal (removeMinAux ln) (key n) rn
 
 
-(* Merge two trees l and r into one.
-   All elements of l must precede the elements of r.
-   Assume | height l - height r | <= 2. *)
+(* [join ln v rn] return a balanced tree simliar to [create ln v rn]
+   bal, but no assumptions are made on the
+   relative heights of [ln] and [rn]. *)
 
-let merge t1 t2 =
-  match (toOpt t1, toOpt t2) with
-    (None, _) -> t2
-  | (_, None) -> t1
-  | (_, Some t2n) -> bal t1 (min0Aux t2n) (removeMinAux t2n)
-
+let rec join ln v rn =
+  match (toOpt ln, toOpt rn) with
+    (None, _) -> addMinElement v rn 
+  | (_, None) -> addMaxElement v ln 
+  | Some l, Some r ->   
+    let lh = h l in     
+    let rh = h r in 
+    if lh > rh + 2 then bal (left l) (key l) (join (right l) v rn) else
+    if rh > lh + 2 then bal (join ln v (left r)) (key r) (right r) else
+      create ln v rn
+  
 (* Merge two trees l and r into one.
    All elements of l must precede the elements of r.
    No assumption on the heights of l and r. *)
