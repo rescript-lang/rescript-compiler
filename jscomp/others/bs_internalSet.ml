@@ -169,11 +169,9 @@ let eq0 ~cmp s1 s2 =
 
 let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
   match N.(toOpt s1, toOpt s2) with
-    None, _ ->
-    true
-  | _, None ->
-    false
-  | Some t1 , Some t2 (* Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) *) ->
+  | None, _ -> true
+  | _, None -> false
+  | Some t1 , Some t2  ->
     let l1,v1,r1 = N.(left t1, key t1, right t1) in  
     let l2,v2,r2 = N.(left t2, key t2, right t2) in 
     let c = (Bs_Cmp.getCmp cmp) v1 v2 [@bs] in

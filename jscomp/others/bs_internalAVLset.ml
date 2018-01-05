@@ -7,11 +7,12 @@ type 'elt node  = {
 }
 [@@bs.deriving abstract]
 
+module A = Bs_Array
 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
-
+external unsafeCoerce : 'a Js.null -> 'a = "%identity"
 type ('elt, 'id) t0 =  'elt node Js.null
 (* Sets are represented by balanced binary trees (the heights of the
    children differ by at most 2 *)
@@ -57,33 +58,25 @@ let bal l v r =
   let hl = match toOpt l with None -> 0 | Some n -> h n in
   let hr = match toOpt r with None -> 0 | Some n -> h n in
   if hl > hr + 2 then begin
-    match toOpt l with
-    | None -> assert false
-    | Some n (* Node(ll, lv, lr, _) *) ->
-      let ll,lv,lr = left n, key n, right n in 
-      if heightGe ll  lr then
-        create ll lv (create lr v r)
-      else begin
-        match toOpt lr with
-          None -> assert false
-        | Some n (* (lrl, lrv, lrr, _) *) ->
-          let lrl, lrv, lrr = left n, key n, right n in 
-          create (create ll lv lrl) lrv (create lrr v r)
-      end
+    let n = unsafeCoerce l in   (* [l] could not be empty *)
+    let ll,lv,lr = left n, key n, right n in 
+    if heightGe ll  lr then
+      create ll lv (create lr v r)
+    else begin
+      let n = unsafeCoerce lr in (* [lr] could not be empty*)
+      let lrl, lrv, lrr = left n, key n, right n in 
+      create (create ll lv lrl) lrv (create lrr v r)
+    end
   end else if hr > hl + 2 then begin
-    match toOpt r with
-      None -> assert false
-    | Some n (* (rl, rv, rr, _) *) ->
-      let rl,rv,rr = left n, key n, right n in 
-      if heightGe rr  rl then
-        create (create l v rl) rv rr
-      else begin
-        match toOpt rl with
-          None -> assert false
-        | Some n (* (rll, rlv, rlr, _)*) ->
-          let rll, rlv, rlr = left n, key n, right n in 
-          create (create l v rll) rlv (create rlr rv rr)
-      end
+    let n = unsafeCoerce r in  (* [r] could not be empty *)
+    let rl,rv,rr = left n, key n, right n in 
+    if heightGe rr  rl then
+      create (create l v rl) rv rr
+    else begin
+      let n = unsafeCoerce rl in (* [rl] could not be empty *)
+      let rll, rlv, rlr = left n, key n, right n in 
+      create (create l v rll) rlv (create rlr rv rr)
+    end
   end else
     return @@ node ~left:l ~key:v ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
@@ -200,6 +193,7 @@ let rec iter0 n f =
   | Some n  ->
     iter0 (left n) f; f (key n) [@bs]; iter0  (right n) f
 
+
 let rec fold0 s accu f =
   match toOpt s with
   | None -> accu
@@ -268,17 +262,17 @@ let rec length0 n =
   | Some n  ->
     cardinalAux n 
 
-let rec elements_aux accu n = 
+let rec toListAux accu n = 
   match toOpt n with 
   | None -> accu
   | Some n  ->
     let l,k,r = left n, key n, right n in 
-    elements_aux 
-      (k :: elements_aux accu r)
+    toListAux 
+      (k :: toListAux accu r)
       l
 
 let toList0 s =
-  elements_aux [] s
+  toListAux [] s
 
 let rec checkInvariant (v : _ t0) = 
   match toOpt v with 
@@ -288,7 +282,7 @@ let rec checkInvariant (v : _ t0) =
     let diff = height l - height r  in 
     diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
 
-module A = Bs_Array
+
 
 let rec fillArray n i arr =     
   let l,v,r = left n, key n, right n in 
@@ -304,8 +298,7 @@ let rec fillArray n i arr =
   | Some r -> 
     fillArray r rnext arr 
 
-(* TODO: binary search tree to array efficiency
-*)
+
 let toArray0 n =   
   match toOpt n with 
   | None -> [||]
@@ -317,7 +310,7 @@ let toArray0 n =
 
 
 
-external unsafeCoerce : 'a Js.null -> 'a = "%identity"
+
 
 (* 
   L rotation, return root node
@@ -434,6 +427,6 @@ let rec ofSortedArrayAux arr off len =
     create left mid right    
 
 
-    
+
 let ofSortedArrayUnsafe0 arr =     
   ofSortedArrayAux arr 0 (A.length arr)
