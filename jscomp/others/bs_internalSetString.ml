@@ -140,22 +140,22 @@ let rec compare_aux e1 e2 =
   | (More(v1, r1, e1), More(v2, r2, e2)) ->
     if (v1 : elt) <> v2
     then if v1 < v2 then -1 else 1
-    else compare_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)
+    else compare_aux (N.toEnum r1 e1) (N.toEnum r2 e2)
 
 let cmp s1 s2 =
-  compare_aux (N.cons_enum s1 End) (N.cons_enum s2 End)
+  compare_aux (N.toEnum s1 End) (N.toEnum s2 End)
 
-let rec eq_aux e1 e2 =
+let rec eqAux (e1 : enumeration) e2 =
   match (e1, e2) with
     (End, End) -> true
   | (End, More _)  -> false
   | (More _, End) -> false
   | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    (v1 : elt) = v2 &&
-    eq_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)  
+    v1 = v2 &&
+    eqAux (N.toEnum r1 e1) (N.toEnum r2 e2)  
 
 let eq s1 s2 = 
-  eq_aux (N.cons_enum s1 End) (N.cons_enum s2 End)
+  eqAux (N.toEnum s1 End) (N.toEnum s2 End)
 
 (* This algorithm applies to BST, it does not need to be balanced tree *)  
 let rec subset (s1 : t) (s2 : t) =

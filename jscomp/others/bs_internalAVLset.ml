@@ -187,11 +187,11 @@ let empty0 = empty
 
 let isEmpty0 n = match toOpt n with Some _ -> false | None -> true 
 
-let rec cons_enum s e =
+let rec toEnum s e =
   match toOpt s with
     None -> e
-  | Some n (* Node(l, v, r, _) *) 
-    -> cons_enum (left n) (More( key n, right n, e))
+  | Some n 
+    -> toEnum (left n) (More( key n, right n, e))
 
 
 let rec iter0 n f = 

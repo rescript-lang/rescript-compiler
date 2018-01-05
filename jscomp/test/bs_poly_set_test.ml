@@ -41,6 +41,8 @@ let () =
   b __LOC__ (not (N.isEmpty u7));  
   b __LOC__ (N.isEmpty u8);
   b __LOC__ (u9 == u10);
+  b __LOC__ (N.mem u10 20);
+  b __LOC__ (N.mem u10 21);
   eq __LOC__ (N.length u10) 20001;
   eq __LOC__ (N.length u11) 19800;  
   eq __LOC__ (N.length u12) 19000;
@@ -48,6 +50,30 @@ let () =
   eq __LOC__ (N.length u14) 10000;
   eq __LOC__ (N.length u15) 1 ;
   b __LOC__ (N.mem u15 20000);
-  b __LOC__ (N.isEmpty u16)
-
+  b __LOC__ (not @@ N.mem u15 2000);
+  b __LOC__ (N.isEmpty u16);
+  let u17  = N.ofArray (module IntCmp) (I.randomRange 0 100) in 
+  let u18 = N.ofArray (module IntCmp) (I.randomRange 59 200) in 
+  let u19 = N.union u17 u18 in 
+  let u20 = N.ofArray (module IntCmp) (I.randomRange 0 200) in 
+  b __LOC__ (N.eq u19 u20);
+  let u21 =  N.inter u17 u18 in 
+  eq __LOC__ (N.toArray u21) (I.range 59 100);
+  let u22 = N.diff u17 u18 in 
+  eq __LOC__ (N.toArray u22) (I.range 0 58);
+  let u23 = N.diff u18 u17 in 
+  let u24 = N.union u18 u17 in 
+  b __LOC__ (N.eq u24 u19);
+  eq __LOC__ (N.toArray u23) (I.range 101 200);
+  b __LOC__ (N.subset u23 u18);
+  b __LOC__ (not (N.subset u18 u23));
+  b __LOC__ (N.subset u22 u17);
+  b __LOC__ (N.subset u21 u17 && N.subset u21 u18);
+  b __LOC__ (Js.eqNull 47 (N.findNull u22 47));
+  b __LOC__ ( Some 47 = (N.findOpt u22 47));
+  b __LOC__ (Js.Null.test (N.findNull u22 59));
+  b __LOC__ (None = (N.findOpt u22 59));
+  let u25 = N.add u22 59 in 
+  eq __LOC__ (N.length u25) 60
+  
 ;; Mt.from_pair_suites __FILE__ !suites  
