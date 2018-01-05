@@ -41,7 +41,7 @@ let rec add  (t : t) (x : elt) : t =
     - present is false if s contains no element equal to x,
       or true if s contains an element equal to x. *)
 
-let rec splitAux (x : elt) (n : _ N.node) : t * bool * t =   
+let rec splitAux (n : _ N.node) (x : elt) : t * bool * t =   
   let l,v,r = N.(left n , key n, right n) in  
   if x = v then (l, true, r)
   else if x < v then
@@ -49,13 +49,15 @@ let rec splitAux (x : elt) (n : _ N.node) : t * bool * t =
     | None -> 
       N.(empty , false, return n)
     | Some l -> 
-      let (ll, pres, rl) = splitAux x l in (ll, pres, N.join rl v r)
+      let (ll, pres, rl) = splitAux l x in 
+      ll, pres, N.join rl v r
   else
     match N.toOpt r with 
     | None ->
-      N.(return n, false, empty)
+      N.return n, false, N.empty
     | Some r -> 
-      let (lr, pres, rr) = splitAux x r in (N.join l v lr, pres, rr)
+      let (lr, pres, rr) = splitAux r x in
+      N.join l v lr, pres, rr
 
 
 let split  (t : t) (x : elt) : t * bool *  t =
@@ -63,7 +65,7 @@ let split  (t : t) (x : elt) : t * bool *  t =
     None ->
     N.(empty, false, empty)
   | Some n  ->    
-    splitAux x n 
+    splitAux n  x
 
 
 let rec mem (t : t) (x : elt)  =
@@ -105,13 +107,13 @@ let rec union (s1 : t) (s2 : t) =
     if h1 >= h2 then
       if h2 = 1 then add  s1 (N.key n2) else begin
         let l1, v1, r1 = N.(left n1, key n1, right n1) in      
-        let (l2, _, r2) = splitAux v1 n2 in
+        let (l2, _, r2) = splitAux n2 v1 in
         N.join (union l1 l2) v1 (union r1 r2)
       end
     else
     if h1 = 1 then add  s2 (N.key n1) else begin
       let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
-      let (l1, _, r1) = splitAux v2 n1 in
+      let (l1, _, r1) = splitAux n1 v2 in
       N.join (union l1 l2) v2 (union r1 r2)
     end
 
@@ -121,7 +123,7 @@ let rec inter (s1 : t) (s2 : t) =
   | (_, None) -> s2 
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let l1,v1,r1 = N.(left n1, key n1, right n1) in  
-    match splitAux v1 n2 with
+    match splitAux n2 v1 with
       (l2, false, r2) ->
       N.concat (inter l1 l2) (inter r1 r2)
     | (l2, true, r2) ->
@@ -133,7 +135,7 @@ let rec diff (s1 : t) (s2 : t) =
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
     let l1,v1,r1 = N.(left n1, key n1, right n1) in
-    match splitAux v1 n2 with
+    match splitAux n2 v1  with
       (l2, false, r2) ->
       N.join (diff l1 l2) v1 (diff r1 r2)
     | (l2, true, r2) ->

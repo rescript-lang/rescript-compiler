@@ -33,34 +33,6 @@ let rec add0 ~cmp (t : _ t0) x  : _ t0 =
         else N.bal l k rr 
 
 
-(* Splitting.  split x s returns a triple (l, present, r) where
-    - l is the set of elements of s that are < x
-    - r is the set of elements of s that are > x
-    - present is false if s contains no element equal to x,
-      or true if s contains an element equal to x. *)
-let rec splitAux ~cmp (n : _ N.node) x : _ * bool * _ =   
-  let l,v,r = N.(left n , key n, right n) in  
-  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-  if c = 0 then (l, true, r)
-  else if c < 0 then
-    match N.toOpt l with 
-    | None -> 
-      N.(empty , false, return n)
-    | Some l -> 
-      let (ll, pres, rl) = splitAux ~cmp  l x in (ll, pres, N.join rl v r)
-  else
-    match N.toOpt r with 
-    | None ->
-      N.(return n, false, empty)
-    | Some r -> 
-      let (lr, pres, rr) = splitAux ~cmp  r x in (N.join l v lr, pres, rr)
-
-let  split0 ~cmp  (t : _ t0) x : _ t0 * bool * _ t0 =
-  match N.toOpt t with 
-    None ->
-    N.empty, false, N.empty
-  | Some n ->
-    splitAux ~cmp n x
 
 let rec mem0 ~cmp  (t: _ t0) x =
   match  N.toOpt t with 
@@ -112,49 +84,6 @@ let removeArray0 h arr ~cmp =
   done ;
   !v 
 
-(** FIXME: provide a [splitAux] which returns a tuple of two instead *)      
-let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
-  match N.(toOpt s1, toOpt s2) with
-    (None, _) -> s2
-  | (_, None) -> s1
-  | Some n1, Some n2 ->
-    let h1, h2 = N.(h n1 , h n2) in                 
-    if h1 >= h2 then
-      if h2 = 1 then add0 ~cmp s1 (N.key n2)  else begin
-        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
-        let (l2, _, r2) = split0 ~cmp  s2 v1 in
-        N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
-      end
-    else
-    if h1 = 1 then add0 s2 ~cmp (N.key n1)  else begin
-      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
-      let (l1, _, r1) = split0 ~cmp s1 v2  in
-      N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
-    end
-
-let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
-  match N.(toOpt s1, toOpt s2) with
-    (None, _) -> s1
-  | (_, None) -> s2
-  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
-    match splitAux ~cmp n2 v1 with
-      (l2, false, r2) ->
-      N.concat (inter0 ~cmp l1 l2) (inter0 ~cmp r1 r2)
-    | (l2, true, r2) ->
-      N.join (inter0 ~cmp l1 l2) v1 (inter0 ~cmp r1 r2)
-
-let rec diff0 ~cmp s1 s2 =
-  match N.(toOpt s1, toOpt s2) with
-    (None, _) 
-  | (_, None) -> s1
-  | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, key n1, right n1) in
-    match splitAux ~cmp n2 v1  with
-      (l2, false, r2) ->
-      N.join (diff0 ~cmp l1 l2) v1 (diff0 ~cmp r1 r2)
-    | (l2, true, r2) ->
-      N.concat (diff0 ~cmp l1 l2) (diff0 ~cmp r1 r2)
 
 
 
@@ -175,6 +104,110 @@ let cmp0 ~cmp s1 s2 =
 let eq0 ~cmp s1 s2 =
   cmp0 ~cmp s1 s2 = 0
 
+let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =   
+  let l,v,r = N.(left n , key n, right n) in  
+  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  if c = 0 then l,r
+  else 
+  if c < 0 then
+    match N.toOpt l with 
+    | None -> 
+      N.empty ,  N.return n
+    | Some l -> 
+      let (ll,  rl) = splitAuxNoPivot ~cmp  l x in 
+      ll,  N.join rl v r
+  else
+    match N.toOpt r with 
+    | None ->
+      N.return n,  N.empty
+    | Some r -> 
+      let lr,  rr = splitAuxNoPivot ~cmp  r x in 
+      N.join l v lr, rr
+
+let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =   
+  let l,v,r = N.(left n , key n, right n) in  
+  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  if c = 0 then 
+    begin
+      pres := true;
+      l, r
+    end
+  else 
+  if c < 0 then
+    match N.toOpt l with 
+    | None -> 
+      N.empty , N.return n
+    | Some l -> 
+      let (ll, rl) = splitAuxPivot ~cmp  l x pres in 
+      ll,  N.join rl v r
+  else
+    match N.toOpt r with 
+    | None ->
+      N.return n,  N.empty
+    | Some r -> 
+      let lr, rr = splitAuxPivot ~cmp  r x pres in 
+      N.join l v lr,  rr
+
+let  split0 ~cmp  (t : _ t0) x : _ t0 * bool * _ t0 =
+  match N.toOpt t with 
+    None ->
+    N.empty, false, N.empty
+  | Some n ->
+    let pres = ref false in 
+    let l, r = splitAuxPivot ~cmp n x  pres in 
+    l, !pres, r 
+
+(* [union0 s1 s2]
+   Use the pivot to split the smaller collection
+*)      
+let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) -> s2
+  | (_, None) -> s1
+  | Some n1, Some n2 ->
+    let h1, h2 = N.(h n1 , h n2) in                 
+    if h1 >= h2 then
+      if h2 = 1 then add0 ~cmp s1 (N.key n2)  
+      else begin
+        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
+        let l2, r2 = splitAuxNoPivot ~cmp n2 v1 in
+        N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
+      end
+    else
+    if h1 = 1 then add0 s2 ~cmp (N.key n1) 
+    else begin
+      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
+      let l1, r1 = splitAuxNoPivot ~cmp n1 v2  in
+      N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
+    end
+
+let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
+  match N.(toOpt s1, toOpt s2) with
+  | None, _ 
+  | _, None -> N.empty
+  | Some n1, Some n2  ->
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
+    let pres = ref false in 
+    let l2,r2 = splitAuxPivot ~cmp n2 v1 pres in 
+    let ll = inter0 ~cmp l1 l2 in 
+    let rr = inter0 ~cmp r1 r2 in 
+    if !pres then N.join ll v1 rr 
+    else N.concat ll rr 
+
+let rec diff0 ~cmp s1 s2 =
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) 
+  | (_, None) -> s1
+  | Some n1, Some n2  ->
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in
+    let pres = ref false in 
+    let l2, r2 = splitAuxPivot ~cmp n2 v1 pres in 
+    let ll = diff0 ~cmp l1 l2 in 
+    let rr = diff0 ~cmp r1 r2 in 
+    if !pres then N.concat ll rr 
+    else N.join ll v1 rr 
+
+
 let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
   match N.(toOpt s1, toOpt s2) with
   | None, _ -> true
@@ -186,9 +219,14 @@ let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
     if c = 0 then
       subset0 ~cmp l1 l2 && subset0 ~cmp r1 r2
     else if c < 0 then
-      subset0 ~cmp N.(return @@ node ~left:l1 ~key:v1 ~right:empty ~h:0) l2 && subset0 ~cmp r1 s2
+      subset0 ~cmp N.(return @@ node ~left:l1 ~key:v1 ~right:empty ~h:0) l2 && 
+      subset0 ~cmp r1 s2
     else
-      subset0 ~cmp N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && subset0 ~cmp l1 s2
+      subset0 ~cmp N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && 
+      subset0 ~cmp l1 s2
+(* and subsetAuxLeft s1 v s2 ~cmp = 
+   mem0 ~cmp s2 v &&
+   subset0 ~cmp s1 s2  *)
 
 let rec findOpt0 ~cmp (n : _ t0) x = 
   match N.toOpt n with 
