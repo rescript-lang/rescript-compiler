@@ -131,11 +131,12 @@ let maxNull0 n =
   | None -> Js.null
   | Some n -> return (max0Aux n)
 
-let rec removeMinAux n = 
+let rec removeMinAuxWithRef n v = 
   let rn, ln = right n, left n  in 
   match toOpt ln with   
-  | None -> rn
-  | Some ln -> bal (removeMinAux ln) (key n) rn
+  | None ->  v:= key n ; rn
+  | Some ln -> bal (removeMinAuxWithRef ln v) (key n) rn
+  
 
 
 (* [join ln v rn] return a balanced tree simliar to [create ln v rn]
@@ -153,15 +154,17 @@ let rec join ln v rn =
     if rh > lh + 2 then bal (join ln v (left r)) (key r) (right r) else
       create ln v rn
   
-(* Merge two trees l and r into one.
-   All elements of l must precede the elements of r.
+(* [concat l r]
    No assumption on the heights of l and r. *)
 
 let concat t1 t2 =
   match (toOpt t1, toOpt t2) with
     (None, _) -> t2
   | (_, None) -> t1
-  | (_, Some t2n) -> join t1 (min0Aux t2n) (removeMinAux t2n)
+  | (_, Some t2n) -> 
+    let v = ref (key t2n ) in 
+    let t2r = removeMinAuxWithRef t2n v in 
+    join t1 !v t2r  
 
 (* Implementation of the set operations *)
 
@@ -368,14 +371,6 @@ let balMutate nt  =
       hSet nt (max hl hr + 1);
       nt
     end
-
-(* let rec removeMinAuxMutate n = 
-   let rn, ln = right n, left n in 
-   match toOpt ln with 
-   | None -> rn 
-   | Some ln -> 
-    leftSet n (removeMinAuxMutate ln); 
-    return (balMutate n) *)
 
 
 

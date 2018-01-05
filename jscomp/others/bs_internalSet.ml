@@ -81,7 +81,9 @@ let rec remove0 ~cmp (t : _ t0) x : _ t0 =
       | (None, _) -> r 
       | (_, None) -> l 
       | (_, Some rn) -> 
-        N.bal l (N.min0Aux rn) (N.removeMinAux rn )
+        let v = ref (N.key rn) in 
+        let r = N.removeMinAuxWithRef rn v in 
+        N.bal l !v r 
     else
     if c < 0 then 
       let ll = remove0 ~cmp  l x in 

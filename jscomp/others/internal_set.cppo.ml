@@ -87,7 +87,9 @@ let rec remove (t : t) (x : elt) : t =
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
-        N.bal l (N.min0Aux rn) (N.removeMinAux rn)
+        let v = ref (N.key rn) in 
+        let r = N.removeMinAuxWithRef rn v in 
+        N.bal l !v r
     else
     if x < v then 
       let ll = remove l x in  
