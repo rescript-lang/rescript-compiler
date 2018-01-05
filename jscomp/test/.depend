@@ -103,6 +103,8 @@ bs_min_max_test.cmj : ../stdlib/pervasives.cmj mt.cmj
 bs_mutable_set_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
     array_data_util.cmj ../stdlib/array.cmj
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
+bs_poly_mutable_set_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
+    array_data_util.cmj
 bs_qualified.cmj : ../runtime/js.cmj
 bs_queue_test.cmj : ../runtime/js.cmj ../others/bs.cmj
 bs_rbset_int_bench.cmj : rbset.cmj

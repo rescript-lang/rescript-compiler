@@ -29,10 +29,14 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_HashSetString\
 	bs_HashSetInt\
 	bs_Bag\
+	bs_BagM\
 	bs_Cmp\
 	bs_Map\
+	bs_MapString \
+	bs_MapInt\
+	bs_internalSet\
 	bs_Set\
-	bs_MapString bs_MapInt\
+	bs_SetM\
 	bs_internalSetInt\
 	bs_internalSetString\
 	bs_SetInt\

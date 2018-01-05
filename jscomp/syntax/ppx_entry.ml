@@ -453,6 +453,9 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
               Location.raise_errorf 
                 ~loc "expect a boolean expression in the payload"
           )
+          (*
+          [%%bs.import Bs_internalAVLSet.(a,b,c)]
+          *)
         | Pexp_extension
             ({txt = ("bs.node" | "node"); loc},
              payload)

@@ -161,6 +161,7 @@ let rec eq_aux e1 e2 =
 let eq s1 s2 = 
   eq_aux (N.cons_enum s1 End) (N.cons_enum s2 End)
 
+(* This algorithm applies to BST, it does not need to be balanced tree *)  
 let rec subset (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
     None, _ ->
@@ -170,7 +171,7 @@ let rec subset (s1 : t) (s2 : t) =
   | Some t1, Some t2 (* Node (l1, v1, r1, _), (Node (l2, v2, r2, _) as t2) *) ->
     let l1,v1,r1 = N.(left t1, key t1, right t1) in  
     let l2,v2,r2 = N.(left t2, key t2, right t2) in 
-    if (v1 : elt) = v2 then
+    if v1 = v2 then
       subset l1 l2 && subset r1 r2
     else if v1 < v2 then
       subset N.(return @@ node ~left:l1 ~key:v1 ~right:empty ~h:0) l2 && subset r1 s2
@@ -184,7 +185,7 @@ let rec findOpt  (n :t) (x : elt) =
   | Some t  ->    
     let v = N.key t in     
     if x = v then Some v
-    else findOpt N.(if x < v then (left t) else (right t)) x
+    else findOpt (if x < v then N.left t else N.right t) x
 
 let rec findAssert (n :t) (x : elt)   = 
   match N.toOpt n with 
@@ -192,7 +193,7 @@ let rec findAssert (n :t) (x : elt)   =
   | Some t  ->    
     let v = N.key t in     
     if x = v then Some v
-    else findAssert  N.(if x < v then (left t) else (right t)) x
+    else findAssert  (if x < v then N.left t else N.right t) x
 
 let rec findNull (n :t) (x : elt)   = 
   match N.toOpt n with 

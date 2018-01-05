@@ -26,6 +26,7 @@
 
 (**/*)
 (**/*)
+module BagM = Bs_BagM
 module Bag = Bs_Bag
 module Cmp = Bs_Cmp
 module Hash = Bs_Hash
@@ -42,6 +43,7 @@ module Sort = Bs_Sort
 module Range = Bs_Range
 module Map = Bs_Map
 module Set = Bs_Set
+module SetM = Bs_SetM
 module MapInt = Bs_MapInt
 module MapString = Bs_MapString  
 module SetInt = Bs_SetInt
