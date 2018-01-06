@@ -7,11 +7,12 @@ type 'elt node  = {
 }
 [@@bs.deriving abstract]
 
+module A = Bs_Array
 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
-
+external unsafeCoerce : 'a Js.null -> 'a = "%identity"
 type ('elt, 'id) t0 =  'elt node Js.null
 (* Sets are represented by balanced binary trees (the heights of the
    children differ by at most 2 *)
@@ -52,77 +53,54 @@ let heightGe l r =
    Assumes l and r balanced and | height l - height r | <= 3.
    Inline expansion of create for better speed in the most frequent case
    where no rebalancing is required. *)
-(* FIXME: bal should return [node] instead of [_ t0] *)
+(* TODO: inline all [create] operation, save duplicated [h] calcuation *)
 let bal l v r =
   let hl = match toOpt l with None -> 0 | Some n -> h n in
   let hr = match toOpt r with None -> 0 | Some n -> h n in
   if hl > hr + 2 then begin
-    match toOpt l with
-    | None -> assert false
-    | Some n (* Node(ll, lv, lr, _) *) ->
-      let ll,lv,lr = left n, key n, right n in 
-      if heightGe ll  lr then
-        create ll lv (create lr v r)
-      else begin
-        match toOpt lr with
-          None -> assert false
-        | Some n (* (lrl, lrv, lrr, _) *) ->
-          let lrl, lrv, lrr = left n, key n, right n in 
-          create (create ll lv lrl) lrv (create lrr v r)
-      end
+    let n = unsafeCoerce l in   (* [l] could not be empty *)
+    let ll,lv,lr = left n, key n, right n in 
+    if heightGe ll  lr then
+      create ll lv (create lr v r)
+    else begin
+      let n = unsafeCoerce lr in (* [lr] could not be empty*)
+      let lrl, lrv, lrr = left n, key n, right n in 
+      create (create ll lv lrl) lrv (create lrr v r)
+    end
   end else if hr > hl + 2 then begin
-    match toOpt r with
-      None -> assert false
-    | Some n (* (rl, rv, rr, _) *) ->
-      let rl,rv,rr = left n, key n, right n in 
-      if heightGe rr  rl then
-        create (create l v rl) rv rr
-      else begin
-        match toOpt rl with
-          None -> assert false
-        | Some n (* (rll, rlv, rlr, _)*) ->
-          let rll, rlv, rlr = left n, key n, right n in 
-          create (create l v rll) rlv (create rlr rv rr)
-      end
+    let n = unsafeCoerce r in  (* [r] could not be empty *)
+    let rl,rv,rr = left n, key n, right n in 
+    if heightGe rr  rl then
+      create (create l v rl) rv rr
+    else begin
+      let n = unsafeCoerce rl in (* [rl] could not be empty *)
+      let rll, rlv, rlr = left n, key n, right n in 
+      create (create l v rll) rlv (create rlr rv rr)
+    end
   end else
     return @@ node ~left:l ~key:v ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
 let singleton0 x = return @@ node ~left:empty ~key:x ~right:empty ~h:1
 
-(* Beware: those two functions assume that the added v is *strictly*
-   smaller (or bigger) than all the present elements in the tree; it
-   does not test for equality with the current min (or max) element.
-   Indeed, they are only used during the "join" operation which
+(* [addMinElement v n] and [addMaxElement v n] 
+   assume that the added v is *strictly*
+   smaller (or bigger) than all the present elements in the tree.
+   They are only used during the "join" operation which
    respects this precondition.
 *)
 
-let rec add_min_element v n =
+let rec addMinElement v n =
   match toOpt n with 
   | None -> singleton0 v
-  | Some n (* (l, x, r, h)*) ->
-    bal (add_min_element v (left n))  (key n) (right n)
+  | Some n  ->
+    bal (addMinElement v (left n))  (key n) (right n)
 
-let rec add_max_element v n = 
+let rec addMaxElement v n = 
   match toOpt n with 
   | None -> singleton0 v
-  | Some n (* (l, x, r, h)*) ->
-    bal (left n) (key n) (add_max_element v (right n))
+  | Some n  ->
+    bal (left n) (key n) (addMaxElement v (right n))
 
-(* Same as create and bal, but no assumptions are made on the
-   relative heights of l and r. *)
-
-let rec join ln v rn =
-  match (toOpt ln, toOpt rn) with
-    (None, _) -> add_min_element v rn (* could be inlined *)
-  | (_, None) -> add_max_element v ln (* could be inlined *)
-  | Some l, Some r ->   
-    let lh = h l in     
-    let rh = h r in 
-    if lh > rh + 2 then bal (left l) (key l) (join (right l) v rn) else
-    if rh > lh + 2 then bal (join ln v (left r)) (key r) (right r) else
-      create ln v rn
-
-(* Smallest and greatest element of a set *)
 let rec min0Aux n = 
   match toOpt (left n) with 
   | None -> key n
@@ -143,7 +121,7 @@ let rec max0Aux n =
   | None -> key n
   | Some n -> max0Aux n 
 
-let  maxOpt0 n = 
+let maxOpt0 n = 
   match toOpt n with 
   | None -> None
   | Some n -> Some (max0Aux n)
@@ -152,34 +130,15 @@ let maxNull0 n =
   match toOpt n with 
   | None -> Js.null
   | Some n -> return (max0Aux n)
-(* Remove the smallest element of the given set *)
 
-let rec removeMinAux n = 
+let rec removeMinAuxWithRef n v = 
   let rn, ln = right n, left n  in 
   match toOpt ln with   
-  | None -> rn
-  | Some ln -> bal (removeMinAux ln) (key n) rn
+  | None ->  v:= key n ; rn
+  | Some ln -> bal (removeMinAuxWithRef ln v) (key n) rn
+  
 
 
-(* Merge two trees l and r into one.
-   All elements of l must precede the elements of r.
-   Assume | height l - height r | <= 2. *)
-
-let merge t1 t2 =
-  match (toOpt t1, toOpt t2) with
-    (None, _) -> t2
-  | (_, None) -> t1
-  | (_, Some t2n) -> bal t1 (min0Aux t2n) (removeMinAux t2n)
-
-(* Merge two trees l and r into one.
-   All elements of l must precede the elements of r.
-   No assumption on the heights of l and r. *)
-
-let concat t1 t2 =
-  match (toOpt t1, toOpt t2) with
-    (None, _) -> t2
-  | (_, None) -> t1
-  | (_, Some t2n) -> join t1 (min0Aux t2n) (removeMinAux t2n)
 
 (* Implementation of the set operations *)
 
@@ -187,11 +146,11 @@ let empty0 = empty
 
 let isEmpty0 n = match toOpt n with Some _ -> false | None -> true 
 
-let rec cons_enum s e =
+let rec toEnum s e =
   match toOpt s with
     None -> e
-  | Some n (* Node(l, v, r, _) *) 
-    -> cons_enum (left n) (More( key n, right n, e))
+  | Some n 
+    -> toEnum (left n) (More( key n, right n, e))
 
 
 let rec iter0 n f = 
@@ -199,6 +158,7 @@ let rec iter0 n f =
   | None -> ()
   | Some n  ->
     iter0 (left n) f; f (key n) [@bs]; iter0  (right n) f
+
 
 let rec fold0 s accu f =
   match toOpt s with
@@ -225,26 +185,53 @@ let rec exists0 n p =
     exists0 (left n) p || 
     exists0 (right n) p 
 
+
+(* [join ln v rn] return a balanced tree simliar to [create ln v rn]
+   bal, but no assumptions are made on the
+   relative heights of [ln] and [rn]. *)
+
+let rec join ln v rn =
+  match (toOpt ln, toOpt rn) with
+    (None, _) -> addMinElement v rn 
+  | (_, None) -> addMaxElement v ln 
+  | Some l, Some r ->   
+    let lh = h l in     
+    let rh = h r in 
+    if lh > rh + 2 then bal (left l) (key l) (join (right l) v rn) else
+    if rh > lh + 2 then bal (join ln v (left r)) (key r) (right r) else
+      create ln v rn
+  
+(* [concat l r]
+   No assumption on the heights of l and r. *)
+
+let concat t1 t2 =
+  match (toOpt t1, toOpt t2) with
+    (None, _) -> t2
+  | (_, None) -> t1
+  | (_, Some t2n) -> 
+    let v = ref (key t2n ) in 
+    let t2r = removeMinAuxWithRef t2n v in 
+    join t1 !v t2r  
+    
+    
 let rec filter0 n p =
   match toOpt n with 
   | None -> empty
   | Some n  ->
-    (* call [p] in the expected left-to-right order *)
-    let newL = filter0 (left n) p in
-    let v = key n in 
+    let l,v,r = left n, key n, right n in  
+    let newL = filter0 l p in
     let pv = p v [@bs] in
-    let newR = filter0 (right n) p in
+    let newR = filter0 r p in
     if pv then join newL v newR else concat newL newR
 
 let rec partition0  n p =
   match toOpt n with 
   |  None -> (empty, empty)
   | Some n  ->
-    (* call [p] in the expected left-to-right order *)
-    let (lt, lf) = partition0 (left n) p in
-    let v = key n in 
+    let l,v,r = left n, key n, right n in 
+    let (lt, lf) = partition0 l p in    
     let pv = p v [@bs] in
-    let (rt, rf) = partition0 (right n) p in
+    let (rt, rf) = partition0 r p in
     if pv
     then (join lt v rt, concat lf rf)
     else (concat lt rt, join lf v rf)
@@ -268,17 +255,17 @@ let rec length0 n =
   | Some n  ->
     cardinalAux n 
 
-let rec elements_aux accu n = 
+let rec toListAux accu n = 
   match toOpt n with 
   | None -> accu
   | Some n  ->
     let l,k,r = left n, key n, right n in 
-    elements_aux 
-      (k :: elements_aux accu r)
+    toListAux 
+      (k :: toListAux accu r)
       l
 
 let toList0 s =
-  elements_aux [] s
+  toListAux [] s
 
 let rec checkInvariant (v : _ t0) = 
   match toOpt v with 
@@ -288,7 +275,7 @@ let rec checkInvariant (v : _ t0) =
     let diff = height l - height r  in 
     diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
 
-module A = Bs_Array
+
 
 let rec fillArray n i arr =     
   let l,v,r = left n, key n, right n in 
@@ -304,8 +291,7 @@ let rec fillArray n i arr =
   | Some r -> 
     fillArray r rnext arr 
 
-(* TODO: binary search tree to array efficiency
-*)
+
 let toArray0 n =   
   match toOpt n with 
   | None -> [||]
@@ -317,7 +303,7 @@ let toArray0 n =
 
 
 
-external unsafeCoerce : 'a Js.null -> 'a = "%identity"
+
 
 (* 
   L rotation, return root node
@@ -387,14 +373,6 @@ let balMutate nt  =
       nt
     end
 
-(* let rec removeMinAuxMutate n = 
-   let rn, ln = right n, left n in 
-   match toOpt ln with 
-   | None -> rn 
-   | Some ln -> 
-    leftSet n (removeMinAuxMutate ln); 
-    return (balMutate n) *)
-
 
 
 let rec removeMinAuxMutateWithRoot nt n = 
@@ -434,6 +412,6 @@ let rec ofSortedArrayAux arr off len =
     create left mid right    
 
 
-    
+
 let ofSortedArrayUnsafe0 arr =     
   ofSortedArrayAux arr 0 (A.length arr)
