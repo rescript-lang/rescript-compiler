@@ -57,7 +57,7 @@ let mk ~lo ~hi = {lo = to_unsigned lo ; hi}
 let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
 
 let max_int =
- mk  ~lo:( -0xffff_ffffn) ~hi: 0x7fff_fffn
+ mk  ~lo:( -0xffff_ffffn) ~hi: 0x7fff_ffffn
 
 let one = mk ~lo: 1n ~hi:0n
 let zero = mk ~lo: 0n ~hi: 0n
