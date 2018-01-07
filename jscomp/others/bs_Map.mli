@@ -103,16 +103,27 @@ val merge:
     @since 3.12.0
 *)
 
-val compare0: cmp:('k,'id) Bs_Cmp.cmp -> 
-  ('a -> 'a -> int [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 -> int
-val compare: ('a -> 'a -> int [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> int
+val cmp0: 
+  ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0  -> 
+  kcmp:('k,'id) Bs_Cmp.cmp -> 
+  vcmp:('a -> 'a -> int [@bs]) -> 
+  int
+val cmp: 
+    ('k, 'a, 'id) t -> 
+    ('k, 'a, 'id) t ->
+    ('a -> 'a -> int [@bs]) -> 
+     int
 (** Total ordering between maps.  The first argument is a total ordering
     used to compare data associated with equal keys in the two maps. *)
 
-val equal0: cmp: ('k,'id) Bs_Cmp.cmp ->     
-  ('a -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 -> bool
-val equal: ('a -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> bool
-(** [equal cmp m1 m2] tests whether the maps [m1] and [m2] are
+val eq0: 
+ ('k, 'a, 'id) t0 -> 
+ ('k, 'a, 'id) t0 -> 
+ kcmp: ('k,'id) Bs_Cmp.cmp ->     
+ vcmp:('a -> 'a -> bool [@bs]) ->
+ bool
+val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
+(** [eq m1 m2 cmp] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
     equal data.  [cmp] is the equality predicate used to compare
     the data associated with the keys. *)
@@ -160,8 +171,8 @@ val partition: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 
     @since 3.12.0
 *)
 
-val cardinal0: ('k, 'a, 'id) t0 -> int
-val cardinal: ('k, 'a, 'id) t -> int
+val length0: ('k, 'a, 'id) t0 -> int
+val length: ('k, 'a, 'id) t -> int
 (** Return the number of bindings of a map.
     @since 3.12.0
 *)

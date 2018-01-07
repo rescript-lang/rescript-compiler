@@ -117,6 +117,19 @@ let () =
   b __LOC__ (N.subset (N.add dd 200) bb);
   b __LOC__ (N.add dd 200 == dd);
   b __LOC__ (N.add dd 0 == dd);
-  b __LOC__ (not (N.subset (N.add dd 201) bb));
+  b __LOC__ (not (N.subset (N.add dd 201) bb))
+
+
+let () =   
+  let aa = N.ofArray (I.randomRange 0 100) in 
+  let bb = N.ofArray (I.randomRange 0 100) in 
+  let cc = N.add bb 101 in 
+  let dd = N.remove bb 99 in 
+  let ee = N.add dd 101 in 
+  b __LOC__ (N.eq aa bb );
+  b __LOC__ (not (N.eq aa cc));
+  b __LOC__ (not (N.eq dd cc));
+  b __LOC__ (not (N.eq bb ee));
+
 
 ;; Mt.from_pair_suites __FILE__ !suites    

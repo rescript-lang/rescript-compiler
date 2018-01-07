@@ -8,12 +8,7 @@ type ('key, 'a, 'id) t0 = ('key,'a,'id) N.t0
 
 type + 'a t = (key,'a, unit) N.t0 
 
-type ('key, 'a, 'id) enumeration0 = ('key,'a,'id) N.enumeration0 =
-    End 
-  | More of 'key * 'a * ('key, 'a, 'id) t0 * ('key, 'a, 'id) enumeration0
 
-type  'a enumeration = 
-  (key,'a, unit) enumeration0
 
 
 
@@ -30,7 +25,7 @@ let forAll = N.forAll0
 let exists = N.exists0    
 let filter = N.filter0
 let partition = N.partition0
-let cardinal = N.cardinal0
+let length = N.length0
 let bindings = N.bindings0  
 let checkInvariant = N.checkInvariant
 
@@ -130,30 +125,51 @@ let rec merge f s1 s2 =
   | _ ->
     assert false
 
-let compare cmp m1 m2 =
-  let rec compare_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      if (v1 : key) <> v2 then if v1 < v2 then -1 else 1 else
-        let c = cmp d1 d2 [@bs] in
-        if c <> 0 then c else
-          compare_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)
-  in compare_aux (N.cons_enum m1 End) (N.cons_enum m2 End)
+let rec compareAux e1 e2 vcmp =
+   match e1,e2 with 
+   | h1::t1, h2::t2 ->
+    let c = Pervasives.compare (N.key h1 : key) (N.key h2)  in 
+    if c = 0 then 
+      let cx = vcmp (N.value h1) (N.value h2) [@bs] in 
+      if cx = 0 then
+          compareAux 
+          (N.stackAllLeft  (N.right h1) t1 ) 
+          (N.stackAllLeft (N.right h2) t2)
+          vcmp 
+      else  cx
+    else c 
+  | _, _ -> 0    
 
-let equal cmp m1 m2 =
-  let rec equal_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> true
-    | (End, _)  -> false
-    | (_, End) -> false
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      (v1 : key) = v2  && cmp d1 d2 [@bs] &&
-      equal_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)
-  in equal_aux (N.cons_enum m1 End) (N.cons_enum m2 End)
+let cmp s1 s2 cmp = 
+  let len1, len2 = N.length0 s1, N.length0 s2 in 
+  if len1 = len2 then 
+    compareAux 
+      (N.stackAllLeft s1 []) 
+      (N.stackAllLeft s2 []) 
+      cmp 
+  else if len1 < len2 then -1 
+  else 1 
 
+
+let rec eqAux e1 e2  eq =
+    match e1,e2 with 
+    | h1::t1, h2::t2 ->
+     if (N.key h1 : key) =  (N.key h2)  && 
+        eq (N.value h1) (N.value h2) [@bs] then
+          eqAux (
+            N.stackAllLeft  (N.right h1) t1 ) 
+            (N.stackAllLeft (N.right h2) t2)
+            eq
+      else  false    
+    | _, _ -> true (*end *)  
+
+let eq s1 s2 eq =      
+  let len1,len2 = N.length0 s1, N.length0 s2 in 
+  if len1 = len2 then 
+    eqAux 
+    (N.stackAllLeft s1 [])
+    (N.stackAllLeft s2 []) eq 
+  else false  
 
 let ofArray  (xs : _ array) : _ t0 =     
   let result = ref N.empty in 

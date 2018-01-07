@@ -59,6 +59,7 @@ bs_SetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_SetString.cmi
 bs_SetStringM.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_SetStringM.cmi
+bs_Stack.cmj : bs_Stack.cmi
 node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
@@ -102,6 +103,7 @@ bs_SetInt.cmi :
 bs_SetIntM.cmi :
 bs_SetString.cmi :
 bs_SetStringM.cmi :
+bs_Stack.cmi :
 js_boolean.cmi :
 js_dict.cmi :
 js_cast.cmi :

@@ -12,7 +12,7 @@ let test () =
   for i = 0 to count do 
     m := Bs.MapInt.remove i !m ;
   done ;
-  should (Bs.MapInt.cardinal !m = 0)
+  should (Bs.MapInt.length !m = 0)
 
 let () =
   test ()

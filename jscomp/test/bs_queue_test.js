@@ -29,7 +29,7 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[]) && q.length ==
       ];
 }
 
-Bs_Queue.push(1, q);
+Bs_Queue.push(q, 1);
 
 if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[1]) && q.length === 1)) {
   throw [
@@ -42,7 +42,7 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[1]) && q.length =
       ];
 }
 
-Bs_Queue.push(2, q);
+Bs_Queue.push(q, 2);
 
 if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
           1,
@@ -58,7 +58,7 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
       ];
 }
 
-Bs_Queue.push(3, q);
+Bs_Queue.push(q, 3);
 
 if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
           1,
@@ -75,7 +75,7 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
       ];
 }
 
-Bs_Queue.push(4, q);
+Bs_Queue.push(q, 4);
 
 if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
           1,
@@ -201,7 +201,7 @@ if (!does_raise(Bs_Queue.popAssert, q)) {
 
 var q$1 = Bs_Queue.create(/* () */0);
 
-Bs_Queue.push(1, q$1);
+Bs_Queue.push(q$1, 1);
 
 if (Bs_Queue.popAssert(q$1) !== 1) {
   throw [
@@ -225,7 +225,7 @@ if (!does_raise(Bs_Queue.popAssert, q$1)) {
       ];
 }
 
-Bs_Queue.push(2, q$1);
+Bs_Queue.push(q$1, 2);
 
 if (Bs_Queue.popAssert(q$1) !== 2) {
   throw [
@@ -262,7 +262,7 @@ if (q$1.length !== 0) {
 
 var q$2 = Bs_Queue.create(/* () */0);
 
-Bs_Queue.push(1, q$2);
+Bs_Queue.push(q$2, 1);
 
 if (Bs_Queue.peekAssert(q$2) !== 1) {
   throw [
@@ -275,7 +275,7 @@ if (Bs_Queue.peekAssert(q$2) !== 1) {
       ];
 }
 
-Bs_Queue.push(2, q$2);
+Bs_Queue.push(q$2, 2);
 
 if (Bs_Queue.peekAssert(q$2) !== 1) {
   throw [
@@ -288,7 +288,7 @@ if (Bs_Queue.peekAssert(q$2) !== 1) {
       ];
 }
 
-Bs_Queue.push(3, q$2);
+Bs_Queue.push(q$2, 3);
 
 if (Bs_Queue.peekAssert(q$2) !== 1) {
   throw [
@@ -392,7 +392,7 @@ if (!does_raise(Bs_Queue.peekAssert, q$2)) {
 var q$3 = Bs_Queue.create(/* () */0);
 
 for(var i = 1; i <= 10; ++i){
-  Bs_Queue.push(i, q$3);
+  Bs_Queue.push(q$3, i);
 }
 
 Bs_Queue.clear(q$3);
@@ -430,7 +430,7 @@ if (!Caml_obj.caml_equal(q$3, Bs_Queue.create(/* () */0))) {
       ];
 }
 
-Bs_Queue.push(42, q$3);
+Bs_Queue.push(q$3, 42);
 
 if (Bs_Queue.popAssert(q$3) !== 42) {
   throw [
@@ -446,7 +446,7 @@ if (Bs_Queue.popAssert(q$3) !== 42) {
 var q1 = Bs_Queue.create(/* () */0);
 
 for(var i$1 = 1; i$1 <= 10; ++i$1){
-  Bs_Queue.push(i$1, q1);
+  Bs_Queue.push(q1, i$1);
 }
 
 var q2 = Bs_Queue.copy(q1);
@@ -559,7 +559,7 @@ if (q$4.length !== 0) {
 }
 
 for(var i$4 = 1; i$4 <= 10; ++i$4){
-  Bs_Queue.push(i$4, q$4);
+  Bs_Queue.push(q$4, i$4);
   if (q$4.length !== i$4) {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -632,25 +632,25 @@ if (q$4.length !== 0) {
 var q$5 = Bs_Queue.create(/* () */0);
 
 for(var i$6 = 1; i$6 <= 10; ++i$6){
-  Bs_Queue.push(i$6, q$5);
+  Bs_Queue.push(q$5, i$6);
 }
 
 var i$7 = [1];
 
-Bs_Queue.iter((function (j) {
+Bs_Queue.iter(q$5, (function (j) {
         if (i$7[0] !== j) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 [
                   "bs_queue_test.ml",
                   94,
-                  24
+                  26
                 ]
               ];
         }
         i$7[0] = i$7[0] + 1 | 0;
         return /* () */0;
-      }), q$5);
+      }));
 
 var q1$1 = Bs_Queue.create(/* () */0);
 
@@ -751,7 +751,7 @@ var q1$2 = Bs_Queue.create(/* () */0);
 var q2$2 = Bs_Queue.create(/* () */0);
 
 for(var i$8 = 1; i$8 <= 4; ++i$8){
-  Bs_Queue.push(i$8, q1$2);
+  Bs_Queue.push(q1$2, i$8);
 }
 
 if (q1$2.length !== 4) {
@@ -859,7 +859,7 @@ var q1$3 = Bs_Queue.create(/* () */0);
 var q2$3 = Bs_Queue.create(/* () */0);
 
 for(var i$9 = 5; i$9 <= 8; ++i$9){
-  Bs_Queue.push(i$9, q2$3);
+  Bs_Queue.push(q2$3, i$9);
 }
 
 if (q1$3.length !== 0) {
@@ -967,11 +967,11 @@ var q1$4 = Bs_Queue.create(/* () */0);
 var q2$4 = Bs_Queue.create(/* () */0);
 
 for(var i$10 = 1; i$10 <= 4; ++i$10){
-  Bs_Queue.push(i$10, q1$4);
+  Bs_Queue.push(q1$4, i$10);
 }
 
 for(var i$11 = 5; i$11 <= 8; ++i$11){
-  Bs_Queue.push(i$11, q2$4);
+  Bs_Queue.push(q2$4, i$11);
 }
 
 if (q1$4.length !== 4) {
@@ -1085,9 +1085,9 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$4), v)) {
       ];
 }
 
-if (Bs_Queue.fold((function (x, y) {
+if (Bs_Queue.fold(q2$4, 0, (function (x, y) {
           return x - y | 0;
-        }), 0, q2$4) !== Bs_Array.foldLeft(v, 0, (function (x, y) {
+        })) !== Bs_Array.foldLeft(v, 0, (function (x, y) {
           return x - y | 0;
         }))) {
   throw [

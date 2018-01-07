@@ -22,12 +22,6 @@ type ('k,'v,'id) t =
 
 
 
-
-
-type ('key, 'a, 'id) enumeration = ('key, 'a, 'id) N.enumeration0 =
-    End 
-  | More of 'key * 'a * ('key, 'a, 'id) t0 * ('key, 'a, 'id) enumeration
-
 let empty0 = N.empty0      
 let isEmpty0 = N.isEmpty0
 let singleton0 = N.singleton0
@@ -41,7 +35,7 @@ let forAll0 = N.forAll0
 let exists0 = N.exists0    
 let filter0 = N.filter0
 let partition0 = N.partition0
-let cardinal0 = N.cardinal0
+let length0 = N.length0
 let bindings0 = N.bindings0  
 
 let rec add0 ~cmp x data (t : _ t0) =
@@ -152,32 +146,42 @@ let rec merge0 ~cmp f s1 s2 =
   | _ ->
     assert false
 
+let rec compareAux e1 e2 ~kcmp ~vcmp =
+  match e1,e2 with 
+  | h1::t1, h2::t2 ->
+    let c = (Bs_Cmp.getCmp kcmp) (N.key h1) (N.key h2) [@bs] in 
+    if c = 0 then 
+      let cx = vcmp (N.value h1) (N.value h2) [@bs] in 
+      if cx = 0 then
+        compareAux ~kcmp ~vcmp 
+          (N.stackAllLeft  (N.right h1) t1 )
+          (N.stackAllLeft (N.right h2) t2)
+      else  cx
+    else c 
+  | _, _ -> 0   
+
+let rec eqAux e1 e2 ~kcmp ~vcmp =
+  match e1,e2 with 
+  | h1::t1, h2::t2 ->
+    if (Bs_Cmp.getCmp kcmp) (N.key h1) (N.key h2) [@bs] = 0 && 
+       vcmp (N.value h1) (N.value h2) [@bs] then
+      eqAux ~kcmp ~vcmp (
+        N.stackAllLeft  (N.right h1) t1 ) (N.stackAllLeft (N.right h2) t2)
+    else  false    
+  | _, _ -> true (*end *)
 
 
-let compare0 ~cmp:keycmp cmp m1 m2 =
-  let rec compare_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> 0
-    | (End, _)  -> -1
-    | (_, End) -> 1
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      let c = (Bs_Cmp.getCmp keycmp) v1 v2 [@bs] in
-      if c <> 0 then c else
-        let c = cmp d1 d2 [@bs] in
-        if c <> 0 then c else
-          compare_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)
-  in compare_aux (N.cons_enum m1 End) (N.cons_enum m2 End)
+let cmp0 s1 s2 ~kcmp ~vcmp =
+  let len1,len2 = N.length0 s1, N.length0 s2 in 
+  if len1 = len2 then 
+    compareAux (N.stackAllLeft s1 []) (N.stackAllLeft s2 []) ~kcmp ~vcmp 
+  else  if len1 < len2 then -1 else 1 
 
-let equal0 ~cmp:keycmp cmp m1 m2 =
-  let rec equal_aux e1 e2 =
-    match (e1, e2) with
-      (End, End) -> true
-    | (End, _)  -> false
-    | (_, End) -> false
-    | (More(v1, d1, r1, e1), More(v2, d2, r2, e2)) ->
-      (Bs_Cmp.getCmp keycmp) v1 v2 [@bs] = 0   && cmp d1 d2 [@bs] &&
-      equal_aux (N.cons_enum r1 e1) (N.cons_enum r2 e2)
-  in equal_aux (N.cons_enum m1 End) (N.cons_enum m2 End)
+let eq0  s1 s2 ~kcmp ~vcmp =
+  let len1, len2 = N.length0 s1, N.length0 s2 in 
+  if len1 = len2 then
+    eqAux (N.stackAllLeft s1 []) (N.stackAllLeft s2 []) ~kcmp ~vcmp
+  else false
 
 
 let ofArray0 ~cmp (xs : _ array) : _ t0 =     
@@ -221,8 +225,8 @@ let partition p map =
   let l,r = partition0 p map in 
   B.bag ~dict ~data:l, B.bag ~dict ~data:r 
 
-let cardinal map = 
-  cardinal0 (B.data map)   
+let length map = 
+  length0 (B.data map)   
 
 let bindings map = 
   bindings0 (B.data map) 
@@ -235,12 +239,12 @@ let maxBinding map =
 let map f map = 
   let dict, map = B.(dict map, data map) in 
   B.bag ~dict ~data:(map0 f map)
-  
+
 
 let mapi f map  = 
   let dict,map = B.(dict map, data map) in 
   B.bag ~dict ~data:(mapi0 f map )
-  
+
 
 
 let add (type k) (type v) (type id) key data (map : (k,v,id) t) = 
@@ -248,13 +252,13 @@ let add (type k) (type v) (type id) key data (map : (k,v,id) t) =
   let module X = (val dict) in 
   B.bag ~dict ~data:(add0 ~cmp:X.cmp key data map)
 
-  
+
 let ofArray (type k) (type v) (type id) (dict : (k,id) Bs_Cmp.t) data = 
   let module M = (val dict ) in 
   B.bag
     ~dict 
     ~data:(ofArray0 ~cmp:M.cmp data)
-  
+
 
 
 let findOpt (type k) (type v) (type id) x (map : (k,v,id) t) = 
@@ -284,8 +288,8 @@ let remove (type k) (type v) (type id) x (map : (k,v,id) t) =
   B.bag ~dict ~data:(remove0 ~cmp:X.cmp x map)
 
 let split (type k) (type v) (type id) x (map : (k,v,id) t) =   
-    let dict,map = B.(dict map, data map) in 
-  
+  let dict,map = B.(dict map, data map) in 
+
   let module X = (val dict) in 
   let l,v,r = split0 ~cmp:X.cmp x map in 
   B.bag ~dict 
@@ -294,7 +298,7 @@ let split (type k) (type v) (type id) x (map : (k,v,id) t) =
   v ,
   B.bag ~dict
     ~data:r
-  
+
 
 let merge (type k) (type v) (type id) f (s1 : (k,v,id) t) 
     (s2 : (k,_,id) t) = 
@@ -302,15 +306,18 @@ let merge (type k) (type v) (type id) f (s1 : (k,v,id) t)
   let module X = (val dict) in 
   B.bag ~data:(merge0 ~cmp:X.cmp f s1_data s2_data )
     ~dict
-  
 
-let compare (type k) (type v) (type id) cmp 
-    (m1 : (k,v,id) t) (m2 : (k,v,id) t) = 
+
+let cmp (type k) (type v) (type id)  
+    (m1 : (k,v,id) t) (m2 : (k,v,id) t) 
+    cmp
+  = 
   let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
   let module X = (val dict) in 
-  compare0 ~cmp:X.cmp cmp m1_data m2_data
+  cmp0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data
 
-let equal (type k) (type v) (type id) cmp (m1 : (k,v,id) t) (m2 : (k,v,id) t) = 
+let eq (type k) (type v) (type id) 
+    (m1 : (k,v,id) t) (m2 : (k,v,id) t) cmp = 
   let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
   let module X = (val dict) in 
-  equal0 ~cmp:X.cmp cmp m1_data m2_data 
+  eq0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data 

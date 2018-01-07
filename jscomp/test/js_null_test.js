@@ -115,7 +115,7 @@ var suites_001 = /* :: */[
                     (function () {
                         return /* Eq */Block.__(0, [
                                   null,
-                                  Js_null.from_opt(/* None */0)
+                                  Js_null.fromOption(/* None */0)
                                 ]);
                       })
                   ],
@@ -125,7 +125,7 @@ var suites_001 = /* :: */[
                       (function () {
                           return /* Eq */Block.__(0, [
                                     2,
-                                    Js_null.from_opt(/* Some */[2])
+                                    Js_null.fromOption(/* Some */[2])
                                   ]);
                         })
                     ],

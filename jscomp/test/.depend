@@ -117,6 +117,7 @@ bs_set_int_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \
 bs_sort_test.cmj : mt.cmj ../others/bs_Range.cmj ../others/bs.cmj \
     array_data_util.cmj
 bs_splice_partial.cmj : ../runtime/js.cmj
+bs_stack_test.cmj : ../runtime/js.cmj ../others/bs.cmj
 bs_string_test.cmj : mt.cmj ../runtime/js.cmj
 bs_unwrap_test.cmj : ../runtime/js.cmj
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \

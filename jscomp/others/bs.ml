@@ -40,6 +40,7 @@ module HashMapString = Bs_HashMapString
 module HashMultiMap = Bs_HashMultiMap
 module HashMapInt = Bs_HashMapInt
 module Sort = Bs_Sort
+module Stack = Bs_Stack
 module Range = Bs_Range
 module Map = Bs_Map
 module Set = Bs_Set

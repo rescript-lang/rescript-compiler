@@ -9,8 +9,6 @@ var a = true;
 
 var b = false;
 
-var c = null;
-
 var d = undefined;
 
 var Textarea = /* module */[];
@@ -29,6 +27,8 @@ function f() {
   return v[0];
 }
 
+var c = null;
+
 exports.u = u;
 exports.a = a;
 exports.b = b;
@@ -38,4 +38,4 @@ exports.Textarea = Textarea;
 exports.Int32Array = Int32Array;
 exports.v = v;
 exports.f = f;
-/*  Not a pure module */
+/* a Not a pure module */

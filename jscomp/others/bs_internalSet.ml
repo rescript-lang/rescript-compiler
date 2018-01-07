@@ -4,12 +4,6 @@ module B =  Bs_Bag
 module A = Bs_Array
 type ('elt, 'id) t0 = ('elt, 'id) N.t0 
 
-type ('elt, 'id)enumeration = 
-  ('elt, 'id) N.enumeration0 
-=
-    End 
-  | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration
-
 
 (* here we relies on reference transparence
    address equality means everything equal across time
@@ -85,21 +79,23 @@ let removeArray0 h arr ~cmp =
   !v 
 
 
+let rec compareAux e1 e2 ~cmp =
+  match e1,e2 with 
+  | h1::t1, h2::t2 ->
+    let c = (Bs_Cmp.getCmp cmp) (N.key h1) (N.key h2) [@bs] in 
+    if c = 0 then
+      compareAux ~cmp 
+        (N.stackAllLeft  (N.right h1) t1)
+        (N.stackAllLeft (N.right h2) t2)
+    else c 
+  | _, _ -> 0   
 
+let cmp0 s1 s2 ~cmp = 
+  let len1,len2 = N.length0 s1, N.length0 s2 in    
+  if len1 = len2 then
+   compareAux ~cmp (N.stackAllLeft s1 []) (N.stackAllLeft s2 [])
+  else if len1 < len2 then -1 else 1 
 
-let rec compareAux ~cmp e1 e2 =
-  match (e1, e2) with
-    (End, End) -> 0
-  | (End, _)  -> -1
-  | (_, End) -> 1
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    let c = (Bs_Cmp.getCmp cmp) v1 v2 [@bs] in
-    if c <> 0
-    then c
-    else compareAux ~cmp (N.toEnum r1 e1) (N.toEnum r2 e2)
-
-let cmp0 ~cmp s1 s2 =
-  compareAux ~cmp (N.toEnum s1 End) (N.toEnum s2 End)
 
 let eq0 ~cmp s1 s2 =
   cmp0 ~cmp s1 s2 = 0

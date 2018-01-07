@@ -27,8 +27,8 @@ val clear : 'a t -> unit
 val create : unit -> 'a t
 (** Return a new queue, initially empty. *)
 
-val push : 'a -> 'a t -> unit
-(** [push x q] adds the element [x] at the end of the queue [q]. *)
+val push : 'a t -> 'a -> unit
+(** [push q x] adds the element [x] at the end of the queue [q]. *)
 
 val peekOpt : 'a t -> 'a option
 (** [peekOpt q] returns the first element in queue [q], without removing
@@ -56,13 +56,13 @@ val isEmpty : 'a t -> bool
 val length : 'a t -> int
 (** Return the number of elements in a queue. *)
 
-val iter : ('a -> unit [@bs]) -> 'a t -> unit
+val iter : 'a t -> ('a -> unit [@bs]) -> unit
 (** [iter f q] applies [f] in turn to all elements of [q],
     from the least recently entered to the most recently entered.
     The queue itself is unchanged. *)
 
-val fold : ('b -> 'a -> 'b [@bs]) -> 'b -> 'a t -> 'b
-(** [fold f accu q] is equivalent to [List.foldLeft f accu l],
+val fold : 'a t -> 'b -> ('b -> 'a -> 'b [@bs])  ->  'b
+(** [fold q accu f] is equivalent to [List.foldLeft f accu l],
     where [l] is the list of [q]'s elements. The queue remains
     unchanged. *)
 
