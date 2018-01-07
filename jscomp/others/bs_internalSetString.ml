@@ -7,15 +7,7 @@ module N = Bs_internalAVLset
 module A = Bs_Array 
 type ('elt, 'id) t0 = ('elt, 'id) N.t0 
 
-type ('elt, 'id) enumeration0 = 
-  ('elt, 'id) N.enumeration0 
-=
-    End 
-  | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration0
-
 type t = (elt, unit) t0
-type enumeration = (elt,unit) enumeration0
-
 
 let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 
@@ -23,15 +15,15 @@ let rec add  (t : t) (x : elt) : t =
   | Some nt  ->
     let v = N.key nt in  
     if x = v then t else
-    let l, r = N.(left nt , right nt) in 
-    if x < v then 
-      let ll = add l x in 
-      if ll == l then t 
-      else N.bal ll v r
-    else 
-      let rr = add r x in 
-      if rr == r then t
-      else N.bal l v (add  r x) 
+      let l, r = N.(left nt , right nt) in 
+      if x < v then 
+        let ll = add l x in 
+        if ll == l then t 
+        else N.bal ll v r
+      else 
+        let rr = add r x in 
+        if rr == r then t
+        else N.bal l v (add  r x) 
 
 
 
@@ -66,30 +58,28 @@ let rec remove (t : t) (x : elt) : t =
       else N.bal l v rr
 
 
-let rec compare_aux e1 e2 =
-  match (e1, e2) with
-    (End, End) -> 0
-  | (End, _)  -> -1
-  | (_, End) -> 1
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    if (v1 : elt) <> v2
-    then if v1 < v2 then -1 else 1
-    else compare_aux (N.toEnum r1 e1) (N.toEnum r2 e2)
+let rec compareAux e1 e2  =
+    match e1,e2 with 
+    | h1::t1, h2::t2 ->
+        let (k1 : elt) ,k2 = N.key h1, N.key h2 in 
+        if k1 = k2 then  
+          compareAux 
+            (N.stackAllLeft (N.right h1) t1 ) 
+            (N.stackAllLeft (N.right h2) t2)
+        else if k1  < k2 then -1    
+        else 1
+    | _, _ -> 0   
+
 
 let cmp s1 s2 =
-  compare_aux (N.toEnum s1 End) (N.toEnum s2 End)
+  let len1, len2 = N.length0 s1, N.length0 s2 in   
+  if len1 = len2 then 
+    compareAux (N.stackAllLeft s1 []) (N.stackAllLeft s2 [])
+  else if len1 < len2 then -1 else 1 
 
-let rec eqAux (e1 : enumeration) e2 =
-  match (e1, e2) with
-    (End, End) -> true
-  | (End, More _)  -> false
-  | (More _, End) -> false
-  | (More(v1, r1, e1), More(v2, r2, e2)) ->
-    v1 = v2 &&
-    eqAux (N.toEnum r1 e1) (N.toEnum r2 e2)  
+let eq (s1 : t) s2 = 
+  cmp s1 s2 = 0
 
-let eq s1 s2 = 
-  eqAux (N.toEnum s1 End) (N.toEnum s2 End)
 
 let rec splitAuxNoPivot (n : _ N.node) (x : elt) : t * t =   
   let l,v,r = N.(left n , key n, right n) in  
@@ -141,7 +131,7 @@ let split  (t : t) (x : elt) : t * bool *  t =
     let l,r = splitAuxPivot n  x pres in 
     l, !pres, r 
 
-      
+
 let rec union (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
     (None, _) -> s2
@@ -215,13 +205,7 @@ let rec findOpt  (n :t) (x : elt) =
     if x = v then Some v
     else findOpt (if x < v then N.left t else N.right t) x
 
-let rec findAssert (n :t) (x : elt)   = 
-  match N.toOpt n with 
-  | None -> [%assert "Not_found"]
-  | Some t  ->    
-    let v = N.key t in     
-    if x = v then Some v
-    else findAssert  (if x < v then N.left t else N.right t) x
+
 
 let rec findNull (n :t) (x : elt)   = 
   match N.toOpt n with 
@@ -240,13 +224,13 @@ let rec addMutate  (t : _ t0) (x : elt)=
     let k = N.key nt in 
     if x = k then t 
     else
-    let l, r = N.(left nt, right nt) in 
-    (if x < k then                   
-       N.leftSet nt (addMutate l x)       
-     else   
-       N.rightSet nt (addMutate r x);
-     );
-    N.return (N.balMutate nt)
+      let l, r = N.(left nt, right nt) in 
+      (if x < k then                   
+         N.leftSet nt (addMutate l x)       
+       else   
+         N.rightSet nt (addMutate r x);
+      );
+      N.return (N.balMutate nt)
 
 
 
@@ -256,27 +240,27 @@ let rec removeMutateAux nt (x : elt)=
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
     | Some _,  Some nr ->  
-          N.rightSet nt (N.removeMinAuxMutateWithRoot nt nr);
-          N.return (N.balMutate nt)
+      N.rightSet nt (N.removeMinAuxMutateWithRoot nt nr);
+      N.return (N.balMutate nt)
     | None, Some _ ->
-          r  
+      r  
     | (Some _ | None ), None ->  l 
   else 
     begin 
       if x < k then 
-           match N.toOpt (N.left nt) with         
-           | None -> N.return nt 
-           | Some l ->
-             N.leftSet nt (removeMutateAux l x );
-             N.return (N.balMutate nt)
+        match N.toOpt (N.left nt) with         
+        | None -> N.return nt 
+        | Some l ->
+          N.leftSet nt (removeMutateAux l x );
+          N.return (N.balMutate nt)
       else 
-          match N.toOpt (N.right nt) with 
-          | None -> N.return nt 
-          | Some r -> 
-            N.rightSet nt (removeMutateAux r x);
-            N.return (N.balMutate nt)
-      end
-  
+        match N.toOpt (N.right nt) with 
+        | None -> N.return nt 
+        | Some r -> 
+          N.rightSet nt (removeMutateAux r x);
+          N.return (N.balMutate nt)
+    end
+
 let removeMutate nt x = 
   match N.toOpt nt with 
   | None -> nt 
@@ -300,7 +284,7 @@ let rec sortedLengthAux (xs : elt array) prec acc len =
     if v > prec  then 
       sortedLengthAux xs v (acc + 1) len 
     else acc  
-  
+
 
 let ofArray (xs : elt array) =   
   let len = A.length xs in 
@@ -309,6 +293,6 @@ let ofArray (xs : elt array) =
     let next = sortedLengthAux xs (A.unsafe_get xs 0) 1 len in 
     let result  = ref (N.ofSortedArrayAux xs 0 next) in 
     for i = next to len - 1 do 
-       result := addMutate !result (A.unsafe_get xs i) 
+      result := addMutate !result (A.unsafe_get xs i) 
     done ;
     !result 

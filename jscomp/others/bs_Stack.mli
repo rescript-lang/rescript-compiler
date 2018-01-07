@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,40 +17,41 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Provides functionality for dealing with the ['a Js.null] type *)
+
+type 'a t
 
 
-type + 'a t = 'a Js.null
+val create : unit -> 'a t
 
-external toOption : 'a t -> 'a option = "#null_to_opt"
-external return : 'a -> 'a t  = "%identity"
-external test : 'a t -> bool = "#is_nil"
-external empty : 'a t = "#null" 
-external castUnsafe : 'a t -> 'a = "%identity"
+val clear : 'a t -> unit
 
-let castExn f =
-  match toOption f with 
-  | None -> [%assert "null"]
-  | Some x -> x 
-  
-let bind x f =
-  match toOption x with
-  | None -> empty
-  | Some x -> return (f x [@bs])
+val copy : 'a t -> 'a t
+(** [copy x] O(1) *)
 
-let iter x f =
-  match toOption x with
-  | None ->  ()
-  | Some x -> f x [@bs]
+val push : 'a t -> 'a -> unit
 
-let fromOption x =
-  match x with
-  | None -> empty
-  | Some x -> return x
+val popNull : 'a t -> 'a Js.null
 
-let from_opt = fromOption  
+val popOpt : 'a t -> 'a option 
+
+val topNull : 'a t -> 'a Js.null
+
+val topOpt : 'a t -> 'a option 
+
+val isEmpty : 'a t -> bool
+
+val length : 'a t -> int
+
+val iter : 'a t -> ('a -> unit [@bs]) -> unit
+
+val dynamicPopIter : 'a t -> ('a ->  unit [@bs]) -> unit 
+(** [dynamicPopIter s f ]
+  apply [f] to each element of [s]. The item is poped 
+  before applying [f], [s] will be empty  after this opeartion
+*)
+

@@ -27,9 +27,6 @@ external empty : 'a Js.null = "#null"
 
 type ('key, 'a, 'id) t0 = ('key, 'a) node Js.null
 
-type ('key, 'a, 'id) enumeration0 =
-    End 
-  | More of 'key * 'a * ('key, 'a, 'id) t0 * ('key, 'a, 'id) enumeration0
 
 let height (n : _ t0) =
   match toOpt n with 
@@ -244,38 +241,37 @@ let rec partition0 p n =
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)  
 
-let rec cons_enum m e =
-  match toOpt m with
-    None -> e
-  | Some n (* Node(l, v, d, r, _) *) -> 
-    let l, v, d, r = left n,  key n, value n, right n in 
-    cons_enum l (More(v, d, r, e))
+let rec stackAllLeft v s = 
+  match toOpt v with 
+  | None -> s 
+  | Some x -> stackAllLeft (left x) (x::s)    
 
-let rec cardinalAux n = 
+
+let rec lengthAux n = 
   let l, r = left n, right n in  
   let sizeL = 
     match toOpt l with 
     | None -> 0
     | Some l -> 
-      cardinalAux l  in 
+      lengthAux l  in 
   let sizeR = 
     match toOpt r with 
     | None -> 0
-    | Some r -> cardinalAux r in 
+    | Some r -> lengthAux r in 
   1 + sizeL + sizeR      
 
-let rec cardinal0 n =
+let rec length0 n =
   match toOpt n with 
   | None -> 0
   | Some n  ->
-    cardinalAux n   
+    lengthAux n   
 
 let rec bindings_aux accu n = 
   match toOpt n with 
   | None -> accu
   | Some n (* Node(l, v, d, r, _) *) ->
     let l, v, d, r = left n,  key n, value n, right n in 
-   bindings_aux ((v, d) :: bindings_aux accu r) l
+    bindings_aux ((v, d) :: bindings_aux accu r) l
 
 let bindings0 s =
   bindings_aux [] s  
@@ -289,4 +285,3 @@ let rec checkInvariant (v : _ t0) =
     let diff = height l - height r  in 
     diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
 
-  

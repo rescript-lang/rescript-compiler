@@ -164,7 +164,7 @@ function bench3(m) {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     table = Bs_Map.remove0(cmp, "" + i$2, table);
   }
-  if (Bs_Map.cardinal0(table)) {
+  if (Bs_Map.length0(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

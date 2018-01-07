@@ -17,9 +17,6 @@ type ('elt, 'id) t0 =  'elt node Js.null
 (* Sets are represented by balanced binary trees (the heights of the
    children differ by at most 2 *)
 
-type ('elt, 'id)enumeration0 = 
-  | End 
-  | More of 'elt * ('elt, 'id) t0 * ('elt, 'id) enumeration0    
 
 let height (n : _ t0) =
   match toOpt n with 
@@ -146,12 +143,11 @@ let empty0 = empty
 
 let isEmpty0 n = match toOpt n with Some _ -> false | None -> true 
 
-let rec toEnum s e =
-  match toOpt s with
-    None -> e
-  | Some n 
-    -> toEnum (left n) (More( key n, right n, e))
-
+let rec stackAllLeft v s = 
+  match toOpt v with 
+  | None -> s 
+  | Some x -> stackAllLeft (left x) (x::s)
+  
 
 let rec iter0 n f = 
   match toOpt n with 
@@ -236,24 +232,24 @@ let rec partition0  n p =
     then (join lt v rt, concat lf rf)
     else (concat lt rt, join lf v rf)
 
-let rec cardinalAux n = 
+let rec lengthAux n = 
   let l, r = left n, right n in  
   let sizeL = 
     match toOpt l with 
     | None -> 0
     | Some l -> 
-      cardinalAux l  in 
+      lengthAux l  in 
   let sizeR = 
     match toOpt r with 
     | None -> 0
-    | Some r -> cardinalAux r in 
+    | Some r -> lengthAux r in 
   1 + sizeL + sizeR  
 
 let rec length0 n =
   match toOpt n with 
   | None -> 0
   | Some n  ->
-    cardinalAux n 
+    lengthAux n 
 
 let rec toListAux accu n = 
   match toOpt n with 
@@ -296,7 +292,7 @@ let toArray0 n =
   match toOpt n with 
   | None -> [||]
   | Some n ->  
-    let size = cardinalAux n in 
+    let size = lengthAux n in 
     let v = Bs.Array.makeUninitializedUnsafe size in 
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v 

@@ -40,7 +40,7 @@ let clear q =
   firstSet q  null;
   lastSet q  null
 
-let push x q  =
+let push q x =
   let cell = return @@ node 
       ~content:x
       ~next:null
@@ -150,7 +150,7 @@ let rec iterAux f cell =
     f (content x) [@bs];
     iterAux f (next x)
 
-let iter f q =
+let iter q f =
   iterAux f (first q)
 
 let rec foldAux f accu cell =
@@ -160,7 +160,7 @@ let rec foldAux f accu cell =
     let accu = f accu (content x) [@bs] in
     foldAux f accu (next x)
 
-let fold f accu q =
+let fold q  accu f =
   foldAux f accu (first q)
 
 let transfer q1 q2 =

@@ -8,7 +8,7 @@ let eq loc x y =
 
 module Test_null = struct 
 let f1 x = 
-  match Js.Null.to_opt x with 
+  match Js.Null.toOption x with 
   | None -> 
     let sum x y = x + y in 
     sum 1 2 
@@ -17,7 +17,7 @@ let f1 x =
     sum x 1
 
 let f2 x = 
-  let u = Js.Null.to_opt x in
+  let u = Js.Null.toOption x in
   match  u with 
   | None -> 
     let sum x y = x + y in 
@@ -29,7 +29,7 @@ let f2 x =
 
 
 let f5 h x = 
-  let u = Js.Null.to_opt @@ h 32 in
+  let u = Js.Null.toOption @@ h 32 in
   match  u with 
   | None -> 
     let sum x y = x + y in 
@@ -39,7 +39,7 @@ let f5 h x =
     sum x 1
 
 let f4 h x = 
-  let u = Js.Null.to_opt @@ h 32 in
+  let u = Js.Null.toOption @@ h 32 in
   let v = 32 + x  in
   match  u with 
   | None -> 
@@ -60,16 +60,16 @@ let f7 x =
    No, if [x] is [null] then None else [Some x]
 *)
 let f8 (x : 'a Js.Null.t Js.Null.t)= 
-  match Js.Null.to_opt x with 
+  match Js.Null.toOption x with 
   | Some x ->
-    (match Js.Null.to_opt x with 
+    (match Js.Null.toOption x with 
     | Some _ -> 0
     | None -> 1 )
   | None -> 2 
 
 let u = f8 (Js.Null.return (Js.Null.return None))
 
-let f9 x = Js.Null.to_opt x 
+let f9 x = Js.Null.toOption x 
 
 let f10 x = Js.Null.test x 
 

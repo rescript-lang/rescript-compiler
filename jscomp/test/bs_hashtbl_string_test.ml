@@ -100,7 +100,7 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
   for i = 0 to count do  
     table := Bs.Map.remove0 ~cmp (string_of_int i) !table
   done ;
-  assert (Bs.Map.cardinal0 !table = 0)
+  assert (Bs.Map.length0 !table = 0)
 
 module Sx = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y )) 
 

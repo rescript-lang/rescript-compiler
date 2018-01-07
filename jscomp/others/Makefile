@@ -43,6 +43,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_SetIntM\
 	bs_SetString\
 	bs_SetStringM\
+	bs_Stack\
 	node_child_process js_boolean js_math\
 	js_dict js_date js_global js_cast js_promise\
 	dom dom_storage\

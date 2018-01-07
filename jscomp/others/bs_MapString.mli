@@ -39,11 +39,11 @@ val merge:
     @since 3.12.0
  *)
 
-val compare: ('a -> 'a -> int [@bs]) -> 'a t -> 'a t -> int
+val cmp:  'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 (** Total ordering between maps.  The first argument is a total ordering
     used to compare data associated with equal keys in the two maps. *)
 
-val equal: ('a -> 'a -> bool [@bs]) -> 'a t -> 'a t -> bool
+val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
 (** [equal cmp m1 m2] tests whether the maps [m1] and [m2] are
    equal, that is, contain equal keys and associate them with
    equal data.  [cmp] is the equality predicate used to compare
@@ -86,7 +86,7 @@ val partition: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t * 'a t
     @since 3.12.0
  *)
 
-val cardinal: 'a t -> int
+val length: 'a t -> int
 (** Return the number of bindings of a map.
     @since 3.12.0
  *)

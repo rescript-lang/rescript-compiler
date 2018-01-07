@@ -35,8 +35,12 @@ external return : 'a -> 'a t  = "%identity"
 external test : 'a t -> bool = "#is_nil"
 
 (** The empty value, [null] *)
-external empty : 'a t = "null" [@@bs.val]
+external empty : 'a t = "#null" 
 
+
+external castUnsafe : 'a t -> 'a = "%identity"
+
+val castExn : 'a t -> 'a
 
 (** Maps the contained value using the given function
 
@@ -71,7 +75,10 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 </table>
 %}
 *)
+val fromOption: 'a option -> 'a t
+
 val from_opt : 'a option -> 'a t
+[@@ocaml.deprecated "Use fromOpiton instead"]
 
 (** Maps ['a Js.null] to ['a option]
 
@@ -84,5 +91,4 @@ val from_opt : 'a option -> 'a t
 *)
 external toOption : 'a t -> 'a option = "#null_to_opt"
 
-external to_opt : 'a t -> 'a option = "#null_to_opt"
-[@@deprecated "use toOption instead"]
+

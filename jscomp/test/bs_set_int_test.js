@@ -245,6 +245,24 @@ b("File \"bs_set_int_test.ml\", line 119, characters 4-11", +(Bs_SetInt.add(dd, 
 
 b("File \"bs_set_int_test.ml\", line 120, characters 4-11", 1 - Bs_SetInt.subset(Bs_SetInt.add(dd, 201), bb));
 
+var aa$1 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100));
+
+var bb$1 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100));
+
+var cc$1 = Bs_SetInt.add(bb$1, 101);
+
+var dd$1 = Bs_SetInt.remove(bb$1, 99);
+
+var ee = Bs_SetInt.add(dd$1, 101);
+
+b("File \"bs_set_int_test.ml\", line 129, characters 4-11", Bs_SetInt.eq(aa$1, bb$1));
+
+b("File \"bs_set_int_test.ml\", line 130, characters 4-11", 1 - Bs_SetInt.eq(aa$1, cc$1));
+
+b("File \"bs_set_int_test.ml\", line 131, characters 4-11", 1 - Bs_SetInt.eq(dd$1, cc$1));
+
+b("File \"bs_set_int_test.ml\", line 132, characters 4-11", 1 - Bs_SetInt.eq(bb$1, ee));
+
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 
 var N = 0;

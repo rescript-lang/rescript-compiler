@@ -17,7 +17,7 @@ let f (c,d) =
     such block.
 
     It is more general than   
-    [Js.Null.to_opt]
+    [Js.Null.toOption]
     since its box number is one and immutable,
     so we can give it a meaningful name for such slot
 
@@ -34,7 +34,7 @@ let g () =
 
 
 let a0 f  =
-  let u = Js.Null.to_opt (f ())  in 
+  let u = Js.Null.toOption (f ())  in 
   match u with 
   | None -> 0
   | Some x -> Js.log x ; Js.log x ; 1 

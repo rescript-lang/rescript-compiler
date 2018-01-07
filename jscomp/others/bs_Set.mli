@@ -145,8 +145,9 @@ val subset0:
   ('elt, 'id) t0 -> ('elt, 'id) t0 -> bool
 
 val cmp0: 
+  ('elt, 'id) t0 -> ('elt, 'id) t0  -> 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> ('elt, 'id) t0 -> int
+  int
 
 val eq0:
   cmp: ('elt,'id) Bs_Cmp.cmp ->
