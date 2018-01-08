@@ -2,7 +2,7 @@
 module N = Bs_internalAVLset
 module B =  Bs_Bag
 module A = Bs_Array
-type ('elt, 'id) t0 = ('elt, 'id) N.t0 
+type ('elt, 'id) t0 = 'elt N.t0 
 
 
 (* here we relies on reference transparence

@@ -13,7 +13,7 @@ external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 external unsafeCoerce : 'a Js.null -> 'a = "%identity"
-type ('elt, 'id) t0 =  'elt node Js.null
+type 'elt t0 =  'elt node Js.null
 (* Sets are represented by balanced binary trees (the heights of the
    children differ by at most 2 *)
 

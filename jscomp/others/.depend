@@ -17,8 +17,8 @@ js_console.cmj :
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
 bs_Array.cmj : js_math.cmj bs_Array.cmi
-bs_internalAVLset.cmj : bs_Array.cmj bs.cmj
-bs_internalAVLtree.cmj :
+bs_internalAVLset.cmj : bs_Array.cmj bs.cmj bs_internalAVLset.cmi
+bs_internalAVLtree.cmj : bs_internalAVLtree.cmi
 bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SetIntM.cmi
 bs_Hash.cmj : bs_Hash.cmi
 bs_Queue.cmj : bs_Array.cmj bs_Queue.cmi
@@ -83,6 +83,8 @@ js_option.cmi :
 js_result.cmi :
 js_mapperRt.cmi :
 bs_Array.cmi :
+bs_internalAVLset.cmi :
+bs_internalAVLtree.cmi :
 bs_SetIntM.cmi :
 bs_Hash.cmi :
 bs_Queue.cmi :

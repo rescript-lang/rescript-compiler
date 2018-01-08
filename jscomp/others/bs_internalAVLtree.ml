@@ -10,7 +10,7 @@
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
 (***********************************************************************)
-(** Adapted by authors of BuckleScript without using functors          *)
+(** Almost rewritten  by authors of BuckleScript                       *)
 
 
 type ('k, + 'v) node  = {
@@ -25,7 +25,7 @@ external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null" 
 
-type ('key, 'a, 'id) t0 = ('key, 'a) node Js.null
+type ('key, 'a) t0 = ('key, 'a) node Js.null
 
 
 let height (n : _ t0) =

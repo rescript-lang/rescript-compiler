@@ -5,13 +5,13 @@ type elt = string
 # 10
 module N = Bs_internalAVLset
 module A = Bs_Array 
-type ('elt, 'id) t0 = ('elt, 'id) N.t0 
+type ('elt, 'id) t0 = 'elt N.t0 
 
 type t = (elt, unit) t0
 
 let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 
-    None -> N.(return @@ node ~left:empty ~key:x ~right:empty ~h:1)
+    None -> N.singleton0 x 
   | Some nt  ->
     let v = N.key nt in  
     if x = v then t else

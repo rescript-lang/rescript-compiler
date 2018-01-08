@@ -14,7 +14,7 @@
 
 module N = Bs_internalAVLtree
 module B = Bs_Bag 
-type ('key, + 'a, 'id) t0 = ('key,'a,'id) N.t0 
+type ('key, + 'a, 'id) t0 = ('key,'a) N.t0 
 
 type ('k,'v,'id) t = 
   (('k,'id) Bs_Cmp.t,
