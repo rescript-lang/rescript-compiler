@@ -71,11 +71,6 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           Typ.arrow
             label_declaration.pld_name.txt label_declaration.pld_type acc 
         ) label_declarations  core_type in 
-
-    let maker =   
-      Val.mk  {loc; txt = name}
-        ~attrs:[Ast_attributes.bs_obj]
-        ~prim:[""] ty in 
     let setter_accessor =     
       Ext_list.fold_right (fun (x: Parsetree.label_declaration) acc -> 
           let pld_name = x.pld_name.txt in 
@@ -98,8 +93,16 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           | Immutable -> setter 
         ) label_declarations []
     in 
+
     newTdcl, 
-    (maker :: setter_accessor)
+    (match tdcl.ptype_private with 
+     | Private -> setter_accessor
+     | Public -> 
+       let maker =   
+         Val.mk  {loc; txt = name}
+           ~attrs:[Ast_attributes.bs_obj]
+           ~prim:[""] ty in 
+       (maker :: setter_accessor))
 
   | Ptype_abstract 
   | Ptype_variant _ 
@@ -108,7 +111,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
     (* U.notApplicable tdcl.ptype_loc derivingName;  *)
     tdcl, []
 
-let handleTdcls tdcls =     
+let handleTdclsInStr tdcls =     
   let tdcls, code = 
     List.fold_right (fun tdcl (tdcls, sts)  -> 
         match handleTdcl tdcl with 
@@ -117,6 +120,16 @@ let handleTdcls tdcls =
           Ext_list.map_append (fun x -> Str.primitive x) value_descriptions sts
 
       ) tdcls ([],[])  in 
-  Str.type_ tdcls :: code  
+  Str.type_ tdcls :: code    
 (* still need perform transformation for non-abstract type*)
 
+let handleTdclsInSig tdcls =     
+  let tdcls, code = 
+    List.fold_right (fun tdcl (tdcls, sts)  -> 
+        match handleTdcl tdcl with 
+          ntdcl, value_descriptions -> 
+          ntdcl::tdcls, 
+          Ext_list.map_append (fun x -> Sig.value x) value_descriptions sts
+
+      ) tdcls ([],[])  in 
+  Sig.type_ tdcls :: code  

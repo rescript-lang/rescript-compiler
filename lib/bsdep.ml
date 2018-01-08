@@ -29130,7 +29130,11 @@ module Ast_derive_abstract : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val handleTdcls : Parsetree.type_declaration list -> Parsetree.structure
+val handleTdclsInStr : 
+  Parsetree.type_declaration list -> Parsetree.structure
+
+val handleTdclsInSig:  
+  Parsetree.type_declaration list -> Parsetree.signature
 end = struct
 #1 "ast_derive_abstract.ml"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -29206,11 +29210,6 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           Typ.arrow
             label_declaration.pld_name.txt label_declaration.pld_type acc 
         ) label_declarations  core_type in 
-
-    let maker =   
-      Val.mk  {loc; txt = name}
-        ~attrs:[Ast_attributes.bs_obj]
-        ~prim:[""] ty in 
     let setter_accessor =     
       Ext_list.fold_right (fun (x: Parsetree.label_declaration) acc -> 
           let pld_name = x.pld_name.txt in 
@@ -29233,8 +29232,16 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
           | Immutable -> setter 
         ) label_declarations []
     in 
+
     newTdcl, 
-    (maker :: setter_accessor)
+    (match tdcl.ptype_private with 
+     | Private -> setter_accessor
+     | Public -> 
+       let maker =   
+         Val.mk  {loc; txt = name}
+           ~attrs:[Ast_attributes.bs_obj]
+           ~prim:[""] ty in 
+       (maker :: setter_accessor))
 
   | Ptype_abstract 
   | Ptype_variant _ 
@@ -29243,7 +29250,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
     (* U.notApplicable tdcl.ptype_loc derivingName;  *)
     tdcl, []
 
-let handleTdcls tdcls =     
+let handleTdclsInStr tdcls =     
   let tdcls, code = 
     List.fold_right (fun tdcl (tdcls, sts)  -> 
         match handleTdcl tdcl with 
@@ -29252,10 +29259,19 @@ let handleTdcls tdcls =
           Ext_list.map_append (fun x -> Str.primitive x) value_descriptions sts
 
       ) tdcls ([],[])  in 
-  Str.type_ tdcls :: code  
+  Str.type_ tdcls :: code    
 (* still need perform transformation for non-abstract type*)
 
+let handleTdclsInSig tdcls =     
+  let tdcls, code = 
+    List.fold_right (fun tdcl (tdcls, sts)  -> 
+        match handleTdcl tdcl with 
+          ntdcl, value_descriptions -> 
+          ntdcl::tdcls, 
+          Ext_list.map_append (fun x -> Sig.value x) value_descriptions sts
 
+      ) tdcls ([],[])  in 
+  Sig.type_ tdcls :: code  
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -37343,15 +37359,32 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | {bs_deriving = Some actions; explict_nonrec}, newAttrs
           -> 
           let loc = sigi.psig_loc in 
+          let newTdcls = newTdcls tdcls newAttrs in             
+          let newSigi = 
+            self.signature_item self {sigi with psig_desc = Psig_type newTdcls} in 
           if Ast_payload.isAbstract actions then 
-            Location.raise_errorf ~loc "bs.deriving abstract is not supported in signature language"
+            let  codes = Ast_derive_abstract.handleTdclsInSig newTdcls in 
+            Ast_signature.fuseAll ~loc             
+            (
+              Sig.include_ ~loc 
+              (Incl.mk ~loc 
+                (Mty.typeof_ ~loc (Mod.constraint_ ~loc 
+                  (Mod.structure ~loc [
+                     { pstr_loc = loc; pstr_desc = Pstr_type (match newSigi.psig_desc with Psig_type x -> x | _ -> assert false)
+                   }] ) 
+                (Mty.signature ~loc [])) ) )
+              ::
+              self.signature self 
+              codes
+            )
           else 
-            let newTdcls = newTdcls tdcls newAttrs in             
+
             Ast_signature.fuseAll ~loc 
-              (self.signature 
+              (newSigi::
+                self.signature 
                  self 
-                 ({sigi with psig_desc = Psig_type newTdcls} 
-                  :: Ast_derive.gen_signature tdcls actions explict_nonrec))
+                 ( 
+                   Ast_derive.gen_signature tdcls actions explict_nonrec))
         | {bs_deriving = None }, _  -> 
           Bs_ast_mapper.default_mapper.signature_item self sigi 
 
@@ -37421,7 +37454,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
               self.structure_item self 
                 {str with pstr_desc = Pstr_type tdcls2} in 
             if Ast_payload.isAbstract actions then 
-              let codes = Ast_derive_abstract.handleTdcls tdcls2 in 
+              let codes = Ast_derive_abstract.handleTdclsInStr tdcls2 in 
               (* use [tdcls2] avoid nonterminating *)
               Ast_structure.fuseAll ~loc 
                 ( 

@@ -726,15 +726,32 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | {bs_deriving = Some actions; explict_nonrec}, newAttrs
           -> 
           let loc = sigi.psig_loc in 
+          let newTdcls = newTdcls tdcls newAttrs in             
+          let newSigi = 
+            self.signature_item self {sigi with psig_desc = Psig_type newTdcls} in 
           if Ast_payload.isAbstract actions then 
-            Location.raise_errorf ~loc "bs.deriving abstract is not supported in signature language"
+            let  codes = Ast_derive_abstract.handleTdclsInSig newTdcls in 
+            Ast_signature.fuseAll ~loc             
+            (
+              Sig.include_ ~loc 
+              (Incl.mk ~loc 
+                (Mty.typeof_ ~loc (Mod.constraint_ ~loc 
+                  (Mod.structure ~loc [
+                     { pstr_loc = loc; pstr_desc = Pstr_type (match newSigi.psig_desc with Psig_type x -> x | _ -> assert false)
+                   }] ) 
+                (Mty.signature ~loc [])) ) )
+              ::
+              self.signature self 
+              codes
+            )
           else 
-            let newTdcls = newTdcls tdcls newAttrs in             
+
             Ast_signature.fuseAll ~loc 
-              (self.signature 
+              (newSigi::
+                self.signature 
                  self 
-                 ({sigi with psig_desc = Psig_type newTdcls} 
-                  :: Ast_derive.gen_signature tdcls actions explict_nonrec))
+                 ( 
+                   Ast_derive.gen_signature tdcls actions explict_nonrec))
         | {bs_deriving = None }, _  -> 
           Bs_ast_mapper.default_mapper.signature_item self sigi 
 
@@ -804,7 +821,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
               self.structure_item self 
                 {str with pstr_desc = Pstr_type tdcls2} in 
             if Ast_payload.isAbstract actions then 
-              let codes = Ast_derive_abstract.handleTdcls tdcls2 in 
+              let codes = Ast_derive_abstract.handleTdclsInStr tdcls2 in 
               (* use [tdcls2] avoid nonterminating *)
               Ast_structure.fuseAll ~loc 
                 ( 

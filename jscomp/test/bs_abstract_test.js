@@ -15,6 +15,5 @@ var f = {
   y: "x"
 };
 
-exports.v = v;
 exports.f = f;
 /*  Not a pure module */
