@@ -35,7 +35,7 @@ external castUnsafe : 'a t -> 'a = "%identity"
 
 let castExn f =
   match toOption f with 
-  | None -> [%assert "null"]
+  | None -> Js_exn.raiseError "Js.Null.castExn"
   | Some x -> x 
   
 let bind x f =

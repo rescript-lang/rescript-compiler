@@ -34,7 +34,7 @@ js_exn.cmj : caml_exceptions.cmj js_exn.cmi
 bs_obj.cmj : js.cmj
 js_nativeint.cmj :
 js_int.cmj :
-js_null.cmj : js.cmj js_null.cmi
+js_null.cmj : js_exn.cmj js.cmj js_null.cmi
 js_undefined.cmj : js.cmj js_undefined.cmi
 caml_array.cmi :
 caml_string.cmi :

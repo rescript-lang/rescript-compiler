@@ -2,7 +2,7 @@
 module N = Bs_internalAVLset
 module B =  Bs_Bag
 module A = Bs_Array
-type ('elt, 'id) t0 = ('elt, 'id) N.t0 
+type ('elt, 'id) t0 = 'elt N.t0 
 
 
 (* here we relies on reference transparence
@@ -11,7 +11,7 @@ type ('elt, 'id) t0 = ('elt, 'id) N.t0
 *)  
 let rec add0 ~cmp (t : _ t0) x  : _ t0 =
   match N.toOpt t with 
-    None -> N.(return @@ node ~left:empty ~right:empty ~key:x  ~h:1)
+    None -> N.singleton0 x 
   | Some nt ->
     let k = N.key nt in 
     let c = (Bs_Cmp.getCmp cmp) x k [@bs] in
@@ -215,10 +215,10 @@ let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
     if c = 0 then
       subset0 ~cmp l1 l2 && subset0 ~cmp r1 r2
     else if c < 0 then
-      subset0 ~cmp N.(return @@ node ~left:l1 ~key:v1 ~right:empty ~h:0) l2 && 
+      subset0 ~cmp N.(create l1 v1 empty) l2 && 
       subset0 ~cmp r1 s2
     else
-      subset0 ~cmp N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && 
+      subset0 ~cmp N.(create empty v1 r1 ) r2 && 
       subset0 ~cmp l1 s2
 (* and subsetAuxLeft s1 v s2 ~cmp = 
    mem0 ~cmp s2 v &&
@@ -247,7 +247,7 @@ let rec findNull0 ~cmp (n : _ t0) x =
 
 let rec addMutate ~cmp (t : _ t0) x =   
   match N.toOpt t with 
-  | None -> N.(return @@ node ~left:empty ~right:empty ~key:x ~h:1)
+  | None -> N.singleton0 x 
   | Some nt -> 
     let k = N.key nt in 
     let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
@@ -324,7 +324,7 @@ let rec addMutateCheckAux  (t : _ t0) x added ~cmp  =
   match N.toOpt t with 
   | None -> 
     added := true;
-    N.(return @@ node ~left:empty ~right:empty ~key:x ~h:1)
+    N.singleton0 x 
   | Some nt -> 
     let k = N.key nt in 
     let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  

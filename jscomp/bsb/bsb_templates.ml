@@ -561,7 +561,9 @@ let root = OCamlRes.Res.([
       \  an issue! */\n\
        {\n\
       \  \"name\": \"react-template\",\n\
-      \  \"reason\": {\"react-jsx\" : 2},\n\
+      \  \"reason\": {\n\
+      \    \"react-jsx\": 2\n\
+      \  },\n\
       \  \"sources\": [\n\
       \    \"src\"\n\
       \  ],\n\

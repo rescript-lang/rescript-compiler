@@ -1,16 +1,16 @@
 #ifdef TYPE_STRING
 type key = string
-           #elif defined TYPE_INT
+#elif defined TYPE_INT
 type key = int
-           #else 
+#else 
   [%error "unknown type"]
-  #endif 
+#endif 
 
 module N = Bs_internalAVLtree
 
-type ('key, 'a, 'id) t0 = ('key,'a,'id) N.t0 
+type ('key, 'a, 'id) t0 = ('key,'a) N.t0 
 
-type + 'a t = (key,'a, unit) N.t0 
+type + 'a t = (key,'a) N.t0 
 
 
 

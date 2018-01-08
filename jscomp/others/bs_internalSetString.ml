@@ -5,13 +5,13 @@ type elt = string
 # 10
 module N = Bs_internalAVLset
 module A = Bs_Array 
-type ('elt, 'id) t0 = ('elt, 'id) N.t0 
+type ('elt, 'id) t0 = 'elt N.t0 
 
 type t = (elt, unit) t0
 
 let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 
-    None -> N.(return @@ node ~left:empty ~key:x ~right:empty ~h:1)
+    None -> N.singleton0 x 
   | Some nt  ->
     let v = N.key nt in  
     if x = v then t else
@@ -192,9 +192,9 @@ let rec subset (s1 : t) (s2 : t) =
     if v1 = v2 then
       subset l1 l2 && subset r1 r2
     else if v1 < v2 then
-      subset N.(return @@ node ~left:l1 ~key:v1 ~right:empty ~h:0) l2 && subset r1 s2
+      subset N.(create l1 v1 empty ) l2 && subset r1 s2
     else
-      subset N.(return @@ node ~left:empty ~key:v1 ~right:r1 ~h:0) r2 && subset l1 s2
+      subset N.(create empty v1 r1 ) r2 && subset l1 s2
 
 
 let rec findOpt  (n :t) (x : elt) = 
@@ -219,7 +219,7 @@ let rec findNull (n :t) (x : elt)   =
 
 let rec addMutate  (t : _ t0) (x : elt)=   
   match N.toOpt t with 
-  | None -> N.(return @@ node ~left:empty ~right:empty ~key:x ~h:1)
+  | None -> N.singleton0 x
   | Some nt -> 
     let k = N.key nt in 
     if x = k then t 

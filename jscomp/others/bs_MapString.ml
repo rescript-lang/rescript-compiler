@@ -4,9 +4,9 @@ type key = string
 # 9
 module N = Bs_internalAVLtree
 
-type ('key, 'a, 'id) t0 = ('key,'a,'id) N.t0 
+type ('key, 'a, 'id) t0 = ('key,'a) N.t0 
 
-type + 'a t = (key,'a, unit) N.t0 
+type + 'a t = (key,'a) N.t0 
 
 
 
