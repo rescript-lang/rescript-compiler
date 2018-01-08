@@ -1,9 +1,9 @@
 type 'elt t0 = 'elt node Js.null
-and 'elt node  = {
+and 'elt node  = private {
   mutable left : 'elt t0;
-  mutable key : 'elt ; 
+   key : 'elt ; 
   mutable right : 'elt t0;
-  mutable h : int 
+  h : int 
 } [@@bs.deriving abstract]
 (* TODO: node is used in [subset] *)
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
@@ -11,7 +11,7 @@ external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 
 
-val height : _ t0 -> int
+
 val copy : 'a t0 -> 'a t0
 val create : 'a t0 -> 'a -> 'a t0 -> 'a t0
 val bal : 'a t0 -> 'a -> 'a t0 -> 'a t0
