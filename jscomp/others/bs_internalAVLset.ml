@@ -79,24 +79,6 @@ let bal l v r =
 
 let singleton0 x = return @@ node ~left:empty ~key:x ~right:empty ~h:1
 
-(* [addMinElement v n] and [addMaxElement v n] 
-   assume that the added v is *strictly*
-   smaller (or bigger) than all the present elements in the tree.
-   They are only used during the "join" operation which
-   respects this precondition.
-*)
-
-let rec addMinElement v n =
-  match toOpt n with 
-  | None -> singleton0 v
-  | Some n  ->
-    bal (addMinElement v (left n))  (key n) (right n)
-
-let rec addMaxElement v n = 
-  match toOpt n with 
-  | None -> singleton0 v
-  | Some n  ->
-    bal (left n) (key n) (addMaxElement v (right n))
 
 let rec min0Aux n = 
   match toOpt (left n) with 
@@ -182,14 +164,33 @@ let rec exists0 n p =
     exists0 (right n) p 
 
 
+(* [addMinElement v n] and [addMaxElement v n] 
+   assume that the added v is *strictly*
+   smaller (or bigger) than all the present elements in the tree.
+   They are only used during the "join" operation which
+   respects this precondition.
+*)
+
+let rec addMinElement n v =
+  match toOpt n with 
+  | None -> singleton0 v
+  | Some n  ->
+    bal (addMinElement (left n) v)  (key n) (right n)
+
+let rec addMaxElement n v = 
+  match toOpt n with 
+  | None -> singleton0 v
+  | Some n  ->
+    bal (left n) (key n) (addMaxElement (right n) v)
+    
 (* [join ln v rn] return a balanced tree simliar to [create ln v rn]
    bal, but no assumptions are made on the
    relative heights of [ln] and [rn]. *)
 
 let rec join ln v rn =
   match (toOpt ln, toOpt rn) with
-    (None, _) -> addMinElement v rn 
-  | (_, None) -> addMaxElement v ln 
+    (None, _) -> addMinElement rn v 
+  | (_, None) -> addMaxElement ln v
   | Some l, Some r ->   
     let lh = h l in     
     let rh = h r in 
@@ -218,8 +219,15 @@ let rec filter0 n p =
     let newL = filter0 l p in
     let pv = p v [@bs] in
     let newR = filter0 r p in
-    if pv then join newL v newR else concat newL newR
-
+    if pv then 
+      (if l == newL && r == newR then 
+        return n
+      else join newL v newR)
+    else concat newL newR
+(* ATT: functional methods in general can be shared with 
+    imperative methods, however, it does not apply when functional 
+    methods makes use of referential equality
+*)
 let rec partition0  n p =
   match toOpt n with 
   |  None -> (empty, empty)
@@ -298,8 +306,33 @@ let toArray0 n =
     v 
 
 
+let rec ofSortedArrayAux arr off len =     
+  match len with 
+  | 0 -> empty0
+  | 1 -> singleton0 (A.unsafe_get arr off)
+  | 2 ->  
+    let x0,x1 = A.(unsafe_get arr off, unsafe_get arr (off + 1) ) 
+    in 
+    return @@ node ~left:(singleton0 x0) ~key:x1 ~h:2 ~right:empty0
+  | 3 -> 
+    let x0,x1,x2 = 
+      A.(unsafe_get arr off, 
+         unsafe_get arr (off + 1), 
+         unsafe_get arr (off + 2)) in 
+    return @@ node ~left:(singleton0 x0)
+      ~right:(singleton0 x2)
+      ~key:x1
+      ~h:2
+  | _ ->  
+    let nl = len / 2 in 
+    let left = ofSortedArrayAux arr off nl in 
+    let mid = A.unsafe_get arr (off + nl) in 
+    let right = 
+      ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
+    create left mid right    
 
 
+(******************************************************************)
 
 (* 
   L rotation, return root node
@@ -382,30 +415,6 @@ let rec removeMinAuxMutateWithRoot nt n =
     return (balMutate n)    
 
 
-let rec ofSortedArrayAux arr off len =     
-  match len with 
-  | 0 -> empty0
-  | 1 -> singleton0 (A.unsafe_get arr off)
-  | 2 ->  
-    let x0,x1 = A.(unsafe_get arr off, unsafe_get arr (off + 1) ) 
-    in 
-    return @@ node ~left:(singleton0 x0) ~key:x1 ~h:2 ~right:empty0
-  | 3 -> 
-    let x0,x1,x2 = 
-      A.(unsafe_get arr off, 
-         unsafe_get arr (off + 1), 
-         unsafe_get arr (off + 2)) in 
-    return @@ node ~left:(singleton0 x0)
-      ~right:(singleton0 x2)
-      ~key:x1
-      ~h:2
-  | _ ->  
-    let nl = len / 2 in 
-    let left = ofSortedArrayAux arr off nl in 
-    let mid = A.unsafe_get arr (off + nl) in 
-    let right = 
-      ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
-    create left mid right    
 
 
 

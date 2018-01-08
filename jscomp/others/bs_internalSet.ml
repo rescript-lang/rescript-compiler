@@ -244,7 +244,7 @@ let rec findNull0 ~cmp (n : _ t0) x =
     else findNull0 ~cmp  (if c < 0 then N.left t else N.right t) x 
 
 
-
+(************************************************************************)
 let rec addMutate ~cmp (t : _ t0) x =   
   match N.toOpt t with 
   | None -> N.singleton0 x 
@@ -296,7 +296,7 @@ let rec sortedLengthAux ~cmp (xs : _ array) prec acc len =
   if  acc >= len then acc 
   else 
     let v = A.unsafe_get xs acc in 
-    if (Bs_Cmp.getCmp cmp) v  prec [@bs] >= 0 then 
+    if cmp v  prec [@bs] >= 0 then 
       sortedLengthAux ~cmp xs v (acc + 1) len 
     else acc    
 
@@ -304,7 +304,8 @@ let ofArray0 ~cmp (xs : _ array) =
   let len = A.length xs in 
   if len = 0 then N.empty0
   else
-    let next = sortedLengthAux ~cmp xs (A.unsafe_get xs 0) 1 len in 
+    let next = sortedLengthAux 
+      ~cmp:(Bs_Cmp.getCmp cmp) xs (A.unsafe_get xs 0) 1 len in 
     let result  = ref (N.ofSortedArrayAux  xs 0 next) in 
     for i = next to len - 1 do 
       result := addMutate ~cmp !result (A.unsafe_get xs i) 
