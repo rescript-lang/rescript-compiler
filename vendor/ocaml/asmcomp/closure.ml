@@ -793,6 +793,7 @@ let rec close fenv cenv = function
       let rec transl = function
         | Const_base(Const_int n) -> Uconst_int n
         | Const_base(Const_char c) -> Uconst_int (Char.code c)
+        | Const_bool b -> Uconst_int (if b then 1 else 0)
         | Const_pointer (n,_) -> Uconst_ptr n
         | Const_block (tag, _, fields) ->
             str (Uconst_block (tag, List.map transl fields))

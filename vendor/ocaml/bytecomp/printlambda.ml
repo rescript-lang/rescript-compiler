@@ -26,6 +26,7 @@ let rec struct_const ppf = function
   | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
   | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
   | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
+  | Const_bool b -> fprintf ppf "%b" b
   | Const_pointer (n,_) -> fprintf ppf "%ia" n
   | Const_block(tag,_, []) ->
       fprintf ppf "[%i]" tag
