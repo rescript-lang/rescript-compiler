@@ -1904,6 +1904,7 @@ let convert exports lam : _ * _  =
     | Const_base (Const_int32 i) -> (Const_int32 i)
     | Const_base (Const_int64 i) -> (Const_int64 i)
     | Const_base (Const_nativeint i) -> (Const_nativeint i)
+    | Const_bool b -> Const_int (if b then 1 else 0)
     | Const_pointer(i,p) -> Const_pointer (i,p)
     | Const_float_array (s) -> Const_float_array(s)
     | Const_immstring s -> Const_immstring s 
