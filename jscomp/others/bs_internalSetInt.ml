@@ -5,9 +5,9 @@ type elt = int
 # 10
 module N = Bs_internalAVLset
 module A = Bs_Array 
-type ('elt, 'id) t0 = 'elt N.t0 
 
-type t = (elt, unit) t0
+
+type t = elt N.t0
 
 let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 
@@ -215,9 +215,8 @@ let rec findNull (n :t) (x : elt)   =
     if x = v then N.return v
     else findNull  (if x < v then N.left t else N.right t) x
 
-
-
-let rec addMutate  (t : _ t0) (x : elt)=   
+(****************************************************************************)
+let rec addMutate  t  (x : elt)=   
   match N.toOpt t with 
   | None -> N.singleton0 x
   | Some nt -> 
@@ -231,51 +230,6 @@ let rec addMutate  (t : _ t0) (x : elt)=
          N.rightSet nt (addMutate r x);
       );
       N.return (N.balMutate nt)
-
-
-
-let rec removeMutateAux nt (x : elt)= 
-  let k = N.key nt in 
-  if x = k then 
-    let l,r = N.(left nt, right nt) in       
-    match N.(toOpt l, toOpt r) with 
-    | Some _,  Some nr ->  
-      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
-      N.return (N.balMutate nt)
-    | None, Some _ ->
-      r  
-    | (Some _ | None ), None ->  l 
-  else 
-    begin 
-      if x < k then 
-        match N.toOpt (N.left nt) with         
-        | None -> N.return nt 
-        | Some l ->
-          N.leftSet nt (removeMutateAux l x );
-          N.return (N.balMutate nt)
-      else 
-        match N.toOpt (N.right nt) with 
-        | None -> N.return nt 
-        | Some r -> 
-          N.rightSet nt (removeMutateAux r x);
-          N.return (N.balMutate nt)
-    end
-
-let removeMutate nt x = 
-  match N.toOpt nt with 
-  | None -> nt 
-  | Some nt -> removeMutateAux nt x 
-
-
-
-
-let addArrayMutate (t : _ t0) xs =       
-  let v = ref t in 
-  for i = 0 to A.length xs - 1 do 
-    v := addMutate !v (A.unsafe_get xs i)
-  done ;
-  !v
-
 
 let rec sortedLengthAux (xs : elt array) prec acc len =    
   if acc >= len then acc 
@@ -296,3 +250,6 @@ let ofArray (xs : elt array) =
       result := addMutate !result (A.unsafe_get xs i) 
     done ;
     !result 
+
+
+
