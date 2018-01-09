@@ -80,14 +80,14 @@ let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =
       N.empty ,  N.return n
     | Some l -> 
       let (ll,  rl) = splitAuxNoPivot ~cmp  l x in 
-      ll,  N.join rl v r
+      ll,  N.joinShared rl v r
   else
     match N.toOpt r with 
     | None ->
       N.return n,  N.empty
     | Some r -> 
       let lr,  rr = splitAuxNoPivot ~cmp  r x in 
-      N.join l v lr, rr
+      N.joinShared l v lr, rr
 
 let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =   
   let l,v,r = N.(left n , key n, right n) in  
@@ -104,23 +104,23 @@ let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =
       N.empty , N.return n
     | Some l -> 
       let (ll, rl) = splitAuxPivot ~cmp  l x pres in 
-      ll,  N.join rl v r
+      ll,  N.joinShared rl v r
   else
     match N.toOpt r with 
     | None ->
       N.return n,  N.empty
     | Some r -> 
       let lr, rr = splitAuxPivot ~cmp  r x pres in 
-      N.join l v lr,  rr
+      N.joinShared l v lr,  rr
 
-let  split0 ~cmp  (t : _ t0) x : _ t0 * bool * _ t0 =
+let  split0 ~cmp  (t : _ t0) x  =
   match N.toOpt t with 
     None ->
-    N.empty, false, N.empty
+    (N.empty, N.empty), false
   | Some n ->
     let pres = ref false in 
-    let l, r = splitAuxPivot ~cmp n x  pres in 
-    l, !pres, r 
+    let v = splitAuxPivot ~cmp n x  pres in 
+    v, !pres
 
 (* [union0 s1 s2]
    Use the pivot to split the smaller collection
@@ -136,14 +136,14 @@ let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
       else begin
         let l1, v1, r1 = N.(left n1, key n1, right n1) in      
         let l2, r2 = splitAuxNoPivot ~cmp n2 v1 in
-        N.join (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
+        N.joinShared (union0 ~cmp l1 l2) v1 (union0 ~cmp r1 r2)
       end
     else
     if h1 = 1 then add0 s2 ~cmp (N.key n1) 
     else begin
       let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
       let l1, r1 = splitAuxNoPivot ~cmp n1 v2  in
-      N.join (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
+      N.joinShared (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
     end
 
 let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
@@ -156,8 +156,8 @@ let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
     let l2,r2 = splitAuxPivot ~cmp n2 v1 pres in 
     let ll = inter0 ~cmp l1 l2 in 
     let rr = inter0 ~cmp r1 r2 in 
-    if !pres then N.join ll v1 rr 
-    else N.concat ll rr 
+    if !pres then N.joinShared ll v1 rr 
+    else N.concatShared ll rr 
 
 let rec diff0 ~cmp s1 s2 =
   match N.(toOpt s1, toOpt s2) with
@@ -169,8 +169,8 @@ let rec diff0 ~cmp s1 s2 =
     let l2, r2 = splitAuxPivot ~cmp n2 v1 pres in 
     let ll = diff0 ~cmp l1 l2 in 
     let rr = diff0 ~cmp r1 r2 in 
-    if !pres then N.concat ll rr 
-    else N.join ll v1 rr 
+    if !pres then N.concatShared ll rr 
+    else N.joinShared ll v1 rr 
 
         
 
@@ -186,8 +186,8 @@ let iter0 = N.iter0
 let fold0 = N.fold0
 let forAll0 = N.forAll0
 let exists0 = N.exists0    
-let filter0 = N.filter0
-let partition0 = N.partition0
+let filter0 = N.filterShared0
+let partition0 = N.partitionShared0
 let length0 = N.length0
 let toList0 = N.toList0
 let toArray0 = N.toArray0
@@ -297,11 +297,11 @@ let exists m f = N.exists0  (B.data m) f
 
 let filter m f  = 
   let data, dict = B.(data m, dict m) in 
-  B.bag ~dict ~data:(N.filter0 data f )
+  B.bag ~dict ~data:(N.filterShared0 data f )
 
 let partition m f  = 
   let mdata, dict = B.(data m, dict m) in   
-  let l,r = N.partition0 mdata f in   
+  let l,r = N.partitionShared0 mdata f in   
   B.bag ~data:l ~dict, B.bag ~data:r ~dict
 
 let length m = N.length0 (B.data m) 
@@ -317,10 +317,11 @@ let maxNull m = N.maxNull0 (B.data m)
 let split (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in  
   let module M = (val dict) in 
-  let l, b, r = split0 ~cmp:M.cmp data e in 
-  B.bag ~dict ~data:l,
-  b,
-  B.bag ~dict ~data:r
+  let (l,  r), b = split0 ~cmp:M.cmp data e in 
+  (B.bag ~dict ~data:l,
+  B.bag ~dict ~data:r),
+  b
+  
 
 let findOpt (type elt) (type id)  (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in   

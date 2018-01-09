@@ -92,10 +92,11 @@ let forAll d p =
   N.forAll0 (data d) p 
 let exists d  p = 
   N.exists0 (data d) p   
+
 let filter d p = 
-  t ~data:(N.filter0 (data d) p )
+  t ~data:(N.filterCopy (data d) p )
 let partition d p = 
-  let a , b = N.partition0 (data d) p in 
+  let a , b = N.partitionCopy (data d) p in 
   t ~data:a, t ~data:b
 let length d = 
   N.length0 (data d)
@@ -154,9 +155,9 @@ let eq d0 d1 =
   I.eq (data d0) (data d1)
 let findOpt d x = 
   I.findOpt (data d) x 
-let split d  p =  
+(* let split d  p =  
   let a,b,c =  I.split (data d) p  in 
-  t ~data:a, b, t ~data:c
+  t ~data:a, b, t ~data:c *)
 let subset a b = I.subset  (data a) (data b)
 let inter a b  = t ~data:(I.inter (data a) (data b))
 let union a b = t ~data:(I.union (data a) (data b))

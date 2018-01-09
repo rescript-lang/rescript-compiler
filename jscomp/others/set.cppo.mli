@@ -72,7 +72,7 @@ val maxOpt: t -> elt option
 val maxNull: t -> elt Js.null
 
 
-val split:  t -> elt -> t * bool * t
+val split:  t -> elt -> (t * t) * bool  
 (** [split x s] returns a triple [(l, present, r)], where
       [l] is the set of elements of [s] that are
       strictly less than [x];

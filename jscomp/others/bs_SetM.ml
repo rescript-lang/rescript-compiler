@@ -132,13 +132,13 @@ let forAll d p =
   N.forAll0 (B.data d) p 
 let exists d  p = 
   N.exists0 (B.data d) p   
-let filter d p = 
+(* let filter d p = 
   let data, dict = B.(data d, dict d) in  
-  B.bag ~data:(N.filter0 data p ) ~dict 
-let partition d p = 
+  B.bag ~data:(N.filter0 data p ) ~dict  *)
+(* let partition d p = 
   let data, dict = B.(data d, dict d) in 
   let a , b = N.partition0 data p in 
-  B.bag ~data:a ~dict, B.bag ~data:b ~dict
+  B.bag ~data:a ~dict, B.bag ~data:b ~dict *)
 let length d = 
   N.length0 (B.data d)
 let toList d =

@@ -38,12 +38,16 @@ val iter0 : 'a t0 -> ('a -> 'b [@bs]) -> unit
 val fold0 : 'a t0 -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
 val forAll0 : 'a t0 -> ('a -> bool [@bs]) -> bool
 val exists0 : 'a t0 -> ('a -> bool [@bs]) -> bool
-val join : 'a t0 -> 'a -> 'a t0 -> 'a t0
-val concat : 'a t0 -> 'a t0 -> 'a t0
-val filter0 : 'a t0 -> ('a -> bool [@bs]) -> 'a t0
-val partition0 :
-  'a t0 -> ('a -> bool [@bs]) -> 'a t0 * 'a t0
 
+val joinShared : 'a t0 -> 'a -> 'a t0 -> 'a t0
+val concatShared : 'a t0 -> 'a t0 -> 'a t0
+val filterShared0 : 'a t0 -> ('a -> bool [@bs]) -> 'a t0
+val filterCopy : 'a t0 -> ('a -> bool  [@bs]) -> 'a t0
+
+val partitionShared0 :
+  'a t0 -> ('a -> bool [@bs]) -> 'a t0 * 'a t0
+val partitionCopy: 
+  'a t0 -> ('a -> bool [@bs]) -> 'a t0 * 'a t0
 val length0 : 'a t0 -> int
 
 val toList0 : 'a t0 -> 'a list

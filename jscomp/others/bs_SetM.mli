@@ -99,10 +99,10 @@ val forAll: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
 val exists: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 (** [exists p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
-val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
+(* val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t *)
 (** [filter p s] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
-val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
+(* val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t *)
 (** [partition p s] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of

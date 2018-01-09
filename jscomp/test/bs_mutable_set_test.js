@@ -196,6 +196,40 @@ id("File \"bs_mutable_set_test.ml\", line 81, characters 5-12", /* array */[
 
 id("File \"bs_mutable_set_test.ml\", line 82, characters 5-12", Array_data_util.range(0, 1000));
 
+var xs$1 = Array_data_util.randomRange(0, 1000);
+
+var v$4 = {
+  data: Bs_internalSetInt.ofArray(xs$1)
+};
+
+var copyV = Bs_SetIntM.filter(v$4, (function (x) {
+        return +(x % 8 === 0);
+      }));
+
+var match = Bs_SetIntM.partition(v$4, (function (x) {
+        return +(x % 8 === 0);
+      }));
+
+var cc = Bs_SetIntM.filter(v$4, (function (x) {
+        return +(x % 8 !== 0);
+      }));
+
+for(var i$4 = 0; i$4 <= 200; ++i$4){
+  Bs_SetIntM.removeOnly(v$4, i$4);
+}
+
+eq("File \"bs_mutable_set_test.ml\", line 92, characters 5-12", Bs_internalAVLset.length0(copyV.data), 126);
+
+eq("File \"bs_mutable_set_test.ml\", line 93, characters 5-12", Bs_internalAVLset.toArray0(copyV.data), Bs_Array.init(126, (function (i) {
+            return (i << 3);
+          })));
+
+eq("File \"bs_mutable_set_test.ml\", line 94, characters 5-12", Bs_internalAVLset.length0(v$4.data), 800);
+
+b("File \"bs_mutable_set_test.ml\", line 95, characters 4-11", Bs_SetIntM.eq(copyV, match[0]));
+
+b("File \"bs_mutable_set_test.ml\", line 96, characters 4-11", Bs_SetIntM.eq(cc, match[1]));
+
 Mt.from_pair_suites("bs_mutable_set_test.ml", suites[0]);
 
 var N = 0;

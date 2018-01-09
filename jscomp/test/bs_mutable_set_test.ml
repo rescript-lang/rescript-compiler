@@ -81,5 +81,18 @@ let () =
   id __LOC__ [|0;1;2;3;4;6;7;8;9|];
   id __LOC__ (I.range 0 1000)
   
+let () =   
+  let v = N.ofArray (I.randomRange 0 1000) in 
+  let copyV = N.filter v (fun[@bs] x -> x mod 8 = 0) in 
+  let aa,bb = N.partition v (fun[@bs] x -> x mod 8 = 0) in 
+  let cc = N.filter v (fun[@bs] x -> x mod 8 <> 0) in 
+  for i = 0 to 200 do 
+    N.removeOnly v i
+  done ;
+  eq __LOC__ (N.length copyV) 126; 
+  eq __LOC__ (N.toArray copyV) (A.init 126 (fun[@bs] i -> i * 8));
+  eq __LOC__ (N.length v ) 800;
+  b __LOC__ (N.eq copyV aa);
+  b __LOC__ (N.eq cc bb)
 
 ;; Mt.from_pair_suites __FILE__ !suites  

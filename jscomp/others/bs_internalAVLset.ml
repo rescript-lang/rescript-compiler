@@ -187,58 +187,42 @@ let rec addMaxElement n v =
    bal, but no assumptions are made on the
    relative heights of [ln] and [rn]. *)
 
-let rec join ln v rn =
+let rec joinShared ln v rn =
   match (toOpt ln, toOpt rn) with
     (None, _) -> addMinElement rn v 
   | (_, None) -> addMaxElement ln v
   | Some l, Some r ->   
     let lh = h l in     
     let rh = h r in 
-    if lh > rh + 2 then bal (left l) (key l) (join (right l) v rn) else
-    if rh > lh + 2 then bal (join ln v (left r)) (key r) (right r) else
+    if lh > rh + 2 then bal (left l) (key l) (joinShared (right l) v rn) else
+    if rh > lh + 2 then bal (joinShared ln v (left r)) (key r) (right r) else
       create ln v rn
   
 (* [concat l r]
    No assumption on the heights of l and r. *)
 
-let concat t1 t2 =
+let concatShared t1 t2 =
   match (toOpt t1, toOpt t2) with
     (None, _) -> t2
   | (_, None) -> t1
   | (_, Some t2n) -> 
     let v = ref (key t2n ) in 
     let t2r = removeMinAuxWithRef t2n v in 
-    join t1 !v t2r  
+    joinShared t1 !v t2r  
     
     
-let rec filter0 n p =
-  match toOpt n with 
-  | None -> empty
-  | Some n  ->
-    let l,v,r = left n, key n, right n in  
-    let newL = filter0 l p in
-    let pv = p v [@bs] in
-    let newR = filter0 r p in
-    if pv then 
-      (if l == newL && r == newR then 
-        return n
-      else join newL v newR)
-    else concat newL newR
-(* ATT: functional methods in general can be shared with 
-    imperative methods, however, it does not apply when functional 
-    methods makes use of referential equality
-*)
-let rec partition0  n p =
+
+let rec partitionShared0  n p =
   match toOpt n with 
   |  None -> (empty, empty)
   | Some n  ->
     let l,v,r = left n, key n, right n in 
-    let (lt, lf) = partition0 l p in    
+    let (lt, lf) = partitionShared0 l p in    
     let pv = p v [@bs] in
-    let (rt, rf) = partition0 r p in
+    let (rt, rf) = partitionShared0 r p in
     if pv
-    then (join lt v rt, concat lf rf)
-    else (concat lt rt, join lf v rf)
+    then (joinShared lt v rt, concatShared lf rf)
+    else (concatShared lt rt, joinShared lf v rf)
 
 let rec lengthAux n = 
   let l, r = left n, right n in  
@@ -295,16 +279,83 @@ let rec fillArray n i arr =
   | Some r -> 
     fillArray r rnext arr 
 
+type cursor =     
+  { mutable forward : int; mutable backward : int } [@@bs.deriving abstract]
+
+let rec fillArrayWithPartition n cursor arr p =     
+  let l,v,r = left n, key n, right n in 
+  (match toOpt l with 
+  | None -> ()
+  | Some l -> 
+      fillArrayWithPartition l cursor arr p);  
+  (if p v [@bs] then begin        
+      let c = forward cursor in 
+      A.unsafe_set arr c v;
+      forwardSet cursor (c + 1)
+  end  
+  else begin 
+    let c = backward cursor in 
+    A.unsafe_set arr c v ;
+    backwardSet cursor (c - 1)
+  end);     
+  match toOpt r with 
+  | None -> ()
+  | Some r -> 
+    fillArrayWithPartition r cursor arr  p 
+    
+let rec fillArrayWithFilter n i arr p =     
+  let l,v,r = left n, key n, right n in 
+  let next = 
+    match toOpt l with 
+    | None -> i 
+    | Some l -> 
+      fillArrayWithFilter l i arr p in 
+  let rnext =
+    if p v [@bs] then        
+      (A.unsafe_set arr next v;
+        next + 1
+      )
+    else next in   
+  match toOpt r with 
+  | None -> rnext 
+  | Some r -> 
+    fillArrayWithFilter r rnext arr  p 
+
 
 let toArray0 n =   
   match toOpt n with 
   | None -> [||]
   | Some n ->  
     let size = lengthAux n in 
-    let v = Bs.Array.makeUninitializedUnsafe size in 
+    let v = A.makeUninitializedUnsafe size in 
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v 
 
+let rec ofSortedArrayRevAux arr off len =     
+  match len with 
+  | 0 -> empty0
+  | 1 -> singleton0 (A.unsafe_get arr off)
+  | 2 ->  
+    let x0,x1 = A.(unsafe_get arr off, unsafe_get arr (off - 1) ) 
+    in 
+    return @@ node ~left:(singleton0 x0) ~key:x1 ~h:2 ~right:empty0
+  | 3 -> 
+    let x0,x1,x2 = 
+      A.(unsafe_get arr off, 
+         unsafe_get arr (off - 1), 
+         unsafe_get arr (off - 2)) in 
+    return @@ node ~left:(singleton0 x0)
+      ~right:(singleton0 x2)
+      ~key:x1
+      ~h:2
+  | _ ->  
+    let nl = len / 2 in 
+    let left = ofSortedArrayRevAux arr off nl in 
+    let mid = A.unsafe_get arr (off - nl) in 
+    let right = 
+      ofSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
+    create left mid right    
+    
 
 let rec ofSortedArrayAux arr off len =     
   match len with 
@@ -331,6 +382,47 @@ let rec ofSortedArrayAux arr off len =
       ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left mid right    
 
+
+let rec filterShared0 n p =
+  match toOpt n with 
+  | None -> empty
+  | Some n  ->
+    let l,v,r = left n, key n, right n in  
+    let newL = filterShared0 l p in
+    let pv = p v [@bs] in
+    let newR = filterShared0 r p in
+    if pv then 
+      (if l == newL && r == newR then 
+        return n
+      else joinShared newL v newR)
+    else concatShared newL newR
+(* ATT: functional methods in general can be shared with 
+    imperative methods, however, it does not apply when functional 
+    methods makes use of referential equality
+*)
+
+let rec filterCopy n p : _ t0= 
+  match toOpt n with 
+  | None -> empty 
+  | Some n -> 
+    let size = lengthAux n in 
+    let  v = A.makeUninitializedUnsafe size in 
+    let last =     
+      fillArrayWithFilter n 0 v p in 
+    ofSortedArrayAux v 0 last 
+
+let partitionCopy n p  =     
+  match toOpt n with 
+  | None -> empty, empty  
+  | Some n -> 
+    let size = lengthAux n in 
+    let v = A.makeUninitializedUnsafe size in 
+    let backward = size - 1 in 
+    let cursor = cursor ~forward:0 ~backward in 
+    fillArrayWithPartition n cursor v p ;
+    let forwardLen = forward cursor in 
+    ofSortedArrayAux v 0 forwardLen,  
+    ofSortedArrayRevAux v backward (size  - forwardLen)
 
 let rec mem0 ~cmp  (t: _ t0) x =
   match  toOpt t with 

@@ -90,14 +90,14 @@ let rec splitAuxNoPivot (n : _ N.node) (x : elt) : t * t =
       N.empty , N.return n
     | Some l -> 
       let ll,  rl = splitAuxNoPivot l x in 
-      ll,  N.join rl v r
+      ll,  N.joinShared rl v r
   else
     match N.toOpt r with 
     | None ->
       N.return n,  N.empty
     | Some r -> 
       let lr,  rr = splitAuxNoPivot r x in
-      N.join l v lr,  rr
+      N.joinShared l v lr,  rr
 
 
 let rec splitAuxPivot (n : _ N.node) (x : elt) pres : t  * t =   
@@ -112,24 +112,24 @@ let rec splitAuxPivot (n : _ N.node) (x : elt) pres : t  * t =
       N.empty, N.return n
     | Some l -> 
       let ll,  rl = splitAuxPivot l x pres in 
-      ll,  N.join rl v r
+      ll,  N.joinShared rl v r
   else
     match N.toOpt r with 
     | None ->
       N.return n,  N.empty
     | Some r -> 
       let lr,  rr = splitAuxPivot r x pres in
-      N.join l v lr,  rr
+      N.joinShared l v lr,  rr
 
-(* TODO: fix me, change the api to (t * t ) * bool *)
-let split  (t : t) (x : elt) : t * bool *  t =
+
+let split  (t : t) (x : elt) =
   match N.toOpt t with 
     None ->
-    N.empty, false, N.empty
+    (N.empty,  N.empty), false
   | Some n  ->    
     let pres = ref false in 
-    let l,r = splitAuxPivot n  x pres in 
-    l, !pres, r 
+    let v = splitAuxPivot n  x pres  in 
+    v, !pres
 
 
 let rec union (s1 : t) (s2 : t) =
@@ -142,13 +142,13 @@ let rec union (s1 : t) (s2 : t) =
       if h2 = 1 then add  s1 (N.key n2) else begin
         let l1, v1, r1 = N.(left n1, key n1, right n1) in      
         let (l2,  r2) = splitAuxNoPivot n2 v1 in
-        N.join (union l1 l2) v1 (union r1 r2)
+        N.joinShared (union l1 l2) v1 (union r1 r2)
       end
     else
     if h1 = 1 then add  s2 (N.key n1) else begin
       let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
       let (l1, r1) = splitAuxNoPivot n1 v2 in
-      N.join (union l1 l2) v2 (union r1 r2)
+      N.joinShared (union l1 l2) v2 (union r1 r2)
     end
 
 let rec inter (s1 : t) (s2 : t) =
@@ -161,8 +161,8 @@ let rec inter (s1 : t) (s2 : t) =
     let l2,r2 =  splitAuxPivot n2 v1 pres in 
     let ll = inter l1 l2 in 
     let rr = inter r1 r2 in 
-    if !pres then N.join ll v1 rr 
-    else N.concat ll rr 
+    if !pres then N.joinShared ll v1 rr 
+    else N.concatShared ll rr 
 
 let rec diff (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
@@ -174,8 +174,8 @@ let rec diff (s1 : t) (s2 : t) =
     let l2, r2 = splitAuxPivot  n2 v1 pres in 
     let ll = diff  l1 l2 in 
     let rr = diff  r1 r2 in 
-    if !pres then N.concat ll rr 
-    else N.join ll v1 rr 
+    if !pres then N.concatShared ll rr 
+    else N.joinShared ll v1 rr 
 
 
 
