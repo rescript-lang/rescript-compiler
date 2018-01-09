@@ -71,12 +71,12 @@ val removeCheck:
 (* [b = removeCheck s e] [b] is true means one element removed *)   
 
 
-val union:  
+(* val union:  
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
 val inter: 
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
 val diff:   
-  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t *)
 val subset:  
   ('elt, 'id) t -> ('elt, 'id) t -> bool     
 
@@ -120,8 +120,8 @@ val minOpt: ('elt, 'id) t -> 'elt option
 val minNull: ('elt, 'id) t -> 'elt Js.null
 val maxOpt: ('elt, 'id) t -> 'elt option
 val maxNull: ('elt, 'id) t -> 'elt Js.null
-val split: 
-   ('elt, 'id) t -> 'elt ->  ('elt, 'id) t * bool * ('elt, 'id) t
+(* val split: 
+   ('elt, 'id) t -> 'elt ->  ('elt, 'id) t * bool * ('elt, 'id) t *)
 (** [split x s] returns a triple [(l, present, r)], where
       [l] is the set of elements of [s] that are
       strictly less than [x];

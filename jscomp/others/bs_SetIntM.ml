@@ -12,20 +12,28 @@ type t = {
 } [@@bs.deriving abstract]
 
 let empty  () = t ~data:N.empty0 
+
 let isEmpty d = 
   N.isEmpty0 (data d)
+
 let singleton x = 
   t ~data:(N.singleton0 x)
+
 let minOpt d = 
   N.minOpt0 (data d)
+
 let minNull d =
   N.minNull0 (data d)
+
 let maxOpt d = 
   N.maxOpt0 (data d)
+
 let maxNull d =
-  N.maxNull0 (data d)
+N.maxNull0 (data d)
+
 let iter d f =
   N.iter0 (data d) f     
+  
 let fold d acc cb = 
   N.fold0 (data d) acc cb 
 let forAll d p = 
@@ -66,7 +74,10 @@ let addArrayOnly d arr =
     dataSet d v 
     
 let addArray d arr = 
-  addArrayOnly d arr; 
+  let old_data = data d in 
+  let v = I.addArrayMutate old_data arr in 
+  if v != old_data then 
+    dataSet d v ;
   d   
 
 let removeOnly d v = 

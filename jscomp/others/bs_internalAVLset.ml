@@ -332,6 +332,81 @@ let rec ofSortedArrayAux arr off len =
     create left mid right    
 
 
+let rec mem0 ~cmp  (t: _ t0) x =
+  match  toOpt t with 
+  | None -> false
+  | Some n ->
+    let v = key n in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    c = 0 || mem0 ~cmp (if c < 0 then left n else right n) x
+
+
+let rec compareAux e1 e2 ~cmp =
+  match e1,e2 with 
+  | h1::t1, h2::t2 ->
+    let c = (Bs_Cmp.getCmp cmp) (key h1) (key h2) [@bs] in 
+    if c = 0 then
+      compareAux ~cmp 
+        (stackAllLeft  (right h1) t1)
+        (stackAllLeft (right h2) t2)
+    else c 
+  | _, _ -> 0   
+
+let cmp0 s1 s2 ~cmp = 
+  let len1,len2 = length0 s1, length0 s2 in    
+  if len1 = len2 then
+   compareAux ~cmp (stackAllLeft s1 []) (stackAllLeft s2 [])
+  else if len1 < len2 then -1 else 1 
+
+
+let eq0 ~cmp s1 s2 =
+  cmp0 ~cmp s1 s2 = 0
+
+
+let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
+  match (toOpt s1, toOpt s2) with
+  | None, _ -> true
+  | _, None -> false
+  | Some t1 , Some t2  ->
+    let l1,v1,r1 = (left t1, key t1, right t1) in  
+    let l2,v2,r2 = (left t2, key t2, right t2) in 
+    let c = (Bs_Cmp.getCmp cmp) v1 v2 [@bs] in
+    if c = 0 then
+      subset0 ~cmp l1 l2 && subset0 ~cmp r1 r2
+    else if c < 0 then
+      subset0 ~cmp (create l1 v1 empty) l2 && 
+      subset0 ~cmp r1 s2
+    else
+      subset0 ~cmp (create empty v1 r1 ) r2 && 
+      subset0 ~cmp l1 s2
+
+let rec findOpt0 ~cmp (n : _ t0) x = 
+  match toOpt n with 
+    None -> None
+  | Some t (* Node(l, v, r, _) *) ->
+    let v = key t in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then Some v
+    else findOpt0 ~cmp  (if c < 0 then left t else right t) x
+
+
+let rec findNull0 ~cmp (n : _ t0) x =
+  match toOpt n with 
+    None -> Js.null
+  | Some t (* Node(l, v, r, _) *) ->
+    let v = key t in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then  return v
+    else findNull0 ~cmp  (if c < 0 then left t else right t) x 
+
+let rec sortedLengthAux ~cmp (xs : _ array) prec acc len =    
+  if  acc >= len then acc 
+  else 
+    let v = A.unsafe_get xs acc in 
+    if cmp v  prec [@bs] >= 0 then 
+      sortedLengthAux ~cmp xs v (acc + 1) len 
+    else acc    
+    
 (******************************************************************)
 
 (* 
@@ -402,20 +477,46 @@ let balMutate nt  =
       nt
     end
 
+let rec addMutate ~cmp (t : _ t0) x =   
+  match toOpt t with 
+  | None -> singleton0 x 
+  | Some nt -> 
+    let k = key nt in 
+    let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
+    if c = 0 then t 
+    else
+      let l, r = (left nt, right nt) in 
+      (if c < 0 then                   
+         let ll = addMutate ~cmp l x in
+         leftSet nt ll
+       else   
+         rightSet nt (addMutate ~cmp r x);
+      );
+      return (balMutate nt)
 
 
-let rec removeMinAuxMutateWithRoot nt n = 
+let ofArray0 ~cmp (xs : _ array) =   
+  let len = A.length xs in 
+  if len = 0 then empty0
+  else
+    let next = sortedLengthAux 
+      ~cmp:(Bs_Cmp.getCmp cmp) xs (A.unsafe_get xs 0) 1 len in 
+    let result  = ref (ofSortedArrayAux  xs 0 next) in 
+    for i = next to len - 1 do 
+      result := addMutate ~cmp !result (A.unsafe_get xs i) 
+    done ;
+    !result         
+
+
+let rec removeMinAuxWithRootMutate nt n = 
   let rn, ln = right n, left n in 
   match toOpt ln with 
   | None -> 
     keySet nt (key n);
     rn 
   | Some ln -> 
-    leftSet n (removeMinAuxMutateWithRoot nt ln); 
+    leftSet n (removeMinAuxWithRootMutate nt ln); 
     return (balMutate n)    
-
-
-
 
 
 let ofSortedArrayUnsafe0 arr =     
