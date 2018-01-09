@@ -66,4 +66,18 @@ let () =
     [|1, "c"; 1, "b";  1,"a"; 1, "b"; 1, "c"; 2 ,"a"|]    
 
 
+
+let () =     
+  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 33 cmp ) 4 ;
+  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 1 cmp ) 0;
+  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 2 cmp ) 1;
+  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 3 cmp ) 2;
+  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 4 cmp ) 3;
+  let aa = I.range 0 1000 in 
+  b __LOC__ @@ R.forAll 0 1000 (fun [@bs] i -> 
+      S.binSearch aa i cmp = i 
+  );
+
+  
+
 ;; Mt.from_pair_suites __FILE__ !suites  

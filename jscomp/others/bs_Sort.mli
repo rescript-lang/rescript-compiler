@@ -15,3 +15,6 @@ external sortBy :
 
 val sortByCont :   
   'a array -> ('a -> 'a -> int [@bs]) -> 'a array
+
+val binSearch:
+  'a array -> 'a -> ('a -> 'a -> int [@bs]) -> int 

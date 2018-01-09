@@ -210,6 +210,62 @@ eq("File \"bs_sort_test.ml\", line 62, characters 5-12", (Bs_Sort.stableSortBy(u
       ]
     ]);
 
+eq("File \"bs_sort_test.ml\", line 71, characters 5-12", Bs_Sort.binSearch(/* array */[
+          1,
+          2,
+          3,
+          4,
+          33,
+          35,
+          36
+        ], 33, cmp), 4);
+
+eq("File \"bs_sort_test.ml\", line 72, characters 5-12", Bs_Sort.binSearch(/* array */[
+          1,
+          2,
+          3,
+          4,
+          33,
+          35,
+          36
+        ], 1, cmp), 0);
+
+eq("File \"bs_sort_test.ml\", line 73, characters 5-12", Bs_Sort.binSearch(/* array */[
+          1,
+          2,
+          3,
+          4,
+          33,
+          35,
+          36
+        ], 2, cmp), 1);
+
+eq("File \"bs_sort_test.ml\", line 74, characters 5-12", Bs_Sort.binSearch(/* array */[
+          1,
+          2,
+          3,
+          4,
+          33,
+          35,
+          36
+        ], 3, cmp), 2);
+
+eq("File \"bs_sort_test.ml\", line 75, characters 5-12", Bs_Sort.binSearch(/* array */[
+          1,
+          2,
+          3,
+          4,
+          33,
+          35,
+          36
+        ], 4, cmp), 3);
+
+var aa = Array_data_util.range(0, 1000);
+
+b("File \"bs_sort_test.ml\", line 77, characters 4-11", Bs_Range.forAll(0, 1000, (function (i) {
+            return +(Bs_Sort.binSearch(aa, i, cmp) === i);
+          })));
+
 Mt.from_pair_suites("bs_sort_test.ml", suites[0]);
 
 var I = 0;
