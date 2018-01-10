@@ -99,10 +99,10 @@ val forAll: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
 val exists: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 (** [exists p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
-(* val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t *)
+val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
 (** [filter p s] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
-(* val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t *)
+val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
 (** [partition p s] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
@@ -120,15 +120,17 @@ val minOpt: ('elt, 'id) t -> 'elt option
 val minNull: ('elt, 'id) t -> 'elt Js.null
 val maxOpt: ('elt, 'id) t -> 'elt option
 val maxNull: ('elt, 'id) t -> 'elt Js.null
-(* val split: 
-   ('elt, 'id) t -> 'elt ->  ('elt, 'id) t * bool * ('elt, 'id) t *)
-(** [split x s] returns a triple [(l, present, r)], where
+val split: 
+   ('elt, 'id) t -> 'elt ->  (('elt, 'id) t * ('elt, 'id) t) * bool
+(** [split s x] returns a triple [((l, r), present)], where
       [l] is the set of elements of [s] that are
       strictly less than [x];
       [r] is the set of elements of [s] that are
       strictly greater than [x];
       [present] is [false] if [s] contains no element equal to [x],
-      or [true] if [s] contains an element equal to [x]. *)
+      or [true] if [s] contains an element equal to [x].
+    [l,r] are freshly made, no sharing with [s]   
+*)
 
 val ofSortedArrayUnsafe:
   dict:('elt, 'id) Bs_Cmp.t ->

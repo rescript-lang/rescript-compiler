@@ -108,6 +108,7 @@ let rec removeMutateCheckAux  nt x removed ~cmp=
           N.rightSet nt (removeMutateCheckAux ~cmp r x removed);
           N.return (N.balMutate nt)
     end
+module S = Bs_Sort 
 
 
 let empty dict = 
@@ -132,13 +133,39 @@ let forAll d p =
   N.forAll0 (B.data d) p 
 let exists d  p = 
   N.exists0 (B.data d) p   
-(* let filter d p = 
+
+let split (type elt) (type id) (d : (elt,id) t)  key  =     
+  let dict, s = B.dict d, B.data d  in 
+  let module M = (val dict ) in 
+  let arr = N.toArray0 s in 
+  let i = S.binSearch arr key (Bs_Cmp.getCmp M.cmp)  in   
+  let len = A.length arr in 
+  if i < 0 then 
+    let next = - i -1 in 
+    (B.bag 
+      ~data:(N.ofSortedArrayAux arr 0 next)
+      ~dict
+    , 
+    B.bag 
+      ~data:(N.ofSortedArrayAux arr next (len - next))
+      ~dict
+    ), false
+  else 
+    (B.bag 
+      ~data:(N.ofSortedArrayAux arr 0 i)
+      ~dict,
+    B.bag 
+      ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
+      ~dict
+      ), true   
+    
+let filter d p = 
   let data, dict = B.(data d, dict d) in  
-  B.bag ~data:(N.filter0 data p ) ~dict  *)
-(* let partition d p = 
+  B.bag ~data:(N.filterCopy data p ) ~dict 
+let partition d p = 
   let data, dict = B.(data d, dict d) in 
-  let a , b = N.partition0 data p in 
-  B.bag ~data:a ~dict, B.bag ~data:b ~dict *)
+  let a , b = N.partitionCopy data p in 
+  B.bag ~data:a ~dict, B.bag ~data:b ~dict
 let length d = 
   N.length0 (B.data d)
 let toList d =
@@ -251,12 +278,6 @@ let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data =
   let module M = (val dict) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
 
-(* let split (type elt) (type id) (d : (elt,id) t)  p : _ t * bool * _ t =  
-  let dict = B.dict d in 
-  let module M = (val dict) in 
-  let a,b,c =  I.split0 ~cmp:M.cmp (B.data d) p  in 
-  B.bag ~data:a ~dict, b, B.bag ~data:c ~dict 
- *)
 
 let subset (type elt) (type id) (a : (elt,id) t) b = 
   let dict = B.dict a in 

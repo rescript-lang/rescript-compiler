@@ -36,7 +36,7 @@ let () =
   let u = I.randomRange 0 1_000_000 in  
   let u1 = A.copy u in 
   let u2 = A.copy u in 
-  let u3 = A.map u (fun[@bs] x -> float x) in 
+  (* let u3 = A.map u (fun[@bs] x -> float x) in  *)
   [%time S.stableSortBy u cmp];
   b __LOC__ (S.isSorted u cmp);
   [%time S.stableSortInts u2 ];
@@ -77,7 +77,16 @@ let () =
   b __LOC__ @@ R.forAll 0 1000 (fun [@bs] i -> 
       S.binSearch aa i cmp = i 
   );
+  (* 0, 2, 4, ... 4000 *)
+  let cc =  A.map (I.range 0 2000 ) (fun [@bs] x -> x * 2) in 
+  eq __LOC__ (lnot (S.binSearch cc 5000 cmp)) (2001);
+  eq __LOC__ (lnot (S.binSearch cc (-1) cmp)) (0);
+  eq __LOC__ (S.binSearch cc 0 cmp) 0;
 
-  
+  eq __LOC__ ( lnot (S.binSearch cc 1 cmp)) (1);
+  b __LOC__ @@ R.forAll 0 1999 (fun [@bs] i -> 
+    lnot (S.binSearch cc (2 * i + 1) cmp) = (i + 1) 
+    (* 1, 3, 5, ... , 3999 *)
+  )
 
 ;; Mt.from_pair_suites __FILE__ !suites  

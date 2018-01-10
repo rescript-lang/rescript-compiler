@@ -246,12 +246,12 @@ let rec binSearchAux arr lo hi key cmp =
     else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
       if hi = mid then  
         if cmp (A.unsafe_get arr lo) key [@bs] = 0 then lo
-        else - (mid + 1)
+        else - (hi + 1)
       else binSearchAux arr lo mid key cmp 
     else  (*  a[lo] =< a[mid] < key <= a[hi] *)
       if lo = mid then 
         if cmp (A.unsafe_get arr hi) key [@bs] = 0 then hi
-        else - (mid + 1)
+        else - (hi + 1)
       else binSearchAux arr mid hi key cmp 
 
 let binSearch sorted key cmp : int =  

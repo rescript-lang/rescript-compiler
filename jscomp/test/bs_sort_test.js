@@ -54,10 +54,6 @@ var u1 = Bs_Array.copy(u);
 
 var u2 = Bs_Array.copy(u);
 
-Bs_Array.map(u, (function (x) {
-        return x;
-      }));
-
 console.time("bs_sort_test.ml 40");
 
 Bs_Sort.stableSortBy(u, cmp);
@@ -264,6 +260,22 @@ var aa = Array_data_util.range(0, 1000);
 
 b("File \"bs_sort_test.ml\", line 77, characters 4-11", Bs_Range.forAll(0, 1000, (function (i) {
             return +(Bs_Sort.binSearch(aa, i, cmp) === i);
+          })));
+
+var cc = Bs_Array.map(Array_data_util.range(0, 2000), (function (x) {
+        return (x << 1);
+      }));
+
+eq("File \"bs_sort_test.ml\", line 82, characters 5-12", Bs_Sort.binSearch(cc, 5000, cmp) ^ -1, 2001);
+
+eq("File \"bs_sort_test.ml\", line 83, characters 5-12", Bs_Sort.binSearch(cc, -1, cmp) ^ -1, 0);
+
+eq("File \"bs_sort_test.ml\", line 84, characters 5-12", Bs_Sort.binSearch(cc, 0, cmp), 0);
+
+eq("File \"bs_sort_test.ml\", line 86, characters 5-12", Bs_Sort.binSearch(cc, 1, cmp) ^ -1, 1);
+
+b("File \"bs_sort_test.ml\", line 87, characters 4-11", Bs_Range.forAll(0, 1999, (function (i) {
+            return +((Bs_Sort.binSearch(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
           })));
 
 Mt.from_pair_suites("bs_sort_test.ml", suites[0]);
