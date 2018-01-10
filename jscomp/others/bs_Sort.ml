@@ -25,11 +25,9 @@
 
 module A = Bs_Array 
 
-(* external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
-external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set" *)
 external unsafe_blit :
   'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
-external length : 'a array -> int = "%array_length"
+
 
 let rec isSortedAux a i cmp last_bound = 
   (* when [i = len - 1], it reaches the last element*)
@@ -41,7 +39,7 @@ let rec isSortedAux a i cmp last_bound =
 
 
 let isSorted a cmp =
-  let len = length a in 
+  let len = A.length a in 
   if len = 0 then true
   else isSortedAux a 0 cmp (len - 1)
 
@@ -178,7 +176,7 @@ let rec sortToFloats (src : float array) srcofs dst dstofs len  =
   end      
 
 let stableSortBy  a cmp =
-  let l = length a in
+  let l = A.length a in
   if l <= cutoff then insertionSort a 0 a 0 l cmp 
   else begin
     let l1 = l / 2 in
@@ -189,7 +187,7 @@ let stableSortBy  a cmp =
     merge a l2 l1 t 0 l2 a 0 cmp;
   end
 let stableSortInts  (a : int array)  =
-  let l = length a in
+  let l = A.length a in
   if l <= cutoff then insertionSortInts a 0 a 0 l  
   else begin
     let l1 = l / 2 in
@@ -200,7 +198,7 @@ let stableSortInts  (a : int array)  =
     mergeInts a l2 l1 t 0 l2 a 0 ;
   end
 let stableSortFloats  (a : float array)  =
-  let l = length a in
+  let l = A.length a in
   if l <= cutoff then insertionSortFloats a 0 a 0 l  
   else begin
     let l1 = l / 2 in

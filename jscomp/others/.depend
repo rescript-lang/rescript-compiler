@@ -60,6 +60,8 @@ bs_SetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_SetString.cmi
 bs_SetStringM.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_Array.cmj bs_SetStringM.cmi
+bs_SortInt.cmj : bs_Array.cmj bs_SortInt.cmi
+bs_SortString.cmj : bs_Array.cmj bs_SortString.cmi
 bs_Stack.cmj : bs_Stack.cmi
 node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
@@ -107,6 +109,8 @@ bs_SetInt.cmi :
 bs_SetIntM.cmi :
 bs_SetString.cmi :
 bs_SetStringM.cmi :
+bs_SortInt.cmi :
+bs_SortString.cmi :
 bs_Stack.cmi :
 js_boolean.cmi :
 js_dict.cmi :
