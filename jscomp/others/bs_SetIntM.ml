@@ -1,6 +1,7 @@
 # 2 "setm.cppo.ml"
 module I = Bs_internalSetInt
-# 8
+module S = Bs_SortInt
+# 10
 module N = Bs_internalAVLset
 module A = Bs_Array 
 
@@ -151,9 +152,27 @@ let eq d0 d1 =
   I.eq (data d0) (data d1)
 let findOpt d x = 
   I.findOpt (data d) x 
-(* let split d  p =  
-  let a,b,c =  I.split (data d) p  in 
-  t ~data:a, b, t ~data:c *)
+let split d  key =  
+  let s = data d in  
+  let arr = N.toArray0 s in 
+  let i = S.binSearch arr key   in   
+  let len = A.length arr in 
+  if i < 0 then 
+    let next = - i -1 in 
+    (t
+      ~data:(N.ofSortedArrayAux arr 0 next)
+    , 
+    t
+      ~data:(N.ofSortedArrayAux arr next (len - next))
+    ), false
+  else 
+    (t
+      ~data:(N.ofSortedArrayAux arr 0 i)
+    ,
+    t
+      ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
+      ), true   
+  
 let subset a b = I.subset  (data a) (data b)
 let inter a b  = t ~data:(I.inter (data a) (data b))
 let union a b = t ~data:(I.union (data a) (data b))

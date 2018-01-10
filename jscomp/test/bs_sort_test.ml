@@ -32,6 +32,7 @@ let () =
     (not @@ S.isSorted [|1;0|] cmp)        
 
 module A = Bs.Array
+module SI = Bs.SortInt
 let () =     
   let u = I.randomRange 0 1_000_000 in  
   let u1 = A.copy u in 
@@ -39,7 +40,7 @@ let () =
   (* let u3 = A.map u (fun[@bs] x -> float x) in  *)
   [%time S.stableSortBy u cmp];
   b __LOC__ (S.isSorted u cmp);
-  [%time S.stableSortInts u2 ];
+  [%time SI.stableSort u2 ];
   b __LOC__ (S.isSorted u2 cmp);
   [%time S.sortBy u1 cmp];
   b __LOC__ (S.isSorted u1 cmp)

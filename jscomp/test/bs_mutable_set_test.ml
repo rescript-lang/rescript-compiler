@@ -95,4 +95,13 @@ let () =
   b __LOC__ (N.eq copyV aa);
   b __LOC__ (N.eq cc bb)
 
+let () =   
+  let v = N.ofArray (I.randomRange 0 1000) in 
+  let ((aa,bb),_) = N.split v 400 in 
+  b __LOC__ (N.eq aa (N.ofArray (I.randomRange 0 399))) ;
+  b __LOC__ (N.eq bb (N.ofArray (I.randomRange 401 1000)));
+  let d = N.ofArray (A.map (I.randomRange 0 1000) (fun[@bs] x -> x * 2)) in 
+  let ((cc,dd), _) = N.split d 1001 in   
+  b __LOC__ (N.eq cc (N.ofArray (A.init 501 (fun[@bs] x -> x * 2))));
+  b __LOC__ (N.eq dd (N.ofArray (A.init 500 (fun [@bs] x -> 1002 + x * 2))))
 ;; Mt.from_pair_suites __FILE__ !suites  

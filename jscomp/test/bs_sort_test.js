@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Bs_Sort = require("../../lib/js/bs_Sort.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_Range = require("../../lib/js/bs_Range.js");
+var Bs_SortInt = require("../../lib/js/bs_SortInt.js");
 var Array_data_util = require("./array_data_util.js");
 
 var suites = [/* [] */0];
@@ -54,29 +55,29 @@ var u1 = Bs_Array.copy(u);
 
 var u2 = Bs_Array.copy(u);
 
-console.time("bs_sort_test.ml 40");
+console.time("bs_sort_test.ml 41");
 
 Bs_Sort.stableSortBy(u, cmp);
 
-console.timeEnd("bs_sort_test.ml 40");
+console.timeEnd("bs_sort_test.ml 41");
 
-b("File \"bs_sort_test.ml\", line 41, characters 4-11", Bs_Sort.isSorted(u, cmp));
+b("File \"bs_sort_test.ml\", line 42, characters 4-11", Bs_Sort.isSorted(u, cmp));
 
-console.time("bs_sort_test.ml 42");
+console.time("bs_sort_test.ml 43");
 
-Bs_Sort.stableSortInts(u2);
+Bs_SortInt.stableSort(u2);
 
-console.timeEnd("bs_sort_test.ml 42");
+console.timeEnd("bs_sort_test.ml 43");
 
-b("File \"bs_sort_test.ml\", line 43, characters 4-11", Bs_Sort.isSorted(u2, cmp));
+b("File \"bs_sort_test.ml\", line 44, characters 4-11", Bs_Sort.isSorted(u2, cmp));
 
-console.time("bs_sort_test.ml 44");
+console.time("bs_sort_test.ml 45");
 
 u1.sort(cmp);
 
-console.timeEnd("bs_sort_test.ml 44");
+console.timeEnd("bs_sort_test.ml 45");
 
-b("File \"bs_sort_test.ml\", line 45, characters 4-11", Bs_Sort.isSorted(u1, cmp));
+b("File \"bs_sort_test.ml\", line 46, characters 4-11", Bs_Sort.isSorted(u1, cmp));
 
 var u$1 = /* array */[
   /* tuple */[
@@ -93,7 +94,7 @@ var u$1 = /* array */[
   ]
 ];
 
-eq("File \"bs_sort_test.ml\", line 50, characters 5-12", (Bs_Sort.stableSortBy(u$1, (function (param, param$1) {
+eq("File \"bs_sort_test.ml\", line 51, characters 5-12", (Bs_Sort.stableSortBy(u$1, (function (param, param$1) {
               return param[0] - param$1[0] | 0;
             })), u$1), /* array */[
       /* tuple */[
@@ -129,7 +130,7 @@ var u$2 = /* array */[
   ]
 ];
 
-eq("File \"bs_sort_test.ml\", line 56, characters 5-12", (Bs_Sort.stableSortBy(u$2, (function (param, param$1) {
+eq("File \"bs_sort_test.ml\", line 57, characters 5-12", (Bs_Sort.stableSortBy(u$2, (function (param, param$1) {
               return param[0] - param$1[0] | 0;
             })), u$2), /* array */[
       /* tuple */[
@@ -177,7 +178,7 @@ var u$3 = /* array */[
   ]
 ];
 
-eq("File \"bs_sort_test.ml\", line 62, characters 5-12", (Bs_Sort.stableSortBy(u$3, (function (param, param$1) {
+eq("File \"bs_sort_test.ml\", line 63, characters 5-12", (Bs_Sort.stableSortBy(u$3, (function (param, param$1) {
               return param[0] - param$1[0] | 0;
             })), u$3), /* array */[
       /* tuple */[
@@ -206,7 +207,7 @@ eq("File \"bs_sort_test.ml\", line 62, characters 5-12", (Bs_Sort.stableSortBy(u
       ]
     ]);
 
-eq("File \"bs_sort_test.ml\", line 71, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 72, characters 5-12", Bs_Sort.binSearch(/* array */[
           1,
           2,
           3,
@@ -216,7 +217,7 @@ eq("File \"bs_sort_test.ml\", line 71, characters 5-12", Bs_Sort.binSearch(/* ar
           36
         ], 33, cmp), 4);
 
-eq("File \"bs_sort_test.ml\", line 72, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 73, characters 5-12", Bs_Sort.binSearch(/* array */[
           1,
           2,
           3,
@@ -226,7 +227,7 @@ eq("File \"bs_sort_test.ml\", line 72, characters 5-12", Bs_Sort.binSearch(/* ar
           36
         ], 1, cmp), 0);
 
-eq("File \"bs_sort_test.ml\", line 73, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 74, characters 5-12", Bs_Sort.binSearch(/* array */[
           1,
           2,
           3,
@@ -236,7 +237,7 @@ eq("File \"bs_sort_test.ml\", line 73, characters 5-12", Bs_Sort.binSearch(/* ar
           36
         ], 2, cmp), 1);
 
-eq("File \"bs_sort_test.ml\", line 74, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 75, characters 5-12", Bs_Sort.binSearch(/* array */[
           1,
           2,
           3,
@@ -246,7 +247,7 @@ eq("File \"bs_sort_test.ml\", line 74, characters 5-12", Bs_Sort.binSearch(/* ar
           36
         ], 3, cmp), 2);
 
-eq("File \"bs_sort_test.ml\", line 75, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 76, characters 5-12", Bs_Sort.binSearch(/* array */[
           1,
           2,
           3,
@@ -258,7 +259,7 @@ eq("File \"bs_sort_test.ml\", line 75, characters 5-12", Bs_Sort.binSearch(/* ar
 
 var aa = Array_data_util.range(0, 1000);
 
-b("File \"bs_sort_test.ml\", line 77, characters 4-11", Bs_Range.forAll(0, 1000, (function (i) {
+b("File \"bs_sort_test.ml\", line 78, characters 4-11", Bs_Range.forAll(0, 1000, (function (i) {
             return +(Bs_Sort.binSearch(aa, i, cmp) === i);
           })));
 
@@ -266,15 +267,15 @@ var cc = Bs_Array.map(Array_data_util.range(0, 2000), (function (x) {
         return (x << 1);
       }));
 
-eq("File \"bs_sort_test.ml\", line 82, characters 5-12", Bs_Sort.binSearch(cc, 5000, cmp) ^ -1, 2001);
+eq("File \"bs_sort_test.ml\", line 83, characters 5-12", Bs_Sort.binSearch(cc, 5000, cmp) ^ -1, 2001);
 
-eq("File \"bs_sort_test.ml\", line 83, characters 5-12", Bs_Sort.binSearch(cc, -1, cmp) ^ -1, 0);
+eq("File \"bs_sort_test.ml\", line 84, characters 5-12", Bs_Sort.binSearch(cc, -1, cmp) ^ -1, 0);
 
-eq("File \"bs_sort_test.ml\", line 84, characters 5-12", Bs_Sort.binSearch(cc, 0, cmp), 0);
+eq("File \"bs_sort_test.ml\", line 85, characters 5-12", Bs_Sort.binSearch(cc, 0, cmp), 0);
 
-eq("File \"bs_sort_test.ml\", line 86, characters 5-12", Bs_Sort.binSearch(cc, 1, cmp) ^ -1, 1);
+eq("File \"bs_sort_test.ml\", line 87, characters 5-12", Bs_Sort.binSearch(cc, 1, cmp) ^ -1, 1);
 
-b("File \"bs_sort_test.ml\", line 87, characters 4-11", Bs_Range.forAll(0, 1999, (function (i) {
+b("File \"bs_sort_test.ml\", line 88, characters 4-11", Bs_Range.forAll(0, 1999, (function (i) {
             return +((Bs_Sort.binSearch(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
           })));
 
@@ -288,6 +289,8 @@ var R = 0;
 
 var A = 0;
 
+var SI = 0;
+
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
@@ -297,4 +300,5 @@ exports.S = S;
 exports.R = R;
 exports.cmp = cmp;
 exports.A = A;
+exports.SI = SI;
 /*  Not a pure module */

@@ -230,6 +230,56 @@ b("File \"bs_mutable_set_test.ml\", line 95, characters 4-11", Bs_SetIntM.eq(cop
 
 b("File \"bs_mutable_set_test.ml\", line 96, characters 4-11", Bs_SetIntM.eq(cc, match[1]));
 
+var xs$2 = Array_data_util.randomRange(0, 1000);
+
+var v$5 = {
+  data: Bs_internalSetInt.ofArray(xs$2)
+};
+
+var match$1 = Bs_SetIntM.split(v$5, 400);
+
+var match$2 = match$1[0];
+
+var xs$3 = Array_data_util.randomRange(0, 399);
+
+b("File \"bs_mutable_set_test.ml\", line 101, characters 4-11", Bs_SetIntM.eq(match$2[0], {
+          data: Bs_internalSetInt.ofArray(xs$3)
+        }));
+
+var xs$4 = Array_data_util.randomRange(401, 1000);
+
+b("File \"bs_mutable_set_test.ml\", line 102, characters 4-11", Bs_SetIntM.eq(match$2[1], {
+          data: Bs_internalSetInt.ofArray(xs$4)
+        }));
+
+var xs$5 = Bs_Array.map(Array_data_util.randomRange(0, 1000), (function (x) {
+        return (x << 1);
+      }));
+
+var d = {
+  data: Bs_internalSetInt.ofArray(xs$5)
+};
+
+var match$3 = Bs_SetIntM.split(d, 1001);
+
+var match$4 = match$3[0];
+
+var xs$6 = Bs_Array.init(501, (function (x) {
+        return (x << 1);
+      }));
+
+b("File \"bs_mutable_set_test.ml\", line 105, characters 4-11", Bs_SetIntM.eq(match$4[0], {
+          data: Bs_internalSetInt.ofArray(xs$6)
+        }));
+
+var xs$7 = Bs_Array.init(500, (function (x) {
+        return 1002 + (x << 1) | 0;
+      }));
+
+b("File \"bs_mutable_set_test.ml\", line 106, characters 4-11", Bs_SetIntM.eq(match$4[1], {
+          data: Bs_internalSetInt.ofArray(xs$7)
+        }));
+
 Mt.from_pair_suites("bs_mutable_set_test.ml", suites[0]);
 
 var N = 0;

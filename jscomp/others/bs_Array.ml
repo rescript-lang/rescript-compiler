@@ -24,7 +24,7 @@ external makeUninitializedUnsafe : int -> 'a  array = "Array" [@@bs.new]
 external unsafe_sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 external append_prim : 'a array -> 'a array -> 'a array = "caml_array_append"
 external concat : 'a array list -> 'a array = "caml_array_concat"
-external unsafe_blit :
+external blitUnsafe :
   'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
 
 
@@ -109,7 +109,7 @@ let blit a1 ofs1 a2 ofs2 len =
   then 
     (* invalid_arg  *)
     [%assert "Array.blit"]
-  else unsafe_blit a1 ofs1 a2 ofs2 len
+  else blitUnsafe a1 ofs1 a2 ofs2 len
 
 let iter a f =
   for i = 0 to length a - 1 do f(unsafe_get a i) [@bs] done

@@ -54,7 +54,10 @@ val minNull: t -> elt Js.null
 val maxOpt: t -> elt option
 val maxNull: t -> elt Js.null
     
-(* val split:  t -> elt  -> t * bool * t *)
+val split:  t -> elt  -> (t * t) * bool 
+(**
+    [split s key] return a fresh copy of each
+*)
 val findOpt:  t -> elt -> elt option
     
 val addArray: t -> elt array -> t 

@@ -70,8 +70,9 @@ val fill : 'a array -> int -> int -> 'a -> unit
    Raise [Invalid_argument "Array.fill"] if [ofs] and [len] do not
    designate a valid subarray of [a]. *)
 
-val blit : 'a array -> int -> 'a array -> int -> int -> unit
-(** [Array.blit v1 o1 v2 o2 len] copies [len] elements
+val blit : 
+    'a array -> int -> 'a array -> int -> int -> unit
+(** [blit v1 o1 v2 o2 len] copies [len] elements
    from array [v1], starting at element number [o1], to array [v2],
    starting at element number [o2]. It works correctly even if
    [v1] and [v2] are the same array, and the source and
@@ -80,6 +81,8 @@ val blit : 'a array -> int -> 'a array -> int -> int -> unit
    Raise [Invalid_argument "Array.blit"] if [o1] and [len] do not
    designate a valid subarray of [v1], or if [o2] and [len] do not
    designate a valid subarray of [v2]. *)
+external blitUnsafe :
+  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
 
 val toList : 'a array -> 'a list
 
@@ -105,4 +108,3 @@ val forAll2: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 
 external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
-
