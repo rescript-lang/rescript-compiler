@@ -86,7 +86,7 @@ let union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
       let i1 = i1 + 1 in
       let i2 = i2 + 1 in 
       let d  = d + 1 in 
-      if i1 < src1r && i2 < src1r then 
+      if i1 < src1r && i2 < src2r then 
         loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
       else if i1 = src1r then   
         (A.blitUnsafe src2 i2 dst d (src2r - i2);
@@ -131,7 +131,7 @@ let inter src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
       let i1 = i1 + 1 in
       let i2 = i2 + 1 in 
       let d = d + 1 in 
-      if i1 < src1r && i2 < src1r then 
+      if i1 < src1r && i2 < src2r then 
         loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
       else d
     end 
@@ -166,7 +166,7 @@ let diff src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
     else if c = 0 then begin 
       let i1 = i1 + 1 in
       let i2 = i2 + 1 in 
-      if i1 < src1r && i2 < src1r then 
+      if i1 < src1r && i2 < src2r then 
         loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
       else if i1 = src1r then 
         d

@@ -71,8 +71,9 @@ val removeCheck:
 (* [b = removeCheck s e] [b] is true means one element removed *)   
 
 
-(* val union:  
+val union:  
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+(*  
 val inter: 
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
 val diff:   

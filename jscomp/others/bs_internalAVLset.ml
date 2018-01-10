@@ -224,24 +224,24 @@ let rec partitionShared0  n p =
     then (joinShared lt v rt, concatShared lf rf)
     else (concatShared lt rt, joinShared lf v rf)
 
-let rec lengthAux n = 
+let rec lengthNode n = 
   let l, r = left n, right n in  
   let sizeL = 
     match toOpt l with 
     | None -> 0
     | Some l -> 
-      lengthAux l  in 
+      lengthNode l  in 
   let sizeR = 
     match toOpt r with 
     | None -> 0
-    | Some r -> lengthAux r in 
+    | Some r -> lengthNode r in 
   1 + sizeL + sizeR  
 
 let rec length0 n =
   match toOpt n with 
   | None -> 0
   | Some n  ->
-    lengthAux n 
+    lengthNode n 
 
 let rec toListAux accu n = 
   match toOpt n with 
@@ -326,7 +326,7 @@ let toArray0 n =
   match toOpt n with 
   | None -> [||]
   | Some n ->  
-    let size = lengthAux n in 
+    let size = lengthNode n in 
     let v = A.makeUninitializedUnsafe size in 
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v 
@@ -405,7 +405,7 @@ let rec filterCopy n p : _ t0=
   match toOpt n with 
   | None -> empty 
   | Some n -> 
-    let size = lengthAux n in 
+    let size = lengthNode n in 
     let  v = A.makeUninitializedUnsafe size in 
     let last =     
       fillArrayWithFilter n 0 v p in 
@@ -415,7 +415,7 @@ let partitionCopy n p  =
   match toOpt n with 
   | None -> empty, empty  
   | Some n -> 
-    let size = lengthAux n in 
+    let size = lengthNode n in 
     let v = A.makeUninitializedUnsafe size in 
     let backward = size - 1 in 
     let cursor = cursor ~forward:0 ~backward in 
