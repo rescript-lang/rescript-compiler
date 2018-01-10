@@ -138,26 +138,27 @@ function fib3(n) {
 }
 
 function even(n) {
-  if (n === 0) {
-    return /* true */1;
-  } else {
+  if (n) {
     var n$1 = n - 1 | 0;
     if (n$1 === 1) {
-      return /* true */1;
+      return true;
     } else {
       return even(n$1 - 1 | 0);
     }
+  } else {
+    return true;
   }
 }
 
 function even2(_n) {
   while(true) {
     var n = _n;
-    if (n === 0) {
-      return /* true */1;
-    } else {
+    if (n) {
       _n = n - 1 | 0;
       continue ;
+      
+    } else {
+      return true;
     }
   };
 }
@@ -181,6 +182,7 @@ function sum(_acc, _n) {
       _n = n - 1 | 0;
       _acc = acc + n | 0;
       continue ;
+      
     } else {
       return acc;
     }

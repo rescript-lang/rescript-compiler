@@ -2,13 +2,14 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
+var Pervasives = require("../../lib/js/pervasives.js");
 
 var suites_000 = /* tuple */[
   "_NaN <> _NaN",
   (function () {
       return /* Eq */Block.__(0, [
-                /* false */0,
-                +(NaN === NaN)
+                false,
+                NaN === NaN
               ]);
     })
 ];
@@ -18,8 +19,8 @@ var suites_001 = /* :: */[
     "isNaN - _NaN",
     (function () {
         return /* Eq */Block.__(0, [
-                  /* true */1,
-                  +isNaN(NaN)
+                  true,
+                  isNaN(NaN)
                 ]);
       })
   ],
@@ -28,8 +29,8 @@ var suites_001 = /* :: */[
       "isNaN - 0.",
       (function () {
           return /* Eq */Block.__(0, [
-                    /* false */0,
-                    +isNaN(0)
+                    false,
+                    isNaN(0)
                   ]);
         })
     ],
@@ -38,8 +39,8 @@ var suites_001 = /* :: */[
         "isFinite - infinity",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* false */0,
-                      +isFinite(Number.POSITIVE_INFINITY)
+                      false,
+                      isFinite(Pervasives.infinity)
                     ]);
           })
       ],
@@ -48,8 +49,8 @@ var suites_001 = /* :: */[
           "isFinite - neg_infinity",
           (function () {
               return /* Eq */Block.__(0, [
-                        /* false */0,
-                        +isFinite(Number.NEGATIVE_INFINITY)
+                        false,
+                        isFinite(Pervasives.neg_infinity)
                       ]);
             })
         ],
@@ -58,8 +59,8 @@ var suites_001 = /* :: */[
             "isFinite - _NaN",
             (function () {
                 return /* Eq */Block.__(0, [
-                          /* false */0,
-                          +isFinite(NaN)
+                          false,
+                          isFinite(NaN)
                         ]);
               })
           ],
@@ -68,8 +69,8 @@ var suites_001 = /* :: */[
               "isFinite - 0.",
               (function () {
                   return /* Eq */Block.__(0, [
-                            /* true */1,
-                            +isFinite(0)
+                            true,
+                            isFinite(0)
                           ]);
                 })
             ],
@@ -428,8 +429,8 @@ var suites_001 = /* :: */[
                                                                                       "fromString - invalid string",
                                                                                       (function () {
                                                                                           return /* Eq */Block.__(0, [
-                                                                                                    /* true */1,
-                                                                                                    +isNaN(Number("foo"))
+                                                                                                    true,
+                                                                                                    isNaN(Number("foo"))
                                                                                                   ]);
                                                                                         })
                                                                                     ],

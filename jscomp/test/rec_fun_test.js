@@ -13,7 +13,7 @@ function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + String(test_id[0])),
+      loc + (" id " + test_id[0]),
       (function () {
           return /* Eq */Block.__(0, [
                     x,
@@ -33,12 +33,12 @@ function g() {
   var next = function (i, b) {
     called[0] = called[0] + 1 | 0;
     if (b) {
-      Curry._2(v[0], i, /* false */0);
+      Curry._2(v[0], i, false);
     }
     return i + 1 | 0;
   };
   Caml_obj.caml_update_dummy(v, [next]);
-  console.log(String(next(0, /* true */1)));
+  console.log("" + next(0, true));
   return /* () */0;
 }
 

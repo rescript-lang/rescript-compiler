@@ -1,16 +1,17 @@
 'use strict';
 
-var Belt_Id = require("../../lib/js/belt_Id.js");
+var Bs_Map = require("../../lib/js/bs_Map.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_hash = require("../../lib/js/caml_hash.js");
-var Belt_HashMap = require("../../lib/js/belt_HashMap.js");
-var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
+var Bs_HashMap = require("../../lib/js/bs_HashMap.js");
+var Bs_HashMapInt = require("../../lib/js/bs_HashMapInt.js");
+var Bs_HashSetInt = require("../../lib/js/bs_HashSetInt.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
-var Belt_HashMapInt = require("../../lib/js/belt_HashMapInt.js");
-var Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
-var Belt_HashMapString = require("../../lib/js/belt_HashMapString.js");
+var Bs_HashMapString = require("../../lib/js/bs_HashMapString.js");
+var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
+var Bs_internalBuckets = require("../../lib/js/bs_internalBuckets.js");
+var Bs_internalBucketsType = require("../../lib/js/bs_internalBucketsType.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
-var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
 function hash_string(s) {
   return Caml_hash.caml_hash_final_mix(Caml_hash.caml_hash_mix_string(0, s));
@@ -23,36 +24,65 @@ var hashString = (function (str) {
                                               while(i !== 0) {
                                               hash = (hash * 33) ^ str.charCodeAt(--i);
                                               }
-                                              return hash
+                                              return hash  
                                               }
                                             );
 
-var $$String = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
-        return +(x === y);
-      }));
+var String_000 = Hashtbl.hash;
 
-var String1 = Belt_Id.hashable(hashString, (function (x, y) {
-        return +(x === y);
-      }));
+function String_001(x, y) {
+  return x === y;
+}
 
-var String2 = Belt_Id.hashable((function (x) {
-        return Caml_hash.caml_hash_final_mix(Caml_hash.caml_hash_mix_string(0, x));
-      }), (function (x, y) {
-        return +(x === y);
-      }));
+var $$String = /* module */[
+  String_000,
+  String_001
+];
 
-var Int = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
-        return +(x === y);
-      }));
+function String1_001(x, y) {
+  return x === y;
+}
 
-var empty = Belt_HashMap.make(500000, Int);
+var String1 = /* module */[
+  /* hash */hashString,
+  String1_001
+];
+
+function String2_000(x) {
+  return Caml_hash.caml_hash_final_mix(Caml_hash.caml_hash_mix_string(0, x));
+}
+
+function String2_001(x, y) {
+  return x === y;
+}
+
+var String2 = /* module */[
+  String2_000,
+  String2_001
+];
+
+var Int_000 = Hashtbl.hash;
+
+function Int_001(x, y) {
+  return x === y;
+}
+
+var Int = /* module */[
+  Int_000,
+  Int_001
+];
+
+var empty = {
+  dict: Int,
+  data: Bs_internalBucketsType.create0(500000)
+};
 
 function bench() {
   for(var i = 0; i <= 1000000; ++i){
-    Belt_HashMap.set(empty, i, i);
+    Bs_HashMap.add(empty, i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Belt_HashMap.has(empty, i$1)) {
+    if (!Bs_HashMap.mem(empty, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -64,21 +94,27 @@ function bench() {
     }
     
   }
-  return Belt_HashMap.logStats(empty);
+  return Bs_internalBuckets.logStats0(empty.data);
 }
 
 function bench2(m) {
-  var empty = Belt_HashMap.make(1000000, m);
+  var empty = {
+    dict: m,
+    data: Bs_internalBucketsType.create0(1000000)
+  };
+  var hash = m[/* hash */0];
+  var eq = m[/* eq */1];
+  var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
-    Belt_HashMap.set(empty, String(i), i);
+    Bs_HashMap.add0(hash, eq, table, "" + i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Belt_HashMap.has(empty, String(i$1))) {
+    if (!Bs_HashMap.mem0(hash, eq, table, "" + i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              76,
+              75,
               4
             ]
           ];
@@ -86,11 +122,9 @@ function bench2(m) {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Belt_HashMap.remove(empty, String(i$2));
+    Bs_HashMap.remove0(hash, eq, table, "" + i$2);
   }
-  if (empty.size === 0) {
-    return 0;
-  } else {
+  if (Bs_HashMap.length0(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -99,26 +133,28 @@ function bench2(m) {
             2
           ]
         ];
+  } else {
+    return 0;
   }
 }
 
 function bench3(m) {
   var empty = {
-    cmp: m[/* cmp */0],
-    data: Belt_MapDict.empty
+    dict: m,
+    data: Bs_internalAVLtree.empty0
   };
   var cmp = m[/* cmp */0];
   var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
-    table = Belt_MapDict.set(table, String(i), i, cmp);
+    table = Bs_Map.add0(cmp, "" + i, i, table);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Belt_MapDict.has(table, String(i$1), cmp)) {
+    if (!Bs_Map.mem0(cmp, "" + i$1, table)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              98,
+              96,
               4
             ]
           ];
@@ -126,36 +162,36 @@ function bench3(m) {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    table = Belt_MapDict.remove(table, String(i$2), cmp);
+    table = Bs_Map.remove0(cmp, "" + i$2, table);
   }
-  if (Belt_MapDict.size(table) === 0) {
-    return 0;
-  } else {
+  if (Bs_Map.length0(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            105,
+            103,
             2
           ]
         ];
+  } else {
+    return 0;
   }
 }
 
-var Sx = Belt_Id.comparable(Caml_primitive.caml_string_compare);
+var Sx = /* module */[/* cmp */Caml_primitive.caml_string_compare];
 
 function bench4() {
-  var table = Belt_internalBucketsType.make(/* () */0, /* () */0, 1000000);
+  var table = Bs_HashMapString.create(1000000);
   for(var i = 0; i <= 1000000; ++i){
-    Belt_HashMapString.set(table, String(i), i);
+    Bs_HashMapString.add(table, "" + i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Belt_HashMapString.has(table, String(i$1))) {
+    if (!Bs_HashMapString.mem(table, "" + i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              118,
+              116,
               4
             ]
           ];
@@ -163,75 +199,81 @@ function bench4() {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Belt_HashMapString.remove(table, String(i$2));
+    Bs_HashMapString.remove(table, "" + i$2);
   }
-  if (Belt_HashMapString.isEmpty(table)) {
-    return 0;
-  } else {
+  if (Bs_HashMapString.length(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            124,
+            122,
             2
           ]
         ];
+  } else {
+    return 0;
   }
 }
 
 function bench5() {
-  var table = Belt_HashMap.make(1000000, Int);
-  console.time("bs_hashtbl_string_test.ml 133");
+  var table = {
+    dict: Int,
+    data: Bs_internalBucketsType.create0(1000000)
+  };
+  var table_data = table.data;
+  var hash = Int_000;
+  var eq = Int_001;
+  console.time("bs_hashtbl_string_test.ml 130");
   for(var i = 0; i <= 1000000; ++i){
-    Belt_HashMap.set(table, i, i);
+    Bs_HashMap.add0(hash, eq, table_data, i, i);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 133");
-  console.time("bs_hashtbl_string_test.ml 137");
+  console.timeEnd("bs_hashtbl_string_test.ml 130");
+  console.time("bs_hashtbl_string_test.ml 134");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Belt_HashMap.has(table, i$1)) {
+    if (!Bs_HashMap.mem0(hash, eq, table_data, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              138,
+              135,
               6
             ]
           ];
     }
     
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 137");
-  console.time("bs_hashtbl_string_test.ml 141");
+  console.timeEnd("bs_hashtbl_string_test.ml 134");
+  console.time("bs_hashtbl_string_test.ml 138");
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Belt_HashMap.remove(table, i$2);
+    Bs_HashMap.remove0(hash, eq, table_data, i$2);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 141");
-  if (Belt_HashMap.isEmpty(table)) {
-    return 0;
-  } else {
+  console.timeEnd("bs_hashtbl_string_test.ml 138");
+  if (table.data.size) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            144,
+            141,
             2
           ]
         ];
+  } else {
+    return 0;
   }
 }
 
 function bench6() {
-  var table = Belt_internalBucketsType.make(/* () */0, /* () */0, 1000000);
+  var table = Bs_HashMapInt.create(1000000);
   for(var i = 0; i <= 1000000; ++i){
-    Belt_HashMapInt.set(table, i, i);
+    Bs_HashMapInt.add(table, i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Belt_HashMapInt.has(table, i$1)) {
+    if (!Bs_HashMapInt.mem(table, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              156,
+              152,
               4
             ]
           ];
@@ -239,35 +281,34 @@ function bench6() {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Belt_HashMapInt.remove(table, i$2);
+    Bs_HashMapInt.remove(table, i$2);
   }
-  if (table.size === 0) {
-    return 0;
-  } else {
+  if (Bs_HashMapInt.length(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            162,
+            158,
             2
           ]
         ];
+  } else {
+    return 0;
   }
 }
 
 function bench7() {
-  var hintSize = 2000000;
-  var table = Belt_internalBucketsType.make(/* () */0, /* () */0, hintSize);
+  var table = Bs_HashSetInt.create(2000000);
   for(var i = 0; i <= 1000000; ++i){
-    Belt_HashSetInt.add(table, i);
+    Bs_HashSetInt.add(table, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Belt_HashSetInt.has(table, i$1)) {
+    if (!Bs_HashSetInt.mem(table, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              181,
+              177,
               4
             ]
           ];
@@ -275,45 +316,33 @@ function bench7() {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Belt_HashSetInt.remove(table, i$2);
+    Bs_HashSetInt.remove(table, i$2);
   }
-  if (table.size === 0) {
-    return 0;
-  } else {
+  if (Bs_HashSetInt.length(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            192,
+            188,
             2
           ]
         ];
+  } else {
+    return 0;
   }
 }
 
-console.time("bs_hashtbl_string_test.ml 203");
+console.time("bs_hashtbl_string_test.ml 199");
 
 bench7(/* () */0);
 
-console.timeEnd("bs_hashtbl_string_test.ml 203");
-
-var N = 0;
+console.timeEnd("bs_hashtbl_string_test.ml 199");
 
 var count = 1000000;
 
 var initial_size = 1000000;
 
-var M = 0;
-
-var Md = 0;
-
-var Md0 = 0;
-
-var H = 0;
-
-var H0 = 0;
-
-var HI = 0;
+var B = 0;
 
 var S = 0;
 
@@ -323,22 +352,16 @@ exports.$$String = $$String;
 exports.String1 = String1;
 exports.String2 = String2;
 exports.Int = Int;
-exports.N = N;
 exports.empty = empty;
 exports.bench = bench;
 exports.count = count;
 exports.initial_size = initial_size;
-exports.M = M;
+exports.B = B;
 exports.bench2 = bench2;
-exports.Md = Md;
-exports.Md0 = Md0;
 exports.bench3 = bench3;
 exports.Sx = Sx;
-exports.H = H;
 exports.bench4 = bench4;
-exports.H0 = H0;
 exports.bench5 = bench5;
-exports.HI = HI;
 exports.bench6 = bench6;
 exports.S = S;
 exports.bench7 = bench7;

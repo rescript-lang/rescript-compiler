@@ -1763,7 +1763,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                             (function () {
                                 return /* Eq */Block.__(0, [
                                           $$Array.map((function () {
-                                                  return /* true */1;
+                                                  return true;
                                                 }), check_complete_compare),
                                           check_complete_compare
                                         ]);

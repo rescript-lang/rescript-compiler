@@ -257,9 +257,9 @@ function exists(p, a) {
   while(true) {
     var i = _i;
     if (i === n) {
-      return /* false */0;
+      return false;
     } else if (Curry._1(p, a[i])) {
-      return /* true */1;
+      return true;
     } else {
       _i = i + 1 | 0;
       continue ;
@@ -268,14 +268,14 @@ function exists(p, a) {
 }
 
 function is_empty(arr) {
-  return +(arr.length === 0);
+  return arr.length === 0;
 }
 
 function unsafe_loop(_index, len, p, xs, ys) {
   while(true) {
     var index = _index;
     if (index >= len) {
-      return /* true */1;
+      return true;
     } else if (Curry._2(p, xs[index], ys[index])) {
       _index = index + 1 | 0;
       continue ;

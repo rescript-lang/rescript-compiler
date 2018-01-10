@@ -14,7 +14,7 @@ var suites_000 = /* tuple */[
   "is_block_test1",
   (function () {
       return /* Eq */Block.__(0, [
-                /* false */0,
+                false,
                 (3).length !== undefined
               ]);
     })
@@ -25,7 +25,7 @@ var suites_001 = /* :: */[
     "is_block_test2",
     (function () {
         return /* Eq */Block.__(0, [
-                  /* true */1,
+                  true,
                   /* :: */[
                     3,
                     /* [] */0
@@ -38,7 +38,7 @@ var suites_001 = /* :: */[
       "is_block_test3",
       (function () {
           return /* Eq */Block.__(0, [
-                    /* true */1,
+                    true,
                     "x".length !== undefined
                   ]);
         })
@@ -48,7 +48,7 @@ var suites_001 = /* :: */[
         "is_block_test4",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* false */0,
+                      false,
                       (3.0).length !== undefined
                     ]);
           })

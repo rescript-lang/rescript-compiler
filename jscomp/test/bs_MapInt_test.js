@@ -1,6 +1,6 @@
 'use strict';
 
-var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
+var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
 
 function should(b) {
   if (b) {
@@ -11,24 +11,21 @@ function should(b) {
 }
 
 function test() {
-  var m = Belt_MapInt.empty;
+  var m = Bs_MapInt.empty;
   for(var i = 0; i <= 999999; ++i){
-    m = Belt_MapInt.set(m, i, i);
+    m = Bs_MapInt.add(i, i, m);
   }
   for(var i$1 = 0; i$1 <= 999999; ++i$1){
-    should(+(Belt_MapInt.get(m, i$1) !== /* None */0));
+    should(Bs_MapInt.findOpt(i$1, m) !== /* None */0);
   }
   for(var i$2 = 0; i$2 <= 999999; ++i$2){
-    m = Belt_MapInt.remove(m, i$2);
+    m = Bs_MapInt.remove(i$2, m);
   }
-  return should(Belt_MapInt.isEmpty(m));
+  return should(Bs_MapInt.length(m) === 0);
 }
 
 test(/* () */0);
 
-var M = 0;
-
 exports.should = should;
-exports.M = M;
 exports.test = test;
 /*  Not a pure module */

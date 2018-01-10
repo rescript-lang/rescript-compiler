@@ -11,7 +11,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function split_by($staropt$star, is_delim, str) {
-  var keep_empty = $staropt$star ? $staropt$star[0] : /* false */0;
+  var keep_empty = $staropt$star ? $staropt$star[0] : false;
   var len = str.length;
   var _acc = /* [] */0;
   var _last_pos = len;
@@ -40,14 +40,17 @@ function split_by($staropt$star, is_delim, str) {
           acc
         ];
         continue ;
+        
       } else {
         _pos = pos - 1 | 0;
         _last_pos = pos;
         continue ;
+        
       }
     } else {
       _pos = pos - 1 | 0;
       continue ;
+      
     }
   };
 }
@@ -56,23 +59,15 @@ function trim(s) {
   var i = 0;
   var j = s.length;
   while((function () {
-          var tmp = /* false */0;
-          if (i < j) {
-            var u = s.charCodeAt(i);
-            tmp = +(u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32);
-          }
-          return tmp;
+          var u = s.charCodeAt(i);
+          return i < j && (u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32);
         })()) {
     i = i + 1 | 0;
   };
   var k = j - 1 | 0;
   while((function () {
-          var tmp = /* false */0;
-          if (k >= i) {
-            var u = s.charCodeAt(k);
-            tmp = +(u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32);
-          }
-          return tmp;
+          var u = s.charCodeAt(k);
+          return k >= i && (u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32);
         })()) {
     k = k - 1 | 0;
   };
@@ -84,17 +79,17 @@ function split(keep_empty, str, on) {
     return /* [] */0;
   } else {
     return split_by(keep_empty, (function (x) {
-                  return +(x === on);
+                  return x === on;
                 }), str);
   }
 }
 
 function quick_split_by_ws(str) {
-  return split_by(/* Some */[/* false */0], (function (x) {
+  return split_by(/* Some */[false], (function (x) {
                 if (x === /* "\t" */9 || x === /* "\n" */10) {
                   return /* true */1;
                 } else {
-                  return +(x === /* " " */32);
+                  return x === /* " " */32;
                 }
               }), str);
 }
@@ -107,7 +102,7 @@ function starts_with(s, beg) {
     while(i < beg_len && s[i] === beg[i]) {
       i = i + 1 | 0;
     };
-    return +(i === beg_len);
+    return i === beg_len;
   } else {
     return /* false */0;
   }
@@ -130,6 +125,7 @@ function ends_with_index(s, end_) {
         _k = k - 1 | 0;
         _j = j - 1 | 0;
         continue ;
+        
       } else {
         return -1;
       }
@@ -138,7 +134,7 @@ function ends_with_index(s, end_) {
 }
 
 function ends_with(s, end_) {
-  return +(ends_with_index(s, end_) >= 0);
+  return ends_with_index(s, end_) >= 0;
 }
 
 function ends_with_then_chop(s, beg) {
@@ -167,6 +163,7 @@ function check_any_suffix_case_then_chop(s, suffixes) {
       } else {
         _suffixes = suffixes$1[1];
         continue ;
+        
       }
     } else {
       return /* None */0;
@@ -179,26 +176,28 @@ function escaped(s) {
     while(true) {
       var i = _i;
       if (i >= s.length) {
-        return /* false */0;
+        return false;
       } else {
         var match = s.charCodeAt(i);
         if (match >= 32) {
           var switcher = match - 34 | 0;
           if (switcher > 58 || switcher < 0) {
             if (switcher >= 93) {
-              return /* true */1;
+              return true;
             } else {
               _i = i + 1 | 0;
               continue ;
+              
             }
           } else if (switcher > 57 || switcher < 1) {
-            return /* true */1;
+            return true;
           } else {
             _i = i + 1 | 0;
             continue ;
+            
           }
         } else {
-          return /* true */1;
+          return true;
         }
       }
     };
@@ -218,6 +217,7 @@ function unsafe_for_all_range(s, _start, finish, p) {
     } else if (Curry._1(p, s.charCodeAt(start))) {
       _start = start + 1 | 0;
       continue ;
+      
     } else {
       return /* false */0;
     }
@@ -241,7 +241,7 @@ function for_all(p, s) {
 }
 
 function is_empty(s) {
-  return +(s.length === 0);
+  return s.length === 0;
 }
 
 function repeat(n, s) {
@@ -259,10 +259,11 @@ function unsafe_is_sub(sub, i, s, j, len) {
     while(true) {
       var k = _k;
       if (k === len) {
-        return /* true */1;
+        return true;
       } else if (sub[i + k | 0] === s[j + k | 0]) {
         _k = k + 1 | 0;
         continue ;
+        
       } else {
         return /* false */0;
       }
@@ -298,17 +299,12 @@ function find($staropt$star, sub, s) {
 }
 
 function contain_substring(s, sub) {
-  return +(find(/* None */0, sub, s) >= 0);
+  return find(/* None */0, sub, s) >= 0;
 }
 
 function non_overlap_count(sub, s) {
   var sub_len = sub.length;
-  if (sub.length === 0) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_string_test.non_overlap_count"
-        ];
-  } else {
+  if (sub.length) {
     var _acc = 0;
     var _off = 0;
     while(true) {
@@ -321,8 +317,14 @@ function non_overlap_count(sub, s) {
         _off = i + sub_len | 0;
         _acc = acc + 1 | 0;
         continue ;
+        
       }
     };
+  } else {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Ext_string_test.non_overlap_count"
+        ];
   }
 }
 
@@ -350,7 +352,7 @@ function rfind(sub, s) {
 function tail_from(s, x) {
   var len = s.length;
   if (x > len) {
-    var s$1 = "Ext_string_test.tail_from " + (s + (" : " + String(x)));
+    var s$1 = "Ext_string_test.tail_from " + (s + (" : " + x));
     throw [
           Caml_builtin_exceptions.invalid_argument,
           s$1
@@ -374,6 +376,7 @@ function digits_of_str(s, offset, x) {
       _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s$1, offset + i | 0) | 0) - 48 | 0;
       _i = i + 1 | 0;
       continue ;
+      
     }
   };
 }
@@ -398,7 +401,7 @@ function starts_with_and_number(s, offset, beg) {
 }
 
 function equal(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 function unsafe_concat_with_length(len, sep, l) {
@@ -426,11 +429,14 @@ function unsafe_concat_with_length(len, sep, l) {
 function rindex_rec(s, _i, c) {
   while(true) {
     var i = _i;
-    if (i < 0 || s.charCodeAt(i) === c) {
+    if (i < 0) {
+      return i;
+    } else if (s.charCodeAt(i) === c) {
       return i;
     } else {
       _i = i - 1 | 0;
       continue ;
+      
     }
   };
 }
@@ -445,6 +451,7 @@ function rindex_rec_opt(s, _i, c) {
     } else {
       _i = i - 1 | 0;
       continue ;
+      
     }
   };
 }
@@ -464,14 +471,14 @@ function is_valid_module_file(s) {
     var exit = 0;
     if (match >= 91) {
       if (match > 122 || match < 97) {
-        return /* false */0;
+        return false;
       } else {
         exit = 1;
       }
     } else if (match >= 65) {
       exit = 1;
     } else {
-      return /* false */0;
+      return false;
     }
     if (exit === 1) {
       return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
@@ -479,25 +486,25 @@ function is_valid_module_file(s) {
                       var switcher = x - 91 | 0;
                       if (switcher > 5 || switcher < 0) {
                         if (switcher >= 32) {
-                          return /* false */0;
+                          return false;
                         } else {
-                          return /* true */1;
+                          return true;
                         }
                       } else if (switcher !== 4) {
-                        return /* false */0;
+                        return false;
                       } else {
-                        return /* true */1;
+                        return true;
                       }
                     } else if (x >= 48) {
                       if (x >= 58) {
-                        return /* false */0;
+                        return false;
                       } else {
-                        return /* true */1;
+                        return true;
                       }
                     } else if (x !== 39) {
-                      return /* false */0;
+                      return false;
                     } else {
-                      return /* true */1;
+                      return true;
                     }
                   }));
     }
@@ -509,42 +516,46 @@ function is_valid_module_file(s) {
 
 function is_valid_npm_package_name(s) {
   var len = s.length;
-  if (len <= 214 && len > 0) {
-    var match = s.charCodeAt(0);
-    var exit = 0;
-    if (match >= 97) {
-      if (match >= 123) {
-        return /* false */0;
+  if (len <= 214) {
+    if (len > 0) {
+      var match = s.charCodeAt(0);
+      var exit = 0;
+      if (match >= 97) {
+        if (match >= 123) {
+          return false;
+        } else {
+          exit = 1;
+        }
+      } else if (match !== 64) {
+        return false;
       } else {
         exit = 1;
       }
-    } else if (match !== 64) {
-      return /* false */0;
-    } else {
-      exit = 1;
-    }
-    if (exit === 1) {
-      return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
-                    if (x >= 58) {
-                      if (x >= 97) {
-                        if (x >= 123) {
-                          return /* false */0;
+      if (exit === 1) {
+        return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
+                      if (x >= 58) {
+                        if (x >= 97) {
+                          if (x >= 123) {
+                            return false;
+                          } else {
+                            return true;
+                          }
+                        } else if (x !== 95) {
+                          return false;
                         } else {
-                          return /* true */1;
+                          return true;
                         }
-                      } else if (x !== 95) {
-                        return /* false */0;
+                      } else if (x !== 45 && x < 48) {
+                        return false;
                       } else {
-                        return /* true */1;
+                        return true;
                       }
-                    } else if (x !== 45 && x < 48) {
-                      return /* false */0;
-                    } else {
-                      return /* true */1;
-                    }
-                  }));
+                    }));
+      }
+      
+    } else {
+      return /* false */0;
     }
-    
   } else {
     return /* false */0;
   }
@@ -583,6 +594,7 @@ function unsafe_no_char(x, ch, _i, last_idx) {
     } else if (x.charCodeAt(i) !== ch) {
       _i = i + 1 | 0;
       continue ;
+      
     } else {
       return /* false */0;
     }
@@ -597,6 +609,7 @@ function unsafe_no_char_idx(x, ch, _i, last_idx) {
     } else if (x.charCodeAt(i) !== ch) {
       _i = i + 1 | 0;
       continue ;
+      
     } else {
       return i;
     }

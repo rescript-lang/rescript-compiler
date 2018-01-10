@@ -68,9 +68,9 @@ function max_elt(_param) {
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -152,7 +152,7 @@ function for_all(p, _param) {
         return /* false */0;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -168,7 +168,7 @@ function exists(p, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -684,7 +684,7 @@ function is_ordered(cmp, tree) {
       return /* Empty */50834029;
     }
   };
-  return +(is_ordered_min_max(tree) !== /* No */17505);
+  return is_ordered_min_max(tree) !== /* No */17505;
 }
 
 function invariant(cmp, t) {

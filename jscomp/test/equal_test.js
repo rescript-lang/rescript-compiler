@@ -2,13 +2,13 @@
 
 
 function str_equal(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 var str_b = /* true */1;
 
 function int_equal(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 var v = /* false */0;

@@ -22,10 +22,10 @@ function b(loc, x) {
 function does_raise(f, q) {
   try {
     Curry._1(f, q);
-    return /* false */0;
+    return false;
   }
   catch (exn){
-    return /* true */1;
+    return true;
   }
 }
 

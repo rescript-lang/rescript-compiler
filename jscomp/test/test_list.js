@@ -349,7 +349,7 @@ function for_all(p, _param) {
         return /* false */0;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -365,7 +365,7 @@ function exists(p, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -395,7 +395,7 @@ function for_all2(p, _l1, _l2) {
             "List.for_all2"
           ];
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -425,7 +425,7 @@ function exists2(p, _l1, _l2) {
             "List.exists2"
           ];
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -441,7 +441,7 @@ function mem(x, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -457,7 +457,7 @@ function memq(x, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -507,7 +507,7 @@ function mem_assoc(x, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -523,7 +523,7 @@ function mem_assq(x, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }

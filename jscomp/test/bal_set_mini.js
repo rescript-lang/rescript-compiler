@@ -166,7 +166,7 @@ function mem(x, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }

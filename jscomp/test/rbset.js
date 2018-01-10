@@ -12,27 +12,27 @@ function blackify(s) {
                 s[2],
                 s[3]
               ],
-              /* false */0
+              false
             ];
     } else {
       return /* tuple */[
               s,
-              /* true */1
+              true
             ];
     }
   } else {
     return /* tuple */[
             s,
-            /* true */1
+            true
           ];
   }
 }
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -42,16 +42,18 @@ function mem(x, _param) {
     if (param) {
       var y = param[2];
       if (x === y) {
-        return /* true */1;
+        return true;
       } else if (x < y) {
         _param = param[1];
         continue ;
+        
       } else {
         _param = param[3];
         continue ;
+        
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -65,37 +67,49 @@ function balance_left(l, x, r) {
   var c;
   var z;
   var d;
-  if (l && l[0] !== 0) {
-    var a$1 = l[1];
-    var exit$1 = 0;
-    if (a$1 && a$1[0] !== 0) {
-      a = a$1[1];
-      x$1 = a$1[2];
-      b = a$1[3];
-      y = l[2];
-      c = l[3];
-      z = x;
-      d = r;
-      exit = 2;
-    } else {
-      exit$1 = 3;
-    }
-    if (exit$1 === 3) {
-      var match = l[3];
-      if (match && match[0] !== 0) {
-        a = a$1;
-        x$1 = l[2];
-        b = match[1];
-        y = match[2];
-        c = match[3];
-        z = x;
-        d = r;
-        exit = 2;
+  if (l) {
+    if (l[0] !== 0) {
+      var a$1 = l[1];
+      var exit$1 = 0;
+      if (a$1) {
+        if (a$1[0] !== 0) {
+          a = a$1[1];
+          x$1 = a$1[2];
+          b = a$1[3];
+          y = l[2];
+          c = l[3];
+          z = x;
+          d = r;
+          exit = 2;
+        } else {
+          exit$1 = 3;
+        }
       } else {
-        exit = 1;
+        exit$1 = 3;
       }
+      if (exit$1 === 3) {
+        var match = l[3];
+        if (match) {
+          if (match[0] !== 0) {
+            a = a$1;
+            x$1 = l[2];
+            b = match[1];
+            y = match[2];
+            c = match[3];
+            z = x;
+            d = r;
+            exit = 2;
+          } else {
+            exit = 1;
+          }
+        } else {
+          exit = 1;
+        }
+      }
+      
+    } else {
+      exit = 1;
     }
-    
   } else {
     exit = 1;
   }
@@ -137,37 +151,49 @@ function balance_right(l, x, r) {
   var c;
   var z;
   var d;
-  if (r && r[0] !== 0) {
-    var b$1 = r[1];
-    var exit$1 = 0;
-    if (b$1 && b$1[0] !== 0) {
-      a = l;
-      x$1 = x;
-      b = b$1[1];
-      y = b$1[2];
-      c = b$1[3];
-      z = r[2];
-      d = r[3];
-      exit = 2;
-    } else {
-      exit$1 = 3;
-    }
-    if (exit$1 === 3) {
-      var match = r[3];
-      if (match && match[0] !== 0) {
-        a = l;
-        x$1 = x;
-        b = b$1;
-        y = r[2];
-        c = match[1];
-        z = match[2];
-        d = match[3];
-        exit = 2;
+  if (r) {
+    if (r[0] !== 0) {
+      var b$1 = r[1];
+      var exit$1 = 0;
+      if (b$1) {
+        if (b$1[0] !== 0) {
+          a = l;
+          x$1 = x;
+          b = b$1[1];
+          y = b$1[2];
+          c = b$1[3];
+          z = r[2];
+          d = r[3];
+          exit = 2;
+        } else {
+          exit$1 = 3;
+        }
       } else {
-        exit = 1;
+        exit$1 = 3;
       }
+      if (exit$1 === 3) {
+        var match = r[3];
+        if (match) {
+          if (match[0] !== 0) {
+            a = l;
+            x$1 = x;
+            b = b$1;
+            y = r[2];
+            c = match[1];
+            z = match[2];
+            d = match[3];
+            exit = 2;
+          } else {
+            exit = 1;
+          }
+        } else {
+          exit = 1;
+        }
+      }
+      
+    } else {
+      exit = 1;
     }
-    
   } else {
     exit = 1;
   }
@@ -214,16 +240,20 @@ function unbalanced_left(param) {
   if (param) {
     if (param[0] !== 0) {
       var match = param[1];
-      if (match && match[0] === 0) {
-        return /* tuple */[
-                balance_left(/* Node */[
-                      /* Red */1,
-                      match[1],
-                      match[2],
-                      match[3]
-                    ], param[2], param[3]),
-                /* false */0
-              ];
+      if (match) {
+        if (match[0] !== 0) {
+          exit = 1;
+        } else {
+          return /* tuple */[
+                  balance_left(/* Node */[
+                        /* Red */1,
+                        match[1],
+                        match[2],
+                        match[3]
+                      ], param[2], param[3]),
+                  false
+                ];
+        }
       } else {
         exit = 1;
       }
@@ -232,21 +262,25 @@ function unbalanced_left(param) {
       if (match$1) {
         if (match$1[0] !== 0) {
           var match$2 = match$1[3];
-          if (match$2 && match$2[0] === 0) {
-            return /* tuple */[
-                    /* Node */[
-                      /* Black */0,
-                      match$1[1],
-                      match$1[2],
-                      balance_left(/* Node */[
-                            /* Red */1,
-                            match$2[1],
-                            match$2[2],
-                            match$2[3]
-                          ], param[2], param[3])
-                    ],
-                    /* false */0
-                  ];
+          if (match$2) {
+            if (match$2[0] !== 0) {
+              exit = 1;
+            } else {
+              return /* tuple */[
+                      /* Node */[
+                        /* Black */0,
+                        match$1[1],
+                        match$1[2],
+                        balance_left(/* Node */[
+                              /* Red */1,
+                              match$2[1],
+                              match$2[2],
+                              match$2[3]
+                            ], param[2], param[3])
+                      ],
+                      false
+                    ];
+            }
           } else {
             exit = 1;
           }
@@ -258,7 +292,7 @@ function unbalanced_left(param) {
                         match$1[2],
                         match$1[3]
                       ], param[2], param[3]),
-                  /* true */1
+                  true
                 ];
         }
       } else {
@@ -286,16 +320,20 @@ function unbalanced_right(param) {
   if (param) {
     if (param[0] !== 0) {
       var match = param[3];
-      if (match && match[0] === 0) {
-        return /* tuple */[
-                balance_right(param[1], param[2], /* Node */[
-                      /* Red */1,
-                      match[1],
-                      match[2],
-                      match[3]
-                    ]),
-                /* false */0
-              ];
+      if (match) {
+        if (match[0] !== 0) {
+          exit = 1;
+        } else {
+          return /* tuple */[
+                  balance_right(param[1], param[2], /* Node */[
+                        /* Red */1,
+                        match[1],
+                        match[2],
+                        match[3]
+                      ]),
+                  false
+                ];
+        }
       } else {
         exit = 1;
       }
@@ -306,21 +344,25 @@ function unbalanced_right(param) {
         var a = param[1];
         if (match$1[0] !== 0) {
           var match$2 = match$1[1];
-          if (match$2 && match$2[0] === 0) {
-            return /* tuple */[
-                    /* Node */[
-                      /* Black */0,
-                      balance_right(a, x, /* Node */[
-                            /* Red */1,
-                            match$2[1],
-                            match$2[2],
-                            match$2[3]
-                          ]),
-                      match$1[2],
-                      match$1[3]
-                    ],
-                    /* false */0
-                  ];
+          if (match$2) {
+            if (match$2[0] !== 0) {
+              exit = 1;
+            } else {
+              return /* tuple */[
+                      /* Node */[
+                        /* Black */0,
+                        balance_right(a, x, /* Node */[
+                              /* Red */1,
+                              match$2[1],
+                              match$2[2],
+                              match$2[3]
+                            ]),
+                        match$1[2],
+                        match$1[3]
+                      ],
+                      false
+                    ];
+            }
           } else {
             exit = 1;
           }
@@ -332,7 +374,7 @@ function unbalanced_right(param) {
                         match$1[2],
                         match$1[3]
                       ]),
-                  /* true */1
+                  true
                 ];
         }
       } else {
@@ -361,23 +403,27 @@ function lbalance(x1, x2, x3) {
       var r = x1[3];
       var l = x1[1];
       var exit = 0;
-      if (l && l[0] !== 0) {
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  l[1],
-                  l[2],
-                  l[3]
-                ],
-                x1[2],
-                /* Node */[
-                  /* Black */0,
-                  r,
-                  x2,
-                  x3
-                ]
-              ];
+      if (l) {
+        if (l[0] !== 0) {
+          return /* Node */[
+                  /* Red */1,
+                  /* Node */[
+                    /* Black */0,
+                    l[1],
+                    l[2],
+                    l[3]
+                  ],
+                  x1[2],
+                  /* Node */[
+                    /* Black */0,
+                    r,
+                    x2,
+                    x3
+                  ]
+                ];
+        } else {
+          exit = 1;
+        }
       } else {
         exit = 1;
       }
@@ -439,53 +485,65 @@ function lbalance(x1, x2, x3) {
 
 function rbalance(x1, x2, x3) {
   var exit = 0;
-  if (x3 && x3[0] !== 0) {
-    var b = x3[1];
-    var exit$1 = 0;
-    if (b && b[0] !== 0) {
-      return /* Node */[
-              /* Red */1,
-              /* Node */[
-                /* Black */0,
-                x1,
-                x2,
-                b[1]
-              ],
-              b[2],
-              /* Node */[
-                /* Black */0,
-                b[3],
-                x3[2],
-                x3[3]
-              ]
-            ];
-    } else {
-      exit$1 = 2;
-    }
-    if (exit$1 === 2) {
-      var match = x3[3];
-      if (match && match[0] !== 0) {
-        return /* Node */[
-                /* Red */1,
-                /* Node */[
-                  /* Black */0,
-                  x1,
-                  x2,
-                  b
-                ],
-                x3[2],
-                /* Node */[
-                  /* Black */0,
-                  match[1],
-                  match[2],
-                  match[3]
-                ]
-              ];
+  if (x3) {
+    if (x3[0] !== 0) {
+      var b = x3[1];
+      var exit$1 = 0;
+      if (b) {
+        if (b[0] !== 0) {
+          return /* Node */[
+                  /* Red */1,
+                  /* Node */[
+                    /* Black */0,
+                    x1,
+                    x2,
+                    b[1]
+                  ],
+                  b[2],
+                  /* Node */[
+                    /* Black */0,
+                    b[3],
+                    x3[2],
+                    x3[3]
+                  ]
+                ];
+        } else {
+          exit$1 = 2;
+        }
       } else {
-        exit = 1;
+        exit$1 = 2;
       }
+      if (exit$1 === 2) {
+        var match = x3[3];
+        if (match) {
+          if (match[0] !== 0) {
+            return /* Node */[
+                    /* Red */1,
+                    /* Node */[
+                      /* Black */0,
+                      x1,
+                      x2,
+                      b
+                    ],
+                    x3[2],
+                    /* Node */[
+                      /* Black */0,
+                      match[1],
+                      match[2],
+                      match[3]
+                    ]
+                  ];
+          } else {
+            exit = 1;
+          }
+        } else {
+          exit = 1;
+        }
+      }
+      
+    } else {
+      exit = 1;
     }
-    
   } else {
     exit = 1;
   }
@@ -574,7 +632,7 @@ function remove_min(param) {
         return /* tuple */[
                 param[3],
                 param[2],
-                /* false */0
+                false
               ];
       }
     } else if (param[1]) {
@@ -592,7 +650,7 @@ function remove_min(param) {
                     match[3]
                   ],
                   x,
-                  /* false */0
+                  false
                 ];
         } else {
           throw [
@@ -608,7 +666,7 @@ function remove_min(param) {
         return /* tuple */[
                 /* Empty */0,
                 x,
-                /* true */1
+                true
               ];
       }
     }
@@ -635,7 +693,7 @@ function remove_min(param) {
         return /* tuple */[
                 s,
                 y,
-                /* false */0
+                false
               ];
       }
     }
@@ -674,13 +732,13 @@ function remove_aux(x, n) {
         } else {
           return /* tuple */[
                   n$1,
-                  /* false */0
+                  false
                 ];
         }
       } else if (c === /* Red */1) {
         return /* tuple */[
                 l,
-                /* false */0
+                false
               ];
       } else {
         return blackify(l);
@@ -699,7 +757,7 @@ function remove_aux(x, n) {
       } else {
         return /* tuple */[
                 n$2,
-                /* false */0
+                false
               ];
       }
     } else {
@@ -716,14 +774,14 @@ function remove_aux(x, n) {
       } else {
         return /* tuple */[
                 n$3,
-                /* false */0
+                false
               ];
       }
     }
   } else {
     return /* tuple */[
             /* Empty */0,
-            /* false */0
+            false
           ];
   }
 }

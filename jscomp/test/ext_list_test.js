@@ -27,7 +27,7 @@ function filter_map(f, _xs) {
 }
 
 function excludes(p, l) {
-  var excluded = [/* false */0];
+  var excluded = [false];
   var aux = function (_accu, _param) {
     while(true) {
       var param = _param;
@@ -36,7 +36,7 @@ function excludes(p, l) {
         var l = param[1];
         var x = param[0];
         if (Curry._1(p, x)) {
-          excluded[0] = /* true */1;
+          excluded[0] = true;
           _param = l;
           continue ;
         } else {
@@ -55,12 +55,12 @@ function excludes(p, l) {
   var v = aux(/* [] */0, l);
   if (excluded[0]) {
     return /* tuple */[
-            /* true */1,
+            true,
             v
           ];
   } else {
     return /* tuple */[
-            /* false */0,
+            false,
             l
           ];
   }
@@ -148,12 +148,12 @@ function same_length(_xs, _ys) {
         _xs = xs[1];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else if (ys) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -343,7 +343,7 @@ function map2_last(f, l1, l2) {
         exit = 1;
       } else {
         return /* :: */[
-                Curry._3(f, /* true */1, u, l2[0]),
+                Curry._3(f, true, u, l2[0]),
                 /* [] */0
               ];
       }
@@ -355,7 +355,7 @@ function map2_last(f, l1, l2) {
     }
     if (exit === 1) {
       if (l2) {
-        var r = Curry._3(f, /* false */0, u, l2[0]);
+        var r = Curry._3(f, false, u, l2[0]);
         return /* :: */[
                 r,
                 map2_last(f, l1$1, l2[1])
@@ -383,14 +383,14 @@ function map_last(f, l1) {
     var l1$1 = l1[1];
     var u = l1[0];
     if (l1$1) {
-      var r = Curry._2(f, /* false */0, u);
+      var r = Curry._2(f, false, u);
       return /* :: */[
               r,
               map_last(f, l1$1)
             ];
     } else {
       return /* :: */[
-              Curry._2(f, /* true */1, u),
+              Curry._2(f, true, u),
               /* [] */0
             ];
     }
@@ -410,7 +410,7 @@ function fold_right2_last(f, l1, l2, accu) {
       if (l2[1]) {
         exit = 1;
       } else {
-        return Curry._4(f, /* true */1, last1, l2[0], accu);
+        return Curry._4(f, true, last1, l2[0], accu);
       }
     } else {
       throw [
@@ -420,7 +420,7 @@ function fold_right2_last(f, l1, l2, accu) {
     }
     if (exit === 1) {
       if (l2) {
-        return Curry._4(f, /* false */0, last1, l2[0], fold_right2_last(f, l1$1, l2[1], accu));
+        return Curry._4(f, false, last1, l2[0], fold_right2_last(f, l1$1, l2[1], accu));
       } else {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -505,10 +505,10 @@ function length_larger_than_n(n, _xs, _ys) {
         _xs = xs[1];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return +(length_compare(xs, n) === /* Eq */15500);
+      return length_compare(xs, n) === /* Eq */15500;
     }
   };
 }
@@ -698,12 +698,12 @@ function for_all2_no_exn(p, _l1, _l2) {
         _l1 = l1[1];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else if (l2) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -815,9 +815,9 @@ function ref_top(x) {
 function ref_empty(x) {
   var match = x[0];
   if (match) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 

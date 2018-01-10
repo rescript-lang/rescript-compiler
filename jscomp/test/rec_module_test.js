@@ -21,12 +21,14 @@ var B = Caml_module.init_mod([
     ], [[0]]);
 
 function even(n) {
-  if (n === 0) {
-    return /* true */1;
-  } else if (n === 1) {
-    return /* false */0;
+  if (n) {
+    if (n === 1) {
+      return false;
+    } else {
+      return Curry._1(B[/* odd */0], n - 1 | 0);
+    }
   } else {
-    return Curry._1(B[/* odd */0], n - 1 | 0);
+    return true;
   }
 }
 
@@ -34,11 +36,11 @@ Caml_module.update_mod([[0]], A, /* module */[/* even */even]);
 
 function odd(n) {
   if (n === 1) {
-    return /* true */1;
-  } else if (n === 0) {
-    return /* false */0;
-  } else {
+    return true;
+  } else if (n) {
     return Curry._1(A[/* even */0], n - 1 | 0);
+  } else {
+    return false;
   }
 }
 
@@ -63,12 +65,14 @@ var BB = Caml_module.init_mod([
       ]]);
 
 function even$1(n) {
-  if (n === 0) {
-    return /* true */1;
-  } else if (n === 1) {
-    return /* false */0;
+  if (n) {
+    if (n === 1) {
+      return false;
+    } else {
+      return Curry._1(BB[/* odd */0], n - 1 | 0);
+    }
   } else {
-    return Curry._1(BB[/* odd */0], n - 1 | 0);
+    return true;
   }
 }
 
@@ -86,11 +90,11 @@ Caml_module.update_mod([[
 
 function odd$1(n) {
   if (n === 1) {
-    return /* true */1;
-  } else if (n === 0) {
-    return /* false */0;
-  } else {
+    return true;
+  } else if (n) {
     return Curry._1(AA[/* even */0], n - 1 | 0);
+  } else {
+    return false;
   }
 }
 
@@ -192,12 +196,14 @@ function add(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Curry._2(AAA[/* compare */0], x, v);
-    if (c === 0) {
-      return t;
-    } else if (c < 0) {
-      return bal(add(x, l), v, r);
+    if (c) {
+      if (c < 0) {
+        return bal(add(x, l), v, r);
+      } else {
+        return bal(l, v, add(x, r));
+      }
     } else {
-      return bal(l, v, add(x, r));
+      return t;
     }
   } else {
     return /* Node */[
@@ -262,6 +268,7 @@ function min_elt(_param) {
       if (l) {
         _param = l;
         continue ;
+        
       } else {
         return param[1];
       }
@@ -279,6 +286,7 @@ function max_elt(_param) {
       if (r) {
         _param = r;
         continue ;
+        
       } else {
         return param[1];
       }
@@ -322,31 +330,33 @@ function split(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Curry._2(AAA[/* compare */0], x, v);
-    if (c === 0) {
+    if (c) {
+      if (c < 0) {
+        var match = split(x, l);
+        return /* tuple */[
+                match[0],
+                match[1],
+                join(match[2], v, r)
+              ];
+      } else {
+        var match$1 = split(x, r);
+        return /* tuple */[
+                join(l, v, match$1[0]),
+                match$1[1],
+                match$1[2]
+              ];
+      }
+    } else {
       return /* tuple */[
               l,
-              /* true */1,
+              true,
               r
-            ];
-    } else if (c < 0) {
-      var match = split(x, l);
-      return /* tuple */[
-              match[0],
-              match[1],
-              join(match[2], v, r)
-            ];
-    } else {
-      var match$1 = split(x, r);
-      return /* tuple */[
-              join(l, v, match$1[0]),
-              match$1[1],
-              match$1[2]
             ];
     }
   } else {
     return /* tuple */[
             /* Empty */0,
-            /* false */0,
+            false,
             /* Empty */0
           ];
   }
@@ -354,9 +364,9 @@ function split(x, param) {
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -365,14 +375,15 @@ function mem(x, _param) {
     var param = _param;
     if (param) {
       var c = Curry._2(AAA[/* compare */0], x, param[1]);
-      if (c === 0) {
-        return /* true */1;
-      } else {
+      if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
+        
+      } else {
+        return /* true */1;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -383,7 +394,13 @@ function remove(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Curry._2(AAA[/* compare */0], x, v);
-    if (c === 0) {
+    if (c) {
+      if (c < 0) {
+        return bal(remove(x, l), v, r);
+      } else {
+        return bal(l, v, remove(x, r));
+      }
+    } else {
       var t1 = l;
       var t2 = r;
       if (t1) {
@@ -395,10 +412,6 @@ function remove(x, param) {
       } else {
         return t2;
       }
-    } else if (c < 0) {
-      return bal(remove(x, l), v, r);
-    } else {
-      return bal(l, v, remove(x, r));
     }
   } else {
     return /* Empty */0;
@@ -434,16 +447,20 @@ function union(s1, s2) {
 }
 
 function inter(s1, s2) {
-  if (s1 && s2) {
-    var r1 = s1[2];
-    var v1 = s1[1];
-    var l1 = s1[0];
-    var match = split(v1, s2);
-    var l2 = match[0];
-    if (match[1] !== 0) {
-      return join(inter(l1, l2), v1, inter(r1, match[2]));
+  if (s1) {
+    if (s2) {
+      var r1 = s1[2];
+      var v1 = s1[1];
+      var l1 = s1[0];
+      var match = split(v1, s2);
+      var l2 = match[0];
+      if (match[1] !== false) {
+        return join(inter(l1, l2), v1, inter(r1, match[2]));
+      } else {
+        return concat(inter(l1, l2), inter(r1, match[2]));
+      }
     } else {
-      return concat(inter(l1, l2), inter(r1, match[2]));
+      return /* Empty */0;
     }
   } else {
     return /* Empty */0;
@@ -458,7 +475,7 @@ function diff(s1, s2) {
       var l1 = s1[0];
       var match = split(v1, s2);
       var l2 = match[0];
-      if (match[1] !== 0) {
+      if (match[1] !== false) {
         return concat(diff(l1, l2), diff(r1, match[2]));
       } else {
         return join(diff(l1, l2), v1, diff(r1, match[2]));
@@ -483,6 +500,7 @@ function cons_enum(_s, _e) {
       ];
       _s = s[0];
       continue ;
+      
     } else {
       return e;
     }
@@ -504,6 +522,7 @@ function compare(s1, s2) {
           _e2 = cons_enum(e2[1], e2[2]);
           _e1 = cons_enum(e1[1], e1[2]);
           continue ;
+          
         }
       } else {
         return 1;
@@ -517,7 +536,7 @@ function compare(s1, s2) {
 }
 
 function equal(s1, s2) {
-  return +(compare(s1, s2) === 0);
+  return compare(s1, s2) === 0;
 }
 
 function subset(_s1, _s2) {
@@ -532,42 +551,45 @@ function subset(_s1, _s2) {
         var v1 = s1[1];
         var l1 = s1[0];
         var c = Curry._2(AAA[/* compare */0], v1, s2[1]);
-        if (c === 0) {
-          if (subset(l1, l2)) {
-            _s2 = r2;
-            _s1 = r1;
-            continue ;
-          } else {
-            return /* false */0;
-          }
-        } else if (c < 0) {
-          if (subset(/* Node */[
-                  l1,
-                  v1,
+        if (c) {
+          if (c < 0) {
+            if (subset(/* Node */[
+                    l1,
+                    v1,
+                    /* Empty */0,
+                    0
+                  ], l2)) {
+              _s1 = r1;
+              continue ;
+              
+            } else {
+              return /* false */0;
+            }
+          } else if (subset(/* Node */[
                   /* Empty */0,
+                  v1,
+                  r1,
                   0
-                ], l2)) {
-            _s1 = r1;
+                ], r2)) {
+            _s1 = l1;
             continue ;
+            
           } else {
             return /* false */0;
           }
-        } else if (subset(/* Node */[
-                /* Empty */0,
-                v1,
-                r1,
-                0
-              ], r2)) {
-          _s1 = l1;
+        } else if (subset(l1, l2)) {
+          _s2 = r2;
+          _s1 = r1;
           continue ;
+          
         } else {
           return /* false */0;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -580,6 +602,7 @@ function iter(f, _param) {
       Curry._1(f, param[1]);
       _param = param[2];
       continue ;
+      
     } else {
       return /* () */0;
     }
@@ -594,6 +617,7 @@ function fold(f, _s, _accu) {
       _accu = Curry._2(f, s[1], fold(f, s[0], accu));
       _s = s[2];
       continue ;
+      
     } else {
       return accu;
     }
@@ -604,14 +628,19 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1]) && for_all(p, param[0])) {
-        _param = param[2];
-        continue ;
+      if (Curry._1(p, param[1])) {
+        if (for_all(p, param[0])) {
+          _param = param[2];
+          continue ;
+          
+        } else {
+          return /* false */0;
+        }
       } else {
         return /* false */0;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -620,14 +649,17 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1]) || exists(p, param[0])) {
+      if (Curry._1(p, param[1])) {
+        return /* true */1;
+      } else if (exists(p, param[0])) {
         return /* true */1;
       } else {
         _param = param[2];
         continue ;
+        
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -696,6 +728,7 @@ function elements_aux(_accu, _param) {
         elements_aux(accu, param[2])
       ];
       continue ;
+      
     } else {
       return accu;
     }
@@ -712,11 +745,12 @@ function find(x, _param) {
     if (param) {
       var v = param[1];
       var c = Curry._2(AAA[/* compare */0], x, v);
-      if (c === 0) {
-        return v;
-      } else {
+      if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
+        
+      } else {
+        return v;
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -923,10 +957,10 @@ var suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 /* tuple */[
-                  /* true */1,
-                  /* true */1,
-                  /* false */0,
-                  /* false */0
+                  true,
+                  true,
+                  false,
+                  false
                 ],
                 /* tuple */[
                   Curry._1(A[/* even */0], 2),
@@ -963,7 +997,7 @@ var suites_001 = /* :: */[
         "test4",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* true */1,
+                      true,
                       Curry._1(A[/* even */0], 2)
                     ]);
           })
@@ -973,7 +1007,7 @@ var suites_001 = /* :: */[
           "test4",
           (function () {
               return /* Eq */Block.__(0, [
-                        /* true */1,
+                        true,
                         Curry._1(AA[/* even */0], 4)
                       ]);
             })
@@ -983,7 +1017,7 @@ var suites_001 = /* :: */[
             "test5",
             (function () {
                 return /* Eq */Block.__(0, [
-                          /* false */0,
+                          false,
                           Curry._1(B[/* odd */0], 2)
                         ]);
               })
