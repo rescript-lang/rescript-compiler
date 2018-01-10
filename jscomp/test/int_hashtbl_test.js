@@ -52,7 +52,7 @@ function g(H) {
 var hash = Hashtbl.hash;
 
 function equal(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 var Int_hash = Hashtbl.Make(/* module */[

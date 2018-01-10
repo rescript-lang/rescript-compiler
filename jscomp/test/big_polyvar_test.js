@@ -1217,12 +1217,12 @@ function tFromJs(param) {
 function eq(x, y) {
   if (x) {
     if (y) {
-      return +(x[0] === y[0]);
+      return x[0] === y[0];
     } else {
-      return /* false */0;
+      return false;
     }
   } else {
-    return +(y === /* None */0);
+    return y === /* None */0;
   }
 }
 

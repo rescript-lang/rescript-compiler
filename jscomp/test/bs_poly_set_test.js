@@ -67,27 +67,27 @@ var u15 = Bs_Set.removeArray(u14, Array_data_util.randomRange(10000, 19999));
 
 var u16 = Bs_Set.removeArray(u15, Array_data_util.randomRange(20000, 21000));
 
-b("File \"bs_poly_set_test.ml\", line 33, characters 4-11", +(u0 !== u1));
+b("File \"bs_poly_set_test.ml\", line 33, characters 4-11", u0 !== u1);
 
-b("File \"bs_poly_set_test.ml\", line 34, characters 4-11", +(u2 === u1));
+b("File \"bs_poly_set_test.ml\", line 34, characters 4-11", u2 === u1);
 
 eq("File \"bs_poly_set_test.ml\", line 35, characters 5-12", Bs_internalAVLset.length0(u4.data), 28);
 
-b("File \"bs_poly_set_test.ml\", line 36, characters 4-11", +(29 === Bs_internalAVLset.maxNull0(u4.data)));
+b("File \"bs_poly_set_test.ml\", line 36, characters 4-11", 29 === Bs_internalAVLset.maxNull0(u4.data));
 
-b("File \"bs_poly_set_test.ml\", line 37, characters 4-11", +(1 === Bs_internalAVLset.minNull0(u4.data)));
+b("File \"bs_poly_set_test.ml\", line 37, characters 4-11", 1 === Bs_internalAVLset.minNull0(u4.data));
 
-b("File \"bs_poly_set_test.ml\", line 38, characters 4-11", +(u4 === u5));
+b("File \"bs_poly_set_test.ml\", line 38, characters 4-11", u4 === u5);
 
 b("File \"bs_poly_set_test.ml\", line 39, characters 4-11", Bs_internalAVLset.isEmpty0(u6.data));
 
 eq("File \"bs_poly_set_test.ml\", line 40, characters 6-13", Bs_internalAVLset.length0(u7.data), 3);
 
-b("File \"bs_poly_set_test.ml\", line 41, characters 4-11", 1 - Bs_internalAVLset.isEmpty0(u7.data));
+b("File \"bs_poly_set_test.ml\", line 41, characters 4-11", !Bs_internalAVLset.isEmpty0(u7.data));
 
 b("File \"bs_poly_set_test.ml\", line 42, characters 4-11", Bs_internalAVLset.isEmpty0(u8.data));
 
-b("File \"bs_poly_set_test.ml\", line 43, characters 4-11", +(u9 === u10));
+b("File \"bs_poly_set_test.ml\", line 43, characters 4-11", u9 === u10);
 
 b("File \"bs_poly_set_test.ml\", line 44, characters 4-11", Bs_Set.mem(u10, 20));
 
@@ -99,7 +99,7 @@ eq("File \"bs_poly_set_test.ml\", line 47, characters 5-12", Bs_internalAVLset.l
 
 eq("File \"bs_poly_set_test.ml\", line 48, characters 5-12", Bs_internalAVLset.length0(u12.data), 19000);
 
-b("File \"bs_poly_set_test.ml\", line 49, characters 4-11", +(u12 === u13));
+b("File \"bs_poly_set_test.ml\", line 49, characters 4-11", u12 === u13);
 
 eq("File \"bs_poly_set_test.ml\", line 50, characters 5-12", Bs_internalAVLset.length0(u14.data), 10000);
 
@@ -107,7 +107,7 @@ eq("File \"bs_poly_set_test.ml\", line 51, characters 5-12", Bs_internalAVLset.l
 
 b("File \"bs_poly_set_test.ml\", line 52, characters 4-11", Bs_Set.mem(u15, 20000));
 
-b("File \"bs_poly_set_test.ml\", line 53, characters 4-11", 1 - Bs_Set.mem(u15, 2000));
+b("File \"bs_poly_set_test.ml\", line 53, characters 4-11", !Bs_Set.mem(u15, 2000));
 
 b("File \"bs_poly_set_test.ml\", line 54, characters 4-11", Bs_internalAVLset.isEmpty0(u16.data));
 
@@ -139,19 +139,19 @@ eq("File \"bs_poly_set_test.ml\", line 67, characters 5-12", Bs_internalAVLset.t
 
 b("File \"bs_poly_set_test.ml\", line 68, characters 4-11", Bs_Set.subset(u23, u18));
 
-b("File \"bs_poly_set_test.ml\", line 69, characters 4-11", 1 - Bs_Set.subset(u18, u23));
+b("File \"bs_poly_set_test.ml\", line 69, characters 4-11", !Bs_Set.subset(u18, u23));
 
 b("File \"bs_poly_set_test.ml\", line 70, characters 4-11", Bs_Set.subset(u22, u17));
 
 b("File \"bs_poly_set_test.ml\", line 71, characters 4-11", Bs_Set.subset(u21, u17) && Bs_Set.subset(u21, u18));
 
-b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", +(47 === Bs_Set.findNull(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", 47 === Bs_Set.findNull(u22, 47));
 
 b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Caml_obj.caml_equal(/* Some */[47], Bs_Set.findOpt(u22, 47)));
 
-b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", +(Bs_Set.findNull(u22, 59) === null));
+b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", Bs_Set.findNull(u22, 59) === null);
 
-b("File \"bs_poly_set_test.ml\", line 75, characters 4-11", +(/* None */0 === Bs_Set.findOpt(u22, 59)));
+b("File \"bs_poly_set_test.ml\", line 75, characters 4-11", /* None */0 === Bs_Set.findOpt(u22, 59));
 
 var u25 = Bs_Set.add(u22, 59);
 

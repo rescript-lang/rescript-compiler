@@ -237,23 +237,23 @@ function Make(Ord) {
       } else {
         return /* tuple */[
                 l,
-                /* true */1,
+                true,
                 r
               ];
       }
     } else {
       return /* tuple */[
               /* Empty */0,
-              /* false */0,
+              false,
               /* Empty */0
             ];
     }
   };
   var is_empty = function (param) {
     if (param) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
   var mem = function (x, _param) {
@@ -269,7 +269,7 @@ function Make(Ord) {
           return /* true */1;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     };
   };
@@ -327,7 +327,7 @@ function Make(Ord) {
         var l1 = s1[0];
         var match = split(v1, s2);
         var l2 = match[0];
-        if (match[1] !== 0) {
+        if (match[1] !== false) {
           return join(inter(l1, l2), v1, inter(r1, match[2]));
         } else {
           return concat(inter(l1, l2), inter(r1, match[2]));
@@ -347,7 +347,7 @@ function Make(Ord) {
         var l1 = s1[0];
         var match = split(v1, s2);
         var l2 = match[0];
-        if (match[1] !== 0) {
+        if (match[1] !== false) {
           return concat(diff(l1, l2), diff(r1, match[2]));
         } else {
           return join(diff(l1, l2), v1, diff(r1, match[2]));
@@ -406,7 +406,7 @@ function Make(Ord) {
     return compare_aux(cons_enum(s1, /* End */0), cons_enum(s2, /* End */0));
   };
   var equal = function (s1, s2) {
-    return +(compare(s1, s2) === 0);
+    return compare(s1, s2) === 0;
   };
   var subset = function (_s1, _s2) {
     while(true) {
@@ -455,10 +455,10 @@ function Make(Ord) {
             return /* false */0;
           }
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        return /* true */1;
+        return true;
       }
     };
   };
@@ -506,7 +506,7 @@ function Make(Ord) {
           return /* false */0;
         }
       } else {
-        return /* true */1;
+        return true;
       }
     };
   };
@@ -524,7 +524,7 @@ function Make(Ord) {
           
         }
       } else {
-        return /* false */0;
+        return false;
       }
     };
   };

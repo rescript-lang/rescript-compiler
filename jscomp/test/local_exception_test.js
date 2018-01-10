@@ -4,10 +4,12 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 
 var A = Caml_exceptions.create("Local_exception_test.A");
 
+var v_002 = true;
+
 var v = [
   A,
   3,
-  /* true */1
+  v_002
 ];
 
 var B = Caml_exceptions.create("Local_exception_test.B");

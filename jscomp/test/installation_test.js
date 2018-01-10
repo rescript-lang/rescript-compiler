@@ -57,7 +57,7 @@ if (match !== undefined) {
     var files = Fs.readdirSync(dir);
     var exists = files.indexOf("pervasives.cmi");
     var non_exists = files.indexOf("pervasive.cmi");
-    var v = +(exists >= 0 && non_exists < 0);
+    var v = exists >= 0 && non_exists < 0;
     console.log(v);
   }
   

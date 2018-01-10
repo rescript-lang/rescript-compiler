@@ -26,7 +26,7 @@ function eq(loc, x, y) {
 }
 
 function foo(x) {
-  return +(Caml_format.caml_int_of_string(x) !== 3);
+  return Caml_format.caml_int_of_string(x) !== 3;
 }
 
 function badInlining(obj) {

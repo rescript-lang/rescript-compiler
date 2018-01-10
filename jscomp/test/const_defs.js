@@ -1,7 +1,7 @@
 'use strict';
 
 
-var v = /* true */1;
+var v = true;
 
 exports.v = v;
 /* No side effect */

@@ -43,7 +43,7 @@ b("File \"bs_sort_test.ml\", line 29, characters 4-11", Bs_Sort.isSorted(/* int 
           1
         ], cmp));
 
-b("File \"bs_sort_test.ml\", line 31, characters 4-11", 1 - Bs_Sort.isSorted(/* int array */[
+b("File \"bs_sort_test.ml\", line 31, characters 4-11", !Bs_Sort.isSorted(/* int array */[
           1,
           0
         ], cmp));

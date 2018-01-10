@@ -54,7 +54,7 @@ function fail() {
 function thenTest() {
   var p = Promise.resolve(4);
   return p.then((function (x) {
-                return Promise.resolve(assert_bool(+(x === 4)));
+                return Promise.resolve(assert_bool(x === 4));
               }));
 }
 
@@ -63,7 +63,7 @@ function andThenTest() {
   return p.then((function () {
                   return Promise.resolve(12);
                 })).then((function (y) {
-                return Promise.resolve(assert_bool(+(y === 12)));
+                return Promise.resolve(assert_bool(y === 12));
               }));
 }
 
@@ -95,7 +95,7 @@ function orResolvedTest() {
   return p.catch((function () {
                     return Promise.resolve(22);
                   })).then((function (value) {
-                  return Promise.resolve(assert_bool(+(value === 42)));
+                  return Promise.resolve(assert_bool(value === 42));
                 })).catch(fail);
 }
 
@@ -104,7 +104,7 @@ function orRejectedTest() {
   return p.catch((function () {
                     return Promise.resolve(22);
                   })).then((function (value) {
-                  return Promise.resolve(assert_bool(+(value === 22)));
+                  return Promise.resolve(assert_bool(value === 22));
                 })).catch(fail);
 }
 
@@ -113,7 +113,7 @@ function orElseResolvedTest() {
   return p.catch((function () {
                     return Promise.resolve(22);
                   })).then((function (value) {
-                  return Promise.resolve(assert_bool(+(value === 42)));
+                  return Promise.resolve(assert_bool(value === 42));
                 })).catch(fail);
 }
 
@@ -122,7 +122,7 @@ function orElseRejectedResolveTest() {
   return p.catch((function () {
                     return Promise.resolve(22);
                   })).then((function (value) {
-                  return Promise.resolve(assert_bool(+(value === 22)));
+                  return Promise.resolve(assert_bool(value === 22));
                 })).catch(fail);
 }
 
@@ -150,7 +150,7 @@ function orElseRejectedRejectTest() {
 function resolveTest() {
   var p1 = Promise.resolve(10);
   return p1.then((function (x) {
-                return Promise.resolve(assert_bool(+(x === 10)));
+                return Promise.resolve(assert_bool(x === 10));
               }));
 }
 
@@ -162,7 +162,7 @@ function rejectTest() {
 function thenCatchChainResolvedTest() {
   var p = Promise.resolve(20);
   return p.then((function (value) {
-                  return Promise.resolve(assert_bool(+(value === 20)));
+                  return Promise.resolve(assert_bool(value === 20));
                 })).catch(fail);
 }
 
@@ -181,9 +181,9 @@ function allResolvedTest() {
     p3
   ];
   return Promise.all(promises).then((function (resolved) {
-                assert_bool(+(Caml_array.caml_array_get(resolved, 0) === 1));
-                assert_bool(+(Caml_array.caml_array_get(resolved, 1) === 2));
-                assert_bool(+(Caml_array.caml_array_get(resolved, 2) === 3));
+                assert_bool(Caml_array.caml_array_get(resolved, 0) === 1);
+                assert_bool(Caml_array.caml_array_get(resolved, 1) === 2);
+                assert_bool(Caml_array.caml_array_get(resolved, 2) === 3);
                 return h;
               }));
 }
@@ -198,7 +198,7 @@ function allRejectTest() {
     p3
   ];
   return Promise.all(promises).then(fail).catch((function (error) {
-                assert_bool(+(error === Caml_builtin_exceptions.not_found));
+                assert_bool(error === Caml_builtin_exceptions.not_found);
                 return h;
               }));
 }
@@ -221,7 +221,7 @@ function createPromiseRejectTest() {
   return new Promise((function (_, reject) {
                   return reject(Caml_builtin_exceptions.not_found);
                 })).catch((function (error) {
-                assert_bool(+(error === Caml_builtin_exceptions.not_found));
+                assert_bool(error === Caml_builtin_exceptions.not_found);
                 return h;
               }));
 }
@@ -230,7 +230,7 @@ function createPromiseFulfillTest() {
   return new Promise((function (resolve, _) {
                     return resolve("success");
                   })).then((function (resolved) {
-                  assert_bool(+(resolved === "success"));
+                  assert_bool(resolved === "success");
                   return h;
                 })).catch(fail);
 }

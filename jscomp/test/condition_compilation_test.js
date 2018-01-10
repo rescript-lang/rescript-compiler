@@ -42,7 +42,7 @@ var buffer_size = 1;
 
 var vv = 3;
 
-var version_gt_3 = /* true */1;
+var version_gt_3 = true;
 
 var version = -1;
 

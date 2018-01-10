@@ -291,7 +291,7 @@ eq("ZIP", Bs_List.zip(/* :: */[
     ]);
 
 function mod2(x) {
-  return +(x % 2 === 0);
+  return x % 2 === 0;
 }
 
 eq("PARTITION", Bs_List.partition(/* :: */[
@@ -377,7 +377,7 @@ eq("PARTITION", Bs_List.partition(/* :: */[
             ]
           ]
         ], (function (x) {
-            return 1 - mod2(x);
+            return !mod2(x);
           })), /* tuple */[
       /* [] */0,
       /* :: */[
@@ -765,7 +765,7 @@ function succx(x) {
 }
 
 function eq$1(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 eq("REMOVEASSOQ", Bs_List.removeAssq(/* :: */[
@@ -1105,14 +1105,14 @@ eq("File \"bs_list_test.ml\", line 208, characters 5-12", Bs_List.forAll(/* :: *
               /* [] */0
             ]
           ]
-        ], mod2), /* true */1);
+        ], mod2), true);
 
 eq("File \"bs_list_test.ml\", line 209, characters 5-12", Bs_List.forAll(/* :: */[
           1,
           /* [] */0
-        ], mod2), /* false */0);
+        ], mod2), false);
 
-eq("File \"bs_list_test.ml\", line 210, characters 5-12", Bs_List.forAll(/* [] */0, mod2), /* true */1);
+eq("File \"bs_list_test.ml\", line 210, characters 5-12", Bs_List.forAll(/* [] */0, mod2), true);
 
 eq("File \"bs_list_test.ml\", line 211, characters 5-12", Bs_List.exists(/* :: */[
           1,
@@ -1123,7 +1123,7 @@ eq("File \"bs_list_test.ml\", line 211, characters 5-12", Bs_List.exists(/* :: *
               /* [] */0
             ]
           ]
-        ], mod2), /* true */1);
+        ], mod2), true);
 
 eq("File \"bs_list_test.ml\", line 212, characters 5-12", Bs_List.exists(/* :: */[
           1,
@@ -1134,16 +1134,16 @@ eq("File \"bs_list_test.ml\", line 212, characters 5-12", Bs_List.exists(/* :: *
               /* [] */0
             ]
           ]
-        ], mod2), /* false */0);
+        ], mod2), false);
 
-eq("File \"bs_list_test.ml\", line 213, characters 5-12", Bs_List.exists(/* [] */0, mod2), /* false */0);
+eq("File \"bs_list_test.ml\", line 213, characters 5-12", Bs_List.exists(/* [] */0, mod2), false);
 
 eq("File \"bs_list_test.ml\", line 214, characters 5-12", Bs_List.forAll2(/* [] */0, /* :: */[
           1,
           /* [] */0
         ], (function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_list_test.ml\", line 215, characters 5-12", Bs_List.forAll2(/* :: */[
           2,
@@ -1152,8 +1152,8 @@ eq("File \"bs_list_test.ml\", line 215, characters 5-12", Bs_List.forAll2(/* :: 
           1,
           /* [] */0
         ], (function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_list_test.ml\", line 216, characters 5-12", Bs_List.forAll2(/* :: */[
           2,
@@ -1168,15 +1168,15 @@ eq("File \"bs_list_test.ml\", line 216, characters 5-12", Bs_List.forAll2(/* :: 
             /* [] */0
           ]
         ], (function (x, y) {
-            return +(x > y);
-          })), /* false */0);
+            return x > y;
+          })), false);
 
 eq("File \"bs_list_test.ml\", line 217, characters 5-12", Bs_List.exists2(/* [] */0, /* :: */[
           1,
           /* [] */0
         ], (function (x, y) {
-            return +(x > y);
-          })), /* false */0);
+            return x > y;
+          })), false);
 
 eq("File \"bs_list_test.ml\", line 218, characters 5-12", Bs_List.exists2(/* :: */[
           2,
@@ -1191,8 +1191,8 @@ eq("File \"bs_list_test.ml\", line 218, characters 5-12", Bs_List.exists2(/* :: 
             /* [] */0
           ]
         ], (function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_list_test.ml\", line 219, characters 5-12", Bs_List.exists2(/* :: */[
           0,
@@ -1207,8 +1207,8 @@ eq("File \"bs_list_test.ml\", line 219, characters 5-12", Bs_List.exists2(/* :: 
             /* [] */0
           ]
         ], (function (x, y) {
-            return +(x > y);
-          })), /* false */0);
+            return x > y;
+          })), false);
 
 eq("File \"bs_list_test.ml\", line 220, characters 5-12", Bs_List.mem(/* :: */[
           1,
@@ -1220,8 +1220,8 @@ eq("File \"bs_list_test.ml\", line 220, characters 5-12", Bs_List.mem(/* :: */[
             ]
           ]
         ], "2", (function (x, s) {
-            return +("" + x === s);
-          })), /* true */1);
+            return "" + x === s;
+          })), true);
 
 eq("File \"bs_list_test.ml\", line 221, characters 5-12", Bs_List.mem(/* :: */[
           1,
@@ -1233,8 +1233,8 @@ eq("File \"bs_list_test.ml\", line 221, characters 5-12", Bs_List.mem(/* :: */[
             ]
           ]
         ], "0", (function (x, s) {
-            return +("" + x === s);
-          })), /* false */0);
+            return "" + x === s;
+          })), false);
 
 Mt.from_pair_suites("bs_list_test.ml", suites[0]);
 

@@ -274,7 +274,6 @@ val set_tag : ?comment:string -> J.expression -> J.expression -> t
 
 val set_length : ?comment:string -> J.expression -> J.expression -> t
 val obj_length : ?comment:string -> J.expression -> t
-val bool_of_boolean : unary_op
 
 val and_ : binary_op
 val or_ : binary_op

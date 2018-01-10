@@ -5,9 +5,9 @@ var Block = require("../../lib/js/block.js");
 
 function f(x) {
   if (x) {
-    return /* true */1;
+    return true;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -27,7 +27,7 @@ function f4(x) {
   }
 }
 
-var f3 = /* true */1;
+var f3 = true;
 
 var u = ( 1);
 
@@ -36,9 +36,10 @@ var v = ( true);
 var suites_000 = /* tuple */[
   "caml_bool_eq_caml_bool",
   (function () {
+      var x = true;
       return /* Eq */Block.__(0, [
                 u,
-                f(true)
+                x ? true : false
               ]);
     })
 ];
@@ -55,15 +56,32 @@ var suites_001 = /* :: */[
   ],
   /* :: */[
     /* tuple */[
-      "js_bool_neq_acml_bool",
+      "js_bool_eq_ocaml_bool",
       (function () {
+          var x = true;
           return /* Eq */Block.__(0, [
-                    /* false */0,
-                    +(f(true) === (true))
+                    true,
+                    (
+                      x ? true : false
+                    ) === (true)
                   ]);
         })
     ],
-    /* [] */0
+    /* :: */[
+      /* tuple */[
+        "js_bool_is_ocaml_bool",
+        (function () {
+            var x = true;
+            return /* Eq */Block.__(0, [
+                      true,
+                      (
+                        x ? true : false
+                      ) === true
+                    ]);
+          })
+      ],
+      /* [] */0
+    ]
   ]
 ];
 

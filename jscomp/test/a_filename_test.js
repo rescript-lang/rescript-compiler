@@ -26,8 +26,10 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
+var partial_arg = true;
+
 function test(param, param$1) {
-  return Ext_filename_test.node_relative_path(/* true */1, param, param$1);
+  return Ext_filename_test.node_relative_path(partial_arg, param, param$1);
 }
 
 eq("File \"a_filename_test.ml\", line 10, characters 5-12", /* tuple */[

@@ -172,7 +172,7 @@ function mem(x, _param) {
         return /* true */1;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }

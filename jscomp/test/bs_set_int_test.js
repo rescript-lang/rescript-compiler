@@ -68,7 +68,7 @@ var i = range(100, 1500);
 b("File \"bs_set_int_test.ml\", line 36, characters 4-11", Bs_SetInt.eq(Bs_SetInt.ofArray(i), v));
 
 var match = Bs_SetInt.partition(v, (function (x) {
-        return +(x % 3 === 0);
+        return x % 3 === 0;
       }));
 
 var l = Bs_SetInt.empty;
@@ -150,7 +150,7 @@ var minv = Bs_SetInt.minNull(v$1);
 var maxv = Bs_SetInt.maxNull(v$1);
 
 function approx(loc, x, y) {
-  return b(loc, +(x === y));
+  return b(loc, x === y);
 }
 
 eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", Bs_SetInt.fold(v$1, 0, (function (x, y) {
@@ -239,11 +239,11 @@ b("File \"bs_set_int_test.ml\", line 116, characters 4-11", Bs_SetInt.subset(dd,
 
 b("File \"bs_set_int_test.ml\", line 117, characters 4-11", Bs_SetInt.subset(Bs_SetInt.add(dd, 200), bb));
 
-b("File \"bs_set_int_test.ml\", line 118, characters 4-11", +(Bs_SetInt.add(dd, 200) === dd));
+b("File \"bs_set_int_test.ml\", line 118, characters 4-11", Bs_SetInt.add(dd, 200) === dd);
 
-b("File \"bs_set_int_test.ml\", line 119, characters 4-11", +(Bs_SetInt.add(dd, 0) === dd));
+b("File \"bs_set_int_test.ml\", line 119, characters 4-11", Bs_SetInt.add(dd, 0) === dd);
 
-b("File \"bs_set_int_test.ml\", line 120, characters 4-11", 1 - Bs_SetInt.subset(Bs_SetInt.add(dd, 201), bb));
+b("File \"bs_set_int_test.ml\", line 120, characters 4-11", !Bs_SetInt.subset(Bs_SetInt.add(dd, 201), bb));
 
 var aa$1 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100));
 
@@ -257,11 +257,11 @@ var ee = Bs_SetInt.add(dd$1, 101);
 
 b("File \"bs_set_int_test.ml\", line 129, characters 4-11", Bs_SetInt.eq(aa$1, bb$1));
 
-b("File \"bs_set_int_test.ml\", line 130, characters 4-11", 1 - Bs_SetInt.eq(aa$1, cc$1));
+b("File \"bs_set_int_test.ml\", line 130, characters 4-11", !Bs_SetInt.eq(aa$1, cc$1));
 
-b("File \"bs_set_int_test.ml\", line 131, characters 4-11", 1 - Bs_SetInt.eq(dd$1, cc$1));
+b("File \"bs_set_int_test.ml\", line 131, characters 4-11", !Bs_SetInt.eq(dd$1, cc$1));
 
-b("File \"bs_set_int_test.ml\", line 132, characters 4-11", 1 - Bs_SetInt.eq(bb$1, ee));
+b("File \"bs_set_int_test.ml\", line 132, characters 4-11", !Bs_SetInt.eq(bb$1, ee));
 
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 

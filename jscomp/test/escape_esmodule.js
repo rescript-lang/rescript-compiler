@@ -1,7 +1,7 @@
 'use strict';
 
 
-var $$__esModule = /* false */0;
+var $$__esModule = false;
 
 var $$default = 4;
 
