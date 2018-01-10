@@ -23,7 +23,7 @@ function b(loc, x) {
 }
 
 function eq(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 var hash = Hashtbl.hash;

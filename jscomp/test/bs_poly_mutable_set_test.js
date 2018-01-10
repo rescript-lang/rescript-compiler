@@ -25,7 +25,7 @@ var u = Bs_SetM.ofArray(IntCmp, Array_data_util.range(0, 30));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 15, characters 4-11", Bs_SetM.removeCheck(u, 0));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 16, characters 4-11", 1 - Bs_SetM.removeCheck(u, 0));
+b("File \"bs_poly_mutable_set_test.ml\", line 16, characters 4-11", !Bs_SetM.removeCheck(u, 0));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 17, characters 4-11", Bs_SetM.removeCheck(u, 30));
 
@@ -35,9 +35,9 @@ eq("File \"bs_poly_mutable_set_test.ml\", line 19, characters 5-12", Bs_internal
 
 var r = Array_data_util.randomRange(0, 30);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 21, characters 4-11", +(29 === Bs_internalAVLset.maxNull0(u.data)));
+b("File \"bs_poly_mutable_set_test.ml\", line 21, characters 4-11", 29 === Bs_internalAVLset.maxNull0(u.data));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 22, characters 4-11", +(1 === Bs_internalAVLset.minNull0(u.data)));
+b("File \"bs_poly_mutable_set_test.ml\", line 22, characters 4-11", 1 === Bs_internalAVLset.minNull0(u.data));
 
 Bs_SetM.addOnly(u, 3);
 
@@ -57,7 +57,7 @@ Bs_SetM.addOnly(u, 0);
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 32, characters 5-12", Bs_internalAVLset.length0(u.data), 3);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 33, characters 4-11", 1 - Bs_internalAVLset.isEmpty0(u.data));
+b("File \"bs_poly_mutable_set_test.ml\", line 33, characters 4-11", !Bs_internalAVLset.isEmpty0(u.data));
 
 for(var i$1 = 0; i$1 <= 3; ++i$1){
   Bs_SetM.removeOnly(u, i$1);

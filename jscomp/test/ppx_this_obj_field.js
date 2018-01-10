@@ -127,7 +127,7 @@ var eventObj = {
     }),
   needRebuild: (function () {
       var self = this ;
-      return +(self.events.length !== 0);
+      return self.events.length !== 0;
     })
 };
 

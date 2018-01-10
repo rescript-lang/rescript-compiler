@@ -102,7 +102,7 @@ function string_of_rank(param) {
 
 function find_ticker_by_name(all_tickers, ticker) {
   return List.find((function (param) {
-                return +(param[/* ticker_name */2] === ticker);
+                return param[/* ticker_name */2] === ticker;
               }), all_tickers);
 }
 
@@ -207,9 +207,9 @@ function bal(l, x, d, r) {
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -277,7 +277,7 @@ function mem(x, _param) {
         return /* true */1;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -453,7 +453,7 @@ function for_all(p, _param) {
         return /* false */0;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -472,7 +472,7 @@ function exists(p, _param) {
         
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -726,12 +726,12 @@ function equal(cmp, m1, m2) {
           return /* false */0;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else if (e2) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }

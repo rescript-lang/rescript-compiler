@@ -51,7 +51,7 @@ console.log(/* int array */[
             3,
             4
           ].filter((function (x) {
-                return +(x > 2);
+                return x > 2;
               })).map((function (x, i) {
               return x + i | 0;
             })).reduce((function (x, y) {
@@ -102,7 +102,7 @@ var a = Js_vector.init(5, (function (i) {
       }));
 
 eq("File \"bs_array_test.ml\", line 35, characters 5-12", (Js_vector.filterInPlace((function (j) {
-              return +(j % 2 === 0);
+              return j % 2 === 0;
             }), a), a), /* int array */[
       2,
       4
@@ -113,7 +113,7 @@ var a$1 = Js_vector.init(5, (function (i) {
       }));
 
 eq("File \"bs_array_test.ml\", line 42, characters 5-12", (Js_vector.filterInPlace((function (j) {
-              return +(j % 2 !== 0);
+              return j % 2 !== 0;
             }), a$1), a$1), /* int array */[
       1,
       3,

@@ -141,12 +141,12 @@ function even(n) {
   if (n) {
     var n$1 = n - 1 | 0;
     if (n$1 === 1) {
-      return /* true */1;
+      return true;
     } else {
       return even(n$1 - 1 | 0);
     }
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -158,7 +158,7 @@ function even2(_n) {
       continue ;
       
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }

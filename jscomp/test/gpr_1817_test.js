@@ -31,7 +31,7 @@ function f() {
   return /* tuple */[
           Caml_obj.caml_greaterthan(y, x),
           Caml_obj.caml_lessthan(y, x),
-          /* true */1
+          true
         ];
 }
 
@@ -45,7 +45,7 @@ var a0 = match[0];
 
 console.log(a0, a1);
 
-eq("File \"gpr_1817_test.ml\", line 19, characters 6-13", a2, /* true */1);
+eq("File \"gpr_1817_test.ml\", line 19, characters 6-13", a2, true);
 
 Mt.from_pair_suites("gpr_1817_test.ml", suites[0]);
 

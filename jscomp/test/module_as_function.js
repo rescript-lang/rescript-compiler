@@ -3,7 +3,7 @@
 var Nightmare = require("nightmare");
 
 var v = Nightmare({
-      show: /* true */1
+      show: true
     });
 
 exports.v = v;

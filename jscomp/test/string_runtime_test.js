@@ -26,7 +26,7 @@ var suites_001 = /* :: */[
     (function () {
         return /* Eq */Block.__(0, [
                   Caml_string.caml_is_printable(/* "a" */97),
-                  /* true */1
+                  true
                 ]);
       })
   ],

@@ -31,7 +31,7 @@ var hashString = (function (str) {
 var String_000 = Hashtbl.hash;
 
 function String_001(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 var $$String = /* module */[
@@ -40,7 +40,7 @@ var $$String = /* module */[
 ];
 
 function String1_001(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 var String1 = /* module */[
@@ -53,7 +53,7 @@ function String2_000(x) {
 }
 
 function String2_001(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 var String2 = /* module */[
@@ -64,7 +64,7 @@ var String2 = /* module */[
 var Int_000 = Hashtbl.hash;
 
 function Int_001(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 var Int = /* module */[

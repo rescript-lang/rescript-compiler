@@ -21,7 +21,7 @@ var suites_001 = /* :: */[
   /* tuple */[
     "make",
     (function () {
-        return /* Ok */Block.__(4, [+(new Date().getTime() > 1487223505382)]);
+        return /* Ok */Block.__(4, [new Date().getTime() > 1487223505382]);
       })
   ],
   /* :: */[
@@ -48,7 +48,7 @@ var suites_001 = /* :: */[
         /* tuple */[
           "fromString_invalid",
           (function () {
-              return /* Ok */Block.__(4, [+isNaN(new Date("gibberish").getTime())]);
+              return /* Ok */Block.__(4, [isNaN(new Date("gibberish").getTime())]);
             })
         ],
         /* :: */[

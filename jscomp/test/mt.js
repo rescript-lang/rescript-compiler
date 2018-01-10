@@ -22,13 +22,13 @@ function is_mocha() {
       if (exec === "mocha") {
         return /* true */1;
       } else {
-        return +(exec === "_mocha");
+        return exec === "_mocha";
       }
     } else {
-      return /* false */0;
+      return false;
     }
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -52,7 +52,7 @@ function from_suites(name, suite) {
 
 function close_enough($staropt$star, a, b) {
   var threshold = $staropt$star ? $staropt$star[0] : 0.0000001;
-  return +(Math.abs(a - b) < threshold);
+  return Math.abs(a - b) < threshold;
 }
 
 function handleCode(spec) {

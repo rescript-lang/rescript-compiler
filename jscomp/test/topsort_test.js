@@ -683,14 +683,14 @@ function split(x, param) {
     } else {
       return /* tuple */[
               l,
-              /* true */1,
+              true,
               r
             ];
     }
   } else {
     return /* tuple */[
             /* Empty */0,
-            /* false */0,
+            false,
             /* Empty */0
           ];
   }
@@ -698,9 +698,9 @@ function split(x, param) {
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -717,7 +717,7 @@ function mem(x, _param) {
         return /* true */1;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -788,7 +788,7 @@ function inter(s1, s2) {
       var l1 = s1[0];
       var match = split(v1, s2);
       var l2 = match[0];
-      if (match[1] !== 0) {
+      if (match[1] !== false) {
         return join(inter(l1, l2), v1, inter(r1, match[2]));
       } else {
         return concat(inter(l1, l2), inter(r1, match[2]));
@@ -809,7 +809,7 @@ function diff(s1, s2) {
       var l1 = s1[0];
       var match = split(v1, s2);
       var l2 = match[0];
-      if (match[1] !== 0) {
+      if (match[1] !== false) {
         return concat(diff(l1, l2), diff(r1, match[2]));
       } else {
         return join(diff(l1, l2), v1, diff(r1, match[2]));
@@ -870,7 +870,7 @@ function compare(s1, s2) {
 }
 
 function equal(s1, s2) {
-  return +(compare(s1, s2) === 0);
+  return compare(s1, s2) === 0;
 }
 
 function subset(_s1, _s2) {
@@ -920,10 +920,10 @@ function subset(_s1, _s2) {
           return /* false */0;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -974,7 +974,7 @@ function for_all(p, _param) {
         return /* false */0;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -993,7 +993,7 @@ function exists(p, _param) {
         
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
