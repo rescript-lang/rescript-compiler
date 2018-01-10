@@ -38,6 +38,7 @@ let rec translate (x : Lam.constant ) : J.expression =
   | Const_js_null -> E.nil
   | Const_js_undefined -> E.undefined
   | Const_int i -> E.int (Int32.of_int i)
+  | Const_bool b -> E.js_bool b
   | Const_char i ->
     Js_of_lam_string.const_char i
   | Const_int32 i -> E.int i 

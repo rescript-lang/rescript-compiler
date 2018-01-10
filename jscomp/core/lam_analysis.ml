@@ -86,7 +86,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       
       | Pcreate_extension _
       (* | Pcreate_exception _ *)
-      | Pjs_boolean_to_bool
       | Pjs_typeof
       | Pis_null
       | Pis_undefined
@@ -310,7 +309,7 @@ let rec size (lam : Lam.t) =
   with Too_big_to_inline ->  1000 
 and size_constant x = 
   match x with 
-  | Const_int _ | Const_char _ 
+  | Const_int _ | Const_bool _ | Const_char _ 
   | Const_string _  
   | Const_unicode _
   | Const_float _  | Const_int32 _ | Const_int64 _ 
@@ -533,7 +532,6 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pis_null -> rhs = Pis_null
   | Pis_undefined -> rhs = Pis_undefined
   | Pis_null_undefined -> rhs = Pis_null_undefined
-  | Pjs_boolean_to_bool -> rhs = Pjs_boolean_to_bool
   | Pjs_typeof -> rhs = Pjs_typeof
   | Pisint -> rhs = Pisint
   | Pisout -> rhs = Pisout
