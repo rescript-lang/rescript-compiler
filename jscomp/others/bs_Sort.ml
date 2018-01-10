@@ -63,9 +63,131 @@ let merge src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   in 
   loop src1ofs (A.unsafe_get src src1ofs) src2ofs (A.unsafe_get src2 src2ofs) dstofs
 
+let union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+  let src1r = src1ofs + src1len in 
+  let src2r = src2ofs + src2len in
+  let rec loop i1 s1 i2 s2 d =
+    let c = cmp s1 s2 [@bs] in 
+    if c < 0 then begin
+      (* [s1] is larger than all elements in [d] *)
+      A.unsafe_set dst d s1; 
+      let i1 = i1 + 1 in
+      let d = d + 1 in 
+      if i1 < src1r then
+        loop i1 (A.unsafe_get src i1) i2 s2 d
+      else
+        begin 
+          A.blitUnsafe src2 i2 dst d (src2r - i2);
+          d + src2r - i2   
+        end
+    end 
+    else if c = 0 then begin 
+      A.unsafe_set dst d s1;
+      let i1 = i1 + 1 in
+      let i2 = i2 + 1 in 
+      let d  = d + 1 in 
+      if i1 < src1r && i2 < src1r then 
+        loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
+      else if i1 = src1r then   
+        (A.blitUnsafe src2 i2 dst d (src2r - i2);
+         d + src2r - i2)
+      else    
+        (A.blitUnsafe src i1 dst d (src1r - i1);
+         d + src1r - i1)
+    end 
+    else begin
+      A.unsafe_set dst d s2;
+      let i2 = i2 + 1 in
+      let d = d + 1 in 
+      if i2 < src2r then
+        loop i1 s1 i2 (A.unsafe_get src2 i2) d
+      else
+        (A.blitUnsafe src i1 dst d (src1r - i1);
+         d + src1r - i1
+        )
+    end
+  in 
+  loop src1ofs 
+    (A.unsafe_get src src1ofs) 
+    src2ofs 
+    (A.unsafe_get src2 src2ofs) dstofs
 
 
-  
+let inter src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+  let src1r = src1ofs + src1len in 
+  let src2r = src2ofs + src2len in
+  let rec loop i1 s1 i2 s2 d =
+    let c = cmp s1 s2 [@bs] in 
+    if c < 0 then begin
+      (* A.unsafe_set dst d s1; *)
+      let i1 = i1 + 1 in
+      if i1 < src1r then
+        loop i1 (A.unsafe_get src i1) i2 s2 d
+      else
+        d
+    end 
+    else if c = 0 then begin 
+      A.unsafe_set dst d s1;
+      let i1 = i1 + 1 in
+      let i2 = i2 + 1 in 
+      let d = d + 1 in 
+      if i1 < src1r && i2 < src1r then 
+        loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
+      else d
+    end 
+    else begin
+      (* A.unsafe_set dst d s2; *)
+      let i2 = i2 + 1 in
+      if i2 < src2r then
+        loop i1 s1 i2 (A.unsafe_get src2 i2) d
+      else
+        d
+    end
+  in 
+  loop src1ofs 
+    (A.unsafe_get src src1ofs) 
+    src2ofs 
+    (A.unsafe_get src2 src2ofs) dstofs    
+
+let diff src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+  let src1r = src1ofs + src1len in 
+  let src2r = src2ofs + src2len in
+  let rec loop i1 s1 i2 s2 d =
+    let c = cmp s1 s2 [@bs] in 
+    if c < 0 then begin
+      A.unsafe_set dst d s1;
+      let d = d + 1 in 
+      let i1 = i1 + 1 in      
+      if i1 < src1r then
+        loop i1 (A.unsafe_get src i1) i2 s2 d
+      else
+        d
+    end 
+    else if c = 0 then begin 
+      let i1 = i1 + 1 in
+      let i2 = i2 + 1 in 
+      if i1 < src1r && i2 < src1r then 
+        loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
+      else if i1 = src1r then 
+        d
+      else 
+      (A.blitUnsafe src i1 dst d (src1r - i1);
+        d + src1r - i1)
+    end 
+    else begin
+      let i2 = i2 + 1 in
+      if i2 < src2r then
+        loop i1 s1 i2 (A.unsafe_get src2 i2) d
+      else
+        (A.blitUnsafe src i1 dst d (src1r - i1);
+        d + src1r - i1)        
+    end
+  in 
+  loop src1ofs 
+    (A.unsafe_get src src1ofs) 
+    src2ofs 
+    (A.unsafe_get src2 src2ofs) dstofs        
+
 (* [<=] alone is not enough for stable sort *)
 let insertionSort src srcofs dst dstofs len cmp =
   for i = 0 to len - 1 do
@@ -90,7 +212,7 @@ let rec sortTo src srcofs dst dstofs len cmp =
   end    
 
 
-  
+
 
 let stableSortBy  a cmp =
   let l = A.length a in
@@ -120,21 +242,21 @@ let sortByCont xs cmp =
   input (lo <= hi)
   [arr[lo] <= key <= arr[hi]] *)
 let rec binSearchAux arr lo hi key cmp = 
-  
-    let mid = (lo + hi)/2 in 
-    let midVal = A.unsafe_get arr mid in 
-    let c = cmp key midVal [@bs] in 
-    if c = 0 then mid 
-    else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
-      if hi = mid then  
-        if cmp (A.unsafe_get arr lo) key [@bs] = 0 then lo
-        else - (hi + 1)
-      else binSearchAux arr lo mid key cmp 
-    else  (*  a[lo] =< a[mid] < key <= a[hi] *)
-      if lo = mid then 
-        if cmp (A.unsafe_get arr hi) key [@bs] = 0 then hi
-        else - (hi + 1)
-      else binSearchAux arr mid hi key cmp 
+
+  let mid = (lo + hi)/2 in 
+  let midVal = A.unsafe_get arr mid in 
+  let c = cmp key midVal [@bs] in 
+  if c = 0 then mid 
+  else if c < 0 then  (*  a[lo] =< key < a[mid] <= a[hi] *)
+    if hi = mid then  
+      if cmp (A.unsafe_get arr lo) key [@bs] = 0 then lo
+      else - (hi + 1)
+    else binSearchAux arr lo mid key cmp 
+  else  (*  a[lo] =< a[mid] < key <= a[hi] *)
+  if lo = mid then 
+    if cmp (A.unsafe_get arr hi) key [@bs] = 0 then hi
+    else - (hi + 1)
+  else binSearchAux arr mid hi key cmp 
 
 let binSearch sorted key cmp : int =  
   let len = A.length sorted in 
@@ -144,7 +266,7 @@ let binSearch sorted key cmp : int =
     let c = cmp key lo [@bs] in 
     if c < 0 then -1 
     else
-    let hi = A.unsafe_get sorted (len - 1) in 
-    let c2 = cmp key hi [@bs]in 
-    if c2 > 0 then - (len + 1)
-    else binSearchAux sorted 0 (len - 1) key cmp 
+      let hi = A.unsafe_get sorted (len - 1) in 
+      let c2 = cmp key hi [@bs]in 
+      if c2 > 0 then - (len + 1)
+      else binSearchAux sorted 0 (len - 1) key cmp 

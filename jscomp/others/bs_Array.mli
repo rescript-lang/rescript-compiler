@@ -108,3 +108,4 @@ val forAll2: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 
 external unsafe_get : 'a array -> int -> 'a = "%array_unsafe_get"
 external unsafe_set : 'a array -> int -> 'a -> unit = "%array_unsafe_set"
+external truncateToLengthUnsafe : 'a array -> int ->  unit = "length" [@@bs.set]

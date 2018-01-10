@@ -197,3 +197,8 @@ let forAll2  a b p =
   if lena <> lenb then false
   else 
     forAllAux2  a b 0 p lena
+
+external truncateToLengthUnsafe : 'a array -> int ->  unit = "length" [@@bs.set]
+
+
+
