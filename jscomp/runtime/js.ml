@@ -67,7 +67,7 @@ external nullToOption : 'a null -> 'a option = "#null_to_opt"
 external test : 'a nullable -> bool = "#is_nil_undef"
 external testAny : 'a -> bool = "#is_nil_undef"
 
-type boolean
+type boolean = bool
 (** The JS boolean type, can be [Js.true_] or [Js.false_] *)
 
 (* I'd like to move this and the other types into a Js_core module that can be
@@ -88,7 +88,7 @@ external undefined : 'a undefined = "#undefined"
 (* end::predefined_js_values[]*)
 
 (* tag::utility_functions[]*)
-external to_bool : boolean -> bool = "#boolean_to_bool"
+external to_bool : boolean -> bool = "%identity"
 (** convert Js boolean to OCaml bool *)
 external typeof : 'a -> string = "#typeof"
 (** [typeof x] will be compiled as [typeof x] in JS *)

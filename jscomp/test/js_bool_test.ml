@@ -19,8 +19,10 @@ let v : Js.boolean = [%bs.raw{| true|}]
 let suites = Mt.[
     "caml_bool_eq_caml_bool", (fun _ -> Eq (u, f Js.true_));
     "js_bool_eq_js_bool",(fun _ -> Eq(v, f4 true));
-    "js_bool_neq_acml_bool",(fun _ -> 
-        Eq( false, (f Js.true_ = [%bs.raw {|true|} ] (* not type check*))));
+    "js_bool_eq_ocaml_bool",(fun _ -> 
+        Eq( true, (f Js.true_ = [%bs.raw {|true|} ] (* not type check*))));
+    "js_bool_is_ocaml_bool",(fun _ -> 
+        Eq( true, (f Js.true_ = true)));
 ]
 
 (* let f u = Js.unsafe_js_expr u *)
