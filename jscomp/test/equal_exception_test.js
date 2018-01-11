@@ -42,7 +42,18 @@ function is_equal() {
           ]
         ];
   }
-  return 0;
+  if (true) {
+    return 0;
+  } else {
+    throw [
+          Caml_builtin_exceptions.assert_failure,
+          [
+            "equal_exception_test.ml",
+            14,
+            4
+          ]
+        ];
+  }
 }
 
 function is_exception() {

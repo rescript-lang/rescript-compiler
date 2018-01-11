@@ -45,15 +45,15 @@ b("File \"equal_box_test.ml\", line 28, characters 4-11", !Caml_int64.equal_null
 
 b("File \"equal_box_test.ml\", line 29, characters 4-11", 0 !== null);
 
-b("File \"equal_box_test.ml\", line 30, characters 4-11", !/* false */0);
+b("File \"equal_box_test.ml\", line 30, characters 4-11", !false);
 
 b("File \"equal_box_test.ml\", line 31, characters 4-11", !Caml_obj.caml_equal_null(/* None */0, null));
 
 b("File \"equal_box_test.ml\", line 32, characters 4-11", Caml_obj.caml_equal_null(null, null));
 
-b("File \"equal_box_test.ml\", line 33, characters 4-11", !/* false */0);
+b("File \"equal_box_test.ml\", line 33, characters 4-11", !false);
 
-b("File \"equal_box_test.ml\", line 34, characters 4-11", /* true */1);
+b("File \"equal_box_test.ml\", line 34, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 35, characters 4-11", !Caml_obj.caml_equal_null(/* Some */[3], /* None */0));
 
@@ -80,9 +80,9 @@ b("File \"equal_box_test.ml\", line 46, characters 4-11", !Caml_obj.caml_equal_n
 
 b("File \"equal_box_test.ml\", line 47, characters 4-11", Caml_obj.caml_equal_nullable(null, v));
 
-b("File \"equal_box_test.ml\", line 48, characters 4-11", !/* false */0);
+b("File \"equal_box_test.ml\", line 48, characters 4-11", !false);
 
-b("File \"equal_box_test.ml\", line 49, characters 4-11", /* true */1);
+b("File \"equal_box_test.ml\", line 49, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 50, characters 4-11", !Caml_obj.caml_equal_nullable(/* Some */[3], /* None */0));
 
@@ -109,9 +109,9 @@ b("File \"equal_box_test.ml\", line 62, characters 4-11", !Caml_obj.caml_equal_u
 
 b("File \"equal_box_test.ml\", line 63, characters 4-11", !Caml_obj.caml_equal_undefined(null, v$1));
 
-b("File \"equal_box_test.ml\", line 64, characters 4-11", !/* false */0);
+b("File \"equal_box_test.ml\", line 64, characters 4-11", !false);
 
-b("File \"equal_box_test.ml\", line 65, characters 4-11", /* true */1);
+b("File \"equal_box_test.ml\", line 65, characters 4-11", true);
 
 b("File \"equal_box_test.ml\", line 66, characters 4-11", !Caml_obj.caml_equal_undefined(/* Some */[3], /* None */0));
 

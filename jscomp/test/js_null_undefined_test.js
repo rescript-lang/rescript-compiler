@@ -62,7 +62,7 @@ var suites_001 = /* :: */[
             (function () {
                 return /* Eq */Block.__(0, [
                           true,
-                          /* true */1
+                          true
                         ]);
               })
           ],
@@ -72,7 +72,7 @@ var suites_001 = /* :: */[
               (function () {
                   return /* Eq */Block.__(0, [
                             true,
-                            /* true */1
+                            true
                           ]);
                 })
             ],
@@ -82,7 +82,7 @@ var suites_001 = /* :: */[
                 (function () {
                     return /* Eq */Block.__(0, [
                               true,
-                              /* true */1
+                              true
                             ]);
                   })
               ],
@@ -92,7 +92,7 @@ var suites_001 = /* :: */[
                   (function () {
                       return /* Eq */Block.__(0, [
                                 false,
-                                /* false */0
+                                false
                               ]);
                     })
                 ],
@@ -249,7 +249,7 @@ var suites_001 = /* :: */[
                                             /* tuple */[
                                               "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
                                               (function () {
-                                                  return /* Ok */Block.__(4, [!/* false */0]);
+                                                  return /* Ok */Block.__(4, [!false]);
                                                 })
                                             ],
                                             /* [] */0
