@@ -103,9 +103,52 @@ var bb = f(Array_data_util.randomRange(40, 120));
 
 var cc = Bs_SetM.union(aa, bb);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 61, characters 4-11", Bs_SetM.eq(cc, f(Array_data_util.randomRange(0, 120))));
+b("File \"bs_poly_mutable_set_test.ml\", line 60, characters 4-11", Bs_SetM.eq(cc, f(Array_data_util.randomRange(0, 120))));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 63, characters 4-11", Bs_SetM.eq(Bs_SetM.union(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(21, 40))), f(Array_data_util.randomRange(0, 40))));
+b("File \"bs_poly_mutable_set_test.ml\", line 62, characters 4-11", Bs_SetM.eq(Bs_SetM.union(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(21, 40))), f(Array_data_util.randomRange(0, 40))));
+
+var dd = Bs_SetM.inter(aa, bb);
+
+b("File \"bs_poly_mutable_set_test.ml\", line 67, characters 4-11", Bs_SetM.eq(dd, f(Array_data_util.randomRange(40, 100))));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 68, characters 4-11", Bs_SetM.eq(Bs_SetM.inter(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(21, 40))), {
+          dict: IntCmp,
+          data: Bs_internalAVLset.empty0
+        }));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 74, characters 4-11", Bs_SetM.eq(Bs_SetM.inter(f(Array_data_util.randomRange(21, 40)), f(Array_data_util.randomRange(0, 20))), {
+          dict: IntCmp,
+          data: Bs_internalAVLset.empty0
+        }));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 80, characters 4-11", Bs_SetM.eq(Bs_SetM.inter(f(/* array */[
+                  1,
+                  3,
+                  4,
+                  5,
+                  7,
+                  9
+                ]), f(/* array */[
+                  2,
+                  4,
+                  5,
+                  6,
+                  8,
+                  10
+                ])), f(/* int array */[
+              4,
+              5
+            ])));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 86, characters 4-11", Bs_SetM.eq(Bs_SetM.diff(aa, bb), f(Array_data_util.randomRange(0, 39))));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 88, characters 4-11", Bs_SetM.eq(Bs_SetM.diff(bb, aa), f(Array_data_util.randomRange(101, 120))));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 90, characters 4-11", Bs_SetM.eq(Bs_SetM.diff(f(Array_data_util.randomRange(21, 40)), f(Array_data_util.randomRange(0, 20))), f(Array_data_util.randomRange(21, 40))));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 96, characters 4-11", Bs_SetM.eq(Bs_SetM.diff(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(21, 40))), f(Array_data_util.randomRange(0, 20))));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 103, characters 4-11", Bs_SetM.eq(Bs_SetM.diff(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(0, 40))), f(Array_data_util.randomRange(0, -1))));
 
 Mt.from_pair_suites("bs_poly_mutable_set_test.ml", suites[0]);
 

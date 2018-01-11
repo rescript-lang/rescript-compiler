@@ -73,11 +73,13 @@ val removeCheck:
 
 val union:  
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-(*  
+
 val inter: 
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
+
 val diff:   
-  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t *)
+  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
+  
 val subset:  
   ('elt, 'id) t -> ('elt, 'id) t -> bool     
 
