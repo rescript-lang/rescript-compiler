@@ -314,6 +314,9 @@ let obj_int_tag_literal : t =
 let int ?comment ?c  i : t = 
   {expression_desc = Number (Int {i; c}) ; comment}
 
+let bool ?comment b : t = 
+  {expression_desc = Bool b; comment}
+
 let small_int i : t = 
   match i with 
   | 0 -> zero_int_literal
@@ -511,6 +514,9 @@ let float_mod ?comment e1 e2 : J.expression =
     expression_desc = Bin (Mod, e1,e2)
   }
 
+let caml_true  = bool true
+
+let caml_false  = bool false
 
 (** Here we have to use JS [===], and therefore, we are introducing 
     Js boolean, so be sure to convert it back to OCaml bool
