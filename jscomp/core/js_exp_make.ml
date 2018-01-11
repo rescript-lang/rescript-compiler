@@ -277,6 +277,9 @@ let obj_int_tag_literal : t =
 let int ?comment ?c  i : t = 
   {expression_desc = Number (Int {i; c}) ; comment}
 
+let bool ?comment b : t = 
+  {expression_desc = Bool b; comment}
+
 let small_int i : t = 
   match i with 
   | 0 -> zero_int_literal
@@ -497,9 +500,9 @@ let to_number ?comment (e : t) : t =
   | Number _ -> e 
   | _ -> {comment ; expression_desc = Anything_to_number e}
 
-let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
+let caml_true  = bool true
 
-let caml_false  = int ~comment:"false" 0l
+let caml_false  = bool false
 
 let bool v = if  v then caml_true else caml_false
 
