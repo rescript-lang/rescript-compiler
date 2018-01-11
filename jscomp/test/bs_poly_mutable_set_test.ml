@@ -50,5 +50,19 @@ let () =
   eq __LOC__ (N.length u) 1 ;
   b __LOC__ (N.mem u 20000)
   (* for i =  *)
+let (++) = N.union
+let f = N.ofArray (module IntCmp) 
+let (=~) = N.eq 
+let () =   
+  
+  let aa =  f (I.randomRange 0 100) in 
+  let bb = f  (I.randomRange 40 120) in
+  let cc = aa ++ bb in 
+  b __LOC__ (cc =~ f (I.randomRange 0 120));
+
+  b __LOC__ (N.eq 
+    ( N.union (f (I.randomRange 0 20))
+       (f (I.randomRange 21 40) ))
+    (f( I.randomRange 0 40)))
 
 ;; Mt.from_pair_suites __FILE__ !suites  

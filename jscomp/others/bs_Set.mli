@@ -84,14 +84,8 @@ val maxOpt: ('elt, 'id) t -> 'elt option
 val maxNull: ('elt, 'id) t -> 'elt Js.null
 
 val split: 
-  ('elt, 'id) t -> 'elt -> ('elt, 'id) t * bool * ('elt, 'id) t
-(** [split x s] returns a triple [(l, present, r)], where
-      [l] is the set of elements of [s] that are
-      strictly less than [x];
-      [r] is the set of elements of [s] that are
-      strictly greater than [x];
-      [present] is [false] if [s] contains no element equal to [x],
-      or [true] if [s] contains an element equal to [x]. *)
+  ('elt, 'id) t -> 'elt -> 
+  (('elt, 'id) t  * ('elt, 'id) t) * bool
 
 val ofSortedArrayUnsafe:
   dict:('elt, 'id) Bs_Cmp.t ->
@@ -178,7 +172,8 @@ val maxOpt0: ('elt, 'id) t0 -> 'elt option
 
 val split0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt -> ('elt, 'id) t0 * bool * ('elt, 'id) t0
+  ('elt, 'id) t0 -> 'elt -> 
+  (('elt, 'id) t0  * ('elt, 'id) t0) * bool
 
 val ofSortedArrayUnsafe0:
   'elt array -> ('elt,'id) t0

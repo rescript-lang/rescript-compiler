@@ -34,11 +34,11 @@ val exists: t -> (elt -> bool [@bs]) ->  bool
     the set satisfies the predicate [p]. Oder unspecified. *)
 
 val filter: t -> (elt -> bool [@bs]) ->  t
-(** [filter p s] returns the set of all elements in [s]
+(** [filter s p] returns a fresh copy of the set of all elements in [s]
     that satisfy predicate [p]. *)
 
 val partition: t -> (elt -> bool [@bs]) ->  t * t
-(** [partition p s] returns a pair of sets [(s1, s2)], where
+(** [partition s p] returns a fresh copy pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
     [s] that do not satisfy [p]. *)
@@ -54,7 +54,10 @@ val minNull: t -> elt Js.null
 val maxOpt: t -> elt option
 val maxNull: t -> elt Js.null
     
-val split:  t -> elt  -> t * bool * t
+val split:  t -> elt  -> (t * t) * bool 
+(**
+    [split s key] return a fresh copy of each
+*)
 val findOpt:  t -> elt -> elt option
     
 val addArray: t -> elt array -> t 

@@ -93,6 +93,20 @@ eq("File \"bs_poly_mutable_set_test.ml\", line 50, characters 5-12", Bs_internal
 
 b("File \"bs_poly_mutable_set_test.ml\", line 51, characters 4-11", Bs_SetM.mem(u, 20000));
 
+function f(param) {
+  return Bs_SetM.ofArray(IntCmp, param);
+}
+
+var aa = f(Array_data_util.randomRange(0, 100));
+
+var bb = f(Array_data_util.randomRange(40, 120));
+
+var cc = Bs_SetM.union(aa, bb);
+
+b("File \"bs_poly_mutable_set_test.ml\", line 61, characters 4-11", Bs_SetM.eq(cc, f(Array_data_util.randomRange(0, 120))));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 63, characters 4-11", Bs_SetM.eq(Bs_SetM.union(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(21, 40))), f(Array_data_util.randomRange(0, 40))));
+
 Mt.from_pair_suites("bs_poly_mutable_set_test.ml", suites[0]);
 
 var N = 0;
@@ -100,6 +114,10 @@ var N = 0;
 var I = 0;
 
 var A = 0;
+
+var $plus$plus = Bs_SetM.union;
+
+var $eq$tilde = Bs_SetM.eq;
 
 exports.suites = suites;
 exports.test_id = test_id;
@@ -109,4 +127,7 @@ exports.N = N;
 exports.I = I;
 exports.A = A;
 exports.IntCmp = IntCmp;
+exports.$plus$plus = $plus$plus;
+exports.f = f;
+exports.$eq$tilde = $eq$tilde;
 /* u Not a pure module */

@@ -17,9 +17,10 @@ js_console.cmj :
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
 bs_Array.cmj : js_math.cmj bs_Array.cmi
-bs_internalAVLset.cmj : bs_Array.cmj bs.cmj bs_internalAVLset.cmi
+bs_internalAVLset.cmj : bs_Cmp.cmj bs_Array.cmj bs_internalAVLset.cmi
 bs_internalAVLtree.cmj : bs_internalAVLtree.cmi
-bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SetIntM.cmi
+bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SortInt.cmj \
+    bs_Array.cmj bs_SetIntM.cmi
 bs_Hash.cmj : bs_Hash.cmi
 bs_Queue.cmj : bs_Array.cmj bs_Queue.cmi
 bs_List.cmj : js_json.cmj bs_Array.cmj bs_List.cmi
@@ -45,20 +46,22 @@ bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Bag.cmj bs_Array.cmj \
     bs_Map.cmi
 bs_MapString.cmj : bs_internalAVLtree.cmj bs_Array.cmj bs_MapString.cmi
 bs_MapInt.cmj : bs_internalAVLtree.cmj bs_Array.cmj bs_MapInt.cmi
-bs_internalSet.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Bag.cmj \
-    bs_Array.cmj
-bs_Set.cmj : bs_internalSet.cmj bs_internalAVLset.cmj bs_Cmp.cmj bs_Bag.cmj \
+bs_internalSet.cmj : bs_internalSet.cmi
+bs_Set.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Bag.cmj bs_Array.cmj \
     bs_Set.cmi
-bs_SetM.cmj : bs_internalSet.cmj bs_internalAVLset.cmj bs_Cmp.cmj \
-    bs_BagM.cmj bs_SetM.cmi
+bs_SetM.cmj : bs_internalAVLset.cmj bs_Sort.cmj bs_Cmp.cmj bs_BagM.cmj \
+    bs_Array.cmj bs_SetM.cmi
 bs_internalSetInt.cmj : bs_internalAVLset.cmj bs_Array.cmj
 bs_internalSetString.cmj : bs_internalAVLset.cmj bs_Array.cmj
 bs_SetInt.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SetInt.cmi
-bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SetIntM.cmi
+bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SortInt.cmj \
+    bs_Array.cmj bs_SetIntM.cmi
 bs_SetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_SetString.cmi
 bs_SetStringM.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
-    bs_SetStringM.cmi
+    bs_SortString.cmj bs_Array.cmj bs_SetStringM.cmi
+bs_SortInt.cmj : bs_Array.cmj bs_SortInt.cmi
+bs_SortString.cmj : bs_Array.cmj bs_SortString.cmi
 bs_Stack.cmj : bs_Stack.cmi
 node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
@@ -83,7 +86,7 @@ js_option.cmi :
 js_result.cmi :
 js_mapperRt.cmi :
 bs_Array.cmi :
-bs_internalAVLset.cmi :
+bs_internalAVLset.cmi : bs_Cmp.cmi
 bs_internalAVLtree.cmi :
 bs_SetIntM.cmi :
 bs_Hash.cmi :
@@ -99,12 +102,15 @@ bs_Cmp.cmi :
 bs_Map.cmi : bs_Cmp.cmi bs_Bag.cmj
 bs_MapString.cmi :
 bs_MapInt.cmi :
+bs_internalSet.cmi :
 bs_Set.cmi : bs_Cmp.cmi bs_Bag.cmj
 bs_SetM.cmi : bs_Cmp.cmi
 bs_SetInt.cmi :
 bs_SetIntM.cmi :
 bs_SetString.cmi :
 bs_SetStringM.cmi :
+bs_SortInt.cmi :
+bs_SortString.cmi :
 bs_Stack.cmi :
 js_boolean.cmi :
 js_dict.cmi :

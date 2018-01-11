@@ -19,8 +19,8 @@ let iter = N.iter0
 let fold = N.fold0
 let forAll = N.forAll0
 let exists = N.exists0    
-let filter = N.filter0
-let partition = N.partition0
+let filter = N.filterShared0
+let partition = N.partitionShared0
 let length = N.length0
 let toList = N.toList0
 let toArray = N.toArray0
@@ -39,3 +39,4 @@ let inter = I.inter
 let union = I.union
 let remove = I.remove 
 let mem = I.mem 
+
