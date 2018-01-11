@@ -5,7 +5,7 @@ function str_equal(x, y) {
   return x === y;
 }
 
-var str_b = /* true */1;
+var str_b = true;
 
 function int_equal(x, y) {
   return x === y;
