@@ -18,6 +18,7 @@ function cons_enum(_s, _e) {
       ];
       _s = s[0];
       continue ;
+      
     } else {
       return e;
     }
@@ -40,6 +41,7 @@ function min_elt(_param) {
       if (l) {
         _param = l;
         continue ;
+        
       } else {
         return param[1];
       }
@@ -57,6 +59,7 @@ function max_elt(_param) {
       if (r) {
         _param = r;
         continue ;
+        
       } else {
         return param[1];
       }
@@ -82,6 +85,7 @@ function cardinal_aux(_acc, _param) {
       _param = param[0];
       _acc = cardinal_aux(acc + 1 | 0, param[2]);
       continue ;
+      
     } else {
       return acc;
     }
@@ -103,6 +107,7 @@ function elements_aux(_accu, _param) {
         elements_aux(accu, param[2])
       ];
       continue ;
+      
     } else {
       return accu;
     }
@@ -121,6 +126,7 @@ function iter(f, _param) {
       Curry._1(f, param[1]);
       _param = param[2];
       continue ;
+      
     } else {
       return /* () */0;
     }
@@ -135,6 +141,7 @@ function fold(f, _s, _accu) {
       _accu = Curry._2(f, s[1], fold(f, s[0], accu));
       _s = s[2];
       continue ;
+      
     } else {
       return accu;
     }
@@ -145,11 +152,16 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1]) && for_all(p, param[0])) {
-        _param = param[2];
-        continue ;
+      if (Curry._1(p, param[1])) {
+        if (for_all(p, param[0])) {
+          _param = param[2];
+          continue ;
+          
+        } else {
+          return false;
+        }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
       return true;
@@ -161,11 +173,14 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1]) || exists(p, param[0])) {
-        return /* true */1;
+      if (Curry._1(p, param[1])) {
+        return true;
+      } else if (exists(p, param[0])) {
+        return true;
       } else {
         _param = param[2];
         continue ;
+        
       }
     } else {
       return false;
@@ -554,57 +569,59 @@ function of_sorted_list(l) {
 
 function of_sorted_array(l) {
   var sub = function (start, n, l) {
-    if (n === 0) {
-      return /* Empty */0;
-    } else if (n === 1) {
-      var x0 = l[start];
-      return /* Node */[
-              /* Empty */0,
-              x0,
-              /* Empty */0,
-              1
-            ];
-    } else if (n === 2) {
-      var x0$1 = l[start];
-      var x1 = l[start + 1 | 0];
-      return /* Node */[
-              /* Node */[
+    if (n) {
+      if (n === 1) {
+        var x0 = l[start];
+        return /* Node */[
                 /* Empty */0,
-                x0$1,
+                x0,
                 /* Empty */0,
                 1
-              ],
-              x1,
-              /* Empty */0,
-              2
-            ];
-    } else if (n === 3) {
-      var x0$2 = l[start];
-      var x1$1 = l[start + 1 | 0];
-      var x2 = l[start + 2 | 0];
-      return /* Node */[
-              /* Node */[
+              ];
+      } else if (n === 2) {
+        var x0$1 = l[start];
+        var x1 = l[start + 1 | 0];
+        return /* Node */[
+                /* Node */[
+                  /* Empty */0,
+                  x0$1,
+                  /* Empty */0,
+                  1
+                ],
+                x1,
                 /* Empty */0,
-                x0$2,
-                /* Empty */0,
-                1
-              ],
-              x1$1,
-              /* Node */[
-                /* Empty */0,
-                x2,
-                /* Empty */0,
-                1
-              ],
-              2
-            ];
+                2
+              ];
+      } else if (n === 3) {
+        var x0$2 = l[start];
+        var x1$1 = l[start + 1 | 0];
+        var x2 = l[start + 2 | 0];
+        return /* Node */[
+                /* Node */[
+                  /* Empty */0,
+                  x0$2,
+                  /* Empty */0,
+                  1
+                ],
+                x1$1,
+                /* Node */[
+                  /* Empty */0,
+                  x2,
+                  /* Empty */0,
+                  1
+                ],
+                2
+              ];
+      } else {
+        var nl = n / 2 | 0;
+        var left = sub(start, nl, l);
+        var mid = start + nl | 0;
+        var v = l[mid];
+        var right = sub(mid + 1 | 0, (n - nl | 0) - 1 | 0, l);
+        return create(left, v, right);
+      }
     } else {
-      var nl = n / 2 | 0;
-      var left = sub(start, nl, l);
-      var mid = start + nl | 0;
-      var v = l[mid];
-      var right = sub(mid + 1 | 0, (n - nl | 0) - 1 | 0, l);
-      return create(left, v, right);
+      return /* Empty */0;
     }
   };
   return sub(0, l.length, l);
@@ -705,6 +722,7 @@ function compare_aux(cmp, _e1, _e2) {
           _e2 = cons_enum(e2[1], e2[2]);
           _e1 = cons_enum(e1[1], e1[2]);
           continue ;
+          
         }
       } else {
         return 1;

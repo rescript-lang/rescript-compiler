@@ -93,7 +93,13 @@ function add(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_int_compare(x, v);
-    if (c === 0) {
+    if (c) {
+      if (c < 0) {
+        return bal(add(x, data, l), v, d, r);
+      } else {
+        return bal(l, v, d, add(x, data, r));
+      }
+    } else {
       return /* Node */[
               l,
               x,
@@ -101,10 +107,6 @@ function add(x, data, param) {
               r,
               param[4]
             ];
-    } else if (c < 0) {
-      return bal(add(x, data, l), v, d, r);
-    } else {
-      return bal(l, v, d, add(x, data, r));
     }
   } else {
     return /* Node */[
@@ -130,6 +132,7 @@ function cons_enum(_m, _e) {
       ];
       _m = m[0];
       continue ;
+      
     } else {
       return e;
     }
@@ -155,6 +158,7 @@ function compare(cmp, m1, m2) {
             _e2 = cons_enum(e2[2], e2[3]);
             _e1 = cons_enum(e1[2], e1[3]);
             continue ;
+            
           }
         }
       } else {
@@ -175,10 +179,19 @@ function equal(cmp, m1, m2) {
     var e2 = _e2;
     var e1 = _e1;
     if (e1) {
-      if (e2 && e1[0] === e2[0] && Curry._2(cmp, e1[1], e2[1])) {
-        _e2 = cons_enum(e2[2], e2[3]);
-        _e1 = cons_enum(e1[2], e1[3]);
-        continue ;
+      if (e2) {
+        if (e1[0] === e2[0]) {
+          if (Curry._2(cmp, e1[1], e2[1])) {
+            _e2 = cons_enum(e2[2], e2[3]);
+            _e1 = cons_enum(e1[2], e1[3]);
+            continue ;
+            
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
@@ -283,7 +296,13 @@ function add$1(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c === 0) {
+    if (c) {
+      if (c < 0) {
+        return bal$1(add$1(x, data, l), v, d, r);
+      } else {
+        return bal$1(l, v, d, add$1(x, data, r));
+      }
+    } else {
       return /* Node */[
               l,
               x,
@@ -291,10 +310,6 @@ function add$1(x, data, param) {
               r,
               param[4]
             ];
-    } else if (c < 0) {
-      return bal$1(add$1(x, data, l), v, d, r);
-    } else {
-      return bal$1(l, v, d, add$1(x, data, r));
     }
   } else {
     return /* Node */[
@@ -312,11 +327,12 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c === 0) {
-        return param[2];
-      } else {
+      if (c) {
         _param = c < 0 ? param[0] : param[3];
         continue ;
+        
+      } else {
+        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -463,11 +479,11 @@ var int_map_suites_001 = /* :: */[
         (function () {
             var m = /* Empty */0;
             for(var i = 0; i <= 10000; ++i){
-              m = add$1(String(i), String(i), m);
+              m = add$1("" + i, "" + i, m);
             }
             var v = -1;
             for(var i$1 = 0; i$1 <= 10000; ++i$1){
-              if (find(String(i$1), m) !== String(i$1)) {
+              if (find("" + i$1, m) !== "" + i$1) {
                 v = i$1;
               }
               

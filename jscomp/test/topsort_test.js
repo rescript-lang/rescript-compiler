@@ -714,7 +714,7 @@ function mem(x, _param) {
         continue ;
         
       } else {
-        return /* true */1;
+        return true;
       }
     } else {
       return false;
@@ -897,7 +897,7 @@ function subset(_s1, _s2) {
               continue ;
               
             } else {
-              return /* false */0;
+              return false;
             }
           } else if (subset(/* Node */[
                   /* Empty */0,
@@ -909,7 +909,7 @@ function subset(_s1, _s2) {
             continue ;
             
           } else {
-            return /* false */0;
+            return false;
           }
         } else if (subset(l1, l2)) {
           _s2 = r2;
@@ -917,7 +917,7 @@ function subset(_s1, _s2) {
           continue ;
           
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
         return false;
@@ -968,10 +968,10 @@ function for_all(p, _param) {
           continue ;
           
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
       return true;
@@ -984,9 +984,9 @@ function exists(p, _param) {
     var param = _param;
     if (param) {
       if (Curry._1(p, param[1])) {
-        return /* true */1;
+        return true;
       } else if (exists(p, param[0])) {
-        return /* true */1;
+        return true;
       } else {
         _param = param[2];
         continue ;

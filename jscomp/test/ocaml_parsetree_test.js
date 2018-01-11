@@ -1843,7 +1843,7 @@ function is_mocha() {
     if (match$1) {
       var exec = Path.basename(match$1[0]);
       if (exec === "mocha") {
-        return /* true */1;
+        return true;
       } else {
         return exec === "_mocha";
       }
@@ -9741,7 +9741,7 @@ function directive_parse(token_with_comments, lexbuf) {
                       } else if (major === l_major) {
                         return version[1] === lversion[1];
                       } else {
-                        return /* false */0;
+                        return false;
                       }
                     } else {
                       return Caml_obj.caml_greaterequal(lversion, version);
@@ -9776,7 +9776,7 @@ function directive_parse(token_with_comments, lexbuf) {
               }
               
             } else {
-              return /* true */1;
+              return true;
             }
             break;
         case "<=" : 
@@ -9836,7 +9836,7 @@ function directive_parse(token_with_comments, lexbuf) {
       if (calc) {
         return Curry._2(f, lhs, assert_same_type(lexbuf, lhs, rhs$1));
       } else {
-        return /* true */1;
+        return true;
       }
     }
     
@@ -9851,7 +9851,7 @@ function directive_parse(token_with_comments, lexbuf) {
         var calc$1 = calc && !v;
         var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
         if (v) {
-          return /* true */1;
+          return true;
         } else {
           return b;
         }
@@ -9873,7 +9873,7 @@ function directive_parse(token_with_comments, lexbuf) {
         if (v) {
           return b;
         } else {
-          return /* false */0;
+          return false;
         }
       }
     } else {
@@ -9975,7 +9975,7 @@ function directive_parse(token_with_comments, lexbuf) {
                     return defined(s);
                   }
                 } else {
-                  return /* true */1;
+                  return true;
                 }
               } else {
                 throw [

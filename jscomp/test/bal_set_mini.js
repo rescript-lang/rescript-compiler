@@ -79,12 +79,14 @@ function add(x, t) {
     var v = t[1];
     var l = t[0];
     var c = compare_int(x, v);
-    if (c === 0) {
-      return t;
-    } else if (c < 0) {
-      return bal(add(x, l), v, r);
+    if (c) {
+      if (c < 0) {
+        return bal(add(x, l), v, r);
+      } else {
+        return bal(l, v, add(x, r));
+      }
     } else {
-      return bal(l, v, add(x, r));
+      return t;
     }
   } else {
     return /* Node */[
@@ -106,6 +108,7 @@ function min_elt(_def, _param) {
         _param = l;
         _def = param[1];
         continue ;
+        
       } else {
         return param[1];
       }
@@ -142,12 +145,14 @@ function remove(x, tree) {
     var v = tree[1];
     var l = tree[0];
     var c = compare_int(x, v);
-    if (c === 0) {
-      return internal_merge(l, r);
-    } else if (c < 0) {
-      return bal(remove(x, l), v, r);
+    if (c) {
+      if (c < 0) {
+        return bal(remove(x, l), v, r);
+      } else {
+        return bal(l, v, remove(x, r));
+      }
     } else {
-      return bal(l, v, remove(x, r));
+      return internal_merge(l, r);
     }
   } else {
     return /* Empty */0;
@@ -159,11 +164,12 @@ function mem(x, _param) {
     var param = _param;
     if (param) {
       var c = compare_int(x, param[1]);
-      if (c === 0) {
-        return /* true */1;
-      } else {
+      if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
+        
+      } else {
+        return true;
       }
     } else {
       return false;
