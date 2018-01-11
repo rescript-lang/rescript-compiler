@@ -365,7 +365,7 @@ function _is_digit(c) {
   if (/* "0" */48 <= c) {
     return c <= /* "9" */57;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -1004,7 +1004,7 @@ function MakeDecode(funarg) {
     if (/* "0" */48 <= c) {
       return c <= /* "9" */57;
     } else {
-      return /* false */0;
+      return false;
     }
   };
   var _refill = function (t, k_succ, k_fail) {

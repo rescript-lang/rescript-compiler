@@ -4490,7 +4490,7 @@ function mem(x, _param) {
         continue ;
         
       } else {
-        return /* true */1;
+        return true;
       }
     } else {
       return false;
@@ -4941,11 +4941,11 @@ function is_identifier($staropt$star, env) {
 function is_function($staropt$star, env) {
   var i = $staropt$star ? $staropt$star[0] : 0;
   if (token$2(/* Some */[i], env) === /* T_FUNCTION */13) {
-    return /* true */1;
+    return true;
   } else if (token$2(/* Some */[i], env) === /* T_ASYNC */61) {
     return token$2(/* Some */[i + 1 | 0], env) === /* T_FUNCTION */13;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -5356,7 +5356,7 @@ function mem$1(x, _param) {
         continue ;
         
       } else {
-        return /* true */1;
+        return true;
       }
     } else {
       return false;
@@ -5611,7 +5611,7 @@ function mem$2(x, _param) {
         continue ;
         
       } else {
-        return /* true */1;
+        return true;
       }
     } else {
       return false;
@@ -7075,7 +7075,7 @@ function is_simple_param(param) {
 
 function is_simple_function_params(params, defaults, rest) {
   if (defaults || rest) {
-    return /* false */0;
+    return false;
   } else {
     return List.for_all(is_simple_param, params);
   }

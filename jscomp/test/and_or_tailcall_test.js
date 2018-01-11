@@ -13,7 +13,7 @@ function f(b, _, _n) {
       continue ;
       
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -24,7 +24,7 @@ function or_f(b, _, _n) {
     if (n > 100000) {
       return false;
     } else if (b) {
-      return /* true */1;
+      return true;
     } else {
       _n = n + 1 | 0;
       continue ;

@@ -809,10 +809,10 @@ function equal(_l1, _l2) {
                         continue ;
                         
                       } else {
-                        return /* false */0;
+                        return false;
                       }
                     } else {
-                      return /* false */0;
+                      return false;
                     }
                     break;
                 case 1 : 
@@ -836,10 +836,10 @@ function equal(_l1, _l2) {
                         continue ;
                         
                       } else {
-                        return /* false */0;
+                        return false;
                       }
                     } else {
-                      return /* false */0;
+                      return false;
                     }
                     break;
                 case 0 : 
@@ -865,7 +865,7 @@ function equal(_l1, _l2) {
                       continue ;
                       
                     } else {
-                      return /* false */0;
+                      return false;
                     }
                     break;
                 
@@ -991,7 +991,7 @@ function equal$1(x, y) {
   if (x[/* hash */4] === y[/* hash */4] && x[/* idx */0] === y[/* idx */0] && x[/* category */1] === y[/* category */1]) {
     return equal(x[/* desc */2], y[/* desc */2]);
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -1220,7 +1220,7 @@ function filter_marks(b, e, marks) {
           /* marks */List.filter((function (param) {
                     var i = param[0];
                     if (i < b) {
-                      return /* true */1;
+                      return true;
                     } else {
                       return i > e;
                     }
@@ -1811,7 +1811,7 @@ function is_charset(_param) {
               continue ;
               
             } else {
-              return /* false */0;
+              return false;
             }
             break;
         default:
@@ -2062,10 +2062,10 @@ function equal$2(_x1, _x2) {
                   continue ;
                   
                 } else {
-                  return /* false */0;
+                  return false;
                 }
               } else {
-                return /* false */0;
+                return false;
               }
             } else {
               return false;
@@ -2081,7 +2081,7 @@ function equal$2(_x1, _x2) {
                 continue ;
                 
               } else {
-                return /* false */0;
+                return false;
               }
             } else {
               return false;
@@ -2097,7 +2097,7 @@ function equal$2(_x1, _x2) {
                 continue ;
                 
               } else {
-                return /* false */0;
+                return false;
               }
             } else {
               return false;
@@ -2178,7 +2178,7 @@ function equal$2(_x1, _x2) {
                 continue ;
                 
               } else {
-                return /* false */0;
+                return false;
               }
             } else {
               return false;
@@ -2194,7 +2194,7 @@ function equal$2(_x1, _x2) {
                 continue ;
                 
               } else {
-                return /* false */0;
+                return false;
               }
             } else {
               return false;
@@ -2218,7 +2218,7 @@ function eq_list(_l1, _l2) {
           continue ;
           
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
         return false;
@@ -2745,7 +2745,7 @@ function anchored(_param) {
               continue ;
               
             } else {
-              return /* false */0;
+              return false;
             }
             break;
         case 6 : 
@@ -3169,7 +3169,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
     if (i[0] !== l) {
       return Caml_string.get(s, i[0]) === c;
     } else {
-      return /* false */0;
+      return false;
     }
   };
   var accept = function (c) {

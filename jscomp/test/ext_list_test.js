@@ -724,7 +724,7 @@ function for_all2_no_exn(p, _l1, _l2) {
           continue ;
           
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
         return false;

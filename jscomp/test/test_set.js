@@ -266,7 +266,7 @@ function Make(Ord) {
           continue ;
           
         } else {
-          return /* true */1;
+          return true;
         }
       } else {
         return false;
@@ -432,7 +432,7 @@ function Make(Ord) {
                 continue ;
                 
               } else {
-                return /* false */0;
+                return false;
               }
             } else if (subset(/* Node */[
                     /* Empty */0,
@@ -444,7 +444,7 @@ function Make(Ord) {
               continue ;
               
             } else {
-              return /* false */0;
+              return false;
             }
           } else if (subset(l1, l2)) {
             _s2 = r2;
@@ -452,7 +452,7 @@ function Make(Ord) {
             continue ;
             
           } else {
-            return /* false */0;
+            return false;
           }
         } else {
           return false;
@@ -500,10 +500,10 @@ function Make(Ord) {
             continue ;
             
           } else {
-            return /* false */0;
+            return false;
           }
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
         return true;
@@ -515,9 +515,9 @@ function Make(Ord) {
       var param = _param;
       if (param) {
         if (Curry._1(p, param[1])) {
-          return /* true */1;
+          return true;
         } else if (exists(p, param[0])) {
-          return /* true */1;
+          return true;
         } else {
           _param = param[2];
           continue ;

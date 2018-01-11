@@ -184,7 +184,7 @@ function eq_list(cmp, _xs, _ys) {
           continue ;
           
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
         return false;

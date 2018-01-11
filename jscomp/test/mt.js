@@ -20,7 +20,7 @@ function is_mocha() {
     if (match$1) {
       var exec = Path.basename(match$1[0]);
       if (exec === "mocha") {
-        return /* true */1;
+        return true;
       } else {
         return exec === "_mocha";
       }

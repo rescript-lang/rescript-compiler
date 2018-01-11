@@ -28,7 +28,7 @@ function check_healty(check) {
   if (!check.a && !check.b) {
     return !check.c;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -40,7 +40,7 @@ function f(check) {
   if (check.x) {
     return check.y;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 

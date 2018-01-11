@@ -6279,7 +6279,7 @@ function rev_split_by_naming_convention(s) {
     if (64 < c) {
       return c < 91;
     } else {
-      return /* false */0;
+      return false;
     }
   };
   var add_sub_string = function (start_i, end_i, l) {
@@ -7044,7 +7044,7 @@ function compile(proto_definition) {
                                         if (first) {
                                           return !has_encoded;
                                         } else {
-                                          return /* false */0;
+                                          return false;
                                         }
                                       }), true, types);
                                 return /* () */0;

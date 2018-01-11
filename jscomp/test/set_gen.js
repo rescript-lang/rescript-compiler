@@ -158,10 +158,10 @@ function for_all(p, _param) {
           continue ;
           
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
       return true;
@@ -174,9 +174,9 @@ function exists(p, _param) {
     var param = _param;
     if (param) {
       if (Curry._1(p, param[1])) {
-        return /* true */1;
+        return true;
       } else if (exists(p, param[0])) {
-        return /* true */1;
+        return true;
       } else {
         _param = param[2];
         continue ;

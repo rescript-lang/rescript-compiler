@@ -1274,7 +1274,7 @@ function col_bypass(c1, c2) {
     
   }
   if (o1[/* kill */8] || o2[/* kill */8]) {
-    return /* true */1;
+    return true;
   } else {
     return ctypes;
   }
@@ -1559,7 +1559,7 @@ function in_viewport(v, pos) {
   if (x >= v_min_x && x <= v_max_x && y >= v_min_y) {
     return y <= v_max_y;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -2040,7 +2040,7 @@ function broad_phase(collid, all_collids, state) {
   var obj = collid[2];
   return List.filter((function () {
                   if (in_viewport(state[/* vpt */2], obj[/* pos */1]) || is_player(collid)) {
-                    return /* true */1;
+                    return true;
                   } else {
                     return out_of_viewport_below(state[/* vpt */2], obj[/* pos */1][/* y */1]);
                   }

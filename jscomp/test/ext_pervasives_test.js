@@ -132,13 +132,13 @@ function dump(r) {
           var s = r.length;
           var t = r.tag | 0;
           if (t) {
-            return /* false */0;
+            return false;
           } else if (s === 2) {
             _r = r[1];
             continue ;
             
           } else {
-            return /* false */0;
+            return false;
           }
         }
       };

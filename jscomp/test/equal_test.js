@@ -11,7 +11,7 @@ function int_equal(x, y) {
   return x === y;
 }
 
-var v = /* false */0;
+var v = false;
 
 exports.str_equal = str_equal;
 exports.str_b = str_b;

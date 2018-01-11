@@ -169,7 +169,7 @@ function mem(x, _param) {
         continue ;
         
       } else {
-        return /* true */1;
+        return true;
       }
     } else {
       return false;

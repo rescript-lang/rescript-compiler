@@ -187,10 +187,10 @@ function equal(cmp, m1, m2) {
             continue ;
             
           } else {
-            return /* false */0;
+            return false;
           }
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
         return false;

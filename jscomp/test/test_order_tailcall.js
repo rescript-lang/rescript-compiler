@@ -71,16 +71,16 @@ function f6(b) {
             continue ;
             
           } else {
-            return /* false */0;
+            return false;
           }
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -88,13 +88,13 @@ function f6(b) {
 function f7(b) {
   while(true) {
     if (b) {
-      return /* true */1;
+      return true;
     } else if (b) {
-      return /* true */1;
+      return true;
     } else if (b) {
-      return /* true */1;
+      return true;
     } else if (b) {
-      return /* true */1;
+      return true;
     } else {
       continue ;
       

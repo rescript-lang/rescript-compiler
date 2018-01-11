@@ -150,7 +150,7 @@ function mem(x, _tree) {
         continue ;
         
       } else {
-        return /* true */1;
+        return true;
       }
     } else {
       return false;
@@ -210,7 +210,7 @@ function subset(_s1, _s2) {
               continue ;
               
             } else {
-              return /* false */0;
+              return false;
             }
           } else if (subset(/* Node */[
                   /* Empty */0,
@@ -222,7 +222,7 @@ function subset(_s1, _s2) {
             continue ;
             
           } else {
-            return /* false */0;
+            return false;
           }
         } else if (subset(l1, l2)) {
           _s2 = r2;
@@ -230,7 +230,7 @@ function subset(_s1, _s2) {
           continue ;
           
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
         return false;

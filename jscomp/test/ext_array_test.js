@@ -293,7 +293,7 @@ function unsafe_loop(_index, len, p, xs, ys) {
       continue ;
       
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -304,7 +304,7 @@ function for_all2_no_exn(p, xs, ys) {
   if (len_xs === len_ys) {
     return unsafe_loop(0, len_xs, p, xs, ys);
   } else {
-    return /* false */0;
+    return false;
   }
 }
 

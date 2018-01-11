@@ -873,14 +873,14 @@ var to_floats = /* array */[
 ];
 
 var check_complete_compare = /* int array */[
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true
 ];
 
 var of_float_pairs = /* array */[

@@ -161,7 +161,7 @@ function mem(x, _param) {
         continue ;
         
       } else {
-        return /* true */1;
+        return true;
       }
     } else {
       return false;
@@ -334,10 +334,10 @@ function for_all(p, _param) {
           continue ;
           
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
       return true;
@@ -350,9 +350,9 @@ function exists(p, _param) {
     var param = _param;
     if (param) {
       if (Curry._2(p, param[1], param[2])) {
-        return /* true */1;
+        return true;
       } else if (exists(p, param[0])) {
-        return /* true */1;
+        return true;
       } else {
         _param = param[3];
         continue ;
@@ -609,10 +609,10 @@ function equal(cmp, m1, m2) {
             continue ;
             
           } else {
-            return /* false */0;
+            return false;
           }
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
         return false;

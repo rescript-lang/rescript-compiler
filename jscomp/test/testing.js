@@ -107,7 +107,7 @@ function test_raises_exc_p(pred, f, x) {
   catch (raw_x){
     var x$1 = Js_exn.internalToOCamlException(raw_x);
     if (Curry._1(pred, x$1)) {
-      return /* true */1;
+      return true;
     } else {
       print_failure_test_fail(/* () */0);
       return false;
