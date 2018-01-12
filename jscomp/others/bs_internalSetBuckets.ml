@@ -38,24 +38,24 @@ type 'a bucket = {
 and 'a t0 = 'a bucket C.container  
 [@@bs.deriving abstract]
 
-let rec bucket_length accu buckets = 
+let rec bucketLength accu buckets = 
   match C.toOpt buckets with 
   | None -> accu
-  | Some cell -> bucket_length (accu + 1) (next cell)
+  | Some cell -> bucketLength (accu + 1) (next cell)
 
 
 
-let rec do_bucket_iter ~f buckets = 
+let rec doBucketIter ~f buckets = 
   match C.toOpt buckets with 
   | None ->
     ()
   | Some cell ->
-    f (key cell)  [@bs]; do_bucket_iter ~f (next cell)
+    f (key cell)  [@bs]; doBucketIter ~f (next cell)
 
 let iter0 h f =
   let d = C.buckets h in
   for i = 0 to Bs_Array.length d - 1 do
-    do_bucket_iter f (Bs_Array.unsafe_get d i)
+    doBucketIter f (Bs_Array.unsafe_get d i)
   done
 
 let rec fillArray i arr cell =  
@@ -79,18 +79,18 @@ let toArray0 h =
 
 
 
-let rec do_bucket_fold ~f b accu =
+let rec doBucketFold ~f b accu =
   match C.toOpt b with
   | None ->
     accu
   | Some cell ->
-    do_bucket_fold ~f (next cell) (f (key cell) accu [@bs]) 
+    doBucketFold ~f (next cell) (f (key cell) accu [@bs]) 
 
 let fold0 h init f =
   let d = C.buckets h in
   let accu = ref init in
   for i = 0 to Bs_Array.length d - 1 do
-    accu := do_bucket_fold ~f (Bs_Array.unsafe_get d i) !accu
+    accu := doBucketFold ~f (Bs_Array.unsafe_get d i) !accu
   done;
   !accu
 
@@ -100,12 +100,12 @@ let fold0 h init f =
 let logStats0 h =
   let mbl =
     Bs_Array.foldLeft (C.buckets h) 0 (fun[@bs] m b -> 
-      let len = (bucket_length 0 b) in
+      let len = (bucketLength 0 b) in
       max m len)  in
   let histo = Bs_Array.init (mbl + 1) (fun[@bs] _ -> 0) in
   Bs_Array.iter  (C.buckets h)
     (fun[@bs] b ->
-       let l = bucket_length 0 b in
+       let l = bucketLength 0 b in
        Bs_Array.unsafe_set histo l (Bs_Array.unsafe_get histo l + 1)
     )
     ;

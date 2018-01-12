@@ -64,14 +64,8 @@ let reset0 h =
 let length0 h = size h
   
 
-type statistics = {
-  num_bindings: int;
-  num_buckets: int;
-  max_bucket_length: int;
-  bucket_histogram: int array
-}
 
-(* 
+
 type statistics = {
   num_bindings: int;
   (** Number of bindings present in the table.
@@ -84,4 +78,4 @@ type statistics = {
   (** Histogram of bucket sizes.  This array [histo] has
       length [max_bucket_length + 1].  The value of
       [histo.(i)] is the number of buckets whose size is [i]. *)
-} *)
+} 
