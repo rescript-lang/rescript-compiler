@@ -29,8 +29,6 @@ function f4(x) {
   }
 }
 
-var f3 = true;
-
 var u = ( 1);
 
 var v = ( true);
@@ -62,10 +60,9 @@ function polyEq(x, y) {
 var suites_000 = /* tuple */[
   "caml_bool_eq_caml_bool",
   (function () {
-      var x = true;
       return /* Eq */Block.__(0, [
                 u,
-                x ? true : false
+                true
               ]);
     })
 ];
@@ -84,12 +81,9 @@ var suites_001 = /* :: */[
     /* tuple */[
       "js_bool_eq_ocaml_bool",
       (function () {
-          var x = true;
           return /* Eq */Block.__(0, [
                     true,
-                    (
-                      x ? true : false
-                    ) === (true)
+                    true === (true)
                   ]);
         })
     ],
@@ -97,12 +91,9 @@ var suites_001 = /* :: */[
       /* tuple */[
         "js_bool_is_ocaml_bool",
         (function () {
-            var x = true;
             return /* Eq */Block.__(0, [
                       true,
-                      (
-                        x ? true : false
-                      ) === true
+                      true === true
                     ]);
           })
       ],
@@ -168,7 +159,17 @@ var suites = /* :: */[
   suites_001
 ];
 
+function ff(u) {
+  if (u === true) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
 Mt.from_pair_suites("js_bool_test.ml", suites);
+
+var f3 = true;
 
 exports.f = f;
 exports.f2 = f2;
@@ -181,4 +182,5 @@ exports.boolAnd = boolAnd;
 exports.boolOr = boolOr;
 exports.polyEq = polyEq;
 exports.suites = suites;
-/* f3 Not a pure module */
+exports.ff = ff;
+/* u Not a pure module */

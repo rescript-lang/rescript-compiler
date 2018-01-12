@@ -227,21 +227,21 @@ var suites_001 = /* :: */[
                                       /* tuple */[
                                         "null <> undefined",
                                         (function () {
-                                            return /* Ok */Block.__(4, [/* true */1]);
+                                            return /* Ok */Block.__(4, [true]);
                                           })
                                       ],
                                       /* :: */[
                                         /* tuple */[
                                           "null <> empty",
                                           (function () {
-                                              return /* Ok */Block.__(4, [/* true */1]);
+                                              return /* Ok */Block.__(4, [true]);
                                             })
                                         ],
                                         /* :: */[
                                           /* tuple */[
                                             "undefined = empty",
                                             (function () {
-                                                return /* Ok */Block.__(4, [/* true */1]);
+                                                return /* Ok */Block.__(4, [true]);
                                               })
                                           ],
                                           /* :: */[

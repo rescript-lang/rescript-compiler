@@ -59,13 +59,12 @@ function is_pos_pow(n) {
         return -2;
       } else if (n$1 === 1) {
         return c;
-      } else if (n$1 & 1) {
-        throw E;
-      } else {
+      } else if ((n$1 & 1) === 0) {
         _n = (n$1 >> 1);
         _c = c + 1 | 0;
         continue ;
-        
+      } else {
+        throw E;
       }
     };
   }
@@ -103,7 +102,7 @@ function bad_argf(fmt) {
 
 function dump(r) {
   if (typeof r === "number") {
-    return "" + r;
+    return String(r);
   } else {
     var get_fields = function (_acc, _n) {
       while(true) {
@@ -117,7 +116,6 @@ function dump(r) {
             acc
           ];
           continue ;
-          
         } else {
           return acc;
         }
@@ -131,12 +129,9 @@ function dump(r) {
         } else {
           var s = r.length;
           var t = r.tag | 0;
-          if (t) {
-            return false;
-          } else if (s === 2) {
+          if (t === 0 && s === 2) {
             _r = r[1];
             continue ;
-            
           } else {
             return false;
           }
@@ -203,7 +198,7 @@ function dump(r) {
         return "<forward>";
       } else if (t < Obj.no_scan_tag) {
         var fields$2 = get_fields(/* [] */0, s);
-        return "Tag" + (t + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
+        return "Tag" + (String(t) + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
       } else if (t === Obj.string_tag) {
         return "\"" + ($$String.escaped(r) + "\"");
       } else if (t === Obj.double_tag) {

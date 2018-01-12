@@ -102,7 +102,7 @@ function assertions() {
 }
 
 function f0(x) {
-  if (x === /* true */1) {
+  if (x === true) {
     return 1;
   } else {
     return 2;
@@ -110,7 +110,7 @@ function f0(x) {
 }
 
 function f1(x) {
-  if (x !== /* true */1) {
+  if (x !== true) {
     return 1;
   } else {
     return 2;

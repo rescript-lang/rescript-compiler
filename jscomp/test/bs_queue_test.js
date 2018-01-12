@@ -1122,13 +1122,13 @@ eq("File \"bs_queue_test.ml\", line 154, characters 5-12", Belt_MutableQueue.toA
 
 var q$7 = Belt_MutableQueue.ofArray(/* array */[]);
 
-b("File \"bs_queue_test.ml\", line 155, characters 4-11", +(q$7.length === 0));
+b("File \"bs_queue_test.ml\", line 155, characters 4-11", q$7.length === 0);
 
 var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.ofArray(/* int array */[]), (function (x) {
         return x + 1 | 0;
       }));
 
-b("File \"bs_queue_test.ml\", line 156, characters 4-11", +(q$8.length === 0));
+b("File \"bs_queue_test.ml\", line 156, characters 4-11", q$8.length === 0);
 
 Mt.from_pair_suites("bs_queue_test.ml", suites[0]);
 

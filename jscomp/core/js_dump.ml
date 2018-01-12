@@ -638,21 +638,8 @@ and
       if need_paren
       then P.paren f  action
       else action ()
-    );
-    cxt
-  | J.Anything_to_number e
-  | Int_of_boolean e ->
-    let action () =
-      P.group f 0 @@ fun _ ->
-      P.string f "+" ;
-      expression 13 cxt f e
-    in
-    (* need to tweak precedence carefully
-       here [++x --> +(+x)]
-    *)
-    if l > 12
-    then P.paren_group f 1 action
-    else action ()
+    ); 
+    cxt 
   | Is_null_undefined_to_boolean e ->
     let action = (fun _ ->
         let cxt = expression 1 cxt f e in
@@ -1151,9 +1138,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Number _
       | Js_not _
       | Bool _
-      | New _
-      | J.Anything_to_number _
-      | Int_of_boolean _ -> false
+      | New _ 
+        -> false
       (* e = function(x){...}(x);  is good
       *)
     in

@@ -85,15 +85,15 @@ function makeWrapper4(foo, _) {
   return tmp;
 }
 
-b("File \"gpr_2503_test.ml\", line 31, characters 5-12", +("a" === makeWrapper3(/* Some */[/* a */97], /* () */0).foo));
+b("File \"gpr_2503_test.ml\", line 31, characters 5-12", "a" === makeWrapper3(/* Some */[/* a */97], /* () */0).foo);
 
-b("File \"gpr_2503_test.ml\", line 34, characters 5-12", +(undefined === makeWrapper3(/* None */0, /* () */0).foo));
+b("File \"gpr_2503_test.ml\", line 34, characters 5-12", undefined === makeWrapper3(/* None */0, /* () */0).foo);
 
-b("File \"gpr_2503_test.ml\", line 37, characters 5-12", +("a" === makeWrapper4(1, /* () */0).foo));
+b("File \"gpr_2503_test.ml\", line 37, characters 5-12", "a" === makeWrapper4(1, /* () */0).foo);
 
-b("File \"gpr_2503_test.ml\", line 40, characters 5-12", +("b" === makeWrapper4(11, /* () */0).foo));
+b("File \"gpr_2503_test.ml\", line 40, characters 5-12", "b" === makeWrapper4(11, /* () */0).foo);
 
-b("File \"gpr_2503_test.ml\", line 43, characters 5-12", +(undefined === makeWrapper4(111, /* () */0).foo));
+b("File \"gpr_2503_test.ml\", line 43, characters 5-12", undefined === makeWrapper4(111, /* () */0).foo);
 
 Mt.from_pair_suites("gpr_2503_test.ml", suites[0]);
 

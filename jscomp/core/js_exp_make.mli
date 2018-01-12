@@ -57,12 +57,6 @@ type binary_op =   ?comment:string -> t -> t -> t
 
 type unary_op =  ?comment:string -> t -> t
 
-(** simplify 
-    {[if b then ]}
-    there is no need to convert b into OCaml boolean under this scenario
-*)
-val ocaml_boolean_under_condition : t -> t 
-
 
 
 val var : ?comment:string  -> J.ident -> t 
@@ -258,7 +252,6 @@ val dump : ?comment:string -> Js_op.level -> t list -> t
 
 
 (** see {!https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Unary_plus}*)
-(* val to_number : unary_op *)
 val int_to_string : unary_op
 
 
@@ -338,7 +331,6 @@ val raw_js_code : ?comment:string -> J.code_info ->  string -> t
 val nil : t 
 val is_null : unary_op
 
-val js_bool :  bool -> t 
 val is_undef : unary_op
 val for_sure_js_null_undefined_boolean : J.expression -> bool
 val is_null_undefined : unary_op

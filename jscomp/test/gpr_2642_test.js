@@ -6,13 +6,13 @@ function isfree(id, _param) {
     var param = _param;
     switch (param.tag | 0) {
       case 0 : 
-          return +(id === param[0]);
+          return id === param[0];
       case 1 : 
           _param = param[0];
           continue ;
       case 2 : 
           if (isfree(id, param[0])) {
-            return /* true */1;
+            return true;
           } else {
             _param = param[1];
             continue ;

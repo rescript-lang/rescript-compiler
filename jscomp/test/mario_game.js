@@ -774,7 +774,7 @@ function update_vel(part) {
 
 function $$process(part) {
   part[/* life */6] = part[/* life */6] - 1 | 0;
-  if (!part[/* life */6]) {
+  if (part[/* life */6] === 0) {
     part[/* kill */5] = true;
   }
   update_vel(part);
@@ -968,7 +968,6 @@ function update_player(player, keys, context) {
                   player$1[/* dir */6] = /* Left */0;
                   return /* () */0;
                 }
-                break;
             case 1 : 
                 if (player$1[/* crouch */10]) {
                   return 0;
@@ -979,7 +978,6 @@ function update_player(player, keys, context) {
                   player$1[/* dir */6] = /* Right */1;
                   return /* () */0;
                 }
-                break;
             case 2 : 
                 if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
                   player$1[/* jumping */4] = true;
@@ -1185,16 +1183,14 @@ function rev_dir(o, t, s) {
 
 function dec_health(obj) {
   var health = obj[/* health */9] - 1 | 0;
-  if (health) {
-    if (obj[/* invuln */7]) {
-      return 0;
-    } else {
-      obj[/* health */9] = health;
-      return /* () */0;
-    }
-  } else {
+  if (health === 0) {
     obj[/* kill */8] = true;
     return /* () */0;
+  } else if (obj[/* invuln */7] === 0) {
+    obj[/* health */9] = health;
+    return /* () */0;
+  } else {
+    return 0;
   }
 }
 
@@ -1352,62 +1348,57 @@ function kill(collid, ctx) {
     case 3 : 
         var o$2 = collid[2];
         var t = collid[0];
-        if (typeof t === "number") {
-          if (t !== 1) {
-            return /* [] */0;
-          } else {
-            var pos_000$1 = o$2[/* pos */1][/* x */0];
-            var pos_001$1 = o$2[/* pos */1][/* y */1];
-            var pos$1 = /* tuple */[
-              pos_000$1,
-              pos_001$1
-            ];
-            var p1 = make$1(/* Some */[/* tuple */[
-                    -5,
-                    -5
-                  ]], /* Some */[/* tuple */[
-                    0,
-                    0.2
-                  ]], /* BrickChunkL */1, pos$1, ctx);
-            var p2 = make$1(/* Some */[/* tuple */[
-                    -3,
-                    -4
-                  ]], /* Some */[/* tuple */[
-                    0,
-                    0.2
-                  ]], /* BrickChunkL */1, pos$1, ctx);
-            var p3 = make$1(/* Some */[/* tuple */[
-                    3,
-                    -4
-                  ]], /* Some */[/* tuple */[
-                    0,
-                    0.2
-                  ]], /* BrickChunkR */2, pos$1, ctx);
-            var p4 = make$1(/* Some */[/* tuple */[
-                    5,
-                    -5
-                  ]], /* Some */[/* tuple */[
-                    0,
-                    0.2
-                  ]], /* BrickChunkR */2, pos$1, ctx);
-            return /* :: */[
-                    p1,
+        if (typeof t === "number" && t === 1) {
+          var pos_000$1 = o$2[/* pos */1][/* x */0];
+          var pos_001$1 = o$2[/* pos */1][/* y */1];
+          var pos$1 = /* tuple */[
+            pos_000$1,
+            pos_001$1
+          ];
+          var p1 = make$1(/* Some */[/* tuple */[
+                  -5,
+                  -5
+                ]], /* Some */[/* tuple */[
+                  0,
+                  0.2
+                ]], /* BrickChunkL */1, pos$1, ctx);
+          var p2 = make$1(/* Some */[/* tuple */[
+                  -3,
+                  -4
+                ]], /* Some */[/* tuple */[
+                  0,
+                  0.2
+                ]], /* BrickChunkL */1, pos$1, ctx);
+          var p3 = make$1(/* Some */[/* tuple */[
+                  3,
+                  -4
+                ]], /* Some */[/* tuple */[
+                  0,
+                  0.2
+                ]], /* BrickChunkR */2, pos$1, ctx);
+          var p4 = make$1(/* Some */[/* tuple */[
+                  5,
+                  -5
+                ]], /* Some */[/* tuple */[
+                  0,
+                  0.2
+                ]], /* BrickChunkR */2, pos$1, ctx);
+          return /* :: */[
+                  p1,
+                  /* :: */[
+                    p2,
                     /* :: */[
-                      p2,
+                      p3,
                       /* :: */[
-                        p3,
-                        /* :: */[
-                          p4,
-                          /* [] */0
-                        ]
+                        p4,
+                        /* [] */0
                       ]
                     ]
-                  ];
-          }
+                  ]
+                ];
         } else {
           return /* [] */0;
         }
-        break;
     
   }
 }
@@ -1474,8 +1465,8 @@ function clear_canvas(canvas) {
 }
 
 function hud(canvas, score, coins) {
-  var score_string = "" + score;
-  var coin_string = "" + coins;
+  var score_string = String(score);
+  var coin_string = String(coins);
   var context = canvas.getContext("2d");
   context.font = "10px 'Press Start 2P'";
   context.fillText("Score: " + score_string, canvas.width - 140, 18);
@@ -1484,7 +1475,7 @@ function hud(canvas, score, coins) {
 }
 
 function fps(canvas, fps_val) {
-  var fps_str = "" + (fps_val | 0);
+  var fps_str = String(fps_val | 0);
   var context = canvas.getContext("2d");
   context.fillText(fps_str, 10, 18);
   return /* () */0;
@@ -1679,16 +1670,12 @@ function process_collision(dir, c1, c2, state) {
               var t = c2[0];
               if (dir !== 0) {
                 var exit$1 = 0;
-                if (typeof t === "number") {
-                  if (t !== 4) {
-                    exit$1 = 4;
-                  } else {
-                    game_win(state[/* ctx */1]);
-                    return /* tuple */[
-                            /* None */0,
-                            /* None */0
-                          ];
-                  }
+                if (typeof t === "number" && t === 4) {
+                  game_win(state[/* ctx */1]);
+                  return /* tuple */[
+                          /* None */0,
+                          /* None */0
+                        ];
                 } else {
                   exit$1 = 4;
                 }
@@ -1724,15 +1711,15 @@ function process_collision(dir, c1, c2, state) {
                             /* None */0
                           ];
                   }
-                } else if (c1[0]) {
+                } else if (c1[0] === /* BigM */0) {
                   collide_block(/* None */0, dir, o1$3);
+                  dec_health(o2$4);
                   return /* tuple */[
                           /* None */0,
                           /* None */0
                         ];
                 } else {
                   collide_block(/* None */0, dir, o1$3);
-                  dec_health(o2$4);
                   return /* tuple */[
                           /* None */0,
                           /* None */0
@@ -1896,7 +1883,6 @@ function process_collision(dir, c1, c2, state) {
                         /* None */0
                       ];
               }
-              break;
           
         }
         break;
@@ -2031,7 +2017,6 @@ function process_collision(dir, c1, c2, state) {
                   /* None */0
                 ];
         }
-        break;
     
   }
 }
@@ -2108,7 +2093,6 @@ function check_collisions(collid, all_collids, state) {
         _acc = acc$1;
         _cs = cs$1[1];
         continue ;
-        
       } else {
         return acc;
       }
@@ -2428,7 +2412,6 @@ function mem_loc(checkloc, _loclist) {
       } else {
         _loclist = loclist[1];
         continue ;
-        
       }
     } else {
       return false;
@@ -2505,7 +2488,6 @@ function avoid_overlap(_lst, currentLst) {
       if (mem_loc(h[1], currentLst)) {
         _lst = t;
         continue ;
-        
       } else {
         return Pervasives.$at(/* :: */[
                     h,
@@ -2531,7 +2513,6 @@ function trim_edges(_lst, blockw, blockh) {
       if (cx < 128 || pixx - cx < 528 || cy === 0 || pixy - cy < 48) {
         _lst = t;
         continue ;
-        
       } else {
         return Pervasives.$at(/* :: */[
                     h,
@@ -2545,7 +2526,9 @@ function trim_edges(_lst, blockw, blockh) {
 }
 
 function generate_clouds(cbx, cby, typ, num) {
-  if (num) {
+  if (num === 0) {
+    return /* [] */0;
+  } else {
     return Pervasives.$at(/* :: */[
                 /* tuple */[
                   typ,
@@ -2556,8 +2539,6 @@ function generate_clouds(cbx, cby, typ, num) {
                 ],
                 /* [] */0
               ], generate_clouds(cbx + 1, cby, typ, num - 1 | 0));
-  } else {
-    return /* [] */0;
   }
 }
 
@@ -2568,11 +2549,7 @@ function generate_coins(_block_coord) {
     if (block_coord) {
       var t = block_coord[1];
       var h = block_coord[0];
-      if (place_coin) {
-        _block_coord = t;
-        continue ;
-        
-      } else {
+      if (place_coin === 0) {
         var xc = h[1][0];
         var yc = h[1][1];
         return Pervasives.$at(/* :: */[
@@ -2585,6 +2562,9 @@ function generate_coins(_block_coord) {
                     ],
                     /* [] */0
                   ], generate_coins(t));
+      } else {
+        _block_coord = t;
+        continue ;
       }
     } else {
       return /* [] */0;
@@ -2599,7 +2579,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
     var block_typ = Random.$$int(4);
     var stair_typ = Random.$$int(2);
     var life_block_chance = Random.$$int(5);
-    var middle_block = life_block_chance ? stair_typ : 3;
+    var middle_block = life_block_chance === 0 ? 3 : stair_typ;
     if (prob > 5 || prob < 0) {
       throw [
             Caml_builtin_exceptions.failure,
@@ -3042,14 +3022,12 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
       _cby = 0;
       _cbx = cbx + 1;
       continue ;
-      
     } else if (mem_loc(/* tuple */[
             cbx,
             cby
           ], acc) || cby === 0) {
       _cby = cby + 1;
       continue ;
-      
     } else {
       var prob = Random.$$int(30);
       if (prob < 3 && blockh - 1 === cby) {
@@ -3068,7 +3046,6 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
       } else {
         _cby = cby + 1;
         continue ;
-        
       }
     }
   };
@@ -3082,11 +3059,7 @@ function generate_block_enemies(_block_coord) {
     if (block_coord) {
       var t = block_coord[1];
       var h = block_coord[0];
-      if (place_enemy) {
-        _block_coord = t;
-        continue ;
-        
-      } else {
+      if (place_enemy === 0) {
         var xc = h[1][0];
         var yc = h[1][1];
         return Pervasives.$at(/* :: */[
@@ -3099,6 +3072,9 @@ function generate_block_enemies(_block_coord) {
                     ],
                     /* [] */0
                   ], generate_block_enemies(t));
+      } else {
+        _block_coord = t;
+        continue ;
       }
     } else {
       return /* [] */0;
@@ -3117,14 +3093,12 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
       _cby = 0;
       _cbx = cbx + 1;
       continue ;
-      
     } else if (mem_loc(/* tuple */[
             cbx,
             cby
           ], acc) || cby === 0) {
       _cby = cby + 1;
       continue ;
-      
     } else {
       var prob = Random.$$int(100);
       if (prob < 5) {
@@ -3134,11 +3108,9 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
         _acc = called_acc;
         _cby = cby + 1;
         continue ;
-        
       } else {
         _cby = cby + 1;
         continue ;
-        
       }
     }
   };
@@ -3172,12 +3144,10 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       if (skip === 7 && blockw - inc > 32) {
         _inc = inc + 1;
         continue ;
-        
       } else {
         _acc = newacc;
         _inc = inc + 1;
         continue ;
-        
       }
     } else {
       var newacc$1 = Pervasives.$at(acc, /* :: */[
@@ -3193,7 +3163,6 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       _acc = newacc$1;
       _inc = inc + 1;
       continue ;
-      
     }
   };
 }

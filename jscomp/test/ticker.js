@@ -42,14 +42,13 @@ function split(delim, s) {
             l_000,
             l
           ];
-          var l$2 = i$prime ? l$1 : /* :: */[
+          var l$2 = i$prime === 0 ? /* :: */[
               "",
               l$1
-            ];
+            ] : l$1;
           _i = i$prime;
           _l = l$2;
           continue ;
-          
         }
         
       } else {
@@ -220,13 +219,7 @@ function add(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_obj.caml_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, data, l), v, d, r);
-      } else {
-        return bal(l, v, d, add(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -234,6 +227,10 @@ function add(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal(add(x, data, l), v, d, r);
+    } else {
+      return bal(l, v, d, add(x, data, r));
     }
   } else {
     return /* Node */[
@@ -251,12 +248,11 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_obj.caml_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -269,12 +265,11 @@ function mem(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_obj.caml_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return true;
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
-      } else {
-        return true;
       }
     } else {
       return false;
@@ -290,7 +285,6 @@ function min_binding(_param) {
       if (l) {
         _param = l;
         continue ;
-        
       } else {
         return /* tuple */[
                 param[1],
@@ -311,7 +305,6 @@ function max_binding(_param) {
       if (r) {
         _param = r;
         continue ;
-        
       } else {
         return /* tuple */[
                 param[1],
@@ -347,13 +340,7 @@ function remove(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_obj.caml_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(remove(x, l), v, d, r);
-      } else {
-        return bal(l, v, d, remove(x, r));
-      }
-    } else {
+    if (c === 0) {
       var t1 = l;
       var t2 = r;
       if (t1) {
@@ -366,6 +353,10 @@ function remove(x, param) {
       } else {
         return t2;
       }
+    } else if (c < 0) {
+      return bal(remove(x, l), v, d, r);
+    } else {
+      return bal(l, v, d, remove(x, r));
     }
   } else {
     return /* Empty */0;
@@ -380,7 +371,6 @@ function iter(f, _param) {
       Curry._2(f, param[1], param[2]);
       _param = param[3];
       continue ;
-      
     } else {
       return /* () */0;
     }
@@ -430,7 +420,6 @@ function fold(f, _m, _accu) {
       _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
       _m = m[3];
       continue ;
-      
     } else {
       return accu;
     }
@@ -441,14 +430,9 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
-        if (for_all(p, param[0])) {
-          _param = param[3];
-          continue ;
-          
-        } else {
-          return false;
-        }
+      if (Curry._2(p, param[1], param[2]) && for_all(p, param[0])) {
+        _param = param[3];
+        continue ;
       } else {
         return false;
       }
@@ -462,14 +446,11 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
-        return true;
-      } else if (exists(p, param[0])) {
+      if (Curry._2(p, param[1], param[2]) || exists(p, param[0])) {
         return true;
       } else {
         _param = param[3];
         continue ;
-        
       }
     } else {
       return false;
@@ -541,27 +522,25 @@ function split$1(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_obj.caml_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        var match = split$1(x, l);
-        return /* tuple */[
-                match[0],
-                match[1],
-                join(match[2], v, d, r)
-              ];
-      } else {
-        var match$1 = split$1(x, r);
-        return /* tuple */[
-                join(l, v, d, match$1[0]),
-                match$1[1],
-                match$1[2]
-              ];
-      }
-    } else {
+    if (c === 0) {
       return /* tuple */[
               l,
               /* Some */[d],
               r
+            ];
+    } else if (c < 0) {
+      var match = split$1(x, l);
+      return /* tuple */[
+              match[0],
+              match[1],
+              join(match[2], v, d, r)
+            ];
+    } else {
+      var match$1 = split$1(x, r);
+      return /* tuple */[
+              join(l, v, d, match$1[0]),
+              match$1[1],
+              match$1[2]
             ];
     }
   } else {
@@ -667,7 +646,6 @@ function cons_enum(_m, _e) {
       ];
       _m = m[0];
       continue ;
-      
     } else {
       return e;
     }
@@ -693,7 +671,6 @@ function compare(cmp, m1, m2) {
             _e2 = cons_enum(e2[2], e2[3]);
             _e1 = cons_enum(e1[2], e1[3]);
             continue ;
-            
           }
         }
       } else {
@@ -714,17 +691,10 @@ function equal(cmp, m1, m2) {
     var e2 = _e2;
     var e1 = _e1;
     if (e1) {
-      if (e2) {
-        if (Caml_obj.caml_compare(e1[0], e2[0])) {
-          return false;
-        } else if (Curry._2(cmp, e1[1], e2[1])) {
-          _e2 = cons_enum(e2[2], e2[3]);
-          _e1 = cons_enum(e1[2], e1[3]);
-          continue ;
-          
-        } else {
-          return false;
-        }
+      if (e2 && Caml_obj.caml_equal(e1[0], e2[0]) && Curry._2(cmp, e1[1], e2[1])) {
+        _e2 = cons_enum(e2[2], e2[3]);
+        _e1 = cons_enum(e1[2], e1[3]);
+        continue ;
       } else {
         return false;
       }
@@ -758,7 +728,6 @@ function bindings_aux(_accu, _param) {
         bindings_aux(accu, param[3])
       ];
       continue ;
-      
     } else {
       return accu;
     }
@@ -800,24 +769,20 @@ function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {
           var loop = function (counter, ticker) {
             var rank = ticker[/* rank */1];
-            if (typeof rank === "number") {
-              if (rank !== 0) {
-                return counter;
+            if (typeof rank === "number" && rank === 0) {
+              ticker[/* rank */1] = /* Visited */1;
+              var match = ticker[/* type_ */3];
+              if (match) {
+                var match$1 = match[0];
+                var counter$1 = loop(counter, match$1[/* lhs */2]);
+                var counter$2 = loop(counter$1, match$1[/* rhs */1]);
+                var counter$3 = counter$2 + 1 | 0;
+                ticker[/* rank */1] = /* Ranked */[counter$3];
+                return counter$3;
               } else {
-                ticker[/* rank */1] = /* Visited */1;
-                var match = ticker[/* type_ */3];
-                if (match) {
-                  var match$1 = match[0];
-                  var counter$1 = loop(counter, match$1[/* lhs */2]);
-                  var counter$2 = loop(counter$1, match$1[/* rhs */1]);
-                  var counter$3 = counter$2 + 1 | 0;
-                  ticker[/* rank */1] = /* Ranked */[counter$3];
-                  return counter$3;
-                } else {
-                  var counter$4 = counter + 1 | 0;
-                  ticker[/* rank */1] = /* Ranked */[counter$4];
-                  return counter$4;
-                }
+                var counter$4 = counter + 1 | 0;
+                ticker[/* rank */1] = /* Ranked */[counter$4];
+                return counter$4;
               }
             } else {
               return counter;
@@ -847,7 +812,6 @@ function compute_update_sequences(all_tickers) {
                     up
                   ];
                   continue ;
-                  
                 } else {
                   var l = find(ticker_name, map);
                   return add(ticker_name, Pervasives.$at(up, l), map);
@@ -893,14 +857,10 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   var match$2 = match$1[/* lhs */2][/* value */0];
                   var match$3 = match$1[/* rhs */1][/* value */0];
                   var value;
-                  if (match$2) {
-                    if (match$3) {
-                      var y = match$3[0];
-                      var x = match$2[0];
-                      value = match$1[/* op */0] !== 0 ? /* Some */[x - y] : /* Some */[x + y];
-                    } else {
-                      value = /* None */0;
-                    }
+                  if (match$2 && match$3) {
+                    var y = match$3[0];
+                    var x = match$2[0];
+                    value = match$1[/* op */0] !== 0 ? /* Some */[x - y] : /* Some */[x + y];
                   } else {
                     value = /* None */0;
                   }
@@ -967,7 +927,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                   "Invalid input line"
                 ];
           }
-          break;
       case "R" : 
           var match$2 = tokens[1];
           if (match$2) {
@@ -1006,7 +965,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                             "Invalid input line"
                           ];
                     }
-                    break;
                 case "-" : 
                     var match$6 = match$3[1];
                     if (match$6) {
@@ -1038,7 +996,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                             "Invalid input line"
                           ];
                     }
-                    break;
                 case "S" : 
                     if (match$3[1]) {
                       throw [
@@ -1059,7 +1016,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ticker_map
                             ];
                     }
-                    break;
                 default:
                   throw [
                         Caml_builtin_exceptions.failure,
@@ -1078,7 +1034,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                   "Invalid input line"
                 ];
           }
-          break;
       default:
         throw [
               Caml_builtin_exceptions.failure,
@@ -1102,7 +1057,6 @@ function loop(_lines, _param) {
       _param = process_input_line(param[1], all_tickers, lines[0]);
       _lines = lines[1];
       continue ;
-      
     } else {
       return print_all_composite(all_tickers);
     }

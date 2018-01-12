@@ -6,14 +6,11 @@ var Block = require("../../lib/js/block.js");
 function f(b, _, _n) {
   while(true) {
     var n = _n;
-    if (n > 100000) {
+    if (n > 100000 || !b) {
       return false;
-    } else if (b) {
+    } else {
       _n = n + 1 | 0;
       continue ;
-      
-    } else {
-      return false;
     }
   };
 }
@@ -28,7 +25,6 @@ function or_f(b, _, _n) {
     } else {
       _n = n + 1 | 0;
       continue ;
-      
     }
   };
 }

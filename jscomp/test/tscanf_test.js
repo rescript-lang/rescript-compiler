@@ -6,7 +6,7 @@ var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
-var Buffer = require("../../lib/js/buffer.js");
+var $$Buffer = require("../../lib/js/buffer.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
@@ -631,7 +631,7 @@ function test7() {
                     ])]),
               "%C %C %C %C %C"
             ]), (function (c1, c2, c3, c4, c5) {
-            return c1 === /* "a" */97 && c2 === /* "\n" */10 && c3 === /* "\t" */9 && !c4 ? c5 === /* " " */32 : false;
+            return c1 === /* "a" */97 && c2 === /* "\n" */10 && c3 === /* "\t" */9 && c4 === /* "\000" */0 ? c5 === /* " " */32 : false;
           }))) {
     return Curry._1(Scanf.bscanf(Scanf.Scanning[/* from_string */6]("a \n \t \0  b"), /* Format */[
                     /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
@@ -646,7 +646,7 @@ function test7() {
                           ])]),
                     "%c %c %c "
                   ]), (function (c1, c2, c3) {
-                  if (c1 === /* "a" */97 && !c2) {
+                  if (c1 === /* "a" */97 && c2 === /* "\000" */0) {
                     return c3 === /* "b" */98;
                   } else {
                     return false;
@@ -1452,13 +1452,13 @@ function scan_elems$2(ib, accu) {
                     } else {
                       switch (c - 91 | 0) {
                         case 0 : 
-                            if (accu) {
-                              exit = 1;
-                            } else {
+                            if (accu === /* [] */0) {
                               return scan_elems$2(ib, /* :: */[
                                           i,
                                           accu
                                         ]);
+                            } else {
+                              exit = 1;
                             }
                             break;
                         case 1 : 
@@ -1723,12 +1723,7 @@ function scan_elems$4(ib, accu) {
                         Caml_builtin_exceptions.failure,
                         "scan_elems"
                       ];
-                } else if (accu) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_elems"
-                      ];
-                } else {
+                } else if (accu === /* [] */0) {
                   return Curry._1(Scanf.bscanf(ib, /* Format */[
                                   /* Scan_char_set */Block.__(20, [
                                       /* None */0,
@@ -1762,6 +1757,11 @@ function scan_elems$4(ib, accu) {
                                               }));
                                 }
                               }));
+                } else {
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_elems"
+                      ];
                 }
               }));
 }
@@ -1772,13 +1772,9 @@ function scan_int_list$3(ib) {
 
 function test18() {
   var ib = Scanf.Scanning[/* from_string */6]("[]");
-  if (List.rev(scan_elems$4(ib, /* [] */0))) {
-    return false;
-  } else {
+  if (List.rev(scan_elems$4(ib, /* [] */0)) === /* [] */0) {
     var ib$1 = Scanf.Scanning[/* from_string */6]("[ ]");
-    if (List.rev(scan_elems$4(ib$1, /* [] */0))) {
-      return false;
-    } else {
+    if (List.rev(scan_elems$4(ib$1, /* [] */0)) === /* [] */0) {
       var ib$2 = Scanf.Scanning[/* from_string */6]("[1;2;3;4]");
       if (Caml_obj.caml_equal(List.rev(scan_elems$4(ib$2, /* [] */0)), /* :: */[
               1,
@@ -1810,7 +1806,11 @@ function test18() {
       } else {
         return false;
       }
+    } else {
+      return false;
     }
+  } else {
+    return false;
   }
 }
 
@@ -1912,24 +1912,22 @@ function scan_int_list$4(ib) {
 }
 
 function test22() {
-  if (scan_int_list$4(Scanf.Scanning[/* from_string */6]("[]")) || scan_int_list$4(Scanf.Scanning[/* from_string */6]("[ ]")) || !(Caml_obj.caml_equal(scan_int_list$4(Scanf.Scanning[/* from_string */6]("[1]")), /* :: */[
-            1,
-            /* [] */0
-          ]) && Caml_obj.caml_equal(scan_int_list$4(Scanf.Scanning[/* from_string */6]("[1;2;3;4]")), /* :: */[
-            1,
+  if (scan_int_list$4(Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && scan_int_list$4(Scanf.Scanning[/* from_string */6]("[ ]")) === /* [] */0 && Caml_obj.caml_equal(scan_int_list$4(Scanf.Scanning[/* from_string */6]("[1]")), /* :: */[
+          1,
+          /* [] */0
+        ]) && Caml_obj.caml_equal(scan_int_list$4(Scanf.Scanning[/* from_string */6]("[1;2;3;4]")), /* :: */[
+          1,
+          /* :: */[
+            2,
             /* :: */[
-              2,
+              3,
               /* :: */[
-                3,
-                /* :: */[
-                  4,
-                  /* [] */0
-                ]
+                4,
+                /* [] */0
               ]
             ]
-          ]))) {
-    return false;
-  } else {
+          ]
+        ])) {
     return Caml_obj.caml_equal(scan_int_list$4(Scanf.Scanning[/* from_string */6]("[1;2;3;4;]")), /* :: */[
                 1,
                 /* :: */[
@@ -1943,6 +1941,8 @@ function test22() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -2018,24 +2018,22 @@ function scan_int_list$5(param) {
 }
 
 function test23() {
-  if (scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[]")) || scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[ ]")) || !(Caml_obj.caml_equal(scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[1]")), /* :: */[
-            1,
-            /* [] */0
-          ]) && Caml_obj.caml_equal(scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[1;2;3;4]")), /* :: */[
-            1,
+  if (scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[ ]")) === /* [] */0 && Caml_obj.caml_equal(scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[1]")), /* :: */[
+          1,
+          /* [] */0
+        ]) && Caml_obj.caml_equal(scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[1;2;3;4]")), /* :: */[
+          1,
+          /* :: */[
+            2,
             /* :: */[
-              2,
+              3,
               /* :: */[
-                3,
-                /* :: */[
-                  4,
-                  /* [] */0
-                ]
+                4,
+                /* [] */0
               ]
             ]
-          ]))) {
-    return false;
-  } else {
+          ]
+        ])) {
     return Caml_obj.caml_equal(scan_list(scan_int_elem, Scanf.Scanning[/* from_string */6]("[1;2;3;4;]")), /* :: */[
                 1,
                 /* :: */[
@@ -2049,6 +2047,8 @@ function test23() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -2120,51 +2120,49 @@ function scan_String_list(param) {
 }
 
 function test28() {
-  if (scan_list(scan_string_elem, Scanf.Scanning[/* from_string */6]("[]")) || !(Caml_obj.caml_equal(scan_list(scan_string_elem, Scanf.Scanning[/* from_string */6]("[\"Le\"]")), /* :: */[
-            "Le",
-            /* [] */0
-          ]) && Caml_obj.caml_equal(scan_list(scan_string_elem, Scanf.Scanning[/* from_string */6]("[\"Le\";\"langage\";\"Objective\";\"Caml\"]")), /* :: */[
-            "Le",
+  if (scan_list(scan_string_elem, Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && Caml_obj.caml_equal(scan_list(scan_string_elem, Scanf.Scanning[/* from_string */6]("[\"Le\"]")), /* :: */[
+          "Le",
+          /* [] */0
+        ]) && Caml_obj.caml_equal(scan_list(scan_string_elem, Scanf.Scanning[/* from_string */6]("[\"Le\";\"langage\";\"Objective\";\"Caml\"]")), /* :: */[
+          "Le",
+          /* :: */[
+            "langage",
             /* :: */[
-              "langage",
+              "Objective",
               /* :: */[
-                "Objective",
-                /* :: */[
-                  "Caml",
-                  /* [] */0
-                ]
-              ]
-            ]
-          ]) && Caml_obj.caml_equal(scan_list(scan_string_elem, Scanf.Scanning[/* from_string */6]("[\"Le\";\"langage\";\"Objective\";\"Caml\"; ]")), /* :: */[
-            "Le",
-            /* :: */[
-              "langage",
-              /* :: */[
-                "Objective",
-                /* :: */[
-                  "Caml",
-                  /* [] */0
-                ]
-              ]
-            ]
-          ]) && !(scan_String_list(Scanf.Scanning[/* from_string */6]("[]")) || !(Caml_obj.caml_equal(scan_String_list(Scanf.Scanning[/* from_string */6]("[\"Le\"]")), /* :: */[
-                "Le",
+                "Caml",
                 /* [] */0
-              ]) && Caml_obj.caml_equal(scan_String_list(Scanf.Scanning[/* from_string */6]("[\"Le\";\"langage\";\"Objective\";\"Caml\"]")), /* :: */[
-                "Le",
-                /* :: */[
-                  "langage",
-                  /* :: */[
-                    "Objective",
-                    /* :: */[
-                      "Caml",
-                      /* [] */0
-                    ]
-                  ]
-                ]
-              ]))))) {
-    return false;
-  } else {
+              ]
+            ]
+          ]
+        ]) && Caml_obj.caml_equal(scan_list(scan_string_elem, Scanf.Scanning[/* from_string */6]("[\"Le\";\"langage\";\"Objective\";\"Caml\"; ]")), /* :: */[
+          "Le",
+          /* :: */[
+            "langage",
+            /* :: */[
+              "Objective",
+              /* :: */[
+                "Caml",
+                /* [] */0
+              ]
+            ]
+          ]
+        ]) && scan_String_list(Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && Caml_obj.caml_equal(scan_String_list(Scanf.Scanning[/* from_string */6]("[\"Le\"]")), /* :: */[
+          "Le",
+          /* [] */0
+        ]) && Caml_obj.caml_equal(scan_String_list(Scanf.Scanning[/* from_string */6]("[\"Le\";\"langage\";\"Objective\";\"Caml\"]")), /* :: */[
+          "Le",
+          /* :: */[
+            "langage",
+            /* :: */[
+              "Objective",
+              /* :: */[
+                "Caml",
+                /* [] */0
+              ]
+            ]
+          ]
+        ])) {
     return Caml_obj.caml_equal(scan_String_list(Scanf.Scanning[/* from_string */6]("[\"Le\";\"langage\";\"Objective\";\"Caml\"; ]")), /* :: */[
                 "Le",
                 /* :: */[
@@ -2178,6 +2176,8 @@ function test28() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -2241,24 +2241,22 @@ function scan_int_elem$1(ib, f, ek) {
 }
 
 function test29() {
-  if (scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[]")) || scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[ ]")) || !(Caml_obj.caml_equal(scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[1]")), /* :: */[
-            1,
-            /* [] */0
-          ]) && Caml_obj.caml_equal(scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[1;2;3;4]")), /* :: */[
-            1,
+  if (scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[ ]")) === /* [] */0 && Caml_obj.caml_equal(scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[1]")), /* :: */[
+          1,
+          /* [] */0
+        ]) && Caml_obj.caml_equal(scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[1;2;3;4]")), /* :: */[
+          1,
+          /* :: */[
+            2,
             /* :: */[
-              2,
+              3,
               /* :: */[
-                3,
-                /* :: */[
-                  4,
-                  /* [] */0
-                ]
+                4,
+                /* [] */0
               ]
             ]
-          ]))) {
-    return false;
-  } else {
+          ]
+        ])) {
     return Caml_obj.caml_equal(scan_list$1(scan_int_elem$1, Scanf.Scanning[/* from_string */6]("[1;2;3;4;]")), /* :: */[
                 1,
                 /* :: */[
@@ -2272,6 +2270,8 @@ function test29() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -2298,24 +2298,22 @@ function scan_string_elem$1(ib, f, ek) {
 }
 
 function test30() {
-  if (scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[]")) || scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[ ]")) || !(Caml_obj.caml_equal(scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[ \"1\" ]")), /* :: */[
-            "1",
-            /* [] */0
-          ]) && Caml_obj.caml_equal(scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\"]")), /* :: */[
-            "1",
+  if (scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[ ]")) === /* [] */0 && Caml_obj.caml_equal(scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[ \"1\" ]")), /* :: */[
+          "1",
+          /* [] */0
+        ]) && Caml_obj.caml_equal(scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\"]")), /* :: */[
+          "1",
+          /* :: */[
+            "2",
             /* :: */[
-              "2",
+              "3",
               /* :: */[
-                "3",
-                /* :: */[
-                  "4",
-                  /* [] */0
-                ]
+                "4",
+                /* [] */0
               ]
             ]
-          ]))) {
-    return false;
-  } else {
+          ]
+        ])) {
     return Caml_obj.caml_equal(scan_list$1(scan_string_elem$1, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\";]")), /* :: */[
                 "1",
                 /* :: */[
@@ -2329,6 +2327,8 @@ function test30() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -2428,24 +2428,22 @@ function scan_string_list(param) {
 }
 
 function test31() {
-  if (Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[]")) || Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[ ]")) || !(Caml_obj.caml_equal(Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[1]")), /* :: */[
-            1,
-            /* [] */0
-          ]) && Caml_obj.caml_equal(Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[1;2;3;4]")), /* :: */[
-            1,
+  if (Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[ ]")) === /* [] */0 && Caml_obj.caml_equal(Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[1]")), /* :: */[
+          1,
+          /* [] */0
+        ]) && Caml_obj.caml_equal(Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[1;2;3;4]")), /* :: */[
+          1,
+          /* :: */[
+            2,
             /* :: */[
-              2,
+              3,
               /* :: */[
-                3,
-                /* :: */[
-                  4,
-                  /* [] */0
-                ]
+                4,
+                /* [] */0
               ]
             ]
-          ]))) {
-    return false;
-  } else {
+          ]
+        ])) {
     return Caml_obj.caml_equal(Curry._1(scan_int_list$6, Scanf.Scanning[/* from_string */6]("[1;2;3;4;]")), /* :: */[
                 1,
                 /* :: */[
@@ -2459,30 +2457,30 @@ function test31() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
 test("File \"tscanf_test.ml\", line 714, characters 5-12", test31(/* () */0));
 
 function test32() {
-  if (Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[]")) || Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[ ]")) || !(Caml_obj.caml_equal(Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[ \"1\" ]")), /* :: */[
-            "1",
-            /* [] */0
-          ]) && Caml_obj.caml_equal(Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\"]")), /* :: */[
-            "1",
+  if (Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[ ]")) === /* [] */0 && Caml_obj.caml_equal(Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[ \"1\" ]")), /* :: */[
+          "1",
+          /* [] */0
+        ]) && Caml_obj.caml_equal(Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\"]")), /* :: */[
+          "1",
+          /* :: */[
+            "2",
             /* :: */[
-              "2",
+              "3",
               /* :: */[
-                "3",
-                /* :: */[
-                  "4",
-                  /* [] */0
-                ]
+                "4",
+                /* [] */0
               ]
             ]
-          ]))) {
-    return false;
-  } else {
+          ]
+        ])) {
     return Caml_obj.caml_equal(Curry._1(scan_string_list, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\";]")), /* :: */[
                 "1",
                 /* :: */[
@@ -2496,6 +2494,8 @@ function test32() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -2578,24 +2578,22 @@ function scan_string_list$1(param) {
 }
 
 function test33() {
-  if (Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[]")) || Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[ ]")) || !(Caml_obj.caml_equal(Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[ 1 ]")), /* :: */[
-            1,
-            /* [] */0
-          ]) && Caml_obj.caml_equal(Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[ 1; 2; 3; 4 ]")), /* :: */[
-            1,
+  if (Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[ ]")) === /* [] */0 && Caml_obj.caml_equal(Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[ 1 ]")), /* :: */[
+          1,
+          /* [] */0
+        ]) && Caml_obj.caml_equal(Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[ 1; 2; 3; 4 ]")), /* :: */[
+          1,
+          /* :: */[
+            2,
             /* :: */[
-              2,
+              3,
               /* :: */[
-                3,
-                /* :: */[
-                  4,
-                  /* [] */0
-                ]
+                4,
+                /* [] */0
               ]
             ]
-          ]))) {
-    return false;
-  } else {
+          ]
+        ])) {
     return Caml_obj.caml_equal(Curry._1(scan_int_list$7, Scanf.Scanning[/* from_string */6]("[1;2;3;4;]")), /* :: */[
                 1,
                 /* :: */[
@@ -2609,30 +2607,30 @@ function test33() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
 test("File \"tscanf_test.ml\", line 773, characters 5-12", test33(/* () */0));
 
 function test34() {
-  if (Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[]")) || Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[ ]")) || !(Caml_obj.caml_equal(Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[ \"1\" ]")), /* :: */[
-            "1",
-            /* [] */0
-          ]) && Caml_obj.caml_equal(Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\"]")), /* :: */[
-            "1",
+  if (Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[]")) === /* [] */0 && Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[ ]")) === /* [] */0 && Caml_obj.caml_equal(Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[ \"1\" ]")), /* :: */[
+          "1",
+          /* [] */0
+        ]) && Caml_obj.caml_equal(Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\"]")), /* :: */[
+          "1",
+          /* :: */[
+            "2",
             /* :: */[
-              "2",
+              "3",
               /* :: */[
-                "3",
-                /* :: */[
-                  "4",
-                  /* [] */0
-                ]
+                "4",
+                /* [] */0
               ]
             ]
-          ]))) {
-    return false;
-  } else {
+          ]
+        ])) {
     return Caml_obj.caml_equal(Curry._1(scan_string_list$1, Scanf.Scanning[/* from_string */6]("[\"1\"; \"2\"; \"3\"; \"4\";]")), /* :: */[
                 "1",
                 /* :: */[
@@ -2646,6 +2644,8 @@ function test34() {
                   ]
                 ]
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -2827,7 +2827,7 @@ function test35() {
               "%N"
             ]), (function (x) {
             return x;
-          })) || Curry._1(Scanf.sscanf("456", /* Format */[
+          })) === 0 && Curry._1(Scanf.sscanf("456", /* Format */[
               /* Scan_get_counter */Block.__(21, [
                   /* Token_counter */2,
                   /* End_of_format */0
@@ -2835,7 +2835,7 @@ function test35() {
               "%N"
             ]), (function (x) {
             return x;
-          })) || !Caml_obj.caml_equal(Curry._1(Scanf.sscanf("456", /* Format */[
+          })) === 0 && Caml_obj.caml_equal(Curry._1(Scanf.sscanf("456", /* Format */[
                   /* Int */Block.__(4, [
                       /* Int_d */0,
                       /* No_padding */0,
@@ -2855,8 +2855,6 @@ function test35() {
           456,
           1
         ])) {
-    return false;
-  } else {
     return Caml_obj.caml_equal(Curry._1(Scanf.sscanf(" ", /* Format */[
                         /* Scan_get_counter */Block.__(21, [
                             /* Token_counter */2,
@@ -2880,6 +2878,8 @@ function test35() {
                 "",
                 1
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -2951,7 +2951,7 @@ function test36() {
               "%n"
             ]), (function (x) {
             return x;
-          })) || Curry._1(Scanf.sscanf("456", /* Format */[
+          })) === 0 && Curry._1(Scanf.sscanf("456", /* Format */[
               /* Scan_get_counter */Block.__(21, [
                   /* Char_counter */1,
                   /* End_of_format */0
@@ -2959,7 +2959,7 @@ function test36() {
               "%n"
             ]), (function (x) {
             return x;
-          })) || !Caml_obj.caml_equal(Curry._1(Scanf.sscanf("456", /* Format */[
+          })) === 0 && Caml_obj.caml_equal(Curry._1(Scanf.sscanf("456", /* Format */[
                   /* Int */Block.__(4, [
                       /* Int_d */0,
                       /* No_padding */0,
@@ -2979,8 +2979,6 @@ function test36() {
           456,
           3
         ])) {
-    return false;
-  } else {
     return Caml_obj.caml_equal(Curry._1(Scanf.sscanf(" ", /* Format */[
                         /* Scan_get_counter */Block.__(21, [
                             /* Char_counter */1,
@@ -3004,6 +3002,8 @@ function test36() {
                 "",
                 0
               ]);
+  } else {
+    return false;
   }
 }
 
@@ -3347,194 +3347,150 @@ function test48() {
       ]),
     "%i"
   ];
-  if (test_meta_read("%i", fmt, fmt)) {
-    if (test_meta_read("%i", /* Format */[
-            /* Int */Block.__(4, [
-                /* Int_d */0,
-                /* No_padding */0,
-                /* No_precision */0,
-                /* End_of_format */0
-              ]),
-            "%d"
-          ], /* Format */[
-            /* Int */Block.__(4, [
-                /* Int_i */3,
-                /* No_padding */0,
-                /* No_precision */0,
-                /* End_of_format */0
-              ]),
-            "%i"
-          ])) {
-      if (Curry._1(Scanf.sscanf("12 \"%i\"89 ", /* Format */[
-                  /* Int */Block.__(4, [
-                      /* Int_i */3,
-                      /* No_padding */0,
-                      /* No_precision */0,
-                      /* Char_literal */Block.__(12, [
-                          /* " " */32,
-                          /* Format_arg */Block.__(13, [
-                              /* None */0,
-                              /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* " " */32,
-                                      /* Flush */Block.__(10, [/* End_of_format */0])
-                                    ])
+  if (test_meta_read("%i", fmt, fmt) && test_meta_read("%i", /* Format */[
+          /* Int */Block.__(4, [
+              /* Int_d */0,
+              /* No_padding */0,
+              /* No_precision */0,
+              /* End_of_format */0
+            ]),
+          "%d"
+        ], /* Format */[
+          /* Int */Block.__(4, [
+              /* Int_i */3,
+              /* No_padding */0,
+              /* No_precision */0,
+              /* End_of_format */0
+            ]),
+          "%i"
+        ]) && Curry._1(Scanf.sscanf("12 \"%i\"89 ", /* Format */[
+              /* Int */Block.__(4, [
+                  /* Int_i */3,
+                  /* No_padding */0,
+                  /* No_precision */0,
+                  /* Char_literal */Block.__(12, [
+                      /* " " */32,
+                      /* Format_arg */Block.__(13, [
+                          /* None */0,
+                          /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* " " */32,
+                                  /* Flush */Block.__(10, [/* End_of_format */0])
                                 ])
                             ])
                         ])
-                    ]),
-                  "%i %{%d%}%s %!"
-                ]), (function (i, f, s) {
-                if (i === 12 && Caml_obj.caml_equal(f, /* Format */[
-                        /* Int */Block.__(4, [
-                            /* Int_i */3,
-                            /* No_padding */0,
-                            /* No_precision */0,
-                            /* End_of_format */0
-                          ]),
-                        "%i"
-                      ])) {
-                  return s === "89";
-                } else {
-                  return false;
-                }
-              }))) {
-        var k = function (s) {
-          return Curry._1(Scanf.sscanf(s, /* Format */[
-                          /* Format_subst */Block.__(14, [
-                              /* None */0,
-                              /* Float_ty */Block.__(6, [/* End_of_fmtty */0]),
-                              /* End_of_format */0
-                            ]),
-                          "%(%f%)"
-                        ]), (function (_, i) {
-                        return i;
-                      }));
-        };
-        if (k("\" : %1f\": 987654321") === 9.0) {
-          if (k("\" : %2f\": 987654321") === 98.0) {
-            if (k("\" : %3f\": 9.87654321") === 9.8) {
-              if (k("\" : %4f\": 9.87654321") === 9.87) {
-                var h = function (s) {
-                  return Curry._1(Scanf.sscanf(s, /* Format */[
-                                  /* String_literal */Block.__(11, [
-                                      "Read integers with ",
-                                      /* Format_subst */Block.__(14, [
-                                          /* None */0,
-                                          /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
-                                          /* End_of_format */0
-                                        ])
-                                    ]),
-                                  "Read integers with %(%i%)"
-                                ]), (function (_, i) {
-                                return i;
-                              }));
-                };
-                if (h("Read integers with \"%1d\"987654321") === 9) {
-                  if (h("Read integers with \"%2d\"987654321") === 98) {
-                    if (h("Read integers with \"%3u\"987654321") === 987) {
-                      if (h("Read integers with \"%4x\"987654321") === 39030) {
-                        var i = function (s) {
-                          return Curry._1(Scanf.sscanf(s, /* Format */[
-                                          /* String_literal */Block.__(11, [
-                                              "with ",
-                                              /* Format_subst */Block.__(14, [
-                                                  /* None */0,
-                                                  /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
-                                                  /* End_of_format */0
-                                                ])
-                                            ]),
-                                          "with %(%i %s%)"
-                                        ]), (function (_, amount, currency) {
-                                        return /* tuple */[
-                                                amount,
-                                                currency
-                                              ];
-                                      }));
-                        };
-                        if (Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), /* tuple */[
-                                21,
-                                "euros"
-                              ])) {
-                          if (Caml_obj.caml_equal(i("with \" : %d %s\" : 987654321 dollars"), /* tuple */[
-                                  987654321,
-                                  "dollars"
-                                ])) {
-                            if (Caml_obj.caml_equal(i("with \" : %u %s\" :     54321 pounds"), /* tuple */[
-                                    54321,
-                                    "pounds"
-                                  ])) {
-                              if (Caml_obj.caml_equal(i("with \" : %x %s\" :       321 yens"), /* tuple */[
-                                      801,
-                                      "yens"
-                                    ])) {
-                                var j = function (s) {
-                                  return Curry._1(Scanf.sscanf(s, /* Format */[
-                                                  /* String_literal */Block.__(11, [
-                                                      "with ",
-                                                      /* Format_subst */Block.__(14, [
-                                                          /* None */0,
-                                                          /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
-                                                          /* End_of_format */0
-                                                        ])
-                                                    ]),
-                                                  "with %(%i %_s %s%)"
-                                                ]), (function (_, amount, currency) {
-                                                return /* tuple */[
-                                                        amount,
-                                                        currency
-                                                      ];
-                                              }));
-                                };
-                                if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), /* tuple */[
-                                        9,
-                                        "euros"
-                                      ]) && Caml_obj.caml_equal(j("with \" : %2d %_s %s\" : 987654321 dollars"), /* tuple */[
-                                        98,
-                                        "dollars"
-                                      ]) && Caml_obj.caml_equal(j("with \" : %3u %_s %s\" : 987654321 pounds"), /* tuple */[
-                                        987,
-                                        "pounds"
-                                      ])) {
-                                  return Caml_obj.caml_equal(j("with \" : %4x %_s %s\" : 987654321 yens"), /* tuple */[
-                                              39030,
-                                              "yens"
-                                            ]);
-                                } else {
-                                  return false;
-                                }
-                              } else {
-                                return false;
-                              }
-                            } else {
-                              return false;
-                            }
-                          } else {
-                            return false;
-                          }
-                        } else {
-                          return false;
-                        }
-                      } else {
-                        return false;
-                      }
-                    } else {
-                      return false;
-                    }
-                  } else {
-                    return false;
-                  }
-                } else {
-                  return false;
-                }
-              } else {
-                return false;
-              }
+                    ])
+                ]),
+              "%i %{%d%}%s %!"
+            ]), (function (i, f, s) {
+            if (i === 12 && Caml_obj.caml_equal(f, /* Format */[
+                    /* Int */Block.__(4, [
+                        /* Int_i */3,
+                        /* No_padding */0,
+                        /* No_precision */0,
+                        /* End_of_format */0
+                      ]),
+                    "%i"
+                  ])) {
+              return s === "89";
             } else {
               return false;
             }
+          }))) {
+    var k = function (s) {
+      return Curry._1(Scanf.sscanf(s, /* Format */[
+                      /* Format_subst */Block.__(14, [
+                          /* None */0,
+                          /* Float_ty */Block.__(6, [/* End_of_fmtty */0]),
+                          /* End_of_format */0
+                        ]),
+                      "%(%f%)"
+                    ]), (function (_, i) {
+                    return i;
+                  }));
+    };
+    if (k("\" : %1f\": 987654321") === 9.0 && k("\" : %2f\": 987654321") === 98.0 && k("\" : %3f\": 9.87654321") === 9.8 && k("\" : %4f\": 9.87654321") === 9.87) {
+      var h = function (s) {
+        return Curry._1(Scanf.sscanf(s, /* Format */[
+                        /* String_literal */Block.__(11, [
+                            "Read integers with ",
+                            /* Format_subst */Block.__(14, [
+                                /* None */0,
+                                /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "Read integers with %(%i%)"
+                      ]), (function (_, i) {
+                      return i;
+                    }));
+      };
+      if (h("Read integers with \"%1d\"987654321") === 9 && h("Read integers with \"%2d\"987654321") === 98 && h("Read integers with \"%3u\"987654321") === 987 && h("Read integers with \"%4x\"987654321") === 39030) {
+        var i = function (s) {
+          return Curry._1(Scanf.sscanf(s, /* Format */[
+                          /* String_literal */Block.__(11, [
+                              "with ",
+                              /* Format_subst */Block.__(14, [
+                                  /* None */0,
+                                  /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
+                                  /* End_of_format */0
+                                ])
+                            ]),
+                          "with %(%i %s%)"
+                        ]), (function (_, amount, currency) {
+                        return /* tuple */[
+                                amount,
+                                currency
+                              ];
+                      }));
+        };
+        if (Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), /* tuple */[
+                21,
+                "euros"
+              ]) && Caml_obj.caml_equal(i("with \" : %d %s\" : 987654321 dollars"), /* tuple */[
+                987654321,
+                "dollars"
+              ]) && Caml_obj.caml_equal(i("with \" : %u %s\" :     54321 pounds"), /* tuple */[
+                54321,
+                "pounds"
+              ]) && Caml_obj.caml_equal(i("with \" : %x %s\" :       321 yens"), /* tuple */[
+                801,
+                "yens"
+              ])) {
+          var j = function (s) {
+            return Curry._1(Scanf.sscanf(s, /* Format */[
+                            /* String_literal */Block.__(11, [
+                                "with ",
+                                /* Format_subst */Block.__(14, [
+                                    /* None */0,
+                                    /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
+                                    /* End_of_format */0
+                                  ])
+                              ]),
+                            "with %(%i %_s %s%)"
+                          ]), (function (_, amount, currency) {
+                          return /* tuple */[
+                                  amount,
+                                  currency
+                                ];
+                        }));
+          };
+          if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), /* tuple */[
+                  9,
+                  "euros"
+                ]) && Caml_obj.caml_equal(j("with \" : %2d %_s %s\" : 987654321 dollars"), /* tuple */[
+                  98,
+                  "dollars"
+                ]) && Caml_obj.caml_equal(j("with \" : %3u %_s %s\" : 987654321 pounds"), /* tuple */[
+                  987,
+                  "pounds"
+                ])) {
+            return Caml_obj.caml_equal(j("with \" : %4x %_s %s\" : 987654321 yens"), /* tuple */[
+                        39030,
+                        "yens"
+                      ]);
           } else {
             return false;
           }
@@ -3716,25 +3672,25 @@ function test49() {
 test("File \"tscanf_test.ml\", line 1176, characters 5-12", test49(/* () */0));
 
 function next_char(ob, _) {
-  var s = Buffer.contents(ob);
+  var s = $$Buffer.contents(ob);
   var len = s.length;
-  if (len) {
+  if (len === 0) {
+    throw Caml_builtin_exceptions.end_of_file;
+  } else {
     var c = Caml_string.get(s, 0);
     ob[/* position */1] = 0;
-    Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
+    $$Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
     return c;
-  } else {
-    throw Caml_builtin_exceptions.end_of_file;
   }
 }
 
 function send_string(ob, s) {
-  Buffer.add_string(ob, s);
-  return Buffer.add_char(ob, /* "\n" */10);
+  $$Buffer.add_string(ob, s);
+  return $$Buffer.add_char(ob, /* "\n" */10);
 }
 
 function send_int(ob, i) {
-  return send_string(ob, "" + i);
+  return send_string(ob, String(i));
 }
 
 function writer(ib, ob) {
@@ -3766,7 +3722,7 @@ function writer(ib, ob) {
                                   }));
                   default:
                     var i = Caml_format.caml_int_of_string(s);
-                    send_string(ob, "" + i);
+                    send_string(ob, String(i));
                     return reader(ib, ob);
                 }
               }));
@@ -3799,9 +3755,9 @@ function reader(ib, ob) {
                     count[0] = l + count[0] | 0;
                     if (count[0] >= 100) {
                       send_string(ob, "stop");
-                      send_string(ob, "" + count[0]);
+                      send_string(ob, String(count[0]));
                     } else {
-                      send_string(ob, "" + l);
+                      send_string(ob, String(l));
                     }
                     return writer(ib, ob);
                   }
@@ -3810,7 +3766,7 @@ function reader(ib, ob) {
 }
 
 function go() {
-  var ob = Buffer.create(17);
+  var ob = $$Buffer.create(17);
   var ib = Scanf.Scanning[/* from_function */7]((function (param) {
           return next_char(ob, param);
         }));
