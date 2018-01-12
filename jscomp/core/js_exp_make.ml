@@ -277,8 +277,8 @@ let obj_int_tag_literal : t =
 let int ?comment ?c  i : t = 
   {expression_desc = Number (Int {i; c}) ; comment}
 
-let bool ?comment b : t = 
-  {expression_desc = Bool b; comment}
+let bool b : t = 
+  {expression_desc = Bool b; comment=None}
 
 let small_int i : t = 
   match i with 
@@ -493,18 +493,9 @@ let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t =
 
 let assign ?comment e0 e1 : t = {expression_desc = Bin(Eq, e0,e1); comment}
 
-let to_number ?comment (e : t) : t = 
-  match e.expression_desc with 
-  | Int_of_boolean _
-  | Anything_to_number _
-  | Number _ -> e 
-  | _ -> {comment ; expression_desc = Anything_to_number e}
-
 let caml_true  = bool true
 
 let caml_false  = bool false
-
-let bool v = if  v then caml_true else caml_false
 
 (** Here we have to use JS [===], and therefore, we are introducing 
     Js boolean, so be sure to convert it back to OCaml boolean
@@ -513,13 +504,13 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   match e0.expression_desc, e1.expression_desc with
   | Var (Id ({name = "undefined"|"null"} as id)), 
     (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Bool _ | Number _ | Typeof _ 
     | Fun _ | Array _ | Caml_block _ )
     when Ext_ident.is_js id && no_side_effect e1 -> 
     caml_false (* TODO: rename it as [caml_false] *)
   | 
     (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Bool _ | Number _ | Typeof _ 
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
     caml_false
@@ -575,21 +566,6 @@ let bin ?comment (op : J.binop) e0 e1 : t =
 *)
 let rec and_ ?comment (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
-  |  Int_of_boolean e1 , Int_of_boolean e2 ->
-    and_ ?comment e1 e2
-
-  (*
-     {[ a && (b && c) === (a && b ) && c ]}
-     is not used: benefit is not clear 
-     | Int_of_boolean e10, Bin(And, {expression_desc = Int_of_boolean e20 }, e3) 
-      -> 
-      and_ ?comment 
-        { e1 with expression_desc 
-                  = 
-                    J.Int_of_boolean { expression_desc = Bin (And, e10,e20); comment = None}
-        }
-        e3
-  *)
   (* Note that 
      {[ "" && 3 ]}
      return  "" instead of false, so [e1] is indeed useful
@@ -613,9 +589,6 @@ let rec and_ ?comment (e1 : t) (e2 : t) : t =
 
 let rec or_ ?comment (e1 : t) (e2 : t) = 
   match e1.expression_desc, e2.expression_desc with 
-  | Int_of_boolean e1 , Int_of_boolean e2
-    ->
-    or_ ?comment e1 e2
   | Var i, Var j when Js_op_util.same_vident  i j 
     -> 
     e1
@@ -645,26 +618,6 @@ let not ({expression_desc; comment} as e : t) : t =
   | Bin(Gt,a,b) -> 
     {e with expression_desc = Bin (Le,a,b)}
   | _ -> {expression_desc = Js_not e; comment = None}
-
-let rec ocaml_boolean_under_condition (b : t) =
-  match b.expression_desc with 
-  | Int_of_boolean b -> ocaml_boolean_under_condition b 
-  | Bin (And, x,y) -> 
-    let x' = ocaml_boolean_under_condition x in 
-    let y' = ocaml_boolean_under_condition y in 
-    if x == x' && y==y' then b 
-    else {b with expression_desc = Bin(And,x',y')}
-  | Bin(Or,x,y) ->
-    let x' = ocaml_boolean_under_condition x in 
-    let y' = ocaml_boolean_under_condition y in 
-    if x == x' && y == y' then b 
-    else {b with expression_desc = Bin(Or,x',y')}
-  | Js_not u 
-    -> 
-    let u' = ocaml_boolean_under_condition u in 
-    if u' == u then b 
-    else {b with expression_desc = Js_not u'} 
-  | _ -> b 
 
 let rec econd ?comment (b : t) (t : t) (f : t) : t = 
   match b.expression_desc , t.expression_desc, f.expression_desc with
@@ -748,11 +701,7 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
   | Js_not e, _, _ 
     ->
     econd ?comment e f t 
-  | Int_of_boolean  b, _, _  -> econd ?comment  b t f
-  (* | Bin (And ,{expression_desc = Int_of_boolean b0},b1), _, _  -> *)
-  (*   econd ?comment { b with expression_desc = Bin (And , b0,b1)} t f *)
   | _ -> 
-    let b  = ocaml_boolean_under_condition b in 
     (* if b' <> b then *)
     (*   econd ?comment b' t f  *)
     (* else  *)
@@ -1258,11 +1207,6 @@ let of_block ?comment ?e block : t =
     } []
 
 let is_nil ?comment x = triple_equal ?comment x nil 
-
-let js_bool ?comment x : t = 
-  { comment; 
-    expression_desc = Bool x
-  }
 
 let is_undef ?comment x = triple_equal ?comment x undefined
 
