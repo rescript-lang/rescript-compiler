@@ -24,3 +24,27 @@ val binSearch :
   if [key] is largeer than all elements return [- (len + 1)] since (lnot (-(len+1)) = len]
 
 *)  
+
+val union :   
+  elt array -> int -> int -> 
+  elt array -> int -> int -> 
+  elt array -> int 
+  -> int
+(**
+  [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
+  assume [src] and [src2] is strictly sorted.
+  for equivalent elements, it is picked from [src]
+  also assume that [dst] is large enough to store all elements
+*)  
+
+val inter:
+  elt array -> int -> int -> 
+  elt array -> int -> int -> 
+  elt array -> int 
+  -> int
+  
+val diff:  
+  elt array -> int -> int -> 
+  elt array -> int -> int -> 
+  elt array -> int 
+  -> int

@@ -151,8 +151,6 @@ let ofArray xs =
 
 let cmp d0 d1 = 
   I.cmp (data d0) (data d1)
-let diff d0 d1 = 
-  t ~data:(I.diff (data d0) (data d1))
 let eq d0 d1 = 
   I.eq (data d0) (data d1)
 let findOpt d x = 
@@ -179,6 +177,75 @@ let split d  key =
       ), true   
   
 let subset a b = I.subset  (data a) (data b)
-let inter a b  = t ~data:(I.inter (data a) (data b))
-let union a b = t ~data:(I.union (data a) (data b))
+let inter dataa datab  = 
+  let dataa, datab = data dataa, data datab in
+    match N.toOpt dataa, N.toOpt datab with 
+    | None, _ -> empty ()
+    | _, None -> empty ()
+    | Some dataa0, Some datab0 ->  
+    let sizea, sizeb = 
+        N.lengthNode dataa0, N.lengthNode datab0 in          
+    let totalSize = sizea + sizeb in 
+    let tmp = A.makeUninitializedUnsafe totalSize in 
+    ignore @@ N.fillArray dataa0 0 tmp ; 
+    ignore @@ N.fillArray datab0 sizea tmp;
+    (* let p = Bs_Cmp.getCmp M.cmp in  *)
+    if ((A.unsafe_get tmp (sizea - 1) < 
+        A.unsafe_get tmp sizea))
+      || 
+      (
+      (A.unsafe_get tmp (totalSize - 1) <
+      A.unsafe_get tmp 0)
+      )
+       then empty ()
+    else 
+    let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
+    let k = S.inter tmp 0 sizea tmp sizea sizeb tmp2 0  in 
+    t ~data:(N.ofSortedArrayAux tmp2 0 k)
+  
+let diff dataa datab : t = 
+  let dataa, datab = data dataa, data datab in
+  match N.toOpt dataa, N.toOpt datab with 
+  | None, _ -> empty ()
+  | _, None -> t ~data:(N.copy dataa)
+  | Some dataa0, Some datab0 -> 
+    let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
+    let totalSize = sizea + sizeb in 
+    let tmp = A.makeUninitializedUnsafe totalSize in 
+    ignore @@ N.fillArray dataa0 0 tmp ; 
+    ignore @@ N.fillArray datab0 sizea tmp;
+    (* let p = Bs_Cmp.getCmp M.cmp in  *)
+    if ( (A.unsafe_get tmp (sizea - 1)) < 
+        (A.unsafe_get tmp sizea))
+      ||       
+      (A.unsafe_get tmp (totalSize - 1)
+      < A.unsafe_get tmp 0) 
+       then t ~data:(N.copy dataa) 
+    else 
+    let tmp2 = A.makeUninitializedUnsafe sizea in 
+    let k = S.diff tmp 0 sizea tmp sizea sizeb tmp2 0  in 
+    t ~data:(N.ofSortedArrayAux tmp2 0 k)
+
+let union (dataa : t)  (datab : t) : t = 
+  let dataa, datab = data dataa, data datab in
+   match N.toOpt dataa, N.toOpt datab with 
+  | None, _ -> t ~data:(N.copy datab) 
+  | _, None -> t ~data:(N.copy dataa) 
+  | Some dataa0, Some datab0 
+    -> 
+    let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in 
+    let totalSize = sizea + sizeb in 
+    let tmp = A.makeUninitializedUnsafe totalSize in 
+    ignore @@ N.fillArray dataa0 0 tmp ;
+    ignore @@ N.fillArray datab0 sizea tmp ;
+    (* let p = (Bs_Cmp.getCmp M.cmp)  in  *)
+    if 
+      (A.unsafe_get tmp (sizea - 1) < 
+      A.unsafe_get tmp sizea)  then 
+      t  ~data:(N.ofSortedArrayAux tmp 0 totalSize) 
+    else   
+      let tmp2 = A.makeUninitializedUnsafe totalSize in 
+      let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0  in 
+      t ~data:(N.ofSortedArrayAux tmp2 0 k) 
+  
 let mem d x = I.mem (data d) x 

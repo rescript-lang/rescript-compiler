@@ -252,12 +252,7 @@ let cmp (type elt) (type id) (d0 : (elt,id) t) d1 =
   let module M = (val dict) in 
   N.cmp0 ~cmp:M.cmp (B.data d0) (B.data d1)
 
-(* let diff (type elt) (type id) (d0 : (elt,id) t) d1 = 
-  let dict = B.dict d0 in 
-  let module M = (val dict) in 
-  B.bag 
-  ~data:(I.diff0 ~cmp:M.cmp (B.data d0) (B.data d1))
-  ~dict *)
+
 
 let eq (type elt) (type id) (d0 : (elt,id) t)  d1 = 
   let dict = B.dict d0 in 
@@ -284,12 +279,60 @@ let subset (type elt) (type id) (a : (elt,id) t) b =
   let module M = (val dict) in 
   N.subset0  ~cmp:M.cmp (B.data a) (B.data b)
 
-(* let inter (type elt) (type id) (a : (elt,id) t) b  = 
-  let dict = B.dict a in 
+let inter (type elt) (type id) (a : (elt,id) t) b  : _ t = 
+  let dict, dataa, datab = B.dict a, B.data a, B.data b in 
   let module M = (val dict) in 
-  B.bag ~data:(I.inter0 ~cmp:M.cmp (B.data a) (B.data b))
+  match N.toOpt dataa, N.toOpt datab with 
+  | None, _ -> empty dict
+  | _, None -> empty dict
+  | Some dataa0, Some datab0 ->  
+    let sizea, sizeb = 
+        N.lengthNode dataa0, N.lengthNode datab0 in          
+    let totalSize = sizea + sizeb in 
+    let tmp = A.makeUninitializedUnsafe totalSize in 
+    ignore @@ N.fillArray dataa0 0 tmp ; 
+    ignore @@ N.fillArray datab0 sizea tmp;
+    let p = Bs_Cmp.getCmp M.cmp in 
+    if (p (A.unsafe_get tmp (sizea - 1))
+        (A.unsafe_get tmp sizea) [@bs] < 0)
+      || 
+      (p 
+      (A.unsafe_get tmp (totalSize - 1))
+      (A.unsafe_get tmp 0) [@bs] < 0 
+      )
+       then empty dict
+    else 
+    let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
+    let k = S.inter tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+    B.bag ~data:(N.ofSortedArrayAux tmp2 0 k)
   ~dict
-*)
+let diff (type elt) (type id) (a : (elt,id) t) b : _ t = 
+  let dict, dataa, datab = B.dict a, B.data a, B.data b in 
+  let module M = (val dict) in
+  match N.toOpt dataa, N.toOpt datab with 
+  | None, _ -> empty dict 
+  | _, None -> 
+     B.bag ~data:(N.copy dataa) ~dict 
+  | Some dataa0, Some datab0
+   -> 
+    let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
+    let totalSize = sizea + sizeb in 
+    let tmp = A.makeUninitializedUnsafe totalSize in 
+    ignore @@ N.fillArray dataa0 0 tmp ; 
+    ignore @@ N.fillArray datab0 sizea tmp;
+    let p = Bs_Cmp.getCmp M.cmp in 
+    if (p (A.unsafe_get tmp (sizea - 1))
+        (A.unsafe_get tmp sizea) [@bs] < 0)
+      || 
+      (p 
+      (A.unsafe_get tmp (totalSize - 1))
+      (A.unsafe_get tmp 0) [@bs] < 0 
+      )
+       then B.bag ~data:(N.copy dataa) ~dict 
+    else 
+    let tmp2 = A.makeUninitializedUnsafe sizea in 
+    let k = S.diff tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+    B.bag ~data:(N.ofSortedArrayAux tmp2 0 k) ~dict 
 
 let union (type elt) (type id) (a : (elt,id) t) b = 
   let dict, dataa, datab = B.dict a, B.data a, B.data b  in 
@@ -313,9 +356,7 @@ let union (type elt) (type id) (a : (elt,id) t) b =
       let tmp2 = A.makeUninitializedUnsafe totalSize in 
       let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       B.bag ~data:(N.ofSortedArrayAux tmp2 0 k) ~dict 
-  (* B.bag 
-  ~data:(I.union0 ~cmp:M.cmp (B.data a) (B.data b)) 
-  ~dict *)
+  
  
 let mem (type elt) (type id) (d : (elt,id) t) x =
   let dict = B.dict d in 

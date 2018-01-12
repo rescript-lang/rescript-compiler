@@ -43,6 +43,132 @@ let merge (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
   in 
   loop src1ofs (A.unsafe_get src src1ofs) src2ofs (A.unsafe_get src2 src2ofs) dstofs
   
+
+
+let union (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+  let src1r = src1ofs + src1len in 
+  let src2r = src2ofs + src2len in
+  let rec loop i1 s1 i2 s2 d =
+    (* let c = cmp s1 s2 [@bs] in  *)
+    if s1 < s2 then begin
+      (* [s1] is larger than all elements in [d] *)
+      A.unsafe_set dst d s1; 
+      let i1 = i1 + 1 in
+      let d = d + 1 in 
+      if i1 < src1r then
+        loop i1 (A.unsafe_get src i1) i2 s2 d
+      else
+        begin 
+          A.blitUnsafe src2 i2 dst d (src2r - i2);
+          d + src2r - i2   
+        end
+    end 
+    else if s1 = s2 then begin 
+      A.unsafe_set dst d s1;
+      let i1 = i1 + 1 in
+      let i2 = i2 + 1 in 
+      let d  = d + 1 in 
+      if i1 < src1r && i2 < src2r then 
+        loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
+      else if i1 = src1r then   
+        (A.blitUnsafe src2 i2 dst d (src2r - i2);
+         d + src2r - i2)
+      else    
+        (A.blitUnsafe src i1 dst d (src1r - i1);
+         d + src1r - i1)
+    end 
+    else begin
+      A.unsafe_set dst d s2;
+      let i2 = i2 + 1 in
+      let d = d + 1 in 
+      if i2 < src2r then
+        loop i1 s1 i2 (A.unsafe_get src2 i2) d
+      else
+        (A.blitUnsafe src i1 dst d (src1r - i1);
+         d + src1r - i1
+        )
+    end
+  in 
+  loop src1ofs 
+    (A.unsafe_get src src1ofs) 
+    src2ofs 
+    (A.unsafe_get src2 src2ofs) dstofs
+  
+let inter (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+  let src1r = src1ofs + src1len in 
+  let src2r = src2ofs + src2len in
+  let rec loop i1 s1 i2 s2 d =
+    (* let c = cmp s1 s2 [@bs] in  *)
+    if s1 < s2 then begin
+      (* A.unsafe_set dst d s1; *)
+      let i1 = i1 + 1 in
+      if i1 < src1r then
+        loop i1 (A.unsafe_get src i1) i2 s2 d
+      else
+        d
+    end 
+    else if s1 = s2 then begin 
+      A.unsafe_set dst d s1;
+      let i1 = i1 + 1 in
+      let i2 = i2 + 1 in 
+      let d = d + 1 in 
+      if i1 < src1r && i2 < src2r then 
+        loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
+      else d
+    end 
+    else begin
+      (* A.unsafe_set dst d s2; *)
+      let i2 = i2 + 1 in
+      if i2 < src2r then
+        loop i1 s1 i2 (A.unsafe_get src2 i2) d
+      else
+        d
+    end
+  in 
+  loop src1ofs 
+    (A.unsafe_get src src1ofs) 
+    src2ofs 
+    (A.unsafe_get src2 src2ofs) dstofs    
+
+let diff (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+  let src1r = src1ofs + src1len in 
+  let src2r = src2ofs + src2len in
+  let rec loop i1 s1 i2 s2 d =
+    (* let c = cmp s1 s2 [@bs] in  *)
+    if s1 < s2 then begin
+      A.unsafe_set dst d s1;
+      let d = d + 1 in 
+      let i1 = i1 + 1 in      
+      if i1 < src1r then
+        loop i1 (A.unsafe_get src i1) i2 s2 d
+      else
+        d
+    end 
+    else if s1 = s2 then begin 
+      let i1 = i1 + 1 in
+      let i2 = i2 + 1 in 
+      if i1 < src1r && i2 < src2r then 
+        loop i1 (A.unsafe_get src i1) i2 (A.unsafe_get src2 i2) d
+      else if i1 = src1r then 
+        d
+      else 
+      (A.blitUnsafe src i1 dst d (src1r - i1);
+        d + src1r - i1)
+    end 
+    else begin
+      let i2 = i2 + 1 in
+      if i2 < src2r then
+        loop i1 s1 i2 (A.unsafe_get src2 i2) d
+      else
+        (A.blitUnsafe src i1 dst d (src1r - i1);
+        d + src1r - i1)        
+    end
+  in 
+  loop src1ofs 
+    (A.unsafe_get src src1ofs) 
+    src2ofs 
+    (A.unsafe_get src2 src2ofs) dstofs        
+
 let insertionSort (src : elt array) srcofs dst dstofs len  =
   for i = 0 to len - 1 do
     let e = (A.unsafe_get src (srcofs + i)) in

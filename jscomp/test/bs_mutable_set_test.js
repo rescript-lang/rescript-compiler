@@ -280,6 +280,151 @@ b("File \"bs_mutable_set_test.ml\", line 106, characters 4-11", Bs_SetIntM.eq(ma
           data: Bs_internalSetInt.ofArray(xs$7)
         }));
 
+var xs$8 = Array_data_util.randomRange(0, 100);
+
+var aa = {
+  data: Bs_internalSetInt.ofArray(xs$8)
+};
+
+var xs$9 = Array_data_util.randomRange(40, 120);
+
+var bb = {
+  data: Bs_internalSetInt.ofArray(xs$9)
+};
+
+var cc$1 = Bs_SetIntM.union(aa, bb);
+
+var xs$10 = Array_data_util.randomRange(0, 120);
+
+b("File \"bs_mutable_set_test.ml\", line 116, characters 4-11", Bs_SetIntM.eq(cc$1, {
+          data: Bs_internalSetInt.ofArray(xs$10)
+        }));
+
+var xs$11 = Array_data_util.randomRange(0, 20);
+
+var xs$12 = Array_data_util.randomRange(21, 40);
+
+var xs$13 = Array_data_util.randomRange(0, 40);
+
+b("File \"bs_mutable_set_test.ml\", line 118, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.union({
+              data: Bs_internalSetInt.ofArray(xs$11)
+            }, {
+              data: Bs_internalSetInt.ofArray(xs$12)
+            }), {
+          data: Bs_internalSetInt.ofArray(xs$13)
+        }));
+
+var dd = Bs_SetIntM.inter(aa, bb);
+
+var xs$14 = Array_data_util.randomRange(40, 100);
+
+b("File \"bs_mutable_set_test.ml\", line 123, characters 4-11", Bs_SetIntM.eq(dd, {
+          data: Bs_internalSetInt.ofArray(xs$14)
+        }));
+
+var xs$15 = Array_data_util.randomRange(0, 20);
+
+var xs$16 = Array_data_util.randomRange(21, 40);
+
+b("File \"bs_mutable_set_test.ml\", line 124, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.inter({
+              data: Bs_internalSetInt.ofArray(xs$15)
+            }, {
+              data: Bs_internalSetInt.ofArray(xs$16)
+            }), {
+          data: Bs_internalAVLset.empty0
+        }));
+
+var xs$17 = Array_data_util.randomRange(21, 40);
+
+var xs$18 = Array_data_util.randomRange(0, 20);
+
+b("File \"bs_mutable_set_test.ml\", line 130, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.inter({
+              data: Bs_internalSetInt.ofArray(xs$17)
+            }, {
+              data: Bs_internalSetInt.ofArray(xs$18)
+            }), {
+          data: Bs_internalAVLset.empty0
+        }));
+
+b("File \"bs_mutable_set_test.ml\", line 136, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.inter({
+              data: Bs_internalSetInt.ofArray(/* array */[
+                    1,
+                    3,
+                    4,
+                    5,
+                    7,
+                    9
+                  ])
+            }, {
+              data: Bs_internalSetInt.ofArray(/* array */[
+                    2,
+                    4,
+                    5,
+                    6,
+                    8,
+                    10
+                  ])
+            }), {
+          data: Bs_internalSetInt.ofArray(/* int array */[
+                4,
+                5
+              ])
+        }));
+
+var xs$19 = Array_data_util.randomRange(0, 39);
+
+b("File \"bs_mutable_set_test.ml\", line 142, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.diff(aa, bb), {
+          data: Bs_internalSetInt.ofArray(xs$19)
+        }));
+
+var xs$20 = Array_data_util.randomRange(101, 120);
+
+b("File \"bs_mutable_set_test.ml\", line 144, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.diff(bb, aa), {
+          data: Bs_internalSetInt.ofArray(xs$20)
+        }));
+
+var xs$21 = Array_data_util.randomRange(21, 40);
+
+var xs$22 = Array_data_util.randomRange(0, 20);
+
+var xs$23 = Array_data_util.randomRange(21, 40);
+
+b("File \"bs_mutable_set_test.ml\", line 146, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.diff({
+              data: Bs_internalSetInt.ofArray(xs$21)
+            }, {
+              data: Bs_internalSetInt.ofArray(xs$22)
+            }), {
+          data: Bs_internalSetInt.ofArray(xs$23)
+        }));
+
+var xs$24 = Array_data_util.randomRange(0, 20);
+
+var xs$25 = Array_data_util.randomRange(21, 40);
+
+var xs$26 = Array_data_util.randomRange(0, 20);
+
+b("File \"bs_mutable_set_test.ml\", line 152, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.diff({
+              data: Bs_internalSetInt.ofArray(xs$24)
+            }, {
+              data: Bs_internalSetInt.ofArray(xs$25)
+            }), {
+          data: Bs_internalSetInt.ofArray(xs$26)
+        }));
+
+var xs$27 = Array_data_util.randomRange(0, 20);
+
+var xs$28 = Array_data_util.randomRange(0, 40);
+
+var xs$29 = Array_data_util.randomRange(0, -1);
+
+b("File \"bs_mutable_set_test.ml\", line 159, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.diff({
+              data: Bs_internalSetInt.ofArray(xs$27)
+            }, {
+              data: Bs_internalSetInt.ofArray(xs$28)
+            }), {
+          data: Bs_internalSetInt.ofArray(xs$29)
+        }));
+
 Mt.from_pair_suites("bs_mutable_set_test.ml", suites[0]);
 
 var N = 0;
@@ -290,7 +435,11 @@ var R = 0;
 
 var A = 0;
 
-var $plus$plus = Bs_Array.append;
+var $plus$plus = Bs_SetIntM.union;
+
+var f = Bs_SetIntM.ofArray;
+
+var $eq$tilde = Bs_SetIntM.eq;
 
 exports.suites = suites;
 exports.test_id = test_id;
@@ -301,4 +450,6 @@ exports.I = I;
 exports.R = R;
 exports.A = A;
 exports.$plus$plus = $plus$plus;
+exports.f = f;
+exports.$eq$tilde = $eq$tilde;
 /*  Not a pure module */
