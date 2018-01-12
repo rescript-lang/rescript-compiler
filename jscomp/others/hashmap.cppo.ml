@@ -31,6 +31,7 @@ let hash (s : key) =
 (**  Adapted by Authors of BuckleScript 2017                           *)
 module N = Bs_internalBuckets
 module C = Bs_internalBucketsType
+module A = Bs_Array
 type ('a, 'b,'id) t0 = ('a,'b) N.t0 
 
 type 'b t = (key,'b,unit) t0
@@ -57,8 +58,8 @@ let resize  h =
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize >= osize then begin (* no overflow *)
-    let h_buckets = C.makeSize nsize  in
-    let ndata_tail = C.makeSize nsize  in (* keep track of tail *)
+    let h_buckets = A.makeUninitialized nsize  in
+    let ndata_tail = A.makeUninitialized nsize  in (* keep track of tail *)
     C.bucketsSet h  h_buckets;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
       insert_bucket  ~h_buckets ~ndata_tail h (Bs_Array.unsafe_get odata i)

@@ -28,8 +28,8 @@ type 'c container =
     mutable buckets: 'c opt array;  (* the buckets *)
     initialSize: int;                        (* initial array size *)
   } [@@bs.deriving abstract]
+module A = Bs_Array
 
-external makeSize : int -> 'a opt array = "Array" [@@bs.new]      
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a opt = "%identity" 
 let emptyOpt = Js.undefined   
@@ -41,24 +41,24 @@ let rec power_2_above x n =
 let create0  initialSize =
   let s = power_2_above 16 initialSize in  
   container  ~initialSize:s ~size:0
-    ~buckets:(makeSize s)
+    ~buckets:(A.makeUninitialized s)
 
 let clear0 h =
   sizeSet h 0;
   let h_buckets = buckets h in 
-  let len = Bs_Array.length h_buckets in
+  let len = A.length h_buckets in
   for i = 0 to len - 1 do
-    Bs_Array.unsafe_set h_buckets i  emptyOpt
+    A.unsafe_set h_buckets i  emptyOpt
   done
 
 let reset0 h =
-  let len = Bs_Array.length (buckets h) in
+  let len = A.length (buckets h) in
   let h_initialSize = initialSize h in
   if len = h_initialSize then
     clear0 h
   else begin
     sizeSet h 0;
-    bucketsSet h (makeSize h_initialSize)
+    bucketsSet h (A.makeUninitialized h_initialSize)
   end
 
 let length0 h = size h

@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2018 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,35 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type 'a opt = 'a Js.undefined
+type 'c container =
+  private { 
+    mutable size: int;                        (* number of entries *)
+    mutable buckets: 'c opt array;  (* the buckets *)
+    
+  } [@@bs.deriving abstract]
 
+external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
+external return : 'a -> 'a opt = "%identity"
 
-(**/*)
-(**/*)
-module BagM = Bs_BagM
-module Bag = Bs_Bag
-module Cmp = Bs_Cmp
-module Hash = Bs_Hash
-module Array = Bs_Array
-module Queue = Bs_Queue
-module HashMap = Bs_HashMap
-module HashSet = Bs_HashSet
-module HashSetInt = Bs_HashSetInt
-module HashSetString = Bs_HashSetInt
-module HashMapString = Bs_HashMapString
-module HashMultiMap = Bs_HashMultiMap
-module HashMapInt = Bs_HashMapInt
-module Sort = Bs_Sort
-module SortInt = Bs_SortInt
-module SortString = Bs_SortString
-module Stack = Bs_Stack
-module Range = Bs_Range
-module Map = Bs_Map
-module Set = Bs_Set
-module SetM = Bs_SetM
-module MapInt = Bs_MapInt
-module MapString = Bs_MapString  
-module SetInt = Bs_SetInt
-module SetIntM = Bs_SetIntM
-module SetString = Bs_SetString
-module List = Bs_List
-
+val emptyOpt : 'a Js.undefined
+val create0 : int -> 'a container
+val clear0 : 'a container -> unit
+val reset0 : 'a container -> unit
+val length0 : 'a container -> int
+type statistics = {
+  num_bindings : int;
+  num_buckets : int;
+  max_bucket_length : int;
+  bucket_histogram : int array;
+}

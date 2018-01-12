@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2018 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,35 +22,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module C = Bs_internalBucketsType
+
+type 'a bucket = {
+  mutable key : 'a;
+  mutable next : 'a bucket C.opt
+}  
+and 'a t0 = 'a bucket C.container  
+[@@bs.deriving abstract]
 
 
-(**/*)
-(**/*)
-module BagM = Bs_BagM
-module Bag = Bs_Bag
-module Cmp = Bs_Cmp
-module Hash = Bs_Hash
-module Array = Bs_Array
-module Queue = Bs_Queue
-module HashMap = Bs_HashMap
-module HashSet = Bs_HashSet
-module HashSetInt = Bs_HashSetInt
-module HashSetString = Bs_HashSetInt
-module HashMapString = Bs_HashMapString
-module HashMultiMap = Bs_HashMultiMap
-module HashMapInt = Bs_HashMapInt
-module Sort = Bs_Sort
-module SortInt = Bs_SortInt
-module SortString = Bs_SortString
-module Stack = Bs_Stack
-module Range = Bs_Range
-module Map = Bs_Map
-module Set = Bs_Set
-module SetM = Bs_SetM
-module MapInt = Bs_MapInt
-module MapString = Bs_MapString  
-module SetInt = Bs_SetInt
-module SetIntM = Bs_SetIntM
-module SetString = Bs_SetString
-module List = Bs_List
+val iter0 : 'a bucket C.container -> ('a -> 'b [@bs]) -> unit
+val fillArray : int -> 'a array -> 'a bucket -> int
+val toArray0 : 'a bucket C.container -> 'a array
 
+val fold0 : 'a bucket C.container -> 'b -> ('a -> 'b -> 'b [@bs]) -> 'b
+val logStats0 : 'a bucket C.container -> unit
