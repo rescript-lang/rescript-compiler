@@ -104,4 +104,66 @@ let () =
   let ((cc,dd), _) = N.split d 1001 in   
   b __LOC__ (N.eq cc (N.ofArray (A.init 501 (fun[@bs] x -> x * 2))));
   b __LOC__ (N.eq dd (N.ofArray (A.init 500 (fun [@bs] x -> 1002 + x * 2))))
+
+
+let (++) = N.union
+let f = N.ofArray 
+let (=~) = N.eq 
+let () =   
+  let aa =  f (I.randomRange 0 100) in 
+  let bb = f  (I.randomRange 40 120) in
+  let cc = aa ++ bb in 
+  b __LOC__ (cc =~ f (I.randomRange 0 120));
+
+  b __LOC__ (N.eq 
+               ( N.union (f (I.randomRange 0 20))
+                   (f (I.randomRange 21 40) ))
+               (f( I.randomRange 0 40)));
+  let dd = N.inter aa bb in 
+  b __LOC__ (dd =~ f (I.randomRange 40 100));
+  b __LOC__ 
+    (N.inter 
+       (f @@ I.randomRange 0 20)
+       (f @@ I.randomRange 21 40)
+     =~ (N.empty ())
+    );
+  b __LOC__ 
+    (N.inter 
+       (f @@ I.randomRange 21 40)
+       (f @@ I.randomRange 0 20)      
+     =~ (N.empty ())
+    );  
+  b __LOC__  
+    (N.inter 
+       (f [|1;3;4;5;7;9|])
+       (f [|2;4;5;6;8;10|])
+     =~ (f [|4;5|])  
+    );
+  b __LOC__
+    (N.diff aa bb =~ f (I.randomRange 0 39));
+  b __LOC__   
+    (N.diff bb aa =~ f (I.randomRange 101 120));
+  b __LOC__ 
+    (N.diff
+       (f @@ I.randomRange 21 40)
+       (f @@ I.randomRange 0 20)      
+     =~ (f (I.randomRange 21 40))
+    );  
+  b __LOC__ 
+    (N.diff
+       (f @@ I.randomRange 0 20)
+       (f @@ I.randomRange 21 40)      
+     =~ (f (I.randomRange 0 20))
+    );    
+
+  b __LOC__ 
+    (N.diff
+       (f @@ I.randomRange 0 20)
+       (f @@ I.randomRange 0 40)      
+     =~ (f (I.randomRange 0 (-1)))
+    );      
+
+  
+
 ;; Mt.from_pair_suites __FILE__ !suites  
+
