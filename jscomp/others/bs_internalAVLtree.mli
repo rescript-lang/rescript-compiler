@@ -52,11 +52,10 @@ val empty0 : _ t0
 
 val isEmpty0 : _ t0 -> bool
 
-val minBinding0 : ('a,'b) t0 -> ('a * 'b) option
-
-val maxBinding0 : ('a,'b) t0 -> ('a * 'b) option
-val removeMinAux : ('a, 'b) node -> ('a,'b) t0
-val merge : ('a,'b) t0 -> ('a,'b) t0 -> ('a,'b) t0
+val minKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
+val minKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
+val maxKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
+val removeMinAuxWithRef : ('a, 'b) node -> 'a ref -> 'b ref -> ('a,'b) t0
 val iter0 : ('a -> 'b -> 'c [@bs]) -> ('a,'b) t0 -> unit
 val map0 : ('a -> 'b [@bs]) -> ('c, 'a) t0 -> ('c, 'b) t0
 val mapi0 :

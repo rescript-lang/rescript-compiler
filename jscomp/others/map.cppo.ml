@@ -19,8 +19,8 @@ type  'a t = (key,'a) N.t0
 let empty = N.empty0      
 let isEmpty = N.isEmpty0
 let singleton = N.singleton0
-let minBinding = N.minBinding0
-let maxBinding = N.maxBinding0
+let minBinding = N.minKVOpt0
+let maxBinding = N.maxKVOpt0
 let iter = N.iter0      
 let map  = N.map0
 let mapi = N.mapi0
@@ -84,7 +84,13 @@ let rec remove (x : key) n =
   |  Some n ->
     let l,v,r = N.(left n, key n, right n) in 
     if x = v then
-      N.merge l r
+      match N.toOpt l, N.toOpt r with
+      | None, _ -> r 
+      | _, None -> l 
+      | _, Some rn -> 
+        let kr, vr = ref (N.key rn), ref (N.value rn) in 
+        let r = N.removeMinAuxWithRef rn kr vr in 
+        N.bal l !kr !vr r 
     else if x < v then
       N.(bal (remove x l) v (value n) r)
     else

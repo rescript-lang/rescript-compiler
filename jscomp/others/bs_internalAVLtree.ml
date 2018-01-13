@@ -77,41 +77,50 @@ let empty0 = empty
 
 let isEmpty0 x = match toOpt x with None -> true | Some _ -> false
 
-let rec minBindingAux n =  
+let rec minKV0Aux n =  
   match toOpt (left n) with 
   | None -> key n , value n 
-  | Some n -> minBindingAux n 
+  | Some n -> minKV0Aux n 
 
-let rec minBinding0 n = 
+let minKVOpt0 n = 
   match toOpt n with 
     None -> None
-  | Some n -> Some (minBindingAux n)
+  | Some n -> Some (minKV0Aux n)
 
-let rec maxBindingAux n =   
+let minKVNull0 n = 
+  match toOpt n with 
+  | None -> Js.null
+  | Some n -> return (minKV0Aux n)
+
+let rec maxKV0Aux n =   
   match toOpt (right n) with 
   | None -> key n, value n 
-  | Some n -> maxBindingAux n 
+  | Some n -> maxKV0Aux n 
 
-let rec maxBinding0 n =
+let maxKVOpt0 n =
   match toOpt n with 
   | None -> None 
-  | Some n -> Some (maxBindingAux n)
+  | Some n -> Some (maxKV0Aux n)
+
+let maxKVNull0 n =   
+  match toOpt n with 
+  | None -> Js.null
+  | Some n -> return (maxKV0Aux n)
 
 (* only internal use for a non empty map*)  
-let rec removeMinAux n = 
+(* let rec removeMinAux n = 
   let ln, rn = left n , right n in 
   match toOpt ln with 
   | None -> rn
-  | Some ln -> bal (removeMinAux ln) (key n) (value n) rn 
+  | Some ln -> bal (removeMinAux ln) (key n) (value n) rn  *)
+
+let rec removeMinAuxWithRef n kr vr =   
+  let ln, rn, kn, vn = left n, right n, key n, value n in 
+  match toOpt ln with 
+  | None ->  kr := kn; vr := vn; rn 
+  | Some ln -> bal (removeMinAuxWithRef ln kr vr) kn vn rn
 
 
-let merge t1 t2 =
-  match (toOpt t1, toOpt t2) with
-    (None, _) -> t2
-  | (_, None) -> t1
-  | (_, Some t2n) ->
-    let (x, d) = minBindingAux t2n in
-    bal t1 x d (removeMinAux t2n)
 
 let rec iter0 f  n = 
   match toOpt n with 
@@ -126,10 +135,10 @@ let rec map0 f n =
     empty
   | Some n (* Node(l, v, d, r, h) *) ->
     let l, v, d, r, h = left n,  key n, value n, right n, h n  in 
-    let l' = map0 f l in
-    let d' = f d [@bs] in
-    let r' = map0 f r in
-    return @@ node ~left:l' ~key:v ~value:d' ~right:r' ~h
+    let newLeft = map0 f l in
+    let newD = f d [@bs] in
+    let newRight = map0 f r in
+    return @@ node ~left:newLeft ~key:v ~value:newD ~right:newRight ~h
 
 let rec mapi0 f n =
   match toOpt n with 
@@ -208,8 +217,11 @@ let concat t1 t2 =
     (None, _) -> t2
   | (_, None) -> t1
   | (_, Some t2n) ->
-    let (x, d) = minBindingAux t2n in
-    join t1 x d (removeMinAux t2n)
+    (* let (x, d) = minKV0Aux t2n in
+    join t1 x d (removeMinAux t2n) *)
+    let kr, vr = ref (key t2n), ref (value t2n) in 
+    let t2r = removeMinAuxWithRef t2n kr vr in 
+    join t1 !kr !vr t2r 
 
 let concat_or_join t1 v d t2 =
   match d with

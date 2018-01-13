@@ -138,10 +138,10 @@ let maxNull0 n =
   | Some n -> return (max0Aux n)
 
 let rec removeMinAuxWithRef n v = 
-  let rn, ln = right n, left n  in 
+  let ln, rn, kn = left n, right n, key n in 
   match toOpt ln with   
-  | None ->  v:= key n ; rn
-  | Some ln -> bal (removeMinAuxWithRef ln v) (key n) rn
+  | None ->  v:= kn ; rn
+  | Some ln -> bal (removeMinAuxWithRef ln v) kn rn
   
 
 

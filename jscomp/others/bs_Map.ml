@@ -25,8 +25,8 @@ type ('k,'v,'id) t =
 let empty0 = N.empty0      
 let isEmpty0 = N.isEmpty0
 let singleton0 = N.singleton0
-let minBinding0 = N.minBinding0
-let maxBinding0 = N.maxBinding0
+let minBinding0 = N.minKVOpt0
+let maxBinding0 = N.maxKVOpt0
 let iter0 = N.iter0      
 let map0  = N.map0
 let mapi0 = N.mapi0
@@ -100,7 +100,13 @@ let rec remove0 ~cmp x n =
     let l,v,r = N.(left n, key n, right n ) in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then
-      N.(merge l r)
+      match N.toOpt l, N.toOpt r with 
+      | None, _ -> r 
+      | _, None -> l 
+      | _, Some rn -> 
+        let kr, vr = ref (N.key rn), ref (N.value rn) in 
+        let r = N.removeMinAuxWithRef rn kr vr in 
+        N.bal l !kr !vr r
     else if c < 0 then
       N.(bal (remove0 ~cmp x l) v (value n) r)
     else
