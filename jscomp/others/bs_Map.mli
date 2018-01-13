@@ -12,7 +12,7 @@
 (***********************************************************************)
 (** Adapted by authors of BuckleScript without using functors          *)
 (** The type of the map keys. *)
-type ('k, + 'a, 'id) t0 
+type ('k,  'a, 'id) t0 
 (** [('k, 'a, id) t] 
     ['k] the key type 
     ['a] the value type

@@ -5,8 +5,9 @@ module N =
       compare x y
      )
   )
-
-let m0 = Bs.Map.empty (module N)   
+module M = Bs.Map
+module MI = Bs.MapInt
+let m0 : (_,string,_) M.t = M.empty (module N)   
 
 module I = Bs.Cmp.Make(
   struct 
@@ -26,8 +27,10 @@ module I2 = Bs.Cmp.Make(
   
 let m = Bs.Map.empty (module I)
 
-let m2 = Bs.Map.empty (module I2)
+let m2 : (int, string, _) M.t = M.empty (module I2)
 
+let vv = MI.empty 
+let vv2 = MI.empty
 module B = Bs.Bag
 (* let () = 
   Js.log (m = m2) *)

@@ -26,7 +26,7 @@
 
 type ('key, 'a) t0 = ('key, 'a) node Js.null
 
-and ('k, + 'v) node  = {
+and ('k,  'v) node  = {
   left : ('k,'v) t0;
   key : 'k; 
   value : 'v; 

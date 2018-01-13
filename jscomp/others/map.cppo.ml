@@ -10,7 +10,7 @@ module N = Bs_internalAVLtree
 
 type ('key, 'a, 'id) t0 = ('key,'a) N.t0 
 
-type + 'a t = (key,'a) N.t0 
+type  'a t = (key,'a) N.t0 
 
 
 

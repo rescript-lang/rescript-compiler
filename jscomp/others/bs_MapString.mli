@@ -1,7 +1,7 @@
 # 2 "map.cppo.mli"
 type key = string
 # 8
-type (+'a) t
+type 'a t
 (** The type of maps from type [key] to type ['a]. *)
 
 val empty: 'a t

@@ -13,12 +13,12 @@
 (** Almost rewritten  by authors of BuckleScript                       *)
 
 
-type ('k, + 'v) node  = {
-  left : ('k,'v) node Js.null;
-  key : 'k; 
-  value : 'v; 
-  right : ('k,'v) node Js.null;
-  h : int 
+type ('k, 'v) node  = {
+  mutable left : ('k,'v) node Js.null;
+  mutable key : 'k; 
+  mutable value : 'v; 
+  mutable right : ('k,'v) node Js.null;
+  mutable h : int 
 } [@@bs.deriving abstract]
 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
