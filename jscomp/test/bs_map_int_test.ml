@@ -20,7 +20,7 @@ let () =
   b __LOC__ (N.checkInvariant u);
   let firstHalf = Bs.Array.sub v 0 2_000 in 
   let xx = Bs.Array.foldLeft firstHalf u
-      (fun[@bs] acc (x,_) -> N.remove x acc)  in 
+      (fun[@bs] acc (x,_) -> N.remove acc x)  in 
   b __LOC__ (N.checkInvariant u);
 
 

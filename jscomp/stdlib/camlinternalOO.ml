@@ -189,15 +189,19 @@ let get_method_label table name =
     with
     | Some x -> x
     | None ->
+      let label = new_method table in
+      table.methods_by_name <- Meths.add  table.methods_by_name name label;
+      table.methods_by_label <- Labs.add  table.methods_by_label label true;
+      label
 #else    
   try
     Meths.find name table.methods_by_name
   with Not_found ->
-#end  
     let label = new_method table in
     table.methods_by_name <- Meths.add name label table.methods_by_name;
     table.methods_by_label <- Labs.add label true table.methods_by_label;
     label
+#end  
 
 let get_method_labels table names =
   Array.map (get_method_label table) names
@@ -227,22 +231,37 @@ let narrow table vars virt_meths concr_meths =
       table.vars, virt_meth_labs, vars)
      :: table.previous_states;
   table.vars <-
+#if BS then
+     Vars.fold table.vars Vars.empty
+      (fun[@bs] tvars lab info  ->
+        if List.mem lab vars then Vars.add tvars lab info  else tvars);      
+#else    
     Vars.fold
       (fun[@bs] lab info tvars ->
         if List.mem lab vars then Vars.add lab info tvars else tvars)
       table.vars Vars.empty;
+#end      
   let by_name = ref Meths.empty in
   let by_label = ref Labs.empty in
-  List.iter2
+#if BS then   
+  List.iter2 (fun met label -> 
+     by_name := Meths.add !by_name met label;
+     by_label :=
+          Labs.add !by_label label
+            (Labs.findWithDefault table.methods_by_label label true)            
+  ) concr_meths concr_meth_labs;
+  List.iter2 
+    (fun met label -> 
+      by_name := Meths.add !by_name met label;
+      by_label := Labs.add !by_label label false;
+    ) virt_meths virt_meth_labs;
+#else     
+ List.iter2
     (fun met label ->
        by_name := Meths.add met label !by_name;
        by_label :=
           Labs.add label
-#if BS then
-            (Labs.findWithDefault ~def:true label table.methods_by_label)
-#else    
             (try Labs.find label table.methods_by_label with Not_found -> true)
-#end            
             !by_label)
     concr_meths concr_meth_labs;
   List.iter2
@@ -250,6 +269,7 @@ let narrow table vars virt_meths concr_meths =
        by_name := Meths.add met label !by_name;
        by_label := Labs.add label false !by_label)
     virt_meths virt_meth_labs;
+#end
   table.methods_by_name <- !by_name;
   table.methods_by_label <- !by_label;
   table.hidden_meths <-
@@ -267,7 +287,7 @@ let widen table =
   table.vars <-
      List.fold_left
 #if BS then
-       (fun s v -> Vars.add v (Vars.findAssert v table.vars) s)
+       (fun s v -> Vars.add s v (Vars.findAssert v table.vars))
 #else    
        (fun s v -> Vars.add v (Vars.find v table.vars) s)
 #end       
@@ -291,13 +311,16 @@ let new_variable table name =
     match Vars.findOpt name table.vars with
     | Some x -> x
     | None ->
+      let index = new_slot table in
+      if name <> "" then table.vars <- Vars.add table.vars name index ;
+      index
 #else    
   try Vars.find name table.vars
   with Not_found ->
-#end  
     let index = new_slot table in
     if name <> "" then table.vars <- Vars.add name index table.vars;
     index
+#end  
 
 let to_array arr =
   if arr = Obj.magic 0 then [||] else arr
@@ -345,8 +368,14 @@ let create_table public_methods =
   Array.iteri
     (fun i met ->
       let lab = i*2+2 in
+#if BS then       
+      table.methods_by_name  <- Meths.add table.methods_by_name met lab ;
+      table.methods_by_label <- Labs.add table.methods_by_label lab true 
+#else       
       table.methods_by_name  <- Meths.add met lab table.methods_by_name;
-      table.methods_by_label <- Labs.add lab true table.methods_by_label)
+      table.methods_by_label <- Labs.add lab true table.methods_by_label
+#end
+    )
     public_methods;
   table
 

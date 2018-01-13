@@ -2,6 +2,7 @@
 
 var Bs_Map = require("../../lib/js/bs_Map.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
+var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Bs_internalAVLset = require("../../lib/js/bs_internalAVLset.js");
 var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
@@ -40,7 +41,7 @@ m2.dict;
 var m_dict = m.dict;
 
 for(var i = 0; i <= 100000; ++i){
-  data = Bs_Map.add0(m_dict[/* cmp */0], i, i, data);
+  data = Bs_Map.add0(data, i, i, m_dict[/* cmp */0]);
 }
 
 var newm = {
@@ -50,7 +51,7 @@ var newm = {
 
 console.log(newm);
 
-var m11 = Bs_Map.add0(cmp, 1, 1, Bs_Map.empty0);
+var m11 = Bs_Map.add0(Bs_Map.empty0, 1, 1, cmp);
 
 console.log(m11);
 
@@ -71,16 +72,28 @@ for(var i$1 = 0; i$1 <= 100000; ++i$1){
 
 console.log(data$1);
 
+var M = 0;
+
+var MI = 0;
+
+var vv = Bs_MapInt.empty;
+
+var vv2 = Bs_MapInt.empty;
+
 var B = 0;
 
 var ISet = 0;
 
 exports.N = N;
+exports.M = M;
+exports.MI = MI;
 exports.m0 = m0;
 exports.I = I;
 exports.I2 = I2;
 exports.m = m;
 exports.m2 = m2;
+exports.vv = vv;
+exports.vv2 = vv2;
 exports.B = B;
 exports.ISet = ISet;
 /* data Not a pure module */

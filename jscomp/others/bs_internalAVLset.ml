@@ -1,4 +1,29 @@
 
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
 type 'elt node  = {
   mutable left : 'elt node Js.null;
   mutable key : 'elt ; 
@@ -41,6 +66,8 @@ let create (l : _ t0) v (r : _ t0) =
   let hr = match toOpt r with None -> 0 | Some n -> h n in
   return @@ node ~left:l ~key:v ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
+let singleton0 x = return @@ node ~left:empty ~key:x ~right:empty ~h:1  
+
 let heightGe l r = 
   match toOpt l, toOpt r with 
   | _ , None -> true 
@@ -77,7 +104,7 @@ let bal l v r =
   end else
     return @@ node ~left:l ~key:v ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
-let singleton0 x = return @@ node ~left:empty ~key:x ~right:empty ~h:1
+
 
 
 let rec min0Aux n = 
@@ -111,10 +138,10 @@ let maxNull0 n =
   | Some n -> return (max0Aux n)
 
 let rec removeMinAuxWithRef n v = 
-  let rn, ln = right n, left n  in 
+  let ln, rn, kn = left n, right n, key n in 
   match toOpt ln with   
-  | None ->  v:= key n ; rn
-  | Some ln -> bal (removeMinAuxWithRef ln v) (key n) rn
+  | None ->  v:= kn ; rn
+  | Some ln -> bal (removeMinAuxWithRef ln v) kn rn
   
 
 
@@ -216,13 +243,13 @@ let rec partitionShared0  n p =
   match toOpt n with 
   |  None -> (empty, empty)
   | Some n  ->
-    let l,v,r = left n, key n, right n in 
-    let (lt, lf) = partitionShared0 l p in    
-    let pv = p v [@bs] in
-    let (rt, rf) = partitionShared0 r p in
+    let key = key n in 
+    let (lt, lf) = partitionShared0 (left n) p in    
+    let pv = p key [@bs] in
+    let (rt, rf) = partitionShared0 (right n) p in
     if pv
-    then (joinShared lt v rt, concatShared lf rf)
-    else (concatShared lt rt, joinShared lf v rf)
+    then (joinShared lt key rt, concatShared lf rf)
+    else (concatShared lt rt, joinShared lf key rf)
 
 let rec lengthNode n = 
   let l, r = left n, right n in  
@@ -246,11 +273,10 @@ let rec length0 n =
 let rec toListAux accu n = 
   match toOpt n with 
   | None -> accu
-  | Some n  ->
-    let l,k,r = left n, key n, right n in 
+  | Some n  ->    
     toListAux 
-      (k :: toListAux accu r)
-      l
+      ((key n) :: toListAux accu (right n))
+      (left n)
 
 let toList0 s =
   toListAux [] s
@@ -382,7 +408,9 @@ let rec ofSortedArrayAux arr off len =
       ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left mid right    
 
-
+let ofSortedArrayUnsafe0 arr =     
+  ofSortedArrayAux arr 0 (A.length arr)
+  
 let rec filterShared0 n p =
   match toOpt n with 
   | None -> empty
@@ -612,5 +640,3 @@ let rec removeMinAuxWithRootMutate nt n =
     return (balMutate n)    
 
 
-let ofSortedArrayUnsafe0 arr =     
-  ofSortedArrayAux arr 0 (A.length arr)

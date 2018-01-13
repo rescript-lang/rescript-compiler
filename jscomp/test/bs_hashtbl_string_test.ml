@@ -89,8 +89,8 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
   let cmp = String.cmp in 
   let table = ref (B.data empty) in 
   for i  = 0 to  count do  
-    table := Bs.Map.add0 ~cmp
-        (string_of_int i) i !table
+    table := Bs.Map.add0 ~cmp !table
+        (string_of_int i) i 
   done ;
   for i = 0 to count do 
     assert (Bs.Map.mem0 ~cmp
@@ -98,7 +98,7 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
               (string_of_int i) !table)
   done; 
   for i = 0 to count do  
-    table := Bs.Map.remove0 ~cmp (string_of_int i) !table
+    table := Bs.Map.remove0 ~cmp !table (string_of_int i) 
   done ;
   assert (Bs.Map.length0 !table = 0)
 

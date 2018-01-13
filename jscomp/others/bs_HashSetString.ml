@@ -9,6 +9,7 @@ let hash (s : key) =
 # 19
 module N = Bs_internalSetBuckets
 module C = Bs_internalBucketsType
+module A = Bs_Array
 type t = key N.t0 
 
 let rec insert_bucket  ~h_buckets ~ndata_tail h old_bucket = 
@@ -32,8 +33,8 @@ let resize  h =
   let osize = Array.length odata in
   let nsize = osize * 2 in
   if nsize >= osize then begin (* no overflow *)
-    let h_buckets = C.makeSize nsize  in
-    let ndata_tail = C.makeSize nsize  in (* keep track of tail *)
+    let h_buckets = A.makeUninitialized nsize  in
+    let ndata_tail = A.makeUninitialized nsize  in (* keep track of tail *)
     C.bucketsSet h  h_buckets;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
       insert_bucket  ~h_buckets ~ndata_tail h (Bs_Array.unsafe_get odata i)
