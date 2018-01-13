@@ -45,14 +45,14 @@ let () =
   (* let vcmp = Bs.Cmp.getCmp  M.cmp in  *)
   for i = 0 to count do 
     data := 
-      Bs.Map.add0 
+      Bs.Map.add0 !data 
       ~cmp:  M.cmp
       
       (* M.cmp *)
       (* (fun[@bs] x y -> compare x y) *)
      
 
-      i i !data 
+      i i 
   done ;
   let newm = B.bag ~data:!data ~dict:m_dict in 
   Js.log newm
@@ -60,8 +60,8 @@ let () =
 let () =     
   let  m = Bs.Map.empty0 in 
   let m11 = 
-    Bs.Map.add0 ~cmp:I.cmp
-    1 1 m 
+    Bs.Map.add0 ~cmp:I.cmp m
+    1 1 
   in  
   (* let m2 = 
     Bs.Map.add0 ~cmp:I2.cmp 1 3 m1 in *)

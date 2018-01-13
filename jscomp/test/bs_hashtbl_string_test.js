@@ -146,10 +146,10 @@ function bench3(m) {
   var cmp = m[/* cmp */0];
   var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
-    table = Bs_Map.add0(cmp, "" + i, i, table);
+    table = Bs_Map.add0(table, "" + i, i, cmp);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_Map.mem0(cmp, "" + i$1, table)) {
+    if (!Bs_Map.mem0("" + i$1, table, cmp)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -162,7 +162,7 @@ function bench3(m) {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    table = Bs_Map.remove0(cmp, "" + i$2, table);
+    table = Bs_Map.remove0(table, "" + i$2, cmp);
   }
   if (Bs_Map.length0(table)) {
     throw [

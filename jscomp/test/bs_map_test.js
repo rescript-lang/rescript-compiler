@@ -41,7 +41,7 @@ m2.dict;
 var m_dict = m.dict;
 
 for(var i = 0; i <= 100000; ++i){
-  data = Bs_Map.add0(m_dict[/* cmp */0], i, i, data);
+  data = Bs_Map.add0(data, i, i, m_dict[/* cmp */0]);
 }
 
 var newm = {
@@ -51,7 +51,7 @@ var newm = {
 
 console.log(newm);
 
-var m11 = Bs_Map.add0(cmp, 1, 1, Bs_Map.empty0);
+var m11 = Bs_Map.add0(Bs_Map.empty0, 1, 1, cmp);
 
 console.log(m11);
 
