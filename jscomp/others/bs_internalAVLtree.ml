@@ -20,11 +20,11 @@ type ('k, 'v) node  = {
   mutable right : ('k,'v) node Js.null;
   mutable h : int 
 } [@@bs.deriving abstract]
-
+module A = Bs_Array 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null" 
-
+external unsafeCoerce : 'a Js.null -> 'a = "%identity"
 type ('key, 'a) t0 = ('key, 'a) node Js.null
 
 
@@ -32,6 +32,13 @@ let height (n : _ t0) =
   match toOpt n with 
     None -> 0
   | Some n -> h n 
+
+let rec copy n =   
+  match toOpt n with 
+  | None -> n 
+  | Some n -> 
+    let l,r = left n, right n in
+    return @@ node ~left:(copy l) ~right:(copy r) ~value:(value n) ~key:(key n) ~h:(h n)
 
 let create l x d r =
   let hl, hr  = height l,  height r in
@@ -44,33 +51,25 @@ let bal l x d r =
   let hl = match toOpt l with None -> 0 | Some n -> h n in
   let hr = match toOpt r with None -> 0 | Some n -> h n in
   if hl > hr + 2 then begin
-    match toOpt l with
-      None -> assert false
-    | Some n (* Node(ll, lv, ld, lr, _) *) ->
-      let ll,lv,ld,lr = left n, key n, value n, right n in  
-      if height ll >= height lr then
-        create ll lv ld (create lr x d r)
-      else begin
-        match toOpt lr with
-          None -> assert false
-        | Some n (* Node(lrl, lrv, lrd, lrr, _) *) ->
-          let lrl, lrv, lrd,lrr = left n, key n, value n, right n in 
-          create (create ll lv ld lrl) lrv lrd (create lrr x d r)
-      end
+    let n = unsafeCoerce l in  
+    let ll,lv,ld,lr = left n, key n, value n, right n in  
+    if height ll >= height lr then
+      create ll lv ld (create lr x d r)
+    else begin
+      let n = unsafeCoerce lr in 
+      let lrl, lrv, lrd,lrr = left n, key n, value n, right n in 
+      create (create ll lv ld lrl) lrv lrd (create lrr x d r)
+    end
   end else if hr > hl + 2 then begin
-    match toOpt r with
-      None -> assert false
-    | Some n (* Node(rl, rv, rd, rr, _) *) ->
-      let rl, rv, rd, rr = left n, key n, value n, right n in  
-      if height rr >= height rl then
-        create (create l x d rl) rv rd rr
-      else begin
-        match toOpt rl with
-          None -> assert false
-        | Some n (* Node(rll, rlv, rld, rlr, _) *)  ->
-          let rll, rlv,rld,rlr = left n, key n, value n, right n in 
-          create (create l x d rll) rlv rld (create rlr rv rd rr)
-      end
+    let n = unsafeCoerce r in 
+    let rl, rv, rd, rr = left n, key n, value n, right n in  
+    if height rr >= height rl then
+      create (create l x d rl) rv rd rr
+    else begin
+      let n = unsafeCoerce rl in 
+      let rll, rlv,rld,rlr = left n, key n, value n, right n in 
+      create (create l x d rll) rlv rld (create rlr rv rd rr)
+    end
   end else
     return @@ node ~left:l ~key:x ~value:d ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
