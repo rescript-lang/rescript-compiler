@@ -56,13 +56,14 @@ val minKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
 val minKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
 val maxKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
 val removeMinAuxWithRef : ('a, 'b) node -> 'a ref -> 'b ref -> ('a,'b) t0
-val iter0 : ('a -> 'b -> 'c [@bs]) -> ('a,'b) t0 -> unit
-val map0 : ('a -> 'b [@bs]) -> ('c, 'a) t0 -> ('c, 'b) t0
+
+val iter0 :  ('a,'b) t0 -> ('a -> 'b -> unit [@bs]) -> unit
+val map0 :  ('c, 'a) t0 -> ('a -> 'b [@bs]) -> ('c, 'b) t0
 val mapi0 :
-  ('a -> 'b -> 'c [@bs]) -> ('a,'b) t0 -> ('a, 'c) t0
-val fold0 : ('a -> 'b -> 'c -> 'c [@bs]) -> ('a,'b) t0 -> 'c -> 'c
-val forAll0 : ('a -> 'b -> bool [@bs]) -> ('a,'b) t0 -> bool
-val exists0 : ('a -> 'b -> bool [@bs]) -> ('a,'b) t0 -> bool
+   ('a,'b) t0 -> ('a -> 'b -> 'c [@bs]) -> ('a, 'c) t0
+val fold0 : ('a,'b) t0 -> 'c -> ( 'c -> 'a -> 'b -> 'c [@bs]) ->  'c
+val forAll0 :  ('a,'b) t0 -> ('a -> 'b -> bool [@bs]) -> bool
+val exists0 :  ('a,'b) t0 -> ('a -> 'b -> bool [@bs]) -> bool
 
 val join : ('a,'b) t0 -> 'a -> 'b -> ('a,'b) t0 -> ('a, 'b) t0
 

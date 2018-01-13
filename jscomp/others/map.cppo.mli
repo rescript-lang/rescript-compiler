@@ -53,24 +53,24 @@ val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
    equal data.  [cmp] is the equality predicate used to compare
    the data associated with the keys. *)
 
-val iter: (key -> 'a -> unit [@bs]) -> 'a t -> unit
+val iter: 'a t -> (key -> 'a -> unit [@bs]) ->  unit
 (** [iter f m] applies [f] to all bindings in map [m].
    [f] receives the key as first argument, and the associated value
    as second argument.  The bindings are passed to [f] in increasing
    order with respect to the ordering over the type of the keys. *)
 
-val fold: (key -> 'a -> 'b -> 'b [@bs]) -> 'a t -> 'b -> 'b
+val fold:  'a t -> 'b -> ('b -> key -> 'a -> 'b [@bs]) -> 'b
 (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
    where [k1 ... kN] are the keys of all bindings in [m]
    (in increasing order), and [d1 ... dN] are the associated data. *)
 
-val forAll: (key -> 'a -> bool [@bs]) -> 'a t -> bool
+val forAll:  'a t -> (key -> 'a -> bool [@bs]) -> bool
 (** [for_all p m] checks if all the bindings of the map
     satisfy the predicate [p].
     @since 3.12.0
  *)
 
-val exists: (key -> 'a -> bool [@bs]) -> 'a t -> bool
+val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
 (** [exists p m] checks if at least one binding of the map
     satisfy the predicate [p].
     @since 3.12.0
@@ -136,14 +136,14 @@ val findAssert: key -> 'a t -> 'a
   
 val findWithDefault: def:'a -> key -> 'a t -> 'a
 
-val map: ('a -> 'b [@bs]) -> 'a t -> 'b t
-(** [map f m] returns a map with same domain as [m], where the
+val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
+(** [map m f] returns a map with same domain as [m], where the
    associated value [a] of all bindings of [m] has been
    replaced by the result of the application of [f] to [a].
    The bindings are passed to [f] in increasing order
    with respect to the ordering over the type of the keys. *)
 
-val mapi: (key -> 'a -> 'b [@bs]) -> 'a t -> 'b t
+val mapi: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
 (** Same as {!Map.S.map}, but the function receives as arguments both the
    key and the associated value for each binding of the map. *)
 

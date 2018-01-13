@@ -73,9 +73,6 @@ let bal l x d r =
   end else
     return @@ node ~left:l ~key:x ~value:d ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
-let empty0 = empty
-
-let isEmpty0 x = match toOpt x with None -> true | Some _ -> false
 
 let rec minKV0Aux n =  
   match toOpt (left n) with 
@@ -107,12 +104,6 @@ let maxKVNull0 n =
   | None -> Js.null
   | Some n -> return (maxKV0Aux n)
 
-(* only internal use for a non empty map*)  
-(* let rec removeMinAux n = 
-  let ln, rn = left n , right n in 
-  match toOpt ln with 
-  | None -> rn
-  | Some ln -> bal (removeMinAux ln) (key n) (value n) rn  *)
 
 let rec removeMinAuxWithRef n kr vr =   
   let ln, rn, kn, vn = left n, right n, key n, value n in 
@@ -120,57 +111,66 @@ let rec removeMinAuxWithRef n kr vr =
   | None ->  kr := kn; vr := vn; rn 
   | Some ln -> bal (removeMinAuxWithRef ln kr vr) kn vn rn
 
+let empty0 = empty
 
+let isEmpty0 x = match toOpt x with None -> true | Some _ -> false
 
-let rec iter0 f  n = 
+let rec stackAllLeft v s = 
+  match toOpt v with 
+  | None -> s 
+  | Some x -> stackAllLeft (left x) (x::s)    
+
+let rec iter0 n f = 
   match toOpt n with 
   | None -> () 
-  | Some n -> (* Node(l, v, d, r, _) *)
-    let l, v, d, r = left n, key n, value n, right n in   
-    iter0 f l; f v d [@bs]; iter0 f r
+  | Some n -> 
+    iter0 (left n) f ; f (key n) (value n) [@bs]; iter0 (right n) f
 
-let rec map0 f n = 
+let rec map0 n f = 
   match toOpt n with
     None  ->
     empty
-  | Some n (* Node(l, v, d, r, h) *) ->
-    let l, v, d, r, h = left n,  key n, value n, right n, h n  in 
-    let newLeft = map0 f l in
-    let newD = f d [@bs] in
-    let newRight = map0 f r in
-    return @@ node ~left:newLeft ~key:v ~value:newD ~right:newRight ~h
+  | Some n  ->
+    let newLeft = map0 (left n) f in
+    let newD = f (value n) [@bs] in
+    let newRight = map0 (right n) f in
+    return @@ node ~left:newLeft ~key:(key n) ~value:newD ~right:newRight ~h:(h n)
 
-let rec mapi0 f n =
+let rec mapi0 n f =
   match toOpt n with 
     None ->
     empty
-  | Some n (* Node(l, v, d, r, h) *) ->
-    let l, v, d, r, h = left n,  key n, value n, right n, h n  in 
-    let l' = mapi0 f l in
-    let d' = f v d [@bs] in
-    let r' = mapi0 f r in
-    return @@ node ~left:l' ~key:v ~value:d' ~right:r' ~h
+  | Some n ->
+    let key = key n in 
+    let newLeft = mapi0 (left n) f in
+    let newD = f key (value n) [@bs] in
+    let newRight = mapi0 (right n) f in
+    return @@ node ~left:newLeft ~key ~value:newD ~right:newRight ~h:(h n)
 
-let rec fold0 f m accu =
+let rec fold0 m accu f =
   match toOpt m with
     None -> accu
-  | Some n (* Node(l, v, d, r, _) *) ->
+  | Some n  ->
     let l, v, d, r = left n,  key n, value n, right n in 
-    fold0 f r (f v d (fold0 f l accu) [@bs])
+    fold0
+       r 
+      (f (fold0 l accu f) v d [@bs]) f
 
-let rec forAll0 p n =
+let rec forAll0  n p =
   match toOpt n with 
     None -> true
-  | Some n (* Node(l, v, d, r, _) *) ->
-    let l, v, d, r = left n,  key n, value n, right n in 
-    p v d [@bs] && forAll0 p l && forAll0 p r
+  | Some n  ->    
+    p (key n) (value n) [@bs] && 
+    forAll0 (left n) p && 
+    forAll0 (right n) p
 
-let rec exists0 p n = 
+let rec exists0 n p = 
   match toOpt n with 
     None -> false
-  | Some n (* Node(l, v, d, r, _) *) ->
-    let l, v, d, r = left n,  key n, value n, right n  in 
-    p v d [@bs] || exists0 p l || exists0 p r
+  | Some n  ->
+    p (key n) (value n) [@bs] || 
+    exists0 (left n) p || 
+    exists0 (right n) p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -251,11 +251,6 @@ let rec partition0 p n =
     if pvd
     then (join lt v d rt, concat lf rf)
     else (concat lt rt, join lf v d rf)  
-
-let rec stackAllLeft v s = 
-  match toOpt v with 
-  | None -> s 
-  | Some x -> stackAllLeft (left x) (x::s)    
 
 
 let rec lengthAux n = 

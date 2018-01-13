@@ -213,14 +213,14 @@ let singleton dict k v =
     ~data:(singleton0 k v)
 
 
-let iter f map = 
-  iter0 f (B.data map)
-let fold f map acc = 
-  fold0 f (B.data map) acc   
-let forAll f map = 
-  forAll0 f (B.data map)   
-let exists f map =   
-  exists0 f (B.data map) 
+let iter map f = 
+  iter0 (B.data map) f
+let fold map acc f = 
+  fold0 (B.data map) acc f  
+let forAll map f = 
+  forAll0 (B.data map) f  
+let exists map f =   
+  exists0 (B.data map) f
 
 let filter f map = 
   let dict, map = B.(dict map, data map) in 
@@ -242,14 +242,14 @@ let minBinding map =
 let maxBinding map =
   maxBinding0 (B.data map)   
 
-let map f map = 
-  let dict, map = B.(dict map, data map) in 
-  B.bag ~dict ~data:(map0 f map)
+let map m f = 
+  let dict, map = B.(dict m, data m) in 
+  B.bag ~dict ~data:(map0 map f)
 
 
-let mapi f map  = 
+let mapi map  f = 
   let dict,map = B.(dict map, data map) in 
-  B.bag ~dict ~data:(mapi0 f map )
+  B.bag ~dict ~data:(mapi0 map f)
 
 
 

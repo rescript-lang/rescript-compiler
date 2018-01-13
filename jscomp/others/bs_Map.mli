@@ -128,28 +128,28 @@ val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
     equal data.  [cmp] is the equality predicate used to compare
     the data associated with the keys. *)
 
-val iter0: ('k -> 'a -> unit [@bs]) -> ('k, 'a, 'id) t0 -> unit   
-val iter: ('k -> 'a -> unit [@bs]) -> ('k, 'a, 'id) t -> unit
+val iter0:  ('k, 'a, 'id) t0 -> ('k -> 'a -> unit [@bs]) -> unit   
+val iter:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
 (** [iter f m] applies [f] to all bindings in map [m].
     [f] receives the 'k as first argument, and the associated value
     as second argument.  The bindings are passed to [f] in increasing
     order with respect to the ordering over the type of the keys. *)
 
-val fold0: ('k -> 'a -> 'b -> 'b [@bs]) -> ('k, 'a, 'id) t0 -> 'b -> 'b
-val fold: ('k -> 'a -> 'b -> 'b [@bs]) -> ('k, 'a, 'id) t -> 'b -> 'b
+val fold0: ('k, 'a, 'id) t0 -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
+val fold: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
 (** [fold f m a] computes [(f kN dN ... (f k1 d1 a)...)],
     where [k1 ... kN] are the keys of all bindings in [m]
     (in increasing order), and [d1 ... dN] are the associated data. *)
 
-val forAll0: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> bool
-val forAll: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> bool
+val forAll0: ('k, 'a, 'id) t0 ->  ('k -> 'a -> bool [@bs]) -> bool
+val forAll: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 (** [for_all p m] checks if all the bindings of the map
     satisfy the predicate [p].
     @since 3.12.0
 *)
 
-val exists0: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> bool
-val exists: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> bool
+val exists0: ('k, 'a, 'id) t0 -> ('k -> 'a -> bool [@bs]) ->  bool
+val exists: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 (** [exists p m] checks if at least one binding of the map
     satisfy the predicate [p].
     @since 3.12.0
@@ -239,16 +239,16 @@ val findWithDefault:
   'k -> ('k, 'a, 'id) t -> 'a 
 
 
-val map0: ('a -> 'b [@bs]) -> ('k, 'a, 'id) t0 -> ('k ,'b,'id ) t0    
-val map: ('a -> 'b [@bs]) -> ('k, 'a, 'id) t -> ('k ,'b,'id ) t
+val map0: ('k, 'a, 'id) t0 -> ('a -> 'b [@bs]) -> ('k ,'b,'id ) t0    
+val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 (** [map f m] returns a map with same domain as [m], where the
     associated value [a] of all bindings of [m] has been
     replaced by the result of the application of [f] to [a].
     The bindings are passed to [f] in increasing order
     with respect to the ordering over the type of the keys. *)
 
-val mapi0: ('k -> 'a -> 'b [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'b, 'id) t0    
-val mapi: ('k -> 'a -> 'b [@bs]) -> ('k, 'a, 'id) t -> ('k, 'b, 'id) t
+val mapi0: ('k, 'a, 'id) t0 -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t0    
+val mapi: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
 (** Same as {!Map.S.map}, but the function receives as arguments both the
     'k and the associated value for each binding of the map. *)
 
