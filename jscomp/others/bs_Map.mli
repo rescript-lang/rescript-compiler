@@ -13,7 +13,7 @@
 (** Adapted by authors of BuckleScript without using functors          *)
 (** The type of the map keys. *)
 type ('k,  'a, 'id) t0 
-(** [('k, 'a, id) t] 
+(** 
     ['k] the key type 
     ['a] the value type
     ['id] is a unique type for each keyed module
@@ -23,6 +23,7 @@ type ('k,  'a, 'id) t0
 type ('k,'v,'id) t = 
   (('k,'id) Bs_Cmp.t,
    ('k,'v, 'id) t0 ) Bs_Bag.bag
+(** The data associated with a comparison function *)   
 
 (*
     How we remain soundness:
@@ -128,22 +129,13 @@ val length: ('k, 'a, 'id) t -> int
 
 
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
-(** Return the list of all bindings of the given map.
-    The returned list is sorted in increasing order with respect
-    to the ordering [Ord.compare], where [Ord] is the argument
-    given to {!Map.Make}.
-*)
+(** In increasing order*)
+val toArray : ('k, 'a, 'id) t -> ('k * 'a) array
 
-val minBinding: ('k, 'a, 'id) t -> ('k * 'a) option
-(** Return the smallest binding of the given map
-    (with respect to the [Ord.compare] ordering), or raise
-    [Not_found] if the map is empty.
-*)
-
-val maxBinding: ('k, 'a, 'id) t -> ('k * 'a) option
-(** Same as {!Map.S.min_binding}, but returns the largest binding
-    of the given map.
-*)
+val minKVOpt: ('k, 'a,  _) t -> ('k * 'a) option
+val minKVNull: ('k, 'a, _) t -> ('k * 'a) Js.null
+val maxKVOpt: ('k, 'a, _) t -> ('k * 'a) option
+val maxKVNull:('k, 'a, _) t -> ('k * 'a) Js.null
 
 val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t
 (** [split x m] returns a triple [(l, data, r)], where

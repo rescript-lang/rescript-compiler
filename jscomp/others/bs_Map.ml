@@ -237,11 +237,13 @@ let length map =
 
 let toList map = 
   toList0 (B.data map) 
-
-let minBinding map = 
-  minBinding0 (B.data map) 
-let maxBinding map =
-  maxBinding0 (B.data map)   
+let toArray m = 
+  N.toArray0 (B.data m)
+let minKVOpt m = N.minKVOpt0 (B.data m)
+let minKVNull m = N.minKVNull0 (B.data m) 
+let maxKVOpt m = N.maxKVOpt0 (B.data m)
+let maxKVNull m = N.maxKVNull0 (B.data m)
+  
 
 let map m f = 
   let dict, map = B.(dict m, data m) in 

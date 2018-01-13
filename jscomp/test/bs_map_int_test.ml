@@ -12,10 +12,10 @@ let b loc v  =
      (fun _ -> Mt.Ok v)) :: !suites
 
 module N = Bs.MapInt
-
+module A = Bs.Array
 let () = 
-  let v = Bs.Array.init 1_000_000 (fun[@bs] i -> (i,i)) in 
-  Bs.Array.shuffleInPlace v ; 
+  let v = 
+      A.shuffle (A.init 1_000_000 (fun[@bs] i -> (i,i))) in 
   let u = N.ofArray v in   
   b __LOC__ (N.checkInvariant u);
   let firstHalf = Bs.Array.sub v 0 2_000 in 

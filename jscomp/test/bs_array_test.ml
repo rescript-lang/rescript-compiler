@@ -59,7 +59,7 @@ let add = fun [@bs] x y -> x + y
 let () = 
   let v = Bs.Array.init 3000 (fun[@bs] i -> i) in 
   let u = Bs.Array.copy v  in 
-  Bs.Array.shuffleInPlace u ; 
+  Bs.Array.shuffleOnly u ; 
   neq __LOC__ u  v (* unlikely*);
   let sum x = Bs.Array.foldLeft x 0 add in 
   eq __LOC__ ( sum u) (sum v)
