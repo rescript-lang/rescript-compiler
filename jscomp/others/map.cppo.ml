@@ -30,7 +30,7 @@ let exists = N.exists0
 let filter = N.filter0
 let partition = N.partition0
 let length = N.length0
-let bindings = N.bindings0  
+let toList = N.toList0
 let checkInvariant = N.checkInvariant
 
 let rec add  (x : key) (data : _) t = 
@@ -127,11 +127,11 @@ let rec merge f s1 s2 =
   | Some n (* (Node (l1, v1, d1, r1, h1), _)*), _ when N.(h n >= height s2) ->
     let (l1,v1,d1,r1) = N.(left n, key n, value n, right n ) in 
     let (l2, d2, r2) = split v1 s2 in
-    N.concat_or_join (merge f l1 l2) v1 (f v1 (Some d1) d2 [@bs]) (merge f r1 r2)
+    N.concatOrJoin (merge f l1 l2) v1 (f v1 (Some d1) d2 [@bs]) (merge f r1 r2)
   | (_, Some n) (* Node (l2, v2, d2, r2, h2) *)  ->
     let (l2, v2, d2, r2) = N.(left n, key n, value n, right n) in 
     let (l1, d1, r1) = split v2 s1 in
-    N.concat_or_join (merge f l1 l2) v2 (f v2 d1 (Some d2) [@bs]) (merge f r1 r2)
+    N.concatOrJoin (merge f l1 l2) v2 (f v2 d1 (Some d2) [@bs]) (merge f r1 r2)
   | _ ->
     assert false
 

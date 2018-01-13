@@ -243,13 +243,13 @@ let rec partitionShared0  n p =
   match toOpt n with 
   |  None -> (empty, empty)
   | Some n  ->
-    let l,v,r = left n, key n, right n in 
-    let (lt, lf) = partitionShared0 l p in    
-    let pv = p v [@bs] in
-    let (rt, rf) = partitionShared0 r p in
+    let key = key n in 
+    let (lt, lf) = partitionShared0 (left n) p in    
+    let pv = p key [@bs] in
+    let (rt, rf) = partitionShared0 (right n) p in
     if pv
-    then (joinShared lt v rt, concatShared lf rf)
-    else (concatShared lt rt, joinShared lf v rf)
+    then (joinShared lt key rt, concatShared lf rf)
+    else (concatShared lt rt, joinShared lf key rf)
 
 let rec lengthNode n = 
   let l, r = left n, right n in  
@@ -273,11 +273,10 @@ let rec length0 n =
 let rec toListAux accu n = 
   match toOpt n with 
   | None -> accu
-  | Some n  ->
-    let l,k,r = left n, key n, right n in 
+  | Some n  ->    
     toListAux 
-      (k :: toListAux accu r)
-      l
+      ((key n) :: toListAux accu (right n))
+      (left n)
 
 let toList0 s =
   toListAux [] s

@@ -180,28 +180,28 @@ let rec exists0 n p =
    respects this precondition.
 *)
 
-let rec add_minBinding k v n = 
+let rec addMinElement n k v  = 
   match toOpt n with
   | None -> singleton0 k v
-  | Some n (* Node (l, x, d, r, h) *) ->
-    let l, x, d, r = left n,  key n, value n, right n  in 
-    bal (add_minBinding k v l) x d r
+  | Some n  
+    ->
+    bal (addMinElement (left n) k v ) (key n) (value n) (right n)
 
-let rec add_maxBinding k v n = 
+let rec addMaxElement n k v  = 
   match toOpt n with 
   | None -> singleton0 k v
-  | Some n (* Node (l, x, d, r, h) *) ->
-    let l, x, d, r = left n,  key n, value n, right n in 
-    bal l x d (add_maxBinding k v r)
+  | Some n 
+    ->      
+    bal (left n) (key n) (value n) (addMaxElement (right n) k v )
 
 (* Same as create and bal, but no assumptions are made on the
    relative heights of l and r. *)
 
 let rec join ln v d rn =
   match (toOpt ln, toOpt rn) with
-    (None, _) -> add_minBinding v d rn (* could be inlined *)
-  | (_, None) -> add_maxBinding v d ln (* could be inlined *)
-  | Some l, Some r (* (Node(ll, lv, ld, lr, lh), Node(rl, rv, rd, rr, rh)) *) ->
+    (None, _) -> addMinElement rn v d  
+  | (_, None) -> addMaxElement ln v d  
+  | Some l, Some r  ->
     let (ll, lv, ld, lr, lh) = left l, key l, value l, right l, h l in 
     let (rl, rv, rd, rr, rh) = left r, key r, value r, right r, h r in  
     if lh > rh + 2 then bal ll lv ld (join lr v d rn) else
@@ -217,13 +217,11 @@ let concat t1 t2 =
     (None, _) -> t2
   | (_, None) -> t1
   | (_, Some t2n) ->
-    (* let (x, d) = minKV0Aux t2n in
-    join t1 x d (removeMinAux t2n) *)
     let kr, vr = ref (key t2n), ref (value t2n) in 
     let t2r = removeMinAuxWithRef t2n kr vr in 
     join t1 !kr !vr t2r 
 
-let concat_or_join t1 v d t2 =
+let concatOrJoin t1 v d t2 =
   match d with
   | Some d -> join t1 v d t2
   | None -> concat t1 t2    
@@ -231,56 +229,55 @@ let concat_or_join t1 v d t2 =
 let rec filter0 p n = 
   match toOpt n with 
     None -> n
-  | Some n (* Node(l, v, d, r, _) *) ->
+  | Some n  ->
     (* call [p] in the expected left-to-right order *)
-    let l, v, d, r = left n,  key n, value n, right n  in 
-    let l' = filter0 p l in
+    let  v, d =  key n, value n  in 
+    let newLeft = filter0 p (left n) in
     let pvd = p v d [@bs] in
-    let r' = filter0 p r in
-    if pvd then join l' v d r' else concat l' r'
+    let newRight = filter0 p (right n) in
+    if pvd then join newLeft v d newRight else concat newLeft newRight
 
 let rec partition0 p n = 
   match toOpt n with   
     None -> (empty, empty)
-  | Some n (* Node(l, v, d, r, _) *) ->
-    let l, v, d, r = left n,  key n, value n, right n  in
+  | Some n  ->
+    let  key, value =  key n, value n  in
     (* call [p] in the expected left-to-right order *)    
-    let (lt, lf) = partition0 p l in
-    let pvd = p v d [@bs] in
-    let (rt, rf) = partition0 p r in
+    let (lt, lf) = partition0 p (left n) in
+    let pvd = p key value [@bs] in
+    let (rt, rf) = partition0 p (right n) in
     if pvd
-    then (join lt v d rt, concat lf rf)
-    else (concat lt rt, join lf v d rf)  
+    then (join lt key value rt, concat lf rf)
+    else (concat lt rt, join lf key value rf)  
 
 
-let rec lengthAux n = 
+let rec lengthNode n = 
   let l, r = left n, right n in  
   let sizeL = 
     match toOpt l with 
     | None -> 0
     | Some l -> 
-      lengthAux l  in 
+      lengthNode l  in 
   let sizeR = 
     match toOpt r with 
     | None -> 0
-    | Some r -> lengthAux r in 
+    | Some r -> lengthNode r in 
   1 + sizeL + sizeR      
 
 let rec length0 n =
   match toOpt n with 
   | None -> 0
   | Some n  ->
-    lengthAux n   
+    lengthNode n   
 
-let rec bindings_aux accu n = 
+let rec toListAux accu n = 
   match toOpt n with 
   | None -> accu
-  | Some n (* Node(l, v, d, r, _) *) ->
-    let l, v, d, r = left n,  key n, value n, right n in 
-    bindings_aux ((v, d) :: bindings_aux accu r) l
+  | Some n  ->    
+    toListAux ((key n, value n) :: toListAux accu (right n)) (left n)
 
-let bindings0 s =
-  bindings_aux [] s  
+let toList0 s =
+  toListAux [] s  
 
 
 let rec checkInvariant (v : _ t0) = 

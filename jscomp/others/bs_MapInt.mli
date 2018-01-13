@@ -91,7 +91,7 @@ val length: 'a t -> int
     @since 3.12.0
  *)
 
-val bindings: 'a t -> (key * 'a) list
+val toList: 'a t -> (key * 'a) list
 (** Return the list of all bindings of the given map.
    The returned list is sorted in increasing order with respect
    to the ordering [Ord.compare], where [Ord] is the argument

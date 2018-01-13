@@ -36,7 +36,7 @@ let exists0 = N.exists0
 let filter0 = N.filter0
 let partition0 = N.partition0
 let length0 = N.length0
-let bindings0 = N.bindings0  
+let toList0 = N.toList0
 
 let rec add0 ~cmp x data (t : _ t0) =
   match N.toOpt t with (* TODO: test case with the same key *)
@@ -144,11 +144,11 @@ let rec merge0 ~cmp f s1 s2 =
   | Some n (* (Node (l1, v1, d1, r1, h1), _) *), _ when N.h n  >= N.height s2 ->
     let l1, v1, d1, r1 = N.(left n, key n, value n, right n) in 
     let (l2, d2, r2) = split0 ~cmp v1 s2 in
-    N.concat_or_join (merge0 ~cmp f l1 l2) v1 (f v1 (Some d1) d2 [@bs]) (merge0 ~cmp f r1 r2)
+    N.concatOrJoin (merge0 ~cmp f l1 l2) v1 (f v1 (Some d1) d2 [@bs]) (merge0 ~cmp f r1 r2)
   | _, Some n (* Node (l2, v2, d2, r2, h2)*) ->
     let l2,v2,d2,r2 = N.(left n, key n, value n, right n) in 
     let (l1, d1, r1) = split0 ~cmp v2 s1 in
-    N.concat_or_join (merge0 ~cmp f l1 l2) v2 (f v2 d1 (Some d2) [@bs]) (merge0 ~cmp f r1 r2)
+    N.concatOrJoin (merge0 ~cmp f l1 l2) v2 (f v2 d1 (Some d2) [@bs]) (merge0 ~cmp f r1 r2)
   | _ ->
     assert false
 
@@ -234,8 +234,8 @@ let partition p map =
 let length map = 
   length0 (B.data map)   
 
-let bindings map = 
-  bindings0 (B.data map) 
+let toList map = 
+  toList0 (B.data map) 
 
 let minBinding map = 
   minBinding0 (B.data map) 

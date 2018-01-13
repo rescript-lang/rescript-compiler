@@ -177,8 +177,8 @@ val length: ('k, 'a, 'id) t -> int
     @since 3.12.0
 *)
 
-val bindings0: ('k, 'a, 'id) t0 -> ('k * 'a) list
-val bindings: ('k, 'a, 'id) t -> ('k * 'a) list
+val toList0: ('k, 'a, 'id) t0 -> ('k * 'a) list
+val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** Return the list of all bindings of the given map.
     The returned list is sorted in increasing order with respect
     to the ordering [Ord.compare], where [Ord] is the argument

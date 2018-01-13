@@ -69,7 +69,7 @@ val join : ('a,'b) t0 -> 'a -> 'b -> ('a,'b) t0 -> ('a, 'b) t0
 
 val concat : ('a,'b) t0 -> ('a,'b) t0 -> ('a,'b) t0
 
-val concat_or_join :
+val concatOrJoin :
   ('a,'b) t0 -> 'a -> 'b option -> ('a,'b) t0 -> ('a, 'b) t0
 val filter0 : ('a -> 'b -> bool [@bs]) -> ('a,'b) t0 -> ('a,'b) t0
 val partition0 :
@@ -78,8 +78,8 @@ val partition0 :
 
 val stackAllLeft :
   ('a,'b) t0 -> ('a, 'b) node list -> ('a, 'b) node list
-val lengthAux : ('a, 'b) node -> int
+val lengthNode : ('a, 'b) node -> int
 val length0 : ('a,'b) t0 -> int
-val bindings_aux : ('a * 'b) list -> ('a,'b) t0 -> ('a * 'b) list
-val bindings0 : ('a,'b) t0 -> ('a * 'b) list
+
+val toList0 : ('a,'b) t0 -> ('a * 'b) list
 val checkInvariant : ('a,'b) t0 -> bool
