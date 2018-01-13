@@ -48,10 +48,9 @@ val create : 'a t0 -> 'a -> 'a t0 -> 'a t0
 val bal : 'a t0 -> 'a -> 'a t0 -> 'a t0
 val singleton0 : 'a -> 'a t0
 
-val min0Aux : 'a node -> 'a
+
 val minOpt0 : 'a t0 -> 'a option
 val minNull0 : 'a t0 -> 'a Js.null
-val max0Aux : 'a node -> 'a
 val maxOpt0 : 'a t0 -> 'a option
 val maxNull0 : 'a t0 -> 'a Js.null
 

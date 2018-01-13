@@ -38,24 +38,25 @@ external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 
-
-val height : _ t0 -> int
-
+val copy : ('k, 'v) t0 -> ('k, 'v) t0
 val create :
   ('a,'b) t0 -> 'a -> 'b -> ('a,'b) t0 -> ('a,'b) t0
-val singleton0 : 'a -> 'b -> ('a,'b) t0
-
 val bal :
   ('a,'b) t0 -> 'a -> 'b -> ('a,'b) t0 -> ('a,'b) t0
-
-val empty0 : _ t0
-
-val isEmpty0 : _ t0 -> bool
+val singleton0 : 'a -> 'b -> ('a,'b) t0
 
 val minKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
 val minKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
 val maxKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
+val maxKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
+
 val removeMinAuxWithRef : ('a, 'b) node -> 'a ref -> 'b ref -> ('a,'b) t0
+
+val empty0 : _ t0
+val isEmpty0 : _ t0 -> bool
+
+val stackAllLeft :
+  ('a,'b) t0 -> ('a, 'b) node list -> ('a, 'b) node list
 
 val iter0 :  ('a,'b) t0 -> ('a -> 'b -> unit [@bs]) -> unit
 val map0 :  ('c, 'a) t0 -> ('a -> 'b [@bs]) -> ('c, 'b) t0
@@ -76,10 +77,14 @@ val partition0 :
   ('a -> 'b -> bool [@bs]) ->
   ('a,'b) t0 -> ('a,'b) t0 * ('a,'b) t0
 
-val stackAllLeft :
-  ('a,'b) t0 -> ('a, 'b) node list -> ('a, 'b) node list
+
 val lengthNode : ('a, 'b) node -> int
 val length0 : ('a,'b) t0 -> int
 
 val toList0 : ('a,'b) t0 -> ('a * 'b) list
 val checkInvariant : ('a,'b) t0 -> bool
+
+val fillArray : ('a,'b) node -> int -> ('a * 'b) array -> int  
+val toArray0 : ('a,'b) t0 -> ('a * 'b) array  
+val ofSortedArrayAux : ('a * 'b) array -> int -> int -> ('a, 'b) t0
+val ofSortedArrayUnsafe0 : ('a * 'b) array -> ('a, 'b) t0

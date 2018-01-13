@@ -408,7 +408,9 @@ let rec ofSortedArrayAux arr off len =
       ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left mid right    
 
-
+let ofSortedArrayUnsafe0 arr =     
+  ofSortedArrayAux arr 0 (A.length arr)
+  
 let rec filterShared0 n p =
   match toOpt n with 
   | None -> empty
@@ -638,5 +640,3 @@ let rec removeMinAuxWithRootMutate nt n =
     return (balMutate n)    
 
 
-let ofSortedArrayUnsafe0 arr =     
-  ofSortedArrayAux arr 0 (A.length arr)

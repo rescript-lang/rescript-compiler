@@ -288,3 +288,125 @@ let rec checkInvariant (v : _ t0) =
     let diff = height l - height r  in 
     diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
 
+
+let rec fillArray n i arr =     
+  let l,v,r = left n, key n, right n in 
+  let next = 
+    match toOpt l with 
+    | None -> i 
+    | Some l -> 
+      fillArray l i arr in 
+  A.unsafe_set arr next (v, value n) ;
+  let rnext = next + 1 in 
+  match toOpt r with 
+  | None -> rnext 
+  | Some r -> 
+    fillArray r rnext arr 
+
+type cursor =     
+  { mutable forward : int; mutable backward : int } [@@bs.deriving abstract]
+
+let rec fillArrayWithPartition n cursor arr p =     
+  let l,v,r = left n, key n, right n in 
+  (match toOpt l with 
+  | None -> ()
+  | Some l -> 
+      fillArrayWithPartition l cursor arr p);  
+  (if p v [@bs] then begin        
+      let c = forward cursor in 
+      A.unsafe_set arr c (v,value n);
+      forwardSet cursor (c + 1)
+  end  
+  else begin 
+    let c = backward cursor in 
+    A.unsafe_set arr c (v, value n);
+    backwardSet cursor (c - 1)
+  end);     
+  match toOpt r with 
+  | None -> ()
+  | Some r -> 
+    fillArrayWithPartition r cursor arr  p 
+    
+let rec fillArrayWithFilter n i arr p =     
+  let l,v,r = left n, key n, right n in 
+  let next = 
+    match toOpt l with 
+    | None -> i 
+    | Some l -> 
+      fillArrayWithFilter l i arr p in 
+  let rnext =
+    if p v [@bs] then        
+      (A.unsafe_set arr next (v, value n);
+        next + 1
+      )
+    else next in   
+  match toOpt r with 
+  | None -> rnext 
+  | Some r -> 
+    fillArrayWithFilter r rnext arr  p 
+
+
+let toArray0 n =   
+  match toOpt n with 
+  | None -> [||]
+  | Some n ->  
+    let size = lengthNode n in 
+    let v = A.makeUninitializedUnsafe size in 
+    ignore (fillArray n 0 v : int);  (* may add assertion *)
+    v 
+
+let rec ofSortedArrayRevAux arr off len =     
+  match len with 
+  | 0 -> empty0
+  | 1 -> let k, v = (A.unsafe_get arr off) in singleton0 k v 
+  | 2 ->  
+    let (x0,y0),(x1,y1) = A.(unsafe_get arr off, unsafe_get arr (off - 1) ) 
+    in 
+    return @@ node ~left:(singleton0 x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty0
+  | 3 -> 
+    let (x0,y0),(x1,y1),(x2,y2) = 
+      A.(unsafe_get arr off, 
+         unsafe_get arr (off - 1), 
+         unsafe_get arr (off - 2)) in 
+    return @@ node ~left:(singleton0 x0 y0)
+      ~right:(singleton0 x2 y2)
+      ~key:x1
+      ~value:y1
+      ~h:2
+  | _ ->  
+    let nl = len / 2 in 
+    let left = ofSortedArrayRevAux arr off nl in 
+    let midK,midV = A.unsafe_get arr (off - nl) in 
+    let right = 
+      ofSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
+    create left midK midV right    
+    
+
+let rec ofSortedArrayAux arr off len =     
+  match len with 
+  | 0 -> empty0
+  | 1 -> let k, v = (A.unsafe_get arr off) in singleton0 k v 
+  | 2 ->  
+    let (x0,y0),(x1,y1) = A.(unsafe_get arr off, unsafe_get arr (off + 1) ) 
+    in 
+    return @@ node ~left:(singleton0 x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty0
+  | 3 -> 
+    let (x0,y0),(x1,y1),(x2,y2) = 
+      A.(unsafe_get arr off, 
+         unsafe_get arr (off + 1), 
+         unsafe_get arr (off + 2)) in 
+    return @@ node ~left:(singleton0 x0 y0)
+      ~right:(singleton0 x2 y2)
+      ~key:x1 ~value:y1
+      ~h:2
+  | _ ->  
+    let nl = len / 2 in 
+    let left = ofSortedArrayAux arr off nl in 
+    let midK, midV = A.unsafe_get arr (off + nl) in 
+    let right = 
+      ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
+    create left midK midV right    
+    
+let ofSortedArrayUnsafe0 arr =     
+  ofSortedArrayAux arr 0 (A.length arr)
+      
