@@ -85,6 +85,7 @@ val checkInvariant : _ t0 -> bool
 val fillArray: 'a node -> int -> 'a array -> int 
 val toArray0 : 'a t0 -> 'a array
 val ofSortedArrayAux : 'a array -> int -> int -> 'a t0
+val ofSortedArrayRevAux : 'a array -> int -> int -> 'a t0
 val ofSortedArrayUnsafe0 : 'a array -> 'a t0
 val mem0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> bool
 val cmp0 : 'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> int

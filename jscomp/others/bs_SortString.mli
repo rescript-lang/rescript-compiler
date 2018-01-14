@@ -1,8 +1,16 @@
 # 4 "sort.cppo.mli"
 type elt = string
 
+# 9
+val strictlySortedLength : 
+  elt array -> 
+  int 
+(**
+  [strictlySortedLenght xs]
+  return [+n] means increasing order
+  [-n] means negative order
+*)  
 
-# 10
 val isSorted : elt array  -> bool
 (** strictly sorted *)
 

@@ -342,6 +342,57 @@ b("File \"bs_sort_test.ml\", line 127, characters 4-11", Bs_Range.forAll(0, 1999
             return +((Bs_Sort.binSearch(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
           })));
 
+eq("File \"bs_sort_test.ml\", line 133, characters 5-12", Bs_Sort.strictlySortedLength(/* int array */[], cmp), 0);
+
+eq("File \"bs_sort_test.ml\", line 134, characters 5-12", Bs_Sort.strictlySortedLength(/* int array */[1], cmp), 1);
+
+eq("File \"bs_sort_test.ml\", line 135, characters 5-12", Bs_Sort.strictlySortedLength(/* int array */[
+          1,
+          1
+        ], cmp), 1);
+
+eq("File \"bs_sort_test.ml\", line 136, characters 5-12", Bs_Sort.strictlySortedLength(/* int array */[
+          1,
+          1,
+          2
+        ], cmp), 1);
+
+eq("File \"bs_sort_test.ml\", line 137, characters 5-12", Bs_Sort.strictlySortedLength(/* int array */[
+          1,
+          2
+        ], cmp), 2);
+
+eq("File \"bs_sort_test.ml\", line 138, characters 5-12", Bs_Sort.strictlySortedLength(/* array */[
+          1,
+          2,
+          3,
+          4,
+          3
+        ], cmp), 4);
+
+eq("File \"bs_sort_test.ml\", line 139, characters 5-12", Bs_Sort.strictlySortedLength(/* array */[
+          4,
+          4,
+          3,
+          2,
+          1
+        ], cmp), 1);
+
+eq("File \"bs_sort_test.ml\", line 140, characters 5-12", Bs_Sort.strictlySortedLength(/* int array */[
+          4,
+          3,
+          2,
+          1
+        ], cmp), -4);
+
+eq("File \"bs_sort_test.ml\", line 141, characters 5-12", Bs_Sort.strictlySortedLength(/* array */[
+          4,
+          3,
+          2,
+          1,
+          0
+        ], cmp), -5);
+
 Mt.from_pair_suites("bs_sort_test.ml", suites[0]);
 
 var I = 0;

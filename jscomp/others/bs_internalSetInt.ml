@@ -1,8 +1,9 @@
-# 4 "internal_set.cppo.ml"
+# 5 "internal_set.cppo.ml"
 type elt = int
+module S = Bs_SortInt
 
 
-# 10
+# 12
 module N = Bs_internalAVLset
 module A = Bs_Array 
 
@@ -136,22 +137,23 @@ let rec addMutate  t  (x : elt)=
       );
       N.return (N.balMutate nt)
 
-let rec sortedLengthAux (xs : elt array) prec acc len =    
-  if acc >= len then acc 
-  else 
-    let v = A.unsafe_get xs acc in 
-    if v > prec  then 
-      sortedLengthAux xs v (acc + 1) len 
-    else acc  
 
 
 let ofArray (xs : elt array) =   
   let len = A.length xs in 
   if len = 0 then N.empty
   else
-    let next = sortedLengthAux xs (A.unsafe_get xs 0) 1 len in 
-    let result  = ref (N.ofSortedArrayAux xs 0 next) in 
-    for i = next to len - 1 do 
+    let next =  ref (S.strictlySortedLength xs ) in 
+    let result  = 
+        ref (
+          if !next >= 0 then 
+            N.ofSortedArrayAux xs 0 !next
+          else begin 
+            next := - !next ;  
+            N.ofSortedArrayRevAux xs (!next - 1) !next
+          end
+          ) in 
+    for i = !next to len - 1 do 
       result := addMutate !result (A.unsafe_get xs i) 
     done ;
     !result 

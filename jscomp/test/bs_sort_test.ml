@@ -129,4 +129,15 @@ let () =
     (* 1, 3, 5, ... , 3999 *)
   )
 
+let () =   
+  eq __LOC__ (S.strictlySortedLength [||] cmp) 0 ;
+  eq __LOC__ (S.strictlySortedLength [|1|] cmp) 1;
+  eq __LOC__ (S.strictlySortedLength [|1;1|] cmp) 1;
+  eq __LOC__ (S.strictlySortedLength [|1;1;2|] cmp) 1;
+  eq __LOC__ (S.strictlySortedLength [|1;2|] cmp) 2;
+  eq __LOC__ (S.strictlySortedLength [|1;2;3;4;3|] cmp) 4;
+  eq __LOC__ (S.strictlySortedLength [|4;4;3;2;1|] cmp) 1;
+  eq __LOC__ (S.strictlySortedLength [|4;3;2;1|] cmp) (-4);
+  eq __LOC__ (S.strictlySortedLength [|4;3;2;1;0|] cmp) (-5);
+
 ;; Mt.from_pair_suites __FILE__ !suites  
