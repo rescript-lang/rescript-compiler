@@ -40,17 +40,19 @@ let toList0 = N.toList0
 
 let rec add0  (t : _ t0) x data  ~cmp =
   match N.toOpt t with (* TODO: test case with the same key *)
-    None ->
-    N.(return @@ node ~left:empty ~key:x ~value:data ~right:empty ~h:1)
+  | None ->
+    N.singleton0 x data 
   | Some n  ->
-    let l,k,v,r = N.(left n, key n, value n, right n) in 
+    let k= N.key n in 
     let c = (Bs_Cmp.getCmp cmp) x k [@bs] in
     if c = 0 then
-      N.(return @@ node ~left:l ~key:x ~value:data ~right:r ~h:(h n))
-    else if c < 0 then
-      N.(bal (add0 ~cmp l x data ) k v  r)
+      N.updateKV n x data 
+    else 
+    let v = N.value n in 
+    if c < 0 then
+      N.bal (add0 ~cmp (N.left n) x data ) k v  (N.right n)
     else
-      N.(bal l k v (add0 ~cmp r x data ))
+      N.bal (N.left n) k v (add0 ~cmp (N.right n) x data )
 
 let rec findOpt0  n x ~cmp = 
   match N.toOpt n with 
@@ -112,7 +114,7 @@ let rec remove0  n x ~cmp =
     else
       N.(bal l v (value n) (remove0 ~cmp r x ))
 
-let rec splitAux ~cmp x (n : _ N.node) : _ t0 * _ option  * _ t0 =  
+let rec splitAux ~cmp x n  : _ t0 * _ option  * _ t0 =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
   let c = (Bs_Cmp.getCmp cmp) x v [@bs] in 
   if c = 0 then (l, Some d, r)

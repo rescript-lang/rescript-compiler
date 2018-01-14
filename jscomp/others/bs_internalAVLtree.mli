@@ -26,7 +26,7 @@
 
 type ('key, 'a) t0 = ('key, 'a) node Js.null
 
-and ('k,  'v) node  = {
+and ('k,  'v) node  = private {
   left : ('k,'v) t0;
   key : 'k; 
   value : 'v; 
@@ -45,6 +45,7 @@ val bal :
   ('a,'b) t0 -> 'a -> 'b -> ('a,'b) t0 -> ('a,'b) t0
 val singleton0 : 'a -> 'b -> ('a,'b) t0
 
+val updateKV : ('k, 'v) node -> 'k -> 'v -> ('k,'v) t0
 val minKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
 val minKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
 val maxKVOpt0 : ('a,'b) t0 -> ('a * 'b) option

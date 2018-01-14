@@ -59,7 +59,9 @@ val removeMinAuxWithRef : 'a node -> 'a ref -> 'a t0
    minimum removed and stored in cell *)
 val empty0 : 'a t0
 val isEmpty0 : 'a t0 -> bool
+
 val stackAllLeft : 'a t0 -> 'a node list -> 'a node list
+
 val iter0 : 'a t0 -> ('a -> 'b [@bs]) -> unit
 val fold0 : 'a t0 -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
 val forAll0 : 'a t0 -> ('a -> bool [@bs]) -> bool

@@ -47,6 +47,14 @@ let create l x d r =
 let singleton0 x d = 
   return @@ node ~left:empty ~key:x ~value:d ~right:empty ~h:1
 
+let updateKV n key value =  
+  return @@ node 
+  ~left:(left n)
+  ~right:(right n)
+  ~key
+  ~value
+  ~h:(h n)
+
 let bal l x d r =
   let hl = match toOpt l with None -> 0 | Some n -> h n in
   let hr = match toOpt r with None -> 0 | Some n -> h n in

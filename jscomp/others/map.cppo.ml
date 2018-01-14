@@ -1,10 +1,10 @@
 #ifdef TYPE_STRING
 type key = string
-#elif defined TYPE_INT
+           #elif defined TYPE_INT
 type key = int
-#else 
+           #else 
   [%error "unknown type"]
-#endif 
+  #endif 
 
 module N = Bs_internalAVLtree
 
@@ -36,15 +36,17 @@ let checkInvariant = N.checkInvariant
 let rec add  t (x : key) (data : _)  = 
   match N.toOpt t with
   | None -> 
-    N.(return @@ node ~left:empty ~key:x ~value:data ~right:empty ~h:1)
-  | Some n (* Node(l, v, d, r, h) *) ->
-    let l,k,v,r = N.(left n, key n, value n, right n) in 
+    N.singleton0 x data 
+  | Some n  ->
+    let k = N.key n in 
     if x = k then
-      N.(return @@ node ~left:l ~key:x ~value:data ~right:r ~h:(h n))
-    else if x < k then
-      N.(bal (add l x data ) k v r)
+      N.updateKV n x data 
     else
-      N.(bal l k v (add r x data ))
+      let v = N.value n in 
+      if x < k then
+        N.bal (add (N.left n) x data ) k v (N.right n)
+      else
+        N.bal (N.left n) k v (add (N.right n) x data )
 
 let rec findOpt (x : key) n =
   match N.toOpt n with 
@@ -100,19 +102,19 @@ let rec splitAux (x : key) (n : _ N.node) : _ t0 * _ option  * _ t0 =
   let l,v,d,r = N.(left n , key n, value n, right n) in  
   if x = v then (l, Some d, r)
   else     
-    if x < v then
-      match N.toOpt l with 
-      | None -> 
-        N.(empty , None, return n)
-      | Some l -> 
-        let (ll, pres, rl) = splitAux x l in (ll, pres, N.join rl v d r)
-    else
-      match N.toOpt r with 
-      | None ->
-        N.(return n, None, empty)
-      | Some r -> 
-        let (lr, pres, rr) = splitAux x r in (N.join l v d lr, pres, rr)
-      
+  if x < v then
+    match N.toOpt l with 
+    | None -> 
+      N.(empty , None, return n)
+    | Some l -> 
+      let (ll, pres, rl) = splitAux x l in (ll, pres, N.join rl v d r)
+  else
+    match N.toOpt r with 
+    | None ->
+      N.(return n, None, empty)
+    | Some r -> 
+      let (lr, pres, rr) = splitAux x r in (N.join l v d lr, pres, rr)
+
 
 let rec split (x : key) n =
   match N.toOpt n with 
@@ -137,13 +139,13 @@ let rec merge s1 s2 f =
     assert false
 
 let rec compareAux e1 e2 vcmp =
-   match e1,e2 with 
-   | h1::t1, h2::t2 ->
+  match e1,e2 with 
+  | h1::t1, h2::t2 ->
     let c = Pervasives.compare (N.key h1 : key) (N.key h2)  in 
     if c = 0 then 
       let cx = vcmp (N.value h1) (N.value h2) [@bs] in 
       if cx = 0 then
-          compareAux 
+        compareAux 
           (N.stackAllLeft  (N.right h1) t1 ) 
           (N.stackAllLeft (N.right h2) t2)
           vcmp 
@@ -163,23 +165,23 @@ let cmp s1 s2 cmp =
 
 
 let rec eqAux e1 e2  eq =
-    match e1,e2 with 
-    | h1::t1, h2::t2 ->
-     if (N.key h1 : key) =  (N.key h2)  && 
-        eq (N.value h1) (N.value h2) [@bs] then
-          eqAux (
-            N.stackAllLeft  (N.right h1) t1 ) 
-            (N.stackAllLeft (N.right h2) t2)
-            eq
-      else  false    
-    | _, _ -> true (*end *)  
+  match e1,e2 with 
+  | h1::t1, h2::t2 ->
+    if (N.key h1 : key) =  (N.key h2)  && 
+       eq (N.value h1) (N.value h2) [@bs] then
+      eqAux (
+        N.stackAllLeft  (N.right h1) t1 ) 
+        (N.stackAllLeft (N.right h2) t2)
+        eq
+    else  false    
+  | _, _ -> true (*end *)  
 
 let eq s1 s2 eq =      
   let len1,len2 = N.length0 s1, N.length0 s2 in 
   if len1 = len2 then 
     eqAux 
-    (N.stackAllLeft s1 [])
-    (N.stackAllLeft s2 []) eq 
+      (N.stackAllLeft s1 [])
+      (N.stackAllLeft s2 []) eq 
   else false  
 
 let ofArray  (xs : _ array) : _ t0 =     

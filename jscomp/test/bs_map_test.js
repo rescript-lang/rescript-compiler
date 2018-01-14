@@ -98,14 +98,16 @@ function $eq$tilde(a, b) {
     });
 }
 
-var u = f(Bs_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
+var u0 = f(Bs_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
             return /* tuple */[
                     x,
                     x
                   ];
           })));
 
-b("File \"bs_map_test.ml\", line 82, characters 4-11", Bs_Array.forAll2(Bs_internalAVLtree.toArray0(u.data), Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
+var u1 = Bs_Map.add(u0, 39, 120);
+
+b("File \"bs_map_test.ml\", line 83, characters 4-11", Bs_Array.forAll2(Bs_internalAVLtree.toArray0(u0.data), Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
                 return /* tuple */[
                         x,
                         x
@@ -118,7 +120,7 @@ b("File \"bs_map_test.ml\", line 82, characters 4-11", Bs_Array.forAll2(Bs_inter
             }
           })));
 
-b("File \"bs_map_test.ml\", line 87, characters 4-11", Bs_List.forAll2(Bs_internalAVLtree.toList0(u.data), Bs_Array.toList(Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"bs_map_test.ml\", line 88, characters 4-11", Bs_List.forAll2(Bs_internalAVLtree.toList0(u0.data), Bs_Array.toList(Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
                     return /* tuple */[
                             x,
                             x
@@ -131,19 +133,23 @@ b("File \"bs_map_test.ml\", line 87, characters 4-11", Bs_List.forAll2(Bs_intern
             }
           })));
 
-var u$1 = f(Bs_Array.shuffle(Bs_Array.init(10000, (function (x) {
+eq("File \"bs_map_test.ml\", line 93, characters 5-12", Bs_Map.findOpt(u0, 39), /* Some */[39]);
+
+eq("File \"bs_map_test.ml\", line 94, characters 5-12", Bs_Map.findOpt(u1, 39), /* Some */[120]);
+
+var u = f(Bs_Array.shuffle(Bs_Array.init(10000, (function (x) {
                 return /* tuple */[
                         x,
                         x
                       ];
               }))));
 
-eq("File \"bs_map_test.ml\", line 96, characters 4-11", Bs_Array.init(10000, (function (x) {
+eq("File \"bs_map_test.ml\", line 100, characters 4-11", Bs_Array.init(10000, (function (x) {
             return /* tuple */[
                     x,
                     x
                   ];
-          })), Bs_internalAVLtree.toArray0(u$1.data));
+          })), Bs_internalAVLtree.toArray0(u.data));
 
 Mt.from_pair_suites("bs_map_test.ml", suites[0]);
 

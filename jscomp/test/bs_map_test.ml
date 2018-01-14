@@ -78,17 +78,21 @@ let f = M.ofArray (module Icmp)
 let (=~) a b = M.eq a b  
 
 let () =   
-  let u =  f (A.map (I.randomRange 0 39) (fun[@bs] x -> (x,x))) in  
+  let u0 =  f (A.map (I.randomRange 0 39) (fun[@bs] x -> (x,x))) in  
+  let u1 = M.add u0 39 120 in 
   b __LOC__
-  (A.forAll2 (M.toArray u) 
+  (A.forAll2 (M.toArray u0) 
    (A.map (I.range 0 39) (fun [@bs] x -> (x,x)))
    (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
-
+  
   b __LOC__
   (L.forAll2 
-    (M.toList u)
+    (M.toList u0)
     (A.toList (A.map (I.range 0 39) (fun [@bs] x -> (x,x))))
-    (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1))
+    (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
+  eq __LOC__ (M.findOpt u0 39) (Some 39);
+  eq __LOC__ (M.findOpt u1 39) (Some 120)
+
 
 let () =     
   let u = f 
