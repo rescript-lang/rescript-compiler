@@ -47,6 +47,12 @@ let create l x d r =
 let singleton0 x d = 
   return @@ node ~left:empty ~key:x ~value:d ~right:empty ~h:1
 
+let heightGe l r =   
+  match toOpt l, toOpt r with  
+  | _, None -> true 
+  | Some hl, Some hr -> h hl >= h hr 
+  | None, Some _ -> false
+
 let updateKV n key value =  
   return @@ node 
   ~left:(left n)
@@ -417,4 +423,118 @@ let rec ofSortedArrayAux arr off len =
     
 let ofSortedArrayUnsafe0 arr =     
   ofSortedArrayAux arr 0 (A.length arr)
+      
+(******************************************************************)
+
+(* 
+  L rotation, return root node
+*)
+let rotateWithLeftChild k2 = 
+  let k1 = unsafeCoerce (left k2) in 
+  (leftSet k2 (right k1)); 
+  (rightSet k1 (return k2 ));
+  let hlk2, hrk2 = (height (left k2), (height (right k2))) in  
+  (hSet k2 
+     (Pervasives.max hlk2 hrk2 + 1));
+  let hlk1, hk2 = (height (left k1), (h k2)) in 
+  (hSet k1 (Pervasives.max hlk1 hk2 + 1));
+  k1  
+(* right rotation *)
+let rotateWithRightChild k1 =   
+  let k2 = unsafeCoerce (right k1) in 
+  (rightSet k1 (left k2));
+  (leftSet k2 (return k1));
+  let hlk1, hrk1 = ((height (left k1)), (height (right k1))) in 
+  (hSet k1 (Pervasives.max  hlk1 hrk1 + 1));
+  let hrk2, hk1 = (height (right k2), (h k1)) in 
+  (hSet k2 (Pervasives.max  hrk2 hk1 + 1));
+  k2 
+
+(*
+  double l rotation
+*)  
+let doubleWithLeftChild k3 =   
+  let v = rotateWithRightChild (unsafeCoerce (left k3)) in 
+  (leftSet k3 (return v ));
+  rotateWithLeftChild k3 
+
+let doubleWithRightChild k2 = 
+  let v = rotateWithLeftChild (unsafeCoerce (right k2)) in   
+  (rightSet k2 (return v));
+  rotateWithRightChild k2
+
+let heightUpdateMutate t = 
+  let hlt, hrt = (height (left t),(height (right t))) in 
+  hSet t (Pervasives.max hlt hrt  + 1);
+  t
+
+let balMutate nt  =  
+  let l, r = (left nt, right nt) in  
+  let hl, hr =  (height l, height r) in 
+  if hl > 2 +  hr then 
+    let l = unsafeCoerce l in 
+    let ll, lr = (left l , right l)in
+    (if heightGe ll lr then 
+       heightUpdateMutate (rotateWithLeftChild nt)
+     else 
+       heightUpdateMutate (doubleWithLeftChild nt)
+    )
+  else 
+  if hr > 2 + hl  then 
+    let r = unsafeCoerce r in 
+    let rl,rr = (left r, right r) in 
+    (if heightGe rr rl then 
+       heightUpdateMutate (rotateWithRightChild nt) 
+     else 
+       heightUpdateMutate (doubleWithRightChild nt)
+    ) 
+  else 
+    begin
+      hSet nt (max hl hr + 1);
+      nt
+    end
+
+let rec addMutate ~cmp (t : _ t0) x data =   
+  match toOpt t with 
+  | None -> singleton0 x data
+  | Some nt -> 
+    let k = key nt in 
+    let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
+    if c = 0 then begin     
+      keySet nt x;
+      valueSet nt data;
+      return nt
+    end      
+    else
+      let l, r = (left nt, right nt) in 
+      (if c < 0 then                   
+         let ll = addMutate ~cmp l x data in
+         leftSet nt ll
+       else   
+         rightSet nt (addMutate ~cmp r x data);
+      );
+      return (balMutate nt)  
+
+(* let ofArray0 ~cmp (xs : _ array) =   
+  let len = A.length xs in 
+  if len = 0 then empty0
+  else
+    let next = sortedLengthAux 
+      ~cmp:(Bs_Cmp.getCmp cmp) xs (A.unsafe_get xs 0) 1 len in 
+    let result  = ref (ofSortedArrayAux  xs 0 next) in 
+    for i = next to len - 1 do 
+      result := addMutate ~cmp !result (A.unsafe_get xs i) 
+    done ;
+    !result          *)
+
+
+let rec removeMinAuxWithRootMutate nt n = 
+  let rn, ln = right n, left n in 
+  match toOpt ln with 
+  | None -> 
+    keySet nt (key n);
+    rn 
+  | Some ln -> 
+    leftSet n (removeMinAuxWithRootMutate nt ln); 
+    return (balMutate n)    
       
