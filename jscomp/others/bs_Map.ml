@@ -37,6 +37,7 @@ let filter0 = N.filter0
 let partition0 = N.partition0
 let length0 = N.length0
 let toList0 = N.toList0
+let ofArray0 = N.ofArray0
 
 let rec add0  (t : _ t0) x data  ~cmp =
   match N.toOpt t with (* TODO: test case with the same key *)
@@ -193,13 +194,7 @@ let eq0  s1 s2 ~kcmp ~vcmp =
   else false
 
 
-let ofArray0 ~cmp (xs : _ array) : _ t0 =     
-  let result = ref N.empty in 
-  for i = 0 to Array.length xs - 1 do  
-    let k, v = (Bs_Array.unsafe_get xs i) in 
-    result := add0 ~cmp !result k v 
-  done ;
-  !result 
+
 
 
 

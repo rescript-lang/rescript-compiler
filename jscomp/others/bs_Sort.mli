@@ -28,7 +28,7 @@
 
 val strictlySortedLength : 
   'a array -> 
-  ('a -> 'a -> int [@bs]) -> 
+  ('a -> 'a -> bool [@bs]) -> 
   int 
 (**
   [strictlySortedLenght xs cmp]

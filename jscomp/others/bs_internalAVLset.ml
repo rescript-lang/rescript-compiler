@@ -614,7 +614,8 @@ let ofArray0 ~cmp (xs : _ array) =
   let len = A.length xs in 
   if len = 0 then empty0
   else
-    let next = ref (S.strictlySortedLength xs (Bs_Cmp.getCmp cmp)) in     
+    let next = ref (S.strictlySortedLength xs 
+      (fun [@bs] x y -> (Bs_Cmp.getCmp cmp) x y [@bs] < 0)) in     
     let result = 
       ref (if !next >= 0 then  
         ofSortedArrayAux xs 0 !next

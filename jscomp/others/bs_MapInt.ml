@@ -3,7 +3,8 @@ type key = int
 
 # 9
 module N = Bs_internalAVLtree
-
+module A = Bs_Array 
+module S = Bs_Sort
 type ('key, 'a, 'id) t0 = ('key,'a) N.t0 
 
 type  'a t = (key,'a) N.t0 
@@ -180,13 +181,51 @@ let eq s1 s2 eq =
       (N.stackAllLeft s2 []) eq 
   else false  
 
-let ofArray  (xs : _ array) : _ t0 =     
-  let result = ref N.empty in 
-  for i = 0 to Array.length xs - 1 do  
-    let k, v = (Bs_Array.unsafe_get xs i) in 
-    result := add !result k v 
-  done ;
-  !result 
+let rec addMutate  (t : _ t) x data =   
+  match N.toOpt t with 
+  | None -> N.singleton0 x data
+  | Some nt -> 
+    let k = N.key nt in 
+    (* let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in   *)
+    if x = k then begin     
+      N.keySet nt x;
+      N.valueSet nt data;
+      N.return nt
+    end      
+    else
+      let l, r = (N.left nt, N.right nt) in 
+      (if x < k then                   
+         let ll = addMutate  l x data in
+         N.leftSet nt ll
+       else   
+         N.rightSet nt (addMutate r x data);
+      );
+      N.return (N.balMutate nt)  
+
+let ofArray  (xs : (key * _) array) =   
+  let len = A.length xs in 
+  if len = 0 then N.empty0
+  else
+    let next = 
+        ref (S.strictlySortedLength xs 
+        (fun[@bs] (x0,_) (y0,_) -> 
+            x0 < y0
+        ))
+      in 
+    let result  = ref (
+      if !next >= 0 then 
+        N.ofSortedArrayAux xs 0 !next 
+      else begin   
+        next := - !next; 
+        N.ofSortedArrayRevAux xs (!next - 1) (!next)
+      end  
+    ) in 
+    for i = !next to len - 1 do 
+      let k, v = (A.unsafe_get xs i)  in 
+      result := addMutate  !result k v 
+    done ;
+    !result         
+
 
 
 

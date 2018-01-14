@@ -21,6 +21,7 @@ type ('k, 'v) node  = {
   mutable h : int 
 } [@@bs.deriving abstract]
 module A = Bs_Array 
+module S = Bs_Sort
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null" 
@@ -515,17 +516,29 @@ let rec addMutate ~cmp (t : _ t0) x data =
       );
       return (balMutate nt)  
 
-(* let ofArray0 ~cmp (xs : _ array) =   
+let ofArray0 ~cmp (xs : _ array) =   
   let len = A.length xs in 
   if len = 0 then empty0
   else
-    let next = sortedLengthAux 
-      ~cmp:(Bs_Cmp.getCmp cmp) xs (A.unsafe_get xs 0) 1 len in 
-    let result  = ref (ofSortedArrayAux  xs 0 next) in 
-    for i = next to len - 1 do 
-      result := addMutate ~cmp !result (A.unsafe_get xs i) 
+    let next = 
+        ref (S.strictlySortedLength xs 
+        (fun[@bs] (x0,_) (y0,_) -> 
+          (Bs_Cmp.getCmp cmp) x0 y0 [@bs] < 0
+        ))
+      in 
+    let result  = ref (
+      if !next >= 0 then 
+        ofSortedArrayAux xs 0 !next 
+      else begin   
+        next := - !next; 
+        ofSortedArrayRevAux xs (!next - 1) (!next)
+      end  
+    ) in 
+    for i = !next to len - 1 do 
+      let k, v = (A.unsafe_get xs i)  in 
+      result := addMutate ~cmp !result k v 
     done ;
-    !result          *)
+    !result         
 
 
 let rec removeMinAuxWithRootMutate nt n = 

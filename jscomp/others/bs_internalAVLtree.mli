@@ -27,10 +27,10 @@
 type ('key, 'a) t0 = ('key, 'a) node Js.null
 
 and ('k,  'v) node  = private {
-  left : ('k,'v) t0;
-  key : 'k; 
-  value : 'v; 
-  right : ('k,'v) t0;
+  mutable left : ('k,'v) t0;
+  mutable key : 'k; 
+  mutable value : 'v; 
+  mutable right : ('k,'v) t0;
   h : int 
 } [@@bs.deriving abstract]
 
@@ -88,4 +88,20 @@ val checkInvariant : ('a,'b) t0 -> bool
 val fillArray : ('a,'b) node -> int -> ('a * 'b) array -> int  
 val toArray0 : ('a,'b) t0 -> ('a * 'b) array  
 val ofSortedArrayAux : ('a * 'b) array -> int -> int -> ('a, 'b) t0
+val ofSortedArrayRevAux : ('a * 'b) array -> int -> int -> ('a, 'b) t0
 val ofSortedArrayUnsafe0 : ('a * 'b) array -> ('a, 'b) t0
+
+val ofArray0 : cmp:('a,'id) Bs_Cmp.cmp -> ('a * 'b) array -> ('a, 'b) t0
+
+val addMutate : 
+  cmp:('a,'id) Bs_Cmp.cmp -> 
+  ('a, 'b) t0 -> 'a -> 'b -> 
+  ('a, 'b) t0
+
+val balMutate :   
+  ('a, 'b) node -> ('a, 'b) node 
+
+val removeMinAuxWithRootMutate :   
+  ('a, 'b) node -> 
+  ('a, 'b) node -> 
+  ('a, 'b) t0 

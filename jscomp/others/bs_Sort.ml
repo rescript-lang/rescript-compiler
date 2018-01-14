@@ -25,33 +25,33 @@
 
 module A = Bs_Array 
 
-let rec sortedLengthAuxMore xs prec acc len cmp = 
+let rec sortedLengthAuxMore xs prec acc len lt = 
   if acc >= len then acc 
   else 
     let v = A.unsafe_get xs acc in 
-    if cmp prec v [@bs] > 0 then 
-      sortedLengthAuxMore xs v (acc + 1) len cmp
+    if lt v prec [@bs]  then 
+      sortedLengthAuxMore xs v (acc + 1) len lt
     else acc   
 
-let rec sortedLengthAuxLess xs prec acc len cmp = 
+let rec sortedLengthAuxLess xs prec acc len lt = 
   if acc >= len then acc 
   else 
     let v = A.unsafe_get xs acc in 
-    if cmp prec v [@bs] < 0 then 
-      sortedLengthAuxLess xs v (acc + 1) len cmp
+    if lt prec v [@bs]  then 
+      sortedLengthAuxLess xs v (acc + 1) len lt
     else acc   
     
-let strictlySortedLength xs cmp = 
+let strictlySortedLength xs lt = 
   let len = A.length xs in 
   match len with 
   | 0 | 1 -> len 
   | _ -> 
     let x0, x1 = A.unsafe_get xs 0, A.unsafe_get xs 1 in 
-    let c = cmp x0 x1 [@bs]  in
-    if c < 0 then 
-      sortedLengthAuxLess xs x1 2 len cmp
-    else if c > 0 then 
-      - (sortedLengthAuxMore xs x1 2 len cmp)
+    (* let c = cmp x0 x1 [@bs]  in *)
+    if lt x0 x1 [@bs] then 
+      sortedLengthAuxLess xs x1 2 len lt
+    else if lt x1 x0 [@bs] then 
+      - (sortedLengthAuxMore xs x1 2 len lt)
     else 1  
 
 
