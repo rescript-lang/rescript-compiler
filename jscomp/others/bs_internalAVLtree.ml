@@ -56,11 +56,11 @@ let heightGe l r =
 
 let updateKV n key value =  
   return @@ node 
-  ~left:(left n)
-  ~right:(right n)
-  ~key
-  ~value
-  ~h:(h n)
+    ~left:(left n)
+    ~right:(right n)
+    ~key
+    ~value
+    ~h:(h n)
 
 let bal l x d r =
   let hl = match toOpt l with None -> 0 | Some n -> h n in
@@ -168,7 +168,7 @@ let rec fold0 m accu f =
   | Some n  ->
     let l, v, d, r = left n,  key n, value n, right n in 
     fold0
-       r 
+      r 
       (f (fold0 l accu f) v d [@bs]) f
 
 let rec forAll0  n p =
@@ -241,26 +241,26 @@ let concatOrJoin t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2    
 
-let rec filter0 p n = 
+let rec filterShared0 p n = 
   match toOpt n with 
     None -> n
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  v, d =  key n, value n  in 
-    let newLeft = filter0 p (left n) in
+    let newLeft = filterShared0 p (left n) in
     let pvd = p v d [@bs] in
-    let newRight = filter0 p (right n) in
+    let newRight = filterShared0 p (right n) in
     if pvd then join newLeft v d newRight else concat newLeft newRight
 
-let rec partition0 p n = 
+let rec partitionShared0 p n = 
   match toOpt n with   
     None -> (empty, empty)
   | Some n  ->
     let  key, value =  key n, value n  in
     (* call [p] in the expected left-to-right order *)    
-    let (lt, lf) = partition0 p (left n) in
+    let (lt, lf) = partitionShared0 p (left n) in
     let pvd = p key value [@bs] in
-    let (rt, rf) = partition0 p (right n) in
+    let (rt, rf) = partitionShared0 p (right n) in
     if pvd
     then (join lt key value rt, concat lf rf)
     else (concat lt rt, join lf key value rf)  
@@ -304,6 +304,34 @@ let rec checkInvariant (v : _ t0) =
     diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
 
 
+let rec fillArrayKey n i arr =     
+  let l,v,r = left n, key n, right n in 
+  let next = 
+    match toOpt l with 
+    | None -> i 
+    | Some l -> 
+      fillArrayKey l i arr in 
+  A.unsafe_set arr next v;
+  let rnext = next + 1 in 
+  match toOpt r with 
+  | None -> rnext 
+  | Some r -> 
+    fillArrayKey r rnext arr     
+
+let rec fillArrayValue n i arr =     
+  let l,r = left n,  right n in 
+  let next = 
+    match toOpt l with 
+    | None -> i 
+    | Some l -> 
+      fillArrayValue l i arr in 
+  A.unsafe_set arr next (value n);
+  let rnext = next + 1 in 
+  match toOpt r with 
+  | None -> rnext 
+  | Some r -> 
+    fillArrayValue r rnext arr         
+
 let rec fillArray n i arr =     
   let l,v,r = left n, key n, right n in 
   let next = 
@@ -324,24 +352,24 @@ type cursor =
 let rec fillArrayWithPartition n cursor arr p =     
   let l,v,r = left n, key n, right n in 
   (match toOpt l with 
-  | None -> ()
-  | Some l -> 
-      fillArrayWithPartition l cursor arr p);  
+   | None -> ()
+   | Some l -> 
+     fillArrayWithPartition l cursor arr p);  
   (if p v [@bs] then begin        
       let c = forward cursor in 
       A.unsafe_set arr c (v,value n);
       forwardSet cursor (c + 1)
-  end  
-  else begin 
-    let c = backward cursor in 
-    A.unsafe_set arr c (v, value n);
-    backwardSet cursor (c - 1)
-  end);     
+    end  
+   else begin 
+     let c = backward cursor in 
+     A.unsafe_set arr c (v, value n);
+     backwardSet cursor (c - 1)
+   end);     
   match toOpt r with 
   | None -> ()
   | Some r -> 
     fillArrayWithPartition r cursor arr  p 
-    
+
 let rec fillArrayWithFilter n i arr p =     
   let l,v,r = left n, key n, right n in 
   let next = 
@@ -352,7 +380,7 @@ let rec fillArrayWithFilter n i arr p =
   let rnext =
     if p v [@bs] then        
       (A.unsafe_set arr next (v, value n);
-        next + 1
+       next + 1
       )
     else next in   
   match toOpt r with 
@@ -370,6 +398,24 @@ let toArray0 n =
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v 
 
+let keysToArray0 n =     
+  match toOpt n with 
+  | None -> [||]
+  | Some n ->  
+    let size = lengthNode n in 
+    let v = A.makeUninitializedUnsafe size in 
+    ignore (fillArrayKey n 0 v : int);  (* may add assertion *)
+    v 
+
+let valuesToArray0 n =     
+  match toOpt n with 
+  | None -> [||]
+  | Some n ->  
+    let size = lengthNode n in 
+    let v = A.makeUninitializedUnsafe size in 
+    ignore (fillArrayValue n 0 v : int);  (* may add assertion *)
+    v         
+    
 let rec ofSortedArrayRevAux arr off len =     
   match len with 
   | 0 -> empty0
@@ -395,7 +441,7 @@ let rec ofSortedArrayRevAux arr off len =
     let right = 
       ofSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
     create left midK midV right    
-    
+
 
 let rec ofSortedArrayAux arr off len =     
   match len with 
@@ -421,10 +467,10 @@ let rec ofSortedArrayAux arr off len =
     let right = 
       ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left midK midV right    
-    
+
 let ofSortedArrayUnsafe0 arr =     
   ofSortedArrayAux arr 0 (A.length arr)
-      
+
 let rec compareAux e1 e2 ~kcmp ~vcmp =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
@@ -460,7 +506,7 @@ let eq0  s1 s2 ~kcmp ~vcmp =
   if len1 = len2 then
     eqAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~vcmp
   else false
-  
+
 let rec findOpt0  n x ~cmp = 
   match toOpt n with 
     None -> None
@@ -596,19 +642,19 @@ let ofArray0 ~cmp (xs : _ array) =
   if len = 0 then empty0
   else
     let next = 
-        ref (S.strictlySortedLength xs 
-        (fun[@bs] (x0,_) (y0,_) -> 
-          (Bs_Cmp.getCmp cmp) x0 y0 [@bs] < 0
-        ))
-      in 
+      ref (S.strictlySortedLength xs 
+             (fun[@bs] (x0,_) (y0,_) -> 
+                (Bs_Cmp.getCmp cmp) x0 y0 [@bs] < 0
+             ))
+    in 
     let result  = ref (
-      if !next >= 0 then 
-        ofSortedArrayAux xs 0 !next 
-      else begin   
-        next := - !next; 
-        ofSortedArrayRevAux xs (!next - 1) (!next)
-      end  
-    ) in 
+        if !next >= 0 then 
+          ofSortedArrayAux xs 0 !next 
+        else begin   
+          next := - !next; 
+          ofSortedArrayRevAux xs (!next - 1) (!next)
+        end  
+      ) in 
     for i = !next to len - 1 do 
       let k, v = (A.unsafe_get xs i)  in 
       result := addMutate ~cmp !result k v 
@@ -625,4 +671,3 @@ let rec removeMinAuxWithRootMutate nt n =
   | Some ln -> 
     leftSet n (removeMinAuxWithRootMutate nt ln); 
     return (balMutate n)    
-      

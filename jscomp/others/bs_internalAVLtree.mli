@@ -73,8 +73,8 @@ val concat : ('a,'b) t0 -> ('a,'b) t0 -> ('a,'b) t0
 
 val concatOrJoin :
   ('a,'b) t0 -> 'a -> 'b option -> ('a,'b) t0 -> ('a, 'b) t0
-val filter0 : ('a -> 'b -> bool [@bs]) -> ('a,'b) t0 -> ('a,'b) t0
-val partition0 :
+val filterShared0 : ('a -> 'b -> bool [@bs]) -> ('a,'b) t0 -> ('a,'b) t0
+val partitionShared0 :
   ('a -> 'b -> bool [@bs]) ->
   ('a,'b) t0 -> ('a,'b) t0 * ('a,'b) t0
 
@@ -86,7 +86,10 @@ val toList0 : ('a,'b) t0 -> ('a * 'b) list
 val checkInvariant : ('a,'b) t0 -> bool
 
 val fillArray : ('a,'b) node -> int -> ('a * 'b) array -> int  
-val toArray0 : ('a,'b) t0 -> ('a * 'b) array  
+
+val toArray0 : ('a, 'b) t0 -> ('a * 'b) array  
+val keysToArray0 : ('a, 'b) t0 -> 'a array
+val valuesToArray0 : ('a, 'b) t0 -> 'b array 
 val ofSortedArrayAux : ('a * 'b) array -> int -> int -> ('a, 'b) t0
 val ofSortedArrayRevAux : ('a * 'b) array -> int -> int -> ('a, 'b) t0
 val ofSortedArrayUnsafe0 : ('a * 'b) array -> ('a, 'b) t0

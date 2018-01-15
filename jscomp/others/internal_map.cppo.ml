@@ -13,12 +13,20 @@ type ('key, 'a, 'id) t0 = ('key,'a) N.t0
 
 type  'a t = (key,'a) N.t0 
 
-
-
-
-
-
-
+let rec add  t (x : key) (data : _)  = 
+  match N.toOpt t with
+  | None -> 
+    N.singleton0 x data 
+  | Some n  ->
+    let k = N.key n in 
+    if x = k then
+      N.updateKV n x data 
+    else
+      let v = N.value n in 
+      if x < k then
+        N.bal (add (N.left n) x data ) k v (N.right n)
+      else
+        N.bal (N.left n) k v (add (N.right n) x data )
 
 let rec findOpt n (x : key)  =
   match N.toOpt n with 
@@ -52,7 +60,23 @@ let rec mem n (x : key)=
     let v = N.key n in 
     x = v || mem (if x < v then N.left n else N.right n) x 
 
-
+let rec remove n (x : key) = 
+  match N.toOpt n with 
+  |  None -> n    
+  |  Some n ->
+    let l,v,r = N.(left n, key n, right n) in 
+    if x = v then
+      match N.toOpt l, N.toOpt r with
+      | None, _ -> r 
+      | _, None -> l 
+      | _, Some rn -> 
+        let kr, vr = ref (N.key rn), ref (N.value rn) in 
+        let r = N.removeMinAuxWithRef rn kr vr in 
+        N.bal l !kr !vr r 
+    else if x < v then
+      N.(bal (remove l x ) v (value n) r)
+    else
+      N.(bal l v (value n) (remove r x ))
 
 let rec splitAux (x : key) (n : _ N.node) : _ t0 * _ option  * _ t0 =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  

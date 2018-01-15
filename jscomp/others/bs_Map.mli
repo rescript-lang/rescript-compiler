@@ -131,13 +131,17 @@ val length: ('k, 'a, 'id) t -> int
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
 val toArray : ('k, 'a, 'id) t -> ('k * 'a) array
+val keysToArray : ('k, 'a, 'id) t -> 'k  array
+val valuesToArray : ('k, 'a, 'id) t -> 'a  array
 
 val minKVOpt: ('k, 'a,  _) t -> ('k * 'a) option
 val minKVNull: ('k, 'a, _) t -> ('k * 'a) Js.null
 val maxKVOpt: ('k, 'a, _) t -> ('k * 'a) option
 val maxKVNull:('k, 'a, _) t -> ('k * 'a) Js.null
 
-val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t
+val split: 
+    ('k, 'a, 'id) t -> 'k -> 
+    ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t
 (** [split x m] returns a triple [(l, data, r)], where
       [l] is the map with all the bindings of [m] whose 'k
     is strictly less than [x];
@@ -237,7 +241,9 @@ val maxKVOpt0: ('k, 'a, 'id) t0 -> ('k * 'a) option
 
 val split0: 
   cmp: ('k,'id) Bs_Cmp.cmp ->
-  'k -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 * 'a option * ('k, 'a, 'id) t0
+  ('k, 'a, 'id) t0 -> 
+  'k -> 
+  ('k, 'a, 'id) t0 * 'a option * ('k, 'a, 'id) t0
 
 
 
