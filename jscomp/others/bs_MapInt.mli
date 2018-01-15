@@ -5,12 +5,10 @@ type 'a t
 (** The type of maps from type [key] to type ['a]. *)
 
 val empty: 'a t
-(** The empty map. *)
 
 val ofArray: (key * 'a) array -> 'a t 
 
 val isEmpty: 'a t -> bool
-(** Test whether a map is empty or not. *)
 
 val mem:  'a t -> key -> bool
 
@@ -85,14 +83,11 @@ val toList: 'a t -> (key * 'a) list
    given to {!Map.Make}.
  *)
 
-val minBinding: 'a t -> (key * 'a) option
-(** Return the smallest binding of the given map
-   or raise
- *)
+val minKVOpt: 'a t -> (key * 'a) option
+val minKVNull: 'a t -> (key * 'a) Js.null
+val maxKVOpt: 'a t -> (key * 'a) option
+val maxKVNull: 'a t -> (key * 'a) Js.null
 
-val maxBinding: 'a t -> (key * 'a) option
-(** returns the largest binding of the given map.
- *)
 
 
 
@@ -106,12 +101,8 @@ val split: key -> 'a t -> 'a t * 'a option * 'a t
       or [Some v] if [m] binds [v] to [x].
  *)
 
-val findOpt: key -> 'a t -> 'a option
-(** [findOpt x m] returns the current binding of [x] in [m] *)
-
-val findAssert: key -> 'a t -> 'a
-(** raise an exception if not there *)
-  
+val findOpt: 'a t -> key -> 'a option
+val findNull: 'a t -> key -> 'a Js.null
 val findWithDefault:  'a t -> key -> 'a  -> 'a
 
 val map: 'a t -> ('a -> 'b [@bs]) ->  'b t

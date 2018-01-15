@@ -6,8 +6,10 @@ type t
 val empty: unit -> t
 val isEmpty: t -> bool
 val mem: t -> elt -> bool
-val add: t -> elt -> t
+
 val addOnly: t -> elt -> unit
+val add: t -> elt -> t
+
 val singleton: elt -> t
 val remove: t -> elt -> t
 val removeOnly: t -> elt -> unit

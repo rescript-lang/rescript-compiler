@@ -46,10 +46,16 @@ bs_Bag.cmj :
 bs_BagM.cmj :
 bs_Cmp.cmj : bs_Cmp.cmi
 bs_Map.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Bag.cmj bs_Map.cmi
-bs_MapString.cmj : bs_internalAVLtree.cmj bs_Sort.cmj bs_Array.cmj \
-    bs_MapString.cmi
-bs_MapInt.cmj : bs_internalAVLtree.cmj bs_Sort.cmj bs_Array.cmj \
-    bs_MapInt.cmi
+bs_internalMapInt.cmj : bs_internalAVLtree.cmj bs_Sort.cmj bs_Array.cmj
+bs_internalMapString.cmj : bs_internalAVLtree.cmj bs_Sort.cmj bs_Array.cmj
+bs_MapString.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
+    bs_Sort.cmj bs_Array.cmj bs_MapString.cmi
+bs_MapInt.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_Sort.cmj \
+    bs_Array.cmj bs_MapInt.cmi
+bs_MapStringM.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
+    bs_SortString.cmj bs_Array.cmj bs_MapStringM.cmi
+bs_MapIntM.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_SortInt.cmj \
+    bs_Array.cmj bs_MapIntM.cmi
 bs_Set.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Bag.cmj bs_Array.cmj \
     bs_Set.cmi
 bs_SetM.cmj : bs_internalAVLset.cmj bs_Sort.cmj bs_Cmp.cmj bs_BagM.cmj \
@@ -108,6 +114,8 @@ bs_Cmp.cmi :
 bs_Map.cmi : bs_Cmp.cmi bs_Bag.cmj
 bs_MapString.cmi :
 bs_MapInt.cmi :
+bs_MapStringM.cmi :
+bs_MapIntM.cmi :
 bs_Set.cmi : bs_Cmp.cmi bs_Bag.cmj
 bs_SetM.cmi : bs_Cmp.cmi
 bs_SetInt.cmi :

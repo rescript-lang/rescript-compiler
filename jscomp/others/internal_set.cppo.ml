@@ -15,23 +15,6 @@ module A = Bs_Array
 
 type t = elt N.t0
 
-let rec add  (t : t) (x : elt) : t =
-  match N.toOpt t with 
-    None -> N.singleton0 x 
-  | Some nt  ->
-    let v = N.key nt in  
-    if x = v then t else
-      let l, r = N.(left nt , right nt) in 
-      if x < v then 
-        let ll = add l x in 
-        if ll == l then t 
-        else N.bal ll v r
-      else 
-        let rr = add r x in 
-        if rr == r then t
-        else N.bal l v (add  r x) 
-
-
 
 let rec mem (t : t) (x : elt)  =
   match N.toOpt t with 
@@ -39,29 +22,6 @@ let rec mem (t : t) (x : elt)  =
   | Some n  ->                
     let v = N.key n in 
     x = v || mem (if x < v then N.left n else N.right n) x
-
-let rec remove (t : t) (x : elt) : t = 
-  match N.toOpt t with 
-  | None -> t
-  | Some n  ->
-    let l,v,r = N.(left n, key n, right n) in 
-    if x = v then 
-      match N.toOpt l, N.toOpt r with 
-      | None, _ -> r 
-      | _, None -> l 
-      | _, Some rn -> 
-        let v = ref (N.key rn) in 
-        let r = N.removeMinAuxWithRef rn v in 
-        N.bal l !v r
-    else
-    if x < v then 
-      let ll = remove l x in  
-      if ll == l then t  
-      else N.bal ll v r 
-    else 
-      let rr = remove r x in 
-      if rr == r then t
-      else N.bal l v rr
 
 
 let rec compareAux e1 e2  =

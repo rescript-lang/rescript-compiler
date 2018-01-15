@@ -1,14 +1,10 @@
-#ifdef TYPE_STRING
+# 2 "mapm.cppo.mli"
 type key = string
-#elif defined TYPE_INT
-type key = int
-#else
-[%error "unknown type"]
-#endif  
+# 8
 type 'a t
-(** The type of maps from type [key] to type ['a]. *)
 
-val empty: 'a t
+
+val empty: unit -> 'a t
 
 val ofArray: (key * 'a) array -> 'a t 
 
@@ -16,21 +12,21 @@ val isEmpty: 'a t -> bool
 
 val mem:  'a t -> key -> bool
 
+val addOnly : 'a t -> key -> 'a -> unit  
 val add: 'a t ->  key -> 'a -> 'a t
-(** [add m x y] returns a map containing the same bindings as
-   [m], plus a binding of [x] to [y]. If [x] was already bound
+(** [add m x y] do the in-place modification, return
+    [m] for chaining. If [x] was already bound
    in [m], its previous binding disappears. *)
 
 val singleton: key -> 'a -> 'a t
 
 val remove: 'a t ->  key -> 'a t
-(** [remove m x] returns a map containing the same bindings as
-   [m], except for [x] which is unbound in the returned map. *)
+(** [remove m x] do the in-place modification, return [m] for chaining *)
 
-val merge:
+(* val merge:
     'a t -> 'b t ->
     (key -> 'a option -> 'b option -> 'c option [@bs]) ->
-    'c t
+    'c t *)
 (** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
     and of [m2]. The presence of each such binding, and the corresponding
     value, is determined with the function [f].
@@ -65,12 +61,13 @@ val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
     satisfy the predicate [p].
  *)
 
-val filter: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t
+(* val filter: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t *)
 (** [filter m p] returns the map with all the bindings in [m]
     that satisfy predicate [p].
 *)
 
-val partition: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t * 'a t
+
+(* val partition: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t * 'a t *)
 (** [partition p m] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
@@ -95,7 +92,7 @@ val maxKVNull: 'a t -> (key * 'a) Js.null
 
 
 
-val split: key -> 'a t -> 'a t * 'a option * 'a t
+(* val split: key -> 'a t -> 'a t * 'a option * 'a t *)
 (** [split x m] returns a triple [(l, data, r)], where
       [l] is the map with all the bindings of [m] whose key
     is strictly less than [x];
@@ -105,7 +102,7 @@ val split: key -> 'a t -> 'a t * 'a option * 'a t
       or [Some v] if [m] binds [v] to [x].
  *)
 
-val findOpt: 'a t -> key -> 'a option
+val findOpt: 'a t ->  key -> 'a option
 val findNull: 'a t -> key -> 'a Js.null
 val findWithDefault:  'a t -> key -> 'a  -> 'a
 

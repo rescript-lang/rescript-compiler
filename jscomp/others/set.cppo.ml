@@ -31,13 +31,48 @@ let toArray = N.toArray0
 let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe0
 let checkInvariant = N.checkInvariant
 
-let add = I.add
+let rec add  (t : t) (x : elt) : t =
+  match N.toOpt t with 
+    None -> N.singleton0 x 
+  | Some nt  ->
+    let v = N.key nt in  
+    if x = v then t else
+      let l, r = N.(left nt , right nt) in 
+      if x < v then 
+        let ll = add l x in 
+        if ll == l then t 
+        else N.bal ll v r
+      else 
+        let rr = add r x in 
+        if rr == r then t
+        else N.bal l v (add  r x) 
+let rec remove (t : t) (x : elt) : t = 
+  match N.toOpt t with 
+  | None -> t
+  | Some n  ->
+    let l,v,r = N.(left n, key n, right n) in 
+    if x = v then 
+      match N.toOpt l, N.toOpt r with 
+      | None, _ -> r 
+      | _, None -> l 
+      | _, Some rn -> 
+        let v = ref (N.key rn) in 
+        let r = N.removeMinAuxWithRef rn v in 
+        N.bal l !v r
+    else
+    if x < v then 
+      let ll = remove l x in  
+      if ll == l then t  
+      else N.bal ll v r 
+    else 
+      let rr = remove r x in 
+      if rr == r then t
+      else N.bal l v rr
 let ofArray = I.ofArray
 let cmp = I.cmp 
 let eq = I.eq 
 let findOpt = I.findOpt
 let subset = I.subset 
-let remove = I.remove 
 let mem = I.mem 
 
 let rec splitAuxNoPivot (n : _ N.node) (x : elt) : t * t =   
@@ -97,7 +132,7 @@ let rec union (s1 : t) (s2 : t) =
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
     let h1, h2 = N.(h n1 , h n2) in             
     if h1 >= h2 then
-      if h2 = 1 then I.add  s1 (N.key n2) else begin
+      if h2 = 1 then add  s1 (N.key n2) else begin
         let l1, v1, r1 = N.(left n1, key n1, right n1) in      
         let (l2,  r2) = splitAuxNoPivot n2 v1 in
         N.joinShared (union l1 l2) v1 (union r1 r2)

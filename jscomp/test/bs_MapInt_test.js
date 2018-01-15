@@ -16,7 +16,7 @@ function test() {
     m = Bs_MapInt.add(m, i, i);
   }
   for(var i$1 = 0; i$1 <= 999999; ++i$1){
-    should(+(Bs_MapInt.findOpt(i$1, m) !== /* None */0));
+    should(+(Bs_MapInt.findOpt(m, i$1) !== /* None */0));
   }
   for(var i$2 = 0; i$2 <= 999999; ++i$2){
     m = Bs_MapInt.remove(m, i$2);
