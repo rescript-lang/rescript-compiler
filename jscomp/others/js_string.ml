@@ -78,6 +78,20 @@ external normalizeByForm : t -> t = "normalize" [@@bs.send.pipe: t] (** ES2015 *
 external repeat : int -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
 
 external replace : t ->  t ->  t = "" [@@bs.send.pipe: t]
+
+(** [replace substr newSubstr string] returns a new string which is
+identical to [string] except with the first matching instance of [substr]
+replaced by [newSubstr].
+
+[substr] is treated as a verbatim string to match, not a regular
+expression.
+
+@example {[
+let result = Js.String.replace "a" "b" "aaaa"
+let () = Js.log result (* prints "baaa" *)
+]}
+*)
+
 external replaceByRe : Js_re.t ->  t ->  t = "replace" [@@bs.send.pipe: t]
 
 (** returns a new string with some or all matches of a pattern replaced by the
