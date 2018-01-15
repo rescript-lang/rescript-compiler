@@ -91,6 +91,45 @@ val ofSortedArrayAux : ('a * 'b) array -> int -> int -> ('a, 'b) t0
 val ofSortedArrayRevAux : ('a * 'b) array -> int -> int -> ('a, 'b) t0
 val ofSortedArrayUnsafe0 : ('a * 'b) array -> ('a, 'b) t0
 
+val cmp0 : 
+  ('a, 'b) t0 -> ('a, 'c) t0 -> 
+  kcmp:('a,_) Bs_Cmp.cmp -> 
+  vcmp :('b -> 'c -> int [@bs]) -> 
+  int 
+
+val eq0:   
+  ('a, 'b) t0 -> ('a, 'c) t0 -> 
+  kcmp:('a,_) Bs_Cmp.cmp -> 
+  vcmp :('b -> 'c -> bool [@bs]) -> 
+  bool
+
+val findOpt0:  
+  ('a, 'b) t0 -> 
+  'a -> 
+  cmp:('a,_) Bs_Cmp.cmp -> 
+  'b option 
+
+val findNull0:  
+  ('a, 'b) t0 -> 
+  'a -> 
+  cmp:('a,_) Bs_Cmp.cmp -> 
+  'b Js.null
+
+val findWithDefault0:  
+  ('a, 'b) t0 -> 
+  'a -> 
+  'b -> 
+  cmp:('a,_) Bs_Cmp.cmp -> 
+  'b 
+
+val mem0:  
+  ('a, 'b) t0 -> 
+  'a -> 
+  cmp:('a,_) Bs_Cmp.cmp -> 
+  bool
+
+
+  
 val ofArray0 : cmp:('a,'id) Bs_Cmp.cmp -> ('a * 'b) array -> ('a, 'b) t0
 
 val addMutate : 

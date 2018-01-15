@@ -425,6 +425,81 @@ let rec ofSortedArrayAux arr off len =
 let ofSortedArrayUnsafe0 arr =     
   ofSortedArrayAux arr 0 (A.length arr)
       
+let rec compareAux e1 e2 ~kcmp ~vcmp =
+  match e1,e2 with 
+  | h1::t1, h2::t2 ->
+    let c = (Bs_Cmp.getCmp kcmp) (key h1) (key h2) [@bs] in 
+    if c = 0 then 
+      let cx = vcmp (value h1) (value h2) [@bs] in 
+      if cx = 0 then
+        compareAux ~kcmp ~vcmp 
+          (stackAllLeft  (right h1) t1 )
+          (stackAllLeft (right h2) t2)
+      else  cx
+    else c 
+  | _, _ -> 0   
+
+let rec eqAux e1 e2 ~kcmp ~vcmp =
+  match e1,e2 with 
+  | h1::t1, h2::t2 ->
+    if (Bs_Cmp.getCmp kcmp) (key h1) (key h2) [@bs] = 0 && 
+       vcmp (value h1) (value h2) [@bs] then
+      eqAux ~kcmp ~vcmp (
+        stackAllLeft  (right h1) t1 ) (stackAllLeft (right h2) t2)
+    else  false    
+  | _, _ -> true 
+
+let cmp0 s1 s2 ~kcmp ~vcmp =
+  let len1,len2 = length0 s1, length0 s2 in 
+  if len1 = len2 then 
+    compareAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~vcmp 
+  else  if len1 < len2 then -1 else 1 
+
+let eq0  s1 s2 ~kcmp ~vcmp =
+  let len1, len2 = length0 s1, length0 s2 in 
+  if len1 = len2 then
+    eqAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~vcmp
+  else false
+  
+let rec findOpt0  n x ~cmp = 
+  match toOpt n with 
+    None -> None
+  | Some n (* Node(l, v, d, r, _) *)  ->
+    let v = key n in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then Some (value n)
+    else findOpt0 ~cmp  (if c < 0 then left n else right n) x 
+
+let rec findNull0  n x ~cmp =
+  match toOpt n with 
+  | None -> Js.null
+  | Some n  ->
+    let v = key n in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then return (value n )
+    else findNull0 ~cmp  (if c < 0 then left n else right n) x 
+
+let rec findWithDefault0   n x def ~cmp = 
+  match toOpt n with 
+    None ->
+    def
+  | Some n (* Node(l, v, d, r, _)*) ->
+    let v = key n in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then value n 
+    else findWithDefault0 ~cmp  (if c < 0 then left n else right n) x def
+
+
+let rec mem0  n x ~cmp = 
+  match toOpt n with 
+    None ->
+    false
+  | Some n (* Node(l, v, d, r, _) *) ->
+    let v = key n in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    c = 0 || mem0 ~cmp (if c < 0 then left n else right n) x
+
+
 (******************************************************************)
 
 (* 

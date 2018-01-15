@@ -25,8 +25,8 @@ type ('k,'v,'id) t =
 let empty0 = N.empty0      
 let isEmpty0 = N.isEmpty0
 let singleton0 = N.singleton0
-let minBinding0 = N.minKVOpt0
-let maxBinding0 = N.maxKVOpt0
+let minKVOpt0 = N.minKVOpt0
+let maxKVOpt0 = N.maxKVOpt0
 let iter0 = N.iter0      
 let map0  = N.map0
 let mapi0 = N.mapi0
@@ -38,6 +38,12 @@ let partition0 = N.partition0
 let length0 = N.length0
 let toList0 = N.toList0
 let ofArray0 = N.ofArray0
+let findOpt0 = N.findOpt0
+let findNull0 = N.findNull0
+let findWithDefault0 = N.findWithDefault0
+let mem0 = N.mem0
+let cmp0 = N.cmp0
+let eq0 = N.eq0 
 
 let rec add0  (t : _ t0) x data  ~cmp =
   match N.toOpt t with (* TODO: test case with the same key *)
@@ -55,44 +61,6 @@ let rec add0  (t : _ t0) x data  ~cmp =
     else
       N.bal (N.left n) k v (add0 ~cmp (N.right n) x data )
 
-let rec findOpt0  n x ~cmp = 
-  match N.toOpt n with 
-    None -> None
-  | Some n (* Node(l, v, d, r, _) *)  ->
-    let v = N.key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then Some (N.value n)
-    else findOpt0 ~cmp  (if c < 0 then N.left n else N.right n) x 
-
-let rec findAssert0  n x ~cmp =
-  match N.toOpt n with 
-  | None -> 
-    [%assert "Not_found"]
-  | Some n (* Node(l, v, d, r, _)*) ->
-    let v = N.key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then N.value n 
-    else findAssert0 ~cmp  (if c < 0 then N.left n else N.right n) x 
-
-let rec findWithDefault0   n x def ~cmp = 
-  match N.toOpt n with 
-    None ->
-    def
-  | Some n (* Node(l, v, d, r, _)*) ->
-    let v = N.key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then N.value n 
-    else findWithDefault0 ~cmp  (if c < 0 then N.left n else N.right n) x def
-
-
-let rec mem0  x n ~cmp = 
-  match N.toOpt n with 
-    None ->
-    false
-  | Some n (* Node(l, v, d, r, _) *) ->
-    let v = N.key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    c = 0 || mem0 ~cmp x (if c < 0 then N.left n else N.right n)
 
 
 let rec remove0  n x ~cmp = 
@@ -156,42 +124,6 @@ let rec merge0 s1 s2 f ~cmp =
   | _ ->
     assert false
 
-let rec compareAux e1 e2 ~kcmp ~vcmp =
-  match e1,e2 with 
-  | h1::t1, h2::t2 ->
-    let c = (Bs_Cmp.getCmp kcmp) (N.key h1) (N.key h2) [@bs] in 
-    if c = 0 then 
-      let cx = vcmp (N.value h1) (N.value h2) [@bs] in 
-      if cx = 0 then
-        compareAux ~kcmp ~vcmp 
-          (N.stackAllLeft  (N.right h1) t1 )
-          (N.stackAllLeft (N.right h2) t2)
-      else  cx
-    else c 
-  | _, _ -> 0   
-
-let rec eqAux e1 e2 ~kcmp ~vcmp =
-  match e1,e2 with 
-  | h1::t1, h2::t2 ->
-    if (Bs_Cmp.getCmp kcmp) (N.key h1) (N.key h2) [@bs] = 0 && 
-       vcmp (N.value h1) (N.value h2) [@bs] then
-      eqAux ~kcmp ~vcmp (
-        N.stackAllLeft  (N.right h1) t1 ) (N.stackAllLeft (N.right h2) t2)
-    else  false    
-  | _, _ -> true (*end *)
-
-
-let cmp0 s1 s2 ~kcmp ~vcmp =
-  let len1,len2 = N.length0 s1, N.length0 s2 in 
-  if len1 = len2 then 
-    compareAux (N.stackAllLeft s1 []) (N.stackAllLeft s2 []) ~kcmp ~vcmp 
-  else  if len1 < len2 then -1 else 1 
-
-let eq0  s1 s2 ~kcmp ~vcmp =
-  let len1, len2 = N.length0 s1, N.length0 s2 in 
-  if len1 = len2 then
-    eqAux (N.stackAllLeft s1 []) (N.stackAllLeft s2 []) ~kcmp ~vcmp
-  else false
 
 
 
@@ -272,10 +204,10 @@ let findOpt (type k) (type v) (type id) (map : (k,v,id) t) x  =
   let module X = (val dict) in 
   findOpt0 ~cmp:X.cmp  map x 
 
-let findAssert (type k) (type v) (type id) (map : (k,v,id) t) x = 
+let findNull (type k) (type v) (type id) (map : (k,v,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  findAssert0 ~cmp:X.cmp  map x
+  findNull0 ~cmp:X.cmp  map x
 
 let findWithDefault (type k) (type v) (type id)  (map : (k,v,id) t) x def = 
   let dict,map = B.(dict map, data map) in 
@@ -286,7 +218,7 @@ let findWithDefault (type k) (type v) (type id)  (map : (k,v,id) t) x def =
 let mem (type k) (type v) (type id)  (map : (k,v,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  mem0 ~cmp:X.cmp x map
+  N.mem0 ~cmp:X.cmp map x
 
 let remove (type k) (type v) (type id) (map : (k,v,id) t) x  =   
   let dict,map = B.(dict map, data map) in 

@@ -19,20 +19,6 @@ type  'a t = (key,'a) N.t0
 
 
 
-let rec add  t (x : key) (data : _)  = 
-  match N.toOpt t with
-  | None -> 
-    N.singleton0 x data 
-  | Some n  ->
-    let k = N.key n in 
-    if x = k then
-      N.updateKV n x data 
-    else
-      let v = N.value n in 
-      if x < k then
-        N.bal (add (N.left n) x data ) k v (N.right n)
-      else
-        N.bal (N.left n) k v (add (N.right n) x data )
 
 let rec findOpt n (x : key)  =
   match N.toOpt n with 

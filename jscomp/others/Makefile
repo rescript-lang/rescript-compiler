@@ -41,6 +41,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_internalSet\
 	bs_Set\
 	bs_SetM\
+	bs_MapM\
 	bs_internalSetInt\
 	bs_internalSetString\
 	bs_SetInt\

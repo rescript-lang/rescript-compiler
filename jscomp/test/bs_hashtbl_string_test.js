@@ -149,7 +149,7 @@ function bench3(m) {
     table = Bs_Map.add0(table, "" + i, i, cmp);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_Map.mem0("" + i$1, table, cmp)) {
+    if (!Bs_Map.mem0(table, "" + i$1, cmp)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [

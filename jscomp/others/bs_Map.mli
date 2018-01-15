@@ -11,7 +11,7 @@
 (*                                                                     *)
 (***********************************************************************)
 (** Adapted by authors of BuckleScript without using functors          *)
-(** The type of the map keys. *)
+
 type ('k,  'a, 'id) t0 
 (** 
     ['k] the key type 
@@ -150,7 +150,7 @@ val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) 
 val findOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
 (** [find x m] returns the current binding of [x] in [m],
     or raises [Not_found] if no such binding exists. *)
-val findAssert: ('k, 'a, 'id) t -> 'k ->  'a
+val findNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 
 val findWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
@@ -173,8 +173,8 @@ val ofArray0:
 val isEmpty0 : ('k, 'a,'id) t0 -> bool 
 
 val mem0: 
-    'k ->     
    ('k, 'a, 'id) t0 -> 
+   'k ->     
    cmp: ('k,'id) Bs_Cmp.cmp -> 
    bool
 
@@ -228,10 +228,10 @@ val length0: ('k, 'a, 'id) t0 -> int
 
 val toList0: ('k, 'a, 'id) t0 -> ('k * 'a) list
 
-val minBinding0: ('k, 'a, 'id) t0 -> ('k * 'a) option
+val minKVOpt0: ('k, 'a, 'id) t0 -> ('k * 'a) option
 
 
-val maxBinding0: ('k, 'a, 'id) t0 -> ('k * 'a) option
+val maxKVOpt0: ('k, 'a, 'id) t0 -> ('k * 'a) option
 
 
 
@@ -247,11 +247,11 @@ val findOpt0:
     cmp: ('k,'id) Bs_Cmp.cmp -> 
     'a option
 
-val findAssert0: 
+val findNull0: 
     ('k, 'a, 'id) t0 -> 
     'k ->
     cmp: ('k,'id) Bs_Cmp.cmp -> 
-   'a 
+   'a Js.null
 
 
 val findWithDefault0: 
