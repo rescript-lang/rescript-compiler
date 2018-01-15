@@ -252,6 +252,20 @@ let rec filterShared0 p n =
     let newRight = filterShared0 p (right n) in
     if pvd then join newLeft v d newRight else concat newLeft newRight
 
+let rec filterMap0 n p = 
+  match toOpt n with 
+    None -> empty
+  | Some n  ->
+    (* call [p] in the expected left-to-right order *)
+    let  v, d =  key n, value n  in 
+    let newLeft = filterMap0 (left n) p in
+    let pvd = p v d [@bs] in
+    let newRight = filterMap0 (right n) p in
+    match pvd with 
+    | None -> concat newLeft newRight
+    | Some d -> join newLeft v d newRight 
+    
+
 let rec partitionShared0 p n = 
   match toOpt n with   
     None -> (empty, empty)

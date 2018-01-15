@@ -89,17 +89,23 @@ let split0 ~cmp n x =
 let rec merge0 s1 s2 f ~cmp =
   match N.(toOpt s1, toOpt s2) with
     (None, None) -> N.empty
-  | Some n (* (Node (l1, v1, d1, r1, h1), _) *), _ 
-    when N.h n  >= (match N.toOpt s2 with None -> 0 | Some n -> N.h n) ->
+  | Some _, None -> 
+    N.filterMap0 s1 (fun[@bs] k v -> 
+            f k (Some v) None [@bs]
+      )
+  | None, Some _ -> 
+    N.filterMap0 s2 (fun[@bs] k v -> 
+      f k None (Some v) [@bs]
+    )
+  | Some n , Some s2n 
+    when N.h n  >= N.h s2n  ->
     let l1, v1, d1, r1 = N.(left n, key n, value n, right n) in 
-    let (l2, d2, r2) = split0 ~cmp s2 v1 in
+    let (l2, d2, r2) = splitAux ~cmp s2n v1 in
     N.concatOrJoin (merge0 ~cmp l1 l2 f) v1 (f v1 (Some d1) d2 [@bs]) (merge0 ~cmp r1 r2 f)
-  | _, Some n (* Node (l2, v2, d2, r2, h2)*) ->
+  | Some s1n, Some n (* Node (l2, v2, d2, r2, h2)*) ->
     let l2,v2,d2,r2 = N.(left n, key n, value n, right n) in 
-    let (l1, d1, r1) = split0 ~cmp s1 v2 in
+    let (l1, d1, r1) = splitAux ~cmp s1n v2 in
     N.concatOrJoin (merge0 ~cmp l1 l2 f) v2 (f v2 d1 (Some d2) [@bs]) (merge0 ~cmp r1 r2 f)
-  | _ ->
-    assert false
 
 
 
