@@ -243,7 +243,7 @@ let concatOrJoin t1 v d t2 =
 
 let rec filterShared0 p n = 
   match toOpt n with 
-    None -> n
+    None -> empty
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  v, d =  key n, value n  in 

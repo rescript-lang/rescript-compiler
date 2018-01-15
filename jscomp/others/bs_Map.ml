@@ -32,11 +32,11 @@ let rec add0  (t : _ t0) x data  ~cmp =
     if c = 0 then
       N.updateKV n x data 
     else 
-    let v = N.value n in 
-    if c < 0 then
-      N.bal (add0 ~cmp (N.left n) x data ) k v  (N.right n)
-    else
-      N.bal (N.left n) k v (add0 ~cmp (N.right n) x data )
+      let v = N.value n in 
+      if c < 0 then
+        N.bal (add0 ~cmp (N.left n) x data ) k v  (N.right n)
+      else
+        N.bal (N.left n) k v (add0 ~cmp (N.right n) x data )
 
 
 
@@ -60,52 +60,69 @@ let rec remove0  n x ~cmp =
     else
       N.(bal l v (value n) (remove0 ~cmp r x ))
 
-let rec splitAux ~cmp n x  : _ t0 * _ option  * _ t0 =  
+let rec splitAuxPivot ~cmp n x pres  =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
   let c = (Bs_Cmp.getCmp cmp) x v [@bs] in 
-  if c = 0 then (l, Some d, r)
+  if c = 0 then begin 
+    pres := Some d; 
+    (l,  r)
+  end
   else     
   if c < 0 then
     match N.toOpt l with 
     | None -> 
-      N.(empty , None, return n)
+      N.(empty, return n)
     | Some l -> 
-      let (ll, pres, rl) = splitAux ~cmp l x in (ll, pres, N.join rl v d r)
+      let (ll,rl) = splitAuxPivot ~cmp l x pres in
+      (ll,  N.join rl v d r)
   else
     match N.toOpt r with 
     | None ->
-      N.(return n, None, empty)
+      N.(return n, empty)
     | Some r -> 
-      let (lr, pres, rr) = splitAux ~cmp r x in (N.join l v d lr, pres, rr)
+      let (lr,  rr) = splitAuxPivot ~cmp r x pres in
+      (N.join l v d lr,  rr)
 
 
 let split0 ~cmp n x = 
   match N.toOpt n with 
   | None ->     
-    N.(empty, None, empty)
+    N.(empty, empty), None
   | Some n  ->
-    splitAux ~cmp n x 
+    let pres = ref None in
+    let v = splitAuxPivot ~cmp n x pres in 
+    v, !pres
 
 let rec merge0 s1 s2 f ~cmp =
   match N.(toOpt s1, toOpt s2) with
     (None, None) -> N.empty
   | Some _, None -> 
     N.filterMap0 s1 (fun[@bs] k v -> 
-            f k (Some v) None [@bs]
+        f k (Some v) None [@bs]
       )
   | None, Some _ -> 
     N.filterMap0 s2 (fun[@bs] k v -> 
-      f k None (Some v) [@bs]
-    )
-  | Some n , Some s2n 
-    when N.h n  >= N.h s2n  ->
-    let l1, v1, d1, r1 = N.(left n, key n, value n, right n) in 
-    let (l2, d2, r2) = splitAux ~cmp s2n v1 in
-    N.concatOrJoin (merge0 ~cmp l1 l2 f) v1 (f v1 (Some d1) d2 [@bs]) (merge0 ~cmp r1 r2 f)
-  | Some s1n, Some n (* Node (l2, v2, d2, r2, h2)*) ->
-    let l2,v2,d2,r2 = N.(left n, key n, value n, right n) in 
-    let (l1, d1, r1) = splitAux ~cmp s1n v2 in
-    N.concatOrJoin (merge0 ~cmp l1 l2 f) v2 (f v2 d1 (Some d2) [@bs]) (merge0 ~cmp r1 r2 f)
+        f k None (Some v) [@bs]
+      )
+  | Some s1n , Some s2n -> 
+    if N.h s1n  >= N.h s2n  then
+      let l1, v1, d1, r1 = N.(left s1n, key s1n, value s1n, right s1n) in 
+      let d2 = ref None in 
+      let (l2, r2) = splitAuxPivot ~cmp s2n v1 d2 in
+      let d2 = !d2 in 
+      let newLeft = merge0 ~cmp l1 l2 f in 
+      let newD = f v1 (Some d1) d2 [@bs] in 
+      let newRight = merge0 ~cmp r1 r2 f in 
+      N.concatOrJoin newLeft v1 newD  newRight
+    else
+      let l2,v2,d2,r2 = N.(left s2n, key s2n, value s2n, right s2n) in 
+      let d1 = ref None in 
+      let (l1,  r1) = splitAuxPivot ~cmp s1n v2 d1 in
+      let d1 = !d1 in 
+      let newLeft = merge0 ~cmp l1 l2 f in 
+      let newD = (f v2 d1 (Some d2) [@bs]) in 
+      let newRight = (merge0 ~cmp r1 r2 f) in 
+      N.concatOrJoin newLeft v2 newD newRight
 
 
 
@@ -160,7 +177,7 @@ let minKVOpt m = N.minKVOpt0 (B.data m)
 let minKVNull m = N.minKVNull0 (B.data m) 
 let maxKVOpt m = N.maxKVOpt0 (B.data m)
 let maxKVNull m = N.maxKVNull0 (B.data m)
-  
+
 
 let map m f = 
   let dict, map = B.(dict m, data m) in 
@@ -216,13 +233,12 @@ let remove (type k) (type v) (type id) (map : (k,v,id) t) x  =
 let split (type k)  (type id) (map : (k,_,id) t) x =   
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  let l,v,r = split0 ~cmp:X.cmp map x in 
-  B.bag ~dict 
+  let (l,r),v = split0 ~cmp:X.cmp map x in 
+  (B.bag ~dict 
     ~data:l
-  , 
-  v ,
+  ,   
   B.bag ~dict
-    ~data:r
+    ~data:r), v
 
 
 let merge (type k) (type v) (type id)  (s1 : (k,v,id) t) 

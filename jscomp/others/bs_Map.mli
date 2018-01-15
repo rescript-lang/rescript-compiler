@@ -141,7 +141,7 @@ val maxKVNull:('k, 'a, _) t -> ('k * 'a) Js.null
 
 val split: 
     ('k, 'a, 'id) t -> 'k -> 
-    ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t
+    (('k, 'a, 'id) t * ('k, 'a, 'id) t )* 'a option 
 (** [split x m] returns a triple [(l, data, r)], where
       [l] is the map with all the bindings of [m] whose 'k
     is strictly less than [x];
@@ -243,7 +243,7 @@ val split0:
   cmp: ('k,'id) Bs_Cmp.cmp ->
   ('k, 'a, 'id) t0 -> 
   'k -> 
-  ('k, 'a, 'id) t0 * 'a option * ('k, 'a, 'id) t0
+  (('k, 'a, 'id) t0  * ('k, 'a, 'id) t0) * 'a option
 
 
 
