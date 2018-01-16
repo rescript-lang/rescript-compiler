@@ -471,6 +471,7 @@
 ../lib/whole_compiler.ml : ./syntax/ast_derive_projector.mli
 ../lib/whole_compiler.ml : ./core/js_pass_tailcall_inline.mli
 ../lib/whole_compiler.ml : ./core/lam_compile_external_obj.ml
+../lib/whole_compiler.ml : ./super_errors/super_includemod.ml
 ../lib/whole_compiler.ml : ./syntax/ast_utf8_string_interp.ml
 ../lib/whole_compiler.ml : ./core/lam_compile_external_call.ml
 ../lib/whole_compiler.ml : ./core/lam_compile_external_obj.mli
