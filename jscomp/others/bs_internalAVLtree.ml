@@ -89,6 +89,36 @@ let bal l x d r =
     return @@ node ~left:l ~key:x ~value:d ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
 
+let rec minKey0Aux n =  
+  match toOpt (left n) with 
+  | None -> key n
+  | Some n -> minKey0Aux n 
+    
+let minKeyOpt0 n =     
+  match toOpt n with 
+  | None -> None 
+  | Some n -> Some (minKey0Aux n)
+
+let minKeyNull0 n =   
+  match toOpt n with 
+  | None -> Js.null 
+  | Some n -> return (minKey0Aux n)
+
+let rec maxKey0Aux n =  
+  match toOpt (right n) with 
+  | None -> key n
+  | Some n -> maxKey0Aux n 
+    
+let maxKeyOpt0 n =     
+  match toOpt n with 
+  | None -> None 
+  | Some n -> Some (maxKey0Aux n)
+
+let maxKeyNull0 n =   
+  match toOpt n with 
+  | None -> Js.null 
+  | Some n -> return (maxKey0Aux n)
+  
 let rec minKV0Aux n =  
   match toOpt (left n) with 
   | None -> key n , value n 
@@ -639,7 +669,7 @@ let balMutate nt  =
       nt
     end
 
-let rec addMutate ~cmp (t : _ t0) x data =   
+let rec updateMutate (t : _ t0) x data ~cmp =   
   match toOpt t with 
   | None -> singleton0 x data
   | Some nt -> 
@@ -653,10 +683,10 @@ let rec addMutate ~cmp (t : _ t0) x data =
     else
       let l, r = (left nt, right nt) in 
       (if c < 0 then                   
-         let ll = addMutate ~cmp l x data in
+         let ll = updateMutate ~cmp l x data in
          leftSet nt ll
        else   
-         rightSet nt (addMutate ~cmp r x data);
+         rightSet nt (updateMutate ~cmp r x data);
       );
       return (balMutate nt)  
 
@@ -680,7 +710,7 @@ let ofArray0 ~cmp (xs : _ array) =
       ) in 
     for i = !next to len - 1 do 
       let k, v = (A.unsafe_get xs i)  in 
-      result := addMutate ~cmp !result k v 
+      result := updateMutate ~cmp !result k v 
     done ;
     !result         
 

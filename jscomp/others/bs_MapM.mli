@@ -26,26 +26,28 @@
 type ('k,'v,'id) t
 
 val empty: ('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
-
 val ofArray:      
   ('k,'id) Bs_Cmp.t -> 
   ('k * 'a) array ->  
-  ('k,'a,'id) t
-    
+  ('k,'a,'id) t    
 val isEmpty: ('k, 'a, 'id) t -> bool
-val mem: 
-   ('k, 'a, 'id) t -> 'k  -> bool
-
-val add: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
-(** [add m x y ] do the in-place modification,
-    returnning [m] for chaining. *)
-
-val singleton: ('k,'id) Bs_Cmp.t ->
+val singleton: 
+  ('k,'id) Bs_Cmp.t ->
   'k -> 'a -> ('k, 'a, 'id) t
+val mem: ('k, _, _) t -> 'k  -> bool
 
+val updateOnly: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
+val update: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
+(** [update m x y ] do the in-place modification, returnning [m] for chaining. *)
+
+
+
+val removeOnly:  ('k, 'a, 'id) t -> 'k -> unit
 val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
 (** [remove m x] do the in-place modification,
     returnning [m] for chaining. *)
+val removeArrayOnly: ('k, 'a, 'id) t -> 'k array -> unit    
+val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t 
 
 
 (* val merge: *)
@@ -60,12 +62,10 @@ val cmp:
     ('k, 'a, 'id) t ->
     ('a -> 'a -> int [@bs]) -> 
      int
-
-
 val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
-(** [eq m1 m2 cmp] tests whether the maps [m1] and [m2] are
+(** [eq m1 m2 eqf] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
-    equal data.  [cmp] is the equality predicate used to compare
+    equal data.  [eqf] is the equality predicate used to compare
     the data associated with the keys. *)
     
 val iter:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
@@ -89,19 +89,6 @@ val exists: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 (** [exists m p] checks if at least one binding of the map
     satisfy the predicate [p].
 *)
-
-(* val filter: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t *)
-(** [filter p m] returns the map with all the bindings in [m]
-    that satisfy predicate [p].
-*)
-    
-(* val partition: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * ('k, 'a, 'id) t *)
-(** [partition p m] returns a pair of maps [(m1, m2)], where
-    [m1] contains all the bindings of [s] that satisfy the
-    predicate [p], and [m2] is the map with all the bindings of
-    [s] that do not satisfy [p].
-*)
-
 val length: ('k, 'a, 'id) t -> int
 
 
@@ -113,17 +100,6 @@ val minKVOpt: ('k, 'a,  _) t -> ('k * 'a) option
 val minKVNull: ('k, 'a, _) t -> ('k * 'a) Js.null
 val maxKVOpt: ('k, 'a, _) t -> ('k * 'a) option
 val maxKVNull:('k, 'a, _) t -> ('k * 'a) Js.null
-
-(* val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t *)
-(** [split x m] returns a triple [(l, data, r)], where
-      [l] is the map with all the bindings of [m] whose 'k
-    is strictly less than [x];
-      [r] is the map with all the bindings of [m] whose 'k
-    is strictly greater than [x];
-      [data] is [None] if [m] contains no binding for [x],
-      or [Some v] if [m] binds [v] to [x].
-*)
-
 val findOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
 val findNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val findWithDefault:
@@ -138,4 +114,28 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 
 val mapi: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
     
+
+
+(* val filter: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t *)
+(** [filter p m] returns the map with all the bindings in [m]
+    that satisfy predicate [p].
+*)
+    
+(* val partition: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * ('k, 'a, 'id) t *)
+(** [partition p m] returns a pair of maps [(m1, m2)], where
+    [m1] contains all the bindings of [s] that satisfy the
+    predicate [p], and [m2] is the map with all the bindings of
+    [s] that do not satisfy [p].
+*)
+
+
+(* val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t *)
+(** [split x m] returns a triple [(l, data, r)], where
+      [l] is the map with all the bindings of [m] whose 'k
+    is strictly less than [x];
+      [r] is the map with all the bindings of [m] whose 'k
+    is strictly greater than [x];
+      [data] is [None] if [m] contains no binding for [x],
+      or [Some v] if [m] binds [v] to [x].
+*)
 
