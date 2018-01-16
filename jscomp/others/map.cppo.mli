@@ -108,6 +108,7 @@ val split: key -> 'a t -> 'a t * 'a option * 'a t
 val findOpt: 'a t -> key -> 'a option
 val findNull: 'a t -> key -> 'a Js.null
 val findWithDefault:  'a t -> key -> 'a  -> 'a
+val findExn: 'a t -> key -> 'a 
 
 val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
 (** [map m f] returns a map with same domain as [m], where the

@@ -50,4 +50,12 @@ let () =
   b __LOC__ (N.eq (mergeDiff u1 u0) (ff (I.range 101 120)))
 
 
+let () =   
+  let a0 = f (randomRange 0 10) in 
+  let a1 = M.add a0 3 33 in 
+  let a2 = M.remove a1 3 in  
+  b __LOC__ (Js.eqNull 3 (M.findNull a0 3));
+  b __LOC__ (Js.eqNull 33 (M.findNull a1 3));
+  b __LOC__ (Js.Null.test (M.findNull a2 3));
+
 ;; Mt.from_pair_suites __FILE__ !suites

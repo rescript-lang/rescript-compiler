@@ -539,6 +539,16 @@ let rec findNull0  n x ~cmp =
     if c = 0 then return (value n )
     else findNull0 ~cmp  (if c < 0 then left n else right n) x 
 
+let rec findExn0   n x  ~cmp = 
+  match toOpt n with 
+    None ->
+    [%assert "findExn0"]
+  | Some n (* Node(l, v, d, r, _)*) ->
+    let v = key n in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then value n 
+    else findExn0 ~cmp  (if c < 0 then left n else right n) x
+
 let rec findWithDefault0   n x def ~cmp = 
   match toOpt n with 
     None ->
@@ -548,7 +558,6 @@ let rec findWithDefault0   n x def ~cmp =
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then value n 
     else findWithDefault0 ~cmp  (if c < 0 then left n else right n) x def
-
 
 let rec mem0  n x ~cmp = 
   match toOpt n with 

@@ -31,11 +31,11 @@ external toOption : 'a t -> 'a option = "#null_to_opt"
 external return : 'a -> 'a t  = "%identity"
 external test : 'a t -> bool = "#is_nil"
 external empty : 'a t = "#null" 
-external castUnsafe : 'a t -> 'a = "%identity"
+external getUnsafe : 'a t -> 'a = "%identity"
 
-let castExn f =
+let getExn f =
   match toOption f with 
-  | None -> Js_exn.raiseError "Js.Null.castExn"
+  | None -> Js_exn.raiseError "Js.Null.getExn"
   | Some x -> x 
   
 let bind x f =

@@ -105,3 +105,4 @@ let findOpt d x =
   I.findOpt (data d) x 
 let findNull d x = I.findNull (data d) x 
 let findWithDefault d x def = I.findWithDefault (data d) x def  
+let findExn d x = I.findExn (data d) x 

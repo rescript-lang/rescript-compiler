@@ -18,17 +18,17 @@ let inOrder (v : t) =
   let s : node S.t = S.create () in 
   let q : int Q.t = Q.create () in 
   while !current != Js.null do 
-    let v = Js.Null.castUnsafe !current  in 
+    let v = Js.Null.getUnsafe !current  in 
     S.push s v; 
     current := left v; 
   done ;
   while not (S.isEmpty s ) do 
     current := S.popNull s ;
-    let v = Js.Null.castUnsafe !current in 
+    let v = Js.Null.getUnsafe !current in 
     Q.push q (value v);
     current := right v ;
     while !current != Js.null do 
-      let v = Js.Null.castUnsafe !current  in 
+      let v = Js.Null.getUnsafe !current  in 
       S.push s v; 
       current := left v; 
     done ;    
@@ -40,7 +40,7 @@ let inOrder3 (v : t) =
   let s : node S.t = S.create () in 
   let q : int Q.t = Q.create () in 
   while !current != Js.null do 
-    let v = Js.Null.castUnsafe !current  in 
+    let v = Js.Null.getUnsafe !current  in 
     S.push s v; 
     current := left v; 
   done ;
@@ -48,7 +48,7 @@ let inOrder3 (v : t) =
     Q.push q (value popped);
     let current = ref (right popped) in 
     while !current != Js.null do 
-      let v = Js.Null.castUnsafe !current in 
+      let v = Js.Null.getUnsafe !current in 
       S.push s v;  
       current := left v
     done 
@@ -63,14 +63,14 @@ let inOrder2 (v : t) =
   while !todo do 
     if !cursor != Js.null then 
       (
-        let v = (Js.Null.castUnsafe !cursor) in 
+        let v = (Js.Null.getUnsafe !cursor) in 
         S.push s v;
         cursor := left v)
     else 
       begin 
         if not (S.isEmpty s) then 
           (cursor := S.popNull s ;
-           let current = Js.Null.castUnsafe !cursor in 
+           let current = Js.Null.getUnsafe !cursor in 
            Q.push q (value current);
            cursor := right current)
         else 
@@ -96,7 +96,7 @@ let test1 =
 let pushAllLeft st1 s1 = 
   let current = ref st1 in 
   while !current != Js.null do 
-    let v = Js.Null.castUnsafe !current  in 
+    let v = Js.Null.getUnsafe !current  in 
     S.push s1 v; 
     current := left v; 
   done 

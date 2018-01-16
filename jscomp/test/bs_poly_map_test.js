@@ -101,6 +101,20 @@ var x$5 = Array_data_util.range(101, 120);
 
 b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Bs_Set.eq(mergeDiff(u1, u0), Bs_Set.ofArray(Icmp, x$5)));
 
+var x$6 = randomRange(0, 10);
+
+var a0 = Bs_Map.ofArray(Icmp, x$6);
+
+var a1 = Bs_Map.add(a0, 3, 33);
+
+var a2 = Bs_Map.remove(a1, 3);
+
+b("File \"bs_poly_map_test.ml\", line 57, characters 4-11", +(3 === Bs_Map.findNull(a0, 3)));
+
+b("File \"bs_poly_map_test.ml\", line 58, characters 4-11", +(33 === Bs_Map.findNull(a1, 3)));
+
+b("File \"bs_poly_map_test.ml\", line 59, characters 4-11", +(Bs_Map.findNull(a2, 3) === null));
+
 Mt.from_pair_suites("bs_poly_map_test.ml", suites[0]);
 
 var M = 0;

@@ -41,6 +41,14 @@ let rec findNull n (x : key) =
     if x = v then N.return (N.value n)
     else findNull (if x < v then (N.left n) else (N.right n)) x 
 
+let rec findExn n (x : key) =
+  match N.toOpt n with 
+  | None -> [%assert "findExn"]
+  | Some n -> 
+    let v = N.key n in 
+    if x = v then (N.value n)
+    else findExn (if x < v then (N.left n) else (N.right n)) x
+
 let rec findWithDefault n (x : key) def =
   match N.toOpt n with 
   | None -> def    
@@ -48,7 +56,7 @@ let rec findWithDefault n (x : key) def =
     let v = N.key n in 
     if x = v then (N.value n)
     else findWithDefault (if x < v then (N.left n) else (N.right n)) x def
-
+    
 let rec mem n (x : key)= 
   match N.toOpt n with 
     None -> false

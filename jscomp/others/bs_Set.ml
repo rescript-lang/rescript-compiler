@@ -10,7 +10,7 @@ type ('elt,'id) t = (('elt,'id) Bs_Cmp.t , ('elt,'id) t0) B.bag
    address equality means everything equal across time
    no need to call [bal] again
 *)  
-let rec add0 ~cmp (t : _ t0) x  : _ t0 =
+let rec add0  (t : _ t0) x  ~cmp : _ t0 =
   match N.toOpt t with 
     None -> N.singleton0 x 
   | Some nt ->

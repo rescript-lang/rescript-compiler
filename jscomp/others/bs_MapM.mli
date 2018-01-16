@@ -125,13 +125,10 @@ val maxKVNull:('k, 'a, _) t -> ('k * 'a) Js.null
 *)
 
 val findOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
-(** [find x m] returns the current binding of [x] in [m],
-    or raises [Not_found] if no such binding exists. *)
 val findNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
-
 val findWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
-  
+val findExn:  ('k, 'a, 'id) t -> 'k ->  'a 
 val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 (** [map m f] returns a map with same domain as [m], where the
     associated value [a] of all bindings of [m] has been

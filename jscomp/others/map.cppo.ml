@@ -72,6 +72,7 @@ let eq = I.eq
 let findOpt = I.findOpt
 let findNull = I.findNull 
 let findWithDefault = I.findWithDefault 
+let findExn = I.findExn
 let split = I.split 
 let merge = I.merge 
 let ofArray = I.ofArray

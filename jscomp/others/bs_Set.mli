@@ -108,8 +108,10 @@ val mem0:
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> 'elt -> bool
 val add0: 
+  ('elt, 'id) t0 -> 
+  'elt ->  
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt ->  ('elt, 'id) t0
+  ('elt, 'id) t0
 val addArray0:  
   ('elt, 'id) t0 -> 'elt array ->
   cmp: ('elt,'id) Bs_Cmp.cmp ->

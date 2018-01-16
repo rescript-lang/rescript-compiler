@@ -133,6 +133,11 @@ val findWithDefault0:
   'b -> 
   cmp:('a,_) Bs_Cmp.cmp -> 
   'b 
+val findExn0:  
+  ('a, 'b) t0 -> 
+  'a -> 
+  cmp:('a,_) Bs_Cmp.cmp ->   
+  'b 
 
 val mem0:  
   ('a, 'b) t0 -> 

@@ -114,24 +114,22 @@ let add m e v =
   addOnly m e v;
   m
   
-let ofArray (type k) (type v) (type id) (dict : (k,id) Bs_Cmp.t) data = 
+let ofArray (type k) (type id) (dict : (k,id) Bs_Cmp.t) data = 
   let module M = (val dict ) in 
   B.bag
     ~dict 
     ~data:(N.ofArray0 ~cmp:M.cmp data)  
 
-
-
-let cmp (type k) (type v) (type id)  
-    (m1 : (k,v,id) t) (m2 : (k,v,id) t) 
+let cmp (type k)  (type id)  
+    (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) 
     cmp
   = 
   let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
   let module X = (val dict) in 
   N.cmp0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data
 
-let eq (type k) (type v) (type id) 
-    (m1 : (k,v,id) t) (m2 : (k,v,id) t) cmp = 
+let eq (type k) (type id) 
+    (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
   let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
   let module X = (val dict) in 
   N.eq0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data   
@@ -144,23 +142,27 @@ let mapi map  f =
   let dict,map = B.(dict map, data map) in 
   B.bag ~dict ~data:(N.mapi0 map f)
 
-let findOpt (type k) (type v) (type id) (map : (k,v,id) t) x  = 
+let findOpt (type k) (type id) (map : (k,_,id) t) x  = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findOpt0 ~cmp:X.cmp  map x 
 
-let findNull (type k) (type v) (type id) (map : (k,v,id) t) x = 
+let findNull (type k) (type id) (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findNull0 ~cmp:X.cmp  map x
 
-let findWithDefault (type k) (type v) (type id)  (map : (k,v,id) t) x def = 
+let findWithDefault (type k) (type id)  (map : (k,_,id) t) x def = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findWithDefault0 ~cmp:X.cmp map x  def  
 
+let findExn (type k)  (type id)  (map : (k,_,id) t) x = 
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  N.findExn0 ~cmp:X.cmp map x 
 
-let mem (type k) (type v) (type id)  (map : (k,v,id) t) x = 
+let mem (type k) (type id)  (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.mem0 ~cmp:X.cmp map x

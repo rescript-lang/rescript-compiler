@@ -185,7 +185,7 @@ let new_method table =
 
 let get_method_label table name =
 #if BS then
-    match Meths.findOpt name table.methods_by_name
+    match Js.nullToOption (Meths.findNull table.methods_by_name name)
     with
     | Some x -> x
     | None ->
@@ -208,7 +208,13 @@ let get_method_labels table names =
 
 let set_method table label element =
   incr method_count;
-  if Labs.findAssert label table.methods_by_label then
+  if
+#if BS then     
+    Labs.findExn table.methods_by_label label
+#else
+    Labs.find label table.methods_by_label
+#end
+  then
     put table label element
   else
     table.hidden_meths <- (label, element) :: table.hidden_meths
@@ -287,7 +293,7 @@ let widen table =
   table.vars <-
      List.fold_left
 #if BS then
-       (fun s v -> Vars.add s v (Vars.findAssert v table.vars))
+       (fun s v -> Vars.add s v (Vars.findExn table.vars v))
 #else    
        (fun s v -> Vars.add v (Vars.find v table.vars) s)
 #end       
@@ -308,7 +314,7 @@ let new_slot table =
 
 let new_variable table name =
 #if BS then
-    match Vars.findOpt name table.vars with
+    match Js.nullToOption (Vars.findNull table.vars name : int Js.null)  with
     | Some x -> x
     | None ->
       let index = new_slot table in
@@ -339,7 +345,7 @@ let new_methods_variables table meths vals =
 
 let get_variable table name =
 #if BS then
-  Vars.findAssert name table.vars 
+    Vars.findExn table.vars name
 #else    
   try Vars.find name table.vars with Not_found -> assert false
 #end
