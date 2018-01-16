@@ -150,7 +150,7 @@ test();
 
 * Thanks to the  [OCaml](https://ocaml.org) team, obviously, without such a beautiful yet practical language, this backend would not exist
 * Thanks to [ninja-build](https://ninja-build.org), BuckleScript also comes with a blazing fast build tool on top of it, `ninja` is a truly [well engineered](http://aosabook.org/en/posa/ninja.html) scalable build tool
-* Thanks to [Bloomberg](https://techatbloomberg.com)! This project began at Bloomberg and was published in 2016; without the support of Bloomberg, it would not have happened. Now that the project has grown and developed its own community, it has moved to its own GitHub organization.
+* Thanks to [Bloomberg](https://www.techatbloomberg.com)! This project began at Bloomberg and was published in 2016; without the support of Bloomberg, it would not have happened. Now that the project has grown and developed its own community, it has moved to its own GitHub organization.
 
 ## Licensing
 
