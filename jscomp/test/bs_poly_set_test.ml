@@ -40,7 +40,8 @@ let () =
   eq  __LOC__ (N.length u7) 3 ;
   b __LOC__ (not (N.isEmpty u7));  
   b __LOC__ (N.isEmpty u8);
-  b __LOC__ (u9 == u10);
+  (* b __LOC__ (u9 == u10); *)
+  (* addArray does not get reference equality guarantee *)
   b __LOC__ (N.mem u10 20);
   b __LOC__ (N.mem u10 21);
   eq __LOC__ (N.length u10) 20001;
