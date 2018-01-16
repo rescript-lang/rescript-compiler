@@ -12,10 +12,15 @@ val isEmpty: 'a t -> bool
 
 val mem:  'a t -> key -> bool
 
-val add: 'a t ->  key -> 'a -> 'a t
+val update: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] returns a map containing the same bindings as
    [m], plus a binding of [x] to [y]. If [x] was already bound
    in [m], its previous binding disappears. *)
+val updateWithOpt:
+    'a t -> 
+    key -> 
+    (key option -> 'a option [@bs]) -> 
+    'a t 
 
 val singleton: key -> 'a -> 'a t
 

@@ -146,7 +146,7 @@ function bench3(m) {
   var cmp = m[/* cmp */0];
   var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
-    table = Bs_Map.add0(table, "" + i, i, cmp);
+    table = Bs_Map.update0(table, "" + i, i, cmp);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_Map.mem0(table, "" + i$1, cmp)) {

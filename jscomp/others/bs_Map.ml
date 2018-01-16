@@ -21,28 +21,7 @@ type ('k,'v,'id) t =
   (('k,'id) Bs_Cmp.t,
    ('k,'v, 'id) t0 ) B.bag 
 
-(** [addCheck0 m k v cmp]
-    return m reference unchanged when [k] already existed
-*)   
-let rec addCheck0  (t : _ t0) newK newD ~cmp : _ t0 =
-  match N.toOpt t with 
-  | None -> N.singleton0 newK newD
-  | Some nt ->
-    let k = N.key nt in 
-    let c = (Bs_Cmp.getCmp cmp) newK k [@bs] in
-    if c = 0 then t 
-    else
-      let l,r,v = N.left nt, N.right nt, N.value nt in 
-      if c < 0 then 
-        let ll = addCheck0 ~cmp l newK newD in 
-        if ll == l then t 
-        else N.bal ll k v r 
-      else 
-        let rr = addCheck0 ~cmp r newK newD in 
-        if rr == r then t 
-        else N.bal l k v rr    
-
-let rec add0  (t : _ t0) newK newD  ~cmp =
+let rec update0  (t : _ t0) newK newD  ~cmp =
   match N.toOpt t with 
   | None -> N.singleton0 newK newD 
   | Some n  ->
@@ -53,16 +32,51 @@ let rec add0  (t : _ t0) newK newD  ~cmp =
     else 
       let l,r,v = N.left n, N.right n, N.value n in 
       if c < 0 then
-        N.bal (add0 ~cmp l newK newD ) k v  r
+        N.bal (update0 ~cmp l newK newD ) k v  r
       else
-        N.bal l k v (add0 ~cmp r newK newD )
+        N.bal l k v (update0 ~cmp r newK newD )
 
-
-
-let rec remove0  n x ~cmp = 
-  match N.toOpt n with 
+let rec updateWithOpt0  (t : _ t0) newK f  ~cmp =
+  match N.toOpt t with 
   | None ->
-    n
+    begin match f None [@bs] with 
+    | None -> t 
+    | Some newD -> N.singleton0 newK newD 
+    end 
+  | Some n  ->
+    let k= N.key n in 
+    let c = (Bs_Cmp.getCmp cmp) newK k [@bs] in
+    if c = 0 then
+      match f (Some k) [@bs] with 
+      | None -> t 
+      | Some newD -> N.updateKV n newK newD 
+    else 
+      let l,r,v = N.left n, N.right n, N.value n in 
+      if c < 0 then
+        N.bal (updateWithOpt0 ~cmp l newK f ) k v  r
+      else
+        N.bal l k v (updateWithOpt0 ~cmp r newK f)
+
+(*  unboxing API was not exported
+    since the correct API is really awkard
+    [bool -> 'k Js.null -> ('a Js.null * bool)]
+    even for specialized [k] the first [bool] can 
+    be erased, maybe the perf boost does not justify the inclusion of such API
+
+    [updateWithNull m x f]
+    the callback to [f exist v] 
+    when [v] is non-null,
+    [exist] is guaranteed to be true
+    [v] is guranteed to be [null],
+    when [exist] is [true], [v] could be [null], 
+    since ['a] is polymorphic
+*)
+  
+        
+let rec remove0  t x ~cmp = 
+  match N.toOpt t with 
+  | None ->
+    t
   | Some n  ->
     let l,v,r = N.(left n, key n, right n ) in 
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
@@ -75,9 +89,13 @@ let rec remove0  n x ~cmp =
         let r = N.removeMinAuxWithRef rn kr vr in 
         N.bal l !kr !vr r
     else if c < 0 then
-      N.(bal (remove0 ~cmp l x ) v (value n) r)
+      let ll = remove0 l x ~cmp in 
+      if ll == l then t
+      else N.bal ll v (N.value n) r
     else
-      N.(bal l v (value n) (remove0 ~cmp r x ))
+      let rr = remove0 ~cmp r x in
+      if rr == r then t 
+      else N.bal l v (N.value n)  rr
 
 let rec splitAuxPivot ~cmp n x pres  =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
@@ -209,11 +227,16 @@ let mapi map  f =
 
 
 
-let add (type k) (type id) (map : (k,_,id) t) key data  = 
+let update (type k) (type id) (map : (k,_,id) t) key data  = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  B.bag ~dict ~data:(add0 ~cmp:X.cmp map key data )
+  B.bag ~dict ~data:(update0 ~cmp:X.cmp map key data )
 
+let updateWithOpt (type k) (type id) (map : (k,_,id) t) key f  = 
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  B.bag ~dict ~data:(updateWithOpt0 ~cmp:X.cmp map key f )
+  
 let ofArray (type k) (type id) (dict : (k,id) Bs_Cmp.t) data = 
   let module M = (val dict ) in 
   B.bag

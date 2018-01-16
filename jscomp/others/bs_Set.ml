@@ -12,11 +12,12 @@ type ('elt,'id) t = (('elt,'id) Bs_Cmp.t , ('elt,'id) t0) B.bag
 *)  
 let rec add0  (t : _ t0) x  ~cmp : _ t0 =
   match N.toOpt t with 
-    None -> N.singleton0 x 
+  | None -> N.singleton0 x 
   | Some nt ->
     let k = N.key nt in 
     let c = (Bs_Cmp.getCmp cmp) x k [@bs] in
-    if c = 0 then t else
+    if c = 0 then t
+    else
       let l,r = N.(left nt, right nt) in 
       if c < 0 then 
         let ll = add0 ~cmp l x in 
@@ -27,7 +28,7 @@ let rec add0  (t : _ t0) x  ~cmp : _ t0 =
         if rr == r then t 
         else N.bal l k rr 
 
-let rec remove0 ~cmp (t : _ t0) x : _ t0 = 
+let rec remove0 (t : _ t0) x  ~cmp : _ t0 = 
   match N.toOpt t with 
     None -> t
   | Some n  ->

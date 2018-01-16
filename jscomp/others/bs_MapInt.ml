@@ -28,21 +28,43 @@ let length = N.length0
 let toList = N.toList0
 let checkInvariant = N.checkInvariant
 
-let rec add  t (x : key) (data : _)  = 
+let rec update  t (newK : key) (newD : _)  = 
   match N.toOpt t with
   | None -> 
-    N.singleton0 x data 
+    N.singleton0 newK newD
+  | Some n  ->
+    let k = N.key n in 
+    if newK = k then
+      N.updateKV n newK newD
+    else
+      let v = N.value n in 
+      if newK < k then
+        N.bal (update (N.left n) newK newD) k v (N.right n)
+      else
+        N.bal (N.left n) k v (update (N.right n) newK newD)
+        
+let rec updateWithOpt  t (x : key) f  = 
+  match N.toOpt t with
+  | None -> 
+    begin match f None [@bs] with 
+    | None -> t 
+    | Some data -> 
+      N.singleton0 x data 
+    end 
   | Some n  ->
     let k = N.key n in 
     if x = k then
-      N.updateKV n x data 
+      begin match f (Some k) [@bs] with 
+      | None -> t 
+      | Some data -> N.updateKV n x data 
+      end 
     else
       let v = N.value n in 
       if x < k then
-        N.bal (add (N.left n) x data ) k v (N.right n)
+        N.bal (updateWithOpt (N.left n) x f) k v (N.right n)
       else
-        N.bal (N.left n) k v (add (N.right n) x data )
-        
+        N.bal (N.left n) k v (updateWithOpt (N.right n) x f)        
+
 let rec remove n (x : key) = 
   match N.toOpt n with 
   |  None -> n    

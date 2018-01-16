@@ -46,7 +46,7 @@ let () =
   let module Mm = ( val m_dict) in
   for i = 0 to count do 
     data := 
-      M.add0 !data 
+      M.update0 !data 
       ~cmp:  Mm.cmp
       i i 
   done ;
@@ -56,7 +56,7 @@ module ISet = Bs.Set
 let () =     
   let  m = M.empty0 in 
   let m11 = 
-    M.add0 ~cmp:Icmp.cmp m
+    M.update0 ~cmp:Icmp.cmp m
     1 1 
   in  
   let _m20 = M.empty (module Icmp) in 
@@ -79,7 +79,7 @@ let (=~) a b = M.eq a b
 
 let () =   
   let u0 =  f (A.map (I.randomRange 0 39) (fun[@bs] x -> (x,x))) in  
-  let u1 = M.add u0 39 120 in 
+  let u1 = M.update u0 39 120 in 
   b __LOC__
   (A.forAll2 (M.toArray u0) 
    (A.map (I.range 0 39) (fun [@bs] x -> (x,x)))

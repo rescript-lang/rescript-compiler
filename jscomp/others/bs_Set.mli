@@ -123,8 +123,10 @@ val removeArray0:
 
 val singleton0: 'elt -> ('elt, 'id) t0
 val remove0: 
+  ('elt, 'id) t0 -> 
+  'elt ->  
   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0 -> 'elt ->  ('elt, 'id) t0
+  ('elt, 'id) t0
 val union0: 
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0 -> ('elt, 'id) t0 -> ('elt, 'id) t0

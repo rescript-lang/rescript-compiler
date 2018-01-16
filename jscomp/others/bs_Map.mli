@@ -59,10 +59,17 @@ val ofArray:
 val isEmpty: ('k, 'a, 'id) t -> bool
 val mem: 
    ('k, 'a, 'id) t -> 'k  -> bool
-val add: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
-(** [add m x y ] returns a map containing the same bindings as
-    [m], plus a binding of [x] to [y]. If [x] was already bound
+
+val update: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
+(** [update m x y ] returns a map containing the same bindings as
+    [m], with a new binding of [x] to [y]. If [x] was already bound
     in [m], its previous binding disappears. *)
+
+val updateWithOpt:     
+    ('k, 'a, 'id) t ->  
+    'k -> 
+    ('k option -> 'a option [@bs]) -> 
+    ('k, 'a, 'id) t 
 
 val singleton: ('k,'id) Bs_Cmp.t ->
   'k -> 'a -> ('k, 'a, 'id) t
@@ -179,9 +186,10 @@ val mem0:
    cmp: ('k,'id) Bs_Cmp.cmp -> 
    bool
 
-val add0: 
-    ('k, 'a, 'id) t0 -> 
-  'k -> 'a -> 
+val update0: 
+  ('k, 'a, 'id) t0 -> 
+  'k -> 
+  'a -> 
   cmp: ('k,'id) Bs_Cmp.cmp -> 
   ('k, 'a, 'id) t0 
 

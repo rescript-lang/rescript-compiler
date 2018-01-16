@@ -52,10 +52,21 @@ let () =
 
 let () =   
   let a0 = f (randomRange 0 10) in 
-  let a1 = M.add a0 3 33 in 
+  let a1 = M.update a0 3 33 in 
   let a2 = M.remove a1 3 in  
   b __LOC__ (Js.eqNull 3 (M.findNull a0 3));
   b __LOC__ (Js.eqNull 33 (M.findNull a1 3));
   b __LOC__ (Js.Null.test (M.findNull a2 3));
-
+  let a3 = M.updateWithOpt a2 3 (fun[@bs]  k -> 
+    match k with 
+    | Some k -> Some (k + 1)
+    | None  ->  Some 11
+  ) in 
+  let a4 = M.updateWithOpt a2 3 (fun[@bs]  k -> 
+    match k with 
+    | Some k-> Some (k + 1)
+    | None  ->  None
+  ) in 
+  b __LOC__ (Js.eqNull 11 (M.findNull a3 3));
+  b __LOC__ (Js.Null.test (M.findNull a4 3))
 ;; Mt.from_pair_suites __FILE__ !suites

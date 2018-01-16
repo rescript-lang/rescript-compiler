@@ -57,7 +57,7 @@ m2.dict;
 var m_dict = m.dict;
 
 for(var i = 0; i <= 100000; ++i){
-  data = Bs_Map.add0(data, i, i, m_dict[/* cmp */0]);
+  data = Bs_Map.update0(data, i, i, m_dict[/* cmp */0]);
 }
 
 var newm = {
@@ -67,7 +67,7 @@ var newm = {
 
 console.log(newm);
 
-var m11 = Bs_Map.add0(Bs_Map.empty0, 1, 1, Icmp[/* cmp */0]);
+var m11 = Bs_Map.update0(Bs_Map.empty0, 1, 1, Icmp[/* cmp */0]);
 
 console.log(m11);
 
@@ -105,7 +105,7 @@ var u0 = f(Bs_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
                   ];
           })));
 
-var u1 = Bs_Map.add(u0, 39, 120);
+var u1 = Bs_Map.update(u0, 39, 120);
 
 b("File \"bs_map_test.ml\", line 83, characters 4-11", Bs_Array.forAll2(Bs_internalAVLtree.toArray0(u0.data), Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
                 return /* tuple */[

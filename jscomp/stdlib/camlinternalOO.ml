@@ -190,8 +190,8 @@ let get_method_label table name =
     | Some x -> x
     | None ->
       let label = new_method table in
-      table.methods_by_name <- Meths.add  table.methods_by_name name label;
-      table.methods_by_label <- Labs.add  table.methods_by_label label true;
+      table.methods_by_name <- Meths.update  table.methods_by_name name label;
+      table.methods_by_label <- Labs.update  table.methods_by_label label true;
       label
 #else    
   try
@@ -240,7 +240,7 @@ let narrow table vars virt_meths concr_meths =
 #if BS then
      Vars.fold table.vars Vars.empty
       (fun[@bs] tvars lab info  ->
-        if List.mem lab vars then Vars.add tvars lab info  else tvars);      
+        if List.mem lab vars then Vars.update tvars lab info  else tvars);      
 #else    
     Vars.fold
       (fun[@bs] lab info tvars ->
@@ -251,15 +251,15 @@ let narrow table vars virt_meths concr_meths =
   let by_label = ref Labs.empty in
 #if BS then   
   List.iter2 (fun met label -> 
-     by_name := Meths.add !by_name met label;
+     by_name := Meths.update !by_name met label;
      by_label :=
-          Labs.add !by_label label
+          Labs.update !by_label label
             (Labs.findWithDefault table.methods_by_label label true)            
   ) concr_meths concr_meth_labs;
   List.iter2 
     (fun met label -> 
-      by_name := Meths.add !by_name met label;
-      by_label := Labs.add !by_label label false;
+      by_name := Meths.update !by_name met label;
+      by_label := Labs.update !by_label label false;
     ) virt_meths virt_meth_labs;
 #else     
  List.iter2
@@ -293,7 +293,7 @@ let widen table =
   table.vars <-
      List.fold_left
 #if BS then
-       (fun s v -> Vars.add s v (Vars.findExn table.vars v))
+       (fun s v -> Vars.update s v (Vars.findExn table.vars v))
 #else    
        (fun s v -> Vars.add v (Vars.find v table.vars) s)
 #end       
@@ -318,7 +318,7 @@ let new_variable table name =
     | Some x -> x
     | None ->
       let index = new_slot table in
-      if name <> "" then table.vars <- Vars.add table.vars name index ;
+      if name <> "" then table.vars <- Vars.update table.vars name index ;
       index
 #else    
   try Vars.find name table.vars
@@ -375,8 +375,8 @@ let create_table public_methods =
     (fun i met ->
       let lab = i*2+2 in
 #if BS then       
-      table.methods_by_name  <- Meths.add table.methods_by_name met lab ;
-      table.methods_by_label <- Labs.add table.methods_by_label lab true 
+      table.methods_by_name  <- Meths.update table.methods_by_name met lab ;
+      table.methods_by_label <- Labs.update table.methods_by_label lab true 
 #else       
       table.methods_by_name  <- Meths.add met lab table.methods_by_name;
       table.methods_by_label <- Labs.add lab true table.methods_by_label
