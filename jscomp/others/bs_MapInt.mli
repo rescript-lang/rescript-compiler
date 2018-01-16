@@ -66,13 +66,19 @@ val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
     satisfy the predicate [p].
  *)
 
-val filter: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t
+val filter: 
+    'a t -> 
+    (key -> 'a -> bool [@bs]) -> 
+    'a t
 (** [filter m p] returns the map with all the bindings in [m]
     that satisfy predicate [p].
 *)
 
-val partition: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t * 'a t
-(** [partition p m] returns a pair of maps [(m1, m2)], where
+val partition: 
+    'a t -> 
+    (key -> 'a -> bool [@bs]) -> 
+    'a t * 'a t
+(** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
     [s] that do not satisfy [p].

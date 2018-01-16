@@ -12,10 +12,10 @@
 (***********************************************************************)
 (** Adapted by authors of BuckleScript without using functors          *)
 
-type ('k,  'a, 'id) t0 
+type ('k,  'v, 'id) t0 
 (** 
     ['k] the key type 
-    ['a] the value type
+    ['v] the value type
     ['id] is a unique type for each keyed module
 *)
 
@@ -56,43 +56,53 @@ val ofArray:
   ('k,'id) Bs_Cmp.t -> 
   ('k * 'a) array ->  
   ('k,'a,'id) t 
-val isEmpty: ('k, 'a, 'id) t -> bool
+
+val isEmpty: _ t -> bool
 val mem: 
    ('k, 'a, 'id) t -> 'k  -> bool
 
-val update: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
+val update: 
+    ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
 (** [update m x y ] returns a map containing the same bindings as
     [m], with a new binding of [x] to [y]. If [x] was already bound
     in [m], its previous binding disappears. *)
-
+val updateArray:
+    ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
 val updateWithOpt:     
     ('k, 'a, 'id) t ->  
     'k -> 
     ('k option -> 'a option [@bs]) -> 
     ('k, 'a, 'id) t 
 
-val singleton: ('k,'id) Bs_Cmp.t ->
-  'k -> 'a -> ('k, 'a, 'id) t
+val singleton: 
+    ('k,'id) Bs_Cmp.t ->
+    'k -> 'a -> ('k, 'a, 'id) t
 
 val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
-(** [remove m x] returns a map containing the same bindings as
-    [m], except for [x] which is unbound in the returned map. *)
+(** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
 
 val merge:
-   ('k, 'a, 'id ) t -> ('k, 'b,'id) t -> ('k -> 'a option -> 'b option -> 'c option [@bs]) -> ('k, 'c,'id) t
+   ('k, 'a, 'id ) t -> 
+   ('k, 'b,'id) t ->
+   ('k -> 'a option -> 'b option -> 'c option [@bs]) -> 
+   ('k, 'c,'id) t
 (** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
     and of [m2]. The presence of each such binding, and the corresponding
     value, is determined with the function [f].
 *)    
 
 val cmp: 
-    ('k, 'a, 'id) t -> 
-    ('k, 'a, 'id) t ->
-    ('a -> 'a -> int [@bs]) -> 
+    ('k, 'v, 'id) t -> 
+    ('k, 'v, 'id) t ->
+    ('v -> 'v -> int [@bs]) -> 
      int
 
 
-val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
+val eq:  
+    ('k, 'a, 'id) t -> 
+    ('k, 'a, 'id) t -> 
+    ('a -> 'a -> bool [@bs]) -> 
+    bool
 (** [eq m1 m2 cmp] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
     equal data.  [cmp] is the equality predicate used to compare
@@ -111,22 +121,24 @@ val fold: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
 
 val forAll: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 (** [forAll m p] checks if all the bindings of the map
-    satisfy the predicate [p].
-*)
+    satisfy the predicate [p]. Order unspecified *)
     
-
 val exists: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 (** [exists m p] checks if at least one binding of the map
-    satisfy the predicate [p].
-*)
+    satisfy the predicate [p]. Order unspecified *)
 
-val filter: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t
-(** [filter p m] returns the map with all the bindings in [m]
-    that satisfy predicate [p].
-*)
+val filter: 
+    ('k, 'a, 'id) t -> 
+    ('k -> 'a -> bool [@bs]) -> 
+    ('k, 'a, 'id) t
+(** [filter m p] returns the map with all the bindings in [m]
+    that satisfy predicate [p]. *)
     
-val partition: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * ('k, 'a, 'id) t
-(** [partition p m] returns a pair of maps [(m1, m2)], where
+val partition: 
+    ('k, 'a, 'id) t ->
+    ('k -> 'a -> bool [@bs]) -> 
+    ('k, 'a, 'id) t * ('k, 'a, 'id) t
+(** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
     [s] that do not satisfy [p].
@@ -229,9 +241,15 @@ val forAll0: ('k, 'a, 'id) t0 ->  ('k -> 'a -> bool [@bs]) -> bool
 
 val exists0: ('k, 'a, 'id) t0 -> ('k -> 'a -> bool [@bs]) ->  bool
 
-val filter0: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0
+val filter0: 
+    ('k, 'a, 'id) t0 -> 
+    ('k -> 'a -> bool [@bs]) -> 
+    ('k, 'a, 'id) t0
 
-val partition0: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0 * ('k, 'a, 'id) t0
+val partition0: 
+    ('k, 'a, 'id) t0 -> 
+    ('k -> 'a -> bool [@bs]) ->     
+    ('k, 'a, 'id) t0 * ('k, 'a, 'id) t0
 
 val length0: ('k, 'a, 'id) t0 -> int
 

@@ -1,6 +1,6 @@
 
 
-type (_,_) t0
+type ('k,'id) t0
 
 type ('k,'id) t = 
   (('k,'id) Bs_Cmp.t,
@@ -21,8 +21,6 @@ val add:
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
 val addArray:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
-val removeArray:
-  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 val singleton : 
   ('elt,'id) Bs_Cmp.t -> 
@@ -31,7 +29,10 @@ val singleton :
 
 val remove:  
    ('elt, 'id) t -> 'elt -> ('elt, 'id) t
-(** [remove x s] If [x] was not in [s], [s] is returned unchanged. *)
+(** [remove m x] If [x] was not in [m], [m] is returned reference unchanged. *)
+
+val removeArray:
+  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 val union:  
   ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
@@ -62,10 +63,10 @@ val exists: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 (** [exists p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
-(** [filter p s] returns the set of all elements in [s]
+(** [filter m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
 val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
-(** [partition p s] returns a pair of sets [(s1, s2)], where
+(** [partition m p] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
     [s] that do not satisfy [p]. *)
@@ -98,9 +99,8 @@ val findNull:
 
 
 
-(** Other operations only when better performance needed,
-  it is still safe API but more verbose
- *)
+(** Below are operations only when better performance needed,
+    it is still safe API but more verbose. *)
 val empty0: ('elt, 'id) t0
 val ofArray0: cmp:('k,'id) Bs_Cmp.cmp -> 'k array -> ('k, 'id) t0  
 val isEmpty0: ('elt, 'id) t0 -> bool

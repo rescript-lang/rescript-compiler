@@ -241,15 +241,15 @@ let concatOrJoin t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2    
 
-let rec filterShared0 p n = 
+let rec filterShared0 n p = 
   match toOpt n with 
     None -> empty
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  v, d =  key n, value n  in 
-    let newLeft = filterShared0 p (left n) in
+    let newLeft = filterShared0 (left n) p in
     let pvd = p v d [@bs] in
-    let newRight = filterShared0 p (right n) in
+    let newRight = filterShared0 (right n) p in
     if pvd then join newLeft v d newRight else concat newLeft newRight
 
 let rec filterMap0 n p = 
@@ -266,15 +266,15 @@ let rec filterMap0 n p =
     | Some d -> join newLeft v d newRight 
     
 
-let rec partitionShared0 p n = 
+let rec partitionShared0 n p = 
   match toOpt n with   
     None -> (empty, empty)
   | Some n  ->
     let  key, value =  key n, value n  in
     (* call [p] in the expected left-to-right order *)    
-    let (lt, lf) = partitionShared0 p (left n) in
+    let (lt, lf) = partitionShared0 (left n) p in
     let pvd = p key value [@bs] in
-    let (rt, rf) = partitionShared0 p (right n) in
+    let (rt, rf) = partitionShared0 (right n) p in
     if pvd
     then (join lt key value rt, concat lf rf)
     else (concat lt rt, join lf key value rf)  

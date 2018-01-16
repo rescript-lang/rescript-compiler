@@ -175,47 +175,20 @@ let rec diff0 ~cmp s1 s2 =
 
         
 
-let empty0 = N.empty0      
-let ofArray0 = N.ofArray0
-let isEmpty0 = N.isEmpty0
-let mem0 = N.mem0
-let singleton0 = N.singleton0
-let subset0 = N.subset0
-let cmp0 = N.cmp0
-let eq0 = N.eq0 
-let iter0 = N.iter0      
-let fold0 = N.fold0
-let forAll0 = N.forAll0
-let exists0 = N.exists0    
-let filter0 = N.filterShared0
-let partition0 = N.partitionShared0
-let length0 = N.length0
-let toList0 = N.toList0
-let toArray0 = N.toArray0
-let minOpt0 = N.minOpt0
-let maxOpt0 = N.maxOpt0
-let ofSortedArrayUnsafe0 = N.ofSortedArrayUnsafe0
-let findOpt0 = N.findOpt0
-let findNull0 = N.findNull0
 
-let empty dict = 
-  B.bag
-    ~dict 
-    ~data:N.empty0
+
+
 
 let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data = 
   let module M = (val dict ) in 
-  B.bag
-    ~dict 
-    ~data:(ofArray0 ~cmp:M.cmp data)
+  B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
 
-let isEmpty m = N.isEmpty0 (B.data m)
-
-
-let mem (type elt) (type id) (m : (elt,id) t) e = 
-  let dict, data = B.(dict m, data m) in 
+let remove (type elt) (type id) (m : (elt,id) t) e =      
+  let dict, data = B.(dict m, data m) in   
   let module M = (val dict) in 
-  mem0 ~cmp:(M.cmp) data e
+  let newData = remove0 ~cmp:M.cmp data e in 
+  if newData == data then m 
+  else B.bag ~dict ~data:newData  
 
 let add (type elt) (type id) (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in
@@ -231,8 +204,7 @@ let addArray (type elt) (type id) (m : (elt,id) t) e =
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newData = addArray0 ~cmp:M.cmp data e in 
-  if newData == data then m
-  else B.bag ~dict ~data:newData
+  B.bag ~dict ~data:newData
 
 let removeArray (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
@@ -241,17 +213,8 @@ let removeArray (type elt) (type id) (m : (elt,id) t) e =
   if newData == data then m
   else B.bag ~dict ~data:newData
   
-let singleton dict e =     
-  B.bag ~dict
-    ~data:(N.singleton0 e)
 
 
-let remove (type elt) (type id) (m : (elt,id) t) e =      
-  let dict, data = B.(dict m, data m) in   
-  let module M = (val dict) in 
-  let newData = remove0 ~cmp:M.cmp data e in 
-  if newData == data then m 
-  else B.bag ~dict ~data:newData
 
 let union (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
   let dict, mdata, ndata = B.(dict m, data m, data n) in   
@@ -273,20 +236,35 @@ let diff (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =
   B.bag ~dict ~data:(diff0 ~cmp:M.cmp mdata ndata )
 
 
-let cmp (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
-  let dict, mdata, ndata = B.(dict m, data m, data n) in 
-  let module M = (val dict) in 
-  cmp0 ~cmp:M.cmp mdata ndata
-
-let eq (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
-  let dict, mdata, ndata = B.(dict m, data m, data n) in 
-  let module M = (val dict) in 
-  eq0 ~cmp:M.cmp mdata ndata  
 
 let subset (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
   let dict, mdata, ndata = B.(dict m, data m, data n) in 
   let module M = (val dict) in 
-  subset0 ~cmp:M.cmp mdata ndata  
+  N.subset0 ~cmp:M.cmp mdata ndata  
+
+let split (type elt) (type id) (m : (elt,id) t) e = 
+  let dict, data = B.(dict m, data m) in  
+  let module M = (val dict) in 
+  let (l,  r), b = split0 ~cmp:M.cmp data e in 
+  (B.bag ~dict ~data:l, B.bag ~dict ~data:r), b
+  
+let empty dict = 
+  B.bag ~dict  ~data:N.empty0
+
+let isEmpty m = N.isEmpty0 (B.data m)
+
+let singleton dict e =     
+  B.bag ~dict ~data:(N.singleton0 e)
+
+let cmp (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
+  let dict, mdata, ndata = B.(dict m, data m, data n) in 
+  let module M = (val dict) in 
+  N.cmp0 ~cmp:M.cmp mdata ndata
+
+let eq (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
+  let dict, mdata, ndata = B.(dict m, data m, data n) in 
+  let module M = (val dict) in 
+  N.eq0 ~cmp:M.cmp mdata ndata    
 
 let iter m f  = N.iter0 (B.data m) f 
 
@@ -315,32 +293,53 @@ let minNull m = N.minNull0 (B.data m)
 let maxOpt m = N.maxOpt0 (B.data m)
 let maxNull m = N.maxNull0 (B.data m)
 
-let split (type elt) (type id) (m : (elt,id) t) e = 
-  let dict, data = B.(dict m, data m) in  
-  let module M = (val dict) in 
-  let (l,  r), b = split0 ~cmp:M.cmp data e in 
-  (B.bag ~dict ~data:l,
-  B.bag ~dict ~data:r),
-  b
-  
+
 
 let findOpt (type elt) (type id)  (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in   
   let module M = (val dict) in 
-  findOpt0 ~cmp:M.cmp data e
+  N.findOpt0 ~cmp:M.cmp data e
 
 let findNull (type elt) (type id) (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   N.findNull0 ~cmp:M.cmp data e
 
+let mem (type elt) (type id) (m : (elt,id) t) e = 
+  let dict, data = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  N.mem0 ~cmp:(M.cmp) data e
 
 let ofSortedArrayUnsafe ~dict xs  =
   B.bag ~dict ~data:(N.ofSortedArrayUnsafe0 xs)
 
 
+  
+let empty0 = N.empty0      
+let ofArray0 = N.ofArray0
+let isEmpty0 = N.isEmpty0
+let singleton0 = N.singleton0
 
 
+let cmp0 = N.cmp0
+let eq0 = N.eq0 
+let mem0 = N.mem0
+let iter0 = N.iter0      
+let fold0 = N.fold0
+let forAll0 = N.forAll0
+let exists0 = N.exists0    
+let length0 = N.length0
+let toList0 = N.toList0
+let toArray0 = N.toArray0
+let minOpt0 = N.minOpt0
+let maxOpt0 = N.maxOpt0
+let findOpt0 = N.findOpt0
+let findNull0 = N.findNull0
+
+let ofSortedArrayUnsafe0 = N.ofSortedArrayUnsafe0
+let subset0 = N.subset0
+let filter0 = N.filterShared0
+let partition0 = N.partitionShared0
 
 
 

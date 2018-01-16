@@ -74,8 +74,8 @@ val concat : ('a,'b) t0 -> ('a,'b) t0 -> ('a,'b) t0
 val concatOrJoin :
   ('a,'b) t0 -> 'a -> 'b option -> ('a,'b) t0 -> ('a, 'b) t0
 val filterShared0 : 
-  ('a -> 'b -> bool [@bs]) -> 
   ('a,'b) t0 ->
+  ('a -> 'b -> bool [@bs]) -> 
   ('a,'b) t0
 
 val filterMap0 :    
@@ -83,9 +83,10 @@ val filterMap0 :
   ('a -> 'b -> 'c option [@bs]) -> 
   ('a, 'c) t0 
 (* seems no sharing, could be shared with mutation *)
-val partitionShared0 :
+val partitionShared0 :  
+  ('a,'b) t0 -> 
   ('a -> 'b -> bool [@bs]) ->
-  ('a,'b) t0 -> ('a,'b) t0 * ('a,'b) t0
+  ('a,'b) t0 * ('a,'b) t0
 
 
 val lengthNode : ('a, 'b) node -> int

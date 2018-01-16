@@ -109,12 +109,6 @@ var a1 = Bs_Map.update(a0, 3, 33);
 
 var a2 = Bs_Map.remove(a1, 3);
 
-b("File \"bs_poly_map_test.ml\", line 57, characters 4-11", +(3 === Bs_Map.findNull(a0, 3)));
-
-b("File \"bs_poly_map_test.ml\", line 58, characters 4-11", +(33 === Bs_Map.findNull(a1, 3)));
-
-b("File \"bs_poly_map_test.ml\", line 59, characters 4-11", +(Bs_Map.findNull(a2, 3) === null));
-
 var a3 = Bs_Map.updateWithOpt(a2, 3, (function (k) {
         if (k) {
           return /* Some */[k[0] + 1 | 0];
@@ -131,9 +125,25 @@ var a4 = Bs_Map.updateWithOpt(a2, 3, (function (k) {
         }
       }));
 
-b("File \"bs_poly_map_test.ml\", line 70, characters 4-11", +(11 === Bs_Map.findNull(a3, 3)));
+var a5 = Bs_Map.remove(a0, 3);
 
-b("File \"bs_poly_map_test.ml\", line 71, characters 4-11", +(Bs_Map.findNull(a4, 3) === null));
+var a6 = Bs_Map.remove(a5, 3);
+
+b("File \"bs_poly_map_test.ml\", line 69, characters 4-11", +(a5 === a6));
+
+b("File \"bs_poly_map_test.ml\", line 70, characters 4-11", Bs_Map.mem(a0, 3));
+
+b("File \"bs_poly_map_test.ml\", line 71, characters 4-11", 1 - Bs_Map.mem(a5, 3));
+
+b("File \"bs_poly_map_test.ml\", line 72, characters 4-11", +(3 === Bs_Map.findNull(a0, 3)));
+
+b("File \"bs_poly_map_test.ml\", line 73, characters 4-11", +(33 === Bs_Map.findNull(a1, 3)));
+
+b("File \"bs_poly_map_test.ml\", line 74, characters 4-11", +(Bs_Map.findNull(a2, 3) === null));
+
+b("File \"bs_poly_map_test.ml\", line 76, characters 4-11", +(11 === Bs_Map.findNull(a3, 3)));
+
+b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(Bs_Map.findNull(a4, 3) === null));
 
 Mt.from_pair_suites("bs_poly_map_test.ml", suites[0]);
 

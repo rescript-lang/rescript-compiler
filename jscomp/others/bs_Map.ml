@@ -14,7 +14,7 @@
 
 module N = Bs_internalAVLtree
 module B = Bs_Bag 
-
+module A = Bs_Array
 type ('key,  'a, 'id) t0 = ('key, 'a) N.t0 
 
 type ('k,'v,'id) t = 
@@ -97,7 +97,16 @@ let rec remove0  t x ~cmp =
       if rr == r then t 
       else N.bal l v (N.value n)  rr
 
-let rec splitAuxPivot ~cmp n x pres  =  
+let updateArray0   h arr ~cmp =   
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key,value = A.unsafe_get arr i in 
+    v := update0 !v  ~cmp key value
+  done ;
+  !v 
+
+let rec splitAuxPivot n x pres  ~cmp =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
   let c = (Bs_Cmp.getCmp cmp) x v [@bs] in 
   if c = 0 then begin 
@@ -163,40 +172,91 @@ let rec merge0 s1 s2 f ~cmp =
 
 
 
+let ofArray (type k) (type id) (dict : (k,id) Bs_Cmp.t) data = 
+  let module M = (val dict ) in 
+  B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
+
+let remove (type k) (type id) (m : (k,_,id) t) x  =   
+  let dict,data = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  let newData = remove0 ~cmp:M.cmp data x in  
+  if newData == data then m
+  else B.bag ~dict ~data:newData
 
 
+let update (type k) (type id) (map : (k,_,id) t) key data  = 
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  B.bag ~dict ~data:(update0 ~cmp:X.cmp map key data )
 
+let updateArray (type elt) (type id) (m : (elt,_,id) t) e = 
+  let dict, data = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  let newData = updateArray0 ~cmp:M.cmp data e in 
+  B.bag ~dict ~data:newData  
+
+let updateWithOpt (type k) (type id) (map : (k,_,id) t) key f  = 
+  let dict,map = B.(dict map, data map) in 
+  let module X = (val dict) in 
+  B.bag ~dict ~data:(updateWithOpt0 ~cmp:X.cmp map key f )
+
+let split (type k)  (type id) (map : (k,_,id) t) x =   
+  let dict,map = B.(dict map, data map) in 
+  let module M = (val dict) in 
+  let (l,r),b = split0 ~cmp:M.cmp map x in 
+  (B.bag ~dict ~data:l, B.bag ~dict ~data:r), b  
+
+let merge (type k) (type id)  (s1 : (k,_,id) t) 
+    (s2 : (k,_,id) t) f = 
+  let dict, s1_data, s2_data = B.(dict s1, data s1, data s2) in 
+  let module X = (val dict) in 
+  B.bag ~data:(merge0 ~cmp:X.cmp  s1_data s2_data f)
+    ~dict
 
 let empty dict = 
-  B.bag 
-    ~dict 
-    ~data:N.empty0
+  B.bag  ~dict  ~data:N.empty0
 
 let isEmpty map = 
   N.isEmpty0 (B.data map)
 
 let singleton dict k v = 
-  B.bag ~dict 
-    ~data:(N.singleton0 k v)
+  B.bag ~dict ~data:(N.singleton0 k v)     
 
+let cmp (type k)  (type id)  (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp
+  = 
+  let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
+  let module X = (val dict) in 
+  N.cmp0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data
 
-let iter map f = 
-  N.iter0 (B.data map) f
-let fold map acc f = 
-  N.fold0 (B.data map) acc f  
-let forAll map f = 
-  N.forAll0 (B.data map) f  
-let exists map f =   
-  N.exists0 (B.data map) f
+let eq (type k) (type id) 
+    (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
+  let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
+  let module X = (val dict) in 
+  N.eq0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data 
 
-let filter f map = 
-  let dict, map = B.(dict map, data map) in 
-  B.bag ~dict ~data:(N.filterShared0 f map)
+let iter m f = N.iter0 (B.data m) f
 
-let partition p map =   
-  let dict, map = B.(dict map, data map) in 
-  let l,r = N.partitionShared0 p map in 
+let fold m acc f = N.fold0 (B.data m) acc f  
+
+let forAll m f = N.forAll0 (B.data m) f  
+
+let exists m f = N.exists0 (B.data m) f
+
+let filter m f = 
+  let dict, map = B.(dict m, data m) in 
+  B.bag ~dict ~data:(N.filterShared0 map f)
+
+let partition m p =   
+  let dict, map = B.(dict m, data m) in 
+  let l,r = N.partitionShared0 map p in 
   B.bag ~dict ~data:l, B.bag ~dict ~data:r 
+
+let map m f = 
+  let dict, map = B.(dict m, data m) in 
+  B.bag ~dict ~data:(N.map0 map f)
+let mapi m  f = 
+  let dict,map = B.(dict m, data m) in 
+  B.bag ~dict ~data:(N.mapi0 map f)
 
 let length map = 
   N.length0 (B.data map)   
@@ -214,35 +274,6 @@ let minKVOpt m = N.minKVOpt0 (B.data m)
 let minKVNull m = N.minKVNull0 (B.data m) 
 let maxKVOpt m = N.maxKVOpt0 (B.data m)
 let maxKVNull m = N.maxKVNull0 (B.data m)
-
-
-let map m f = 
-  let dict, map = B.(dict m, data m) in 
-  B.bag ~dict ~data:(N.map0 map f)
-
-
-let mapi map  f = 
-  let dict,map = B.(dict map, data map) in 
-  B.bag ~dict ~data:(N.mapi0 map f)
-
-
-
-let update (type k) (type id) (map : (k,_,id) t) key data  = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  B.bag ~dict ~data:(update0 ~cmp:X.cmp map key data )
-
-let updateWithOpt (type k) (type id) (map : (k,_,id) t) key f  = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  B.bag ~dict ~data:(updateWithOpt0 ~cmp:X.cmp map key f )
-  
-let ofArray (type k) (type id) (dict : (k,id) Bs_Cmp.t) data = 
-  let module M = (val dict ) in 
-  B.bag
-    ~dict 
-    ~data:(N.ofArray0 ~cmp:M.cmp data)
-
 
 let findOpt (type k) (type id) (map : (k,_,id) t) x  = 
   let dict,map = B.(dict map, data map) in 
@@ -269,68 +300,35 @@ let mem (type k) (type id)  (map : (k,_,id) t) x =
   let module X = (val dict) in 
   N.mem0 ~cmp:X.cmp map x
 
-let remove (type k) (type id) (map : (k,_,id) t) x  =   
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  B.bag ~dict ~data:(remove0 ~cmp:X.cmp map x )
-
-let split (type k)  (type id) (map : (k,_,id) t) x =   
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  let (l,r),v = split0 ~cmp:X.cmp map x in 
-  (B.bag ~dict 
-     ~data:l
-   ,   
-   B.bag ~dict
-     ~data:r), v
-
-
-let merge (type k) (type id)  (s1 : (k,_,id) t) 
-    (s2 : (k,_,id) t) f = 
-  let dict, s1_data, s2_data = B.(dict s1, data s1, data s2) in 
-  let module X = (val dict) in 
-  B.bag ~data:(merge0 ~cmp:X.cmp  s1_data s2_data f)
-    ~dict
-
-
-let cmp (type k)  (type id)  
-    (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) 
-    cmp
-  = 
-  let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
-  let module X = (val dict) in 
-  N.cmp0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data
-
-let eq (type k) (type id) 
-    (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
-  let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
-  let module X = (val dict) in 
-  N.eq0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data 
 
 let empty0 = N.empty0      
+let ofArray0 = N.ofArray0
 let isEmpty0 = N.isEmpty0
 let singleton0 = N.singleton0
-let minKVOpt0 = N.minKVOpt0
-let maxKVOpt0 = N.maxKVOpt0
+
+let cmp0 = N.cmp0
+let eq0 = N.eq0   
+let mem0 = N.mem0
 let iter0 = N.iter0      
-let map0  = N.map0
-let mapi0 = N.mapi0
 let fold0 = N.fold0
 let forAll0 = N.forAll0
 let exists0 = N.exists0    
-
-
 let length0 = N.length0
 let toList0 = N.toList0
-let ofArray0 = N.ofArray0
+let toArray0 = N.toArray0
+
+let keysToArray0 = N.keysToArray0
+let valuesToArray0 = N.valuesToArray0
+
+let minKVOpt0 = N.minKVOpt0
+let maxKVOpt0 = N.maxKVOpt0
 let findOpt0 = N.findOpt0
 let findNull0 = N.findNull0
 let findWithDefault0 = N.findWithDefault0
 let findExn0 = N.findExn0
-let mem0 = N.mem0
-let cmp0 = N.cmp0
-let eq0 = N.eq0   
-let keysToArray0 = N.keysToArray0
-let valuesToArray0 = N.valuesToArray0
+
+let mapi0 = N.mapi0
+let map0  = N.map0
+
 let filter0 = N.filterShared0
 let partition0 = N.partitionShared0
