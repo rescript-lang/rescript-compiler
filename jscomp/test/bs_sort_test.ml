@@ -129,4 +129,16 @@ let () =
     (* 1, 3, 5, ... , 3999 *)
   )
 
+let lt = fun [@bs] (x : int) y -> x < y  
+let () =   
+  eq __LOC__ (S.strictlySortedLength [||] lt) 0 ;
+  eq __LOC__ (S.strictlySortedLength [|1|] lt) 1;
+  eq __LOC__ (S.strictlySortedLength [|1;1|] lt) 1;
+  eq __LOC__ (S.strictlySortedLength [|1;1;2|] lt) 1;
+  eq __LOC__ (S.strictlySortedLength [|1;2|] lt) 2;
+  eq __LOC__ (S.strictlySortedLength [|1;2;3;4;3|] lt) 4;
+  eq __LOC__ (S.strictlySortedLength [|4;4;3;2;1|] lt) 1;
+  eq __LOC__ (S.strictlySortedLength [|4;3;2;1|] lt) (-4);
+  eq __LOC__ (S.strictlySortedLength [|4;3;2;1;0|] lt) (-5);
+
 ;; Mt.from_pair_suites __FILE__ !suites  

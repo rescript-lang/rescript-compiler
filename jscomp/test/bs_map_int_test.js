@@ -40,14 +40,12 @@ function b(loc, v) {
   return /* () */0;
 }
 
-var v = Bs_Array.init(1000000, (function (i) {
-        return /* tuple */[
-                i,
-                i
-              ];
-      }));
-
-Bs_Array.shuffleInPlace(v);
+var v = Bs_Array.shuffle(Bs_Array.init(1000000, (function (i) {
+            return /* tuple */[
+                    i,
+                    i
+                  ];
+          })));
 
 var u = Bs_MapInt.ofArray(v);
 
@@ -65,9 +63,12 @@ Mt.from_pair_suites("bs_map_int_test.ml", suites[0]);
 
 var N = 0;
 
+var A = 0;
+
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.b = b;
 exports.N = N;
+exports.A = A;
 /* v Not a pure module */

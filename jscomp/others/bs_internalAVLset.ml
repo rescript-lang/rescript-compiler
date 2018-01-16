@@ -33,6 +33,7 @@ type 'elt node  = {
 [@@bs.deriving abstract]
 
 module A = Bs_Array
+module S = Bs_Sort
 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
@@ -142,7 +143,7 @@ let rec removeMinAuxWithRef n v =
   match toOpt ln with   
   | None ->  v:= kn ; rn
   | Some ln -> bal (removeMinAuxWithRef ln v) kn rn
-  
+
 
 
 
@@ -156,7 +157,7 @@ let rec stackAllLeft v s =
   match toOpt v with 
   | None -> s 
   | Some x -> stackAllLeft (left x) (x::s)
-  
+
 
 let rec iter0 n f = 
   match toOpt n with 
@@ -209,7 +210,7 @@ let rec addMaxElement n v =
   | None -> singleton0 v
   | Some n  ->
     bal (left n) (key n) (addMaxElement (right n) v)
-    
+
 (* [join ln v rn] return a balanced tree simliar to [create ln v rn]
    bal, but no assumptions are made on the
    relative heights of [ln] and [rn]. *)
@@ -224,7 +225,7 @@ let rec joinShared ln v rn =
     if lh > rh + 2 then bal (left l) (key l) (joinShared (right l) v rn) else
     if rh > lh + 2 then bal (joinShared ln v (left r)) (key r) (right r) else
       create ln v rn
-  
+
 (* [concat l r]
    No assumption on the heights of l and r. *)
 
@@ -236,8 +237,8 @@ let concatShared t1 t2 =
     let v = ref (key t2n ) in 
     let t2r = removeMinAuxWithRef t2n v in 
     joinShared t1 !v t2r  
-    
-    
+
+
 
 let rec partitionShared0  n p =
   match toOpt n with 
@@ -311,24 +312,24 @@ type cursor =
 let rec fillArrayWithPartition n cursor arr p =     
   let l,v,r = left n, key n, right n in 
   (match toOpt l with 
-  | None -> ()
-  | Some l -> 
-      fillArrayWithPartition l cursor arr p);  
+   | None -> ()
+   | Some l -> 
+     fillArrayWithPartition l cursor arr p);  
   (if p v [@bs] then begin        
       let c = forward cursor in 
       A.unsafe_set arr c v;
       forwardSet cursor (c + 1)
-  end  
-  else begin 
-    let c = backward cursor in 
-    A.unsafe_set arr c v ;
-    backwardSet cursor (c - 1)
-  end);     
+    end  
+   else begin 
+     let c = backward cursor in 
+     A.unsafe_set arr c v ;
+     backwardSet cursor (c - 1)
+   end);     
   match toOpt r with 
   | None -> ()
   | Some r -> 
     fillArrayWithPartition r cursor arr  p 
-    
+
 let rec fillArrayWithFilter n i arr p =     
   let l,v,r = left n, key n, right n in 
   let next = 
@@ -339,7 +340,7 @@ let rec fillArrayWithFilter n i arr p =
   let rnext =
     if p v [@bs] then        
       (A.unsafe_set arr next v;
-        next + 1
+       next + 1
       )
     else next in   
   match toOpt r with 
@@ -381,7 +382,7 @@ let rec ofSortedArrayRevAux arr off len =
     let right = 
       ofSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
     create left mid right    
-    
+
 
 let rec ofSortedArrayAux arr off len =     
   match len with 
@@ -410,7 +411,7 @@ let rec ofSortedArrayAux arr off len =
 
 let ofSortedArrayUnsafe0 arr =     
   ofSortedArrayAux arr 0 (A.length arr)
-  
+
 let rec filterShared0 n p =
   match toOpt n with 
   | None -> empty
@@ -421,8 +422,8 @@ let rec filterShared0 n p =
     let newR = filterShared0 r p in
     if pv then 
       (if l == newL && r == newR then 
-        return n
-      else joinShared newL v newR)
+         return n
+       else joinShared newL v newR)
     else concatShared newL newR
 (* ATT: functional methods in general can be shared with 
     imperative methods, however, it does not apply when functional 
@@ -476,7 +477,7 @@ let rec compareAux e1 e2 ~cmp =
 let cmp0 s1 s2 ~cmp = 
   let len1,len2 = length0 s1, length0 s2 in    
   if len1 = len2 then
-   compareAux ~cmp (stackAllLeft s1 []) (stackAllLeft s2 [])
+    compareAux ~cmp (stackAllLeft s1 []) (stackAllLeft s2 [])
   else if len1 < len2 then -1 else 1 
 
 
@@ -520,14 +521,7 @@ let rec findNull0 ~cmp (n : _ t0) x =
     if c = 0 then  return v
     else findNull0 ~cmp  (if c < 0 then left t else right t) x 
 
-let rec sortedLengthAux ~cmp (xs : _ array) prec acc len =    
-  if  acc >= len then acc 
-  else 
-    let v = A.unsafe_get xs acc in 
-    if cmp v  prec [@bs] >= 0 then 
-      sortedLengthAux ~cmp xs v (acc + 1) len 
-    else acc    
-    
+
 (******************************************************************)
 
 (* 
@@ -620,14 +614,19 @@ let ofArray0 ~cmp (xs : _ array) =
   let len = A.length xs in 
   if len = 0 then empty0
   else
-    let next = sortedLengthAux 
-      ~cmp:(Bs_Cmp.getCmp cmp) xs (A.unsafe_get xs 0) 1 len in 
-    let result  = ref (ofSortedArrayAux  xs 0 next) in 
-    for i = next to len - 1 do 
+    let next = ref (S.strictlySortedLength xs 
+      (fun [@bs] x y -> (Bs_Cmp.getCmp cmp) x y [@bs] < 0)) in     
+    let result = 
+      ref (if !next >= 0 then  
+        ofSortedArrayAux xs 0 !next
+      else begin   
+        next := - !next ; 
+        ofSortedArrayRevAux xs (!next - 1) !next
+      end)  in 
+    for i = !next to len - 1 do 
       result := addMutate ~cmp !result (A.unsafe_get xs i) 
     done ;
     !result         
-
 
 let rec removeMinAuxWithRootMutate nt n = 
   let rn, ln = right n, left n in 

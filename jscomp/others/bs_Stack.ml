@@ -91,7 +91,7 @@ let iter s f =
 let dynamicPopIter s f =    
   let cursor = ref (root s) in 
   while !cursor != Js.null do 
-    let v = Js.Null.castUnsafe !cursor in 
+    let v = Js.Null.getUnsafe !cursor in 
     rootSet s (tail v);
     f (head v) [@bs];
     cursor := root s (* using root, [f] may change it*)

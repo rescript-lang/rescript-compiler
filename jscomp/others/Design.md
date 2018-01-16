@@ -37,3 +37,18 @@ hierachy
 ## bs_SetStringM
 
 # map 
+## bs_internalAVLtree (basic module with rotation)
+
+## bs_Map
+
+## internal_map.cpp.ml
+## bs_internalMapInt
+## bs_internalMapString
+
+## map.cppo.ml
+## bs_MapInt
+## bs_MapString
+
+## mapm.cppo.ml
+## bs_MapIntM
+## bs_MapStringM

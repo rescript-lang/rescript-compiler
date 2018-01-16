@@ -39,8 +39,12 @@ external makeUninitializedUnsafe : int -> 'a array = "Array" [@@bs.new]
 
 val init : int -> (int -> 'a [@bs]) -> 'a array
 
-val shuffleInPlace : 'a array -> unit    
+val shuffleOnly : 'a array -> unit    
 
+val shuffle :'a array -> 'a array 
+(** [shuffle xs] it mutates [xs] and return
+    [xs] for chaining
+ *)
 val zip : 'a array -> 'b array -> ('a * 'b) array
 (** [zip a b] stop with the shorter array *)
 

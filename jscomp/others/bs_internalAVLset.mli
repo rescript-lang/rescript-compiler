@@ -59,7 +59,9 @@ val removeMinAuxWithRef : 'a node -> 'a ref -> 'a t0
    minimum removed and stored in cell *)
 val empty0 : 'a t0
 val isEmpty0 : 'a t0 -> bool
+
 val stackAllLeft : 'a t0 -> 'a node list -> 'a node list
+
 val iter0 : 'a t0 -> ('a -> 'b [@bs]) -> unit
 val fold0 : 'a t0 -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
 val forAll0 : 'a t0 -> ('a -> bool [@bs]) -> bool
@@ -83,6 +85,7 @@ val checkInvariant : _ t0 -> bool
 val fillArray: 'a node -> int -> 'a array -> int 
 val toArray0 : 'a t0 -> 'a array
 val ofSortedArrayAux : 'a array -> int -> int -> 'a t0
+val ofSortedArrayRevAux : 'a array -> int -> int -> 'a t0
 val ofSortedArrayUnsafe0 : 'a array -> 'a t0
 val mem0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> bool
 val cmp0 : 'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> int

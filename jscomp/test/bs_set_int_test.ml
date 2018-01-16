@@ -6,7 +6,7 @@ let b loc v  = Mt.bool_suites ~suites ~test_id loc v
 
 module N = Bs.SetInt
 module I = Array_data_util
-
+module A = Bs_Array
 let (=~) s i = 
   N.(eq (ofArray i) s)
 let (=*) a b =  
@@ -97,8 +97,7 @@ let () =
  
 let ()  = 
   let count = 1_000_000 in 
-  let v = Bs.Array.init count (fun [@bs] i -> i) in 
-  Bs.Array.shuffleInPlace v ;
+  let v = (A.shuffle (A.init count (fun [@bs] i -> i))) in 
   let u = N.ofArray v in 
   b __LOC__ (N.checkInvariant u );
   let firstHalf = Bs.Array.sub v 0 2_000 in 

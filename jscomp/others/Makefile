@@ -32,11 +32,16 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_BagM\
 	bs_Cmp\
 	bs_Map\
+	bs_internalMapInt\
+	bs_internalMapString\
 	bs_MapString \
 	bs_MapInt\
+	bs_MapStringM \
+	bs_MapIntM\
 	bs_internalSet\
 	bs_Set\
 	bs_SetM\
+	bs_MapM\
 	bs_internalSetInt\
 	bs_internalSetString\
 	bs_SetInt\
@@ -86,7 +91,13 @@ clean::
 	bs_internalSetInt.ml bs_internalSetString.ml \
 	bs_SetInt.ml bs_SetInt.mli bs_SetString.ml  bs_SetString.mli \
 	bs_SetIntM.ml bs_SetIntM.mli bs_SetStringM.ml bs_SetStringM.mli\
-	bs_SortInt.ml bs_SortInt.mli bs_SortString.ml bs_SortString.mli
+	bs_SortInt.ml bs_SortInt.mli bs_SortString.ml bs_SortString.mli\
+	bs_internalMapInt.ml bs_internalMapInt.mli \
+	bs_internalMapIntM.ml bs_internalMapIntM.mli \
+	bs_internalMapString.ml bs_internalMapString.mli\
+	bs_internalMapStringM.ml bs_internalMapStringM.mli\
+	bs_MapStringM.mli bs_MapStringM.ml\
+	bs_MapIntM.mli bs_MapIntM.ml
 
 ifndef BS_RELEASE_BUILD
 bs_HashSetString.ml: hashset.cppo.ml
@@ -113,6 +124,18 @@ bs_MapString.mli: map.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 bs_MapInt.mli: map.cppo.mli
 	cppo -D TYPE_INT $^ > $@
+bs_MapStringM.mli: mapm.cppo.mli
+	cppo -D TYPE_STRING $^ > $@
+bs_MapIntM.mli: mapm.cppo.mli
+	cppo -D TYPE_INT $^ > $@
+bs_MapStringM.ml: mapm.cppo.ml
+	cppo -D TYPE_STRING $^ > $@
+bs_MapIntM.ml: mapm.cppo.ml
+	cppo -D TYPE_INT $^ > $@
+bs_internalMapInt.ml : internal_map.cppo.ml
+	cppo -D TYPE_INT $^ > $@
+bs_internalMapString.ml : internal_map.cppo.ml
+	cppo -D TYPE_STRING $^ > $@
 bs_internalSetInt.ml: internal_set.cppo.ml
 	cppo -D TYPE_INT $^ > $@
 bs_internalSetString.ml: internal_set.cppo.ml

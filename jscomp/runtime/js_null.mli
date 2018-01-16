@@ -38,9 +38,9 @@ external test : 'a t -> bool = "#is_nil"
 external empty : 'a t = "#null" 
 
 
-external castUnsafe : 'a t -> 'a = "%identity"
+external getUnsafe : 'a t -> 'a = "%identity"
 
-val castExn : 'a t -> 'a
+val getExn : 'a t -> 'a
 
 (** Maps the contained value using the given function
 

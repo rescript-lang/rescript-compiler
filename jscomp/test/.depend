@@ -61,7 +61,7 @@ arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj
 arith_syntax.cmj :
 arity_deopt.cmj : mt.cmj
-array_data_util.cmj : ../others/bs.cmj ../stdlib/array.cmj
+array_data_util.cmj : ../others/bs_Array.cmj
 array_safe_get.cmj : ../stdlib/array.cmj
 array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
 array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
@@ -99,11 +99,14 @@ bs_ignore_effect.cmj : mt.cmj
 bs_ignore_test.cmj : ../runtime/js.cmj
 bs_list_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj
 bs_map_int_test.cmj : mt.cmj ../others/bs.cmj
-bs_map_test.cmj : ../runtime/js.cmj ../others/bs.cmj
+bs_map_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs_Array.cmj \
+    ../others/bs.cmj array_data_util.cmj
 bs_min_max_test.cmj : ../stdlib/pervasives.cmj mt.cmj
 bs_mutable_set_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
     array_data_util.cmj ../stdlib/array.cmj
 bs_node_string_buffer_test.cmj : ../others/node.cmj ../runtime/js.cmj
+bs_poly_map_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs_Array.cmj \
+    ../others/bs.cmj array_data_util.cmj
 bs_poly_mutable_set_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
     array_data_util.cmj
 bs_poly_set_test.cmj : mt.cmj ../runtime/js.cmj ../others/bs.cmj \
@@ -114,7 +117,8 @@ bs_rbset_int_bench.cmj : rbset.cmj
 bs_rest_test.cmj :
 bs_set_bench.cmj : ../others/bs.cmj
 bs_set_int_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \
-    ../others/bs.cmj array_data_util.cmj ../stdlib/array.cmj
+    ../others/bs_Array.cmj ../others/bs.cmj array_data_util.cmj \
+    ../stdlib/array.cmj
 bs_sort_test.cmj : mt.cmj ../others/bs_Range.cmj ../others/bs_Array.cmj \
     ../others/bs.cmj array_data_util.cmj
 bs_splice_partial.cmj : ../runtime/js.cmj

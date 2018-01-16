@@ -45,11 +45,13 @@ let swapUnsafe xs i j =
   unsafe_set xs j tmp
 
 
-let shuffleInPlace xs =     
+let shuffleOnly xs =     
   let len = length xs in 
   for i = 0 to len - 1 do
     swapUnsafe xs i (Js_math.random_int i len) (* [i,len)*)
   done 
+
+let shuffle xs = shuffleOnly xs; xs   
 
 let makeMatrix sx sy init =
   [%assert sx >=0 && sy >=0 ];

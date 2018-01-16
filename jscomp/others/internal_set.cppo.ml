@@ -1,7 +1,9 @@
 #ifdef TYPE_STRING
 type elt = string
+module S = Bs_SortString
 #elif defined TYPE_INT  
 type elt = int
+module S = Bs_SortInt
 #else
   [%error "unknown type"]  
 #endif
@@ -13,23 +15,6 @@ module A = Bs_Array
 
 type t = elt N.t0
 
-let rec add  (t : t) (x : elt) : t =
-  match N.toOpt t with 
-    None -> N.singleton0 x 
-  | Some nt  ->
-    let v = N.key nt in  
-    if x = v then t else
-      let l, r = N.(left nt , right nt) in 
-      if x < v then 
-        let ll = add l x in 
-        if ll == l then t 
-        else N.bal ll v r
-      else 
-        let rr = add r x in 
-        if rr == r then t
-        else N.bal l v (add  r x) 
-
-
 
 let rec mem (t : t) (x : elt)  =
   match N.toOpt t with 
@@ -37,29 +22,6 @@ let rec mem (t : t) (x : elt)  =
   | Some n  ->                
     let v = N.key n in 
     x = v || mem (if x < v then N.left n else N.right n) x
-
-let rec remove (t : t) (x : elt) : t = 
-  match N.toOpt t with 
-  | None -> t
-  | Some n  ->
-    let l,v,r = N.(left n, key n, right n) in 
-    if x = v then 
-      match N.toOpt l, N.toOpt r with 
-      | None, _ -> r 
-      | _, None -> l 
-      | _, Some rn -> 
-        let v = ref (N.key rn) in 
-        let r = N.removeMinAuxWithRef rn v in 
-        N.bal l !v r
-    else
-    if x < v then 
-      let ll = remove l x in  
-      if ll == l then t  
-      else N.bal ll v r 
-    else 
-      let rr = remove r x in 
-      if rr == r then t
-      else N.bal l v rr
 
 
 let rec compareAux e1 e2  =
@@ -140,22 +102,23 @@ let rec addMutate  t  (x : elt)=
       );
       N.return (N.balMutate nt)
 
-let rec sortedLengthAux (xs : elt array) prec acc len =    
-  if acc >= len then acc 
-  else 
-    let v = A.unsafe_get xs acc in 
-    if v > prec  then 
-      sortedLengthAux xs v (acc + 1) len 
-    else acc  
 
 
 let ofArray (xs : elt array) =   
   let len = A.length xs in 
   if len = 0 then N.empty
   else
-    let next = sortedLengthAux xs (A.unsafe_get xs 0) 1 len in 
-    let result  = ref (N.ofSortedArrayAux xs 0 next) in 
-    for i = next to len - 1 do 
+    let next =  ref (S.strictlySortedLength xs ) in 
+    let result  = 
+        ref (
+          if !next >= 0 then 
+            N.ofSortedArrayAux xs 0 !next
+          else begin 
+            next := - !next ;  
+            N.ofSortedArrayRevAux xs (!next - 1) !next
+          end
+          ) in 
+    for i = !next to len - 1 do 
       result := addMutate !result (A.unsafe_get xs i) 
     done ;
     !result 

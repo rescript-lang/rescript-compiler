@@ -25,6 +25,36 @@
 
 module A = Bs_Array 
 
+let rec sortedLengthAuxMore xs prec acc len lt = 
+  if acc >= len then acc 
+  else 
+    let v = A.unsafe_get xs acc in 
+    if lt v prec [@bs]  then 
+      sortedLengthAuxMore xs v (acc + 1) len lt
+    else acc   
+
+let rec sortedLengthAuxLess xs prec acc len lt = 
+  if acc >= len then acc 
+  else 
+    let v = A.unsafe_get xs acc in 
+    if lt prec v [@bs]  then 
+      sortedLengthAuxLess xs v (acc + 1) len lt
+    else acc   
+    
+let strictlySortedLength xs lt = 
+  let len = A.length xs in 
+  match len with 
+  | 0 | 1 -> len 
+  | _ -> 
+    let x0, x1 = A.unsafe_get xs 0, A.unsafe_get xs 1 in 
+    (* let c = cmp x0 x1 [@bs]  in *)
+    if lt x0 x1 [@bs] then 
+      sortedLengthAuxLess xs x1 2 len lt
+    else if lt x1 x0 [@bs] then 
+      - (sortedLengthAuxMore xs x1 2 len lt)
+    else 1  
+
+
 let rec isSortedAux a i cmp last_bound = 
   (* when [i = len - 1], it reaches the last element*)
   if i = last_bound then true 

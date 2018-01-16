@@ -6,6 +6,14 @@ type elt = string
   [%error "unknown type"]
 #endif
 
+val strictlySortedLength : 
+  elt array -> 
+  int 
+(**
+  [strictlySortedLenght xs]
+  return [+n] means increasing order
+  [-n] means negative order
+*)  
 
 val isSorted : elt array  -> bool
 (** strictly sorted *)

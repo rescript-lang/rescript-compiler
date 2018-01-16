@@ -9,19 +9,22 @@ type 'a t
 (** The type of maps from type [key] to type ['a]. *)
 
 val empty: 'a t
-(** The empty map. *)
 
 val ofArray: (key * 'a) array -> 'a t 
 
 val isEmpty: 'a t -> bool
-(** Test whether a map is empty or not. *)
 
 val mem:  'a t -> key -> bool
 
-val add: 'a t ->  key -> 'a -> 'a t
+val update: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] returns a map containing the same bindings as
    [m], plus a binding of [x] to [y]. If [x] was already bound
    in [m], its previous binding disappears. *)
+val updateWithOpt:
+    'a t -> 
+    key -> 
+    (key option -> 'a option [@bs]) -> 
+    'a t 
 
 val singleton: key -> 'a -> 'a t
 
@@ -67,13 +70,19 @@ val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
     satisfy the predicate [p].
  *)
 
-val filter: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t
+val filter: 
+    'a t -> 
+    (key -> 'a -> bool [@bs]) -> 
+    'a t
 (** [filter m p] returns the map with all the bindings in [m]
     that satisfy predicate [p].
 *)
 
-val partition: (key -> 'a -> bool [@bs]) -> 'a t -> 'a t * 'a t
-(** [partition p m] returns a pair of maps [(m1, m2)], where
+val partition: 
+    'a t -> 
+    (key -> 'a -> bool [@bs]) -> 
+    'a t * 'a t
+(** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
     [s] that do not satisfy [p].
@@ -89,14 +98,11 @@ val toList: 'a t -> (key * 'a) list
    given to {!Map.Make}.
  *)
 
-val minBinding: 'a t -> (key * 'a) option
-(** Return the smallest binding of the given map
-   or raise
- *)
+val minKVOpt: 'a t -> (key * 'a) option
+val minKVNull: 'a t -> (key * 'a) Js.null
+val maxKVOpt: 'a t -> (key * 'a) option
+val maxKVNull: 'a t -> (key * 'a) Js.null
 
-val maxBinding: 'a t -> (key * 'a) option
-(** returns the largest binding of the given map.
- *)
 
 
 
@@ -110,13 +116,10 @@ val split: key -> 'a t -> 'a t * 'a option * 'a t
       or [Some v] if [m] binds [v] to [x].
  *)
 
-val findOpt: key -> 'a t -> 'a option
-(** [findOpt x m] returns the current binding of [x] in [m] *)
-
-val findAssert: key -> 'a t -> 'a
-(** raise an exception if not there *)
-  
+val findOpt: 'a t -> key -> 'a option
+val findNull: 'a t -> key -> 'a Js.null
 val findWithDefault:  'a t -> key -> 'a  -> 'a
+val findExn: 'a t -> key -> 'a 
 
 val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
 (** [map m f] returns a map with same domain as [m], where the
