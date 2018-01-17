@@ -55,7 +55,7 @@ val minKeyValueOpt: 'a t -> (key * 'a) option
 val minKeyValueNull: 'a t -> (key * 'a) Js.null
 val maxKeyValueOpt: 'a t -> (key * 'a) option
 val maxKeyValueNull: 'a t -> (key * 'a) Js.null
-val getOpt: 'a t -> key -> 'a option
+val get: 'a t -> key -> 'a option
 val getNull: 'a t -> key -> 'a Js.null
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a 
@@ -67,11 +67,11 @@ val remove: 'a t ->  key -> 'a t
    [m], except for [x] which is unbound in the returned map. *)
 val removeArray: 'a t -> key array -> 'a t
 
-val update: 'a t ->  key -> 'a -> 'a t
+val set: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] returns a map containing the same bindings as
    [m], plus a binding of [x] to [y]. If [x] was already bound
    in [m], its previous binding disappears. *)
-val updateWithOpt:
+val setWithOpt:
     'a t -> 
     key -> 
     (key option -> 'a option [@bs]) -> 

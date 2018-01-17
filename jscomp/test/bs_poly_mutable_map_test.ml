@@ -24,7 +24,7 @@ let randomRange i j =
 
   let () = 
     let a0 = f (randomRange 0 10) in 
-    M.updateDone a0 3 33;
+    M.setDone a0 3 33;
     eq __LOC__ (M.getExn a0 3) 33 ;
     M.removeArrayDone a0 [|7;8;0;1;3;2;4;922;4;5;6;|];
     eq __LOC__ (M.keysToArray a0) [|9;10|];

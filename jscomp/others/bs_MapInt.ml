@@ -36,7 +36,7 @@ let keysToArray = N.keysToArray0
 let valuesToArray = N.valuesToArray0 
 let checkInvariant = N.checkInvariant
 
-let rec update  t (newK : key) (newD : _)  = 
+let rec set  t (newK : key) (newD : _)  = 
   match N.toOpt t with
   | None -> 
     N.singleton0 newK newD
@@ -47,11 +47,11 @@ let rec update  t (newK : key) (newD : _)  =
     else
       let v = N.value n in 
       if newK < k then
-        N.bal (update (N.left n) newK newD) k v (N.right n)
+        N.bal (set (N.left n) newK newD) k v (N.right n)
       else
-        N.bal (N.left n) k v (update (N.right n) newK newD)
+        N.bal (N.left n) k v (set (N.right n) newK newD)
         
-let rec updateWithOpt  t (x : key) f  = 
+let rec setWithOpt  t (x : key) f  = 
   match N.toOpt t with
   | None -> 
     begin match f None [@bs] with 
@@ -69,9 +69,9 @@ let rec updateWithOpt  t (x : key) f  =
     else
       let v = N.value n in 
       if x < k then
-        N.bal (updateWithOpt (N.left n) x f) k v (N.right n)
+        N.bal (setWithOpt (N.left n) x f) k v (N.right n)
       else
-        N.bal (N.left n) k v (updateWithOpt (N.right n) x f)        
+        N.bal (N.left n) k v (setWithOpt (N.right n) x f)        
 
 let rec removeAux n (x : key) = 
     let l,v,r = N.(left n, key n, right n) in 
@@ -121,7 +121,7 @@ let removeArray t keys =
 let mem = I.mem 
 let cmp = I.cmp 
 let eq = I.eq 
-let getOpt = I.findOpt
+let get = I.findOpt
 let getNull = I.findNull 
 let getWithDefault = I.findWithDefault 
 let getExn = I.findExn

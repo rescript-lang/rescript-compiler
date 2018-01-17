@@ -27,14 +27,14 @@ let minKeyValueNull m = N.minKVNull0 (data m)
 let maxKeyValueOpt m = N.maxKVOpt0 (data m)
 let maxKeyValueNull m = N.maxKVNull0 (data m)
 
-let addDone (m : _ t) k v = 
+let setDone (m : _ t) k v = 
   let old_data = data m in 
   let v = I.addMutate old_data k v in 
   if v != old_data then 
     dataSet m v 
 
-let add (d : 'a t) (k : key) (v : 'a) : 'a t=  
-  addDone d k v; 
+let set (d : 'a t) (k : key) (v : 'a) : 'a t=  
+  setDone d k v; 
   d
 let iter d f = N.iter0 (data d) f     
 let map d f = t ~data:(N.map0 (data d) f)
@@ -130,7 +130,7 @@ let cmp d0 d1 =
   I.cmp (data d0) (data d1)
 let eq d0 d1 = 
   I.eq (data d0) (data d1)
-let getOpt d x = 
+let get d x = 
   I.findOpt (data d) x 
 let getNull d x = I.findNull (data d) x 
 let getWithDefault d x def = I.findWithDefault (data d) x def  

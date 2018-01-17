@@ -57,7 +57,7 @@ val minKeyValueOpt: 'a t -> (key * 'a) option
 val minKeyValueNull: 'a t -> (key * 'a) Js.null
 val maxKeyValueOpt: 'a t -> (key * 'a) option
 val maxKeyValueNull: 'a t -> (key * 'a) Js.null
-val getOpt: 'a t ->  key -> 'a option
+val get: 'a t ->  key -> 'a option
 val getNull: 'a t -> key -> 'a Js.null
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a
@@ -72,8 +72,8 @@ val remove: 'a t ->  key -> 'a t
 val removeArrayDone: 'a t -> key array -> unit
 val removeArray: 'a t -> key array -> 'a t
     
-val addDone: 'a t -> key -> 'a -> unit  
-val add: 'a t ->  key -> 'a -> 'a t
+val setDone: 'a t -> key -> 'a -> unit  
+val set: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] do the in-place modification, return
     [m] for chaining. If [x] was already bound
    in [m], its previous binding disappears. *)

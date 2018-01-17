@@ -84,7 +84,7 @@ val minKeyValueOpt: ('k, 'a,  _) t -> ('k * 'a) option
 val minKeyValueNull: ('k, 'a, _) t -> ('k * 'a) Js.null
 val maxKeyValueOpt: ('k, 'a, _) t -> ('k * 'a) option
 val maxKeyValueNull:('k, 'a, _) t -> ('k * 'a) Js.null
-val getOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
+val get:  ('k, 'a, 'id) t -> 'k -> 'a option
 val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
@@ -103,9 +103,9 @@ val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t
 
 
   
-val updateDone: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
-val update: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
-(** [update m x y ] do the in-place modification, returnning [m] for chaining. *)
+val setDone: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
+val set: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
+(** [set m x y ] do the in-place modification, returnning [m] for chaining. *)
 
 
 

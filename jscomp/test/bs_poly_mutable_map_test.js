@@ -43,7 +43,7 @@ var x = randomRange(0, 10);
 
 var a0 = Bs_MapM.ofArray(x, Icmp);
 
-Bs_MapM.updateDone(a0, 3, 33);
+Bs_MapM.setDone(a0, 3, 33);
 
 eq("File \"bs_poly_mutable_map_test.ml\", line 28, characters 7-14", Bs_MapM.getExn(a0, 3), 33);
 
@@ -61,14 +61,14 @@ Bs_MapM.removeArrayDone(a0, /* array */[
       6
     ]);
 
-eq("File \"bs_poly_mutable_map_test.ml\", line 31, characters 7-14", Bs_internalAVLtree.keysToArray0(a0.data), /* int array */[
+eq("File \"bs_poly_mutable_map_test.ml\", line 30, characters 7-14", Bs_internalAVLtree.keysToArray0(a0.data), /* int array */[
       9,
       10
     ]);
 
 Bs_MapM.removeArrayDone(a0, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_mutable_map_test.ml\", line 33, characters 6-13", Bs_internalAVLtree.isEmpty0(a0.data));
+b("File \"bs_poly_mutable_map_test.ml\", line 32, characters 6-13", Bs_internalAVLtree.isEmpty0(a0.data));
 
 Mt.from_pair_suites("bs_poly_mutable_map_test.ml", suites[0]);
 

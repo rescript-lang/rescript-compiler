@@ -114,7 +114,7 @@ bs_HashSet.cmi : bs_Hash.cmi bs_Bag.cmj
 bs_HashSetString.cmi :
 bs_HashSetInt.cmi :
 bs_Cmp.cmi :
-bs_Map.cmi : bs_Cmp.cmi bs_Bag.cmj
+bs_Map.cmi : bs_Cmp.cmi
 bs_MapString.cmi :
 bs_MapInt.cmi :
 bs_MapStringM.cmi :

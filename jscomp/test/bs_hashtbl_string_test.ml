@@ -84,12 +84,13 @@ let bench2 (type t) (m : (string,t) Bs.Hash.t) =
 (* Bs.HashMap.logStats empty *)
 
 let bench3 (type t) (m : (string,t) Bs.Cmp.t) = 
+  let module M = Bs.Map in 
   let empty = Bs.Map.empty m in
   let module String = (val m) in 
   let cmp = String.cmp in 
-  let table = ref (B.data empty) in 
+  let table = ref (M.getData empty) in 
   for i  = 0 to  count do  
-    table := Bs.Map.update0 ~cmp !table
+    table := M.set0 ~cmp !table
         (string_of_int i) i 
   done ;
   for i = 0 to count do 

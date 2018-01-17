@@ -20,9 +20,7 @@ type ('k,  'v, 'id) t0
 *)
 
 
-type ('k,'v,'id) t = 
-  (('k,'id) Bs_Cmp.t,
-   ('k,'v, 'id) t0 ) Bs_Bag.bag
+type ('k,'v,'id) t 
 (** The data associated with a comparison function *)   
 
 (*
@@ -100,7 +98,7 @@ val minKeyValueOpt: ('k, 'a,  _) t -> ('k * 'a) option
 val minKeyValueNull: ('k, 'a, _) t -> ('k * 'a) Js.null
 val maxKeyValueOpt: ('k, 'a, _) t -> ('k * 'a) option
 val maxKeyValueNull:('k, 'a, _) t -> ('k * 'a) Js.null
-val getOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
+val get:  ('k, 'a, 'id) t -> 'k -> 'a option
 val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
@@ -112,18 +110,19 @@ val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
 (** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
 val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t  
   
-val update: 
+val set: 
     ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
-(** [update m x y ] returns a map containing the same bindings as
+(** [set m x y ] returns a map containing the same bindings as
     [m], with a new binding of [x] to [y]. If [x] was already bound
     in [m], its previous binding disappears. *)
-val updateArray:
-    ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
-val updateWithOpt:     
+val setWithOpt:     
     ('k, 'a, 'id) t ->  
     'k -> 
     ('k option -> 'a option [@bs]) -> 
     ('k, 'a, 'id) t 
+      
+val updateArray:
+    ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
 
 
 val merge:
@@ -177,6 +176,10 @@ val mapi: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
 
 (****************************************************************************)
 
+val getData: ('k,'v,'id) t  -> ('k,'v,'id) t0
+val getDict: ('k,'v,'id) t  -> ('k,'id) Bs_Cmp.t
+val packDictData: dict:('k, 'id) Bs_Cmp.t -> data:('k, 'v, 'id) t0 -> ('k, 'v, 'id) t
+
 val empty0 : ('k, 'a, 'id) t0
 val ofArray0:  
   cmp: ('k,'id) Bs_Cmp.cmp -> 
@@ -190,7 +193,7 @@ val mem0:
    cmp: ('k,'id) Bs_Cmp.cmp -> 
    bool
 
-val update0: 
+val set0: 
   ('k, 'a, 'id) t0 -> 
   'k -> 
   'a -> 

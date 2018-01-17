@@ -21,7 +21,7 @@ type ('k,'v,'id) t =
   (('k,'id) Bs_Cmp.t,
    ('k,'v, 'id) t0 ) B.bag 
 
-let rec update0  (t : _ t0) newK newD  ~cmp =
+let rec set0  (t : _ t0) newK newD  ~cmp =
   match N.toOpt t with 
   | None -> N.singleton0 newK newD 
   | Some n  ->
@@ -32,9 +32,9 @@ let rec update0  (t : _ t0) newK newD  ~cmp =
     else 
       let l,r,v = N.left n, N.right n, N.value n in 
       if c < 0 then
-        N.bal (update0 ~cmp l newK newD ) k v  r
+        N.bal (set0 ~cmp l newK newD ) k v  r
       else
-        N.bal l k v (update0 ~cmp r newK newD )
+        N.bal l k v (set0 ~cmp r newK newD )
 
 let rec updateWithOpt0  (t : _ t0) newK f  ~cmp =
   match N.toOpt t with 
@@ -109,7 +109,7 @@ let updateArray0   h arr ~cmp =
   let v = ref h in  
   for i = 0 to len - 1 do 
     let key,value = A.unsafe_get arr i in 
-    v := update0 !v  ~cmp key value
+    v := set0 !v  ~cmp key value
   done ;
   !v 
 
@@ -220,10 +220,10 @@ let removeArray (type k) (type id) (m : (k,_,id) t) xs =
     if newData == odata then m 
     else B.bag ~dict ~data:newData
 
-let update (type k) (type id) (map : (k,_,id) t) key data  = 
+let set (type k) (type id) (map : (k,_,id) t) key data  = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  B.bag ~dict ~data:(update0 ~cmp:X.cmp map key data )
+  B.bag ~dict ~data:(set0 ~cmp:X.cmp map key data )
 
 let updateArray (type elt) (type id) (m : (elt,_,id) t) e = 
   let dict, data = B.(dict m, data m) in 
@@ -231,7 +231,7 @@ let updateArray (type elt) (type id) (m : (elt,_,id) t) e =
   let newData = updateArray0 ~cmp:M.cmp data e in 
   B.bag ~dict ~data:newData  
 
-let updateWithOpt (type k) (type id) (map : (k,_,id) t) key f  = 
+let setWithOpt (type k) (type id) (map : (k,_,id) t) key f  = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   B.bag ~dict ~data:(updateWithOpt0 ~cmp:X.cmp map key f )
@@ -315,7 +315,7 @@ let minKeyValueNull m = N.minKVNull0 (B.data m)
 let maxKeyValueOpt m = N.maxKVOpt0 (B.data m)
 let maxKeyValueNull m = N.maxKVNull0 (B.data m)
 
-let getOpt (type k) (type id) (map : (k,_,id) t) x  = 
+let get (type k) (type id) (map : (k,_,id) t) x  = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findOpt0 ~cmp:X.cmp  map x 
@@ -372,3 +372,6 @@ let map0  = N.map0
 
 let filter0 = N.filterShared0
 let partition0 = N.partitionShared0
+let getData = B.data
+let getDict = B.dict
+let packDictData = B.bag 

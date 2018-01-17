@@ -150,7 +150,7 @@ let map m f =
 let mapi map  f = 
   let dict,map = B.(dict map, data map) in 
   B.bag ~dict ~data:(N.mapi0 map f)
-let getOpt (type k) (type id) (map : (k,_,id) t) x  = 
+let get (type k) (type id) (map : (k,_,id) t) x  = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findOpt0 ~cmp:X.cmp  map x 
@@ -173,14 +173,14 @@ let mem (type k) (type id)  (map : (k,_,id) t) x =
 let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)= 
   let module M = (val dict ) in 
   B.bag ~dict  ~data:(N.ofArray0 ~cmp:M.cmp data)  
-let updateDone (type elt) (type id) (m : (elt,_,id) t) e v = 
+let setDone (type elt) (type id) (m : (elt,_,id) t) e v = 
   let dict, oldRoot = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newRoot = N.updateMutate ~cmp:M.cmp oldRoot e v in 
   if newRoot != oldRoot then 
     B.dataSet m newRoot
-let update m e v = 
-  updateDone m e v;
+let set m e v = 
+  setDone m e v;
   m
 let updateArrayMutate t  xs ~cmp =     
   let v = ref t in 

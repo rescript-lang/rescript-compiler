@@ -52,14 +52,14 @@ let () =
 
 let () =   
   let a0 = f (randomRange 0 10) in 
-  let a1 = M.update a0 3 33 in 
+  let a1 = M.set a0 3 33 in 
   let a2 = M.remove a1 3 in  
-  let a3 = M.updateWithOpt a2 3 (fun[@bs]  k -> 
+  let a3 = M.setWithOpt a2 3 (fun[@bs]  k -> 
       match k with 
       | Some k -> Some (k + 1)
       | None  ->  Some 11
     ) in 
-  let a4 = M.updateWithOpt a2 3 (fun[@bs]  k -> 
+  let a4 = M.setWithOpt a2 3 (fun[@bs]  k -> 
       match k with 
       | Some k-> Some (k + 1)
       | None  ->  None
@@ -80,5 +80,21 @@ let () =
   eq __LOC__ (M.keysToArray a7) [|9;10|];
   let a8 = M.removeArray a7 (I.randomRange 0 100) in 
   b __LOC__ (M.isEmpty a8)
-  
+
+(* TODO: expose [Bs_Bag.bag] makes the error message
+  pretty hard to read
+  {[
+    Error: This expression has type
+         ((Icmp.t, Icmp.id) Bs_Cmp.t, (Icmp.t, Icmp.t, Icmp.id) Bs_Map.t0)
+         Bs_Bag.bag
+       but an expression was expected of type unit
+  ]}
+ *)  
+let () =   
+  let module Array = M in 
+  let u0 = f (randomRange 0 100) in 
+  let u1 = u0.(3) <- 32  in 
+  eq __LOC__ (M.get u1 3 ) (Some 3) 
+
+
 ;; Mt.from_pair_suites __FILE__ !suites

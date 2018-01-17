@@ -105,11 +105,11 @@ var x$6 = randomRange(0, 10);
 
 var a0 = Bs_Map.ofArray(x$6, Icmp);
 
-var a1 = Bs_Map.update(a0, 3, 33);
+var a1 = Bs_Map.set(a0, 3, 33);
 
 var a2 = Bs_Map.remove(a1, 3);
 
-var a3 = Bs_Map.updateWithOpt(a2, 3, (function (k) {
+var a3 = Bs_Map.setWithOpt(a2, 3, (function (k) {
         if (k) {
           return /* Some */[k[0] + 1 | 0];
         } else {
@@ -117,7 +117,7 @@ var a3 = Bs_Map.updateWithOpt(a2, 3, (function (k) {
         }
       }));
 
-var a4 = Bs_Map.updateWithOpt(a2, 3, (function (k) {
+var a4 = Bs_Map.setWithOpt(a2, 3, (function (k) {
         if (k) {
           return /* Some */[k[0] + 1 | 0];
         } else {
@@ -167,6 +167,14 @@ eq("File \"bs_poly_map_test.ml\", line 80, characters 5-12", Bs_internalAVLtree.
 var a8 = Bs_Map.removeArray(a7, Array_data_util.randomRange(0, 100));
 
 b("File \"bs_poly_map_test.ml\", line 82, characters 4-11", Bs_internalAVLtree.isEmpty0(a8.data));
+
+var x$7 = randomRange(0, 100);
+
+var u0$1 = Bs_Map.ofArray(x$7, Icmp);
+
+var u1$1 = Bs_Map.set(u0$1, 3, 32);
+
+eq("File \"bs_poly_map_test.ml\", line 97, characters 5-12", Bs_Map.get(u1$1, 3), /* Some */[3]);
 
 Mt.from_pair_suites("bs_poly_map_test.ml", suites[0]);
 
