@@ -115,8 +115,8 @@ let cmp d0 d1 =
   I.cmp (data d0) (data d1)
 let eq d0 d1 = 
   I.eq (data d0) (data d1)
-let findOpt d x = 
+let getOpt d x = 
   I.findOpt (data d) x 
-let findNull d x = I.findNull (data d) x 
-let findWithDefault d x def = I.findWithDefault (data d) x def  
-let findExn d x = I.findExn (data d) x 
+let getNull d x = I.findNull (data d) x 
+let getWithDefault d x def = I.findWithDefault (data d) x def  
+let getExn d x = I.findExn (data d) x 

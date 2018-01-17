@@ -151,19 +151,19 @@ let map m f =
 let mapi map  f = 
   let dict,map = B.(dict map, data map) in 
   B.bag ~dict ~data:(N.mapi0 map f)
-let findOpt (type k) (type id) (map : (k,_,id) t) x  = 
+let getOpt (type k) (type id) (map : (k,_,id) t) x  = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findOpt0 ~cmp:X.cmp  map x 
-let findNull (type k) (type id) (map : (k,_,id) t) x = 
+let getNull (type k) (type id) (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findNull0 ~cmp:X.cmp  map x
-let findWithDefault (type k) (type id)  (map : (k,_,id) t) x def = 
+let getWithDefault (type k) (type id)  (map : (k,_,id) t) x def = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findWithDefault0 ~cmp:X.cmp map x  def  
-let findExn (type k)  (type id)  (map : (k,_,id) t) x = 
+let getExn (type k)  (type id)  (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findExn0 ~cmp:X.cmp map x 

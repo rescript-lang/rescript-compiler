@@ -55,12 +55,16 @@ val minKeyValueOpt: 'a t -> (key * 'a) option
 val minKeyValueNull: 'a t -> (key * 'a) Js.null
 val maxKeyValueOpt: 'a t -> (key * 'a) option
 val maxKeyValueNull: 'a t -> (key * 'a) Js.null
-val findOpt: 'a t -> key -> 'a option
-val findNull: 'a t -> key -> 'a Js.null
-val findWithDefault:  'a t -> key -> 'a  -> 'a
-val findExn: 'a t -> key -> 'a 
+val getOpt: 'a t -> key -> 'a option
+val getNull: 'a t -> key -> 'a Js.null
+val getWithDefault:  'a t -> key -> 'a  -> 'a
+val getExn: 'a t -> key -> 'a 
 
 (****************************************************************************)
+
+val remove: 'a t ->  key -> 'a t
+(** [remove m x] returns a map containing the same bindings as
+   [m], except for [x] which is unbound in the returned map. *)
 
 val update: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] returns a map containing the same bindings as
@@ -73,9 +77,6 @@ val updateWithOpt:
     'a t 
 
 
-val remove: 'a t ->  key -> 'a t
-(** [remove m x] returns a map containing the same bindings as
-   [m], except for [x] which is unbound in the returned map. *)
 
 
 val merge:

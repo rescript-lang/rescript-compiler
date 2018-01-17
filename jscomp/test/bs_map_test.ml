@@ -90,8 +90,8 @@ let () =
     (M.toList u0)
     (A.toList (A.map (I.range 0 39) (fun [@bs] x -> (x,x))))
     (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
-  eq __LOC__ (M.findOpt u0 39) (Some 39);
-  eq __LOC__ (M.findOpt u1 39) (Some 120)
+  eq __LOC__ (M.getOpt u0 39) (Some 39);
+  eq __LOC__ (M.getOpt u1 39) (Some 120)
 
 
 let () =     

@@ -84,13 +84,17 @@ val minKeyValueOpt: ('k, 'a,  _) t -> ('k * 'a) option
 val minKeyValueNull: ('k, 'a, _) t -> ('k * 'a) Js.null
 val maxKeyValueOpt: ('k, 'a, _) t -> ('k * 'a) option
 val maxKeyValueNull:('k, 'a, _) t -> ('k * 'a) Js.null
-val findOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
-val findNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
-val findWithDefault:
+val getOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
+val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
+val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
-val findExn:  ('k, 'a, 'id) t -> 'k ->  'a 
+val getExn:  ('k, 'a, 'id) t -> 'k ->  'a 
 
 (****************************************************************************)
+
+val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
+(** [remove m x] do the in-place modification,
+    returnning [m] for chaining. *)
 
 (*TODO: add functional [merge, partition, filter, split]*)
   
@@ -99,9 +103,6 @@ val update: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
 (** [update m x y ] do the in-place modification, returnning [m] for chaining. *)
 
 val removeOnly:  ('k, 'a, 'id) t -> 'k -> unit
-val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
-(** [remove m x] do the in-place modification,
-    returnning [m] for chaining. *)
 val removeArrayOnly: ('k, 'a, 'id) t -> 'k array -> unit    
 val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t 
 

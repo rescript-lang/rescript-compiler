@@ -133,9 +133,9 @@ b("File \"bs_map_test.ml\", line 88, characters 4-11", Bs_List.forAll2(Bs_intern
             }
           })));
 
-eq("File \"bs_map_test.ml\", line 93, characters 5-12", Bs_Map.findOpt(u0, 39), /* Some */[39]);
+eq("File \"bs_map_test.ml\", line 93, characters 5-12", Bs_Map.getOpt(u0, 39), /* Some */[39]);
 
-eq("File \"bs_map_test.ml\", line 94, characters 5-12", Bs_Map.findOpt(u1, 39), /* Some */[120]);
+eq("File \"bs_map_test.ml\", line 94, characters 5-12", Bs_Map.getOpt(u1, 39), /* Some */[120]);
 
 var u = f(Bs_Array.shuffle(Bs_Array.init(10000, (function (x) {
                 return /* tuple */[

@@ -57,15 +57,18 @@ val minKeyValueOpt: 'a t -> (key * 'a) option
 val minKeyValueNull: 'a t -> (key * 'a) Js.null
 val maxKeyValueOpt: 'a t -> (key * 'a) option
 val maxKeyValueNull: 'a t -> (key * 'a) Js.null
-val findOpt: 'a t ->  key -> 'a option
-val findNull: 'a t -> key -> 'a Js.null
-val findWithDefault:  'a t -> key -> 'a  -> 'a
-val findExn: 'a t -> key -> 'a
+val getOpt: 'a t ->  key -> 'a option
+val getNull: 'a t -> key -> 'a Js.null
+val getWithDefault:  'a t -> key -> 'a  -> 'a
+val getExn: 'a t -> key -> 'a
   
 (****************************************************************************)
 
 (*TODO: add functional [merge, partition, filter, split]*)
-  
+
+val remove: 'a t ->  key -> 'a t
+(** [remove m x] do the in-place modification, return [m] for chaining *)
+
 val addOnly : 'a t -> key -> 'a -> unit  
 val add: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] do the in-place modification, return
@@ -73,8 +76,6 @@ val add: 'a t ->  key -> 'a -> 'a t
    in [m], its previous binding disappears. *)
 
 
-val remove: 'a t ->  key -> 'a t
-(** [remove m x] do the in-place modification, return [m] for chaining *)
 
 
 val map: 'a t -> ('a -> 'b [@bs]) ->  'b t

@@ -135,15 +135,15 @@ b("File \"bs_poly_map_test.ml\", line 70, characters 4-11", Bs_Map.mem(a0, 3));
 
 b("File \"bs_poly_map_test.ml\", line 71, characters 4-11", 1 - Bs_Map.mem(a5, 3));
 
-b("File \"bs_poly_map_test.ml\", line 72, characters 4-11", +(3 === Bs_Map.findNull(a0, 3)));
+b("File \"bs_poly_map_test.ml\", line 72, characters 4-11", +(3 === Bs_Map.getNull(a0, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 73, characters 4-11", +(33 === Bs_Map.findNull(a1, 3)));
+b("File \"bs_poly_map_test.ml\", line 73, characters 4-11", +(33 === Bs_Map.getNull(a1, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 74, characters 4-11", +(Bs_Map.findNull(a2, 3) === null));
+b("File \"bs_poly_map_test.ml\", line 74, characters 4-11", +(Bs_Map.getNull(a2, 3) === null));
 
-b("File \"bs_poly_map_test.ml\", line 76, characters 4-11", +(11 === Bs_Map.findNull(a3, 3)));
+b("File \"bs_poly_map_test.ml\", line 76, characters 4-11", +(11 === Bs_Map.getNull(a3, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(Bs_Map.findNull(a4, 3) === null));
+b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(Bs_Map.getNull(a4, 3) === null));
 
 Mt.from_pair_suites("bs_poly_map_test.ml", suites[0]);
 

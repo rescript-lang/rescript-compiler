@@ -7,7 +7,7 @@ let test () =
     m := Bs.MapInt.update !m i i 
   done;
   for i = 0 to count do
-    should (Bs.MapInt.findOpt !m i <> None)
+    should (Bs.MapInt.getOpt !m i <> None)
   done; 
   for i = 0 to count do 
     m := Bs.MapInt.remove !m i  ;

@@ -69,10 +69,10 @@ let () =
   b __LOC__ (a5 == a6);
   b __LOC__ (M.mem a0 3);
   b __LOC__ (not (M.mem a5 3));
-  b __LOC__ (Js.eqNull 3 (M.findNull a0 3));
-  b __LOC__ (Js.eqNull 33 (M.findNull a1 3));
-  b __LOC__ (Js.Null.test (M.findNull a2 3));
+  b __LOC__ (Js.eqNull 3 (M.getNull a0 3));
+  b __LOC__ (Js.eqNull 33 (M.getNull a1 3));
+  b __LOC__ (Js.Null.test (M.getNull a2 3));
 
-  b __LOC__ (Js.eqNull 11 (M.findNull a3 3));
-  b __LOC__ (Js.Null.test (M.findNull a4 3))
+  b __LOC__ (Js.eqNull 11 (M.getNull a3 3));
+  b __LOC__ (Js.Null.test (M.getNull a4 3))
 ;; Mt.from_pair_suites __FILE__ !suites

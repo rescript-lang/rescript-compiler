@@ -100,13 +100,16 @@ val minKeyValueOpt: ('k, 'a,  _) t -> ('k * 'a) option
 val minKeyValueNull: ('k, 'a, _) t -> ('k * 'a) Js.null
 val maxKeyValueOpt: ('k, 'a, _) t -> ('k * 'a) option
 val maxKeyValueNull:('k, 'a, _) t -> ('k * 'a) Js.null
-val findOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
-val findNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
-val findWithDefault:
+val getOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
+val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
+val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
-val findExn:  ('k, 'a, 'id) t -> 'k -> 'a 
+val getExn:  ('k, 'a, 'id) t -> 'k -> 'a 
 
 (****************************************************************************)
+
+val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
+(** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
 
 val update: 
     ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
@@ -121,8 +124,6 @@ val updateWithOpt:
     ('k option -> 'a option [@bs]) -> 
     ('k, 'a, 'id) t 
 
-val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
-(** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
 
 val merge:
    ('k, 'a, 'id ) t -> 
