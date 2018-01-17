@@ -25,43 +25,21 @@
 
 type ('k,'v,'id) t
 
-val empty: ('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
-val ofArray:      
-  ('k,'id) Bs_Cmp.t -> 
-  ('k * 'a) array ->  
-  ('k,'a,'id) t    
-val isEmpty: ('k, 'a, 'id) t -> bool
+val empty: dict:('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
+val isEmpty: _ t -> bool
 val singleton: 
   ('k,'id) Bs_Cmp.t ->
   'k -> 'a -> ('k, 'a, 'id) t
 val mem: ('k, _, _) t -> 'k  -> bool
-
-val updateOnly: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
-val update: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
-(** [update m x y ] do the in-place modification, returnning [m] for chaining. *)
-
-
-
-val removeOnly:  ('k, 'a, 'id) t -> 'k -> unit
-val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
-(** [remove m x] do the in-place modification,
-    returnning [m] for chaining. *)
-val removeArrayOnly: ('k, 'a, 'id) t -> 'k array -> unit    
-val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t 
-
-
-(* val merge: *)
-(*    ('k, 'a, 'id ) t -> ('k, 'b,'id) t -> ('k -> 'a option -> 'b option -> 'c option [@bs]) -> ('k, 'c,'id) t *)
-(** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
-    and of [m2]. The presence of each such binding, and the corresponding
-    value, is determined with the function [f].
-*)    
-
 val cmp: 
     ('k, 'a, 'id) t -> 
     ('k, 'a, 'id) t ->
     ('a -> 'a -> int [@bs]) -> 
      int
+(** [cmp m1 m2 cmp]
+    First compare by size, if size is the same,
+    compare by key, value pair
+*)     
 val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
 (** [eq m1 m2 eqf] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
@@ -94,17 +72,40 @@ val length: ('k, 'a, 'id) t -> int
 
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
-val toArray : ('k, 'a, 'id) t -> ('k * 'a) array
-
-val minKVOpt: ('k, 'a,  _) t -> ('k * 'a) option
-val minKVNull: ('k, 'a, _) t -> ('k * 'a) Js.null
-val maxKVOpt: ('k, 'a, _) t -> ('k * 'a) option
-val maxKVNull:('k, 'a, _) t -> ('k * 'a) Js.null
+val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
+val ofArray: ('k * 'a) array -> dict:('k,'id) Bs_Cmp.t ->  ('k,'a,'id) t    
+val keysToArray: ('k, _, _) t -> 'k array 
+val valuesToArray: (_, 'a, _) t -> 'a array
+val minKeyOpt: ('k, _,  _) t -> 'k option
+val minKeyNull: ('k, _,  _) t -> 'k Js.null
+val maxKeyOpt: ('k, _,  _) t -> 'k option
+val maxKeyNull: ('k, _,  _) t -> 'k Js.null    
+val minKeyValueOpt: ('k, 'a,  _) t -> ('k * 'a) option
+val minKeyValueNull: ('k, 'a, _) t -> ('k * 'a) Js.null
+val maxKeyValueOpt: ('k, 'a, _) t -> ('k * 'a) option
+val maxKeyValueNull:('k, 'a, _) t -> ('k * 'a) Js.null
 val findOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
 val findNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val findWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
 val findExn:  ('k, 'a, 'id) t -> 'k ->  'a 
+
+(****************************************************************************)
+
+(*TODO: add functional [merge, partition, filter, split]*)
+  
+val updateOnly: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
+val update: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
+(** [update m x y ] do the in-place modification, returnning [m] for chaining. *)
+
+val removeOnly:  ('k, 'a, 'id) t -> 'k -> unit
+val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
+(** [remove m x] do the in-place modification,
+    returnning [m] for chaining. *)
+val removeArrayOnly: ('k, 'a, 'id) t -> 'k array -> unit    
+val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t 
+
+
 val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 (** [map m f] returns a map with same domain as [m], where the
     associated value [a] of all bindings of [m] has been
@@ -115,27 +116,4 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 val mapi: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
     
 
-
-(* val filter: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t *)
-(** [filter p m] returns the map with all the bindings in [m]
-    that satisfy predicate [p].
-*)
-    
-(* val partition: ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * ('k, 'a, 'id) t *)
-(** [partition p m] returns a pair of maps [(m1, m2)], where
-    [m1] contains all the bindings of [s] that satisfy the
-    predicate [p], and [m2] is the map with all the bindings of
-    [s] that do not satisfy [p].
-*)
-
-
-(* val split: 'k -> ('k, 'a, 'id) t -> ('k, 'a, 'id) t * 'a option * ('k, 'a, 'id) t *)
-(** [split x m] returns a triple [(l, data, r)], where
-      [l] is the map with all the bindings of [m] whose 'k
-    is strictly less than [x];
-      [r] is the map with all the bindings of [m] whose 'k
-    is strictly greater than [x];
-      [data] is [None] if [m] contains no binding for [x],
-      or [Some v] if [m] binds [v] to [x].
-*)
 

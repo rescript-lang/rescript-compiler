@@ -14,7 +14,7 @@ module N = Bs.Set
 
 module A = Bs_Array
 module I = Array_data_util
-let f x = M.ofArray (module Icmp) x 
+let f x = M.ofArray ~dict:(module Icmp) x 
 let ff x = N.ofArray (module Icmp) x 
 
 let mergeInter s1 s2 = 

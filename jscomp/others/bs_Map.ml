@@ -172,7 +172,7 @@ let rec merge0 s1 s2 f ~cmp =
 
 
 
-let ofArray (type k) (type id) (dict : (k,id) Bs_Cmp.t) data = 
+let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)  = 
   let module M = (val dict ) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
 
@@ -213,13 +213,13 @@ let merge (type k) (type id)  (s1 : (k,_,id) t)
   B.bag ~data:(merge0 ~cmp:X.cmp  s1_data s2_data f)
     ~dict
 
-let empty dict = 
+let empty ~dict = 
   B.bag  ~dict  ~data:N.empty0
 
 let isEmpty map = 
   N.isEmpty0 (B.data map)
 
-let singleton dict k v = 
+let singleton k v ~dict = 
   B.bag ~dict ~data:(N.singleton0 k v)     
 
 let cmp (type k)  (type id)  (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp
@@ -270,10 +270,14 @@ let keysToArray m =
 let valuesToArray m =   
   N.valuesToArray0 (B.data m)
 
-let minKVOpt m = N.minKVOpt0 (B.data m)
-let minKVNull m = N.minKVNull0 (B.data m) 
-let maxKVOpt m = N.maxKVOpt0 (B.data m)
-let maxKVNull m = N.maxKVNull0 (B.data m)
+let minKeyOpt m = N.minKeyOpt0 (B.data m)
+let minKeyNull m = N.minKeyNull0 (B.data m)
+let maxKeyOpt m = N.maxKeyOpt0 (B.data m)
+let maxKeyNull m = N.maxKeyNull0 (B.data m)    
+let minKeyValueOpt m = N.minKVOpt0 (B.data m)
+let minKeyValueNull m = N.minKVNull0 (B.data m) 
+let maxKeyValueOpt m = N.maxKVOpt0 (B.data m)
+let maxKeyValueNull m = N.maxKVNull0 (B.data m)
 
 let findOpt (type k) (type id) (map : (k,_,id) t) x  = 
   let dict,map = B.(dict map, data map) in 

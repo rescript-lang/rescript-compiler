@@ -89,7 +89,7 @@ for(var i$1 = 0; i$1 <= 100000; ++i$1){
 console.log(data$1);
 
 function f(param) {
-  return Bs_Map.ofArray(Icmp, param);
+  return Bs_Map.ofArray(param, Icmp);
 }
 
 function $eq$tilde(a, b) {

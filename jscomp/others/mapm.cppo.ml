@@ -23,10 +23,15 @@ type 'a t = {
 let empty () = t ~data:N.empty0      
 let isEmpty m = N.isEmpty0 (data m)
 let singleton k v = t ~data:(N.singleton0 k v)
-let minKVOpt m = N.minKVOpt0 (data m)
-let minKVNull m = N.minKVNull0 (data m)
-let maxKVOpt m = N.maxKVOpt0 (data m)
-let maxKVNull m = N.maxKVNull0 (data m)
+
+let minKeyNull m = N.minKeyNull0 (data m)
+let minKeyOpt m = N.minKeyOpt0 (data m)
+let maxKeyNull m = N.maxKeyNull0 (data m)
+let maxKeyOpt m = N.maxKeyOpt0 (data m)
+let minKeyValueOpt m = N.minKVOpt0 (data m)
+let minKeyValueNull m = N.minKVNull0 (data m)
+let maxKeyValueOpt m = N.maxKVOpt0 (data m)
+let maxKeyValueNull m = N.maxKVNull0 (data m)
 
 let addOnly (m : _ t) k v = 
   let old_data = data m in 
@@ -46,6 +51,9 @@ let exists d f = N.exists0 (data d) f
 
 let length d = N.length0 (data d)
 let toList d = N.toList0 (data d)
+let toArray d = N.toArray0 (data d)
+let keysToArray d = N.keysToArray0 (data d)
+let valuesToArray d = N.valuesToArray0 (data d)
 let checkInvariant d = N.checkInvariant (data d)
 let mem d v = I.mem (data d) v 
 

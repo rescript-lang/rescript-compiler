@@ -47,57 +47,15 @@ type ('k,'v,'id) t =
 (* should not export [Bs_Cmp.compare]. 
    should only export [Bs_Cmp.t] or [Bs_Cmp.cmp] instead *)
 
-
-
-
-val empty: ('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
-
-val ofArray:      
-  ('k,'id) Bs_Cmp.t -> 
-  ('k * 'a) array ->  
-  ('k,'a,'id) t 
-
+val empty: dict:('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
-val mem: 
-   ('k, 'a, 'id) t -> 'k  -> bool
-
-val update: 
-    ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
-(** [update m x y ] returns a map containing the same bindings as
-    [m], with a new binding of [x] to [y]. If [x] was already bound
-    in [m], its previous binding disappears. *)
-val updateArray:
-    ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
-val updateWithOpt:     
-    ('k, 'a, 'id) t ->  
-    'k -> 
-    ('k option -> 'a option [@bs]) -> 
-    ('k, 'a, 'id) t 
-
-val singleton: 
-    ('k,'id) Bs_Cmp.t ->
-    'k -> 'a -> ('k, 'a, 'id) t
-
-val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
-(** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
-
-val merge:
-   ('k, 'a, 'id ) t -> 
-   ('k, 'b,'id) t ->
-   ('k -> 'a option -> 'b option -> 'c option [@bs]) -> 
-   ('k, 'c,'id) t
-(** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
-    and of [m2]. The presence of each such binding, and the corresponding
-    value, is determined with the function [f].
-*)    
-
+val singleton: 'k -> 'a -> dict:('k,'id) Bs_Cmp.t -> ('k, 'a, 'id) t
+val mem: ('k, 'a, 'id) t -> 'k  -> bool    
 val cmp: 
     ('k, 'v, 'id) t -> 
     ('k, 'v, 'id) t ->
     ('v -> 'v -> int [@bs]) -> 
      int
-
-
 val eq:  
     ('k, 'a, 'id) t -> 
     ('k, 'a, 'id) t -> 
@@ -127,6 +85,55 @@ val exists: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 (** [exists m p] checks if at least one binding of the map
     satisfy the predicate [p]. Order unspecified *)
 
+val length: ('k, 'a, 'id) t -> int
+val toList: ('k, 'a, 'id) t -> ('k * 'a) list
+(** In increasing order*)
+val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
+val ofArray:  ('k * 'a) array -> dict:('k,'id) Bs_Cmp.t -> ('k,'a,'id) t         
+val keysToArray: ('k, 'a, 'id) t -> 'k  array
+val valuesToArray: ('k, 'a, 'id) t -> 'a  array
+val minKeyOpt: ('k, _, _) t -> 'k option
+val minKeyNull: ('k, _, _) t -> 'k Js.null
+val maxKeyOpt: ('k, _, _) t -> 'k option
+val maxKeyNull: ('k, _, _) t -> 'k Js.null    
+val minKeyValueOpt: ('k, 'a,  _) t -> ('k * 'a) option
+val minKeyValueNull: ('k, 'a, _) t -> ('k * 'a) Js.null
+val maxKeyValueOpt: ('k, 'a, _) t -> ('k * 'a) option
+val maxKeyValueNull:('k, 'a, _) t -> ('k * 'a) Js.null
+val findOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
+val findNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
+val findWithDefault:
+    ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
+val findExn:  ('k, 'a, 'id) t -> 'k -> 'a 
+
+(****************************************************************************)
+
+val update: 
+    ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
+(** [update m x y ] returns a map containing the same bindings as
+    [m], with a new binding of [x] to [y]. If [x] was already bound
+    in [m], its previous binding disappears. *)
+val updateArray:
+    ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
+val updateWithOpt:     
+    ('k, 'a, 'id) t ->  
+    'k -> 
+    ('k option -> 'a option [@bs]) -> 
+    ('k, 'a, 'id) t 
+
+val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
+(** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
+
+val merge:
+   ('k, 'a, 'id ) t -> 
+   ('k, 'b,'id) t ->
+   ('k -> 'a option -> 'b option -> 'c option [@bs]) -> 
+   ('k, 'c,'id) t
+(** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
+    and of [m2]. The presence of each such binding, and the corresponding
+    value, is determined with the function [f].
+*)    
+
 val filter: 
     ('k, 'a, 'id) t -> 
     ('k -> 'a -> bool [@bs]) -> 
@@ -144,20 +151,6 @@ val partition:
     [s] that do not satisfy [p].
 *)
 
-val length: ('k, 'a, 'id) t -> int
-
-
-val toList: ('k, 'a, 'id) t -> ('k * 'a) list
-(** In increasing order*)
-val toArray : ('k, 'a, 'id) t -> ('k * 'a) array
-val keysToArray : ('k, 'a, 'id) t -> 'k  array
-val valuesToArray : ('k, 'a, 'id) t -> 'a  array
-
-val minKVOpt: ('k, 'a,  _) t -> ('k * 'a) option
-val minKVNull: ('k, 'a, _) t -> ('k * 'a) Js.null
-val maxKVOpt: ('k, 'a, _) t -> ('k * 'a) option
-val maxKVNull:('k, 'a, _) t -> ('k * 'a) Js.null
-
 val split: 
     ('k, 'a, 'id) t -> 'k -> 
     (('k, 'a, 'id) t * ('k, 'a, 'id) t )* 'a option 
@@ -170,11 +163,6 @@ val split:
       or [Some v] if [m] binds [v] to [x].
 *)
 
-val findOpt:  ('k, 'a, 'id) t -> 'k -> 'a option
-val findNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
-val findWithDefault:
-    ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
-val findExn:  ('k, 'a, 'id) t -> 'k -> 'a 
 val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 (** [map m f] returns a map with same domain as [m], where the
     associated value [a] of all bindings of [m] has been

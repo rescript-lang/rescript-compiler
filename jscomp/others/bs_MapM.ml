@@ -98,8 +98,8 @@ let removeArrayOnly (type elt) (type id) (d : (elt,_,id) t) xs =
 let removeArray d xs =      
   removeArrayOnly d xs; 
   d
-  
-let empty dict = 
+
+let empty ~dict = 
   B.bag ~dict ~data:N.empty0  
 let isEmpty d = 
   N.isEmpty0 (B.data d)
@@ -108,10 +108,13 @@ let singleton dict x v=
 
 let minKeyOpt m = N.minKeyOpt0 (B.data m)
 let minKeyNull m = N.minKeyNull0 (B.data m)
-let minKVOpt m = N.minKVOpt0 (B.data m)
-let minKVNull m = N.minKVNull0 (B.data m) 
-let maxKVOpt m = N.maxKVOpt0 (B.data m)
-let maxKVNull m = N.maxKVNull0 (B.data m)
+let maxKeyOpt m = N.maxKeyOpt0 (B.data m)
+let maxKeyNull m = N.maxKeyNull0 (B.data m)
+let minKeyValueOpt m = N.minKVOpt0 (B.data m)
+let minKeyValueNull m = N.minKVNull0 (B.data m) 
+let maxKeyValueOpt m = N.maxKVOpt0 (B.data m)
+let maxKeyValueNull m = N.maxKVNull0 (B.data m)
+
 let iter d f =
   N.iter0 (B.data d) f     
 let fold d acc cb = 
@@ -126,6 +129,10 @@ let toList d =
   N.toList0 (B.data d)
 let toArray d = 
   N.toArray0 (B.data d)
+let keysToArray d =   
+  N.keysToArray0 (B.data d)
+let valuesToArray d =   
+  N.valuesToArray0 (B.data d)
 let ofSortedArrayUnsafe ~dict xs : _ t =
   B.bag ~data:(N.ofSortedArrayUnsafe0 xs) ~dict   
 let checkInvariant d = 
@@ -164,7 +171,7 @@ let mem (type k) (type id)  (map : (k,_,id) t) x =
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.mem0 ~cmp:X.cmp map x
-let ofArray (type k) (type id) (dict : (k,id) Bs_Cmp.t) data = 
+let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)= 
   let module M = (val dict ) in 
   B.bag ~dict  ~data:(N.ofArray0 ~cmp:M.cmp data)  
 let updateOnly (type elt) (type id) (m : (elt,_,id) t) e v = 

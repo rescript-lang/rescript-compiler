@@ -23,7 +23,7 @@ function b(loc, v) {
 var Icmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
 function f(x) {
-  return Bs_Map.ofArray(Icmp, x);
+  return Bs_Map.ofArray(x, Icmp);
 }
 
 function ff(x) {
@@ -79,11 +79,11 @@ function randomRange(i, j) {
 
 var x = randomRange(0, 100);
 
-var u0 = Bs_Map.ofArray(Icmp, x);
+var u0 = Bs_Map.ofArray(x, Icmp);
 
 var x$1 = randomRange(30, 120);
 
-var u1 = Bs_Map.ofArray(Icmp, x$1);
+var u1 = Bs_Map.ofArray(x$1, Icmp);
 
 var x$2 = Array_data_util.range(30, 100);
 
@@ -103,7 +103,7 @@ b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Bs_Set.eq(mergeDiff(
 
 var x$6 = randomRange(0, 10);
 
-var a0 = Bs_Map.ofArray(Icmp, x$6);
+var a0 = Bs_Map.ofArray(x$6, Icmp);
 
 var a1 = Bs_Map.update(a0, 3, 33);
 

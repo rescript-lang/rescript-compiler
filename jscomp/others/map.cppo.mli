@@ -9,38 +9,9 @@ type 'a t
 (** The type of maps from type [key] to type ['a]. *)
 
 val empty: 'a t
-
-val ofArray: (key * 'a) array -> 'a t 
-
 val isEmpty: 'a t -> bool
-
-val mem:  'a t -> key -> bool
-
-val update: 'a t ->  key -> 'a -> 'a t
-(** [add m x y] returns a map containing the same bindings as
-   [m], plus a binding of [x] to [y]. If [x] was already bound
-   in [m], its previous binding disappears. *)
-val updateWithOpt:
-    'a t -> 
-    key -> 
-    (key option -> 'a option [@bs]) -> 
-    'a t 
-
 val singleton: key -> 'a -> 'a t
-
-val remove: 'a t ->  key -> 'a t
-(** [remove m x] returns a map containing the same bindings as
-   [m], except for [x] which is unbound in the returned map. *)
-
-val merge:
-    'a t -> 'b t ->
-    (key -> 'a option -> 'b option -> 'c option [@bs]) ->
-    'c t
-(** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
-    and of [m2]. The presence of each such binding, and the corresponding
-    value, is determined with the function [f].
- *)
-
+val mem:  'a t -> key -> bool    
 val cmp:  'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 
 val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
@@ -69,6 +40,52 @@ val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
 (** [exists m p] checks if at least one binding of the map
     satisfy the predicate [p].
  *)
+val length: 'a t -> int
+val toList: 'a t -> (key * 'a) list
+(** In increasing order with respect *)
+val toArray: 'a t -> (key * 'a) array
+val ofArray: (key * 'a) array -> 'a t     
+val keysToArray: 'a t -> key array 
+val valuesToArray: 'a t -> 'a array
+val minKeyOpt: _ t -> key option 
+val minKeyNull: _ t -> key Js.null
+val maxKeyOpt: _ t -> key option
+val maxKeyNull: _ t -> key Js.null    
+val minKeyValueOpt: 'a t -> (key * 'a) option
+val minKeyValueNull: 'a t -> (key * 'a) Js.null
+val maxKeyValueOpt: 'a t -> (key * 'a) option
+val maxKeyValueNull: 'a t -> (key * 'a) Js.null
+val findOpt: 'a t -> key -> 'a option
+val findNull: 'a t -> key -> 'a Js.null
+val findWithDefault:  'a t -> key -> 'a  -> 'a
+val findExn: 'a t -> key -> 'a 
+
+(****************************************************************************)
+
+val update: 'a t ->  key -> 'a -> 'a t
+(** [add m x y] returns a map containing the same bindings as
+   [m], plus a binding of [x] to [y]. If [x] was already bound
+   in [m], its previous binding disappears. *)
+val updateWithOpt:
+    'a t -> 
+    key -> 
+    (key option -> 'a option [@bs]) -> 
+    'a t 
+
+
+val remove: 'a t ->  key -> 'a t
+(** [remove m x] returns a map containing the same bindings as
+   [m], except for [x] which is unbound in the returned map. *)
+
+
+val merge:
+    'a t -> 'b t ->
+    (key -> 'a option -> 'b option -> 'c option [@bs]) ->
+    'c t
+(** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
+    and of [m2]. The presence of each such binding, and the corresponding
+    value, is determined with the function [f].
+ *)
 
 val filter: 
     'a t -> 
@@ -88,20 +105,6 @@ val partition:
     [s] that do not satisfy [p].
  *)
 
-val length: 'a t -> int
-
-
-val toList: 'a t -> (key * 'a) list
-(** Return the list of all bindings of the given map.
-   The returned list is sorted in increasing order with respect
-   to the ordering [Ord.compare], where [Ord] is the argument
-   given to {!Map.Make}.
- *)
-
-val minKVOpt: 'a t -> (key * 'a) option
-val minKVNull: 'a t -> (key * 'a) Js.null
-val maxKVOpt: 'a t -> (key * 'a) option
-val maxKVNull: 'a t -> (key * 'a) Js.null
 
 
 
@@ -116,10 +119,6 @@ val split: key -> 'a t -> 'a t * 'a option * 'a t
       or [Some v] if [m] binds [v] to [x].
  *)
 
-val findOpt: 'a t -> key -> 'a option
-val findNull: 'a t -> key -> 'a Js.null
-val findWithDefault:  'a t -> key -> 'a  -> 'a
-val findExn: 'a t -> key -> 'a 
 
 val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
 (** [map m f] returns a map with same domain as [m], where the

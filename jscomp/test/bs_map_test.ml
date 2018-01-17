@@ -74,7 +74,7 @@ let () =
   done ;
   Js.log !data  
 
-let f = M.ofArray (module Icmp)
+let f = M.ofArray ~dict:(module Icmp)
 let (=~) a b = M.eq a b  
 
 let () =   
