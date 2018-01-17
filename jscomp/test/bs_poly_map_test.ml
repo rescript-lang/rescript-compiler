@@ -74,5 +74,11 @@ let () =
   b __LOC__ (Js.Null.test (M.getNull a2 3));
 
   b __LOC__ (Js.eqNull 11 (M.getNull a3 3));
-  b __LOC__ (Js.Null.test (M.getNull a4 3))
+  b __LOC__ (Js.Null.test (M.getNull a4 3));
+
+  let a7 = M.removeArray a0 [|7;8;0;1;3;2;4;922;4;5;6;|] in 
+  eq __LOC__ (M.keysToArray a7) [|9;10|];
+  let a8 = M.removeArray a7 (I.randomRange 0 100) in 
+  b __LOC__ (M.isEmpty a8)
+  
 ;; Mt.from_pair_suites __FILE__ !suites

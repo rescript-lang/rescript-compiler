@@ -145,6 +145,29 @@ b("File \"bs_poly_map_test.ml\", line 76, characters 4-11", +(11 === Bs_Map.getN
 
 b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(Bs_Map.getNull(a4, 3) === null));
 
+var a7 = Bs_Map.removeArray(a0, /* array */[
+      7,
+      8,
+      0,
+      1,
+      3,
+      2,
+      4,
+      922,
+      4,
+      5,
+      6
+    ]);
+
+eq("File \"bs_poly_map_test.ml\", line 80, characters 5-12", Bs_internalAVLtree.keysToArray0(a7.data), /* int array */[
+      9,
+      10
+    ]);
+
+var a8 = Bs_Map.removeArray(a7, Array_data_util.randomRange(0, 100));
+
+b("File \"bs_poly_map_test.ml\", line 82, characters 4-11", Bs_internalAVLtree.isEmpty0(a8.data));
+
 Mt.from_pair_suites("bs_poly_map_test.ml", suites[0]);
 
 var M = 0;
