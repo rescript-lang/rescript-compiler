@@ -40,8 +40,8 @@ let rec updateWithOpt0  (t : _ t0) newK f  ~cmp =
   match N.toOpt t with 
   | None ->
     begin match f None [@bs] with 
-    | None -> t 
-    | Some newD -> N.singleton0 newK newD 
+      | None -> t 
+      | Some newD -> N.singleton0 newK newD 
     end 
   | Some n  ->
     let k= N.key n in 
@@ -71,32 +71,39 @@ let rec updateWithOpt0  (t : _ t0) newK f  ~cmp =
     when [exist] is [true], [v] could be [null], 
     since ['a] is polymorphic
 *)
-  
-        
-let rec remove0  t x ~cmp = 
-  match N.toOpt t with 
-  | None ->
-    t
-  | Some n  ->
-    let l,v,r = N.(left n, key n, right n ) in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then
-      match N.toOpt l, N.toOpt r with 
-      | None, _ -> r 
-      | _, None -> l 
-      | _, Some rn -> 
-        let kr, vr = ref (N.key rn), ref (N.value rn) in 
-        let r = N.removeMinAuxWithRef rn kr vr in 
-        N.bal l !kr !vr r
-    else if c < 0 then
-      let ll = remove0 l x ~cmp in 
-      if ll == l then t
+
+
+let rec removeAux0  n x ~cmp = 
+  let l,v,r = N.(left n, key n, right n ) in 
+  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  if c = 0 then
+    match N.toOpt l, N.toOpt r with 
+    | None, _ -> r 
+    | _, None -> l 
+    | _, Some rn -> 
+      let kr, vr = ref (N.key rn), ref (N.value rn) in 
+      let r = N.removeMinAuxWithRef rn kr vr in 
+      N.bal l !kr !vr r
+  else if c < 0 then
+    match N.toOpt l with 
+    | None -> N.return n (* Nothing to remove *)
+    | Some left ->
+      let ll = removeAux0 left x ~cmp in 
+      if ll == l then (N.return n)
       else N.bal ll v (N.value n) r
-    else
-      let rr = remove0 ~cmp r x in
-      if rr == r then t 
+  else
+    match N.toOpt r with 
+    | None -> N.return n (* Nothing to remove *)
+    | Some right -> 
+      let rr = removeAux0 ~cmp right x in
+      if rr == r then N.return n
       else N.bal l v (N.value n)  rr
 
+let remove0 n x ~cmp = 
+  match N.toOpt n with        
+  | None -> N.empty0
+  | Some n -> removeAux0 n x ~cmp 
+  
 let updateArray0   h arr ~cmp =   
   let len = A.length arr in 
   let v = ref h in  
@@ -170,19 +177,48 @@ let rec merge0 s1 s2 f ~cmp =
       let newRight = (merge0 ~cmp r1 r2 f) in 
       N.concatOrJoin newLeft v2 newD newRight
 
-
+let rec removeArrayAux t xs i len ~cmp =
+  if i < len then
+    let ele = A.unsafe_get xs i in
+    let u =  removeAux0 t ele ~cmp in
+    match N.toOpt u with
+    | None -> u
+    | Some t -> removeArrayAux t xs (i + 1) len ~cmp 
+  else
+    N.return t
+      
+let removeArray0 t keys ~cmp =
+  let len = A.length keys in
+  match N.toOpt t with
+  | None -> N.empty0
+  | Some t ->  removeArrayAux t keys 0 len ~cmp 
 
 let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)  = 
   let module M = (val dict ) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
 
 let remove (type k) (type id) (m : (k,_,id) t) x  =   
-  let dict,data = B.(dict m, data m) in 
-  let module M = (val dict) in 
-  let newData = remove0 ~cmp:M.cmp data x in  
-  if newData == data then m
-  else B.bag ~dict ~data:newData
+  let odata = B.data m in 
+  match N.toOpt odata with 
+  | None ->  m 
+  | Some data ->  
+    let dict = B.dict m in   
+    let module M = (val dict) in 
+    let newData = removeAux0 ~cmp:M.cmp data x in  
+    if newData == odata then m
+    else B.bag ~dict ~data:newData
 
+let removeArray (type k) (type id) (m : (k,_,id) t) xs =     
+  let odata = B.data m in 
+  match N.toOpt odata with 
+  | None -> m 
+  | Some data -> 
+    let dict = B.dict m in 
+    let module M = (val dict) in 
+    let len = A.length xs in 
+    let newData = removeArrayAux data xs 0 len ~cmp:M.cmp in 
+    if newData == odata then m 
+    else B.bag ~dict ~data:newData
 
 let update (type k) (type id) (map : (k,_,id) t) key data  = 
   let dict,map = B.(dict map, data map) in 
@@ -298,7 +334,7 @@ let getExn (type k) (type id)  (map : (k,_,id) t) x =
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findExn0 ~cmp:X.cmp map x 
-  
+
 let mem (type k) (type id)  (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 

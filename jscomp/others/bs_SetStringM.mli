@@ -7,12 +7,12 @@ val empty: unit -> t
 val isEmpty: t -> bool
 val mem: t -> elt -> bool
 
-val addOnly: t -> elt -> unit
+val addDone: t -> elt -> unit
 val add: t -> elt -> t
 
 val singleton: elt -> t
 val remove: t -> elt -> t
-val removeOnly: t -> elt -> unit
+val removeDone: t -> elt -> unit
 val union: t -> t -> t
 val inter: t -> t -> t
 val diff: t -> t -> t
@@ -63,7 +63,7 @@ val split:  t -> elt  -> (t * t) * bool
 val findOpt:  t -> elt -> elt option
     
 val addArray: t -> elt array -> t 
-val addArrayOnly: t -> elt array -> unit 
+val addArrayDone: t -> elt array -> unit 
 
 val checkInvariant: t ->  bool
 

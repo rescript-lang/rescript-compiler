@@ -37,7 +37,7 @@ let rec removeMutateAux nt x ~cmp =
           N.return (N.balMutate nt)
     end
 
-let removeOnly (type elt) (type id) (d : (elt,id) t) v =  
+let removeDone (type elt) (type id) (d : (elt,id) t) v =  
   let dict, oldRoot = B.(dict d, data d) in 
   let module M = (val dict) in 
   match N.toOpt oldRoot with 
@@ -48,7 +48,7 @@ let removeOnly (type elt) (type id) (d : (elt,id) t) v =
       B.dataSet d newRoot    
 
 let remove d v =     
-  removeOnly d v; 
+  removeDone d v; 
   d     
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
@@ -60,7 +60,7 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
   else N.return t    
 
-let removeArrayOnly (type elt) (type id) (d : (elt,id) t) xs =  
+let removeArrayDone (type elt) (type id) (d : (elt,id) t) xs =  
   let oldRoot = B.data d in 
   match N.toOpt oldRoot with 
   | None -> ()
@@ -73,9 +73,9 @@ let removeArrayOnly (type elt) (type id) (d : (elt,id) t) xs =
       B.dataSet d newRoot
 
 let removeArray d xs =      
-  removeArrayOnly d xs; 
+  removeArrayDone d xs; 
   d
-  
+
 let rec removeMutateCheckAux  nt x removed ~cmp= 
   let k = N.key nt in 
   let c = (Bs_Cmp.getCmp cmp) x k [@bs] in 
@@ -230,14 +230,14 @@ let mem (type elt) (type id) (d : (elt,id) t) x =
 let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data =  
   let module M = (val dict) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
-let addOnly (type elt) (type id) (m : (elt,id) t) e = 
+let addDone (type elt) (type id) (m : (elt,id) t) e = 
   let dict, oldRoot = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newRoot = N.addMutate ~cmp:M.cmp oldRoot e  in 
   if newRoot != oldRoot then 
     B.dataSet m newRoot
 let add m e = 
-  addOnly m e;
+  addDone m e;
   m
 let addCheck (type elt) (type id) (m : (elt,id) t) e = 
   let dict, oldRoot = B.(dict m, data m) in 
@@ -253,7 +253,7 @@ let addArrayMutate (t : _ t0) xs ~cmp =
     v := N.addMutate !v (A.unsafe_get xs i)  ~cmp
   done; 
   !v 
-let addArrayOnly (type elt) (type id) (d : (elt,id) t ) xs =   
+let addArrayDone (type elt) (type id) (d : (elt,id) t ) xs =   
   let dict = B.dict d in 
   let oldRoot = B.data d in 
   let module M = (val dict) in 
@@ -261,7 +261,7 @@ let addArrayOnly (type elt) (type id) (d : (elt,id) t ) xs =
   if newRoot != oldRoot then 
     B.dataSet d newRoot 
 let addArray d xs = 
-  addArrayOnly d xs ; 
+  addArrayDone d xs ; 
   d 
 
 

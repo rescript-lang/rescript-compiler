@@ -60,18 +60,18 @@ let rec removeMutateAux nt x ~cmp =
           N.return (N.balMutate nt)
     end    
 
-let removeOnly (type elt) (type id) (d : (elt,_,id) t) k =  
-  let dict, oldRoot = B.(dict d, data d) in 
-  let module M = (val dict) in 
+let removeDone (type elt) (type id) (d : (elt,_,id) t) k =  
+  let oldRoot = B.data d in   
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
+    let module M = (val B.dict d) in 
     let newRoot = removeMutateAux ~cmp:M.cmp oldRoot2 k in 
     if newRoot != oldRoot then 
       B.dataSet d newRoot    
 
 let remove d v =     
-  removeOnly d v; 
+  removeDone d v; 
   d 
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
@@ -83,20 +83,19 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
   else N.return t    
 
-let removeArrayOnly (type elt) (type id) (d : (elt,_,id) t) xs =  
+let removeArrayDone (type elt) (type id) (d : (elt,_,id) t) xs =  
   let oldRoot = B.data d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
-    let dict = B.dict d in  
-    let module M = (val dict) in 
+    let module M = (val B.dict d)  in 
     let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:M.cmp in 
     if newRoot != oldRoot then 
       B.dataSet d newRoot
 
 let removeArray d xs =      
-  removeArrayOnly d xs; 
+  removeArrayDone d xs; 
   d
 
 let empty ~dict = 
@@ -174,14 +173,14 @@ let mem (type k) (type id)  (map : (k,_,id) t) x =
 let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)= 
   let module M = (val dict ) in 
   B.bag ~dict  ~data:(N.ofArray0 ~cmp:M.cmp data)  
-let updateOnly (type elt) (type id) (m : (elt,_,id) t) e v = 
+let updateDone (type elt) (type id) (m : (elt,_,id) t) e v = 
   let dict, oldRoot = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newRoot = N.updateMutate ~cmp:M.cmp oldRoot e v in 
   if newRoot != oldRoot then 
     B.dataSet m newRoot
 let update m e v = 
-  updateOnly m e v;
+  updateDone m e v;
   m
 let updateArrayMutate t  xs ~cmp =     
   let v = ref t in 
@@ -190,7 +189,7 @@ let updateArrayMutate t  xs ~cmp =
     v := N.updateMutate !v key value ~cmp
   done; 
   !v 
-let updateArrayOnly (type elt) (type id) (d : (elt,_,id) t ) xs =   
+let updateArrayDone (type elt) (type id) (d : (elt,_,id) t ) xs =   
   let dict = B.dict d in 
   let oldRoot = B.data d in 
   let module M = (val dict) in 
@@ -198,6 +197,6 @@ let updateArrayOnly (type elt) (type id) (d : (elt,_,id) t ) xs =
   if newRoot != oldRoot then 
     B.dataSet d newRoot 
 let updateArray d xs = 
-  updateArrayOnly d xs ; 
+  updateArrayDone d xs ; 
   d   
 

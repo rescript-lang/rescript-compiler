@@ -110,7 +110,8 @@ val getExn:  ('k, 'a, 'id) t -> 'k -> 'a
 
 val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
 (** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
-
+val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t  
+  
 val update: 
     ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
 (** [update m x y ] returns a map containing the same bindings as
@@ -172,7 +173,9 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
     with respect to the ordering over the type of the keys. *)
 
 val mapi: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
-    
+
+
+(****************************************************************************)
 
 val empty0 : ('k, 'a, 'id) t0
 val ofArray0:  
@@ -202,6 +205,12 @@ val remove0:
    cmp: ('k,'id) Bs_Cmp.cmp -> 
    ('k, 'a, 'id) t0
 
+val removeArray0:
+  ('k, 'a, 'id) t0 ->
+  'k array -> 
+   cmp: ('k,'id) Bs_Cmp.cmp -> 
+   ('k, 'a, 'id) t0
+   
 val merge0: 
   ('k, 'a, 'id ) t0 -> ('k, 'b,'id) t0 -> 
   ('k -> 'a option -> 'b option -> 'c option [@bs]) -> 

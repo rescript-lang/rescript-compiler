@@ -73,10 +73,7 @@ let rec updateWithOpt  t (x : key) f  =
       else
         N.bal (N.left n) k v (updateWithOpt (N.right n) x f)        
 
-let rec remove n (x : key) = 
-  match N.toOpt n with 
-  |  None -> n    
-  |  Some n ->
+let rec removeAux n (x : key) = 
     let l,v,r = N.(left n, key n, right n) in 
     if x = v then
       match N.toOpt l, N.toOpt r with
@@ -87,9 +84,39 @@ let rec remove n (x : key) =
         let r = N.removeMinAuxWithRef rn kr vr in 
         N.bal l !kr !vr r 
     else if x < v then
-      N.(bal (remove l x ) v (value n) r)
+      match N.toOpt l with 
+      | None -> N.return n
+      | Some left -> 
+        let ll = removeAux left x in 
+        if ll == l then N.return n 
+        else N.(bal ll v (value n) r)
     else
-      N.(bal l v (value n) (remove r x ))
+      match N.toOpt r with 
+      | None -> N.return n 
+      | Some right -> 
+        let rr = removeAux right x  in 
+        N.bal l v (N.value n) rr
+
+let remove n x = 
+  match N.toOpt n with 
+  | None -> N.empty0
+  | Some n -> removeAux n x 
+
+let rec removeArrayAux t xs i len  =
+  if i < len then
+    let ele = A.unsafe_get xs i in
+    let u =  removeAux t ele  in
+    match N.toOpt u with
+    | None -> u
+    | Some t -> removeArrayAux t xs (i + 1) len
+  else
+    N.return t
+      
+let removeArray t keys =
+  let len = A.length keys in
+  match N.toOpt t with
+  | None -> N.empty0
+  | Some t ->  removeArrayAux t keys 0 len
 
 let mem = I.mem 
 let cmp = I.cmp 

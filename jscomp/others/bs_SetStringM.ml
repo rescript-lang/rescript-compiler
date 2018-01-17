@@ -106,18 +106,18 @@ let ofSortedArrayUnsafe xs =
 let checkInvariant d = 
   N.checkInvariant (data d)
 
-let addOnly d k = 
+let addDone d k = 
   let old_data = data d in 
   let v = I.addMutate old_data k in 
   if v != old_data then 
     dataSet d v   
 
 let add d k = 
-  addOnly d k;
+  addDone d k;
   d 
 
 
-let addArrayOnly d arr = 
+let addArrayDone d arr = 
   let old_data = data d in 
   let v = addArrayMutate old_data arr in 
   if v != old_data then 
@@ -130,14 +130,14 @@ let addArray d arr =
     dataSet d v ;
   d   
 
-let removeOnly d v = 
+let removeDone d v = 
   let old_data = data d in 
   let v = removeMutate old_data v in 
   if v != old_data then 
     dataSet d v   
 
 let remove d v = 
-  removeOnly d v; 
+  removeDone d v; 
   d 
 
   

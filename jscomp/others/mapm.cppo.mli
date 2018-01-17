@@ -70,10 +70,13 @@ val getExn: 'a t -> key -> 'a
 
 (*TODO: add functional [merge, partition, filter, split]*)
 
+val removeDone: 'a t -> key -> unit  
 val remove: 'a t ->  key -> 'a t
 (** [remove m x] do the in-place modification, return [m] for chaining *)
-
-val addOnly : 'a t -> key -> 'a -> unit  
+val removeArrayDone: 'a t -> key array -> unit
+val removeArray: 'a t -> key array -> 'a t
+    
+val addDone: 'a t -> key -> 'a -> unit  
 val add: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] do the in-place modification, return
     [m] for chaining. If [x] was already bound

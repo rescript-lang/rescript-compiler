@@ -14,7 +14,7 @@ let () =
   let v = N.empty () in 
   for i = 0 to 1_00_000 do 
     (* [%assert (N.checkInvariant !v)]; *)
-     N.addOnly v i 
+     N.addDone v i 
   done ;
   b __LOC__ (N.checkInvariant v);
   b __LOC__ @@ R.forAll 0  1_00_000 (fun [@bs] i -> 
@@ -25,7 +25,7 @@ let () =
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = N.empty () in 
-  N.addArrayOnly v u ;
+  N.addArrayDone v u ;
   eq __LOC__ (N.length v) 91 ; 
   eq __LOC__ (N.toArray v) (I.range 30 120)
 
@@ -36,29 +36,29 @@ let () =
   let u = I.randomRange 50_000 80_000 in 
   
   for i = 0 to A.length u - 1 do 
-    N.removeOnly v i 
+    N.removeDone v i 
   done;
   
   eq __LOC__ (N.length v) 70_000;
   let count = 100_000 in 
   let vv = I.randomRange 0 count in 
   for i  = 0 to A.length vv - 1 do 
-    N.removeOnly v vv.(i)
+    N.removeDone v vv.(i)
   done; 
   eq __LOC__ (N.length v) 0;
   b __LOC__ (N.isEmpty v )
 
 let () = 
   let v = N.ofArray (A.init 30 (fun [@bs]i -> i)) in 
-  N.removeOnly v 30; 
-  N.removeOnly v 29 ;
+  N.removeDone v 30; 
+  N.removeDone v 29 ;
   b __LOC__ (Js.eqNull 28 (N.maxNull v ));
-  N.removeOnly v 0 ; 
+  N.removeDone v 0 ; 
   b __LOC__ (Js.eqNull 1 (N.minNull v));
   eq __LOC__ (N.length v ) 28;
   let vv = I.randomRange 1 28 in 
   for i = 0 to A.length vv - 1 do  
-    N.removeOnly v vv.(i)
+    N.removeDone v vv.(i)
   done  ;
   eq __LOC__ (N.length v) 0 
 
@@ -87,7 +87,7 @@ let () =
   let aa,bb = N.partition v (fun[@bs] x -> x mod 8 = 0) in 
   let cc = N.filter v (fun[@bs] x -> x mod 8 <> 0) in 
   for i = 0 to 200 do 
-    N.removeOnly v i
+    N.removeDone v i
   done ;
   eq __LOC__ (N.length copyV) 126; 
   eq __LOC__ (N.toArray copyV) (A.init 126 (fun[@bs] i -> i * 8));

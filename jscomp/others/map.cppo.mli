@@ -65,6 +65,7 @@ val getExn: 'a t -> key -> 'a
 val remove: 'a t ->  key -> 'a t
 (** [remove m x] returns a map containing the same bindings as
    [m], except for [x] which is unbound in the returned map. *)
+val removeArray: 'a t -> key array -> 'a t
 
 val update: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] returns a map containing the same bindings as

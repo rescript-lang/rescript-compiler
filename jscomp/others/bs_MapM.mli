@@ -92,19 +92,22 @@ val getExn:  ('k, 'a, 'id) t -> 'k ->  'a
 
 (****************************************************************************)
 
+(*TODO: add functional [merge, partition, filter, split]*)
+
+val removeDone:  ('k, 'a, 'id) t -> 'k -> unit
 val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
 (** [remove m x] do the in-place modification,
     returnning [m] for chaining. *)
+val removeArrayDone: ('k, 'a, 'id) t -> 'k array -> unit    
+val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t 
 
-(*TODO: add functional [merge, partition, filter, split]*)
+
   
-val updateOnly: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
+val updateDone: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
 val update: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
 (** [update m x y ] do the in-place modification, returnning [m] for chaining. *)
 
-val removeOnly:  ('k, 'a, 'id) t -> 'k -> unit
-val removeArrayOnly: ('k, 'a, 'id) t -> 'k array -> unit    
-val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t 
+
 
 
 val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t

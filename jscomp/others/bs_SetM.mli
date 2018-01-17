@@ -37,25 +37,25 @@ val singleton :
   'elt -> ('elt, 'id) t
 val mem:  ('elt, _) t -> 'elt ->  bool
 
-val addOnly:   
+val addDone:   
   ('elt, 'id) t -> 'elt -> unit 
 val add:   
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 val addCheck:
   ('elt, 'id) t -> 'elt -> bool 
-val addArrayOnly:
+val addArrayDone:
   ('elt, 'id) t -> 'elt array -> unit 
 val addArray:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
   
-val removeOnly:
+val removeDone:
    ('elt, 'id) t -> 'elt -> unit 
 val remove:  
    ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 val removeCheck:  
    ('elt, 'id) t -> 'elt -> bool
    (* [b = removeCheck s e] [b] is true means one element removed *)      
-val removeArrayOnly:
+val removeArrayDone:
   ('elt, 'id) t -> 'elt array -> unit 
 val removeArray:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t

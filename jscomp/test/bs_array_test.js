@@ -178,7 +178,7 @@ var v = Bs_Array.init(3000, (function (i) {
 
 var u = Bs_Array.copy(v);
 
-Bs_Array.shuffleOnly(u);
+Bs_Array.shuffleDone(u);
 
 neq("File \"bs_array_test.ml\", line 63, characters 6-13", u, v);
 

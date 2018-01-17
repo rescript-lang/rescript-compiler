@@ -27,14 +27,14 @@ let minKeyValueNull m = N.minKVNull0 (data m)
 let maxKeyValueOpt m = N.maxKVOpt0 (data m)
 let maxKeyValueNull m = N.maxKVNull0 (data m)
 
-let addOnly (m : _ t) k v = 
+let addDone (m : _ t) k v = 
   let old_data = data m in 
   let v = I.addMutate old_data k v in 
   if v != old_data then 
     dataSet m v 
 
 let add (d : 'a t) (k : key) (v : 'a) : 'a t=  
-  addOnly d k v; 
+  addDone d k v; 
   d
 let iter d f = N.iter0 (data d) f     
 let map d f = t ~data:(N.map0 (data d) f)
@@ -78,21 +78,42 @@ let rec removeMutateAux nt (x : key)=
           N.rightSet nt (removeMutateAux r x);
           N.return (N.balMutate nt)
     end
-let removeMutate nt x = 
-  match N.toOpt nt with 
-  | None -> nt 
-  | Some nt -> removeMutateAux nt x 
 
-let removeOnly d v = 
-  let old_data = data d in 
-  let v = removeMutate old_data v in 
-  if v != old_data then 
-    dataSet d v   
+let removeDone d v = 
+  let oldRoot = data d in 
+  match N.toOpt oldRoot with 
+  | None -> ()
+  | Some root -> 
+    let newRoot = removeMutateAux root v in 
+    if newRoot != oldRoot then 
+      dataSet d newRoot   
 
 let remove d v = 
-  removeOnly d v; 
+  removeDone d v; 
   d 
   
+let rec removeArrayMutateAux t xs i len   =  
+  if i < len then 
+    let ele = A.unsafe_get xs i in 
+    let u = removeMutateAux t ele  in 
+    match N.toOpt u with 
+    | None -> N.empty0
+    | Some t -> removeArrayMutateAux t xs (i+1) len 
+  else N.return t    
+
+let removeArrayDone (type elt) (type id) (d : _ t) xs =  
+  let oldRoot = data d in 
+  match N.toOpt oldRoot with 
+  | None -> ()
+  | Some nt -> 
+    let len = A.length xs in 
+    let newRoot = removeArrayMutateAux nt xs 0 len in 
+    if newRoot != oldRoot then 
+      dataSet d newRoot
+
+let removeArray d xs =      
+  removeArrayDone d xs; 
+  d  
 
 let cmp = I.cmp 
 let eq = I.eq 
