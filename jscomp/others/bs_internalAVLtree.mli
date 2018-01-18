@@ -45,9 +45,17 @@ val bal :
   ('a,'b) t0 -> 'a -> 'b -> ('a,'b) t0 -> ('a,'b) t0
 val singleton0 : 'a -> 'b -> ('a,'b) t0
 
-val updateKV : ('k, 'v) node -> 'k -> 'v -> ('k,'v) t0
-val minKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
+val updateValue : ('k, 'v) node -> 'v -> ('k,'v) node
+
+val minKeyOpt0 : ('a, 'b) t0 -> 'a option 
+val minKeyNull0: ('a, 'b) t0 -> 'a Js.null
+
+val maxKeyOpt0 : ('a, 'b) t0 -> 'a option 
+val maxKeyNull0 : ('a, 'b) t0 -> 'a Js.null 
+
+val minKVOpt0 : ('a, 'b) t0 -> ('a * 'b) option
 val minKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
+
 val maxKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
 val maxKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
 
@@ -150,9 +158,9 @@ val mem0:
   
 val ofArray0 : cmp:('a,'id) Bs_Cmp.cmp -> ('a * 'b) array -> ('a, 'b) t0
 
-val addMutate : 
-  cmp:('a,'id) Bs_Cmp.cmp -> 
+val updateMutate :   
   ('a, 'b) t0 -> 'a -> 'b -> 
+  cmp:('a,'id) Bs_Cmp.cmp -> 
   ('a, 'b) t0
 
 val balMutate :   

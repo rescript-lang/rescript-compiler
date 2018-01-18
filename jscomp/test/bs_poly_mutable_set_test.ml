@@ -20,33 +20,33 @@ let () =
   let r = I.randomRange 0 30 in 
   b __LOC__ (Js.eqNull 29 (N.maxNull u));
   b __LOC__ (Js.eqNull 1 (N.minNull u));
-  N.addOnly u 3;
+  N.addDone u 3;
   for i = 0 to A.length r - 1 do 
-    N.removeOnly u (A.get r i)
+    N.removeDone u (A.get r i)
   done ;
   b __LOC__ (N.isEmpty u);
-  N.addOnly u 0;
-  N.addOnly u 1;
-  N.addOnly u 2;
-  N.addOnly u 0;
+  N.addDone u 0;
+  N.addDone u 1;
+  N.addDone u 2;
+  N.addDone u 0;
   eq __LOC__ (N.length u) 3;
   b __LOC__ (not (N.isEmpty u));
   for i = 0 to 3 do 
-    N.removeOnly u i 
+    N.removeDone u i 
   done ;
   b __LOC__ (N.isEmpty u);
-  N.addArrayOnly u (I.randomRange 0 20000);
-  N.addArrayOnly u (I.randomRange 0 200);
+  N.addArrayDone u (I.randomRange 0 20000);
+  N.addArrayDone u (I.randomRange 0 200);
   eq __LOC__ (N.length u) 20001;
-  N.removeArrayOnly u (I.randomRange 0 200);
+  N.removeArrayDone u (I.randomRange 0 200);
   eq __LOC__ (N.length u) 19800;
-  N.removeArrayOnly u (I.randomRange 0 1000);
+  N.removeArrayDone u (I.randomRange 0 1000);
   eq __LOC__ (N.length u) 19000;
-  N.removeArrayOnly u (I.randomRange 0 1000);
+  N.removeArrayDone u (I.randomRange 0 1000);
   eq __LOC__ (N.length u) 19000;
-  N.removeArrayOnly u (I.randomRange 1000 10000);
+  N.removeArrayDone u (I.randomRange 1000 10000);
   eq __LOC__ (N.length u) 10000;
-  N.removeArrayOnly u (I.randomRange 10000 (20000 -1));
+  N.removeArrayDone u (I.randomRange 10000 (20000 -1));
   eq __LOC__ (N.length u) 1 ;
   b __LOC__ (N.mem u 20000)
 (* for i =  *)

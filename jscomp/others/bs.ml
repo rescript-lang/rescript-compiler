@@ -45,6 +45,7 @@ module SortString = Bs_SortString
 module Stack = Bs_Stack
 module Range = Bs_Range
 module Map = Bs_Map
+module MapM = Bs_MapM
 module Set = Bs_Set
 module SetM = Bs_SetM
 module MapInt = Bs_MapInt

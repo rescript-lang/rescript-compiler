@@ -4,10 +4,10 @@ let test () =
   let m = ref Bs.MapInt.empty in
   let count = 100_0000 - 1 in
   for i = 0 to count do
-    m := Bs.MapInt.update !m i i 
+    m := Bs.MapInt.set !m i i 
   done;
   for i = 0 to count do
-    should (Bs.MapInt.findOpt !m i <> None)
+    should (Bs.MapInt.get !m i <> None)
   done; 
   for i = 0 to count do 
     m := Bs.MapInt.remove !m i  ;

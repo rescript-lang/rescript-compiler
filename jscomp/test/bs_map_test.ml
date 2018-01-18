@@ -40,13 +40,13 @@ let vv2 = MI.empty
 
 let () = 
   let count = 1_000_00 in 
-  let data = ref (B.data m) in 
-  let m2_dict, m_dict = B.(dict m2, dict m) in 
+  let data = ref (M.getData m) in 
+  let m2_dict, m_dict = M.(getDict m2, getDict m) in 
   let module N = (val m2_dict) in 
   let module Mm = ( val m_dict) in
   for i = 0 to count do 
     data := 
-      M.update0 !data 
+      M.set0 !data 
       ~cmp:  Mm.cmp
       i i 
   done ;
@@ -56,7 +56,7 @@ module ISet = Bs.Set
 let () =     
   let  m = M.empty0 in 
   let m11 = 
-    M.update0 ~cmp:Icmp.cmp m
+    M.set0 ~cmp:Icmp.cmp m
     1 1 
   in  
   let _m20 = M.empty (module Icmp) in 
@@ -65,7 +65,7 @@ let () =
 let () =   
  let count = 100_000 in 
   let v = ISet.empty (module Icmp2) in 
-  let m_dict = B.dict m in 
+  let m_dict = M.getDict m in 
   let module M = (val m_dict) in 
   let cmp = M.cmp in 
   let data = ref (B.data v) in 
@@ -74,12 +74,12 @@ let () =
   done ;
   Js.log !data  
 
-let f = M.ofArray (module Icmp)
+let f = M.ofArray ~dict:(module Icmp)
 let (=~) a b = M.eq a b  
 
 let () =   
   let u0 =  f (A.map (I.randomRange 0 39) (fun[@bs] x -> (x,x))) in  
-  let u1 = M.update u0 39 120 in 
+  let u1 = M.set u0 39 120 in 
   b __LOC__
   (A.forAll2 (M.toArray u0) 
    (A.map (I.range 0 39) (fun [@bs] x -> (x,x)))
@@ -90,8 +90,8 @@ let () =
     (M.toList u0)
     (A.toList (A.map (I.range 0 39) (fun [@bs] x -> (x,x))))
     (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
-  eq __LOC__ (M.findOpt u0 39) (Some 39);
-  eq __LOC__ (M.findOpt u1 39) (Some 120)
+  eq __LOC__ (M.get u0 39) (Some 39);
+  eq __LOC__ (M.get u1 39) (Some 120)
 
 
 let () =     

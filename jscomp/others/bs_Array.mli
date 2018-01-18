@@ -39,7 +39,7 @@ external makeUninitializedUnsafe : int -> 'a array = "Array" [@@bs.new]
 
 val init : int -> (int -> 'a [@bs]) -> 'a array
 
-val shuffleOnly : 'a array -> unit    
+val shuffleDone : 'a array -> unit    
 
 val shuffle :'a array -> 'a array 
 (** [shuffle xs] it mutates [xs] and return

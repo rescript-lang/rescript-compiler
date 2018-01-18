@@ -14,7 +14,7 @@ module N = Bs.Set
 
 module A = Bs_Array
 module I = Array_data_util
-let f x = M.ofArray (module Icmp) x 
+let f x = M.ofArray ~dict:(module Icmp) x 
 let ff x = N.ofArray (module Icmp) x 
 
 let mergeInter s1 s2 = 
@@ -52,27 +52,65 @@ let () =
 
 let () =   
   let a0 = f (randomRange 0 10) in 
-  let a1 = M.update a0 3 33 in 
-  let a2 = M.remove a1 3 in  
-  let a3 = M.updateWithOpt a2 3 (fun[@bs]  k -> 
+  let a1 = M.set a0 3 33 in (* (3,3) *)
+  let a2 = M.remove a1 3 in  (* no 3 *)
+  let a3 = M.update a2 3 (fun[@bs]  k -> 
       match k with 
       | Some k -> Some (k + 1)
       | None  ->  Some 11
-    ) in 
-  let a4 = M.updateWithOpt a2 3 (fun[@bs]  k -> 
+    ) in  (* 3, 11 *)
+  let a4 = M.update a2 3 (fun[@bs]  k -> 
       match k with 
       | Some k-> Some (k + 1)
       | None  ->  None
-    ) in 
+    ) in  (* no 3 *)
   let a5 = M.remove a0 3 in   
   let a6 = M.remove a5 3 in 
   b __LOC__ (a5 == a6);
   b __LOC__ (M.mem a0 3);
   b __LOC__ (not (M.mem a5 3));
-  b __LOC__ (Js.eqNull 3 (M.findNull a0 3));
-  b __LOC__ (Js.eqNull 33 (M.findNull a1 3));
-  b __LOC__ (Js.Null.test (M.findNull a2 3));
+  b __LOC__ (Js.eqNull 3 (M.getNull a0 3));
+  b __LOC__ (Js.eqNull 33 (M.getNull a1 3));
+  b __LOC__ (Js.Null.test (M.getNull a2 3));
 
-  b __LOC__ (Js.eqNull 11 (M.findNull a3 3));
-  b __LOC__ (Js.Null.test (M.findNull a4 3))
+  b __LOC__ (Js.eqNull 11 (M.getNull a3 3));
+  b __LOC__ (Js.Null.test (M.getNull a4 3));
+
+  let a7 = M.removeArray a0 [|7;8;0;1;3;2;4;922;4;5;6;|] in 
+  eq __LOC__ (M.keysToArray a7) [|9;10|];
+  let a8 = M.removeArray a7 (I.randomRange 0 100) in 
+  b __LOC__ (M.isEmpty a8)
+
+(* TODO: expose [Bs_Bag.bag] makes the error message
+  pretty hard to read
+  {[
+    Error: This expression has type
+         ((Icmp.t, Icmp.id) Bs_Cmp.t, (Icmp.t, Icmp.t, Icmp.id) Bs_Map.t0)
+         Bs_Bag.bag
+       but an expression was expected of type unit
+  ]}
+ *)  
+let () =   
+  let module Array = M in 
+  let u0 = f (randomRange 0 100) in 
+  let u1 = u0.(3) <- 32  in 
+  eq __LOC__ u1.(3) (Some 32); 
+  eq __LOC__ u0.(3) (Some 3)
+
+
+let acc m i =   
+  M.update m i (fun[@bs] n -> match n with None -> Some 1 | Some acc -> Some (acc + 1))
+
+let acc m is : _ M.t =   
+  A.foldLeft is m (fun[@bs] a i -> acc a i) 
+
+let () = 
+  let m = M.empty (module Icmp) in 
+  let m1 = acc m (A.append (I.randomRange 0 20) (I.randomRange 10 30)) in 
+  b __LOC__ 
+  (M.eq m1 
+  (M.ofArray ~dict:(module Icmp) (A.init 31 (fun[@bs] i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
+  (fun[@bs] x y -> x = y)
+  )
+
 ;; Mt.from_pair_suites __FILE__ !suites

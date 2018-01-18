@@ -16,7 +16,7 @@ let rec add  t (x : key) (data : _)  =
   | Some n  ->
     let k = N.key n in 
     if x = k then
-      N.updateKV n x data 
+      N.return (N.updateValue n data)
     else
       let v = N.value n in 
       if x < k then
