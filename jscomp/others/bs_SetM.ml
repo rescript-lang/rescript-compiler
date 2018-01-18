@@ -140,6 +140,14 @@ let rec addMutateCheckAux  (t : _ t0) x added ~cmp  =
       );
       N.return (N.balMutate nt)
 
+let addCheck (type elt) (type id) (m : (elt,id) t) e = 
+  let dict, oldRoot = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  let added = ref false in 
+  let newRoot = addMutateCheckAux ~cmp:M.cmp oldRoot e added in 
+  if newRoot != oldRoot then 
+    B.dataSet m newRoot;
+  !added    
 
 
 let split (type elt) (type id) (d : (elt,id) t)  key  =     
@@ -175,11 +183,11 @@ let partition d p =
   let a , b = N.partitionCopy data p in 
   B.bag ~data:a ~dict, B.bag ~data:b ~dict      
 
-let empty dict = 
+let empty ~dict = 
   B.bag ~dict ~data:N.empty0
 let isEmpty d = 
   N.isEmpty0 (B.data d)
-let singleton dict x = 
+let singleton x ~dict = 
   B.bag ~data:(N.singleton0 x) ~dict 
 let minOpt d = 
   N.minOpt0 (B.data d)
@@ -203,7 +211,7 @@ let toList d =
   N.toList0 (B.data d)
 let toArray d = 
   N.toArray0 (B.data d)
-let ofSortedArrayUnsafe ~dict xs : _ t =
+let ofSortedArrayUnsafe xs ~dict : _ t =
   B.bag ~data:(N.ofSortedArrayUnsafe0 xs) ~dict   
 let checkInvariant d = 
   N.checkInvariant (B.data d)
@@ -227,7 +235,7 @@ let mem (type elt) (type id) (d : (elt,id) t) x =
   let dict = B.dict d in 
   let module M = (val dict) in 
   N.mem0 ~cmp:M.cmp (B.data d) x   
-let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data =  
+let ofArray (type elt) (type id) data ~(dict : (elt,id) Bs_Cmp.t) =  
   let module M = (val dict) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
 let addDone (type elt) (type id) (m : (elt,id) t) e = 
@@ -239,14 +247,6 @@ let addDone (type elt) (type id) (m : (elt,id) t) e =
 let add m e = 
   addDone m e;
   m
-let addCheck (type elt) (type id) (m : (elt,id) t) e = 
-  let dict, oldRoot = B.(dict m, data m) in 
-  let module M = (val dict) in 
-  let added = ref false in 
-  let newRoot = addMutateCheckAux ~cmp:M.cmp oldRoot e added in 
-  if newRoot != oldRoot then 
-    B.dataSet m newRoot;
-  !added    
 let addArrayMutate (t : _ t0) xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 

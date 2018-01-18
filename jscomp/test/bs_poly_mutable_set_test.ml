@@ -11,7 +11,7 @@ module IntCmp =
 
 
 let () = 
-  let u = N.ofArray (module IntCmp) (I.range 0 30) in 
+  let u = N.ofArray ~dict:(module IntCmp) (I.range 0 30) in 
   b __LOC__ (N.removeCheck u 0);
   b __LOC__ (not (N.removeCheck u 0));
   b __LOC__ (N.removeCheck u 30);
@@ -51,7 +51,7 @@ let () =
   b __LOC__ (N.mem u 20000)
 (* for i =  *)
 let (++) = N.union
-let f = N.ofArray (module IntCmp) 
+let f = N.ofArray ~dict:(module IntCmp) 
 let (=~) = N.eq 
 let () =   
   let aa =  f (I.randomRange 0 100) in 

@@ -179,7 +179,7 @@ let rec diff0 ~cmp s1 s2 =
 
 
 
-let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data = 
+let ofArray (type elt) (type id) ~(dict : (elt,id) Bs_Cmp.t) data = 
   let module M = (val dict ) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
 
@@ -248,12 +248,12 @@ let split (type elt) (type id) (m : (elt,id) t) e =
   let (l,  r), b = split0 ~cmp:M.cmp data e in 
   (B.bag ~dict ~data:l, B.bag ~dict ~data:r), b
   
-let empty dict = 
+let empty ~dict = 
   B.bag ~dict  ~data:N.empty0
 
 let isEmpty m = N.isEmpty0 (B.data m)
 
-let singleton dict e =     
+let singleton e ~dict =     
   B.bag ~dict ~data:(N.singleton0 e)
 
 let cmp (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
@@ -310,7 +310,7 @@ let mem (type elt) (type id) (m : (elt,id) t) e =
   let module M = (val dict) in 
   N.mem0 ~cmp:(M.cmp) data e
 
-let ofSortedArrayUnsafe ~dict xs  =
+let ofSortedArrayUnsafe xs ~dict =
   B.bag ~dict ~data:(N.ofSortedArrayUnsafe0 xs)
 
 
@@ -341,7 +341,10 @@ let subset0 = N.subset0
 let filter0 = N.filterShared0
 let partition0 = N.partitionShared0
 
-
+let getData = B.data
+let getDict = B.dict
+let packDictData = B.bag                
+let checkInvariant d = N.checkInvariant (B.data d)
 
 
 

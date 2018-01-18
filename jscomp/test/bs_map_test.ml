@@ -68,7 +68,7 @@ let () =
   let m_dict = M.getDict m in 
   let module M = (val m_dict) in 
   let cmp = M.cmp in 
-  let data = ref (B.data v) in 
+  let data = ref (ISet.getData v) in 
   for i = 0 to count do 
     data := Bs.Set.add0 ~cmp !data i 
   done ;
