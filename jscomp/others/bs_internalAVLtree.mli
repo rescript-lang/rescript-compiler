@@ -45,7 +45,7 @@ val bal :
   ('a,'b) t0 -> 'a -> 'b -> ('a,'b) t0 -> ('a,'b) t0
 val singleton0 : 'a -> 'b -> ('a,'b) t0
 
-val updateKV : ('k, 'v) node -> 'k -> 'v -> ('k,'v) t0
+val updateValue : ('k, 'v) node -> 'v -> ('k,'v) node
 
 val minKeyOpt0 : ('a, 'b) t0 -> 'a option 
 val minKeyNull0: ('a, 'b) t0 -> 'a Js.null

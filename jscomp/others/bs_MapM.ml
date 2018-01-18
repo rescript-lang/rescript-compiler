@@ -98,6 +98,52 @@ let removeArray d xs =
   removeArrayDone d xs; 
   d
 
+let rec updateDone0 t x   f  ~cmp =   
+  match N.toOpt t with 
+  | None ->
+    (match f None [@bs] with
+    | Some data -> N.singleton0 x data
+    | None -> t)
+  | Some nt -> 
+    let k = N.key nt in 
+    let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
+    if c = 0 then begin     
+      match f (Some (N.value nt)) [@bs] with
+      | None ->
+        let l,r = N.left nt, N.right nt in
+        begin match N.toOpt l, N.toOpt r with
+        | Some _, Some nr ->
+          N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
+          N.return (N.balMutate nt)
+        | None, Some _ ->
+          r
+        | (Some _ | None), None -> l
+        end
+      | Some data -> 
+        N.valueSet nt data;
+        N.return nt
+    end      
+    else
+      let l, r = N.(left nt, right nt) in 
+      (if c < 0 then                   
+         let ll = updateDone0  l x f ~cmp in
+         N.leftSet nt ll
+       else   
+         N.rightSet nt (updateDone0  r x f ~cmp);
+      );
+      N.return (N.balMutate nt)  
+      
+let updateDone (type k) (type id) (t : (k,_,id) t)  x f =       
+  let oldRoot = B.data t in 
+  let module M = (val B.dict t) in 
+  let newRoot = updateDone0 oldRoot x f ~cmp:M.cmp in 
+  if  newRoot != oldRoot then 
+    B.dataSet t newRoot 
+
+let update t x f = 
+  updateDone t x f ; 
+  t
+  
 let empty ~dict = 
   B.bag ~dict ~data:N.empty0  
 let isEmpty d = 
@@ -182,21 +228,21 @@ let setDone (type elt) (type id) (m : (elt,_,id) t) e v =
 let set m e v = 
   setDone m e v;
   m
-let updateArrayMutate t  xs ~cmp =     
+let mergeArrayAux t  xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
     let key,value = A.unsafe_get xs i in 
     v := N.updateMutate !v key value ~cmp
   done; 
   !v 
-let updateArrayDone (type elt) (type id) (d : (elt,_,id) t ) xs =   
+let mergeArrayDone (type elt) (type id) (d : (elt,_,id) t ) xs =   
   let dict = B.dict d in 
   let oldRoot = B.data d in 
   let module M = (val dict) in 
-  let newRoot = updateArrayMutate oldRoot xs ~cmp:M.cmp in 
+  let newRoot = mergeArrayAux oldRoot xs ~cmp:M.cmp in 
   if newRoot != oldRoot then 
     B.dataSet d newRoot 
-let updateArray d xs = 
-  updateArrayDone d xs ; 
+let mergeArray d xs = 
+  mergeArrayDone d xs ; 
   d   
 

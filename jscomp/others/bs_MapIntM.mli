@@ -61,7 +61,7 @@ val get: 'a t ->  key -> 'a option
 val getNull: 'a t -> key -> 'a Js.null
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a
-  
+val checkInvariant: _ t -> bool   
 (****************************************************************************)
 
 (*TODO: add functional [merge, partition, filter, split]*)
@@ -78,8 +78,8 @@ val set: 'a t ->  key -> 'a -> 'a t
     [m] for chaining. If [x] was already bound
    in [m], its previous binding disappears. *)
 
-
-
+val updateDone: 'a t -> key -> ('a option -> 'a option [@bs]) -> unit
+val update: 'a t ->  key ->  ('a option -> 'a option [@bs]) -> 'a t 
 
 val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
 (** [map m f] returns a map with same domain as [m], where the
@@ -91,4 +91,4 @@ val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
 val mapi: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
 
 
-val checkInvariant : _ t -> bool 
+

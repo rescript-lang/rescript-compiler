@@ -109,7 +109,7 @@ var a1 = Bs_Map.set(a0, 3, 33);
 
 var a2 = Bs_Map.remove(a1, 3);
 
-var a3 = Bs_Map.setWithOpt(a2, 3, (function (k) {
+var a3 = Bs_Map.update(a2, 3, (function (k) {
         if (k) {
           return /* Some */[k[0] + 1 | 0];
         } else {
@@ -117,7 +117,7 @@ var a3 = Bs_Map.setWithOpt(a2, 3, (function (k) {
         }
       }));
 
-var a4 = Bs_Map.setWithOpt(a2, 3, (function (k) {
+var a4 = Bs_Map.update(a2, 3, (function (k) {
         if (k) {
           return /* Some */[k[0] + 1 | 0];
         } else {
@@ -174,7 +174,39 @@ var u0$1 = Bs_Map.ofArray(x$7, Icmp);
 
 var u1$1 = Bs_Map.set(u0$1, 3, 32);
 
-eq("File \"bs_poly_map_test.ml\", line 97, characters 5-12", Bs_Map.get(u1$1, 3), /* Some */[3]);
+eq("File \"bs_poly_map_test.ml\", line 97, characters 5-12", Bs_Map.get(u1$1, 3), /* Some */[32]);
+
+eq("File \"bs_poly_map_test.ml\", line 98, characters 5-12", Bs_Map.get(u0$1, 3), /* Some */[3]);
+
+function acc(m, is) {
+  return Bs_Array.foldLeft(is, m, (function (a, i) {
+                var m = a;
+                var i$1 = i;
+                return Bs_Map.update(m, i$1, (function (n) {
+                              if (n) {
+                                return /* Some */[n[0] + 1 | 0];
+                              } else {
+                                return /* Some */[1];
+                              }
+                            }));
+              }));
+}
+
+var m = {
+  dict: Icmp,
+  data: Bs_internalAVLtree.empty0
+};
+
+var m1 = acc(m, Bs_Array.append(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
+
+b("File \"bs_poly_map_test.ml\", line 110, characters 4-11", Bs_Map.eq(m1, Bs_Map.ofArray(Bs_Array.init(31, (function (i) {
+                    return /* tuple */[
+                            i,
+                            i >= 10 && i <= 20 ? 2 : 1
+                          ];
+                  })), Icmp), (function (x, y) {
+            return +(x === y);
+          })));
 
 Mt.from_pair_suites("bs_poly_map_test.ml", suites[0]);
 
@@ -201,4 +233,5 @@ exports.mergeInter = mergeInter;
 exports.mergeUnion = mergeUnion;
 exports.mergeDiff = mergeDiff;
 exports.randomRange = randomRange;
+exports.acc = acc;
 /* x Not a pure module */

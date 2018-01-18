@@ -48,7 +48,7 @@ let rec set  t (newK : key) (newD : _)  =
   | Some n  ->
     let k = N.key n in 
     if newK = k then
-      N.updateKV n newK newD
+      N.return (N.updateValue n newD)
     else
       let v = N.value n in 
       if newK < k then
@@ -56,7 +56,7 @@ let rec set  t (newK : key) (newD : _)  =
       else
         N.bal (N.left n) k v (set (N.right n) newK newD)
         
-let rec setWithOpt  t (x : key) f  = 
+let rec update  t (x : key) f  = 
   match N.toOpt t with
   | None -> 
     begin match f None [@bs] with 
@@ -67,16 +67,29 @@ let rec setWithOpt  t (x : key) f  =
   | Some n  ->
     let k = N.key n in 
     if x = k then
-      begin match f (Some k) [@bs] with 
-      | None -> t 
-      | Some data -> N.updateKV n x data 
+      begin match f (Some (N.value n)) [@bs] with 
+      | None ->
+        let l, r = N.left n, N.right n in
+        begin match N.toOpt l, N.toOpt r with
+          | None, _ -> r
+          | _, None -> l
+          | _, Some rn ->
+            let kr, vr = ref (N.key rn), ref (N.value rn) in
+            let r = N.removeMinAuxWithRef rn kr vr in
+            N.bal l !kr !vr r 
+        end
+      | Some data -> N.return (N.updateValue n data )
       end 
     else
-      let v = N.value n in 
+      let l,r,v = N.left n, N.right n , N.value n in 
       if x < k then
-        N.bal (setWithOpt (N.left n) x f) k v (N.right n)
+        let ll = (update l x f) in
+        if l == ll then t 
+        else N.bal ll  k v r
       else
-        N.bal (N.left n) k v (setWithOpt (N.right n) x f)        
+        let rr = (update r x f) in
+        if r == rr then t 
+        else N.bal l k v rr 
 
 let rec removeAux n (x : key) = 
     let l,v,r = N.(left n, key n, right n) in 
@@ -122,6 +135,15 @@ let removeArray t keys =
   match N.toOpt t with
   | None -> N.empty0
   | Some t ->  removeArrayAux t keys 0 len
+
+let mergeArray h arr =   
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key,value = A.unsafe_get arr i in 
+    v := set !v key value
+  done ;
+  !v 
 
 let mem = I.mem 
 let cmp = I.cmp 

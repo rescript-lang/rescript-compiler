@@ -89,7 +89,7 @@ val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
 val getExn:  ('k, 'a, 'id) t -> 'k ->  'a 
-
+val checkInvariant: _ t -> bool   
 (****************************************************************************)
 
 (*TODO: add functional [merge, partition, filter, split]*)
@@ -106,9 +106,13 @@ val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t
 val setDone: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
 val set: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
 (** [set m x y ] do the in-place modification, returnning [m] for chaining. *)
+    
+val updateDone: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> unit
+val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> ('k, 'a, 'id) t
 
-
-
+val mergeArrayDone:  ('k, 'a, 'id) t -> ('k * 'a) array ->  unit
+val mergeArray: ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
+      
 
 val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 (** [map m f] returns a map with same domain as [m], where the

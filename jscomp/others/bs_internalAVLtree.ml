@@ -54,12 +54,14 @@ let heightGe l r =
   | Some hl, Some hr -> h hl >= h hr 
   | None, Some _ -> false
 
-let updateKV n key value =  
-  return @@ node 
+let updateValue n newValue =
+  if value n == newValue then n 
+  else
+    node 
     ~left:(left n)
     ~right:(right n)
-    ~key
-    ~value
+    ~key:(key n)
+    ~value:newValue
     ~h:(h n)
 
 let bal l x d r =
@@ -676,7 +678,6 @@ let rec updateMutate (t : _ t0) x data ~cmp =
     let k = key nt in 
     let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
     if c = 0 then begin     
-      keySet nt x;
       valueSet nt data;
       return nt
     end      

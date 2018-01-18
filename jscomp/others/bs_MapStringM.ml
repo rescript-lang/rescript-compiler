@@ -56,13 +56,12 @@ let rec removeMutateAux nt (x : key)=
   let k = N.key nt in 
   if x = k then 
     let l,r = N.(left nt, right nt) in       
-    match N.(toOpt l, toOpt r) with 
-    | Some _,  Some nr ->  
+    match N.(toOpt l, toOpt r) with
+    | None, _ -> r  
+    | _, None -> l 
+    | _,  Some nr ->  
       N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
       N.return (N.balMutate nt)
-    | None, Some _ ->
-      r  
-    | (Some _ | None ), None ->  l 
   else 
     begin 
       if x < k then 
@@ -91,7 +90,49 @@ let removeDone d v =
 let remove d v = 
   removeDone d v; 
   d 
-  
+
+let rec updateDone0 t (x : key)  f  =   
+  match N.toOpt t with 
+  | None ->
+    (match f None [@bs] with
+    | Some data -> N.singleton0 x data
+    | None -> t)
+  | Some nt -> 
+    let k = N.key nt in 
+    (* let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in   *)
+    if k = x then begin     
+      match f (Some (N.value nt)) [@bs] with
+      | None ->
+        let l,r = N.left nt, N.right nt in
+        begin match N.toOpt l, N.toOpt r with
+          | None,  _ -> r
+          | _, None  -> l
+          | _, Some nr ->
+            N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
+            N.return (N.balMutate nt)
+        end
+      | Some data -> 
+        N.valueSet nt data;
+        N.return nt
+    end      
+    else
+      let l, r = N.(left nt, right nt) in 
+      (if x < k then                   
+         let ll = updateDone0  l x f in
+         N.leftSet nt ll
+       else   
+         N.rightSet nt (updateDone0  r x f);
+      );
+      N.return (N.balMutate nt)  
+let updateDone t x f =       
+  let oldRoot = data t in 
+  let newRoot = updateDone0 oldRoot x f  in 
+  if newRoot != oldRoot then 
+    dataSet t newRoot 
+    
+let update t x f =     
+  updateDone t x f ; 
+  t 
 let rec removeArrayMutateAux t xs i len   =  
   if i < len then 
     let ele = A.unsafe_get xs i in 

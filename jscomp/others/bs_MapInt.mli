@@ -55,7 +55,7 @@ val get: 'a t -> key -> 'a option
 val getNull: 'a t -> key -> 'a Js.null
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a 
-
+val checkInvariant: _ t -> bool   
 (****************************************************************************)
 
 val remove: 'a t ->  key -> 'a t
@@ -67,15 +67,9 @@ val set: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] returns a map containing the same bindings as
    [m], plus a binding of [x] to [y]. If [x] was already bound
    in [m], its previous binding disappears. *)
-val setWithOpt:
-    'a t -> 
-    key -> 
-    (key option -> 'a option [@bs]) -> 
-    'a t 
-
-
-
-
+val update: 'a t -> key -> ('a option -> 'a option [@bs]) -> 'a t 
+val mergeArray: 'a t -> (key * 'a) array -> 'a t
+    
 val merge:
     'a t -> 'b t ->
     (key -> 'a option -> 'b option -> 'c option [@bs]) ->

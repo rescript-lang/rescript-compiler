@@ -103,7 +103,7 @@ val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
 val getExn:  ('k, 'a, 'id) t -> 'k -> 'a 
-
+val checkInvariant: _ t -> bool   
 (****************************************************************************)
 
 val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
@@ -115,15 +115,9 @@ val set:
 (** [set m x y ] returns a map containing the same bindings as
     [m], with a new binding of [x] to [y]. If [x] was already bound
     in [m], its previous binding disappears. *)
-val setWithOpt:     
-    ('k, 'a, 'id) t ->  
-    'k -> 
-    ('k option -> 'a option [@bs]) -> 
-    ('k, 'a, 'id) t 
-      
-val updateArray:
+val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> ('k, 'a, 'id) t      
+val mergeArray:
     ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
-
 
 val merge:
    ('k, 'a, 'id ) t -> 
@@ -200,6 +194,10 @@ val set0:
   cmp: ('k,'id) Bs_Cmp.cmp -> 
   ('k, 'a, 'id) t0 
 
+val update0:
+  ('k, 'a, 'id) t0 -> 'k -> ('a option -> 'a option [@bs]) ->
+  cmp:('k, 'id) Bs_Cmp.cmp -> 
+  ('k, 'a, 'id) t0      
 val singleton0 : 'k -> 'a -> ('k, 'a, 'id) t0    
 
 val remove0:
