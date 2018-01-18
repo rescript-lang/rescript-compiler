@@ -326,6 +326,8 @@ hashtbl_test.cmj : mt.cmj ../stdlib/moreLabels.cmj ../stdlib/list.cmj \
 hello.foo.cmj : ../runtime/js.cmj
 http_types.cmj : ../runtime/js.cmj
 ignore_test.cmj : mt.cmj ../runtime/js.cmj
+imm_map_bench.cmj : ../runtime/js.cmj ../others/bs_Array.cmj \
+    ../others/bs.cmj
 include_side_effect.cmj : side_effect.cmj
 include_side_effect_free.cmj : side_effect_free.cmj
 infer_type_test.cmj : ../runtime/js.cmj infer_type_test.cmi
