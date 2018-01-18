@@ -46,17 +46,17 @@ function test2() {
   return /* () */0;
 }
 
-console.time("imm_map_bench.ml 43");
+console.time("imm_map_bench.ml 44");
 
 test(/* () */0);
 
-console.timeEnd("imm_map_bench.ml 43");
+console.timeEnd("imm_map_bench.ml 44");
 
-console.time("imm_map_bench.ml 44");
+console.time("imm_map_bench.ml 45");
 
 test2(/* () */0);
 
-console.timeEnd("imm_map_bench.ml 44");
+console.timeEnd("imm_map_bench.ml 45");
 
 var A = 0;
 

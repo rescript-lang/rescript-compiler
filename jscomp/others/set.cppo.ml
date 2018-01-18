@@ -6,7 +6,7 @@ module I = Bs_internalSetString
   [%error "unknown type"]
 #endif  
 module N = Bs_internalAVLset
-
+module A = Bs_Array
 
 type elt = I.elt
 type t = I.t 
@@ -45,7 +45,18 @@ let rec add  (t : t) (x : elt) : t =
       else 
         let rr = add r x in 
         if rr == r then t
-        else N.bal l v (add  r x) 
+        else N.bal l v (add  r x)
+
+let addArray h arr =   
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key = A.unsafe_get arr i in 
+    v := add !v  key 
+  done ;
+  !v 
+
+
 let rec remove (t : t) (x : elt) : t = 
   match N.toOpt t with 
   | None -> t
@@ -68,10 +79,21 @@ let rec remove (t : t) (x : elt) : t =
       let rr = remove r x in 
       if rr == r then t
       else N.bal l v rr
+          
+let removeArray h arr = 
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key = A.unsafe_get arr i in 
+    v := remove !v  key 
+  done ;
+  !v 
+          
 let ofArray = I.ofArray
 let cmp = I.cmp 
 let eq = I.eq 
 let findOpt = I.findOpt
+let findNull = I.findNull
 let subset = I.subset 
 let mem = I.mem 
 

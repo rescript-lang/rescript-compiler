@@ -48,16 +48,11 @@ let addArrayMutate t  xs =
   done ;
   !v    
 
-
-
-
   
 let removeMutate nt x = 
   match N.toOpt nt with 
   | None -> nt 
   | Some nt -> removeMutateAux nt x 
-
-
 
     
 let empty  () = t ~data:N.empty0 
@@ -140,7 +135,100 @@ let remove d v =
   removeDone d v; 
   d 
 
-  
+let rec removeArrayMutateAux t xs i len  =  
+  if i < len then 
+    let ele = A.unsafe_get xs i in 
+    let u = removeMutateAux t ele in 
+    match N.toOpt u with 
+    | None -> N.empty0
+    | Some t -> removeArrayMutateAux t xs (i+1) len
+  else N.return t    
+
+let removeArrayDone  (d : t) xs =  
+  let oldRoot = data d in 
+  match N.toOpt oldRoot with 
+  | None -> ()
+  | Some nt -> 
+    let len = A.length xs in 
+    let newRoot = removeArrayMutateAux nt xs 0 len  in 
+    if newRoot != oldRoot then 
+      dataSet d newRoot
+
+let removeArray d xs =      
+  removeArrayDone d xs; 
+  d
+
+let rec removeMutateCheckAux  nt (x : elt) removed = 
+  let k = N.key nt in 
+  (* let c = (Bs_Cmp.getCmp cmp) x k [@bs] in  *)
+  if x = k then 
+    let () = removed := true in  
+    let l,r = N.(left nt, right nt) in       
+    match N.(toOpt l, toOpt r) with 
+    | Some _,  Some nr ->  
+      N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
+      N.return (N.balMutate nt)
+    | None, Some _ ->
+      r  
+    | (Some _ | None ), None ->  l 
+  else 
+    begin 
+      if x < k then 
+        match N.toOpt (N.left nt) with         
+        | None -> N.return nt 
+        | Some l ->
+          N.leftSet nt (removeMutateCheckAux  l x removed);
+          N.return (N.balMutate nt)
+      else 
+        match N.toOpt (N.right nt) with 
+        | None -> N.return nt 
+        | Some r -> 
+          N.rightSet nt (removeMutateCheckAux  r x removed);
+          N.return (N.balMutate nt)
+    end
+
+
+
+let removeCheck  (d :  t) v =  
+  let oldRoot = data d in 
+  match N.toOpt oldRoot with 
+  | None -> false 
+  | Some oldRoot2 ->
+    let removed = ref false in 
+    let newRoot = removeMutateCheckAux  oldRoot2 v removed in 
+    if newRoot != oldRoot then  
+      dataSet d newRoot ;   
+    !removed
+
+
+
+let rec addMutateCheckAux  t (x : elt) added  =   
+  match N.toOpt t with 
+  | None -> 
+    added := true;
+    N.singleton0 x 
+  | Some nt -> 
+    let k = N.key nt in 
+    (* let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in   *)
+    if x = k then t 
+    else
+      let l, r = N.(left nt, right nt) in 
+      (if x < k then                   
+         let ll = addMutateCheckAux  l x added in
+         N.leftSet nt ll
+       else   
+         N.rightSet nt (addMutateCheckAux r x added );
+      );
+      N.return (N.balMutate nt)
+
+let addCheck (m :  t) e = 
+  let  oldRoot = data m in 
+  let added = ref false in 
+  let newRoot = addMutateCheckAux oldRoot e added in 
+  if newRoot != oldRoot then 
+    dataSet m newRoot;
+  !added    
+
 let ofArray xs = 
   t  ~data:(I.ofArray xs)
 
@@ -149,7 +237,9 @@ let cmp d0 d1 =
 let eq d0 d1 = 
   I.eq (data d0) (data d1)
 let findOpt d x = 
-  I.findOpt (data d) x 
+  I.findOpt (data d) x
+let findNull d x =
+  I.findNull (data d) x 
 let split d  key =  
   let s = data d in  
   let arr = N.toArray0 s in 

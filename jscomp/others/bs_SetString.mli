@@ -1,6 +1,31 @@
-# 2 "set.cppo.mli"
+# 1 "set.cppo.mli"
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+# 26
 type elt = string
-# 8
+# 32
 (** The type of the set elements. *)
 
 
@@ -8,18 +33,27 @@ type t
 (** The type of sets. *)
 
 val empty: t
-val isEmpty: t -> bool
-val mem: t -> elt -> bool
-val add:  t -> elt -> t
-(** If [x] was already in [s], [s] is returned unchanged. *)
 val singleton: elt -> t
 (** [singleton x] returns the one-element set containing only [x]. *)
+val ofArray: elt array -> t
+val ofSortedArrayUnsafe: elt array -> t     
+val isEmpty: t -> bool
+val mem: t -> elt -> bool
+  
+val add:  t -> elt -> t
+(** If [x] was already in [s], [s] is returned unchanged. *)
+val addArray: t -> elt array -> t 
 val remove:  t -> elt -> t
 (**  If [x] was not in [s], [s] is returned unchanged. *)
-
+val removeArray: t -> elt array -> t
+  
 val union: t -> t -> t
 val inter: t -> t -> t
 val diff: t -> t -> t
+val subset: t -> t -> bool
+(** [subset s1 s2] tests whether the set [s1] is a subset of
+   the set [s2]. *)
+  
 val cmp: t -> t -> int
 (** Total ordering between sets. Can be used as the ordering function
    for doing sets of sets. *)
@@ -28,9 +62,6 @@ val eq: t -> t -> bool
 (** [eq s1 s2] tests whether the sets [s1] and [s2] are
    equal, that is, contain equal elements. *)
 
-val subset: t -> t -> bool
-(** [subset s1 s2] tests whether the set [s1] is a subset of
-   the set [s2]. *)
 
 val iter: t -> (elt -> unit [@bs]) ->  unit
 (** In increasing order*)
@@ -60,14 +91,18 @@ val length: t -> int
 val toList: t -> elt list
 (** In increasing order with respect *)
 val toArray: t -> elt array
-val ofArray: elt array -> t
-val ofSortedArrayUnsafe: elt array -> t   
+
+
 val minOpt: t -> elt option
 val minNull: t -> elt Js.null
 val maxOpt: t -> elt option
 val maxNull: t -> elt Js.null
 
 
+
+val findOpt:  t -> elt -> elt option
+val findNull:  t -> elt -> elt Js.null
+    
 val split:  t -> elt -> (t * t) * bool  
 (** [split x s] returns a triple [(l, present, r)], where
       [l] is the set of elements of [s] that are
@@ -76,9 +111,6 @@ val split:  t -> elt -> (t * t) * bool
       strictly greater than [x];
       [present] is [false] if [s] contains no element equal to [x],
       or [true] if [s] contains an element equal to [x]. *)
-
-val findOpt:  t -> elt -> elt option
-
 
 
 

@@ -1,3 +1,27 @@
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
 #ifdef TYPE_STRING
 type elt = string
 #elif defined TYPE_INT
@@ -8,22 +32,33 @@ type elt = int
 
 type t
 val empty: unit -> t
+val singleton: elt -> t  
+val ofArray: elt array -> t
+val ofSortedArrayUnsafe: elt array -> t   
 val isEmpty: t -> bool
 val mem: t -> elt -> bool
 
 val addDone: t -> elt -> unit
 val add: t -> elt -> t
+val addCheck: t -> elt -> bool 
+val addArrayDone: t -> elt array -> unit
+val addArray: t -> elt array -> t
 
-val singleton: elt -> t
-val remove: t -> elt -> t
 val removeDone: t -> elt -> unit
+val remove: t -> elt -> t
+val removeCheck: t -> elt -> bool 
+val removeArrayDone: t -> elt array -> unit
+val removeArray: t -> elt array -> t
+  
 val union: t -> t -> t
 val inter: t -> t -> t
 val diff: t -> t -> t
+val subset: t -> t -> bool
+  
 val cmp: t -> t -> int
 val eq: t -> t -> bool
 
-val subset: t -> t -> bool
+
 
 val iter: t -> (elt -> unit [@bs]) ->  unit
 (** In increasing order*)
@@ -50,24 +85,23 @@ val partition: t -> (elt -> bool [@bs]) ->  t * t
     [s] that do not satisfy [p]. *)
 
 val length: t -> int
-val toList : t -> elt list
+val toList: t -> elt list
  (** In increasing order with respect *)
 val toArray: t -> elt array
-val ofArray: elt array -> t
-val ofSortedArrayUnsafe: elt array -> t 
+
+
 val minOpt: t -> elt option
 val minNull: t -> elt Js.null
 val maxOpt: t -> elt option
 val maxNull: t -> elt Js.null
-    
+
+val findOpt:  t -> elt -> elt option
+val findNull:  t -> elt -> elt Js.null
+
 val split:  t -> elt  -> (t * t) * bool 
 (**
     [split s key] return a fresh copy of each
 *)
-val findOpt:  t -> elt -> elt option
-    
-val addArray: t -> elt array -> t 
-val addArrayDone: t -> elt array -> unit 
 
 val checkInvariant: t ->  bool
 

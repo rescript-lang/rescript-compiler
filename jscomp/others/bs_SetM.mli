@@ -26,21 +26,16 @@
 type ('k,'id) t 
 
 
-val empty : ('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
-val ofArray: 
-  ('k, 'id) Bs_Cmp.t -> 
-  'k array -> 
-  ('k, 'id) t 
-val isEmpty : _ t -> bool
-val singleton : 
-  ('elt,'id) Bs_Cmp.t -> 
-  'elt -> ('elt, 'id) t
+val empty: dict:('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
+val singleton: 'elt -> dict:('elt,'id) Bs_Cmp.t ->  ('elt, 'id) t    
+val ofArray: 'k array -> dict:('k, 'id) Bs_Cmp.t ->   ('k, 'id) t
+val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) Bs_Cmp.t ->  ('elt,'id) t
+    
+val isEmpty: _ t -> bool
 val mem:  ('elt, _) t -> 'elt ->  bool
 
-val addDone:   
-  ('elt, 'id) t -> 'elt -> unit 
-val add:   
-  ('elt, 'id) t -> 'elt -> ('elt, 'id) t
+val addDone: ('elt, 'id) t -> 'elt -> unit 
+val add: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 val addCheck:
   ('elt, 'id) t -> 'elt -> bool 
 val addArrayDone:
@@ -48,26 +43,19 @@ val addArrayDone:
 val addArray:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
   
-val removeDone:
-   ('elt, 'id) t -> 'elt -> unit 
-val remove:  
-   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
-val removeCheck:  
-   ('elt, 'id) t -> 'elt -> bool
+val removeDone: ('elt, 'id) t -> 'elt -> unit 
+val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
+val removeCheck: ('elt, 'id) t -> 'elt -> bool
    (* [b = removeCheck s e] [b] is true means one element removed *)      
 val removeArrayDone:
   ('elt, 'id) t -> 'elt array -> unit 
 val removeArray:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
   
-val union:  
-  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-val inter: 
-  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
-val diff:   
-  ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
-val subset:  
-  ('elt, 'id) t -> ('elt, 'id) t -> bool     
+val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+val inter: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
+val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
+val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool     
 
 val cmp:  
   ('elt, 'id) t -> ('elt, 'id) t -> int
@@ -86,21 +74,6 @@ val exists: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 (** [exists p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
-val length:  ('elt, 'id) t -> int    
-val toList: ('elt, 'id) t -> 'elt list
-(** In increasing order*)
-val toArray: ('elt, 'id) t -> 'elt array
-
-val minOpt: ('elt, 'id) t -> 'elt option
-val minNull: ('elt, 'id) t -> 'elt Js.null
-val maxOpt: ('elt, 'id) t -> 'elt option
-val maxNull: ('elt, 'id) t -> 'elt Js.null
-
-val findOpt: 
-  ('elt, 'id) t -> 'elt -> 'elt option 
-val findNull:   
-  ('elt, 'id) t -> 'elt -> 'elt Js.null
-
 val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
 (** [filter p s] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
@@ -111,11 +84,21 @@ val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 
     [s] that do not satisfy [p]. *)
 
 
+val length:  ('elt, 'id) t -> int    
+val toList: ('elt, 'id) t -> 'elt list
+(** In increasing order*)
+val toArray: ('elt, 'id) t -> 'elt array
 
-    
+val minOpt: ('elt, 'id) t -> 'elt option
+val minNull: ('elt, 'id) t -> 'elt Js.null
+val maxOpt: ('elt, 'id) t -> 'elt option
+val maxNull: ('elt, 'id) t -> 'elt Js.null
 
-val split: 
-   ('elt, 'id) t -> 'elt ->  (('elt, 'id) t * ('elt, 'id) t) * bool
+val findOpt: ('elt, 'id) t -> 'elt -> 'elt option 
+val findNull: ('elt, 'id) t -> 'elt -> 'elt Js.null
+
+
+val split: ('elt, 'id) t -> 'elt ->  (('elt, 'id) t * ('elt, 'id) t) * bool
 (** [split s x] returns a triple [((l, r), present)], where
       [l] is the set of elements of [s] that are
       strictly less than [x];
@@ -126,9 +109,7 @@ val split:
     [l,r] are freshly made, no sharing with [s]   
 *)
 
-val ofSortedArrayUnsafe:
-  dict:('elt, 'id) Bs_Cmp.t ->
-  'elt array -> ('elt,'id) t
+val checkInvariant: _ t -> bool
 
 (*
   [add0] was not exposed for various reasons:

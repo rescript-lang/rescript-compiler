@@ -21,7 +21,7 @@ function b(loc, x) {
 
 var IntCmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
-var u = Bs_SetM.ofArray(IntCmp, Array_data_util.range(0, 30));
+var u = Bs_SetM.ofArray(Array_data_util.range(0, 30), IntCmp);
 
 b("File \"bs_poly_mutable_set_test.ml\", line 15, characters 4-11", Bs_SetM.removeCheck(u, 0));
 
@@ -94,7 +94,7 @@ eq("File \"bs_poly_mutable_set_test.ml\", line 50, characters 5-12", Bs_internal
 b("File \"bs_poly_mutable_set_test.ml\", line 51, characters 4-11", Bs_SetM.mem(u, 20000));
 
 function f(param) {
-  return Bs_SetM.ofArray(IntCmp, param);
+  return Bs_SetM.ofArray(param, IntCmp);
 }
 
 var aa = f(Array_data_util.randomRange(0, 100));
