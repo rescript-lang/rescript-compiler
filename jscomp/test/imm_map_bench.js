@@ -30,10 +30,6 @@ var shuffledDataAdd = Bs_Array.shuffle(Bs_Array.init(1000001, (function (i) {
                   ];
           })));
 
-var shuffleRemoved = Bs_Array.shuffle(Bs_Array.init(2000001, (function (i) {
-            return i;
-          })));
-
 function test() {
   var v = ofArray(shuffledDataAdd);
   for(var j = 0; j <= 1000000; ++j){
@@ -50,17 +46,17 @@ function test2() {
   return /* () */0;
 }
 
-console.time("imm_map_bench.ml 42");
+console.time("imm_map_bench.ml 44");
 
 test(/* () */0);
 
-console.timeEnd("imm_map_bench.ml 42");
+console.timeEnd("imm_map_bench.ml 44");
 
-console.time("imm_map_bench.ml 43");
+console.time("imm_map_bench.ml 45");
 
 test2(/* () */0);
 
-console.timeEnd("imm_map_bench.ml 43");
+console.timeEnd("imm_map_bench.ml 45");
 
 var A = 0;
 
@@ -74,7 +70,6 @@ exports.ofArray = ofArray;
 exports.should = should;
 exports.count = count;
 exports.shuffledDataAdd = shuffledDataAdd;
-exports.shuffleRemoved = shuffleRemoved;
 exports.test = test;
 exports.M = M;
 exports.test2 = test2;

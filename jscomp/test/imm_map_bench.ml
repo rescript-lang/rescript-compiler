@@ -18,9 +18,11 @@ let ofArray kvs =
 
 let should b = 
   if not b  then Js.Exn.raiseError "impossible"
+  
 let count = 1_000_000 
-let shuffledDataAdd = (A.shuffle (A.init (count +  1) (fun[@bs] i -> (i,i))))
-let shuffleRemoved = A.shuffle (A.init (2 * count + 1) (fun [@bs] i -> i ))
+
+let shuffledDataAdd = A.shuffle (A.init (count +  1) (fun[@bs] i -> (i,i)))
+
 
 
 let test () = 
