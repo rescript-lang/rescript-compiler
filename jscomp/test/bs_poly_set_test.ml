@@ -70,10 +70,10 @@ let () =
   b __LOC__ (not (N.subset u18 u23));
   b __LOC__ (N.subset u22 u17);
   b __LOC__ (N.subset u21 u17 && N.subset u21 u18);
-  b __LOC__ (Js.eqNull 47 (N.findNull u22 47));
-  b __LOC__ ( Some 47 = (N.findOpt u22 47));
-  b __LOC__ (Js.Null.test (N.findNull u22 59));
-  b __LOC__ (None = (N.findOpt u22 59));
+  b __LOC__ (Js.eqNull 47 (N.getNull u22 47));
+  b __LOC__ ( Some 47 = (N.get u22 47));
+  b __LOC__ (Js.Null.test (N.getNull u22 59));
+  b __LOC__ (None = (N.get u22 59));
   let u25 = N.add u22 59 in 
   eq __LOC__ (N.length u25) 60
   

@@ -155,10 +155,10 @@ let minKeyOpt m = N.minKeyOpt0 (B.data m)
 let minKeyNull m = N.minKeyNull0 (B.data m)
 let maxKeyOpt m = N.maxKeyOpt0 (B.data m)
 let maxKeyNull m = N.maxKeyNull0 (B.data m)
-let minKeyValueOpt m = N.minKVOpt0 (B.data m)
-let minKeyValueNull m = N.minKVNull0 (B.data m) 
-let maxKeyValueOpt m = N.maxKVOpt0 (B.data m)
-let maxKeyValueNull m = N.maxKVNull0 (B.data m)
+let minimum m = N.minKVOpt0 (B.data m)
+let minNull m = N.minKVNull0 (B.data m) 
+let maximum m = N.maxKVOpt0 (B.data m)
+let maxNull m = N.maxKVNull0 (B.data m)
 
 let iter d f =
   N.iter0 (B.data d) f     

@@ -63,13 +63,13 @@ let isEmpty d =
 let singleton x = 
   t ~data:(N.singleton0 x)
 
-let minOpt d = 
+let minimum d = 
   N.minOpt0 (data d)
 
 let minNull d =
   N.minNull0 (data d)
 
-let maxOpt d = 
+let maximum d = 
   N.maxOpt0 (data d)
 
 let maxNull d =
@@ -236,10 +236,12 @@ let cmp d0 d1 =
   I.cmp (data d0) (data d1)
 let eq d0 d1 = 
   I.eq (data d0) (data d1)
-let findOpt d x = 
+let get d x = 
   I.findOpt (data d) x
-let findNull d x =
-  I.findNull (data d) x 
+let getNull d x =
+  I.findNull (data d) x
+let getExn d x =
+  I.findExn (data d) x 
 let split d  key =  
   let s = data d in  
   let arr = N.toArray0 s in 

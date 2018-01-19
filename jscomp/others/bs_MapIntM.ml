@@ -22,10 +22,10 @@ let minKeyNull m = N.minKeyNull0 (data m)
 let minKeyOpt m = N.minKeyOpt0 (data m)
 let maxKeyNull m = N.maxKeyNull0 (data m)
 let maxKeyOpt m = N.maxKeyOpt0 (data m)
-let minKeyValueOpt m = N.minKVOpt0 (data m)
-let minKeyValueNull m = N.minKVNull0 (data m)
-let maxKeyValueOpt m = N.maxKVOpt0 (data m)
-let maxKeyValueNull m = N.maxKVNull0 (data m)
+let minimum m = N.minKVOpt0 (data m)
+let minNull m = N.minKVNull0 (data m)
+let maximum m = N.maxKVOpt0 (data m)
+let maxNull m = N.maxKVNull0 (data m)
 
 let setDone (m : _ t) k v = 
   let old_data = data m in 

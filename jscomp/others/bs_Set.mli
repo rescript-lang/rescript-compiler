@@ -84,15 +84,16 @@ val toList: ('elt, 'id) t -> 'elt list
 (** In increasing order*)
 val toArray: ('elt, 'id) t -> 'elt array
 
-val minOpt: ('elt, 'id) t -> 'elt option
+val minimum: ('elt, 'id) t -> 'elt option
 val minNull: ('elt, 'id) t -> 'elt Js.null
-val maxOpt: ('elt, 'id) t -> 'elt option
+val maximum: ('elt, 'id) t -> 'elt option
 val maxNull: ('elt, 'id) t -> 'elt Js.null
 
 
 
-val findOpt: ('elt, 'id) t -> 'elt -> 'elt option 
-val findNull: ('elt, 'id) t -> 'elt -> 'elt Js.null 
+val get: ('elt, 'id) t -> 'elt -> 'elt option 
+val getNull: ('elt, 'id) t -> 'elt -> 'elt Js.null
+val getExn: ('elt, 'id) t -> 'elt -> 'elt 
 
 val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
                                     

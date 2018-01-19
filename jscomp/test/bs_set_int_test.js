@@ -165,9 +165,9 @@ approx("File \"bs_set_int_test.ml\", line 76, characters 9-16", 222, maxv);
 
 var v$2 = Bs_SetInt.remove(v$1, 3);
 
-var minv$1 = Bs_SetInt.minOpt(v$2);
+var minv$1 = Bs_SetInt.minimum(v$2);
 
-var maxv$1 = Bs_SetInt.maxOpt(v$2);
+var maxv$1 = Bs_SetInt.maximum(v$2);
 
 eq("File \"bs_set_int_test.ml\", line 79, characters 5-12", minv$1, /* Some */[-1]);
 
@@ -175,9 +175,9 @@ eq("File \"bs_set_int_test.ml\", line 80, characters 5-12", maxv$1, /* Some */[2
 
 var v$3 = Bs_SetInt.remove(v$2, 222);
 
-var minv$2 = Bs_SetInt.minOpt(v$3);
+var minv$2 = Bs_SetInt.minimum(v$3);
 
-var maxv$2 = Bs_SetInt.maxOpt(v$3);
+var maxv$2 = Bs_SetInt.maximum(v$3);
 
 eq("File \"bs_set_int_test.ml\", line 83, characters 5-12", minv$2, /* Some */[-1]);
 
@@ -185,9 +185,9 @@ eq("File \"bs_set_int_test.ml\", line 84, characters 5-12", maxv$2, /* Some */[3
 
 var v$4 = Bs_SetInt.remove(v$3, -1);
 
-var minv$3 = Bs_SetInt.minOpt(v$4);
+var minv$3 = Bs_SetInt.minimum(v$4);
 
-var maxv$3 = Bs_SetInt.maxOpt(v$4);
+var maxv$3 = Bs_SetInt.maximum(v$4);
 
 eq("File \"bs_set_int_test.ml\", line 87, characters 5-12", minv$3, /* Some */[0]);
 

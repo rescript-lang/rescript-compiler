@@ -80,10 +80,10 @@ val minKeyOpt: ('k, _,  _) t -> 'k option
 val minKeyNull: ('k, _,  _) t -> 'k Js.null
 val maxKeyOpt: ('k, _,  _) t -> 'k option
 val maxKeyNull: ('k, _,  _) t -> 'k Js.null    
-val minKeyValueOpt: ('k, 'a,  _) t -> ('k * 'a) option
-val minKeyValueNull: ('k, 'a, _) t -> ('k * 'a) Js.null
-val maxKeyValueOpt: ('k, 'a, _) t -> ('k * 'a) option
-val maxKeyValueNull:('k, 'a, _) t -> ('k * 'a) Js.null
+val minimum: ('k, 'a,  _) t -> ('k * 'a) option
+val minNull: ('k, 'a, _) t -> ('k * 'a) Js.null
+val maximum: ('k, 'a, _) t -> ('k * 'a) option
+val maxNull:('k, 'a, _) t -> ('k * 'a) Js.null
 val get:  ('k, 'a, 'id) t -> 'k -> 'a option
 val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val getWithDefault:

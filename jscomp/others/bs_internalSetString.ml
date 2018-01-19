@@ -81,6 +81,14 @@ let rec findNull (n :t) (x : elt)   =
     if x = v then N.return v
     else findNull  (if x < v then N.left t else N.right t) x
 
+let rec findExn  (n :t) (x : elt) = 
+  match N.toOpt n with 
+  | None -> [%assert "findExn"]
+  | Some t  ->    
+    let v = N.key t in     
+    if x = v then  v
+    else findExn (if x < v then N.left t else N.right t) x
+
 (****************************************************************************)
 let rec addMutate  t  (x : elt)=   
   match N.toOpt t with 
