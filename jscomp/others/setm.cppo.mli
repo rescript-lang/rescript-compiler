@@ -41,8 +41,8 @@ val has: t -> elt -> bool
 val addDone: t -> elt -> unit
 val add: t -> elt -> t
 val addCheck: t -> elt -> bool 
-val addArrayDone: t -> elt array -> unit
-val addArray: t -> elt array -> t
+val mergeArrayDone: t -> elt array -> unit
+val mergeArray: t -> elt array -> t
 
 val removeDone: t -> elt -> unit
 val remove: t -> elt -> t

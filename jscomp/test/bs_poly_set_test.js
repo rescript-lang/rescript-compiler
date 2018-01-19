@@ -43,7 +43,7 @@ var u5 = Bs_Set.add(u4, 3);
 
 var u6 = Bs_Set.removeArray(u5, r);
 
-var u7 = Bs_Set.addArray(u6, /* int array */[
+var u7 = Bs_Set.mergeArray(u6, /* int array */[
       0,
       1,
       2,
@@ -57,9 +57,9 @@ var u8 = Bs_Set.removeArray(u7, /* int array */[
       3
     ]);
 
-var u9 = Bs_Set.addArray(u8, Array_data_util.randomRange(0, 20000));
+var u9 = Bs_Set.mergeArray(u8, Array_data_util.randomRange(0, 20000));
 
-var u10 = Bs_Set.addArray(u9, Array_data_util.randomRange(0, 200));
+var u10 = Bs_Set.mergeArray(u9, Array_data_util.randomRange(0, 200));
 
 var u11 = Bs_Set.removeArray(u10, Array_data_util.randomRange(0, 200));
 

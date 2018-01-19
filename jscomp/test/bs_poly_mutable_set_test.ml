@@ -35,8 +35,8 @@ let () =
     N.removeDone u i 
   done ;
   b __LOC__ (N.isEmpty u);
-  N.addArrayDone u (I.randomRange 0 20000);
-  N.addArrayDone u (I.randomRange 0 200);
+  N.mergeArrayDone u (I.randomRange 0 20000);
+  N.mergeArrayDone u (I.randomRange 0 200);
   eq __LOC__ (N.size u) 20001;
   N.removeArrayDone u (I.randomRange 0 200);
   eq __LOC__ (N.size u) 19800;

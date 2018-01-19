@@ -112,13 +112,13 @@ let add d k =
   d 
 
 
-let addArrayDone d arr = 
+let mergeArrayDone d arr = 
   let old_data = data d in 
   let v = addArrayMutate old_data arr in 
   if v != old_data then 
     dataSet d v 
     
-let addArray d arr = 
+let mergeArray d arr = 
   let old_data = data d in 
   let v = addArrayMutate old_data arr in 
   if v != old_data then 

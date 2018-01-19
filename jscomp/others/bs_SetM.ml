@@ -253,15 +253,15 @@ let addArrayMutate (t : _ t0) xs ~cmp =
     v := N.addMutate !v (A.unsafe_get xs i)  ~cmp
   done; 
   !v 
-let addArrayDone (type elt) (type id) (d : (elt,id) t ) xs =   
+let mergeArrayDone (type elt) (type id) (d : (elt,id) t ) xs =   
   let dict = B.dict d in 
   let oldRoot = B.data d in 
   let module M = (val dict) in 
   let newRoot = addArrayMutate oldRoot xs ~cmp:M.cmp in 
   if newRoot != oldRoot then 
     B.dataSet d newRoot 
-let addArray d xs = 
-  addArrayDone d xs ; 
+let mergeArray d xs = 
+  mergeArrayDone d xs ; 
   d 
 
 

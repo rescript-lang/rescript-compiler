@@ -200,7 +200,7 @@ let add (type elt) (type id) (m : (elt,id) t) e =
       ~dict 
       ~data:newData
 
-let addArray (type elt) (type id) (m : (elt,id) t) e = 
+let mergeArray (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newData = addArray0 ~cmp:M.cmp data e in 

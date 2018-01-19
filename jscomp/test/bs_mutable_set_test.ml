@@ -25,7 +25,7 @@ let () =
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = N.empty () in 
-  N.addArrayDone v u ;
+  N.mergeArrayDone v u ;
   eq __LOC__ (N.size v) 91 ; 
   eq __LOC__ (N.toArray v) (I.range 30 120)
 

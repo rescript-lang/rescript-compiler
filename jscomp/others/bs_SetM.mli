@@ -38,9 +38,9 @@ val addDone: ('elt, 'id) t -> 'elt -> unit
 val add: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 val addCheck:
   ('elt, 'id) t -> 'elt -> bool 
-val addArrayDone:
+val mergeArrayDone:
   ('elt, 'id) t -> 'elt array -> unit 
-val addArray:
+val mergeArray:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
   
 val removeDone: ('elt, 'id) t -> 'elt -> unit 
