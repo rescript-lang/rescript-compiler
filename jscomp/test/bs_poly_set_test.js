@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
+var Bs_List = require("../../lib/js/bs_List.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
@@ -181,7 +182,63 @@ var m$3 = {
   data: Bs_internalAVLset.empty0
 };
 
-b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_internalAVLset.minNull0(m$3.data), null));
+b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_internalAVLset.maxNull0(m$3.data), null));
+
+function testIterToList(xs) {
+  var v = [/* [] */0];
+  Bs_internalAVLset.iter0(xs.data, (function (x) {
+          v[0] = /* :: */[
+            x,
+            v[0]
+          ];
+          return /* () */0;
+        }));
+  return Bs_List.rev(v[0]);
+}
+
+var u0$1 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(0, 20));
+
+var u1$1 = Bs_Set.remove(u0$1, 17);
+
+var u2$1 = Bs_Set.add(u1$1, 33);
+
+b("File \"bs_poly_set_test.ml\", line 93, characters 4-11", Bs_List.forAll2(testIterToList(u0$1), Bs_List.init(21, (function (i) {
+                return i;
+              })), (function (x, y) {
+            return +(x === y);
+          })));
+
+b("File \"bs_poly_set_test.ml\", line 94, characters 4-11", Bs_List.forAll2(testIterToList(u0$1), Bs_internalAVLset.toList0(u0$1.data), (function (x, y) {
+            return +(x === y);
+          })));
+
+function f(x) {
+  return +(x === 17);
+}
+
+b("File \"bs_poly_set_test.ml\", line 95, characters 4-11", Bs_internalAVLset.exists0(u0$1.data, f));
+
+function f$1(x) {
+  return +(x === 17);
+}
+
+b("File \"bs_poly_set_test.ml\", line 96, characters 4-11", 1 - Bs_internalAVLset.exists0(u1$1.data, f$1));
+
+function f$2(x) {
+  return +(x < 24);
+}
+
+b("File \"bs_poly_set_test.ml\", line 97, characters 4-11", Bs_internalAVLset.forAll0(u0$1.data, f$2));
+
+function f$3(x) {
+  return +(x < 24);
+}
+
+b("File \"bs_poly_set_test.ml\", line 98, characters 4-11", 1 - Bs_internalAVLset.forAll0(u2$1.data, f$3));
+
+b("File \"bs_poly_set_test.ml\", line 99, characters 4-11", +(Bs_Set.cmp(u1$1, u0$1) < 0));
+
+b("File \"bs_poly_set_test.ml\", line 100, characters 4-11", +(Bs_Set.cmp(u0$1, u1$1) > 0));
 
 Mt.from_pair_suites("bs_poly_set_test.ml", suites[0]);
 
@@ -191,6 +248,8 @@ var I = 0;
 
 var A = 0;
 
+var L = 0;
+
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
@@ -199,4 +258,6 @@ exports.N = N;
 exports.I = I;
 exports.A = A;
 exports.IntCmp = IntCmp;
+exports.L = L;
+exports.testIterToList = testIterToList;
 /* u0 Not a pure module */
