@@ -181,3 +181,8 @@ let bool_suites  ~test_id ~suites loc x   =
   incr test_id ; 
   suites := 
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Ok(x))) :: !suites  
+
+let throw_suites ~test_id ~suites loc x =     
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> ThrowAny(x))) :: !suites
