@@ -93,16 +93,16 @@ val toList: t -> elt list
 val toArray: t -> elt array
 
 
-val minOpt: t -> elt option
+val minimum: t -> elt option
 val minNull: t -> elt Js.null
-val maxOpt: t -> elt option
+val maximum: t -> elt option
 val maxNull: t -> elt Js.null
 
 
 
-val findOpt:  t -> elt -> elt option
-val findNull:  t -> elt -> elt Js.null
-    
+val get:  t -> elt -> elt option
+val getNull:  t -> elt -> elt Js.null
+val getExn: t -> elt -> elt    
 val split:  t -> elt -> (t * t) * bool  
 (** [split x s] returns a triple [(l, present, r)], where
       [l] is the set of elements of [s] that are

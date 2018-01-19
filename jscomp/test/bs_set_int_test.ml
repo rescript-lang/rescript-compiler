@@ -75,15 +75,15 @@ let () =
   approx __LOC__ (-1) minv ;
   approx __LOC__ 222 maxv;
   let v = N.remove v 3 in 
-  let minv, maxv = N.minOpt v, N.maxOpt v in 
+  let minv, maxv = N.minimum v, N.maximum v in 
   eq __LOC__ minv (Some (-1)); 
   eq __LOC__ maxv (Some 222);
   let v = N.remove v 222 in 
-  let minv, maxv = N.minOpt v, N.maxOpt v in 
+  let minv, maxv = N.minimum v, N.maximum v in 
   eq __LOC__ minv (Some (-1)); 
   eq __LOC__ maxv (Some 33);
   let v = N.remove  v (-1) in 
-  let minv, maxv = N.minOpt v, N.maxOpt v in 
+  let minv, maxv = N.minimum v, N.maximum v in 
   eq __LOC__ minv (Some (0)); 
   eq __LOC__ maxv (Some 33);
   let v = N.remove  v 0 in 

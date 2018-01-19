@@ -521,6 +521,15 @@ let rec findNull0 ~cmp (n : _ t0) x =
     if c = 0 then  return v
     else findNull0 ~cmp  (if c < 0 then left t else right t) x 
 
+let rec findExn0 ~cmp (n : _ t0) x =
+  match toOpt n with 
+    None -> [%assert "findExn0"]
+  | Some t (* Node(l, v, r, _) *) ->
+    let v = key t in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then  v
+    else findExn0 ~cmp  (if c < 0 then left t else right t) x 
+
 
 (******************************************************************)
 

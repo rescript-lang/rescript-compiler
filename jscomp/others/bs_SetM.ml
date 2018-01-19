@@ -189,11 +189,11 @@ let isEmpty d =
   N.isEmpty0 (B.data d)
 let singleton x ~dict = 
   B.bag ~data:(N.singleton0 x) ~dict 
-let minOpt d = 
+let minimum d = 
   N.minOpt0 (B.data d)
 let minNull d =
   N.minNull0 (B.data d)
-let maxOpt d = 
+let maximum d = 
   N.maxOpt0 (B.data d)
 let maxNull d =
   N.maxNull0 (B.data d)
@@ -216,21 +216,21 @@ let ofSortedArrayUnsafe xs ~dict : _ t =
 let checkInvariant d = 
   N.checkInvariant (B.data d)
 let cmp (type elt) (type id) (d0 : (elt,id) t) d1 = 
-  let dict = B.dict d0 in 
-  let module M = (val dict) in 
+  let module M = (val B.dict d0) in 
   N.cmp0 ~cmp:M.cmp (B.data d0) (B.data d1)
 let eq (type elt) (type id) (d0 : (elt,id) t)  d1 = 
-  let dict = B.dict d0 in 
-  let module M = (val dict) in 
+  let module M = (val B.dict d0) in 
   N.eq0 ~cmp:M.cmp (B.data d0) (B.data d1)
-let findOpt (type elt) (type id) (d : (elt,id) t) x = 
-  let dict = B.dict d in 
-  let module M = (val dict) in 
+let get (type elt) (type id) (d : (elt,id) t) x = 
+  let module M = (val B.dict d) in 
   N.findOpt0 ~cmp:M.cmp (B.data d) x 
-let findNull (type elt) (type id) (d : (elt,id) t) x = 
+let getNull (type elt) (type id) (d : (elt,id) t) x = 
+  let module M = (val B.dict d) in 
+  N.findNull0 ~cmp:M.cmp (B.data d) x
+let getExn (type elt) (type id) (d : (elt,id) t) x = 
   let dict = B.dict d in 
   let module M = (val dict) in 
-  N.findNull0 ~cmp:M.cmp (B.data d) x 
+  N.findExn0 ~cmp:M.cmp (B.data d) x     
 let mem (type elt) (type id) (d : (elt,id) t) x =
   let dict = B.dict d in 
   let module M = (val dict) in 

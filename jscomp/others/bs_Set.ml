@@ -288,22 +288,27 @@ let length m = N.length0 (B.data m)
 let toList m = N.toList0 (B.data m)
 let toArray m = N.toArray0 (B.data m)
 
-let minOpt m = N.minOpt0 (B.data m)
+let minimum m = N.minOpt0 (B.data m)
 let minNull m = N.minNull0 (B.data m) 
-let maxOpt m = N.maxOpt0 (B.data m)
+let maximum m = N.maxOpt0 (B.data m)
 let maxNull m = N.maxNull0 (B.data m)
 
 
 
-let findOpt (type elt) (type id)  (m : (elt,id) t) e =   
+let get (type elt) (type id)  (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in   
   let module M = (val dict) in 
   N.findOpt0 ~cmp:M.cmp data e
 
-let findNull (type elt) (type id) (m : (elt,id) t) e =   
+let getNull (type elt) (type id) (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   N.findNull0 ~cmp:M.cmp data e
+
+let getExn (type elt) (type id) (m : (elt,id) t) e =   
+  let dict, data = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  N.findExn0 ~cmp:M.cmp data e
 
 let mem (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 

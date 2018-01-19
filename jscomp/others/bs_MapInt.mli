@@ -47,10 +47,10 @@ val minKeyOpt: _ t -> key option
 val minKeyNull: _ t -> key Js.null
 val maxKeyOpt: _ t -> key option
 val maxKeyNull: _ t -> key Js.null    
-val minKeyValueOpt: 'a t -> (key * 'a) option
-val minKeyValueNull: 'a t -> (key * 'a) Js.null
-val maxKeyValueOpt: 'a t -> (key * 'a) option
-val maxKeyValueNull: 'a t -> (key * 'a) Js.null
+val minimum: 'a t -> (key * 'a) option
+val minNull: 'a t -> (key * 'a) Js.null
+val maximum: 'a t -> (key * 'a) option
+val maxNull: 'a t -> (key * 'a) Js.null
 val get: 'a t -> key -> 'a option
 val getNull: 'a t -> key -> 'a Js.null
 val getWithDefault:  'a t -> key -> 'a  -> 'a

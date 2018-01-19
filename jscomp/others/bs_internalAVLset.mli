@@ -93,6 +93,7 @@ val eq0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a t0 -> bool
 val subset0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a t0 -> bool
 val findOpt0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> 'a option
 val findNull0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> 'a Js.null
+val findExn0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> 'a 
 
 
 val ofArray0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a array -> 'a t0

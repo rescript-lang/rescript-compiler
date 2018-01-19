@@ -143,13 +143,13 @@ b("File \"bs_poly_set_test.ml\", line 71, characters 4-11", Bs_Set.subset(u22, u
 
 b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", Bs_Set.subset(u21, u17) && Bs_Set.subset(u21, u18));
 
-b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", +(47 === Bs_Set.findNull(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", +(47 === Bs_Set.getNull(u22, 47)));
 
-b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", Caml_obj.caml_equal(/* Some */[47], Bs_Set.findOpt(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", Caml_obj.caml_equal(/* Some */[47], Bs_Set.get(u22, 47)));
 
-b("File \"bs_poly_set_test.ml\", line 75, characters 4-11", +(Bs_Set.findNull(u22, 59) === null));
+b("File \"bs_poly_set_test.ml\", line 75, characters 4-11", +(Bs_Set.getNull(u22, 59) === null));
 
-b("File \"bs_poly_set_test.ml\", line 76, characters 4-11", +(/* None */0 === Bs_Set.findOpt(u22, 59)));
+b("File \"bs_poly_set_test.ml\", line 76, characters 4-11", +(/* None */0 === Bs_Set.get(u22, 59)));
 
 var u25 = Bs_Set.add(u22, 59);
 
