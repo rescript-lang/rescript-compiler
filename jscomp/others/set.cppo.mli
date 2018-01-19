@@ -45,7 +45,7 @@ val has: t -> elt -> bool
   
 val add:  t -> elt -> t
 (** If [x] was already in [s], [s] is returned unchanged. *)
-val addArray: t -> elt array -> t 
+val mergeArray: t -> elt array -> t 
 val remove:  t -> elt -> t
 (**  If [x] was not in [s], [s] is returned unchanged. *)
 val removeArray: t -> elt array -> t

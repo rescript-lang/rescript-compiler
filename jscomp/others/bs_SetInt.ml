@@ -43,7 +43,7 @@ let rec add  (t : t) (x : elt) : t =
         if rr == r then t
         else N.bal l v (add  r x)
 
-let addArray h arr =   
+let mergeArray h arr =   
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 

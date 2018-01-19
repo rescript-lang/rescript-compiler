@@ -128,7 +128,29 @@ let () =
   b __LOC__ (N.eq aa bb );
   b __LOC__ (not (N.eq aa cc));
   b __LOC__ (not (N.eq dd cc));
-  b __LOC__ (not (N.eq bb ee));
+  b __LOC__ (not (N.eq bb ee))
+
+let () =   
+  let a0 = N.empty in 
+  let a1 = N.mergeArray a0 (I.randomRange 0 100) in 
+  let a2 = N.removeArray a1 (I.randomRange 40 100) in 
+  let a3 = N.ofArray (I.randomRange 0 39) in 
+  let (a4,a5), pres = N.split a1 40 in 
+  b __LOC__ (N.eq a1 (N.ofArray (I.randomRange 0 100)));
+  b __LOC__ (N.eq a2 a3);
+  b __LOC__ pres;
+  b __LOC__ (N.eq a3 a4);
+  let a6 = N.remove (N.removeArray a1 (I.randomRange 0 39)) 40 in 
+  b __LOC__ (N.eq a5 a6);
+  let a7 = N.remove a1 40 in 
+  let (a8,a9), pres2 = N.split a7 40 in 
+  b __LOC__ (not pres2); 
+  b __LOC__ (N.eq a4 a8);
+  b __LOC__ (N.eq a5 a9);
+  let a10 = N.removeArray a9 (I.randomRange 42 2000)  in 
+  eq __LOC__ (N.size a10 ) 1; 
+  let a11 = N.removeArray a9 (I.randomRange 0 2000) in 
+  b __LOC__ (N.isEmpty a11)
 
 
 ;; Mt.from_pair_suites __FILE__ !suites    

@@ -20,10 +20,10 @@ let () =
   
   let u5  = N.add u4 3 in 
   let u6 = N.removeArray u5 r in   
-  let u7 = N.addArray u6 [|0;1;2;0|] in 
+  let u7 = N.mergeArray u6 [|0;1;2;0|] in 
   let u8 = N.removeArray u7 [|0;1;2;3|] in 
-  let u9 = N.addArray u8 (I.randomRange 0 20000)  in 
-  let u10 = N.addArray u9 (I.randomRange 0 200) in 
+  let u9 = N.mergeArray u8 (I.randomRange 0 20000)  in 
+  let u10 = N.mergeArray u9 (I.randomRange 0 200) in 
   let u11 = N.removeArray u10 (I.randomRange 0 200) in 
   let u12 = N.removeArray u11 (I.randomRange 0 1000) in 
   let u13 = N.removeArray u12 (I.randomRange 0 1000) in 

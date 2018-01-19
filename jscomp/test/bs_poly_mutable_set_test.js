@@ -66,9 +66,9 @@ for(var i$1 = 0; i$1 <= 3; ++i$1){
 
 b("File \"bs_poly_mutable_set_test.ml\", line 37, characters 4-11", Bs_internalAVLset.isEmpty0(u.data));
 
-Bs_SetM.addArrayDone(u, Array_data_util.randomRange(0, 20000));
+Bs_SetM.mergeArrayDone(u, Array_data_util.randomRange(0, 20000));
 
-Bs_SetM.addArrayDone(u, Array_data_util.randomRange(0, 200));
+Bs_SetM.mergeArrayDone(u, Array_data_util.randomRange(0, 200));
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 40, characters 5-12", Bs_internalAVLset.length0(u.data), 20001);
 

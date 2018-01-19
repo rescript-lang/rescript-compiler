@@ -261,6 +261,54 @@ b("File \"bs_set_int_test.ml\", line 130, characters 4-11", 1 - Bs_SetInt.eq(dd$
 
 b("File \"bs_set_int_test.ml\", line 131, characters 4-11", 1 - Bs_SetInt.eq(bb$1, ee));
 
+var a1 = Bs_SetInt.mergeArray(Bs_SetInt.empty, Array_data_util.randomRange(0, 100));
+
+var a2 = Bs_SetInt.removeArray(a1, Array_data_util.randomRange(40, 100));
+
+var a3 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 39));
+
+var match$1 = Bs_SetInt.split(a1, 40);
+
+var match$2 = match$1[0];
+
+var a5 = match$2[1];
+
+var a4 = match$2[0];
+
+b("File \"bs_set_int_test.ml\", line 139, characters 4-11", Bs_SetInt.eq(a1, Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100))));
+
+b("File \"bs_set_int_test.ml\", line 140, characters 4-11", Bs_SetInt.eq(a2, a3));
+
+b("File \"bs_set_int_test.ml\", line 141, characters 4-11", match$1[1]);
+
+b("File \"bs_set_int_test.ml\", line 142, characters 4-11", Bs_SetInt.eq(a3, a4));
+
+var a6 = Bs_SetInt.remove(Bs_SetInt.removeArray(a1, Array_data_util.randomRange(0, 39)), 40);
+
+b("File \"bs_set_int_test.ml\", line 144, characters 4-11", Bs_SetInt.eq(a5, a6));
+
+var a7 = Bs_SetInt.remove(a1, 40);
+
+var match$3 = Bs_SetInt.split(a7, 40);
+
+var match$4 = match$3[0];
+
+var a9 = match$4[1];
+
+b("File \"bs_set_int_test.ml\", line 147, characters 4-11", 1 - match$3[1]);
+
+b("File \"bs_set_int_test.ml\", line 148, characters 4-11", Bs_SetInt.eq(a4, match$4[0]));
+
+b("File \"bs_set_int_test.ml\", line 149, characters 4-11", Bs_SetInt.eq(a5, a9));
+
+var a10 = Bs_SetInt.removeArray(a9, Array_data_util.randomRange(42, 2000));
+
+eq("File \"bs_set_int_test.ml\", line 151, characters 5-12", Bs_SetInt.size(a10), 1);
+
+var a11 = Bs_SetInt.removeArray(a9, Array_data_util.randomRange(0, 2000));
+
+b("File \"bs_set_int_test.ml\", line 153, characters 4-11", Bs_SetInt.isEmpty(a11));
+
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 
 var N = 0;
