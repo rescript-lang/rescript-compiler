@@ -8,7 +8,7 @@ module I = Array_data_util
 module A = Bs.Array
 module IntCmp = 
   (val Bs.Cmp.make (fun[@bs] (x:int) y -> compare x y))
-
+module L = Bs.List
 
 let () = 
   let u0 = N.ofArray (module IntCmp) (I.range 0 30) in 
@@ -79,7 +79,24 @@ let () =
   b __LOC__ (N.minimum (N.empty (module IntCmp)) = None);
   b __LOC__ (N.maximum (N.empty (module IntCmp)) = None);
   b __LOC__ (N.minNull (N.empty (module IntCmp)) = Js.null);
-  b __LOC__ (N.minNull (N.empty (module IntCmp)) = Js.null);
+  b __LOC__ (N.maxNull (N.empty (module IntCmp)) = Js.null)
 
-(* let testIterToList    *)
+let testIterToList  xs = 
+  let v = ref [] in 
+  N.forEach xs (fun[@bs] x -> v := x :: !v ) ; 
+  L.rev !v
+
+let () =   
+  let u0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 20) in 
+  let u1 = N.remove u0 17 in  
+  let u2 = N.add u1 33 in 
+  b __LOC__ (L.forAll2 (testIterToList u0) (L.init 21 (fun[@bs] i -> i)) (fun [@bs] x y -> x = y));
+  b __LOC__ (L.forAll2 (testIterToList u0) (N.toList u0) (fun [@bs] x y -> x = y));
+  b __LOC__ (N.exists u0 (fun [@bs] x -> x = 17));
+  b __LOC__ (not (N.exists u1 (fun [@bs] x -> x = 17)));
+  b __LOC__ (N.forAll u0 (fun [@bs] x -> x < 24));
+  b __LOC__ (not (N.forAll u2 (fun [@bs] x -> x < 24)));
+  b __LOC__ (N.cmp u1 u0 < 0);
+  b __LOC__ (N.cmp u0 u1 > 0);
+
 ;; Mt.from_pair_suites __FILE__ !suites  
