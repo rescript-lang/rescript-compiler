@@ -41,7 +41,7 @@ function test() {
 function test2() {
   var v = Bs_MapInt.ofArray(shuffledDataAdd);
   for(var j = 0; j <= 1000000; ++j){
-    should(Bs_MapInt.mem(v, j));
+    should(Bs_MapInt.has(v, j));
   }
   return /* () */0;
 }

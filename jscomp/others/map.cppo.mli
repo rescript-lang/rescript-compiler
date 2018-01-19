@@ -11,7 +11,7 @@ type 'a t
 val empty: 'a t
 val isEmpty: 'a t -> bool
 val singleton: key -> 'a -> 'a t
-val mem:  'a t -> key -> bool    
+val has:  'a t -> key -> bool    
 val cmp:  'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 
 val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
@@ -20,8 +20,8 @@ val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
    equal data.  [cmp] is the equality predicate used to compare
    the data associated with the keys. *)
 
-val iter: 'a t -> (key -> 'a -> unit [@bs]) ->  unit
-(** [iter m f] applies [f] to all bindings in map [m].
+val forEach: 'a t -> (key -> 'a -> unit [@bs]) ->  unit
+(** [forEach m f] applies [f] to all bindings in map [m].
    [f] receives the key as first argument, and the associated value
    as second argument.  The bindings are passed to [f] in increasing
    order with respect to the ordering over the type of the keys. *)
@@ -40,7 +40,7 @@ val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
 (** [exists m p] checks if at least one binding of the map
     satisfy the predicate [p].
  *)
-val length: 'a t -> int
+val size: 'a t -> int
 val toList: 'a t -> (key * 'a) list
 (** In increasing order with respect *)
 val toArray: 'a t -> (key * 'a) array

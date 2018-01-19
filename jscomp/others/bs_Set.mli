@@ -33,7 +33,7 @@ val ofArray: dict:('k, 'id) Bs_Cmp.t -> 'k array -> ('k, 'id) t
 val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) Bs_Cmp.t -> ('elt,'id) t
     
 val isEmpty: _ t -> bool
-val mem: ('elt, 'id) t -> 'elt ->  bool
+val has: ('elt, 'id) t -> 'elt ->  bool
 
 
 val add:   
@@ -58,8 +58,8 @@ val cmp: ('elt, 'id) t -> ('elt, 'id) t -> int
     for doing sets of sets. *)
 val eq: ('elt, 'id) t -> ('elt, 'id) t -> bool
 
-val iter: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
-(** [iter s f] applies [f] in turn to all elements of [s].
+val forEach: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
+(** [forEach s f] applies [f] in turn to all elements of [s].
     In increasing order *)
 val fold: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
 (** In increasing order. *)
@@ -79,7 +79,7 @@ val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 
     predicate [p], and [s2] is the set of all the elements of
     [s] that do not satisfy [p]. *)
 
-val length:  ('elt, 'id) t -> int
+val size:  ('elt, 'id) t -> int
 val toList: ('elt, 'id) t -> 'elt list
 (** In increasing order*)
 val toArray: ('elt, 'id) t -> 'elt array

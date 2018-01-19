@@ -197,7 +197,7 @@ let maximum d =
   N.maxOpt0 (B.data d)
 let maxNull d =
   N.maxNull0 (B.data d)
-let iter d f =
+let forEach d f =
   N.iter0 (B.data d) f     
 let fold d acc cb = 
   N.fold0 (B.data d) acc cb 
@@ -205,7 +205,7 @@ let forAll d p =
   N.forAll0 (B.data d) p 
 let exists d  p = 
   N.exists0 (B.data d) p   
-let length d = 
+let size d = 
   N.length0 (B.data d)
 let toList d =
   N.toList0 (B.data d)
@@ -231,7 +231,7 @@ let getExn (type elt) (type id) (d : (elt,id) t) x =
   let dict = B.dict d in 
   let module M = (val dict) in 
   N.findExn0 ~cmp:M.cmp (B.data d) x     
-let mem (type elt) (type id) (d : (elt,id) t) x =
+let has (type elt) (type id) (d : (elt,id) t) x =
   let dict = B.dict d in 
   let module M = (val dict) in 
   N.mem0 ~cmp:M.cmp (B.data d) x   

@@ -266,7 +266,7 @@ let eq (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =
   let module M = (val dict) in 
   N.eq0 ~cmp:M.cmp mdata ndata    
 
-let iter m f  = N.iter0 (B.data m) f 
+let forEach m f  = N.iter0 (B.data m) f 
 
 let fold m acc f = N.fold0 (B.data m) acc f
 
@@ -283,7 +283,7 @@ let partition m f  =
   let l,r = N.partitionShared0 mdata f in   
   B.bag ~data:l ~dict, B.bag ~data:r ~dict
 
-let length m = N.length0 (B.data m) 
+let size m = N.length0 (B.data m) 
 
 let toList m = N.toList0 (B.data m)
 let toArray m = N.toArray0 (B.data m)
@@ -310,7 +310,7 @@ let getExn (type elt) (type id) (m : (elt,id) t) e =
   let module M = (val dict) in 
   N.findExn0 ~cmp:M.cmp data e
 
-let mem (type elt) (type id) (m : (elt,id) t) e = 
+let has (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   N.mem0 ~cmp:(M.cmp) data e

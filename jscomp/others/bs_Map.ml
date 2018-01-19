@@ -285,7 +285,7 @@ let eq (type k) (type id)
   let module X = (val dict) in 
   N.eq0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data 
 
-let iter m f = N.iter0 (B.data m) f
+let forEach m f = N.iter0 (B.data m) f
 
 let fold m acc f = N.fold0 (B.data m) acc f  
 
@@ -309,7 +309,7 @@ let mapi m  f =
   let dict,map = B.(dict m, data m) in 
   B.bag ~dict ~data:(N.mapi0 map f)
 
-let length map = 
+let size map = 
   N.length0 (B.data map)   
 
 let toList map = 
@@ -350,7 +350,7 @@ let getExn (type k) (type id)  (map : (k,_,id) t) x =
   let module X = (val dict) in 
   N.findExn0 ~cmp:X.cmp map x 
 
-let mem (type k) (type id)  (map : (k,_,id) t) x = 
+let has (type k) (type id)  (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.mem0 ~cmp:X.cmp map x

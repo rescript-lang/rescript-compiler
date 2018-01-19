@@ -32,26 +32,26 @@ let () =
   let u16 = N.removeArray u15 (I.randomRange 20000 21000) in
   b __LOC__ (u0 != u1);  
   b __LOC__ (u2 == u1);
-  eq __LOC__ (N.length u4) 28; 
+  eq __LOC__ (N.size u4) 28; 
   b __LOC__ (Js.eqNull 29 (N.maxNull u4));
   b __LOC__ (Js.eqNull 1 (N.minNull u4));
   b __LOC__ (u4 == u5);  
   b __LOC__ (N.isEmpty u6);  
-  eq  __LOC__ (N.length u7) 3 ;
+  eq  __LOC__ (N.size u7) 3 ;
   b __LOC__ (not (N.isEmpty u7));  
   b __LOC__ (N.isEmpty u8);
   (* b __LOC__ (u9 == u10); *)
   (* addArray does not get reference equality guarantee *)
-  b __LOC__ (N.mem u10 20);
-  b __LOC__ (N.mem u10 21);
-  eq __LOC__ (N.length u10) 20001;
-  eq __LOC__ (N.length u11) 19800;  
-  eq __LOC__ (N.length u12) 19000;
+  b __LOC__ (N.has u10 20);
+  b __LOC__ (N.has u10 21);
+  eq __LOC__ (N.size u10) 20001;
+  eq __LOC__ (N.size u11) 19800;  
+  eq __LOC__ (N.size u12) 19000;
   b __LOC__ (u12 == u13);  
-  eq __LOC__ (N.length u14) 10000;
-  eq __LOC__ (N.length u15) 1 ;
-  b __LOC__ (N.mem u15 20000);
-  b __LOC__ (not @@ N.mem u15 2000);
+  eq __LOC__ (N.size u14) 10000;
+  eq __LOC__ (N.size u15) 1 ;
+  b __LOC__ (N.has u15 20000);
+  b __LOC__ (not @@ N.has u15 2000);
   b __LOC__ (N.isEmpty u16);
   let u17  = N.ofArray (module IntCmp) (I.randomRange 0 100) in 
   let u18 = N.ofArray (module IntCmp) (I.randomRange 59 200) in 
@@ -75,6 +75,11 @@ let () =
   b __LOC__ (Js.Null.test (N.getNull u22 59));
   b __LOC__ (None = (N.get u22 59));
   let u25 = N.add u22 59 in 
-  eq __LOC__ (N.length u25) 60
-  
+  eq __LOC__ (N.size u25) 60;
+  b __LOC__ (N.minimum (N.empty (module IntCmp)) = None);
+  b __LOC__ (N.maximum (N.empty (module IntCmp)) = None);
+  b __LOC__ (N.minNull (N.empty (module IntCmp)) = Js.null);
+  b __LOC__ (N.minNull (N.empty (module IntCmp)) = Js.null);
+
+(* let testIterToList    *)
 ;; Mt.from_pair_suites __FILE__ !suites  

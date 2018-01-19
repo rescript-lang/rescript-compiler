@@ -21,7 +21,7 @@ function test() {
   for(var i$2 = 0; i$2 <= 999999; ++i$2){
     m = Bs_MapInt.remove(m, i$2);
   }
-  return should(+(Bs_MapInt.length(m) === 0));
+  return should(+(Bs_MapInt.size(m) === 0));
 }
 
 test(/* () */0);

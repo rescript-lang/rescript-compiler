@@ -37,7 +37,7 @@ module M =  Bs.MapInt
 let test2 () = 
   let v = M.ofArray shuffledDataAdd in 
   for j = 0 to count do 
-    should (M.mem v j)
+    should (M.has v j)
   done ;
 
 

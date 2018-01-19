@@ -87,9 +87,9 @@ b("File \"bs_poly_set_test.ml\", line 41, characters 4-11", 1 - Bs_internalAVLse
 
 b("File \"bs_poly_set_test.ml\", line 42, characters 4-11", Bs_internalAVLset.isEmpty0(u8.data));
 
-b("File \"bs_poly_set_test.ml\", line 45, characters 4-11", Bs_Set.mem(u10, 20));
+b("File \"bs_poly_set_test.ml\", line 45, characters 4-11", Bs_Set.has(u10, 20));
 
-b("File \"bs_poly_set_test.ml\", line 46, characters 4-11", Bs_Set.mem(u10, 21));
+b("File \"bs_poly_set_test.ml\", line 46, characters 4-11", Bs_Set.has(u10, 21));
 
 eq("File \"bs_poly_set_test.ml\", line 47, characters 5-12", Bs_internalAVLset.length0(u10.data), 20001);
 
@@ -103,9 +103,9 @@ eq("File \"bs_poly_set_test.ml\", line 51, characters 5-12", Bs_internalAVLset.l
 
 eq("File \"bs_poly_set_test.ml\", line 52, characters 5-12", Bs_internalAVLset.length0(u15.data), 1);
 
-b("File \"bs_poly_set_test.ml\", line 53, characters 4-11", Bs_Set.mem(u15, 20000));
+b("File \"bs_poly_set_test.ml\", line 53, characters 4-11", Bs_Set.has(u15, 20000));
 
-b("File \"bs_poly_set_test.ml\", line 54, characters 4-11", 1 - Bs_Set.mem(u15, 2000));
+b("File \"bs_poly_set_test.ml\", line 54, characters 4-11", 1 - Bs_Set.has(u15, 2000));
 
 b("File \"bs_poly_set_test.ml\", line 55, characters 4-11", Bs_internalAVLset.isEmpty0(u16.data));
 
@@ -154,6 +154,34 @@ b("File \"bs_poly_set_test.ml\", line 76, characters 4-11", +(/* None */0 === Bs
 var u25 = Bs_Set.add(u22, 59);
 
 eq("File \"bs_poly_set_test.ml\", line 78, characters 5-12", Bs_internalAVLset.length0(u25.data), 60);
+
+var m = {
+  dict: IntCmp,
+  data: Bs_internalAVLset.empty0
+};
+
+b("File \"bs_poly_set_test.ml\", line 79, characters 4-11", +(Bs_internalAVLset.minOpt0(m.data) === /* None */0));
+
+var m$1 = {
+  dict: IntCmp,
+  data: Bs_internalAVLset.empty0
+};
+
+b("File \"bs_poly_set_test.ml\", line 80, characters 4-11", +(Bs_internalAVLset.maxOpt0(m$1.data) === /* None */0));
+
+var m$2 = {
+  dict: IntCmp,
+  data: Bs_internalAVLset.empty0
+};
+
+b("File \"bs_poly_set_test.ml\", line 81, characters 4-11", Caml_obj.caml_equal(Bs_internalAVLset.minNull0(m$2.data), null));
+
+var m$3 = {
+  dict: IntCmp,
+  data: Bs_internalAVLset.empty0
+};
+
+b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_internalAVLset.minNull0(m$3.data), null));
 
 Mt.from_pair_suites("bs_poly_set_test.ml", suites[0]);
 

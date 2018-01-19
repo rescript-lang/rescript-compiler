@@ -160,7 +160,7 @@ let minNull m = N.minKVNull0 (B.data m)
 let maximum m = N.maxKVOpt0 (B.data m)
 let maxNull m = N.maxKVNull0 (B.data m)
 
-let iter d f =
+let forEach d f =
   N.iter0 (B.data d) f     
 let fold d acc cb = 
   N.fold0 (B.data d) acc cb 
@@ -168,7 +168,7 @@ let forAll d p =
   N.forAll0 (B.data d) p 
 let exists d  p = 
   N.exists0 (B.data d) p       
-let length d = 
+let size d = 
   N.length0 (B.data d)
 let toList d =
   N.toList0 (B.data d)
@@ -212,7 +212,7 @@ let getExn (type k)  (type id)  (map : (k,_,id) t) x =
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.findExn0 ~cmp:X.cmp map x 
-let mem (type k) (type id)  (map : (k,_,id) t) x = 
+let has (type k) (type id)  (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.mem0 ~cmp:X.cmp map x

@@ -38,7 +38,7 @@ val singleton: elt -> t
 val ofArray: elt array -> t
 val ofSortedArrayUnsafe: elt array -> t     
 val isEmpty: t -> bool
-val mem: t -> elt -> bool
+val has: t -> elt -> bool
   
 val add:  t -> elt -> t
 (** If [x] was already in [s], [s] is returned unchanged. *)
@@ -63,7 +63,7 @@ val eq: t -> t -> bool
    equal, that is, contain equal elements. *)
 
 
-val iter: t -> (elt -> unit [@bs]) ->  unit
+val forEach: t -> (elt -> unit [@bs]) ->  unit
 (** In increasing order*)
 
 val fold: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
@@ -87,7 +87,7 @@ val partition: t -> (elt -> bool [@bs]) ->  t * t
    predicate [p], and [s2] is the set of all the elements of
    [s] that do not satisfy [p]. *)
 
-val length: t -> int
+val size: t -> int
 val toList: t -> elt list
 (** In increasing order with respect *)
 val toArray: t -> elt array
