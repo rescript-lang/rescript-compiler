@@ -2,7 +2,7 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x =  Mt.bool_suites ~test_id ~suites loc x  
-
+let t loc x = Mt.throw_suites ~test_id ~suites loc x 
 module N = Bs.Set
 module I = Array_data_util
 module A = Bs.Array
@@ -97,6 +97,41 @@ let () =
   b __LOC__ (N.forAll u0 (fun [@bs] x -> x < 24));
   b __LOC__ (not (N.forAll u2 (fun [@bs] x -> x < 24)));
   b __LOC__ (N.cmp u1 u0 < 0);
-  b __LOC__ (N.cmp u0 u1 > 0);
+  b __LOC__ (N.cmp u0 u1 > 0)
+
+let () =   
+  let a0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 1000) in 
+  let a1,a2 = 
+    (
+      N.filter a0 (fun [@bs] x -> x mod 2  = 0),
+      N.filter a0 (fun [@bs] x -> x mod 2 <> 0)
+    ) in 
+  let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
+  b __LOC__ (N.eq a1 a3);
+  b __LOC__ (N.eq a2 a4);
+  eq __LOC__ (N.getExn a0 3) 3 ;
+  eq __LOC__ (N.getExn a0 4) 4;   
+  t __LOC__ (fun _ -> ignore @@ N.getExn a0 1002 );
+  t __LOC__ (fun _ -> ignore @@ N.getExn a0 (-1) );  
+  eq __LOC__ (N.size a0 ) 1001;
+  b __LOC__ (not @@ N.isEmpty a0);
+  let (a5,a6), pres  = N.split a0 200 in 
+  b __LOC__ pres ;
+  eq __LOC__ (N.toArray a5) (A.init 200 (fun[@bs] i -> i));
+  eq __LOC__ (N.toList a6) (L.init 800 (fun[@bs] i -> i + 201));
+  let a7 = N.remove a0 200 in 
+  let (a8,a9), pres  = N.split a7 200 in 
+  b __LOC__ (not pres) ;
+  eq __LOC__ (N.toArray a8) (A.init 200 (fun[@bs] i -> i));
+  eq __LOC__ (N.toList a9) (L.init 800 (fun[@bs] i -> i + 201));
+  eq __LOC__ (N.minimum a8) (Some 0);
+  eq __LOC__ (N.minimum a9) (Some 201);
+  b __LOC__ (L.forAll [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariant x))
+
+
+let () =   
+  let a = N.ofArray (module IntCmp) [||] in 
+  b __LOC__ (N.isEmpty (N.filter a (fun[@bs] x -> x mod 2 = 0)))
+
 
 ;; Mt.from_pair_suites __FILE__ !suites  

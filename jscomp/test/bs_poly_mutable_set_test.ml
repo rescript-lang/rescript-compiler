@@ -8,7 +8,7 @@ module I = Array_data_util
 module A = Bs.Array
 module IntCmp = 
   (val Bs.Cmp.make (fun[@bs] (x:int) y -> compare x y))
-
+module L = Bs.List
 
 let () = 
   let u = N.ofArray ~dict:(module IntCmp) (I.range 0 30) in 
@@ -105,8 +105,19 @@ let () =
        (f @@ I.randomRange 0 20)
        (f @@ I.randomRange 0 40)      
      =~ (f (I.randomRange 0 (-1)))
-    );      
+    )     
 
+let () =   
+  let a0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 1000) in 
+  let a1,a2 = 
+    (
+      N.filter a0 (fun [@bs] x -> x mod 2  = 0),
+      N.filter a0 (fun [@bs] x -> x mod 2 <> 0)
+    ) in 
+  let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
+  b __LOC__ (N.eq a1 a3);
+  b __LOC__ (N.eq a2 a4);
+  b __LOC__ (L.forAll [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariant x))
 
 
 

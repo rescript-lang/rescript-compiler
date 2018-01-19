@@ -3,6 +3,7 @@
 var Mt = require("./mt.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
 var Bs_List = require("../../lib/js/bs_List.js");
+var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
@@ -18,6 +19,10 @@ function eq(loc, x, y) {
 
 function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
+}
+
+function t(loc, x) {
+  return Mt.throw_suites(test_id, suites, loc, x);
 }
 
 var IntCmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
@@ -240,6 +245,111 @@ b("File \"bs_poly_set_test.ml\", line 99, characters 4-11", +(Bs_Set.cmp(u1$1, u
 
 b("File \"bs_poly_set_test.ml\", line 100, characters 4-11", +(Bs_Set.cmp(u0$1, u1$1) > 0));
 
+var a0 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(0, 1000));
+
+var a1 = Bs_Set.filter(a0, (function (x) {
+        return +(x % 2 === 0);
+      }));
+
+var a2 = Bs_Set.filter(a0, (function (x) {
+        return +(x % 2 !== 0);
+      }));
+
+var match = Bs_Set.partition(a0, (function (x) {
+        return +(x % 2 === 0);
+      }));
+
+var a4 = match[1];
+
+var a3 = match[0];
+
+b("File \"bs_poly_set_test.ml\", line 110, characters 4-11", Bs_Set.eq(a1, a3));
+
+b("File \"bs_poly_set_test.ml\", line 111, characters 4-11", Bs_Set.eq(a2, a4));
+
+eq("File \"bs_poly_set_test.ml\", line 112, characters 5-12", Bs_Set.getExn(a0, 3), 3);
+
+eq("File \"bs_poly_set_test.ml\", line 113, characters 5-12", Bs_Set.getExn(a0, 4), 4);
+
+t("File \"bs_poly_set_test.ml\", line 114, characters 4-11", (function () {
+        Bs_Set.getExn(a0, 1002);
+        return /* () */0;
+      }));
+
+t("File \"bs_poly_set_test.ml\", line 115, characters 4-11", (function () {
+        Bs_Set.getExn(a0, -1);
+        return /* () */0;
+      }));
+
+eq("File \"bs_poly_set_test.ml\", line 116, characters 5-12", Bs_internalAVLset.length0(a0.data), 1001);
+
+b("File \"bs_poly_set_test.ml\", line 117, characters 4-11", 1 - Bs_internalAVLset.isEmpty0(a0.data));
+
+var match$1 = Bs_Set.split(a0, 200);
+
+var match$2 = match$1[0];
+
+b("File \"bs_poly_set_test.ml\", line 119, characters 4-11", match$1[1]);
+
+eq("File \"bs_poly_set_test.ml\", line 120, characters 5-12", Bs_internalAVLset.toArray0(match$2[0].data), Bs_Array.init(200, (function (i) {
+            return i;
+          })));
+
+eq("File \"bs_poly_set_test.ml\", line 121, characters 5-12", Bs_internalAVLset.toList0(match$2[1].data), Bs_List.init(800, (function (i) {
+            return i + 201 | 0;
+          })));
+
+var a7 = Bs_Set.remove(a0, 200);
+
+var match$3 = Bs_Set.split(a7, 200);
+
+var match$4 = match$3[0];
+
+var a9 = match$4[1];
+
+var a8 = match$4[0];
+
+b("File \"bs_poly_set_test.ml\", line 124, characters 4-11", 1 - match$3[1]);
+
+eq("File \"bs_poly_set_test.ml\", line 125, characters 5-12", Bs_internalAVLset.toArray0(a8.data), Bs_Array.init(200, (function (i) {
+            return i;
+          })));
+
+eq("File \"bs_poly_set_test.ml\", line 126, characters 5-12", Bs_internalAVLset.toList0(a9.data), Bs_List.init(800, (function (i) {
+            return i + 201 | 0;
+          })));
+
+eq("File \"bs_poly_set_test.ml\", line 127, characters 5-12", Bs_internalAVLset.minOpt0(a8.data), /* Some */[0]);
+
+eq("File \"bs_poly_set_test.ml\", line 128, characters 5-12", Bs_internalAVLset.minOpt0(a9.data), /* Some */[201]);
+
+b("File \"bs_poly_set_test.ml\", line 129, characters 4-11", Bs_List.forAll(/* :: */[
+          a0,
+          /* :: */[
+            a1,
+            /* :: */[
+              a2,
+              /* :: */[
+                a3,
+                /* :: */[
+                  a4,
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]
+        ], (function (x) {
+            return Bs_internalAVLset.checkInvariant(x.data);
+          })));
+
+var a = Bs_Set.ofArray(IntCmp, /* int array */[]);
+
+var m$4 = Bs_Set.filter(a, (function (x) {
+        return +(x % 2 === 0);
+      }));
+
+b("File \"bs_poly_set_test.ml\", line 134, characters 4-11", Bs_internalAVLset.isEmpty0(m$4.data));
+
 Mt.from_pair_suites("bs_poly_set_test.ml", suites[0]);
 
 var N = 0;
@@ -254,6 +364,7 @@ exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
 exports.b = b;
+exports.t = t;
 exports.N = N;
 exports.I = I;
 exports.A = A;

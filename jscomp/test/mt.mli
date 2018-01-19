@@ -28,3 +28,7 @@ val eq_suites :
 val bool_suites :
   test_id:int ref ->
   suites: pair_suites ref -> string -> bool -> unit
+
+val throw_suites : 
+  test_id:int ref ->
+  suites: pair_suites ref -> string -> (unit -> unit) -> unit
