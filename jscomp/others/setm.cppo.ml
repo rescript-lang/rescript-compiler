@@ -80,7 +80,7 @@ let maximum d =
 let maxNull d =
 N.maxNull0 (data d)
 
-let iter d f =
+let forEach d f =
   N.iter0 (data d) f     
 
 let fold d acc cb = 
@@ -95,7 +95,7 @@ let filter d p =
 let partition d p = 
   let a , b = N.partitionCopy (data d) p in 
   t ~data:a, t ~data:b
-let length d = 
+let size d = 
   N.length0 (data d)
 let toList d =
   N.toList0 (data d)
@@ -340,4 +340,4 @@ let union (dataa : t)  (datab : t) : t =
       let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0  in 
       t ~data:(N.ofSortedArrayAux tmp2 0 k) 
   
-let mem d x = I.mem (data d) x 
+let has d x = I.mem (data d) x 

@@ -32,7 +32,7 @@ type 'a t
 val empty: unit -> 'a t
 val isEmpty: 'a t -> bool
 val singleton: key -> 'a -> 'a t
-val mem:  'a t -> key -> bool
+val has:  'a t -> key -> bool
 val cmp:  'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 (** [cmp m1 m2 cmp]
     First compare by size, if size is the same,
@@ -41,7 +41,7 @@ val cmp:  'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
 (** [eq m1 m2 cmp] *)
   
-val iter: 'a t -> (key -> 'a -> unit [@bs]) ->  unit
+val forEach: 'a t -> (key -> 'a -> unit [@bs]) ->  unit
 (** [iter m f] applies [f] to all bindings in map [m].
    [f] receives the key as first argument, and the associated value
    as second argument.
@@ -67,7 +67,7 @@ val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
 
 
 
-val length: 'a t -> int
+val size: 'a t -> int
 val toList: 'a t -> (key * 'a) list
 (** In increasing order *)
 val toArray: 'a t -> (key * 'a) array   

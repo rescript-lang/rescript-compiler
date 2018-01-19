@@ -91,7 +91,7 @@ Bs_SetM.removeArrayDone(u, Array_data_util.randomRange(10000, 19999));
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 50, characters 5-12", Bs_internalAVLset.length0(u.data), 1);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 51, characters 4-11", Bs_SetM.mem(u, 20000));
+b("File \"bs_poly_mutable_set_test.ml\", line 51, characters 4-11", Bs_SetM.has(u, 20000));
 
 function f(param) {
   return Bs_SetM.ofArray(param, IntCmp);

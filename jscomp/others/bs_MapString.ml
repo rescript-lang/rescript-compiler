@@ -21,7 +21,7 @@ let minimum = N.minKVOpt0
 let minNull = N.minKVNull0
 let maximum = N.maxKVOpt0
 let maxNull = N.maxKVNull0
-let iter = N.iter0      
+let forEach = N.iter0      
 let map  = N.map0
 let mapi = N.mapi0
 let fold = N.fold0
@@ -29,7 +29,7 @@ let forAll = N.forAll0
 let exists = N.exists0    
 let filter = N.filterShared0
 let partition = N.partitionShared0
-let length = N.length0
+let size = N.length0
 let toList = N.toList0
 let toArray = N.toArray0 
 let keysToArray = N.keysToArray0
@@ -140,7 +140,7 @@ let mergeArray h arr =
   done ;
   !v 
 
-let mem = I.mem 
+let has = I.mem 
 let cmp = I.cmp 
 let eq = I.eq 
 let get = I.findOpt

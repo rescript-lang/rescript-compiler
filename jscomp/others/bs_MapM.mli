@@ -30,7 +30,7 @@ val isEmpty: _ t -> bool
 val singleton: 
   ('k,'id) Bs_Cmp.t ->
   'k -> 'a -> ('k, 'a, 'id) t
-val mem: ('k, _, _) t -> 'k  -> bool
+val has: ('k, _, _) t -> 'k  -> bool
 val cmp: 
     ('k, 'a, 'id) t -> 
     ('k, 'a, 'id) t ->
@@ -46,7 +46,7 @@ val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
     equal data.  [eqf] is the equality predicate used to compare
     the data associated with the keys. *)
     
-val iter:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
+val forEach:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
 (** [iter m f] applies [f] to all bindings in map [m].
     [f] receives the 'k as first argument, and the associated value
     as second argument.  The bindings are passed to [f] in increasing
@@ -67,7 +67,7 @@ val exists: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 (** [exists m p] checks if at least one binding of the map
     satisfy the predicate [p].
 *)
-val length: ('k, 'a, 'id) t -> int
+val size: ('k, 'a, 'id) t -> int
 
 
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list

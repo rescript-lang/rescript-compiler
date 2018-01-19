@@ -18,34 +18,34 @@ let () =
   done ;
   b __LOC__ (N.checkInvariant v);
   b __LOC__ @@ R.forAll 0  1_00_000 (fun [@bs] i -> 
-    N.mem v i 
+    N.has v i 
    );  
-  eq __LOC__ (N.length v) 1_00_001
+  eq __LOC__ (N.size v) 1_00_001
 
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = N.empty () in 
   N.addArrayDone v u ;
-  eq __LOC__ (N.length v) 91 ; 
+  eq __LOC__ (N.size v) 91 ; 
   eq __LOC__ (N.toArray v) (I.range 30 120)
 
 let () =   
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
   let v = N.ofArray u in 
-  eq __LOC__ (N.length v) 100_001;
+  eq __LOC__ (N.size v) 100_001;
   let u = I.randomRange 50_000 80_000 in 
   
   for i = 0 to A.length u - 1 do 
     N.removeDone v i 
   done;
   
-  eq __LOC__ (N.length v) 70_000;
+  eq __LOC__ (N.size v) 70_000;
   let count = 100_000 in 
   let vv = I.randomRange 0 count in 
   for i  = 0 to A.length vv - 1 do 
     N.removeDone v vv.(i)
   done; 
-  eq __LOC__ (N.length v) 0;
+  eq __LOC__ (N.size v) 0;
   b __LOC__ (N.isEmpty v )
 
 let () = 
@@ -55,12 +55,12 @@ let () =
   b __LOC__ (Js.eqNull 28 (N.maxNull v ));
   N.removeDone v 0 ; 
   b __LOC__ (Js.eqNull 1 (N.minNull v));
-  eq __LOC__ (N.length v ) 28;
+  eq __LOC__ (N.size v ) 28;
   let vv = I.randomRange 1 28 in 
   for i = 0 to A.length vv - 1 do  
     N.removeDone v vv.(i)
   done  ;
-  eq __LOC__ (N.length v) 0 
+  eq __LOC__ (N.size v) 0 
 
 let () =   
   let id loc x = 
@@ -89,9 +89,9 @@ let () =
   for i = 0 to 200 do 
     N.removeDone v i
   done ;
-  eq __LOC__ (N.length copyV) 126; 
+  eq __LOC__ (N.size copyV) 126; 
   eq __LOC__ (N.toArray copyV) (A.init 126 (fun[@bs] i -> i * 8));
-  eq __LOC__ (N.length v ) 800;
+  eq __LOC__ (N.size v ) 800;
   b __LOC__ (N.eq copyV aa);
   b __LOC__ (N.eq cc bb)
 

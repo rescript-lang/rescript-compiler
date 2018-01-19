@@ -67,8 +67,8 @@ let () =
   let a5 = M.remove a0 3 in   
   let a6 = M.remove a5 3 in 
   b __LOC__ (a5 == a6);
-  b __LOC__ (M.mem a0 3);
-  b __LOC__ (not (M.mem a5 3));
+  b __LOC__ (M.has a0 3);
+  b __LOC__ (not (M.has a5 3));
   b __LOC__ (Js.eqNull 3 (M.getNull a0 3));
   b __LOC__ (Js.eqNull 33 (M.getNull a1 3));
   b __LOC__ (Js.Null.test (M.getNull a2 3));
