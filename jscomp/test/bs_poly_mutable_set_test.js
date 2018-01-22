@@ -1,6 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_SetM = require("../../lib/js/bs_SetM.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
@@ -21,7 +22,7 @@ function b(loc, x) {
 
 var IntCmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
-var u = Bs_SetM.ofArray(IntCmp, Array_data_util.range(0, 30));
+var u = Bs_SetM.ofArray(Array_data_util.range(0, 30), IntCmp);
 
 b("File \"bs_poly_mutable_set_test.ml\", line 15, characters 4-11", Bs_SetM.removeCheck(u, 0));
 
@@ -65,9 +66,9 @@ for(var i$1 = 0; i$1 <= 3; ++i$1){
 
 b("File \"bs_poly_mutable_set_test.ml\", line 37, characters 4-11", Bs_internalAVLset.isEmpty0(u.data));
 
-Bs_SetM.addArrayDone(u, Array_data_util.randomRange(0, 20000));
+Bs_SetM.mergeArrayDone(u, Array_data_util.randomRange(0, 20000));
 
-Bs_SetM.addArrayDone(u, Array_data_util.randomRange(0, 200));
+Bs_SetM.mergeArrayDone(u, Array_data_util.randomRange(0, 200));
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 40, characters 5-12", Bs_internalAVLset.length0(u.data), 20001);
 
@@ -91,10 +92,10 @@ Bs_SetM.removeArrayDone(u, Array_data_util.randomRange(10000, 19999));
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 50, characters 5-12", Bs_internalAVLset.length0(u.data), 1);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 51, characters 4-11", Bs_SetM.mem(u, 20000));
+b("File \"bs_poly_mutable_set_test.ml\", line 51, characters 4-11", Bs_SetM.has(u, 20000));
 
 function f(param) {
-  return Bs_SetM.ofArray(IntCmp, param);
+  return Bs_SetM.ofArray(param, IntCmp);
 }
 
 var aa = f(Array_data_util.randomRange(0, 100));
@@ -150,6 +151,47 @@ b("File \"bs_poly_mutable_set_test.ml\", line 96, characters 4-11", Bs_SetM.eq(B
 
 b("File \"bs_poly_mutable_set_test.ml\", line 103, characters 4-11", Bs_SetM.eq(Bs_SetM.diff(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(0, 40))), f(Array_data_util.randomRange(0, -1))));
 
+var a0 = Bs_SetM.ofArray(Array_data_util.randomRange(0, 1000), IntCmp);
+
+var a1 = Bs_SetM.filter(a0, (function (x) {
+        return +(x % 2 === 0);
+      }));
+
+var a2 = Bs_SetM.filter(a0, (function (x) {
+        return +(x % 2 !== 0);
+      }));
+
+var match = Bs_SetM.partition(a0, (function (x) {
+        return +(x % 2 === 0);
+      }));
+
+var a4 = match[1];
+
+var a3 = match[0];
+
+b("File \"bs_poly_mutable_set_test.ml\", line 118, characters 4-11", Bs_SetM.eq(a1, a3));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 119, characters 4-11", Bs_SetM.eq(a2, a4));
+
+b("File \"bs_poly_mutable_set_test.ml\", line 120, characters 4-11", Bs_List.forAll(/* :: */[
+          a0,
+          /* :: */[
+            a1,
+            /* :: */[
+              a2,
+              /* :: */[
+                a3,
+                /* :: */[
+                  a4,
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]
+        ], (function (x) {
+            return Bs_internalAVLset.checkInvariant(x.data);
+          })));
+
 Mt.from_pair_suites("bs_poly_mutable_set_test.ml", suites[0]);
 
 var N = 0;
@@ -157,6 +199,8 @@ var N = 0;
 var I = 0;
 
 var A = 0;
+
+var L = 0;
 
 var $plus$plus = Bs_SetM.union;
 
@@ -170,6 +214,7 @@ exports.N = N;
 exports.I = I;
 exports.A = A;
 exports.IntCmp = IntCmp;
+exports.L = L;
 exports.$plus$plus = $plus$plus;
 exports.f = f;
 exports.$eq$tilde = $eq$tilde;

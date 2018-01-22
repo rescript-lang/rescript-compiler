@@ -140,6 +140,14 @@ let rec addMutateCheckAux  (t : _ t0) x added ~cmp  =
       );
       N.return (N.balMutate nt)
 
+let addCheck (type elt) (type id) (m : (elt,id) t) e = 
+  let dict, oldRoot = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  let added = ref false in 
+  let newRoot = addMutateCheckAux ~cmp:M.cmp oldRoot e added in 
+  if newRoot != oldRoot then 
+    B.dataSet m newRoot;
+  !added    
 
 
 let split (type elt) (type id) (d : (elt,id) t)  key  =     
@@ -175,59 +183,59 @@ let partition d p =
   let a , b = N.partitionCopy data p in 
   B.bag ~data:a ~dict, B.bag ~data:b ~dict      
 
-let empty dict = 
+let empty ~dict = 
   B.bag ~dict ~data:N.empty0
 let isEmpty d = 
   N.isEmpty0 (B.data d)
-let singleton dict x = 
+let singleton x ~dict = 
   B.bag ~data:(N.singleton0 x) ~dict 
-let minOpt d = 
+let minimum d = 
   N.minOpt0 (B.data d)
 let minNull d =
   N.minNull0 (B.data d)
-let maxOpt d = 
+let maximum d = 
   N.maxOpt0 (B.data d)
 let maxNull d =
   N.maxNull0 (B.data d)
-let iter d f =
+let forEach d f =
   N.iter0 (B.data d) f     
-let fold d acc cb = 
+let reduce d acc cb = 
   N.fold0 (B.data d) acc cb 
 let forAll d p = 
   N.forAll0 (B.data d) p 
 let exists d  p = 
   N.exists0 (B.data d) p   
-let length d = 
+let size d = 
   N.length0 (B.data d)
 let toList d =
   N.toList0 (B.data d)
 let toArray d = 
   N.toArray0 (B.data d)
-let ofSortedArrayUnsafe ~dict xs : _ t =
+let ofSortedArrayUnsafe xs ~dict : _ t =
   B.bag ~data:(N.ofSortedArrayUnsafe0 xs) ~dict   
 let checkInvariant d = 
   N.checkInvariant (B.data d)
 let cmp (type elt) (type id) (d0 : (elt,id) t) d1 = 
-  let dict = B.dict d0 in 
-  let module M = (val dict) in 
+  let module M = (val B.dict d0) in 
   N.cmp0 ~cmp:M.cmp (B.data d0) (B.data d1)
 let eq (type elt) (type id) (d0 : (elt,id) t)  d1 = 
-  let dict = B.dict d0 in 
-  let module M = (val dict) in 
+  let module M = (val B.dict d0) in 
   N.eq0 ~cmp:M.cmp (B.data d0) (B.data d1)
-let findOpt (type elt) (type id) (d : (elt,id) t) x = 
-  let dict = B.dict d in 
-  let module M = (val dict) in 
+let get (type elt) (type id) (d : (elt,id) t) x = 
+  let module M = (val B.dict d) in 
   N.findOpt0 ~cmp:M.cmp (B.data d) x 
-let findNull (type elt) (type id) (d : (elt,id) t) x = 
+let getNull (type elt) (type id) (d : (elt,id) t) x = 
+  let module M = (val B.dict d) in 
+  N.findNull0 ~cmp:M.cmp (B.data d) x
+let getExn (type elt) (type id) (d : (elt,id) t) x = 
   let dict = B.dict d in 
   let module M = (val dict) in 
-  N.findNull0 ~cmp:M.cmp (B.data d) x 
-let mem (type elt) (type id) (d : (elt,id) t) x =
+  N.findExn0 ~cmp:M.cmp (B.data d) x     
+let has (type elt) (type id) (d : (elt,id) t) x =
   let dict = B.dict d in 
   let module M = (val dict) in 
   N.mem0 ~cmp:M.cmp (B.data d) x   
-let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data =  
+let ofArray (type elt) (type id) data ~(dict : (elt,id) Bs_Cmp.t) =  
   let module M = (val dict) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
 let addDone (type elt) (type id) (m : (elt,id) t) e = 
@@ -239,29 +247,21 @@ let addDone (type elt) (type id) (m : (elt,id) t) e =
 let add m e = 
   addDone m e;
   m
-let addCheck (type elt) (type id) (m : (elt,id) t) e = 
-  let dict, oldRoot = B.(dict m, data m) in 
-  let module M = (val dict) in 
-  let added = ref false in 
-  let newRoot = addMutateCheckAux ~cmp:M.cmp oldRoot e added in 
-  if newRoot != oldRoot then 
-    B.dataSet m newRoot;
-  !added    
 let addArrayMutate (t : _ t0) xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
     v := N.addMutate !v (A.unsafe_get xs i)  ~cmp
   done; 
   !v 
-let addArrayDone (type elt) (type id) (d : (elt,id) t ) xs =   
+let mergeArrayDone (type elt) (type id) (d : (elt,id) t ) xs =   
   let dict = B.dict d in 
   let oldRoot = B.data d in 
   let module M = (val dict) in 
   let newRoot = addArrayMutate oldRoot xs ~cmp:M.cmp in 
   if newRoot != oldRoot then 
     B.dataSet d newRoot 
-let addArray d xs = 
-  addArrayDone d xs ; 
+let mergeArray d xs = 
+  mergeArrayDone d xs ; 
   d 
 
 

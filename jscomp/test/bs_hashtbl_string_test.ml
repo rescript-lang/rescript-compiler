@@ -54,19 +54,20 @@ let bench() =
 
 let count  = 1_000_000 
 let initial_size = 1_000_000
-module B = Bs.Bag 
+(* module B = Bs.Bag  *)
 (*
     (empty : _ Bs.HashMap.t)
     #.add (string_of_int i) i 
     #.add (string_of_int i) i
 *)    
+module M = Bs.HashMap
 let bench2 (type t) (m : (string,t) Bs.Hash.t) = 
   let empty = 
-    Bs.HashMap.create m initial_size in
+    M.create m initial_size in
   let module String = (val m) in     
   let hash = String.hash in 
   let eq = String.eq in 
-  let table = B.data empty in 
+  let table = M.getData empty in 
   for i  = 0 to  count do  
     Bs.HashMap.add0 ~hash ~eq
       table (string_of_int i) i 
@@ -94,14 +95,14 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
         (string_of_int i) i 
   done ;
   for i = 0 to count do 
-    assert (Bs.Map.mem0 ~cmp
+    assert (M.has0 ~cmp
               !table
               (string_of_int i) )
   done; 
   for i = 0 to count do  
     table := Bs.Map.remove0 ~cmp !table (string_of_int i) 
   done ;
-  assert (Bs.Map.length0 !table = 0)
+  assert (M.size0 !table = 0)
 
 module Sx = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y )) 
 
@@ -125,7 +126,7 @@ let bench4 () =
 let bench5 () =   
   let table = 
     Bs.HashMap.create (module Int) initial_size in 
-  let table_data = B.data table in   
+  let table_data = M.getData table in   
   let hash = Int.hash in 
   let eq = Int.eq in 
   [%time for i  = 0 to  count do  

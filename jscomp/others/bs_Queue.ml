@@ -40,7 +40,7 @@ let clear q =
   firstSet q  null;
   lastSet q  null
 
-let push q x =
+let addDone q x =
   let cell = return @@ node 
       ~content:x
       ~next:null
@@ -55,8 +55,9 @@ let push q x =
     nextSet last  cell;
     lastSet q  cell
 
-
-let peekOpt q =
+let add q x = addDone q x; q
+  
+let peek q =
   match Js.nullToOption (first q ) with
   | None -> None
   | Some v -> Some (content v)
@@ -67,12 +68,12 @@ let peekNull q =
   | Some v -> return (content v)
 
 
-let peekAssert q =
+let peekExn q =
   match Js.nullToOption (first q ) with
   | None -> [%assert "Bs.Queue.Empty"]
   | Some v -> content v
 
-let popOpt q =
+let pop q =
   match Js.nullToOption (first q ) with
   | None -> None
   | Some x  ->
@@ -88,7 +89,7 @@ let popOpt q =
       Some(content x) 
     end
 
-let popAssert q =
+let popExn q =
   match Js.nullToOption (first q ) with
   | None -> [%assert "Bs.Queue.Empty"]
   | Some x  ->
@@ -150,7 +151,7 @@ let rec iterAux f cell =
     f (content x) [@bs];
     iterAux f (next x)
 
-let iter q f =
+let forEach q f =
   iterAux f (first q)
 
 let rec foldAux f accu cell =
@@ -160,7 +161,7 @@ let rec foldAux f accu cell =
     let accu = f accu (content x) [@bs] in
     foldAux f accu (next x)
 
-let fold q  accu f =
+let reduce q  accu f =
   foldAux f accu (first q)
 
 let transfer q1 q2 =

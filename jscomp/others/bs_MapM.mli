@@ -30,7 +30,7 @@ val isEmpty: _ t -> bool
 val singleton: 
   ('k,'id) Bs_Cmp.t ->
   'k -> 'a -> ('k, 'a, 'id) t
-val mem: ('k, _, _) t -> 'k  -> bool
+val has: ('k, _, _) t -> 'k  -> bool
 val cmp: 
     ('k, 'a, 'id) t -> 
     ('k, 'a, 'id) t ->
@@ -46,14 +46,14 @@ val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
     equal data.  [eqf] is the equality predicate used to compare
     the data associated with the keys. *)
     
-val iter:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
+val forEach:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
 (** [iter m f] applies [f] to all bindings in map [m].
     [f] receives the 'k as first argument, and the associated value
     as second argument.  The bindings are passed to [f] in increasing
     order with respect to the ordering over the type of the keys. *)
     
-val fold: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
-(** [fold m a f] computes [(f kN dN ... (f k1 d1 a)...)],
+val reduce: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
+(** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
     where [k1 ... kN] are the keys of all bindings in [m]
     (in increasing order), and [d1 ... dN] are the associated data. *)
 
@@ -67,7 +67,7 @@ val exists: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 (** [exists m p] checks if at least one binding of the map
     satisfy the predicate [p].
 *)
-val length: ('k, 'a, 'id) t -> int
+val size: ('k, 'a, 'id) t -> int
 
 
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
@@ -80,10 +80,10 @@ val minKeyOpt: ('k, _,  _) t -> 'k option
 val minKeyNull: ('k, _,  _) t -> 'k Js.null
 val maxKeyOpt: ('k, _,  _) t -> 'k option
 val maxKeyNull: ('k, _,  _) t -> 'k Js.null    
-val minKeyValueOpt: ('k, 'a,  _) t -> ('k * 'a) option
-val minKeyValueNull: ('k, 'a, _) t -> ('k * 'a) Js.null
-val maxKeyValueOpt: ('k, 'a, _) t -> ('k * 'a) option
-val maxKeyValueNull:('k, 'a, _) t -> ('k * 'a) Js.null
+val minimum: ('k, 'a,  _) t -> ('k * 'a) option
+val minNull: ('k, 'a, _) t -> ('k * 'a) Js.null
+val maximum: ('k, 'a, _) t -> ('k * 'a) option
+val maxNull:('k, 'a, _) t -> ('k * 'a) Js.null
 val get:  ('k, 'a, 'id) t -> 'k -> 'a option
 val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val getWithDefault:

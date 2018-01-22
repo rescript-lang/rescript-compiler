@@ -2,7 +2,7 @@
 module I = Bs_internalSetInt
 # 8
 module N = Bs_internalAVLset
-
+module A = Bs_Array
 
 type elt = I.elt
 type t = I.t 
@@ -11,17 +11,17 @@ type t = I.t
 let empty = N.empty0      
 let isEmpty = N.isEmpty0
 let singleton = N.singleton0
-let minOpt = N.minOpt0
+let minimum = N.minOpt0
 let minNull = N.minNull0
-let maxOpt = N.maxOpt0
+let maximum = N.maxOpt0
 let maxNull = N.maxNull0
-let iter = N.iter0      
-let fold = N.fold0
+let forEach = N.iter0      
+let reduce = N.fold0
 let forAll = N.forAll0
 let exists = N.exists0    
 let filter = N.filterShared0
 let partition = N.partitionShared0
-let length = N.length0
+let size = N.length0
 let toList = N.toList0
 let toArray = N.toArray0
 let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe0
@@ -41,7 +41,18 @@ let rec add  (t : t) (x : elt) : t =
       else 
         let rr = add r x in 
         if rr == r then t
-        else N.bal l v (add  r x) 
+        else N.bal l v (add  r x)
+
+let mergeArray h arr =   
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key = A.unsafe_get arr i in 
+    v := add !v  key 
+  done ;
+  !v 
+
+
 let rec remove (t : t) (x : elt) : t = 
   match N.toOpt t with 
   | None -> t
@@ -64,12 +75,24 @@ let rec remove (t : t) (x : elt) : t =
       let rr = remove r x in 
       if rr == r then t
       else N.bal l v rr
+          
+let removeArray h arr = 
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key = A.unsafe_get arr i in 
+    v := remove !v  key 
+  done ;
+  !v 
+          
 let ofArray = I.ofArray
 let cmp = I.cmp 
 let eq = I.eq 
-let findOpt = I.findOpt
+let get = I.findOpt
+let getNull = I.findNull
+let getExn = I.findExn                
 let subset = I.subset 
-let mem = I.mem 
+let has = I.mem 
 
 let rec splitAuxNoPivot (n : _ N.node) (x : elt) : t * t =   
   let l,v,r = N.(left n , key n, right n) in  

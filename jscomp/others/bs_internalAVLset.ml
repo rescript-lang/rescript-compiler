@@ -454,7 +454,7 @@ let partitionCopy n p  =
     ofSortedArrayRevAux v backward (size  - forwardLen)
 
 
-let rec mem0 ~cmp  (t: _ t0) x =
+let rec mem0   (t: _ t0) x ~cmp =
   match  toOpt t with 
   | None -> false
   | Some n ->
@@ -481,11 +481,11 @@ let cmp0 s1 s2 ~cmp =
   else if len1 < len2 then -1 else 1 
 
 
-let eq0 ~cmp s1 s2 =
+let eq0 s1 s2 ~cmp =
   cmp0 ~cmp s1 s2 = 0
 
 
-let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
+let rec subset0 (s1 : _ t0) (s2 : _ t0) ~cmp  =
   match (toOpt s1, toOpt s2) with
   | None, _ -> true
   | _, None -> false
@@ -502,7 +502,7 @@ let rec subset0 ~cmp (s1 : _ t0) (s2 : _ t0) =
       subset0 ~cmp (create empty v1 r1 ) r2 && 
       subset0 ~cmp l1 s2
 
-let rec findOpt0 ~cmp (n : _ t0) x = 
+let rec findOpt0  (n : _ t0) x ~cmp = 
   match toOpt n with 
     None -> None
   | Some t (* Node(l, v, r, _) *) ->
@@ -512,7 +512,7 @@ let rec findOpt0 ~cmp (n : _ t0) x =
     else findOpt0 ~cmp  (if c < 0 then left t else right t) x
 
 
-let rec findNull0 ~cmp (n : _ t0) x =
+let rec findNull0 (n : _ t0) x ~cmp  =
   match toOpt n with 
     None -> Js.null
   | Some t (* Node(l, v, r, _) *) ->
@@ -520,6 +520,15 @@ let rec findNull0 ~cmp (n : _ t0) x =
     let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
     if c = 0 then  return v
     else findNull0 ~cmp  (if c < 0 then left t else right t) x 
+
+let rec findExn0  (n : _ t0) x ~cmp =
+  match toOpt n with 
+    None -> [%assert "findExn0"]
+  | Some t (* Node(l, v, r, _) *) ->
+    let v = key t in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then  v
+    else findExn0 ~cmp  (if c < 0 then left t else right t) x 
 
 
 (******************************************************************)
@@ -610,7 +619,7 @@ let rec addMutate ~cmp (t : _ t0) x =
       return (balMutate nt)
 
 
-let ofArray0 ~cmp (xs : _ array) =   
+let ofArray0  (xs : _ array) ~cmp =   
   let len = A.length xs in 
   if len = 0 then empty0
   else

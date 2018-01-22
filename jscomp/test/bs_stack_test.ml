@@ -25,7 +25,7 @@ let inOrder (v : t) =
   while not (S.isEmpty s ) do 
     current := S.popNull s ;
     let v = Js.Null.getUnsafe !current in 
-    Q.push q (value v);
+    Q.addDone q (value v);
     current := right v ;
     while !current != Js.null do 
       let v = Js.Null.getUnsafe !current  in 
@@ -45,7 +45,7 @@ let inOrder3 (v : t) =
     current := left v; 
   done ;
   S.dynamicPopIter s begin fun [@bs] popped -> 
-    Q.push q (value popped);
+    Q.addDone q (value popped);
     let current = ref (right popped) in 
     while !current != Js.null do 
       let v = Js.Null.getUnsafe !current in 
@@ -71,7 +71,7 @@ let inOrder2 (v : t) =
         if not (S.isEmpty s) then 
           (cursor := S.popNull s ;
            let current = Js.Null.getUnsafe !cursor in 
-           Q.push q (value current);
+           Q.addDone q (value current);
            cursor := right current)
         else 
           todo := false

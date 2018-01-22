@@ -691,7 +691,7 @@ let rec updateMutate (t : _ t0) x data ~cmp =
       );
       return (balMutate nt)  
 
-let ofArray0 ~cmp (xs : _ array) =   
+let ofArray0 (xs : _ array) ~cmp =   
   let len = A.length xs in 
   if len = 0 then empty0
   else

@@ -131,9 +131,9 @@ var a6 = Bs_Map.remove(a5, 3);
 
 b("File \"bs_poly_map_test.ml\", line 69, characters 4-11", +(a5 === a6));
 
-b("File \"bs_poly_map_test.ml\", line 70, characters 4-11", Bs_Map.mem(a0, 3));
+b("File \"bs_poly_map_test.ml\", line 70, characters 4-11", Bs_Map.has(a0, 3));
 
-b("File \"bs_poly_map_test.ml\", line 71, characters 4-11", 1 - Bs_Map.mem(a5, 3));
+b("File \"bs_poly_map_test.ml\", line 71, characters 4-11", 1 - Bs_Map.has(a5, 3));
 
 b("File \"bs_poly_map_test.ml\", line 72, characters 4-11", +(3 === Bs_Map.getNull(a0, 3)));
 

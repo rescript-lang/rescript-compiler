@@ -81,16 +81,18 @@ external unsafeTail :
    - the cell is not empty   
 *)
 
-let headOpt x =
+let head x =
   match x with
   | [] -> None
   | x::_ -> Some x
 
-let tailOpt x =
+let tail x =
   match x with
   | [] -> None
   | _::xs -> Some xs 
 
+let add xs x  = x :: xs
+                
 (* Assume [n >=0] *)
 let rec nthAux x n =
   match x with
@@ -100,13 +102,13 @@ let rec nthAux x n =
 let rec nthAuxAssert x n =
   match x with
   | h::t -> if n = 0 then h else nthAuxAssert t (n - 1)
-  | _ -> [%assert "nthAssert"]
+  | _ -> [%assert "getExn"]
 
-let nthOpt x n =
+let get x n =
   if n < 0 then None
   else nthAux x n
 
-let nthAssert x n =
+let getExn x n =
   if n < 0 then [%assert "nthAssert"]
   else nthAuxAssert x n 
 
@@ -240,7 +242,7 @@ let rec splitAtAux n cell prec =
       splitAtAux (n - 1) xs cell
 
 (* invarint [n >= 0] *)    
-let  takeOpt lst n = 
+let  take lst n = 
   if n < 0 then None
   else 
   if n = 0 then Some []
@@ -260,12 +262,12 @@ let rec dropAux l n =
     | _::tl ->  dropAux tl (n -1)
     | [] -> None 
 
-let dropOpt lst n =       
+let drop lst n =       
   if n < 0 then None 
   else 
     dropAux lst n 
 
-let splitAtOpt lst n =     
+let splitAt lst n =     
   if n < 0 then None 
   else 
   if n = 0 then Some ([],lst) 
@@ -387,12 +389,12 @@ let fromJson j f =
       head
   | None ->
     [%assert "Not array when decoding list"]
-let rec revAppend l1 l2 =
+let rec reverseAppend l1 l2 =
   match l1 with
     [] -> l2
-  | a :: l -> revAppend l (a :: l2)
+  | a :: l -> reverseAppend l (a :: l2)
 
-let rev l = revAppend l []
+let reverse l = reverseAppend l []
 
 let rec flattenAux prec xs =
   match xs with
@@ -409,39 +411,36 @@ let rec flatten xs =
     flattenAux (copyAuxCont t cell) r ;
     cell 
 
-
-
-
 let rec mapRevAux f accu xs = 
   match xs with 
   | [] -> accu
   | a::l -> mapRevAux f (f a [@bs] :: accu) l
 
-let mapRev l f  =
+let mapReverse l f  =
   mapRevAux f [] l
 
 
-let rec iter xs f  = 
+let rec forEach xs f  = 
   match xs with 
     [] -> ()
-  | a::l -> f a [@bs]; iter l f 
+  | a::l -> f a [@bs]; forEach l f 
 
 let rec iteri xs i f  = 
   match xs with 
     [] -> ()
   | a::l -> f i a [@bs]; iteri l (i + 1) f 
 
-let iteri l f  = iteri l 0 f 
+let forEachi l f  = iteri l 0 f 
 
-let rec foldLeft l accu f   =
+let rec reduce l accu f   =
   match l with
     [] -> accu
-  | a::l -> foldLeft l (f accu a [@bs]) f 
+  | a::l -> reduce l (f accu a [@bs]) f 
 
-let rec foldRight l accu f  =
+let rec reduceFromTail l accu f  =
   match l with
     [] -> accu
-  | a::l -> f a (foldRight l accu f) [@bs]
+  | a::l -> f a (reduceFromTail l accu f) [@bs]
 
 
 let rec mapRevAux2 l1 l2 accu f =
@@ -449,24 +448,24 @@ let rec mapRevAux2 l1 l2 accu f =
   | (a1::l1, a2::l2) -> mapRevAux2  l1 l2  (f a1 a2 [@bs]:: accu) f
   | _, [] | [], _ -> accu 
 
-let mapRev2 l1 l2 f =
+let mapReverse2 l1 l2 f =
   mapRevAux2 l1 l2  [] f
 
-let rec iter2  l1 l2 f =
+let rec forEach2  l1 l2 f =
   match (l1, l2) with
-  | (a1::l1, a2::l2) -> f a1 a2 [@bs]; iter2  l1 l2 f
+  | (a1::l1, a2::l2) -> f a1 a2 [@bs]; forEach2  l1 l2 f
   | [],_ | _, [] -> ()
 
-let rec foldLeft2 l1 l2 accu f =
+let rec reduce2 l1 l2 accu f =
   match (l1, l2) with
   | (a1::l1, a2::l2) -> 
-    foldLeft2 l1 l2 (f accu a1 a2 [@bs]) f 
+    reduce2 l1 l2 (f accu a1 a2 [@bs]) f 
   | [], _ | _, [] -> accu
 
-let rec foldRight2 l1 l2 accu f  =
+let rec reduceFromTail2 l1 l2 accu f  =
   match (l1, l2) with
     ([], []) -> accu
-  | (a1::l1, a2::l2) -> f a1 a2 (foldRight2 l1 l2 accu f) [@bs]
+  | (a1::l1, a2::l2) -> f a1 a2 (reduceFromTail2 l1 l2 accu f) [@bs]
   | _, [] | [], _ -> accu
 
 let rec forAll xs p = 
@@ -484,6 +483,26 @@ let rec forAll2 l1 l2  p =
     (_, []) | [],_ -> true
   | (a1::l1, a2::l2) -> p a1 a2 [@bs] && forAll2 l1 l2 p
 
+let rec cmp l1 l2  p =
+  match (l1, l2) with
+  | [], [] -> 0
+  | _ , [] -> 1
+  | [], _ -> -1
+  | (a1::l1, a2::l2) ->
+    let c = p a1 a2 [@bs] in
+    if c = 0 then
+      cmp l1 l2 p
+    else c
+      
+let rec eq l1 l2  p =
+  match (l1, l2) with
+  | [], [] -> true
+  | _ , [] 
+  | [], _ -> false
+  | (a1::l1, a2::l2) ->
+    if p a1 a2 [@bs]  then
+      eq l1 l2 p
+    else false
 
 let rec exists2 l1 l2 p =
   match (l1, l2) with
@@ -491,37 +510,37 @@ let rec exists2 l1 l2 p =
   | (a1::l1, a2::l2) -> p a1 a2 [@bs] || exists2 l1 l2 p 
 
 
-let rec mem xs x eq  = 
+let rec has xs x eq  = 
   match xs with 
     [] -> false
-  | a::l -> eq a x [@bs] || mem l x eq 
+  | a::l -> eq a x [@bs] || has l x eq 
 
-let rec memq xs x = 
+let rec hasq xs x = 
   match xs with 
     [] -> false
-  | a::l -> a == x || memq l x 
+  | a::l -> a == x || hasq l x 
 
-let rec assocOpt  xs x eq = 
+let rec assoc  xs x eq = 
   match xs with 
   | [] -> None
   | (a,b)::l -> 
     if eq a x [@bs] then Some b 
-    else assocOpt l x eq 
+    else assoc l x eq 
 
-let rec assqOpt xs x = 
+let rec assq xs x = 
   match xs with 
     [] -> None
-  | (a,b)::l -> if a == x then Some b else assqOpt l x 
+  | (a,b)::l -> if a == x then Some b else assq l x 
 
-let rec memAssoc xs x eq = 
+let rec hasAssoc xs x eq = 
   match xs with 
   | [] -> false
-  | (a, b) :: l -> eq a x [@bs] || memAssoc l x eq 
+  | (a, b) :: l -> eq a x [@bs] || hasAssoc l x eq 
 
-let rec memAssq xs x  = 
+let rec hasAssq xs x  = 
   match xs with 
   | [] -> false
-  | (a, b) :: l -> a == x || memAssq l x 
+  | (a, b) :: l -> a == x || hasAssq l x 
 
 
 (* remove the first pair *)  
@@ -545,12 +564,12 @@ let rec removeAssq xs x =
       removeAssocAux l x cell;  
       cell 
 
-let rec findOpt xs p = 
+let rec getBy xs p = 
   match xs with 
   | [] -> None
   | x :: l -> 
     if p x [@bs] then Some x
-    else findOpt l p 
+    else getBy l p 
 
 
 let rec filter xs p  = 

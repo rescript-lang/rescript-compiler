@@ -22,10 +22,10 @@ let minKeyNull m = N.minKeyNull0 (data m)
 let minKeyOpt m = N.minKeyOpt0 (data m)
 let maxKeyNull m = N.maxKeyNull0 (data m)
 let maxKeyOpt m = N.maxKeyOpt0 (data m)
-let minKeyValueOpt m = N.minKVOpt0 (data m)
-let minKeyValueNull m = N.minKVNull0 (data m)
-let maxKeyValueOpt m = N.maxKVOpt0 (data m)
-let maxKeyValueNull m = N.maxKVNull0 (data m)
+let minimum m = N.minKVOpt0 (data m)
+let minNull m = N.minKVNull0 (data m)
+let maximum m = N.maxKVOpt0 (data m)
+let maxNull m = N.maxKVNull0 (data m)
 
 let setDone (m : _ t) k v = 
   let old_data = data m in 
@@ -36,20 +36,20 @@ let setDone (m : _ t) k v =
 let set (d : 'a t) (k : key) (v : 'a) : 'a t=  
   setDone d k v; 
   d
-let iter d f = N.iter0 (data d) f     
+let forEach d f = N.iter0 (data d) f     
 let map d f = t ~data:(N.map0 (data d) f)
 let mapi d f = t ~data:(N.mapi0 (data d) f) 
-let fold d acc f  = N.fold0 (data d) acc f 
+let reduce d acc f  = N.fold0 (data d) acc f 
 let forAll d f = N.forAll0 (data d) f 
 let exists d f = N.exists0 (data d) f    
 
-let length d = N.length0 (data d)
+let size d = N.length0 (data d)
 let toList d = N.toList0 (data d)
 let toArray d = N.toArray0 (data d)
 let keysToArray d = N.keysToArray0 (data d)
 let valuesToArray d = N.valuesToArray0 (data d)
 let checkInvariant d = N.checkInvariant (data d)
-let mem d v = I.mem (data d) v 
+let has d v = I.mem (data d) v 
 
 
 let rec removeMutateAux nt (x : key)= 

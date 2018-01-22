@@ -87,15 +87,16 @@ val toArray0 : 'a t0 -> 'a array
 val ofSortedArrayAux : 'a array -> int -> int -> 'a t0
 val ofSortedArrayRevAux : 'a array -> int -> int -> 'a t0
 val ofSortedArrayUnsafe0 : 'a array -> 'a t0
-val mem0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> bool
+val mem0 :  'a t0 ->  'a -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
 val cmp0 : 'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> int
-val eq0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a t0 -> bool
-val subset0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a t0 -> bool
-val findOpt0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> 'a option
-val findNull0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> 'a Js.null
+val eq0 :  'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
+val subset0 :  'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
+val findOpt0 :  'a t0 -> 'a  -> cmp:('a, 'b) Bs_Cmp.cmp -> 'a option
+val findNull0 : 'a t0 -> 'a -> cmp:('a, 'b) Bs_Cmp.cmp -> 'a Js.null
+val findExn0 : 'a t0 -> 'a ->  cmp:('a, 'b) Bs_Cmp.cmp -> 'a 
 
 
-val ofArray0 : cmp:('a, 'b) Bs_Cmp.cmp -> 'a array -> 'a t0
+val ofArray0 : 'a array ->  cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0
 
 
 val addMutate : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> 'a t0

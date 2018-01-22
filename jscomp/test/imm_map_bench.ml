@@ -18,9 +18,11 @@ let ofArray kvs =
 
 let should b = 
   if not b  then Js.Exn.raiseError "impossible"
+  
 let count = 1_000_000 
-let shuffledDataAdd = (A.shuffle (A.init (count +  1) (fun[@bs] i -> (i,i))))
-let shuffleRemoved = A.shuffle (A.init (2 * count + 1) (fun [@bs] i -> i ))
+
+let shuffledDataAdd = A.shuffle (A.init (count +  1) (fun[@bs] i -> (i,i)))
+
 
 
 let test () = 
@@ -35,7 +37,7 @@ module M =  Bs.MapInt
 let test2 () = 
   let v = M.ofArray shuffledDataAdd in 
   for j = 0 to count do 
-    should (M.mem v j)
+    should (M.has v j)
   done ;
 
 

@@ -261,9 +261,24 @@ function bool_suites(test_id, suites, loc, x) {
   return /* () */0;
 }
 
+function throw_suites(test_id, suites, loc, x) {
+  test_id[0] = test_id[0] + 1 | 0;
+  suites[0] = /* :: */[
+    /* tuple */[
+      loc + (" id " + test_id[0]),
+      (function () {
+          return /* ThrowAny */Block.__(7, [x]);
+        })
+    ],
+    suites[0]
+  ];
+  return /* () */0;
+}
+
 exports.from_suites = from_suites;
 exports.from_pair_suites = from_pair_suites;
 exports.from_promise_suites = from_promise_suites;
 exports.eq_suites = eq_suites;
 exports.bool_suites = bool_suites;
+exports.throw_suites = throw_suites;
 /* val_unit Not a pure module */

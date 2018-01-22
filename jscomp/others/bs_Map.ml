@@ -152,7 +152,7 @@ let rec splitAuxPivot n x pres  ~cmp =
       (N.join l v d lr,  rr)
 
 
-let split0 ~cmp n x = 
+let split0  n x ~cmp = 
   match N.toOpt n with 
   | None ->     
     N.(empty, empty), None
@@ -285,9 +285,9 @@ let eq (type k) (type id)
   let module X = (val dict) in 
   N.eq0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data 
 
-let iter m f = N.iter0 (B.data m) f
+let forEach m f = N.iter0 (B.data m) f
 
-let fold m acc f = N.fold0 (B.data m) acc f  
+let reduce m acc f = N.fold0 (B.data m) acc f  
 
 let forAll m f = N.forAll0 (B.data m) f  
 
@@ -309,7 +309,7 @@ let mapi m  f =
   let dict,map = B.(dict m, data m) in 
   B.bag ~dict ~data:(N.mapi0 map f)
 
-let length map = 
+let size map = 
   N.length0 (B.data map)   
 
 let toList map = 
@@ -325,10 +325,10 @@ let minKeyOpt m = N.minKeyOpt0 (B.data m)
 let minKeyNull m = N.minKeyNull0 (B.data m)
 let maxKeyOpt m = N.maxKeyOpt0 (B.data m)
 let maxKeyNull m = N.maxKeyNull0 (B.data m)    
-let minKeyValueOpt m = N.minKVOpt0 (B.data m)
-let minKeyValueNull m = N.minKVNull0 (B.data m) 
-let maxKeyValueOpt m = N.maxKVOpt0 (B.data m)
-let maxKeyValueNull m = N.maxKVNull0 (B.data m)
+let minimum m = N.minKVOpt0 (B.data m)
+let minNull m = N.minKVNull0 (B.data m) 
+let maximum m = N.maxKVOpt0 (B.data m)
+let maxNull m = N.maxKVNull0 (B.data m)
 
 let get (type k) (type id) (map : (k,_,id) t) x  = 
   let dict,map = B.(dict map, data map) in 
@@ -350,7 +350,7 @@ let getExn (type k) (type id)  (map : (k,_,id) t) x =
   let module X = (val dict) in 
   N.findExn0 ~cmp:X.cmp map x 
 
-let mem (type k) (type id)  (map : (k,_,id) t) x = 
+let has (type k) (type id)  (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
   N.mem0 ~cmp:X.cmp map x
@@ -364,24 +364,24 @@ let singleton0 = N.singleton0
 
 let cmp0 = N.cmp0
 let eq0 = N.eq0   
-let mem0 = N.mem0
-let iter0 = N.iter0      
-let fold0 = N.fold0
+let has0 = N.mem0
+let forEach0 = N.iter0      
+let reduce0 = N.fold0
 let forAll0 = N.forAll0
 let exists0 = N.exists0    
-let length0 = N.length0
+let size0 = N.length0
 let toList0 = N.toList0
 let toArray0 = N.toArray0
 
 let keysToArray0 = N.keysToArray0
 let valuesToArray0 = N.valuesToArray0
 
-let minKVOpt0 = N.minKVOpt0
-let maxKVOpt0 = N.maxKVOpt0
-let findOpt0 = N.findOpt0
-let findNull0 = N.findNull0
-let findWithDefault0 = N.findWithDefault0
-let findExn0 = N.findExn0
+let minimum0 = N.minKVOpt0
+let maximum0 = N.maxKVOpt0
+let get0 = N.findOpt0
+let getNull0 = N.findNull0
+let getWithDefault0 = N.findWithDefault0
+let getExn0 = N.findExn0
 
 let mapi0 = N.mapi0
 let map0  = N.map0

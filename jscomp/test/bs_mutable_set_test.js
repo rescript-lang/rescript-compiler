@@ -43,7 +43,7 @@ var v$1 = {
   data: Bs_internalAVLset.empty0
 };
 
-Bs_SetIntM.addArrayDone(v$1, u);
+Bs_SetIntM.mergeArrayDone(v$1, u);
 
 eq("File \"bs_mutable_set_test.ml\", line 29, characters 5-12", Bs_internalAVLset.length0(v$1.data), 91);
 

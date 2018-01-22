@@ -23,28 +23,24 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[]) && q.length ==
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          15,
-          26
+          16,
+          2
         ]
       ];
 }
 
-Bs_Queue.push(q, 1);
-
-if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[1]) && q.length === 1)) {
+if (!(Caml_obj.caml_equal(Bs_Queue.toArray(Bs_Queue.add(q, 1)), /* int array */[1]) && q.length === 1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          16,
-          26
+          17,
+          2
         ]
       ];
 }
 
-Bs_Queue.push(q, 2);
-
-if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
+if (!(Caml_obj.caml_equal(Bs_Queue.toArray(Bs_Queue.add(q, 2)), /* int array */[
           1,
           2
         ]) && q.length === 2)) {
@@ -52,15 +48,13 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          17,
-          26
+          18,
+          2
         ]
       ];
 }
 
-Bs_Queue.push(q, 3);
-
-if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
+if (!(Caml_obj.caml_equal(Bs_Queue.toArray(Bs_Queue.add(q, 3)), /* int array */[
           1,
           2,
           3
@@ -69,15 +63,13 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          18,
-          26
+          19,
+          2
         ]
       ];
 }
 
-Bs_Queue.push(q, 4);
-
-if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
+if (!(Caml_obj.caml_equal(Bs_Queue.toArray(Bs_Queue.add(q, 4)), /* int array */[
           1,
           2,
           3,
@@ -87,18 +79,18 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          19,
-          26
+          20,
+          2
         ]
       ];
 }
 
-if (Bs_Queue.popAssert(q) !== 1) {
+if (Bs_Queue.popExn(q) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          20,
+          21,
           2
         ]
       ];
@@ -113,18 +105,18 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          20,
-          30
+          21,
+          27
         ]
       ];
 }
 
-if (Bs_Queue.popAssert(q) !== 2) {
+if (Bs_Queue.popExn(q) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          21,
+          22,
           2
         ]
       ];
@@ -138,18 +130,18 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          21,
-          30
+          22,
+          27
         ]
       ];
 }
 
-if (Bs_Queue.popAssert(q) !== 3) {
+if (Bs_Queue.popExn(q) !== 3) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          22,
+          23,
           2
         ]
       ];
@@ -160,35 +152,13 @@ if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[4]) && q.length =
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          22,
-          30
-        ]
-      ];
-}
-
-if (Bs_Queue.popAssert(q) !== 4) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "bs_queue_test.ml",
           23,
-          2
+          27
         ]
       ];
 }
 
-if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[]) && q.length === 0)) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "bs_queue_test.ml",
-          23,
-          30
-        ]
-      ];
-}
-
-if (!does_raise(Bs_Queue.popAssert, q)) {
+if (Bs_Queue.popExn(q) !== 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -199,57 +169,53 @@ if (!does_raise(Bs_Queue.popAssert, q)) {
       ];
 }
 
+if (!(Caml_obj.caml_equal(Bs_Queue.toArray(q), /* int array */[]) && q.length === 0)) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "bs_queue_test.ml",
+          24,
+          27
+        ]
+      ];
+}
+
+if (!does_raise(Bs_Queue.popExn, q)) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "bs_queue_test.ml",
+          25,
+          2
+        ]
+      ];
+}
+
 var q$1 = Bs_Queue.create(/* () */0);
 
-Bs_Queue.push(q$1, 1);
-
-if (Bs_Queue.popAssert(q$1) !== 1) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "bs_queue_test.ml",
-          29,
-          14
-        ]
-      ];
-}
-
-if (!does_raise(Bs_Queue.popAssert, q$1)) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "bs_queue_test.ml",
-          29,
-          42
-        ]
-      ];
-}
-
-Bs_Queue.push(q$1, 2);
-
-if (Bs_Queue.popAssert(q$1) !== 2) {
+if (Bs_Queue.popExn(Bs_Queue.add(q$1, 1)) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
           30,
-          14
+          2
         ]
       ];
 }
 
-if (!does_raise(Bs_Queue.popAssert, q$1)) {
+if (!does_raise(Bs_Queue.popExn, q$1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
           30,
-          42
+          34
         ]
       ];
 }
 
-if (q$1.length !== 0) {
+if (Bs_Queue.popExn(Bs_Queue.add(q$1, 2)) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -260,48 +226,53 @@ if (q$1.length !== 0) {
       ];
 }
 
-var q$2 = Bs_Queue.create(/* () */0);
-
-Bs_Queue.push(q$2, 1);
-
-if (Bs_Queue.peekAssert(q$2) !== 1) {
+if (!does_raise(Bs_Queue.popExn, q$1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          36,
-          14
+          31,
+          34
         ]
       ];
 }
 
-Bs_Queue.push(q$2, 2);
+if (q$1.length !== 0) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "bs_queue_test.ml",
+          32,
+          2
+        ]
+      ];
+}
 
-if (Bs_Queue.peekAssert(q$2) !== 1) {
+var q$2 = Bs_Queue.create(/* () */0);
+
+if (Bs_Queue.peekExn(Bs_Queue.add(q$2, 1)) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
           37,
-          14
+          2
         ]
       ];
 }
 
-Bs_Queue.push(q$2, 3);
-
-if (Bs_Queue.peekAssert(q$2) !== 1) {
+if (Bs_Queue.peekExn(Bs_Queue.add(q$2, 2)) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
           38,
-          14
+          2
         ]
       ];
 }
 
-if (Bs_Queue.peekAssert(q$2) !== 1) {
+if (Bs_Queue.peekExn(Bs_Queue.add(q$2, 3)) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -312,18 +283,7 @@ if (Bs_Queue.peekAssert(q$2) !== 1) {
       ];
 }
 
-if (Bs_Queue.popAssert(q$2) !== 1) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "bs_queue_test.ml",
-          39,
-          31
-        ]
-      ];
-}
-
-if (Bs_Queue.peekAssert(q$2) !== 2) {
+if (Bs_Queue.peekExn(q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -334,18 +294,18 @@ if (Bs_Queue.peekAssert(q$2) !== 2) {
       ];
 }
 
-if (Bs_Queue.popAssert(q$2) !== 2) {
+if (Bs_Queue.popExn(q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
           40,
-          31
+          28
         ]
       ];
 }
 
-if (Bs_Queue.peekAssert(q$2) !== 3) {
+if (Bs_Queue.peekExn(q$2) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -356,18 +316,18 @@ if (Bs_Queue.peekAssert(q$2) !== 3) {
       ];
 }
 
-if (Bs_Queue.popAssert(q$2) !== 3) {
+if (Bs_Queue.popExn(q$2) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
           41,
-          31
+          28
         ]
       ];
 }
 
-if (!does_raise(Bs_Queue.peekAssert, q$2)) {
+if (Bs_Queue.peekExn(q$2) !== 3) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -378,7 +338,18 @@ if (!does_raise(Bs_Queue.peekAssert, q$2)) {
       ];
 }
 
-if (!does_raise(Bs_Queue.peekAssert, q$2)) {
+if (Bs_Queue.popExn(q$2) !== 3) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "bs_queue_test.ml",
+          42,
+          28
+        ]
+      ];
+}
+
+if (!does_raise(Bs_Queue.peekExn, q$2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -389,26 +360,26 @@ if (!does_raise(Bs_Queue.peekAssert, q$2)) {
       ];
 }
 
-var q$3 = Bs_Queue.create(/* () */0);
-
-for(var i = 1; i <= 10; ++i){
-  Bs_Queue.push(q$3, i);
-}
-
-Bs_Queue.clear(q$3);
-
-if (q$3.length !== 0) {
+if (!does_raise(Bs_Queue.peekExn, q$2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          50,
+          44,
           2
         ]
       ];
 }
 
-if (!does_raise(Bs_Queue.popAssert, q$3)) {
+var q$3 = Bs_Queue.create(/* () */0);
+
+for(var i = 1; i <= 10; ++i){
+  Bs_Queue.addDone(q$3, i);
+}
+
+Bs_Queue.clear(q$3);
+
+if (q$3.length !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -419,7 +390,7 @@ if (!does_raise(Bs_Queue.popAssert, q$3)) {
       ];
 }
 
-if (!Caml_obj.caml_equal(q$3, Bs_Queue.create(/* () */0))) {
+if (!does_raise(Bs_Queue.popExn, q$3)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -430,14 +401,25 @@ if (!Caml_obj.caml_equal(q$3, Bs_Queue.create(/* () */0))) {
       ];
 }
 
-Bs_Queue.push(q$3, 42);
-
-if (Bs_Queue.popAssert(q$3) !== 42) {
+if (!Caml_obj.caml_equal(q$3, Bs_Queue.create(/* () */0))) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          54,
+          53,
+          2
+        ]
+      ];
+}
+
+Bs_Queue.addDone(q$3, 42);
+
+if (Bs_Queue.popExn(q$3) !== 42) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "bs_queue_test.ml",
+          55,
           2
         ]
       ];
@@ -446,34 +428,12 @@ if (Bs_Queue.popAssert(q$3) !== 42) {
 var q1 = Bs_Queue.create(/* () */0);
 
 for(var i$1 = 1; i$1 <= 10; ++i$1){
-  Bs_Queue.push(q1, i$1);
+  Bs_Queue.addDone(q1, i$1);
 }
 
 var q2 = Bs_Queue.copy(q1);
 
 if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1), /* array */[
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10
-      ])) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "bs_queue_test.ml",
-          61,
-          2
-        ]
-      ];
-}
-
-if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2), /* array */[
         1,
         2,
         3,
@@ -495,7 +455,18 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2), /* array */[
       ];
 }
 
-if (q1.length !== 10) {
+if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2), /* array */[
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -506,7 +477,7 @@ if (q1.length !== 10) {
       ];
 }
 
-if (q2.length !== 10) {
+if (q1.length !== 10) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -517,13 +488,24 @@ if (q2.length !== 10) {
       ];
 }
 
+if (q2.length !== 10) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "bs_queue_test.ml",
+          65,
+          2
+        ]
+      ];
+}
+
 for(var i$2 = 1; i$2 <= 10; ++i$2){
-  if (Bs_Queue.popAssert(q1) !== i$2) {
+  if (Bs_Queue.popExn(q1) !== i$2) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_queue_test.ml",
-            66,
+            67,
             4
           ]
         ];
@@ -532,12 +514,12 @@ for(var i$2 = 1; i$2 <= 10; ++i$2){
 }
 
 for(var i$3 = 1; i$3 <= 10; ++i$3){
-  if (Bs_Queue.popAssert(q2) !== i$3) {
+  if (Bs_Queue.popExn(q2) !== i$3) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_queue_test.ml",
-            69,
+            70,
             4
           ]
         ];
@@ -552,20 +534,20 @@ if (q$4.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          75,
+          76,
           2
         ]
       ];
 }
 
 for(var i$4 = 1; i$4 <= 10; ++i$4){
-  Bs_Queue.push(q$4, i$4);
+  Bs_Queue.addDone(q$4, i$4);
   if (q$4.length !== i$4) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_queue_test.ml",
-            78,
+            79,
             4
           ]
         ];
@@ -575,7 +557,7 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_queue_test.ml",
-            79,
+            80,
             4
           ]
         ];
@@ -589,7 +571,7 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_queue_test.ml",
-            82,
+            83,
             4
           ]
         ];
@@ -599,23 +581,12 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_queue_test.ml",
-            83,
+            84,
             4
           ]
         ];
   }
-  Bs_Queue.popAssert(q$4);
-}
-
-if (q$4.length !== 0) {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "bs_queue_test.ml",
-          86,
-          2
-        ]
-      ];
+  Bs_Queue.popExn(q$4);
 }
 
 if (q$4.length !== 0) {
@@ -629,22 +600,33 @@ if (q$4.length !== 0) {
       ];
 }
 
+if (q$4.length !== 0) {
+  throw [
+        Caml_builtin_exceptions.assert_failure,
+        [
+          "bs_queue_test.ml",
+          88,
+          2
+        ]
+      ];
+}
+
 var q$5 = Bs_Queue.create(/* () */0);
 
 for(var i$6 = 1; i$6 <= 10; ++i$6){
-  Bs_Queue.push(q$5, i$6);
+  Bs_Queue.addDone(q$5, i$6);
 }
 
 var i$7 = [1];
 
-Bs_Queue.iter(q$5, (function (j) {
+Bs_Queue.forEach(q$5, (function (j) {
         if (i$7[0] !== j) {
           throw [
                 Caml_builtin_exceptions.assert_failure,
                 [
                   "bs_queue_test.ml",
-                  94,
-                  26
+                  95,
+                  29
                 ]
               ];
         }
@@ -661,7 +643,7 @@ if (q1$1.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          99,
+          100,
           2
         ]
       ];
@@ -672,7 +654,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1$1), /* array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          99,
+          100,
           28
         ]
       ];
@@ -683,7 +665,7 @@ if (q2$1.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          100,
+          101,
           2
         ]
       ];
@@ -694,7 +676,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$1), /* array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          100,
+          101,
           28
         ]
       ];
@@ -707,7 +689,7 @@ if (q1$1.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          102,
+          103,
           2
         ]
       ];
@@ -718,7 +700,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1$1), /* array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          102,
+          103,
           28
         ]
       ];
@@ -729,7 +711,7 @@ if (q2$1.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          103,
+          104,
           2
         ]
       ];
@@ -740,7 +722,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$1), /* array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          103,
+          104,
           28
         ]
       ];
@@ -751,7 +733,7 @@ var q1$2 = Bs_Queue.create(/* () */0);
 var q2$2 = Bs_Queue.create(/* () */0);
 
 for(var i$8 = 1; i$8 <= 4; ++i$8){
-  Bs_Queue.push(q1$2, i$8);
+  Bs_Queue.addDone(q1$2, i$8);
 }
 
 if (q1$2.length !== 4) {
@@ -759,7 +741,7 @@ if (q1$2.length !== 4) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          109,
+          110,
           2
         ]
       ];
@@ -775,7 +757,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1$2), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          109,
+          110,
           28
         ]
       ];
@@ -786,7 +768,7 @@ if (q2$2.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          110,
+          111,
           2
         ]
       ];
@@ -797,7 +779,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$2), /* int array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          110,
+          111,
           28
         ]
       ];
@@ -810,7 +792,7 @@ if (q1$2.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          112,
+          113,
           2
         ]
       ];
@@ -821,7 +803,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1$2), /* int array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          112,
+          113,
           28
         ]
       ];
@@ -832,7 +814,7 @@ if (q2$2.length !== 4) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          113,
+          114,
           2
         ]
       ];
@@ -848,7 +830,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$2), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          113,
+          114,
           28
         ]
       ];
@@ -859,7 +841,7 @@ var q1$3 = Bs_Queue.create(/* () */0);
 var q2$3 = Bs_Queue.create(/* () */0);
 
 for(var i$9 = 5; i$9 <= 8; ++i$9){
-  Bs_Queue.push(q2$3, i$9);
+  Bs_Queue.addDone(q2$3, i$9);
 }
 
 if (q1$3.length !== 0) {
@@ -867,7 +849,7 @@ if (q1$3.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          119,
+          120,
           2
         ]
       ];
@@ -878,7 +860,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1$3), /* int array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          119,
+          120,
           28
         ]
       ];
@@ -889,7 +871,7 @@ if (q2$3.length !== 4) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          120,
+          121,
           2
         ]
       ];
@@ -905,7 +887,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$3), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          120,
+          121,
           28
         ]
       ];
@@ -918,7 +900,7 @@ if (q1$3.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          122,
+          123,
           2
         ]
       ];
@@ -929,7 +911,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1$3), /* int array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          122,
+          123,
           28
         ]
       ];
@@ -940,7 +922,7 @@ if (q2$3.length !== 4) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          123,
+          124,
           2
         ]
       ];
@@ -956,7 +938,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$3), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          123,
+          124,
           28
         ]
       ];
@@ -967,11 +949,11 @@ var q1$4 = Bs_Queue.create(/* () */0);
 var q2$4 = Bs_Queue.create(/* () */0);
 
 for(var i$10 = 1; i$10 <= 4; ++i$10){
-  Bs_Queue.push(q1$4, i$10);
+  Bs_Queue.addDone(q1$4, i$10);
 }
 
 for(var i$11 = 5; i$11 <= 8; ++i$11){
-  Bs_Queue.push(q2$4, i$11);
+  Bs_Queue.addDone(q2$4, i$11);
 }
 
 if (q1$4.length !== 4) {
@@ -979,7 +961,7 @@ if (q1$4.length !== 4) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          130,
+          131,
           2
         ]
       ];
@@ -995,7 +977,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1$4), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          130,
+          131,
           28
         ]
       ];
@@ -1006,7 +988,7 @@ if (q2$4.length !== 4) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          131,
+          132,
           2
         ]
       ];
@@ -1022,7 +1004,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$4), /* int array */[
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          131,
+          132,
           28
         ]
       ];
@@ -1035,7 +1017,7 @@ if (q1$4.length !== 0) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          133,
+          134,
           2
         ]
       ];
@@ -1046,7 +1028,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q1$4), /* int array */[])) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          133,
+          134,
           28
         ]
       ];
@@ -1068,7 +1050,7 @@ if (q2$4.length !== 8) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          135,
+          136,
           2
         ]
       ];
@@ -1079,13 +1061,13 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$4), v)) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          135,
+          136,
           28
         ]
       ];
 }
 
-if (Bs_Queue.fold(q2$4, 0, (function (x, y) {
+if (Bs_Queue.reduce(q2$4, 0, (function (x, y) {
           return x - y | 0;
         })) !== Bs_Array.foldLeft(v, 0, (function (x, y) {
           return x - y | 0;
@@ -1094,7 +1076,7 @@ if (Bs_Queue.fold(q2$4, 0, (function (x, y) {
         Caml_builtin_exceptions.assert_failure,
         [
           "bs_queue_test.ml",
-          137,
+          138,
           2
         ]
       ];
@@ -1104,6 +1086,9 @@ console.log("OK");
 
 var Q = 0;
 
+var $plus$plus = Bs_Queue.add;
+
 exports.Q = Q;
 exports.does_raise = does_raise;
+exports.$plus$plus = $plus$plus;
 /* q Not a pure module */

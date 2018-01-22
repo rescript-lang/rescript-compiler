@@ -9,64 +9,65 @@ let does_raise f q =
     false
   with _ ->
     true
+let (++) = Q.add 
 
 let () =
   let q = Q.create () in
-  ();                     assert (Q.toArray q = [|          |] && Q.length q = 0);
-  Q.push q 1;             assert (Q.toArray q = [|1         |] && Q.length q = 1);
-  Q.push q 2;             assert (Q.toArray q = [|1; 2      |] && Q.length q = 2);
-  Q.push q 3;             assert (Q.toArray q = [|1; 2; 3   |] && Q.length q = 3);
-  Q.push q 4;             assert (Q.toArray q = [|1; 2; 3; 4|] && Q.length q = 4);
-  assert (Q.popAssert q = 1); assert (Q.toArray q = [|   2; 3; 4|] && Q.length q = 3);
-  assert (Q.popAssert q = 2); assert (Q.toArray q = [|      3; 4|] && Q.length q = 2);
-  assert (Q.popAssert q = 3); assert (Q.toArray q = [|         4|] && Q.length q = 1);
-  assert (Q.popAssert q = 4); assert (Q.toArray q = [|          |] && Q.length q = 0);
-  assert (does_raise Q.popAssert q);
+  assert (Q.toArray q = [|          |] && Q.length q = 0);
+  assert (Q.toArray (q ++ 1) = [|1         |] && Q.length q = 1);
+  assert (Q.toArray (q ++ 2) = [|1; 2      |] && Q.length q = 2);
+  assert (Q.toArray (q ++ 3) = [|1; 2; 3   |] && Q.length q = 3);
+  assert (Q.toArray (q ++ 4) = [|1; 2; 3; 4|] && Q.length q = 4);
+  assert (Q.popExn q = 1); assert (Q.toArray q = [|   2; 3; 4|] && Q.length q = 3);
+  assert (Q.popExn q = 2); assert (Q.toArray q = [|      3; 4|] && Q.length q = 2);
+  assert (Q.popExn q = 3); assert (Q.toArray q = [|         4|] && Q.length q = 1);
+  assert (Q.popExn q = 4); assert (Q.toArray q = [|          |] && Q.length q = 0);
+  assert (does_raise Q.popExn q);
 ;;
 
 let () =
   let q = Q.create () in
-  Q.push q 1; assert (Q.popAssert q = 1); assert (does_raise Q.popAssert q);
-  Q.push q 2; assert (Q.popAssert q = 2); assert (does_raise Q.popAssert q);
+  assert (Q.popExn (q ++ 1) = 1); assert (does_raise Q.popExn q);
+  assert (Q.popExn (q ++ 2) = 2); assert (does_raise Q.popExn q);
   assert (Q.length q = 0);
 ;;
 
 let () =
   let q = Q.create () in
-  Q.push q 1; assert (Q.peekAssert q = 1);
-  Q.push q 2; assert (Q.peekAssert q = 1);
-  Q.push q 3; assert (Q.peekAssert q = 1);
-  assert (Q.peekAssert q = 1); assert (Q.popAssert q = 1);
-  assert (Q.peekAssert q = 2); assert (Q.popAssert q = 2);
-  assert (Q.peekAssert q = 3); assert (Q.popAssert q = 3);
-  assert (does_raise Q.peekAssert q);
-  assert (does_raise Q.peekAssert q);
+  assert (Q.peekExn (q ++ 1) = 1);
+  assert (Q.peekExn (q ++ 2) = 1);
+  assert (Q.peekExn (q ++ 3) = 1);
+  assert (Q.peekExn q = 1); assert (Q.popExn q = 1);
+  assert (Q.peekExn q = 2); assert (Q.popExn q = 2);
+  assert (Q.peekExn q = 3); assert (Q.popExn q = 3);
+  assert (does_raise Q.peekExn q);
+  assert (does_raise Q.peekExn q);
 ;;
 
 let () =
   let q = Q.create () in
-  for i = 1 to 10 do Q.push q i  done;
+  for i = 1 to 10 do Q.addDone q i  done;
   Q.clear q;
   assert (Q.length q = 0);
-  assert (does_raise Q.popAssert q);
+  assert (does_raise Q.popExn q);
   assert (q = Q.create ());
-  Q.push q 42;
-  assert (Q.popAssert q = 42);
+  Q.addDone q 42;
+  assert (Q.popExn q = 42);
 ;;
 
 let () =
   let q1 = Q.create () in
-  for i = 1 to 10 do Q.push q1 i done;
+  for i = 1 to 10 do Q.addDone q1 i done;
   let q2 = Q.copy q1 in
   assert (Q.toArray q1 = [|1; 2; 3; 4; 5; 6; 7; 8; 9; 10|]);
   assert (Q.toArray q2 = [|1; 2; 3; 4; 5; 6; 7; 8; 9; 10|]);
   assert (Q.length q1 = 10);
   assert (Q.length q2 = 10);
   for i = 1 to 10 do
-    assert (Q.popAssert q1 = i);
+    assert (Q.popExn q1 = i);
   done;
   for i = 1 to 10 do
-    assert (Q.popAssert q2 = i);
+    assert (Q.popExn q2 = i);
   done;
 ;;
 
@@ -74,14 +75,14 @@ let () =
   let q = Q.create () in
   assert (Q.isEmpty q);
   for i = 1 to 10 do
-    Q.push q i;
+    Q.addDone q i;
     assert (Q.length q = i);
     assert (not (Q.isEmpty q));
   done;
   for i = 10 downto 1 do
     assert (Q.length q = i);
     assert (not (Q.isEmpty q));
-    ignore (Q.popAssert q : int);
+    ignore (Q.popExn q : int);
   done;
   assert (Q.length q = 0);
   assert (Q.isEmpty q);
@@ -89,9 +90,9 @@ let () =
 
 let () =
   let q = Q.create () in
-  for i = 1 to 10 do Q.push q i done;
+  for i = 1 to 10 do Q.addDone q i done;
   let i = ref 1 in
-  Q.iter q (fun[@bs] j -> assert (!i = j); incr i);
+  Q.forEach q (fun[@bs] j -> assert (!i = j); incr i);
 ;;
 
 let () =
@@ -105,7 +106,7 @@ let () =
 
 let () =
   let q1 = Q.create () and q2 = Q.create () in
-  for i = 1 to 4 do Q.push q1 i done;
+  for i = 1 to 4 do Q.addDone q1 i done;
   assert (Q.length q1 = 4); assert (Q.toArray q1 = [|1; 2; 3; 4|]);
   assert (Q.length q2 = 0); assert (Q.toArray q2 = [|          |]);
   Q.transfer q1 q2;
@@ -115,7 +116,7 @@ let () =
 
 let () =
   let q1 = Q.create () and q2 = Q.create () in
-  for i = 5 to 8 do Q.push q2 i done;
+  for i = 5 to 8 do Q.addDone q2 i done;
   assert (Q.length q1 = 0); assert (Q.toArray q1 = [|          |]);
   assert (Q.length q2 = 4); assert (Q.toArray q2 = [|5; 6; 7; 8|]);
   Q.transfer q1 q2;
@@ -125,8 +126,8 @@ let () =
 
 let () =
   let q1 = Q.create () and q2 = Q.create () in
-  for i = 1 to 4 do Q.push q1 i  done;
-  for i = 5 to 8 do Q.push q2 i  done;
+  for i = 1 to 4 do Q.addDone q1 i  done;
+  for i = 5 to 8 do Q.addDone q2 i  done;
   assert (Q.length q1 = 4); assert (Q.toArray q1 = [|1; 2; 3; 4|]);
   assert (Q.length q2 = 4); assert (Q.toArray q2 = [|5; 6; 7; 8|]);
   Q.transfer q1 q2;
@@ -134,7 +135,7 @@ let () =
   let v = [|5; 6; 7; 8; 1; 2; 3; 4|] in 
   assert (Q.length q2 = 8); assert (Q.toArray q2 = v );
 
-  assert (Q.fold q2 0 (fun[@bs] x y -> x - y ) = 
+  assert (Q.reduce q2 0 (fun[@bs] x y -> x - y ) = 
           Bs.Array.foldLeft v 0 (fun [@bs] x y -> x - y) )
 
 ;;

@@ -18,7 +18,7 @@ function inOrder(v) {
   while(s.root !== null) {
     current = Bs_Stack.popNull(s);
     var v$2 = current;
-    Bs_Queue.push(q, v$2.value);
+    Bs_Queue.addDone(q, v$2.value);
     current = v$2.right;
     while(current !== null) {
       var v$3 = current;
@@ -41,7 +41,7 @@ function inOrder3(v) {
     current = v$1.left;
   };
   Bs_Stack.dynamicPopIter(s, (function (popped) {
-          Bs_Queue.push(q, popped.value);
+          Bs_Queue.addDone(q, popped.value);
           var current = popped.right;
           while(current !== null) {
             var v = current;
@@ -68,7 +68,7 @@ function inOrder2(v) {
     } else if (s.root !== null) {
       cursor = Bs_Stack.popNull(s);
       var current = cursor;
-      Bs_Queue.push(q, current.value);
+      Bs_Queue.addDone(q, current.value);
       cursor = current.right;
     } else {
       todo = /* false */0;

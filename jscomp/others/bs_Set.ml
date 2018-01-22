@@ -52,7 +52,7 @@ let rec remove0 (t : _ t0) x  ~cmp : _ t0 =
       if rr == r then t  
       else N.bal l v rr
 
-let addArray0   h arr ~cmp =   
+let mergeArray0   h arr ~cmp =   
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
@@ -114,7 +114,7 @@ let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =
       let lr, rr = splitAuxPivot ~cmp  r x pres in 
       N.joinShared l v lr,  rr
 
-let  split0 ~cmp  (t : _ t0) x  =
+let  split0  (t : _ t0) x  ~cmp  =
   match N.toOpt t with 
     None ->
     (N.empty, N.empty), false
@@ -126,7 +126,7 @@ let  split0 ~cmp  (t : _ t0) x  =
 (* [union0 s1 s2]
    Use the pivot to split the smaller collection
 *)      
-let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
+let rec union0 (s1 : _ t0) (s2 : _ t0) ~cmp : _ t0=
   match N.(toOpt s1, toOpt s2) with
     (None, _) -> s2
   | (_, None) -> s1
@@ -147,7 +147,7 @@ let rec union0 ~cmp (s1 : _ t0) (s2 : _ t0) : _ t0=
       N.joinShared (union0 ~cmp l1 l2) v2 (union0 ~cmp r1 r2)
     end
 
-let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
+let rec inter0  (s1 : _ t0) (s2 : _ t0) ~cmp =
   match N.(toOpt s1, toOpt s2) with
   | None, _ 
   | _, None -> N.empty
@@ -160,7 +160,7 @@ let rec inter0 ~cmp (s1 : _ t0) (s2 : _ t0) =
     if !pres then N.joinShared ll v1 rr 
     else N.concatShared ll rr 
 
-let rec diff0 ~cmp s1 s2 =
+let rec diff0 s1 s2 ~cmp  =
   match N.(toOpt s1, toOpt s2) with
     (None, _) 
   | (_, None) -> s1
@@ -179,7 +179,7 @@ let rec diff0 ~cmp s1 s2 =
 
 
 
-let ofArray (type elt) (type id) (dict : (elt,id) Bs_Cmp.t) data = 
+let ofArray (type elt) (type id) ~(dict : (elt,id) Bs_Cmp.t) data = 
   let module M = (val dict ) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
 
@@ -200,10 +200,10 @@ let add (type elt) (type id) (m : (elt,id) t) e =
       ~dict 
       ~data:newData
 
-let addArray (type elt) (type id) (m : (elt,id) t) e = 
+let mergeArray (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
-  let newData = addArray0 ~cmp:M.cmp data e in 
+  let newData = mergeArray0 ~cmp:M.cmp data e in 
   B.bag ~dict ~data:newData
 
 let removeArray (type elt) (type id) (m : (elt,id) t) e = 
@@ -248,12 +248,12 @@ let split (type elt) (type id) (m : (elt,id) t) e =
   let (l,  r), b = split0 ~cmp:M.cmp data e in 
   (B.bag ~dict ~data:l, B.bag ~dict ~data:r), b
   
-let empty dict = 
+let empty ~dict = 
   B.bag ~dict  ~data:N.empty0
 
 let isEmpty m = N.isEmpty0 (B.data m)
 
-let singleton dict e =     
+let singleton e ~dict =     
   B.bag ~dict ~data:(N.singleton0 e)
 
 let cmp (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
@@ -266,9 +266,9 @@ let eq (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =
   let module M = (val dict) in 
   N.eq0 ~cmp:M.cmp mdata ndata    
 
-let iter m f  = N.iter0 (B.data m) f 
+let forEach m f  = N.iter0 (B.data m) f 
 
-let fold m acc f = N.fold0 (B.data m) acc f
+let reduce m acc f = N.fold0 (B.data m) acc f
 
 let forAll m f  = N.forAll0  (B.data m) f
 
@@ -283,34 +283,39 @@ let partition m f  =
   let l,r = N.partitionShared0 mdata f in   
   B.bag ~data:l ~dict, B.bag ~data:r ~dict
 
-let length m = N.length0 (B.data m) 
+let size m = N.length0 (B.data m) 
 
 let toList m = N.toList0 (B.data m)
 let toArray m = N.toArray0 (B.data m)
 
-let minOpt m = N.minOpt0 (B.data m)
+let minimum m = N.minOpt0 (B.data m)
 let minNull m = N.minNull0 (B.data m) 
-let maxOpt m = N.maxOpt0 (B.data m)
+let maximum m = N.maxOpt0 (B.data m)
 let maxNull m = N.maxNull0 (B.data m)
 
 
 
-let findOpt (type elt) (type id)  (m : (elt,id) t) e =   
+let get (type elt) (type id)  (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in   
   let module M = (val dict) in 
   N.findOpt0 ~cmp:M.cmp data e
 
-let findNull (type elt) (type id) (m : (elt,id) t) e =   
+let getNull (type elt) (type id) (m : (elt,id) t) e =   
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   N.findNull0 ~cmp:M.cmp data e
 
-let mem (type elt) (type id) (m : (elt,id) t) e = 
+let getExn (type elt) (type id) (m : (elt,id) t) e =   
+  let dict, data = B.(dict m, data m) in 
+  let module M = (val dict) in 
+  N.findExn0 ~cmp:M.cmp data e
+
+let has (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   N.mem0 ~cmp:(M.cmp) data e
 
-let ofSortedArrayUnsafe ~dict xs  =
+let ofSortedArrayUnsafe xs ~dict =
   B.bag ~dict ~data:(N.ofSortedArrayUnsafe0 xs)
 
 
@@ -323,25 +328,28 @@ let singleton0 = N.singleton0
 
 let cmp0 = N.cmp0
 let eq0 = N.eq0 
-let mem0 = N.mem0
-let iter0 = N.iter0      
-let fold0 = N.fold0
+let has0 = N.mem0
+let forEach0 = N.iter0      
+let reduce0 = N.fold0
 let forAll0 = N.forAll0
 let exists0 = N.exists0    
-let length0 = N.length0
+let size0 = N.length0
 let toList0 = N.toList0
 let toArray0 = N.toArray0
-let minOpt0 = N.minOpt0
-let maxOpt0 = N.maxOpt0
-let findOpt0 = N.findOpt0
-let findNull0 = N.findNull0
+let minimum0 = N.minOpt0
+let maximum0 = N.maxOpt0
+let get0 = N.findOpt0
+let getNull0 = N.findNull0
 
 let ofSortedArrayUnsafe0 = N.ofSortedArrayUnsafe0
 let subset0 = N.subset0
 let filter0 = N.filterShared0
 let partition0 = N.partitionShared0
 
-
+let getData = B.data
+let getDict = B.dict
+let packDictData = B.bag                
+let checkInvariant d = N.checkInvariant (B.data d)
 
 
 

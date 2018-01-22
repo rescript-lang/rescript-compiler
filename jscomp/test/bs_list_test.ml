@@ -17,19 +17,19 @@ module A = Bs.Array
 module J = Js.Json 
 let sum xs = 
   let v = ref 0 in 
-  N.iter xs (fun[@bs] x -> v := !v + x);
+  N.forEach xs (fun[@bs] x -> v := !v + x);
   !v 
 
 let sum2 xs ys =   
   let v = ref 0 in 
-  N.iter2 xs ys (fun[@bs] x y -> v := !v + x  + y);
+  N.forEach2 xs ys (fun[@bs] x y -> v := !v + x  + y);
   !v 
 let () = 
   let u = (N.init 5 (fun[@bs] i -> i * i )) in 
 
   (* N.checkInvariant u ; *)
   let f i = 
-    eq __LOC__ (N.nthAssert u i) (i * i) in 
+    eq __LOC__ (N.getExn u i) (i * i) in 
   for i = 0 to 4 do 
     f i 
   done ;
@@ -121,41 +121,41 @@ let () =
   map2_add length_10_id b =~  N.(append (map c (fun[@bs] x -> x * 2)) [16;18]);
   map2_add length_10_id length_8_id =~
   N.(mapi length_8_id (fun [@bs] i x -> i + x ) );
-  N.rev (N.mapRev2 length_10_id length_10_id add) 
+  N.reverse (N.mapReverse2 length_10_id length_10_id add) 
   =~ N.map length_10_id (fun [@bs] x -> x * 2);
-  let xs = (N.rev (N.mapRev2 length_8_id length_10_id add)) in 
+  let xs = (N.reverse (N.mapReverse2 length_8_id length_10_id add)) in 
   eq __LOC__ (N.length xs) 8;
   xs =~ (N.map2 length_10_id length_8_id add)
 
 let () =   
   let (=~) = eq "TAKE" in 
-  N.takeOpt [1;2;3] 2 =~ Some [1;2];
-  N.takeOpt [] 1 =~ None;
-  N.takeOpt [1;2] 3 =~ None ; 
-  N.takeOpt [1;2] 2 =~ Some [1;2];
-  N.takeOpt length_10_id 8 =~ Some length_8_id ;
-  N.takeOpt length_10_id 0 =~ Some [];
-  N.takeOpt length_8_id (-2) =~ None 
+  N.take [1;2;3] 2 =~ Some [1;2];
+  N.take [] 1 =~ None;
+  N.take [1;2] 3 =~ None ; 
+  N.take [1;2] 2 =~ Some [1;2];
+  N.take length_10_id 8 =~ Some length_8_id ;
+  N.take length_10_id 0 =~ Some [];
+  N.take length_8_id (-2) =~ None 
 
 let () =   
   let (=~) = eq "DROP" in 
-  N.dropOpt length_10_id 10 =~ Some [];
-  N.dropOpt length_10_id 8 =~ Some [8;9];
-  N.dropOpt length_10_id 0 =~ Some length_10_id ;
-  N.dropOpt length_8_id (-1) =~ None
+  N.drop length_10_id 10 =~ Some [];
+  N.drop length_10_id 8 =~ Some [8;9];
+  N.drop length_10_id 0 =~ Some length_10_id ;
+  N.drop length_8_id (-1) =~ None
 
 let () = 
   let (=~) = eq "SPLIT" in 
   let a = N.init 5 id in 
-  N.splitAtOpt [] 1 =~ None;
-  N.splitAtOpt a 6 =~ None;
-  N.splitAtOpt a 5 =~ Some (a,[]);
-  N.splitAtOpt a 4 =~ Some ([0;1;2;3],[4]);
-  N.splitAtOpt a 3 =~ Some ([0;1;2],[3;4]);
-  N.splitAtOpt a 2 =~ Some ([0;1],[2;3;4]);
-  N.splitAtOpt a 1 =~ Some ([0],[1;2;3;4]);
-  N.splitAtOpt a 0 =~ Some ([],a);
-  N.splitAtOpt a (-1) =~ None
+  N.splitAt [] 1 =~ None;
+  N.splitAt a 6 =~ None;
+  N.splitAt a 5 =~ Some (a,[]);
+  N.splitAt a 4 =~ Some ([0;1;2;3],[4]);
+  N.splitAt a 3 =~ Some ([0;1;2],[3;4]);
+  N.splitAt a 2 =~ Some ([0;1],[2;3;4]);
+  N.splitAt a 1 =~ Some ([0],[1;2;3;4]);
+  N.splitAt a 0 =~ Some ([],a);
+  N.splitAt a (-1) =~ None
 let succx =   (fun[@bs] x -> x + 1)
 
 let () = 
@@ -173,37 +173,37 @@ let () =
   
 let ()   = 
 
-  eq __LOC__ N.(headOpt length_10_id, tailOpt length_10_id)  (Some 0, N.dropOpt length_10_id 1);
-  eq __LOC__ (N.headOpt [])  None ;
-  N.iteri length_10_id (fun[@bs] i x ->
-      eq __LOC__ (N.nthOpt length_10_id i) (Some x));     
-  eq __LOC__ (N.tailOpt [])  None ; 
-  eq __LOC__ (N.dropOpt [] 3) None ; 
+  eq __LOC__ N.(head length_10_id, tail length_10_id)  (Some 0, N.drop length_10_id 1);
+  eq __LOC__ (N.head [])  None ;
+  N.forEachi length_10_id (fun[@bs] i x ->
+      eq __LOC__ (N.get length_10_id i) (Some x));     
+  eq __LOC__ (N.tail [])  None ; 
+  eq __LOC__ (N.drop [] 3) None ; 
   eq __LOC__ (N.mapi [] (fun [@bs] i x -> i + x)) [];
-  eq __LOC__ (N.nthOpt  length_10_id (-1) ) None; 
-  eq __LOC__ (N.nthOpt  length_10_id 12 ) None;
+  eq __LOC__ (N.get  length_10_id (-1) ) None; 
+  eq __LOC__ (N.get  length_10_id 12 ) None;
   eq __LOC__ (sum []) 0;
   eq __LOC__ (sum length_10_id) 45;
   eq __LOC__ (N.init 0 id) [];
-  eq __LOC__ (N.(rev (rev length_10_id)))  length_10_id ; 
-  eq __LOC__ (N.(rev (rev length_8_id)))  length_8_id ;
-  eq __LOC__ (N.rev []) [];
+  eq __LOC__ (N.(reverse (reverse length_10_id)))  length_10_id ; 
+  eq __LOC__ (N.(reverse (reverse length_8_id)))  length_8_id ;
+  eq __LOC__ (N.reverse []) [];
   eq __LOC__ 
-    (N.rev (N.mapRev length_10_id succx))
+    (N.reverse (N.mapReverse length_10_id succx))
     (N.map length_10_id succx  );
   eq __LOC__
-    (N.foldLeft length_10_id 0 add) 45;
+    (N.reduce length_10_id 0 add) 45;
   eq __LOC__
-    (N.foldRight length_10_id 0 add) 45;
+    (N.reduceFromTail length_10_id 0 add) 45;
   (* eq __LOC__ 
      (N.mapRev2 length_10_id length_8_id add ) *)
   eq __LOC__ (sum2 length_10_id length_10_id) 90;
   eq __LOC__ (sum2 length_8_id length_10_id) 56;
-  eq __LOC__ (N.foldLeft2 length_10_id length_8_id 0 
+  eq __LOC__ (N.reduce2 length_10_id length_8_id 0 
                 (fun [@bs] acc x y -> acc + x + y)) 56;
-  eq __LOC__ (N.foldRight2 length_10_id length_8_id 0 
+  eq __LOC__ (N.reduceFromTail2 length_10_id length_8_id 0 
                 (fun [@bs] acc x y -> acc + x + y)) 56;                
-  eq __LOC__ (N.foldRight2 length_10_id length_10_id 0 
+  eq __LOC__ (N.reduceFromTail2 length_10_id length_10_id 0 
                 (fun [@bs] acc x y -> acc + x + y)) 90;
   eq __LOC__ (N.forAll [2;4;6] mod2) true;
   eq __LOC__ (N.forAll [1] mod2) false;
@@ -217,7 +217,7 @@ let ()   =
   eq __LOC__ (N.exists2 [] [1] (fun [@bs] x y -> x > y)) false;
   eq __LOC__ (N.exists2 [2;3] [1;4] (fun [@bs] x y -> x > y)) true;
   eq __LOC__ (N.exists2 [0;3] [1;4] (fun [@bs] x y -> x > y)) false;
-  eq __LOC__ (N.mem [1;2;3] "2" (fun [@bs] x s -> string_of_int x = s)) true;
-  eq __LOC__ (N.mem [1;2;3] "0" (fun [@bs] x s -> string_of_int x = s)) false
+  eq __LOC__ (N.has [1;2;3] "2" (fun [@bs] x s -> string_of_int x = s)) true;
+  eq __LOC__ (N.has [1;2;3] "0" (fun [@bs] x s -> string_of_int x = s)) false
 
 ;; Mt.from_pair_suites __FILE__ !suites
