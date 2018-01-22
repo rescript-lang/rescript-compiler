@@ -92,6 +92,8 @@ external to_bool : boolean -> bool = "#boolean_to_bool"
 (** convert Js boolean to OCaml bool *)
 external typeof : 'a -> string = "#typeof"
 (** [typeof x] will be compiled as [typeof x] in JS *)
+
+external unsafeCoerce : 'a -> 'b = "%identity"
 external log : 'a -> unit = "log" 
 [@@bs.val] [@@bs.scope "console"]
 external log2 : 'a -> 'b -> unit = "log" 

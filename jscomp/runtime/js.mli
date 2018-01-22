@@ -111,6 +111,9 @@ external typeof : 'a -> string = "#typeof"
     Please consider functions in {!Types} for a type safe way of reflection 
 *)
 
+external unsafeCoerce : 'a -> 'b = "%identity"
+(** [unsafeCoerce x] casts [x] from any type to any type. Use with caution. *)
+
 external log : 'a -> unit = "log" 
 [@@bs.val] [@@bs.scope "console"]
 external log2 : 'a -> 'b -> unit = "log" 

@@ -39,7 +39,30 @@ external null : 'a t = "null" [@@bs.val]
 (** The [undefined] value of type ['a Js.null_undefined] *)
 external undefined : 'a t = "undefined" [@@bs.val]
 
+(** [map f x] returns the result of running [f] on the value inside [x].
 
+If [x] is [null] or [undefined], returns it unchanged. If it contains a
+value, returns the result of calling [f] on that value, wrapped up as a
+nullable value again.
+
+@example {[
+map (fun [@bs] x -> x + 1) (return 1) = return 2
+map (fun [@bs] x -> x + 1) undefined = undefined
+]} *)
+val map : ('a -> 'b [@bs]) -> 'a t -> 'b t
+
+(** [andThen f x] returns the result of running [f] on the value inside
+[x] and then flattening the result of that.
+
+If [x] is [null] or [undefined], returns it unchanged. If it contains a
+value, returns a nullable value produced by calling [f] with that
+contained value.
+
+@example {[
+andThen (fun [@bs] x -> return (x + 1)) (return 1) = return 2
+andThen (fun [@bs] x -> return (x + 1)) undefined = undefined
+]} *)
+val andThen : ('a -> 'b t [@bs]) -> 'a t -> 'b t
 
 (** Maps the contained value using the given function
 
@@ -48,10 +71,11 @@ the given function [a' -> 'b], then wrapped back up and returned as ['b Js.null_
 
 @example {[
 let maybeGreetWorld (maybeGreeting: string Js.null_undefined) =
-  Js.Undefined.bind maybeGreeting (fun greeting -> greeting ^ " world!")
+  bind maybeGreeting (fun [@bs] greeting -> greeting ^ " world!")
 ]}
 *)
 val bind : 'a t -> ('a -> 'b [@bs]) -> 'b t
+[@@ocaml.deprecated "map is the more idiomatic name for this, use map instead."]
 
 (** Iterates over the contained value with the given function
 
@@ -60,7 +84,7 @@ the given function.
 
 @example {[
 let maybeSay (maybeMessage: string Js.null_undefined) =
-  Js.Null_undefined.iter maybeMessage (fun message -> Js.log message)
+  Js.Null_undefined.iter maybeMessage (fun [@bs] message -> Js.log message)
 ]}
 *)
 val iter : 'a t -> ('a -> unit [@bs]) -> unit

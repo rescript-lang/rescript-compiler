@@ -31,10 +31,15 @@ external test : 'a t -> bool =  "#is_nil_undef"
 external null : 'a t = "null" [@@bs.val]
 external undefined : 'a t = "undefined" [@@bs.val]
 
-let bind x f =
-  match to_opt x with
-  | None -> (Obj.magic (x: 'a t): 'b t)
-  | Some x -> return (f x [@bs])
+let map f x = match to_opt x with
+| None -> Js.unsafeCoerce x
+| Some x -> return (f x [@bs])
+
+let andThen f x = match to_opt x with
+| None -> Js.unsafeCoerce x
+| Some x -> f x [@bs]
+
+let bind x f = map f x
 
 let iter x f =
   match to_opt x with
