@@ -128,7 +128,7 @@ let rec mem_in_bucket (key : key) cell =
    | Some nextCell -> 
      mem_in_bucket key nextCell)
 
-let mem h key =
+let has h key =
   let h_buckets = C.buckets h in 
   let nid = hash key  land (Array.length h_buckets - 1) in 
   let bucket = (Bs_Array.unsafe_get h_buckets nid) in 
@@ -141,9 +141,9 @@ let mem h key =
 let create = C.create0
 let clear = C.clear0
 let reset = C.reset0
-let length = C.length0
-let iter = N.iter0
-let fold = N.fold0
+let size = C.length0
+let forEach = N.iter0
+let reduce = N.fold0
 let logStats = N.logStats0
 let toArray = N.toArray0
 
@@ -156,8 +156,12 @@ let ofArray arr  =
   v
 
 (* TOOD: optimize heuristics for resizing *)  
-let addArray h arr =   
+let mergeArrayDone h arr =   
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
     add h (Bs_Array.unsafe_get arr i)
-done 
+  done
+
+
+let mergeArray h arr =   
+  mergeArrayDone h arr; h 

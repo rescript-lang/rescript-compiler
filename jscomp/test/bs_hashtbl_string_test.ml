@@ -176,7 +176,7 @@ let bench7 () =
   ;
   (* [%time  *)
   for i = 0 to count do 
-    assert (S.mem
+    assert (S.has
               table i)
   done
   (* ] *)
@@ -187,7 +187,7 @@ let bench7 () =
   done 
   (* ] *)
   ;
-  assert (S.length table = 0)  
+  assert (S.size table = 0)  
 
 
 (* ;; [%time bench4 ()]

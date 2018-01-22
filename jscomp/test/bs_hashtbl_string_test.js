@@ -303,7 +303,7 @@ function bench7() {
     Bs_HashSetInt.add(table, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_HashSetInt.mem(table, i$1)) {
+    if (!Bs_HashSetInt.has(table, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -318,7 +318,7 @@ function bench7() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashSetInt.remove(table, i$2);
   }
-  if (Bs_HashSetInt.length(table)) {
+  if (Bs_HashSetInt.size(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

@@ -84,7 +84,7 @@ let rec doBucketFold ~f b accu =
   | None ->
     accu
   | Some cell ->
-    doBucketFold ~f (next cell) (f (key cell) accu [@bs]) 
+    doBucketFold ~f (next cell) (f  accu (key cell) [@bs]) 
 
 let fold0 h init f =
   let d = C.buckets h in

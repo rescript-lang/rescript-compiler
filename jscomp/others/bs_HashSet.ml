@@ -173,9 +173,9 @@ let create dict initialize_size =
     ~dict 
 let clear h = clear0 (B.data h)
 let reset h = reset0 (B.data h)
-let length h = length0 (B.data h)                 
-let iter h f  = iter0 (B.data h) f 
-let fold h init f = fold0 (B.data h) init f
+let size h = length0 (B.data h)                 
+let forEach h f  = iter0 (B.data h) f 
+let reduce h init f = N.fold0 (B.data h) init f
 let logStats h = logStats0 (B.data h)
 
 let add (type a) (type id) (h : (a,id) t) (key:a)  = 
@@ -194,7 +194,7 @@ let replace (type a)(type id)  (h : (a,id) t) (key : a)  =
   let module M = (val dict) in 
   add0 ~hash:M.hash ~eq:M.eq data key
 
-let mem (type a) (type id) (h : (a,id) t) (key : a) =           
+let has (type a) (type id) (h : (a,id) t) (key : a) =           
   let dict,data = B.(dict h, data h) in
   let module M = (val dict) in   
   mem0 ~hash:M.hash ~eq:M.eq data key   
@@ -215,14 +215,20 @@ let addArray0 ~hash ~eq  h arr =
   done 
 
 let ofArray (type a) (type id)
-    ~dict:(dict:(a,id) Bs_Hash.t) arr =     
+    arr
+    ~dict:(dict:(a,id) Bs_Hash.t)  =     
   let module M = (val dict) in 
   B.bag ~dict 
     ~data:M.(ofArray0 ~eq~hash arr)
 
-let addArray (type a) (type id)
+let mergeArrayDone (type a) (type id)
     (h : (a,id) t) arr = 
-  let dict,data = B.(dict h, data h) in 
-  let module M = (val dict) in
+  let data = B.data h in 
+  let module M = (val B.dict h) in
   M.(addArray0 ~hash ~eq data arr)
 
+let mergeArray h arr = mergeArrayDone h arr; h
+  
+let getData = B.data
+let getDict = B.dict
+let packDictData = B.bag 

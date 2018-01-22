@@ -111,7 +111,7 @@ bs_internalBucketsType.cmi :
 bs_internalSetBuckets.cmi : bs_internalBucketsType.cmi
 bs_HashMap.cmi : bs_Hash.cmi
 bs_HashMultiMap.cmi : bs_Hash.cmi bs_Bag.cmj
-bs_HashSet.cmi : bs_Hash.cmi bs_Bag.cmj
+bs_HashSet.cmi : bs_Hash.cmi
 bs_HashSetString.cmi :
 bs_HashSetInt.cmi :
 bs_Cmp.cmi :
