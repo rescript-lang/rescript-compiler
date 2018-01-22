@@ -24,19 +24,19 @@
 
 type 'a t = 'a list
 
-val headOpt : 'a t -> 'a option
+val head : 'a t -> 'a option
 
-val tailOpt : 'a t -> 'a t option
+val tail : 'a t -> 'a t option
+val add : 'a t -> 'a -> 'a t
+val get : 'a t -> int -> 'a option
 
-val nthOpt : 'a t -> int -> 'a option
+val getExn : 'a t -> int -> 'a
 
-val nthAssert : 'a t -> int -> 'a
+val drop : 'a t -> int -> 'a t option 
 
-val dropOpt : 'a t -> int -> 'a t option 
+val take : 'a t -> int -> 'a t option 
 
-val takeOpt : 'a t -> int -> 'a t option 
-
-val splitAtOpt : 'a t -> int -> ('a list * 'a list) option 
+val splitAt : 'a t -> int -> ('a list * 'a list) option 
 
 val append : 'a t -> 'a t -> 'a t
 
@@ -52,36 +52,39 @@ val length : 'a t -> int
 
 val toArray : 'a t -> 'a array
 
-type json = Js_json.t 
+(* type json = Js_json.t  *)
 
-val toJson : 'a t -> ('a -> json  [@bs]) -> json
-val fromJson : json -> (json -> 'a [@bs]) -> 'a t 
+(* val toJson : 'a t -> ('a -> json  [@bs]) -> json *)
+(* val fromJson : json -> (json -> 'a [@bs]) -> 'a t  *)
 
-val revAppend : 'a t -> 'a t -> 'a t
-
-val rev : 'a t -> 'a t
-
+val reverseAppend : 'a t -> 'a t -> 'a t
+(**
+   [reverseAppend a b] is semantically equivalent to [append (reverse a) b]
+*)
+    
+val reverse : 'a t -> 'a t
 
 val flatten : 'a t t -> 'a t
 
-val mapRev : 'a t -> ('a -> 'b [@bs]) -> 'b t
+val mapReverse : 'a t -> ('a -> 'b [@bs]) -> 'b t
+(** [mapReverse a f] is semantically equivalent to [reverse (map a f)]    
+*)
+val forEach : 'a t ->  ('a -> 'b [@bs]) -> unit
 
-val iter : 'a t ->  ('a -> 'b [@bs]) -> unit
+val forEachi : 'a t -> (int -> 'a -> 'b [@bs]) -> unit
 
-val iteri : 'a t -> (int -> 'a -> 'b [@bs]) -> unit
+val reduce :  'a t -> 'b ->  ('b -> 'a -> 'b [@bs]) ->'b
 
-val foldLeft :  'a t -> 'b ->  ('b -> 'a -> 'b [@bs]) ->'b
+val reduceFromTail : 'a t -> 'b -> ('a -> 'b -> 'b [@bs])  -> 'b
 
-val foldRight : 'a t -> 'b -> ('a -> 'b -> 'b [@bs])  -> 'b
+val mapReverse2 : 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) ->  'c t
 
-val mapRev2 : 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) ->  'c t
+val forEach2 : 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> unit
 
-val iter2 : 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> unit
-
-val foldLeft2 :
+val reduce2 :
   'b t -> 'c t  -> 'a  -> ('a -> 'b -> 'c -> 'a [@bs]) ->  'a
 
-val foldRight2 :
+val reduceFromTail2 :
   'a t -> 'b t -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) ->  'c
 
 val forAll : 'a t -> ('a -> bool [@bs]) ->  bool
@@ -90,19 +93,23 @@ val exists : 'a t -> ('a -> bool [@bs]) -> bool
 
 val forAll2 : 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
+val cmp : 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
+
+val eq : 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
+  
 val exists2 :  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
-val mem :  'a t -> 'b ->  ('a -> 'b -> bool [@bs]) -> bool
+val has :  'a t -> 'b ->  ('a -> 'b -> bool [@bs]) -> bool
 
-val memq :  'a t -> 'a ->bool
+val hasq :  'a t -> 'a ->bool
 
-val assocOpt : ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
+val assoc : ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
 
-val assqOpt : ('a * 'b) t -> 'a ->  'b option
+val assq : ('a * 'b) t -> 'a ->  'b option
 
-val memAssoc : ('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
+val hasAssoc : ('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
 
-val memAssq : ('a * 'b) t -> 'a -> bool
+val hasAssq : ('a * 'b) t -> 'a -> bool
 
 val removeAssoc :
   ('a * 'c) t ->
@@ -111,7 +118,7 @@ val removeAssoc :
 
 val removeAssq :  ('a * 'b) t -> 'a -> ('a * 'b) t
 
-val findOpt : 'a t -> ('a -> bool [@bs]) ->  'a option
+val getBy  : 'a t -> ('a -> bool [@bs]) ->  'a option
 
 val filter : 'a t ->  ('a -> bool [@bs]) -> 'a t
 
@@ -120,3 +127,5 @@ val partition : 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
 val unzip : ('a * 'b) t -> 'a t * 'b t
 
 val zip : 'a t -> 'b t -> ('a * 'b) t
+
+

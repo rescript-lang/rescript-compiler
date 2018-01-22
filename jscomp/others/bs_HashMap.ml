@@ -266,3 +266,7 @@ let keys h =
   keys0 (B.data h)
 let values0 = N.values0  
 let values h = N.values0 (B.data h)
+
+let getData = B.data
+let getDict = B.dict
+let packDictData = B.bag 

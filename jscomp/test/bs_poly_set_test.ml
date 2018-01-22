@@ -84,7 +84,7 @@ let () =
 let testIterToList  xs = 
   let v = ref [] in 
   N.forEach xs (fun[@bs] x -> v := x :: !v ) ; 
-  L.rev !v
+  L.reverse !v
 
 let () =   
   let u0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 20) in 

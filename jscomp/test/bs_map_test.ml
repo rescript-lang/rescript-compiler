@@ -18,7 +18,7 @@ module Icmp2 = Bs.Cmp.Make(
   )
 module M = Bs.Map
 module MI = Bs.MapInt
-module B = Bs.Bag
+(* module B = Bs.Bag *)
 module I = Array_data_util
 module A = Bs_Array
 module L = Bs.List
@@ -50,7 +50,7 @@ let () =
       ~cmp:  Mm.cmp
       i i 
   done ;
-  let newm = B.bag ~data:!data ~dict:m_dict in 
+  let newm = M.packDictData ~data:!data ~dict:m_dict in 
   Js.log newm
 module ISet = Bs.Set 
 let () =     

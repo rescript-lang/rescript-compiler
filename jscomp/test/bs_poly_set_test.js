@@ -198,7 +198,7 @@ function testIterToList(xs) {
           ];
           return /* () */0;
         }));
-  return Bs_List.rev(v[0]);
+  return Bs_List.reverse(v[0]);
 }
 
 var u0$1 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(0, 20));

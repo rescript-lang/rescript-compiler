@@ -157,8 +157,6 @@ var M = 0;
 
 var MI = 0;
 
-var B = 0;
-
 var I = 0;
 
 var A = 0;
@@ -179,7 +177,6 @@ exports.Icmp = Icmp;
 exports.Icmp2 = Icmp2;
 exports.M = M;
 exports.MI = MI;
-exports.B = B;
 exports.I = I;
 exports.A = A;
 exports.L = L;

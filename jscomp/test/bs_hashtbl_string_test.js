@@ -114,7 +114,7 @@ function bench2(m) {
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              75,
+              76,
               4
             ]
           ];
@@ -129,7 +129,7 @@ function bench2(m) {
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            82,
+            83,
             2
           ]
         ];
@@ -154,7 +154,7 @@ function bench3(m) {
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              97,
+              98,
               4
             ]
           ];
@@ -169,7 +169,7 @@ function bench3(m) {
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            104,
+            105,
             2
           ]
         ];
@@ -191,7 +191,7 @@ function bench4() {
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              117,
+              118,
               4
             ]
           ];
@@ -206,7 +206,7 @@ function bench4() {
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            123,
+            124,
             2
           ]
         ];
@@ -223,37 +223,37 @@ function bench5() {
   var table_data = table.data;
   var hash = Int_000;
   var eq = Int_001;
-  console.time("bs_hashtbl_string_test.ml 131");
+  console.time("bs_hashtbl_string_test.ml 132");
   for(var i = 0; i <= 1000000; ++i){
     Bs_HashMap.add0(hash, eq, table_data, i, i);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 131");
-  console.time("bs_hashtbl_string_test.ml 135");
+  console.timeEnd("bs_hashtbl_string_test.ml 132");
+  console.time("bs_hashtbl_string_test.ml 136");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_HashMap.mem0(hash, eq, table_data, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              136,
+              137,
               6
             ]
           ];
     }
     
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 135");
-  console.time("bs_hashtbl_string_test.ml 139");
+  console.timeEnd("bs_hashtbl_string_test.ml 136");
+  console.time("bs_hashtbl_string_test.ml 140");
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMap.remove0(hash, eq, table_data, i$2);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 139");
+  console.timeEnd("bs_hashtbl_string_test.ml 140");
   if (table.data.size) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            142,
+            143,
             2
           ]
         ];
@@ -273,7 +273,7 @@ function bench6() {
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              153,
+              154,
               4
             ]
           ];
@@ -288,7 +288,7 @@ function bench6() {
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            159,
+            160,
             2
           ]
         ];
@@ -308,7 +308,7 @@ function bench7() {
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              178,
+              179,
               4
             ]
           ];
@@ -323,7 +323,7 @@ function bench7() {
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            189,
+            190,
             2
           ]
         ];
@@ -332,17 +332,17 @@ function bench7() {
   }
 }
 
-console.time("bs_hashtbl_string_test.ml 200");
+console.time("bs_hashtbl_string_test.ml 201");
 
 bench7(/* () */0);
 
-console.timeEnd("bs_hashtbl_string_test.ml 200");
+console.timeEnd("bs_hashtbl_string_test.ml 201");
 
 var count = 1000000;
 
 var initial_size = 1000000;
 
-var B = 0;
+var M = 0;
 
 var S = 0;
 
@@ -356,7 +356,7 @@ exports.empty = empty;
 exports.bench = bench;
 exports.count = count;
 exports.initial_size = initial_size;
-exports.B = B;
+exports.M = M;
 exports.bench2 = bench2;
 exports.bench3 = bench3;
 exports.Sx = Sx;

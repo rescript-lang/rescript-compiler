@@ -2,9 +2,7 @@
 
 type ('a, 'b, 'id) t0
 
-type ('a,'b,'id) t = 
-    (('a, 'id) Bs_Hash.t,
-     ('a,'b,'id) t0) Bs_Bag.bag 
+type ('a,'b,'id) t 
   
 (** The type of hash tables from type ['a] to type ['b]. *)
 
@@ -194,4 +192,8 @@ val values0 :
     ('a,'b,'id) t0 -> 'b array
 val values :    
     ('a,'b,'id) t -> 'b array    
-    
+
+val getData: ('k,'v,'id) t  -> ('k,'v,'id) t0
+val getDict: ('k,'v,'id) t  -> ('k,'id) Bs_Hash.t
+val packDictData: dict:('k, 'id) Bs_Hash.t -> data:('k, 'v, 'id) t0 -> ('k, 'v, 'id) t
+

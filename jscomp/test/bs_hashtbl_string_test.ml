@@ -54,19 +54,20 @@ let bench() =
 
 let count  = 1_000_000 
 let initial_size = 1_000_000
-module B = Bs.Bag 
+(* module B = Bs.Bag  *)
 (*
     (empty : _ Bs.HashMap.t)
     #.add (string_of_int i) i 
     #.add (string_of_int i) i
 *)    
+module M = Bs.HashMap
 let bench2 (type t) (m : (string,t) Bs.Hash.t) = 
   let empty = 
-    Bs.HashMap.create m initial_size in
+    M.create m initial_size in
   let module String = (val m) in     
   let hash = String.hash in 
   let eq = String.eq in 
-  let table = B.data empty in 
+  let table = M.getData empty in 
   for i  = 0 to  count do  
     Bs.HashMap.add0 ~hash ~eq
       table (string_of_int i) i 
@@ -125,7 +126,7 @@ let bench4 () =
 let bench5 () =   
   let table = 
     Bs.HashMap.create (module Int) initial_size in 
-  let table_data = B.data table in   
+  let table_data = M.getData table in   
   let hash = Int.hash in 
   let eq = Int.eq in 
   [%time for i  = 0 to  count do  
