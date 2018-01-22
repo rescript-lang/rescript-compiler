@@ -83,7 +83,7 @@ N.maxNull0 (data d)
 let forEach d f =
   N.iter0 (data d) f     
 
-let fold d acc cb = 
+let reduce d acc cb = 
   N.fold0 (data d) acc cb 
 let forAll d p = 
   N.forAll0 (data d) p 

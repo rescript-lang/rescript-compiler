@@ -153,11 +153,11 @@ function approx(loc, x, y) {
   return b(loc, +(x === y));
 }
 
-eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", Bs_SetInt.fold(v$1, 0, (function (x, y) {
+eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", Bs_SetInt.reduce(v$1, 0, (function (x, y) {
             return x + y | 0;
-          })), $$Array.fold_left((function (prim, prim$1) {
-            return prim + prim$1 | 0;
-          }), 0, ss));
+          })), Bs_Array.foldLeft(ss, 0, (function (x, y) {
+            return x + y | 0;
+          })));
 
 approx("File \"bs_set_int_test.ml\", line 75, characters 9-16", -1, minv);
 

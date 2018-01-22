@@ -65,7 +65,7 @@ val eq:
 val forEach: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
 (** [forEach m f] applies [f] in turn to all elements of [m].
     In increasing order *)
-val fold: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
+val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
 (** In increasing order. *)
 val forAll: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
 (** [for_all p s] checks if all elements of the set

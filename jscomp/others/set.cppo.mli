@@ -69,7 +69,7 @@ val eq: t -> t -> bool
 val forEach: t -> (elt -> unit [@bs]) ->  unit
 (** In increasing order*)
 
-val fold: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
+val reduce: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
 (** Iterate in increasing order. *)
 
 val forAll: t -> (elt -> bool [@bs]) ->  bool
