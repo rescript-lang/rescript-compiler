@@ -29,11 +29,31 @@ let () =
   N.mergeArrayDone v u ;
   eq __LOC__ (N.size v) 100_001;
   for i = 0 to 1_000 do  
-    N.remove v i 
+    N.removeDone v i 
   done ; 
   eq __LOC__ (N.size v ) 99_000;
   for i = 0 to 2_000 do  
-    N.remove v i 
+    N.removeDone v i 
   done ; 
   eq __LOC__ (N.size v ) 98_000
+module A = Bs_Array
+module SI = Bs_SortInt
+let () =   
+  let u0 = N.ofArray (I.randomRange 0 100_000) in 
+  let u1 = N.copy u0 in 
+  eq __LOC__ (N.toArray u0) (N.toArray u1);
+  for i = 0 to 2000 do 
+    N.removeDone u1 i 
+  done ;  
+  for i = 0 to 1000 do 
+    N.removeDone u0 i 
+  done ;
+  let v0 = (A.append (I.range 0 1000) (N.toArray u0)) in 
+  let v1 = (A.append (I.range 0 2000) (N.toArray u1)) in 
+  SI.stableSort v0; 
+  SI.stableSort v1;
+  eq __LOC__  v0 v1 
+  
+  
+
 let () = Mt.from_pair_suites __FILE__ !suites

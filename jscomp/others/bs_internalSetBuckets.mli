@@ -31,7 +31,7 @@ type 'a bucket = {
 and 'a t0 = 'a bucket C.container  
 [@@bs.deriving abstract]
 
-
+val copy: 'a t0 -> 'a t0
 val iter0 : 'a bucket C.container -> ('a -> 'b [@bs]) -> unit
 val fillArray : int -> 'a array -> 'a bucket -> int
 val toArray0 : 'a bucket C.container -> 'a array

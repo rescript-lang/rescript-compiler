@@ -31,10 +31,11 @@ type ('a, 'id) t
 val create: ('a,'id) Bs_Hash.t -> int -> ('a, 'id) t
 val clear: ('a, 'id) t -> unit
 
-val add: ('a, 'id) t -> 'a -> unit
+val addDone: ('a, 'id) t -> 'a -> unit
+val add: ('a, 'id) t -> 'a -> ('a, 'id) t 
 val has: ('a, 'id) t -> 'a -> bool
-val remove: ('a, 'id) t -> 'a -> unit
-
+val removeDone: ('a, 'id) t -> 'a -> unit
+val remove: ('a, 'id) t -> 'a -> ('a, 'id) t
 val forEach: ('a, 'id) t -> ('a  -> unit [@bs]) ->  unit
 (** Order unspecified. *)
 
@@ -71,13 +72,24 @@ val clear0 : ('a, 'id) t0 -> unit
 val create0 : int -> ('a, 'id) t0
 val reset0 : ('a, 'id) t0 -> unit
 val add0 :
+  ('a,'id) t0 ->
+  'a ->
   hash:('a,'id) Bs_Hash.hash ->
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a,'id) t0 -> 'a ->  unit
-val mem0: 
+  eq:('a,'id) Bs_Hash.eq ->
+  ('a,'id) t0 
+val addDone0 :
+  ('a,'id) t0 ->
+  'a ->
+  hash:('a,'id) Bs_Hash.hash ->
+  eq:('a,'id) Bs_Hash.eq ->
+  unit
+  
+val has0: 
+  ('a, 'id) t0 -> 
+  'a -> 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'id) t0 -> 'a -> bool
+  bool
 val remove0: 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 

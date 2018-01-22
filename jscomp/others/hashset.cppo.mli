@@ -11,11 +11,16 @@ type t
 val create: int -> t 
 val clear: t -> unit
 
-val add:  t -> key -> unit
+val addDone:  t -> key -> unit
+val add: t -> key -> t
+val copy: t -> t
+  
 val has:  
    t -> key -> bool
-val remove:
+val removeDone:
   t -> key -> unit
+val remove:
+  t -> key -> t
 val forEach: t -> (key  -> unit [@bs]) ->  unit
 val reduce: t -> 'c -> ( 'c -> key -> 'c [@bs]) ->   'c
 val size: t -> int  

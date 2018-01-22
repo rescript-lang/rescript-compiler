@@ -78,7 +78,7 @@ let rec replace_in_bucket ~eq  key info cell =
 (* if [key] already exists, replace it, otherwise add it 
    Here we add it to the head, it could be tail
 *)      
-let add0 ~hash ~eq  h key value =
+let setDone0 ~hash ~eq  h key value =
   let h_buckets = C.buckets h in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
@@ -204,21 +204,22 @@ let forEach h f = N.iter0 (B.data h) f
 let reduce h init f = N.fold0 (B.data h) init f
 let logStats h = logStats0 (B.data h)
 
-let add (type a) (type b ) (type id) (h : (a,b,id) t) (key:a) (info:b) = 
+let setDone (type a) (type b ) (type id) (h : (a,b,id) t) (key:a) (info:b) = 
   let dict,data = B.(dict h, data h) in 
   let module M = (val  dict) in 
-  add0 ~hash:M.hash ~eq:M.eq data key info 
+  setDone0 ~hash:M.hash ~eq:M.eq data key info 
 
-let remove (type a) (type b) (type id) (h : (a,b,id) t) (key : a) = 
-  let dict,data = B.(dict h, data h) in
-  let module M = (val dict) in   
-  remove0 ~hash:M.hash ~eq:M.eq data key 
+let set h key info = setDone h key info; h
 
+let removeDone (type a) (type id) (h : (a,_,id) t) (key : a) = 
+  let module M = (val B.dict h) in   
+  remove0 ~hash:M.hash ~eq:M.eq (B.data h) key 
 
+let remove h key = removeDone h key; h
+  
 let get (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
-  let dict,data = B.(dict h, data h) in
-  let module M = (val dict) in   
-  get0 ~hash:M.hash ~eq:M.eq data key 
+  let module M = (val B.dict h) in   
+  get0 ~hash:M.hash ~eq:M.eq (B.data h) key 
 
 
 
@@ -239,7 +240,7 @@ let ofArray0  ~hash ~eq arr  =
   let v = create0 len in 
   for i = 0 to len - 1 do 
     let key,value = (Bs.Array.unsafe_get arr i) in 
-    add0 ~eq ~hash v key value
+    setDone0 ~eq ~hash v key value
   done ;
   v
 
@@ -248,7 +249,7 @@ let mergeArrayDone0  h arr ~hash ~eq =
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
     let key,value = (Bs_Array.unsafe_get arr i) in 
-    add0 h  ~eq ~hash key value
+    setDone0 h  ~eq ~hash key value
   done
   
 let mergeArray0 h arr  ~hash ~eq = mergeArrayDone0 h arr ~hash ~eq; h
@@ -261,8 +262,8 @@ let ofArray (type a) (type id)
 
 let mergeArrayDone (type a) (type b) (type id)
     (h : (a,b,id) t) arr = 
-  let dict,data = B.(dict h, data h) in 
-  let module M = (val dict) in
+  let data = B.data h in 
+  let module M = (val B.dict h) in
   mergeArrayDone0 ~hash:M.hash ~eq:M.eq data arr
 
 
@@ -270,12 +271,13 @@ let mergeArray (type a) (type b) (type id)
     (h : (a,b,id) t) arr = 
   mergeArrayDone h arr;
   h
+let copy h = B.bag ~dict:(B.dict h) ~data:(N.copy (B.data h))
 
-let keys0 = N.keys0  
-let keys h =
-  keys0 (B.data h)
-let values0 = N.values0  
-let values h = N.values0 (B.data h)
+let keysToArray0 = N.keys0  
+let keysToArray h =
+  N.keys0 (B.data h)
+let valuesToArray0 = N.values0  
+let valuesToArray h = N.values0 (B.data h)
 
 let getData = B.data
 let getDict = B.dict

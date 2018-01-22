@@ -86,7 +86,7 @@ let rec replace_bucket  (key : key) info cell =
     | Some cell -> 
       replace_bucket key info cell
 
-let set  h (key : key) value =
+let setDone  h (key : key) value =
   let h_buckets = C.buckets h in 
   let i = hash key land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
@@ -105,6 +105,7 @@ let set  h (key : key) value =
     end   
     end
 
+let set h key value = setDone h key value ; h
 let rec remove_bucket h h_buckets  i (key : key) prec buckets =
   match C.toOpt buckets with
   | None -> ()
@@ -118,7 +119,7 @@ let rec remove_bucket h h_buckets  i (key : key) prec buckets =
       end
     else remove_bucket  h h_buckets i key cell cell_next
 
-let remove  h key =  
+let removeDone  h key =  
   let h_buckets = C.buckets h in 
   let i = hash key land (Array.length h_buckets - 1) in  
   let bucket = (Bs_Array.unsafe_get h_buckets i) in 
@@ -133,7 +134,7 @@ let remove  h key =
     else 
       remove_bucket  h h_buckets i key cell (N.next cell)
 
-
+let remove h key  = removeDone h key; h
 
 let rec findAux  (key : key) buckets = 
   match C.toOpt buckets with 
@@ -196,7 +197,7 @@ let ofArray arr  =
   let v = create len in 
   for i = 0 to len - 1 do 
     let k,value = (Bs.Array.unsafe_get arr i) in
-    set v k value
+    setDone v k value
   done ;
   v
 
@@ -205,7 +206,12 @@ let mergeArrayDone h arr =
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
     let k,v = (Bs_Array.unsafe_get arr i) in
-    set h k v 
-done
+    setDone h k v 
+  done
 
 let mergeArray h arr = mergeArrayDone h arr; h
+
+let copy = N.copy
+
+let keysToArray = N.keys0
+let valuesToArray = N.values0
