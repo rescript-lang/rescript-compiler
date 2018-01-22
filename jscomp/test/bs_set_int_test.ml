@@ -71,7 +71,7 @@ let () =
   let minv, maxv = N.minNull v, N.maxNull v in 
   let approx loc (x : int)  y = 
     b loc (Js.eqNull x y) in 
-  eq __LOC__ (N.fold v 0 (fun [@bs] x y -> x + y) ) (Array.fold_left (+) 0 ss) ;
+  eq __LOC__ (N.reduce v 0 (fun [@bs] x y -> x + y) ) (A.foldLeft ss 0 (fun [@bs] x y -> x + y)  ) ;
   approx __LOC__ (-1) minv ;
   approx __LOC__ 222 maxv;
   let v = N.remove v 3 in 
