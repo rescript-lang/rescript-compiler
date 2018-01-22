@@ -42,13 +42,13 @@ val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
 (** [eq m1 m2 cmp] *)
   
 val forEach: 'a t -> (key -> 'a -> unit [@bs]) ->  unit
-(** [iter m f] applies [f] to all bindings in map [m].
+(** [forEach m f] applies [f] to all bindings in map [m].
    [f] receives the key as first argument, and the associated value
    as second argument.
    The application order of [f]  is in increasing order. *)
 
-val fold:  'a t -> 'b -> ('b -> key -> 'a -> 'b [@bs]) -> 'b
-(** [fold m a f] computes [(f kN dN ... (f k1 d1 a)...)],
+val reduce:  'a t -> 'b -> ('b -> key -> 'a -> 'b [@bs]) -> 'b
+(** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
    where [k1 ... kN] are the keys of all bindings in [m]
    (in increasing order), and [d1 ... dN] are the associated data. *)
 

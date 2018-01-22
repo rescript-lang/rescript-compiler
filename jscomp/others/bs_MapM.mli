@@ -52,8 +52,8 @@ val forEach:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
     as second argument.  The bindings are passed to [f] in increasing
     order with respect to the ordering over the type of the keys. *)
     
-val fold: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
-(** [fold m a f] computes [(f kN dN ... (f k1 d1 a)...)],
+val reduce: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
+(** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
     where [k1 ... kN] are the keys of all bindings in [m]
     (in increasing order), and [d1 ... dN] are the associated data. *)
 
