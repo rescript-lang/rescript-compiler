@@ -82,7 +82,7 @@ function bench() {
     Bs_HashMap.add(empty, i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_HashMap.mem(empty, i$1)) {
+    if (!Bs_HashMap.has(empty, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -109,7 +109,7 @@ function bench2(m) {
     Bs_HashMap.add0(hash, eq, table, "" + i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_HashMap.mem0(hash, eq, table, "" + i$1)) {
+    if (!Bs_HashMap.has0(hash, eq, table, "" + i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -124,7 +124,7 @@ function bench2(m) {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMap.remove0(hash, eq, table, "" + i$2);
   }
-  if (Bs_HashMap.length0(table)) {
+  if (Bs_HashMap.size0(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -183,10 +183,10 @@ var Sx = /* module */[/* cmp */Caml_primitive.caml_string_compare];
 function bench4() {
   var table = Bs_HashMapString.create(1000000);
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMapString.add(table, "" + i, i);
+    Bs_HashMapString.set(table, "" + i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_HashMapString.mem(table, "" + i$1)) {
+    if (!Bs_HashMapString.has(table, "" + i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -201,7 +201,7 @@ function bench4() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMapString.remove(table, "" + i$2);
   }
-  if (Bs_HashMapString.length(table)) {
+  if (Bs_HashMapString.size(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -230,7 +230,7 @@ function bench5() {
   console.timeEnd("bs_hashtbl_string_test.ml 132");
   console.time("bs_hashtbl_string_test.ml 136");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_HashMap.mem0(hash, eq, table_data, i$1)) {
+    if (!Bs_HashMap.has0(hash, eq, table_data, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -265,10 +265,10 @@ function bench5() {
 function bench6() {
   var table = Bs_HashMapInt.create(1000000);
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMapInt.add(table, i, i);
+    Bs_HashMapInt.set(table, i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_HashMapInt.mem(table, i$1)) {
+    if (!Bs_HashMapInt.has(table, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -283,7 +283,7 @@ function bench6() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMapInt.remove(table, i$2);
   }
-  if (Bs_HashMapInt.length(table)) {
+  if (Bs_HashMapInt.size(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -338,6 +338,8 @@ bench7(/* () */0);
 
 console.timeEnd("bs_hashtbl_string_test.ml 201");
 
+var N = 0;
+
 var count = 1000000;
 
 var initial_size = 1000000;
@@ -353,6 +355,7 @@ exports.String1 = String1;
 exports.String2 = String2;
 exports.Int = Int;
 exports.empty = empty;
+exports.N = N;
 exports.bench = bench;
 exports.count = count;
 exports.initial_size = initial_size;

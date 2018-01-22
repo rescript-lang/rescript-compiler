@@ -44,7 +44,7 @@ function add(x, y) {
   return x + y | 0;
 }
 
-Bs_HashMap.addArray(empty, /* array */[
+Bs_HashMap.mergeArrayDone(empty, /* array */[
       /* tuple */[
         1,
         1
@@ -63,7 +63,7 @@ Bs_HashMap.addArray(empty, /* array */[
       ]
     ]);
 
-eqx("File \"bs_hashmap_test.ml\", line 31, characters 6-13", Bs_HashMap.findOpt(empty, 2), /* Some */[2]);
+eqx("File \"bs_hashmap_test.ml\", line 31, characters 6-13", Bs_HashMap.get(empty, 2), /* Some */[2]);
 
 eqx("File \"bs_hashmap_test.ml\", line 32, characters 6-13", empty.data.size, 3);
 
@@ -84,7 +84,7 @@ var v$1 = {
   data: Bs_internalBucketsType.create0(40)
 };
 
-Bs_HashMap.addArray(v$1, Bs_Array.zip(u$1, u$1));
+Bs_HashMap.mergeArrayDone(v$1, Bs_Array.zip(u$1, u$1));
 
 eqx("File \"bs_hashmap_test.ml\", line 47, characters 6-13", v$1.data.size, 100001);
 
@@ -101,7 +101,7 @@ for(var i$1 = 0; i$1 <= 2000; ++i$1){
 eqx("File \"bs_hashmap_test.ml\", line 55, characters 6-13", v$1.data.size, 98000);
 
 b("File \"bs_hashmap_test.ml\", line 56, characters 4-11", Bs_Array.forAll(Array_data_util.range(2001, 100000), (function (x) {
-            return Bs_HashMap.mem(v$1, x);
+            return Bs_HashMap.has(v$1, x);
           })));
 
 Mt.from_pair_suites("bs_hashmap_test.ml", suites[0]);

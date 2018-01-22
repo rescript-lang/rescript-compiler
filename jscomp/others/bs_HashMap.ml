@@ -137,7 +137,7 @@ let rec findAux ~eq key buckets =
     if (Bs_Hash.getEq eq) key (N.key cell) [@bs] then Some (N.value cell)
     else findAux ~eq key  (N.next cell)
 
-let findOpt0 ~hash ~eq h key =
+let get0 ~hash ~eq h key =
   let h_buckets = C.buckets h in 
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   match C.toOpt @@ Bs_Array.unsafe_get h_buckets nid with
@@ -173,7 +173,7 @@ let rec mem_in_bucket ~eq key cell =
    | Some nextCell -> 
      mem_in_bucket ~eq key nextCell)
 
-let mem0 ~hash ~eq h key =
+let has0 ~hash ~eq h key =
   let h_buckets = C.buckets h in 
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   let bucket = Bs_Array.unsafe_get h_buckets nid in 
@@ -186,11 +186,11 @@ let mem0 ~hash ~eq h key =
 let create0 = C.create0
 let clear0 = C.clear0
 let reset0 = C.reset0
-let length0 = C.length0
-let iter0 = N.iter0
-let fold0 = N.fold0
+let size0 = C.length0
+let forEach0 = N.iter0
+let reduce0 = N.fold0
 let logStats0 = N.logStats0
-let filterMapInplace0 = N.filterMapInplace0
+let filterMapDone0 = N.filterMapInplace0
 let toArray0 = N.toArray0
 
 (*  Wrapper  *)
@@ -199,9 +199,9 @@ let create dict initialize_size =
     ~dict 
 let clear h = clear0 (B.data h)
 let reset h = reset0 (B.data h)
-let length h = length0 (B.data h)                 
-let iter h f = iter0 (B.data h) f
-let fold h init f = fold0 (B.data h) init f
+let size h = size0 (B.data h)                 
+let forEach h f = N.iter0 (B.data h) f
+let reduce h init f = N.fold0 (B.data h) init f
 let logStats h = logStats0 (B.data h)
 
 let add (type a) (type b ) (type id) (h : (a,b,id) t) (key:a) (info:b) = 
@@ -215,21 +215,23 @@ let remove (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =
   remove0 ~hash:M.hash ~eq:M.eq data key 
 
 
-let findOpt (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
+let get (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
   let dict,data = B.(dict h, data h) in
   let module M = (val dict) in   
-  findOpt0 ~hash:M.hash ~eq:M.eq data key 
+  get0 ~hash:M.hash ~eq:M.eq data key 
 
 
 
 
-let mem (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
+let has (type a) (type b) (type id) (h : (a,b,id) t) (key : a) =           
   let dict,data = B.(dict h, data h) in
   let module M = (val dict) in   
-  mem0 ~hash:M.hash ~eq:M.eq data key   
+  has0 ~hash:M.hash ~eq:M.eq data key   
 
-let filterMapInplace h f =
-  filterMapInplace0 (B.data h) f
+let filterMapDone h f =
+  filterMapDone0 (B.data h) f
+let filterMap h f = filterMapDone h f ; h
+  
 let toArray (type a) (type b) (type id) (h : (a,b,id) t) = 
   toArray0 (B.data h)
 let ofArray0  ~hash ~eq arr  = 
@@ -242,24 +244,32 @@ let ofArray0  ~hash ~eq arr  =
   v
 
 (* TOOD: optimize heuristics for resizing *)  
-let addArray0 ~hash ~eq  h arr =   
+let mergeArrayDone0  h arr ~hash ~eq =   
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
     let key,value = (Bs_Array.unsafe_get arr i) in 
     add0 h  ~eq ~hash key value
-  done 
-
+  done
+  
+let mergeArray0 h arr  ~hash ~eq = mergeArrayDone0 h arr ~hash ~eq; h
+  
 let ofArray (type a) (type id)
     ~dict:(dict:(a,id) Bs_Hash.t) arr =     
   let module M = (val dict) in 
   B.bag ~dict 
     ~data:M.(ofArray0 ~eq~hash arr)
 
-let addArray (type a) (type b) (type id)
+let mergeArrayDone (type a) (type b) (type id)
     (h : (a,b,id) t) arr = 
   let dict,data = B.(dict h, data h) in 
   let module M = (val dict) in
-  M.(addArray0 ~hash ~eq data arr)
+  mergeArrayDone0 ~hash:M.hash ~eq:M.eq data arr
+
+
+let mergeArray (type a) (type b) (type id)
+    (h : (a,b,id) t) arr = 
+  mergeArrayDone h arr;
+  h
 
 let keys0 = N.keys0  
 let keys h =

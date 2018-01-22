@@ -144,8 +144,8 @@ val iter : ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
-val fold0 : ('a, 'b, 'id) t0 -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) -> 'c
-val fold : ('a, 'b, 'id) t -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) ->  'c
+val fold0 : ('a, 'b, 'id) t0 -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) -> 'c
+val fold : ('a, 'b, 'id) t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
 (** [Hashtbl.fold f tbl init] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],
