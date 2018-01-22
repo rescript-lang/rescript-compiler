@@ -23,7 +23,7 @@ val forEach: 'a t -> (key -> 'a -> unit [@bs]) ->  unit
    order with respect to the ordering over the type of the keys. *)
 
 val fold:  'a t -> 'b -> ('b -> key -> 'a -> 'b [@bs]) -> 'b
-(** [fold m a f] computes [(f kN dN ... (f k1 d1 a)...)],
+(** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
    where [k1 ... kN] are the keys of all bindings in [m]
    (in increasing order), and [d1 ... dN] are the associated data. *)
 

@@ -156,7 +156,7 @@ val mem0:
 
 
   
-val ofArray0 : cmp:('a,'id) Bs_Cmp.cmp -> ('a * 'b) array -> ('a, 'b) t0
+val ofArray0 : ('a * 'b) array ->  cmp:('a,'id) Bs_Cmp.cmp -> ('a, 'b) t0
 
 val updateMutate :   
   ('a, 'b) t0 -> 'a -> 'b -> 

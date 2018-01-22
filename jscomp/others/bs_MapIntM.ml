@@ -39,7 +39,7 @@ let set (d : 'a t) (k : key) (v : 'a) : 'a t=
 let forEach d f = N.iter0 (data d) f     
 let map d f = t ~data:(N.map0 (data d) f)
 let mapi d f = t ~data:(N.mapi0 (data d) f) 
-let fold d acc f  = N.fold0 (data d) acc f 
+let reduce d acc f  = N.fold0 (data d) acc f 
 let forAll d f = N.forAll0 (data d) f 
 let exists d f = N.exists0 (data d) f    
 
