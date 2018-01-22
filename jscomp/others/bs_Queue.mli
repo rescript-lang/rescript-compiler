@@ -27,25 +27,26 @@ val clear : 'a t -> unit
 val create : unit -> 'a t
 (** Return a new queue, initially empty. *)
 
-val push : 'a t -> 'a -> unit
-(** [push q x] adds the element [x] at the end of the queue [q]. *)
-
-val peekOpt : 'a t -> 'a option
+val addDone : 'a t -> 'a -> unit
+(** [addDone q x] adds the element [x] at the end of the queue [q]. *)
+val add : 'a t -> 'a  -> 'a t
+    
+val peek : 'a t -> 'a option
 (** [peekOpt q] returns the first element in queue [q], without removing
     it from the queue. *)
 
 val peekNull : 'a t -> 'a Js.null
 (** [peekNull q] returns the first element in queue [q], without removing
     it from the queue. *)
-val peekAssert : 'a t -> 'a 
+val peekExn : 'a t -> 'a 
 
-val popOpt : 'a t -> 'a option 
-(** [take q] removes and returns the first element in queue [q].*)
+val pop : 'a t -> 'a option 
+(** [pop q] removes and returns the first element in queue [q].*)
 
 val popNull : 'a t -> 'a Js.null
-(** [take q] removes and returns the first element in queue [q].*)
+(** [popNull q] removes and returns the first element in queue [q].*)
 
-val popAssert : 'a t -> 'a 
+val popExn : 'a t -> 'a 
 
 val copy : 'a t -> 'a t
 (** Return a copy of the given queue. *)
@@ -56,13 +57,13 @@ val isEmpty : 'a t -> bool
 val length : 'a t -> int
 (** Return the number of elements in a queue. *)
 
-val iter : 'a t -> ('a -> unit [@bs]) -> unit
-(** [iter f q] applies [f] in turn to all elements of [q],
+val forEach : 'a t -> ('a -> unit [@bs]) -> unit
+(** [reduce f q] applies [f] in turn to all elements of [q],
     from the least recently entered to the most recently entered.
     The queue itself is unchanged. *)
 
-val fold : 'a t -> 'b -> ('b -> 'a -> 'b [@bs])  ->  'b
-(** [fold q accu f] is equivalent to [List.foldLeft f accu l],
+val reduce : 'a t -> 'b -> ('b -> 'a -> 'b [@bs])  ->  'b
+(** [reduce q accu f] is equivalent to [List.reduce f accu l],
     where [l] is the list of [q]'s elements. The queue remains
     unchanged. *)
 
