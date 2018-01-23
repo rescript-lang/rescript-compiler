@@ -179,7 +179,7 @@ eq("File \"bs_poly_map_test.ml\", line 97, characters 5-12", Bs_Map.get(u1$1, 3)
 eq("File \"bs_poly_map_test.ml\", line 98, characters 5-12", Bs_Map.get(u0$1, 3), /* Some */[3]);
 
 function acc(m, is) {
-  return Bs_Array.foldLeft(is, m, (function (a, i) {
+  return Bs_Array.reduce(is, m, (function (a, i) {
                 var m = a;
                 var i$1 = i;
                 return Bs_Map.update(m, i$1, (function (n) {
@@ -199,7 +199,7 @@ var m = {
 
 var m1 = acc(m, Bs_Array.append(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
 
-b("File \"bs_poly_map_test.ml\", line 110, characters 4-11", Bs_Map.eq(m1, Bs_Map.ofArray(Bs_Array.init(31, (function (i) {
+b("File \"bs_poly_map_test.ml\", line 110, characters 4-11", Bs_Map.eq(m1, Bs_Map.ofArray(Bs_Array.initExn(31, (function (i) {
                     return /* tuple */[
                             i,
                             i >= 10 && i <= 20 ? 2 : 1

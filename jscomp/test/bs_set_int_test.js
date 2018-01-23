@@ -155,7 +155,7 @@ function approx(loc, x, y) {
 
 eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", Bs_SetInt.reduce(v$1, 0, (function (x, y) {
             return x + y | 0;
-          })), Bs_Array.foldLeft(ss, 0, (function (x, y) {
+          })), Bs_Array.reduce(ss, 0, (function (x, y) {
             return x + y | 0;
           })));
 
@@ -207,7 +207,7 @@ var v$10 = Bs_SetInt.remove(v$9, 1);
 
 b("File \"bs_set_int_test.ml\", line 95, characters 4-11", Bs_SetInt.isEmpty(v$10));
 
-var v$11 = Bs_Array.shuffle(Bs_Array.init(1000000, (function (i) {
+var v$11 = Bs_Array.shuffle(Bs_Array.initExn(1000000, (function (i) {
             return i;
           })));
 
@@ -215,9 +215,9 @@ var u$1 = Bs_SetInt.ofArray(v$11);
 
 b("File \"bs_set_int_test.ml\", line 102, characters 4-11", Bs_SetInt.checkInvariant(u$1));
 
-var firstHalf = Bs_Array.sub(v$11, 0, 2000);
+var firstHalf = Bs_Array.subExn(v$11, 0, 2000);
 
-var xx = Bs_Array.foldLeft(firstHalf, u$1, Bs_SetInt.remove);
+var xx = Bs_Array.reduce(firstHalf, u$1, Bs_SetInt.remove);
 
 b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Bs_SetInt.checkInvariant(u$1));
 

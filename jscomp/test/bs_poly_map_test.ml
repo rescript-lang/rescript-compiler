@@ -102,14 +102,14 @@ let acc m i =
   M.update m i (fun[@bs] n -> match n with None -> Some 1 | Some acc -> Some (acc + 1))
 
 let acc m is : _ M.t =   
-  A.foldLeft is m (fun[@bs] a i -> acc a i) 
+  A.reduce is m (fun[@bs] a i -> acc a i) 
 
 let () = 
   let m = M.empty (module Icmp) in 
   let m1 = acc m (A.append (I.randomRange 0 20) (I.randomRange 10 30)) in 
   b __LOC__ 
   (M.eq m1 
-  (M.ofArray ~dict:(module Icmp) (A.init 31 (fun[@bs] i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
+  (M.ofArray ~dict:(module Icmp) (A.initExn 31 (fun[@bs] i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
   (fun[@bs] x y -> x = y)
   )
 

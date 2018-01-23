@@ -89,13 +89,13 @@ Bs_HashMap.mergeArrayDone(v$1, Bs_Array.zip(u$1, u$1));
 eqx("File \"bs_hashmap_test.ml\", line 47, characters 6-13", v$1.data.size, 100001);
 
 for(var i = 0; i <= 1000; ++i){
-  Bs_HashMap.remove(v$1, i);
+  Bs_HashMap.removeDone(v$1, i);
 }
 
 eqx("File \"bs_hashmap_test.ml\", line 51, characters 6-13", v$1.data.size, 99000);
 
 for(var i$1 = 0; i$1 <= 2000; ++i$1){
-  Bs_HashMap.remove(v$1, i$1);
+  Bs_HashMap.removeDone(v$1, i$1);
 }
 
 eqx("File \"bs_hashmap_test.ml\", line 55, characters 6-13", v$1.data.size, 98000);

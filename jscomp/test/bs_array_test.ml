@@ -57,23 +57,23 @@ let () =
 module A = Bs.Array  
 let add = fun [@bs] x y -> x + y
 let () = 
-  let v = Bs.Array.init 3000 (fun[@bs] i -> i) in 
+  let v = Bs.Array.initExn 3000 (fun[@bs] i -> i) in 
   let u = Bs.Array.copy v  in 
   Bs.Array.shuffleDone u ; 
   neq __LOC__ u  v (* unlikely*);
-  let sum x = Bs.Array.foldLeft x 0 add in 
+  let sum x = Bs.Array.reduce x 0 add in 
   eq __LOC__ ( sum u) (sum v)
 let addone = fun [@bs] x -> x + 1
 
 let () =   
-  eq __LOC__ (A.init 0 begin fun[@bs] _ ->1 end ) [||];
-  eq __LOC__ (A.init 3 begin fun [@bs] i -> i end) [|0;1;2|];
-  eq __LOC__ (A.makeMatrix 3 4 1 
+  eq __LOC__ (A.initExn 0 begin fun[@bs] _ ->1 end ) [||];
+  eq __LOC__ (A.initExn 3 begin fun [@bs] i -> i end) [|0;1;2|];
+  eq __LOC__ (A.makeMatrixExn 3 4 1 
     
   ) [| [|1;1;1;1|]; [|1;1;1;1|]; [|1;1;1;1|]|];
-  eq __LOC__ (A.makeMatrix 3 0 0 ) [| [||] ; [||]; [||] |];
-  eq __LOC__ (A.makeMatrix  0 3 1 ) [||];
-  eq __LOC__ (A.makeMatrix 1 1 1) [| [|1 |] |];
+  eq __LOC__ (A.makeMatrixExn 3 0 0 ) [| [||] ; [||]; [||] |];
+  eq __LOC__ (A.makeMatrixExn  0 3 1 ) [||];
+  eq __LOC__ (A.makeMatrixExn 1 1 1) [| [|1 |] |];
   eq __LOC__ (A.copy [||]) [||];
   eq __LOC__ (A.map [||] addone) [||];
   eq __LOC__ (A.mapi [||] add) [||];

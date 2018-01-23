@@ -137,14 +137,14 @@ eq("File \"bs_map_test.ml\", line 93, characters 5-12", Bs_Map.get(u0, 39), /* S
 
 eq("File \"bs_map_test.ml\", line 94, characters 5-12", Bs_Map.get(u1, 39), /* Some */[120]);
 
-var u = f(Bs_Array.shuffle(Bs_Array.init(10000, (function (x) {
+var u = f(Bs_Array.shuffle(Bs_Array.initExn(10000, (function (x) {
                 return /* tuple */[
                         x,
                         x
                       ];
               }))));
 
-eq("File \"bs_map_test.ml\", line 100, characters 4-11", Bs_Array.init(10000, (function (x) {
+eq("File \"bs_map_test.ml\", line 100, characters 4-11", Bs_Array.initExn(10000, (function (x) {
             return /* tuple */[
                     x,
                     x

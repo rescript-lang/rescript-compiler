@@ -117,12 +117,12 @@ let () =
   b __LOC__ (not @@ N.isEmpty a0);
   let (a5,a6), pres  = N.split a0 200 in 
   b __LOC__ pres ;
-  eq __LOC__ (N.toArray a5) (A.init 200 (fun[@bs] i -> i));
+  eq __LOC__ (N.toArray a5) (A.initExn 200 (fun[@bs] i -> i));
   eq __LOC__ (N.toList a6) (L.init 800 (fun[@bs] i -> i + 201));
   let a7 = N.remove a0 200 in 
   let (a8,a9), pres  = N.split a7 200 in 
   b __LOC__ (not pres) ;
-  eq __LOC__ (N.toArray a8) (A.init 200 (fun[@bs] i -> i));
+  eq __LOC__ (N.toArray a8) (A.initExn 200 (fun[@bs] i -> i));
   eq __LOC__ (N.toList a9) (L.init 800 (fun[@bs] i -> i + 201));
   eq __LOC__ (N.minimum a8) (Some 0);
   eq __LOC__ (N.minimum a9) (Some 201);

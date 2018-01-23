@@ -96,9 +96,9 @@ let () =
 
 let () =     
   let u = f 
-    (A.shuffle (A.init 10_000 (fun[@bs] x  -> (x,x)))) in 
+    (A.shuffle (A.initExn 10_000 (fun[@bs] x  -> (x,x)))) in 
  eq __LOC__    
-  (A.init 10_000 (fun[@bs] x  -> (x,x)))
+  (A.initExn 10_000 (fun[@bs] x  -> (x,x)))
   (M.toArray u)
 
 

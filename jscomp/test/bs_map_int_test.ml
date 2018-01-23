@@ -15,11 +15,11 @@ module N = Bs.MapInt
 module A = Bs.Array
 let () = 
   let v = 
-      A.shuffle (A.init 1_000_000 (fun[@bs] i -> (i,i))) in 
+      A.shuffle (A.initExn 1_000_000 (fun[@bs] i -> (i,i))) in 
   let u = N.ofArray v in   
   b __LOC__ (N.checkInvariant u);
-  let firstHalf = Bs.Array.sub v 0 2_000 in 
-  let xx = Bs.Array.foldLeft firstHalf u
+  let firstHalf = Bs.Array.subExn v 0 2_000 in 
+  let xx = Bs.Array.reduce firstHalf u
       (fun[@bs] acc (x,_) -> N.remove acc x)  in 
   b __LOC__ (N.checkInvariant u);
 

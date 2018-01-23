@@ -31,7 +31,7 @@ external blitUnsafe :
 (*DOC: when l < 0 raise RangeError js excpetion *)
 (* See #6575. We could also check for maximum array size, but this depends
      on whether we create a float array or a regular one... *)
-let init l f =
+let initExn l f =
   [%assert l >= 0];
   let res = makeUninitializedUnsafe l in 
   for i = 0 to  l - 1 do
@@ -53,7 +53,7 @@ let shuffleDone xs =
 
 let shuffle xs = shuffleDone xs; xs   
 
-let makeMatrix sx sy init =
+let makeMatrixExn sx sy init =
   [%assert sx >=0 && sy >=0 ];
   let res = makeUninitializedUnsafe sx in 
   for x = 0 to  sx - 1 do
@@ -91,29 +91,31 @@ let append a1 a2 =
   else if length a2 = 0 then unsafe_sub a1 0 l1
   else append_prim a1 a2
 
-let sub a ofs len =
+let subExn a ofs len =
   if len < 0 || ofs > length a - len
   then 
     (* invalid_arg  *)
-    [%assert "Array.sub"]
+    [%assert "subExn"]
   else unsafe_sub a ofs len
 
 let fill a ofs len v =
   if ofs < 0 || len < 0 || ofs > length a - len
   then 
-    (* invalid_arg  *)
-    [%assert "Array.fill"]
-  else for i = ofs to ofs + len - 1 do unsafe_set a i v done
+    false
+  else
+    begin 
+      for i = ofs to ofs + len - 1 do unsafe_set a i v done;
+      true
+    end
 
 let blit a1 ofs1 a2 ofs2 len =
   if len < 0 || ofs1 < 0 || ofs1 > length a1 - len
      || ofs2 < 0 || ofs2 > length a2 - len
   then 
-    (* invalid_arg  *)
-    [%assert "Array.blit"]
-  else blitUnsafe a1 ofs1 a2 ofs2 len
+    false
+  else (blitUnsafe a1 ofs1 a2 ofs2 len; true)
 
-let iter a f =
+let forEach a f =
   for i = 0 to length a - 1 do f(unsafe_get a i) [@bs] done
 
 let map a f =
@@ -125,7 +127,7 @@ let map a f =
   r
 
 
-let iteri a f=
+let forEachi a f=
   for i = 0 to length a - 1 do f i (unsafe_get a i) [@bs] done
 
 let mapi  a f =
@@ -159,14 +161,14 @@ let ofList xs =
   fillAUx a 0 xs;
   a
 
-let foldLeft a x f =
+let reduce a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
     r := f !r (unsafe_get a i) [@bs]
   done;
   !r
 
-let foldRight a x f =
+let reduceFromTail a x f =
   let r = ref x in
   for i = length a - 1 downto 0 do
     r := f  !r (unsafe_get a i) [@bs]
@@ -199,6 +201,23 @@ let forAll2  a b p =
   if lena <> lenb then false
   else 
     forAllAux2  a b 0 p lena
+
+let eq = forAll2
+
+let rec forAllCmpAux2 arr1 arr2 i b len =   
+  if i = len then 0
+  else
+    let c = b (unsafe_get arr1 i) (unsafe_get arr2 i) [@bs]  in 
+    if c = 0 then 
+      forAllCmpAux2 arr1 arr2 (i + 1) b len
+    else c
+
+let cmp a b p =
+  let lena = length a in  
+  let lenb = length b in
+  if lena > lenb then 1
+  else if lena < lenb then -1
+  else forAllCmpAux2 a b 0 p lena
 
 external truncateToLengthUnsafe : 'a array -> int ->  unit = "length" [@@bs.set]
 
