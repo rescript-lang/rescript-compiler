@@ -57,20 +57,13 @@ val remove:
   ('a, 'b, 'id) t
 
 val forEach: ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
-(** [Hashtbl.iter f tbl] applies [f] to all bindings in table [tbl].
+(** [forEach tbl f] applies [f] to all bindings in table [tbl].
     [f] receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to [f].
 
-    The order in which the bindings are passed to [f] is unspecified.
-    However, if the table contains several bindings for the same key,
-    they are passed to [f] in reverse order of introduction, that is,
-    the most recent binding is passed first.
-
     If the hash table was created in non-randomized mode, the order
     in which the bindings are enumerated is reproducible between
-    successive runs of the program, and even between minor versions
-    of OCaml.  For randomized hash tables, the order of enumeration
-    is entirely random. *)
+    successive runs of the program. *)
 
 
 val reduce: ('a, 'b, 'id) t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c

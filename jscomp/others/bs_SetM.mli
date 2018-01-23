@@ -30,7 +30,7 @@ val empty: dict:('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
 val singleton: 'elt -> dict:('elt,'id) Bs_Cmp.t ->  ('elt, 'id) t    
 val ofArray: 'k array -> dict:('k, 'id) Bs_Cmp.t ->   ('k, 'id) t
 val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) Bs_Cmp.t ->  ('elt,'id) t
-    
+val copy: ('k, 'id) t -> ('k, 'id) t     
 val isEmpty: _ t -> bool
 val has:  ('elt, _) t -> 'elt ->  bool
 
