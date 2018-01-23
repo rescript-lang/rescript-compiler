@@ -183,9 +183,9 @@ eq("File \"bs_list_test.ml\", line 50, characters 5-12", Bs_List.toArray(Bs_List
                     return i;
                   })), Bs_List.init(100, (function (i) {
                     return i;
-                  })))), Bs_Array.append(Bs_Array.init(100, (function (i) {
+                  })))), Bs_Array.append(Bs_Array.initExn(100, (function (i) {
                 return i;
-              })), Bs_Array.init(100, (function (i) {
+              })), Bs_Array.initExn(100, (function (i) {
                 return i;
               }))));
 

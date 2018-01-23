@@ -31,7 +31,7 @@ polymorphism_test.cmi :
 scanf_reference_error_regression_test.cmi :
 sexp.cmi :
 sexpm.cmi : ../stdlib/format.cmi ../stdlib/bytes.cmi ../stdlib/buffer.cmi
-simple_derive_test.cmi : ../others/bs_dyn.cmi
+simple_derive_test.cmi :
 simple_derive_use.cmi :
 test_for_map2.cmi :
 test_http_server.cmi :
@@ -177,7 +177,7 @@ demo_binding.cmj : ../runtime/js.cmj
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmj :
 demo_pipe.cmj : ../runtime/js.cmj
-derive_dyntype.cmj : ../others/bs_dyn.cmj
+derive_dyntype.cmj :
 derive_projector_test.cmj : ../runtime/js.cmj derive_projector_test.cmi
 derive_type_test.cmj :
 digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \

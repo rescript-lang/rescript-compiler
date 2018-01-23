@@ -658,7 +658,7 @@ DOCS_SOURCES+=$(shell ls others/*.ml*)
 	ocamlopt.opt -I +compiler-libs -I +ocamldoc -shared -I ../odoc_gen  -o $@ $^
 
 docs: ../odoc_gen/generator.cmxs
-	make -C bin bsppx.exe
+	make -C ../lib bsppx.exe
 	node ../scripts/doc_gen.js
 # ocamldoc.opt -nostdlib -I stdlib -g ../odoc_gen/generator.cmxs -charset utf-8 -css-style ../../odoc_gen/style.css -sort -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
 

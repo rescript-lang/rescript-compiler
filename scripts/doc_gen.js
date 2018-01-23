@@ -18,20 +18,22 @@ var others_prefix = path.relative(jscomp, others_dir)
 var runtime_files = 
     fs.readdirSync(runtime_dir)
         .filter(file => 
-        file.startsWith("js") && (file.endsWith(".ml") || file.endsWith(".mli")))
+        file.startsWith("js") && (file.endsWith(".ml") || file.endsWith(".mli")) && (!file.endsWith(".cppo.ml")) && (!file.endsWith(".cppo.mli"))
+        )
         .map (x => path.join(runtime_prefix,x))
         .join(' ')
 
 var others_files = 
     fs.readdirSync(others_dir)
         .filter(file => 
-        (file.endsWith(".ml") || file.endsWith(".mli")))
+        (file.endsWith(".ml") || file.endsWith(".mli")) && (!file.endsWith(".cppo.ml")) && (!file.endsWith(".cppo.mli"))
+        )
         .map(x=>path.join(others_prefix,x))
         .join(' ')
 
 
 var odoc_gendir = path.join(__dirname,'..', 'odoc_gen')
-var bsppx = path.join(__dirname,'..','jscomp','bin','bsppx.exe')
+var bsppx = path.join(__dirname,'..','lib','bsppx.exe')
 var api_doc_dir = path.join(__dirname,'..','docs','api') 
 var intro = path.join(__dirname,'..','docs','api','intro.txt')
 // 

@@ -79,7 +79,7 @@ var empty = {
 
 function bench() {
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMap.add(empty, i, i);
+    Bs_HashMap.setDone(empty, i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_HashMap.has(empty, i$1)) {
@@ -106,7 +106,7 @@ function bench2(m) {
   var eq = m[/* eq */1];
   var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMap.add0(hash, eq, table, "" + i, i);
+    Bs_HashMap.setDone0(hash, eq, table, "" + i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_HashMap.has0(hash, eq, table, "" + i$1)) {
@@ -183,7 +183,7 @@ var Sx = /* module */[/* cmp */Caml_primitive.caml_string_compare];
 function bench4() {
   var table = Bs_HashMapString.create(1000000);
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMapString.set(table, "" + i, i);
+    Bs_HashMapString.setDone(table, "" + i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_HashMapString.has(table, "" + i$1)) {
@@ -199,7 +199,7 @@ function bench4() {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Bs_HashMapString.remove(table, "" + i$2);
+    Bs_HashMapString.removeDone(table, "" + i$2);
   }
   if (Bs_HashMapString.size(table)) {
     throw [
@@ -225,7 +225,7 @@ function bench5() {
   var eq = Int_001;
   console.time("bs_hashtbl_string_test.ml 132");
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMap.add0(hash, eq, table_data, i, i);
+    Bs_HashMap.setDone0(hash, eq, table_data, i, i);
   }
   console.timeEnd("bs_hashtbl_string_test.ml 132");
   console.time("bs_hashtbl_string_test.ml 136");
@@ -265,7 +265,7 @@ function bench5() {
 function bench6() {
   var table = Bs_HashMapInt.create(1000000);
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashMapInt.set(table, i, i);
+    Bs_HashMapInt.setDone(table, i, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_HashMapInt.has(table, i$1)) {
@@ -281,7 +281,7 @@ function bench6() {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Bs_HashMapInt.remove(table, i$2);
+    Bs_HashMapInt.removeDone(table, i$2);
   }
   if (Bs_HashMapInt.size(table)) {
     throw [
@@ -300,7 +300,7 @@ function bench6() {
 function bench7() {
   var table = Bs_HashSetInt.create(2000000);
   for(var i = 0; i <= 1000000; ++i){
-    Bs_HashSetInt.add(table, i);
+    Bs_HashSetInt.addDone(table, i);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_HashSetInt.has(table, i$1)) {
@@ -316,7 +316,7 @@ function bench7() {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    Bs_HashSetInt.remove(table, i$2);
+    Bs_HashSetInt.removeDone(table, i$2);
   }
   if (Bs_HashSetInt.size(table)) {
     throw [
