@@ -1069,7 +1069,7 @@ if (!Caml_obj.caml_equal(Bs_Queue.toArray(q2$4), v)) {
 
 if (Bs_Queue.reduce(q2$4, 0, (function (x, y) {
           return x - y | 0;
-        })) !== Bs_Array.foldLeft(v, 0, (function (x, y) {
+        })) !== Bs_Array.reduce(v, 0, (function (x, y) {
           return x - y | 0;
         }))) {
   throw [

@@ -31,7 +31,8 @@ type t
 val empty: unit -> t
 val singleton: elt -> t  
 val ofArray: elt array -> t
-val ofSortedArrayUnsafe: elt array -> t   
+val ofSortedArrayUnsafe: elt array -> t
+val copy: t -> t 
 val isEmpty: t -> bool
 val has: t -> elt -> bool
 

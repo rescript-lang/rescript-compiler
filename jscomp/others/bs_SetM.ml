@@ -353,3 +353,4 @@ let union (type elt) (type id) (a : (elt,id) t) b =
       let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       B.bag ~data:(N.ofSortedArrayAux tmp2 0 k) ~dict 
 
+let copy d = B.bag ~data:(N.copy (B.data d)) ~dict:(B.dict d)

@@ -38,6 +38,38 @@ type 'a bucket = {
 and 'a t0 = 'a bucket C.container  
 [@@bs.deriving abstract]
 
+module A = Bs_Array
+
+let rec copy ( x : _ t0) : _ t0= 
+  C.container
+    ~size:(C.size x)
+    ~buckets:(copyBuckets (C.buckets x))
+    ~initialSize:(C.initialSize x)
+and copyBuckets ( buckets : _ bucket C.opt array) =  
+  let len = A.length buckets in 
+  let newBuckets = A.makeUninitializedUnsafe len in 
+  for i = 0 to len - 1 do 
+    A.unsafe_set newBuckets i 
+    (copyBucket (A.unsafe_get buckets i))
+  done ;
+  newBuckets
+and copyBucket c =   
+  match C.toOpt c with 
+  | None -> c 
+  | Some c -> 
+    let head = (bucket ~key:(key c) 
+                  ~next:(C.emptyOpt)) in 
+    copyAuxCont (next c) head;
+    C.return head
+and copyAuxCont c prec =       
+  match C.toOpt c with 
+  | None -> ()
+  | Some nc -> 
+    let ncopy = bucket ~key:(key nc) ~next:C.emptyOpt in 
+    nextSet prec (C.return ncopy) ;
+    copyAuxCont (next nc) ncopy
+
+
 let rec bucketLength accu buckets = 
   match C.toOpt buckets with 
   | None -> accu
@@ -84,7 +116,7 @@ let rec doBucketFold ~f b accu =
   | None ->
     accu
   | Some cell ->
-    doBucketFold ~f (next cell) (f (key cell) accu [@bs]) 
+    doBucketFold ~f (next cell) (f  accu (key cell) [@bs]) 
 
 let fold0 h init f =
   let d = C.buckets h in
@@ -99,11 +131,11 @@ let fold0 h init f =
 
 let logStats0 h =
   let mbl =
-    Bs_Array.foldLeft (C.buckets h) 0 (fun[@bs] m b -> 
+    Bs_Array.reduce (C.buckets h) 0 (fun[@bs] m b -> 
       let len = (bucketLength 0 b) in
       max m len)  in
-  let histo = Bs_Array.init (mbl + 1) (fun[@bs] _ -> 0) in
-  Bs_Array.iter  (C.buckets h)
+  let histo = Bs_Array.initExn (mbl + 1) (fun[@bs] _ -> 0) in
+  Bs_Array.forEach (C.buckets h)
     (fun[@bs] b ->
        let l = bucketLength 0 b in
        Bs_Array.unsafe_set histo l (Bs_Array.unsafe_get histo l + 1)

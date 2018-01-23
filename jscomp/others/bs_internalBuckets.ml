@@ -33,6 +33,7 @@ type ('a,'b) bucket = {
 and ('a, 'b) t0 = ('a,'b) bucket C.container  
 [@@bs.deriving abstract]
 
+module A = Bs_Array
 
 type statistics = {
   num_bindings: int;
@@ -40,6 +41,39 @@ type statistics = {
   max_bucket_length: int;
   bucket_histogram: int array
 }
+
+let rec copy ( x : _ t0) : _ t0= 
+  C.container
+    ~size:(C.size x)
+    ~buckets:(copyBuckets (C.buckets x))
+    ~initialSize:(C.initialSize x)
+and copyBuckets ( buckets : _ bucket C.opt array) =  
+  let len = A.length buckets in 
+  let newBuckets = A.makeUninitializedUnsafe len in 
+  for i = 0 to len - 1 do 
+    A.unsafe_set newBuckets i 
+    (copyBucket (A.unsafe_get buckets i))
+  done ;
+  newBuckets
+and copyBucket c =   
+  match C.toOpt c with 
+  | None -> c 
+  | Some c -> 
+    let head = (bucket ~key:(key c) ~value:(value c)
+                  ~next:(C.emptyOpt)) in 
+    copyAuxCont (next c) head;
+    C.return head
+and copyAuxCont c prec =       
+  match C.toOpt c with 
+  | None -> ()
+  | Some nc -> 
+    let ncopy = 
+        bucket ~key:(key nc) ~value:(value nc) ~next:C.emptyOpt in 
+    nextSet prec (C.return ncopy) ;
+    copyAuxCont (next nc) ncopy
+
+
+
 
 let rec bucket_length accu buckets = 
   match C.toOpt buckets with 
@@ -67,7 +101,7 @@ let rec do_bucket_fold ~f b accu =
   | None ->
     accu
   | Some cell ->
-    do_bucket_fold ~f (next cell) (f (key cell) (value cell) accu [@bs]) 
+    do_bucket_fold ~f (next cell) (f accu (key cell) (value cell)  [@bs]) 
 
 let fold0  h init f =
   let d = C.buckets h in
@@ -82,16 +116,16 @@ let fold0  h init f =
 
 let logStats0 h =
   let mbl =
-    Bs_Array.foldLeft (C.buckets h) 0 (fun[@bs] m b -> 
+    Bs_Array.reduce (C.buckets h) 0 (fun[@bs] m b -> 
         let len = (bucket_length 0 b) in
         Pervasives.max m len) in
-  let histo = Bs_Array.init (mbl + 1) (fun[@bs] _ -> 0) in
-  Bs_Array.iter (C.buckets h)
+  let histo = Bs_Array.initExn (mbl + 1) (fun[@bs] _ -> 0) in
+  Bs_Array.forEach (C.buckets h)
     (fun[@bs] b ->
        let l = bucket_length 0 b in
        Bs_Array.unsafe_set histo l (Bs_Array.unsafe_get histo l + 1)
     )
-    ;
+  ;
   Js.log [%obj{ num_bindings = (C.size h);
                 num_buckets = Bs_Array.length (C.buckets h);
                 max_bucket_length = mbl;

@@ -33,9 +33,8 @@ module Queue = Bs_Queue
 module HashMap = Bs_HashMap
 module HashSet = Bs_HashSet
 module HashSetInt = Bs_HashSetInt
-module HashSetString = Bs_HashSetInt
+module HashSetString = Bs_HashSetString
 module HashMapString = Bs_HashMapString
-module HashMultiMap = Bs_HashMultiMap
 module HashMapInt = Bs_HashMapInt
 module Sort = Bs_Sort
 module SortInt = Bs_SortInt
@@ -53,3 +52,4 @@ module SetIntM = Bs_SetIntM
 module SetString = Bs_SetString
 module List = Bs_List
 
+(* module HashMultiMap = Bs_HashMultiMap *)

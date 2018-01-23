@@ -27,9 +27,9 @@ let add = fun [@bs] x y -> x + y
 
 
 let () = 
-  N.addArray empty [|1,1;2,3;3,3; 2,2|];
-  eqx __LOC__ (N.findOpt empty 2) (Some 2);
-  eqx __LOC__ (N.length empty) 3
+  N.mergeArrayDone empty [|1,1;2,3;3,3; 2,2|];
+  eqx __LOC__ (N.get empty 2) (Some 2);
+  eqx __LOC__ (N.size empty) 3
   
 module A = Bs.Array 
 module So = Bs.Sort 
@@ -37,22 +37,22 @@ let () =
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = A.zip u u in 
   let xx = N.ofArray (module Y) v  in 
-  eqx __LOC__ (N.length xx) 91;
-  eqx __LOC__ (So.sortByCont (N.keys xx) cmp) (I.range 30 120)
+  eqx __LOC__ (N.size xx) 91;
+  eqx __LOC__ (So.sortByCont (N.keysToArray xx) cmp) (I.range 30 120)
 
 let () = 
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
   let v = N.create (module Y) 40 in 
-  N.addArray v (A.zip u u);
-  eqx __LOC__ (N.length v) 100_001;
+  N.mergeArrayDone v (A.zip u u);
+  eqx __LOC__ (N.size v) 100_001;
   for i = 0 to 1_000 do 
-    N.remove v i 
+    N.removeDone v i 
   done; 
-  eqx __LOC__ (N.length v) 99_000;
+  eqx __LOC__ (N.size v) 99_000;
   for i = 0 to 2_000 do 
-    N.remove v i 
+    N.removeDone v i 
   done ;
-  eqx __LOC__ (N.length v) 98_000;
-  b __LOC__ (A.forAll (I.range 2_001 100_000) (fun [@bs] x -> N.mem v x ))
+  eqx __LOC__ (N.size v) 98_000;
+  b __LOC__ (A.forAll (I.range 2_001 100_000) (fun [@bs] x -> N.has v x ))
 
 ;; Mt.from_pair_suites __FILE__ !suites

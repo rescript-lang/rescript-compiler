@@ -291,7 +291,7 @@ var match$2 = match$1[0];
 
 b("File \"bs_poly_set_test.ml\", line 119, characters 4-11", match$1[1]);
 
-eq("File \"bs_poly_set_test.ml\", line 120, characters 5-12", Bs_internalAVLset.toArray0(match$2[0].data), Bs_Array.init(200, (function (i) {
+eq("File \"bs_poly_set_test.ml\", line 120, characters 5-12", Bs_internalAVLset.toArray0(match$2[0].data), Bs_Array.initExn(200, (function (i) {
             return i;
           })));
 
@@ -311,7 +311,7 @@ var a8 = match$4[0];
 
 b("File \"bs_poly_set_test.ml\", line 124, characters 4-11", 1 - match$3[1]);
 
-eq("File \"bs_poly_set_test.ml\", line 125, characters 5-12", Bs_internalAVLset.toArray0(a8.data), Bs_Array.init(200, (function (i) {
+eq("File \"bs_poly_set_test.ml\", line 125, characters 5-12", Bs_internalAVLset.toArray0(a8.data), Bs_Array.initExn(200, (function (i) {
             return i;
           })));
 

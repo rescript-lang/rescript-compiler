@@ -77,7 +77,7 @@ let rec replace_bucket  (key : key) info cell =
     | Some cell -> 
       replace_bucket key info cell
 
-let add  h (key : key) value =
+let setDone  h (key : key) value =
   let h_buckets = C.buckets h in 
   let i = hash key land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
@@ -96,6 +96,7 @@ let add  h (key : key) value =
     end   
     end
 
+let set h key value = setDone h key value ; h
 let rec remove_bucket h h_buckets  i (key : key) prec buckets =
   match C.toOpt buckets with
   | None -> ()
@@ -109,7 +110,7 @@ let rec remove_bucket h h_buckets  i (key : key) prec buckets =
       end
     else remove_bucket  h h_buckets i key cell cell_next
 
-let remove  h key =  
+let removeDone  h key =  
   let h_buckets = C.buckets h in 
   let i = hash key land (Array.length h_buckets - 1) in  
   let bucket = (Bs_Array.unsafe_get h_buckets i) in 
@@ -124,7 +125,7 @@ let remove  h key =
     else 
       remove_bucket  h h_buckets i key cell (N.next cell)
 
-
+let remove h key  = removeDone h key; h
 
 let rec findAux  (key : key) buckets = 
   match C.toOpt buckets with 
@@ -134,7 +135,7 @@ let rec findAux  (key : key) buckets =
     if key = (N.key cell)  then Some (N.value cell) 
     else findAux key  (N.next cell)
 
-let findOpt  h (key : key) =
+let get  h (key : key) =
   let h_buckets = C.buckets h in 
   let nid = hash key  land (Array.length h_buckets - 1) in 
   match C.toOpt @@ Bs_Array.unsafe_get h_buckets nid with
@@ -161,7 +162,7 @@ let rec mem_in_bucket (key : key) cell =
     | Some nextCell -> mem_in_bucket  key nextCell
      )
     
-let mem  h key =
+let has  h key =
   let h_buckets = C.buckets h in 
   let nid = hash key land (Array.length h_buckets - 1) in 
   let bucket = Bs_Array.unsafe_get h_buckets nid in 
@@ -174,11 +175,12 @@ let mem  h key =
 let create = C.create0
 let clear = C.clear0
 let reset = C.reset0
-let length = C.length0
-let iter = N.iter0
-let fold = N.fold0
+let size = C.length0
+let forEach = N.iter0
+let reduce = N.fold0
 let logStats = N.logStats0
-let filterMapInplace = N.filterMapInplace0
+let filterMapDone = N.filterMapInplace0
+let filterMap h f = filterMapDone h f; h
 let toArray = N.toArray0 
 
 let ofArray arr  = 
@@ -186,14 +188,21 @@ let ofArray arr  =
   let v = create len in 
   for i = 0 to len - 1 do 
     let k,value = (Bs.Array.unsafe_get arr i) in
-    add v k value
+    setDone v k value
   done ;
   v
 
 (* TOOD: optimize heuristics for resizing *)  
-let addArray h arr =   
+let mergeArrayDone h arr =   
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
     let k,v = (Bs_Array.unsafe_get arr i) in
-    add h k v 
-done 
+    setDone h k v 
+  done
+
+let mergeArray h arr = mergeArrayDone h arr; h
+
+let copy = N.copy
+
+let keysToArray = N.keys0
+let valuesToArray = N.values0

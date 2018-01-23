@@ -4,18 +4,24 @@ type key = int
 
 # 10
 type t
-val create : int -> t 
-val clear : t -> unit
-val reset : t -> unit
-val add :  t -> key -> unit
-val mem:  
+val create: int -> t 
+val clear: t -> unit
+
+val addDone:  t -> key -> unit
+val add: t -> key -> t
+val copy: t -> t
+  
+val has:  
    t -> key -> bool
-val remove:
+val removeDone:
   t -> key -> unit
-val iter : t -> (key  -> unit [@bs]) ->  unit
-val fold : t -> 'c -> (key -> 'c -> 'c [@bs]) ->   'c
-val length  : t -> int  
-val logStats : t -> unit
-val toArray : t -> key array 
-val ofArray : key array -> t 
-val addArray : t -> key array -> unit 
+val remove:
+  t -> key -> t
+val forEach: t -> (key  -> unit [@bs]) ->  unit
+val reduce: t -> 'c -> ( 'c -> key -> 'c [@bs]) ->   'c
+val size: t -> int  
+val logStats: t -> unit
+val toArray: t -> key array 
+val ofArray: key array -> t 
+val mergeArrayDone: t -> key array -> unit
+val mergeArray: t -> key array -> t

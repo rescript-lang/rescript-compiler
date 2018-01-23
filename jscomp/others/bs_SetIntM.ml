@@ -336,3 +336,5 @@ let union (dataa : t)  (datab : t) : t =
       t ~data:(N.ofSortedArrayAux tmp2 0 k) 
   
 let has d x = I.mem (data d) x 
+
+let copy d = t ~data:(N.copy (data d)) 

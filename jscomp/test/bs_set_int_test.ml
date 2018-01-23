@@ -71,7 +71,7 @@ let () =
   let minv, maxv = N.minNull v, N.maxNull v in 
   let approx loc (x : int)  y = 
     b loc (Js.eqNull x y) in 
-  eq __LOC__ (N.reduce v 0 (fun [@bs] x y -> x + y) ) (A.foldLeft ss 0 (fun [@bs] x y -> x + y)  ) ;
+  eq __LOC__ (N.reduce v 0 (fun [@bs] x y -> x + y) ) (A.reduce ss 0 (fun [@bs] x y -> x + y)  ) ;
   approx __LOC__ (-1) minv ;
   approx __LOC__ 222 maxv;
   let v = N.remove v 3 in 
@@ -97,11 +97,11 @@ let () =
  
 let ()  = 
   let count = 1_000_000 in 
-  let v = (A.shuffle (A.init count (fun [@bs] i -> i))) in 
+  let v = (A.shuffle (A.initExn count (fun [@bs] i -> i))) in 
   let u = N.ofArray v in 
   b __LOC__ (N.checkInvariant u );
-  let firstHalf = Bs.Array.sub v 0 2_000 in 
-  let xx = Bs.Array.foldLeft firstHalf u
+  let firstHalf = Bs.Array.subExn v 0 2_000 in 
+  let xx = Bs.Array.reduce firstHalf u
     (fun[@bs] acc x -> N.remove acc x ) in 
   b __LOC__ (N.checkInvariant u);
   b __LOC__ N.(eq (union (ofArray firstHalf) xx) u)

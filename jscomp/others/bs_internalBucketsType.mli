@@ -24,10 +24,10 @@
 
 type 'a opt = 'a Js.undefined
 type 'c container =
-  private { 
+   { 
     mutable size: int;                        (* number of entries *)
     mutable buckets: 'c opt array;  (* the buckets *)
-    
+    initialSize : int
   } [@@bs.deriving abstract]
 
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"

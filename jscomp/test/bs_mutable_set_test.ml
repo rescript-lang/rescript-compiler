@@ -49,7 +49,7 @@ let () =
   b __LOC__ (N.isEmpty v )
 
 let () = 
-  let v = N.ofArray (A.init 30 (fun [@bs]i -> i)) in 
+  let v = N.ofArray (A.initExn 30 (fun [@bs]i -> i)) in 
   N.removeDone v 30; 
   N.removeDone v 29 ;
   b __LOC__ (Js.eqNull 28 (N.maxNull v ));
@@ -90,7 +90,7 @@ let () =
     N.removeDone v i
   done ;
   eq __LOC__ (N.size copyV) 126; 
-  eq __LOC__ (N.toArray copyV) (A.init 126 (fun[@bs] i -> i * 8));
+  eq __LOC__ (N.toArray copyV) (A.initExn 126 (fun[@bs] i -> i * 8));
   eq __LOC__ (N.size v ) 800;
   b __LOC__ (N.eq copyV aa);
   b __LOC__ (N.eq cc bb)
@@ -102,8 +102,8 @@ let () =
   b __LOC__ (N.eq bb (N.ofArray (I.randomRange 401 1000)));
   let d = N.ofArray (A.map (I.randomRange 0 1000) (fun[@bs] x -> x * 2)) in 
   let ((cc,dd), _) = N.split d 1001 in   
-  b __LOC__ (N.eq cc (N.ofArray (A.init 501 (fun[@bs] x -> x * 2))));
-  b __LOC__ (N.eq dd (N.ofArray (A.init 500 (fun [@bs] x -> 1002 + x * 2))))
+  b __LOC__ (N.eq cc (N.ofArray (A.initExn 501 (fun[@bs] x -> x * 2))));
+  b __LOC__ (N.eq dd (N.ofArray (A.initExn 500 (fun [@bs] x -> 1002 + x * 2))))
 
 
 let (++) = N.union

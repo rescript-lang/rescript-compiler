@@ -57,8 +57,8 @@ let () =
 
     (A.
        (append 
-          (init 100 (fun [@bs] i -> i) )
-          (init 100 (fun [@bs] i -> i)))
+          (initExn 100 (fun [@bs] i -> i) )
+          (initExn 100 (fun [@bs] i -> i)))
     )
 let () = 
   let (=~) = eq "APPEND" in 

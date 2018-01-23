@@ -39,20 +39,20 @@ type ('a,'id) t =
 
 
 
-let rec insert_bucket ~hash ~h_buckets ~ndata_tail h old_bucket = 
+let rec copyBucket ~hash ~h_buckets ~ndata_tail h old_bucket = 
   match C.toOpt old_bucket with 
   | None -> ()
   | Some cell ->
     let nidx = (Bs_Hash.getHash hash) (N.key cell) [@bs] land (Array.length h_buckets - 1) in 
     let v = C.return cell in 
-    begin match C.toOpt (Bs_Array.unsafe_get ndata_tail nidx) with
+    begin match C.toOpt (A.unsafe_get ndata_tail nidx) with
       | None -> 
-        Bs_Array.unsafe_set h_buckets nidx  v
+        A.unsafe_set h_buckets nidx  v
       | Some tail ->
         N.nextSet tail v  (* cell put at the end *)            
     end;          
-    Bs_Array.unsafe_set ndata_tail nidx  v;
-    insert_bucket ~hash ~h_buckets ~ndata_tail h (N.next cell)
+    A.unsafe_set ndata_tail nidx  v;
+    copyBucket ~hash ~h_buckets ~ndata_tail h (N.next cell)
 
 
 let resize ~hash h =
@@ -64,10 +64,10 @@ let resize ~hash h =
     let ndata_tail = A.makeUninitialized nsize  in (* keep track of tail *)
     C.bucketsSet h  h_buckets;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
-      insert_bucket ~hash ~h_buckets ~ndata_tail h (Bs_Array.unsafe_get odata i)
+      copyBucket ~hash ~h_buckets ~ndata_tail h (A.unsafe_get odata i)
     done;
     for i = 0 to nsize - 1 do
-      match C.toOpt (Bs_Array.unsafe_get ndata_tail i) with
+      match C.toOpt (A.unsafe_get ndata_tail i) with
       | None -> ()
       | Some tail -> N.nextSet tail C.emptyOpt
     done
@@ -75,7 +75,7 @@ let resize ~hash h =
 
 
 
-let rec remove_bucket ~eq h h_buckets  i key prec cell =
+let rec removeBucket ~eq h h_buckets  i key prec cell =
   let cell_next = N.next cell in 
   if (Bs_Hash.getEq eq) (N.key cell) key [@bs]
   then 
@@ -88,12 +88,12 @@ let rec remove_bucket ~eq h h_buckets  i key prec cell =
     | None -> 
       ()
     | Some cell_next ->
-      remove_bucket ~eq h h_buckets i key cell cell_next
+      removeBucket ~eq h h_buckets i key cell cell_next
 
 let remove0 ~hash ~eq h key =  
   let h_buckets = C.buckets h in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in  
-  let l = (Bs_Array.unsafe_get h_buckets i) in 
+  let l = (A.unsafe_get h_buckets i) in 
   match C.toOpt l with 
   | None -> ()
   | Some cell -> 
@@ -101,13 +101,13 @@ let remove0 ~hash ~eq h key =
     if (Bs_Hash.getEq eq) (N.key cell) key [@bs] then 
       begin 
         C.sizeSet h (C.size h - 1) ;
-        Bs_Array.unsafe_set h_buckets i next_cell
+        A.unsafe_set h_buckets i next_cell
       end
     else       
       match C.toOpt next_cell with 
       | None -> ()
       | Some next_cell -> 
-        remove_bucket ~eq h h_buckets i key cell next_cell
+        removeBucket ~eq h h_buckets i key cell next_cell
 
 
 
@@ -124,38 +124,41 @@ let rec addBucket ~eq h key  cell =
       N.nextSet cell (C.return @@ N.bucket ~key ~next:n)
     | Some n -> addBucket ~eq h key  n
 
-let add0 
+let addDone0     
+    (h : (_,'id) t0) key
     ~hash:(hash:(_,'id)Bs_Hash.hash) 
-    ~eq:(eq:(_,'id) Bs_Hash.eq)  (h : (_,'id) t0) key  =
+    ~eq:(eq:(_,'id) Bs_Hash.eq)
+  =
   let h_buckets = C.buckets h in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
   (match C.toOpt l with                                    
    | None -> 
      C.sizeSet h (C.size  h + 1);
-     Bs_Array.unsafe_set h_buckets i 
+     A.unsafe_set h_buckets i 
        (C.return @@ N.bucket ~key ~next:C.emptyOpt)
    | Some cell -> 
      addBucket ~eq h key cell);
   if C.size h > Array.length (C.buckets h) lsl 1 then resize ~hash h
 
 
-let rec mem_in_bucket ~eq key cell = 
+let add0 h key ~hash ~eq  =  addDone0 h key ~hash ~eq; h
+let rec memInBucket ~eq key cell = 
   (Bs_Hash.getEq eq) 
     (N.key cell) key [@bs] || 
   (match C.toOpt (N.next cell) with 
    | None -> false 
    | Some nextCell -> 
-     mem_in_bucket ~eq key nextCell)
+     memInBucket ~eq key nextCell)
 
-let mem0 ~hash ~eq h key =
+let has0 h key ~hash ~eq =
   let h_buckets = C.buckets h in 
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
-  let bucket = (Bs_Array.unsafe_get h_buckets nid) in 
+  let bucket = (A.unsafe_get h_buckets nid) in 
   match C.toOpt bucket with 
   | None -> false 
   | Some bucket -> 
-    mem_in_bucket ~eq key bucket
+    memInBucket ~eq key bucket
 
 
 let create0 = C.create0
@@ -173,37 +176,33 @@ let create dict initialize_size =
     ~dict 
 let clear h = clear0 (B.data h)
 let reset h = reset0 (B.data h)
-let length h = length0 (B.data h)                 
-let iter h f  = iter0 (B.data h) f 
-let fold h init f = fold0 (B.data h) init f
+let size h = length0 (B.data h)                 
+let forEach h f  = iter0 (B.data h) f 
+let reduce h init f = N.fold0 (B.data h) init f
 let logStats h = logStats0 (B.data h)
 
-let add (type a) (type id) (h : (a,id) t) (key:a)  = 
+let addDone (type a) (type id) (h : (a,id) t) (key:a)  = 
   let dict,data = B.(dict h, data h) in 
   let module M = (val  dict) in 
-  add0 ~hash:M.hash ~eq:M.eq data key 
+  addDone0 ~hash:M.hash ~eq:M.eq data key 
 
-let remove (type a)  (type id) (h : (a,id) t) (key : a) = 
-  let dict,data = B.(dict h, data h) in
-  let module M = (val dict) in   
-  remove0 ~hash:M.hash ~eq:M.eq data key 
+let add h key = addDone h key; h
+  
+let removeDone (type a)  (type id) (h : (a,id) t) (key : a) = 
+  let module M = (val B.dict h) in   
+  remove0 ~hash:M.hash ~eq:M.eq (B.data h) key 
 
+let remove h key = removeDone h key; h
 
-let replace (type a)(type id)  (h : (a,id) t) (key : a)  =
-  let dict,data = B.(dict h, data h) in
-  let module M = (val dict) in 
-  add0 ~hash:M.hash ~eq:M.eq data key
-
-let mem (type a) (type id) (h : (a,id) t) (key : a) =           
-  let dict,data = B.(dict h, data h) in
-  let module M = (val dict) in   
-  mem0 ~hash:M.hash ~eq:M.eq data key   
+let has (type a) (type id) (h : (a,id) t) (key : a) =           
+  let module M = (val B.dict h) in   
+  has0 ~hash:M.hash ~eq:M.eq (B.data h) key   
 
 let ofArray0  ~hash ~eq arr  = 
   let len = Bs.Array.length arr in 
   let v = create0 len in 
   for i = 0 to len - 1 do 
-    add0 ~eq ~hash v (Bs.Array.unsafe_get arr i)
+    addDone0 ~eq ~hash v (Bs.Array.unsafe_get arr i)
   done ;
   v
 
@@ -211,18 +210,24 @@ let ofArray0  ~hash ~eq arr  =
 let addArray0 ~hash ~eq  h arr =   
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
-    add0 h  ~eq ~hash (Bs_Array.unsafe_get arr i)
+    addDone0 h  ~eq ~hash (A.unsafe_get arr i)
   done 
 
 let ofArray (type a) (type id)
-    ~dict:(dict:(a,id) Bs_Hash.t) arr =     
+    arr
+    ~dict:(dict:(a,id) Bs_Hash.t)  =     
   let module M = (val dict) in 
   B.bag ~dict 
     ~data:M.(ofArray0 ~eq~hash arr)
 
-let addArray (type a) (type id)
+let mergeArrayDone (type a) (type id)
     (h : (a,id) t) arr = 
-  let dict,data = B.(dict h, data h) in 
-  let module M = (val dict) in
+  let data = B.data h in 
+  let module M = (val B.dict h) in
   M.(addArray0 ~hash ~eq data arr)
 
+let mergeArray h arr = mergeArrayDone h arr; h
+  
+let getData = B.data
+let getDict = B.dict
+let packDictData = B.bag 

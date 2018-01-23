@@ -172,7 +172,7 @@ function add(x, y) {
   return x + y | 0;
 }
 
-var v = Bs_Array.init(3000, (function (i) {
+var v = Bs_Array.initExn(3000, (function (i) {
         return i;
       }));
 
@@ -182,17 +182,17 @@ Bs_Array.shuffleDone(u);
 
 neq("File \"bs_array_test.ml\", line 63, characters 6-13", u, v);
 
-eq("File \"bs_array_test.ml\", line 65, characters 5-12", Bs_Array.foldLeft(u, 0, add), Bs_Array.foldLeft(v, 0, add));
+eq("File \"bs_array_test.ml\", line 65, characters 5-12", Bs_Array.reduce(u, 0, add), Bs_Array.reduce(v, 0, add));
 
 function addone(x) {
   return x + 1 | 0;
 }
 
-eq("File \"bs_array_test.ml\", line 69, characters 5-12", Bs_Array.init(0, (function () {
+eq("File \"bs_array_test.ml\", line 69, characters 5-12", Bs_Array.initExn(0, (function () {
             return 1;
           })), /* int array */[]);
 
-eq("File \"bs_array_test.ml\", line 70, characters 5-12", Bs_Array.init(3, (function (i) {
+eq("File \"bs_array_test.ml\", line 70, characters 5-12", Bs_Array.initExn(3, (function (i) {
             return i;
           })), /* int array */[
       0,
@@ -200,7 +200,7 @@ eq("File \"bs_array_test.ml\", line 70, characters 5-12", Bs_Array.init(3, (func
       2
     ]);
 
-eq("File \"bs_array_test.ml\", line 71, characters 5-12", Bs_Array.makeMatrix(3, 4, 1), /* array */[
+eq("File \"bs_array_test.ml\", line 71, characters 5-12", Bs_Array.makeMatrixExn(3, 4, 1), /* array */[
       /* int array */[
         1,
         1,
@@ -221,15 +221,15 @@ eq("File \"bs_array_test.ml\", line 71, characters 5-12", Bs_Array.makeMatrix(3,
       ]
     ]);
 
-eq("File \"bs_array_test.ml\", line 74, characters 5-12", Bs_Array.makeMatrix(3, 0, 0), /* array */[
+eq("File \"bs_array_test.ml\", line 74, characters 5-12", Bs_Array.makeMatrixExn(3, 0, 0), /* array */[
       /* int array */[],
       /* int array */[],
       /* int array */[]
     ]);
 
-eq("File \"bs_array_test.ml\", line 75, characters 5-12", Bs_Array.makeMatrix(0, 3, 1), /* array */[]);
+eq("File \"bs_array_test.ml\", line 75, characters 5-12", Bs_Array.makeMatrixExn(0, 3, 1), /* array */[]);
 
-eq("File \"bs_array_test.ml\", line 76, characters 5-12", Bs_Array.makeMatrix(1, 1, 1), /* array */[/* int array */[1]]);
+eq("File \"bs_array_test.ml\", line 76, characters 5-12", Bs_Array.makeMatrixExn(1, 1, 1), /* array */[/* int array */[1]]);
 
 eq("File \"bs_array_test.ml\", line 77, characters 5-12", Bs_Array.copy(/* array */[]), /* array */[]);
 

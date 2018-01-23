@@ -23,7 +23,7 @@ function should(b) {
   }
 }
 
-var shuffledDataAdd = Bs_Array.shuffle(Bs_Array.init(1000001, (function (i) {
+var shuffledDataAdd = Bs_Array.shuffle(Bs_Array.initExn(1000001, (function (i) {
             return /* tuple */[
                     i,
                     i
