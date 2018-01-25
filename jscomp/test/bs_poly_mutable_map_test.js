@@ -43,11 +43,11 @@ var x = randomRange(0, 10);
 
 var a0 = Bs_MapM.ofArray(x, Icmp);
 
-Bs_MapM.setDone(a0, 3, 33);
+Bs_MapM.set(a0, 3, 33);
 
 eq("File \"bs_poly_mutable_map_test.ml\", line 28, characters 7-14", Bs_MapM.getExn(a0, 3), 33);
 
-Bs_MapM.removeArrayDone(a0, /* array */[
+Bs_MapM.removeMany(a0, /* array */[
       7,
       8,
       0,
@@ -66,7 +66,7 @@ eq("File \"bs_poly_mutable_map_test.ml\", line 30, characters 7-14", Bs_internal
       10
     ]);
 
-Bs_MapM.removeArrayDone(a0, Array_data_util.randomRange(0, 100));
+Bs_MapM.removeMany(a0, Array_data_util.randomRange(0, 100));
 
 b("File \"bs_poly_mutable_map_test.ml\", line 32, characters 6-13", Bs_internalAVLtree.isEmpty0(a0.data));
 

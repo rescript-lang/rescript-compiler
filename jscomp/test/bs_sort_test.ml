@@ -108,24 +108,24 @@ let () =
 
 
 let () =     
-  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 33 cmp ) 4 ;
-  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 1 cmp ) 0;
-  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 2 cmp ) 1;
-  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 3 cmp ) 2;
-  eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 4 cmp ) 3;
+  eq __LOC__ (S.binarySearch [|1;2;3;4;33;35;36|] 33 cmp ) 4 ;
+  eq __LOC__ (S.binarySearch [|1;2;3;4;33;35;36|] 1 cmp ) 0;
+  eq __LOC__ (S.binarySearch [|1;2;3;4;33;35;36|] 2 cmp ) 1;
+  eq __LOC__ (S.binarySearch [|1;2;3;4;33;35;36|] 3 cmp ) 2;
+  eq __LOC__ (S.binarySearch [|1;2;3;4;33;35;36|] 4 cmp ) 3;
   let aa = I.range 0 1000 in 
   b __LOC__ @@ R.every 0 1000 (fun [@bs] i -> 
-      S.binSearch aa i cmp = i 
+      S.binarySearch aa i cmp = i 
   );
   (* 0, 2, 4, ... 4000 *)
   let cc =  A.map (I.range 0 2000 ) (fun [@bs] x -> x * 2) in 
-  eq __LOC__ (lnot (S.binSearch cc 5000 cmp)) (2001);
-  eq __LOC__ (lnot (S.binSearch cc (-1) cmp)) (0);
-  eq __LOC__ (S.binSearch cc 0 cmp) 0;
+  eq __LOC__ (lnot (S.binarySearch cc 5000 cmp)) (2001);
+  eq __LOC__ (lnot (S.binarySearch cc (-1) cmp)) (0);
+  eq __LOC__ (S.binarySearch cc 0 cmp) 0;
 
-  eq __LOC__ ( lnot (S.binSearch cc 1 cmp)) (1);
+  eq __LOC__ ( lnot (S.binarySearch cc 1 cmp)) (1);
   b __LOC__ @@ R.every 0 1999 (fun [@bs] i -> 
-    lnot (S.binSearch cc (2 * i + 1) cmp) = (i + 1) 
+    lnot (S.binarySearch cc (2 * i + 1) cmp) = (i + 1) 
     (* 1, 3, 5, ... , 3999 *)
   )
 

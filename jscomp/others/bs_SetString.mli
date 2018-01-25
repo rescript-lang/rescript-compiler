@@ -33,8 +33,6 @@ type t
 (** The type of sets. *)
 
 val empty: t
-val singleton: elt -> t
-(** [singleton x] returns the one-element set containing only [x]. *)
 val ofArray: elt array -> t
 val ofSortedArrayUnsafe: elt array -> t     
 val isEmpty: t -> bool

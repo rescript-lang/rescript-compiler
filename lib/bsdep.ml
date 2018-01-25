@@ -31218,7 +31218,7 @@ let jsMapperRt =
 let search upper polyvar array = 
   app3
     (Exp.ident ({loc = noloc; 
-                 txt = Longident.Ldot (jsMapperRt,"binSearch") })
+                 txt = Longident.Ldot (jsMapperRt,"binarySearch") })
     )                                 
     upper
     (eraseType polyvar)
@@ -31627,6 +31627,7 @@ let init () =
        } 
     )
 ;
+
 end
 module Ast_derive_projector : sig 
 #1 "ast_derive_projector.mli"

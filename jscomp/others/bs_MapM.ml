@@ -60,7 +60,7 @@ let rec removeMutateAux nt x ~cmp =
           N.return (N.balMutate nt)
     end    
 
-let removeDone (type elt) (type id) (d : (elt,_,id) t) k =  
+let remove (type elt) (type id) (d : (elt,_,id) t) k =  
   let oldRoot = B.data d in   
   match N.toOpt oldRoot with 
   | None -> ()
@@ -70,9 +70,6 @@ let removeDone (type elt) (type id) (d : (elt,_,id) t) k =
     if newRoot != oldRoot then 
       B.dataSet d newRoot    
 
-let remove d v =     
-  removeDone d v; 
-  d 
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
   if i < len then 
@@ -83,7 +80,7 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
   else N.return t    
 
-let removeArrayDone (type elt) (type id) (d : (elt,_,id) t) xs =  
+let removeMany (type elt) (type id) (d : (elt,_,id) t) xs =  
   let oldRoot = B.data d in 
   match N.toOpt oldRoot with 
   | None -> ()
@@ -94,9 +91,6 @@ let removeArrayDone (type elt) (type id) (d : (elt,_,id) t) xs =
     if newRoot != oldRoot then 
       B.dataSet d newRoot
 
-let removeArray d xs =      
-  removeArrayDone d xs; 
-  d
 
 let rec updateDone0 t x   f  ~cmp =   
   match N.toOpt t with 
@@ -133,17 +127,13 @@ let rec updateDone0 t x   f  ~cmp =
       );
       N.return (N.balMutate nt)  
       
-let updateDone (type k) (type id) (t : (k,_,id) t)  x f =       
+let update (type k) (type id) (t : (k,_,id) t)  x f =       
   let oldRoot = B.data t in 
   let module M = (val B.dict t) in 
   let newRoot = updateDone0 oldRoot x f ~cmp:M.cmp in 
   if  newRoot != oldRoot then 
     B.dataSet t newRoot 
 
-let update t x f = 
-  updateDone t x f ; 
-  t
-  
 let empty ~dict = 
   B.bag ~dict ~data:N.empty0  
 let isEmpty d = 
@@ -151,9 +141,9 @@ let isEmpty d =
 let singleton dict x v= 
   B.bag ~data:(N.singleton0 x v) ~dict 
 
-let minKeyOpt m = N.minKeyOpt0 (B.data m)
+let minKey m = N.minKeyOpt0 (B.data m)
 let minKeyNull m = N.minKeyNull0 (B.data m)
-let maxKeyOpt m = N.maxKeyOpt0 (B.data m)
+let maxKey m = N.maxKeyOpt0 (B.data m)
 let maxKeyNull m = N.maxKeyNull0 (B.data m)
 let minimum m = N.minKVOpt0 (B.data m)
 let minNull m = N.minKVNull0 (B.data m) 
@@ -193,7 +183,7 @@ let eq (type k) (type id) (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp =
 let map m f = 
   let dict, map = B.(dict m, data m) in 
   B.bag ~dict ~data:(N.map0 map f)
-let mapi map  f = 
+let mapWithKey map  f = 
   let dict,map = B.(dict map, data map) in 
   B.bag ~dict ~data:(N.mapi0 map f)
 let get (type k) (type id) (map : (k,_,id) t) x  = 
@@ -219,15 +209,13 @@ let has (type k) (type id)  (map : (k,_,id) t) x =
 let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)= 
   let module M = (val dict ) in 
   B.bag ~dict  ~data:(N.ofArray0 ~cmp:M.cmp data)  
-let setDone (type elt) (type id) (m : (elt,_,id) t) e v = 
-  let dict, oldRoot = B.(dict m, data m) in 
-  let module M = (val dict) in 
+let set (type elt) (type id) (m : (elt,_,id) t) e v = 
+  let oldRoot = B.data m in 
+  let module M = (val B.dict m) in 
   let newRoot = N.updateMutate ~cmp:M.cmp oldRoot e v in 
   if newRoot != oldRoot then 
     B.dataSet m newRoot
-let set m e v = 
-  setDone m e v;
-  m
+
 let mergeArrayAux t  xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
@@ -235,14 +223,10 @@ let mergeArrayAux t  xs ~cmp =
     v := N.updateMutate !v key value ~cmp
   done; 
   !v 
-let mergeArrayDone (type elt) (type id) (d : (elt,_,id) t ) xs =   
-  let dict = B.dict d in 
+let mergeMany (type elt) (type id) (d : (elt,_,id) t ) xs =   
   let oldRoot = B.data d in 
-  let module M = (val dict) in 
+  let module M = (val B.dict d) in 
   let newRoot = mergeArrayAux oldRoot xs ~cmp:M.cmp in 
   if newRoot != oldRoot then 
     B.dataSet d newRoot 
-let mergeArray d xs = 
-  mergeArrayDone d xs ; 
-  d   
 

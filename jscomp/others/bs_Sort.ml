@@ -267,11 +267,11 @@ let sortByCont xs cmp =
   xs   
 
 (* 
-  [binSearchAux arr lo hi key cmp]
+  [binarySearchAux arr lo hi key cmp]
   range [lo, hi]
   input (lo <= hi)
   [arr[lo] <= key <= arr[hi]] *)
-let rec binSearchAux arr lo hi key cmp = 
+let rec binarySearchAux arr lo hi key cmp = 
 
   let mid = (lo + hi)/2 in 
   let midVal = A.getUnsafe arr mid in 
@@ -281,14 +281,14 @@ let rec binSearchAux arr lo hi key cmp =
     if hi = mid then  
       if cmp (A.getUnsafe arr lo) key [@bs] = 0 then lo
       else - (hi + 1)
-    else binSearchAux arr lo mid key cmp 
+    else binarySearchAux arr lo mid key cmp 
   else  (*  a[lo] =< a[mid] < key <= a[hi] *)
   if lo = mid then 
     if cmp (A.getUnsafe arr hi) key [@bs] = 0 then hi
     else - (hi + 1)
-  else binSearchAux arr mid hi key cmp 
+  else binarySearchAux arr mid hi key cmp 
 
-let binSearch sorted key cmp : int =  
+let binarySearch sorted key cmp : int =  
   let len = A.length sorted in 
   if len = 0 then -1 
   else 
@@ -299,4 +299,4 @@ let binSearch sorted key cmp : int =
       let hi = A.getUnsafe sorted (len - 1) in 
       let c2 = cmp key hi [@bs]in 
       if c2 > 0 then - (len + 1)
-      else binSearchAux sorted 0 (len - 1) key cmp 
+      else binarySearchAux sorted 0 (len - 1) key cmp 

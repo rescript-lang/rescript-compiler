@@ -147,7 +147,7 @@ let split (type elt) (type id) (d : (elt,id) t)  key  =
   let dict, s = B.dict d, B.data d  in 
   let module M = (val dict ) in 
   let arr = N.toArray0 s in 
-  let i = S.binSearch arr key (Bs_Cmp.getCmp M.cmp)  in   
+  let i = S.binarySearch arr key (Bs_Cmp.getCmp M.cmp)  in   
   let len = A.length arr in 
   if i < 0 then 
     let next = - i -1 in 

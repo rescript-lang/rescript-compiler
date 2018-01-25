@@ -10,7 +10,6 @@ type 'a t
 
 val empty: 'a t
 val isEmpty: 'a t -> bool
-val singleton: key -> 'a -> 'a t
 val has:  'a t -> key -> bool    
 val cmp:  'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 
@@ -26,7 +25,7 @@ val forEach: 'a t -> (key -> 'a -> unit [@bs]) ->  unit
    as second argument.  The bindings are passed to [f] in increasing
    order with respect to the ordering over the type of the keys. *)
 
-val fold:  'a t -> 'b -> ('b -> key -> 'a -> 'b [@bs]) -> 'b
+val reduce:  'a t -> 'b -> ('b -> key -> 'a -> 'b [@bs]) -> 'b
 (** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
    where [k1 ... kN] are the keys of all bindings in [m]
    (in increasing order), and [d1 ... dN] are the associated data. *)
@@ -47,9 +46,9 @@ val toArray: 'a t -> (key * 'a) array
 val ofArray: (key * 'a) array -> 'a t     
 val keysToArray: 'a t -> key array 
 val valuesToArray: 'a t -> 'a array
-val minKeyOpt: _ t -> key option 
+val minKey: _ t -> key option 
 val minKeyNull: _ t -> key Js.null
-val maxKeyOpt: _ t -> key option
+val maxKey: _ t -> key option
 val maxKeyNull: _ t -> key Js.null    
 val minimum: 'a t -> (key * 'a) option
 val minNull: 'a t -> (key * 'a) Js.null
@@ -123,7 +122,7 @@ val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
    The bindings are passed to [f] in increasing order
    with respect to the ordering over the type of the keys. *)
 
-val mapi: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
+val mapWithKey: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
 
 
-val checkInvariant : _ t -> bool 
+val checkInvariant: _ t -> bool 

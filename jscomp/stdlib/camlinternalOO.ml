@@ -238,7 +238,7 @@ let narrow table vars virt_meths concr_meths =
      :: table.previous_states;
   table.vars <-
 #if BS then
-     Vars.fold table.vars Vars.empty
+     Vars.reduce table.vars Vars.empty
       (fun[@bs] tvars lab info  ->
         if List.mem lab vars then Vars.set tvars lab info  else tvars);      
 #else    

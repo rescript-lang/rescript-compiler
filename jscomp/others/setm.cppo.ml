@@ -235,7 +235,7 @@ let getExn d x =
 let split d  key =  
   let s = data d in  
   let arr = N.toArray0 s in 
-  let i = S.binSearch arr key   in   
+  let i = S.binarySearch arr key   in   
   let len = A.length arr in 
   if i < 0 then 
     let next = - i -1 in 

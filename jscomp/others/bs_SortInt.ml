@@ -230,7 +230,7 @@ let stableSort  (a : elt array)  =
     merge a l2 l1 t 0 l2 a 0 ;
   end
 
-let rec binSearchAux (arr : elt array) lo hi key =   
+let rec binarySearchAux (arr : elt array) lo hi key =   
 
     let mid = (lo + hi)/2 in 
     let midVal = A.getUnsafe arr mid in 
@@ -240,14 +240,14 @@ let rec binSearchAux (arr : elt array) lo hi key =
       if hi = mid then  
         if  (A.getUnsafe arr lo) = key  then lo
         else - (hi + 1)
-      else binSearchAux arr lo mid key 
+      else binarySearchAux arr lo mid key 
     else  (*  a[lo] =< a[mid] < key <= a[hi] *)
       if lo = mid then 
         if (A.getUnsafe arr hi) = key  then hi
         else - (hi + 1)
-      else binSearchAux arr mid hi key 
+      else binarySearchAux arr mid hi key 
 
-let binSearch (sorted : elt array) key  : int =  
+let binarySearch (sorted : elt array) key  : int =  
   let len = A.length sorted in 
   if len = 0 then -1 
   else 
@@ -258,4 +258,4 @@ let binSearch (sorted : elt array) key  : int =
     let hi = A.getUnsafe sorted (len - 1) in 
     (* let c2 = cmp key hi [@bs]in  *)
     if key > hi then - (len + 1)
-    else binSearchAux sorted 0 (len - 1) key 
+    else binarySearchAux sorted 0 (len - 1) key 
