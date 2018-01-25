@@ -14,6 +14,8 @@
 (*                                                                        *)
 (**************************************************************************)
 (* Adapted siginifcantly by BuckleScript Authors                          *)
+module A = Bs_Array
+
 type 'a node = { 
   content: 'a; 
   mutable next: 'a cell 
@@ -182,10 +184,10 @@ let rec fillAux i arr cell =
   match Js.nullToOption cell with 
   | None -> ()
   | Some x ->
-    Bs_Array.unsafe_set arr i (content x);
+    A.setUnsafe arr i (content x);
     fillAux (i + 1) arr (next x) 
 
 let toArray x =         
-  let v = Bs_Array.makeUninitializedUnsafe (length x) in 
+  let v = A.makeUninitializedUnsafe (length x) in 
   fillAux 0 v (first x);
   v

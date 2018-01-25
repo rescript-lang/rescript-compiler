@@ -25,15 +25,16 @@ bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SortInt.cmj \
     bs_Array.cmj bs_SetIntM.cmi
 bs_Hash.cmj : bs_Hash.cmi
 bs_Queue.cmj : bs_Array.cmj bs_Queue.cmi
-bs_List.cmj : js_json.cmj bs_Array.cmj bs_List.cmi
+bs_List.cmj : bs_Array.cmj bs_List.cmi
 bs_Sort.cmj : bs_Array.cmj bs_Sort.cmi
 bs_Range.cmj :
 bs_internalBucketsType.cmj : bs_Array.cmj bs_internalBucketsType.cmi
 bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj \
     bs_internalSetBuckets.cmi
-bs_internalBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj
+bs_internalBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj \
+    bs_internalBuckets.cmi
 bs_HashMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
-    bs_Hash.cmj bs_Bag.cmj bs_Array.cmj bs.cmj bs_HashMap.cmi
+    bs_Hash.cmj bs_Bag.cmj bs_Array.cmj bs_HashMap.cmi
 bs_HashMultiMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
     bs_Hash.cmj bs_Bag.cmj bs_Array.cmj bs_HashMultiMap.cmi
 bs_HashSet.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
@@ -86,9 +87,9 @@ js_global.cmj :
 js_cast.cmj : js_cast.cmi
 js_promise.cmj :
 bs_HashMapInt.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
-    bs_Array.cmj bs.cmj bs_HashMapInt.cmi
+    bs_Array.cmj bs_HashMapInt.cmi
 bs_HashMapString.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
-    bs_Array.cmj bs.cmj bs_HashMapString.cmi
+    bs_Array.cmj bs_HashMapString.cmi
 node_process.cmi : js_dict.cmi
 js_re.cmi :
 js_null_undefined.cmi :
@@ -109,6 +110,7 @@ bs_List.cmi :
 bs_Sort.cmi :
 bs_internalBucketsType.cmi :
 bs_internalSetBuckets.cmi : bs_internalBucketsType.cmi
+bs_internalBuckets.cmi : bs_internalBucketsType.cmi
 bs_HashMap.cmi : bs_Hash.cmi
 bs_HashMultiMap.cmi : bs_Hash.cmi bs_Bag.cmj
 bs_HashSet.cmi : bs_Hash.cmi

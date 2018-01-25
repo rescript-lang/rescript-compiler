@@ -72,8 +72,8 @@ val map0 :  ('c, 'a) t0 -> ('a -> 'b [@bs]) -> ('c, 'b) t0
 val mapi0 :
    ('a,'b) t0 -> ('a -> 'b -> 'c [@bs]) -> ('a, 'c) t0
 val fold0 : ('a,'b) t0 -> 'c -> ( 'c -> 'a -> 'b -> 'c [@bs]) ->  'c
-val forAll0 :  ('a,'b) t0 -> ('a -> 'b -> bool [@bs]) -> bool
-val exists0 :  ('a,'b) t0 -> ('a -> 'b -> bool [@bs]) -> bool
+val every0 :  ('a,'b) t0 -> ('a -> 'b -> bool [@bs]) -> bool
+val some0 :  ('a,'b) t0 -> ('a -> 'b -> bool [@bs]) -> bool
 
 val join : ('a,'b) t0 -> 'a -> 'b -> ('a,'b) t0 -> ('a, 'b) t0
 

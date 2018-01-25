@@ -40,24 +40,26 @@ function b(loc, v) {
   return /* () */0;
 }
 
-var v = Bs_Array.shuffle(Bs_Array.initExn(1000000, (function (i) {
-            return /* tuple */[
-                    i,
-                    i
-                  ];
-          })));
+var v = Bs_Array.makeByAndShuffle(1000000, (function (i) {
+        return /* tuple */[
+                i,
+                i
+              ];
+      }));
 
 var u = Bs_MapInt.ofArray(v);
 
 b("File \"bs_map_int_test.ml\", line 20, characters 4-11", Bs_MapInt.checkInvariant(u));
 
-var firstHalf = Bs_Array.subExn(v, 0, 2000);
+var firstHalf = Bs_Array.slice(v, 0, 2000);
 
-Bs_Array.reduce(firstHalf, u, (function (acc, param) {
+var xx = Bs_Array.reduce(firstHalf, u, (function (acc, param) {
         return Bs_MapInt.remove(acc, param[0]);
       }));
 
 b("File \"bs_map_int_test.ml\", line 24, characters 4-11", Bs_MapInt.checkInvariant(u));
+
+b("File \"bs_map_int_test.ml\", line 25, characters 4-11", Bs_MapInt.checkInvariant(xx));
 
 Mt.from_pair_suites("bs_map_int_test.ml", suites[0]);
 

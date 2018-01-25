@@ -60,7 +60,7 @@ val ofArray:
 
 val mergeArrayDone: ('a,'id) t -> 'a array -> unit
 val mergeArray: ('a,'id) t -> 'a array -> ('a, 'id)t
-
+val getBucketHistogram: _ t -> int array
 (****************************************************************************)
 type ('a, 'id) t0
 
@@ -68,10 +68,10 @@ val getData: ('k, 'id) t  -> ('k, 'id) t0
 val getDict: ('k, 'id) t  -> ('k, 'id) Bs_Hash.t
 val packDictData: dict:('k, 'id) Bs_Hash.t -> data:('k, 'id) t0 -> ('k, 'id) t
 
-val clear0 : ('a, 'id) t0 -> unit
-val create0 : int -> ('a, 'id) t0
-val reset0 : ('a, 'id) t0 -> unit
-val add0 :
+val clear0: ('a, 'id) t0 -> unit
+val create0: int -> ('a, 'id) t0
+
+val add0:
   ('a,'id) t0 ->
   'a ->
   hash:('a,'id) Bs_Hash.hash ->
@@ -94,18 +94,18 @@ val remove0:
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a, 'id) t0 -> 'a -> unit
-val iter0 : ('a, 'id) t0 -> ('a -> unit [@bs]) ->  unit
-val fold0 : ('a, 'id) t0 -> 'c -> ('c -> 'a ->  'c [@bs]) ->  'c
-val length0 : ('a, 'id) t0 -> int
-val logStats0 : ('a, 'id) t0 -> unit
-val toArray0 : ('a,'id) t0 -> 'a array
-val ofArray0 : 
+val forEach0: ('a, 'id) t0 -> ('a -> unit [@bs]) ->  unit
+val reduce0: ('a, 'id) t0 -> 'c -> ('c -> 'a ->  'c [@bs]) ->  'c
+val size0: ('a, 'id) t0 -> int
+val logStats0: ('a, 'id) t0 -> unit
+val toArray0: ('a,'id) t0 -> 'a array
+val ofArray0: 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   'a array -> 
   ('a, 'id) t0      
 
-val addArray0 : 
+val addArray0: 
   hash:('a,'id) Bs_Hash.hash  -> 
   eq:('a,'id) Bs_Hash.eq -> 
   ('a,'id) t0 -> 'a array -> unit     

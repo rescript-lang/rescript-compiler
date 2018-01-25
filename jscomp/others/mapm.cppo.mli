@@ -55,14 +55,14 @@ val reduce:  'a t -> 'b -> ('b -> key -> 'a -> 'b [@bs]) -> 'b
    where [k1 ... kN] are the keys of all bindings in [m]
    (in increasing order), and [d1 ... dN] are the associated data. *)
 
-val forAll:  'a t -> (key -> 'a -> bool [@bs]) -> bool
-(** [forAll m p] checks if all the bindings of the map
+val every:  'a t -> (key -> 'a -> bool [@bs]) -> bool
+(** [every m p] checks if all the bindings of the map
     satisfy the predicate [p].
     The application order of [p] is unspecified. 
  *)
 
-val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
-(** [exists m p] checks if at least one binding of the map
+val some:  'a t -> (key -> 'a -> bool [@bs]) -> bool
+(** [some m p] checks if at least one binding of the map
     satisfy the predicate [p].
     The application order of [p] is unspecified. 
  *)
@@ -92,7 +92,7 @@ val getExn: 'a t -> key -> 'a
 val checkInvariant: _ t -> bool   
 (****************************************************************************)
 
-(*TODO: add functional [merge, partition, filter, split]*)
+(*TODO: add functional [merge, partition, keepBy, split]*)
 
 val removeDone: 'a t -> key -> unit  
 val remove: 'a t ->  key -> 'a t

@@ -81,12 +81,12 @@ let () =
   let u0 =  f (A.map (I.randomRange 0 39) (fun[@bs] x -> (x,x))) in  
   let u1 = M.set u0 39 120 in 
   b __LOC__
-  (A.forAll2 (M.toArray u0) 
+  (A.every2 (M.toArray u0) 
    (A.map (I.range 0 39) (fun [@bs] x -> (x,x)))
    (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
   
   b __LOC__
-  (L.forAll2 
+  (L.every2 
     (M.toList u0)
     (A.toList (A.map (I.range 0 39) (fun [@bs] x -> (x,x))))
     (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
@@ -96,9 +96,9 @@ let () =
 
 let () =     
   let u = f 
-    (A.shuffle (A.initExn 10_000 (fun[@bs] x  -> (x,x)))) in 
+    ((A.makeByAndShuffle 10_000 (fun[@bs] x  -> (x,x)))) in 
  eq __LOC__    
-  (A.initExn 10_000 (fun[@bs] x  -> (x,x)))
+  (A.makeBy 10_000 (fun[@bs] x  -> (x,x)))
   (M.toArray u)
 
 

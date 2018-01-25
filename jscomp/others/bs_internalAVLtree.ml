@@ -203,21 +203,21 @@ let rec fold0 m accu f =
       r 
       (f (fold0 l accu f) v d [@bs]) f
 
-let rec forAll0  n p =
+let rec every0  n p =
   match toOpt n with 
     None -> true
   | Some n  ->    
     p (key n) (value n) [@bs] && 
-    forAll0 (left n) p && 
-    forAll0 (right n) p
+    every0 (left n) p && 
+    every0 (right n) p
 
-let rec exists0 n p = 
+let rec some0 n p = 
   match toOpt n with 
     None -> false
   | Some n  ->
     p (key n) (value n) [@bs] || 
-    exists0 (left n) p || 
-    exists0 (right n) p
+    some0 (left n) p || 
+    some0 (right n) p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -357,7 +357,7 @@ let rec fillArrayKey n i arr =
     | None -> i 
     | Some l -> 
       fillArrayKey l i arr in 
-  A.unsafe_set arr next v;
+  A.setUnsafe arr next v;
   let rnext = next + 1 in 
   match toOpt r with 
   | None -> rnext 
@@ -371,7 +371,7 @@ let rec fillArrayValue n i arr =
     | None -> i 
     | Some l -> 
       fillArrayValue l i arr in 
-  A.unsafe_set arr next (value n);
+  A.setUnsafe arr next (value n);
   let rnext = next + 1 in 
   match toOpt r with 
   | None -> rnext 
@@ -385,7 +385,7 @@ let rec fillArray n i arr =
     | None -> i 
     | Some l -> 
       fillArray l i arr in 
-  A.unsafe_set arr next (v, value n) ;
+  A.setUnsafe arr next (v, value n) ;
   let rnext = next + 1 in 
   match toOpt r with 
   | None -> rnext 
@@ -403,12 +403,12 @@ let rec fillArrayWithPartition n cursor arr p =
      fillArrayWithPartition l cursor arr p);  
   (if p v [@bs] then begin        
       let c = forward cursor in 
-      A.unsafe_set arr c (v,value n);
+      A.setUnsafe arr c (v,value n);
       forwardSet cursor (c + 1)
     end  
    else begin 
      let c = backward cursor in 
-     A.unsafe_set arr c (v, value n);
+     A.setUnsafe arr c (v, value n);
      backwardSet cursor (c - 1)
    end);     
   match toOpt r with 
@@ -425,7 +425,7 @@ let rec fillArrayWithFilter n i arr p =
       fillArrayWithFilter l i arr p in 
   let rnext =
     if p v [@bs] then        
-      (A.unsafe_set arr next (v, value n);
+      (A.setUnsafe arr next (v, value n);
        next + 1
       )
     else next in   
@@ -465,16 +465,16 @@ let valuesToArray0 n =
 let rec ofSortedArrayRevAux arr off len =     
   match len with 
   | 0 -> empty0
-  | 1 -> let k, v = (A.unsafe_get arr off) in singleton0 k v 
+  | 1 -> let k, v = (A.getUnsafe arr off) in singleton0 k v 
   | 2 ->  
-    let (x0,y0),(x1,y1) = A.(unsafe_get arr off, unsafe_get arr (off - 1) ) 
+    let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off - 1) ) 
     in 
     return @@ node ~left:(singleton0 x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty0
   | 3 -> 
     let (x0,y0),(x1,y1),(x2,y2) = 
-      A.(unsafe_get arr off, 
-         unsafe_get arr (off - 1), 
-         unsafe_get arr (off - 2)) in 
+      A.(getUnsafe arr off, 
+         getUnsafe arr (off - 1), 
+         getUnsafe arr (off - 2)) in 
     return @@ node ~left:(singleton0 x0 y0)
       ~right:(singleton0 x2 y2)
       ~key:x1
@@ -483,7 +483,7 @@ let rec ofSortedArrayRevAux arr off len =
   | _ ->  
     let nl = len / 2 in 
     let left = ofSortedArrayRevAux arr off nl in 
-    let midK,midV = A.unsafe_get arr (off - nl) in 
+    let midK,midV = A.getUnsafe arr (off - nl) in 
     let right = 
       ofSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
     create left midK midV right    
@@ -492,16 +492,16 @@ let rec ofSortedArrayRevAux arr off len =
 let rec ofSortedArrayAux arr off len =     
   match len with 
   | 0 -> empty0
-  | 1 -> let k, v = (A.unsafe_get arr off) in singleton0 k v 
+  | 1 -> let k, v = (A.getUnsafe arr off) in singleton0 k v 
   | 2 ->  
-    let (x0,y0),(x1,y1) = A.(unsafe_get arr off, unsafe_get arr (off + 1) ) 
+    let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off + 1) ) 
     in 
     return @@ node ~left:(singleton0 x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty0
   | 3 -> 
     let (x0,y0),(x1,y1),(x2,y2) = 
-      A.(unsafe_get arr off, 
-         unsafe_get arr (off + 1), 
-         unsafe_get arr (off + 2)) in 
+      A.(getUnsafe arr off, 
+         getUnsafe arr (off + 1), 
+         getUnsafe arr (off + 2)) in 
     return @@ node ~left:(singleton0 x0 y0)
       ~right:(singleton0 x2 y2)
       ~key:x1 ~value:y1
@@ -509,7 +509,7 @@ let rec ofSortedArrayAux arr off len =
   | _ ->  
     let nl = len / 2 in 
     let left = ofSortedArrayAux arr off nl in 
-    let midK, midV = A.unsafe_get arr (off + nl) in 
+    let midK, midV = A.getUnsafe arr (off + nl) in 
     let right = 
       ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left midK midV right    
@@ -710,7 +710,7 @@ let ofArray0 (xs : _ array) ~cmp =
         end  
       ) in 
     for i = !next to len - 1 do 
-      let k, v = (A.unsafe_get xs i)  in 
+      let k, v = (A.getUnsafe xs i)  in 
       result := updateMutate ~cmp !result k v 
     done ;
     !result         

@@ -207,15 +207,15 @@ var v$10 = Bs_SetInt.remove(v$9, 1);
 
 b("File \"bs_set_int_test.ml\", line 95, characters 4-11", Bs_SetInt.isEmpty(v$10));
 
-var v$11 = Bs_Array.shuffle(Bs_Array.initExn(1000000, (function (i) {
-            return i;
-          })));
+var v$11 = Bs_Array.makeByAndShuffle(1000000, (function (i) {
+        return i;
+      }));
 
 var u$1 = Bs_SetInt.ofArray(v$11);
 
 b("File \"bs_set_int_test.ml\", line 102, characters 4-11", Bs_SetInt.checkInvariant(u$1));
 
-var firstHalf = Bs_Array.subExn(v$11, 0, 2000);
+var firstHalf = Bs_Array.slice(v$11, 0, 2000);
 
 var xx = Bs_Array.reduce(firstHalf, u$1, Bs_SetInt.remove);
 

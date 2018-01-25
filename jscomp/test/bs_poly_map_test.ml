@@ -106,10 +106,10 @@ let acc m is : _ M.t =
 
 let () = 
   let m = M.empty (module Icmp) in 
-  let m1 = acc m (A.append (I.randomRange 0 20) (I.randomRange 10 30)) in 
+  let m1 = acc m (A.concat (I.randomRange 0 20) (I.randomRange 10 30)) in 
   b __LOC__ 
   (M.eq m1 
-  (M.ofArray ~dict:(module Icmp) (A.initExn 31 (fun[@bs] i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
+  (M.ofArray ~dict:(module Icmp) (A.makeBy 31 (fun[@bs] i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
   (fun[@bs] x y -> x = y)
   )
 

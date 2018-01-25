@@ -97,10 +97,10 @@ let () =
  
 let ()  = 
   let count = 1_000_000 in 
-  let v = (A.shuffle (A.initExn count (fun [@bs] i -> i))) in 
+  let v = ((A.makeByAndShuffle count (fun [@bs] i -> i))) in 
   let u = N.ofArray v in 
   b __LOC__ (N.checkInvariant u );
-  let firstHalf = Bs.Array.subExn v 0 2_000 in 
+  let firstHalf = A.slice v 0 2_000 in 
   let xx = Bs.Array.reduce firstHalf u
     (fun[@bs] acc x -> N.remove acc x ) in 
   b __LOC__ (N.checkInvariant u);

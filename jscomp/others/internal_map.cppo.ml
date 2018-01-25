@@ -212,7 +212,7 @@ let ofArray  (xs : (key * _) array) =
       end  
     ) in 
     for i = !next to len - 1 do 
-      let k, v = (A.unsafe_get xs i)  in 
+      let k, v = (A.getUnsafe xs i)  in 
       result := addMutate  !result k v 
     done ;
     !result         

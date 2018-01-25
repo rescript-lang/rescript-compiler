@@ -76,7 +76,7 @@ let remove d v =
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
   if i < len then 
-    let ele = A.unsafe_get xs i in 
+    let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele ~cmp in 
     match N.toOpt u with 
     | None -> N.empty0
@@ -164,10 +164,10 @@ let forEach d f =
   N.iter0 (B.data d) f     
 let reduce d acc cb = 
   N.fold0 (B.data d) acc cb 
-let forAll d p = 
-  N.forAll0 (B.data d) p 
-let exists d  p = 
-  N.exists0 (B.data d) p       
+let every d p = 
+  N.every0 (B.data d) p 
+let some d  p = 
+  N.some0 (B.data d) p       
 let size d = 
   N.length0 (B.data d)
 let toList d =
@@ -231,7 +231,7 @@ let set m e v =
 let mergeArrayAux t  xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
-    let key,value = A.unsafe_get xs i in 
+    let key,value = A.getUnsafe xs i in 
     v := N.updateMutate !v key value ~cmp
   done; 
   !v 

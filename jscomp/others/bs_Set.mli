@@ -63,15 +63,15 @@ val forEach: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
     In increasing order *)
 val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
 (** In increasing order. *)
-val forAll: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
-(** [for_all p s] checks if all elements of the set
+val every: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
+(** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified *)
 
-val exists: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
-(** [exists p s] checks if at least one element of
+val some: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
+(** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
-val filter: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
-(** [filter m p] returns the set of all elements in [s]
+val keepBy: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
+(** [keepBy m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
 val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
 (** [partition m p] returns a pair of sets [(s1, s2)], where
@@ -184,8 +184,8 @@ val eq0:
 val forEach0: ('elt, 'id) t0 -> ('elt -> unit [@bs]) ->  unit
 
 val reduce0: ('elt, 'id) t0 -> 'a -> ('a -> 'elt ->  'a [@bs]) ->  'a
-val forAll0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
-val exists0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
+val every0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
+val some0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
 
 val filter0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  ('elt, 'id) t0
 

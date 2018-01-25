@@ -11,71 +11,77 @@
 (*                                                                     *)
 (***********************************************************************)
 
-(** Array operations. *)
 
-external length : 'a array -> int = "%array_length"
-(** Return the length (number of elements) of the given array. *)
+external length : 'a array -> int = "%array_length" 
 
-external get : 'a array -> int -> 'a = "%array_safe_get"
-(** [Array.get a n] returns the element number [n] of array [a].
-   The first element has number 0.
-   The last element has number [Array.length a - 1].
-   You can also write [a.(n)] instead of [Array.get a n].
+val get : 'a array -> int -> 'a option
 
-   Raise [Invalid_argument "index out of bounds"]
-   if [n] is outside the range 0 to [(Array.length a - 1)]. *)
+val set : 'a array -> int -> 'a -> unit 
+(** [set a n x] modifies array [a] in place, replacing
+    element number [n] with [x].
+    Nothing happens if [n] is out of range
+*)
 
-external set : 'a array -> int -> 'a -> unit = "%array_safe_set"
-(** [Array.set a n x] modifies array [a] in place, replacing
-   element number [n] with [x].
-   You can also write [a.(n) <- x] instead of [Array.set a n x].
+external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
+external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
+val getExn: 'a array -> int -> 'a  
+external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 
-   Raise [Invalid_argument "index out of bounds"]
-   if [n] is outside the range 0 to [Array.length a - 1]. *)
+val shuffleInPlace: 'a array -> unit
+val shuffle: 'a array -> 'a array  
+val reverseInPlace: 'a array -> unit
+val reverse: 'a array -> 'a array
+external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
+external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
+
+val make: int -> 'a  -> 'a array
+(** [make n e] return an empty array when [n] is negative *)
+val makeBy: int -> (int -> 'a [@bs]) -> 'a array
+(** [makeBy n f] return an empty array when [n] is negative *)
+val makeByAndShuffle: int -> (int -> 'a [@bs]) -> 'a array
+(** [makeByAndShuffle n f] is semantically equivalent to [makeBy n f]
+    and return the shuffled array  *)    
 
 
-external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
-external makeUninitializedUnsafe : int -> 'a array = "Array" [@@bs.new]
-
-val initExn: int -> (int -> 'a [@bs]) -> 'a array
-
-val shuffleDone: 'a array -> unit    
-
-val shuffle: 'a array -> 'a array 
-(** [shuffle xs] it mutates [xs] and return
-    [xs] for chaining
- *)
 val zip: 'a array -> 'b array -> ('a * 'b) array
 (** [zip a b] stop with the shorter array *)
 
-val makeMatrixExn: int -> int -> 'a -> 'a array array
 
 
-val append: 'a array -> 'a array -> 'a array
+val concat: 'a array -> 'a array -> 'a array
 (** Note it returns a fresh array containing the
     concatenation of the arrays [v1] and [v2], so even if [v1] or [v2]
     is empty, it can not be shared 
 *)
 
-val concat: 'a array list -> 'a array
+val concatMany: 'a array array -> 'a array
 
 
-val subExn: 'a array -> int -> int -> 'a array
+val slice: 'a array -> offset:int -> len:int -> 'a array
+(** [slice arr offset len]
+    [offset] can be negative,
+    [slice arr -1 1] means get the last element as a singleton array,
+    [slice arr -(very_large_index) len] will do a copy of the array
+    if the array does not have enough data, [slice] extracts through
+    the end of sequence
+*)
 
 
 val copy: 'a array -> 'a array
-(** [.copy a] returns a copy of [a], that is, a fresh array
+(** [copy a] returns a copy of [a], that is, a fresh array
    containing the same elements as [a]. *)
 
-val fill: 'a array -> int -> int -> 'a -> bool
-(** [fill a ofs len x] modifies the array [a] in place,
+val fill: 'a array -> offset:int -> len:int -> 'a -> unit
+(** [fill arr ofs len x] modifies the array [arr] in place,
     storing [x] in elements number [ofs] to [ofs + len - 1].
 
-    return false means the input is invalid, the array is unchanged
+    [offset] can be negative,
+    [fill arr offset:(-1) len:1 ] means fill the last element,
+    if the arry does not have enogh data, [fill] will ignore it
  *)
 
 val blit: 
-    'a array -> int -> 'a array -> int -> int -> bool
+    src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
 (** [blit v1 o1 v2 o2 len] copies [len] elements
    from array [v1], starting at element number [o1], to array [v2],
    starting at element number [o2]. It works correctly even if
@@ -84,8 +90,8 @@ val blit:
 
     return false means the input is invalid, the array is unchnaged
 *)
-external blitUnsafe:
-  'a array -> int -> 'a array -> int -> int -> unit = "caml_array_blit"
+val blitUnsafe:
+  src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit 
 
 val toList: 'a array -> 'a list
 
@@ -96,22 +102,26 @@ val forEach: 'a array ->  ('a -> unit [@bs]) -> unit
 
 val map: 'a array ->  ('a -> 'b [@bs]) -> 'b array
 
-val forEachi: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
+val map2: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array    
 
-val mapi: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
+val keepBy: 'a array -> ('a -> bool [@bs]) -> 'a array
+
+val keepMap: 'a array -> ('a -> 'b option [@bs]) -> 'b array 
+    
+val forEachWithIndex: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
+
+val mapWithIndex: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
 
 val reduce:  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
 
-val reduceFromTail: 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
+val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
 
-val forAll: 'a array -> ('a -> bool [@bs]) -> bool
+val every: 'a array -> ('a -> bool [@bs]) -> bool
 
-(** [forAll2 a b] return false when [length a <> length b] *)
-val forAll2: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+(** [every2 a b] return false when [length a <> length b] *)
+val every2: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 
-val cmp: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
-val eq:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
+val compareTo: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
+val equalTo:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
   
-external unsafe_get: 'a array -> int -> 'a = "%array_unsafe_get"
-external unsafe_set: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]

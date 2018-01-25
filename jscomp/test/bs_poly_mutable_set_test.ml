@@ -20,9 +20,9 @@ let () =
   let r = I.randomRange 0 30 in 
   b __LOC__ (Js.eqNull 29 (N.maxNull u));
   b __LOC__ (Js.eqNull 1 (N.minNull u));
-  N.addDone u 3;
+  N.addDone u 3;  
   for i = 0 to A.length r - 1 do 
-    N.removeDone u (A.get r i)
+    N.removeDone u (A.getUnsafe r i)
   done ;
   b __LOC__ (N.isEmpty u);
   N.addDone u 0;
@@ -111,13 +111,13 @@ let () =
   let a0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
-      N.filter a0 (fun [@bs] x -> x mod 2  = 0),
-      N.filter a0 (fun [@bs] x -> x mod 2 <> 0)
+      N.keepBy a0 (fun [@bs] x -> x mod 2  = 0),
+      N.keepBy a0 (fun [@bs] x -> x mod 2 <> 0)
     ) in 
   let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
   b __LOC__ (N.eq a2 a4);
-  b __LOC__ (L.forAll [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariant x))
+  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariant x))
 
 
 

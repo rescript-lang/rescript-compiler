@@ -48,13 +48,13 @@ let () =
   eq __LOC__ (diffs (I.range 0 2) (I.range 4 7)) [|0;1;2|]  
 let () = 
   b __LOC__ (
-    R.forAll 0 200 (fun [@bs] i -> 
+    R.every 0 200 (fun [@bs] i -> 
         let v = I.randomRange 0 i  in 
         S.stableSortBy v cmp ;
         S.isSorted v cmp
       ));
   b __LOC__ (
-    R.forAll 0 200 (fun [@bs] i -> 
+    R.every 0 200 (fun [@bs] i -> 
         let v = I.randomRange 0 i  in 
         S.sortBy v cmp ;
         S.isSorted v cmp
@@ -114,7 +114,7 @@ let () =
   eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 3 cmp ) 2;
   eq __LOC__ (S.binSearch [|1;2;3;4;33;35;36|] 4 cmp ) 3;
   let aa = I.range 0 1000 in 
-  b __LOC__ @@ R.forAll 0 1000 (fun [@bs] i -> 
+  b __LOC__ @@ R.every 0 1000 (fun [@bs] i -> 
       S.binSearch aa i cmp = i 
   );
   (* 0, 2, 4, ... 4000 *)
@@ -124,7 +124,7 @@ let () =
   eq __LOC__ (S.binSearch cc 0 cmp) 0;
 
   eq __LOC__ ( lnot (S.binSearch cc 1 cmp)) (1);
-  b __LOC__ @@ R.forAll 0 1999 (fun [@bs] i -> 
+  b __LOC__ @@ R.every 0 1999 (fun [@bs] i -> 
     lnot (S.binSearch cc (2 * i + 1) cmp) = (i + 1) 
     (* 1, 3, 5, ... , 3999 *)
   )

@@ -3,7 +3,6 @@
 var Mt = require("./mt.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_SetM = require("../../lib/js/bs_SetM.js");
-var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 var Bs_internalAVLset = require("../../lib/js/bs_internalAVLset.js");
@@ -43,7 +42,7 @@ b("File \"bs_poly_mutable_set_test.ml\", line 22, characters 4-11", +(1 === Bs_i
 Bs_SetM.addDone(u, 3);
 
 for(var i = 0 ,i_finish = r.length - 1 | 0; i <= i_finish; ++i){
-  Bs_SetM.removeDone(u, Caml_array.caml_array_get(r, i));
+  Bs_SetM.removeDone(u, r[i]);
 }
 
 b("File \"bs_poly_mutable_set_test.ml\", line 27, characters 4-11", Bs_internalAVLset.isEmpty0(u.data));
@@ -153,11 +152,11 @@ b("File \"bs_poly_mutable_set_test.ml\", line 103, characters 4-11", Bs_SetM.eq(
 
 var a0 = Bs_SetM.ofArray(Array_data_util.randomRange(0, 1000), IntCmp);
 
-var a1 = Bs_SetM.filter(a0, (function (x) {
+var a1 = Bs_SetM.keepBy(a0, (function (x) {
         return +(x % 2 === 0);
       }));
 
-var a2 = Bs_SetM.filter(a0, (function (x) {
+var a2 = Bs_SetM.keepBy(a0, (function (x) {
         return +(x % 2 !== 0);
       }));
 
@@ -173,7 +172,7 @@ b("File \"bs_poly_mutable_set_test.ml\", line 118, characters 4-11", Bs_SetM.eq(
 
 b("File \"bs_poly_mutable_set_test.ml\", line 119, characters 4-11", Bs_SetM.eq(a2, a4));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 120, characters 4-11", Bs_List.forAll(/* :: */[
+b("File \"bs_poly_mutable_set_test.ml\", line 120, characters 4-11", Bs_List.every(/* :: */[
           a0,
           /* :: */[
             a1,

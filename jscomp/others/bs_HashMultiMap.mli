@@ -8,7 +8,7 @@ type ('a,'b,'id) t =
   
 (** The type of hash tables from type ['a] to type ['b]. *)
 
-val create0 : int -> ('a, 'b, 'id) t0
+
 val create : ('a,'id) Bs_Hash.t -> int -> ('a,'b,'id) t
 (** [Hashtbl.create n] creates a new, empty hash table, with
     initial size [n].  For best results, [n] should be on the
@@ -48,77 +48,48 @@ val create : ('a,'id) Bs_Hash.t -> int -> ('a,'b,'id) t
     @before 4.00.0 the [random] parameter was not present and all
     hash tables were created in non-randomized mode. *)
 
-val clear0 : ('a, 'b, 'id) t0 -> unit
+
 val clear : ('a, 'b, 'id) t -> unit
 (** Empty a hash table. Use [reset] instead of [clear] to shrink the
     size of the bucket table to its initial size. *)
 
-val reset0 : ('a, 'b, 'id) t0 -> unit
-val reset : ('a, 'b, 'id) t -> unit
-(** Empty a hash table and shrink the size of the bucket table
-    to its initial size.
-    @since 4.00.0 *)
 
 
 
-val add0 : hash:('a,'id) Bs_Hash.hash -> ('a,'b,'id) t0 -> 'a -> 'b -> unit
-val add : ('a, 'b, 'id) t -> 'a -> 'b -> unit
-(** [Hashtbl.add tbl x y] adds a binding of [x] to [y] in table [tbl].
+
+val add: ('a, 'b, 'id) t -> 'a -> 'b -> unit
+(** [add tbl x y] adds a binding of [x] to [y] in table [tbl].
     Previous bindings for [x] are not removed, but simply
     hidden. That is, after performing {!Hashtbl.remove}[ tbl x],
     the previous binding for [x], if any, is restored.
     (Same behavior as with association lists.) *)
 
-val findOpt0: 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> 'b option
-val findOpt:  
+val get:  
   ('a, 'b, 'id) t -> 'a -> 'b option
 (** [findOpt tbl x] returns the current binding of [x] in [tbl],
     *)
 
-val findAll0 : 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> 'b list
-
-val findAll:  ('a, 'b, 'id) t -> 'a -> 'b list  
-(** [Hashtbl.find_all tbl x] returns the list of all data
+val getAll:  ('a, 'b, 'id) t -> 'a -> 'b list  
+(** [getAll tbl x] returns the list of all data
     associated with [x] in [tbl].
     The current binding is returned first, then the previous
     bindings, in reverse order of introduction in the table. *)
 
-val mem0: 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> bool
-val mem:  
+val has:  
   ('a, 'b, 'id) t -> 'a -> bool
 (** [Hashtbl.mem tbl x] checks if [x] is bound in [tbl]. *)
 
-val remove0: 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> unit
+  
 val remove:
 ('a, 'b, 'id) t -> 'a -> unit
 (** [Hashtbl.remove tbl x] removes the current binding of [x] in [tbl],
     restoring the previous binding if it exists.
     It does nothing if [x] is not bound in [tbl]. *)
 
-val removeAll0: 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> unit    
 val removeAll:
 ('a, 'b, 'id) t -> 'a -> unit
 
     
-val replace0 :
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 -> 'a -> 'b -> unit
 val replace:  
   ('a, 'b, 'id) t -> 'a -> 'b -> unit
 (** [Hashtbl.replace tbl x y] replaces the current binding of [x]
@@ -127,9 +98,9 @@ val replace:
     This is functionally equivalent to {!Hashtbl.remove}[ tbl x]
     followed by {!Hashtbl.add}[ tbl x y]. *)
 
-val iter0 : ('a, 'b, 'id) t0 -> ('a -> 'b -> unit [@bs]) -> unit
-val iter : ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
-(** [Hashtbl.iter f tbl] applies [f] to all bindings in table [tbl].
+
+val forEach : ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
+(** [forEach f tbl] applies [f] to all bindings in table [tbl].
     [f] receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to [f].
 
@@ -144,9 +115,9 @@ val iter : ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
-val fold0 : ('a, 'b, 'id) t0 -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) -> 'c
-val fold : ('a, 'b, 'id) t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
-(** [Hashtbl.fold f tbl init] computes
+
+val reduce : ('a, 'b, 'id) t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
+(** [reduce f tbl init] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],
     and [d1 ... dN] are the associated values.
@@ -163,40 +134,61 @@ val fold : ('a, 'b, 'id) t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
     of OCaml.  For randomized hash tables, the order of enumeration
     is entirely random. *)
 
-val filterMapInplace0 : ('a, 'b, 'id) t0 -> ('a -> 'b -> 'b option [@bs]) -> unit
-val filterMapInplace : ('a, 'b, 'id) t -> ('a -> 'b -> 'b option [@bs]) ->  unit
+
+val filterMapDone : ('a, 'b, 'id) t -> ('a -> 'b -> 'b option [@bs]) ->  unit
   
-val length0 : ('a, 'b, 'id) t0 -> int
-val length  : ('a, 'b, 'id) t -> int  
-(** [Hashtbl.length tbl] returns the number of bindings in [tbl].
+val size  : ('a, 'b, 'id) t -> int  
+(** [size tbl] returns the number of bindings in [tbl].
     It takes constant time.  Multiple bindings are counted once each, so
-    [Hashtbl.length] gives the number of times [Hashtbl.iter] calls its
+    [size] gives the number of times [Hashtbl.iter] calls its
     first argument. *)
 
 
-(* 
-type statistics = {
-  num_bindings: int;
-  (** Number of bindings present in the table.
-      Same value as returned by {!Hashtbl.length}. *)
-  num_buckets: int;
-  (** Number of buckets in the table. *)
-  max_bucket_length: int;
-  (** Maximal number of bindings per bucket. *)
-  bucket_histogram: int array
-  (** Histogram of bucket sizes.  This array [histo] has
-      length [max_bucket_length + 1].  The value of
-      [histo.(i)] is the number of buckets whose size is [i]. *)
-} *)
 
-val logStats0 : ('a, 'b, 'id) t0 -> unit
+
 val logStats : _ t -> unit
-(** [Hashtbl.stats tbl] returns statistics about the table [tbl]:
-    number of buckets, size of the biggest bucket, distribution of
-    buckets by size.
-    @since 4.00.0 *)
 
+(****************************************************************************)
 
+val create0: int -> ('a, 'b, 'id) t0
 
+val clear0: ('a, 'b, 'id) t0 -> unit
 
+val logStats0: ('a, 'b, 'id) t0 -> unit
 
+val filterMapInplace0: ('a, 'b, 'id) t0 -> ('a -> 'b -> 'b option [@bs]) -> unit
+
+val reduce0: ('a, 'b, 'id) t0 -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) -> 'c
+
+val forEach0: ('a, 'b, 'id) t0 -> ('a -> 'b -> unit [@bs]) -> unit
+
+val replace0:
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a, 'b, 'id) t0 -> 'a -> 'b -> unit
+
+val add0: hash:('a,'id) Bs_Hash.hash -> ('a,'b,'id) t0 -> 'a -> 'b -> unit
+val get0: 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a, 'b, 'id) t0 -> 'a -> 'b option
+
+val getAll0: 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a, 'b, 'id) t0 -> 'a -> 'b list
+
+val has0: 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a, 'b, 'id) t0 -> 'a -> bool
+
+val removeAll0: 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a, 'b, 'id) t0 -> 'a -> unit    
+
+val remove0: 
+  hash:('a,'id) Bs_Hash.hash  -> 
+  eq:('a,'id) Bs_Hash.eq -> 
+  ('a, 'b, 'id) t0 -> 'a -> unit

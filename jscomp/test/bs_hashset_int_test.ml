@@ -1,12 +1,12 @@
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
-
+let b loc x  = Mt.bool_suites ~test_id ~suites loc x  
 module N = Bs.HashSetInt 
 module S = Bs.SetInt 
 
 module I = Array_data_util
-let (++) = Bs.Array.append 
+let (++) = Bs.Array.concat
 let add = fun [@bs] x y -> x + y  
 
 let sum2 h = 
@@ -48,12 +48,14 @@ let () =
   for i = 0 to 1000 do 
     N.removeDone u0 i 
   done ;
-  let v0 = (A.append (I.range 0 1000) (N.toArray u0)) in 
-  let v1 = (A.append (I.range 0 2000) (N.toArray u1)) in 
+  let v0 = (A.concat (I.range 0 1000) (N.toArray u0)) in 
+  let v1 = (A.concat (I.range 0 2000) (N.toArray u1)) in 
   SI.stableSort v0; 
   SI.stableSort v1;
   eq __LOC__  v0 v1 
   
-  
-
+let () =
+  let h = N.ofArray (I.randomRange  0 1_000_000) in 
+  let histo = N.getBucketHistogram h in 
+  b __LOC__ (A.length histo <= 10)
 let () = Mt.from_pair_suites __FILE__ !suites

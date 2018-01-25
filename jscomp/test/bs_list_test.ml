@@ -25,7 +25,7 @@ let sum2 xs ys =
   N.forEach2 xs ys (fun[@bs] x y -> v := !v + x  + y);
   !v 
 let () = 
-  let u = (N.init 5 (fun[@bs] i -> i * i )) in 
+  let u = (N.makeBy 5 (fun[@bs] i -> i * i )) in 
 
   (* N.checkInvariant u ; *)
   let f i = 
@@ -39,31 +39,31 @@ let () =
   let (=~) = eq "FLATTEN" in 
 
 
-  N.(flatten
-       [[1]; [2]; [3];[]; init 4 (fun [@bs] i -> i )]
+  N.(concatMany
+       [[1]; [2]; [3];[]; makeBy 4 (fun [@bs] i -> i )]
     ) =~
   [1;2;3; 0;1;2;3];
-  N.flatten [] =~ [];  
-  N.flatten [[];[]; [2]; [1];[2];[]] =~ [2;1;2]
+  N.concatMany [] =~ [];  
+  N.concatMany [[];[]; [2]; [1];[2];[]] =~ [2;1;2]
 
 let () = 
   eq __LOC__
     (N.
-       (append 
-          (init 100 (fun [@bs] i -> i) )
-          (init 100 (fun [@bs] i -> i)))
+       (concat
+          (makeBy 100 (fun [@bs] i -> i) )
+          (makeBy 100 (fun [@bs] i -> i)))
      |> N.toArray
     )
 
     (A.
-       (append 
-          (initExn 100 (fun [@bs] i -> i) )
-          (initExn 100 (fun [@bs] i -> i)))
+       (concat
+          (makeBy 100 (fun [@bs] i -> i) )
+          (makeBy 100 (fun [@bs] i -> i)))
     )
 let () = 
   let (=~) = eq "APPEND" in 
-  N.append [1] [] =~ [1];
-  N.append [] [1] =~ [1]
+  N.concat [1] [] =~ [1];
+  N.concat [] [1] =~ [1]
 
 let () =     
   let (=~) = eq "ZIP"   in 
@@ -93,34 +93,34 @@ let () =
 
 let () = 
   let (=~) = eq "FILTER" in 
-  N.filter [1;2;3;4] mod2 =~ [2;4];
-  N.filter [1;3;41] mod2 =~ [];
-  N.filter [] mod2 =~ [];
-  N.filter  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
+  N.keepBy [1;2;3;4] mod2 =~ [2;4];
+  N.keepBy [1;3;41] mod2 =~ [];
+  N.keepBy [] mod2 =~ [];
+  N.keepBy  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
 let id : int -> int [@bs] = fun [@bs] x -> x 
 
 let () =   
   let (=~) = eq "MAP" in 
-  N.map (N.init 5 id )(fun [@bs] x -> x * 2 ) 
+  N.map (N.makeBy 5 id )(fun [@bs] x -> x * 2 ) 
   =~ [0;2;4;6;8];
   N.map [] id  =~ [];
   N.map [1] (fun [@bs] x-> -x)  =~ [-1]
 let add = (fun [@bs] a b -> a + b)
-let length_10_id = N.init 10 id  
-let length_8_id = N.init 8 id 
+let length_10_id = N.makeBy 10 id  
+let length_8_id = N.makeBy 8 id 
 let () = 
   let (=~) = eq "MAP2" in   
   let b = length_10_id in
   let c = length_8_id in 
-  let d = N.init 10 (fun [@bs] x -> 2 * x ) in     
+  let d = N.makeBy 10 (fun [@bs] x -> 2 * x ) in     
   let map2_add x y = N.map2  x y add in 
   map2_add length_10_id b =~ d ;
   map2_add [] [1] =~ [];
   map2_add [1] [] =~ [];
   map2_add [] [] =~ [];
-  map2_add length_10_id b =~  N.(append (map c (fun[@bs] x -> x * 2)) [16;18]);
+  map2_add length_10_id b =~  N.(concat (map c (fun[@bs] x -> x * 2)) [16;18]);
   map2_add length_10_id length_8_id =~
-  N.(mapi length_8_id (fun [@bs] i x -> i + x ) );
+  N.(mapWithIndex length_8_id (fun [@bs] i x -> i + x ) );
   N.reverse (N.mapReverse2 length_10_id length_10_id add) 
   =~ N.map length_10_id (fun [@bs] x -> x * 2);
   let xs = (N.reverse (N.mapReverse2 length_8_id length_10_id add)) in 
@@ -146,7 +146,7 @@ let () =
 
 let () = 
   let (=~) = eq "SPLIT" in 
-  let a = N.init 5 id in 
+  let a = N.makeBy 5 id in 
   N.splitAt [] 1 =~ None;
   N.splitAt a 6 =~ None;
   N.splitAt a 5 =~ Some (a,[]);
@@ -161,10 +161,10 @@ let succx =   (fun[@bs] x -> x + 1)
 let () = 
   let (=~) = eq "REMOVEASSOQ" in 
   let eq = fun [@bs] x y -> (x : int) = y in 
-  N.removeAssq [1,"1";2,"2"; 3,"3"] 3 =~ [1,"1";2,"2"];
-  N.removeAssq [1,"1";2,"2"; 3,"3"] 1 =~ [2,"2"; 3,"3"];
-  N.removeAssq [1,"1";2,"2"; 3,"3"] 2 =~ [1,"1"; 3,"3"];
-  N.removeAssq [1,"1";2,"2"; 3,"3"] 0 =~ [1,"1"; 2,"2"; 3,"3"];
+  N.removeAssocByReference [1,"1";2,"2"; 3,"3"] 3 =~ [1,"1";2,"2"];
+  N.removeAssocByReference [1,"1";2,"2"; 3,"3"] 1 =~ [2,"2"; 3,"3"];
+  N.removeAssocByReference [1,"1";2,"2"; 3,"3"] 2 =~ [1,"1"; 3,"3"];
+  N.removeAssocByReference [1,"1";2,"2"; 3,"3"] 0 =~ [1,"1"; 2,"2"; 3,"3"];
 
   N.removeAssoc [1,"1";2,"2"; 3,"3"] 3 eq =~ [1,"1";2,"2"];
   N.removeAssoc [1,"1";2,"2"; 3,"3"] 1 eq =~ [2,"2"; 3,"3"];
@@ -175,16 +175,16 @@ let ()   =
 
   eq __LOC__ N.(head length_10_id, tail length_10_id)  (Some 0, N.drop length_10_id 1);
   eq __LOC__ (N.head [])  None ;
-  N.forEachi length_10_id (fun[@bs] i x ->
+  N.forEachWithIndex length_10_id (fun[@bs] i x ->
       eq __LOC__ (N.get length_10_id i) (Some x));     
   eq __LOC__ (N.tail [])  None ; 
   eq __LOC__ (N.drop [] 3) None ; 
-  eq __LOC__ (N.mapi [] (fun [@bs] i x -> i + x)) [];
+  eq __LOC__ (N.mapWithIndex [] (fun [@bs] i x -> i + x)) [];
   eq __LOC__ (N.get  length_10_id (-1) ) None; 
   eq __LOC__ (N.get  length_10_id 12 ) None;
   eq __LOC__ (sum []) 0;
   eq __LOC__ (sum length_10_id) 45;
-  eq __LOC__ (N.init 0 id) [];
+  eq __LOC__ (N.makeBy 0 id) [];
   eq __LOC__ (N.(reverse (reverse length_10_id)))  length_10_id ; 
   eq __LOC__ (N.(reverse (reverse length_8_id)))  length_8_id ;
   eq __LOC__ (N.reverse []) [];
@@ -194,30 +194,44 @@ let ()   =
   eq __LOC__
     (N.reduce length_10_id 0 add) 45;
   eq __LOC__
-    (N.reduceFromTail length_10_id 0 add) 45;
+    (N.reduceReverse length_10_id 0 add) 45;
   (* eq __LOC__ 
      (N.mapRev2 length_10_id length_8_id add ) *)
   eq __LOC__ (sum2 length_10_id length_10_id) 90;
   eq __LOC__ (sum2 length_8_id length_10_id) 56;
   eq __LOC__ (N.reduce2 length_10_id length_8_id 0 
                 (fun [@bs] acc x y -> acc + x + y)) 56;
-  eq __LOC__ (N.reduceFromTail2 length_10_id length_8_id 0 
+  eq __LOC__ (N.reduceReverse2 length_10_id length_8_id 0 
                 (fun [@bs] acc x y -> acc + x + y)) 56;                
-  eq __LOC__ (N.reduceFromTail2 length_10_id length_10_id 0 
+  eq __LOC__ (N.reduceReverse2 length_10_id length_10_id 0 
                 (fun [@bs] acc x y -> acc + x + y)) 90;
-  eq __LOC__ (N.forAll [2;4;6] mod2) true;
-  eq __LOC__ (N.forAll [1] mod2) false;
-  eq __LOC__ (N.forAll [] mod2) true;
-  eq __LOC__ (N.exists [1;2;5] mod2)  true;
-  eq __LOC__ (N.exists [1;3;5] mod2)  false;
-  eq __LOC__ (N.exists [] mod2)  false;
-  eq __LOC__ (N.forAll2 [] [1] (fun [@bs] x y -> x > y)) true;  
-  eq __LOC__ (N.forAll2 [2] [1] (fun [@bs] x y -> x > y)) true;
-  eq __LOC__ (N.forAll2 [2;3] [1;4] (fun [@bs] x y -> x > y)) false;
-  eq __LOC__ (N.exists2 [] [1] (fun [@bs] x y -> x > y)) false;
-  eq __LOC__ (N.exists2 [2;3] [1;4] (fun [@bs] x y -> x > y)) true;
-  eq __LOC__ (N.exists2 [0;3] [1;4] (fun [@bs] x y -> x > y)) false;
+  eq __LOC__ (N.every [2;4;6] mod2) true;
+  eq __LOC__ (N.every [1] mod2) false;
+  eq __LOC__ (N.every [] mod2) true;
+  eq __LOC__ (N.some [1;2;5] mod2)  true;
+  eq __LOC__ (N.some [1;3;5] mod2)  false;
+  eq __LOC__ (N.some [] mod2)  false;
+  eq __LOC__ (N.every2 [] [1] (fun [@bs] x y -> x > y)) true;  
+  eq __LOC__ (N.every2 [2] [1] (fun [@bs] x y -> x > y)) true;
+  eq __LOC__ (N.every2 [2;3] [1;4] (fun [@bs] x y -> x > y)) false;
+  eq __LOC__ (N.some2 [] [1] (fun [@bs] x y -> x > y)) false;
+  eq __LOC__ (N.some2 [2;3] [1;4] (fun [@bs] x y -> x > y)) true;
+  eq __LOC__ (N.some2 [0;3] [1;4] (fun [@bs] x y -> x > y)) false;
   eq __LOC__ (N.has [1;2;3] "2" (fun [@bs] x s -> string_of_int x = s)) true;
   eq __LOC__ (N.has [1;2;3] "0" (fun [@bs] x s -> string_of_int x = s)) false
+
+let makeTest n =  
+  eq __LOC__ (N.make n 3) (N.makeBy n (fun[@bs] _ -> 3))
+
+let () =   
+  makeTest 0;
+  makeTest 1;
+  makeTest 2;
+  makeTest 3
+
+let () = 
+  let u0 = N.makeBy 20 (fun[@bs] x -> x) in   
+  let u1 = N.keepMap u0 (fun [@bs] x -> if x mod 7 = 0 then Some (x+1) else None) in 
+  eq __LOC__ u1 [1;8;15]
 
 ;; Mt.from_pair_suites __FILE__ !suites
