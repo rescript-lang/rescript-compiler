@@ -10,6 +10,8 @@ var sys_extension;
 switch (os.type()) {
     case 'Darwin':
         sys_extension = ".darwin"; break;
+    case 'FreeBSD':
+        sys_extension = ".freebsd"; break;
     case 'Linux':
         sys_extension = ".linux64"; break;
     case 'Windows_NT':
