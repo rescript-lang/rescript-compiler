@@ -27,9 +27,10 @@ external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
 val getExn: 'a array -> int -> 'a  
 external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 
-val shuffle: 'a array -> unit
-val reverse: 'a array -> unit
-val reverseCopy: 'a array -> 'a array
+val shuffleInPlace: 'a array -> unit
+val shuffle: 'a array -> 'a array  
+val reverseInPlace: 'a array -> unit
+val reverse: 'a array -> 'a array
 external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
 
@@ -120,7 +121,7 @@ val every: 'a array -> ('a -> bool [@bs]) -> bool
 (** [every2 a b] return false when [length a <> length b] *)
 val every2: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 
-val cmp: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
-val eq:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
+val compareTo: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
+val equalTo:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
   
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]

@@ -12,7 +12,7 @@ function randomRange(i, j) {
   var v = Bs_Array.makeBy((j - i | 0) + 1 | 0, (function (k) {
           return k + i | 0;
         }));
-  Bs_Array.shuffle(v);
+  Bs_Array.shuffleInPlace(v);
   return v;
 }
 

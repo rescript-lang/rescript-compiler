@@ -25,7 +25,7 @@ bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SortInt.cmj \
     bs_Array.cmj bs_SetIntM.cmi
 bs_Hash.cmj : bs_Hash.cmi
 bs_Queue.cmj : bs_Array.cmj bs_Queue.cmi
-bs_List.cmj : js_json.cmj bs_Array.cmj bs_List.cmi
+bs_List.cmj : bs_Array.cmj bs_List.cmi
 bs_Sort.cmj : bs_Array.cmj bs_Sort.cmi
 bs_Range.cmj :
 bs_internalBucketsType.cmj : bs_Array.cmj bs_internalBucketsType.cmi

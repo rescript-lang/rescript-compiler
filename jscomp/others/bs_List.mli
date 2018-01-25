@@ -24,108 +24,113 @@
 
 type 'a t = 'a list
 
-val head : 'a t -> 'a option
+val head: 'a t -> 'a option
 
-val tail : 'a t -> 'a t option
-val add : 'a t -> 'a -> 'a t
-val get : 'a t -> int -> 'a option
+val tail: 'a t -> 'a t option
+val add: 'a t -> 'a -> 'a t
+val get: 'a t -> int -> 'a option
+val getExn: 'a t -> int -> 'a
+  
+val make: int -> 'a -> 'a t
+(** [make n v] return empty if [n] is negative
+*)
+    
+val makeBy: int -> (int -> 'a [@bs]) -> 'a t
+(** [makeBy n f] return empty if [n] is negative
+*)    
 
-val getExn : 'a t -> int -> 'a
 
-val drop : 'a t -> int -> 'a t option 
+val drop: 'a t -> int -> 'a t option 
+val take: 'a t -> int -> 'a t option 
 
-val take : 'a t -> int -> 'a t option 
+val splitAt: 'a t -> int -> ('a list * 'a list) option 
 
-val splitAt : 'a t -> int -> ('a list * 'a list) option 
+val concat: 'a t -> 'a t -> 'a t
 
-val concat : 'a t -> 'a t -> 'a t
+val map: 'a t -> ('a -> 'b [@bs]) -> 'b t
 
-val map : 'a t -> ('a -> 'b [@bs]) -> 'b t
+val map2: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
 
-val map2 : 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
+val mapWithIndex: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
 
-val mapi : 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
+val length: 'a t -> int
 
-val init : int -> (int -> 'a [@bs]) -> 'a t
-
-val length : 'a t -> int
-
-val toArray : 'a t -> 'a array
+val toArray: 'a t -> 'a array
 
 (* type json = Js_json.t  *)
 
 (* val toJson : 'a t -> ('a -> json  [@bs]) -> json *)
 (* val fromJson : json -> (json -> 'a [@bs]) -> 'a t  *)
 
-val reverseAppend : 'a t -> 'a t -> 'a t
+val reverseConcat: 'a t -> 'a t -> 'a t
 (**
    [reverseAppend a b] is semantically equivalent to [concat (reverse a) b]
 *)
     
-val reverse : 'a t -> 'a t
+val reverse: 'a t -> 'a t
 
-val flatten : 'a t t -> 'a t
+val concatMany: 'a t t -> 'a t
 
-val mapReverse : 'a t -> ('a -> 'b [@bs]) -> 'b t
+val mapReverse: 'a t -> ('a -> 'b [@bs]) -> 'b t
 (** [mapReverse a f] is semantically equivalent to [reverse (map a f)]    
 *)
-val forEach : 'a t ->  ('a -> 'b [@bs]) -> unit
+val forEach: 'a t ->  ('a -> 'b [@bs]) -> unit
 
-val forEachi : 'a t -> (int -> 'a -> 'b [@bs]) -> unit
+val forEachWithIndex: 'a t -> (int -> 'a -> 'b [@bs]) -> unit
 
-val reduce :  'a t -> 'b ->  ('b -> 'a -> 'b [@bs]) ->'b
+val reduce:  'a t -> 'b ->  ('b -> 'a -> 'b [@bs]) ->'b
 
-val reduceFromTail : 'a t -> 'b -> ('a -> 'b -> 'b [@bs])  -> 'b
+val reduceReverse: 'a t -> 'b -> ('a -> 'b -> 'b [@bs])  -> 'b
 
-val mapReverse2 : 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) ->  'c t
+val mapReverse2: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) ->  'c t
 
-val forEach2 : 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> unit
+val forEach2: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> unit
 
-val reduce2 :
+val reduce2:
   'b t -> 'c t  -> 'a  -> ('a -> 'b -> 'c -> 'a [@bs]) ->  'a
 
-val reduceFromTail2 :
+val reduceReverse2:
   'a t -> 'b t -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) ->  'c
 
-val every : 'a t -> ('a -> bool [@bs]) ->  bool
+val every: 'a t -> ('a -> bool [@bs]) ->  bool
 
-val some : 'a t -> ('a -> bool [@bs]) -> bool
+val some: 'a t -> ('a -> bool [@bs]) -> bool
 
-val every2 : 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val every2: 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
-val cmp : 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
+val compare: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 
-val eq : 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
+val equal: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
   
-val some2 :  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val some2:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
-val has :  'a t -> 'b ->  ('a -> 'b -> bool [@bs]) -> bool
+val has:  'a t -> 'b ->  ('a -> 'b -> bool [@bs]) -> bool
 
-val hasq :  'a t -> 'a ->bool
+val hasByReference:  'a t -> 'a ->bool
 
-val assoc : ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
+val assoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
 
-val assq : ('a * 'b) t -> 'a ->  'b option
+val assocByReference: ('a * 'b) t -> 'a ->  'b option
 
-val hasAssoc : ('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
+val hasAssoc: ('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
 
-val hasAssq : ('a * 'b) t -> 'a -> bool
+val hasAssocByReference: ('a * 'b) t -> 'a -> bool
 
-val removeAssoc :
+val removeAssoc:
   ('a * 'c) t ->
   'b -> 
   ('a -> 'b -> bool [@bs]) -> ('a * 'c) t
 
-val removeAssq :  ('a * 'b) t -> 'a -> ('a * 'b) t
+val removeAssocByReference:  ('a * 'b) t -> 'a -> ('a * 'b) t
 
-val getBy  : 'a t -> ('a -> bool [@bs]) ->  'a option
+val getBy: 'a t -> ('a -> bool [@bs]) ->  'a option
 
-val keepBy : 'a t ->  ('a -> bool [@bs]) -> 'a t
+val keepBy: 'a t ->  ('a -> bool [@bs]) -> 'a t
+val keepMap: 'a t -> ('a -> 'b option [@bs]) -> 'b t
+val partition: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
 
-val partition : 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
+val unzip: ('a * 'b) t -> 'a t * 'b t
 
-val unzip : ('a * 'b) t -> 'a t * 'b t
-
-val zip : 'a t -> 'b t -> ('a * 'b) t
+val zip: 'a t -> 'b t -> ('a * 'b) t
 
 

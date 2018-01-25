@@ -58,8 +58,7 @@ let () =
 let add = fun [@bs] x y -> x + y
 let () = 
   let v = A.makeBy 3000 (fun[@bs] i -> i) in 
-  let u = A.copy v  in 
-  A.shuffle u ; 
+  let u = A.shuffle v  in 
   neq __LOC__ u  v (* unlikely*);
   let sum x = A.reduce x 0 add in 
   eq __LOC__ ( sum u) (sum v)
@@ -184,9 +183,9 @@ let () =
 
 let id loc x = 
   eq __LOC__ 
-  (A.reverseCopy x)
-  (let u = A.copy x in A.reverse u; u)
-  
+  (A.reverse x)
+  (let u = A.copy x in A.reverseInPlace u; u)
+
 let ()  =    
   id __LOC__ [||];
   id __LOC__ [|1|];

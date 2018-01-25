@@ -33,29 +33,40 @@ external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe : int -> 'a  array = "Array" [@@bs.new]
 
 
-
+let copy a =
+  let l = length a in 
+  let v = makeUninitializedUnsafe l in 
+  for i = 0 to l - 1 do 
+    setUnsafe v i (getUnsafe a i)
+  done ;
+  v
 
 let swapUnsafe xs i j =    
   let tmp = getUnsafe xs i in 
   setUnsafe xs i (getUnsafe xs j) ;
   setUnsafe xs j tmp
 
-let shuffle xs =     
+let shuffleInPlace xs =     
   let len = length xs in 
   for i = 0 to len - 1 do
     swapUnsafe xs i (Js_math.random_int i len) (* [i,len)*)
   done 
+
+let shuffle xs =
+  let result = copy xs in
+  shuffleInPlace result; (* TODO: improve*)
+  result
 
 let reverseAux xs ofs len =
   for i = 0 to len/2 - 1 do
     swapUnsafe xs (ofs + i) (ofs + len - i - 1)
   done
 
-let reverse xs =
+let reverseInPlace xs =
   let len = length xs in
   reverseAux xs 0 len
 
-let reverseCopy xs =
+let reverse xs =
   let len = length xs in
   let result = makeUninitializedUnsafe len in 
   for i = 0 to len - 1 do
@@ -86,17 +97,10 @@ let makeBy l f =
 
 let makeByAndShuffle l f =
   let u  = makeBy l f in
-  shuffle u ;
+  shuffleInPlace u ;
   u
 
 
-let copy a =
-  let l = length a in 
-  let v = makeUninitializedUnsafe l in 
-  for i = 0 to l - 1 do 
-    setUnsafe v i (getUnsafe a i)
-  done ;
-  v
 
 
 let zip xs ys = 
@@ -327,7 +331,7 @@ let every2  a b p =
   else 
     everyAux2  a b 0 p lena
 
-let eq = every2
+let equalTo = every2
 
 let rec everyCmpAux2 arr1 arr2 i b len =   
   if i = len then 0
@@ -337,7 +341,7 @@ let rec everyCmpAux2 arr1 arr2 i b len =
       everyCmpAux2 arr1 arr2 (i + 1) b len
     else c
 
-let cmp a b p =
+let compareTo a b p =
   let lena = length a in  
   let lenb = length b in
   if lena > lenb then 1

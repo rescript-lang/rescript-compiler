@@ -7,7 +7,7 @@ let range i j =
 
 let randomRange i j  =
     let v= (A.makeBy (j - i + 1) (fun[@bs] k -> k + i )) in 
-    A.shuffle v ; 
+    A.shuffleInPlace v ; 
     v 
     
     

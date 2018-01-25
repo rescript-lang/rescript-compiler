@@ -164,6 +164,20 @@ let rec copyAuxWitFilter f cellX prec =
       end
     else copyAuxWitFilter f t prec 
 
+let rec copyAuxWitFilterMap f cellX prec =
+  match cellX with
+  | [] -> 
+    ()
+  | h::t ->
+    match f h [@bs] with
+    | Some h -> 
+      begin 
+        let next = mutableCell h [] in
+        unsafeMutateTail prec next ; 
+        copyAuxWitFilterMap f t next
+      end
+    | None ->  copyAuxWitFilterMap f t prec 
+
 let rec removeAssocAuxWithMap  cellX x  prec f =  
   match cellX with 
   | [] -> ()
@@ -175,7 +189,7 @@ let rec removeAssocAuxWithMap  cellX x  prec f =
       unsafeMutateTail prec next ; 
       removeAssocAuxWithMap t x next f 
 
-let rec removeAssocAux  cellX x  prec =  
+let rec removeAssocAuxByReference  cellX x  prec =  
   match cellX with 
   | [] -> ()
   | ((a,_) as h):: t -> 
@@ -184,7 +198,7 @@ let rec removeAssocAux  cellX x  prec =
     else  
       let next = mutableCell h [] in 
       unsafeMutateTail prec next ; 
-      removeAssocAux t x next 
+      removeAssocAuxByReference t x next 
       
 let rec copyAuxWithMap cellX prec f =
   match cellX with
@@ -307,7 +321,7 @@ let map2 l1 l2 f =
     cell 
   | [], _ | _, [] -> []
 
-let rec mapi  xs f  = 
+let mapWithIndex  xs f  = 
   match xs with 
     [] -> []
   | h::t -> 
@@ -318,16 +332,29 @@ let rec mapi  xs f  =
 
 
 
-let init n f =
-  if n < 0 then [%assert "Invalid_argument"]
-  else
-  if n = 0 then []
+let makeBy n f =
+  if n <= 0 then []
   else
     let headX = mutableCell (f 0 [@bs]) [] in
     let cur = ref headX in
     let i = ref 1 in
     while !i < n do
       let v = mutableCell (f !i [@bs]) [] in
+      unsafeMutateTail !cur v ; 
+      cur := v ;
+      incr i ;
+    done
+    ;
+    headX
+
+let make n v =
+  if n <= 0 then []
+  else
+    let headX = mutableCell v [] in
+    let cur = ref headX in
+    let i = ref 1 in
+    while !i < n do
+      let v = mutableCell v [] in
       unsafeMutateTail !cur v ; 
       cur := v ;
       incr i ;
@@ -362,41 +389,42 @@ let rec fillAuxMap arr i x f =
     A.setUnsafe arr i (f h [@bs]) ;
     fillAuxMap arr (i + 1) t f  
 
-module J = Js_json
-type json = J.t 
-let toJson x f =   
-  let len = length x in
-  let arr = Bs_Array.makeUninitializedUnsafe len in
-  fillAuxMap arr 0 x f;
-  J.array arr
+(* module J = Js_json *)
+(* type json = J.t  *)
+(* let toJson x f =    *)
+(*   let len = length x in *)
+(*   let arr = Bs_Array.makeUninitializedUnsafe len in *)
+(*   fillAuxMap arr 0 x f; *)
+(*   J.array arr *)
 
 (* TODO: best practice about raising excpetion 
    1. raise OCaml exception, no stacktrace 
    2. raise JS exception, how to pattern match
 *)
 
-let fromJson j f =   
-  match J.decodeArray j with 
-  | Some arr ->     
-    let len = Bs_Array.length arr in 
-    if len = 0 then []
-    else 
-      let head = (mutableCell (f (A.getUnsafe arr 0) [@bs]) []) in 
-      let cell = ref head in   
-      for i = 1 to len - 1 do   
-        let next = mutableCell (f (A.getUnsafe arr i) [@bs]) [] in 
-        unsafeMutateTail !cell next ;
-        cell := next 
-      done ;
-      head
-  | None ->
-    [%assert "Not array when decoding list"]
-let rec reverseAppend l1 l2 =
+(* let fromJson j f =    *)
+(*   match J.decodeArray j with  *)
+(*   | Some arr ->      *)
+(*     let len = Bs_Array.length arr in  *)
+(*     if len = 0 then [] *)
+(*     else  *)
+(*       let head = (mutableCell (f (A.getUnsafe arr 0) [@bs]) []) in  *)
+(*       let cell = ref head in    *)
+(*       for i = 1 to len - 1 do    *)
+(*         let next = mutableCell (f (A.getUnsafe arr i) [@bs]) [] in  *)
+(*         unsafeMutateTail !cell next ; *)
+(*         cell := next  *)
+(*       done ; *)
+(*       head *)
+(*   | None -> *)
+(*     [%assert "Not array when decoding list"] *)
+    
+let rec reverseConcat l1 l2 =
   match l1 with
     [] -> l2
-  | a :: l -> reverseAppend l (a :: l2)
+  | a :: l -> reverseConcat l (a :: l2)
 
-let reverse l = reverseAppend l []
+let reverse l = reverseConcat l []
 
 let rec flattenAux prec xs =
   match xs with
@@ -404,10 +432,10 @@ let rec flattenAux prec xs =
   | h::r -> flattenAux (copyAuxCont h prec) r
 
 
-let rec flatten xs =     
+let rec concatMany xs =     
   match xs with 
   | [] -> []
-  | []::xs -> flatten xs
+  | []::xs -> concatMany xs
   | (h::t):: r ->  
     let cell = mutableCell h [] in 
     flattenAux (copyAuxCont t cell) r ;
@@ -432,17 +460,17 @@ let rec iteri xs i f  =
     [] -> ()
   | a::l -> f i a [@bs]; iteri l (i + 1) f 
 
-let forEachi l f  = iteri l 0 f 
+let forEachWithIndex l f  = iteri l 0 f 
 
 let rec reduce l accu f   =
   match l with
     [] -> accu
   | a::l -> reduce l (f accu a [@bs]) f 
 
-let rec reduceFromTail l accu f  =
+let rec reduceReverse l accu f  =
   match l with
     [] -> accu
-  | a::l -> f a (reduceFromTail l accu f) [@bs]
+  | a::l -> f a (reduceReverse l accu f) [@bs]
 
 
 let rec mapRevAux2 l1 l2 accu f =
@@ -464,10 +492,10 @@ let rec reduce2 l1 l2 accu f =
     reduce2 l1 l2 (f accu a1 a2 [@bs]) f 
   | [], _ | _, [] -> accu
 
-let rec reduceFromTail2 l1 l2 accu f  =
+let rec reduceReverse2 l1 l2 accu f  =
   match (l1, l2) with
     ([], []) -> accu
-  | (a1::l1, a2::l2) -> f a1 a2 (reduceFromTail2 l1 l2 accu f) [@bs]
+  | (a1::l1, a2::l2) -> f a1 a2 (reduceReverse2 l1 l2 accu f) [@bs]
   | _, [] | [], _ -> accu
 
 let rec every xs p = 
@@ -485,7 +513,7 @@ let rec every2 l1 l2  p =
     (_, []) | [],_ -> true
   | (a1::l1, a2::l2) -> p a1 a2 [@bs] && every2 l1 l2 p
 
-let rec cmp l1 l2  p =
+let rec compare l1 l2  p =
   match (l1, l2) with
   | [], [] -> 0
   | _ , [] -> 1
@@ -493,17 +521,17 @@ let rec cmp l1 l2  p =
   | (a1::l1, a2::l2) ->
     let c = p a1 a2 [@bs] in
     if c = 0 then
-      cmp l1 l2 p
+      compare l1 l2 p
     else c
       
-let rec eq l1 l2  p =
+let rec equal l1 l2  p =
   match (l1, l2) with
   | [], [] -> true
   | _ , [] 
   | [], _ -> false
   | (a1::l1, a2::l2) ->
     if p a1 a2 [@bs]  then
-      eq l1 l2 p
+      equal l1 l2 p
     else false
 
 let rec some2 l1 l2 p =
@@ -517,10 +545,10 @@ let rec has xs x eq  =
     [] -> false
   | a::l -> eq a x [@bs] || has l x eq 
 
-let rec hasq xs x = 
+let rec hasByReference xs x = 
   match xs with 
     [] -> false
-  | a::l -> a == x || hasq l x 
+  | a::l -> a == x || hasByReference l x 
 
 let rec assoc  xs x eq = 
   match xs with 
@@ -529,20 +557,20 @@ let rec assoc  xs x eq =
     if eq a x [@bs] then Some b 
     else assoc l x eq 
 
-let rec assq xs x = 
+let rec assocByReference xs x = 
   match xs with 
     [] -> None
-  | (a,b)::l -> if a == x then Some b else assq l x 
+  | (a,b)::l -> if a == x then Some b else assocByReference l x 
 
 let rec hasAssoc xs x eq = 
   match xs with 
   | [] -> false
   | (a, b) :: l -> eq a x [@bs] || hasAssoc l x eq 
 
-let rec hasAssq xs x  = 
+let rec hasAssocByReference xs x  = 
   match xs with 
   | [] -> false
-  | (a, b) :: l -> a == x || hasAssq l x 
+  | (a, b) :: l -> a == x || hasAssocByReference l x 
 
 
 (* remove the first pair *)  
@@ -556,14 +584,14 @@ let  removeAssoc xs x eq  =
       removeAssocAuxWithMap l x cell eq ;
       cell 
 
-let rec removeAssq xs x = 
+let  removeAssocByReference xs x = 
   match xs with 
   | [] -> []
   | (a, b as pair) :: l -> 
     if a == x then l 
     else 
       let cell = mutableCell pair [] in 
-      removeAssocAux l x cell;  
+      removeAssocAuxByReference l x cell;  
       cell 
 
 let rec getBy xs p = 
@@ -580,12 +608,27 @@ let rec keepBy xs p  =
   | h::t -> 
     if p h [@bs] then 
       begin 
-        let cell = (mutableCell h []) in 
+        let cell = mutableCell h [] in 
         copyAuxWitFilter p t cell ;
         cell 
       end
     else 
-      keepBy t p 
+      keepBy t p
+        
+
+let rec keepMap xs p  = 
+  match xs with 
+  | [] -> []
+  | h::t -> 
+    match p h [@bs] with
+    | Some h ->
+      begin 
+        let cell = mutableCell h [] in 
+        copyAuxWitFilterMap p t cell ;
+        cell 
+      end
+    | None -> 
+      keepMap t p
 
 
 let partition l p  =    

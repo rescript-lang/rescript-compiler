@@ -207,7 +207,7 @@ var u1$1 = Bs_Set.remove(u0$1, 17);
 
 var u2$1 = Bs_Set.add(u1$1, 33);
 
-b("File \"bs_poly_set_test.ml\", line 93, characters 4-11", Bs_List.every2(testIterToList(u0$1), Bs_List.init(21, (function (i) {
+b("File \"bs_poly_set_test.ml\", line 93, characters 4-11", Bs_List.every2(testIterToList(u0$1), Bs_List.makeBy(21, (function (i) {
                 return i;
               })), (function (x, y) {
             return +(x === y);
@@ -295,7 +295,7 @@ eq("File \"bs_poly_set_test.ml\", line 120, characters 5-12", Bs_internalAVLset.
             return i;
           })));
 
-eq("File \"bs_poly_set_test.ml\", line 121, characters 5-12", Bs_internalAVLset.toList0(match$2[1].data), Bs_List.init(800, (function (i) {
+eq("File \"bs_poly_set_test.ml\", line 121, characters 5-12", Bs_internalAVLset.toList0(match$2[1].data), Bs_List.makeBy(800, (function (i) {
             return i + 201 | 0;
           })));
 
@@ -315,7 +315,7 @@ eq("File \"bs_poly_set_test.ml\", line 125, characters 5-12", Bs_internalAVLset.
             return i;
           })));
 
-eq("File \"bs_poly_set_test.ml\", line 126, characters 5-12", Bs_internalAVLset.toList0(a9.data), Bs_List.init(800, (function (i) {
+eq("File \"bs_poly_set_test.ml\", line 126, characters 5-12", Bs_internalAVLset.toList0(a9.data), Bs_List.makeBy(800, (function (i) {
             return i + 201 | 0;
           })));
 
