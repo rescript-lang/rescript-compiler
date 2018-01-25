@@ -27,7 +27,6 @@ type 'c container =
    { 
     mutable size: int;                        (* number of entries *)
     mutable buckets: 'c opt array;  (* the buckets *)
-    initialSize : int
   } [@@bs.deriving abstract]
 
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
@@ -36,8 +35,7 @@ external return : 'a -> 'a opt = "%identity"
 val emptyOpt : 'a Js.undefined
 val create0 : int -> 'a container
 val clear0 : 'a container -> unit
-val reset0 : 'a container -> unit
-val length0 : 'a container -> int
+
 type statistics = {
   num_bindings : int;
   num_buckets : int;

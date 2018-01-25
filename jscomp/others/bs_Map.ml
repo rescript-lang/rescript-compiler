@@ -123,7 +123,7 @@ let mergeArray0   h arr ~cmp =
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
-    let key,value = A.unsafe_get arr i in 
+    let key,value = A.getUnsafe arr i in 
     v := set0 !v  ~cmp key value
   done ;
   !v 
@@ -194,7 +194,7 @@ let rec merge0 s1 s2 f ~cmp =
 
 let rec removeArrayAux t xs i len ~cmp =
   if i < len then
-    let ele = A.unsafe_get xs i in
+    let ele = A.getUnsafe xs i in
     let u =  removeAux0 t ele ~cmp in
     match N.toOpt u with
     | None -> u
@@ -289,11 +289,11 @@ let forEach m f = N.iter0 (B.data m) f
 
 let reduce m acc f = N.fold0 (B.data m) acc f  
 
-let forAll m f = N.forAll0 (B.data m) f  
+let every m f = N.every0 (B.data m) f  
 
-let exists m f = N.exists0 (B.data m) f
+let some m f = N.some0 (B.data m) f
 
-let filter m f = 
+let keepBy m f = 
   let dict, map = B.(dict m, data m) in 
   B.bag ~dict ~data:(N.filterShared0 map f)
 
@@ -367,8 +367,8 @@ let eq0 = N.eq0
 let has0 = N.mem0
 let forEach0 = N.iter0      
 let reduce0 = N.fold0
-let forAll0 = N.forAll0
-let exists0 = N.exists0    
+let every0 = N.every0
+let some0 = N.some0    
 let size0 = N.length0
 let toList0 = N.toList0
 let toArray0 = N.toArray0

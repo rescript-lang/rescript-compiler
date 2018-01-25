@@ -32,9 +32,10 @@ and 'a t0 = 'a bucket C.container
 [@@bs.deriving abstract]
 
 val copy: 'a t0 -> 'a t0
-val iter0 : 'a bucket C.container -> ('a -> 'b [@bs]) -> unit
-val fillArray : int -> 'a array -> 'a bucket -> int
-val toArray0 : 'a bucket C.container -> 'a array
+val forEach0: 'a bucket C.container -> ('a -> 'b [@bs]) -> unit
+val fillArray: int -> 'a array -> 'a bucket -> int
+val toArray0: 'a t0 -> 'a array
 
-val fold0 : 'a bucket C.container -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
-val logStats0 : 'a bucket C.container -> unit
+val reduce0: 'a t0 -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
+val logStats0: _ t0 -> unit
+val getBucketHistogram: _ t0 -> int array  

@@ -30,9 +30,9 @@ let forEach = N.iter0
 let map  = N.map0
 let mapi = N.mapi0
 let fold = N.fold0
-let forAll = N.forAll0
-let exists = N.exists0    
-let filter = N.filterShared0
+let every = N.every0
+let some = N.some0    
+let keepBy = N.filterShared0
 let partition = N.partitionShared0
 let size = N.length0
 let toList = N.toList0
@@ -122,7 +122,7 @@ let remove n x =
 
 let rec removeArrayAux t xs i len  =
   if i < len then
-    let ele = A.unsafe_get xs i in
+    let ele = A.getUnsafe xs i in
     let u =  removeAux t ele  in
     match N.toOpt u with
     | None -> u
@@ -140,7 +140,7 @@ let mergeArray h arr =
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
-    let key,value = A.unsafe_get arr i in 
+    let key,value = A.getUnsafe arr i in 
     v := set !v key value
   done ;
   !v 

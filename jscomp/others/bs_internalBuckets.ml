@@ -46,13 +46,12 @@ let rec copy ( x : _ t0) : _ t0=
   C.container
     ~size:(C.size x)
     ~buckets:(copyBuckets (C.buckets x))
-    ~initialSize:(C.initialSize x)
 and copyBuckets ( buckets : _ bucket C.opt array) =  
   let len = A.length buckets in 
   let newBuckets = A.makeUninitializedUnsafe len in 
   for i = 0 to len - 1 do 
-    A.unsafe_set newBuckets i 
-    (copyBucket (A.unsafe_get buckets i))
+    A.setUnsafe newBuckets i 
+    (copyBucket (A.getUnsafe buckets i))
   done ;
   newBuckets
 and copyBucket c =   
@@ -75,10 +74,10 @@ and copyAuxCont c prec =
 
 
 
-let rec bucket_length accu buckets = 
+let rec bucketLength accu buckets = 
   match C.toOpt buckets with 
   | None -> accu
-  | Some cell -> bucket_length (accu + 1) (next cell)
+  | Some cell -> bucketLength (accu + 1) (next cell)
 
 
 
@@ -89,10 +88,10 @@ let rec do_bucket_iter ~f buckets =
   | Some cell ->
     f (key cell)  (value cell) [@bs]; do_bucket_iter ~f (next cell)
 
-let iter0 h f =
+let forEach0 h f =
   let d = C.buckets h in
-  for i = 0 to Bs_Array.length d - 1 do
-    do_bucket_iter f (Bs_Array.unsafe_get d i)
+  for i = 0 to A.length d - 1 do
+    do_bucket_iter f (A.getUnsafe d i)
   done
 
 
@@ -103,33 +102,37 @@ let rec do_bucket_fold ~f b accu =
   | Some cell ->
     do_bucket_fold ~f (next cell) (f accu (key cell) (value cell)  [@bs]) 
 
-let fold0  h init f =
+let reduce0  h init f =
   let d = C.buckets h in
   let accu = ref init in
-  for i = 0 to Bs_Array.length d - 1 do
-    accu := do_bucket_fold ~f (Bs_Array.unsafe_get d i) !accu
+  for i = 0 to A.length d - 1 do
+    accu := do_bucket_fold ~f (A.getUnsafe d i) !accu
   done;
   !accu
 
 
 
+let getMaxBucketLength h =
+  A.reduce (C.buckets h) 0
+    (fun[@bs] m b -> 
+       let len = bucketLength 0 b in
+       Pervasives.max m len)
+
+let getBucketHistogram h =
+  let mbl = getMaxBucketLength h in 
+  let histo = A.makeBy (mbl + 1) (fun[@bs] _ -> 0) in
+  A.forEach (C.buckets h)
+    (fun[@bs] b ->
+       let l = bucketLength 0 b in
+       A.setUnsafe histo l (A.getUnsafe histo l + 1)
+    );
+  histo
 
 let logStats0 h =
-  let mbl =
-    Bs_Array.reduce (C.buckets h) 0 (fun[@bs] m b -> 
-        let len = (bucket_length 0 b) in
-        Pervasives.max m len) in
-  let histo = Bs_Array.initExn (mbl + 1) (fun[@bs] _ -> 0) in
-  Bs_Array.forEach (C.buckets h)
-    (fun[@bs] b ->
-       let l = bucket_length 0 b in
-       Bs_Array.unsafe_set histo l (Bs_Array.unsafe_get histo l + 1)
-    )
-  ;
-  Js.log [%obj{ num_bindings = (C.size h);
-                num_buckets = Bs_Array.length (C.buckets h);
-                max_bucket_length = mbl;
-                bucket_histogram = histo }]
+  let histogram = getBucketHistogram h in 
+  Js.log [%obj{ bindings = C.size h;
+                buckets = A.length (C.buckets h);
+                histogram}]
 
 
 (** iterate the Buckets, in place remove the elements *)                
@@ -143,13 +146,13 @@ let rec filterMapInplaceBucket f h i prec cell =
           filterMapInplaceBucket f h i prec nextCell
         | None -> 
           match C.toOpt prec with 
-          | None -> Bs_Array.unsafe_set (C.buckets h) i prec
+          | None -> A.setUnsafe (C.buckets h) i prec
           | Some cell -> nextSet cell n
       end
     | Some data -> (* replace *)
       let bucket = C.return cell in 
       begin match C.toOpt prec with
-        | None -> Bs_Array.unsafe_set (C.buckets h) i  bucket 
+        | None -> A.setUnsafe (C.buckets h) i  bucket 
         | Some c -> nextSet cell bucket
       end;
       valueSet cell data;
@@ -161,15 +164,15 @@ let rec filterMapInplaceBucket f h i prec cell =
 
 let filterMapInplace0 h f =
   let h_buckets = C.buckets h in
-  for i = 0 to Bs_Array.length h_buckets - 1 do
-    let v = Bs_Array.unsafe_get h_buckets i in 
+  for i = 0 to A.length h_buckets - 1 do
+    let v = A.getUnsafe h_buckets i in 
     match C.toOpt v with 
     | None -> ()
     | Some v -> filterMapInplaceBucket f h i C.emptyOpt v
   done
 
 let rec fillArray i arr cell =  
-  Bs_Array.unsafe_set arr i (key cell, value cell);
+  A.setUnsafe arr i (key cell, value cell);
   match C.toOpt (next cell) with 
   | None -> i + 1
   | Some v -> fillArray (i + 1) arr v 
@@ -177,9 +180,9 @@ let rec fillArray i arr cell =
 let toArray0 h = 
   let d = C.buckets h in 
   let current = ref 0 in 
-  let arr = Bs.Array.makeUninitializedUnsafe (C.size h) in 
-  for i = 0 to Bs_Array.length d - 1 do  
-    let cell = Bs_Array.unsafe_get d i in 
+  let arr = A.makeUninitializedUnsafe (C.size h) in 
+  for i = 0 to A.length d - 1 do  
+    let cell = A.getUnsafe d i in 
     match C.toOpt cell with 
     | None -> ()
     | Some cell -> 
@@ -188,7 +191,7 @@ let toArray0 h =
   arr 
 
 let rec fillArrayMap i arr cell f =  
-  Bs_Array.unsafe_set arr i (f cell [@bs]);
+  A.setUnsafe arr i (f cell [@bs]);
   match C.toOpt (next cell) with 
   | None -> i + 1
   | Some v -> fillArrayMap (i + 1) arr v f
@@ -196,9 +199,9 @@ let rec fillArrayMap i arr cell f =
 let linear h f = 
   let d = C.buckets h in 
   let current = ref 0 in 
-  let arr = Bs.Array.makeUninitializedUnsafe (C.size h) in 
-  for i = 0 to Bs_Array.length d - 1 do  
-    let cell = Bs_Array.unsafe_get d i in 
+  let arr = A.makeUninitializedUnsafe (C.size h) in 
+  for i = 0 to A.length d - 1 do  
+    let cell = A.getUnsafe d i in 
     match C.toOpt cell with 
     | None -> ()
     | Some cell -> 

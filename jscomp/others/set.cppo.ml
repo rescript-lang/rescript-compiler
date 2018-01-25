@@ -21,9 +21,9 @@ let maximum = N.maxOpt0
 let maxNull = N.maxNull0
 let forEach = N.iter0      
 let reduce = N.fold0
-let forAll = N.forAll0
-let exists = N.exists0    
-let filter = N.filterShared0
+let every = N.every0
+let some = N.some0    
+let keepBy = N.filterShared0
 let partition = N.partitionShared0
 let size = N.length0
 let toList = N.toList0
@@ -51,7 +51,7 @@ let mergeArray h arr =
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
-    let key = A.unsafe_get arr i in 
+    let key = A.getUnsafe arr i in 
     v := add !v  key 
   done ;
   !v 
@@ -84,7 +84,7 @@ let removeArray h arr =
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
-    let key = A.unsafe_get arr i in 
+    let key = A.getUnsafe arr i in 
     v := remove !v  key 
   done ;
   !v 

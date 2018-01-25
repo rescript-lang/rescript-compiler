@@ -44,13 +44,12 @@ let rec copy ( x : _ t0) : _ t0=
   C.container
     ~size:(C.size x)
     ~buckets:(copyBuckets (C.buckets x))
-    ~initialSize:(C.initialSize x)
 and copyBuckets ( buckets : _ bucket C.opt array) =  
   let len = A.length buckets in 
   let newBuckets = A.makeUninitializedUnsafe len in 
   for i = 0 to len - 1 do 
-    A.unsafe_set newBuckets i 
-    (copyBucket (A.unsafe_get buckets i))
+    A.setUnsafe newBuckets i 
+    (copyBucket (A.getUnsafe buckets i))
   done ;
   newBuckets
 and copyBucket c =   
@@ -84,14 +83,14 @@ let rec doBucketIter ~f buckets =
   | Some cell ->
     f (key cell)  [@bs]; doBucketIter ~f (next cell)
 
-let iter0 h f =
+let forEach0 h f =
   let d = C.buckets h in
-  for i = 0 to Bs_Array.length d - 1 do
-    doBucketIter f (Bs_Array.unsafe_get d i)
+  for i = 0 to A.length d - 1 do
+    doBucketIter f (A.getUnsafe d i)
   done
 
 let rec fillArray i arr cell =  
-  Bs_Array.unsafe_set arr i (key cell);
+  A.setUnsafe arr i (key cell);
   match C.toOpt (next cell) with 
   | None -> i + 1
   | Some v -> fillArray (i + 1) arr v 
@@ -100,8 +99,8 @@ let toArray0 h =
   let d = C.buckets h in 
   let current = ref 0 in 
   let arr = Bs.Array.makeUninitializedUnsafe (C.size h) in 
-  for i = 0 to Bs_Array.length d - 1 do  
-    let cell = Bs_Array.unsafe_get d i in 
+  for i = 0 to A.length d - 1 do  
+    let cell = A.getUnsafe d i in 
     match C.toOpt cell with 
     | None -> ()
     | Some cell -> 
@@ -118,32 +117,35 @@ let rec doBucketFold ~f b accu =
   | Some cell ->
     doBucketFold ~f (next cell) (f  accu (key cell) [@bs]) 
 
-let fold0 h init f =
+let reduce0 h init f =
   let d = C.buckets h in
   let accu = ref init in
-  for i = 0 to Bs_Array.length d - 1 do
-    accu := doBucketFold ~f (Bs_Array.unsafe_get d i) !accu
+  for i = 0 to A.length d - 1 do
+    accu := doBucketFold ~f (A.getUnsafe d i) !accu
   done;
   !accu
 
+let getMaxBucketLength h =
+  A.reduce (C.buckets h) 0
+    (fun[@bs] m b -> 
+       let len = bucketLength 0 b in
+       Pervasives.max m len)
 
+let getBucketHistogram h =
+  let mbl = getMaxBucketLength h in 
+  let histo = A.makeBy (mbl + 1) (fun[@bs] _ -> 0) in
+  A.forEach (C.buckets h)
+    (fun[@bs] b ->
+       let l = bucketLength 0 b in
+       A.setUnsafe histo l (A.getUnsafe histo l + 1)
+    );
+  histo
 
 
 let logStats0 h =
-  let mbl =
-    Bs_Array.reduce (C.buckets h) 0 (fun[@bs] m b -> 
-      let len = (bucketLength 0 b) in
-      max m len)  in
-  let histo = Bs_Array.initExn (mbl + 1) (fun[@bs] _ -> 0) in
-  Bs_Array.forEach (C.buckets h)
-    (fun[@bs] b ->
-       let l = bucketLength 0 b in
-       Bs_Array.unsafe_set histo l (Bs_Array.unsafe_get histo l + 1)
-    )
-    ;
-  Js.log [%obj{ num_bindings = (C.size h);
-                num_buckets = Bs_Array.length (C.buckets h);
-                max_bucket_length = mbl;
-                bucket_histogram = histo }]
+  let histogram =  getBucketHistogram h in 
+  Js.log [%obj{ bindings = C.size h;
+                buckets = A.length (C.buckets h);
+                histogram  }]
 
 

@@ -53,7 +53,7 @@ let remove d v =
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
   if i < len then 
-    let ele = A.unsafe_get xs i in 
+    let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele ~cmp in 
     match N.toOpt u with 
     | None -> N.empty0
@@ -175,7 +175,7 @@ let split (type elt) (type id) (d : (elt,id) t)  key  =
        ~dict
     ), true       
 
-let filter d p = 
+let keepBy d p = 
   let data, dict = B.(data d, dict d) in  
   B.bag ~data:(N.filterCopy data p ) ~dict 
 let partition d p = 
@@ -201,10 +201,10 @@ let forEach d f =
   N.iter0 (B.data d) f     
 let reduce d acc cb = 
   N.fold0 (B.data d) acc cb 
-let forAll d p = 
-  N.forAll0 (B.data d) p 
-let exists d  p = 
-  N.exists0 (B.data d) p   
+let every d p = 
+  N.every0 (B.data d) p 
+let some d  p = 
+  N.some0 (B.data d) p   
 let size d = 
   N.length0 (B.data d)
 let toList d =
@@ -250,7 +250,7 @@ let add m e =
 let addArrayMutate (t : _ t0) xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
-    v := N.addMutate !v (A.unsafe_get xs i)  ~cmp
+    v := N.addMutate !v (A.getUnsafe xs i)  ~cmp
   done; 
   !v 
 let mergeArrayDone (type elt) (type id) (d : (elt,id) t ) xs =   
@@ -289,12 +289,12 @@ let inter (type elt) (type id) (a : (elt,id) t) b  : _ t =
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     let p = Bs_Cmp.getCmp M.cmp in 
-    if (p (A.unsafe_get tmp (sizea - 1))
-          (A.unsafe_get tmp sizea) [@bs] < 0)
+    if (p (A.getUnsafe tmp (sizea - 1))
+          (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
        (p 
-          (A.unsafe_get tmp (totalSize - 1))
-          (A.unsafe_get tmp 0) [@bs] < 0 
+          (A.getUnsafe tmp (totalSize - 1))
+          (A.getUnsafe tmp 0) [@bs] < 0 
        )
     then empty dict
     else 
@@ -317,12 +317,12 @@ let diff (type elt) (type id) (a : (elt,id) t) b : _ t =
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     let p = Bs_Cmp.getCmp M.cmp in 
-    if (p (A.unsafe_get tmp (sizea - 1))
-          (A.unsafe_get tmp sizea) [@bs] < 0)
+    if (p (A.getUnsafe tmp (sizea - 1))
+          (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
        (p 
-          (A.unsafe_get tmp (totalSize - 1))
-          (A.unsafe_get tmp 0) [@bs] < 0 
+          (A.getUnsafe tmp (totalSize - 1))
+          (A.getUnsafe tmp 0) [@bs] < 0 
        )
     then B.bag ~data:(N.copy dataa) ~dict 
     else 
@@ -345,8 +345,8 @@ let union (type elt) (type id) (a : (elt,id) t) b =
     ignore @@ N.fillArray datab0 sizea tmp ;
     let p = (Bs_Cmp.getCmp M.cmp)  in 
     if p
-        (A.unsafe_get tmp (sizea - 1))
-        (A.unsafe_get tmp sizea) [@bs] < 0 then 
+        (A.getUnsafe tmp (sizea - 1))
+        (A.getUnsafe tmp sizea) [@bs] < 0 then 
       B.bag ~data:(N.ofSortedArrayAux tmp 0 totalSize) ~dict 
     else   
       let tmp2 = A.makeUninitializedUnsafe totalSize in 

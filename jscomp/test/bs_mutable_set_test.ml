@@ -8,7 +8,7 @@ module N  = Bs.SetIntM
 module I = Array_data_util
 module R = Bs.Range
 module A = Bs.Array
-let (++)= A.append
+let (++) = A.concat
 
 let () = 
   let v = N.empty () in 
@@ -17,7 +17,7 @@ let () =
      N.addDone v i 
   done ;
   b __LOC__ (N.checkInvariant v);
-  b __LOC__ @@ R.forAll 0  1_00_000 (fun [@bs] i -> 
+  b __LOC__ @@ R.every 0  1_00_000 (fun [@bs] i -> 
     N.has v i 
    );  
   eq __LOC__ (N.size v) 1_00_001
@@ -49,7 +49,7 @@ let () =
   b __LOC__ (N.isEmpty v )
 
 let () = 
-  let v = N.ofArray (A.initExn 30 (fun [@bs]i -> i)) in 
+  let v = N.ofArray (A.makeBy 30 (fun [@bs]i -> i)) in 
   N.removeDone v 30; 
   N.removeDone v 29 ;
   b __LOC__ (Js.eqNull 28 (N.maxNull v ));
@@ -66,7 +66,7 @@ let () =
   let id loc x = 
     let u = (N.ofSortedArrayUnsafe x) in
     b loc (N.checkInvariant u );
-    b loc (A.forAll2 (N.toArray u) x (fun[@bs] x y -> x = y) )
+    b loc (A.every2 (N.toArray u) x (fun[@bs] x y -> x = y) )
   in 
   id __LOC__ [||] ; 
   id __LOC__ [|0|];
@@ -83,14 +83,14 @@ let () =
   
 let () =   
   let v = N.ofArray (I.randomRange 0 1000) in 
-  let copyV = N.filter v (fun[@bs] x -> x mod 8 = 0) in 
+  let copyV = N.keepBy v (fun[@bs] x -> x mod 8 = 0) in 
   let aa,bb = N.partition v (fun[@bs] x -> x mod 8 = 0) in 
-  let cc = N.filter v (fun[@bs] x -> x mod 8 <> 0) in 
+  let cc = N.keepBy v (fun[@bs] x -> x mod 8 <> 0) in 
   for i = 0 to 200 do 
     N.removeDone v i
   done ;
   eq __LOC__ (N.size copyV) 126; 
-  eq __LOC__ (N.toArray copyV) (A.initExn 126 (fun[@bs] i -> i * 8));
+  eq __LOC__ (N.toArray copyV) (A.makeBy 126 (fun[@bs] i -> i * 8));
   eq __LOC__ (N.size v ) 800;
   b __LOC__ (N.eq copyV aa);
   b __LOC__ (N.eq cc bb)
@@ -102,8 +102,8 @@ let () =
   b __LOC__ (N.eq bb (N.ofArray (I.randomRange 401 1000)));
   let d = N.ofArray (A.map (I.randomRange 0 1000) (fun[@bs] x -> x * 2)) in 
   let ((cc,dd), _) = N.split d 1001 in   
-  b __LOC__ (N.eq cc (N.ofArray (A.initExn 501 (fun[@bs] x -> x * 2))));
-  b __LOC__ (N.eq dd (N.ofArray (A.initExn 500 (fun [@bs] x -> 1002 + x * 2))))
+  b __LOC__ (N.eq cc (N.ofArray (A.makeBy 501 (fun[@bs] x -> x * 2))));
+  b __LOC__ (N.eq dd (N.ofArray (A.makeBy 500 (fun [@bs] x -> 1002 + x * 2))))
 
 
 let (++) = N.union

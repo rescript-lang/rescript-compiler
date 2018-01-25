@@ -38,7 +38,7 @@ val take : 'a t -> int -> 'a t option
 
 val splitAt : 'a t -> int -> ('a list * 'a list) option 
 
-val append : 'a t -> 'a t -> 'a t
+val concat : 'a t -> 'a t -> 'a t
 
 val map : 'a t -> ('a -> 'b [@bs]) -> 'b t
 
@@ -59,7 +59,7 @@ val toArray : 'a t -> 'a array
 
 val reverseAppend : 'a t -> 'a t -> 'a t
 (**
-   [reverseAppend a b] is semantically equivalent to [append (reverse a) b]
+   [reverseAppend a b] is semantically equivalent to [concat (reverse a) b]
 *)
     
 val reverse : 'a t -> 'a t
@@ -87,17 +87,17 @@ val reduce2 :
 val reduceFromTail2 :
   'a t -> 'b t -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) ->  'c
 
-val forAll : 'a t -> ('a -> bool [@bs]) ->  bool
+val every : 'a t -> ('a -> bool [@bs]) ->  bool
 
-val exists : 'a t -> ('a -> bool [@bs]) -> bool
+val some : 'a t -> ('a -> bool [@bs]) -> bool
 
-val forAll2 : 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val every2 : 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
 val cmp : 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 
 val eq : 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
   
-val exists2 :  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val some2 :  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
 val has :  'a t -> 'b ->  ('a -> 'b -> bool [@bs]) -> bool
 
@@ -120,7 +120,7 @@ val removeAssq :  ('a * 'b) t -> 'a -> ('a * 'b) t
 
 val getBy  : 'a t -> ('a -> bool [@bs]) ->  'a option
 
-val filter : 'a t ->  ('a -> bool [@bs]) -> 'a t
+val keepBy : 'a t ->  ('a -> bool [@bs]) -> 'a t
 
 val partition : 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
 

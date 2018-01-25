@@ -122,7 +122,7 @@ let ofArray (xs : elt array) =
           end
           ) in 
     for i = !next to len - 1 do 
-      result := addMutate !result (A.unsafe_get xs i) 
+      result := addMutate !result (A.getUnsafe xs i) 
     done ;
     !result 
 

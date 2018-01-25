@@ -61,6 +61,8 @@
 
 type 'a t = 'a list
 
+module A = Bs_Array
+
 external mutableCell : 
   'a -> 'a t ->  'a t = "#makemutablelist"
 (* 
@@ -281,7 +283,7 @@ let splitAt lst n =
       | Some rest -> Some (cell, rest)
       | None -> None
 
-let append xs ys =
+let concat xs ys =
   match xs with
   | [] -> ys
   | h::t ->
@@ -344,7 +346,7 @@ let rec fillAux arr i x =
   match x with
   | [] -> ()
   | h::t ->
-    Bs_Array.unsafe_set arr i h ;
+    A.setUnsafe arr i h ;
     fillAux arr (i + 1) t
 
 let toArray ( x : _ t) =
@@ -357,7 +359,7 @@ let rec fillAuxMap arr i x f =
   match x with
   | [] -> ()
   | h::t ->
-    Bs_Array.unsafe_set arr i (f h [@bs]) ;
+    A.setUnsafe arr i (f h [@bs]) ;
     fillAuxMap arr (i + 1) t f  
 
 module J = Js_json
@@ -379,10 +381,10 @@ let fromJson j f =
     let len = Bs_Array.length arr in 
     if len = 0 then []
     else 
-      let head = (mutableCell (f (Bs_Array.unsafe_get arr 0) [@bs]) []) in 
+      let head = (mutableCell (f (A.getUnsafe arr 0) [@bs]) []) in 
       let cell = ref head in   
       for i = 1 to len - 1 do   
-        let next = mutableCell (f (Bs_Array.unsafe_get arr i) [@bs]) [] in 
+        let next = mutableCell (f (A.getUnsafe arr i) [@bs]) [] in 
         unsafeMutateTail !cell next ;
         cell := next 
       done ;
@@ -468,20 +470,20 @@ let rec reduceFromTail2 l1 l2 accu f  =
   | (a1::l1, a2::l2) -> f a1 a2 (reduceFromTail2 l1 l2 accu f) [@bs]
   | _, [] | [], _ -> accu
 
-let rec forAll xs p = 
+let rec every xs p = 
   match xs with 
     [] -> true
-  | a::l -> p a [@bs] && forAll l p
+  | a::l -> p a [@bs] && every l p
 
-let rec exists xs p = 
+let rec some xs p = 
   match xs with 
     [] -> false
-  | a::l -> p a [@bs] || exists l p 
+  | a::l -> p a [@bs] || some l p 
 
-let rec forAll2 l1 l2  p =
+let rec every2 l1 l2  p =
   match (l1, l2) with
     (_, []) | [],_ -> true
-  | (a1::l1, a2::l2) -> p a1 a2 [@bs] && forAll2 l1 l2 p
+  | (a1::l1, a2::l2) -> p a1 a2 [@bs] && every2 l1 l2 p
 
 let rec cmp l1 l2  p =
   match (l1, l2) with
@@ -504,10 +506,10 @@ let rec eq l1 l2  p =
       eq l1 l2 p
     else false
 
-let rec exists2 l1 l2 p =
+let rec some2 l1 l2 p =
   match (l1, l2) with
     [], _ | _, [] -> false
-  | (a1::l1, a2::l2) -> p a1 a2 [@bs] || exists2 l1 l2 p 
+  | (a1::l1, a2::l2) -> p a1 a2 [@bs] || some2 l1 l2 p 
 
 
 let rec has xs x eq  = 
@@ -572,7 +574,7 @@ let rec getBy xs p =
     else getBy l p 
 
 
-let rec filter xs p  = 
+let rec keepBy xs p  = 
   match xs with 
   | [] -> []
   | h::t -> 
@@ -583,7 +585,7 @@ let rec filter xs p  =
         cell 
       end
     else 
-      filter t p 
+      keepBy t p 
 
 
 let partition l p  =    

@@ -15,6 +15,10 @@ function eq(loc, x, y) {
   return Mt.eq_suites(test_id, suites, loc, x, y);
 }
 
+function b(loc, x) {
+  return Mt.bool_suites(test_id, suites, loc, x);
+}
+
 function add(x, y) {
   return x + y | 0;
 }
@@ -28,11 +32,11 @@ function sum2(h) {
   return v[0];
 }
 
-var u = Bs_Array.append(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
+var u = Bs_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
 
 var v = Bs_HashSetInt.ofArray(u);
 
-eq("File \"bs_hashset_int_test.ml\", line 19, characters 5-12", Bs_HashSetInt.size(v), 91);
+eq("File \"bs_hashset_int_test.ml\", line 19, characters 5-12", v.size, 91);
 
 var xs = Bs_SetInt.toArray(Bs_SetInt.ofArray(Bs_HashSetInt.toArray(v)));
 
@@ -42,25 +46,25 @@ eq("File \"bs_hashset_int_test.ml\", line 23, characters 5-12", Bs_HashSetInt.re
 
 eq("File \"bs_hashset_int_test.ml\", line 24, characters 5-12", sum2(v), 6825);
 
-var u$1 = Bs_Array.append(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
+var u$1 = Bs_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
 var v$1 = Bs_HashSetInt.create(40);
 
 Bs_HashSetInt.mergeArrayDone(v$1, u$1);
 
-eq("File \"bs_hashset_int_test.ml\", line 30, characters 5-12", Bs_HashSetInt.size(v$1), 100001);
+eq("File \"bs_hashset_int_test.ml\", line 30, characters 5-12", v$1.size, 100001);
 
 for(var i = 0; i <= 1000; ++i){
   Bs_HashSetInt.removeDone(v$1, i);
 }
 
-eq("File \"bs_hashset_int_test.ml\", line 34, characters 5-12", Bs_HashSetInt.size(v$1), 99000);
+eq("File \"bs_hashset_int_test.ml\", line 34, characters 5-12", v$1.size, 99000);
 
 for(var i$1 = 0; i$1 <= 2000; ++i$1){
   Bs_HashSetInt.removeDone(v$1, i$1);
 }
 
-eq("File \"bs_hashset_int_test.ml\", line 38, characters 5-12", Bs_HashSetInt.size(v$1), 98000);
+eq("File \"bs_hashset_int_test.ml\", line 38, characters 5-12", v$1.size, 98000);
 
 var u0 = Bs_HashSetInt.ofArray(Array_data_util.randomRange(0, 100000));
 
@@ -76,15 +80,21 @@ for(var i$3 = 0; i$3 <= 1000; ++i$3){
   Bs_HashSetInt.removeDone(u0, i$3);
 }
 
-var v0 = Bs_Array.append(Array_data_util.range(0, 1000), Bs_HashSetInt.toArray(u0));
+var v0 = Bs_Array.concat(Array_data_util.range(0, 1000), Bs_HashSetInt.toArray(u0));
 
-var v1 = Bs_Array.append(Array_data_util.range(0, 2000), Bs_HashSetInt.toArray(u1));
+var v1 = Bs_Array.concat(Array_data_util.range(0, 2000), Bs_HashSetInt.toArray(u1));
 
 Bs_SortInt.stableSort(v0);
 
 Bs_SortInt.stableSort(v1);
 
 eq("File \"bs_hashset_int_test.ml\", line 55, characters 5-12", v0, v1);
+
+var h = Bs_HashSetInt.ofArray(Array_data_util.randomRange(0, 1000000));
+
+var histo = Bs_HashSetInt.getBucketHistogram(h);
+
+b("File \"bs_hashset_int_test.ml\", line 60, characters 4-11", +(histo.length <= 10));
 
 Mt.from_pair_suites("bs_hashset_int_test.ml", suites[0]);
 
@@ -94,7 +104,7 @@ var S = 0;
 
 var I = 0;
 
-var $plus$plus = Bs_Array.append;
+var $plus$plus = Bs_Array.concat;
 
 var A = 0;
 
@@ -103,6 +113,7 @@ var SI = 0;
 exports.suites = suites;
 exports.test_id = test_id;
 exports.eq = eq;
+exports.b = b;
 exports.N = N;
 exports.S = S;
 exports.I = I;

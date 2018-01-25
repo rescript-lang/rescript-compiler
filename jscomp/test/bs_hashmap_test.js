@@ -67,17 +67,17 @@ eqx("File \"bs_hashmap_test.ml\", line 31, characters 6-13", Bs_HashMap.get(empt
 
 eqx("File \"bs_hashmap_test.ml\", line 32, characters 6-13", empty.data.size, 3);
 
-var u = Bs_Array.append(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
+var u = Bs_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
 
 var v = Bs_Array.zip(u, u);
 
-var xx = Bs_HashMap.ofArray(Y, v);
+var xx = Bs_HashMap.ofArray(v, Y);
 
 eqx("File \"bs_hashmap_test.ml\", line 40, characters 6-13", xx.data.size, 91);
 
 eqx("File \"bs_hashmap_test.ml\", line 41, characters 6-13", Bs_Sort.sortByCont(Bs_internalBuckets.keys0(xx.data), cmp), Array_data_util.range(30, 120));
 
-var u$1 = Bs_Array.append(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
+var u$1 = Bs_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
 var v$1 = {
   dict: Y,
@@ -100,7 +100,7 @@ for(var i$1 = 0; i$1 <= 2000; ++i$1){
 
 eqx("File \"bs_hashmap_test.ml\", line 55, characters 6-13", v$1.data.size, 98000);
 
-b("File \"bs_hashmap_test.ml\", line 56, characters 4-11", Bs_Array.forAll(Array_data_util.range(2001, 100000), (function (x) {
+b("File \"bs_hashmap_test.ml\", line 56, characters 4-11", Bs_Array.every(Array_data_util.range(2001, 100000), (function (x) {
             return Bs_HashMap.has(v$1, x);
           })));
 
@@ -112,7 +112,7 @@ var S = 0;
 
 var I = 0;
 
-var $plus$plus = Bs_Array.append;
+var $plus$plus = Bs_Array.concat;
 
 var A = 0;
 

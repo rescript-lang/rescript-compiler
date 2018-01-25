@@ -27,13 +27,13 @@ val fold:  'a t -> 'b -> ('b -> key -> 'a -> 'b [@bs]) -> 'b
    where [k1 ... kN] are the keys of all bindings in [m]
    (in increasing order), and [d1 ... dN] are the associated data. *)
 
-val forAll:  'a t -> (key -> 'a -> bool [@bs]) -> bool
-(** [forAll m p] checks if all the bindings of the map
+val every:  'a t -> (key -> 'a -> bool [@bs]) -> bool
+(** [every m p] checks if all the bindings of the map
     satisfy the predicate [p].
  *)
 
-val exists:  'a t -> (key -> 'a -> bool [@bs]) -> bool
-(** [exists m p] checks if at least one binding of the map
+val some:  'a t -> (key -> 'a -> bool [@bs]) -> bool
+(** [some m p] checks if at least one binding of the map
     satisfy the predicate [p].
  *)
 val size: 'a t -> int
@@ -79,11 +79,11 @@ val merge:
     value, is determined with the function [f].
  *)
 
-val filter: 
+val keepBy: 
     'a t -> 
     (key -> 'a -> bool [@bs]) -> 
     'a t
-(** [filter m p] returns the map with all the bindings in [m]
+(** [keepBy m p] returns the map with all the bindings in [m]
     that satisfy predicate [p].
 *)
 

@@ -45,13 +45,13 @@ let rec copyBucket ~hash ~h_buckets ~ndata_tail h old_bucket =
   | Some cell ->
     let nidx = (Bs_Hash.getHash hash) (N.key cell) [@bs] land (Array.length h_buckets - 1) in 
     let v = C.return cell in 
-    begin match C.toOpt (A.unsafe_get ndata_tail nidx) with
+    begin match C.toOpt (A.getUnsafe ndata_tail nidx) with
       | None -> 
-        A.unsafe_set h_buckets nidx  v
+        A.setUnsafe h_buckets nidx  v
       | Some tail ->
         N.nextSet tail v  (* cell put at the end *)            
     end;          
-    A.unsafe_set ndata_tail nidx  v;
+    A.setUnsafe ndata_tail nidx  v;
     copyBucket ~hash ~h_buckets ~ndata_tail h (N.next cell)
 
 
@@ -64,10 +64,10 @@ let resize ~hash h =
     let ndata_tail = A.makeUninitialized nsize  in (* keep track of tail *)
     C.bucketsSet h  h_buckets;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
-      copyBucket ~hash ~h_buckets ~ndata_tail h (A.unsafe_get odata i)
+      copyBucket ~hash ~h_buckets ~ndata_tail h (A.getUnsafe odata i)
     done;
     for i = 0 to nsize - 1 do
-      match C.toOpt (A.unsafe_get ndata_tail i) with
+      match C.toOpt (A.getUnsafe ndata_tail i) with
       | None -> ()
       | Some tail -> N.nextSet tail C.emptyOpt
     done
@@ -93,7 +93,7 @@ let rec removeBucket ~eq h h_buckets  i key prec cell =
 let remove0 ~hash ~eq h key =  
   let h_buckets = C.buckets h in 
   let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in  
-  let l = (A.unsafe_get h_buckets i) in 
+  let l = (A.getUnsafe h_buckets i) in 
   match C.toOpt l with 
   | None -> ()
   | Some cell -> 
@@ -101,7 +101,7 @@ let remove0 ~hash ~eq h key =
     if (Bs_Hash.getEq eq) (N.key cell) key [@bs] then 
       begin 
         C.sizeSet h (C.size h - 1) ;
-        A.unsafe_set h_buckets i next_cell
+        A.setUnsafe h_buckets i next_cell
       end
     else       
       match C.toOpt next_cell with 
@@ -135,7 +135,7 @@ let addDone0
   (match C.toOpt l with                                    
    | None -> 
      C.sizeSet h (C.size  h + 1);
-     A.unsafe_set h_buckets i 
+     A.setUnsafe h_buckets i 
        (C.return @@ N.bucket ~key ~next:C.emptyOpt)
    | Some cell -> 
      addBucket ~eq h key cell);
@@ -154,7 +154,7 @@ let rec memInBucket ~eq key cell =
 let has0 h key ~hash ~eq =
   let h_buckets = C.buckets h in 
   let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
-  let bucket = (A.unsafe_get h_buckets nid) in 
+  let bucket = (A.getUnsafe h_buckets nid) in 
   match C.toOpt bucket with 
   | None -> false 
   | Some bucket -> 
@@ -163,10 +163,10 @@ let has0 h key ~hash ~eq =
 
 let create0 = C.create0
 let clear0 = C.clear0
-let reset0 = C.reset0
-let length0 = C.length0
-let iter0 = N.iter0
-let fold0 = N.fold0
+
+let size0 = C.size
+let forEach0 = N.forEach0
+let reduce0 = N.reduce0
 let logStats0 = N.logStats0
 let toArray0 = N.toArray0 
 let toArray h = toArray0 (B.data h)
@@ -175,10 +175,10 @@ let create dict initialize_size =
   B.bag ~data:(create0 initialize_size)
     ~dict 
 let clear h = clear0 (B.data h)
-let reset h = reset0 (B.data h)
-let size h = length0 (B.data h)                 
-let forEach h f  = iter0 (B.data h) f 
-let reduce h init f = N.fold0 (B.data h) init f
+
+let size h = C.size (B.data h)                 
+let forEach h f  = N.forEach0 (B.data h) f 
+let reduce h init f = N.reduce0 (B.data h) init f
 let logStats h = logStats0 (B.data h)
 
 let addDone (type a) (type id) (h : (a,id) t) (key:a)  = 
@@ -202,7 +202,7 @@ let ofArray0  ~hash ~eq arr  =
   let len = Bs.Array.length arr in 
   let v = create0 len in 
   for i = 0 to len - 1 do 
-    addDone0 ~eq ~hash v (Bs.Array.unsafe_get arr i)
+    addDone0 ~eq ~hash v (A.getUnsafe arr i)
   done ;
   v
 
@@ -210,7 +210,7 @@ let ofArray0  ~hash ~eq arr  =
 let addArray0 ~hash ~eq  h arr =   
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
-    addDone0 h  ~eq ~hash (A.unsafe_get arr i)
+    addDone0 h  ~eq ~hash (A.getUnsafe arr i)
   done 
 
 let ofArray (type a) (type id)
@@ -231,3 +231,4 @@ let mergeArray h arr = mergeArrayDone h arr; h
 let getData = B.data
 let getDict = B.dict
 let packDictData = B.bag 
+let getBucketHistogram h = N.getBucketHistogram (B.data h)

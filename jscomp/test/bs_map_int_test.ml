@@ -15,13 +15,14 @@ module N = Bs.MapInt
 module A = Bs.Array
 let () = 
   let v = 
-      A.shuffle (A.initExn 1_000_000 (fun[@bs] i -> (i,i))) in 
+      (A.makeByAndShuffle 1_000_000 (fun[@bs] i -> (i,i))) in 
   let u = N.ofArray v in   
   b __LOC__ (N.checkInvariant u);
-  let firstHalf = Bs.Array.subExn v 0 2_000 in 
-  let xx = Bs.Array.reduce firstHalf u
+  let firstHalf = A.slice v 0 2_000 in 
+  let xx = A.reduce firstHalf u
       (fun[@bs] acc (x,_) -> N.remove acc x)  in 
   b __LOC__ (N.checkInvariant u);
+  b __LOC__ (N.checkInvariant xx);
 
 
 ;; Mt.from_pair_suites __FILE__ !suites

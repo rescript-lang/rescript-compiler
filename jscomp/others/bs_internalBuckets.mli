@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,53 +17,40 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-type 'a opt = 'a Js.undefined
 
-type 'c container =
-  { mutable size: int;                        (* number of entries *)
-    mutable buckets: 'c opt array;  (* the buckets *)
-  }
+module C = Bs_internalBucketsType
+  
+type ('a,'b) bucket = {
+  mutable key : 'a;
+  mutable value : 'b;
+  mutable next : ('a,'b) bucket C.opt
+}  
+and ('a, 'b) t0 = ('a,'b) bucket C.container  
 [@@bs.deriving abstract]
 
-module A = Bs_Array
-external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
-external return : 'a -> 'a opt = "%identity" 
-
-let emptyOpt = Js.undefined   
-let rec power_2_above x n =
-  if x >= n then x
-  else if x * 2 < x then x (* overflow *)
-  else power_2_above (x * 2) n
-
-let create0  initialSize =
-  let s = power_2_above 16 initialSize in  
-  container
-    ~size:0
-    ~buckets:(A.makeUninitialized s)
-
-let clear0 h =
-  sizeSet h 0;
-  let h_buckets = buckets h in 
-  let len = A.length h_buckets in
-  for i = 0 to len - 1 do
-    A.setUnsafe h_buckets i  emptyOpt
-  done
+val copy : ('a, 'b) t0 -> ('a, 'b) t0
 
 
-type statistics = {
-  num_bindings: int;
-  (** Number of bindings present in the table.
-      Same value as returned by {!Hashtbl.length}. *)
-  num_buckets: int;
-  (** Number of buckets in the table. *)
-  max_bucket_length: int;
-  (** Maximal number of bindings per bucket. *)
-  bucket_histogram: int array
-  (** Histogram of bucket sizes.  This array [histo] has
-      length [max_bucket_length + 1].  The value of
-      [histo.(i)] is the number of buckets whose size is [i]. *)
-} 
+val forEach0 : ('a, 'b) t0 -> ('a -> 'b -> 'c [@bs]) -> unit
+
+val reduce0 :
+  ('a, 'b) t0 -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c
+val logStats0 : ('a, 'b) t0 -> unit
+
+  
+val filterMapInplace0 :
+  ('a, 'b) t0 -> ('a -> 'b -> 'b option [@bs]) -> unit
+
+val fillArray : int -> ('a * 'b) array -> ('a, 'b) bucket -> int
+
+val keys0 : ('a, 'b) t0 -> 'a array
+
+val values0 : ('a, 'b) t0 -> 'b array
+
+val toArray0 : ('a, 'b) t0 -> ('a * 'b) array
+
+val getBucketHistogram : ('a,'b) t0 -> int array

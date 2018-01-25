@@ -86,13 +86,13 @@ eq("File \"bs_sort_test.ml\", line 48, characters 5-12", diffs(Array_data_util.r
       2
     ]);
 
-b("File \"bs_sort_test.ml\", line 50, characters 4-11", Bs_Range.forAll(0, 200, (function (i) {
+b("File \"bs_sort_test.ml\", line 50, characters 4-11", Bs_Range.every(0, 200, (function (i) {
             var v = Array_data_util.randomRange(0, i);
             Bs_Sort.stableSortBy(v, cmp);
             return Bs_Sort.isSorted(v, cmp);
           })));
 
-b("File \"bs_sort_test.ml\", line 56, characters 4-11", Bs_Range.forAll(0, 200, (function (i) {
+b("File \"bs_sort_test.ml\", line 56, characters 4-11", Bs_Range.every(0, 200, (function (i) {
             var v = Array_data_util.randomRange(0, i);
             v.sort(cmp);
             return Bs_Sort.isSorted(v, cmp);
@@ -322,7 +322,7 @@ eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_Sort.binSearch(/* a
 
 var aa = Array_data_util.range(0, 1000);
 
-b("File \"bs_sort_test.ml\", line 117, characters 4-11", Bs_Range.forAll(0, 1000, (function (i) {
+b("File \"bs_sort_test.ml\", line 117, characters 4-11", Bs_Range.every(0, 1000, (function (i) {
             return +(Bs_Sort.binSearch(aa, i, cmp) === i);
           })));
 
@@ -338,7 +338,7 @@ eq("File \"bs_sort_test.ml\", line 124, characters 5-12", Bs_Sort.binSearch(cc, 
 
 eq("File \"bs_sort_test.ml\", line 126, characters 5-12", Bs_Sort.binSearch(cc, 1, cmp) ^ -1, 1);
 
-b("File \"bs_sort_test.ml\", line 127, characters 4-11", Bs_Range.forAll(0, 1999, (function (i) {
+b("File \"bs_sort_test.ml\", line 127, characters 4-11", Bs_Range.every(0, 1999, (function (i) {
             return +((Bs_Sort.binSearch(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
           })));
 

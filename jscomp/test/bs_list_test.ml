@@ -49,21 +49,21 @@ let () =
 let () = 
   eq __LOC__
     (N.
-       (append 
+       (concat
           (init 100 (fun [@bs] i -> i) )
           (init 100 (fun [@bs] i -> i)))
      |> N.toArray
     )
 
     (A.
-       (append 
-          (initExn 100 (fun [@bs] i -> i) )
-          (initExn 100 (fun [@bs] i -> i)))
+       (concat
+          (makeBy 100 (fun [@bs] i -> i) )
+          (makeBy 100 (fun [@bs] i -> i)))
     )
 let () = 
   let (=~) = eq "APPEND" in 
-  N.append [1] [] =~ [1];
-  N.append [] [1] =~ [1]
+  N.concat [1] [] =~ [1];
+  N.concat [] [1] =~ [1]
 
 let () =     
   let (=~) = eq "ZIP"   in 
@@ -93,10 +93,10 @@ let () =
 
 let () = 
   let (=~) = eq "FILTER" in 
-  N.filter [1;2;3;4] mod2 =~ [2;4];
-  N.filter [1;3;41] mod2 =~ [];
-  N.filter [] mod2 =~ [];
-  N.filter  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
+  N.keepBy [1;2;3;4] mod2 =~ [2;4];
+  N.keepBy [1;3;41] mod2 =~ [];
+  N.keepBy [] mod2 =~ [];
+  N.keepBy  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
 let id : int -> int [@bs] = fun [@bs] x -> x 
 
 let () =   
@@ -118,7 +118,7 @@ let () =
   map2_add [] [1] =~ [];
   map2_add [1] [] =~ [];
   map2_add [] [] =~ [];
-  map2_add length_10_id b =~  N.(append (map c (fun[@bs] x -> x * 2)) [16;18]);
+  map2_add length_10_id b =~  N.(concat (map c (fun[@bs] x -> x * 2)) [16;18]);
   map2_add length_10_id length_8_id =~
   N.(mapi length_8_id (fun [@bs] i x -> i + x ) );
   N.reverse (N.mapReverse2 length_10_id length_10_id add) 
@@ -205,18 +205,18 @@ let ()   =
                 (fun [@bs] acc x y -> acc + x + y)) 56;                
   eq __LOC__ (N.reduceFromTail2 length_10_id length_10_id 0 
                 (fun [@bs] acc x y -> acc + x + y)) 90;
-  eq __LOC__ (N.forAll [2;4;6] mod2) true;
-  eq __LOC__ (N.forAll [1] mod2) false;
-  eq __LOC__ (N.forAll [] mod2) true;
-  eq __LOC__ (N.exists [1;2;5] mod2)  true;
-  eq __LOC__ (N.exists [1;3;5] mod2)  false;
-  eq __LOC__ (N.exists [] mod2)  false;
-  eq __LOC__ (N.forAll2 [] [1] (fun [@bs] x y -> x > y)) true;  
-  eq __LOC__ (N.forAll2 [2] [1] (fun [@bs] x y -> x > y)) true;
-  eq __LOC__ (N.forAll2 [2;3] [1;4] (fun [@bs] x y -> x > y)) false;
-  eq __LOC__ (N.exists2 [] [1] (fun [@bs] x y -> x > y)) false;
-  eq __LOC__ (N.exists2 [2;3] [1;4] (fun [@bs] x y -> x > y)) true;
-  eq __LOC__ (N.exists2 [0;3] [1;4] (fun [@bs] x y -> x > y)) false;
+  eq __LOC__ (N.every [2;4;6] mod2) true;
+  eq __LOC__ (N.every [1] mod2) false;
+  eq __LOC__ (N.every [] mod2) true;
+  eq __LOC__ (N.some [1;2;5] mod2)  true;
+  eq __LOC__ (N.some [1;3;5] mod2)  false;
+  eq __LOC__ (N.some [] mod2)  false;
+  eq __LOC__ (N.every2 [] [1] (fun [@bs] x y -> x > y)) true;  
+  eq __LOC__ (N.every2 [2] [1] (fun [@bs] x y -> x > y)) true;
+  eq __LOC__ (N.every2 [2;3] [1;4] (fun [@bs] x y -> x > y)) false;
+  eq __LOC__ (N.some2 [] [1] (fun [@bs] x y -> x > y)) false;
+  eq __LOC__ (N.some2 [2;3] [1;4] (fun [@bs] x y -> x > y)) true;
+  eq __LOC__ (N.some2 [0;3] [1;4] (fun [@bs] x y -> x > y)) false;
   eq __LOC__ (N.has [1;2;3] "2" (fun [@bs] x s -> string_of_int x = s)) true;
   eq __LOC__ (N.has [1;2;3] "0" (fun [@bs] x s -> string_of_int x = s)) false
 

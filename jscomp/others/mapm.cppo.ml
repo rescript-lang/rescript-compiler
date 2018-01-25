@@ -46,8 +46,8 @@ let forEach d f = N.iter0 (data d) f
 let map d f = t ~data:(N.map0 (data d) f)
 let mapi d f = t ~data:(N.mapi0 (data d) f) 
 let reduce d acc f  = N.fold0 (data d) acc f 
-let forAll d f = N.forAll0 (data d) f 
-let exists d f = N.exists0 (data d) f    
+let every d f = N.every0 (data d) f 
+let some d f = N.some0 (data d) f    
 
 let size d = N.length0 (data d)
 let toList d = N.toList0 (data d)
@@ -141,7 +141,7 @@ let update t x f =
   t 
 let rec removeArrayMutateAux t xs i len   =  
   if i < len then 
-    let ele = A.unsafe_get xs i in 
+    let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele  in 
     match N.toOpt u with 
     | None -> N.empty0

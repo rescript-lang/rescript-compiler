@@ -197,9 +197,9 @@ var m = {
   data: Bs_internalAVLtree.empty0
 };
 
-var m1 = acc(m, Bs_Array.append(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
+var m1 = acc(m, Bs_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));
 
-b("File \"bs_poly_map_test.ml\", line 110, characters 4-11", Bs_Map.eq(m1, Bs_Map.ofArray(Bs_Array.initExn(31, (function (i) {
+b("File \"bs_poly_map_test.ml\", line 110, characters 4-11", Bs_Map.eq(m1, Bs_Map.ofArray(Bs_Array.makeBy(31, (function (i) {
                     return /* tuple */[
                             i,
                             i >= 10 && i <= 20 ? 2 : 1

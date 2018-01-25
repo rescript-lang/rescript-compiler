@@ -23,12 +23,12 @@ function should(b) {
   }
 }
 
-var shuffledDataAdd = Bs_Array.shuffle(Bs_Array.initExn(1000001, (function (i) {
-            return /* tuple */[
-                    i,
-                    i
-                  ];
-          })));
+var shuffledDataAdd = Bs_Array.makeByAndShuffle(1000001, (function (i) {
+        return /* tuple */[
+                i,
+                i
+              ];
+      }));
 
 function test() {
   var v = ofArray(shuffledDataAdd);

@@ -124,7 +124,7 @@ function bench2(m) {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMap.remove0(hash, eq, table, "" + i$2);
   }
-  if (Bs_HashMap.size0(table)) {
+  if (table.size) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -201,7 +201,7 @@ function bench4() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMapString.removeDone(table, "" + i$2);
   }
-  if (Bs_HashMapString.size(table)) {
+  if (table.size) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -283,7 +283,7 @@ function bench6() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMapInt.removeDone(table, i$2);
   }
-  if (Bs_HashMapInt.size(table)) {
+  if (table.size) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -318,7 +318,7 @@ function bench7() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashSetInt.removeDone(table, i$2);
   }
-  if (Bs_HashSetInt.size(table)) {
+  if (table.size) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

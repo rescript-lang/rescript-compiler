@@ -49,7 +49,7 @@ let rec removeMutateAux nt (x : elt)=
 let addArrayMutate t  xs =       
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
-    v := I.addMutate !v (A.unsafe_get xs i)
+    v := I.addMutate !v (A.getUnsafe xs i)
   done ;
   !v    
 
@@ -85,12 +85,12 @@ let forEach d f =
 
 let reduce d acc cb = 
   N.fold0 (data d) acc cb 
-let forAll d p = 
-  N.forAll0 (data d) p 
-let exists d  p = 
-  N.exists0 (data d) p   
+let every d p = 
+  N.every0 (data d) p 
+let some d  p = 
+  N.some0 (data d) p   
 
-let filter d p = 
+let keepBy d p = 
   t ~data:(N.filterCopy (data d) p )
 let partition d p = 
   let a , b = N.partitionCopy (data d) p in 
@@ -142,7 +142,7 @@ let remove d v =
 
 let rec removeArrayMutateAux t xs i len  =  
   if i < len then 
-    let ele = A.unsafe_get xs i in 
+    let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele in 
     match N.toOpt u with 
     | None -> N.empty0
@@ -282,12 +282,12 @@ let inter dataa datab  =
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     (* let p = Bs_Cmp.getCmp M.cmp in  *)
-    if ((A.unsafe_get tmp (sizea - 1) < 
-        A.unsafe_get tmp sizea))
+    if ((A.getUnsafe tmp (sizea - 1) < 
+        A.getUnsafe tmp sizea))
       || 
       (
-      (A.unsafe_get tmp (totalSize - 1) <
-      A.unsafe_get tmp 0)
+      (A.getUnsafe tmp (totalSize - 1) <
+      A.getUnsafe tmp 0)
       )
        then empty ()
     else 
@@ -307,11 +307,11 @@ let diff dataa datab : t =
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     (* let p = Bs_Cmp.getCmp M.cmp in  *)
-    if ( (A.unsafe_get tmp (sizea - 1)) < 
-        (A.unsafe_get tmp sizea))
+    if ( (A.getUnsafe tmp (sizea - 1)) < 
+        (A.getUnsafe tmp sizea))
       ||       
-      (A.unsafe_get tmp (totalSize - 1)
-      < A.unsafe_get tmp 0) 
+      (A.getUnsafe tmp (totalSize - 1)
+      < A.getUnsafe tmp 0) 
        then t ~data:(N.copy dataa) 
     else 
     let tmp2 = A.makeUninitializedUnsafe sizea in 
@@ -332,8 +332,8 @@ let union (dataa : t)  (datab : t) : t =
     ignore @@ N.fillArray datab0 sizea tmp ;
     (* let p = (Bs_Cmp.getCmp M.cmp)  in  *)
     if 
-      (A.unsafe_get tmp (sizea - 1) < 
-      A.unsafe_get tmp sizea)  then 
+      (A.getUnsafe tmp (sizea - 1) < 
+      A.getUnsafe tmp sizea)  then 
       t  ~data:(N.ofSortedArrayAux tmp 0 totalSize) 
     else   
       let tmp2 = A.makeUninitializedUnsafe totalSize in 

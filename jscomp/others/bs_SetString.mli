@@ -69,16 +69,16 @@ val forEach: t -> (elt -> unit [@bs]) ->  unit
 val reduce: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
 (** Iterate in increasing order. *)
 
-val forAll: t -> (elt -> bool [@bs]) ->  bool
-(** [for_all p s] checks if all elements of the set
+val every: t -> (elt -> bool [@bs]) ->  bool
+(** [every p s] checks if all elements of the set
    satisfy the predicate [p]. Order unspecified. *)
 
-val exists: t -> (elt -> bool [@bs]) ->  bool
-(** [exists p s] checks if at least one element of
+val some: t -> (elt -> bool [@bs]) ->  bool
+(** [some p s] checks if at least one element of
    the set satisfies the predicate [p]. Oder unspecified. *)
 
-val filter: t -> (elt -> bool [@bs]) ->  t
-(** [filter p s] returns the set of all elements in [s]
+val keepBy: t -> (elt -> bool [@bs]) ->  t
+(** [keepBy p s] returns the set of all elements in [s]
    that satisfy predicate [p]. *)
 
 val partition: t -> (elt -> bool [@bs]) ->  t * t

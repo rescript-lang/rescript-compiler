@@ -11,7 +11,7 @@ let empty = empty ()
 let ofArray kvs = 
   let v = ref empty in 
   for i = 0 to A.length kvs - 1 do
-    let key, value = (A.unsafe_get kvs i)  in 
+    let key, value = (A.getUnsafe kvs i)  in 
     v := set !v key value 
   done;
   !v 
@@ -21,7 +21,7 @@ let should b =
   
 let count = 1_000_000 
 
-let shuffledDataAdd = A.shuffle (A.initExn (count +  1) (fun[@bs] i -> (i,i)))
+let shuffledDataAdd = (A.makeByAndShuffle (count +  1) (fun[@bs] i -> (i,i)))
 
 
 

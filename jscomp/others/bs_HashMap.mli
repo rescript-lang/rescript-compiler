@@ -29,7 +29,7 @@ type ('a,'b,'id) t
   
 (** The type of hash tables from type ['a] to type ['b]. *)
 
-val create: ('a,'id) Bs_Hash.t -> int -> ('a,'b,'id) t
+val create:  int -> dict:('a,'id) Bs_Hash.t -> ('a,'b,'id) t
 (*TODO: allow randomization for security *)
 
 val clear: ('a, 'b, 'id) t -> unit
@@ -39,7 +39,14 @@ val clear: ('a, 'b, 'id) t -> unit
 
 
 val setDone: ('a, 'b, 'id) t -> 'a -> 'b -> unit
+(** [setDone tbl k v] if [k] does not exist,
+     add the binding [k,v], otherwise, update the old value with the new
+     [v]
+*)
+  
 val set: ('a, 'b, 'id) t -> 'a -> 'b -> ('a, 'b, 'id) t
+(** [set tbl k v]
+*)    
 val copy: ('a, 'b, 'id) t -> ('a, 'b, 'id) t
     
 val get:  
@@ -67,7 +74,7 @@ val forEach: ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
 
 
 val reduce: ('a, 'b, 'id) t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
-(** [Hashtbl.reduce  tbl init f] computes
+(** [reduce  tbl init f] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],
     and [d1 ... dN] are the associated values.
@@ -90,18 +97,16 @@ val filterMap: ('a, 'b, 'id) t -> ('a -> 'b -> 'b option [@bs]) -> ('a, 'b, 'id)
 
 
 val size: ('a, 'b, 'id) t -> int  
-(** [Hashtbl.length tbl] returns the number of bindings in [tbl].
-    It takes constant time.  Multiple bindings are counted once each, so
-    [Hashtbl.length] gives the number of times [Hashtbl.iter] calls its
-    first argument. *)
+(** [size tbl] returns the number of bindings in [tbl].
+    It takes constant time. *)
 
 
 
-val logStats : _ t -> unit
-(** [Hashtbl.stats tbl] returns statistics about the table [tbl]:
+val logStats: _ t -> unit
+(** [logStats tbl] returns statistics about the table [tbl]:
     number of buckets, size of the biggest bucket, distribution of
     buckets by size.
-    @since 4.00.0 *)
+*)
 
 
 
@@ -112,8 +117,8 @@ val toArray: ('a, 'b, 'id) t -> ('a * 'b) array
 
 
 val ofArray:   
+  ('a * 'b) array ->
   dict:('a,'id) Bs_Hash.t -> 
-  ('a * 'b) array -> 
   ('a, 'b, 'id) t 
 val mergeArrayDone: ('a, 'b, 'id) t -> ('a * 'b) array -> unit
 val mergeArray: ('a, 'b, 'id) t -> ('a * 'b) array -> ('a, 'b, 'id) t
@@ -123,6 +128,7 @@ val keysToArray:
 val valuesToArray:    
     ('a,'b,'id) t -> 'b array    
 
+val getBucketHistogram: _ t -> int array
 (****************************************************************************)
       
 type ('a, 'b, 'id) t0
@@ -164,9 +170,9 @@ val size0: ('a, 'b, 'id) t0 -> int
 val logStats0: ('a, 'b, 'id) t0 -> unit
 val toArray0: ('a, 'b, 'id) t0 -> ('a * 'b) array
 val ofArray0: 
+  ('a * 'b) array ->
   hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a * 'b) array -> 
+  eq:('a,'id) Bs_Hash.eq ->   
   ('a, 'b, 'id) t0      
 val mergeArray0: 
   ('a, 'b, 'id) t0 ->

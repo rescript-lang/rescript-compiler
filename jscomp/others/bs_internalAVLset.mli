@@ -64,8 +64,8 @@ val stackAllLeft : 'a t0 -> 'a node list -> 'a node list
 
 val iter0 : 'a t0 -> ('a -> 'b [@bs]) -> unit
 val fold0 : 'a t0 -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
-val forAll0 : 'a t0 -> ('a -> bool [@bs]) -> bool
-val exists0 : 'a t0 -> ('a -> bool [@bs]) -> bool
+val every0 : 'a t0 -> ('a -> bool [@bs]) -> bool
+val some0 : 'a t0 -> ('a -> bool [@bs]) -> bool
 
 val joinShared : 'a t0 -> 'a -> 'a t0 -> 'a t0
 val concatShared : 'a t0 -> 'a t0 -> 'a t0

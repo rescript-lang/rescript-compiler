@@ -175,21 +175,21 @@ let rec fold0 s accu f =
       r
       (f (fold0  l accu f) k [@bs]) f
 
-let rec forAll0 n p  = 
+let rec every0 n p  = 
   match toOpt n with  
   | None -> true
   | Some n  -> 
     p (key n) [@bs] && 
-    forAll0  (left n) p &&
-    forAll0 (right n) p
+    every0  (left n) p &&
+    every0 (right n) p
 
-let rec exists0 n p = 
+let rec some0 n p = 
   match toOpt n with 
   | None -> false
   | Some n  -> 
     p (key n) [@bs] || 
-    exists0 (left n) p || 
-    exists0 (right n) p 
+    some0 (left n) p || 
+    some0 (right n) p 
 
 
 (* [addMinElement v n] and [addMaxElement v n] 
@@ -299,7 +299,7 @@ let rec fillArray n i arr =
     | None -> i 
     | Some l -> 
       fillArray l i arr in 
-  A.unsafe_set arr next v ;
+  A.setUnsafe arr next v ;
   let rnext = next + 1 in 
   match toOpt r with 
   | None -> rnext 
@@ -317,12 +317,12 @@ let rec fillArrayWithPartition n cursor arr p =
      fillArrayWithPartition l cursor arr p);  
   (if p v [@bs] then begin        
       let c = forward cursor in 
-      A.unsafe_set arr c v;
+      A.setUnsafe arr c v;
       forwardSet cursor (c + 1)
     end  
    else begin 
      let c = backward cursor in 
-     A.unsafe_set arr c v ;
+     A.setUnsafe arr c v ;
      backwardSet cursor (c - 1)
    end);     
   match toOpt r with 
@@ -339,7 +339,7 @@ let rec fillArrayWithFilter n i arr p =
       fillArrayWithFilter l i arr p in 
   let rnext =
     if p v [@bs] then        
-      (A.unsafe_set arr next v;
+      (A.setUnsafe arr next v;
        next + 1
       )
     else next in   
@@ -361,16 +361,16 @@ let toArray0 n =
 let rec ofSortedArrayRevAux arr off len =     
   match len with 
   | 0 -> empty0
-  | 1 -> singleton0 (A.unsafe_get arr off)
+  | 1 -> singleton0 (A.getUnsafe arr off)
   | 2 ->  
-    let x0,x1 = A.(unsafe_get arr off, unsafe_get arr (off - 1) ) 
+    let x0,x1 = A.(getUnsafe arr off, getUnsafe arr (off - 1) ) 
     in 
     return @@ node ~left:(singleton0 x0) ~key:x1 ~h:2 ~right:empty0
   | 3 -> 
     let x0,x1,x2 = 
-      A.(unsafe_get arr off, 
-         unsafe_get arr (off - 1), 
-         unsafe_get arr (off - 2)) in 
+      A.(getUnsafe arr off, 
+         getUnsafe arr (off - 1), 
+         getUnsafe arr (off - 2)) in 
     return @@ node ~left:(singleton0 x0)
       ~right:(singleton0 x2)
       ~key:x1
@@ -378,7 +378,7 @@ let rec ofSortedArrayRevAux arr off len =
   | _ ->  
     let nl = len / 2 in 
     let left = ofSortedArrayRevAux arr off nl in 
-    let mid = A.unsafe_get arr (off - nl) in 
+    let mid = A.getUnsafe arr (off - nl) in 
     let right = 
       ofSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
     create left mid right    
@@ -387,16 +387,16 @@ let rec ofSortedArrayRevAux arr off len =
 let rec ofSortedArrayAux arr off len =     
   match len with 
   | 0 -> empty0
-  | 1 -> singleton0 (A.unsafe_get arr off)
+  | 1 -> singleton0 (A.getUnsafe arr off)
   | 2 ->  
-    let x0,x1 = A.(unsafe_get arr off, unsafe_get arr (off + 1) ) 
+    let x0,x1 = A.(getUnsafe arr off, getUnsafe arr (off + 1) ) 
     in 
     return @@ node ~left:(singleton0 x0) ~key:x1 ~h:2 ~right:empty0
   | 3 -> 
     let x0,x1,x2 = 
-      A.(unsafe_get arr off, 
-         unsafe_get arr (off + 1), 
-         unsafe_get arr (off + 2)) in 
+      A.(getUnsafe arr off, 
+         getUnsafe arr (off + 1), 
+         getUnsafe arr (off + 2)) in 
     return @@ node ~left:(singleton0 x0)
       ~right:(singleton0 x2)
       ~key:x1
@@ -404,7 +404,7 @@ let rec ofSortedArrayAux arr off len =
   | _ ->  
     let nl = len / 2 in 
     let left = ofSortedArrayAux arr off nl in 
-    let mid = A.unsafe_get arr (off + nl) in 
+    let mid = A.getUnsafe arr (off + nl) in 
     let right = 
       ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left mid right    
@@ -633,7 +633,7 @@ let ofArray0  (xs : _ array) ~cmp =
         ofSortedArrayRevAux xs (!next - 1) !next
       end)  in 
     for i = !next to len - 1 do 
-      result := addMutate ~cmp !result (A.unsafe_get xs i) 
+      result := addMutate ~cmp !result (A.getUnsafe xs i) 
     done ;
     !result         
 
