@@ -37,7 +37,7 @@ b("File \"bs_set_int_test.ml\", line 17, characters 4-11", $eq$star(/* int array
           1
         ]));
 
-var u = Bs_SetInt.inter(Bs_SetInt.ofArray(/* int array */[
+var u = Bs_SetInt.intersect(Bs_SetInt.ofArray(/* int array */[
           1,
           2,
           3
@@ -89,7 +89,7 @@ b("File \"bs_set_int_test.ml\", line 48, characters 4-11", Bs_SetInt.eq(match[1]
 
 var i$2 = range(50, 100);
 
-var s = Bs_SetInt.inter(Bs_SetInt.ofArray(range(1, 100)), Bs_SetInt.ofArray(range(50, 200)));
+var s = Bs_SetInt.intersect(Bs_SetInt.ofArray(range(1, 100)), Bs_SetInt.ofArray(range(50, 200)));
 
 b("File \"bs_set_int_test.ml\", line 51, characters 4-11", Bs_SetInt.eq(Bs_SetInt.ofArray(i$2), s));
 
@@ -107,7 +107,7 @@ b("File \"bs_set_int_test.ml\", line 57, characters 6-13", Bs_SetInt.eq(Bs_SetIn
 
 var i$5 = revRange(50, 100);
 
-var s$3 = Bs_SetInt.inter(Bs_SetInt.ofArray(revRange(1, 100)), Bs_SetInt.ofArray(revRange(50, 200)));
+var s$3 = Bs_SetInt.intersect(Bs_SetInt.ofArray(revRange(1, 100)), Bs_SetInt.ofArray(revRange(50, 200)));
 
 b("File \"bs_set_int_test.ml\", line 60, characters 4-11", Bs_SetInt.eq(Bs_SetInt.ofArray(i$5), s$3));
 
@@ -261,9 +261,9 @@ b("File \"bs_set_int_test.ml\", line 130, characters 4-11", 1 - Bs_SetInt.eq(dd$
 
 b("File \"bs_set_int_test.ml\", line 131, characters 4-11", 1 - Bs_SetInt.eq(bb$1, ee));
 
-var a1 = Bs_SetInt.mergeArray(Bs_SetInt.empty, Array_data_util.randomRange(0, 100));
+var a1 = Bs_SetInt.mergeMany(Bs_SetInt.empty, Array_data_util.randomRange(0, 100));
 
-var a2 = Bs_SetInt.removeArray(a1, Array_data_util.randomRange(40, 100));
+var a2 = Bs_SetInt.removeMany(a1, Array_data_util.randomRange(40, 100));
 
 var a3 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 39));
 
@@ -283,7 +283,7 @@ b("File \"bs_set_int_test.ml\", line 141, characters 4-11", match$1[1]);
 
 b("File \"bs_set_int_test.ml\", line 142, characters 4-11", Bs_SetInt.eq(a3, a4));
 
-var a6 = Bs_SetInt.remove(Bs_SetInt.removeArray(a1, Array_data_util.randomRange(0, 39)), 40);
+var a6 = Bs_SetInt.remove(Bs_SetInt.removeMany(a1, Array_data_util.randomRange(0, 39)), 40);
 
 b("File \"bs_set_int_test.ml\", line 144, characters 4-11", Bs_SetInt.eq(a5, a6));
 
@@ -301,11 +301,11 @@ b("File \"bs_set_int_test.ml\", line 148, characters 4-11", Bs_SetInt.eq(a4, mat
 
 b("File \"bs_set_int_test.ml\", line 149, characters 4-11", Bs_SetInt.eq(a5, a9));
 
-var a10 = Bs_SetInt.removeArray(a9, Array_data_util.randomRange(42, 2000));
+var a10 = Bs_SetInt.removeMany(a9, Array_data_util.randomRange(42, 2000));
 
 eq("File \"bs_set_int_test.ml\", line 151, characters 5-12", Bs_SetInt.size(a10), 1);
 
-var a11 = Bs_SetInt.removeArray(a9, Array_data_util.randomRange(0, 2000));
+var a11 = Bs_SetInt.removeMany(a9, Array_data_util.randomRange(0, 2000));
 
 b("File \"bs_set_int_test.ml\", line 153, characters 4-11", Bs_SetInt.isEmpty(a11));
 

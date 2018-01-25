@@ -43,7 +43,7 @@ let rec add  (t : t) (x : elt) : t =
         if rr == r then t
         else N.bal l v (add  r x)
 
-let mergeArray h arr =   
+let mergeMany h arr =   
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
@@ -76,7 +76,7 @@ let rec remove (t : t) (x : elt) : t =
       if rr == r then t
       else N.bal l v rr
           
-let removeArray h arr = 
+let removeMany h arr = 
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
@@ -163,7 +163,7 @@ let rec union (s1 : t) (s2 : t) =
       N.joinShared (union l1 l2) v2 (union r1 r2)
     end
 
-let rec inter (s1 : t) (s2 : t) =
+let  rec intersect (s1 : t) (s2 : t) =
   match N.(toOpt s1, toOpt s2) with
     (None, _) 
   | (_, None) -> N.empty
@@ -171,8 +171,8 @@ let rec inter (s1 : t) (s2 : t) =
     let l1,v1,r1 = N.(left n1, key n1, right n1) in  
     let pres = ref false in 
     let l2,r2 =  splitAuxPivot n2 v1 pres in 
-    let ll = inter l1 l2 in 
-    let rr = inter r1 r2 in 
+    let ll = intersect l1 l2 in 
+    let rr = intersect r1 r2 in 
     if !pres then N.joinShared ll v1 rr 
     else N.concatShared ll rr 
 

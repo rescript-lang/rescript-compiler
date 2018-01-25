@@ -39,17 +39,17 @@ val has: ('elt, 'id) t -> 'elt ->  bool
 val add:   
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
-val mergeArray: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
+val mergeMany: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [remove m x] If [x] was not in [m], [m] is returned reference unchanged. *)
 
-val removeArray:
+val removeMany:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 
 val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-val inter: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
+val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
 val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
 val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool     
 

@@ -14,7 +14,7 @@ let () =
   let v = N.empty () in 
   for i = 0 to 1_00_000 do 
     (* [%assert (N.checkInvariant !v)]; *)
-     N.addDone v i 
+     N.add v i 
   done ;
   b __LOC__ (N.checkInvariant v);
   b __LOC__ @@ R.every 0  1_00_000 (fun [@bs] i -> 
@@ -25,7 +25,7 @@ let () =
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = N.empty () in 
-  N.mergeArrayDone v u ;
+  N.mergeMany v u ;
   eq __LOC__ (N.size v) 91 ; 
   eq __LOC__ (N.toArray v) (I.range 30 120)
 
@@ -36,29 +36,29 @@ let () =
   let u = I.randomRange 50_000 80_000 in 
   
   for i = 0 to A.length u - 1 do 
-    N.removeDone v i 
+    N.remove v i 
   done;
   
   eq __LOC__ (N.size v) 70_000;
   let count = 100_000 in 
   let vv = I.randomRange 0 count in 
   for i  = 0 to A.length vv - 1 do 
-    N.removeDone v vv.(i)
+    N.remove v vv.(i)
   done; 
   eq __LOC__ (N.size v) 0;
   b __LOC__ (N.isEmpty v )
 
 let () = 
   let v = N.ofArray (A.makeBy 30 (fun [@bs]i -> i)) in 
-  N.removeDone v 30; 
-  N.removeDone v 29 ;
+  N.remove v 30; 
+  N.remove v 29 ;
   b __LOC__ (Js.eqNull 28 (N.maxNull v ));
-  N.removeDone v 0 ; 
+  N.remove v 0 ; 
   b __LOC__ (Js.eqNull 1 (N.minNull v));
   eq __LOC__ (N.size v ) 28;
   let vv = I.randomRange 1 28 in 
   for i = 0 to A.length vv - 1 do  
-    N.removeDone v vv.(i)
+    N.remove v vv.(i)
   done  ;
   eq __LOC__ (N.size v) 0 
 
@@ -87,7 +87,7 @@ let () =
   let aa,bb = N.partition v (fun[@bs] x -> x mod 8 = 0) in 
   let cc = N.keepBy v (fun[@bs] x -> x mod 8 <> 0) in 
   for i = 0 to 200 do 
-    N.removeDone v i
+    N.remove v i
   done ;
   eq __LOC__ (N.size copyV) 126; 
   eq __LOC__ (N.toArray copyV) (A.makeBy 126 (fun[@bs] i -> i * 8));
@@ -119,22 +119,22 @@ let () =
                ( N.union (f (I.randomRange 0 20))
                    (f (I.randomRange 21 40) ))
                (f( I.randomRange 0 40)));
-  let dd = N.inter aa bb in 
+  let dd = N.intersect aa bb in 
   b __LOC__ (dd =~ f (I.randomRange 40 100));
   b __LOC__ 
-    (N.inter 
+    (N.intersect 
        (f @@ I.randomRange 0 20)
        (f @@ I.randomRange 21 40)
      =~ (N.empty ())
     );
   b __LOC__ 
-    (N.inter 
+    (N.intersect 
        (f @@ I.randomRange 21 40)
        (f @@ I.randomRange 0 20)      
      =~ (N.empty ())
     );  
   b __LOC__  
-    (N.inter 
+    (N.intersect 
        (f [|1;3;4;5;7;9|])
        (f [|2;4;5;6;8;10|])
      =~ (f [|4;5|])  

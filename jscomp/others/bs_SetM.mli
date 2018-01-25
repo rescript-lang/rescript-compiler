@@ -34,26 +34,24 @@ val copy: ('k, 'id) t -> ('k, 'id) t
 val isEmpty: _ t -> bool
 val has:  ('elt, _) t -> 'elt ->  bool
 
-val addDone: ('elt, 'id) t -> 'elt -> unit 
-val add: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
+val add: ('elt, 'id) t -> 'elt -> unit 
+
 val addCheck:
   ('elt, 'id) t -> 'elt -> bool 
-val mergeArrayDone:
+
+val mergeMany:
   ('elt, 'id) t -> 'elt array -> unit 
-val mergeArray:
-  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
-  
-val removeDone: ('elt, 'id) t -> 'elt -> unit 
-val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
+
+val remove: ('elt, 'id) t -> 'elt -> unit 
+
 val removeCheck: ('elt, 'id) t -> 'elt -> bool
    (* [b = removeCheck s e] [b] is true means one element removed *)      
-val removeArrayDone:
+
+val removeMany:
   ('elt, 'id) t -> 'elt array -> unit 
-val removeArray:
-  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
-  
+
 val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-val inter: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
+val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
 val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
 val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool     
 

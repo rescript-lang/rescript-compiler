@@ -101,39 +101,27 @@ let ofSortedArrayUnsafe xs =
 let checkInvariant d = 
   N.checkInvariant (data d)
 
-let addDone d k = 
+let add d k = 
   let old_data = data d in 
   let v = I.addMutate old_data k in 
   if v != old_data then 
     dataSet d v   
 
-let add d k = 
-  addDone d k;
-  d 
 
 
-let mergeArrayDone d arr = 
+let mergeMany d arr = 
   let old_data = data d in 
   let v = addArrayMutate old_data arr in 
   if v != old_data then 
     dataSet d v 
     
-let mergeArray d arr = 
-  let old_data = data d in 
-  let v = addArrayMutate old_data arr in 
-  if v != old_data then 
-    dataSet d v ;
-  d   
 
-let removeDone d v = 
+let remove d v = 
   let old_data = data d in 
   let v = removeMutate old_data v in 
   if v != old_data then 
     dataSet d v   
 
-let remove d v = 
-  removeDone d v; 
-  d 
 
 let rec removeArrayMutateAux t xs i len  =  
   if i < len then 
@@ -144,7 +132,7 @@ let rec removeArrayMutateAux t xs i len  =
     | Some t -> removeArrayMutateAux t xs (i+1) len
   else N.return t    
 
-let removeArrayDone  (d : t) xs =  
+let removeMany  (d : t) xs =  
   let oldRoot = data d in 
   match N.toOpt oldRoot with 
   | None -> ()
@@ -154,9 +142,6 @@ let removeArrayDone  (d : t) xs =
     if newRoot != oldRoot then 
       dataSet d newRoot
 
-let removeArray d xs =      
-  removeArrayDone d xs; 
-  d
 
 let rec removeMutateCheckAux  nt (x : elt) removed = 
   let k = N.key nt in 
@@ -264,7 +249,7 @@ let split d  key =
       ), true   
   
 let subset a b = I.subset  (data a) (data b)
-let inter dataa datab  = 
+let intersect dataa datab  = 
   let dataa, datab = data dataa, data datab in
     match N.toOpt dataa, N.toOpt datab with 
     | None, _ -> empty ()

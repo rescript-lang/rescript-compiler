@@ -37,9 +37,9 @@ let rec removeMutateAux nt x ~cmp =
           N.return (N.balMutate nt)
     end
 
-let removeDone (type elt) (type id) (d : (elt,id) t) v =  
-  let dict, oldRoot = B.(dict d, data d) in 
-  let module M = (val dict) in 
+let remove (type elt) (type id) (d : (elt,id) t) v =  
+  let oldRoot = B.data d in 
+  let module M = (val B.dict d) in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
@@ -47,9 +47,6 @@ let removeDone (type elt) (type id) (d : (elt,id) t) v =
     if newRoot != oldRoot then 
       B.dataSet d newRoot    
 
-let remove d v =     
-  removeDone d v; 
-  d     
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
   if i < len then 
@@ -60,21 +57,17 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
   else N.return t    
 
-let removeArrayDone (type elt) (type id) (d : (elt,id) t) xs =  
+let removeMany (type elt) (type id) (d : (elt,id) t) xs =  
   let oldRoot = B.data d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
-    let dict = B.dict d in  
-    let module M = (val dict) in 
+    let module M = (val B.dict d) in 
     let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:M.cmp in 
     if newRoot != oldRoot then 
       B.dataSet d newRoot
 
-let removeArray d xs =      
-  removeArrayDone d xs; 
-  d
 
 let rec removeMutateCheckAux  nt x removed ~cmp= 
   let k = N.key nt in 
@@ -238,31 +231,25 @@ let has (type elt) (type id) (d : (elt,id) t) x =
 let ofArray (type elt) (type id) data ~(dict : (elt,id) Bs_Cmp.t) =  
   let module M = (val dict) in 
   B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
-let addDone (type elt) (type id) (m : (elt,id) t) e = 
-  let dict, oldRoot = B.(dict m, data m) in 
-  let module M = (val dict) in 
+let add (type elt) (type id) (m : (elt,id) t) e = 
+  let oldRoot = B.(data m) in 
+  let module M = (val B.dict m) in 
   let newRoot = N.addMutate ~cmp:M.cmp oldRoot e  in 
   if newRoot != oldRoot then 
     B.dataSet m newRoot
-let add m e = 
-  addDone m e;
-  m
+
 let addArrayMutate (t : _ t0) xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
     v := N.addMutate !v (A.getUnsafe xs i)  ~cmp
   done; 
   !v 
-let mergeArrayDone (type elt) (type id) (d : (elt,id) t ) xs =   
-  let dict = B.dict d in 
+let mergeMany (type elt) (type id) (d : (elt,id) t ) xs =   
   let oldRoot = B.data d in 
-  let module M = (val dict) in 
+  let module M = (val B.dict d) in 
   let newRoot = addArrayMutate oldRoot xs ~cmp:M.cmp in 
   if newRoot != oldRoot then 
     B.dataSet d newRoot 
-let mergeArray d xs = 
-  mergeArrayDone d xs ; 
-  d 
 
 
 
@@ -271,11 +258,10 @@ let mergeArray d xs =
 
 
 let subset (type elt) (type id) (a : (elt,id) t) b = 
-  let dict = B.dict a in 
-  let module M = (val dict) in 
+  let module M = (val B.dict a) in 
   N.subset0  ~cmp:M.cmp (B.data a) (B.data b)
 
-let inter (type elt) (type id) (a : (elt,id) t) b  : _ t = 
+let intersect (type elt) (type id) (a : (elt,id) t) b  : _ t = 
   let dict, dataa, datab = B.dict a, B.data a, B.data b in 
   let module M = (val dict) in 
   match N.toOpt dataa, N.toOpt datab with 
