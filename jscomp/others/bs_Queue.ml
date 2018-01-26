@@ -30,7 +30,7 @@ and 'a t = {
 let null  = Js.null 
 let return = Js.Null.return 
 
-let create () = 
+let make () = 
   t 
     ~length: 0
     ~first:null
@@ -42,11 +42,10 @@ let clear q =
   firstSet q  null;
   lastSet q  null
 
-let addDone q x =
+let add q x =
   let cell = return @@ node 
       ~content:x
-      ~next:null
-  in
+      ~next:null in
   match Js.nullToOption (last q )with
   | None ->
     lengthSet  q 1;
@@ -57,17 +56,17 @@ let addDone q x =
     nextSet last  cell;
     lastSet q  cell
 
-let add q x = addDone q x; q
+
   
 let peek q =
   match Js.nullToOption (first q ) with
   | None -> None
   | Some v -> Some (content v)
 
-let peekNull q =
+let peekUndefined q =
   match Js.nullToOption (first q ) with
-  | None -> null
-  | Some v -> return (content v)
+  | None -> Js.undefined
+  | Some v -> Js.Undefined.return (content v)
 
 
 let peekExn q =
@@ -107,27 +106,26 @@ let popExn q =
       content x 
     end    
 
-let popNull q =
+let popUndefined q =
   match Js.nullToOption (first q ) with
-  | None -> null
+  | None -> Js.undefined
   | Some x  ->
     let next = next x in 
     if Js.Null.test next then 
       begin (* only one element*)
         clear q;
-        return (content x)
+        Js.Undefined.return (content x)
       end
     else begin 
       lengthSet q (length q - 1);
       firstSet q next;
-      return (content x) 
+      Js.Undefined.return (content x) 
     end
 
 let rec copyAux qRes prev cell =
   match Js.nullToOption cell with
   | None -> lastSet qRes  prev; qRes
   | Some x  ->
-    (* Cons { content; next } *)
     let content = content x in 
     let res = return @@ node ~content ~next:null in
     begin match Js.nullToOption prev with
@@ -137,25 +135,43 @@ let rec copyAux qRes prev cell =
     copyAux qRes res (next x)
 
 let copy q =
-
   copyAux (t  ~length:(length q) ~first:null ~last:null)  null (first q)
+
+
+      
+let rec copyMapAux qRes prev cell f =
+  match Js.nullToOption cell with
+  | None -> lastSet qRes  prev; qRes
+  | Some x  ->
+    let content = f (content x) [@bs] in 
+    let res = return @@ node ~content ~next:null in
+    begin match Js.nullToOption prev with (*TODO: optimize to remove such check*)
+      | None -> firstSet qRes res
+      | Some p -> nextSet p  res
+    end;
+    copyMapAux qRes res (next x) f
+
+let map q f =
+  copyMapAux (t  ~length:(length q) ~first:null ~last:null)  null (first q) f
+    
 
 let isEmpty q =
   length q = 0
 
-let length q =
+let size q =
   length q
 
-let rec iterAux f cell =
+let rec iterAux cell f =
   match Js.nullToOption cell with
   | None -> ()
   | Some x  ->
     f (content x) [@bs];
-    iterAux f (next x)
+    iterAux (next x) f
 
 let forEach q f =
-  iterAux f (first q)
+  iterAux (first q) f
 
+    
 let rec foldAux f accu cell =
   match Js.nullToOption cell with
   | None -> accu
@@ -191,3 +207,11 @@ let toArray x =
   let v = A.makeUninitializedUnsafe (length x) in 
   fillAux 0 v (first x);
   v
+
+(*TODO: optimzie *)
+let ofArray arr =
+  let q = make () in
+  for i = 0 to A.length arr - 1 do
+    add q (A.getUnsafe arr i)
+  done ;
+  q

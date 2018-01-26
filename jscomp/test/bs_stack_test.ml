@@ -16,7 +16,7 @@ module Q = Bs.Queue
 let inOrder (v : t) = 
   let current =  ref v in 
   let s : node S.t = S.create () in 
-  let q : int Q.t = Q.create () in 
+  let q : int Q.t = Q.make () in 
   while !current != Js.null do 
     let v = Js.Null.getUnsafe !current  in 
     S.push s v; 
@@ -25,7 +25,7 @@ let inOrder (v : t) =
   while not (S.isEmpty s ) do 
     current := S.popNull s ;
     let v = Js.Null.getUnsafe !current in 
-    Q.addDone q (value v);
+    Q.add q (value v);
     current := right v ;
     while !current != Js.null do 
       let v = Js.Null.getUnsafe !current  in 
@@ -38,14 +38,14 @@ let inOrder (v : t) =
 let inOrder3 (v : t) = 
   let current =  ref v in 
   let s : node S.t = S.create () in 
-  let q : int Q.t = Q.create () in 
+  let q : int Q.t = Q.make () in 
   while !current != Js.null do 
     let v = Js.Null.getUnsafe !current  in 
     S.push s v; 
     current := left v; 
   done ;
   S.dynamicPopIter s begin fun [@bs] popped -> 
-    Q.addDone q (value popped);
+    Q.add q (value popped);
     let current = ref (right popped) in 
     while !current != Js.null do 
       let v = Js.Null.getUnsafe !current in 
@@ -59,7 +59,7 @@ let inOrder2 (v : t) =
   let todo = ref true in 
   let cursor = ref v in 
   let s : node S.t = S.create () in 
-  let q : int Q.t = Q.create () in 
+  let q : int Q.t = Q.make () in 
   while !todo do 
     if !cursor != Js.null then 
       (
@@ -71,7 +71,7 @@ let inOrder2 (v : t) =
         if not (S.isEmpty s) then 
           (cursor := S.popNull s ;
            let current = Js.Null.getUnsafe !cursor in 
-           Q.addDone q (value current);
+           Q.add q (value current);
            cursor := right current)
         else 
           todo := false
