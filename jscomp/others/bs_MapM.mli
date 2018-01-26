@@ -27,9 +27,6 @@ type ('k,'v,'id) t
 
 val empty: dict:('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
-val singleton: 
-  ('k,'id) Bs_Cmp.t ->
-  'k -> 'a -> ('k, 'a, 'id) t
 val has: ('k, _, _) t -> 'k  -> bool
 val cmp: 
     ('k, 'a, 'id) t -> 
@@ -47,7 +44,7 @@ val eq:  ('k, 'a, 'id) t -> ('k, 'a, 'id) t -> ('a -> 'a -> bool [@bs]) -> bool
     the data associated with the keys. *)
     
 val forEach:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
-(** [iter m f] applies [f] to all bindings in map [m].
+(** [forEach m f] applies [f] to all bindings in map [m].
     [f] receives the 'k as first argument, and the associated value
     as second argument.  The bindings are passed to [f] in increasing
     order with respect to the ordering over the type of the keys. *)
@@ -76,9 +73,9 @@ val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
 val ofArray: ('k * 'a) array -> dict:('k,'id) Bs_Cmp.t ->  ('k,'a,'id) t    
 val keysToArray: ('k, _, _) t -> 'k array 
 val valuesToArray: (_, 'a, _) t -> 'a array
-val minKeyOpt: ('k, _,  _) t -> 'k option
+val minKey: ('k, _,  _) t -> 'k option
 val minKeyNull: ('k, _,  _) t -> 'k Js.null
-val maxKeyOpt: ('k, _,  _) t -> 'k option
+val maxKey: ('k, _,  _) t -> 'k option
 val maxKeyNull: ('k, _,  _) t -> 'k Js.null    
 val minimum: ('k, 'a,  _) t -> ('k * 'a) option
 val minNull: ('k, 'a, _) t -> ('k * 'a) Js.null
@@ -94,25 +91,17 @@ val checkInvariant: _ t -> bool
 
 (*TODO: add functional [merge, partition, keepBy, split]*)
 
-val removeDone:  ('k, 'a, 'id) t -> 'k -> unit
-val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
+val remove:  ('k, 'a, 'id) t -> 'k -> unit
 (** [remove m x] do the in-place modification,
-    returnning [m] for chaining. *)
-val removeArrayDone: ('k, 'a, 'id) t -> 'k array -> unit    
-val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t 
-
-
+*)
+val removeMany: ('k, 'a, 'id) t -> 'k array -> unit    
   
-val setDone: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
-val set: ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
-(** [set m x y ] do the in-place modification, returnning [m] for chaining. *)
+val set: ('k, 'a, 'id) t -> 'k -> 'a ->  unit
+(** [set m x y ] do the in-place modification *)
     
-val updateDone: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> unit
-val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> ('k, 'a, 'id) t
+val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> unit
 
-val mergeArrayDone:  ('k, 'a, 'id) t -> ('k * 'a) array ->  unit
-val mergeArray: ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
-      
+val mergeMany:  ('k, 'a, 'id) t -> ('k * 'a) array ->  unit
 
 val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 (** [map m f] returns a map with same domain as [m], where the
@@ -121,7 +110,7 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
     The bindings are passed to [f] in increasing order
     with respect to the ordering over the type of the keys. *)
 
-val mapi: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
+val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
     
 
 

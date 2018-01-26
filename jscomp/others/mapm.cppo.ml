@@ -25,26 +25,23 @@ let isEmpty m = N.isEmpty0 (data m)
 let singleton k v = t ~data:(N.singleton0 k v)
 
 let minKeyNull m = N.minKeyNull0 (data m)
-let minKeyOpt m = N.minKeyOpt0 (data m)
+let minKey m = N.minKeyOpt0 (data m)
 let maxKeyNull m = N.maxKeyNull0 (data m)
-let maxKeyOpt m = N.maxKeyOpt0 (data m)
+let maxKey m = N.maxKeyOpt0 (data m)
 let minimum m = N.minKVOpt0 (data m)
 let minNull m = N.minKVNull0 (data m)
 let maximum m = N.maxKVOpt0 (data m)
 let maxNull m = N.maxKVNull0 (data m)
 
-let setDone (m : _ t) k v = 
+let set (m : _ t) k v = 
   let old_data = data m in 
   let v = I.addMutate old_data k v in 
   if v != old_data then 
     dataSet m v 
 
-let set (d : 'a t) (k : key) (v : 'a) : 'a t=  
-  setDone d k v; 
-  d
 let forEach d f = N.iter0 (data d) f     
 let map d f = t ~data:(N.map0 (data d) f)
-let mapi d f = t ~data:(N.mapi0 (data d) f) 
+let mapWithKey d f = t ~data:(N.mapi0 (data d) f) 
 let reduce d acc f  = N.fold0 (data d) acc f 
 let every d f = N.every0 (data d) f 
 let some d f = N.some0 (data d) f    
@@ -84,7 +81,7 @@ let rec removeMutateAux nt (x : key)=
           N.return (N.balMutate nt)
     end
 
-let removeDone d v = 
+let remove d v = 
   let oldRoot = data d in 
   match N.toOpt oldRoot with 
   | None -> ()
@@ -93,9 +90,6 @@ let removeDone d v =
     if newRoot != oldRoot then 
       dataSet d newRoot   
 
-let remove d v = 
-  removeDone d v; 
-  d 
 
 let rec updateDone0 t (x : key)  f  =   
   match N.toOpt t with 
@@ -129,16 +123,14 @@ let rec updateDone0 t (x : key)  f  =
        else   
          N.rightSet nt (updateDone0  r x f);
       );
-      N.return (N.balMutate nt)  
-let updateDone t x f =       
+      N.return (N.balMutate nt)
+        
+let update t x f =       
   let oldRoot = data t in 
   let newRoot = updateDone0 oldRoot x f  in 
   if newRoot != oldRoot then 
     dataSet t newRoot 
-    
-let update t x f =     
-  updateDone t x f ; 
-  t 
+
 let rec removeArrayMutateAux t xs i len   =  
   if i < len then 
     let ele = A.getUnsafe xs i in 
@@ -148,7 +140,7 @@ let rec removeArrayMutateAux t xs i len   =
     | Some t -> removeArrayMutateAux t xs (i+1) len 
   else N.return t    
 
-let removeArrayDone (type elt) (type id) (d : _ t) xs =  
+let removeMany (type elt) (type id) (d : _ t) xs =  
   let oldRoot = data d in 
   match N.toOpt oldRoot with 
   | None -> ()
@@ -158,9 +150,6 @@ let removeArrayDone (type elt) (type id) (d : _ t) xs =
     if newRoot != oldRoot then 
       dataSet d newRoot
 
-let removeArray d xs =      
-  removeArrayDone d xs; 
-  d  
 
 let cmp = I.cmp 
 let eq = I.eq 

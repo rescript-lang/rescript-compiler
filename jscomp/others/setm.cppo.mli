@@ -32,27 +32,22 @@ type elt = int
 
 type t
 val empty: unit -> t
-val singleton: elt -> t  
+
 val ofArray: elt array -> t
 val ofSortedArrayUnsafe: elt array -> t
 val copy: t -> t 
 val isEmpty: t -> bool
 val has: t -> elt -> bool
 
-val addDone: t -> elt -> unit
-val add: t -> elt -> t
+val add: t -> elt -> unit
 val addCheck: t -> elt -> bool 
-val mergeArrayDone: t -> elt array -> unit
-val mergeArray: t -> elt array -> t
-
-val removeDone: t -> elt -> unit
-val remove: t -> elt -> t
+val mergeMany: t -> elt array -> unit
+val remove: t -> elt -> unit
 val removeCheck: t -> elt -> bool 
-val removeArrayDone: t -> elt array -> unit
-val removeArray: t -> elt array -> t
+val removeMany: t -> elt array -> unit
   
 val union: t -> t -> t
-val inter: t -> t -> t
+val intersect: t -> t -> t
 val diff: t -> t -> t
 val subset: t -> t -> bool
   

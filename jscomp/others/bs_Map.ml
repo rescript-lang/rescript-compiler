@@ -305,7 +305,7 @@ let partition m p =
 let map m f = 
   let dict, map = B.(dict m, data m) in 
   B.bag ~dict ~data:(N.map0 map f)
-let mapi m  f = 
+let mapWithKey m  f = 
   let dict,map = B.(dict m, data m) in 
   B.bag ~dict ~data:(N.mapi0 map f)
 
@@ -321,9 +321,9 @@ let keysToArray m =
 let valuesToArray m =   
   N.valuesToArray0 (B.data m)
 
-let minKeyOpt m = N.minKeyOpt0 (B.data m)
+let minKey m = N.minKeyOpt0 (B.data m)
 let minKeyNull m = N.minKeyNull0 (B.data m)
-let maxKeyOpt m = N.maxKeyOpt0 (B.data m)
+let maxKey m = N.maxKeyOpt0 (B.data m)
 let maxKeyNull m = N.maxKeyNull0 (B.data m)    
 let minimum m = N.minKVOpt0 (B.data m)
 let minNull m = N.minKVNull0 (B.data m) 
@@ -331,29 +331,24 @@ let maximum m = N.maxKVOpt0 (B.data m)
 let maxNull m = N.maxKVNull0 (B.data m)
 
 let get (type k) (type id) (map : (k,_,id) t) x  = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  N.findOpt0 ~cmp:X.cmp  map x 
+  let module X = (val B.dict map) in 
+  N.findOpt0 ~cmp:X.cmp  (B.data map) x 
 
 let getNull (type k) (type id) (map : (k,_,id) t) x = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  N.findNull0 ~cmp:X.cmp  map x
+  let module X = (val B.dict map) in 
+  N.findNull0 ~cmp:X.cmp  (B.data map) x
 
 let getWithDefault (type k) (type id)  (map : (k,_,id) t) x def = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  N.findWithDefault0 ~cmp:X.cmp map x  def
+  let module X = (val B.dict map) in 
+  N.findWithDefault0 ~cmp:X.cmp (B.data map) x  def
 
 let getExn (type k) (type id)  (map : (k,_,id) t) x = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  N.findExn0 ~cmp:X.cmp map x 
+  let module X = (val B.dict map) in 
+  N.findExn0 ~cmp:X.cmp (B.data map) x 
 
 let has (type k) (type id)  (map : (k,_,id) t) x = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  N.mem0 ~cmp:X.cmp map x
+  let module X = (val B.dict map) in 
+  N.mem0 ~cmp:X.cmp (B.data map) x
 
 let checkInvariant m  =
   N.checkInvariant (B.data m)

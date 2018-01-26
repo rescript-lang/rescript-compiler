@@ -270,7 +270,7 @@ eq("File \"bs_sort_test.ml\", line 102, characters 5-12", (Bs_Sort.stableSortBy(
       ]
     ]);
 
-eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Bs_Sort.binarySearch(/* array */[
           1,
           2,
           3,
@@ -280,7 +280,7 @@ eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Bs_Sort.binSearch(/* a
           36
         ], 33, cmp), 4);
 
-eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Bs_Sort.binarySearch(/* array */[
           1,
           2,
           3,
@@ -290,7 +290,7 @@ eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Bs_Sort.binSearch(/* a
           36
         ], 1, cmp), 0);
 
-eq("File \"bs_sort_test.ml\", line 113, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 113, characters 5-12", Bs_Sort.binarySearch(/* array */[
           1,
           2,
           3,
@@ -300,7 +300,7 @@ eq("File \"bs_sort_test.ml\", line 113, characters 5-12", Bs_Sort.binSearch(/* a
           36
         ], 2, cmp), 1);
 
-eq("File \"bs_sort_test.ml\", line 114, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 114, characters 5-12", Bs_Sort.binarySearch(/* array */[
           1,
           2,
           3,
@@ -310,7 +310,7 @@ eq("File \"bs_sort_test.ml\", line 114, characters 5-12", Bs_Sort.binSearch(/* a
           36
         ], 3, cmp), 2);
 
-eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_Sort.binSearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_Sort.binarySearch(/* array */[
           1,
           2,
           3,
@@ -323,23 +323,23 @@ eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_Sort.binSearch(/* a
 var aa = Array_data_util.range(0, 1000);
 
 b("File \"bs_sort_test.ml\", line 117, characters 4-11", Bs_Range.every(0, 1000, (function (i) {
-            return +(Bs_Sort.binSearch(aa, i, cmp) === i);
+            return +(Bs_Sort.binarySearch(aa, i, cmp) === i);
           })));
 
 var cc = Bs_Array.map(Array_data_util.range(0, 2000), (function (x) {
         return (x << 1);
       }));
 
-eq("File \"bs_sort_test.ml\", line 122, characters 5-12", Bs_Sort.binSearch(cc, 5000, cmp) ^ -1, 2001);
+eq("File \"bs_sort_test.ml\", line 122, characters 5-12", Bs_Sort.binarySearch(cc, 5000, cmp) ^ -1, 2001);
 
-eq("File \"bs_sort_test.ml\", line 123, characters 5-12", Bs_Sort.binSearch(cc, -1, cmp) ^ -1, 0);
+eq("File \"bs_sort_test.ml\", line 123, characters 5-12", Bs_Sort.binarySearch(cc, -1, cmp) ^ -1, 0);
 
-eq("File \"bs_sort_test.ml\", line 124, characters 5-12", Bs_Sort.binSearch(cc, 0, cmp), 0);
+eq("File \"bs_sort_test.ml\", line 124, characters 5-12", Bs_Sort.binarySearch(cc, 0, cmp), 0);
 
-eq("File \"bs_sort_test.ml\", line 126, characters 5-12", Bs_Sort.binSearch(cc, 1, cmp) ^ -1, 1);
+eq("File \"bs_sort_test.ml\", line 126, characters 5-12", Bs_Sort.binarySearch(cc, 1, cmp) ^ -1, 1);
 
 b("File \"bs_sort_test.ml\", line 127, characters 4-11", Bs_Range.every(0, 1999, (function (i) {
-            return +((Bs_Sort.binSearch(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
+            return +((Bs_Sort.binarySearch(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
           })));
 
 function lt(x, y) {

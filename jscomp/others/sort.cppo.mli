@@ -20,7 +20,7 @@ val isSorted : elt array  -> bool
 
 val stableSort : elt array -> unit 
 
-val binSearch :
+val binarySearch :
   elt array -> elt -> int 
 (**
 

@@ -34,7 +34,7 @@ type 'a t
 
 val empty: unit -> 'a t
 val isEmpty: 'a t -> bool
-val singleton: key -> 'a -> 'a t
+
 val has:  'a t -> key -> bool
 val cmp:  'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 (** [cmp m1 m2 cmp]
@@ -77,9 +77,9 @@ val toArray: 'a t -> (key * 'a) array
 val ofArray: (key * 'a) array -> 'a t 
 val keysToArray: 'a t -> key array 
 val valuesToArray: 'a t -> 'a array
-val minKeyOpt: _ t -> key option 
+val minKey: _ t -> key option 
 val minKeyNull: _ t -> key Js.null
-val maxKeyOpt: _ t -> key option 
+val maxKey: _ t -> key option 
 val maxKeyNull: _ t -> key Js.null    
 val minimum: 'a t -> (key * 'a) option
 val minNull: 'a t -> (key * 'a) Js.null
@@ -90,24 +90,22 @@ val getNull: 'a t -> key -> 'a Js.null
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a
 val checkInvariant: _ t -> bool   
+
 (****************************************************************************)
 
 (*TODO: add functional [merge, partition, keepBy, split]*)
 
-val removeDone: 'a t -> key -> unit  
-val remove: 'a t ->  key -> 'a t
-(** [remove m x] do the in-place modification, return [m] for chaining *)
-val removeArrayDone: 'a t -> key array -> unit
-val removeArray: 'a t -> key array -> 'a t
+val remove: 'a t -> key -> unit  
+(** [remove m x] do the in-place modification *)
+val removeMany: 'a t -> key array -> unit
     
-val setDone: 'a t -> key -> 'a -> unit  
-val set: 'a t ->  key -> 'a -> 'a t
+val set: 'a t -> key -> 'a -> unit  
 (** [add m x y] do the in-place modification, return
     [m] for chaining. If [x] was already bound
    in [m], its previous binding disappears. *)
 
-val updateDone: 'a t -> key -> ('a option -> 'a option [@bs]) -> unit
-val update: 'a t ->  key ->  ('a option -> 'a option [@bs]) -> 'a t 
+val update: 'a t -> key -> ('a option -> 'a option [@bs]) -> unit
+
 
 val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
 (** [map m f] returns a map with same domain as [m], where the
@@ -116,7 +114,7 @@ val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
    The bindings are passed to [f] in increasing order
    with respect to the ordering over the type of the keys. *)
 
-val mapi: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
+val mapWithKey: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
 
 
 

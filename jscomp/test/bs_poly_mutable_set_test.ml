@@ -20,33 +20,33 @@ let () =
   let r = I.randomRange 0 30 in 
   b __LOC__ (Js.eqNull 29 (N.maxNull u));
   b __LOC__ (Js.eqNull 1 (N.minNull u));
-  N.addDone u 3;  
+  N.add u 3;  
   for i = 0 to A.length r - 1 do 
-    N.removeDone u (A.getUnsafe r i)
+    N.remove u (A.getUnsafe r i)
   done ;
   b __LOC__ (N.isEmpty u);
-  N.addDone u 0;
-  N.addDone u 1;
-  N.addDone u 2;
-  N.addDone u 0;
+  N.add u 0;
+  N.add u 1;
+  N.add u 2;
+  N.add u 0;
   eq __LOC__ (N.size u) 3;
   b __LOC__ (not (N.isEmpty u));
   for i = 0 to 3 do 
-    N.removeDone u i 
+    N.remove u i 
   done ;
   b __LOC__ (N.isEmpty u);
-  N.mergeArrayDone u (I.randomRange 0 20000);
-  N.mergeArrayDone u (I.randomRange 0 200);
+  N.mergeMany u (I.randomRange 0 20000);
+  N.mergeMany u (I.randomRange 0 200);
   eq __LOC__ (N.size u) 20001;
-  N.removeArrayDone u (I.randomRange 0 200);
+  N.removeMany u (I.randomRange 0 200);
   eq __LOC__ (N.size u) 19800;
-  N.removeArrayDone u (I.randomRange 0 1000);
+  N.removeMany u (I.randomRange 0 1000);
   eq __LOC__ (N.size u) 19000;
-  N.removeArrayDone u (I.randomRange 0 1000);
+  N.removeMany u (I.randomRange 0 1000);
   eq __LOC__ (N.size u) 19000;
-  N.removeArrayDone u (I.randomRange 1000 10000);
+  N.removeMany u (I.randomRange 1000 10000);
   eq __LOC__ (N.size u) 10000;
-  N.removeArrayDone u (I.randomRange 10000 (20000 -1));
+  N.removeMany u (I.randomRange 10000 (20000 -1));
   eq __LOC__ (N.size u) 1 ;
   b __LOC__ (N.has u 20000)
 (* for i =  *)
@@ -63,22 +63,22 @@ let () =
                ( N.union (f (I.randomRange 0 20))
                    (f (I.randomRange 21 40) ))
                (f( I.randomRange 0 40)));
-  let dd = N.inter aa bb in 
+  let dd = N.intersect aa bb in 
   b __LOC__ (dd =~ f (I.randomRange 40 100));
   b __LOC__ 
-    (N.inter 
+    (N.intersect 
        (f @@ I.randomRange 0 20)
        (f @@ I.randomRange 21 40)
      =~ (N.empty (module IntCmp))
     );
   b __LOC__ 
-    (N.inter 
+    (N.intersect 
        (f @@ I.randomRange 21 40)
        (f @@ I.randomRange 0 20)      
      =~ (N.empty (module IntCmp))
     );  
   b __LOC__  
-    (N.inter 
+    (N.intersect 
        (f [|1;3;4;5;7;9|])
        (f [|2;4;5;6;8;10|])
      =~ (f [|4;5|])  

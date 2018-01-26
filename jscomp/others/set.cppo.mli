@@ -36,8 +36,8 @@ type t
 (** The type of sets. *)
 
 val empty: t
-val singleton: elt -> t
-(** [singleton x] returns the one-element set containing only [x]. *)
+
+
 val ofArray: elt array -> t
 val ofSortedArrayUnsafe: elt array -> t     
 val isEmpty: t -> bool
@@ -45,13 +45,13 @@ val has: t -> elt -> bool
   
 val add:  t -> elt -> t
 (** If [x] was already in [s], [s] is returned unchanged. *)
-val mergeArray: t -> elt array -> t 
+val mergeMany: t -> elt array -> t 
 val remove:  t -> elt -> t
 (**  If [x] was not in [s], [s] is returned unchanged. *)
-val removeArray: t -> elt array -> t
+val removeMany: t -> elt array -> t
   
 val union: t -> t -> t
-val inter: t -> t -> t
+val intersect: t -> t -> t
 val diff: t -> t -> t
 val subset: t -> t -> bool
 (** [subset s1 s2] tests whether the set [s1] is a subset of

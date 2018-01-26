@@ -40,7 +40,7 @@ type ('k,'v,'id) t
 
 val empty: dict:('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
-val singleton: 'k -> 'a -> dict:('k,'id) Bs_Cmp.t -> ('k, 'a, 'id) t
+
 val has: ('k, 'a, 'id) t -> 'k  -> bool    
 val cmp: 
     ('k, 'v, 'id) t -> 
@@ -83,9 +83,9 @@ val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
 val ofArray:  ('k * 'a) array -> dict:('k,'id) Bs_Cmp.t -> ('k,'a,'id) t         
 val keysToArray: ('k, 'a, 'id) t -> 'k  array
 val valuesToArray: ('k, 'a, 'id) t -> 'a  array
-val minKeyOpt: ('k, _, _) t -> 'k option
+val minKey: ('k, _, _) t -> 'k option
 val minKeyNull: ('k, _, _) t -> 'k Js.null
-val maxKeyOpt: ('k, _, _) t -> 'k option
+val maxKey: ('k, _, _) t -> 'k option
 val maxKeyNull: ('k, _, _) t -> 'k Js.null    
 val minimum: ('k, 'a,  _) t -> ('k * 'a) option
 val minNull: ('k, 'a, _) t -> ('k * 'a) Js.null
@@ -158,7 +158,7 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
     The bindings are passed to [f] in increasing order
     with respect to the ordering over the type of the keys. *)
 
-val mapi: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
+val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
 
 
 (****************************************************************************)
@@ -204,7 +204,7 @@ val update0:
   cmp:('k, 'id) Bs_Cmp.cmp -> 
   ('k, 'a, 'id) t0
     
-val singleton0 : 'k -> 'a -> ('k, 'a, 'id) t0    
+
 
 val remove0:
   ('k, 'a, 'id) t0 ->

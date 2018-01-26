@@ -41,37 +41,37 @@ var r = Array_data_util.randomRange(0, 30);
 
 var u5 = Bs_Set.add(u4, 3);
 
-var u6 = Bs_Set.removeArray(u5, r);
+var u6 = Bs_Set.removeMany(u5, r);
 
-var u7 = Bs_Set.mergeArray(u6, /* int array */[
+var u7 = Bs_Set.mergeMany(u6, /* int array */[
       0,
       1,
       2,
       0
     ]);
 
-var u8 = Bs_Set.removeArray(u7, /* int array */[
+var u8 = Bs_Set.removeMany(u7, /* int array */[
       0,
       1,
       2,
       3
     ]);
 
-var u9 = Bs_Set.mergeArray(u8, Array_data_util.randomRange(0, 20000));
+var u9 = Bs_Set.mergeMany(u8, Array_data_util.randomRange(0, 20000));
 
-var u10 = Bs_Set.mergeArray(u9, Array_data_util.randomRange(0, 200));
+var u10 = Bs_Set.mergeMany(u9, Array_data_util.randomRange(0, 200));
 
-var u11 = Bs_Set.removeArray(u10, Array_data_util.randomRange(0, 200));
+var u11 = Bs_Set.removeMany(u10, Array_data_util.randomRange(0, 200));
 
-var u12 = Bs_Set.removeArray(u11, Array_data_util.randomRange(0, 1000));
+var u12 = Bs_Set.removeMany(u11, Array_data_util.randomRange(0, 1000));
 
-var u13 = Bs_Set.removeArray(u12, Array_data_util.randomRange(0, 1000));
+var u13 = Bs_Set.removeMany(u12, Array_data_util.randomRange(0, 1000));
 
-var u14 = Bs_Set.removeArray(u13, Array_data_util.randomRange(1000, 10000));
+var u14 = Bs_Set.removeMany(u13, Array_data_util.randomRange(1000, 10000));
 
-var u15 = Bs_Set.removeArray(u14, Array_data_util.randomRange(10000, 19999));
+var u15 = Bs_Set.removeMany(u14, Array_data_util.randomRange(10000, 19999));
 
-var u16 = Bs_Set.removeArray(u15, Array_data_util.randomRange(20000, 21000));
+var u16 = Bs_Set.removeMany(u15, Array_data_util.randomRange(20000, 21000));
 
 b("File \"bs_poly_set_test.ml\", line 33, characters 4-11", +(u0 !== u1));
 
@@ -125,7 +125,7 @@ var u20 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(0, 200));
 
 b("File \"bs_poly_set_test.ml\", line 60, characters 4-11", Bs_Set.eq(u19, u20));
 
-var u21 = Bs_Set.inter(u17, u18);
+var u21 = Bs_Set.intersect(u17, u18);
 
 eq("File \"bs_poly_set_test.ml\", line 62, characters 5-12", Bs_internalAVLset.toArray0(u21.data), Array_data_util.range(59, 100));
 

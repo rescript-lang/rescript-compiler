@@ -69,7 +69,7 @@ var jsMapperConstantArray = /* array */[
 ];
 
 function xToJs(param) {
-  return Js_mapperRt.binSearch(3, param, jsMapperConstantArray);
+  return Js_mapperRt.binarySearch(3, param, jsMapperConstantArray);
 }
 
 function xFromJs(param) {

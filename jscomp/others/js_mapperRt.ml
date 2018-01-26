@@ -31,20 +31,20 @@
    [mid = lower], it should hit
    [uper -lower > 1], [mid <> lower]
  *)  
-let rec binSearchAux lower upper xs (k : int) = 
+let rec binarySearchAux lower upper xs (k : int) = 
   [%assert lower < upper];
   let mid = (lower + upper) / 2 in 
   let i,v = Array.unsafe_get xs mid in   
   if i = k then v
   else if i < k then 
-    binSearchAux (mid + 1) upper xs k
+    binarySearchAux (mid + 1) upper xs k
   else 
-    binSearchAux lower mid  xs k  (*Invariant: mid < upper *)
+    binarySearchAux lower mid  xs k  (*Invariant: mid < upper *)
 
 
 
-let binSearch upper (id : int) array =   
-  binSearchAux 0 upper array id 
+let binarySearch upper (id : int) array =   
+  binarySearchAux 0 upper array id 
 
 let rec revSearchAux 
     i len (xs : (int * string) array) (k : string) = 

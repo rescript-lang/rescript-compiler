@@ -27,8 +27,7 @@
 
 type ('k,'id) t 
 val empty: dict:('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
-val singleton: 'elt -> dict:('elt,'id) Bs_Cmp.t -> ('elt, 'id) t
-(** [singleton x] returns the one-element set containing only [x]. *)    
+
 val ofArray: dict:('k, 'id) Bs_Cmp.t -> 'k array -> ('k, 'id) t
 val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) Bs_Cmp.t -> ('elt,'id) t
     
@@ -39,17 +38,17 @@ val has: ('elt, 'id) t -> 'elt ->  bool
 val add:   
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
-val mergeArray: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
+val mergeMany: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [remove m x] If [x] was not in [m], [m] is returned reference unchanged. *)
 
-val removeArray:
+val removeMany:
   ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 
 val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-val inter: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
+val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
 val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
 val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool     
 
@@ -143,7 +142,7 @@ val removeArray0:
   cmp: ('elt,'id) Bs_Cmp.cmp ->
   ('elt, 'id) t0
 
-val singleton0: 'elt -> ('elt, 'id) t0
+
 
 val union0: 
     ('elt, 'id) t0 ->

@@ -200,13 +200,13 @@ let add (type elt) (type id) (m : (elt,id) t) e =
       ~dict 
       ~data:newData
 
-let mergeArray (type elt) (type id) (m : (elt,id) t) e = 
+let mergeMany (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newData = mergeArray0 ~cmp:M.cmp data e in 
   B.bag ~dict ~data:newData
 
-let removeArray (type elt) (type id) (m : (elt,id) t) e = 
+let removeMany (type elt) (type id) (m : (elt,id) t) e = 
   let dict, data = B.(dict m, data m) in 
   let module M = (val dict) in 
   let newData = removeArray0 ~cmp:M.cmp data e in 
@@ -219,15 +219,13 @@ let removeArray (type elt) (type id) (m : (elt,id) t) e =
 let union (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
   let dict, mdata, ndata = B.(dict m, data m, data n) in   
   let module M = (val dict) in 
-  B.bag ~data:(union0 ~cmp:M.cmp mdata ndata)
-    ~dict
+  B.bag ~data:(union0 ~cmp:M.cmp mdata ndata) ~dict
 
 
-let inter (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
+let intersect (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
   let dict, mdata, ndata = B.(dict m, data m, data n) in 
   let module M = (val dict) in 
-  B.bag ~data:(inter0 ~cmp:M.cmp mdata ndata)
-    ~dict 
+  B.bag ~data:(inter0 ~cmp:M.cmp mdata ndata) ~dict 
 
 
 let diff (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   

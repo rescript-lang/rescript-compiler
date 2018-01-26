@@ -24,11 +24,11 @@ let randomRange i j =
 
   let () = 
     let a0 = f (randomRange 0 10) in 
-    M.setDone a0 3 33;
+    M.set a0 3 33;
     eq __LOC__ (M.getExn a0 3) 33 ;
-    M.removeArrayDone a0 [|7;8;0;1;3;2;4;922;4;5;6;|];
+    M.removeMany a0 [|7;8;0;1;3;2;4;922;4;5;6;|];
     eq __LOC__ (M.keysToArray a0) [|9;10|];
-    M.removeArrayDone a0 (I.randomRange 0 100);
+    M.removeMany a0 (I.randomRange 0 100);
     b __LOC__ (M.isEmpty a0)
 
 

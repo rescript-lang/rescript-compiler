@@ -95,7 +95,7 @@ let jsMapperRt =
 let search upper polyvar array = 
   app3
     (Exp.ident ({loc = noloc; 
-                 txt = Longident.Ldot (jsMapperRt,"binSearch") })
+                 txt = Longident.Ldot (jsMapperRt,"binarySearch") })
     )                                 
     upper
     (eraseType polyvar)

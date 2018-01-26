@@ -17,7 +17,7 @@ let ()=
   b __LOC__ 
   ([|1;2;3|] =*
     [|3;2;1|])
-let u = N.(inter (ofA [|1;2;3|]) (ofA [|3;4;5|]) )
+let u = N.(intersect (ofA [|1;2;3|]) (ofA [|3;4;5|]) )
 
 let ()= 
   b __LOC__ 
@@ -48,7 +48,7 @@ let () =
   b __LOC__ (N.eq r nr) 
   
 let () = 
-  b __LOC__ (N.(inter (ofA (range 1 100)) (ofA (range 50 200))   ) =~ range 50 100)
+  b __LOC__ (N.(intersect (ofA (range 1 100)) (ofA (range 50 200))   ) =~ range 50 100)
 
 let () = 
   b __LOC__ (N.(union (ofA (range 1 100)) (ofA (range 50 200))   ) =~ range 1 200)
@@ -57,7 +57,7 @@ let () =
     b __LOC__ (N.(diff (ofA (range 1 100)) (ofA (range 50 200))   ) =~ range 1 49)
 
 let () = 
-  b __LOC__ (N.(inter (ofA (revRange 1 100)) (ofA (revRange 50 200))   ) =~ revRange 50 100)
+  b __LOC__ (N.(intersect (ofA (revRange 1 100)) (ofA (revRange 50 200))   ) =~ revRange 50 100)
 
 let () = 
   b __LOC__ (N.(union (ofA (revRange 1 100)) (ofA (revRange 50 200))   ) =~ revRange 1 200)
@@ -132,24 +132,24 @@ let () =
 
 let () =   
   let a0 = N.empty in 
-  let a1 = N.mergeArray a0 (I.randomRange 0 100) in 
-  let a2 = N.removeArray a1 (I.randomRange 40 100) in 
+  let a1 = N.mergeMany a0 (I.randomRange 0 100) in 
+  let a2 = N.removeMany a1 (I.randomRange 40 100) in 
   let a3 = N.ofArray (I.randomRange 0 39) in 
   let (a4,a5), pres = N.split a1 40 in 
   b __LOC__ (N.eq a1 (N.ofArray (I.randomRange 0 100)));
   b __LOC__ (N.eq a2 a3);
   b __LOC__ pres;
   b __LOC__ (N.eq a3 a4);
-  let a6 = N.remove (N.removeArray a1 (I.randomRange 0 39)) 40 in 
+  let a6 = N.remove (N.removeMany a1 (I.randomRange 0 39)) 40 in 
   b __LOC__ (N.eq a5 a6);
   let a7 = N.remove a1 40 in 
   let (a8,a9), pres2 = N.split a7 40 in 
   b __LOC__ (not pres2); 
   b __LOC__ (N.eq a4 a8);
   b __LOC__ (N.eq a5 a9);
-  let a10 = N.removeArray a9 (I.randomRange 42 2000)  in 
+  let a10 = N.removeMany a9 (I.randomRange 42 2000)  in 
   eq __LOC__ (N.size a10 ) 1; 
-  let a11 = N.removeArray a9 (I.randomRange 0 2000) in 
+  let a11 = N.removeMany a9 (I.randomRange 0 2000) in 
   b __LOC__ (N.isEmpty a11)
 
 

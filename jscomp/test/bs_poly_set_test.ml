@@ -19,17 +19,17 @@ let () =
   let r = I.randomRange 0 30 in 
   
   let u5  = N.add u4 3 in 
-  let u6 = N.removeArray u5 r in   
-  let u7 = N.mergeArray u6 [|0;1;2;0|] in 
-  let u8 = N.removeArray u7 [|0;1;2;3|] in 
-  let u9 = N.mergeArray u8 (I.randomRange 0 20000)  in 
-  let u10 = N.mergeArray u9 (I.randomRange 0 200) in 
-  let u11 = N.removeArray u10 (I.randomRange 0 200) in 
-  let u12 = N.removeArray u11 (I.randomRange 0 1000) in 
-  let u13 = N.removeArray u12 (I.randomRange 0 1000) in 
-  let u14 = N.removeArray u13 (I.randomRange 1000 10000) in 
-  let u15 = N.removeArray u14 (I.randomRange 10000 (20000 - 1)) in 
-  let u16 = N.removeArray u15 (I.randomRange 20000 21000) in
+  let u6 = N.removeMany u5 r in   
+  let u7 = N.mergeMany u6 [|0;1;2;0|] in 
+  let u8 = N.removeMany u7 [|0;1;2;3|] in 
+  let u9 = N.mergeMany u8 (I.randomRange 0 20000)  in 
+  let u10 = N.mergeMany u9 (I.randomRange 0 200) in 
+  let u11 = N.removeMany u10 (I.randomRange 0 200) in 
+  let u12 = N.removeMany u11 (I.randomRange 0 1000) in 
+  let u13 = N.removeMany u12 (I.randomRange 0 1000) in 
+  let u14 = N.removeMany u13 (I.randomRange 1000 10000) in 
+  let u15 = N.removeMany u14 (I.randomRange 10000 (20000 - 1)) in 
+  let u16 = N.removeMany u15 (I.randomRange 20000 21000) in
   b __LOC__ (u0 != u1);  
   b __LOC__ (u2 == u1);
   eq __LOC__ (N.size u4) 28; 
@@ -58,7 +58,7 @@ let () =
   let u19 = N.union u17 u18 in 
   let u20 = N.ofArray (module IntCmp) (I.randomRange 0 200) in 
   b __LOC__ (N.eq u19 u20);
-  let u21 =  N.inter u17 u18 in 
+  let u21 =  N.intersect u17 u18 in 
   eq __LOC__ (N.toArray u21) (I.range 59 100);
   let u22 = N.diff u17 u18 in 
   eq __LOC__ (N.toArray u22) (I.range 0 58);
