@@ -161,38 +161,25 @@ let has0 h key ~hash ~eq =
     memInBucket ~eq key bucket
 
 
-let create0 = C.create0
-let clear0 = C.clear0
-
-let size0 = C.size
-let forEach0 = N.forEach0
-let reduce0 = N.reduce0
-let logStats0 = N.logStats0
-let toArray0 = N.toArray0 
-let toArray h = toArray0 (B.data h)
+let toArray h = N.toArray0 (B.data h)
 (*  Wrapper  *)
-let create dict initialize_size = 
-  B.bag ~data:(create0 initialize_size)
+let make dict initialize_size = 
+  B.bag ~data:(C.create0 initialize_size)
     ~dict 
-let clear h = clear0 (B.data h)
+let clear h = C.clear0 (B.data h)
 
 let size h = C.size (B.data h)                 
 let forEach h f  = N.forEach0 (B.data h) f 
 let reduce h init f = N.reduce0 (B.data h) init f
-let logStats h = logStats0 (B.data h)
+let logStats h = N.logStats0 (B.data h)
 
-let addDone (type a) (type id) (h : (a,id) t) (key:a)  = 
-  let dict,data = B.(dict h, data h) in 
-  let module M = (val  dict) in 
-  addDone0 ~hash:M.hash ~eq:M.eq data key 
+let add (type a) (type id) (h : (a,id) t) (key:a)  = 
+  let module M = (val  B.dict h) in 
+  addDone0 ~hash:M.hash ~eq:M.eq (B.data h) key 
 
-let add h key = addDone h key; h
-  
-let removeDone (type a)  (type id) (h : (a,id) t) (key : a) = 
+let remove (type a)  (type id) (h : (a,id) t) (key : a) = 
   let module M = (val B.dict h) in   
   remove0 ~hash:M.hash ~eq:M.eq (B.data h) key 
-
-let remove h key = removeDone h key; h
 
 let has (type a) (type id) (h : (a,id) t) (key : a) =           
   let module M = (val B.dict h) in   
@@ -200,7 +187,7 @@ let has (type a) (type id) (h : (a,id) t) (key : a) =
 
 let ofArray0  ~hash ~eq arr  = 
   let len = Bs.Array.length arr in 
-  let v = create0 len in 
+  let v = C.create0 len in 
   for i = 0 to len - 1 do 
     addDone0 ~eq ~hash v (A.getUnsafe arr i)
   done ;
@@ -217,18 +204,17 @@ let ofArray (type a) (type id)
     arr
     ~dict:(dict:(a,id) Bs_Hash.t)  =     
   let module M = (val dict) in 
-  B.bag ~dict 
-    ~data:M.(ofArray0 ~eq~hash arr)
+  B.bag ~dict ~data:M.(ofArray0 ~eq~hash arr)
 
-let mergeArrayDone (type a) (type id)
-    (h : (a,id) t) arr = 
-  let data = B.data h in 
+let mergeMany (type a) (type id) (h : (a,id) t) arr = 
   let module M = (val B.dict h) in
-  M.(addArray0 ~hash ~eq data arr)
+  addArray0 ~hash:M.hash ~eq:M.eq (B.data h) arr
 
-let mergeArray h arr = mergeArrayDone h arr; h
+
   
 let getData = B.data
 let getDict = B.dict
 let packDictData = B.bag 
 let getBucketHistogram h = N.getBucketHistogram (B.data h)
+
+let isEmpty h = C.size (B.data h) = 0

@@ -72,7 +72,7 @@ let rec removeBucket  h h_buckets  i (key : key) prec cell =
     | Some cell_next ->
       removeBucket h h_buckets i key cell cell_next
 
-let removeDone h (key : key)=  
+let remove h (key : key)=  
   let h_buckets = C.buckets h in 
   let i = hash key  land (Array.length h_buckets - 1) in  
   let l = (A.getUnsafe h_buckets i) in 
@@ -91,7 +91,7 @@ let removeDone h (key : key)=
       | Some next_cell -> 
         removeBucket h h_buckets i key cell next_cell
 
-let remove h key = removeDone h key; h
+
 
 
 let rec addBucket  h buckets_len (key : key)  cell = 
@@ -104,7 +104,7 @@ let rec addBucket  h buckets_len (key : key)  cell =
       if C.size h > buckets_len lsl 1 then resize  h
     | Some n -> addBucket  h buckets_len key  n
 
-let addDone h (key : key)  =
+let add h (key : key)  =
   let h_buckets = C.buckets h in 
   let buckets_len = Array.length h_buckets in 
   let i = hash key land (buckets_len - 1) in 
@@ -117,8 +117,6 @@ let addDone h (key : key)  =
     if C.size h > buckets_len lsl 1 then resize  h
   | Some cell -> 
     addBucket  h buckets_len key cell
-
-let add h key = addDone h key; h
 
 
 let rec memInBucket (key : key) cell = 
@@ -139,7 +137,7 @@ let has h key =
     memInBucket key bucket
 
 
-let create = C.create0
+let make = C.create0
 let clear = C.clear0
 
 let size = C.size
@@ -150,22 +148,21 @@ let toArray = N.toArray0
 
 let ofArray arr  = 
   let len = Bs.Array.length arr in 
-  let v = create len in 
+  let v = make len in 
   for i = 0 to len - 1 do 
-    addDone v (A.getUnsafe arr i)
+    add v (A.getUnsafe arr i)
   done ;
   v
 
 (* TOOD: optimize heuristics for resizing *)  
-let mergeArrayDone h arr =   
+let mergeMany h arr =   
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
-    addDone h (A.getUnsafe arr i)
+    add h (A.getUnsafe arr i)
   done
 
 
-let mergeArray h arr =   
-  mergeArrayDone h arr; h
-
 let copy = N.copy
 let getBucketHistogram = N.getBucketHistogram 
+
+let isEmpty h = C.size h = 0

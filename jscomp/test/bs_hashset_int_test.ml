@@ -25,15 +25,15 @@ let () =
 
 let () =
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
-  let v = N.create 40 in 
-  N.mergeArrayDone v u ;
+  let v = N.make 40 in 
+  N.mergeMany v u ;
   eq __LOC__ (N.size v) 100_001;
   for i = 0 to 1_000 do  
-    N.removeDone v i 
+    N.remove v i 
   done ; 
   eq __LOC__ (N.size v ) 99_000;
   for i = 0 to 2_000 do  
-    N.removeDone v i 
+    N.remove v i 
   done ; 
   eq __LOC__ (N.size v ) 98_000
 module A = Bs_Array
@@ -43,10 +43,10 @@ let () =
   let u1 = N.copy u0 in 
   eq __LOC__ (N.toArray u0) (N.toArray u1);
   for i = 0 to 2000 do 
-    N.removeDone u1 i 
+    N.remove u1 i 
   done ;  
   for i = 0 to 1000 do 
-    N.removeDone u0 i 
+    N.remove u0 i 
   done ;
   let v0 = (A.concat (I.range 0 1000) (N.toArray u0)) in 
   let v1 = (A.concat (I.range 0 2000) (N.toArray u1)) in 

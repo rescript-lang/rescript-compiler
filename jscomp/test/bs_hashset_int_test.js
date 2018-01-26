@@ -48,20 +48,20 @@ eq("File \"bs_hashset_int_test.ml\", line 24, characters 5-12", sum2(v), 6825);
 
 var u$1 = Bs_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
-var v$1 = Bs_HashSetInt.create(40);
+var v$1 = Bs_HashSetInt.make(40);
 
-Bs_HashSetInt.mergeArrayDone(v$1, u$1);
+Bs_HashSetInt.mergeMany(v$1, u$1);
 
 eq("File \"bs_hashset_int_test.ml\", line 30, characters 5-12", v$1.size, 100001);
 
 for(var i = 0; i <= 1000; ++i){
-  Bs_HashSetInt.removeDone(v$1, i);
+  Bs_HashSetInt.remove(v$1, i);
 }
 
 eq("File \"bs_hashset_int_test.ml\", line 34, characters 5-12", v$1.size, 99000);
 
 for(var i$1 = 0; i$1 <= 2000; ++i$1){
-  Bs_HashSetInt.removeDone(v$1, i$1);
+  Bs_HashSetInt.remove(v$1, i$1);
 }
 
 eq("File \"bs_hashset_int_test.ml\", line 38, characters 5-12", v$1.size, 98000);
@@ -73,11 +73,11 @@ var u1 = Bs_HashSetInt.copy(u0);
 eq("File \"bs_hashset_int_test.ml\", line 44, characters 5-12", Bs_HashSetInt.toArray(u0), Bs_HashSetInt.toArray(u1));
 
 for(var i$2 = 0; i$2 <= 2000; ++i$2){
-  Bs_HashSetInt.removeDone(u1, i$2);
+  Bs_HashSetInt.remove(u1, i$2);
 }
 
 for(var i$3 = 0; i$3 <= 1000; ++i$3){
-  Bs_HashSetInt.removeDone(u0, i$3);
+  Bs_HashSetInt.remove(u0, i$3);
 }
 
 var v0 = Bs_Array.concat(Array_data_util.range(0, 1000), Bs_HashSetInt.toArray(u0));

@@ -37,14 +37,14 @@ module Int =
       ~hash:(fun [@bs] x -> Hashtbl.hash x))
 
 let empty = 
-  Bs.HashMap.create ~dict:(module Int) 500_000
+  Bs.HashMap.make ~dict:(module Int) 500_000
 module N = Bs.HashMap
 let bench() = 
   let count  = 1_000_000 in   
-  let add = N.setDone in 
+  (* let add = N.setDone in  *)
   let mem = N.has in
   for i  = 0 to  count do      
-    add empty i i
+    N.set empty i i
   done ;
   for i = 0 to count do 
     assert (mem empty i)
@@ -63,24 +63,23 @@ let initial_size = 1_000_000
 module M = Bs.HashMap
 let bench2 (type t) (m : (string,t) Bs.Hash.t) = 
   let empty = 
-    M.create ~dict:m initial_size in
+    M.make ~dict:m initial_size in
   let module String = (val m) in     
-  let hash = String.hash in 
-  let eq = String.eq in 
-  let table = M.getData empty in 
+  (* let hash = String.hash in 
+  let eq = String.eq in  *)
+  (* let table = M.getData empty in  *)
   for i  = 0 to  count do  
-     Bs.HashMap.setDone0 ~hash ~eq
-      table (string_of_int i) i 
+     M.set
+      empty (string_of_int i) i 
   done ;
   for i = 0 to count do 
-    assert (Bs.HashMap.has0 
-              ~hash ~eq
-              table (string_of_int i))
+    assert (M.has
+              empty (string_of_int i))
   done; 
   for i = 0 to count do 
-    Bs.HashMap.remove0 ~hash ~eq table (string_of_int i)
+    M.remove empty (string_of_int i)
   done ;
-  assert (Bs.HashMap.size0 table = 0)  
+  assert (M.size empty = 0)  
 
 (* Bs.HashMap.logStats empty *)
 
@@ -108,10 +107,10 @@ module Sx = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y ))
 
 let bench4 () = 
   let table = 
-    Bs.HashMapString.create initial_size in
+    Bs.HashMapString.make initial_size in
 
   for i  = 0 to  count do  
-    Bs.HashMapString.setDone
+    Bs.HashMapString.set
       table (string_of_int i) i 
   done ;
   for i = 0 to count do 
@@ -119,35 +118,35 @@ let bench4 () =
               table (string_of_int i))
   done; 
   for i = 0 to count do 
-    Bs.HashMapString.removeDone table (string_of_int i)
+    Bs.HashMapString.remove table (string_of_int i)
   done ;
   assert (Bs.HashMapString.size table = 0)  
 
 let bench5 () =   
   let table = 
-    Bs.HashMap.create ~dict:(module Int) initial_size in 
-  let table_data = M.getData table in   
-  let hash = Int.hash in 
-  let eq = Int.eq in 
+    Bs.HashMap.make ~dict:(module Int) initial_size in 
+  (* let table_data = M.getData table in    *)
+  (* let hash = Int.hash in 
+  let eq = Int.eq in  *)
   [%time for i  = 0 to  count do  
-      Bs.HashMap.setDone0 ~hash ~eq
-        table_data i i 
+      Bs.HashMap.set 
+        table i i 
     done] ;
   [%time for i = 0 to count do 
-      assert (Bs.HashMap.has0 ~eq ~hash
-                table_data i)
+      assert (Bs.HashMap.has
+                table i)
     done]; 
   [%time for i = 0 to count do 
-      Bs.HashMap.remove0 ~eq ~hash table_data i
+      Bs.HashMap.remove  table i
     done ];
   assert (Bs.HashMap.size table = 0)   
 
 let bench6 () = 
   let table = 
-    Bs.HashMapInt.create initial_size in
+    Bs.HashMapInt.make initial_size in
 
   for i  = 0 to  count do  
-    Bs.HashMapInt.setDone
+    Bs.HashMapInt.set
       table i i 
   done ;
   for i = 0 to count do 
@@ -155,7 +154,7 @@ let bench6 () =
               table i)
   done; 
   for i = 0 to count do 
-    Bs.HashMapInt.removeDone table i
+    Bs.HashMapInt.remove table i
   done ;
   assert (Bs.HashMapInt.size table = 0)  
 
@@ -163,13 +162,13 @@ module S = Bs.HashSetInt
 let bench7 () = 
   let table = 
     (* [%time  *)
-    S.create (initial_size* 2)
+    S.make (initial_size* 2)
     (* ]  *)
     in
 
   (* [%time  *)
   for i  = 0 to  count do  
-    S.addDone 
+    S.add
       table i 
   done 
   (* ] *)
@@ -183,7 +182,7 @@ let bench7 () =
   ; 
   (* [%time *)
    for i = 0 to count do 
-    S.removeDone table i
+    S.remove table i
   done 
   (* ] *)
   ;

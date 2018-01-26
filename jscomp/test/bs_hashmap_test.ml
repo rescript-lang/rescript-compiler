@@ -12,7 +12,7 @@ let eq = fun[@bs] (x : int) y ->  x = y
 let hash = fun[@bs] (x : int) ->  Hashtbl.hash x 
 let cmp = fun [@bs] (x : int) y -> compare x y
 module Y = (val Bs.Hash.make ~eq ~hash)
-let empty : (int, int, _) N.t = N.create ~dict:(module Y) 30 
+let empty : (int, int, _) N.t = N.make ~dict:(module Y) 30 
 
 (*
 [%bs.hash {
@@ -27,7 +27,7 @@ let add = fun [@bs] x y -> x + y
 
 
 let () = 
-  N.mergeArrayDone empty [|1,1;2,3;3,3; 2,2|];
+  N.mergeMany empty [|1,1;2,3;3,3; 2,2|];
   eqx __LOC__ (N.get empty 2) (Some 2);
   eqx __LOC__ (N.size empty) 3
   
@@ -42,15 +42,15 @@ let () =
 
 let () = 
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
-  let v = N.create ~dict:(module Y) 40 in 
-  N.mergeArrayDone v (A.zip u u);
+  let v = N.make ~dict:(module Y) 40 in 
+  N.mergeMany v (A.zip u u);
   eqx __LOC__ (N.size v) 100_001;
   for i = 0 to 1_000 do 
-    N.removeDone v i 
+    N.remove v i 
   done; 
   eqx __LOC__ (N.size v) 99_000;
   for i = 0 to 2_000 do 
-    N.removeDone v i 
+    N.remove v i 
   done ;
   eqx __LOC__ (N.size v) 98_000;
   b __LOC__ (A.every (I.range 2_001 100_000) (fun [@bs] x -> N.has v x ))
