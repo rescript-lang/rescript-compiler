@@ -81,7 +81,7 @@ val lengthNode : 'a node -> int
 val length0 : 'a t0 -> int
 
 val toList0 : 'a t0 -> 'a list
-val checkInvariant : _ t0 -> bool
+val checkInvariantInternal : _ t0 -> bool
 val fillArray: 'a node -> int -> 'a array -> int 
 val toArray0 : 'a t0 -> 'a array
 val ofSortedArrayAux : 'a array -> int -> int -> 'a t0

@@ -117,4 +117,4 @@ val split:  t -> elt -> (t * t) * bool
 
 
 
-val checkInvariant: t -> bool 
+val checkInvariantInternal: t -> bool 

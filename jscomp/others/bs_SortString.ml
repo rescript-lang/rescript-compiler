@@ -1,10 +1,10 @@
 # 4 "sort.cppo.ml"
-type elt = string
+type element = string
 
 # 9
 module A = Bs_Array 
 
-let rec sortedLengthAuxMore (xs : elt array) prec acc len = 
+let rec sortedLengthAuxMore (xs : element array) prec acc len = 
   if acc >= len then acc 
   else 
     let v = A.getUnsafe xs acc in 
@@ -12,7 +12,7 @@ let rec sortedLengthAuxMore (xs : elt array) prec acc len =
       sortedLengthAuxMore xs v (acc + 1) len 
     else acc   
 
-let rec sortedLengthAuxLess (xs : elt array) prec acc len = 
+let rec sortedLengthAuxLess (xs : element array) prec acc len = 
   if acc >= len then acc 
   else 
     let v = A.getUnsafe xs acc in 
@@ -20,7 +20,7 @@ let rec sortedLengthAuxLess (xs : elt array) prec acc len =
       sortedLengthAuxLess xs v (acc + 1) len
     else acc   
     
-let strictlySortedLength (xs : elt array) = 
+let strictlySortedLength (xs : element array) = 
   let len = A.length xs in 
   match len with 
   | 0 | 1 -> len 
@@ -33,11 +33,11 @@ let strictlySortedLength (xs : elt array) =
       - (sortedLengthAuxMore xs x1 2 len)
     else 1  
 
-let rec isSortedAux (a : elt array) i  last_bound = 
+let rec isSortedAux (a : element array) i  last_bound = 
   (* when [i = len - 1], it reaches the last element*)
   if i = last_bound then true 
   else 
-  if (A.getUnsafe a i) <= (A.getUnsafe a (i+1))  then 
+  if A.getUnsafe a i <= A.getUnsafe a (i+1)  then 
     isSortedAux a (i + 1)  last_bound 
   else false 
 
@@ -50,7 +50,7 @@ let isSorted a =
 
 let cutoff = 5
 
-let merge (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+let merge (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
   let src1r = src1ofs + src1len and src2r = src2ofs + src2len in
   let rec loop i1 s1 i2 s2 d =
     if  s1 <= s2  then begin
@@ -73,7 +73,7 @@ let merge (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
   
 
 
-let union (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+let union (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
   let src1r = src1ofs + src1len in 
   let src2r = src2ofs + src2len in
   let rec loop i1 s1 i2 s2 d =
@@ -122,7 +122,7 @@ let union (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
     src2ofs 
     (A.getUnsafe src2 src2ofs) dstofs
   
-let inter (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+let intersect (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
   let src1r = src1ofs + src1len in 
   let src2r = src2ofs + src2len in
   let rec loop i1 s1 i2 s2 d =
@@ -158,7 +158,7 @@ let inter (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
     src2ofs 
     (A.getUnsafe src2 src2ofs) dstofs    
 
-let diff (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
+let diff (src : element array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
   let src1r = src1ofs + src1len in 
   let src2r = src2ofs + src2len in
   let rec loop i1 s1 i2 s2 d =
@@ -197,7 +197,7 @@ let diff (src : elt array) src1ofs src1len src2 src2ofs src2len dst dstofs  =
     src2ofs 
     (A.getUnsafe src2 src2ofs) dstofs        
 
-let insertionSort (src : elt array) srcofs dst dstofs len  =
+let insertionSort (src : element array) srcofs dst dstofs len  =
   for i = 0 to len - 1 do
     let e = (A.getUnsafe src (srcofs + i)) in
     let j = ref (dstofs + i - 1) in
@@ -208,7 +208,7 @@ let insertionSort (src : elt array) srcofs dst dstofs len  =
     A.setUnsafe dst (!j + 1) e;
   done    
 
-let rec sortTo (src : elt array) srcofs dst dstofs len  =
+let rec sortTo (src : element array) srcofs dst dstofs len  =
   if len <= cutoff then insertionSort src srcofs dst dstofs len  
   else begin
     let l1 = len / 2 in
@@ -218,7 +218,7 @@ let rec sortTo (src : elt array) srcofs dst dstofs len  =
     merge src (srcofs + l2) l1 dst (dstofs + l1) l2 dst dstofs ;
   end    
 
-let stableSort  (a : elt array)  =
+let stableSortInPlace  (a : element array)  =
   let l = A.length a in
   if l <= cutoff then insertionSort a 0 a 0 l  
   else begin
@@ -230,7 +230,9 @@ let stableSort  (a : elt array)  =
     merge a l2 l1 t 0 l2 a 0 ;
   end
 
-let rec binarySearchAux (arr : elt array) lo hi key =   
+let stableSort a = let b = A.copy a  in stableSortInPlace b; b 
+
+let rec binarySearchAux (arr : element array) lo hi key =   
 
     let mid = (lo + hi)/2 in 
     let midVal = A.getUnsafe arr mid in 
@@ -247,7 +249,7 @@ let rec binarySearchAux (arr : elt array) lo hi key =
         else - (hi + 1)
       else binarySearchAux arr mid hi key 
 
-let binarySearch (sorted : elt array) key  : int =  
+let binarySearch (sorted : element array) key  : int =  
   let len = A.length sorted in 
   if len = 0 then -1 
   else 

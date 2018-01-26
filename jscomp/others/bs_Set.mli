@@ -96,7 +96,7 @@ val getExn: ('elt, 'id) t -> 'elt -> 'elt
 
 val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
                                     
-val checkInvariant: _ t -> bool
+val checkInvariantInternal: _ t -> bool
 
 (****************************************************************************)
 (** Below are operations only when better performance needed,

@@ -13,10 +13,10 @@ let (++) = A.concat
 let () = 
   let v = N.empty () in 
   for i = 0 to 1_00_000 do 
-    (* [%assert (N.checkInvariant !v)]; *)
+    (* [%assert (N.checkInvariantInternal !v)]; *)
      N.add v i 
   done ;
-  b __LOC__ (N.checkInvariant v);
+  b __LOC__ (N.checkInvariantInternal v);
   b __LOC__ @@ R.every 0  1_00_000 (fun [@bs] i -> 
     N.has v i 
    );  
@@ -65,7 +65,7 @@ let () =
 let () =   
   let id loc x = 
     let u = (N.ofSortedArrayUnsafe x) in
-    b loc (N.checkInvariant u );
+    b loc (N.checkInvariantInternal u );
     b loc (A.every2 (N.toArray u) x (fun[@bs] x y -> x = y) )
   in 
   id __LOC__ [||] ; 

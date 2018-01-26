@@ -84,9 +84,9 @@ var v0 = Bs_Array.concat(Array_data_util.range(0, 1000), Bs_HashSetInt.toArray(u
 
 var v1 = Bs_Array.concat(Array_data_util.range(0, 2000), Bs_HashSetInt.toArray(u1));
 
-Bs_SortInt.stableSort(v0);
+Bs_SortInt.stableSortInPlace(v0);
 
-Bs_SortInt.stableSort(v1);
+Bs_SortInt.stableSortInPlace(v1);
 
 eq("File \"bs_hashset_int_test.ml\", line 55, characters 5-12", v0, v1);
 

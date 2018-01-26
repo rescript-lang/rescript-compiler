@@ -29,7 +29,7 @@ for(var i = 0; i <= 100000; ++i){
   Bs_SetIntM.add(v, i);
 }
 
-b("File \"bs_mutable_set_test.ml\", line 19, characters 4-11", Bs_internalAVLset.checkInvariant(v.data));
+b("File \"bs_mutable_set_test.ml\", line 19, characters 4-11", Bs_internalAVLset.checkInvariantInternal(v.data));
 
 b("File \"bs_mutable_set_test.ml\", line 20, characters 4-11", Bs_Range.every(0, 100000, (function (i) {
             return Bs_internalSetInt.mem(v.data, i);
@@ -107,7 +107,7 @@ function id(loc, x) {
   var u = {
     data: Bs_internalAVLset.ofSortedArrayUnsafe0(x)
   };
-  b(loc, Bs_internalAVLset.checkInvariant(u.data));
+  b(loc, Bs_internalAVLset.checkInvariantInternal(u.data));
   return b(loc, Bs_Array.every2(Bs_internalAVLset.toArray0(u.data), x, (function (x, y) {
                     return +(x === y);
                   })));

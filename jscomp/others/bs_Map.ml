@@ -350,8 +350,8 @@ let has (type k) (type id)  (map : (k,_,id) t) x =
   let module X = (val B.dict map) in 
   N.mem0 ~cmp:X.cmp (B.data map) x
 
-let checkInvariant m  =
-  N.checkInvariant (B.data m)
+let checkInvariantInternal m  =
+  N.checkInvariantInternal (B.data m)
 let empty0 = N.empty0      
 let ofArray0 = N.ofArray0
 let isEmpty0 = N.isEmpty0

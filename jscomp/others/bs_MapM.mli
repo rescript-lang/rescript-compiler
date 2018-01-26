@@ -86,7 +86,7 @@ val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
 val getExn:  ('k, 'a, 'id) t -> 'k ->  'a 
-val checkInvariant: _ t -> bool   
+val checkInvariantInternal: _ t -> bool   
 (****************************************************************************)
 
 (*TODO: add functional [merge, partition, keepBy, split]*)

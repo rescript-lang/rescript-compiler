@@ -50,8 +50,8 @@ let () =
   done ;
   let v0 = (A.concat (I.range 0 1000) (N.toArray u0)) in 
   let v1 = (A.concat (I.range 0 2000) (N.toArray u1)) in 
-  SI.stableSort v0; 
-  SI.stableSort v1;
+  SI.stableSortInPlace v0; 
+  SI.stableSortInPlace v1;
   eq __LOC__  v0 v1 
   
 let () =

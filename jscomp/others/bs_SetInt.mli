@@ -33,6 +33,8 @@ type t
 (** The type of sets. *)
 
 val empty: t
+
+
 val ofArray: elt array -> t
 val ofSortedArrayUnsafe: elt array -> t     
 val isEmpty: t -> bool
@@ -112,4 +114,4 @@ val split:  t -> elt -> (t * t) * bool
 
 
 
-val checkInvariant: t -> bool 
+val checkInvariantInternal: t -> bool 

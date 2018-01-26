@@ -108,7 +108,7 @@ val split: ('elt, 'id) t -> 'elt ->  (('elt, 'id) t * ('elt, 'id) t) * bool
     [l,r] are freshly made, no sharing with [s]   
 *)
 
-val checkInvariant: _ t -> bool
+val checkInvariantInternal: _ t -> bool
 
 (*
   [add0] was not exposed for various reasons:

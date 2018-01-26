@@ -38,7 +38,7 @@ let () =
   let v = A.zip u u in 
   let xx = N.ofArray ~dict:(module Y) v  in 
   eqx __LOC__ (N.size xx) 91;
-  eqx __LOC__ (So.sortByCont (N.keysToArray xx) cmp) (I.range 30 120)
+  eqx __LOC__ (So.stableSortBy (N.keysToArray xx) cmp) (I.range 30 120)
 
 let () = 
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 

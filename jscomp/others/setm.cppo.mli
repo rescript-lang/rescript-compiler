@@ -99,6 +99,6 @@ val split:  t -> elt  -> (t * t) * bool
     [split s key] return a fresh copy of each
 *)
 
-val checkInvariant: t ->  bool
+val checkInvariantInternal: t ->  bool
 
 

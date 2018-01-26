@@ -347,7 +347,7 @@ let partition0 = N.partitionShared0
 let getData = B.data
 let getDict = B.dict
 let packDictData = B.bag                
-let checkInvariant d = N.checkInvariant (B.data d)
+let checkInvariantInternal d = N.checkInvariantInternal (B.data d)
 
 
 

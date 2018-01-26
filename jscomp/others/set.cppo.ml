@@ -29,7 +29,7 @@ let size = N.length0
 let toList = N.toList0
 let toArray = N.toArray0
 let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe0
-let checkInvariant = N.checkInvariant
+let checkInvariantInternal = N.checkInvariantInternal
 
 let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 

@@ -27,7 +27,7 @@ bs_Hash.cmj : bs_Hash.cmi
 bs_Queue.cmj : bs_Array.cmj bs_Queue.cmi
 bs_List.cmj : bs_Array.cmj bs_List.cmi
 bs_Sort.cmj : bs_Array.cmj bs_Sort.cmi
-bs_Range.cmj :
+bs_Range.cmj : bs_Range.cmi
 bs_internalBucketsType.cmj : bs_Array.cmj bs_internalBucketsType.cmi
 bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj \
     bs_internalSetBuckets.cmi
@@ -108,6 +108,7 @@ bs_Hash.cmi :
 bs_Queue.cmi :
 bs_List.cmi :
 bs_Sort.cmi :
+bs_Range.cmi :
 bs_internalBucketsType.cmi :
 bs_internalSetBuckets.cmi : bs_internalBucketsType.cmi
 bs_internalBuckets.cmi : bs_internalBucketsType.cmi

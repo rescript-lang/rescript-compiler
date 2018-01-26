@@ -51,7 +51,7 @@ let toList d = N.toList0 (data d)
 let toArray d = N.toArray0 (data d)
 let keysToArray d = N.keysToArray0 (data d)
 let valuesToArray d = N.valuesToArray0 (data d)
-let checkInvariant d = N.checkInvariant (data d)
+let checkInvariantInternal d = N.checkInvariantInternal (data d)
 let has d v = I.mem (data d) v 
 
 

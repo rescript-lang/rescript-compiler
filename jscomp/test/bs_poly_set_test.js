@@ -339,7 +339,7 @@ b("File \"bs_poly_set_test.ml\", line 129, characters 4-11", Bs_List.every(/* ::
             ]
           ]
         ], (function (x) {
-            return Bs_internalAVLset.checkInvariant(x.data);
+            return Bs_internalAVLset.checkInvariantInternal(x.data);
           })));
 
 var a = Bs_Set.ofArray(IntCmp, /* int array */[]);

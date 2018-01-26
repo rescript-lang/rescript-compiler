@@ -89,7 +89,7 @@ val get: 'a t ->  key -> 'a option
 val getNull: 'a t -> key -> 'a Js.null
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a
-val checkInvariant: _ t -> bool   
+val checkInvariantInternal: _ t -> bool   
 
 (****************************************************************************)
 

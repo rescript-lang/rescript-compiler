@@ -188,7 +188,7 @@ b("File \"bs_poly_mutable_set_test.ml\", line 120, characters 4-11", Bs_List.eve
             ]
           ]
         ], (function (x) {
-            return Bs_internalAVLset.checkInvariant(x.data);
+            return Bs_internalAVLset.checkInvariantInternal(x.data);
           })));
 
 Mt.from_pair_suites("bs_poly_mutable_set_test.ml", suites[0]);

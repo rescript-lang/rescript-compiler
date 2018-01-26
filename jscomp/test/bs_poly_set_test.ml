@@ -126,7 +126,7 @@ let () =
   eq __LOC__ (N.toList a9) (L.makeBy 800 (fun[@bs] i -> i + 201));
   eq __LOC__ (N.minimum a8) (Some 0);
   eq __LOC__ (N.minimum a9) (Some 201);
-  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariant x))
+  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariantInternal x))
 
 
 let () =   

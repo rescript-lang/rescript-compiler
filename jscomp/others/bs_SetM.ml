@@ -1,4 +1,29 @@
 
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
 module N = Bs_internalAVLset
 module B = Bs_BagM
 module A = Bs_Array
@@ -147,7 +172,7 @@ let split (type elt) (type id) (d : (elt,id) t)  key  =
   let dict, s = B.dict d, B.data d  in 
   let module M = (val dict ) in 
   let arr = N.toArray0 s in 
-  let i = S.binarySearch arr key (Bs_Cmp.getCmp M.cmp)  in   
+  let i = S.binarySearchBy arr key (Bs_Cmp.getCmp M.cmp)  in   
   let len = A.length arr in 
   if i < 0 then 
     let next = - i -1 in 
@@ -206,8 +231,8 @@ let toArray d =
   N.toArray0 (B.data d)
 let ofSortedArrayUnsafe xs ~dict : _ t =
   B.bag ~data:(N.ofSortedArrayUnsafe0 xs) ~dict   
-let checkInvariant d = 
-  N.checkInvariant (B.data d)
+let checkInvariantInternal d = 
+  N.checkInvariantInternal (B.data d)
 let cmp (type elt) (type id) (d0 : (elt,id) t) d1 = 
   let module M = (val B.dict d0) in 
   N.cmp0 ~cmp:M.cmp (B.data d0) (B.data d1)
@@ -285,7 +310,7 @@ let intersect (type elt) (type id) (a : (elt,id) t) b  : _ t =
     then empty dict
     else 
       let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
-      let k = S.inter tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+      let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       B.bag ~data:(N.ofSortedArrayAux tmp2 0 k)
         ~dict
 let diff (type elt) (type id) (a : (elt,id) t) b : _ t = 

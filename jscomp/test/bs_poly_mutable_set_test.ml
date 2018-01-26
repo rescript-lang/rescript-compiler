@@ -117,7 +117,7 @@ let () =
   let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
   b __LOC__ (N.eq a2 a4);
-  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariant x))
+  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariantInternal x))
 
 
 

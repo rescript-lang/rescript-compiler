@@ -98,8 +98,8 @@ let toArray d =
   N.toArray0 (data d)
 let ofSortedArrayUnsafe xs =
   t ~data:(N.ofSortedArrayUnsafe0 xs)    
-let checkInvariant d = 
-  N.checkInvariant (data d)
+let checkInvariantInternal d = 
+  N.checkInvariantInternal (data d)
 
 let add d k = 
   let old_data = data d in 
@@ -272,7 +272,7 @@ let intersect dataa datab  =
        then empty ()
     else 
     let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
-    let k = S.inter tmp 0 sizea tmp sizea sizeb tmp2 0  in 
+    let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0  in 
     t ~data:(N.ofSortedArrayAux tmp2 0 k)
   
 let diff dataa datab : t = 

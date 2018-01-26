@@ -27,7 +27,7 @@ let sum2 xs ys =
 let () = 
   let u = (N.makeBy 5 (fun[@bs] i -> i * i )) in 
 
-  (* N.checkInvariant u ; *)
+  (* N.checkInvariantInternal u ; *)
   let f i = 
     eq __LOC__ (N.getExn u i) (i * i) in 
   for i = 0 to 4 do 

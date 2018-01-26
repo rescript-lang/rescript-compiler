@@ -282,13 +282,13 @@ let rec toListAux accu n =
 let toList0 s =
   toListAux [] s
 
-let rec checkInvariant (v : _ t0) = 
+let rec checkInvariantInternal (v : _ t0) = 
   match toOpt v with 
   | None -> true 
   | Some n -> 
     let l,r = left n , right n in 
     let diff = height l - height r  in 
-    diff <=2 && diff >= -2 && checkInvariant l && checkInvariant r 
+    diff <=2 && diff >= -2 && checkInvariantInternal l && checkInvariantInternal r 
 
 
 

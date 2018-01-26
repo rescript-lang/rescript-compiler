@@ -213,13 +213,13 @@ var v$11 = Bs_Array.makeByAndShuffle(1000000, (function (i) {
 
 var u$1 = Bs_SetInt.ofArray(v$11);
 
-b("File \"bs_set_int_test.ml\", line 102, characters 4-11", Bs_SetInt.checkInvariant(u$1));
+b("File \"bs_set_int_test.ml\", line 102, characters 4-11", Bs_SetInt.checkInvariantInternal(u$1));
 
 var firstHalf = Bs_Array.slice(v$11, 0, 2000);
 
 var xx = Bs_Array.reduce(firstHalf, u$1, Bs_SetInt.remove);
 
-b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Bs_SetInt.checkInvariant(u$1));
+b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Bs_SetInt.checkInvariantInternal(u$1));
 
 b("File \"bs_set_int_test.ml\", line 107, characters 4-11", Bs_SetInt.eq(Bs_SetInt.union(Bs_SetInt.ofArray(firstHalf), xx), u$1));
 

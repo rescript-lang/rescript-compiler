@@ -39,7 +39,7 @@ let toList = N.toList0
 let toArray = N.toArray0 
 let keysToArray = N.keysToArray0
 let valuesToArray = N.valuesToArray0 
-let checkInvariant = N.checkInvariant
+let checkInvariantInternal = N.checkInvariantInternal
 
 let rec set  t (newK : key) (newD : _)  = 
   match N.toOpt t with

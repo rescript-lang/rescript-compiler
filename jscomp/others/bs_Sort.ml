@@ -143,7 +143,7 @@ let union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
     (A.getUnsafe src2 src2ofs) dstofs
 
 
-let inter src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+let intersect src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   let src1r = src1ofs + src1len in 
   let src2r = src2ofs + src2len in
   let rec loop i1 s1 i2 s2 d =
@@ -244,7 +244,7 @@ let rec sortTo src srcofs dst dstofs len cmp =
 
 
 
-let stableSortBy  a cmp =
+let stableSortInPlaceBy  a cmp =
   let l = A.length a in
   if l <= cutoff then insertionSort a 0 a 0 l cmp 
   else begin
@@ -256,16 +256,8 @@ let stableSortBy  a cmp =
     merge a l2 l1 t 0 l2 a 0 cmp;
   end
 
-
-
-external sortBy : 
-  'a array -> ('a -> 'a -> int [@bs]) -> unit = 
-  "sort" [@@bs.send]
-
-let sortByCont xs cmp = 
-  sortBy xs cmp ; 
-  xs   
-
+let stableSortBy a cmp = let b = A.copy a in stableSortInPlaceBy b cmp; b
+  
 (* 
   [binarySearchAux arr lo hi key cmp]
   range [lo, hi]
@@ -288,7 +280,7 @@ let rec binarySearchAux arr lo hi key cmp =
     else - (hi + 1)
   else binarySearchAux arr mid hi key cmp 
 
-let binarySearch sorted key cmp : int =  
+let binarySearchBy sorted key cmp : int =  
   let len = A.length sorted in 
   if len = 0 then -1 
   else 

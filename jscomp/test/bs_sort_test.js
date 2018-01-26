@@ -36,7 +36,7 @@ function inters(xs, ys) {
   var lenX = xs.length;
   var lenY = ys.length;
   var o = new Array(lenX);
-  var v = Bs_Sort.inter(xs, 0, lenX, ys, 0, lenY, o, 0, cmp);
+  var v = Bs_Sort.intersect(xs, 0, lenX, ys, 0, lenY, o, 0, cmp);
   o.length = v;
   return o;
 }
@@ -88,13 +88,13 @@ eq("File \"bs_sort_test.ml\", line 48, characters 5-12", diffs(Array_data_util.r
 
 b("File \"bs_sort_test.ml\", line 50, characters 4-11", Bs_Range.every(0, 200, (function (i) {
             var v = Array_data_util.randomRange(0, i);
-            Bs_Sort.stableSortBy(v, cmp);
+            Bs_Sort.stableSortInPlaceBy(v, cmp);
             return Bs_Sort.isSorted(v, cmp);
           })));
 
 b("File \"bs_sort_test.ml\", line 56, characters 4-11", Bs_Range.every(0, 200, (function (i) {
             var v = Array_data_util.randomRange(0, i);
-            v.sort(cmp);
+            Bs_Sort.stableSortInPlaceBy(v, cmp);
             return Bs_Sort.isSorted(v, cmp);
           })));
 
@@ -120,7 +120,7 @@ var u2 = Bs_Array.copy(u);
 
 console.time("bs_sort_test.ml 80");
 
-Bs_Sort.stableSortBy(u, cmp);
+Bs_Sort.stableSortInPlaceBy(u, cmp);
 
 console.timeEnd("bs_sort_test.ml 80");
 
@@ -128,7 +128,7 @@ b("File \"bs_sort_test.ml\", line 81, characters 4-11", Bs_Sort.isSorted(u, cmp)
 
 console.time("bs_sort_test.ml 82");
 
-Bs_SortInt.stableSort(u2);
+Bs_SortInt.stableSortInPlace(u2);
 
 console.timeEnd("bs_sort_test.ml 82");
 
@@ -136,7 +136,7 @@ b("File \"bs_sort_test.ml\", line 83, characters 4-11", Bs_Sort.isSorted(u2, cmp
 
 console.time("bs_sort_test.ml 84");
 
-u1.sort(cmp);
+Bs_Sort.stableSortInPlaceBy(u1, cmp);
 
 console.timeEnd("bs_sort_test.ml 84");
 
@@ -157,9 +157,9 @@ var u$1 = /* array */[
   ]
 ];
 
-eq("File \"bs_sort_test.ml\", line 90, characters 5-12", (Bs_Sort.stableSortBy(u$1, (function (param, param$1) {
-              return param[0] - param$1[0] | 0;
-            })), u$1), /* array */[
+eq("File \"bs_sort_test.ml\", line 90, characters 5-12", Bs_Sort.stableSortBy(u$1, (function (param, param$1) {
+            return param[0] - param$1[0] | 0;
+          })), /* array */[
       /* tuple */[
         1,
         "a"
@@ -193,9 +193,9 @@ var u$2 = /* array */[
   ]
 ];
 
-eq("File \"bs_sort_test.ml\", line 96, characters 5-12", (Bs_Sort.stableSortBy(u$2, (function (param, param$1) {
-              return param[0] - param$1[0] | 0;
-            })), u$2), /* array */[
+eq("File \"bs_sort_test.ml\", line 96, characters 5-12", Bs_Sort.stableSortBy(u$2, (function (param, param$1) {
+            return param[0] - param$1[0] | 0;
+          })), /* array */[
       /* tuple */[
         1,
         "b"
@@ -241,9 +241,9 @@ var u$3 = /* array */[
   ]
 ];
 
-eq("File \"bs_sort_test.ml\", line 102, characters 5-12", (Bs_Sort.stableSortBy(u$3, (function (param, param$1) {
-              return param[0] - param$1[0] | 0;
-            })), u$3), /* array */[
+eq("File \"bs_sort_test.ml\", line 102, characters 5-12", Bs_Sort.stableSortBy(u$3, (function (param, param$1) {
+            return param[0] - param$1[0] | 0;
+          })), /* array */[
       /* tuple */[
         1,
         "c"
@@ -270,7 +270,7 @@ eq("File \"bs_sort_test.ml\", line 102, characters 5-12", (Bs_Sort.stableSortBy(
       ]
     ]);
 
-eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Bs_Sort.binarySearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Bs_Sort.binarySearchBy(/* array */[
           1,
           2,
           3,
@@ -280,7 +280,7 @@ eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Bs_Sort.binarySearch(/
           36
         ], 33, cmp), 4);
 
-eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Bs_Sort.binarySearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Bs_Sort.binarySearchBy(/* array */[
           1,
           2,
           3,
@@ -290,7 +290,7 @@ eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Bs_Sort.binarySearch(/
           36
         ], 1, cmp), 0);
 
-eq("File \"bs_sort_test.ml\", line 113, characters 5-12", Bs_Sort.binarySearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 113, characters 5-12", Bs_Sort.binarySearchBy(/* array */[
           1,
           2,
           3,
@@ -300,7 +300,7 @@ eq("File \"bs_sort_test.ml\", line 113, characters 5-12", Bs_Sort.binarySearch(/
           36
         ], 2, cmp), 1);
 
-eq("File \"bs_sort_test.ml\", line 114, characters 5-12", Bs_Sort.binarySearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 114, characters 5-12", Bs_Sort.binarySearchBy(/* array */[
           1,
           2,
           3,
@@ -310,7 +310,7 @@ eq("File \"bs_sort_test.ml\", line 114, characters 5-12", Bs_Sort.binarySearch(/
           36
         ], 3, cmp), 2);
 
-eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_Sort.binarySearch(/* array */[
+eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_Sort.binarySearchBy(/* array */[
           1,
           2,
           3,
@@ -323,23 +323,23 @@ eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_Sort.binarySearch(/
 var aa = Array_data_util.range(0, 1000);
 
 b("File \"bs_sort_test.ml\", line 117, characters 4-11", Bs_Range.every(0, 1000, (function (i) {
-            return +(Bs_Sort.binarySearch(aa, i, cmp) === i);
+            return +(Bs_Sort.binarySearchBy(aa, i, cmp) === i);
           })));
 
 var cc = Bs_Array.map(Array_data_util.range(0, 2000), (function (x) {
         return (x << 1);
       }));
 
-eq("File \"bs_sort_test.ml\", line 122, characters 5-12", Bs_Sort.binarySearch(cc, 5000, cmp) ^ -1, 2001);
+eq("File \"bs_sort_test.ml\", line 122, characters 5-12", Bs_Sort.binarySearchBy(cc, 5000, cmp) ^ -1, 2001);
 
-eq("File \"bs_sort_test.ml\", line 123, characters 5-12", Bs_Sort.binarySearch(cc, -1, cmp) ^ -1, 0);
+eq("File \"bs_sort_test.ml\", line 123, characters 5-12", Bs_Sort.binarySearchBy(cc, -1, cmp) ^ -1, 0);
 
-eq("File \"bs_sort_test.ml\", line 124, characters 5-12", Bs_Sort.binarySearch(cc, 0, cmp), 0);
+eq("File \"bs_sort_test.ml\", line 124, characters 5-12", Bs_Sort.binarySearchBy(cc, 0, cmp), 0);
 
-eq("File \"bs_sort_test.ml\", line 126, characters 5-12", Bs_Sort.binarySearch(cc, 1, cmp) ^ -1, 1);
+eq("File \"bs_sort_test.ml\", line 126, characters 5-12", Bs_Sort.binarySearchBy(cc, 1, cmp) ^ -1, 1);
 
 b("File \"bs_sort_test.ml\", line 127, characters 4-11", Bs_Range.every(0, 1999, (function (i) {
-            return +((Bs_Sort.binarySearch(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
+            return +((Bs_Sort.binarySearchBy(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
           })));
 
 function lt(x, y) {

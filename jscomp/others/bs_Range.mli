@@ -23,38 +23,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-let forEach s f action =
-  for i = s to f do
-    (action i [@bs] : unit)
-  done
+val forEach: int -> int -> (int -> unit [@bs]) -> unit
   
-let rec every s f p =
-  if s > f then true
-  else
-    p s [@bs] &&
-    (every (s + 1) f p )
-  
+val every: int -> int -> (int -> bool [@bs]) -> bool
 
-let rec everyBy s f ~step p =
-  if s > f then true
-  else
-    p s [@bs] &&
-    (everyBy (s + step) f ~step p )
-    
+val everyBy: int -> int -> step:int -> (int -> bool [@bs]) -> bool
 
+val some: int -> int -> (int -> bool [@bs]) -> bool
 
-let rec some s f p =  
-  if s > f then false
-  else
-    p s [@bs] ||
-    (some (s + 1) f p )
-  
-
-let rec someBy s f ~step p =  
-  if s > f then false
-  else
-    p s [@bs] ||
-    (someBy (s + step) f ~step p )
-    
+val someBy: int -> int -> step:int -> (int -> bool [@bs]) -> bool

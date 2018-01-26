@@ -75,7 +75,7 @@ var xx = Bs_HashMap.ofArray(v, Y);
 
 eqx("File \"bs_hashmap_test.ml\", line 40, characters 6-13", xx.data.size, 91);
 
-eqx("File \"bs_hashmap_test.ml\", line 41, characters 6-13", Bs_Sort.sortByCont(Bs_internalBuckets.keys0(xx.data), cmp), Array_data_util.range(30, 120));
+eqx("File \"bs_hashmap_test.ml\", line 41, characters 6-13", Bs_Sort.stableSortBy(Bs_internalBuckets.keys0(xx.data), cmp), Array_data_util.range(30, 120));
 
 var u$1 = Bs_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 

@@ -170,8 +170,8 @@ let valuesToArray d =
   N.valuesToArray0 (B.data d)
 let ofSortedArrayUnsafe ~dict xs : _ t =
   B.bag ~data:(N.ofSortedArrayUnsafe0 xs) ~dict   
-let checkInvariant d = 
-  N.checkInvariant (B.data d)  
+let checkInvariantInternal d = 
+  N.checkInvariantInternal (B.data d)  
 let cmp (type k)  (type id) (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
   let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
   let module X = (val dict) in   
