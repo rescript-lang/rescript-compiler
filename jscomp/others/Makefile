@@ -31,6 +31,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Bag\
 	bs_BagM\
 	bs_Cmp\
+	bs_SortedMapDict\
 	bs_Map\
 	bs_internalMapInt\
 	bs_internalMapString\

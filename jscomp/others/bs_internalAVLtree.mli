@@ -121,7 +121,7 @@ val cmp0 :
 val eq0:   
   ('a, 'b) t0 -> ('a, 'c) t0 -> 
   kcmp:('a,_) Bs_Cmp.cmp -> 
-  vcmp :('b -> 'c -> bool [@bs]) -> 
+  veq:('b -> 'c -> bool [@bs]) -> 
   bool
 
 val findOpt0:  

@@ -531,12 +531,12 @@ let rec compareAux e1 e2 ~kcmp ~vcmp =
     else c 
   | _, _ -> 0   
 
-let rec eqAux e1 e2 ~kcmp ~vcmp =
+let rec eqAux e1 e2 ~kcmp ~veq =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
     if (Bs_Cmp.getCmp kcmp) (key h1) (key h2) [@bs] = 0 && 
-       vcmp (value h1) (value h2) [@bs] then
-      eqAux ~kcmp ~vcmp (
+       veq (value h1) (value h2) [@bs] then
+      eqAux ~kcmp ~veq (
         stackAllLeft  (right h1) t1 ) (stackAllLeft (right h2) t2)
     else  false    
   | _, _ -> true 
@@ -547,10 +547,10 @@ let cmp0 s1 s2 ~kcmp ~vcmp =
     compareAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~vcmp 
   else  if len1 < len2 then -1 else 1 
 
-let eq0  s1 s2 ~kcmp ~vcmp =
+let eq0  s1 s2 ~kcmp ~veq =
   let len1, len2 = length0 s1, length0 s2 in 
   if len1 = len2 then
-    eqAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~vcmp
+    eqAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~veq
   else false
 
 let rec findOpt0  n x ~cmp = 

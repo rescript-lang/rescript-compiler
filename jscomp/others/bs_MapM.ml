@@ -179,7 +179,7 @@ let cmp (type k)  (type id) (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp =
 let eq (type k) (type id) (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
   let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
   let module M = (val dict) in 
-  N.eq0 ~kcmp:M.cmp ~vcmp:cmp m1_data m2_data   
+  N.eq0 ~kcmp:M.cmp ~veq:cmp m1_data m2_data   
 let map m f = 
   let dict, map = B.(dict m, data m) in 
   B.bag ~dict ~data:(N.map0 map f)
