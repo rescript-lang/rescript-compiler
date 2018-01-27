@@ -82,26 +82,27 @@ let bench2 (type t) (m : (string,t) Bs.Hash.t) =
   assert (M.size empty = 0)  
 
 (* Bs.HashMap.logStats empty *)
-
+module Md = Bs.Map 
+module Md0 = Bs.SortedMapDict
 let bench3 (type t) (m : (string,t) Bs.Cmp.t) = 
-  let module M = Bs.Map in 
-  let empty = Bs.Map.empty m in
+  
+  let empty = Md.empty m in
   let module String = (val m) in 
   let cmp = String.cmp in 
-  let table = ref (M.getData empty) in 
+  let table = ref (Md.getData empty) in 
   for i  = 0 to  count do  
-    table := M.set0 ~cmp !table
+    table := Md0.set ~cmp !table
         (string_of_int i) i 
   done ;
   for i = 0 to count do 
-    assert (M.has0 ~cmp
+    assert (Md0.has ~cmp
               !table
               (string_of_int i) )
   done; 
   for i = 0 to count do  
-    table := Bs.Map.remove0 ~cmp !table (string_of_int i) 
+    table := Md0.remove ~cmp !table (string_of_int i) 
   done ;
-  assert (M.size0 !table = 0)
+  assert (Md0.size !table = 0)
 
 module Sx = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y )) 
 

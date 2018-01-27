@@ -6,7 +6,7 @@ var Bs_Set = require("../../lib/js/bs_Set.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
-var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
+var Bs_SortedMapDict = require("../../lib/js/bs_SortedMapDict.js");
 
 var suites = [/* [] */0];
 
@@ -38,7 +38,7 @@ function mergeInter(s1, s2) {
             return /* None */0;
           }
         }));
-  var x = Bs_internalAVLtree.keysToArray0(m.data);
+  var x = Bs_SortedMapDict.keysToArray(m.data);
   return Bs_Set.ofArray(Icmp, x);
 }
 
@@ -52,7 +52,7 @@ function mergeUnion(s1, s2) {
             return /* None */0;
           }
         }));
-  var x = Bs_internalAVLtree.keysToArray0(m.data);
+  var x = Bs_SortedMapDict.keysToArray(m.data);
   return Bs_Set.ofArray(Icmp, x);
 }
 
@@ -64,7 +64,7 @@ function mergeDiff(s1, s2) {
             return /* None */0;
           }
         }));
-  var x = Bs_internalAVLtree.keysToArray0(m.data);
+  var x = Bs_SortedMapDict.keysToArray(m.data);
   return Bs_Set.ofArray(Icmp, x);
 }
 
@@ -145,7 +145,7 @@ b("File \"bs_poly_map_test.ml\", line 76, characters 4-11", +(11 === Bs_Map.getN
 
 b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(Bs_Map.getNull(a4, 3) === null));
 
-var a7 = Bs_Map.removeArray(a0, /* array */[
+var a7 = Bs_Map.removeMany(a0, /* array */[
       7,
       8,
       0,
@@ -159,14 +159,14 @@ var a7 = Bs_Map.removeArray(a0, /* array */[
       6
     ]);
 
-eq("File \"bs_poly_map_test.ml\", line 80, characters 5-12", Bs_internalAVLtree.keysToArray0(a7.data), /* int array */[
+eq("File \"bs_poly_map_test.ml\", line 80, characters 5-12", Bs_SortedMapDict.keysToArray(a7.data), /* int array */[
       9,
       10
     ]);
 
-var a8 = Bs_Map.removeArray(a7, Array_data_util.randomRange(0, 100));
+var a8 = Bs_Map.removeMany(a7, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_map_test.ml\", line 82, characters 4-11", Bs_internalAVLtree.isEmpty0(a8.data));
+b("File \"bs_poly_map_test.ml\", line 82, characters 4-11", Bs_SortedMapDict.isEmpty(a8.data));
 
 var x$7 = randomRange(0, 100);
 
@@ -194,7 +194,7 @@ function acc(m, is) {
 
 var m = {
   dict: Icmp,
-  data: Bs_internalAVLtree.empty0
+  data: Bs_SortedMapDict.empty
 };
 
 var m1 = acc(m, Bs_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));

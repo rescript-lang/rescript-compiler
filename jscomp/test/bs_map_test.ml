@@ -37,7 +37,7 @@ let m = M.empty (module Icmp2)
 let m2 : (int, string, _) M.t = M.empty (module I2)
 let vv = MI.empty 
 let vv2 = MI.empty
-
+module Md0 = Bs.SortedMapDict
 let () = 
   let count = 1_000_00 in 
   let data = ref (M.getData m) in 
@@ -46,7 +46,7 @@ let () =
   let module Mm = ( val m_dict) in
   for i = 0 to count do 
     data := 
-      M.set0 !data 
+      Md0.set !data 
       ~cmp:  Mm.cmp
       i i 
   done ;
@@ -54,9 +54,9 @@ let () =
   Js.log newm
 module ISet = Bs.Set 
 let () =     
-  let  m = M.empty0 in 
+  let  m = Md0.empty in 
   let m11 = 
-    M.set0 ~cmp:Icmp.cmp m
+    Md0.set ~cmp:Icmp.cmp m
     1 1 
   in  
   let _m20 = M.empty (module Icmp) in 
