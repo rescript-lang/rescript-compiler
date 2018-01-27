@@ -11,7 +11,7 @@ module IntCmp =
 module L = Bs.List
 
 let () = 
-  let u0 = N.ofArray (module IntCmp) (I.range 0 30) in 
+  let u0 = N.ofArray ~dict:(module IntCmp) (I.range 0 30) in 
   let u1 = N.remove u0 0 in 
   let u2 = N.remove u1 0 in 
   let u3 = N.remove u2 30 in 
@@ -53,10 +53,10 @@ let () =
   b __LOC__ (N.has u15 20000);
   b __LOC__ (not @@ N.has u15 2000);
   b __LOC__ (N.isEmpty u16);
-  let u17  = N.ofArray (module IntCmp) (I.randomRange 0 100) in 
-  let u18 = N.ofArray (module IntCmp) (I.randomRange 59 200) in 
+  let u17  = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 100) in 
+  let u18 = N.ofArray ~dict:(module IntCmp) (I.randomRange 59 200) in 
   let u19 = N.union u17 u18 in 
-  let u20 = N.ofArray (module IntCmp) (I.randomRange 0 200) in 
+  let u20 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 200) in 
   b __LOC__ (N.eq u19 u20);
   let u21 =  N.intersect u17 u18 in 
   eq __LOC__ (N.toArray u21) (I.range 59 100);
@@ -130,7 +130,7 @@ let () =
 
 
 let () =   
-  let a = N.ofArray (module IntCmp) [||] in 
+  let a = N.ofArray ~dict:(module IntCmp) [||] in 
   b __LOC__ (N.isEmpty (N.keepBy a (fun[@bs] x -> x mod 2 = 0)))
 
 

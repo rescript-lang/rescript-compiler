@@ -22,44 +22,74 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type ('key, 'id) t
 
-
-
-type ('k,'id) t
-
-type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
+type ('key, 'id) cmp = ('key, 'id) Bs_Cmp.cmp
     
-val empty: dict:('elt, 'id) dict -> ('elt, 'id) t
+val empty: ('elt, 'id) t
 
-val ofArray:  'k array -> dict:('k, 'id) dict ->  ('k, 'id) t
+val ofArray:
+  'k array ->
+  cmp:('k, 'id) cmp ->
+  ('k, 'id) t
 
-val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) dict -> ('elt,'id) t
+val ofSortedArrayUnsafe: 'elt array ->  ('elt,'id) t
     
 val isEmpty: _ t -> bool
-val has: ('elt, 'id) t -> 'elt ->  bool
+val has:
+  ('k, 'id) t -> 'k ->
+  cmp:('k, 'id) cmp ->
+  bool
 
 
 val add:   
-  ('elt, 'id) t -> 'elt -> ('elt, 'id) t
+  ('k, 'id) t -> 'k ->
+  cmp:('k, 'id) cmp ->
+  ('k, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
-val mergeMany: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
+    
+val mergeMany:
+  ('elt, 'id) t -> 'elt array ->
+  cmp:('elt, 'id) cmp ->
+  ('elt, 'id) t 
 
-val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
+val remove:
+  ('elt, 'id) t ->
+  'elt ->
+  cmp:('elt, 'id) cmp ->
+  ('elt, 'id) t
 (** [remove m x] If [x] was not in [m], [m] is returned reference unchanged. *)
 
 val removeMany:
-  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
+  ('elt, 'id) t -> 'elt array ->
+  cmp:('elt, 'id) cmp ->
+  ('elt, 'id) t 
 
 
-val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
-val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool     
+val union:
+  ('elt, 'id) t -> ('elt, 'id) t ->
+  cmp:('elt, 'id) cmp ->
+  ('elt, 'id) t
+val intersect:
+  ('elt, 'id) t -> ('elt, 'id) t ->
+    cmp:('elt, 'id) cmp ->
+  ('elt, 'id) t
+    
+val diff: ('elt, 'id) t -> ('elt, 'id) t ->
+  cmp:('elt, 'id) cmp ->
+  ('elt, 'id) t
+val subset: ('elt, 'id) t -> ('elt, 'id) t ->
+  cmp:('elt, 'id) cmp ->
+  bool     
 
-val cmp: ('elt, 'id) t -> ('elt, 'id) t -> int
+val cmp: ('elt, 'id) t -> ('elt, 'id) t ->
+  cmp:('elt, 'id) cmp ->
+  int
 (** Total ordering between sets. Can be used as the ordering function
     for doing sets of sets. *)
-val eq: ('elt, 'id) t -> ('elt, 'id) t -> bool
+val eq: ('elt, 'id) t -> ('elt, 'id) t ->
+  cmp:('elt, 'id) cmp ->
+  bool
 
 val forEach: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
 (** [forEach s f] applies [f] in turn to all elements of [s].
@@ -94,21 +124,19 @@ val maxNull: ('elt, 'id) t -> 'elt Js.null
 
 
 
-val get: ('elt, 'id) t -> 'elt -> 'elt option 
-val getNull: ('elt, 'id) t -> 'elt -> 'elt Js.null
-val getExn: ('elt, 'id) t -> 'elt -> 'elt 
+val get: ('elt, 'id) t -> 'elt ->
+  cmp:('elt, 'id) cmp ->
+  'elt option 
+val getNull: ('elt, 'id) t -> 'elt ->
+  cmp:('elt, 'id) cmp ->
+  'elt Js.null
+val getExn: ('elt, 'id) t -> 'elt ->
+  cmp:('elt, 'id) cmp ->
+  'elt 
 
-val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
+val split: ('elt, 'id) t -> 'elt ->
+  cmp:('elt, 'id) cmp ->
+  (('elt, 'id) t  * ('elt, 'id) t) * bool
                                     
 val checkInvariantInternal: _ t -> bool
 
-(****************************************************************************)
-(** Below are operations only when better performance needed,
-    it is still safe API but more verbose.
-    More API will be exposed by needs
-*)
-
-val getData: ('k,'id) t  -> ('k,'id) Bs_SortedSetDict.t
-val getDict: ('k,'id) t  -> ('k,'id) dict
-val packDictData: dict:('k, 'id) dict -> data:('k, 'id) Bs_SortedSetDict.t -> ('k, 'id) t
-    

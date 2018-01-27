@@ -27,7 +27,7 @@ function f(x) {
 }
 
 function ff(x) {
-  return Bs_Set.ofArray(Icmp, x);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function randomRange(i, j) {

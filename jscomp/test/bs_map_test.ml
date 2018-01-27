@@ -62,6 +62,7 @@ let () =
   let _m20 = M.empty (module Icmp) in 
   Js.log m11
 
+module S0 = Bs.SortedSetDict  
 let () =   
  let count = 100_000 in 
   let v = ISet.empty (module Icmp2) in 
@@ -70,7 +71,7 @@ let () =
   let cmp = M.cmp in 
   let data = ref (ISet.getData v) in 
   for i = 0 to count do 
-    data := Bs.Set.add0 ~cmp !data i 
+    data := S0.add ~cmp !data i 
   done ;
   Js.log !data  
 

@@ -1,0 +1,231 @@
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+module N = Bs_internalAVLset
+module A = Bs_Array
+
+type ('k,'id) t = 'k N.t0
+
+type ('key, 'id) cmp = ('key, 'id)  Bs_Cmp.cmp
+
+
+(* here we relies on reference transparence
+   address equality means everything equal across time
+   no need to call [bal] again
+*)  
+let rec add  (t : _ t) x  ~cmp : _ t =
+  match N.toOpt t with 
+  | None -> N.singleton0 x 
+  | Some nt ->
+    let k = N.key nt in 
+    let c = (Bs_Cmp.getCmp cmp) x k [@bs] in
+    if c = 0 then t
+    else
+      let l,r = N.(left nt, right nt) in 
+      if c < 0 then 
+        let ll = add ~cmp l x in 
+        if ll == l then t 
+        else N.bal ll k r 
+      else 
+        let rr = add ~cmp r x in 
+        if rr == r then t 
+        else N.bal l k rr 
+
+let rec remove (t : _ t) x  ~cmp : _ t = 
+  match N.toOpt t with 
+    None -> t
+  | Some n  ->
+    let l,v,r = N.(left n , key n, right n) in 
+    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    if c = 0 then 
+      match N.toOpt l, N.toOpt r with 
+      | (None, _) -> r 
+      | (_, None) -> l 
+      | (_, Some rn) -> 
+        let v = ref (N.key rn) in 
+        let r = N.removeMinAuxWithRef rn v in 
+        N.bal l !v r 
+    else
+    if c < 0 then 
+      let ll = remove ~cmp  l x in 
+      if ll == l then t
+      else N.bal ll v r 
+    else
+      let rr = remove ~cmp  r x in 
+      if rr == r then t  
+      else N.bal l v rr
+
+let mergeMany   h arr ~cmp =   
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key = A.getUnsafe arr i in 
+    v := add !v  ~cmp key 
+  done ;
+  !v 
+
+let removeMany h arr ~cmp = 
+  let len = A.length arr in 
+  let v = ref h in  
+  for i = 0 to len - 1 do 
+    let key = A.getUnsafe arr i in 
+    v := remove !v  ~cmp key 
+  done ;
+  !v 
+
+let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =   
+  let l,v,r = N.(left n , key n, right n) in  
+  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  if c = 0 then l,r
+  else 
+  if c < 0 then
+    match N.toOpt l with 
+    | None -> 
+      N.empty ,  N.return n
+    | Some l -> 
+      let (ll,  rl) = splitAuxNoPivot ~cmp  l x in 
+      ll,  N.joinShared rl v r
+  else
+    match N.toOpt r with 
+    | None ->
+      N.return n,  N.empty
+    | Some r -> 
+      let lr,  rr = splitAuxNoPivot ~cmp  r x in 
+      N.joinShared l v lr, rr
+
+let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =   
+  let l,v,r = N.(left n , key n, right n) in  
+  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  if c = 0 then 
+    begin
+      pres := true;
+      l, r
+    end
+  else 
+  if c < 0 then
+    match N.toOpt l with 
+    | None -> 
+      N.empty , N.return n
+    | Some l -> 
+      let (ll, rl) = splitAuxPivot ~cmp  l x pres in 
+      ll,  N.joinShared rl v r
+  else
+    match N.toOpt r with 
+    | None ->
+      N.return n,  N.empty
+    | Some r -> 
+      let lr, rr = splitAuxPivot ~cmp  r x pres in 
+      N.joinShared l v lr,  rr
+
+let split  (t : _ t) x  ~cmp  =
+  match N.toOpt t with 
+    None ->
+    (N.empty, N.empty), false
+  | Some n ->
+    let pres = ref false in 
+    let v = splitAuxPivot ~cmp n x  pres in 
+    v, !pres
+
+(* [union s1 s2]
+   Use the pivot to split the smaller collection
+*)      
+let rec union (s1 : _ t) (s2 : _ t) ~cmp : _ t =
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) -> s2
+  | (_, None) -> s1
+  | Some n1, Some n2 ->
+    let h1, h2 = N.(h n1 , h n2) in                 
+    if h1 >= h2 then
+      if h2 = 1 then add ~cmp s1 (N.key n2)  
+      else begin
+        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
+        let l2, r2 = splitAuxNoPivot ~cmp n2 v1 in
+        N.joinShared (union ~cmp l1 l2) v1 (union ~cmp r1 r2)
+      end
+    else
+    if h1 = 1 then add s2 ~cmp (N.key n1) 
+    else begin
+      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
+      let l1, r1 = splitAuxNoPivot ~cmp n1 v2  in
+      N.joinShared (union ~cmp l1 l2) v2 (union ~cmp r1 r2)
+    end
+
+let rec intersect  (s1 : _ t) (s2 : _ t) ~cmp =
+  match N.(toOpt s1, toOpt s2) with
+  | None, _ 
+  | _, None -> N.empty
+  | Some n1, Some n2  ->
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
+    let pres = ref false in 
+    let l2,r2 = splitAuxPivot ~cmp n2 v1 pres in 
+    let ll = intersect ~cmp l1 l2 in 
+    let rr = intersect ~cmp r1 r2 in 
+    if !pres then N.joinShared ll v1 rr 
+    else N.concatShared ll rr 
+
+let rec diff s1 s2 ~cmp  =
+  match N.(toOpt s1, toOpt s2) with
+    (None, _) 
+  | (_, None) -> s1
+  | Some n1, Some n2  ->
+    let l1,v1,r1 = N.(left n1, key n1, right n1) in
+    let pres = ref false in 
+    let l2, r2 = splitAuxPivot ~cmp n2 v1 pres in 
+    let ll = diff ~cmp l1 l2 in 
+    let rr = diff ~cmp r1 r2 in 
+    if !pres then N.concatShared ll rr 
+    else N.joinShared ll v1 rr 
+
+
+let empty = N.empty0      
+let ofArray = N.ofArray0
+let isEmpty = N.isEmpty0
+
+
+
+let cmp = N.cmp0
+let eq = N.eq0 
+let has = N.mem0
+let forEach = N.iter0      
+let reduce = N.fold0
+let every = N.every0
+let some = N.some0    
+let size = N.length0
+let toList = N.toList0
+let toArray = N.toArray0
+let minimum = N.minOpt0
+let maximum = N.maxOpt0
+let maxNull = N.maxNull0
+let minNull = N.minNull0
+let get = N.findOpt0
+let getExn = N.findExn0
+let getNull = N.findNull0
+                
+
+let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe0
+let subset = N.subset0
+let keepBy = N.filterShared0
+let partition = N.partitionShared0
+
+let checkInvariantInternal = N.checkInvariantInternal

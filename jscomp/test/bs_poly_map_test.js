@@ -27,7 +27,7 @@ function f(x) {
 }
 
 function ff(x) {
-  return Bs_Set.ofArray(Icmp, x);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function mergeInter(s1, s2) {
@@ -39,7 +39,7 @@ function mergeInter(s1, s2) {
           }
         }));
   var x = Bs_SortedMapDict.keysToArray(m.data);
-  return Bs_Set.ofArray(Icmp, x);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function mergeUnion(s1, s2) {
@@ -53,7 +53,7 @@ function mergeUnion(s1, s2) {
           }
         }));
   var x = Bs_SortedMapDict.keysToArray(m.data);
-  return Bs_Set.ofArray(Icmp, x);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function mergeDiff(s1, s2) {
@@ -65,7 +65,7 @@ function mergeDiff(s1, s2) {
           }
         }));
   var x = Bs_SortedMapDict.keysToArray(m.data);
-  return Bs_Set.ofArray(Icmp, x);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function randomRange(i, j) {
@@ -87,19 +87,19 @@ var u1 = Bs_Map.ofArray(x$1, Icmp);
 
 var x$2 = Array_data_util.range(30, 100);
 
-b("File \"bs_poly_map_test.ml\", line 47, characters 4-11", Bs_Set.eq(mergeInter(u0, u1), Bs_Set.ofArray(Icmp, x$2)));
+b("File \"bs_poly_map_test.ml\", line 47, characters 4-11", Bs_Set.eq(mergeInter(u0, u1), Bs_Set.ofArray(x$2, Icmp)));
 
 var x$3 = Array_data_util.range(0, 120);
 
-b("File \"bs_poly_map_test.ml\", line 48, characters 4-11", Bs_Set.eq(mergeUnion(u0, u1), Bs_Set.ofArray(Icmp, x$3)));
+b("File \"bs_poly_map_test.ml\", line 48, characters 4-11", Bs_Set.eq(mergeUnion(u0, u1), Bs_Set.ofArray(x$3, Icmp)));
 
 var x$4 = Array_data_util.range(0, 29);
 
-b("File \"bs_poly_map_test.ml\", line 49, characters 4-11", Bs_Set.eq(mergeDiff(u0, u1), Bs_Set.ofArray(Icmp, x$4)));
+b("File \"bs_poly_map_test.ml\", line 49, characters 4-11", Bs_Set.eq(mergeDiff(u0, u1), Bs_Set.ofArray(x$4, Icmp)));
 
 var x$5 = Array_data_util.range(101, 120);
 
-b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Bs_Set.eq(mergeDiff(u1, u0), Bs_Set.ofArray(Icmp, x$5)));
+b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Bs_Set.eq(mergeDiff(u1, u0), Bs_Set.ofArray(x$5, Icmp)));
 
 var x$6 = randomRange(0, 10);
 

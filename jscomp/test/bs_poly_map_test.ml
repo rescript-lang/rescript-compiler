@@ -15,7 +15,7 @@ module N = Bs.Set
 module A = Bs_Array
 module I = Array_data_util
 let f x = M.ofArray ~dict:(module Icmp) x 
-let ff x = N.ofArray (module Icmp) x 
+let ff x = N.ofArray ~dict:(module Icmp) x 
 
 let mergeInter s1 s2 = 
   ff @@ M.keysToArray (M.merge s1 s2 (fun[@bs] k v1 v2 -> 
