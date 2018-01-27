@@ -47,7 +47,8 @@ let () =
   eq __LOC__ (N.size u10) 20001;
   eq __LOC__ (N.size u11) 19800;  
   eq __LOC__ (N.size u12) 19000;
-  b __LOC__ (u12 == u13);  
+  (* b __LOC__ (u12 == u13);   *)
+  eq __LOC__ (N.size u13) (N.size u12);
   eq __LOC__ (N.size u14) 10000;
   eq __LOC__ (N.size u15) 1 ;
   b __LOC__ (N.has u15 20000);
