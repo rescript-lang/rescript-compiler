@@ -27,127 +27,137 @@ module A = Bs_Array
 
 type ('k,'id) t0 = ('k, 'id) N.t
 type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
+type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
 
-type ('k,'id) t = {
-  dict: ('k, 'id) dict ;
-  data: ('k, 'id) t0
-} [@@bs.deriving abstract]
-  
+module S = struct 
+  type ('k,'id) t = {
+    cmp: ('k, 'id) cmp;
+    data: ('k, 'id) t0
+  } [@@bs.deriving abstract]
+end 
 
-
+type ('k, 'id) t = ('k, 'id) S.t
+    
 let ofArray (type elt) (type id) data ~(dict : (elt,id) dict)  = 
-  let module M = (val dict ) in 
-  t ~dict ~data:(N.ofArray ~cmp:M.cmp data)
+  let module M = (val dict ) in
+  let cmp = M.cmp in 
+  S.t ~cmp ~data:(N.ofArray ~cmp data)
 
-let remove (type elt) (type id) (m : (elt,id) t) e =      
-  let module M = (val dict m) in
-  let data =  data m in
-  let newData = N.remove ~cmp:M.cmp data e in 
+let remove m e =      
+  let cmp, data  = S.cmp m, S.data m  in
+  let newData = N.remove ~cmp data e in 
   if newData == data then m 
-  else t ~dict:(module M) ~data:newData  
+  else S.t ~cmp ~data:newData  
 
-let add (type elt) (type id) (m : (elt,id) t) e =   
-  let module M = (val dict m) in
-  let data = data m in
-  let newData = N.add ~cmp:M.cmp  data e in 
+let add m e =   
+  let cmp, data = S.cmp m, S.data m in
+  let newData = N.add ~cmp  data e in 
   if newData == data then m 
   else 
-    t ~dict:(module M) ~data:newData
+    S.t ~cmp ~data:newData
 
-let mergeMany (type elt) (type id) (m : (elt,id) t) e = 
-  let module M = (val dict m) in
-  t ~dict:(module M) ~data:(N.mergeMany ~cmp:M.cmp (data m) e )
+let mergeMany m e =
+  let cmp = S.cmp m in 
+  S.t ~cmp  ~data:(N.mergeMany ~cmp (S.data m) e )
 
-let removeMany (type elt) (type id) (m : (elt,id) t) e = 
-  let module M = (val dict m) in 
-  t ~dict:(module M) ~data:(N.removeMany ~cmp:M.cmp (data m) e)
+let removeMany  m e = 
+  let cmp = S.cmp m in 
+  S.t ~cmp ~data:(N.removeMany ~cmp (S.data m) e)
 
-let union (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
-  let module M = (val dict m) in 
-  t ~data:(N.union ~cmp:M.cmp (data m) (data n)) ~dict:(module M)
+let union m n =   
+  let cmp = S.cmp m in 
+  S.t ~data:(N.union ~cmp (S.data m) (S.data n)) ~cmp
 
-let intersect (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
-  let module M = (val dict m) in 
-  t ~data:(N.intersect ~cmp:M.cmp (data m) (data n)) ~dict:(module M)
+let intersect m n =
+  let cmp = S.cmp m in 
+  S.t ~data:(N.intersect ~cmp (S.data m) (S.data n)) ~cmp
 
-let diff (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =   
-  let module M = (val dict m) in 
-  t ~dict:(module M) ~data:(N.diff ~cmp:M.cmp (data m) (data n))
+let diff m n =
+  let cmp = S.cmp m in 
+  S.t ~cmp ~data:(N.diff ~cmp (S.data m) (S.data n))
 
-let subset (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
-  let module M = (val dict m) in 
-  N.subset ~cmp:M.cmp (data m) (data n) 
+let subset m n =     
+  let cmp = S.cmp m in 
+  N.subset ~cmp (S.data m) (S.data n) 
 
-let split (type elt) (type id) (m : (elt,id) t) e = 
-  let module M = (val dict m) in 
-  let (l,  r), b = N.split ~cmp:M.cmp (data m) e in 
-  (t ~dict:(module M) ~data:l, t ~dict:(module M) ~data:r), b
+let split m e = 
+  let cmp = S.cmp m in  
+  let (l,  r), b = N.split ~cmp (S.data m) e in 
+  (S.t ~cmp ~data:l, S.t ~cmp ~data:r), b
   
-let empty ~dict = 
-  t ~dict  ~data:N.empty
+let empty (type elt) (type id) ~(dict : (elt, id) dict) =
+  let module M = (val dict) in 
+  S.t ~cmp:M.cmp  ~data:N.empty
 
-let isEmpty m = N.isEmpty (data m)
+let isEmpty m = N.isEmpty (S.data m)
 
-let cmp (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
-  let module M = (val dict m) in 
-  N.cmp ~cmp:M.cmp (data m) (data n)
+let cmp m n =
+  let cmp = S.cmp m in 
+  N.cmp ~cmp (S.data m) (S.data n)
 
-let eq (type elt) (type id) (m : (elt,id) t) (n : (elt,id) t) =     
-  let module M = (val dict m) in 
-  N.eq ~cmp:M.cmp (data m) (data n)    
+let eq m n =     
+  N.eq ~cmp:(S.cmp m) (S.data m) (S.data n)    
 
-let forEach m f  = N.forEach (data m) f 
+let forEach m f  = N.forEach (S.data m) f 
 
-let reduce m acc f = N.reduce (data m) acc f
+let reduce m acc f = N.reduce (S.data m) acc f
 
-let every m f  = N.every  (data m) f
+let every m f  = N.every  (S.data m) f
 
-let some m f = N.some  (data m) f 
+let some m f = N.some  (S.data m) f 
 
 let keepBy m f  = 
-  t ~dict:(dict m) ~data:(N.keepBy (data m) f )
+  S.t ~cmp:(S.cmp m) ~data:(N.keepBy (S.data m) f )
 
 let partition m f  = 
-  let l,r = N.partition (data m) f in
-  let dict = dict m in 
-  t ~data:l ~dict, t ~data:r ~dict
+  let l,r = N.partition (S.data m) f in
+  let cmp = S.cmp m in 
+  S.t ~data:l ~cmp, S.t ~data:r ~cmp
 
-let size m = N.size (data m) 
-let toList m = N.toList (data m)
-let toArray m = N.toArray (data m)
+let size m = N.size (S.data m) 
+let toList m = N.toList (S.data m)
+let toArray m = N.toArray (S.data m)
 
-let minimum m = N.minimum (data m)
-let minUndefined m = N.minUndefined (data m) 
-let maximum m = N.maximum (data m)
-let maxUndefined m = N.maxUndefined (data m)
+let minimum m = N.minimum (S.data m)
+let minUndefined m = N.minUndefined (S.data m) 
+let maximum m = N.maximum (S.data m)
+let maxUndefined m = N.maxUndefined (S.data m)
 
 
-let get (type elt) (type id)  (m : (elt,id) t) e =   
-  let module M = (val dict m) in 
-  N.get ~cmp:M.cmp (data m) e
+let get m e =   
+  N.get ~cmp:(S.cmp m) (S.data m) e
 
-let getUndefined (type elt) (type id) (m : (elt,id) t) e =   
-  let module M = (val dict m) in 
-  N.getUndefined ~cmp:M.cmp (data m) e
+let getUndefined m e =   
+  N.getUndefined ~cmp:(S.cmp m) (S.data m) e
 
-let getExn (type elt) (type id) (m : (elt,id) t) e =   
-  let module M = (val dict m) in 
-  N.getExn ~cmp:M.cmp (data m) e
+let getExn m e =   
+  N.getExn ~cmp:(S.cmp m) (S.data m) e
 
-let has (type elt) (type id) (m : (elt,id) t) e = 
-  let module M = (val dict m) in 
-  N.has ~cmp:M.cmp (data m) e
+let has m e = 
+  N.has ~cmp:(S.cmp m) (S.data m) e
 
-let ofSortedArrayUnsafe xs ~dict =
-  t ~dict ~data:(N.ofSortedArrayUnsafe xs)
+let ofSortedArrayUnsafe (type elt) (type id) xs ~(dict : (elt,id) dict ) =
+  let module M = (val dict) in 
+  S.t ~cmp:M.cmp ~data:(N.ofSortedArrayUnsafe xs)
 
 
   
 
-let getData = data
-let getDict = dict
-let packDictData = t                
-let checkInvariantInternal d = N.checkInvariantInternal (data d)
+let getData = S.data
+
+let getDict (type elt) (type id) (m : (elt,id) t) : (elt, id) dict =
+  let module T = struct
+    type nonrec id = id
+    type nonrec t = elt
+    let cmp =  S.cmp m
+  end in
+  (module T)
+  
+let packDictData (type elt) (type id) ~(dict : (elt, id) dict) ~data  =
+  let module M = (val dict) in 
+  S.t ~cmp:M.cmp ~data
+
+let checkInvariantInternal d = N.checkInvariantInternal (S.data d)
 
 
 
