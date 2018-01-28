@@ -25,48 +25,48 @@
 module N = Bs_internalAVLtree
 module A = Bs_Array
 
-type ('key,  'a, 'id) t = ('key, 'a) N.t0
+type ('key,  'a, 'id) t = ('key, 'a) N.t
 
 type ('key, 'id) cmp = ('key, 'id)  Bs_Cmp.cmp
 
-let empty = N.empty0
-let ofArray = N.ofArray0
-let isEmpty = N.isEmpty0
-let cmp = N.cmp0
-let eq = N.eq0   
-let has = N.mem0
-let forEach = N.iter0      
-let reduce = N.fold0
-let every = N.every0
-let some = N.some0    
-let size = N.length0
-let toList = N.toList0
-let toArray = N.toArray0
-let keysToArray = N.keysToArray0
-let valuesToArray = N.valuesToArray0
+let empty = N.empty
+let ofArray = N.ofArray
+let isEmpty = N.isEmpty
+let cmp = N.cmp
+let eq = N.eq  
+let has = N.has
+let forEach = N.forEach
+let reduce = N.reduce
+let every = N.every
+let some = N.some   
+let size = N.size
+let toList = N.toList
+let toArray = N.toArray
+let keysToArray = N.keysToArray
+let valuesToArray = N.valuesToArray
 
-let minimum = N.minimum0
-let maximum = N.maximum0
-let minKey = N.minKey0
-let maxKey = N.maxKey0
-let minKeyUndefined = N.minKeyUndefined0
-let maxKeyUndefined = N.maxKeyUndefined0
-let minUndefined = N.minUndefined0
-let maxUndefined = N.maxUndefined0
-let get = N.get0
-let getUndefined = N.getUndefined0
-let getWithDefault = N.getWithDefault0
-let getExn = N.getExn0
+let minimum = N.minimum
+let maximum = N.maximum
+let minKey = N.minKey
+let maxKey = N.maxKey
+let minKeyUndefined = N.minKeyUndefined
+let maxKeyUndefined = N.maxKeyUndefined
+let minUndefined = N.minUndefined
+let maxUndefined = N.maxUndefined
+let get = N.get
+let getUndefined = N.getUndefined
+let getWithDefault = N.getWithDefault
+let getExn = N.getExn
 
-let mapWithKey = N.mapi0
-let map  = N.map0
+let mapWithKey = N.mapWithKey
+let map  = N.map
 
-let keepBy = N.filterShared0
-let partition = N.partitionShared0
+let keepBy = N.filterShared
+let partition = N.partitionShared
 let checkInvariantInternal = N.checkInvariantInternal
 let rec set  (t : _ t) newK newD  ~cmp =
   match N.toOpt t with 
-  | None -> N.singleton0 newK newD 
+  | None -> N.singleton newK newD 
   | Some n  ->
     let k= N.key n in 
     let c = (Bs_Cmp.getCmpIntenral cmp) newK k [@bs] in
@@ -84,7 +84,7 @@ let rec update  (t : _ t) newK f  ~cmp :  _ t =
   | None ->
     begin match f None [@bs] with 
       | None -> t 
-      | Some newD -> N.singleton0 newK newD 
+      | Some newD -> N.singleton newK newD 
     end 
   | Some n  ->
     let k= N.key n in 
@@ -160,7 +160,7 @@ let rec removeAux0  n x ~cmp =
 
 let remove n x ~cmp = 
   match N.toOpt n with        
-  | None -> N.empty0
+  | None -> N.empty
   | Some n -> removeAux0 n x ~cmp 
   
 let mergeMany   h arr ~cmp =   
@@ -209,11 +209,11 @@ let rec merge s1 s2 f ~cmp =
   match N.(toOpt s1, toOpt s2) with
     (None, None) -> N.empty
   | Some _, None -> 
-    N.filterMap0 s1 (fun[@bs] k v -> 
+    N.filterMap s1 (fun[@bs] k v -> 
         f k (Some v) None [@bs]
       )
   | None, Some _ -> 
-    N.filterMap0 s2 (fun[@bs] k v -> 
+    N.filterMap s2 (fun[@bs] k v -> 
         f k None (Some v) [@bs]
       )
   | Some s1n , Some s2n -> 
@@ -249,7 +249,7 @@ let rec removeArrayAux t xs i len ~cmp =
 let removeMany t keys ~cmp =
   let len = A.length keys in
   match N.toOpt t with
-  | None -> N.empty0
+  | None -> N.empty
   | Some t ->  removeArrayAux t keys 0 len ~cmp 
 
 

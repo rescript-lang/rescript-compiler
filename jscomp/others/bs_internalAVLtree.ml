@@ -14,22 +14,27 @@
 
 
 type ('k, 'v) node  = {
-  mutable left : ('k,'v) node Js.null;
+  mutable left : ('k,'v) t;
   mutable key : 'k; 
   mutable value : 'v; 
-  mutable right : ('k,'v) node Js.null;
+  mutable right : ('k,'v) t;
   mutable h : int 
-} [@@bs.deriving abstract]
+}
+and ('key, 'a) t = ('key, 'a) node Js.null
+[@@bs.deriving abstract]
+
+type ('k, 'id) cmp = ('k, 'id) Bs_Cmp.cmp
+    
 module A = Bs_Array 
 module S = Bs_Sort
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null" 
 external unsafeCoerce : 'a Js.null -> 'a = "%identity"
-type ('key, 'a) t0 = ('key, 'a) node Js.null
 
 
-let height (n : _ t0) =
+
+let height (n : _ t) =
   match toOpt n with 
     None -> 0
   | Some n -> h n 
@@ -45,7 +50,7 @@ let create l x d r =
   let hl, hr  = height l,  height r in
   return @@ node ~left:l ~key:x ~value:d ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
 
-let singleton0 x d = 
+let singleton x d = 
   return @@ node ~left:empty ~key:x ~value:d ~right:empty ~h:1
 
 let heightGe l r =   
@@ -96,12 +101,12 @@ let rec minKey0Aux n =
   | None -> key n
   | Some n -> minKey0Aux n 
     
-let minKey0 n =     
+let minKey n =     
   match toOpt n with 
   | None -> None 
   | Some n -> Some (minKey0Aux n)
 
-let minKeyUndefined0 n =   
+let minKeyUndefined n =   
   match toOpt n with 
   | None -> Js.undefined
   | Some n -> Js.Undefined.return (minKey0Aux n)
@@ -111,12 +116,12 @@ let rec maxKey0Aux n =
   | None -> key n
   | Some n -> maxKey0Aux n 
     
-let maxKey0 n =     
+let maxKey n =     
   match toOpt n with 
   | None -> None 
   | Some n -> Some (maxKey0Aux n)
 
-let maxKeyUndefined0 n =   
+let maxKeyUndefined n =   
   match toOpt n with 
   | None -> Js.undefined
   | Some n -> Js.Undefined.return (maxKey0Aux n)
@@ -126,12 +131,12 @@ let rec minKV0Aux n =
   | None -> key n , value n 
   | Some n -> minKV0Aux n 
 
-let minimum0 n = 
+let minimum n = 
   match toOpt n with 
     None -> None
   | Some n -> Some (minKV0Aux n)
 
-let minUndefined0 n = 
+let minUndefined n = 
   match toOpt n with 
   | None -> Js.undefined
   | Some n -> Js.Undefined.return (minKV0Aux n)
@@ -141,12 +146,12 @@ let rec maxKV0Aux n =
   | None -> key n, value n 
   | Some n -> maxKV0Aux n 
 
-let maximum0 n =
+let maximum n =
   match toOpt n with 
   | None -> None 
   | Some n -> Some (maxKV0Aux n)
 
-let maxUndefined0 n =   
+let maxUndefined n =   
   match toOpt n with 
   | None -> Js.undefined
   | Some n -> Js.Undefined.return (maxKV0Aux n)
@@ -158,66 +163,66 @@ let rec removeMinAuxWithRef n kr vr =
   | None ->  kr := kn; vr := vn; rn 
   | Some ln -> bal (removeMinAuxWithRef ln kr vr) kn vn rn
 
-let empty0 = empty
 
-let isEmpty0 x = match toOpt x with None -> true | Some _ -> false
+
+let isEmpty x = match toOpt x with None -> true | Some _ -> false
 
 let rec stackAllLeft v s = 
   match toOpt v with 
   | None -> s 
   | Some x -> stackAllLeft (left x) (x::s)    
 
-let rec iter0 n f = 
+let rec forEach n f = 
   match toOpt n with 
   | None -> () 
   | Some n -> 
-    iter0 (left n) f ; f (key n) (value n) [@bs]; iter0 (right n) f
+    forEach (left n) f ; f (key n) (value n) [@bs]; forEach (right n) f
 
-let rec map0 n f = 
+let rec map n f = 
   match toOpt n with
     None  ->
     empty
   | Some n  ->
-    let newLeft = map0 (left n) f in
+    let newLeft = map (left n) f in
     let newD = f (value n) [@bs] in
-    let newRight = map0 (right n) f in
+    let newRight = map (right n) f in
     return @@ node ~left:newLeft ~key:(key n) ~value:newD ~right:newRight ~h:(h n)
 
-let rec mapi0 n f =
+let rec mapWithKey n f =
   match toOpt n with 
     None ->
     empty
   | Some n ->
     let key = key n in 
-    let newLeft = mapi0 (left n) f in
+    let newLeft = mapWithKey (left n) f in
     let newD = f key (value n) [@bs] in
-    let newRight = mapi0 (right n) f in
+    let newRight = mapWithKey (right n) f in
     return @@ node ~left:newLeft ~key ~value:newD ~right:newRight ~h:(h n)
 
-let rec fold0 m accu f =
+let rec reduce m accu f =
   match toOpt m with
     None -> accu
   | Some n  ->
     let l, v, d, r = left n,  key n, value n, right n in 
-    fold0
+    reduce
       r 
-      (f (fold0 l accu f) v d [@bs]) f
+      (f (reduce l accu f) v d [@bs]) f
 
-let rec every0  n p =
+let rec every  n p =
   match toOpt n with 
     None -> true
   | Some n  ->    
     p (key n) (value n) [@bs] && 
-    every0 (left n) p && 
-    every0 (right n) p
+    every (left n) p && 
+    every (right n) p
 
-let rec some0 n p = 
+let rec some n p = 
   match toOpt n with 
     None -> false
   | Some n  ->
     p (key n) (value n) [@bs] || 
-    some0 (left n) p || 
-    some0 (right n) p
+    some (left n) p || 
+    some (right n) p
 
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
@@ -229,14 +234,14 @@ let rec some0 n p =
 
 let rec addMinElement n k v  = 
   match toOpt n with
-  | None -> singleton0 k v
+  | None -> singleton k v
   | Some n  
     ->
     bal (addMinElement (left n) k v ) (key n) (value n) (right n)
 
 let rec addMaxElement n k v  = 
   match toOpt n with 
-  | None -> singleton0 k v
+  | None -> singleton k v
   | Some n 
     ->      
     bal (left n) (key n) (value n) (addMaxElement (right n) k v )
@@ -273,40 +278,40 @@ let concatOrJoin t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2    
 
-let rec filterShared0 n p = 
+let rec filterShared n p = 
   match toOpt n with 
     None -> empty
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  v, d =  key n, value n  in 
-    let newLeft = filterShared0 (left n) p in
+    let newLeft = filterShared (left n) p in
     let pvd = p v d [@bs] in
-    let newRight = filterShared0 (right n) p in
+    let newRight = filterShared (right n) p in
     if pvd then join newLeft v d newRight else concat newLeft newRight
 
-let rec filterMap0 n p = 
+let rec filterMap n p = 
   match toOpt n with 
     None -> empty
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  v, d =  key n, value n  in 
-    let newLeft = filterMap0 (left n) p in
+    let newLeft = filterMap (left n) p in
     let pvd = p v d [@bs] in
-    let newRight = filterMap0 (right n) p in
+    let newRight = filterMap (right n) p in
     match pvd with 
     | None -> concat newLeft newRight
     | Some d -> join newLeft v d newRight 
     
 
-let rec partitionShared0 n p = 
+let rec partitionShared n p = 
   match toOpt n with   
     None -> (empty, empty)
   | Some n  ->
     let  key, value =  key n, value n  in
     (* call [p] in the expected left-to-right order *)    
-    let (lt, lf) = partitionShared0 (left n) p in
+    let (lt, lf) = partitionShared (left n) p in
     let pvd = p key value [@bs] in
-    let (rt, rf) = partitionShared0 (right n) p in
+    let (rt, rf) = partitionShared (right n) p in
     if pvd
     then (join lt key value rt, concat lf rf)
     else (concat lt rt, join lf key value rf)  
@@ -325,7 +330,7 @@ let rec lengthNode n =
     | Some r -> lengthNode r in 
   1 + sizeL + sizeR      
 
-let rec length0 n =
+let size n =
   match toOpt n with 
   | None -> 0
   | Some n  ->
@@ -337,11 +342,11 @@ let rec toListAux accu n =
   | Some n  ->    
     toListAux ((key n, value n) :: toListAux accu (right n)) (left n)
 
-let toList0 s =
+let toList s =
   toListAux [] s  
 
 
-let rec checkInvariantInternal (v : _ t0) = 
+let rec checkInvariantInternal (v : _ t) = 
   match toOpt v with 
   | None -> true 
   | Some n -> 
@@ -435,7 +440,7 @@ let rec fillArrayWithFilter n i arr p =
     fillArrayWithFilter r rnext arr  p 
 
 
-let toArray0 n =   
+let toArray n =   
   match toOpt n with 
   | None -> [||]
   | Some n ->  
@@ -444,7 +449,7 @@ let toArray0 n =
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v 
 
-let keysToArray0 n =     
+let keysToArray n =     
   match toOpt n with 
   | None -> [||]
   | Some n ->  
@@ -453,7 +458,7 @@ let keysToArray0 n =
     ignore (fillArrayKey n 0 v : int);  (* may add assertion *)
     v 
 
-let valuesToArray0 n =     
+let valuesToArray n =     
   match toOpt n with 
   | None -> [||]
   | Some n ->  
@@ -464,19 +469,19 @@ let valuesToArray0 n =
     
 let rec ofSortedArrayRevAux arr off len =     
   match len with 
-  | 0 -> empty0
-  | 1 -> let k, v = (A.getUnsafe arr off) in singleton0 k v 
+  | 0 -> empty
+  | 1 -> let k, v = (A.getUnsafe arr off) in singleton k v 
   | 2 ->  
     let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off - 1) ) 
     in 
-    return @@ node ~left:(singleton0 x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty0
+    return @@ node ~left:(singleton x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty
   | 3 -> 
     let (x0,y0),(x1,y1),(x2,y2) = 
       A.(getUnsafe arr off, 
          getUnsafe arr (off - 1), 
          getUnsafe arr (off - 2)) in 
-    return @@ node ~left:(singleton0 x0 y0)
-      ~right:(singleton0 x2 y2)
+    return @@ node ~left:(singleton x0 y0)
+      ~right:(singleton x2 y2)
       ~key:x1
       ~value:y1
       ~h:2
@@ -491,19 +496,19 @@ let rec ofSortedArrayRevAux arr off len =
 
 let rec ofSortedArrayAux arr off len =     
   match len with 
-  | 0 -> empty0
-  | 1 -> let k, v = (A.getUnsafe arr off) in singleton0 k v 
+  | 0 -> empty
+  | 1 -> let k, v = (A.getUnsafe arr off) in singleton k v 
   | 2 ->  
     let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off + 1) ) 
     in 
-    return @@ node ~left:(singleton0 x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty0
+    return @@ node ~left:(singleton x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty
   | 3 -> 
     let (x0,y0),(x1,y1),(x2,y2) = 
       A.(getUnsafe arr off, 
          getUnsafe arr (off + 1), 
          getUnsafe arr (off + 2)) in 
-    return @@ node ~left:(singleton0 x0 y0)
-      ~right:(singleton0 x2 y2)
+    return @@ node ~left:(singleton x0 y0)
+      ~right:(singleton x2 y2)
       ~key:x1 ~value:y1
       ~h:2
   | _ ->  
@@ -514,7 +519,7 @@ let rec ofSortedArrayAux arr off len =
       ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left midK midV right    
 
-let ofSortedArrayUnsafe0 arr =     
+let ofSortedArrayUnsafe arr =     
   ofSortedArrayAux arr 0 (A.length arr)
 
 let rec compareAux e1 e2 ~kcmp ~vcmp =
@@ -541,37 +546,37 @@ let rec eqAux e1 e2 ~kcmp ~veq =
     else  false    
   | _, _ -> true 
 
-let cmp0 s1 s2 ~kcmp ~vcmp =
-  let len1,len2 = length0 s1, length0 s2 in 
+let cmp s1 s2 ~kcmp ~vcmp =
+  let len1,len2 = size s1, size s2 in 
   if len1 = len2 then 
     compareAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~vcmp 
   else  if len1 < len2 then -1 else 1 
 
-let eq0  s1 s2 ~kcmp ~veq =
-  let len1, len2 = length0 s1, length0 s2 in 
+let eq s1 s2 ~kcmp ~veq =
+  let len1, len2 = size s1, size s2 in 
   if len1 = len2 then
     eqAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~veq
   else false
 
-let rec get0  n x ~cmp = 
+let rec get  n x ~cmp = 
   match toOpt n with 
     None -> None
   | Some n (* Node(l, v, d, r, _) *)  ->
     let v = key n in 
     let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then Some (value n)
-    else get0 ~cmp  (if c < 0 then left n else right n) x 
+    else get ~cmp  (if c < 0 then left n else right n) x 
 
-let rec getUndefined0  n x ~cmp =
+let rec getUndefined  n x ~cmp =
   match toOpt n with 
   | None -> Js.undefined
   | Some n  ->
     let v = key n in 
     let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then Js.Undefined.return (value n )
-    else getUndefined0 ~cmp  (if c < 0 then left n else right n) x 
+    else getUndefined ~cmp  (if c < 0 then left n else right n) x 
 
-let rec getExn0   n x  ~cmp = 
+let rec getExn   n x  ~cmp = 
   match toOpt n with 
     None ->
     [%assert "getExn0"]
@@ -579,9 +584,9 @@ let rec getExn0   n x  ~cmp =
     let v = key n in 
     let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then value n 
-    else getExn0 ~cmp  (if c < 0 then left n else right n) x
+    else getExn ~cmp  (if c < 0 then left n else right n) x
 
-let rec getWithDefault0   n x def ~cmp = 
+let rec getWithDefault   n x def ~cmp = 
   match toOpt n with 
     None ->
     def
@@ -589,16 +594,16 @@ let rec getWithDefault0   n x def ~cmp =
     let v = key n in 
     let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then value n 
-    else getWithDefault0 ~cmp  (if c < 0 then left n else right n) x def
+    else getWithDefault ~cmp  (if c < 0 then left n else right n) x def
 
-let rec mem0  n x ~cmp = 
+let rec has  n x ~cmp = 
   match toOpt n with 
     None ->
     false
   | Some n (* Node(l, v, d, r, _) *) ->
     let v = key n in 
     let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
-    c = 0 || mem0 ~cmp (if c < 0 then left n else right n) x
+    c = 0 || has ~cmp (if c < 0 then left n else right n) x
 
 
 (******************************************************************)
@@ -671,9 +676,9 @@ let balMutate nt  =
       nt
     end
 
-let rec updateMutate (t : _ t0) x data ~cmp =   
+let rec updateMutate (t : _ t) x data ~cmp =   
   match toOpt t with 
-  | None -> singleton0 x data
+  | None -> singleton x data
   | Some nt -> 
     let k = key nt in 
     let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  
@@ -691,9 +696,9 @@ let rec updateMutate (t : _ t0) x data ~cmp =
       );
       return (balMutate nt)  
 
-let ofArray0 (xs : _ array) ~cmp =   
+let ofArray (xs : _ array) ~cmp =   
   let len = A.length xs in 
-  if len = 0 then empty0
+  if len = 0 then empty
   else
     let next = 
       ref (S.strictlySortedLength xs 

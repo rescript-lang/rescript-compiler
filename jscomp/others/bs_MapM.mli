@@ -24,8 +24,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type ('k,'v,'id) t
-
-val empty: dict:('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
+type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
+    
+val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
 val has: ('k, _, _) t -> 'k  -> bool
 val cmp: 
@@ -70,7 +71,7 @@ val size: ('k, 'a, 'id) t -> int
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
-val ofArray: ('k * 'a) array -> dict:('k,'id) Bs_Cmp.t ->  ('k,'a,'id) t    
+val ofArray: ('k * 'a) array -> dict:('k,'id) dict ->  ('k,'a,'id) t    
 val keysToArray: ('k, _, _) t -> 'k array 
 val valuesToArray: (_, 'a, _) t -> 'a array
 val minKey: ('k, _,  _) t -> 'k option

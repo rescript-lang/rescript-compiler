@@ -22,7 +22,7 @@ function b(loc, x) {
 }
 
 var v = {
-  data: Bs_internalAVLset.empty0
+  data: Bs_internalAVLset.empty
 };
 
 for(var i = 0; i <= 100000; ++i){
@@ -32,22 +32,22 @@ for(var i = 0; i <= 100000; ++i){
 b("File \"bs_mutable_set_test.ml\", line 19, characters 4-11", Bs_internalAVLset.checkInvariantInternal(v.data));
 
 b("File \"bs_mutable_set_test.ml\", line 20, characters 4-11", Bs_Range.every(0, 100000, (function (i) {
-            return Bs_internalSetInt.mem(v.data, i);
+            return Bs_internalSetInt.has(v.data, i);
           })));
 
-eq("File \"bs_mutable_set_test.ml\", line 23, characters 5-12", Bs_internalAVLset.length0(v.data), 100001);
+eq("File \"bs_mutable_set_test.ml\", line 23, characters 5-12", Bs_internalAVLset.size(v.data), 100001);
 
 var u = Bs_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
 
 var v$1 = {
-  data: Bs_internalAVLset.empty0
+  data: Bs_internalAVLset.empty
 };
 
 Bs_SetIntM.mergeMany(v$1, u);
 
-eq("File \"bs_mutable_set_test.ml\", line 29, characters 5-12", Bs_internalAVLset.length0(v$1.data), 91);
+eq("File \"bs_mutable_set_test.ml\", line 29, characters 5-12", Bs_internalAVLset.size(v$1.data), 91);
 
-eq("File \"bs_mutable_set_test.ml\", line 30, characters 5-12", Bs_internalAVLset.toArray0(v$1.data), Array_data_util.range(30, 120));
+eq("File \"bs_mutable_set_test.ml\", line 30, characters 5-12", Bs_internalAVLset.toArray(v$1.data), Array_data_util.range(30, 120));
 
 var u$1 = Bs_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
@@ -55,7 +55,7 @@ var v$2 = {
   data: Bs_internalSetInt.ofArray(u$1)
 };
 
-eq("File \"bs_mutable_set_test.ml\", line 35, characters 5-12", Bs_internalAVLset.length0(v$2.data), 100001);
+eq("File \"bs_mutable_set_test.ml\", line 35, characters 5-12", Bs_internalAVLset.size(v$2.data), 100001);
 
 var u$2 = Array_data_util.randomRange(50000, 80000);
 
@@ -63,7 +63,7 @@ for(var i$1 = 0 ,i_finish = u$2.length - 1 | 0; i$1 <= i_finish; ++i$1){
   Bs_SetIntM.remove(v$2, i$1);
 }
 
-eq("File \"bs_mutable_set_test.ml\", line 42, characters 5-12", Bs_internalAVLset.length0(v$2.data), 70000);
+eq("File \"bs_mutable_set_test.ml\", line 42, characters 5-12", Bs_internalAVLset.size(v$2.data), 70000);
 
 var vv = Array_data_util.randomRange(0, 100000);
 
@@ -71,9 +71,9 @@ for(var i$2 = 0 ,i_finish$1 = vv.length - 1 | 0; i$2 <= i_finish$1; ++i$2){
   Bs_SetIntM.remove(v$2, Caml_array.caml_array_get(vv, i$2));
 }
 
-eq("File \"bs_mutable_set_test.ml\", line 48, characters 5-12", Bs_internalAVLset.length0(v$2.data), 0);
+eq("File \"bs_mutable_set_test.ml\", line 48, characters 5-12", Bs_internalAVLset.size(v$2.data), 0);
 
-b("File \"bs_mutable_set_test.ml\", line 49, characters 4-11", Bs_internalAVLset.isEmpty0(v$2.data));
+b("File \"bs_mutable_set_test.ml\", line 49, characters 4-11", Bs_internalAVLset.isEmpty(v$2.data));
 
 var xs = Bs_Array.makeBy(30, (function (i) {
         return i;
@@ -87,13 +87,13 @@ Bs_SetIntM.remove(v$3, 30);
 
 Bs_SetIntM.remove(v$3, 29);
 
-b("File \"bs_mutable_set_test.ml\", line 55, characters 4-11", +(28 === Bs_internalAVLset.maxUndefined0(v$3.data)));
+b("File \"bs_mutable_set_test.ml\", line 55, characters 4-11", +(28 === Bs_internalAVLset.maxUndefined(v$3.data)));
 
 Bs_SetIntM.remove(v$3, 0);
 
-b("File \"bs_mutable_set_test.ml\", line 57, characters 4-11", +(1 === Bs_internalAVLset.minUndefined0(v$3.data)));
+b("File \"bs_mutable_set_test.ml\", line 57, characters 4-11", +(1 === Bs_internalAVLset.minUndefined(v$3.data)));
 
-eq("File \"bs_mutable_set_test.ml\", line 58, characters 5-12", Bs_internalAVLset.length0(v$3.data), 28);
+eq("File \"bs_mutable_set_test.ml\", line 58, characters 5-12", Bs_internalAVLset.size(v$3.data), 28);
 
 var vv$1 = Array_data_util.randomRange(1, 28);
 
@@ -101,14 +101,14 @@ for(var i$3 = 0 ,i_finish$2 = vv$1.length - 1 | 0; i$3 <= i_finish$2; ++i$3){
   Bs_SetIntM.remove(v$3, Caml_array.caml_array_get(vv$1, i$3));
 }
 
-eq("File \"bs_mutable_set_test.ml\", line 63, characters 5-12", Bs_internalAVLset.length0(v$3.data), 0);
+eq("File \"bs_mutable_set_test.ml\", line 63, characters 5-12", Bs_internalAVLset.size(v$3.data), 0);
 
 function id(loc, x) {
   var u = {
-    data: Bs_internalAVLset.ofSortedArrayUnsafe0(x)
+    data: Bs_internalAVLset.ofSortedArrayUnsafe(x)
   };
   b(loc, Bs_internalAVLset.checkInvariantInternal(u.data));
-  return b(loc, Bs_Array.every2(Bs_internalAVLset.toArray0(u.data), x, (function (x, y) {
+  return b(loc, Bs_Array.every2(Bs_internalAVLset.toArray(u.data), x, (function (x, y) {
                     return +(x === y);
                   })));
 }
@@ -218,13 +218,13 @@ for(var i$4 = 0; i$4 <= 200; ++i$4){
   Bs_SetIntM.remove(v$4, i$4);
 }
 
-eq("File \"bs_mutable_set_test.ml\", line 92, characters 5-12", Bs_internalAVLset.length0(copyV.data), 126);
+eq("File \"bs_mutable_set_test.ml\", line 92, characters 5-12", Bs_internalAVLset.size(copyV.data), 126);
 
-eq("File \"bs_mutable_set_test.ml\", line 93, characters 5-12", Bs_internalAVLset.toArray0(copyV.data), Bs_Array.makeBy(126, (function (i) {
+eq("File \"bs_mutable_set_test.ml\", line 93, characters 5-12", Bs_internalAVLset.toArray(copyV.data), Bs_Array.makeBy(126, (function (i) {
             return (i << 3);
           })));
 
-eq("File \"bs_mutable_set_test.ml\", line 94, characters 5-12", Bs_internalAVLset.length0(v$4.data), 800);
+eq("File \"bs_mutable_set_test.ml\", line 94, characters 5-12", Bs_internalAVLset.size(v$4.data), 800);
 
 b("File \"bs_mutable_set_test.ml\", line 95, characters 4-11", Bs_SetIntM.eq(copyV, match[0]));
 
@@ -331,7 +331,7 @@ b("File \"bs_mutable_set_test.ml\", line 124, characters 4-11", Bs_SetIntM.eq(Bs
             }, {
               data: Bs_internalSetInt.ofArray(xs$16)
             }), {
-          data: Bs_internalAVLset.empty0
+          data: Bs_internalAVLset.empty
         }));
 
 var xs$17 = Array_data_util.randomRange(21, 40);
@@ -343,7 +343,7 @@ b("File \"bs_mutable_set_test.ml\", line 130, characters 4-11", Bs_SetIntM.eq(Bs
             }, {
               data: Bs_internalSetInt.ofArray(xs$18)
             }), {
-          data: Bs_internalAVLset.empty0
+          data: Bs_internalAVLset.empty
         }));
 
 b("File \"bs_mutable_set_test.ml\", line 136, characters 4-11", Bs_SetIntM.eq(Bs_SetIntM.intersect({

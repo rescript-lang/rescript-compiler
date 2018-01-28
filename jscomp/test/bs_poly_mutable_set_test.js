@@ -31,13 +31,13 @@ b("File \"bs_poly_mutable_set_test.ml\", line 17, characters 4-11", Bs_SetM.remo
 
 b("File \"bs_poly_mutable_set_test.ml\", line 18, characters 4-11", Bs_SetM.removeCheck(u, 20));
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 19, characters 5-12", Bs_internalAVLset.length0(u.data), 28);
+eq("File \"bs_poly_mutable_set_test.ml\", line 19, characters 5-12", Bs_internalAVLset.size(u.data), 28);
 
 var r = Array_data_util.randomRange(0, 30);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 21, characters 4-11", +(29 === Bs_internalAVLset.maxUndefined0(u.data)));
+b("File \"bs_poly_mutable_set_test.ml\", line 21, characters 4-11", +(29 === Bs_internalAVLset.maxUndefined(u.data)));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 22, characters 4-11", +(1 === Bs_internalAVLset.minUndefined0(u.data)));
+b("File \"bs_poly_mutable_set_test.ml\", line 22, characters 4-11", +(1 === Bs_internalAVLset.minUndefined(u.data)));
 
 Bs_SetM.add(u, 3);
 
@@ -45,7 +45,7 @@ for(var i = 0 ,i_finish = r.length - 1 | 0; i <= i_finish; ++i){
   Bs_SetM.remove(u, r[i]);
 }
 
-b("File \"bs_poly_mutable_set_test.ml\", line 27, characters 4-11", Bs_internalAVLset.isEmpty0(u.data));
+b("File \"bs_poly_mutable_set_test.ml\", line 27, characters 4-11", Bs_internalAVLset.isEmpty(u.data));
 
 Bs_SetM.add(u, 0);
 
@@ -55,41 +55,41 @@ Bs_SetM.add(u, 2);
 
 Bs_SetM.add(u, 0);
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 32, characters 5-12", Bs_internalAVLset.length0(u.data), 3);
+eq("File \"bs_poly_mutable_set_test.ml\", line 32, characters 5-12", Bs_internalAVLset.size(u.data), 3);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 33, characters 4-11", 1 - Bs_internalAVLset.isEmpty0(u.data));
+b("File \"bs_poly_mutable_set_test.ml\", line 33, characters 4-11", 1 - Bs_internalAVLset.isEmpty(u.data));
 
 for(var i$1 = 0; i$1 <= 3; ++i$1){
   Bs_SetM.remove(u, i$1);
 }
 
-b("File \"bs_poly_mutable_set_test.ml\", line 37, characters 4-11", Bs_internalAVLset.isEmpty0(u.data));
+b("File \"bs_poly_mutable_set_test.ml\", line 37, characters 4-11", Bs_internalAVLset.isEmpty(u.data));
 
 Bs_SetM.mergeMany(u, Array_data_util.randomRange(0, 20000));
 
 Bs_SetM.mergeMany(u, Array_data_util.randomRange(0, 200));
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 40, characters 5-12", Bs_internalAVLset.length0(u.data), 20001);
+eq("File \"bs_poly_mutable_set_test.ml\", line 40, characters 5-12", Bs_internalAVLset.size(u.data), 20001);
 
 Bs_SetM.removeMany(u, Array_data_util.randomRange(0, 200));
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 42, characters 5-12", Bs_internalAVLset.length0(u.data), 19800);
+eq("File \"bs_poly_mutable_set_test.ml\", line 42, characters 5-12", Bs_internalAVLset.size(u.data), 19800);
 
 Bs_SetM.removeMany(u, Array_data_util.randomRange(0, 1000));
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 44, characters 5-12", Bs_internalAVLset.length0(u.data), 19000);
+eq("File \"bs_poly_mutable_set_test.ml\", line 44, characters 5-12", Bs_internalAVLset.size(u.data), 19000);
 
 Bs_SetM.removeMany(u, Array_data_util.randomRange(0, 1000));
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 46, characters 5-12", Bs_internalAVLset.length0(u.data), 19000);
+eq("File \"bs_poly_mutable_set_test.ml\", line 46, characters 5-12", Bs_internalAVLset.size(u.data), 19000);
 
 Bs_SetM.removeMany(u, Array_data_util.randomRange(1000, 10000));
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 48, characters 5-12", Bs_internalAVLset.length0(u.data), 10000);
+eq("File \"bs_poly_mutable_set_test.ml\", line 48, characters 5-12", Bs_internalAVLset.size(u.data), 10000);
 
 Bs_SetM.removeMany(u, Array_data_util.randomRange(10000, 19999));
 
-eq("File \"bs_poly_mutable_set_test.ml\", line 50, characters 5-12", Bs_internalAVLset.length0(u.data), 1);
+eq("File \"bs_poly_mutable_set_test.ml\", line 50, characters 5-12", Bs_internalAVLset.size(u.data), 1);
 
 b("File \"bs_poly_mutable_set_test.ml\", line 51, characters 4-11", Bs_SetM.has(u, 20000));
 
@@ -113,12 +113,12 @@ b("File \"bs_poly_mutable_set_test.ml\", line 67, characters 4-11", Bs_SetM.eq(d
 
 b("File \"bs_poly_mutable_set_test.ml\", line 68, characters 4-11", Bs_SetM.eq(Bs_SetM.intersect(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(21, 40))), {
           dict: IntCmp,
-          data: Bs_internalAVLset.empty0
+          data: Bs_internalAVLset.empty
         }));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 74, characters 4-11", Bs_SetM.eq(Bs_SetM.intersect(f(Array_data_util.randomRange(21, 40)), f(Array_data_util.randomRange(0, 20))), {
           dict: IntCmp,
-          data: Bs_internalAVLset.empty0
+          data: Bs_internalAVLset.empty
         }));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 80, characters 4-11", Bs_SetM.eq(Bs_SetM.intersect(f(/* array */[

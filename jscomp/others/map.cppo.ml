@@ -12,39 +12,39 @@ module N = Bs_internalAVLtree
 module A = Bs_Array 
 module S = Bs_Sort
 
-type 'a t = (key, 'a) N.t0
+type 'a t = (key, 'a) N.t
 
-let empty = N.empty0      
-let isEmpty = N.isEmpty0
-let singleton = N.singleton0
+let empty = N.empty      
+let isEmpty = N.isEmpty
+let singleton = N.singleton
 
-let minKey = N.minKey0
-let minKeyUndefined = N.minKeyUndefined0
-let maxKey = N.maxKey0
-let maxKeyUndefined = N.maxKeyUndefined0                   
-let minimum = N.minimum0
-let minUndefined = N.minUndefined0
-let maximum = N.maximum0
-let maxUndefined = N.maxUndefined0
-let forEach = N.iter0      
-let map  = N.map0
-let mapWithKey = N.mapi0
-let reduce = N.fold0
-let every = N.every0
-let some = N.some0    
-let keepBy = N.filterShared0
-let partition = N.partitionShared0
-let size = N.length0
-let toList = N.toList0
-let toArray = N.toArray0 
-let keysToArray = N.keysToArray0
-let valuesToArray = N.valuesToArray0 
+let minKey = N.minKey
+let minKeyUndefined = N.minKeyUndefined
+let maxKey = N.maxKey
+let maxKeyUndefined = N.maxKeyUndefined
+let minimum = N.minimum
+let minUndefined = N.minUndefined
+let maximum = N.maximum
+let maxUndefined = N.maxUndefined
+let forEach = N.forEach
+let map  = N.map
+let mapWithKey = N.mapWithKey
+let reduce = N.reduce
+let every = N.every
+let some = N.some   
+let keepBy = N.filterShared
+let partition = N.partitionShared
+let size = N.size
+let toList = N.toList
+let toArray = N.toArray
+let keysToArray = N.keysToArray
+let valuesToArray = N.valuesToArray
 let checkInvariantInternal = N.checkInvariantInternal
 
 let rec set  t (newK : key) (newD : _)  = 
   match N.toOpt t with
   | None -> 
-    N.singleton0 newK newD
+    N.singleton newK newD
   | Some n  ->
     let k = N.key n in 
     if newK = k then
@@ -62,7 +62,7 @@ let rec update  t (x : key) f  =
     begin match f None [@bs] with 
     | None -> t 
     | Some data -> 
-      N.singleton0 x data 
+      N.singleton x data 
     end 
   | Some n  ->
     let k = N.key n in 
@@ -117,7 +117,7 @@ let rec removeAux n (x : key) =
 
 let remove n x = 
   match N.toOpt n with 
-  | None -> N.empty0
+  | None -> N.empty
   | Some n -> removeAux n x 
 
 let rec removeArrayAux t xs i len  =
@@ -133,7 +133,7 @@ let rec removeArrayAux t xs i len  =
 let removeArray t keys =
   let len = A.length keys in
   match N.toOpt t with
-  | None -> N.empty0
+  | None -> N.empty
   | Some t ->  removeArrayAux t keys 0 len
 
 let mergeArray h arr =   
@@ -145,7 +145,7 @@ let mergeArray h arr =
   done ;
   !v 
 
-let has = I.mem 
+let has = I.has
 let cmp = I.cmp 
 let eq = I.eq 
 let get = I.get
