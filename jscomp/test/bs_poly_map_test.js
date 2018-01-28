@@ -193,7 +193,7 @@ function acc(m, is) {
 }
 
 var m = {
-  dict: Icmp,
+  cmp: Icmp[/* cmp */0],
   data: Bs_SortedMapDict.empty
 };
 

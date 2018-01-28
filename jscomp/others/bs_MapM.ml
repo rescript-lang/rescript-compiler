@@ -26,14 +26,19 @@
     
 module N = Bs_internalAVLtree
 module A = Bs_Array
-module S = Bs_Sort 
+
 
 type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
+type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
     
-type ('k, 'v, 'id) t = {
-  dict: ('k, 'id) dict;
-  mutable data: ('k, 'v) N.t
-} [@@bs.deriving abstract]
+module S = struct    
+  type ('k, 'v, 'id) t = {
+    cmp: ('k, 'id) cmp;
+    mutable data: ('k, 'v) N.t
+  } [@@bs.deriving abstract]
+end
+
+type ('k, 'v, 'id) t = ('k, 'v, 'id) S.t
 
 let rec removeMutateAux nt x ~cmp = 
   let k = N.key nt in 
@@ -63,15 +68,14 @@ let rec removeMutateAux nt x ~cmp =
           N.return (N.balMutate nt)
     end    
 
-let remove (type elt) (type id) (d : (elt,_,id) t) k =  
-  let oldRoot = data d in   
+let remove d k =  
+  let oldRoot = S.data d in   
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
-    let module M = (val dict d) in 
-    let newRoot = removeMutateAux ~cmp:M.cmp oldRoot2 k in 
+    let newRoot = removeMutateAux ~cmp:(S.cmp d) oldRoot2 k in 
     if newRoot != oldRoot then 
-      dataSet d newRoot    
+      S.dataSet d newRoot    
 
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
@@ -83,16 +87,15 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
   else N.return t    
 
-let removeMany (type elt) (type id) (d : (elt,_,id) t) xs =  
-  let oldRoot = data d in 
+let removeMany d xs =  
+  let oldRoot = S.data d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
-    let module M = (val dict d)  in 
-    let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:M.cmp in 
+    let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:(S.cmp d) in 
     if newRoot != oldRoot then 
-      dataSet d newRoot
+      S.dataSet d newRoot
 
 
 let rec updateDone t x   f  ~cmp =   
@@ -130,85 +133,92 @@ let rec updateDone t x   f  ~cmp =
       );
       N.return (N.balMutate nt)  
       
-let update (type k) (type id) (t : (k,_,id) t)  x f =       
-  let oldRoot = data t in 
-  let module M = (val dict t) in 
-  let newRoot = updateDone oldRoot x f ~cmp:M.cmp in 
+let update t  x f =       
+  let oldRoot = S.data t in 
+  let newRoot = updateDone oldRoot x f ~cmp:(S.cmp t) in 
   if  newRoot != oldRoot then 
-    dataSet t newRoot 
+    S.dataSet t newRoot 
 
-let empty ~dict = 
-  t ~dict ~data:N.empty  
+let empty (type elt) (type id) ~(dict : (elt,id) dict) =
+  let module M = (val dict) in 
+  S.t ~cmp:M.cmp ~data:N.empty
+    
 let isEmpty d = 
-  N.isEmpty (data d)
-let singleton dict x v= 
-  t ~data:(N.singleton x v) ~dict 
+  N.isEmpty (S.data d)
+    
 
-let minKey m = N.minKey (data m)
-let minKeyUndefined m = N.minKeyUndefined (data m)
-let maxKey m = N.maxKey (data m)
-let maxKeyUndefined m = N.maxKeyUndefined (data m)
-let minimum m = N.minimum (data m)
-let minUndefined m = N.minUndefined (data m) 
-let maximum m = N.maximum (data m)
-let maxUndefined m = N.maxUndefined (data m)
+let minKey m = N.minKey (S.data m)
+let minKeyUndefined m = N.minKeyUndefined (S.data m)
+let maxKey m = N.maxKey (S.data m)
+let maxKeyUndefined m = N.maxKeyUndefined (S.data m)
+let minimum m = N.minimum (S.data m)
+let minUndefined m = N.minUndefined (S.data m) 
+let maximum m = N.maximum (S.data m)
+let maxUndefined m = N.maxUndefined (S.data m)
 
 let forEach d f =
-  N.forEach (data d) f     
+  N.forEach (S.data d) f     
 let reduce d acc cb = 
-  N.reduce (data d) acc cb 
+  N.reduce (S.data d) acc cb 
 let every d p = 
-  N.every (data d) p 
+  N.every (S.data d) p 
 let some d  p = 
-  N.some (data d) p       
+  N.some (S.data d) p       
 let size d = 
-  N.size (data d)
+  N.size (S.data d)
 let toList d =
-  N.toList (data d)
+  N.toList (S.data d)
 let toArray d = 
-  N.toArray (data d)
+  N.toArray (S.data d)
 let keysToArray d =   
-  N.keysToArray (data d)
+  N.keysToArray (S.data d)
 let valuesToArray d =   
-  N.valuesToArray (data d)
-let ofSortedArrayUnsafe ~dict xs : _ t =
-  t ~data:(N.ofSortedArrayUnsafe xs) ~dict   
+  N.valuesToArray (S.data d)
+    
+let ofSortedArrayUnsafe (type elt) (type id) ~(dict : (elt,id) dict) xs : _ t =
+  let module M = (val dict) in 
+  S.t ~data:(N.ofSortedArrayUnsafe xs) ~cmp:M.cmp
+    
 let checkInvariantInternal d = 
-  N.checkInvariantInternal (data d)  
-let cmp (type k)  (type id) (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
-  let module X = (val dict m1) in   
-  N.cmp ~kcmp:X.cmp ~vcmp:cmp (data m1) (data m2)
-let eq (type k) (type id) (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
-  let module M = (val dict m1) in 
-  N.eq ~kcmp:M.cmp ~veq:cmp (data m1) (data m2)
+  N.checkInvariantInternal (S.data d)  
+
+let cmp m1 m2 cmp = 
+  N.cmp ~kcmp:(S.cmp m1) ~vcmp:cmp (S.data m1) (S.data m2)
+    
+let eq m1 m2 cmp = 
+  N.eq ~kcmp:(S.cmp m1) ~veq:cmp (S.data m1) (S.data m2)
+    
 let map m f = 
-  t ~dict:(dict m) ~data:(N.map (data m) f)
+  S.t ~cmp:(S.cmp m) ~data:(N.map (S.data m) f)
+    
 let mapWithKey m  f = 
-  t ~dict:(dict m) ~data:(N.mapWithKey (data m) f)
-let get (type k) (type id) (m : (k,_,id) t) x  = 
-  let module X = (val dict m) in 
-  N.get ~cmp:X.cmp  (data m) x 
-let getUndefined (type k) (type id) (m : (k,_,id) t) x = 
-  let module X = (val dict m) in 
-  N.getUndefined ~cmp:X.cmp  (data m) x
-let getWithDefault (type k) (type id)  (m : (k,_,id) t) x def = 
-  let module X = (val dict m) in 
-  N.getWithDefault ~cmp:X.cmp (data m) x  def  
-let getExn (type k)  (type id)  (m : (k,_,id) t) x = 
-  let module X = (val dict m) in 
-  N.getExn ~cmp:X.cmp (data m) x 
-let has (type k) (type id)  (m : (k,_,id) t) x = 
-  let module X = (val dict m) in 
-  N.has ~cmp:X.cmp (data m) x
-let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)= 
-  let module M = (val dict ) in 
-  t ~dict  ~data:(N.ofArray ~cmp:M.cmp data)  
-let set (type elt) (type id) (m : (elt,_,id) t) e v = 
-  let module M = (val dict m) in
-  let oldRoot = data m in 
-  let newRoot = N.updateMutate ~cmp:M.cmp oldRoot e v in 
+  S.t ~cmp:(S.cmp m) ~data:(N.mapWithKey (S.data m) f)
+    
+let get m x  = 
+  N.get ~cmp:(S.cmp m)  (S.data m) x
+    
+let getUndefined m x = 
+  N.getUndefined ~cmp:(S.cmp m)  (S.data m) x
+    
+let getWithDefault m x def = 
+  N.getWithDefault ~cmp:(S.cmp m) (S.data m) x  def
+    
+let getExn m x = 
+  N.getExn ~cmp:(S.cmp m) (S.data m) x
+    
+let has m x = 
+  N.has ~cmp:(S.cmp m) (S.data m) x
+    
+let ofArray (type k) (type id) data ~(dict : (k,id) dict)= 
+  let module M = (val dict ) in
+  let cmp = M.cmp in 
+  S.t ~cmp  ~data:(N.ofArray ~cmp data)
+    
+let set  m e v = 
+  let oldRoot = S.data m in 
+  let newRoot = N.updateMutate ~cmp:(S.cmp m) oldRoot e v in 
   if newRoot != oldRoot then 
-    dataSet m newRoot
+    S.dataSet m newRoot
 
 let mergeArrayAux t  xs ~cmp =     
   let v = ref t in 
@@ -217,10 +227,10 @@ let mergeArrayAux t  xs ~cmp =
     v := N.updateMutate !v key value ~cmp
   done; 
   !v 
-let mergeMany (type elt) (type id) (d : (elt,_,id) t ) xs =   
-  let module M = (val dict d) in
-  let oldRoot = data d in 
-  let newRoot = mergeArrayAux oldRoot xs ~cmp:M.cmp in 
+
+let mergeMany d xs =   
+  let oldRoot = S.data d in 
+  let newRoot = mergeArrayAux oldRoot xs ~cmp:(S.cmp d) in 
   if newRoot != oldRoot then 
-    dataSet d newRoot 
+    S.dataSet d newRoot 
 

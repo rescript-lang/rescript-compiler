@@ -27,7 +27,7 @@ var Icmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 var Icmp2 = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
 var m0 = {
-  dict: Icmp,
+  cmp: Icmp[/* cmp */0],
   data: Bs_SortedMapDict.empty
 };
 
@@ -36,28 +36,30 @@ var I2 = /* module */[/* cmp */(function (x, y) {
     })];
 
 var m = {
-  dict: Icmp2,
+  cmp: Icmp2[/* cmp */0],
   data: Bs_SortedMapDict.empty
 };
 
 var m2 = {
-  dict: I2,
+  cmp: I2[/* cmp */0],
   data: Bs_SortedMapDict.empty
 };
 
 var data = m.data;
 
-m2.dict;
+Bs_Map.getDict(m2);
 
-var m_dict = m.dict;
+var m_dict = Bs_Map.getDict(m);
 
 for(var i = 0; i <= 100000; ++i){
   data = Bs_SortedMapDict.set(data, i, i, m_dict[/* cmp */0]);
 }
 
+var data$1 = data;
+
 var newm = {
-  dict: m_dict,
-  data: data
+  cmp: m_dict[/* cmp */0],
+  data: data$1
 };
 
 console.log(newm);
@@ -67,21 +69,21 @@ var m11 = Bs_SortedMapDict.set(Bs_SortedMapDict.empty, 1, 1, Icmp[/* cmp */0]);
 console.log(m11);
 
 var v = {
-  dict: Icmp2,
+  cmp: Icmp2[/* cmp */0],
   data: Bs_SortedSetDict.empty
 };
 
-var m_dict$1 = m.dict;
+var m_dict$1 = Bs_Map.getDict(m);
 
 var cmp = m_dict$1[/* cmp */0];
 
-var data$1 = v.data;
+var data$2 = v.data;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
-  data$1 = Bs_SortedSetDict.add(data$1, i$1, cmp);
+  data$2 = Bs_SortedSetDict.add(data$2, i$1, cmp);
 }
 
-console.log(data$1);
+console.log(data$2);
 
 function f(param) {
   return Bs_Map.ofArray(param, Icmp);

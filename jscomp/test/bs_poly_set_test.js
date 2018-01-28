@@ -162,28 +162,28 @@ var u25 = Bs_Set.add(u22, 59);
 eq("File \"bs_poly_set_test.ml\", line 79, characters 5-12", Bs_SortedSetDict.size(u25.data), 60);
 
 var m = {
-  dict: IntCmp,
+  cmp: IntCmp[/* cmp */0],
   data: Bs_SortedSetDict.empty
 };
 
 b("File \"bs_poly_set_test.ml\", line 80, characters 4-11", +(Bs_SortedSetDict.minimum(m.data) === /* None */0));
 
 var m$1 = {
-  dict: IntCmp,
+  cmp: IntCmp[/* cmp */0],
   data: Bs_SortedSetDict.empty
 };
 
 b("File \"bs_poly_set_test.ml\", line 81, characters 4-11", +(Bs_SortedSetDict.maximum(m$1.data) === /* None */0));
 
 var m$2 = {
-  dict: IntCmp,
+  cmp: IntCmp[/* cmp */0],
   data: Bs_SortedSetDict.empty
 };
 
 b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.minUndefined(m$2.data), undefined));
 
 var m$3 = {
-  dict: IntCmp,
+  cmp: IntCmp[/* cmp */0],
   data: Bs_SortedSetDict.empty
 };
 

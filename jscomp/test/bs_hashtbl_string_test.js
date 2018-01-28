@@ -136,7 +136,7 @@ function bench2(m) {
 
 function bench3(m) {
   var empty = {
-    dict: m,
+    cmp: m[/* cmp */0],
     data: Bs_SortedMapDict.empty
   };
   var cmp = m[/* cmp */0];

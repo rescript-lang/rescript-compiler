@@ -112,12 +112,12 @@ var dd = Bs_SetM.intersect(aa, bb);
 b("File \"bs_poly_mutable_set_test.ml\", line 67, characters 4-11", Bs_SetM.eq(dd, f(Array_data_util.randomRange(40, 100))));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 68, characters 4-11", Bs_SetM.eq(Bs_SetM.intersect(f(Array_data_util.randomRange(0, 20)), f(Array_data_util.randomRange(21, 40))), {
-          dict: IntCmp,
+          cmp: IntCmp[/* cmp */0],
           data: Bs_internalAVLset.empty
         }));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 74, characters 4-11", Bs_SetM.eq(Bs_SetM.intersect(f(Array_data_util.randomRange(21, 40)), f(Array_data_util.randomRange(0, 20))), {
-          dict: IntCmp,
+          cmp: IntCmp[/* cmp */0],
           data: Bs_internalAVLset.empty
         }));
 

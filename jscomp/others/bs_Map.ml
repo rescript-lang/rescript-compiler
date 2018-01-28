@@ -14,14 +14,14 @@
 
 module N = Bs_SortedMapDict
 module A = Bs_Array
-type ('key,  'a, 'id) t0 = ('key, 'a, 'id ) N.t
+
 type ('key, 'id ) dict = ('key, 'id) Bs_Cmp.t
 type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
 
 module S = struct 
   type ('k,'v,'id) t = {
     cmp: ('k,'id) cmp;
-    data: ('k,'v, 'id) t0
+    data: ('k,'v, 'id) N.t
   }
   [@@bs.deriving abstract]
 end
