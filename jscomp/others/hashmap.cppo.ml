@@ -35,7 +35,7 @@ module C = Bs_internalBucketsType
 module A = Bs_Array
 
 
-type 'b t = (key,'b) N.t0
+type 'b t = (key,'b) N.t
 
 
 let rec copyBucketReHash  ~h_buckets ~ndata_tail h old_bucket = 
@@ -181,14 +181,14 @@ let has h key =
     memInBucket  key bucket
 
 
-let make = C.create0
-let clear = C.clear0
+let make = C.make
+let clear = C.clear
 let size = C.size
-let forEach = N.forEach0
-let reduce = N.reduce0
-let logStats = N.logStats0
-let keepMapInPlace = N.filterMapInplace0
-let toArray = N.toArray0 
+let forEach = N.forEach
+let reduce = N.reduce
+let logStats = N.logStats
+let keepMapInPlace = N.keepMapInPlace
+let toArray = N.toArray
 
 let ofArray arr  = 
   let len = A.length arr in 
@@ -209,8 +209,8 @@ let mergeMany h arr =
 
 let copy = N.copy
 
-let keysToArray = N.keys0
-let valuesToArray = N.values0
+let keysToArray = N.keysToArray
+let valuesToArray = N.valuesToArray
 let getBucketHistogram = N.getBucketHistogram 
 
 let isEmpty h = C.size h = 0

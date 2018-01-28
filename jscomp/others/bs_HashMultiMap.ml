@@ -16,7 +16,7 @@ module N = Bs_internalBuckets
 module C = Bs_internalBucketsType
 module B = Bs_Bag 
 module A = Bs_Array
-type ('a, 'b,'id) t0 = ('a,'b) N.t0 
+type ('a, 'b,'id) t0 = ('a,'b) N.t
 
 type ('a,'b) bucket = ('a,'b) N.bucket
 
@@ -206,23 +206,17 @@ let has0 ~hash ~eq h key =
     mem_in_bucket ~eq key bucket
 
 
-let create0 = C.create0
-let clear0 = C.clear0
-let size0 = C.size
-let forEach0 = N.forEach0
-let reduce0 = N.reduce0
-let logStats0 = N.logStats0
-let filterMapInplace0 = N.filterMapInplace0
+let make = C.make
 
 (*  Wrapper  *)
 let create dict initialize_size = 
-  B.bag ~data:(create0 initialize_size) ~dict 
-let clear h = clear0 (B.data h)
+  B.bag ~data:(C.make initialize_size) ~dict 
+let clear h = C.clear (B.data h)
 
 let size h = C.size (B.data h)                 
-let forEach h f = N.forEach0 (B.data h) f
-let reduce h init f = N.reduce0 (B.data h) init f
-let logStats h = logStats0 (B.data h)
+let forEach h f = N.forEach (B.data h) f
+let reduce h init f = N.reduce (B.data h) init f
+let logStats h = N.logStats (B.data h)
 
 let add (type a) (type id) (h : (a,_,id) t) key info  = 
   let module M = (val B.dict h) in 
@@ -252,5 +246,5 @@ let has (type a)  (type id) (h : (a,_,id) t) key =
   let module M = (val B.dict h) in   
   has0 ~hash:M.hash ~eq:M.eq (B.data h) key   
 
-let filterMapDone h f =
-  filterMapInplace0 (B.data h) f
+let keepMapInPlace h f =
+  N.keepMapInPlace (B.data h) f

@@ -30,7 +30,7 @@ type ('a,'b) bucket = {
   mutable value : 'b;
   mutable next : ('a,'b) bucket C.opt
 }  
-and ('a, 'b) t0 = ('a,'b) bucket C.container  
+and ('a, 'b) t = ('a,'b) bucket C.container  
 [@@bs.deriving abstract]
 
 module A = Bs_Array
@@ -42,7 +42,7 @@ type statistics = {
   bucket_histogram: int array
 }
 
-let rec copy ( x : _ t0) : _ t0= 
+let rec copy ( x : _ t) : _ t= 
   C.container
     ~size:(C.size x)
     ~buckets:(copyBuckets (C.buckets x))
@@ -88,7 +88,7 @@ let rec do_bucket_iter ~f buckets =
   | Some cell ->
     f (key cell)  (value cell) [@bs]; do_bucket_iter ~f (next cell)
 
-let forEach0 h f =
+let forEach h f =
   let d = C.buckets h in
   for i = 0 to A.length d - 1 do
     do_bucket_iter f (A.getUnsafe d i)
@@ -102,7 +102,7 @@ let rec do_bucket_fold ~f b accu =
   | Some cell ->
     do_bucket_fold ~f (next cell) (f accu (key cell) (value cell)  [@bs]) 
 
-let reduce0  h init f =
+let reduce  h init f =
   let d = C.buckets h in
   let accu = ref init in
   for i = 0 to A.length d - 1 do
@@ -128,7 +128,7 @@ let getBucketHistogram h =
     );
   histo
 
-let logStats0 h =
+let logStats h =
   let histogram = getBucketHistogram h in 
   Js.log [%obj{ bindings = C.size h;
                 buckets = A.length (C.buckets h);
@@ -162,7 +162,7 @@ let rec filterMapInplaceBucket f h i prec cell =
         filterMapInplaceBucket f h i bucket nextCell
   end
 
-let filterMapInplace0 h f =
+let keepMapInPlace h f =
   let h_buckets = C.buckets h in
   for i = 0 to A.length h_buckets - 1 do
     let v = A.getUnsafe h_buckets i in 
@@ -177,7 +177,7 @@ let rec fillArray i arr cell =
   | None -> i + 1
   | Some v -> fillArray (i + 1) arr v 
 
-let toArray0 h = 
+let toArray h = 
   let d = C.buckets h in 
   let current = ref 0 in 
   let arr = A.makeUninitializedUnsafe (C.size h) in 
@@ -209,6 +209,6 @@ let linear h f =
   done;
   arr 
 
-let keys0 h = linear h (fun [@bs] x -> key x)  
-let values0 h = linear h (fun [@bs] x -> value x)  
-let toArray0 h = linear h (fun [@bs]x -> key x, value x)
+let keysToArray h = linear h (fun [@bs] x -> key x)  
+let valuesToArray h = linear h (fun [@bs] x -> value x)  
+let toArray h = linear h (fun [@bs]x -> key x, value x)

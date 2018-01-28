@@ -29,28 +29,28 @@ type ('a,'b) bucket = {
   mutable value : 'b;
   mutable next : ('a,'b) bucket C.opt
 }  
-and ('a, 'b) t0 = ('a,'b) bucket C.container  
+and ('a, 'b) t = ('a,'b) bucket C.container  
 [@@bs.deriving abstract]
 
-val copy : ('a, 'b) t0 -> ('a, 'b) t0
+val copy : ('a, 'b) t -> ('a, 'b) t
 
 
-val forEach0 : ('a, 'b) t0 -> ('a -> 'b -> 'c [@bs]) -> unit
+val forEach : ('a, 'b) t -> ('a -> 'b -> 'c [@bs]) -> unit
 
-val reduce0 :
-  ('a, 'b) t0 -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c
-val logStats0 : ('a, 'b) t0 -> unit
+val reduce :
+  ('a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c
+val logStats : ('a, 'b) t -> unit
 
   
-val filterMapInplace0 :
-  ('a, 'b) t0 -> ('a -> 'b -> 'b option [@bs]) -> unit
+val keepMapInPlace :
+  ('a, 'b) t -> ('a -> 'b -> 'b option [@bs]) -> unit
 
 val fillArray : int -> ('a * 'b) array -> ('a, 'b) bucket -> int
 
-val keys0 : ('a, 'b) t0 -> 'a array
+val keysToArray : ('a, 'b) t -> 'a array
 
-val values0 : ('a, 'b) t0 -> 'b array
+val valuesToArray : ('a, 'b) t -> 'b array
 
-val toArray0 : ('a, 'b) t0 -> ('a * 'b) array
+val toArray : ('a, 'b) t -> ('a * 'b) array
 
-val getBucketHistogram : ('a,'b) t0 -> int array
+val getBucketHistogram : ('a,'b) t -> int array

@@ -164,9 +164,9 @@ let has0 h key ~hash ~eq =
 let toArray h = N.toArray0 (B.data h)
 (*  Wrapper  *)
 let make dict initialize_size = 
-  B.bag ~data:(C.create0 initialize_size)
+  B.bag ~data:(C.make initialize_size)
     ~dict 
-let clear h = C.clear0 (B.data h)
+let clear h = C.clear (B.data h)
 
 let size h = C.size (B.data h)                 
 let forEach h f  = N.forEach0 (B.data h) f 
@@ -187,7 +187,7 @@ let has (type a) (type id) (h : (a,id) t) (key : a) =
 
 let ofArray0  ~hash ~eq arr  = 
   let len = Bs.Array.length arr in 
-  let v = C.create0 len in 
+  let v = C.make len in 
   for i = 0 to len - 1 do 
     addDone0 ~eq ~hash v (A.getUnsafe arr i)
   done ;

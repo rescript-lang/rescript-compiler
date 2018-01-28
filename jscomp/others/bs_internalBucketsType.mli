@@ -33,12 +33,6 @@ external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a opt = "%identity"
 
 val emptyOpt : 'a Js.undefined
-val create0 : int -> 'a container
-val clear0 : 'a container -> unit
+val make : int -> 'a container
+val clear : 'a container -> unit
 
-type statistics = {
-  num_bindings : int;
-  num_buckets : int;
-  max_bucket_length : int;
-  bucket_histogram : int array;
-}

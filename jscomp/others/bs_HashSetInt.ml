@@ -1,4 +1,4 @@
-# 9 "hashset.cppo.ml"
+# 10 "hashset.cppo.ml"
 type key = int
 type seed = int
 external caml_hash_mix_int : seed -> int -> seed  = "caml_hash_mix_int"
@@ -6,7 +6,7 @@ external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash (s : key) = 
   final_mix (caml_hash_mix_int 0 s)
 
-# 19
+# 20
 module N = Bs_internalSetBuckets
 module C = Bs_internalBucketsType
 module A = Bs_Array
@@ -128,8 +128,8 @@ let has h key =
     memInBucket key bucket
 
 
-let make = C.create0
-let clear = C.clear0
+let make = C.make
+let clear = C.clear
 
 let size = C.size
 let forEach = N.forEach0

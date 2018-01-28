@@ -73,7 +73,7 @@ var Int = /* module */[
 
 var empty = {
   dict: Int,
-  data: Bs_internalBucketsType.create0(500000)
+  data: Bs_internalBucketsType.make(500000)
 };
 
 function bench() {
@@ -93,13 +93,13 @@ function bench() {
     }
     
   }
-  return Bs_internalBuckets.logStats0(empty.data);
+  return Bs_internalBuckets.logStats(empty.data);
 }
 
 function bench2(m) {
   var empty = {
     dict: m,
-    data: Bs_internalBucketsType.create0(1000000)
+    data: Bs_internalBucketsType.make(1000000)
   };
   for(var i = 0; i <= 1000000; ++i){
     Bs_HashMap.set(empty, "" + i, i);
@@ -214,7 +214,7 @@ function bench4() {
 function bench5() {
   var table = {
     dict: Int,
-    data: Bs_internalBucketsType.create0(1000000)
+    data: Bs_internalBucketsType.make(1000000)
   };
   console.time("bs_hashtbl_string_test.ml 132");
   for(var i = 0; i <= 1000000; ++i){

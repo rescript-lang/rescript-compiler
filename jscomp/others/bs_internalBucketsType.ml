@@ -39,13 +39,13 @@ let rec power_2_above x n =
   else if x * 2 < x then x (* overflow *)
   else power_2_above (x * 2) n
 
-let create0  initialSize =
+let make  initialSize =
   let s = power_2_above 16 initialSize in  
   container
     ~size:0
     ~buckets:(A.makeUninitialized s)
 
-let clear0 h =
+let clear h =
   sizeSet h 0;
   let h_buckets = buckets h in 
   let len = A.length h_buckets in
@@ -53,17 +53,3 @@ let clear0 h =
     A.setUnsafe h_buckets i  emptyOpt
   done
 
-
-type statistics = {
-  num_bindings: int;
-  (** Number of bindings present in the table.
-      Same value as returned by {!Hashtbl.length}. *)
-  num_buckets: int;
-  (** Number of buckets in the table. *)
-  max_bucket_length: int;
-  (** Maximal number of bindings per bucket. *)
-  bucket_histogram: int array
-  (** Histogram of bucket sizes.  This array [histo] has
-      length [max_bucket_length + 1].  The value of
-      [histo.(i)] is the number of buckets whose size is [i]. *)
-} 
