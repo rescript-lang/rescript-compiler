@@ -25,14 +25,14 @@
 module N = Bs_SortedSetDict
 module A = Bs_Array
 
-type ('k,'id) t0 = ('k, 'id) N.t
+
 type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
 type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
 
 module S = struct 
   type ('k,'id) t = {
     cmp: ('k, 'id) cmp;
-    data: ('k, 'id) t0
+    data: ('k, 'id) N.t;
   } [@@bs.deriving abstract]
 end 
 

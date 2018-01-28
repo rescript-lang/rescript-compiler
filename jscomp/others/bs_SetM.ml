@@ -26,18 +26,21 @@
 
 module N = Bs_internalAVLset
 module A = Bs_Array
-module S = Bs_Sort 
+module Sort = Bs_Sort 
 
-type ('k,'id) t0 = 'k  N.t
 
 type ('k, 'id) dict = ('k, 'id) Bs_Cmp.t 
+type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
 
-type ('elt,'id) t =
-  {
-    dict: ('elt, 'id) dict;
-    mutable data: 'elt N.t
-  } [@@bs.deriving abstract]
+module S = struct
+  type ('elt,'id) t =
+    {
+      cmp: ('elt, 'id) cmp;
+      mutable data: 'elt N.t
+    } [@@bs.deriving abstract]
+end
 
+type ('k, 'id) t = ('k, 'id) S.t
 
 
 let rec removeMutateAux nt x ~cmp = 
@@ -68,15 +71,14 @@ let rec removeMutateAux nt x ~cmp =
           N.return (N.balMutate nt)
     end
 
-let remove (type elt) (type id) (d : (elt,id) t) v =  
-  let oldRoot = data d in 
-  let module M = (val dict d) in 
+let remove  d  v =  
+  let oldRoot = S.data d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
-    let newRoot = removeMutateAux ~cmp:M.cmp oldRoot2 v in 
+    let newRoot = removeMutateAux ~cmp:(S.cmp d) oldRoot2 v in 
     if newRoot != oldRoot then 
-      dataSet d newRoot    
+      S.dataSet d newRoot    
 
 
 let rec removeArrayMutateAux t xs i len ~cmp  =  
@@ -88,16 +90,15 @@ let rec removeArrayMutateAux t xs i len ~cmp  =
     | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
   else N.return t    
 
-let removeMany (type elt) (type id) (d : (elt,id) t) xs =  
-  let oldRoot = data d in 
+let removeMany d xs =  
+  let oldRoot = S.data d in 
   match N.toOpt oldRoot with 
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
-    let module M = (val dict d) in 
-    let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:M.cmp in 
+    let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:(S.cmp d) in 
     if newRoot != oldRoot then 
-      dataSet d newRoot
+      S.dataSet d newRoot
 
 
 let rec removeMutateCheckAux  nt x removed ~cmp= 
@@ -131,21 +132,20 @@ let rec removeMutateCheckAux  nt x removed ~cmp=
 
 
 
-let removeCheck (type elt) (type id) (d : (elt,id) t) v =  
-  let oldRoot = data d in 
+let removeCheck d v =  
+  let oldRoot = S.data d in 
   match N.toOpt oldRoot with 
   | None -> false 
   | Some oldRoot2 ->
-    let module M = (val dict d) in
     let removed = ref false in 
-    let newRoot = removeMutateCheckAux ~cmp:M.cmp oldRoot2 v removed in 
+    let newRoot = removeMutateCheckAux ~cmp:(S.cmp d) oldRoot2 v removed in 
     if newRoot != oldRoot then  
-      dataSet d newRoot ;   
+      S.dataSet d newRoot ;   
     !removed
 
 
 
-let rec addMutateCheckAux  (t : _ t0) x added ~cmp  =   
+let rec addMutateCheckAux  t x added ~cmp  =   
   match N.toOpt t with 
   | None -> 
     added := true;
@@ -164,136 +164,132 @@ let rec addMutateCheckAux  (t : _ t0) x added ~cmp  =
       );
       N.return (N.balMutate nt)
 
-let addCheck (type elt) (type id) (m : (elt,id) t) e = 
-  let dict, oldRoot = (dict m, data m) in 
-  let module M = (val dict) in 
+let addCheck m e = 
+  let  oldRoot = S.data m in 
   let added = ref false in 
-  let newRoot = addMutateCheckAux ~cmp:M.cmp oldRoot e added in 
+  let newRoot = addMutateCheckAux ~cmp:(S.cmp m) oldRoot e added in 
   if newRoot != oldRoot then 
-    dataSet m newRoot;
+    S.dataSet m newRoot;
   !added    
 
 
-let split (type elt) (type id) (d : (elt,id) t)  key  =     
-  let module M = (val dict d ) in
-  let arr = N.toArray (data d) in 
-  let i = S.binarySearchBy arr key (Bs_Cmp.getCmpIntenral M.cmp)  in   
+let split d  key  =     
+  let arr = N.toArray (S.data d) in
+  let cmp = S.cmp d in 
+  let i = Sort.binarySearchBy arr key (Bs_Cmp.getCmpIntenral cmp)  in   
   let len = A.length arr in 
   if i < 0 then 
     let next = - i -1 in 
-    (t 
+    (S.t 
        ~data:(N.ofSortedArrayAux arr 0 next)
-       ~dict:(module M)
+       ~cmp
      , 
-     t 
+     S.t 
        ~data:(N.ofSortedArrayAux arr next (len - next))
-       ~dict:(module M)
+       ~cmp
     ), false
   else 
-    (t 
+    (S.t 
        ~data:(N.ofSortedArrayAux arr 0 i)
-       ~dict:(module M),
-     t 
+       ~cmp,
+     S.t 
        ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
-       ~dict:(module M)
+       ~cmp
     ), true       
 
 let keepBy d p = 
-  t ~data:(N.filterCopy (data d) p ) ~dict:(dict d) 
+  S.t ~data:(N.filterCopy (S.data d) p ) ~cmp:(S.cmp d)
+    
 let partition d p = 
-  let dict = dict d in 
-  let a, b = N.partitionCopy (data d) p in 
-  t ~data:a ~dict, t ~data:b ~dict      
+  let cmp = S.cmp d in 
+  let a, b = N.partitionCopy (S.data d) p in 
+  S.t ~data:a ~cmp, S.t ~data:b ~cmp
 
-let empty ~dict = 
-  t ~dict ~data:N.empty
+let empty (type elt) (type id) ~(dict : (elt, id) dict) =
+  let module M = (val dict) in 
+  S.t ~cmp:M.cmp ~data:N.empty
     
 let isEmpty d = 
-  N.isEmpty (data d)
+  N.isEmpty (S.data d)
     
-let singleton x ~dict = 
-  t ~data:(N.singleton x) ~dict 
 let minimum d = 
-  N.minimum (data d)
+  N.minimum (S.data d)    
 let minUndefined d =
-  N.minUndefined (data d)
+  N.minUndefined (S.data d)
 let maximum d = 
-  N.maximum (data d)
+  N.maximum (S.data d)
 let maxUndefined d =
-  N.maxUndefined (data d)
+  N.maxUndefined (S.data d)
 let forEach d f =
-  N.forEach (data d) f     
+  N.forEach (S.data d) f     
 let reduce d acc cb = 
-  N.reduce (data d) acc cb 
+  N.reduce (S.data d) acc cb 
 let every d p = 
-  N.every (data d) p 
+  N.every (S.data d) p 
 let some d  p = 
-  N.some (data d) p   
+  N.some (S.data d) p   
 let size d = 
-  N.size (data d)
+  N.size (S.data d)
 let toList d =
-  N.toList (data d)
+  N.toList (S.data d)
 let toArray d = 
-  N.toArray (data d)
-let ofSortedArrayUnsafe xs ~dict : _ t =
-  t ~data:(N.ofSortedArrayUnsafe xs) ~dict   
-let checkInvariantInternal d = 
-  N.checkInvariantInternal (data d)
-let cmp (type elt) (type id) (d0 : (elt,id) t) d1 = 
-  let module M = (val dict d0) in 
-  N.cmp ~cmp:M.cmp (data d0) (data d1)
-let eq (type elt) (type id) (d0 : (elt,id) t)  d1 = 
-  let module M = (val dict d0) in 
-  N.eq ~cmp:M.cmp (data d0) (data d1)
-let get (type elt) (type id) (d : (elt,id) t) x = 
-  let module M = (val dict d) in 
-  N.get ~cmp:M.cmp (data d) x 
-let getUndefined (type elt) (type id) (d : (elt,id) t) x = 
-  let module M = (val dict d) in 
-  N.getUndefined ~cmp:M.cmp (data d) x
-let getExn (type elt) (type id) (d : (elt,id) t) x = 
-  let module M = (val dict d) in 
-  N.getExn ~cmp:M.cmp (data d) x     
-let has (type elt) (type id) (d : (elt,id) t) x =
-  let module M = (val dict d) in 
-  N.has ~cmp:M.cmp (data d) x   
-let ofArray (type elt) (type id) data ~(dict : (elt,id) dict) =  
-  let module M = (val dict) in 
-  t ~dict ~data:(N.ofArray ~cmp:M.cmp data)
-let add (type elt) (type id) (m : (elt,id) t) e = 
-  let module M = (val dict m) in
-  let oldRoot = (data m) in 
-  let newRoot = N.addMutate ~cmp:M.cmp oldRoot e  in 
-  if newRoot != oldRoot then 
-    dataSet m newRoot
+  N.toArray (S.data d)
 
-let addArrayMutate (t : _ t0) xs ~cmp =     
+let ofSortedArrayUnsafe (type elt) (type id) xs ~(dict : (elt,id) dict) : _ t =
+  let module M = (val dict) in 
+  S.t ~data:(N.ofSortedArrayUnsafe xs) ~cmp:M.cmp
+    
+let checkInvariantInternal d = 
+  N.checkInvariantInternal (S.data d)
+    
+let cmp d0 d1 = 
+  N.cmp ~cmp:(S.cmp d0) (S.data d0) (S.data d1)
+
+let eq d0  d1 = 
+  N.eq ~cmp:(S.cmp d0) (S.data d0) (S.data d1)
+    
+let get d x = 
+  N.get ~cmp:(S.cmp d) (S.data d) x
+    
+let getUndefined  d x = 
+  N.getUndefined ~cmp:(S.cmp d) (S.data d) x
+    
+let getExn d x = 
+  N.getExn ~cmp:(S.cmp d) (S.data d) x
+    
+let has d x =
+  N.has ~cmp:(S.cmp d) (S.data d) x
+    
+let ofArray (type elt) (type id)  data ~(dict : (elt,id) dict) =
+  let module M = (val dict) in
+  let cmp = M.cmp in 
+  S.t ~cmp ~data:(N.ofArray ~cmp data)
+    
+let add m e = 
+  let oldRoot = S.data m in 
+  let newRoot = N.addMutate ~cmp:(S.cmp m) oldRoot e  in 
+  if newRoot != oldRoot then 
+    S.dataSet m newRoot
+
+let addArrayMutate t xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
     v := N.addMutate !v (A.getUnsafe xs i)  ~cmp
   done; 
   !v
     
-let mergeMany (type elt) (type id) (d : (elt,id) t ) xs =   
-  let module M = (val dict d) in
-  dataSet d (addArrayMutate (data d) xs ~cmp:M.cmp)
+let mergeMany d xs =   
+  S.dataSet d (addArrayMutate (S.data d) xs ~cmp:(S.cmp d))
 
 
+let subset a b = 
+  N.subset  ~cmp:(S.cmp a) (S.data a) (S.data b)
 
-
-
-
-
-let subset (type elt) (type id) (a : (elt,id) t) b = 
-  let module M = (val dict a) in 
-  N.subset  ~cmp:M.cmp (data a) (data b)
-
-let intersect (type elt) (type id) (a : (elt,id) t) b  : _ t = 
-  (* let dict, dataa, datab = dict a, data a, data b in  *)
-  let module M = (val dict a) in 
-  match N.toOpt (data a), N.toOpt (data b) with 
-  | None, _ -> empty (module M)
-  | _, None -> empty (module M)
+let intersect a b  : _ t = 
+  let cmp = S.cmp a  in 
+  match N.toOpt (S.data a), N.toOpt (S.data b) with 
+  | None, _ -> S.t ~cmp ~data:N.empty
+  | _, None -> S.t ~cmp ~data:N.empty
   | Some dataa0, Some datab0 ->  
     let sizea, sizeb = 
       N.lengthNode dataa0, N.lengthNode datab0 in          
@@ -301,7 +297,7 @@ let intersect (type elt) (type id) (a : (elt,id) t) b  : _ t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    let p = Bs_Cmp.getCmpIntenral M.cmp in 
+    let p = Bs_Cmp.getCmpIntenral cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
@@ -309,20 +305,20 @@ let intersect (type elt) (type id) (a : (elt,id) t) b  : _ t =
           (A.getUnsafe tmp (totalSize - 1))
           (A.getUnsafe tmp 0) [@bs] < 0 
        )
-    then empty (module M)
+    then S.t ~cmp ~data:N.empty
     else 
       let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
-      let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
-      t ~data:(N.ofSortedArrayAux tmp2 0 k)
-        ~dict:(module M)
+      let k = Sort.intersect tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+      S.t ~data:(N.ofSortedArrayAux tmp2 0 k)
+        ~cmp
         
-let diff (type elt) (type id) (a : (elt,id) t) b : _ t = 
-  let module M = (val dict a) in
-  let dataa = data a in 
-  match N.toOpt dataa, N.toOpt (data b) with 
-  | None, _ -> empty (module M)
+let diff a b : _ t = 
+  let cmp = S.cmp a in 
+  let dataa = S.data a in 
+  match N.toOpt dataa, N.toOpt (S.data b) with 
+  | None, _ -> S.t ~cmp ~data:N.empty
   | _, None -> 
-    t ~data:(N.copy dataa) ~dict:(module M) 
+    S.t ~data:(N.copy dataa) ~cmp
   | Some dataa0, Some datab0
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
@@ -330,7 +326,7 @@ let diff (type elt) (type id) (a : (elt,id) t) b : _ t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    let p = Bs_Cmp.getCmpIntenral M.cmp in 
+    let p = Bs_Cmp.getCmpIntenral cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
@@ -338,18 +334,18 @@ let diff (type elt) (type id) (a : (elt,id) t) b : _ t =
           (A.getUnsafe tmp (totalSize - 1))
           (A.getUnsafe tmp 0) [@bs] < 0 
        )
-    then t ~data:(N.copy dataa) ~dict:(module M) 
+    then S.t ~data:(N.copy dataa) ~cmp
     else 
       let tmp2 = A.makeUninitializedUnsafe sizea in 
-      let k = S.diff tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
-      t ~data:(N.ofSortedArrayAux tmp2 0 k) ~dict:(module M) 
+      let k = Sort.diff tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+      S.t ~data:(N.ofSortedArrayAux tmp2 0 k) ~cmp
 
-let union (type elt) (type id) (a : (elt,id) t) b = 
-  let module M = (val dict a) in
-  let dataa, datab =  data a, data b  in 
+let union a b = 
+  let cmp = S.cmp a in 
+  let dataa, datab =  S.data a, S.data b  in 
   match N.toOpt dataa, N.toOpt datab with 
-  | None, _ -> t ~data:(N.copy datab) ~dict:(module M) 
-  | _, None -> t ~data:(N.copy dataa) ~dict:(module M) 
+  | None, _ -> S.t ~data:(N.copy datab) ~cmp
+  | _, None -> S.t ~data:(N.copy dataa) ~cmp
   | Some dataa0, Some datab0 
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in 
@@ -357,14 +353,14 @@ let union (type elt) (type id) (a : (elt,id) t) b =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
-    let p = (Bs_Cmp.getCmpIntenral M.cmp)  in 
+    let p = (Bs_Cmp.getCmpIntenral cmp)  in 
     if p
         (A.getUnsafe tmp (sizea - 1))
         (A.getUnsafe tmp sizea) [@bs] < 0 then 
-      t ~data:(N.ofSortedArrayAux tmp 0 totalSize) ~dict:(module M) 
+      S.t ~data:(N.ofSortedArrayAux tmp 0 totalSize) ~cmp
     else   
       let tmp2 = A.makeUninitializedUnsafe totalSize in 
-      let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
-      t ~data:(N.ofSortedArrayAux tmp2 0 k) ~dict:(module M) 
+      let k = Sort.union tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+      S.t ~data:(N.ofSortedArrayAux tmp2 0 k) ~cmp
 
-let copy d = t ~data:(N.copy (data d)) ~dict:(dict d)
+let copy d = S.t ~data:(N.copy (S.data d)) ~cmp:(S.cmp d)
