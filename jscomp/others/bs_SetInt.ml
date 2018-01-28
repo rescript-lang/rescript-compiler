@@ -8,28 +8,27 @@ type elt = I.elt
 type t = I.t 
 
 
-let empty = N.empty0      
-let isEmpty = N.isEmpty0
-let singleton = N.singleton0
-let minimum = N.minimum0
-let minUndefined = N.minUndefined0
-let maximum = N.maximum0
-let maxUndefined = N.maxUndefined0
-let forEach = N.iter0      
-let reduce = N.fold0
-let every = N.every0
-let some = N.some0    
-let keepBy = N.filterShared0
-let partition = N.partitionShared0
-let size = N.length0
-let toList = N.toList0
-let toArray = N.toArray0
-let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe0
+let empty = N.empty      
+let isEmpty = N.isEmpty
+let minimum = N.minimum
+let minUndefined = N.minUndefined
+let maximum = N.maximum
+let maxUndefined = N.maxUndefined
+let forEach = N.forEach
+let reduce = N.reduce
+let every = N.every
+let some = N.some   
+let keepBy = N.filterShared
+let partition = N.partitionShared
+let size = N.size
+let toList = N.toList
+let toArray = N.toArray
+let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe
 let checkInvariantInternal = N.checkInvariantInternal
 
 let rec add  (t : t) (x : elt) : t =
   match N.toOpt t with 
-    None -> N.singleton0 x 
+    None -> N.singleton x 
   | Some nt  ->
     let v = N.key nt in  
     if x = v then t else
@@ -92,7 +91,7 @@ let get = I.get
 let getUndefined = I.getUndefined
 let getExn = I.getExn                
 let subset = I.subset 
-let has = I.mem 
+let has = I.has
 
 let rec splitAuxNoPivot (n : _ N.node) (x : elt) : t * t =   
   let l,v,r = N.(left n , key n, right n) in  

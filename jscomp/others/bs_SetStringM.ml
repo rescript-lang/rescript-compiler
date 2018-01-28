@@ -55,35 +55,35 @@ let removeMutate nt x =
   | Some nt -> removeMutateAux nt x 
 
     
-let empty  () = t ~data:N.empty0 
+let empty  () = t ~data:N.empty
 
 let isEmpty d = 
-  N.isEmpty0 (data d)
+  N.isEmpty (data d)
 
 let singleton x = 
-  t ~data:(N.singleton0 x)
+  t ~data:(N.singleton x)
 
 let minimum d = 
-  N.minimum0 (data d)
+  N.minimum (data d)
 
 let minUndefined d =
-  N.minUndefined0 (data d)
+  N.minUndefined (data d)
 
 let maximum d = 
-  N.maximum0 (data d)
+  N.maximum (data d)
 
 let maxUndefined d =
-  N.maxUndefined0 (data d)
+  N.maxUndefined (data d)
 
 let forEach d f =
-  N.iter0 (data d) f     
+  N.forEach (data d) f     
 
 let reduce d acc cb = 
-  N.fold0 (data d) acc cb 
+  N.reduce (data d) acc cb 
 let every d p = 
-  N.every0 (data d) p 
+  N.every (data d) p 
 let some d  p = 
-  N.some0 (data d) p   
+  N.some (data d) p   
 
 let keepBy d p = 
   t ~data:(N.filterCopy (data d) p )
@@ -91,13 +91,13 @@ let partition d p =
   let a , b = N.partitionCopy (data d) p in 
   t ~data:a, t ~data:b
 let size d = 
-  N.length0 (data d)
+  N.size (data d)
 let toList d =
-  N.toList0 (data d)
+  N.toList (data d)
 let toArray d = 
-  N.toArray0 (data d)
+  N.toArray (data d)
 let ofSortedArrayUnsafe xs =
-  t ~data:(N.ofSortedArrayUnsafe0 xs)    
+  t ~data:(N.ofSortedArrayUnsafe xs)    
 let checkInvariantInternal d = 
   N.checkInvariantInternal (data d)
 
@@ -128,7 +128,7 @@ let rec removeArrayMutateAux t xs i len  =
     let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele in 
     match N.toOpt u with 
-    | None -> N.empty0
+    | None -> N.empty
     | Some t -> removeArrayMutateAux t xs (i+1) len
   else N.return t    
 
@@ -191,7 +191,7 @@ let rec addMutateCheckAux  t (x : elt) added  =
   match N.toOpt t with 
   | None -> 
     added := true;
-    N.singleton0 x 
+    N.singleton x 
   | Some nt -> 
     let k = N.key nt in 
     (* let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in   *)
@@ -229,7 +229,7 @@ let getExn d x =
   I.getExn (data d) x 
 let split d  key =  
   let s = data d in  
-  let arr = N.toArray0 s in 
+  let arr = N.toArray s in 
   let i = S.binarySearch arr key   in   
   let len = A.length arr in 
   if i < 0 then 
@@ -320,6 +320,6 @@ let union (dataa : t)  (datab : t) : t =
       let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0  in 
       t ~data:(N.ofSortedArrayAux tmp2 0 k) 
   
-let has d x = I.mem (data d) x 
+let has d x = I.has (data d) x 
 
 let copy d = t ~data:(N.copy (data d)) 

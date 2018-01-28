@@ -25,7 +25,7 @@
 module N = Bs_internalAVLset
 module A = Bs_Array
 
-type ('k,'id) t = 'k N.t0
+type ('k,'id) t = 'k N.t
 
 type ('key, 'id) cmp = ('key, 'id)  Bs_Cmp.cmp
 
@@ -36,7 +36,7 @@ type ('key, 'id) cmp = ('key, 'id)  Bs_Cmp.cmp
 *)  
 let rec add  (t : _ t) x  ~cmp : _ t =
   match N.toOpt t with 
-  | None -> N.singleton0 x 
+  | None -> N.singleton x 
   | Some nt ->
     let k = N.key nt in 
     let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in
@@ -198,34 +198,34 @@ let rec diff s1 s2 ~cmp  =
     else N.joinShared ll v1 rr 
 
 
-let empty = N.empty0      
-let ofArray = N.ofArray0
-let isEmpty = N.isEmpty0
+let empty = N.empty     
+let ofArray = N.ofArray
+let isEmpty = N.isEmpty
 
 
 
-let cmp = N.cmp0
-let eq = N.eq0 
-let has = N.mem0
-let forEach = N.iter0      
-let reduce = N.fold0
-let every = N.every0
-let some = N.some0    
-let size = N.length0
-let toList = N.toList0
-let toArray = N.toArray0
-let minimum = N.minimum0
-let maximum = N.maximum0
-let maxUndefined = N.maxUndefined0
-let minUndefined = N.minUndefined0
-let get = N.get0
-let getExn = N.getExn0
-let getUndefined = N.getUndefined0
+let cmp = N.cmp
+let eq = N.eq
+let has = N.has
+let forEach = N.forEach
+let reduce = N.reduce
+let every = N.every
+let some = N.some    
+let size = N.size
+let toList = N.toList
+let toArray = N.toArray
+let minimum = N.minimum
+let maximum = N.maximum
+let maxUndefined = N.maxUndefined
+let minUndefined = N.minUndefined
+let get = N.get
+let getExn = N.getExn
+let getUndefined = N.getUndefined
                 
 
-let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe0
-let subset = N.subset0
-let keepBy = N.filterShared0
-let partition = N.partitionShared0
+let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe
+let subset = N.subset
+let keepBy = N.filterShared
+let partition = N.partitionShared
 
 let checkInvariantInternal = N.checkInvariantInternal

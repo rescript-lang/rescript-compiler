@@ -112,7 +112,7 @@ let zip xs ys =
   done ; 
   s 
 
-let map2 xs ys f = 
+let zipBy xs ys f = 
   let lenx, leny = length xs, length ys in 
   let len = Pervasives.min lenx leny  in 
   let s = makeUninitializedUnsafe len in 

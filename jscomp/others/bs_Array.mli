@@ -102,7 +102,7 @@ val forEach: 'a array ->  ('a -> unit [@bs]) -> unit
 
 val map: 'a array ->  ('a -> 'b [@bs]) -> 'b array
 
-val map2: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array    
+val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array    
 
 val keepBy: 'a array -> ('a -> bool [@bs]) -> 'a array
 

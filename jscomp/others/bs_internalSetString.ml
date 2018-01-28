@@ -8,15 +8,15 @@ module N = Bs_internalAVLset
 module A = Bs_Array 
 
 
-type t = elt N.t0
+type t = elt N.t
 
 
-let rec mem (t : t) (x : elt)  =
+let rec has (t : t) (x : elt)  =
   match N.toOpt t with 
   | None -> false
   | Some n  ->                
     let v = N.key n in 
-    x = v || mem (if x < v then N.left n else N.right n) x
+    x = v || has (if x < v then N.left n else N.right n) x
 
 
 let rec compareAux e1 e2  =
@@ -33,7 +33,7 @@ let rec compareAux e1 e2  =
 
 
 let cmp s1 s2 =
-  let len1, len2 = N.length0 s1, N.length0 s2 in   
+  let len1, len2 = N.size s1, N.size s2 in   
   if len1 = len2 then 
     compareAux (N.stackAllLeft s1 []) (N.stackAllLeft s2 [])
   else if len1 < len2 then -1 else 1 
@@ -92,7 +92,7 @@ let rec getExn  (n :t) (x : elt) =
 (****************************************************************************)
 let rec addMutate  t  (x : elt)=   
   match N.toOpt t with 
-  | None -> N.singleton0 x
+  | None -> N.singleton x
   | Some nt -> 
     let k = N.key nt in 
     if x = k then t 

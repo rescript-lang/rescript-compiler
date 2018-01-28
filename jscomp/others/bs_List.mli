@@ -49,7 +49,7 @@ val concat: 'a t -> 'a t -> 'a t
 
 val map: 'a t -> ('a -> 'b [@bs]) -> 'b t
 
-val map2: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
+val zipBy: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
 
 val mapWithIndex: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
 

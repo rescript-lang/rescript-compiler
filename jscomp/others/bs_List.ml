@@ -313,7 +313,7 @@ let map xs f =
     copyAuxWithMap t cell f;
     cell
 
-let map2 l1 l2 f =
+let zipBy l1 l2 f =
   match (l1, l2) with
   | (a1::l1, a2::l2) -> 
     let cell = mutableCell (f a1 a2 [@bs]) []  in
