@@ -16,129 +16,135 @@ module N = Bs_SortedMapDict
 module A = Bs_Array
 type ('key,  'a, 'id) t0 = ('key, 'a, 'id ) N.t
 type ('key, 'id ) dict = ('key, 'id) Bs_Cmp.t
-type ('k,'v,'id) t = {
-  dict : ('k,'id) dict;
-  data : ('k,'v, 'id) t0
-}
-[@@bs.deriving abstract]
+type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
 
+module S = struct 
+  type ('k,'v,'id) t = {
+    cmp: ('k,'id) cmp;
+    data: ('k,'v, 'id) t0
+  }
+  [@@bs.deriving abstract]
+end
+
+type ('k, 'v, 'id ) t = ('k, 'v, 'id) S.t 
 
 let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)  =
+  let module M = (val dict) in
+  let cmp = M.cmp in 
+  S.t ~cmp ~data:(N.ofArray ~cmp data)
+
+
+let remove m x  =   
+  let cmp, odata = S.cmp m, S.data m in 
+  let newData = N.remove odata x ~cmp  in
+  if newData == odata then m
+  else S.t ~cmp ~data:newData
+
+let removeMany m x =     
+  let cmp, odata = S.cmp m,  S.data m in
+  let newData = N.removeMany odata x ~cmp in
+  if newData == odata then m
+  else S.t ~cmp  ~data:newData
+
+let set m key d  = 
+  let cmp = S.cmp m in 
+  S.t ~cmp  ~data:(N.set ~cmp (S.data m) key d)
+
+let mergeMany m e = 
+  let cmp = S.cmp m in 
+  S.t ~cmp  ~data:(N.mergeMany ~cmp (S.data m) e)
+
+let update m key f  = 
+  let cmp = S.cmp m in 
+  S.t ~cmp ~data:(N.update ~cmp (S.data m) key f )
+
+let split m x =   
+  let cmp = S.cmp m in 
+  let (l,r),b = N.split ~cmp (S.data m) x in 
+  (S.t ~cmp ~data:l, S.t ~cmp  ~data:r), b  
+
+let merge s1 s2 f = 
+  let cmp = S.cmp s1 in 
+  S.t ~cmp ~data:(N.merge ~cmp  (S.data s1) (S.data s2) f)
+
+let empty (type elt) (type id) ~(dict: (elt, id) dict) =
   let module M = (val dict) in 
-  t ~dict ~data:(N.ofArray ~cmp:M.cmp data)
-
-
-let remove (type k) (type id) (m : (k,_,id) t) x  =   
-  let module M = (val dict m) in
-  let odata = data m in
-  let newData = N.remove odata x ~cmp:M.cmp in
-  if newData == odata then m
-  else t ~dict:(module M) ~data:newData
-
-let removeMany (type k) (type id) (m : (k,_,id) t) x =     
-  let module M = (val dict m) in
-  let odata = data m in
-  let newData = N.removeMany odata x ~cmp:M.cmp in
-  if newData == odata then m
-  else t ~dict:(module M) ~data:newData
-
-let set (type k) (type id) (m : (k,_,id) t) key d  = 
-  let module X = (val dict m) in 
-  t ~dict:(module X) ~data:(N.set ~cmp:X.cmp (data m) key d)
-
-let mergeMany (type elt) (type id) (m : (elt,_,id) t) e = 
-  let module M = (val dict m) in 
-  t ~dict:(module M) ~data:(N.mergeMany ~cmp:M.cmp (data m) e)
-
-let update (type k) (type id) (m : (k,_,id) t) key f  = 
-  let module X = (val dict m) in 
-  t ~dict:(module X) ~data:(N.update ~cmp:X.cmp (data m) key f )
-
-let split (type k)  (type id) (m : (k,_,id) t) x =   
-  let module M = (val dict m) in 
-  let (l,r),b = N.split ~cmp:M.cmp (data m) x in 
-  (t ~dict:(module M) ~data:l, t ~dict:(module M) ~data:r), b  
-
-let merge (type k) (type id)  (s1 : (k,_,id) t) 
-    (s2 : (k,_,id) t) f = 
-  let module X = (val dict s1) in 
-  t ~dict:(module X) ~data:(N.merge ~cmp:X.cmp  (data s1) (data s2) f)
-
-let empty ~dict = 
-  t  ~dict  ~data:N.empty
+  S.t  ~cmp:M.cmp  ~data:N.empty
 
 let isEmpty map = 
-  N.isEmpty (data map)
+  N.isEmpty (S.data map)
 
-let cmp (type k)  (type id)  (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp
-  = 
-  let module X = (val dict m1) in 
-  N.cmp ~kcmp:X.cmp ~vcmp:cmp (data m1) (data m2)
 
-let eq (type k) (type id) 
-    (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
-  let module X = (val dict m1) in 
-  N.eq ~kcmp:X.cmp ~veq:cmp (data m1) (data m2)
+let forEach m f = N.forEach (S.data m) f
 
-let forEach m f = N.forEach (data m) f
+let reduce m acc f = N.reduce (S.data m) acc f  
 
-let reduce m acc f = N.reduce (data m) acc f  
+let every m f = N.every (S.data m) f  
 
-let every m f = N.every (data m) f  
+let some m f = N.some (S.data m) f
 
-let some m f = N.some (data m) f
-
-let keepBy m f = 
-  t ~dict:(dict m) ~data:(N.keepBy (data m) f)
+let keepBy m f =
+  S.t ~cmp:(S.cmp m) ~data:(N.keepBy (S.data m) f)
 
 let partition m p =   
-  let dict = dict m in 
-  let l,r = N.partition (data m) p in 
-  t ~dict ~data:l, t ~dict ~data:r 
+  let cmp = S.cmp m in 
+  let l,r = N.partition (S.data m) p in 
+  S.t ~cmp ~data:l, S.t ~cmp ~data:r 
 
 let map m f = 
-  t ~dict:(dict m) ~data:(N.map (data m) f)
+  S.t ~cmp:(S.cmp m) ~data:(N.map (S.data m) f)
     
 let mapWithKey m  f = 
-  t ~dict:(dict m) ~data:(N.mapWithKey (data m) f)
+  S.t ~cmp:(S.cmp m) ~data:(N.mapWithKey (S.data m) f)
 
-let size map = N.size (data map)   
-let toList map = N.toList (data map) 
-let toArray m = N.toArray (data m)
-let keysToArray m = N.keysToArray (data m)
-let valuesToArray m = N.valuesToArray (data m)
-let minKey m = N.minKey (data m)
-let minKeyUndefined m = N.minKeyUndefined (data m)
-let maxKey m = N.maxKey (data m)
-let maxKeyUndefined m = N.maxKeyUndefined (data m)    
-let minimum m = N.minimum (data m)
-let minUndefined m = N.minUndefined (data m) 
-let maximum m = N.maximum (data m)
-let maxUndefined m = N.maxUndefined (data m)
+let size map = N.size (S.data map)   
+let toList map = N.toList (S.data map) 
+let toArray m = N.toArray (S.data m)
+let keysToArray m = N.keysToArray (S.data m)
+let valuesToArray m = N.valuesToArray (S.data m)
+let minKey m = N.minKey (S.data m)
+let minKeyUndefined m = N.minKeyUndefined (S.data m)
+let maxKey m = N.maxKey (S.data m)
+let maxKeyUndefined m = N.maxKeyUndefined (S.data m)    
+let minimum m = N.minimum (S.data m)
+let minUndefined m = N.minUndefined (S.data m) 
+let maximum m = N.maximum (S.data m)
+let maxUndefined m = N.maxUndefined (S.data m)
 
-let get (type k) (type id) (map : (k,_,id) t) x  = 
-  let module X = (val dict map) in 
-  N.get ~cmp:X.cmp  (data map) x 
+let get map x  =
+  N.get ~cmp:(S.cmp map)  (S.data map) x 
 
-let getUndefined (type k) (type id) (map : (k,_,id) t) x = 
-  let module X = (val dict map) in 
-  N.getUndefined ~cmp:X.cmp  (data map) x
+let getUndefined map x = 
+  N.getUndefined ~cmp:(S.cmp map) (S.data map) x
 
-let getWithDefault (type k) (type id)  (map : (k,_,id) t) x def = 
-  let module X = (val dict map) in 
-  N.getWithDefault ~cmp:X.cmp (data map) x  def
+let getWithDefault map x def = 
+  N.getWithDefault ~cmp:(S.cmp map) (S.data map) x  def
 
-let getExn (type k) (type id)  (map : (k,_,id) t) x = 
-  let module X = (val dict map) in 
-  N.getExn ~cmp:X.cmp (data map) x 
+let getExn map x = 
+  N.getExn ~cmp:(S.cmp map) (S.data map) x 
 
-let has (type k) (type id)  (map : (k,_,id) t) x = 
-  let module X = (val dict map) in 
-  N.has ~cmp:X.cmp (data map) x
+let has map x = 
+  N.has ~cmp:(S.cmp map) (S.data map) x
 
 let checkInvariantInternal m  =
-  N.checkInvariantInternal (data m)
+  N.checkInvariantInternal (S.data m)
 
-let getData = data
-let getDict = dict
-let packDictData = t
+let eq m1 m2 veq = 
+  N.eq ~kcmp:(S.cmp m1) ~veq (S.data m1) (S.data m2)
+
+let cmp m1 m2 vcmp =
+  N.cmp ~kcmp:(S.cmp m1)  ~vcmp (S.data m1) (S.data m2)
+
+let getData = S.data
+  
+let getDict (type elt) (type id) (m : (elt,_,id) t) : (elt, id) dict =
+  let module T = struct
+    type nonrec id = id
+    type nonrec t = elt
+    let cmp =  S.cmp m
+  end in
+  (module T )
+  
+let packDictData (type elt) (type id) ~(dict : (elt, id) dict) ~data  =
+  let module M = (val dict) in 
+  S.t ~cmp:M.cmp ~data

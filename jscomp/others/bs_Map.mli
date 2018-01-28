@@ -44,11 +44,13 @@ val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t
 val isEmpty: _ t -> bool
 
 val has: ('k, 'a, 'id) t -> 'k  -> bool    
-val cmp: 
-    ('k, 'v, 'id) t -> 
+
+val cmp:
     ('k, 'v, 'id) t ->
-    ('v -> 'v -> int [@bs]) -> 
+    ('k, 'v, 'id) t ->
+    ('v -> 'v -> int [@bs]) ->
      int
+
 val eq:  
     ('k, 'a, 'id) t -> 
     ('k, 'a, 'id) t -> 
