@@ -42,8 +42,11 @@ external testAny : 'a -> bool = "#is_undef"
 
 
 (** The empty value, [undefined] *)
-external empty : 'a t = "undefined" [@@bs.val]
+external empty : 'a t = "#undefined" 
 
+external getUnsafe : 'a t -> 'a = "%identity"
+
+val getExn: 'a t -> 'a
 
 (** Maps the contained value using the given function
 
@@ -78,7 +81,9 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 </table>
 %}
 *)
+val fromOption: 'a option -> 'a t
 val from_opt : 'a option -> 'a t
+[@@ocaml.deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.undefined] to ['a option]
 

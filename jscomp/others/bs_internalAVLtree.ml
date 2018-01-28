@@ -96,60 +96,60 @@ let rec minKey0Aux n =
   | None -> key n
   | Some n -> minKey0Aux n 
     
-let minKeyOpt0 n =     
+let minKey0 n =     
   match toOpt n with 
   | None -> None 
   | Some n -> Some (minKey0Aux n)
 
-let minKeyNull0 n =   
+let minKeyUndefined0 n =   
   match toOpt n with 
-  | None -> Js.null 
-  | Some n -> return (minKey0Aux n)
+  | None -> Js.undefined
+  | Some n -> Js.Undefined.return (minKey0Aux n)
 
 let rec maxKey0Aux n =  
   match toOpt (right n) with 
   | None -> key n
   | Some n -> maxKey0Aux n 
     
-let maxKeyOpt0 n =     
+let maxKey0 n =     
   match toOpt n with 
   | None -> None 
   | Some n -> Some (maxKey0Aux n)
 
-let maxKeyNull0 n =   
+let maxKeyUndefined0 n =   
   match toOpt n with 
-  | None -> Js.null 
-  | Some n -> return (maxKey0Aux n)
+  | None -> Js.undefined
+  | Some n -> Js.Undefined.return (maxKey0Aux n)
   
 let rec minKV0Aux n =  
   match toOpt (left n) with 
   | None -> key n , value n 
   | Some n -> minKV0Aux n 
 
-let minKVOpt0 n = 
+let minimum0 n = 
   match toOpt n with 
     None -> None
   | Some n -> Some (minKV0Aux n)
 
-let minKVNull0 n = 
+let minUndefined0 n = 
   match toOpt n with 
-  | None -> Js.null
-  | Some n -> return (minKV0Aux n)
+  | None -> Js.undefined
+  | Some n -> Js.Undefined.return (minKV0Aux n)
 
 let rec maxKV0Aux n =   
   match toOpt (right n) with 
   | None -> key n, value n 
   | Some n -> maxKV0Aux n 
 
-let maxKVOpt0 n =
+let maximum0 n =
   match toOpt n with 
   | None -> None 
   | Some n -> Some (maxKV0Aux n)
 
-let maxKVNull0 n =   
+let maxUndefined0 n =   
   match toOpt n with 
-  | None -> Js.null
-  | Some n -> return (maxKV0Aux n)
+  | None -> Js.undefined
+  | Some n -> Js.Undefined.return (maxKV0Aux n)
 
 
 let rec removeMinAuxWithRef n kr vr =   
@@ -520,7 +520,7 @@ let ofSortedArrayUnsafe0 arr =
 let rec compareAux e1 e2 ~kcmp ~vcmp =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
-    let c = (Bs_Cmp.getCmp kcmp) (key h1) (key h2) [@bs] in 
+    let c = (Bs_Cmp.getCmpIntenral kcmp) (key h1) (key h2) [@bs] in 
     if c = 0 then 
       let cx = vcmp (value h1) (value h2) [@bs] in 
       if cx = 0 then
@@ -534,7 +534,7 @@ let rec compareAux e1 e2 ~kcmp ~vcmp =
 let rec eqAux e1 e2 ~kcmp ~veq =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
-    if (Bs_Cmp.getCmp kcmp) (key h1) (key h2) [@bs] = 0 && 
+    if (Bs_Cmp.getCmpIntenral kcmp) (key h1) (key h2) [@bs] = 0 && 
        veq (value h1) (value h2) [@bs] then
       eqAux ~kcmp ~veq (
         stackAllLeft  (right h1) t1 ) (stackAllLeft (right h2) t2)
@@ -553,43 +553,43 @@ let eq0  s1 s2 ~kcmp ~veq =
     eqAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~veq
   else false
 
-let rec findOpt0  n x ~cmp = 
+let rec get0  n x ~cmp = 
   match toOpt n with 
     None -> None
   | Some n (* Node(l, v, d, r, _) *)  ->
     let v = key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then Some (value n)
-    else findOpt0 ~cmp  (if c < 0 then left n else right n) x 
+    else get0 ~cmp  (if c < 0 then left n else right n) x 
 
-let rec findNull0  n x ~cmp =
+let rec getUndefined0  n x ~cmp =
   match toOpt n with 
-  | None -> Js.null
+  | None -> Js.undefined
   | Some n  ->
     let v = key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then return (value n )
-    else findNull0 ~cmp  (if c < 0 then left n else right n) x 
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
+    if c = 0 then Js.Undefined.return (value n )
+    else getUndefined0 ~cmp  (if c < 0 then left n else right n) x 
 
-let rec findExn0   n x  ~cmp = 
+let rec getExn0   n x  ~cmp = 
   match toOpt n with 
     None ->
-    [%assert "findExn0"]
+    [%assert "getExn0"]
   | Some n (* Node(l, v, d, r, _)*) ->
     let v = key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then value n 
-    else findExn0 ~cmp  (if c < 0 then left n else right n) x
+    else getExn0 ~cmp  (if c < 0 then left n else right n) x
 
-let rec findWithDefault0   n x def ~cmp = 
+let rec getWithDefault0   n x def ~cmp = 
   match toOpt n with 
     None ->
     def
   | Some n (* Node(l, v, d, r, _)*) ->
     let v = key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then value n 
-    else findWithDefault0 ~cmp  (if c < 0 then left n else right n) x def
+    else getWithDefault0 ~cmp  (if c < 0 then left n else right n) x def
 
 let rec mem0  n x ~cmp = 
   match toOpt n with 
@@ -597,7 +597,7 @@ let rec mem0  n x ~cmp =
     false
   | Some n (* Node(l, v, d, r, _) *) ->
     let v = key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     c = 0 || mem0 ~cmp (if c < 0 then left n else right n) x
 
 
@@ -676,7 +676,7 @@ let rec updateMutate (t : _ t0) x data ~cmp =
   | None -> singleton0 x data
   | Some nt -> 
     let k = key nt in 
-    let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
+    let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  
     if c = 0 then begin     
       valueSet nt data;
       return nt
@@ -698,7 +698,7 @@ let ofArray0 (xs : _ array) ~cmp =
     let next = 
       ref (S.strictlySortedLength xs 
              (fun[@bs] (x0,_) (y0,_) -> 
-                (Bs_Cmp.getCmp cmp) x0 y0 [@bs] < 0
+                (Bs_Cmp.getCmpIntenral cmp) x0 y0 [@bs] < 0
              ))
     in 
     let result  = ref (

@@ -35,9 +35,9 @@ eq("File \"bs_poly_mutable_set_test.ml\", line 19, characters 5-12", Bs_internal
 
 var r = Array_data_util.randomRange(0, 30);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 21, characters 4-11", +(29 === Bs_internalAVLset.maxNull0(u.data)));
+b("File \"bs_poly_mutable_set_test.ml\", line 21, characters 4-11", +(29 === Bs_internalAVLset.maxUndefined0(u.data)));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 22, characters 4-11", +(1 === Bs_internalAVLset.minNull0(u.data)));
+b("File \"bs_poly_mutable_set_test.ml\", line 22, characters 4-11", +(1 === Bs_internalAVLset.minUndefined0(u.data)));
 
 Bs_SetM.add(u, 3);
 

@@ -113,30 +113,30 @@ let rec min0Aux n =
   | None -> key n
   | Some n -> min0Aux n 
 
-let  minOpt0 n =
+let  minimum0 n =
   match toOpt n with 
     None -> None
   | Some n -> Some (min0Aux n)
 
-let minNull0 n =   
+let minUndefined0 n =   
   match toOpt n with 
-  | None -> Js.null
-  | Some n -> return (min0Aux n) 
+  | None -> Js.undefined
+  | Some n -> Js.Undefined.return (min0Aux n) 
 
 let rec max0Aux n =   
   match toOpt (right n) with 
   | None -> key n
   | Some n -> max0Aux n 
 
-let maxOpt0 n = 
+let maximum0 n = 
   match toOpt n with 
   | None -> None
   | Some n -> Some (max0Aux n)
 
-let maxNull0 n =   
+let maxUndefined0 n =   
   match toOpt n with 
-  | None -> Js.null
-  | Some n -> return (max0Aux n)
+  | None -> Js.undefined
+  | Some n -> Js.Undefined.return (max0Aux n)
 
 let rec removeMinAuxWithRef n v = 
   let ln, rn, kn = left n, right n, key n in 
@@ -459,14 +459,14 @@ let rec mem0   (t: _ t0) x ~cmp =
   | None -> false
   | Some n ->
     let v = key n in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     c = 0 || mem0 ~cmp (if c < 0 then left n else right n) x
 
 
 let rec compareAux e1 e2 ~cmp =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
-    let c = (Bs_Cmp.getCmp cmp) (key h1) (key h2) [@bs] in 
+    let c = (Bs_Cmp.getCmpIntenral cmp) (key h1) (key h2) [@bs] in 
     if c = 0 then
       compareAux ~cmp 
         (stackAllLeft  (right h1) t1)
@@ -492,7 +492,7 @@ let rec subset0 (s1 : _ t0) (s2 : _ t0) ~cmp  =
   | Some t1 , Some t2  ->
     let l1,v1,r1 = (left t1, key t1, right t1) in  
     let l2,v2,r2 = (left t2, key t2, right t2) in 
-    let c = (Bs_Cmp.getCmp cmp) v1 v2 [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) v1 v2 [@bs] in
     if c = 0 then
       subset0 ~cmp l1 l2 && subset0 ~cmp r1 r2
     else if c < 0 then
@@ -502,33 +502,33 @@ let rec subset0 (s1 : _ t0) (s2 : _ t0) ~cmp  =
       subset0 ~cmp (create empty v1 r1 ) r2 && 
       subset0 ~cmp l1 s2
 
-let rec findOpt0  (n : _ t0) x ~cmp = 
+let rec get0  (n : _ t0) x ~cmp = 
   match toOpt n with 
     None -> None
   | Some t (* Node(l, v, r, _) *) ->
     let v = key t in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then Some v
-    else findOpt0 ~cmp  (if c < 0 then left t else right t) x
+    else get0 ~cmp  (if c < 0 then left t else right t) x
 
 
-let rec findNull0 (n : _ t0) x ~cmp  =
+let rec getUndefined0 (n : _ t0) x ~cmp  =
   match toOpt n with 
-    None -> Js.null
+    None -> Js.Undefined.empty
   | Some t (* Node(l, v, r, _) *) ->
     let v = key t in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-    if c = 0 then  return v
-    else findNull0 ~cmp  (if c < 0 then left t else right t) x 
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
+    if c = 0 then  Js.Undefined.return v
+    else getUndefined0 ~cmp  (if c < 0 then left t else right t) x 
 
-let rec findExn0  (n : _ t0) x ~cmp =
+let rec getExn0  (n : _ t0) x ~cmp =
   match toOpt n with 
-    None -> [%assert "findExn0"]
+    None -> [%assert "getExn0"]
   | Some t (* Node(l, v, r, _) *) ->
     let v = key t in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then  v
-    else findExn0 ~cmp  (if c < 0 then left t else right t) x 
+    else getExn0 ~cmp  (if c < 0 then left t else right t) x 
 
 
 (******************************************************************)
@@ -606,7 +606,7 @@ let rec addMutate ~cmp (t : _ t0) x =
   | None -> singleton0 x 
   | Some nt -> 
     let k = key nt in 
-    let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
+    let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  
     if c = 0 then t 
     else
       let l, r = (left nt, right nt) in 
@@ -624,7 +624,7 @@ let ofArray0  (xs : _ array) ~cmp =
   if len = 0 then empty0
   else
     let next = ref (S.strictlySortedLength xs 
-      (fun [@bs] x y -> (Bs_Cmp.getCmp cmp) x y [@bs] < 0)) in     
+      (fun [@bs] x y -> (Bs_Cmp.getCmpIntenral cmp) x y [@bs] < 0)) in     
     let result = 
       ref (if !next >= 0 then  
         ofSortedArrayAux xs 0 !next

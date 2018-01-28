@@ -24,14 +24,14 @@ let empty () = t ~data:N.empty0
 let isEmpty m = N.isEmpty0 (data m)
 let singleton k v = t ~data:(N.singleton0 k v)
 
-let minKeyNull m = N.minKeyNull0 (data m)
-let minKey m = N.minKeyOpt0 (data m)
-let maxKeyNull m = N.maxKeyNull0 (data m)
-let maxKey m = N.maxKeyOpt0 (data m)
-let minimum m = N.minKVOpt0 (data m)
-let minNull m = N.minKVNull0 (data m)
-let maximum m = N.maxKVOpt0 (data m)
-let maxNull m = N.maxKVNull0 (data m)
+let minKeyUndefined m = N.minKeyUndefined0 (data m)
+let minKey m = N.minKey0 (data m)
+let maxKeyUndefined m = N.maxKeyUndefined0 (data m)
+let maxKey m = N.maxKey0 (data m)
+let minimum m = N.minimum0 (data m)
+let minUndefined m = N.minUndefined0 (data m)
+let maximum m = N.maximum0 (data m)
+let maxUndefined m = N.maxUndefined0 (data m)
 
 let set (m : _ t) k v = 
   let old_data = data m in 
@@ -99,7 +99,7 @@ let rec updateDone0 t (x : key)  f  =
     | None -> t)
   | Some nt -> 
     let k = N.key nt in 
-    (* let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in   *)
+    (* let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in   *)
     if k = x then begin     
       match f (Some (N.value nt)) [@bs] with
       | None ->
@@ -166,8 +166,7 @@ let cmp d0 d1 =
   I.cmp (data d0) (data d1)
 let eq d0 d1 = 
   I.eq (data d0) (data d1)
-let get d x = 
-  I.findOpt (data d) x 
-let getNull d x = I.findNull (data d) x 
-let getWithDefault d x def = I.findWithDefault (data d) x def  
-let getExn d x = I.findExn (data d) x 
+let get d x =   I.get (data d) x 
+let getUndefined d x = I.getUndefined (data d) x 
+let getWithDefault d x def = I.getWithDefault (data d) x def  
+let getExn d x = I.getExn (data d) x 

@@ -28,38 +28,38 @@ let rec add  t (x : key) (data : _)  =
       else
         N.bal (N.left n) k v (add (N.right n) x data )
 
-let rec findOpt n (x : key)  =
+let rec get n (x : key)  =
   match N.toOpt n with 
     None -> None
   | Some n  ->
     let v = N.key n in 
     if x = v then Some (N.value n)
-    else findOpt (if x < v then N.left n else N.right n) x 
+    else get (if x < v then N.left n else N.right n) x 
 
-let rec findNull n (x : key) = 
+let rec getUndefined n (x : key) = 
   match N.toOpt n with 
   | None ->
-    Js.null
+    Js.undefined
   | Some n  ->
     let v = N.key n in 
-    if x = v then N.return (N.value n)
-    else findNull (if x < v then (N.left n) else (N.right n)) x 
+    if x = v then Js.Undefined.return (N.value n)
+    else getUndefined (if x < v then (N.left n) else (N.right n)) x 
 
-let rec findExn n (x : key) =
+let rec getExn n (x : key) =
   match N.toOpt n with 
-  | None -> [%assert "findExn"]
+  | None -> [%assert "getExn"]
   | Some n -> 
     let v = N.key n in 
     if x = v then (N.value n)
-    else findExn (if x < v then (N.left n) else (N.right n)) x
+    else getExn (if x < v then (N.left n) else (N.right n)) x
 
-let rec findWithDefault n (x : key) def =
+let rec getWithDefault n (x : key) def =
   match N.toOpt n with 
   | None -> def    
   | Some n -> 
     let v = N.key n in 
     if x = v then (N.value n)
-    else findWithDefault (if x < v then (N.left n) else (N.right n)) x def
+    else getWithDefault (if x < v then (N.left n) else (N.right n)) x def
     
 let rec mem n (x : key)= 
   match N.toOpt n with 
@@ -177,7 +177,7 @@ let rec addMutate  (t : _ t) x data : _ t =
   | None -> N.singleton0 x data
   | Some nt -> 
     let k = N.key nt in 
-    (* let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in   *)
+    (* let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in   *)
     if x = k then begin     
       N.keySet nt x;
       N.valueSet nt data;

@@ -47,17 +47,17 @@ val singleton0 : 'a -> 'b -> ('a,'b) t0
 
 val updateValue : ('k, 'v) node -> 'v -> ('k,'v) node
 
-val minKeyOpt0 : ('a, 'b) t0 -> 'a option 
-val minKeyNull0: ('a, 'b) t0 -> 'a Js.null
+val minKey0: ('a, 'b) t0 -> 'a option 
+val minKeyUndefined0: ('a, 'b) t0 -> 'a Js.undefined
 
-val maxKeyOpt0 : ('a, 'b) t0 -> 'a option 
-val maxKeyNull0 : ('a, 'b) t0 -> 'a Js.null 
+val maxKey0 : ('a, 'b) t0 -> 'a option 
+val maxKeyUndefined0 : ('a, 'b) t0 -> 'a Js.undefined
 
-val minKVOpt0 : ('a, 'b) t0 -> ('a * 'b) option
-val minKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
+val minimum0 : ('a, 'b) t0 -> ('a * 'b) option
+val minUndefined0 : ('a,'b) t0 -> ('a * 'b) Js.undefined
 
-val maxKVOpt0 : ('a,'b) t0 -> ('a * 'b) option
-val maxKVNull0 : ('a,'b) t0 -> ('a * 'b) Js.null
+val maximum0 : ('a,'b) t0 -> ('a * 'b) option
+val maxUndefined0 : ('a,'b) t0 -> ('a * 'b) Js.undefined
 
 val removeMinAuxWithRef : ('a, 'b) node -> 'a ref -> 'b ref -> ('a,'b) t0
 
@@ -124,25 +124,25 @@ val eq0:
   veq:('b -> 'c -> bool [@bs]) -> 
   bool
 
-val findOpt0:  
+val get0:  
   ('a, 'b) t0 -> 
   'a -> 
   cmp:('a,_) Bs_Cmp.cmp -> 
   'b option 
 
-val findNull0:  
+val getUndefined0:  
   ('a, 'b) t0 -> 
   'a -> 
   cmp:('a,_) Bs_Cmp.cmp -> 
-  'b Js.null
+  'b Js.undefined
 
-val findWithDefault0:  
+val getWithDefault0:  
   ('a, 'b) t0 -> 
   'a -> 
   'b -> 
   cmp:('a,_) Bs_Cmp.cmp -> 
   'b 
-val findExn0:  
+val getExn0:  
   ('a, 'b) t0 -> 
   'a -> 
   cmp:('a,_) Bs_Cmp.cmp ->   

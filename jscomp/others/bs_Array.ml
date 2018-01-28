@@ -331,7 +331,7 @@ let every2  a b p =
   else 
     everyAux2  a b 0 p lena
 
-let equalTo = every2
+let eq = every2
 
 let rec everyCmpAux2 arr1 arr2 i b len =   
   if i = len then 0
@@ -341,7 +341,7 @@ let rec everyCmpAux2 arr1 arr2 i b len =
       everyCmpAux2 arr1 arr2 (i + 1) b len
     else c
 
-let compareTo a b p =
+let cmp a b p =
   let lena = length a in  
   let lenb = length b in
   if lena > lenb then 1

@@ -81,21 +81,22 @@ val ofArray:
 val keysToArray: ('k, 'a, 'id) t -> 'k  array
 val valuesToArray: ('k, 'a, 'id) t -> 'a  array
 val minKey: ('k, _, _) t -> 'k option
-val minKeyNull: ('k, _, _) t -> 'k Js.null
+val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined
 val maxKey: ('k, _, _) t -> 'k option
-val maxKeyNull: ('k, _, _) t -> 'k Js.null    
+val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
 val minimum: ('k, 'a,  _) t -> ('k * 'a) option
-val minNull: ('k, 'a, _) t -> ('k * 'a) Js.null
+val minUndefined: ('k, 'a, _) t -> ('k * 'a) Js.undefined
 val maximum: ('k, 'a, _) t -> ('k * 'a) option
-val maxNull:('k, 'a, _) t -> ('k * 'a) Js.null
+val maxUndefined:('k, 'a, _) t -> ('k * 'a) Js.undefined
 val get:
   ('k, 'a, 'id) t -> 'k ->
   cmp:('k, 'id) cmp -> 
   'a option
-val getNull:
+val getUndefined:
   ('k, 'a, 'id) t -> 'k ->
   cmp:('k, 'id) cmp ->
-  'a Js.null
+  'a Js.undefined
+    
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a ->
     cmp:('k, 'id) cmp ->

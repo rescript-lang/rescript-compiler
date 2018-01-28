@@ -34,7 +34,7 @@ type ('k, 'v, 'id) t =
 
 let rec removeMutateAux nt x ~cmp = 
   let k = N.key nt in 
-  let c = (Bs_Cmp.getCmp cmp) x k [@bs] in 
+  let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in 
   if c = 0 then 
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
@@ -100,7 +100,7 @@ let rec updateDone0 t x   f  ~cmp =
     | None -> t)
   | Some nt -> 
     let k = N.key nt in 
-    let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
+    let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  
     if c = 0 then begin     
       match f (Some (N.value nt)) [@bs] with
       | None ->
@@ -141,14 +141,14 @@ let isEmpty d =
 let singleton dict x v= 
   B.bag ~data:(N.singleton0 x v) ~dict 
 
-let minKey m = N.minKeyOpt0 (B.data m)
-let minKeyNull m = N.minKeyNull0 (B.data m)
-let maxKey m = N.maxKeyOpt0 (B.data m)
-let maxKeyNull m = N.maxKeyNull0 (B.data m)
-let minimum m = N.minKVOpt0 (B.data m)
-let minNull m = N.minKVNull0 (B.data m) 
-let maximum m = N.maxKVOpt0 (B.data m)
-let maxNull m = N.maxKVNull0 (B.data m)
+let minKey m = N.minKey0 (B.data m)
+let minKeyUndefined m = N.minKeyUndefined0 (B.data m)
+let maxKey m = N.maxKey0 (B.data m)
+let maxKeyUndefined m = N.maxKeyUndefined0 (B.data m)
+let minimum m = N.minimum0 (B.data m)
+let minUndefined m = N.minUndefined0 (B.data m) 
+let maximum m = N.maximum0 (B.data m)
+let maxUndefined m = N.maxUndefined0 (B.data m)
 
 let forEach d f =
   N.iter0 (B.data d) f     
@@ -189,19 +189,19 @@ let mapWithKey map  f =
 let get (type k) (type id) (map : (k,_,id) t) x  = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  N.findOpt0 ~cmp:X.cmp  map x 
-let getNull (type k) (type id) (map : (k,_,id) t) x = 
+  N.get0 ~cmp:X.cmp  map x 
+let getUndefined (type k) (type id) (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  N.findNull0 ~cmp:X.cmp  map x
+  N.getUndefined0 ~cmp:X.cmp  map x
 let getWithDefault (type k) (type id)  (map : (k,_,id) t) x def = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  N.findWithDefault0 ~cmp:X.cmp map x  def  
+  N.getWithDefault0 ~cmp:X.cmp map x  def  
 let getExn (type k)  (type id)  (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 
-  N.findExn0 ~cmp:X.cmp map x 
+  N.getExn0 ~cmp:X.cmp map x 
 let has (type k) (type id)  (map : (k,_,id) t) x = 
   let dict,map = B.(dict map, data map) in 
   let module X = (val dict) in 

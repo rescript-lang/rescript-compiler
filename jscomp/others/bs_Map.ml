@@ -108,21 +108,21 @@ let toArray m = N.toArray (data m)
 let keysToArray m = N.keysToArray (data m)
 let valuesToArray m = N.valuesToArray (data m)
 let minKey m = N.minKey (data m)
-let minKeyNull m = N.minKeyNull (data m)
+let minKeyUndefined m = N.minKeyUndefined (data m)
 let maxKey m = N.maxKey (data m)
-let maxKeyNull m = N.maxKeyNull (data m)    
+let maxKeyUndefined m = N.maxKeyUndefined (data m)    
 let minimum m = N.minimum (data m)
-let minNull m = N.minNull (data m) 
+let minUndefined m = N.minUndefined (data m) 
 let maximum m = N.maximum (data m)
-let maxNull m = N.maxNull (data m)
+let maxUndefined m = N.maxUndefined (data m)
 
 let get (type k) (type id) (map : (k,_,id) t) x  = 
   let module X = (val dict map) in 
   N.get ~cmp:X.cmp  (data map) x 
 
-let getNull (type k) (type id) (map : (k,_,id) t) x = 
+let getUndefined (type k) (type id) (map : (k,_,id) t) x = 
   let module X = (val dict map) in 
-  N.getNull ~cmp:X.cmp  (data map) x
+  N.getUndefined ~cmp:X.cmp  (data map) x
 
 let getWithDefault (type k) (type id)  (map : (k,_,id) t) x def = 
   let module X = (val dict map) in 

@@ -40,26 +40,26 @@ let copy (s : _ t) : _ t = t ~root:(root s)
 let push s x = 
   rootSet s (Js.Null.return @@ cell ~head:x ~tail:(root s))
 
-let topNull (s : 'a t) : 'a Js.null = 
+let topUndefined (s : 'a t) = 
    match Js.nullToOption (root s) with  
-   | None -> Js.null
-   | Some x -> Js.Null.return (head x) 
+   | None -> Js.undefined
+   | Some x -> Js.Undefined.return (head x) 
 
-let topOpt s = 
+let top s = 
   match Js.nullToOption (root s) with 
   | None -> None 
   | Some x -> Some (head x)
 
 let isEmpty s = Js.Null.test (root s)    
 
-let popNull s =   
+let popUndefined s =   
   match Js.nullToOption (root s) with 
-  | None -> Js.null
+  | None -> Js.undefined
   | Some x -> 
     rootSet s (tail x);    
-    Js.Null.return (head x)
+    Js.Undefined.return (head x)
 
-let popOpt s =     
+let pop s =     
     match Js.nullToOption (root s) with 
   | None -> None
   | Some x -> 
@@ -73,7 +73,7 @@ let rec lengthAux (x : _ cell) acc =
   | None -> acc + 1 
   | Some x -> lengthAux x (acc + 1)
 
-let length s =   
+let size s =   
   match Js.nullToOption (root s) with 
   | None -> 0 
   | Some x -> lengthAux x 0
@@ -85,7 +85,7 @@ let rec iterAux (s : _ opt_cell) f =
     f (head x) [@bs];
     iterAux (tail x) f 
 
-let iter s f =   
+let forEach s f =   
   iterAux (root s) f 
 
 let dynamicPopIter s f =    

@@ -35,7 +35,7 @@ bs_obj.cmj : js.cmj
 js_nativeint.cmj :
 js_int.cmj :
 js_null.cmj : js_exn.cmj js.cmj js_null.cmi
-js_undefined.cmj : js.cmj js_undefined.cmi
+js_undefined.cmj : js_exn.cmj js.cmj js_undefined.cmi
 caml_array.cmi :
 caml_string.cmi :
 caml_bytes.cmi :

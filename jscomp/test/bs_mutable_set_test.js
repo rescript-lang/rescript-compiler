@@ -87,11 +87,11 @@ Bs_SetIntM.remove(v$3, 30);
 
 Bs_SetIntM.remove(v$3, 29);
 
-b("File \"bs_mutable_set_test.ml\", line 55, characters 4-11", +(28 === Bs_internalAVLset.maxNull0(v$3.data)));
+b("File \"bs_mutable_set_test.ml\", line 55, characters 4-11", +(28 === Bs_internalAVLset.maxUndefined0(v$3.data)));
 
 Bs_SetIntM.remove(v$3, 0);
 
-b("File \"bs_mutable_set_test.ml\", line 57, characters 4-11", +(1 === Bs_internalAVLset.minNull0(v$3.data)));
+b("File \"bs_mutable_set_test.ml\", line 57, characters 4-11", +(1 === Bs_internalAVLset.minUndefined0(v$3.data)));
 
 eq("File \"bs_mutable_set_test.ml\", line 58, characters 5-12", Bs_internalAVLset.length0(v$3.data), 28);
 

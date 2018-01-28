@@ -98,9 +98,9 @@ val some: 'a t -> ('a -> bool [@bs]) -> bool
 
 val every2: 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
-val compare: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
+val cmp: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 
-val equal: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
+val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
   
 val some2:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 

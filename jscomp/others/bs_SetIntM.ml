@@ -64,16 +64,16 @@ let singleton x =
   t ~data:(N.singleton0 x)
 
 let minimum d = 
-  N.minOpt0 (data d)
+  N.minimum0 (data d)
 
-let minNull d =
-  N.minNull0 (data d)
+let minUndefined d =
+  N.minUndefined0 (data d)
 
 let maximum d = 
-  N.maxOpt0 (data d)
+  N.maximum0 (data d)
 
-let maxNull d =
-N.maxNull0 (data d)
+let maxUndefined d =
+  N.maxUndefined0 (data d)
 
 let forEach d f =
   N.iter0 (data d) f     
@@ -145,7 +145,7 @@ let removeMany  (d : t) xs =
 
 let rec removeMutateCheckAux  nt (x : elt) removed = 
   let k = N.key nt in 
-  (* let c = (Bs_Cmp.getCmp cmp) x k [@bs] in  *)
+  (* let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  *)
   if x = k then 
     let () = removed := true in  
     let l,r = N.(left nt, right nt) in       
@@ -194,7 +194,7 @@ let rec addMutateCheckAux  t (x : elt) added  =
     N.singleton0 x 
   | Some nt -> 
     let k = N.key nt in 
-    (* let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in   *)
+    (* let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in   *)
     if x = k then t 
     else
       let l, r = N.(left nt, right nt) in 
@@ -222,11 +222,11 @@ let cmp d0 d1 =
 let eq d0 d1 = 
   I.eq (data d0) (data d1)
 let get d x = 
-  I.findOpt (data d) x
-let getNull d x =
-  I.findNull (data d) x
+  I.get (data d) x
+let getUndefined d x =
+  I.getUndefined (data d) x
 let getExn d x =
-  I.findExn (data d) x 
+  I.getExn (data d) x 
 let split d  key =  
   let s = data d in  
   let arr = N.toArray0 s in 
@@ -261,7 +261,7 @@ let intersect dataa datab  =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    (* let p = Bs_Cmp.getCmp M.cmp in  *)
+    (* let p = Bs_Cmp.getCmpIntenral M.cmp in  *)
     if ((A.getUnsafe tmp (sizea - 1) < 
         A.getUnsafe tmp sizea))
       || 
@@ -286,7 +286,7 @@ let diff dataa datab : t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    (* let p = Bs_Cmp.getCmp M.cmp in  *)
+    (* let p = Bs_Cmp.getCmpIntenral M.cmp in  *)
     if ( (A.getUnsafe tmp (sizea - 1)) < 
         (A.getUnsafe tmp sizea))
       ||       
@@ -310,7 +310,7 @@ let union (dataa : t)  (datab : t) : t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
-    (* let p = (Bs_Cmp.getCmp M.cmp)  in  *)
+    (* let p = (Bs_Cmp.getCmpIntenral M.cmp)  in  *)
     if 
       (A.getUnsafe tmp (sizea - 1) < 
       A.getUnsafe tmp sizea)  then 

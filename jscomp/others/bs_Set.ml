@@ -117,18 +117,18 @@ let toList m = N.toList (data m)
 let toArray m = N.toArray (data m)
 
 let minimum m = N.minimum (data m)
-let minNull m = N.minNull (data m) 
+let minUndefined m = N.minUndefined (data m) 
 let maximum m = N.maximum (data m)
-let maxNull m = N.maxNull (data m)
+let maxUndefined m = N.maxUndefined (data m)
 
 
 let get (type elt) (type id)  (m : (elt,id) t) e =   
   let module M = (val dict m) in 
   N.get ~cmp:M.cmp (data m) e
 
-let getNull (type elt) (type id) (m : (elt,id) t) e =   
+let getUndefined (type elt) (type id) (m : (elt,id) t) e =   
   let module M = (val dict m) in 
-  N.getNull ~cmp:M.cmp (data m) e
+  N.getUndefined ~cmp:M.cmp (data m) e
 
 let getExn (type elt) (type id) (m : (elt,id) t) e =   
   let module M = (val dict m) in 

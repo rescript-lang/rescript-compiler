@@ -26,14 +26,14 @@
 type 'a compare = ('a -> 'a -> int [@bs])
 type ('a,'id) cmp = 'a compare
 
-external getCmp : ('a,'id) cmp -> 'a compare = "%identity"
+external getCmpIntenral : ('a,'id) cmp -> 'a compare = "%identity"
 
-module type S = sig
+module type T = sig
   type id
   type t
   val cmp : (t,id) cmp
 end
-type ('key, 'id) t = (module S with type t = 'key and type id = 'id)
+type ('key, 'id) t = (module T with type t = 'key and type id = 'id)
 
 module Make (M : sig
    type t
@@ -47,12 +47,12 @@ end
 
 let make 
   (type key) 
-  (cmp : key -> key -> int [@bs])   
+  ~(cmp : key -> key -> int [@bs])   
   =
   let module M = struct 
     type t = key
     let cmp = cmp
   end in  
   let module N = Make(M) in 
-  (module N : S with type t = key)
+  (module N : T with type t = key)
 

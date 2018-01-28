@@ -78,15 +78,15 @@ val ofArray: (key * 'a) array -> 'a t
 val keysToArray: 'a t -> key array 
 val valuesToArray: 'a t -> 'a array
 val minKey: _ t -> key option 
-val minKeyNull: _ t -> key Js.null
+val minKeyUndefined: _ t -> key Js.undefined
 val maxKey: _ t -> key option 
-val maxKeyNull: _ t -> key Js.null    
+val maxKeyUndefined: _ t -> key Js.undefined
 val minimum: 'a t -> (key * 'a) option
-val minNull: 'a t -> (key * 'a) Js.null
+val minUndefined: 'a t -> (key * 'a) Js.undefined
 val maximum: 'a t -> (key * 'a) option
-val maxNull: 'a t -> (key * 'a) Js.null
+val maxUndefined: 'a t -> (key * 'a) Js.undefined
 val get: 'a t ->  key -> 'a option
-val getNull: 'a t -> key -> 'a Js.null
+val getUndefined: 'a t -> key -> 'a Js.undefined
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a
 val checkInvariantInternal: _ t -> bool   

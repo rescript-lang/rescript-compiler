@@ -43,7 +43,7 @@ let rec copyBucket ~hash ~h_buckets ~ndata_tail h old_bucket =
   match C.toOpt old_bucket with 
   | None -> ()
   | Some cell ->
-    let nidx = (Bs_Hash.getHash hash) (N.key cell) [@bs] land (Array.length h_buckets - 1) in 
+    let nidx = (Bs_Hash.getHashInternal hash) (N.key cell) [@bs] land (Array.length h_buckets - 1) in 
     let v = C.return cell in 
     begin match C.toOpt (A.getUnsafe ndata_tail nidx) with
       | None -> 
@@ -77,7 +77,7 @@ let resize ~hash h =
 
 let rec removeBucket ~eq h h_buckets  i key prec cell =
   let cell_next = N.next cell in 
-  if (Bs_Hash.getEq eq) (N.key cell) key [@bs]
+  if (Bs_Hash.getEqInternal eq) (N.key cell) key [@bs]
   then 
     begin
       N.nextSet prec cell_next;
@@ -92,13 +92,13 @@ let rec removeBucket ~eq h h_buckets  i key prec cell =
 
 let remove0 ~hash ~eq h key =  
   let h_buckets = C.buckets h in 
-  let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in  
+  let i = (Bs_Hash.getHashInternal hash) key [@bs] land (Array.length h_buckets - 1) in  
   let l = (A.getUnsafe h_buckets i) in 
   match C.toOpt l with 
   | None -> ()
   | Some cell -> 
     let next_cell = (N.next cell) in 
-    if (Bs_Hash.getEq eq) (N.key cell) key [@bs] then 
+    if (Bs_Hash.getEqInternal eq) (N.key cell) key [@bs] then 
       begin 
         C.sizeSet h (C.size h - 1) ;
         A.setUnsafe h_buckets i next_cell
@@ -113,7 +113,7 @@ let remove0 ~hash ~eq h key =
 
 
 let rec addBucket ~eq h key  cell = 
-  if (Bs_Hash.getEq eq) (N.key cell) key [@bs]
+  if (Bs_Hash.getEqInternal eq) (N.key cell) key [@bs]
   then
     N.keySet cell key
   else
@@ -130,7 +130,7 @@ let addDone0
     ~eq:(eq:(_,'id) Bs_Hash.eq)
   =
   let h_buckets = C.buckets h in 
-  let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
+  let i = (Bs_Hash.getHashInternal hash) key [@bs] land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
   (match C.toOpt l with                                    
    | None -> 
@@ -144,7 +144,7 @@ let addDone0
 
 let add0 h key ~hash ~eq  =  addDone0 h key ~hash ~eq; h
 let rec memInBucket ~eq key cell = 
-  (Bs_Hash.getEq eq) 
+  (Bs_Hash.getEqInternal eq) 
     (N.key cell) key [@bs] || 
   (match C.toOpt (N.next cell) with 
    | None -> false 
@@ -153,7 +153,7 @@ let rec memInBucket ~eq key cell =
 
 let has0 h key ~hash ~eq =
   let h_buckets = C.buckets h in 
-  let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
+  let nid = (Bs_Hash.getHashInternal hash) key [@bs] land (Array.length h_buckets - 1) in 
   let bucket = (A.getUnsafe h_buckets nid) in 
   match C.toOpt bucket with 
   | None -> false 

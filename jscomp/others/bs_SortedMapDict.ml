@@ -45,18 +45,18 @@ let toArray = N.toArray0
 let keysToArray = N.keysToArray0
 let valuesToArray = N.valuesToArray0
 
-let minimum = N.minKVOpt0
-let maximum = N.maxKVOpt0
-let minKey = N.minKeyOpt0
-let maxKey = N.maxKeyOpt0
-let minKeyNull = N.minKeyNull0
-let maxKeyNull = N.maxKeyNull0
-let minNull = N.minKVNull0
-let maxNull = N.maxKVNull0
-let get = N.findOpt0
-let getNull = N.findNull0
-let getWithDefault = N.findWithDefault0
-let getExn = N.findExn0
+let minimum = N.minimum0
+let maximum = N.maximum0
+let minKey = N.minKey0
+let maxKey = N.maxKey0
+let minKeyUndefined = N.minKeyUndefined0
+let maxKeyUndefined = N.maxKeyUndefined0
+let minUndefined = N.minUndefined0
+let maxUndefined = N.maxUndefined0
+let get = N.get0
+let getUndefined = N.getUndefined0
+let getWithDefault = N.getWithDefault0
+let getExn = N.getExn0
 
 let mapWithKey = N.mapi0
 let map  = N.map0
@@ -69,7 +69,7 @@ let rec set  (t : _ t) newK newD  ~cmp =
   | None -> N.singleton0 newK newD 
   | Some n  ->
     let k= N.key n in 
-    let c = (Bs_Cmp.getCmp cmp) newK k [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) newK k [@bs] in
     if c = 0 then
       N.return (N.updateValue n newD) 
     else 
@@ -88,7 +88,7 @@ let rec update  (t : _ t) newK f  ~cmp :  _ t =
     end 
   | Some n  ->
     let k= N.key n in 
-    let c = (Bs_Cmp.getCmp cmp) newK k [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) newK k [@bs] in
     if c = 0 then
       match f (Some (N.value n)) [@bs] with 
       | None ->
@@ -133,7 +133,7 @@ let rec update  (t : _ t) newK f  ~cmp :  _ t =
 
 let rec removeAux0  n x ~cmp = 
   let l,v,r = N.(left n, key n, right n ) in 
-  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
   if c = 0 then
     match N.toOpt l, N.toOpt r with 
     | None, _ -> r 
@@ -174,7 +174,7 @@ let mergeMany   h arr ~cmp =
 
 let rec splitAuxPivot n x pres  ~cmp =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
-  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in 
+  let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in 
   if c = 0 then begin 
     pres := Some d; 
     (l,  r)

@@ -145,9 +145,9 @@ var v$1 = Bs_SetInt.ofArray(/* array */[
       -1
     ]);
 
-var minv = Bs_SetInt.minNull(v$1);
+var minv = Bs_SetInt.minUndefined(v$1);
 
-var maxv = Bs_SetInt.maxNull(v$1);
+var maxv = Bs_SetInt.maxUndefined(v$1);
 
 function approx(loc, x, y) {
   return b(loc, +(x === y));

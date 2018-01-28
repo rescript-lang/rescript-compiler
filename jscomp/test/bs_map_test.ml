@@ -9,13 +9,10 @@ module Icmp =
       compare x y
      )
   )
-module Icmp2 = Bs.Cmp.Make(
-  struct 
-    type t = int   
-    let cmp = fun [@bs] (x : int) y ->
-      compare x y 
-  end
-  )
+module Icmp2 = 
+(val Bs.Cmp.make ~cmp:(fun [@bs] (x : int) y ->
+      compare x y ))
+  
 module M = Bs.Map
 module MI = Bs.MapInt
 (* module B = Bs.Bag *)
@@ -25,13 +22,9 @@ module L = Bs.List
 let m0 : (_,string,_) M.t = M.empty (module Icmp)   
 
   
-module I2 = Bs.Cmp.Make(
-  struct 
-    type t = int   
-    let cmp = fun [@bs] (x : int) y ->
-      compare y x 
-  end
-  )
+module I2 = 
+(val Bs.Cmp.make ~cmp:(fun [@bs] (x : int) y -> compare y x ))
+
   
 let m = M.empty (module Icmp2)
 let m2 : (int, string, _) M.t = M.empty (module I2)

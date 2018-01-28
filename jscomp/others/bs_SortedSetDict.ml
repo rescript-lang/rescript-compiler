@@ -39,7 +39,7 @@ let rec add  (t : _ t) x  ~cmp : _ t =
   | None -> N.singleton0 x 
   | Some nt ->
     let k = N.key nt in 
-    let c = (Bs_Cmp.getCmp cmp) x k [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in
     if c = 0 then t
     else
       let l,r = N.(left nt, right nt) in 
@@ -57,7 +57,7 @@ let rec remove (t : _ t) x  ~cmp : _ t =
     None -> t
   | Some n  ->
     let l,v,r = N.(left n , key n, right n) in 
-    let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
     if c = 0 then 
       match N.toOpt l, N.toOpt r with 
       | (None, _) -> r 
@@ -96,7 +96,7 @@ let removeMany h arr ~cmp =
 
 let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =   
   let l,v,r = N.(left n , key n, right n) in  
-  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
   if c = 0 then l,r
   else 
   if c < 0 then
@@ -116,7 +116,7 @@ let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =
 
 let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =   
   let l,v,r = N.(left n , key n, right n) in  
-  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
+  let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
   if c = 0 then 
     begin
       pres := true;
@@ -214,13 +214,13 @@ let some = N.some0
 let size = N.length0
 let toList = N.toList0
 let toArray = N.toArray0
-let minimum = N.minOpt0
-let maximum = N.maxOpt0
-let maxNull = N.maxNull0
-let minNull = N.minNull0
-let get = N.findOpt0
-let getExn = N.findExn0
-let getNull = N.findNull0
+let minimum = N.minimum0
+let maximum = N.maximum0
+let maxUndefined = N.maxUndefined0
+let minUndefined = N.minUndefined0
+let get = N.get0
+let getExn = N.getExn0
+let getUndefined = N.getUndefined0
                 
 
 let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe0

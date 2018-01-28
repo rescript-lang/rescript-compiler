@@ -121,7 +121,7 @@ val every: 'a array -> ('a -> bool [@bs]) -> bool
 (** [every2 a b] return false when [length a <> length b] *)
 val every2: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 
-val compareTo: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
-val equalTo:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
+val cmp: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
+val eq:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
   
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]

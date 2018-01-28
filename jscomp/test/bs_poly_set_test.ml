@@ -33,8 +33,8 @@ let () =
   b __LOC__ (u0 != u1);  
   b __LOC__ (u2 == u1);
   eq __LOC__ (N.size u4) 28; 
-  b __LOC__ (Js.eqNull 29 (N.maxNull u4));
-  b __LOC__ (Js.eqNull 1 (N.minNull u4));
+  b __LOC__ (Js.eqUndefined 29 (N.maxUndefined u4));
+  b __LOC__ (Js.eqUndefined 1 (N.minUndefined u4));
   b __LOC__ (u4 == u5);  
   b __LOC__ (N.isEmpty u6);  
   eq  __LOC__ (N.size u7) 3 ;
@@ -71,16 +71,16 @@ let () =
   b __LOC__ (not (N.subset u18 u23));
   b __LOC__ (N.subset u22 u17);
   b __LOC__ (N.subset u21 u17 && N.subset u21 u18);
-  b __LOC__ (Js.eqNull 47 (N.getNull u22 47));
+  b __LOC__ (Js.eqUndefined 47 (N.getUndefined u22 47));
   b __LOC__ ( Some 47 = (N.get u22 47));
-  b __LOC__ (Js.Null.test (N.getNull u22 59));
+  b __LOC__ (Js.Undefined.test (N.getUndefined u22 59));
   b __LOC__ (None = (N.get u22 59));
   let u25 = N.add u22 59 in 
   eq __LOC__ (N.size u25) 60;
   b __LOC__ (N.minimum (N.empty (module IntCmp)) = None);
   b __LOC__ (N.maximum (N.empty (module IntCmp)) = None);
-  b __LOC__ (N.minNull (N.empty (module IntCmp)) = Js.null);
-  b __LOC__ (N.maxNull (N.empty (module IntCmp)) = Js.null)
+  b __LOC__ (N.minUndefined (N.empty (module IntCmp)) = Js.undefined);
+  b __LOC__ (N.maxUndefined (N.empty (module IntCmp)) = Js.undefined)
 
 let testIterToList  xs = 
   let v = ref [] in 

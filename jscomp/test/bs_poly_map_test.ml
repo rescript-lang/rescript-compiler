@@ -69,12 +69,12 @@ let () =
   b __LOC__ (a5 == a6);
   b __LOC__ (M.has a0 3);
   b __LOC__ (not (M.has a5 3));
-  b __LOC__ (Js.eqNull 3 (M.getNull a0 3));
-  b __LOC__ (Js.eqNull 33 (M.getNull a1 3));
-  b __LOC__ (Js.Null.test (M.getNull a2 3));
+  b __LOC__ (Js.eqUndefined 3 (M.getUndefined a0 3));
+  b __LOC__ (Js.eqUndefined 33 (M.getUndefined a1 3));
+  b __LOC__ (Js.Undefined.test (M.getUndefined a2 3));
 
-  b __LOC__ (Js.eqNull 11 (M.getNull a3 3));
-  b __LOC__ (Js.Null.test (M.getNull a4 3));
+  b __LOC__ (Js.eqUndefined 11 (M.getUndefined a3 3));
+  b __LOC__ (Js.Undefined.test (M.getUndefined a4 3));
 
   let a7 = M.removeMany a0 [|7;8;0;1;3;2;4;922;4;5;6;|] in 
   eq __LOC__ (M.keysToArray a7) [|9;10|];

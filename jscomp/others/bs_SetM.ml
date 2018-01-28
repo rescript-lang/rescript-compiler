@@ -36,7 +36,7 @@ type ('elt,'id) t = (('elt,'id) Bs_Cmp.t , ('elt,'id) t0) B.bag
 
 let rec removeMutateAux nt x ~cmp = 
   let k = N.key nt in 
-  let c = (Bs_Cmp.getCmp cmp) x k [@bs] in 
+  let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in 
   if c = 0 then 
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
@@ -96,7 +96,7 @@ let removeMany (type elt) (type id) (d : (elt,id) t) xs =
 
 let rec removeMutateCheckAux  nt x removed ~cmp= 
   let k = N.key nt in 
-  let c = (Bs_Cmp.getCmp cmp) x k [@bs] in 
+  let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in 
   if c = 0 then 
     let () = removed := true in  
     let l,r = N.(left nt, right nt) in       
@@ -146,7 +146,7 @@ let rec addMutateCheckAux  (t : _ t0) x added ~cmp  =
     N.singleton0 x 
   | Some nt -> 
     let k = N.key nt in 
-    let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in  
+    let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  
     if c = 0 then t 
     else
       let l, r = N.(left nt, right nt) in 
@@ -172,7 +172,7 @@ let split (type elt) (type id) (d : (elt,id) t)  key  =
   let dict, s = B.dict d, B.data d  in 
   let module M = (val dict ) in 
   let arr = N.toArray0 s in 
-  let i = S.binarySearchBy arr key (Bs_Cmp.getCmp M.cmp)  in   
+  let i = S.binarySearchBy arr key (Bs_Cmp.getCmpIntenral M.cmp)  in   
   let len = A.length arr in 
   if i < 0 then 
     let next = - i -1 in 
@@ -208,13 +208,13 @@ let isEmpty d =
 let singleton x ~dict = 
   B.bag ~data:(N.singleton0 x) ~dict 
 let minimum d = 
-  N.minOpt0 (B.data d)
-let minNull d =
-  N.minNull0 (B.data d)
+  N.minimum0 (B.data d)
+let minUndefined d =
+  N.minUndefined0 (B.data d)
 let maximum d = 
-  N.maxOpt0 (B.data d)
-let maxNull d =
-  N.maxNull0 (B.data d)
+  N.maximum0 (B.data d)
+let maxUndefined d =
+  N.maxUndefined0 (B.data d)
 let forEach d f =
   N.iter0 (B.data d) f     
 let reduce d acc cb = 
@@ -241,14 +241,14 @@ let eq (type elt) (type id) (d0 : (elt,id) t)  d1 =
   N.eq0 ~cmp:M.cmp (B.data d0) (B.data d1)
 let get (type elt) (type id) (d : (elt,id) t) x = 
   let module M = (val B.dict d) in 
-  N.findOpt0 ~cmp:M.cmp (B.data d) x 
-let getNull (type elt) (type id) (d : (elt,id) t) x = 
+  N.get0 ~cmp:M.cmp (B.data d) x 
+let getUndefined (type elt) (type id) (d : (elt,id) t) x = 
   let module M = (val B.dict d) in 
-  N.findNull0 ~cmp:M.cmp (B.data d) x
+  N.getUndefined0 ~cmp:M.cmp (B.data d) x
 let getExn (type elt) (type id) (d : (elt,id) t) x = 
   let dict = B.dict d in 
   let module M = (val dict) in 
-  N.findExn0 ~cmp:M.cmp (B.data d) x     
+  N.getExn0 ~cmp:M.cmp (B.data d) x     
 let has (type elt) (type id) (d : (elt,id) t) x =
   let dict = B.dict d in 
   let module M = (val dict) in 
@@ -299,7 +299,7 @@ let intersect (type elt) (type id) (a : (elt,id) t) b  : _ t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    let p = Bs_Cmp.getCmp M.cmp in 
+    let p = Bs_Cmp.getCmpIntenral M.cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
@@ -327,7 +327,7 @@ let diff (type elt) (type id) (a : (elt,id) t) b : _ t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    let p = Bs_Cmp.getCmp M.cmp in 
+    let p = Bs_Cmp.getCmpIntenral M.cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
@@ -354,7 +354,7 @@ let union (type elt) (type id) (a : (elt,id) t) b =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
-    let p = (Bs_Cmp.getCmp M.cmp)  in 
+    let p = (Bs_Cmp.getCmpIntenral M.cmp)  in 
     if p
         (A.getUnsafe tmp (sizea - 1))
         (A.getUnsafe tmp sizea) [@bs] < 0 then 

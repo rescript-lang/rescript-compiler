@@ -49,10 +49,10 @@ val bal : 'a t0 -> 'a -> 'a t0 -> 'a t0
 val singleton0 : 'a -> 'a t0
 
 
-val minOpt0 : 'a t0 -> 'a option
-val minNull0 : 'a t0 -> 'a Js.null
-val maxOpt0 : 'a t0 -> 'a option
-val maxNull0 : 'a t0 -> 'a Js.null
+val minimum0 : 'a t0 -> 'a option
+val minUndefined0 : 'a t0 -> 'a Js.undefined
+val maximum0 : 'a t0 -> 'a option
+val maxUndefined0 : 'a t0 -> 'a Js.undefined
 
 val removeMinAuxWithRef : 'a node -> 'a ref -> 'a t0
 (* [removeMinAuxWithRef n cell] return a new node with
@@ -91,9 +91,9 @@ val mem0 :  'a t0 ->  'a -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
 val cmp0 : 'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> int
 val eq0 :  'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
 val subset0 :  'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
-val findOpt0 :  'a t0 -> 'a  -> cmp:('a, 'b) Bs_Cmp.cmp -> 'a option
-val findNull0 : 'a t0 -> 'a -> cmp:('a, 'b) Bs_Cmp.cmp -> 'a Js.null
-val findExn0 : 'a t0 -> 'a ->  cmp:('a, 'b) Bs_Cmp.cmp -> 'a 
+val get0 :  'a t0 -> 'a  -> cmp:('a, 'b) Bs_Cmp.cmp -> 'a option
+val getUndefined0 : 'a t0 -> 'a -> cmp:('a, 'b) Bs_Cmp.cmp -> 'a Js.undefined
+val getExn0 : 'a t0 -> 'a ->  cmp:('a, 'b) Bs_Cmp.cmp -> 'a 
 
 
 val ofArray0 : 'a array ->  cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0

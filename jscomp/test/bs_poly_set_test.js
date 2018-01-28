@@ -79,9 +79,9 @@ b("File \"bs_poly_set_test.ml\", line 34, characters 4-11", +(u2 === u1));
 
 eq("File \"bs_poly_set_test.ml\", line 35, characters 5-12", Bs_SortedSetDict.size(u4.data), 28);
 
-b("File \"bs_poly_set_test.ml\", line 36, characters 4-11", +(29 === Bs_SortedSetDict.maxNull(u4.data)));
+b("File \"bs_poly_set_test.ml\", line 36, characters 4-11", +(29 === Bs_SortedSetDict.maxUndefined(u4.data)));
 
-b("File \"bs_poly_set_test.ml\", line 37, characters 4-11", +(1 === Bs_SortedSetDict.minNull(u4.data)));
+b("File \"bs_poly_set_test.ml\", line 37, characters 4-11", +(1 === Bs_SortedSetDict.minUndefined(u4.data)));
 
 b("File \"bs_poly_set_test.ml\", line 38, characters 4-11", +(u4 === u5));
 
@@ -149,11 +149,11 @@ b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", Bs_Set.subset(u22, u
 
 b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Bs_Set.subset(u21, u17) && Bs_Set.subset(u21, u18));
 
-b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", +(47 === Bs_Set.getNull(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", +(47 === Bs_Set.getUndefined(u22, 47)));
 
 b("File \"bs_poly_set_test.ml\", line 75, characters 4-11", Caml_obj.caml_equal(/* Some */[47], Bs_Set.get(u22, 47)));
 
-b("File \"bs_poly_set_test.ml\", line 76, characters 4-11", +(Bs_Set.getNull(u22, 59) === null));
+b("File \"bs_poly_set_test.ml\", line 76, characters 4-11", +(Bs_Set.getUndefined(u22, 59) === undefined));
 
 b("File \"bs_poly_set_test.ml\", line 77, characters 4-11", +(/* None */0 === Bs_Set.get(u22, 59)));
 
@@ -180,14 +180,14 @@ var m$2 = {
   data: Bs_SortedSetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.minNull(m$2.data), null));
+b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.minUndefined(m$2.data), undefined));
 
 var m$3 = {
   dict: IntCmp,
   data: Bs_SortedSetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.maxNull(m$3.data), null));
+b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.maxUndefined(m$3.data), undefined));
 
 function testIterToList(xs) {
   var v = [/* [] */0];

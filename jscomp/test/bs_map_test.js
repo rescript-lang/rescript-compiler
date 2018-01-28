@@ -24,20 +24,16 @@ function b(loc, v) {
 
 var Icmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
-var cmp = Caml_primitive.caml_int_compare;
-
-var Icmp2 = /* module */[/* cmp */cmp];
+var Icmp2 = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
 var m0 = {
   dict: Icmp,
   data: Bs_SortedMapDict.empty
 };
 
-function cmp$1(x, y) {
-  return Caml_primitive.caml_int_compare(y, x);
-}
-
-var I2 = /* module */[/* cmp */cmp$1];
+var I2 = /* module */[/* cmp */(function (x, y) {
+      return Caml_primitive.caml_int_compare(y, x);
+    })];
 
 var m = {
   dict: Icmp2,
@@ -77,12 +73,12 @@ var v = {
 
 var m_dict$1 = m.dict;
 
-var cmp$2 = m_dict$1[/* cmp */0];
+var cmp = m_dict$1[/* cmp */0];
 
 var data$1 = v.data;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
-  data$1 = Bs_SortedSetDict.add(data$1, i$1, cmp$2);
+  data$1 = Bs_SortedSetDict.add(data$1, i$1, cmp);
 }
 
 console.log(data$1);
@@ -106,7 +102,7 @@ var u0 = f(Bs_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
 
 var u1 = Bs_Map.set(u0, 39, 120);
 
-b("File \"bs_map_test.ml\", line 84, characters 4-11", Bs_Array.every2(Bs_SortedMapDict.toArray(u0.data), Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"bs_map_test.ml\", line 77, characters 4-11", Bs_Array.every2(Bs_SortedMapDict.toArray(u0.data), Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
                 return /* tuple */[
                         x,
                         x
@@ -119,7 +115,7 @@ b("File \"bs_map_test.ml\", line 84, characters 4-11", Bs_Array.every2(Bs_Sorted
             }
           })));
 
-b("File \"bs_map_test.ml\", line 89, characters 4-11", Bs_List.every2(Bs_SortedMapDict.toList(u0.data), Bs_Array.toList(Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"bs_map_test.ml\", line 82, characters 4-11", Bs_List.every2(Bs_SortedMapDict.toList(u0.data), Bs_Array.toList(Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
                     return /* tuple */[
                             x,
                             x
@@ -132,9 +128,9 @@ b("File \"bs_map_test.ml\", line 89, characters 4-11", Bs_List.every2(Bs_SortedM
             }
           })));
 
-eq("File \"bs_map_test.ml\", line 94, characters 5-12", Bs_Map.get(u0, 39), /* Some */[39]);
+eq("File \"bs_map_test.ml\", line 87, characters 5-12", Bs_Map.get(u0, 39), /* Some */[39]);
 
-eq("File \"bs_map_test.ml\", line 95, characters 5-12", Bs_Map.get(u1, 39), /* Some */[120]);
+eq("File \"bs_map_test.ml\", line 88, characters 5-12", Bs_Map.get(u1, 39), /* Some */[120]);
 
 var u = f(Bs_Array.makeByAndShuffle(10000, (function (x) {
             return /* tuple */[
@@ -143,7 +139,7 @@ var u = f(Bs_Array.makeByAndShuffle(10000, (function (x) {
                   ];
           })));
 
-eq("File \"bs_map_test.ml\", line 101, characters 4-11", Bs_Array.makeBy(10000, (function (x) {
+eq("File \"bs_map_test.ml\", line 94, characters 4-11", Bs_Array.makeBy(10000, (function (x) {
             return /* tuple */[
                     x,
                     x

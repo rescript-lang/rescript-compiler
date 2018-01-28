@@ -52,9 +52,9 @@ let () =
   let v = N.ofArray (A.makeBy 30 (fun [@bs]i -> i)) in 
   N.remove v 30; 
   N.remove v 29 ;
-  b __LOC__ (Js.eqNull 28 (N.maxNull v ));
+  b __LOC__ (Js.eqUndefined 28 (N.maxUndefined v ));
   N.remove v 0 ; 
-  b __LOC__ (Js.eqNull 1 (N.minNull v));
+  b __LOC__ (Js.eqUndefined 1 (N.minUndefined v));
   eq __LOC__ (N.size v ) 28;
   let vv = I.randomRange 1 28 in 
   for i = 0 to A.length vv - 1 do  

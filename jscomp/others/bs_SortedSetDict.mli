@@ -118,18 +118,18 @@ val toList: ('elt, 'id) t -> 'elt list
 val toArray: ('elt, 'id) t -> 'elt array
 
 val minimum: ('elt, 'id) t -> 'elt option
-val minNull: ('elt, 'id) t -> 'elt Js.null
+val minUndefined: ('elt, 'id) t -> 'elt Js.undefined
 val maximum: ('elt, 'id) t -> 'elt option
-val maxNull: ('elt, 'id) t -> 'elt Js.null
+val maxUndefined: ('elt, 'id) t -> 'elt Js.undefined
 
 
 
 val get: ('elt, 'id) t -> 'elt ->
   cmp:('elt, 'id) cmp ->
   'elt option 
-val getNull: ('elt, 'id) t -> 'elt ->
+val getUndefined: ('elt, 'id) t -> 'elt ->
   cmp:('elt, 'id) cmp ->
-  'elt Js.null
+  'elt Js.undefined
 val getExn: ('elt, 'id) t -> 'elt ->
   cmp:('elt, 'id) cmp ->
   'elt 
