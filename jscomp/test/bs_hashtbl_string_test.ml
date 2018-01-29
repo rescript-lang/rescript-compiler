@@ -35,10 +35,10 @@ module Int =
   (val Bs.Hash.make 
       ~eq:(fun[@bs] (x:int) y -> x = y )
       ~hash:(fun [@bs] x -> Hashtbl.hash x))
-
+module N = Bs.UnorderedMutableMap
 let empty = 
-  Bs.HashMap.make ~dict:(module Int) 500_000
-module N = Bs.HashMap
+  N.make ~dict:(module Int) 500_000
+
 let bench() = 
   let count  = 1_000_000 in   
   (* let add = N.setDone in  *)
@@ -49,7 +49,7 @@ let bench() =
   for i = 0 to count do 
     assert (mem empty i)
   done ;
-  Bs.HashMap.logStats empty
+  N.logStats empty
 
 
 let count  = 1_000_000 
@@ -60,7 +60,7 @@ let initial_size = 1_000_000
     #.add (string_of_int i) i 
     #.add (string_of_int i) i
 *)    
-module M = Bs.HashMap
+module M = Bs.UnorderedMutableMap
 let bench2 (type t) (m : (string,t) Bs.Hash.t) = 
   let empty = 
     M.make ~dict:m initial_size in
@@ -83,7 +83,7 @@ let bench2 (type t) (m : (string,t) Bs.Hash.t) =
 
 (* Bs.HashMap.logStats empty *)
 module Md = Bs.Map 
-module Md0 = Bs.SortedMapDict
+module Md0 = Bs.MapDict
 let bench3 (type t) (m : (string,t) Bs.Cmp.t) = 
   
   let empty = Md.empty m in
@@ -105,61 +105,63 @@ let bench3 (type t) (m : (string,t) Bs.Cmp.t) =
   assert (Md0.size !table = 0)
 
 module Sx = (val Bs.Cmp.make (fun [@bs] (x : string) y -> compare x y )) 
-
+module H = Bs.UnorderedMutableMap.String
 let bench4 () = 
   let table = 
-    Bs.HashMapString.make initial_size in
+    H.make initial_size in
 
   for i  = 0 to  count do  
-    Bs.HashMapString.set
+    H.set
       table (string_of_int i) i 
   done ;
   for i = 0 to count do 
-    assert (Bs.HashMapString.has
+    assert (H.has
               table (string_of_int i))
   done; 
   for i = 0 to count do 
-    Bs.HashMapString.remove table (string_of_int i)
+    H.remove table (string_of_int i)
   done ;
-  assert (Bs.HashMapString.size table = 0)  
+  assert (H.isEmpty table)  
 
+module H0 = Bs.UnorderedMutableMap 
 let bench5 () =   
   let table = 
-    Bs.HashMap.make ~dict:(module Int) initial_size in 
+    H0.make ~dict:(module Int) initial_size in 
   (* let table_data = M.getData table in    *)
   (* let hash = Int.hash in 
   let eq = Int.eq in  *)
   [%time for i  = 0 to  count do  
-      Bs.HashMap.set 
+      H0.set 
         table i i 
     done] ;
   [%time for i = 0 to count do 
-      assert (Bs.HashMap.has
+      assert (H0.has
                 table i)
     done]; 
   [%time for i = 0 to count do 
-      Bs.HashMap.remove  table i
+      H0.remove  table i
     done ];
-  assert (Bs.HashMap.size table = 0)   
+  assert (H0.isEmpty table)   
 
+module HI = Bs.UnorderedMutableMap.Int
 let bench6 () = 
   let table = 
-    Bs.HashMapInt.make initial_size in
+    HI.make initial_size in
 
   for i  = 0 to  count do  
-    Bs.HashMapInt.set
+    HI.set
       table i i 
   done ;
   for i = 0 to count do 
-    assert (Bs.HashMapInt.has
+    assert (HI.has
               table i)
   done; 
   for i = 0 to count do 
-    Bs.HashMapInt.remove table i
+    HI.remove table i
   done ;
-  assert (Bs.HashMapInt.size table = 0)  
+  assert (HI.size table = 0)  
 
-module S = Bs.HashSetInt
+module S = Bs.UnorderedMutableSetInt
 let bench7 () = 
   let table = 
     (* [%time  *)

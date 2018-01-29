@@ -2,7 +2,7 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x  = Mt.bool_suites ~test_id ~suites loc x  
-module N = Bs.HashSetInt 
+module N = Bs.UnorderedMutableSet.Int
 module S = Bs.SetInt 
 
 module I = Array_data_util

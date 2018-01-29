@@ -2,8 +2,8 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eqx loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x = Mt.bool_suites ~test_id ~suites loc x 
-module N = Bs.HashMap
-module S = Bs.MapInt
+module N = Bs.UnorderedMutableMap
+module S = Bs.Map.Int
 (* module Y = struct  
    type t = int 
 

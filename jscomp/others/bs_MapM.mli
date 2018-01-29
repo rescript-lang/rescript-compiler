@@ -115,3 +115,5 @@ val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
     
 
 
+module Int = Bs_MapIntM
+module String = Bs_MapStringM  

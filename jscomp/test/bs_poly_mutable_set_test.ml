@@ -3,7 +3,7 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x =  Mt.bool_suites ~test_id ~suites loc x  
 
-module N = Bs.SetM
+module N = Bs.MutableSet
 module I = Array_data_util
 module A = Bs.Array
 module IntCmp = 

@@ -30,7 +30,7 @@ let m = M.empty (module Icmp2)
 let m2 : (int, string, _) M.t = M.empty (module I2)
 let vv = MI.empty 
 let vv2 = MI.empty
-module Md0 = Bs.SortedMapDict
+module Md0 = Bs.MapDict
 let () = 
   let count = 1_000_00 in 
   let data = ref (M.getData m) in 
@@ -55,7 +55,7 @@ let () =
   let _m20 = M.empty (module Icmp) in 
   Js.log m11
 
-module S0 = Bs.SortedSetDict  
+module S0 = Bs.SetDict  
 let () =   
  let count = 100_000 in 
   let v = ISet.empty (module Icmp2) in 

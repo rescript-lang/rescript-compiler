@@ -9,7 +9,7 @@ module Icmp =
          compare x y
       )
   )
-module M = Bs.MapM  
+module M = Bs.MutableMap
 module N = Bs.Set 
 
 module A = Bs_Array

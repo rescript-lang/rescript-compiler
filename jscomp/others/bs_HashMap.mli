@@ -108,6 +108,7 @@ val valuesToArray:
 val getBucketHistogram: _ t -> int array
 
 
-
+module Int = Bs_HashMapInt
+module String = Bs_HashMapString
 
 

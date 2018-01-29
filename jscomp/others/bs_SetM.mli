@@ -117,3 +117,6 @@ val checkInvariantInternal: _ t -> bool
     ('elt, 'id) t0 -> 'elt ->  
     ('elt, 'id) t0]
   2. It is not really significantly more *)
+
+module Int = Bs_SetIntM
+module String = Bs_SetStringM

@@ -234,3 +234,6 @@ let keysToArray = N.keysToArray
 let valuesToArray = N.valuesToArray 
 let getBucketHistogram  = N.getBucketHistogram 
 let isEmpty h = C.size h =  0
+
+module Int = Bs_HashMapInt
+module String = Bs_HashMapString  

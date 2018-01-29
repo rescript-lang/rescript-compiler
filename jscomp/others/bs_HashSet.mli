@@ -52,3 +52,6 @@ val ofArray: 'a array -> dict:('a,'id) Bs_Hash.t -> ('a,'id) t
 val mergeMany: ('a,'id) t -> 'a array -> unit
 
 val getBucketHistogram: _ t -> int array
+
+module Int = Bs_HashSetInt
+module String = Bs_HashSetString

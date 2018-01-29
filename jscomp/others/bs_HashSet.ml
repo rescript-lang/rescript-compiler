@@ -203,3 +203,6 @@ let mergeMany h arr =
 let getBucketHistogram  = N.getBucketHistogram 
 
 let isEmpty h = C.size h = 0
+
+module Int = Bs_HashSetInt
+module String = Bs_HashSetString

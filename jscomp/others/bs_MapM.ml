@@ -232,5 +232,9 @@ let mergeMany d xs =
   let oldRoot = S.data d in 
   let newRoot = mergeArrayAux oldRoot xs ~cmp:(S.cmp d) in 
   if newRoot != oldRoot then 
-    S.dataSet d newRoot 
+    S.dataSet d newRoot
+
+
+module Int = Bs_MapIntM
+module String = Bs_MapStringM  
 

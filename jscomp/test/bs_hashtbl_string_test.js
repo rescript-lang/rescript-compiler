@@ -206,37 +206,37 @@ function bench4() {
 
 function bench5() {
   var table = Bs_HashMap.make(1000000, Int);
-  console.time("bs_hashtbl_string_test.ml 132");
+  console.time("bs_hashtbl_string_test.ml 133");
   for(var i = 0; i <= 1000000; ++i){
     Bs_HashMap.set(table, i, i);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 132");
-  console.time("bs_hashtbl_string_test.ml 136");
+  console.timeEnd("bs_hashtbl_string_test.ml 133");
+  console.time("bs_hashtbl_string_test.ml 137");
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
     if (!Bs_HashMap.has(table, i$1)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              137,
+              138,
               6
             ]
           ];
     }
     
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 136");
-  console.time("bs_hashtbl_string_test.ml 140");
+  console.timeEnd("bs_hashtbl_string_test.ml 137");
+  console.time("bs_hashtbl_string_test.ml 141");
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMap.remove(table, i$2);
   }
-  console.timeEnd("bs_hashtbl_string_test.ml 140");
+  console.timeEnd("bs_hashtbl_string_test.ml 141");
   if (table.size) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            143,
+            144,
             2
           ]
         ];
@@ -256,7 +256,7 @@ function bench6() {
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              154,
+              156,
               4
             ]
           ];
@@ -271,7 +271,7 @@ function bench6() {
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            160,
+            162,
             2
           ]
         ];
@@ -292,7 +292,7 @@ function bench7() {
             Caml_builtin_exceptions.assert_failure,
             [
               "bs_hashtbl_string_test.ml",
-              179,
+              181,
               4
             ]
           ];
@@ -307,7 +307,7 @@ function bench7() {
           Caml_builtin_exceptions.assert_failure,
           [
             "bs_hashtbl_string_test.ml",
-            190,
+            192,
             2
           ]
         ];
@@ -316,11 +316,11 @@ function bench7() {
   }
 }
 
-console.time("bs_hashtbl_string_test.ml 201");
+console.time("bs_hashtbl_string_test.ml 203");
 
 bench7(/* () */0);
 
-console.timeEnd("bs_hashtbl_string_test.ml 201");
+console.timeEnd("bs_hashtbl_string_test.ml 203");
 
 var N = 0;
 
@@ -334,6 +334,12 @@ var Md = 0;
 
 var Md0 = 0;
 
+var H = 0;
+
+var H0 = 0;
+
+var HI = 0;
+
 var S = 0;
 
 exports.hash_string = hash_string;
@@ -342,8 +348,8 @@ exports.$$String = $$String;
 exports.String1 = String1;
 exports.String2 = String2;
 exports.Int = Int;
-exports.empty = empty;
 exports.N = N;
+exports.empty = empty;
 exports.bench = bench;
 exports.count = count;
 exports.initial_size = initial_size;
@@ -353,8 +359,11 @@ exports.Md = Md;
 exports.Md0 = Md0;
 exports.bench3 = bench3;
 exports.Sx = Sx;
+exports.H = H;
 exports.bench4 = bench4;
+exports.H0 = H0;
 exports.bench5 = bench5;
+exports.HI = HI;
 exports.bench6 = bench6;
 exports.S = S;
 exports.bench7 = bench7;

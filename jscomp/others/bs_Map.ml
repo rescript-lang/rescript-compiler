@@ -148,3 +148,6 @@ let getDict (type elt) (type id) (m : (elt,_,id) t) : (elt, id) dict =
 let packDictData (type elt) (type id) ~(dict : (elt, id) dict) ~data  =
   let module M = (val dict) in 
   S.t ~cmp:M.cmp ~data
+
+module Int = Bs_MapInt
+module String = Bs_MapString

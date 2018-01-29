@@ -364,3 +364,7 @@ let union a b =
       S.t ~data:(N.ofSortedArrayAux tmp2 0 k) ~cmp
 
 let copy d = S.t ~data:(N.copy (S.data d)) ~cmp:(S.cmp d)
+
+
+module Int = Bs_SetIntM
+module String = Bs_SetStringM  

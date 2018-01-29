@@ -175,3 +175,6 @@ val getDict: ('a, 'b, 'c) t -> ('a, 'c) dict
 val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Bs_SortedMapDict.t
     
 val packDictData: dict:('a, 'b) dict -> data:('a, 'c, 'b) Bs_SortedMapDict.t -> ('a, 'c, 'b) t
+
+module Int = Bs_MapInt
+module String = Bs_MapString  
