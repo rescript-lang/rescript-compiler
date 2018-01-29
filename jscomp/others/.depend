@@ -42,12 +42,12 @@ bs_HashMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
 bs_HashMultiMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
     bs_Hash.cmj bs_Array.cmj bs_HashMultiMap.cmi
 bs_HashSet.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
-    bs_HashSetString.cmj bs_HashSetInt.cmj bs_Hash.cmj bs_Array.cmj bs.cmj \
+    bs_HashSetString.cmj bs_HashSetInt.cmj bs_Hash.cmj bs_Array.cmj \
     bs_HashSet.cmi
 bs_HashSetString.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
-    bs_Array.cmj bs.cmj bs_HashSetString.cmi
+    bs_Array.cmj bs_HashSetString.cmi
 bs_HashSetInt.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
-    bs_Array.cmj bs.cmj bs_HashSetInt.cmi
+    bs_Array.cmj bs_HashSetInt.cmi
 bs_Bag.cmj :
 bs_BagM.cmj :
 bs_Cmp.cmj : bs_Cmp.cmi

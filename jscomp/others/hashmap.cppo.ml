@@ -38,7 +38,7 @@ module A = Bs_Array
 type 'b t = (unit, unit, key,'b) N.t
 
 
-let rec copyBucketReHash  ~h_buckets ~ndata_tail h old_bucket = 
+let rec copyBucketReHash  ~h_buckets ~ndata_tail  old_bucket = 
   match C.toOpt old_bucket with 
   | None -> ()
   | Some cell ->
@@ -51,19 +51,19 @@ let rec copyBucketReHash  ~h_buckets ~ndata_tail h old_bucket =
         N.nextSet tail v  (* cell put at the end *)            
     end;          
     A.setUnsafe ndata_tail nidx  v;
-    copyBucketReHash  ~h_buckets ~ndata_tail h (N.next cell)
+    copyBucketReHash  ~h_buckets ~ndata_tail  (N.next cell)
 
 
 let resize  h =
   let odata = C.buckets h in
-  let osize = Array.length odata in
+  let osize = A.length odata in
   let nsize = osize * 2 in
   if nsize >= osize then begin (* no overflow *)
     let h_buckets = A.makeUninitialized nsize  in
     let ndata_tail = A.makeUninitialized nsize  in (* keep track of tail *)
     C.bucketsSet h  h_buckets;          (* so that indexfun sees the new bucket count *)
     for i = 0 to osize - 1 do
-      copyBucketReHash  ~h_buckets ~ndata_tail h (A.getUnsafe odata i)
+      copyBucketReHash  ~h_buckets ~ndata_tail  (A.getUnsafe odata i)
     done;
     for i = 0 to nsize - 1 do
       match C.toOpt (A.getUnsafe ndata_tail i) with
@@ -88,21 +88,20 @@ let rec replaceInBucket  (key : key) info cell =
 
 let set  h (key : key) value =
   let h_buckets = C.buckets h in 
-  let i = hash key land (Array.length h_buckets - 1) in 
-  let l = Array.unsafe_get h_buckets i in  
-  match C.toOpt l with 
+  let buckets_len = A.length h_buckets in 
+  let i = hash key land (buckets_len - 1) in 
+  let l = A.getUnsafe h_buckets i in  
+  (match C.toOpt l with 
   | None -> 
-    A.setUnsafe h_buckets i (C.return (N.bucket ~key ~value ~next:l));
+    A.setUnsafe h_buckets i (C.return (N.bucket ~key ~value ~next:C.emptyOpt));
     C.sizeSet h (C.size h + 1);
-    if C.size h > Array.length (C.buckets h) lsl 1 then resize h 
   | Some bucket -> 
-    begin 
       if replaceInBucket key value bucket then begin
         A.setUnsafe h_buckets i (C.return (N.bucket ~key ~value ~next:l));
         C.sizeSet h (C.size h + 1);
-        if C.size h > Array.length (C.buckets h) lsl 1 then resize  h
       end   
-    end
+    );
+    if C.size h > buckets_len lsl 1 then resize h 
 
 
 
@@ -121,7 +120,7 @@ let rec removeInBucket h h_buckets  i (key : key) prec buckets =
 
 let remove  h key =  
   let h_buckets = C.buckets h in 
-  let i = hash key land (Array.length h_buckets - 1) in  
+  let i = hash key land (A.length h_buckets - 1) in  
   let bucket = (A.getUnsafe h_buckets i) in 
   match C.toOpt bucket with 
   | None -> ()
@@ -136,13 +135,13 @@ let remove  h key =
 
 
 
-let rec findAux  (key : key) buckets = 
+let rec getAux  (key : key) buckets = 
   match C.toOpt buckets with 
   | None ->
     None
   | Some cell ->
     if key = N.key cell  then Some (N.value cell) 
-    else findAux key  (N.next cell)
+    else getAux key  (N.next cell)
 
 let get  h (key : key) =
   let h_buckets = C.buckets h in 
@@ -159,9 +158,7 @@ let get  h (key : key) =
           | None -> None
           | Some cell3 ->
             if  key = (N.key cell3)  then Some (N.value cell3)
-            else findAux  key (N.next cell3)
-
-
+            else getAux  key (N.next cell3)
 
 
 let rec memInBucket (key : key) cell = 
@@ -189,6 +186,11 @@ let reduce = N.reduce
 let logStats = N.logStats
 let keepMapInPlace = N.keepMapInPlace
 let toArray = N.toArray
+let copy = N.copy
+let keysToArray = N.keysToArray
+let valuesToArray = N.valuesToArray
+let getBucketHistogram = N.getBucketHistogram 
+let isEmpty = C.isEmpty
 
 let ofArray arr  = 
   let len = A.length arr in 
@@ -207,10 +209,3 @@ let mergeMany h arr =
     set h k v 
   done
 
-let copy = N.copy
-
-let keysToArray = N.keysToArray
-let valuesToArray = N.valuesToArray
-let getBucketHistogram = N.getBucketHistogram 
-
-let isEmpty h = C.size h = 0

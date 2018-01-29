@@ -32,9 +32,15 @@ type ('a, 'id) dict = ('a, 'id) Bs_Hash.t
 val make:  int -> dict:('a,'id) dict ->  ('a, 'id) t
 val clear: ('a, 'id) t -> unit
 val isEmpty: _ t -> bool
+
 val add: ('a, 'id) t -> 'a -> unit
+
+val copy: ('a, 'id) t -> ('a, 'id) t
+
 val has: ('a, 'id) t -> 'a -> bool
+
 val remove: ('a, 'id) t -> 'a -> unit
+
 val forEach: ('a, 'id) t -> ('a  -> unit [@bs]) ->  unit
 (** Order unspecified. *)
 
@@ -47,7 +53,7 @@ val logStats: _ t -> unit
 
 val toArray: ('a,'id) t -> 'a array 
 
-val ofArray: 'a array -> dict:('a,'id) Bs_Hash.t -> ('a,'id) t 
+val ofArray: 'a array -> dict:('a,'id) dict -> ('a,'id) t 
 
 val mergeMany: ('a,'id) t -> 'a array -> unit
 

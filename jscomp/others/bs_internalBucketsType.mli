@@ -40,5 +40,7 @@ val make :
   eq:'eq -> 
   int ->
   ('hash, 'eq, _) container
+  
 val clear : _ container -> unit
 
+val isEmpty: _ container -> bool

@@ -82,30 +82,21 @@ val size: _ t -> int
 
 
 
+
+
+
+val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array 
+val keysToArray: ('key, _, _) t -> 'key array    
+val valuesToArray: (_,'value,_) t -> 'value array    
+val ofArray: ('key * 'value) array -> dict:('key,'id) Bs_Hash.t -> ('key, 'value, 'id ) t    
+val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
+val getBucketHistogram: _ t -> int array
 val logStats: _ t -> unit
 (** [logStats tbl] returns statistics about the table [tbl]:
     number of buckets, size of the biggest bucket, distribution of
     buckets by size.
 *)
 
-
-
-
-val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array 
-
-
-
-
-val ofArray: ('key * 'value) array -> dict:('key,'id) Bs_Hash.t -> ('key, 'value, 'id ) t
-    
-val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
-
-val keysToArray:    
-    ('key, _, _) t -> 'key array    
-val valuesToArray:    
-    (_,'value,_) t -> 'value array    
-
-val getBucketHistogram: _ t -> int array
 
 
 module Int = Bs_HashMapInt
