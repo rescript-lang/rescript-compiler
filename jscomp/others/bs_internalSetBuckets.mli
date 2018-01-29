@@ -28,14 +28,18 @@ type 'a bucket = {
   mutable key : 'a;
   mutable next : 'a bucket C.opt
 }  
-and 'a t0 = 'a bucket C.container  
+and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container  
 [@@bs.deriving abstract]
 
-val copy: 'a t0 -> 'a t0
-val forEach0: 'a bucket C.container -> ('a -> 'b [@bs]) -> unit
-val fillArray: int -> 'a array -> 'a bucket -> int
-val toArray0: 'a t0 -> 'a array
+val copy: ('hash, 'eq, 'a) t -> ('hash, 'eq, 'a) t
+val forEach: ('hash, 'eq, 'a) t  -> ('a -> unit [@bs]) -> unit
 
-val reduce0: 'a t0 -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
-val logStats0: _ t0 -> unit
-val getBucketHistogram: _ t0 -> int array  
+val fillArray: int -> 'a array -> 'a bucket -> int
+
+val toArray: (_,_,'a) t -> 'a array
+
+val reduce: (_,_,'a) t -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
+
+val logStats: _ t -> unit
+
+val getBucketHistogram: _ t -> int array  

@@ -35,7 +35,7 @@ module C = Bs_internalBucketsType
 module A = Bs_Array
 
 
-type 'b t = (key,'b) N.t
+type 'b t = (unit, unit, key,'b) N.t
 
 
 let rec copyBucketReHash  ~h_buckets ~ndata_tail h old_bucket = 
@@ -181,7 +181,7 @@ let has h key =
     memInBucket  key bucket
 
 
-let make = C.make
+let make size = C.make size ~hash:() ~eq:()
 let clear = C.clear
 let size = C.size
 let forEach = N.forEach

@@ -14,14 +14,14 @@
 
 module N = Bs_internalBuckets 
 module C = Bs_internalBucketsType
-module B = Bs_Bag 
 module A = Bs_Array
 
-type ('a, 'b,'id) t0 = ('a,'b) N.t
 
-type ('a,'b,'id) t = 
-  (('a, 'id) Bs_Hash.t,
-   ('a,'b,'id) t0) B.bag 
+type ('a, 'id) eq = ('a, 'id) Bs_Hash.eq
+type ('a, 'id) hash = ('a, 'id) Bs_Hash.hash
+type ('a, 'id) dict = ('a, 'id) Bs_Hash.t                        
+type ('a,'b,'id) t =
+  ( ('a, 'id) hash, ('a, 'id) eq, 'a, 'b) N.t
 
 
 
@@ -176,38 +176,35 @@ let has0 ~hash ~eq h key =
 
 
 
-let make initialize_size ~dict = 
-  B.bag ~data:(C.make initialize_size) ~dict 
-let clear h = C.clear (B.data h)
-let size h = C.size (B.data h)                 
-let forEach h f = N.forEach (B.data h) f
-let reduce h init f = N.reduce (B.data h) init f
-let logStats h = N.logStats (B.data h)
+let make (type elt) (type id) initialize_size ~(dict : (elt,id) dict) =
+  let module M = (val dict) in 
+  C.make ~hash:M.hash ~eq:M.eq  initialize_size
 
-let set (type a)  (type id) (h : (a,_,id) t) (key:a) info = 
-  let module M = (val B.dict h) in 
-  setDone0 ~hash:M.hash ~eq:M.eq (B.data h) key info 
+let clear = C.clear
+let size = C.size
+let forEach = N.forEach
+let reduce = N.reduce
+let logStats = N.logStats
 
-let remove (type a) (type id) (h : (a,_,id) t) (key : a) = 
-  let module M = (val B.dict h) in   
-  remove0 ~hash:M.hash ~eq:M.eq (B.data h) key 
+let set h key info = 
+  setDone0 ~hash:(C.hash h) ~eq:(C.eq h) h key info 
 
-let get (type a) (type id) (h : (a, _, id) t) (key : a) =           
-  let module M = (val B.dict h) in   
-  get0 ~hash:M.hash ~eq:M.eq (B.data h) key 
+let remove h key = 
+  remove0 ~hash:(C.hash h) ~eq:(C.eq h) h key 
 
-let has (type a) (type id) (h : (a,_,id) t) (key : a) =           
-  let module M = (val B.dict h) in   
-  has0 ~hash:M.hash ~eq:M.eq (B.data h) key   
+let get h key =           
+  get0 ~hash:(C.hash h) ~eq:(C.eq h) h key 
 
-let keepMapInPlace h f = N.keepMapInPlace (B.data h) f
+let has h key =           
+  has0 ~hash:(C.hash h) ~eq:(C.eq h) h key   
 
-  
-let toArray h = N.toArray (B.data h)
+let keepMapInPlace  = N.keepMapInPlace
+
+let toArray = N.toArray
 
 let ofArray0 arr ~hash ~eq = 
   let len = A.length arr in 
-  let v = C.make len in 
+  let v = C.make ~hash ~eq len in 
   for i = 0 to len - 1 do 
     let key,value = (A.getUnsafe arr i) in 
     setDone0 ~eq ~hash v key value
@@ -223,18 +220,17 @@ let mergeArrayDone0  h arr ~hash ~eq =
   done
     
 let ofArray (type a) (type id) arr ~dict:(dict:(a,id) Bs_Hash.t) =     
-  let module M = (val dict) in 
-  B.bag ~dict  ~data:M.(ofArray0 ~eq ~hash arr)
+  let module M = (val dict) in
+  ofArray0 ~eq:M.eq ~hash:M.hash arr
+    
 
-let mergeMany (type a) (type id) (h : (a,_,id) t) arr = 
-  let module M = (val B.dict h) in
-  mergeArrayDone0 ~hash:M.hash ~eq:M.eq (B.data h) arr
+let mergeMany h arr = 
+  mergeArrayDone0 ~hash:(C.hash h) ~eq:(C.eq h) h arr
 
 
-let copy h = B.bag ~dict:(B.dict h) ~data:(N.copy (B.data h))
+let copy  = N.copy
 
-let keysToArray h = N.keysToArray (B.data h)
-let valuesToArray h = N.valuesToArray (B.data h)
-let getBucketHistogram h = N.getBucketHistogram (B.data h)
-
-let isEmpty h = C.size (B.data h) = 0
+let keysToArray = N.keysToArray
+let valuesToArray = N.valuesToArray 
+let getBucketHistogram  = N.getBucketHistogram 
+let isEmpty h = C.size h =  0

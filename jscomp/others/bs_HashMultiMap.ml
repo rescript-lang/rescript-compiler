@@ -14,16 +14,13 @@
 
 module N = Bs_internalBuckets 
 module C = Bs_internalBucketsType
-module B = Bs_Bag 
 module A = Bs_Array
-type ('a, 'b,'id) t0 = ('a,'b) N.t
 
-type ('a,'b) bucket = ('a,'b) N.bucket
+type ('a, 'id) eq = ('a, 'id) Bs_Hash.eq
+type ('a, 'id) hash = ('a, 'id) Bs_Hash.hash
+type ('a, 'id) dict = ('a, 'id) Bs_Hash.t                        
 
-type ('a,'b,'id) t = 
-  (('a, 'id) Bs_Hash.t,
-   ('a,'b,'id) t0) B.bag 
-
+type ('a, 'b,'id) t = ( ('a, 'id) hash, ('a, 'id) eq ,  'a,'b) N.t
 
 
 let rec insert_bucket ~hash ~h_buckets ~ndata_tail h old_bucket = 
@@ -209,42 +206,36 @@ let has0 ~hash ~eq h key =
 let make = C.make
 
 (*  Wrapper  *)
-let create dict initialize_size = 
-  B.bag ~data:(C.make initialize_size) ~dict 
-let clear h = C.clear (B.data h)
+let make (type elt) (type id) initialize_size ~(dict : (elt, id) dict)  =
+  let module M = (val dict) in 
+  C.make initialize_size ~hash:M.hash ~eq:M.eq
+    
+let clear  = C.clear 
 
-let size h = C.size (B.data h)                 
-let forEach h f = N.forEach (B.data h) f
-let reduce h init f = N.reduce (B.data h) init f
-let logStats h = N.logStats (B.data h)
+let size  = C.size 
+let forEach  = N.forEach 
+let reduce = N.reduce
+let logStats  = N.logStats
 
-let add (type a) (type id) (h : (a,_,id) t) key info  = 
-  let module M = (val B.dict h) in 
-  add0 ~hash:M.hash (B.data h) key info 
+let add  h key info  = 
+  add0 ~hash:(C.hash h) h key info 
 
-let remove (type a) (type id) (h : (a,_,id) t) key = 
-  let module M = (val B.dict h) in   
-  remove0 ~hash:M.hash ~eq:M.eq (B.data h) key 
+let remove h key = 
+  remove0 ~hash:(C.hash h) ~eq:(C.eq h) h key 
 
-let removeAll (type a)  (type id) (h : (a,_,id) t) key = 
-  let module M = (val B.dict h) in   
-  removeAll0 ~hash:M.hash ~eq:M.eq (B.data h) key 
+let removeAll h key = 
+  removeAll0 ~hash:(C.hash h) ~eq:(C.eq h) h key 
 
-let get (type a) (type id) (h : (a,_,id) t) key =           
-  let module M = (val B.dict h) in   
-  get0 ~hash:M.hash ~eq:M.eq (B.data h) key 
+let get h key =           
+  get0 ~hash:(C.hash h) ~eq:(C.eq h) h key 
 
-let getAll (type a)  (type id) (h : (a,_,id) t) key =           
-  let module M = (val B.dict h) in   
-  getAll0 ~hash:M.hash ~eq:M.eq (B.data h) key   
+let getAll h key =           
+  getAll0 ~hash:(C.hash h) ~eq:(C.eq h) h key   
 
-let replace (type a)  (type id)  (h : (a,_,id) t) key info =
-  let module M = (val B.dict h) in 
-  replace0 ~hash:M.hash ~eq:M.eq (B.data h) key info
+let replace h key info =
+  replace0 ~hash:(C.hash h) ~eq:(C.eq h) h key info
 
-let has (type a)  (type id) (h : (a,_,id) t) key =           
-  let module M = (val B.dict h) in   
-  has0 ~hash:M.hash ~eq:M.eq (B.data h) key   
+let has h key =           
+  has0 ~hash:(C.hash h) ~eq:(C.eq h) h key   
 
-let keepMapInPlace h f =
-  N.keepMapInPlace (B.data h) f
+let keepMapInPlace  =  N.keepMapInPlace

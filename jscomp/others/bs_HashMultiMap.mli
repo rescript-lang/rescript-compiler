@@ -6,8 +6,9 @@ type ('a,'b,'id) t
   
 (** The type of hash tables from type ['a] to type ['b]. *)
 
-
-val create : ('a,'id) Bs_Hash.t -> int -> ('a,'b,'id) t
+type ('a, 'id) dict = ('a, 'id) Bs_Hash.t
+    
+val make :  int -> dict: ('a, 'id) dict ->  ('a,'b,'id) t
 (** [Hashtbl.create n] creates a new, empty hash table, with
     initial size [n].  For best results, [n] should be on the
     order of the expected number of elements that will be in

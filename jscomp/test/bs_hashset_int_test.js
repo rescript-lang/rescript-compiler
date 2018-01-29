@@ -6,6 +6,7 @@ var Bs_SetInt = require("../../lib/js/bs_SetInt.js");
 var Bs_SortInt = require("../../lib/js/bs_SortInt.js");
 var Bs_HashSetInt = require("../../lib/js/bs_HashSetInt.js");
 var Array_data_util = require("./array_data_util.js");
+var Bs_internalBucketsType = require("../../lib/js/bs_internalBucketsType.js");
 
 var suites = [/* [] */0];
 
@@ -48,7 +49,7 @@ eq("File \"bs_hashset_int_test.ml\", line 24, characters 5-12", sum2(v), 6825);
 
 var u$1 = Bs_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
-var v$1 = Bs_HashSetInt.make(40);
+var v$1 = Bs_internalBucketsType.make(/* () */0, /* () */0, 40);
 
 Bs_HashSetInt.mergeMany(v$1, u$1);
 

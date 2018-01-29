@@ -34,11 +34,11 @@ bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj \
 bs_internalBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj \
     bs_internalBuckets.cmi
 bs_HashMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
-    bs_Hash.cmj bs_Bag.cmj bs_Array.cmj bs_HashMap.cmi
+    bs_Hash.cmj bs_Array.cmj bs_HashMap.cmi
 bs_HashMultiMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
-    bs_Hash.cmj bs_Bag.cmj bs_Array.cmj bs_HashMultiMap.cmi
+    bs_Hash.cmj bs_Array.cmj bs_HashMultiMap.cmi
 bs_HashSet.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
-    bs_Hash.cmj bs_Bag.cmj bs_Array.cmj bs.cmj bs_HashSet.cmi
+    bs_Hash.cmj bs_Array.cmj bs.cmj bs_HashSet.cmi
 bs_HashSetString.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
     bs_Array.cmj bs.cmj bs_HashSetString.cmi
 bs_HashSetInt.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \

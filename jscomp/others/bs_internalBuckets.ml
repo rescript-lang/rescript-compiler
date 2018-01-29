@@ -30,7 +30,7 @@ type ('a,'b) bucket = {
   mutable value : 'b;
   mutable next : ('a,'b) bucket C.opt
 }  
-and ('a, 'b) t = ('a,'b) bucket C.container  
+and ('hash, 'eq, 'a, 'b) t = ('hash, 'eq, ('a,'b) bucket) C.container  
 [@@bs.deriving abstract]
 
 module A = Bs_Array
@@ -44,6 +44,8 @@ type statistics = {
 
 let rec copy ( x : _ t) : _ t= 
   C.container
+    ~hash:(C.hash x)
+    ~eq:(C.eq x)
     ~size:(C.size x)
     ~buckets:(copyBuckets (C.buckets x))
 and copyBuckets ( buckets : _ bucket C.opt array) =  

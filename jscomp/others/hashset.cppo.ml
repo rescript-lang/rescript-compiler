@@ -20,7 +20,8 @@ let hash (s : key) =
 module N = Bs_internalSetBuckets
 module C = Bs_internalBucketsType
 module A = Bs_Array
-type t = key N.t0 
+
+type t = (unit, unit, key) N.t 
 
 let rec copyBucket  ~h_buckets ~ndata_tail h old_bucket = 
   match C.toOpt old_bucket with 
@@ -138,18 +139,18 @@ let has h key =
     memInBucket key bucket
 
 
-let make = C.make
+let make size = C.make size ~hash:() ~eq:()
 let clear = C.clear
 
 let size = C.size
-let forEach = N.forEach0
-let reduce = N.reduce0
-let logStats = N.logStats0
-let toArray = N.toArray0
+let forEach = N.forEach
+let reduce = N.reduce
+let logStats = N.logStats
+let toArray = N.toArray
 
 let ofArray arr  = 
   let len = Bs.Array.length arr in 
-  let v = make len in 
+  let v = C.make len ~hash:() ~eq:() in 
   for i = 0 to len - 1 do 
     add v (A.getUnsafe arr i)
   done ;

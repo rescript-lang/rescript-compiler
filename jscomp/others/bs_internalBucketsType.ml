@@ -23,9 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type 'a opt = 'a Js.undefined
 
-type 'c container =
+type ('hash, 'eq, 'c) container =
   { mutable size: int;                        (* number of entries *)
     mutable buckets: 'c opt array;  (* the buckets *)
+    hash: 'hash;
+    eq: 'eq
   }
 [@@bs.deriving abstract]
 
@@ -39,11 +41,13 @@ let rec power_2_above x n =
   else if x * 2 < x then x (* overflow *)
   else power_2_above (x * 2) n
 
-let make  initialSize =
+let make  ~hash ~eq initialSize =
   let s = power_2_above 16 initialSize in  
   container
     ~size:0
     ~buckets:(A.makeUninitialized s)
+    ~hash
+    ~eq
 
 let clear h =
   sizeSet h 0;
