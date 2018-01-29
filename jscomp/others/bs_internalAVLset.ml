@@ -34,7 +34,7 @@ and 'elt t =  'elt node Js.null
 [@@bs.deriving abstract]
 
 module A = Bs_Array
-module S = Bs_Sort
+module S = Bs_SortArray
 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"

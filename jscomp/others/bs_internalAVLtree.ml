@@ -26,7 +26,7 @@ and ('key, 'a) t = ('key, 'a) node Js.null
 type ('k, 'id) cmp = ('k, 'id) Bs_Cmp.cmp
     
 module A = Bs_Array 
-module S = Bs_Sort
+module S = Bs_SortArray
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null" 

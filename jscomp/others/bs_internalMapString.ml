@@ -4,7 +4,7 @@ type key = string
 # 9
 module N = Bs_internalAVLtree
 module A = Bs_Array 
-module S = Bs_Sort
+module S = Bs_SortArray
 
 
 

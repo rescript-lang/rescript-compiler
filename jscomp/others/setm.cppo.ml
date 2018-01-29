@@ -1,9 +1,9 @@
 #ifdef TYPE_INT
 module I = Bs_internalSetInt
-module S = Bs_SortInt
+module S = Bs_SortArrayInt
 #elif defined TYPE_STRING
 module I = Bs_internalSetString
-module S = Bs_SortString
+module S = Bs_SortArrayString
 #else
   [%error "unknown type"]
 #endif  

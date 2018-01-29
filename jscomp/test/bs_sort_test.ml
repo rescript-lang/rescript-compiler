@@ -4,7 +4,7 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 let b loc x = Mt.bool_suites ~test_id ~suites loc x 
 
 module I = Array_data_util
-module S = Bs.Sort
+module S = Bs.SortArray
 module R = Bs_Range
 let cmp = fun[@bs] x y -> x - y   
 module A = Bs.Array
@@ -71,7 +71,7 @@ let () =
     (not @@ S.isSorted [|1;0|] cmp)        
 
 
-module SI = Bs.SortInt
+module SI = Bs.SortArray.Int
 let () =     
   let u = I.randomRange 0 1_000_000 in  
   let u1 = A.copy u in 

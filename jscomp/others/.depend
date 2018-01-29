@@ -17,16 +17,19 @@ js_console.cmj :
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
 bs_Array.cmj : js_math.cmj bs_Array.cmi
-bs_internalAVLset.cmj : bs_Sort.cmj bs_Cmp.cmj bs_Array.cmj \
+bs_internalAVLset.cmj : bs_SortArray.cmj bs_Cmp.cmj bs_Array.cmj \
     bs_internalAVLset.cmi
-bs_internalAVLtree.cmj : bs_Sort.cmj bs_Cmp.cmj bs_Array.cmj \
+bs_internalAVLtree.cmj : bs_SortArray.cmj bs_Cmp.cmj bs_Array.cmj \
     bs_internalAVLtree.cmi
-bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SortInt.cmj \
-    bs_Array.cmj bs_SetIntM.cmi
+bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj \
+    bs_SortArrayInt.cmj bs_Array.cmj bs_SetIntM.cmi
 bs_Hash.cmj : bs_Hash.cmi
 bs_Queue.cmj : bs_Array.cmj bs_Queue.cmi
 bs_List.cmj : bs_Array.cmj bs_List.cmi
-bs_Sort.cmj : bs_Array.cmj bs_Sort.cmi
+bs_SortArray.cmj : bs_SortArrayString.cmj bs_SortArrayInt.cmj bs_Array.cmj \
+    bs_SortArray.cmi
+bs_SortArrayInt.cmj : bs_Array.cmj bs_SortArrayInt.cmi
+bs_SortArrayString.cmj : bs_Array.cmj bs_SortArrayString.cmi
 bs_Range.cmj : bs_Range.cmi
 bs_internalBucketsType.cmj : bs_Array.cmj bs_internalBucketsType.cmi
 bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj \
@@ -51,33 +54,33 @@ bs_SortedMapDict.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Array.cmj \
 bs_SortedSetDict.cmj : bs_internalAVLset.cmj bs_Cmp.cmj bs_Array.cmj \
     bs_SortedSetDict.cmi
 bs_Map.cmj : bs_SortedMapDict.cmj bs_Cmp.cmj bs_Array.cmj bs_Map.cmi
-bs_internalMapInt.cmj : bs_internalAVLtree.cmj bs_Sort.cmj bs_Array.cmj
-bs_internalMapString.cmj : bs_internalAVLtree.cmj bs_Sort.cmj bs_Array.cmj
+bs_internalMapInt.cmj : bs_internalAVLtree.cmj bs_SortArray.cmj bs_Array.cmj
+bs_internalMapString.cmj : bs_internalAVLtree.cmj bs_SortArray.cmj \
+    bs_Array.cmj
 bs_MapString.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
-    bs_Sort.cmj bs_Array.cmj bs_MapString.cmi
-bs_MapInt.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_Sort.cmj \
-    bs_Array.cmj bs_MapInt.cmi
+    bs_Array.cmj bs_MapString.cmi
+bs_MapInt.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_Array.cmj \
+    bs_MapInt.cmi
 bs_MapStringM.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
-    bs_SortString.cmj bs_Array.cmj bs_MapStringM.cmi
-bs_MapIntM.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_SortInt.cmj \
-    bs_Array.cmj bs_MapIntM.cmi
+    bs_Array.cmj bs_MapStringM.cmi
+bs_MapIntM.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_Array.cmj \
+    bs_MapIntM.cmi
 bs_Set.cmj : bs_SortedSetDict.cmj bs_Cmp.cmj bs_Array.cmj bs_Set.cmi
-bs_SetM.cmj : bs_internalAVLset.cmj bs_Sort.cmj bs_Cmp.cmj bs_Array.cmj \
+bs_SetM.cmj : bs_internalAVLset.cmj bs_SortArray.cmj bs_Cmp.cmj bs_Array.cmj \
     bs_SetM.cmi
 bs_MapM.cmj : bs_internalAVLtree.cmj bs_Cmp.cmj bs_Array.cmj bs_MapM.cmi
-bs_internalSetInt.cmj : bs_internalAVLset.cmj bs_SortInt.cmj bs_Array.cmj
-bs_internalSetString.cmj : bs_internalAVLset.cmj bs_SortString.cmj \
+bs_internalSetInt.cmj : bs_internalAVLset.cmj bs_SortArrayInt.cmj \
+    bs_Array.cmj
+bs_internalSetString.cmj : bs_internalAVLset.cmj bs_SortArrayString.cmj \
     bs_Array.cmj
 bs_SetInt.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_Array.cmj \
     bs_SetInt.cmi
-bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_SortInt.cmj \
-    bs_Array.cmj bs_SetIntM.cmi
+bs_SetIntM.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj \
+    bs_SortArrayInt.cmj bs_Array.cmj bs_SetIntM.cmi
 bs_SetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_Array.cmj bs_SetString.cmi
 bs_SetStringM.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
-    bs_SortString.cmj bs_Array.cmj bs_SetStringM.cmi
-bs_SortInt.cmj : bs_Array.cmj bs_SortInt.cmi
-bs_SortString.cmj : bs_Array.cmj bs_SortString.cmi
+    bs_SortArrayString.cmj bs_Array.cmj bs_SetStringM.cmi
 bs_Stack.cmj : bs_Stack.cmi
 node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
@@ -108,7 +111,9 @@ bs_SetIntM.cmi :
 bs_Hash.cmi :
 bs_Queue.cmi :
 bs_List.cmi :
-bs_Sort.cmi :
+bs_SortArray.cmi : bs_SortArrayString.cmi bs_SortArrayInt.cmi
+bs_SortArrayInt.cmi :
+bs_SortArrayString.cmi :
 bs_Range.cmi :
 bs_internalBucketsType.cmi :
 bs_internalSetBuckets.cmi : bs_internalBucketsType.cmi
@@ -133,8 +138,6 @@ bs_SetInt.cmi :
 bs_SetIntM.cmi :
 bs_SetString.cmi :
 bs_SetStringM.cmi :
-bs_SortInt.cmi :
-bs_SortString.cmi :
 bs_Stack.cmi :
 js_boolean.cmi :
 js_dict.cmi :

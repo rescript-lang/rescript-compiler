@@ -292,3 +292,6 @@ let binarySearchBy sorted key cmp : int =
       let c2 = cmp key hi [@bs]in 
       if c2 > 0 then - (len + 1)
       else binarySearchAux sorted 0 (len - 1) key cmp 
+
+module Int = Bs_SortArrayInt
+module String = Bs_SortArrayString  

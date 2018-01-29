@@ -1,9 +1,9 @@
 #ifdef TYPE_STRING
 type elt = string
-module S = Bs_SortString
+module S = Bs_SortArrayString
 #elif defined TYPE_INT  
 type elt = int
-module S = Bs_SortInt
+module S = Bs_SortArrayInt
 #else
   [%error "unknown type"]  
 #endif

@@ -1,10 +1,10 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Bs_Sort = require("../../lib/js/bs_Sort.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_HashMap = require("../../lib/js/bs_HashMap.js");
+var Bs_SortArray = require("../../lib/js/bs_SortArray.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 
@@ -68,9 +68,9 @@ var v = Bs_Array.zip(u, u);
 
 var xx = Bs_HashMap.ofArray(v, Y);
 
-eqx("File \"bs_hashmap_test.ml\", line 40, characters 6-13", xx.size, 91);
+eqx("File \"bs_hashmap_test.ml\", line 41, characters 6-13", xx.size, 91);
 
-eqx("File \"bs_hashmap_test.ml\", line 41, characters 6-13", Bs_Sort.stableSortBy(Bs_HashMap.keysToArray(xx), cmp), Array_data_util.range(30, 120));
+eqx("File \"bs_hashmap_test.ml\", line 42, characters 6-13", Bs_SortArray.stableSortBy(Bs_HashMap.keysToArray(xx), cmp), Array_data_util.range(30, 120));
 
 var u$1 = Bs_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
@@ -78,21 +78,21 @@ var v$1 = Bs_HashMap.make(40, Y);
 
 Bs_HashMap.mergeMany(v$1, Bs_Array.zip(u$1, u$1));
 
-eqx("File \"bs_hashmap_test.ml\", line 47, characters 6-13", v$1.size, 100001);
+eqx("File \"bs_hashmap_test.ml\", line 48, characters 6-13", v$1.size, 100001);
 
 for(var i = 0; i <= 1000; ++i){
   Bs_HashMap.remove(v$1, i);
 }
 
-eqx("File \"bs_hashmap_test.ml\", line 51, characters 6-13", v$1.size, 99000);
+eqx("File \"bs_hashmap_test.ml\", line 52, characters 6-13", v$1.size, 99000);
 
 for(var i$1 = 0; i$1 <= 2000; ++i$1){
   Bs_HashMap.remove(v$1, i$1);
 }
 
-eqx("File \"bs_hashmap_test.ml\", line 55, characters 6-13", v$1.size, 98000);
+eqx("File \"bs_hashmap_test.ml\", line 56, characters 6-13", v$1.size, 98000);
 
-b("File \"bs_hashmap_test.ml\", line 56, characters 4-11", Bs_Array.every(Array_data_util.range(2001, 100000), (function (x) {
+b("File \"bs_hashmap_test.ml\", line 57, characters 4-11", Bs_Array.every(Array_data_util.range(2001, 100000), (function (x) {
             return Bs_HashMap.has(v$1, x);
           })));
 

@@ -1,6 +1,6 @@
 # 2 "setm.cppo.ml"
 module I = Bs_internalSetInt
-module S = Bs_SortInt
+module S = Bs_SortArrayInt
 # 10
 module N = Bs_internalAVLset
 module A = Bs_Array 

@@ -95,3 +95,6 @@ val binarySearchBy:
   if [key] is largeer than all elements return [- (len + 1)] since [lnot (-(len+1)) = len]
 
 *)
+
+module Int = Bs_SortArrayInt
+module String = Bs_SortArrayString  

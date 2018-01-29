@@ -32,7 +32,8 @@ let () =
   eqx __LOC__ (N.size empty) 3
   
 module A = Bs.Array 
-module So = Bs.Sort 
+module So = Bs.SortArray 
+
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = A.zip u u in 

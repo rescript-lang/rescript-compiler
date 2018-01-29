@@ -37,7 +37,9 @@ let () =
   done ; 
   eq __LOC__ (N.size v ) 98_000
 module A = Bs_Array
-module SI = Bs_SortInt
+
+module SI = Bs.SortArray.Int
+
 let () =   
   let u0 = N.ofArray (I.randomRange 0 100_000) in 
   let u1 = N.copy u0 in 

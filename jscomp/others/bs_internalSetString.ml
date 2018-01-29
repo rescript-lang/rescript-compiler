@@ -1,6 +1,6 @@
 # 2 "internal_set.cppo.ml"
 type elt = string
-module S = Bs_SortString
+module S = Bs_SortArrayString
 
 
 # 12

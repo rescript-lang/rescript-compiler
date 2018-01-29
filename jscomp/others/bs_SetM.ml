@@ -26,7 +26,7 @@
 
 module N = Bs_internalAVLset
 module A = Bs_Array
-module Sort = Bs_Sort 
+module Sort = Bs_SortArray
 
 
 type ('k, 'id) dict = ('k, 'id) Bs_Cmp.t 
