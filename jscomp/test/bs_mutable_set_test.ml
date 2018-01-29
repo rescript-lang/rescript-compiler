@@ -3,7 +3,7 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x =  Mt.bool_suites ~test_id ~suites loc x  
 
-module N  = Bs.SetIntM
+module N  = Bs.MutableSet.Int
 
 module I = Array_data_util
 module R = Bs.Range
@@ -13,10 +13,10 @@ let (++) = A.concat
 let () = 
   let v = N.empty () in 
   for i = 0 to 1_00_000 do 
-    (* [%assert (N.checkInvariant !v)]; *)
+    (* [%assert (N.checkInvariantInternal !v)]; *)
      N.add v i 
   done ;
-  b __LOC__ (N.checkInvariant v);
+  b __LOC__ (N.checkInvariantInternal v);
   b __LOC__ @@ R.every 0  1_00_000 (fun [@bs] i -> 
     N.has v i 
    );  
@@ -52,9 +52,9 @@ let () =
   let v = N.ofArray (A.makeBy 30 (fun [@bs]i -> i)) in 
   N.remove v 30; 
   N.remove v 29 ;
-  b __LOC__ (Js.eqNull 28 (N.maxNull v ));
+  b __LOC__ (Js.eqUndefined 28 (N.maxUndefined v ));
   N.remove v 0 ; 
-  b __LOC__ (Js.eqNull 1 (N.minNull v));
+  b __LOC__ (Js.eqUndefined 1 (N.minUndefined v));
   eq __LOC__ (N.size v ) 28;
   let vv = I.randomRange 1 28 in 
   for i = 0 to A.length vv - 1 do  
@@ -65,7 +65,7 @@ let () =
 let () =   
   let id loc x = 
     let u = (N.ofSortedArrayUnsafe x) in
-    b loc (N.checkInvariant u );
+    b loc (N.checkInvariantInternal u );
     b loc (A.every2 (N.toArray u) x (fun[@bs] x y -> x = y) )
   in 
   id __LOC__ [||] ; 

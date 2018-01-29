@@ -29,13 +29,15 @@
   Such methods could be shared between 
   [generic set/specalized set] whether mutable or immutable depends on use cases
 *)
-type 'elt t0 = 'elt node Js.null
+type 'elt t = 'elt node Js.null
 and 'elt node  = private {
-  mutable left : 'elt t0;
+  mutable left : 'elt t;
    key : 'elt ; 
-  mutable right : 'elt t0;
+  mutable right : 'elt t;
   h : int
 } [@@bs.deriving abstract]
+
+type ('a, 'b) cmp = ('a, 'b) Bs_Cmp.cmp
 (* TODO: node is used in [subset] *)
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
@@ -43,65 +45,65 @@ external empty : 'a Js.null = "#null"
 
 
 
-val copy : 'a t0 -> 'a t0
-val create : 'a t0 -> 'a -> 'a t0 -> 'a t0
-val bal : 'a t0 -> 'a -> 'a t0 -> 'a t0
-val singleton0 : 'a -> 'a t0
+val copy : 'a t -> 'a t
+val create : 'a t -> 'a -> 'a t -> 'a t
+val bal : 'a t -> 'a -> 'a t -> 'a t
+val singleton : 'a -> 'a t
 
 
-val minOpt0 : 'a t0 -> 'a option
-val minNull0 : 'a t0 -> 'a Js.null
-val maxOpt0 : 'a t0 -> 'a option
-val maxNull0 : 'a t0 -> 'a Js.null
+val minimum : 'a t -> 'a option
+val minUndefined : 'a t -> 'a Js.undefined
+val maximum : 'a t -> 'a option
+val maxUndefined : 'a t -> 'a Js.undefined
 
-val removeMinAuxWithRef : 'a node -> 'a ref -> 'a t0
+val removeMinAuxWithRef : 'a node -> 'a ref -> 'a t
 (* [removeMinAuxWithRef n cell] return a new node with
    minimum removed and stored in cell *)
-val empty0 : 'a t0
-val isEmpty0 : 'a t0 -> bool
+val empty : 'a t
+val isEmpty : 'a t -> bool
 
-val stackAllLeft : 'a t0 -> 'a node list -> 'a node list
+val stackAllLeft : 'a t -> 'a node list -> 'a node list
 
-val iter0 : 'a t0 -> ('a -> 'b [@bs]) -> unit
-val fold0 : 'a t0 -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
-val every0 : 'a t0 -> ('a -> bool [@bs]) -> bool
-val some0 : 'a t0 -> ('a -> bool [@bs]) -> bool
+val forEach : 'a t -> ('a -> 'b [@bs]) -> unit
+val reduce : 'a t -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
+val every : 'a t -> ('a -> bool [@bs]) -> bool
+val some : 'a t -> ('a -> bool [@bs]) -> bool
 
-val joinShared : 'a t0 -> 'a -> 'a t0 -> 'a t0
-val concatShared : 'a t0 -> 'a t0 -> 'a t0
-val filterShared0 : 'a t0 -> ('a -> bool [@bs]) -> 'a t0
-val filterCopy : 'a t0 -> ('a -> bool  [@bs]) -> 'a t0
+val joinShared : 'a t -> 'a -> 'a t -> 'a t
+val concatShared : 'a t -> 'a t -> 'a t
+val filterShared : 'a t -> ('a -> bool [@bs]) -> 'a t
+val filterCopy : 'a t -> ('a -> bool  [@bs]) -> 'a t
 
-val partitionShared0 :
-  'a t0 -> ('a -> bool [@bs]) -> 'a t0 * 'a t0
+val partitionShared:
+  'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
 val partitionCopy: 
-  'a t0 -> ('a -> bool [@bs]) -> 'a t0 * 'a t0
+  'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
 
 val lengthNode : 'a node -> int   
-val length0 : 'a t0 -> int
+val size: 'a t -> int
 
-val toList0 : 'a t0 -> 'a list
-val checkInvariant : _ t0 -> bool
+val toList: 'a t -> 'a list
+val checkInvariantInternal : _ t -> bool
 val fillArray: 'a node -> int -> 'a array -> int 
-val toArray0 : 'a t0 -> 'a array
-val ofSortedArrayAux : 'a array -> int -> int -> 'a t0
-val ofSortedArrayRevAux : 'a array -> int -> int -> 'a t0
-val ofSortedArrayUnsafe0 : 'a array -> 'a t0
-val mem0 :  'a t0 ->  'a -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
-val cmp0 : 'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> int
-val eq0 :  'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
-val subset0 :  'a t0 -> 'a t0 -> cmp:('a, 'b) Bs_Cmp.cmp -> bool
-val findOpt0 :  'a t0 -> 'a  -> cmp:('a, 'b) Bs_Cmp.cmp -> 'a option
-val findNull0 : 'a t0 -> 'a -> cmp:('a, 'b) Bs_Cmp.cmp -> 'a Js.null
-val findExn0 : 'a t0 -> 'a ->  cmp:('a, 'b) Bs_Cmp.cmp -> 'a 
+val toArray: 'a t -> 'a array
+val ofSortedArrayAux : 'a array -> int -> int -> 'a t
+val ofSortedArrayRevAux : 'a array -> int -> int -> 'a t
+val ofSortedArrayUnsafe : 'a array -> 'a t
+val has:  'a t ->  'a -> cmp:('a, 'b) cmp -> bool
+val cmp: 'a t -> 'a t -> cmp:('a, 'b) cmp -> int
+val eq:  'a t -> 'a t -> cmp:('a, 'b) cmp -> bool
+val subset :  'a t -> 'a t -> cmp:('a, 'b) cmp -> bool
+val get :  'a t -> 'a  -> cmp:('a, 'b) cmp -> 'a option
+val getUndefined: 'a t -> 'a -> cmp:('a, 'b) cmp -> 'a Js.undefined
+val getExn: 'a t -> 'a ->  cmp:('a, 'b) cmp -> 'a 
 
 
-val ofArray0 : 'a array ->  cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0
+val ofArray: 'a array ->  cmp:('a, 'b) cmp -> 'a t
 
 
-val addMutate : cmp:('a, 'b) Bs_Cmp.cmp -> 'a t0 -> 'a -> 'a t0
+val addMutate : cmp:('a, 'b) cmp -> 'a t -> 'a -> 'a t
 val balMutate : 'a node -> 'a node
-val removeMinAuxWithRootMutate : 'a node -> 'a node -> 'a t0
+val removeMinAuxWithRootMutate : 'a node -> 'a node -> 'a t
 (* [rmeoveMinAuxMutateWithRoot root n]
    remove the minimum of n in place and store its value in the [key root]
  *)

@@ -27,7 +27,7 @@ let sum2 xs ys =
 let () = 
   let u = (N.makeBy 5 (fun[@bs] i -> i * i )) in 
 
-  (* N.checkInvariant u ; *)
+  (* N.checkInvariantInternal u ; *)
   let f i = 
     eq __LOC__ (N.getExn u i) (i * i) in 
   for i = 0 to 4 do 
@@ -113,7 +113,7 @@ let () =
   let b = length_10_id in
   let c = length_8_id in 
   let d = N.makeBy 10 (fun [@bs] x -> 2 * x ) in     
-  let map2_add x y = N.map2  x y add in 
+  let map2_add x y = N.zipBy  x y add in 
   map2_add length_10_id b =~ d ;
   map2_add [] [1] =~ [];
   map2_add [1] [] =~ [];
@@ -125,7 +125,7 @@ let () =
   =~ N.map length_10_id (fun [@bs] x -> x * 2);
   let xs = (N.reverse (N.mapReverse2 length_8_id length_10_id add)) in 
   eq __LOC__ (N.length xs) 8;
-  xs =~ (N.map2 length_10_id length_8_id add)
+  xs =~ (N.zipBy length_10_id length_8_id add)
 
 let () =   
   let (=~) = eq "TAKE" in 

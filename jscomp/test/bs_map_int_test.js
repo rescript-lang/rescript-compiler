@@ -49,7 +49,7 @@ var v = Bs_Array.makeByAndShuffle(1000000, (function (i) {
 
 var u = Bs_MapInt.ofArray(v);
 
-b("File \"bs_map_int_test.ml\", line 20, characters 4-11", Bs_MapInt.checkInvariant(u));
+b("File \"bs_map_int_test.ml\", line 20, characters 4-11", Bs_MapInt.checkInvariantInternal(u));
 
 var firstHalf = Bs_Array.slice(v, 0, 2000);
 
@@ -57,9 +57,9 @@ var xx = Bs_Array.reduce(firstHalf, u, (function (acc, param) {
         return Bs_MapInt.remove(acc, param[0]);
       }));
 
-b("File \"bs_map_int_test.ml\", line 24, characters 4-11", Bs_MapInt.checkInvariant(u));
+b("File \"bs_map_int_test.ml\", line 24, characters 4-11", Bs_MapInt.checkInvariantInternal(u));
 
-b("File \"bs_map_int_test.ml\", line 25, characters 4-11", Bs_MapInt.checkInvariant(xx));
+b("File \"bs_map_int_test.ml\", line 25, characters 4-11", Bs_MapInt.checkInvariantInternal(xx));
 
 Mt.from_pair_suites("bs_map_int_test.ml", suites[0]);
 

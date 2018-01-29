@@ -18,7 +18,9 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Hash\
 	bs_Queue\
 	bs_List\
-	bs_Sort\
+	bs_SortArray\
+	bs_SortArrayInt\
+	bs_SortArrayString\
 	bs_Range\
 	bs_internalBucketsType\
 	bs_internalSetBuckets\
@@ -31,6 +33,8 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Bag\
 	bs_BagM\
 	bs_Cmp\
+	bs_SortedMapDict\
+	bs_SortedSetDict\
 	bs_Map\
 	bs_internalMapInt\
 	bs_internalMapString\
@@ -48,8 +52,6 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_SetIntM\
 	bs_SetString\
 	bs_SetStringM\
-	bs_SortInt\
-	bs_SortString\
 	bs_Stack\
 	node_child_process \
 	js_boolean js_math\
@@ -91,7 +93,7 @@ clean::
 	bs_internalSetInt.ml bs_internalSetString.ml \
 	bs_SetInt.ml bs_SetInt.mli bs_SetString.ml  bs_SetString.mli \
 	bs_SetIntM.ml bs_SetIntM.mli bs_SetStringM.ml bs_SetStringM.mli\
-	bs_SortInt.ml bs_SortInt.mli bs_SortString.ml bs_SortString.mli\
+	bs_SortArrayInt.ml bs_SortArrayInt.mli bs_SortArrayString.ml bs_SortArrayString.mli\
 	bs_internalMapInt.ml bs_internalMapInt.mli \
 	bs_internalMapIntM.ml bs_internalMapIntM.mli \
 	bs_internalMapString.ml bs_internalMapString.mli\
@@ -160,13 +162,13 @@ bs_SetIntM.mli: setm.cppo.mli
 bs_SetStringM.mli: setm.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 
-bs_SortInt.ml : sort.cppo.ml
+bs_SortArrayInt.ml : sort.cppo.ml
 	cppo -D TYPE_INT $^ >$@
-bs_SortString.ml : sort.cppo.ml
+bs_SortArrayString.ml : sort.cppo.ml
 	cppo -D TYPE_STRING $^ >$@
-bs_SortInt.mli : sort.cppo.mli
+bs_SortArrayInt.mli : sort.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_SortString.mli : sort.cppo.mli
+bs_SortArrayString.mli : sort.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 endif	
 

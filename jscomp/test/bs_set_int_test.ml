@@ -68,9 +68,9 @@ let () =
 let () =     
   let ss = [|1;222;3;4;2;0;33;-1|] in 
   let v = ofA [|1;222;3;4;2;0;33;-1|] in 
-  let minv, maxv = N.minNull v, N.maxNull v in 
+  let minv, maxv = N.minUndefined v, N.maxUndefined v in 
   let approx loc (x : int)  y = 
-    b loc (Js.eqNull x y) in 
+    b loc (Js.eqUndefined x y) in 
   eq __LOC__ (N.reduce v 0 (fun [@bs] x y -> x + y) ) (A.reduce ss 0 (fun [@bs] x y -> x + y)  ) ;
   approx __LOC__ (-1) minv ;
   approx __LOC__ 222 maxv;
@@ -99,11 +99,11 @@ let ()  =
   let count = 1_000_000 in 
   let v = ((A.makeByAndShuffle count (fun [@bs] i -> i))) in 
   let u = N.ofArray v in 
-  b __LOC__ (N.checkInvariant u );
+  b __LOC__ (N.checkInvariantInternal u );
   let firstHalf = A.slice v 0 2_000 in 
   let xx = Bs.Array.reduce firstHalf u
     (fun[@bs] acc x -> N.remove acc x ) in 
-  b __LOC__ (N.checkInvariant u);
+  b __LOC__ (N.checkInvariantInternal u);
   b __LOC__ N.(eq (union (ofArray firstHalf) xx) u)
   
 let () =   

@@ -6,7 +6,6 @@ type 'a t
 
 val empty: 'a t
 val isEmpty: 'a t -> bool
-
 val has:  'a t -> key -> bool    
 val cmp:  'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 
@@ -44,18 +43,18 @@ val ofArray: (key * 'a) array -> 'a t
 val keysToArray: 'a t -> key array 
 val valuesToArray: 'a t -> 'a array
 val minKey: _ t -> key option 
-val minKeyNull: _ t -> key Js.null
+val minKeyUndefined: _ t -> key Js.undefined
 val maxKey: _ t -> key option
-val maxKeyNull: _ t -> key Js.null    
+val maxKeyUndefined: _ t -> key Js.undefined
 val minimum: 'a t -> (key * 'a) option
-val minNull: 'a t -> (key * 'a) Js.null
+val minUndefined: 'a t -> (key * 'a) Js.undefined
 val maximum: 'a t -> (key * 'a) option
-val maxNull: 'a t -> (key * 'a) Js.null
+val maxUndefined: 'a t -> (key * 'a) Js.undefined
 val get: 'a t -> key -> 'a option
-val getNull: 'a t -> key -> 'a Js.null
+val getUndefined: 'a t -> key -> 'a Js.undefined
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a 
-val checkInvariant: _ t -> bool   
+val checkInvariantInternal: _ t -> bool   
 (****************************************************************************)
 
 val remove: 'a t ->  key -> 'a t
@@ -122,4 +121,4 @@ val map: 'a t -> ('a -> 'b [@bs]) ->  'b t
 val mapWithKey: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
 
 
-val checkInvariant: _ t -> bool 
+val checkInvariantInternal: _ t -> bool 

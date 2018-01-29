@@ -15,7 +15,7 @@ module N = Bs.Set
 module A = Bs_Array
 module I = Array_data_util
 let f x = M.ofArray ~dict:(module Icmp) x 
-let ff x = N.ofArray (module Icmp) x 
+let ff x = N.ofArray ~dict:(module Icmp) x 
 
 let mergeInter s1 s2 = 
   ff @@ M.keysToArray (M.merge s1 s2 (fun[@bs] k v1 v2 -> 
@@ -69,16 +69,16 @@ let () =
   b __LOC__ (a5 == a6);
   b __LOC__ (M.has a0 3);
   b __LOC__ (not (M.has a5 3));
-  b __LOC__ (Js.eqNull 3 (M.getNull a0 3));
-  b __LOC__ (Js.eqNull 33 (M.getNull a1 3));
-  b __LOC__ (Js.Null.test (M.getNull a2 3));
+  b __LOC__ (Js.eqUndefined 3 (M.getUndefined a0 3));
+  b __LOC__ (Js.eqUndefined 33 (M.getUndefined a1 3));
+  b __LOC__ (Js.Undefined.test (M.getUndefined a2 3));
 
-  b __LOC__ (Js.eqNull 11 (M.getNull a3 3));
-  b __LOC__ (Js.Null.test (M.getNull a4 3));
+  b __LOC__ (Js.eqUndefined 11 (M.getUndefined a3 3));
+  b __LOC__ (Js.Undefined.test (M.getUndefined a4 3));
 
-  let a7 = M.removeArray a0 [|7;8;0;1;3;2;4;922;4;5;6;|] in 
+  let a7 = M.removeMany a0 [|7;8;0;1;3;2;4;922;4;5;6;|] in 
   eq __LOC__ (M.keysToArray a7) [|9;10|];
-  let a8 = M.removeArray a7 (I.randomRange 0 100) in 
+  let a8 = M.removeMany a7 (I.randomRange 0 100) in 
   b __LOC__ (M.isEmpty a8)
 
 (* TODO: expose [Bs_Bag.bag] makes the error message

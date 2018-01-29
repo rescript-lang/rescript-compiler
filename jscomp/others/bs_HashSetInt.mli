@@ -4,18 +4,19 @@ type key = int
 
 # 10
 type t
-val create: int -> t 
+val make: int -> t 
+
 val clear: t -> unit
 
-val addDone:  t -> key -> unit
-val add: t -> key -> t
+val isEmpty: t -> bool
+  
+val add:  t -> key -> unit
+
 val copy: t -> t
   
 val has: t -> key -> bool
   
-val removeDone: t -> key -> unit
-  
-val remove: t -> key -> t
+val remove: t -> key -> unit
   
 val forEach: t -> (key  -> unit [@bs]) ->  unit
   
@@ -29,8 +30,6 @@ val toArray: t -> key array
 
 val ofArray: key array -> t 
 
-val mergeArrayDone: t -> key array -> unit
-
-val mergeArray: t -> key array -> t
+val mergeMany: t -> key array -> unit
 
 val getBucketHistogram: t -> int array

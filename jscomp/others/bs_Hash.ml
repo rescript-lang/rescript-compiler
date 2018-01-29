@@ -2,17 +2,17 @@
 
 type ('a,'id) hash = ('a -> int [@bs])
 type ('a, 'id) eq = ('a -> 'a -> bool [@bs])
-external getHash : ('a,'id) hash -> ('a -> int [@bs]) = "%identity"
-external getEq : ('a, 'id) eq -> ('a -> 'a -> bool [@bs]) = "%identity"
+external getHashInternal : ('a,'id) hash -> ('a -> int [@bs]) = "%identity"
+external getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs]) = "%identity"
 
-module type S = sig
+module type T = sig
   type id
   type t
   val hash : (t,id) hash
   val eq : (t,id) eq 
 end
 
-type ('key, 'id) t = (module S with type t = 'key and type id = 'id)
+type ('key, 'id) t = (module T with type t = 'key and type id = 'id)
 
 module Make (M : sig
    type t
@@ -37,5 +37,5 @@ let make
     let eq = eq
   end in  
   let module N = Make(M) in 
-  (module N : S with type t = key)
+  (module N : T with type t = key)
 

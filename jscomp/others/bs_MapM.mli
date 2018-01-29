@@ -24,8 +24,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type ('k,'v,'id) t
-
-val empty: dict:('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
+type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
+    
+val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
 val has: ('k, _, _) t -> 'k  -> bool
 val cmp: 
@@ -70,23 +71,23 @@ val size: ('k, 'a, 'id) t -> int
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
-val ofArray: ('k * 'a) array -> dict:('k,'id) Bs_Cmp.t ->  ('k,'a,'id) t    
+val ofArray: ('k * 'a) array -> dict:('k,'id) dict ->  ('k,'a,'id) t    
 val keysToArray: ('k, _, _) t -> 'k array 
 val valuesToArray: (_, 'a, _) t -> 'a array
 val minKey: ('k, _,  _) t -> 'k option
-val minKeyNull: ('k, _,  _) t -> 'k Js.null
+val minKeyUndefined: ('k, _,  _) t -> 'k Js.undefined
 val maxKey: ('k, _,  _) t -> 'k option
-val maxKeyNull: ('k, _,  _) t -> 'k Js.null    
+val maxKeyUndefined: ('k, _,  _) t -> 'k Js.undefined
 val minimum: ('k, 'a,  _) t -> ('k * 'a) option
-val minNull: ('k, 'a, _) t -> ('k * 'a) Js.null
+val minUndefined: ('k, 'a, _) t -> ('k * 'a) Js.undefined
 val maximum: ('k, 'a, _) t -> ('k * 'a) option
-val maxNull:('k, 'a, _) t -> ('k * 'a) Js.null
+val maxUndefined:('k, 'a, _) t -> ('k * 'a) Js.undefined
 val get:  ('k, 'a, 'id) t -> 'k -> 'a option
-val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
+val getUndefined: ('k, 'a, 'id) t -> 'k ->  'a Js.undefined
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
 val getExn:  ('k, 'a, 'id) t -> 'k ->  'a 
-val checkInvariant: _ t -> bool   
+val checkInvariantInternal: _ t -> bool   
 (****************************************************************************)
 
 (*TODO: add functional [merge, partition, keepBy, split]*)
@@ -114,3 +115,5 @@ val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
     
 
 
+module Int = Bs_MapIntM
+module String = Bs_MapStringM  

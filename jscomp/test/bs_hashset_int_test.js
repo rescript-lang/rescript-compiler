@@ -3,9 +3,10 @@
 var Mt = require("./mt.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_SetInt = require("../../lib/js/bs_SetInt.js");
-var Bs_SortInt = require("../../lib/js/bs_SortInt.js");
 var Bs_HashSetInt = require("../../lib/js/bs_HashSetInt.js");
 var Array_data_util = require("./array_data_util.js");
+var Bs_SortArrayInt = require("../../lib/js/bs_SortArrayInt.js");
+var Bs_internalBucketsType = require("../../lib/js/bs_internalBucketsType.js");
 
 var suites = [/* [] */0];
 
@@ -48,20 +49,20 @@ eq("File \"bs_hashset_int_test.ml\", line 24, characters 5-12", sum2(v), 6825);
 
 var u$1 = Bs_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
-var v$1 = Bs_HashSetInt.create(40);
+var v$1 = Bs_internalBucketsType.make(/* () */0, /* () */0, 40);
 
-Bs_HashSetInt.mergeArrayDone(v$1, u$1);
+Bs_HashSetInt.mergeMany(v$1, u$1);
 
 eq("File \"bs_hashset_int_test.ml\", line 30, characters 5-12", v$1.size, 100001);
 
 for(var i = 0; i <= 1000; ++i){
-  Bs_HashSetInt.removeDone(v$1, i);
+  Bs_HashSetInt.remove(v$1, i);
 }
 
 eq("File \"bs_hashset_int_test.ml\", line 34, characters 5-12", v$1.size, 99000);
 
 for(var i$1 = 0; i$1 <= 2000; ++i$1){
-  Bs_HashSetInt.removeDone(v$1, i$1);
+  Bs_HashSetInt.remove(v$1, i$1);
 }
 
 eq("File \"bs_hashset_int_test.ml\", line 38, characters 5-12", v$1.size, 98000);
@@ -70,31 +71,31 @@ var u0 = Bs_HashSetInt.ofArray(Array_data_util.randomRange(0, 100000));
 
 var u1 = Bs_HashSetInt.copy(u0);
 
-eq("File \"bs_hashset_int_test.ml\", line 44, characters 5-12", Bs_HashSetInt.toArray(u0), Bs_HashSetInt.toArray(u1));
+eq("File \"bs_hashset_int_test.ml\", line 46, characters 5-12", Bs_HashSetInt.toArray(u0), Bs_HashSetInt.toArray(u1));
 
 for(var i$2 = 0; i$2 <= 2000; ++i$2){
-  Bs_HashSetInt.removeDone(u1, i$2);
+  Bs_HashSetInt.remove(u1, i$2);
 }
 
 for(var i$3 = 0; i$3 <= 1000; ++i$3){
-  Bs_HashSetInt.removeDone(u0, i$3);
+  Bs_HashSetInt.remove(u0, i$3);
 }
 
 var v0 = Bs_Array.concat(Array_data_util.range(0, 1000), Bs_HashSetInt.toArray(u0));
 
 var v1 = Bs_Array.concat(Array_data_util.range(0, 2000), Bs_HashSetInt.toArray(u1));
 
-Bs_SortInt.stableSort(v0);
+Bs_SortArrayInt.stableSortInPlace(v0);
 
-Bs_SortInt.stableSort(v1);
+Bs_SortArrayInt.stableSortInPlace(v1);
 
-eq("File \"bs_hashset_int_test.ml\", line 55, characters 5-12", v0, v1);
+eq("File \"bs_hashset_int_test.ml\", line 57, characters 5-12", v0, v1);
 
 var h = Bs_HashSetInt.ofArray(Array_data_util.randomRange(0, 1000000));
 
 var histo = Bs_HashSetInt.getBucketHistogram(h);
 
-b("File \"bs_hashset_int_test.ml\", line 60, characters 4-11", +(histo.length <= 10));
+b("File \"bs_hashset_int_test.ml\", line 62, characters 4-11", +(histo.length <= 10));
 
 Mt.from_pair_suites("bs_hashset_int_test.ml", suites[0]);
 

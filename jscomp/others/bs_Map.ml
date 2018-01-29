@@ -12,377 +12,142 @@
 (***********************************************************************)
 (** Adapted by authors of BuckleScript without using functors          *)
 
-module N = Bs_internalAVLtree
-module B = Bs_Bag 
+module N = Bs_SortedMapDict
 module A = Bs_Array
-type ('key,  'a, 'id) t0 = ('key, 'a) N.t0 
 
-type ('k,'v,'id) t = 
-  (('k,'id) Bs_Cmp.t,
-   ('k,'v, 'id) t0 ) B.bag 
+type ('key, 'id ) dict = ('key, 'id) Bs_Cmp.t
+type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
 
-let rec set0  (t : _ t0) newK newD  ~cmp =
-  match N.toOpt t with 
-  | None -> N.singleton0 newK newD 
-  | Some n  ->
-    let k= N.key n in 
-    let c = (Bs_Cmp.getCmp cmp) newK k [@bs] in
-    if c = 0 then
-      N.return (N.updateValue n newD) 
-    else 
-      let l,r,v = N.left n, N.right n, N.value n in 
-      if c < 0 then (* Worth optimize for reference equality? *)
-        N.bal (set0 ~cmp l newK newD ) k v  r
-      else
-        N.bal l k v (set0 ~cmp r newK newD )
+module S = struct 
+  type ('k,'v,'id) t = {
+    cmp: ('k,'id) cmp;
+    data: ('k,'v, 'id) N.t
+  }
+  [@@bs.deriving abstract]
+end
 
-let rec update0  (t : _ t0) newK f  ~cmp =
-  match N.toOpt t with 
-  | None ->
-    begin match f None [@bs] with 
-      | None -> t 
-      | Some newD -> N.singleton0 newK newD 
-    end 
-  | Some n  ->
-    let k= N.key n in 
-    let c = (Bs_Cmp.getCmp cmp) newK k [@bs] in
-    if c = 0 then
-      match f (Some (N.value n)) [@bs] with 
-      | None ->
-        let l, r = N.left n , N.right n in  
-        begin match N.toOpt l, N.toOpt r with
-        | None, _ -> r
-        | _, None -> l
-        | _, Some rn ->
-          let kr, vr = ref (N.key rn), ref (N.value rn) in
-          let r = N.removeMinAuxWithRef rn kr vr in
-          N.bal l !kr !vr r 
-        end
-      | Some newD -> N.return (N.updateValue n newD)
-    else 
-      let l,r,v = N.left n, N.right n, N.value n in 
-      if c < 0 then
-        let ll = (update0 ~cmp l newK f ) in
-        if l == ll then
-          t
-        else 
-          N.bal ll k v  r            
-      else
-        let rr = (update0 ~cmp r newK f) in
-        if r == rr then t 
-        else N.bal l k v rr
+type ('k, 'v, 'id ) t = ('k, 'v, 'id) S.t 
 
-(*  unboxing API was not exported
-    since the correct API is really awkard
-    [bool -> 'k Js.null -> ('a Js.null * bool)]
-    even for specialized [k] the first [bool] can 
-    be erased, maybe the perf boost does not justify the inclusion of such API
-
-    [updateWithNull m x f]
-    the callback to [f exist v] 
-    when [v] is non-null,
-    [exist] is guaranteed to be true
-    [v] is guranteed to be [null],
-    when [exist] is [true], [v] could be [null], 
-    since ['a] is polymorphic
-*)
+let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)  =
+  let module M = (val dict) in
+  let cmp = M.cmp in 
+  S.t ~cmp ~data:(N.ofArray ~cmp data)
 
 
-let rec removeAux0  n x ~cmp = 
-  let l,v,r = N.(left n, key n, right n ) in 
-  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in
-  if c = 0 then
-    match N.toOpt l, N.toOpt r with 
-    | None, _ -> r 
-    | _, None -> l 
-    | _, Some rn -> 
-      let kr, vr = ref (N.key rn), ref (N.value rn) in 
-      let r = N.removeMinAuxWithRef rn kr vr in 
-      N.bal l !kr !vr r
-  else if c < 0 then
-    match N.toOpt l with 
-    | None -> N.return n (* Nothing to remove *)
-    | Some left ->
-      let ll = removeAux0 left x ~cmp in 
-      if ll == l then (N.return n)
-      else N.bal ll v (N.value n) r
-  else
-    match N.toOpt r with 
-    | None -> N.return n (* Nothing to remove *)
-    | Some right -> 
-      let rr = removeAux0 ~cmp right x in
-      if rr == r then N.return n
-      else N.bal l v (N.value n)  rr
+let remove m x  =   
+  let cmp, odata = S.cmp m, S.data m in 
+  let newData = N.remove odata x ~cmp  in
+  if newData == odata then m
+  else S.t ~cmp ~data:newData
 
-let remove0 n x ~cmp = 
-  match N.toOpt n with        
-  | None -> N.empty0
-  | Some n -> removeAux0 n x ~cmp 
-  
-let mergeArray0   h arr ~cmp =   
-  let len = A.length arr in 
-  let v = ref h in  
-  for i = 0 to len - 1 do 
-    let key,value = A.getUnsafe arr i in 
-    v := set0 !v  ~cmp key value
-  done ;
-  !v 
+let removeMany m x =     
+  let cmp, odata = S.cmp m,  S.data m in
+  let newData = N.removeMany odata x ~cmp in
+  if newData == odata then m
+  else S.t ~cmp  ~data:newData
 
-let rec splitAuxPivot n x pres  ~cmp =  
-  let l,v,d,r = N.(left n , key n, value n, right n) in  
-  let c = (Bs_Cmp.getCmp cmp) x v [@bs] in 
-  if c = 0 then begin 
-    pres := Some d; 
-    (l,  r)
-  end
-  else     
-  if c < 0 then
-    match N.toOpt l with 
-    | None -> 
-      N.(empty, return n)
-    | Some l -> 
-      let (ll,rl) = splitAuxPivot ~cmp l x pres in
-      (ll,  N.join rl v d r)
-  else
-    match N.toOpt r with 
-    | None ->
-      N.(return n, empty)
-    | Some r -> 
-      let (lr,  rr) = splitAuxPivot ~cmp r x pres in
-      (N.join l v d lr,  rr)
+let set m key d  = 
+  let cmp = S.cmp m in 
+  S.t ~cmp  ~data:(N.set ~cmp (S.data m) key d)
 
+let mergeMany m e = 
+  let cmp = S.cmp m in 
+  S.t ~cmp  ~data:(N.mergeMany ~cmp (S.data m) e)
 
-let split0  n x ~cmp = 
-  match N.toOpt n with 
-  | None ->     
-    N.(empty, empty), None
-  | Some n  ->
-    let pres = ref None in
-    let v = splitAuxPivot ~cmp n x pres in 
-    v, !pres
+let update m key f  = 
+  let cmp = S.cmp m in 
+  S.t ~cmp ~data:(N.update ~cmp (S.data m) key f )
 
-let rec merge0 s1 s2 f ~cmp =
-  match N.(toOpt s1, toOpt s2) with
-    (None, None) -> N.empty
-  | Some _, None -> 
-    N.filterMap0 s1 (fun[@bs] k v -> 
-        f k (Some v) None [@bs]
-      )
-  | None, Some _ -> 
-    N.filterMap0 s2 (fun[@bs] k v -> 
-        f k None (Some v) [@bs]
-      )
-  | Some s1n , Some s2n -> 
-    if N.h s1n  >= N.h s2n  then
-      let l1, v1, d1, r1 = N.(left s1n, key s1n, value s1n, right s1n) in 
-      let d2 = ref None in 
-      let (l2, r2) = splitAuxPivot ~cmp s2n v1 d2 in
-      let d2 = !d2 in 
-      let newLeft = merge0 ~cmp l1 l2 f in 
-      let newD = f v1 (Some d1) d2 [@bs] in 
-      let newRight = merge0 ~cmp r1 r2 f in 
-      N.concatOrJoin newLeft v1 newD  newRight
-    else
-      let l2,v2,d2,r2 = N.(left s2n, key s2n, value s2n, right s2n) in 
-      let d1 = ref None in 
-      let (l1,  r1) = splitAuxPivot ~cmp s1n v2 d1 in
-      let d1 = !d1 in 
-      let newLeft = merge0 ~cmp l1 l2 f in 
-      let newD = (f v2 d1 (Some d2) [@bs]) in 
-      let newRight = (merge0 ~cmp r1 r2 f) in 
-      N.concatOrJoin newLeft v2 newD newRight
+let split m x =   
+  let cmp = S.cmp m in 
+  let (l,r),b = N.split ~cmp (S.data m) x in 
+  (S.t ~cmp ~data:l, S.t ~cmp  ~data:r), b  
 
-let rec removeArrayAux t xs i len ~cmp =
-  if i < len then
-    let ele = A.getUnsafe xs i in
-    let u =  removeAux0 t ele ~cmp in
-    match N.toOpt u with
-    | None -> u
-    | Some t -> removeArrayAux t xs (i + 1) len ~cmp 
-  else
-    N.return t
-      
-let removeArray0 t keys ~cmp =
-  let len = A.length keys in
-  match N.toOpt t with
-  | None -> N.empty0
-  | Some t ->  removeArrayAux t keys 0 len ~cmp 
+let merge s1 s2 f = 
+  let cmp = S.cmp s1 in 
+  S.t ~cmp ~data:(N.merge ~cmp  (S.data s1) (S.data s2) f)
 
-let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)  = 
-  let module M = (val dict ) in 
-  B.bag ~dict ~data:(N.ofArray0 ~cmp:M.cmp data)
-
-let remove (type k) (type id) (m : (k,_,id) t) x  =   
-  let odata = B.data m in 
-  match N.toOpt odata with 
-  | None ->  m 
-  | Some data ->  
-    let dict = B.dict m in   
-    let module M = (val dict) in 
-    let newData = removeAux0 ~cmp:M.cmp data x in  
-    if newData == odata then m
-    else B.bag ~dict ~data:newData
-
-let removeArray (type k) (type id) (m : (k,_,id) t) xs =     
-  let odata = B.data m in 
-  match N.toOpt odata with 
-  | None -> m 
-  | Some data -> 
-    let dict = B.dict m in 
-    let module M = (val dict) in 
-    let len = A.length xs in 
-    let newData = removeArrayAux data xs 0 len ~cmp:M.cmp in 
-    if newData == odata then m 
-    else B.bag ~dict ~data:newData
-
-let set (type k) (type id) (map : (k,_,id) t) key data  = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  B.bag ~dict ~data:(set0 ~cmp:X.cmp map key data )
-
-let mergeArray (type elt) (type id) (m : (elt,_,id) t) e = 
-  let dict, data = B.(dict m, data m) in 
+let empty (type elt) (type id) ~(dict: (elt, id) dict) =
   let module M = (val dict) in 
-  let newData = mergeArray0 ~cmp:M.cmp data e in 
-  B.bag ~dict ~data:newData  
-
-let update (type k) (type id) (map : (k,_,id) t) key f  = 
-  let dict,map = B.(dict map, data map) in 
-  let module X = (val dict) in 
-  B.bag ~dict ~data:(update0 ~cmp:X.cmp map key f )
-
-let split (type k)  (type id) (map : (k,_,id) t) x =   
-  let dict,map = B.(dict map, data map) in 
-  let module M = (val dict) in 
-  let (l,r),b = split0 ~cmp:M.cmp map x in 
-  (B.bag ~dict ~data:l, B.bag ~dict ~data:r), b  
-
-let merge (type k) (type id)  (s1 : (k,_,id) t) 
-    (s2 : (k,_,id) t) f = 
-  let dict, s1_data, s2_data = B.(dict s1, data s1, data s2) in 
-  let module X = (val dict) in 
-  B.bag ~data:(merge0 ~cmp:X.cmp  s1_data s2_data f)
-    ~dict
-
-let empty ~dict = 
-  B.bag  ~dict  ~data:N.empty0
+  S.t  ~cmp:M.cmp  ~data:N.empty
 
 let isEmpty map = 
-  N.isEmpty0 (B.data map)
+  N.isEmpty (S.data map)
 
-let singleton k v ~dict = 
-  B.bag ~dict ~data:(N.singleton0 k v)     
 
-let cmp (type k)  (type id)  (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp
-  = 
-  let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
-  let module X = (val dict) in 
-  N.cmp0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data
+let forEach m f = N.forEach (S.data m) f
 
-let eq (type k) (type id) 
-    (m1 : (k,'v,id) t) (m2 : (k,'v,id) t) cmp = 
-  let dict, m1_data, m2_data = B.(dict m1, data m1, data m2) in 
-  let module X = (val dict) in 
-  N.eq0 ~kcmp:X.cmp ~vcmp:cmp m1_data m2_data 
+let reduce m acc f = N.reduce (S.data m) acc f  
 
-let forEach m f = N.iter0 (B.data m) f
+let every m f = N.every (S.data m) f  
 
-let reduce m acc f = N.fold0 (B.data m) acc f  
+let some m f = N.some (S.data m) f
 
-let every m f = N.every0 (B.data m) f  
-
-let some m f = N.some0 (B.data m) f
-
-let keepBy m f = 
-  let dict, map = B.(dict m, data m) in 
-  B.bag ~dict ~data:(N.filterShared0 map f)
+let keepBy m f =
+  S.t ~cmp:(S.cmp m) ~data:(N.keepBy (S.data m) f)
 
 let partition m p =   
-  let dict, map = B.(dict m, data m) in 
-  let l,r = N.partitionShared0 map p in 
-  B.bag ~dict ~data:l, B.bag ~dict ~data:r 
+  let cmp = S.cmp m in 
+  let l,r = N.partition (S.data m) p in 
+  S.t ~cmp ~data:l, S.t ~cmp ~data:r 
 
 let map m f = 
-  let dict, map = B.(dict m, data m) in 
-  B.bag ~dict ~data:(N.map0 map f)
+  S.t ~cmp:(S.cmp m) ~data:(N.map (S.data m) f)
+    
 let mapWithKey m  f = 
-  let dict,map = B.(dict m, data m) in 
-  B.bag ~dict ~data:(N.mapi0 map f)
+  S.t ~cmp:(S.cmp m) ~data:(N.mapWithKey (S.data m) f)
 
-let size map = 
-  N.length0 (B.data map)   
+let size map = N.size (S.data map)   
+let toList map = N.toList (S.data map) 
+let toArray m = N.toArray (S.data m)
+let keysToArray m = N.keysToArray (S.data m)
+let valuesToArray m = N.valuesToArray (S.data m)
+let minKey m = N.minKey (S.data m)
+let minKeyUndefined m = N.minKeyUndefined (S.data m)
+let maxKey m = N.maxKey (S.data m)
+let maxKeyUndefined m = N.maxKeyUndefined (S.data m)    
+let minimum m = N.minimum (S.data m)
+let minUndefined m = N.minUndefined (S.data m) 
+let maximum m = N.maximum (S.data m)
+let maxUndefined m = N.maxUndefined (S.data m)
 
-let toList map = 
-  N.toList0 (B.data map) 
-let toArray m = 
-  N.toArray0 (B.data m)
-let keysToArray m =   
-  N.keysToArray0 (B.data m)
-let valuesToArray m =   
-  N.valuesToArray0 (B.data m)
+let get map x  =
+  N.get ~cmp:(S.cmp map)  (S.data map) x 
 
-let minKey m = N.minKeyOpt0 (B.data m)
-let minKeyNull m = N.minKeyNull0 (B.data m)
-let maxKey m = N.maxKeyOpt0 (B.data m)
-let maxKeyNull m = N.maxKeyNull0 (B.data m)    
-let minimum m = N.minKVOpt0 (B.data m)
-let minNull m = N.minKVNull0 (B.data m) 
-let maximum m = N.maxKVOpt0 (B.data m)
-let maxNull m = N.maxKVNull0 (B.data m)
+let getUndefined map x = 
+  N.getUndefined ~cmp:(S.cmp map) (S.data map) x
 
-let get (type k) (type id) (map : (k,_,id) t) x  = 
-  let module X = (val B.dict map) in 
-  N.findOpt0 ~cmp:X.cmp  (B.data map) x 
+let getWithDefault map x def = 
+  N.getWithDefault ~cmp:(S.cmp map) (S.data map) x  def
 
-let getNull (type k) (type id) (map : (k,_,id) t) x = 
-  let module X = (val B.dict map) in 
-  N.findNull0 ~cmp:X.cmp  (B.data map) x
+let getExn map x = 
+  N.getExn ~cmp:(S.cmp map) (S.data map) x 
 
-let getWithDefault (type k) (type id)  (map : (k,_,id) t) x def = 
-  let module X = (val B.dict map) in 
-  N.findWithDefault0 ~cmp:X.cmp (B.data map) x  def
+let has map x = 
+  N.has ~cmp:(S.cmp map) (S.data map) x
 
-let getExn (type k) (type id)  (map : (k,_,id) t) x = 
-  let module X = (val B.dict map) in 
-  N.findExn0 ~cmp:X.cmp (B.data map) x 
+let checkInvariantInternal m  =
+  N.checkInvariantInternal (S.data m)
 
-let has (type k) (type id)  (map : (k,_,id) t) x = 
-  let module X = (val B.dict map) in 
-  N.mem0 ~cmp:X.cmp (B.data map) x
+let eq m1 m2 veq = 
+  N.eq ~kcmp:(S.cmp m1) ~veq (S.data m1) (S.data m2)
 
-let checkInvariant m  =
-  N.checkInvariant (B.data m)
-let empty0 = N.empty0      
-let ofArray0 = N.ofArray0
-let isEmpty0 = N.isEmpty0
-let singleton0 = N.singleton0
+let cmp m1 m2 vcmp =
+  N.cmp ~kcmp:(S.cmp m1)  ~vcmp (S.data m1) (S.data m2)
 
-let cmp0 = N.cmp0
-let eq0 = N.eq0   
-let has0 = N.mem0
-let forEach0 = N.iter0      
-let reduce0 = N.fold0
-let every0 = N.every0
-let some0 = N.some0    
-let size0 = N.length0
-let toList0 = N.toList0
-let toArray0 = N.toArray0
+let getData = S.data
+  
+let getDict (type elt) (type id) (m : (elt,_,id) t) : (elt, id) dict =
+  let module T = struct
+    type nonrec id = id
+    type nonrec t = elt
+    let cmp =  S.cmp m
+  end in
+  (module T )
+  
+let packDictData (type elt) (type id) ~(dict : (elt, id) dict) ~data  =
+  let module M = (val dict) in 
+  S.t ~cmp:M.cmp ~data
 
-let keysToArray0 = N.keysToArray0
-let valuesToArray0 = N.valuesToArray0
-
-let minimum0 = N.minKVOpt0
-let maximum0 = N.maxKVOpt0
-let get0 = N.findOpt0
-let getNull0 = N.findNull0
-let getWithDefault0 = N.findWithDefault0
-let getExn0 = N.findExn0
-
-let mapi0 = N.mapi0
-let map0  = N.map0
-
-let filter0 = N.filterShared0
-let partition0 = N.partitionShared0
-let getData = B.data
-let getDict = B.dict
-let packDictData = B.bag 
+module Int = Bs_MapInt
+module String = Bs_MapString

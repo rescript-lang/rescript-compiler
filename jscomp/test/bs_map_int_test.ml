@@ -17,12 +17,12 @@ let () =
   let v = 
       (A.makeByAndShuffle 1_000_000 (fun[@bs] i -> (i,i))) in 
   let u = N.ofArray v in   
-  b __LOC__ (N.checkInvariant u);
+  b __LOC__ (N.checkInvariantInternal u);
   let firstHalf = A.slice v 0 2_000 in 
   let xx = A.reduce firstHalf u
       (fun[@bs] acc (x,_) -> N.remove acc x)  in 
-  b __LOC__ (N.checkInvariant u);
-  b __LOC__ (N.checkInvariant xx);
+  b __LOC__ (N.checkInvariantInternal u);
+  b __LOC__ (N.checkInvariantInternal xx);
 
 
 ;; Mt.from_pair_suites __FILE__ !suites

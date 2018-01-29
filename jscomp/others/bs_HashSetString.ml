@@ -5,12 +5,14 @@ external caml_hash_mix_string : seed -> string -> seed  = "caml_hash_mix_string"
 external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash (s : key) =   
   final_mix  (caml_hash_mix_string 0 s )
+    
 
-# 19
+# 20
 module N = Bs_internalSetBuckets
 module C = Bs_internalBucketsType
 module A = Bs_Array
-type t = key N.t0 
+
+type t = (unit, unit, key) N.t 
 
 let rec copyBucket  ~h_buckets ~ndata_tail h old_bucket = 
   match C.toOpt old_bucket with 
@@ -63,7 +65,7 @@ let rec removeBucket  h h_buckets  i (key : key) prec cell =
     | Some cell_next ->
       removeBucket h h_buckets i key cell cell_next
 
-let removeDone h (key : key)=  
+let remove h (key : key)=  
   let h_buckets = C.buckets h in 
   let i = hash key  land (Array.length h_buckets - 1) in  
   let l = (A.getUnsafe h_buckets i) in 
@@ -82,7 +84,7 @@ let removeDone h (key : key)=
       | Some next_cell -> 
         removeBucket h h_buckets i key cell next_cell
 
-let remove h key = removeDone h key; h
+
 
 
 let rec addBucket  h buckets_len (key : key)  cell = 
@@ -95,7 +97,7 @@ let rec addBucket  h buckets_len (key : key)  cell =
       if C.size h > buckets_len lsl 1 then resize  h
     | Some n -> addBucket  h buckets_len key  n
 
-let addDone h (key : key)  =
+let add h (key : key)  =
   let h_buckets = C.buckets h in 
   let buckets_len = Array.length h_buckets in 
   let i = hash key land (buckets_len - 1) in 
@@ -108,8 +110,6 @@ let addDone h (key : key)  =
     if C.size h > buckets_len lsl 1 then resize  h
   | Some cell -> 
     addBucket  h buckets_len key cell
-
-let add h key = addDone h key; h
 
 
 let rec memInBucket (key : key) cell = 
@@ -130,33 +130,32 @@ let has h key =
     memInBucket key bucket
 
 
-let create = C.create0
-let clear = C.clear0
+let make size = C.make size ~hash:() ~eq:()
+let clear = C.clear
 
 let size = C.size
-let forEach = N.forEach0
-let reduce = N.reduce0
-let logStats = N.logStats0
-let toArray = N.toArray0
+let forEach = N.forEach
+let reduce = N.reduce
+let logStats = N.logStats
+let toArray = N.toArray
 
 let ofArray arr  = 
   let len = Bs.Array.length arr in 
-  let v = create len in 
+  let v = C.make len ~hash:() ~eq:() in 
   for i = 0 to len - 1 do 
-    addDone v (A.getUnsafe arr i)
+    add v (A.getUnsafe arr i)
   done ;
   v
 
 (* TOOD: optimize heuristics for resizing *)  
-let mergeArrayDone h arr =   
+let mergeMany h arr =   
   let len = Bs.Array.length arr in 
   for i = 0 to len - 1 do 
-    addDone h (A.getUnsafe arr i)
+    add h (A.getUnsafe arr i)
   done
 
 
-let mergeArray h arr =   
-  mergeArrayDone h arr; h
-
 let copy = N.copy
 let getBucketHistogram = N.getBucketHistogram 
+
+let isEmpty h = C.size h = 0

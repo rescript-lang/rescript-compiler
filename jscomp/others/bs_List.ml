@@ -313,7 +313,7 @@ let map xs f =
     copyAuxWithMap t cell f;
     cell
 
-let map2 l1 l2 f =
+let zipBy l1 l2 f =
   match (l1, l2) with
   | (a1::l1, a2::l2) -> 
     let cell = mutableCell (f a1 a2 [@bs]) []  in
@@ -513,7 +513,7 @@ let rec every2 l1 l2  p =
     (_, []) | [],_ -> true
   | (a1::l1, a2::l2) -> p a1 a2 [@bs] && every2 l1 l2 p
 
-let rec compare l1 l2  p =
+let rec cmp l1 l2  p =
   match (l1, l2) with
   | [], [] -> 0
   | _ , [] -> 1
@@ -521,17 +521,17 @@ let rec compare l1 l2  p =
   | (a1::l1, a2::l2) ->
     let c = p a1 a2 [@bs] in
     if c = 0 then
-      compare l1 l2 p
+      cmp l1 l2 p
     else c
       
-let rec equal l1 l2  p =
+let rec eq l1 l2  p =
   match (l1, l2) with
   | [], [] -> true
   | _ , [] 
   | [], _ -> false
   | (a1::l1, a2::l2) ->
     if p a1 a2 [@bs]  then
-      equal l1 l2 p
+      eq l1 l2 p
     else false
 
 let rec some2 l1 l2 p =

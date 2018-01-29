@@ -185,7 +185,7 @@ let new_method table =
 
 let get_method_label table name =
 #if BS then
-    match Js.nullToOption (Meths.getNull table.methods_by_name name)
+    match Js.undefinedToOption (Meths.getUndefined table.methods_by_name name)
     with
     | Some x -> x
     | None ->
@@ -314,7 +314,7 @@ let new_slot table =
 
 let new_variable table name =
 #if BS then
-    match Js.nullToOption (Vars.getNull table.vars name : int Js.null)  with
+    match Js.undefinedToOption (Vars.getUndefined table.vars name : int Js.undefined)  with
     | Some x -> x
     | None ->
       let index = new_slot table in

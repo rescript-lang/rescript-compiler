@@ -9,8 +9,6 @@ var a = true;
 
 var b = false;
 
-var d = undefined;
-
 var Textarea = /* module */[];
 
 var Int32Array = /* module */[];
@@ -28,6 +26,8 @@ function f() {
 }
 
 var c = null;
+
+var d = undefined;
 
 exports.u = u;
 exports.a = a;

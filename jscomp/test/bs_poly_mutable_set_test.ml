@@ -3,7 +3,7 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x =  Mt.bool_suites ~test_id ~suites loc x  
 
-module N = Bs.SetM
+module N = Bs.MutableSet
 module I = Array_data_util
 module A = Bs.Array
 module IntCmp = 
@@ -18,8 +18,8 @@ let () =
   b __LOC__ (N.removeCheck u 20);
   eq __LOC__ (N.size u) 28 ;
   let r = I.randomRange 0 30 in 
-  b __LOC__ (Js.eqNull 29 (N.maxNull u));
-  b __LOC__ (Js.eqNull 1 (N.minNull u));
+  b __LOC__ (Js.eqUndefined 29 (N.maxUndefined u));
+  b __LOC__ (Js.eqUndefined 1 (N.minUndefined u));
   N.add u 3;  
   for i = 0 to A.length r - 1 do 
     N.remove u (A.getUnsafe r i)
@@ -117,7 +117,7 @@ let () =
   let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
   b __LOC__ (N.eq a2 a4);
-  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariant x))
+  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariantInternal x))
 
 
 

@@ -6,7 +6,7 @@ var Bs_Set = require("../../lib/js/bs_Set.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
-var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
+var Bs_SortedMapDict = require("../../lib/js/bs_SortedMapDict.js");
 
 var suites = [/* [] */0];
 
@@ -27,7 +27,7 @@ function f(x) {
 }
 
 function ff(x) {
-  return Bs_Set.ofArray(Icmp, x);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function mergeInter(s1, s2) {
@@ -38,8 +38,8 @@ function mergeInter(s1, s2) {
             return /* None */0;
           }
         }));
-  var x = Bs_internalAVLtree.keysToArray0(m.data);
-  return Bs_Set.ofArray(Icmp, x);
+  var x = Bs_SortedMapDict.keysToArray(m.data);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function mergeUnion(s1, s2) {
@@ -52,8 +52,8 @@ function mergeUnion(s1, s2) {
             return /* None */0;
           }
         }));
-  var x = Bs_internalAVLtree.keysToArray0(m.data);
-  return Bs_Set.ofArray(Icmp, x);
+  var x = Bs_SortedMapDict.keysToArray(m.data);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function mergeDiff(s1, s2) {
@@ -64,8 +64,8 @@ function mergeDiff(s1, s2) {
             return /* None */0;
           }
         }));
-  var x = Bs_internalAVLtree.keysToArray0(m.data);
-  return Bs_Set.ofArray(Icmp, x);
+  var x = Bs_SortedMapDict.keysToArray(m.data);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function randomRange(i, j) {
@@ -87,19 +87,19 @@ var u1 = Bs_Map.ofArray(x$1, Icmp);
 
 var x$2 = Array_data_util.range(30, 100);
 
-b("File \"bs_poly_map_test.ml\", line 47, characters 4-11", Bs_Set.eq(mergeInter(u0, u1), Bs_Set.ofArray(Icmp, x$2)));
+b("File \"bs_poly_map_test.ml\", line 47, characters 4-11", Bs_Set.eq(mergeInter(u0, u1), Bs_Set.ofArray(x$2, Icmp)));
 
 var x$3 = Array_data_util.range(0, 120);
 
-b("File \"bs_poly_map_test.ml\", line 48, characters 4-11", Bs_Set.eq(mergeUnion(u0, u1), Bs_Set.ofArray(Icmp, x$3)));
+b("File \"bs_poly_map_test.ml\", line 48, characters 4-11", Bs_Set.eq(mergeUnion(u0, u1), Bs_Set.ofArray(x$3, Icmp)));
 
 var x$4 = Array_data_util.range(0, 29);
 
-b("File \"bs_poly_map_test.ml\", line 49, characters 4-11", Bs_Set.eq(mergeDiff(u0, u1), Bs_Set.ofArray(Icmp, x$4)));
+b("File \"bs_poly_map_test.ml\", line 49, characters 4-11", Bs_Set.eq(mergeDiff(u0, u1), Bs_Set.ofArray(x$4, Icmp)));
 
 var x$5 = Array_data_util.range(101, 120);
 
-b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Bs_Set.eq(mergeDiff(u1, u0), Bs_Set.ofArray(Icmp, x$5)));
+b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Bs_Set.eq(mergeDiff(u1, u0), Bs_Set.ofArray(x$5, Icmp)));
 
 var x$6 = randomRange(0, 10);
 
@@ -135,17 +135,17 @@ b("File \"bs_poly_map_test.ml\", line 70, characters 4-11", Bs_Map.has(a0, 3));
 
 b("File \"bs_poly_map_test.ml\", line 71, characters 4-11", 1 - Bs_Map.has(a5, 3));
 
-b("File \"bs_poly_map_test.ml\", line 72, characters 4-11", +(3 === Bs_Map.getNull(a0, 3)));
+b("File \"bs_poly_map_test.ml\", line 72, characters 4-11", +(3 === Bs_Map.getUndefined(a0, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 73, characters 4-11", +(33 === Bs_Map.getNull(a1, 3)));
+b("File \"bs_poly_map_test.ml\", line 73, characters 4-11", +(33 === Bs_Map.getUndefined(a1, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 74, characters 4-11", +(Bs_Map.getNull(a2, 3) === null));
+b("File \"bs_poly_map_test.ml\", line 74, characters 4-11", +(Bs_Map.getUndefined(a2, 3) === undefined));
 
-b("File \"bs_poly_map_test.ml\", line 76, characters 4-11", +(11 === Bs_Map.getNull(a3, 3)));
+b("File \"bs_poly_map_test.ml\", line 76, characters 4-11", +(11 === Bs_Map.getUndefined(a3, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(Bs_Map.getNull(a4, 3) === null));
+b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(Bs_Map.getUndefined(a4, 3) === undefined));
 
-var a7 = Bs_Map.removeArray(a0, /* array */[
+var a7 = Bs_Map.removeMany(a0, /* array */[
       7,
       8,
       0,
@@ -159,14 +159,14 @@ var a7 = Bs_Map.removeArray(a0, /* array */[
       6
     ]);
 
-eq("File \"bs_poly_map_test.ml\", line 80, characters 5-12", Bs_internalAVLtree.keysToArray0(a7.data), /* int array */[
+eq("File \"bs_poly_map_test.ml\", line 80, characters 5-12", Bs_SortedMapDict.keysToArray(a7.data), /* int array */[
       9,
       10
     ]);
 
-var a8 = Bs_Map.removeArray(a7, Array_data_util.randomRange(0, 100));
+var a8 = Bs_Map.removeMany(a7, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_map_test.ml\", line 82, characters 4-11", Bs_internalAVLtree.isEmpty0(a8.data));
+b("File \"bs_poly_map_test.ml\", line 82, characters 4-11", Bs_SortedMapDict.isEmpty(a8.data));
 
 var x$7 = randomRange(0, 100);
 
@@ -193,8 +193,8 @@ function acc(m, is) {
 }
 
 var m = {
-  dict: Icmp,
-  data: Bs_internalAVLtree.empty0
+  cmp: Icmp[/* cmp */0],
+  data: Bs_SortedMapDict.empty
 };
 
 var m1 = acc(m, Bs_Array.concat(Array_data_util.randomRange(0, 20), Array_data_util.randomRange(10, 30)));

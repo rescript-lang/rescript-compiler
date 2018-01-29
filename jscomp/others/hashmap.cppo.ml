@@ -35,7 +35,7 @@ module C = Bs_internalBucketsType
 module A = Bs_Array
 
 
-type 'b t = (key,'b) N.t0
+type 'b t = (unit, unit, key,'b) N.t
 
 
 let rec copyBucketReHash  ~h_buckets ~ndata_tail h old_bucket = 
@@ -86,7 +86,7 @@ let rec replaceInBucket  (key : key) info cell =
     | Some cell -> 
       replaceInBucket key info cell
 
-let setDone  h (key : key) value =
+let set  h (key : key) value =
   let h_buckets = C.buckets h in 
   let i = hash key land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
@@ -97,14 +97,14 @@ let setDone  h (key : key) value =
     if C.size h > Array.length (C.buckets h) lsl 1 then resize h 
   | Some bucket -> 
     begin 
-    if replaceInBucket key value bucket then begin
-      A.setUnsafe h_buckets i (C.return (N.bucket ~key ~value ~next:l));
-      C.sizeSet h (C.size h + 1);
-      if C.size h > Array.length (C.buckets h) lsl 1 then resize  h
-    end   
+      if replaceInBucket key value bucket then begin
+        A.setUnsafe h_buckets i (C.return (N.bucket ~key ~value ~next:l));
+        C.sizeSet h (C.size h + 1);
+        if C.size h > Array.length (C.buckets h) lsl 1 then resize  h
+      end   
     end
 
-let set h key value = setDone h key value ; h
+
 
 let rec removeInBucket h h_buckets  i (key : key) prec buckets =
   match C.toOpt buckets with
@@ -119,7 +119,7 @@ let rec removeInBucket h h_buckets  i (key : key) prec buckets =
       end
     else removeInBucket  h h_buckets i key cell cell_next
 
-let removeDone  h key =  
+let remove  h key =  
   let h_buckets = C.buckets h in 
   let i = hash key land (Array.length h_buckets - 1) in  
   let bucket = (A.getUnsafe h_buckets i) in 
@@ -134,7 +134,7 @@ let removeDone  h key =
     else 
       removeInBucket  h h_buckets i key cell (N.next cell)
 
-let remove h key  = removeDone h key; h
+
 
 let rec findAux  (key : key) buckets = 
   match C.toOpt buckets with 
@@ -181,37 +181,36 @@ let has h key =
     memInBucket  key bucket
 
 
-let create = C.create0
-let clear = C.clear0
+let make size = C.make size ~hash:() ~eq:()
+let clear = C.clear
 let size = C.size
-let forEach = N.forEach0
-let reduce = N.reduce0
-let logStats = N.logStats0
-let filterMapDone = N.filterMapInplace0
-let filterMap h f = filterMapDone h f; h
-let toArray = N.toArray0 
+let forEach = N.forEach
+let reduce = N.reduce
+let logStats = N.logStats
+let keepMapInPlace = N.keepMapInPlace
+let toArray = N.toArray
 
 let ofArray arr  = 
   let len = A.length arr in 
-  let v = create len in 
+  let v = make len in 
   for i = 0 to len - 1 do 
     let k,value = (A.getUnsafe arr i) in
-    setDone v k value
+    set v k value
   done ;
   v
 
 (* TOOD: optimize heuristics for resizing *)  
-let mergeArrayDone h arr =   
+let mergeMany h arr =   
   let len = A.length arr in 
   for i = 0 to len - 1 do 
     let k,v = (A.getUnsafe arr i) in
-    setDone h k v 
+    set h k v 
   done
-
-let mergeArray h arr = mergeArrayDone h arr; h
 
 let copy = N.copy
 
-let keysToArray = N.keys0
-let valuesToArray = N.values0
+let keysToArray = N.keysToArray
+let valuesToArray = N.valuesToArray
 let getBucketHistogram = N.getBucketHistogram 
+
+let isEmpty h = C.size h = 0

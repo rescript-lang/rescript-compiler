@@ -1,9 +1,9 @@
 #ifdef TYPE_INT
 module I = Bs_internalSetInt
-module S = Bs_SortInt
+module S = Bs_SortArrayInt
 #elif defined TYPE_STRING
 module I = Bs_internalSetString
-module S = Bs_SortString
+module S = Bs_SortArrayString
 #else
   [%error "unknown type"]
 #endif  
@@ -60,35 +60,35 @@ let removeMutate nt x =
   | Some nt -> removeMutateAux nt x 
 
     
-let empty  () = t ~data:N.empty0 
+let empty  () = t ~data:N.empty
 
 let isEmpty d = 
-  N.isEmpty0 (data d)
+  N.isEmpty (data d)
 
 let singleton x = 
-  t ~data:(N.singleton0 x)
+  t ~data:(N.singleton x)
 
 let minimum d = 
-  N.minOpt0 (data d)
+  N.minimum (data d)
 
-let minNull d =
-  N.minNull0 (data d)
+let minUndefined d =
+  N.minUndefined (data d)
 
 let maximum d = 
-  N.maxOpt0 (data d)
+  N.maximum (data d)
 
-let maxNull d =
-N.maxNull0 (data d)
+let maxUndefined d =
+  N.maxUndefined (data d)
 
 let forEach d f =
-  N.iter0 (data d) f     
+  N.forEach (data d) f     
 
 let reduce d acc cb = 
-  N.fold0 (data d) acc cb 
+  N.reduce (data d) acc cb 
 let every d p = 
-  N.every0 (data d) p 
+  N.every (data d) p 
 let some d  p = 
-  N.some0 (data d) p   
+  N.some (data d) p   
 
 let keepBy d p = 
   t ~data:(N.filterCopy (data d) p )
@@ -96,15 +96,15 @@ let partition d p =
   let a , b = N.partitionCopy (data d) p in 
   t ~data:a, t ~data:b
 let size d = 
-  N.length0 (data d)
+  N.size (data d)
 let toList d =
-  N.toList0 (data d)
+  N.toList (data d)
 let toArray d = 
-  N.toArray0 (data d)
+  N.toArray (data d)
 let ofSortedArrayUnsafe xs =
-  t ~data:(N.ofSortedArrayUnsafe0 xs)    
-let checkInvariant d = 
-  N.checkInvariant (data d)
+  t ~data:(N.ofSortedArrayUnsafe xs)    
+let checkInvariantInternal d = 
+  N.checkInvariantInternal (data d)
 
 let add d k = 
   let old_data = data d in 
@@ -133,7 +133,7 @@ let rec removeArrayMutateAux t xs i len  =
     let ele = A.getUnsafe xs i in 
     let u = removeMutateAux t ele in 
     match N.toOpt u with 
-    | None -> N.empty0
+    | None -> N.empty
     | Some t -> removeArrayMutateAux t xs (i+1) len
   else N.return t    
 
@@ -150,7 +150,7 @@ let removeMany  (d : t) xs =
 
 let rec removeMutateCheckAux  nt (x : elt) removed = 
   let k = N.key nt in 
-  (* let c = (Bs_Cmp.getCmp cmp) x k [@bs] in  *)
+  (* let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  *)
   if x = k then 
     let () = removed := true in  
     let l,r = N.(left nt, right nt) in       
@@ -196,10 +196,10 @@ let rec addMutateCheckAux  t (x : elt) added  =
   match N.toOpt t with 
   | None -> 
     added := true;
-    N.singleton0 x 
+    N.singleton x 
   | Some nt -> 
     let k = N.key nt in 
-    (* let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in   *)
+    (* let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in   *)
     if x = k then t 
     else
       let l, r = N.(left nt, right nt) in 
@@ -227,14 +227,14 @@ let cmp d0 d1 =
 let eq d0 d1 = 
   I.eq (data d0) (data d1)
 let get d x = 
-  I.findOpt (data d) x
-let getNull d x =
-  I.findNull (data d) x
+  I.get (data d) x
+let getUndefined d x =
+  I.getUndefined (data d) x
 let getExn d x =
-  I.findExn (data d) x 
+  I.getExn (data d) x 
 let split d  key =  
   let s = data d in  
-  let arr = N.toArray0 s in 
+  let arr = N.toArray s in 
   let i = S.binarySearch arr key   in   
   let len = A.length arr in 
   if i < 0 then 
@@ -266,7 +266,7 @@ let intersect dataa datab  =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    (* let p = Bs_Cmp.getCmp M.cmp in  *)
+    (* let p = Bs_Cmp.getCmpIntenral M.cmp in  *)
     if ((A.getUnsafe tmp (sizea - 1) < 
         A.getUnsafe tmp sizea))
       || 
@@ -277,7 +277,7 @@ let intersect dataa datab  =
        then empty ()
     else 
     let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
-    let k = S.inter tmp 0 sizea tmp sizea sizeb tmp2 0  in 
+    let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0  in 
     t ~data:(N.ofSortedArrayAux tmp2 0 k)
   
 let diff dataa datab : t = 
@@ -291,7 +291,7 @@ let diff dataa datab : t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    (* let p = Bs_Cmp.getCmp M.cmp in  *)
+    (* let p = Bs_Cmp.getCmpIntenral M.cmp in  *)
     if ( (A.getUnsafe tmp (sizea - 1)) < 
         (A.getUnsafe tmp sizea))
       ||       
@@ -315,7 +315,7 @@ let union (dataa : t)  (datab : t) : t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
-    (* let p = (Bs_Cmp.getCmp M.cmp)  in  *)
+    (* let p = (Bs_Cmp.getCmpIntenral M.cmp)  in  *)
     if 
       (A.getUnsafe tmp (sizea - 1) < 
       A.getUnsafe tmp sizea)  then 
@@ -325,6 +325,6 @@ let union (dataa : t)  (datab : t) : t =
       let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0  in 
       t ~data:(N.ofSortedArrayAux tmp2 0 k) 
   
-let has d x = I.mem (data d) x 
+let has d x = I.has (data d) x 
 
 let copy d = t ~data:(N.copy (data d)) 

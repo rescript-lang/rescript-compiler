@@ -14,14 +14,14 @@
 
 module N = Bs_internalBuckets 
 module C = Bs_internalBucketsType
-module B = Bs_Bag 
 module A = Bs_Array
 
-type ('a, 'b,'id) t0 = ('a,'b) N.t0
 
-type ('a,'b,'id) t = 
-  (('a, 'id) Bs_Hash.t,
-   ('a,'b,'id) t0) B.bag 
+type ('a, 'id) eq = ('a, 'id) Bs_Hash.eq
+type ('a, 'id) hash = ('a, 'id) Bs_Hash.hash
+type ('a, 'id) dict = ('a, 'id) Bs_Hash.t                        
+type ('a,'b,'id) t =
+  ( ('a, 'id) hash, ('a, 'id) eq, 'a, 'b) N.t
 
 
 
@@ -29,7 +29,7 @@ let rec copyBucketReHash ~hash ~h_buckets ~ndata_tail h old_bucket =
   match C.toOpt old_bucket with 
   | None -> ()
   | Some cell ->
-    let nidx = (Bs_Hash.getHash hash) (N.key cell) [@bs] land (A.length h_buckets - 1) in 
+    let nidx = (Bs_Hash.getHashInternal hash) (N.key cell) [@bs] land (A.length h_buckets - 1) in 
     let v = C.return cell in 
     begin match C.toOpt (A.getUnsafe ndata_tail nidx) with
       | None -> 
@@ -60,7 +60,7 @@ let resize ~hash h =
   end
 
 let rec replaceInBucket ~eq  key info cell = 
-  if (Bs_Hash.getEq eq) (N.key cell) key [@bs]
+  if (Bs_Hash.getEqInternal eq) (N.key cell) key [@bs]
   then
     begin
       N.valueSet cell info;
@@ -77,7 +77,7 @@ let rec replaceInBucket ~eq  key info cell =
 *)      
 let setDone0 ~hash ~eq  h key value =
   let h_buckets = C.buckets h in 
-  let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
+  let i = (Bs_Hash.getHashInternal hash) key [@bs] land (Array.length h_buckets - 1) in 
   let l = Array.unsafe_get h_buckets i in  
   match C.toOpt l with  
   | None -> 
@@ -100,7 +100,7 @@ let rec removeInBucket  h h_buckets  i key prec bucket ~eq =
   | None -> ()
   | Some cell ->
     let cell_next = N.next cell in 
-    if (Bs_Hash.getEq eq) (N.key cell) key [@bs]
+    if (Bs_Hash.getEqInternal eq) (N.key cell) key [@bs]
     then 
       begin        
         N.nextSet prec cell_next ; 
@@ -110,12 +110,12 @@ let rec removeInBucket  h h_buckets  i key prec bucket ~eq =
 
 let remove0 ~hash ~eq h key =  
   let h_buckets = C.buckets h in 
-  let i = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in  
+  let i = (Bs_Hash.getHashInternal hash) key [@bs] land (Array.length h_buckets - 1) in  
   let bucket = A.getUnsafe h_buckets i in 
   match C.toOpt bucket with 
   | None -> ()
   | Some cell -> 
-    if (Bs_Hash.getEq eq) (N.key cell ) key [@bs] then 
+    if (Bs_Hash.getEqInternal eq) (N.key cell ) key [@bs] then 
     begin 
       A.setUnsafe h_buckets i (N.next cell);
       C.sizeSet h (C.size h - 1)
@@ -129,28 +129,28 @@ let rec findAux ~eq key buckets =
   | None ->
     None
   | Some cell ->
-    if (Bs_Hash.getEq eq) key (N.key cell) [@bs] then Some (N.value cell)
+    if (Bs_Hash.getEqInternal eq) key (N.key cell) [@bs] then Some (N.value cell)
     else findAux ~eq key  (N.next cell)
 
 let get0 ~hash ~eq h key =
   let h_buckets = C.buckets h in 
-  let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
+  let nid = (Bs_Hash.getHashInternal hash) key [@bs] land (Array.length h_buckets - 1) in 
   match C.toOpt @@ A.getUnsafe h_buckets nid with
   | None -> None
   | Some cell1  ->
-    if (Bs_Hash.getEq eq) key (N.key cell1) [@bs] then 
+    if (Bs_Hash.getEqInternal eq) key (N.key cell1) [@bs] then 
       Some  (N.value cell1)
     else
       match C.toOpt (N.next  cell1) with
       | None -> None
       | Some cell2 ->
-        if (Bs_Hash.getEq eq) key 
+        if (Bs_Hash.getEqInternal eq) key 
             (N.key cell2) [@bs] then 
           Some (N.value cell2) else
           match C.toOpt (N.next cell2) with
           | None -> None
           | Some cell3 ->
-            if (Bs_Hash.getEq eq) key 
+            if (Bs_Hash.getEqInternal eq) key 
                 (N.key cell3) [@bs] then 
               Some (N.value cell3)
             else 
@@ -158,7 +158,7 @@ let get0 ~hash ~eq h key =
 
 
 let rec memInBucket ~eq key cell = 
-  (Bs_Hash.getEq eq) (N.key cell) key [@bs] || 
+  (Bs_Hash.getEqInternal eq) (N.key cell) key [@bs] || 
   (match C.toOpt (N.next cell) with 
    | None -> false 
    | Some nextCell -> 
@@ -166,7 +166,7 @@ let rec memInBucket ~eq key cell =
 
 let has0 ~hash ~eq h key =
   let h_buckets = C.buckets h in 
-  let nid = (Bs_Hash.getHash hash) key [@bs] land (Array.length h_buckets - 1) in 
+  let nid = (Bs_Hash.getHashInternal hash) key [@bs] land (Array.length h_buckets - 1) in 
   let bucket = A.getUnsafe h_buckets nid in 
   match C.toOpt bucket with 
   | None -> false 
@@ -174,53 +174,37 @@ let has0 ~hash ~eq h key =
     memInBucket ~eq key bucket
 
 
-let create0 = C.create0
-let clear0 = C.clear0
-let size0 = C.size
-let forEach0 = N.forEach0
-let reduce0 = N.reduce0
-let logStats0 = N.logStats0
-let filterMapDone0 = N.filterMapInplace0
-let toArray0 = N.toArray0
 
 
-let create initialize_size ~dict = 
-  B.bag ~data:(create0 initialize_size) ~dict 
-let clear h = clear0 (B.data h)
-let size h = C.size (B.data h)                 
-let forEach h f = N.forEach0 (B.data h) f
-let reduce h init f = N.reduce0 (B.data h) init f
-let logStats h = logStats0 (B.data h)
+let make (type elt) (type id) initialize_size ~(dict : (elt,id) dict) =
+  let module M = (val dict) in 
+  C.make ~hash:M.hash ~eq:M.eq  initialize_size
 
-let setDone (type a)  (type id) (h : (a,_,id) t) (key:a) info = 
-  let module M = (val B.dict h) in 
-  setDone0 ~hash:M.hash ~eq:M.eq (B.data h) key info 
+let clear = C.clear
+let size = C.size
+let forEach = N.forEach
+let reduce = N.reduce
+let logStats = N.logStats
 
-let set h key info = setDone h key info; h
+let set h key info = 
+  setDone0 ~hash:(C.hash h) ~eq:(C.eq h) h key info 
 
-let removeDone (type a) (type id) (h : (a,_,id) t) (key : a) = 
-  let module M = (val B.dict h) in   
-  remove0 ~hash:M.hash ~eq:M.eq (B.data h) key 
+let remove h key = 
+  remove0 ~hash:(C.hash h) ~eq:(C.eq h) h key 
 
-let remove h key = removeDone h key; h
-  
-let get (type a) (type id) (h : (a, _, id) t) (key : a) =           
-  let module M = (val B.dict h) in   
-  get0 ~hash:M.hash ~eq:M.eq (B.data h) key 
+let get h key =           
+  get0 ~hash:(C.hash h) ~eq:(C.eq h) h key 
 
-let has (type a) (type id) (h : (a,_,id) t) (key : a) =           
-  let module M = (val B.dict h) in   
-  has0 ~hash:M.hash ~eq:M.eq (B.data h) key   
+let has h key =           
+  has0 ~hash:(C.hash h) ~eq:(C.eq h) h key   
 
-let filterMapDone h f = filterMapDone0 (B.data h) f
+let keepMapInPlace  = N.keepMapInPlace
 
-let filterMap h f = filterMapDone h f; h
-  
-let toArray h = toArray0 (B.data h)
+let toArray = N.toArray
 
 let ofArray0 arr ~hash ~eq = 
   let len = A.length arr in 
-  let v = create0 len in 
+  let v = C.make ~hash ~eq len in 
   for i = 0 to len - 1 do 
     let key,value = (A.getUnsafe arr i) in 
     setDone0 ~eq ~hash v key value
@@ -234,28 +218,22 @@ let mergeArrayDone0  h arr ~hash ~eq =
     let key,value = (A.getUnsafe arr i) in 
     setDone0 h  ~eq ~hash key value
   done
-  
-let mergeArray0 h arr  ~hash ~eq = mergeArrayDone0 h arr ~hash ~eq; h
-  
+    
 let ofArray (type a) (type id) arr ~dict:(dict:(a,id) Bs_Hash.t) =     
-  let module M = (val dict) in 
-  B.bag ~dict  ~data:M.(ofArray0 ~eq ~hash arr)
+  let module M = (val dict) in
+  ofArray0 ~eq:M.eq ~hash:M.hash arr
+    
 
-let mergeArrayDone (type a) (type id) (h : (a,_,id) t) arr = 
-  let module M = (val B.dict h) in
-  mergeArrayDone0 ~hash:M.hash ~eq:M.eq (B.data h) arr
+let mergeMany h arr = 
+  mergeArrayDone0 ~hash:(C.hash h) ~eq:(C.eq h) h arr
 
-let mergeArray h arr = 
-  mergeArrayDone h arr;
-  h
 
-let copy h = B.bag ~dict:(B.dict h) ~data:(N.copy (B.data h))
+let copy  = N.copy
 
-let keysToArray0 = N.keys0  
-let keysToArray h = N.keys0 (B.data h)
-let valuesToArray0 = N.values0  
-let valuesToArray h = N.values0 (B.data h)
-let getBucketHistogram h = N.getBucketHistogram (B.data h)
-let getData = B.data
-let getDict = B.dict
-let packDictData = B.bag 
+let keysToArray = N.keysToArray
+let valuesToArray = N.valuesToArray 
+let getBucketHistogram  = N.getBucketHistogram 
+let isEmpty h = C.size h =  0
+
+module Int = Bs_HashMapInt
+module String = Bs_HashMapString  

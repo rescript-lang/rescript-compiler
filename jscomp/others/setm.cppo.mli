@@ -87,18 +87,18 @@ val toArray: t -> elt array
 
 
 val minimum: t -> elt option
-val minNull: t -> elt Js.null
+val minUndefined: t -> elt Js.undefined
 val maximum: t -> elt option
-val maxNull: t -> elt Js.null
+val maxUndefined: t -> elt Js.undefined
 
 val get:  t -> elt -> elt option
-val getNull:  t -> elt -> elt Js.null
+val getUndefined:  t -> elt -> elt Js.undefined
 val getExn: t -> elt -> elt
 val split:  t -> elt  -> (t * t) * bool 
 (**
     [split s key] return a fresh copy of each
 *)
 
-val checkInvariant: t ->  bool
+val checkInvariantInternal: t ->  bool
 
 

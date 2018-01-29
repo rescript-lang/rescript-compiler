@@ -25,55 +25,41 @@
 
 
 
-type ('a,'b,'id) t 
-  
-(** The type of hash tables from type ['a] to type ['b]. *)
+type ('key,'value,'id) t 
+(** The type of hash tables from type ['key] to type ['value]. *)
 
-val create:  int -> dict:('a,'id) Bs_Hash.t -> ('a,'b,'id) t
+val make:  int -> dict:('key, 'id) Bs_Hash.t -> ('key,'value,'id) t
 (*TODO: allow randomization for security *)
 
-val clear: ('a, 'b, 'id) t -> unit
-(** Empty a hash table. Use [reset] instead of [clear] to shrink the
-    size of the bucket table to its initial size. *)
+val clear: ('key, 'value, 'id ) t -> unit
+(** Empty a hash table. *)
 
+val isEmpty: _ t -> bool  
 
-
-val setDone: ('a, 'b, 'id) t -> 'a -> 'b -> unit
-(** [setDone tbl k v] if [k] does not exist,
+val set: ('key, 'value, 'id ) t -> 'key -> 'value -> unit
+(** [set tbl k v] if [k] does not exist,
      add the binding [k,v], otherwise, update the old value with the new
      [v]
 *)
   
-val set: ('a, 'b, 'id) t -> 'a -> 'b -> ('a, 'b, 'id) t
-(** [set tbl k v]
-*)    
-val copy: ('a, 'b, 'id) t -> ('a, 'b, 'id) t
+val copy: ('key, 'value, 'id ) t -> ('key, 'value, 'id ) t
     
-val get:  
-  ('a, 'b, 'id) t -> 'a -> 'b option
+val get: ('key, 'value, 'id ) t -> 'key -> 'value option
 
   
-val has: ('a, 'b, 'id) t -> 'a -> bool
+val has: ('key, 'value, 'id ) t -> 'key -> bool
 (** [has tbl x] checks if [x] is bound in [tbl]. *)
 
-val removeDone:
-  ('a, 'b, 'id) t -> 'a ->
-  unit
-val remove:
-  ('a, 'b, 'id) t -> 'a ->
-  ('a, 'b, 'id) t
+val remove: ('key, 'value, 'id ) t -> 'key ->  unit
 
-val forEach: ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
+val forEach: ('key, 'value, 'id ) t -> ('key -> 'value -> unit [@bs]) -> unit
 (** [forEach tbl f] applies [f] to all bindings in table [tbl].
     [f] receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to [f].
-
-    If the hash table was created in non-randomized mode, the order
-    in which the bindings are enumerated is reproducible between
-    successive runs of the program. *)
+*)
 
 
-val reduce: ('a, 'b, 'id) t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
+val reduce: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c [@bs]) ->  'c
 (** [reduce  tbl init f] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],
@@ -84,19 +70,13 @@ val reduce: ('a, 'b, 'id) t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
     However, if the table contains several bindings for the same key,
     they are passed to [f] in reverse order of introduction, that is,
     the most recent binding is passed first.
-
-    If the hash table was created in non-randomized mode, the order
-    in which the bindings are enumerated is reproducible between
-    successive runs of the program, and even between minor versions
-    of OCaml.  For randomized hash tables, the order of enumeration
-    is entirely random. *)
+*)
 
 
-val filterMapDone: ('a, 'b, 'id) t -> ('a -> 'b -> 'b option [@bs]) ->  unit
-val filterMap: ('a, 'b, 'id) t -> ('a -> 'b -> 'b option [@bs]) -> ('a, 'b, 'id) t
+val keepMapInPlace: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option [@bs]) ->  unit
 
 
-val size: ('a, 'b, 'id) t -> int  
+val size: _ t -> int  
 (** [size tbl] returns the number of bindings in [tbl].
     It takes constant time. *)
 
@@ -111,79 +91,24 @@ val logStats: _ t -> unit
 
 
 
-val toArray: ('a, 'b, 'id) t -> ('a * 'b) array 
+val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array 
 
 
 
 
-val ofArray:   
-  ('a * 'b) array ->
-  dict:('a,'id) Bs_Hash.t -> 
-  ('a, 'b, 'id) t 
-val mergeArrayDone: ('a, 'b, 'id) t -> ('a * 'b) array -> unit
-val mergeArray: ('a, 'b, 'id) t -> ('a * 'b) array -> ('a, 'b, 'id) t
+val ofArray: ('key * 'value) array -> dict:('key,'id) Bs_Hash.t -> ('key, 'value, 'id ) t
+    
+val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
 
 val keysToArray:    
-    ('a,'b,'id) t -> 'a array    
+    ('key, _, _) t -> 'key array    
 val valuesToArray:    
-    ('a,'b,'id) t -> 'b array    
+    (_,'value,_) t -> 'value array    
 
 val getBucketHistogram: _ t -> int array
-(****************************************************************************)
-      
-type ('a, 'b, 'id) t0
-val getData: ('k,'v,'id) t  -> ('k,'v,'id) t0
-val getDict: ('k,'v,'id) t  -> ('k,'id) Bs_Hash.t
-val packDictData: dict:('k, 'id) Bs_Hash.t -> data:('k, 'v, 'id) t0 -> ('k, 'v, 'id) t
-val create0: int -> ('a, 'b, 'id) t0
-val clear0: ('a, 'b, 'id) t0 -> unit
-val setDone0 : 
-    hash:('a,'id) Bs_Hash.hash ->
-    eq:('a,'id) Bs_Hash.eq -> 
-     ('a,'b,'id) t0 -> 'a ->
-    'b -> unit
-val get0: 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 ->
-  'a ->
-  'b option
 
-val has0: 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 ->
-  'a ->
-  bool
-  
-val remove0: 
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0 ->
-  'a ->
-  unit
 
-val forEach0: ('a, 'b, 'id) t0 -> ('a -> 'b -> unit [@bs]) -> unit
-val reduce0: ('a, 'b, 'id) t0 -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) -> 'c
-val filterMapDone0: ('a, 'b, 'id) t0 -> ('a -> 'b -> 'b option [@bs]) -> unit
-val size0: ('a, 'b, 'id) t0 -> int
-val logStats0: ('a, 'b, 'id) t0 -> unit
-val toArray0: ('a, 'b, 'id) t0 -> ('a * 'b) array
-val ofArray0: 
-  ('a * 'b) array ->
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq ->   
-  ('a, 'b, 'id) t0      
-val mergeArray0: 
-  ('a, 'b, 'id) t0 ->
-  ('a * 'b) array ->
-  hash:('a,'id) Bs_Hash.hash  -> 
-  eq:('a,'id) Bs_Hash.eq -> 
-  ('a, 'b, 'id) t0
-    
-val keysToArray0:    
-    ('a,'b,'id) t0 -> 'a array
-val valuesToArray0:    
-    ('a,'b,'id) t0 -> 'b array
+module Int = Bs_HashMapInt
+module String = Bs_HashMapString
 
 

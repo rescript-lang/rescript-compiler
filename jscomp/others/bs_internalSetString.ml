@@ -1,6 +1,6 @@
 # 2 "internal_set.cppo.ml"
 type elt = string
-module S = Bs_SortString
+module S = Bs_SortArrayString
 
 
 # 12
@@ -8,15 +8,15 @@ module N = Bs_internalAVLset
 module A = Bs_Array 
 
 
-type t = elt N.t0
+type t = elt N.t
 
 
-let rec mem (t : t) (x : elt)  =
+let rec has (t : t) (x : elt)  =
   match N.toOpt t with 
   | None -> false
   | Some n  ->                
     let v = N.key n in 
-    x = v || mem (if x < v then N.left n else N.right n) x
+    x = v || has (if x < v then N.left n else N.right n) x
 
 
 let rec compareAux e1 e2  =
@@ -33,7 +33,7 @@ let rec compareAux e1 e2  =
 
 
 let cmp s1 s2 =
-  let len1, len2 = N.length0 s1, N.length0 s2 in   
+  let len1, len2 = N.size s1, N.size s2 in   
   if len1 = len2 then 
     compareAux (N.stackAllLeft s1 []) (N.stackAllLeft s2 [])
   else if len1 < len2 then -1 else 1 
@@ -63,36 +63,36 @@ let rec subset (s1 : t) (s2 : t) =
       subset N.(create empty v1 r1 ) r2 && subset l1 s2
 
 
-let rec findOpt  (n :t) (x : elt) = 
+let rec get (n :t) (x : elt) = 
   match N.toOpt n with 
   | None -> None
   | Some t  ->    
     let v = N.key t in     
     if x = v then Some v
-    else findOpt (if x < v then N.left t else N.right t) x
+    else get (if x < v then N.left t else N.right t) x
 
 
 
-let rec findNull (n :t) (x : elt)   = 
+let rec getUndefined (n :t) (x : elt)   = 
   match N.toOpt n with 
-  | None -> Js.null
+  | None -> Js.undefined
   | Some t  ->    
     let v = N.key t in     
-    if x = v then N.return v
-    else findNull  (if x < v then N.left t else N.right t) x
+    if x = v then Js.Undefined.return v
+    else getUndefined  (if x < v then N.left t else N.right t) x
 
-let rec findExn  (n :t) (x : elt) = 
+let rec getExn  (n :t) (x : elt) = 
   match N.toOpt n with 
-  | None -> [%assert "findExn"]
+  | None -> [%assert "getExn"]
   | Some t  ->    
     let v = N.key t in     
     if x = v then  v
-    else findExn (if x < v then N.left t else N.right t) x
+    else getExn (if x < v then N.left t else N.right t) x
 
 (****************************************************************************)
 let rec addMutate  t  (x : elt)=   
   match N.toOpt t with 
-  | None -> N.singleton0 x
+  | None -> N.singleton x
   | Some nt -> 
     let k = N.key nt in 
     if x = k then t 

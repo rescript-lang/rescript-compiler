@@ -1,5 +1,35 @@
 
+(* Copyright (C) 2017 Authors of BuckleScript
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+
+let forEach s f action =
+  for i = s to f do
+    (action i [@bs] : unit)
+  done
+  
 let rec every s f p =
   if s > f then true
   else
@@ -7,11 +37,11 @@ let rec every s f p =
     (every (s + 1) f p )
   
 
-let rec everyBy s f step p =
+let rec everyBy s f ~step p =
   if s > f then true
   else
     p s [@bs] &&
-    (everyBy (s + step) f step p )
+    (everyBy (s + step) f ~step p )
     
 
 
@@ -22,9 +52,9 @@ let rec some s f p =
     (some (s + 1) f p )
   
 
-let rec someBy s f step p =  
+let rec someBy s f ~step p =  
   if s > f then false
   else
     p s [@bs] ||
-    (someBy (s + step) f step p )
+    (someBy (s + step) f ~step p )
     

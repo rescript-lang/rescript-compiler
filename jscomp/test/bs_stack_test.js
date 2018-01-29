@@ -1,26 +1,26 @@
 'use strict';
 
-var Js_null = require("../../lib/js/js_null.js");
 var Bs_Queue = require("../../lib/js/bs_Queue.js");
 var Bs_Stack = require("../../lib/js/bs_Stack.js");
+var Js_undefined = require("../../lib/js/js_undefined.js");
 
 function inOrder(v) {
   var current = v;
   var s = {
     root: null
   };
-  var q = Bs_Queue.create(/* () */0);
-  while(current !== null) {
+  var q = Bs_Queue.make(/* () */0);
+  while(current !== undefined) {
     var v$1 = current;
     Bs_Stack.push(s, v$1);
     current = v$1.left;
   };
   while(s.root !== null) {
-    current = Bs_Stack.popNull(s);
+    current = Bs_Stack.popUndefined(s);
     var v$2 = current;
-    Bs_Queue.addDone(q, v$2.value);
+    Bs_Queue.add(q, v$2.value);
     current = v$2.right;
-    while(current !== null) {
+    while(current !== undefined) {
       var v$3 = current;
       Bs_Stack.push(s, v$3);
       current = v$3.left;
@@ -34,16 +34,16 @@ function inOrder3(v) {
   var s = {
     root: null
   };
-  var q = Bs_Queue.create(/* () */0);
-  while(current !== null) {
+  var q = Bs_Queue.make(/* () */0);
+  while(current !== undefined) {
     var v$1 = current;
     Bs_Stack.push(s, v$1);
     current = v$1.left;
   };
   Bs_Stack.dynamicPopIter(s, (function (popped) {
-          Bs_Queue.addDone(q, popped.value);
+          Bs_Queue.add(q, popped.value);
           var current = popped.right;
-          while(current !== null) {
+          while(current !== undefined) {
             var v = current;
             Bs_Stack.push(s, v);
             current = v.left;
@@ -59,16 +59,16 @@ function inOrder2(v) {
   var s = {
     root: null
   };
-  var q = Bs_Queue.create(/* () */0);
+  var q = Bs_Queue.make(/* () */0);
   while(todo) {
-    if (cursor !== null) {
+    if (cursor !== undefined) {
       var v$1 = cursor;
       Bs_Stack.push(s, v$1);
       cursor = v$1.left;
     } else if (s.root !== null) {
-      cursor = Bs_Stack.popNull(s);
+      cursor = Bs_Stack.popUndefined(s);
       var current = cursor;
-      Bs_Queue.addDone(q, current.value);
+      Bs_Queue.add(q, current.value);
       cursor = current.right;
     } else {
       todo = /* false */0;
@@ -80,8 +80,8 @@ function inOrder2(v) {
 function n(l, r, a) {
   return {
           value: a,
-          left: Js_null.fromOption(l),
-          right: Js_null.fromOption(r)
+          left: Js_undefined.fromOption(l),
+          right: Js_undefined.fromOption(r)
         };
 }
 
@@ -89,7 +89,7 @@ var test1 = n(/* Some */[n(/* Some */[n(/* None */0, /* None */0, 4)], /* Some *
 
 function pushAllLeft(st1, s1) {
   var current = st1;
-  while(current !== null) {
+  while(current !== undefined) {
     var v = current;
     Bs_Stack.push(s1, v);
     current = v.left;

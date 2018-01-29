@@ -7,7 +7,7 @@ var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
-var Bs_internalAVLset = require("../../lib/js/bs_internalAVLset.js");
+var Bs_SortedSetDict = require("../../lib/js/bs_SortedSetDict.js");
 
 var suites = [/* [] */0];
 
@@ -27,7 +27,7 @@ function t(loc, x) {
 
 var IntCmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
-var u0 = Bs_Set.ofArray(IntCmp, Array_data_util.range(0, 30));
+var u0 = Bs_Set.ofArray(Array_data_util.range(0, 30), IntCmp);
 
 var u1 = Bs_Set.remove(u0, 0);
 
@@ -77,121 +77,121 @@ b("File \"bs_poly_set_test.ml\", line 33, characters 4-11", +(u0 !== u1));
 
 b("File \"bs_poly_set_test.ml\", line 34, characters 4-11", +(u2 === u1));
 
-eq("File \"bs_poly_set_test.ml\", line 35, characters 5-12", Bs_internalAVLset.length0(u4.data), 28);
+eq("File \"bs_poly_set_test.ml\", line 35, characters 5-12", Bs_SortedSetDict.size(u4.data), 28);
 
-b("File \"bs_poly_set_test.ml\", line 36, characters 4-11", +(29 === Bs_internalAVLset.maxNull0(u4.data)));
+b("File \"bs_poly_set_test.ml\", line 36, characters 4-11", +(29 === Bs_SortedSetDict.maxUndefined(u4.data)));
 
-b("File \"bs_poly_set_test.ml\", line 37, characters 4-11", +(1 === Bs_internalAVLset.minNull0(u4.data)));
+b("File \"bs_poly_set_test.ml\", line 37, characters 4-11", +(1 === Bs_SortedSetDict.minUndefined(u4.data)));
 
 b("File \"bs_poly_set_test.ml\", line 38, characters 4-11", +(u4 === u5));
 
-b("File \"bs_poly_set_test.ml\", line 39, characters 4-11", Bs_internalAVLset.isEmpty0(u6.data));
+b("File \"bs_poly_set_test.ml\", line 39, characters 4-11", Bs_SortedSetDict.isEmpty(u6.data));
 
-eq("File \"bs_poly_set_test.ml\", line 40, characters 6-13", Bs_internalAVLset.length0(u7.data), 3);
+eq("File \"bs_poly_set_test.ml\", line 40, characters 6-13", Bs_SortedSetDict.size(u7.data), 3);
 
-b("File \"bs_poly_set_test.ml\", line 41, characters 4-11", 1 - Bs_internalAVLset.isEmpty0(u7.data));
+b("File \"bs_poly_set_test.ml\", line 41, characters 4-11", 1 - Bs_SortedSetDict.isEmpty(u7.data));
 
-b("File \"bs_poly_set_test.ml\", line 42, characters 4-11", Bs_internalAVLset.isEmpty0(u8.data));
+b("File \"bs_poly_set_test.ml\", line 42, characters 4-11", Bs_SortedSetDict.isEmpty(u8.data));
 
 b("File \"bs_poly_set_test.ml\", line 45, characters 4-11", Bs_Set.has(u10, 20));
 
 b("File \"bs_poly_set_test.ml\", line 46, characters 4-11", Bs_Set.has(u10, 21));
 
-eq("File \"bs_poly_set_test.ml\", line 47, characters 5-12", Bs_internalAVLset.length0(u10.data), 20001);
+eq("File \"bs_poly_set_test.ml\", line 47, characters 5-12", Bs_SortedSetDict.size(u10.data), 20001);
 
-eq("File \"bs_poly_set_test.ml\", line 48, characters 5-12", Bs_internalAVLset.length0(u11.data), 19800);
+eq("File \"bs_poly_set_test.ml\", line 48, characters 5-12", Bs_SortedSetDict.size(u11.data), 19800);
 
-eq("File \"bs_poly_set_test.ml\", line 49, characters 5-12", Bs_internalAVLset.length0(u12.data), 19000);
+eq("File \"bs_poly_set_test.ml\", line 49, characters 5-12", Bs_SortedSetDict.size(u12.data), 19000);
 
-b("File \"bs_poly_set_test.ml\", line 50, characters 4-11", +(u12 === u13));
+eq("File \"bs_poly_set_test.ml\", line 51, characters 5-12", Bs_SortedSetDict.size(u13.data), Bs_SortedSetDict.size(u12.data));
 
-eq("File \"bs_poly_set_test.ml\", line 51, characters 5-12", Bs_internalAVLset.length0(u14.data), 10000);
+eq("File \"bs_poly_set_test.ml\", line 52, characters 5-12", Bs_SortedSetDict.size(u14.data), 10000);
 
-eq("File \"bs_poly_set_test.ml\", line 52, characters 5-12", Bs_internalAVLset.length0(u15.data), 1);
+eq("File \"bs_poly_set_test.ml\", line 53, characters 5-12", Bs_SortedSetDict.size(u15.data), 1);
 
-b("File \"bs_poly_set_test.ml\", line 53, characters 4-11", Bs_Set.has(u15, 20000));
+b("File \"bs_poly_set_test.ml\", line 54, characters 4-11", Bs_Set.has(u15, 20000));
 
-b("File \"bs_poly_set_test.ml\", line 54, characters 4-11", 1 - Bs_Set.has(u15, 2000));
+b("File \"bs_poly_set_test.ml\", line 55, characters 4-11", 1 - Bs_Set.has(u15, 2000));
 
-b("File \"bs_poly_set_test.ml\", line 55, characters 4-11", Bs_internalAVLset.isEmpty0(u16.data));
+b("File \"bs_poly_set_test.ml\", line 56, characters 4-11", Bs_SortedSetDict.isEmpty(u16.data));
 
-var u17 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(0, 100));
+var u17 = Bs_Set.ofArray(Array_data_util.randomRange(0, 100), IntCmp);
 
-var u18 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(59, 200));
+var u18 = Bs_Set.ofArray(Array_data_util.randomRange(59, 200), IntCmp);
 
 var u19 = Bs_Set.union(u17, u18);
 
-var u20 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(0, 200));
+var u20 = Bs_Set.ofArray(Array_data_util.randomRange(0, 200), IntCmp);
 
-b("File \"bs_poly_set_test.ml\", line 60, characters 4-11", Bs_Set.eq(u19, u20));
+b("File \"bs_poly_set_test.ml\", line 61, characters 4-11", Bs_Set.eq(u19, u20));
 
 var u21 = Bs_Set.intersect(u17, u18);
 
-eq("File \"bs_poly_set_test.ml\", line 62, characters 5-12", Bs_internalAVLset.toArray0(u21.data), Array_data_util.range(59, 100));
+eq("File \"bs_poly_set_test.ml\", line 63, characters 5-12", Bs_SortedSetDict.toArray(u21.data), Array_data_util.range(59, 100));
 
 var u22 = Bs_Set.diff(u17, u18);
 
-eq("File \"bs_poly_set_test.ml\", line 64, characters 5-12", Bs_internalAVLset.toArray0(u22.data), Array_data_util.range(0, 58));
+eq("File \"bs_poly_set_test.ml\", line 65, characters 5-12", Bs_SortedSetDict.toArray(u22.data), Array_data_util.range(0, 58));
 
 var u23 = Bs_Set.diff(u18, u17);
 
 var u24 = Bs_Set.union(u18, u17);
 
-b("File \"bs_poly_set_test.ml\", line 67, characters 4-11", Bs_Set.eq(u24, u19));
+b("File \"bs_poly_set_test.ml\", line 68, characters 4-11", Bs_Set.eq(u24, u19));
 
-eq("File \"bs_poly_set_test.ml\", line 68, characters 5-12", Bs_internalAVLset.toArray0(u23.data), Array_data_util.range(101, 200));
+eq("File \"bs_poly_set_test.ml\", line 69, characters 5-12", Bs_SortedSetDict.toArray(u23.data), Array_data_util.range(101, 200));
 
-b("File \"bs_poly_set_test.ml\", line 69, characters 4-11", Bs_Set.subset(u23, u18));
+b("File \"bs_poly_set_test.ml\", line 70, characters 4-11", Bs_Set.subset(u23, u18));
 
-b("File \"bs_poly_set_test.ml\", line 70, characters 4-11", 1 - Bs_Set.subset(u18, u23));
+b("File \"bs_poly_set_test.ml\", line 71, characters 4-11", 1 - Bs_Set.subset(u18, u23));
 
-b("File \"bs_poly_set_test.ml\", line 71, characters 4-11", Bs_Set.subset(u22, u17));
+b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", Bs_Set.subset(u22, u17));
 
-b("File \"bs_poly_set_test.ml\", line 72, characters 4-11", Bs_Set.subset(u21, u17) && Bs_Set.subset(u21, u18));
+b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", Bs_Set.subset(u21, u17) && Bs_Set.subset(u21, u18));
 
-b("File \"bs_poly_set_test.ml\", line 73, characters 4-11", +(47 === Bs_Set.getNull(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", +(47 === Bs_Set.getUndefined(u22, 47)));
 
-b("File \"bs_poly_set_test.ml\", line 74, characters 4-11", Caml_obj.caml_equal(/* Some */[47], Bs_Set.get(u22, 47)));
+b("File \"bs_poly_set_test.ml\", line 75, characters 4-11", Caml_obj.caml_equal(/* Some */[47], Bs_Set.get(u22, 47)));
 
-b("File \"bs_poly_set_test.ml\", line 75, characters 4-11", +(Bs_Set.getNull(u22, 59) === null));
+b("File \"bs_poly_set_test.ml\", line 76, characters 4-11", +(Bs_Set.getUndefined(u22, 59) === undefined));
 
-b("File \"bs_poly_set_test.ml\", line 76, characters 4-11", +(/* None */0 === Bs_Set.get(u22, 59)));
+b("File \"bs_poly_set_test.ml\", line 77, characters 4-11", +(/* None */0 === Bs_Set.get(u22, 59)));
 
 var u25 = Bs_Set.add(u22, 59);
 
-eq("File \"bs_poly_set_test.ml\", line 78, characters 5-12", Bs_internalAVLset.length0(u25.data), 60);
+eq("File \"bs_poly_set_test.ml\", line 79, characters 5-12", Bs_SortedSetDict.size(u25.data), 60);
 
 var m = {
-  dict: IntCmp,
-  data: Bs_internalAVLset.empty0
+  cmp: IntCmp[/* cmp */0],
+  data: Bs_SortedSetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 79, characters 4-11", +(Bs_internalAVLset.minOpt0(m.data) === /* None */0));
+b("File \"bs_poly_set_test.ml\", line 80, characters 4-11", +(Bs_SortedSetDict.minimum(m.data) === /* None */0));
 
 var m$1 = {
-  dict: IntCmp,
-  data: Bs_internalAVLset.empty0
+  cmp: IntCmp[/* cmp */0],
+  data: Bs_SortedSetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 80, characters 4-11", +(Bs_internalAVLset.maxOpt0(m$1.data) === /* None */0));
+b("File \"bs_poly_set_test.ml\", line 81, characters 4-11", +(Bs_SortedSetDict.maximum(m$1.data) === /* None */0));
 
 var m$2 = {
-  dict: IntCmp,
-  data: Bs_internalAVLset.empty0
+  cmp: IntCmp[/* cmp */0],
+  data: Bs_SortedSetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 81, characters 4-11", Caml_obj.caml_equal(Bs_internalAVLset.minNull0(m$2.data), null));
+b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.minUndefined(m$2.data), undefined));
 
 var m$3 = {
-  dict: IntCmp,
-  data: Bs_internalAVLset.empty0
+  cmp: IntCmp[/* cmp */0],
+  data: Bs_SortedSetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_internalAVLset.maxNull0(m$3.data), null));
+b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.maxUndefined(m$3.data), undefined));
 
 function testIterToList(xs) {
   var v = [/* [] */0];
-  Bs_internalAVLset.iter0(xs.data, (function (x) {
+  Bs_SortedSetDict.forEach(xs.data, (function (x) {
           v[0] = /* :: */[
             x,
             v[0]
@@ -201,19 +201,19 @@ function testIterToList(xs) {
   return Bs_List.reverse(v[0]);
 }
 
-var u0$1 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(0, 20));
+var u0$1 = Bs_Set.ofArray(Array_data_util.randomRange(0, 20), IntCmp);
 
 var u1$1 = Bs_Set.remove(u0$1, 17);
 
 var u2$1 = Bs_Set.add(u1$1, 33);
 
-b("File \"bs_poly_set_test.ml\", line 93, characters 4-11", Bs_List.every2(testIterToList(u0$1), Bs_List.makeBy(21, (function (i) {
+b("File \"bs_poly_set_test.ml\", line 94, characters 4-11", Bs_List.every2(testIterToList(u0$1), Bs_List.makeBy(21, (function (i) {
                 return i;
               })), (function (x, y) {
             return +(x === y);
           })));
 
-b("File \"bs_poly_set_test.ml\", line 94, characters 4-11", Bs_List.every2(testIterToList(u0$1), Bs_internalAVLset.toList0(u0$1.data), (function (x, y) {
+b("File \"bs_poly_set_test.ml\", line 95, characters 4-11", Bs_List.every2(testIterToList(u0$1), Bs_SortedSetDict.toList(u0$1.data), (function (x, y) {
             return +(x === y);
           })));
 
@@ -221,31 +221,31 @@ function f(x) {
   return +(x === 17);
 }
 
-b("File \"bs_poly_set_test.ml\", line 95, characters 4-11", Bs_internalAVLset.some0(u0$1.data, f));
+b("File \"bs_poly_set_test.ml\", line 96, characters 4-11", Bs_SortedSetDict.some(u0$1.data, f));
 
 function f$1(x) {
   return +(x === 17);
 }
 
-b("File \"bs_poly_set_test.ml\", line 96, characters 4-11", 1 - Bs_internalAVLset.some0(u1$1.data, f$1));
+b("File \"bs_poly_set_test.ml\", line 97, characters 4-11", 1 - Bs_SortedSetDict.some(u1$1.data, f$1));
 
 function f$2(x) {
   return +(x < 24);
 }
 
-b("File \"bs_poly_set_test.ml\", line 97, characters 4-11", Bs_internalAVLset.every0(u0$1.data, f$2));
+b("File \"bs_poly_set_test.ml\", line 98, characters 4-11", Bs_SortedSetDict.every(u0$1.data, f$2));
 
 function f$3(x) {
   return +(x < 24);
 }
 
-b("File \"bs_poly_set_test.ml\", line 98, characters 4-11", 1 - Bs_internalAVLset.every0(u2$1.data, f$3));
+b("File \"bs_poly_set_test.ml\", line 99, characters 4-11", 1 - Bs_SortedSetDict.every(u2$1.data, f$3));
 
-b("File \"bs_poly_set_test.ml\", line 99, characters 4-11", +(Bs_Set.cmp(u1$1, u0$1) < 0));
+b("File \"bs_poly_set_test.ml\", line 100, characters 4-11", +(Bs_Set.cmp(u1$1, u0$1) < 0));
 
-b("File \"bs_poly_set_test.ml\", line 100, characters 4-11", +(Bs_Set.cmp(u0$1, u1$1) > 0));
+b("File \"bs_poly_set_test.ml\", line 101, characters 4-11", +(Bs_Set.cmp(u0$1, u1$1) > 0));
 
-var a0 = Bs_Set.ofArray(IntCmp, Array_data_util.randomRange(0, 1000));
+var a0 = Bs_Set.ofArray(Array_data_util.randomRange(0, 1000), IntCmp);
 
 var a1 = Bs_Set.keepBy(a0, (function (x) {
         return +(x % 2 === 0);
@@ -263,39 +263,39 @@ var a4 = match[1];
 
 var a3 = match[0];
 
-b("File \"bs_poly_set_test.ml\", line 110, characters 4-11", Bs_Set.eq(a1, a3));
+b("File \"bs_poly_set_test.ml\", line 111, characters 4-11", Bs_Set.eq(a1, a3));
 
-b("File \"bs_poly_set_test.ml\", line 111, characters 4-11", Bs_Set.eq(a2, a4));
+b("File \"bs_poly_set_test.ml\", line 112, characters 4-11", Bs_Set.eq(a2, a4));
 
-eq("File \"bs_poly_set_test.ml\", line 112, characters 5-12", Bs_Set.getExn(a0, 3), 3);
+eq("File \"bs_poly_set_test.ml\", line 113, characters 5-12", Bs_Set.getExn(a0, 3), 3);
 
-eq("File \"bs_poly_set_test.ml\", line 113, characters 5-12", Bs_Set.getExn(a0, 4), 4);
+eq("File \"bs_poly_set_test.ml\", line 114, characters 5-12", Bs_Set.getExn(a0, 4), 4);
 
-t("File \"bs_poly_set_test.ml\", line 114, characters 4-11", (function () {
+t("File \"bs_poly_set_test.ml\", line 115, characters 4-11", (function () {
         Bs_Set.getExn(a0, 1002);
         return /* () */0;
       }));
 
-t("File \"bs_poly_set_test.ml\", line 115, characters 4-11", (function () {
+t("File \"bs_poly_set_test.ml\", line 116, characters 4-11", (function () {
         Bs_Set.getExn(a0, -1);
         return /* () */0;
       }));
 
-eq("File \"bs_poly_set_test.ml\", line 116, characters 5-12", Bs_internalAVLset.length0(a0.data), 1001);
+eq("File \"bs_poly_set_test.ml\", line 117, characters 5-12", Bs_SortedSetDict.size(a0.data), 1001);
 
-b("File \"bs_poly_set_test.ml\", line 117, characters 4-11", 1 - Bs_internalAVLset.isEmpty0(a0.data));
+b("File \"bs_poly_set_test.ml\", line 118, characters 4-11", 1 - Bs_SortedSetDict.isEmpty(a0.data));
 
 var match$1 = Bs_Set.split(a0, 200);
 
 var match$2 = match$1[0];
 
-b("File \"bs_poly_set_test.ml\", line 119, characters 4-11", match$1[1]);
+b("File \"bs_poly_set_test.ml\", line 120, characters 4-11", match$1[1]);
 
-eq("File \"bs_poly_set_test.ml\", line 120, characters 5-12", Bs_internalAVLset.toArray0(match$2[0].data), Bs_Array.makeBy(200, (function (i) {
+eq("File \"bs_poly_set_test.ml\", line 121, characters 5-12", Bs_SortedSetDict.toArray(match$2[0].data), Bs_Array.makeBy(200, (function (i) {
             return i;
           })));
 
-eq("File \"bs_poly_set_test.ml\", line 121, characters 5-12", Bs_internalAVLset.toList0(match$2[1].data), Bs_List.makeBy(800, (function (i) {
+eq("File \"bs_poly_set_test.ml\", line 122, characters 5-12", Bs_SortedSetDict.toList(match$2[1].data), Bs_List.makeBy(800, (function (i) {
             return i + 201 | 0;
           })));
 
@@ -309,21 +309,21 @@ var a9 = match$4[1];
 
 var a8 = match$4[0];
 
-b("File \"bs_poly_set_test.ml\", line 124, characters 4-11", 1 - match$3[1]);
+b("File \"bs_poly_set_test.ml\", line 125, characters 4-11", 1 - match$3[1]);
 
-eq("File \"bs_poly_set_test.ml\", line 125, characters 5-12", Bs_internalAVLset.toArray0(a8.data), Bs_Array.makeBy(200, (function (i) {
+eq("File \"bs_poly_set_test.ml\", line 126, characters 5-12", Bs_SortedSetDict.toArray(a8.data), Bs_Array.makeBy(200, (function (i) {
             return i;
           })));
 
-eq("File \"bs_poly_set_test.ml\", line 126, characters 5-12", Bs_internalAVLset.toList0(a9.data), Bs_List.makeBy(800, (function (i) {
+eq("File \"bs_poly_set_test.ml\", line 127, characters 5-12", Bs_SortedSetDict.toList(a9.data), Bs_List.makeBy(800, (function (i) {
             return i + 201 | 0;
           })));
 
-eq("File \"bs_poly_set_test.ml\", line 127, characters 5-12", Bs_internalAVLset.minOpt0(a8.data), /* Some */[0]);
+eq("File \"bs_poly_set_test.ml\", line 128, characters 5-12", Bs_SortedSetDict.minimum(a8.data), /* Some */[0]);
 
-eq("File \"bs_poly_set_test.ml\", line 128, characters 5-12", Bs_internalAVLset.minOpt0(a9.data), /* Some */[201]);
+eq("File \"bs_poly_set_test.ml\", line 129, characters 5-12", Bs_SortedSetDict.minimum(a9.data), /* Some */[201]);
 
-b("File \"bs_poly_set_test.ml\", line 129, characters 4-11", Bs_List.every(/* :: */[
+b("File \"bs_poly_set_test.ml\", line 130, characters 4-11", Bs_List.every(/* :: */[
           a0,
           /* :: */[
             a1,
@@ -339,16 +339,16 @@ b("File \"bs_poly_set_test.ml\", line 129, characters 4-11", Bs_List.every(/* ::
             ]
           ]
         ], (function (x) {
-            return Bs_internalAVLset.checkInvariant(x.data);
+            return Bs_SortedSetDict.checkInvariantInternal(x.data);
           })));
 
-var a = Bs_Set.ofArray(IntCmp, /* int array */[]);
+var a = Bs_Set.ofArray(/* int array */[], IntCmp);
 
 var m$4 = Bs_Set.keepBy(a, (function (x) {
         return +(x % 2 === 0);
       }));
 
-b("File \"bs_poly_set_test.ml\", line 134, characters 4-11", Bs_internalAVLset.isEmpty0(m$4.data));
+b("File \"bs_poly_set_test.ml\", line 135, characters 4-11", Bs_SortedSetDict.isEmpty(m$4.data));
 
 Mt.from_pair_suites("bs_poly_set_test.ml", suites[0]);
 

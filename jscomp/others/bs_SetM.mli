@@ -88,12 +88,12 @@ val toList: ('elt, 'id) t -> 'elt list
 val toArray: ('elt, 'id) t -> 'elt array
 
 val minimum: ('elt, 'id) t -> 'elt option
-val minNull: ('elt, 'id) t -> 'elt Js.null
+val minUndefined: ('elt, 'id) t -> 'elt Js.undefined
 val maximum: ('elt, 'id) t -> 'elt option
-val maxNull: ('elt, 'id) t -> 'elt Js.null
+val maxUndefined: ('elt, 'id) t -> 'elt Js.undefined
 
 val get: ('elt, 'id) t -> 'elt -> 'elt option 
-val getNull: ('elt, 'id) t -> 'elt -> 'elt Js.null
+val getUndefined: ('elt, 'id) t -> 'elt -> 'elt Js.undefined
 val getExn: ('elt, 'id) t -> 'elt -> 'elt 
 
 
@@ -108,7 +108,7 @@ val split: ('elt, 'id) t -> 'elt ->  (('elt, 'id) t * ('elt, 'id) t) * bool
     [l,r] are freshly made, no sharing with [s]   
 *)
 
-val checkInvariant: _ t -> bool
+val checkInvariantInternal: _ t -> bool
 
 (*
   [add0] was not exposed for various reasons:
@@ -117,3 +117,6 @@ val checkInvariant: _ t -> bool
     ('elt, 'id) t0 -> 'elt ->  
     ('elt, 'id) t0]
   2. It is not really significantly more *)
+
+module Int = Bs_SetIntM
+module String = Bs_SetStringM

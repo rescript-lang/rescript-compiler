@@ -13,7 +13,9 @@
 (** Adapted by authors of BuckleScript without using functors          *)
 
 
-type ('k,'v,'id) t 
+type ('k,'v,'id) t
+
+type ('key, 'id ) dict = ('key, 'id) Bs_Cmp.t
 (** The data associated with a comparison function *)   
 
 (*
@@ -38,15 +40,17 @@ type ('k,'v,'id) t
 (* should not export [Bs_Cmp.compare]. 
    should only export [Bs_Cmp.t] or [Bs_Cmp.cmp] instead *)
 
-val empty: dict:('k, 'id) Bs_Cmp.t -> ('k, 'a, 'id) t 
+val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
 
 val has: ('k, 'a, 'id) t -> 'k  -> bool    
-val cmp: 
-    ('k, 'v, 'id) t -> 
+
+val cmp:
     ('k, 'v, 'id) t ->
-    ('v -> 'v -> int [@bs]) -> 
+    ('k, 'v, 'id) t ->
+    ('v -> 'v -> int [@bs]) ->
      int
+
 val eq:  
     ('k, 'a, 'id) t -> 
     ('k, 'a, 'id) t -> 
@@ -80,28 +84,28 @@ val size: ('k, 'a, 'id) t -> int
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
-val ofArray:  ('k * 'a) array -> dict:('k,'id) Bs_Cmp.t -> ('k,'a,'id) t         
+val ofArray:  ('k * 'a) array -> dict:('k,'id) dict -> ('k,'a,'id) t         
 val keysToArray: ('k, 'a, 'id) t -> 'k  array
 val valuesToArray: ('k, 'a, 'id) t -> 'a  array
 val minKey: ('k, _, _) t -> 'k option
-val minKeyNull: ('k, _, _) t -> 'k Js.null
+val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined
 val maxKey: ('k, _, _) t -> 'k option
-val maxKeyNull: ('k, _, _) t -> 'k Js.null    
+val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
 val minimum: ('k, 'a,  _) t -> ('k * 'a) option
-val minNull: ('k, 'a, _) t -> ('k * 'a) Js.null
+val minUndefined: ('k, 'a, _) t -> ('k * 'a) Js.undefined
 val maximum: ('k, 'a, _) t -> ('k * 'a) option
-val maxNull:('k, 'a, _) t -> ('k * 'a) Js.null
+val maxUndefined:('k, 'a, _) t -> ('k * 'a) Js.undefined
 val get:  ('k, 'a, 'id) t -> 'k -> 'a option
-val getNull: ('k, 'a, 'id) t -> 'k ->  'a Js.null
+val getUndefined: ('k, 'a, 'id) t -> 'k ->  'a Js.undefined
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
 val getExn:  ('k, 'a, 'id) t -> 'k -> 'a 
-val checkInvariant: _ t -> bool   
+val checkInvariantInternal: _ t -> bool   
 (****************************************************************************)
 
 val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
 (** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
-val removeArray: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t  
+val removeMany: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t  
   
 val set: 
     ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
@@ -109,7 +113,7 @@ val set:
     [m], with a new binding of [x] to [y]. If [x] was already bound
     in [m], its previous binding disappears. *)
 val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> ('k, 'a, 'id) t      
-val mergeArray:
+val merge:
     ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
 
 val merge:
@@ -121,6 +125,11 @@ val merge:
     and of [m2]. The presence of each such binding, and the corresponding
     value, is determined with the function [f].
 *)    
+
+val mergeMany:
+  ('a, 'b, 'id) t ->
+  ('a * 'b) array ->
+  ('a, 'b, 'id) t
 
 val keepBy: 
     ('k, 'a, 'id) t -> 
@@ -161,141 +170,11 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
 val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
 
 
-(****************************************************************************)
+val getDict: ('a, 'b, 'c) t -> ('a, 'c) dict
 
-type ('k,  'v, 'id) t0 
-(** 
-    ['k] the key type 
-    ['v] the value type
-    ['id] is a unique type for each keyed module
-*)
-
-
-val getData: ('k,'v,'id) t  -> ('k,'v,'id) t0
-val getDict: ('k,'v,'id) t  -> ('k,'id) Bs_Cmp.t
-val packDictData: dict:('k, 'id) Bs_Cmp.t -> data:('k, 'v, 'id) t0 -> ('k, 'v, 'id) t
-
-val empty0 : ('k, 'a, 'id) t0
-
-val ofArray0:  
-  ('k * 'a) array ->
-  cmp: ('k,'id) Bs_Cmp.cmp -> 
-  ('k,'a,'id) t0 
-
-val isEmpty0 : ('k, 'a,'id) t0 -> bool 
-
-val has0: 
-   ('k, 'a, 'id) t0 -> 
-   'k ->     
-   cmp: ('k,'id) Bs_Cmp.cmp -> 
-   bool
-
-val set0: 
-  ('k, 'a, 'id) t0 -> 
-  'k -> 
-  'a -> 
-  cmp: ('k,'id) Bs_Cmp.cmp -> 
-  ('k, 'a, 'id) t0 
-
-val update0:
-  ('k, 'a, 'id) t0 ->
-  'k ->
-  ('a option -> 'a option [@bs]) ->
-  cmp:('k, 'id) Bs_Cmp.cmp -> 
-  ('k, 'a, 'id) t0
+val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Bs_SortedMapDict.t
     
+val packDictData: dict:('a, 'b) dict -> data:('a, 'c, 'b) Bs_SortedMapDict.t -> ('a, 'c, 'b) t
 
-
-val remove0:
-  ('k, 'a, 'id) t0 ->
-  'k -> 
-   cmp: ('k,'id) Bs_Cmp.cmp -> 
-   ('k, 'a, 'id) t0
-
-val removeArray0:
-  ('k, 'a, 'id) t0 ->
-  'k array -> 
-   cmp: ('k,'id) Bs_Cmp.cmp -> 
-   ('k, 'a, 'id) t0
-   
-val merge0: 
-  ('k, 'a, 'id ) t0 ->
-  ('k, 'b,'id) t0 -> 
-  ('k -> 'a option -> 'b option -> 'c option [@bs]) -> 
-  cmp: ('k,'id) Bs_Cmp.cmp ->     
-  ('k, 'c,'id) t0    
-
-val cmp0: 
-  ('k, 'a, 'id) t0 -> ('k, 'a, 'id) t0  -> 
-  kcmp:('k,'id) Bs_Cmp.cmp -> 
-  vcmp:('a -> 'a -> int [@bs]) -> 
-  int
-
-val eq0: 
- ('k, 'a, 'id) t0 -> 
- ('k, 'a, 'id) t0 -> 
- kcmp: ('k,'id) Bs_Cmp.cmp ->     
- vcmp:('a -> 'a -> bool [@bs]) ->
- bool
-
-
-val forEach0:  ('k, 'a, 'id) t0 -> ('k -> 'a -> unit [@bs]) -> unit   
-
-val reduce0: ('k, 'a, 'id) t0 -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
-
-val every0: ('k, 'a, 'id) t0 ->  ('k -> 'a -> bool [@bs]) -> bool
-
-val some0: ('k, 'a, 'id) t0 -> ('k -> 'a -> bool [@bs]) ->  bool
-
-val filter0: 
-    ('k, 'a, 'id) t0 -> 
-    ('k -> 'a -> bool [@bs]) -> 
-    ('k, 'a, 'id) t0
-
-val partition0: 
-    ('k, 'a, 'id) t0 -> 
-    ('k -> 'a -> bool [@bs]) ->     
-    ('k, 'a, 'id) t0 * ('k, 'a, 'id) t0
-
-val size0: ('k, 'a, 'id) t0 -> int
-
-val toList0: ('k, 'a, 'id) t0 -> ('k * 'a) list
-
-val minimum0: ('k, 'a, 'id) t0 -> ('k * 'a) option
-
-val maximum0: ('k, 'a, 'id) t0 -> ('k * 'a) option
-
-val split0: 
-  ('k, 'a, 'id) t0 -> 
-  'k ->
-  cmp: ('k,'id) Bs_Cmp.cmp ->
-  (('k, 'a, 'id) t0  * ('k, 'a, 'id) t0) * 'a option
-
-val get0: 
-    ('k, 'a, 'id) t0 ->
-    'k ->  
-    cmp: ('k,'id) Bs_Cmp.cmp -> 
-    'a option
-      
-val getNull0: 
-    ('k, 'a, 'id) t0 -> 
-    'k ->
-    cmp: ('k,'id) Bs_Cmp.cmp -> 
-   'a Js.null
-     
-val getWithDefault0: 
-    ('k, 'a, 'id) t0 -> 
-    'k -> 
-    'a -> 
-    cmp: ('k,'id) Bs_Cmp.cmp ->   
-    'a 
-val getExn0:
-    ('k, 'a, 'id) t0 -> 
-    'k -> 
-    cmp: ('k,'id) Bs_Cmp.cmp ->   
-    'a 
-
-val map0: ('k, 'a, 'id) t0 -> ('a -> 'b [@bs]) -> ('k ,'b,'id ) t0    
-
-val mapi0: ('k, 'a, 'id) t0 -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t0    
-
+module Int = Bs_MapInt
+module String = Bs_MapString  

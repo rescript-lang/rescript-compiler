@@ -27,7 +27,7 @@ function f(x) {
 }
 
 function ff(x) {
-  return Bs_Set.ofArray(Icmp, x);
+  return Bs_Set.ofArray(x, Icmp);
 }
 
 function randomRange(i, j) {
@@ -61,14 +61,14 @@ Bs_MapM.removeMany(a0, /* array */[
       6
     ]);
 
-eq("File \"bs_poly_mutable_map_test.ml\", line 30, characters 7-14", Bs_internalAVLtree.keysToArray0(a0.data), /* int array */[
+eq("File \"bs_poly_mutable_map_test.ml\", line 30, characters 7-14", Bs_internalAVLtree.keysToArray(a0.data), /* int array */[
       9,
       10
     ]);
 
 Bs_MapM.removeMany(a0, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_mutable_map_test.ml\", line 32, characters 6-13", Bs_internalAVLtree.isEmpty0(a0.data));
+b("File \"bs_poly_mutable_map_test.ml\", line 32, characters 6-13", Bs_internalAVLtree.isEmpty(a0.data));
 
 Mt.from_pair_suites("bs_poly_mutable_map_test.ml", suites[0]);
 

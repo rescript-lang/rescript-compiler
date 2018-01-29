@@ -31,8 +31,14 @@ external return : 'a -> 'a t = "%identity"
 external test : 'a t -> bool =  "#is_undef"
 external testAny : 'a -> bool = "#is_undef"
   
-external empty : 'a t = "undefined"
-[@@bs.val]
+external empty : 'a t = "#undefined"
+
+external getUnsafe : 'a t -> 'a = "%identity"
+
+let getExn f =
+  match toOption f with 
+  | None -> Js_exn.raiseError "Js.Undefined.getExn"
+  | Some x -> x 
 
 let bind x f =
   match to_opt x with
@@ -44,7 +50,9 @@ let iter x f =
   | None ->  ()
   | Some x -> f x [@bs]
 
-let from_opt x =
+let fromOption x =
   match x with
   | None -> empty
   | Some x -> return x
+
+let from_opt = fromOption

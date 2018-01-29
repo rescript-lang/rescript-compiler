@@ -35,19 +35,19 @@ val copy : 'a t -> 'a t
 
 val push : 'a t -> 'a -> unit
 
-val popNull : 'a t -> 'a Js.null
+val popUndefined : 'a t -> 'a Js.undefined
 
-val popOpt : 'a t -> 'a option 
+val pop : 'a t -> 'a option 
 
-val topNull : 'a t -> 'a Js.null
+val topUndefined : 'a t -> 'a Js.undefined
 
-val topOpt : 'a t -> 'a option 
+val top : 'a t -> 'a option 
 
 val isEmpty : 'a t -> bool
 
-val length : 'a t -> int
+val size : 'a t -> int
 
-val iter : 'a t -> ('a -> unit [@bs]) -> unit
+val forEach : 'a t -> ('a -> unit [@bs]) -> unit
 
 val dynamicPopIter : 'a t -> ('a ->  unit [@bs]) -> unit 
 (** [dynamicPopIter s f ]

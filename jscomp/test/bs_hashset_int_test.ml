@@ -2,7 +2,7 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x  = Mt.bool_suites ~test_id ~suites loc x  
-module N = Bs.HashSetInt 
+module N = Bs.UnorderedMutableSet.Int
 module S = Bs.SetInt 
 
 module I = Array_data_util
@@ -25,33 +25,35 @@ let () =
 
 let () =
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
-  let v = N.create 40 in 
-  N.mergeArrayDone v u ;
+  let v = N.make 40 in 
+  N.mergeMany v u ;
   eq __LOC__ (N.size v) 100_001;
   for i = 0 to 1_000 do  
-    N.removeDone v i 
+    N.remove v i 
   done ; 
   eq __LOC__ (N.size v ) 99_000;
   for i = 0 to 2_000 do  
-    N.removeDone v i 
+    N.remove v i 
   done ; 
   eq __LOC__ (N.size v ) 98_000
 module A = Bs_Array
-module SI = Bs_SortInt
+
+module SI = Bs.SortArray.Int
+
 let () =   
   let u0 = N.ofArray (I.randomRange 0 100_000) in 
   let u1 = N.copy u0 in 
   eq __LOC__ (N.toArray u0) (N.toArray u1);
   for i = 0 to 2000 do 
-    N.removeDone u1 i 
+    N.remove u1 i 
   done ;  
   for i = 0 to 1000 do 
-    N.removeDone u0 i 
+    N.remove u0 i 
   done ;
   let v0 = (A.concat (I.range 0 1000) (N.toArray u0)) in 
   let v1 = (A.concat (I.range 0 2000) (N.toArray u1)) in 
-  SI.stableSort v0; 
-  SI.stableSort v1;
+  SI.stableSortInPlace v0; 
+  SI.stableSortInPlace v1;
   eq __LOC__  v0 v1 
   
 let () =

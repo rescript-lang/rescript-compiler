@@ -8,15 +8,16 @@ type key = int
 
 module N = Bs_internalAVLtree
 module A = Bs_Array 
-module S = Bs_Sort
-type ('key, 'a, 'id) t0 = ('key,'a) N.t0 
+module S = Bs_SortArray
 
-type  'a t = (key,'a) N.t0 
+
+
+type  'a t = (key,'a) N.t
 
 let rec add  t (x : key) (data : _)  = 
   match N.toOpt t with
   | None -> 
-    N.singleton0 x data 
+    N.singleton x data 
   | Some n  ->
     let k = N.key n in 
     if x = k then
@@ -28,45 +29,45 @@ let rec add  t (x : key) (data : _)  =
       else
         N.bal (N.left n) k v (add (N.right n) x data )
 
-let rec findOpt n (x : key)  =
+let rec get n (x : key)  =
   match N.toOpt n with 
     None -> None
   | Some n  ->
     let v = N.key n in 
     if x = v then Some (N.value n)
-    else findOpt (if x < v then N.left n else N.right n) x 
+    else get (if x < v then N.left n else N.right n) x 
 
-let rec findNull n (x : key) = 
+let rec getUndefined n (x : key) = 
   match N.toOpt n with 
   | None ->
-    Js.null
+    Js.undefined
   | Some n  ->
     let v = N.key n in 
-    if x = v then N.return (N.value n)
-    else findNull (if x < v then (N.left n) else (N.right n)) x 
+    if x = v then Js.Undefined.return (N.value n)
+    else getUndefined (if x < v then (N.left n) else (N.right n)) x 
 
-let rec findExn n (x : key) =
+let rec getExn n (x : key) =
   match N.toOpt n with 
-  | None -> [%assert "findExn"]
+  | None -> [%assert "getExn"]
   | Some n -> 
     let v = N.key n in 
     if x = v then (N.value n)
-    else findExn (if x < v then (N.left n) else (N.right n)) x
+    else getExn (if x < v then (N.left n) else (N.right n)) x
 
-let rec findWithDefault n (x : key) def =
+let rec getWithDefault n (x : key) def =
   match N.toOpt n with 
   | None -> def    
   | Some n -> 
     let v = N.key n in 
     if x = v then (N.value n)
-    else findWithDefault (if x < v then (N.left n) else (N.right n)) x def
+    else getWithDefault (if x < v then (N.left n) else (N.right n)) x def
     
-let rec mem n (x : key)= 
+let rec has n (x : key)= 
   match N.toOpt n with 
     None -> false
   | Some n (* Node(l, v, d, r, _) *) ->
     let v = N.key n in 
-    x = v || mem (if x < v then N.left n else N.right n) x 
+    x = v || has (if x < v then N.left n else N.right n) x 
 
 let rec remove n (x : key) = 
   match N.toOpt n with 
@@ -86,7 +87,7 @@ let rec remove n (x : key) =
     else
       N.(bal l v (value n) (remove r x ))
 
-let rec splitAux (x : key) (n : _ N.node) : _ t0 * _ option  * _ t0 =  
+let rec splitAux (x : key) (n : _ N.node) : _ t * _ option  * _ t =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
   if x = v then (l, Some d, r)
   else     
@@ -142,7 +143,7 @@ let rec compareAux e1 e2 vcmp =
   | _, _ -> 0    
 
 let cmp s1 s2 cmp = 
-  let len1, len2 = N.length0 s1, N.length0 s2 in 
+  let len1, len2 = N.size s1, N.size s2 in 
   if len1 = len2 then 
     compareAux 
       (N.stackAllLeft s1 []) 
@@ -165,7 +166,7 @@ let rec eqAux e1 e2  eq =
   | _, _ -> true (*end *)  
 
 let eq s1 s2 eq =      
-  let len1,len2 = N.length0 s1, N.length0 s2 in 
+  let len1,len2 = N.size s1, N.size s2 in 
   if len1 = len2 then 
     eqAux 
       (N.stackAllLeft s1 [])
@@ -174,10 +175,10 @@ let eq s1 s2 eq =
 
 let rec addMutate  (t : _ t) x data : _ t =   
   match N.toOpt t with 
-  | None -> N.singleton0 x data
+  | None -> N.singleton x data
   | Some nt -> 
     let k = N.key nt in 
-    (* let  c = (Bs_Cmp.getCmp cmp) x k [@bs] in   *)
+    (* let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in   *)
     if x = k then begin     
       N.keySet nt x;
       N.valueSet nt data;
@@ -195,7 +196,7 @@ let rec addMutate  (t : _ t) x data : _ t =
 
 let ofArray  (xs : (key * _) array) =   
   let len = A.length xs in 
-  if len = 0 then N.empty0
+  if len = 0 then N.empty
   else
     let next = 
         ref (S.strictlySortedLength xs 

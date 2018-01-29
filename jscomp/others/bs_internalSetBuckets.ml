@@ -35,13 +35,15 @@ type 'a bucket = {
   mutable key : 'a;
   mutable next : 'a bucket C.opt
 }  
-and 'a t0 = 'a bucket C.container  
+and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container  
 [@@bs.deriving abstract]
 
 module A = Bs_Array
 
-let rec copy ( x : _ t0) : _ t0= 
+let rec copy ( x : _ t) : _ t= 
   C.container
+    ~hash:(C.hash x)
+    ~eq:(C.eq x )
     ~size:(C.size x)
     ~buckets:(copyBuckets (C.buckets x))
 and copyBuckets ( buckets : _ bucket C.opt array) =  
@@ -83,7 +85,7 @@ let rec doBucketIter ~f buckets =
   | Some cell ->
     f (key cell)  [@bs]; doBucketIter ~f (next cell)
 
-let forEach0 h f =
+let forEach h f =
   let d = C.buckets h in
   for i = 0 to A.length d - 1 do
     doBucketIter f (A.getUnsafe d i)
@@ -95,7 +97,7 @@ let rec fillArray i arr cell =
   | None -> i + 1
   | Some v -> fillArray (i + 1) arr v 
 
-let toArray0 h = 
+let toArray h = 
   let d = C.buckets h in 
   let current = ref 0 in 
   let arr = Bs.Array.makeUninitializedUnsafe (C.size h) in 
@@ -117,7 +119,7 @@ let rec doBucketFold ~f b accu =
   | Some cell ->
     doBucketFold ~f (next cell) (f  accu (key cell) [@bs]) 
 
-let reduce0 h init f =
+let reduce h init f =
   let d = C.buckets h in
   let accu = ref init in
   for i = 0 to A.length d - 1 do
@@ -142,7 +144,7 @@ let getBucketHistogram h =
   histo
 
 
-let logStats0 h =
+let logStats h =
   let histogram =  getBucketHistogram h in 
   Js.log [%obj{ bindings = C.size h;
                 buckets = A.length (C.buckets h);

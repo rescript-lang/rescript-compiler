@@ -9,13 +9,10 @@ module Icmp =
       compare x y
      )
   )
-module Icmp2 = Bs.Cmp.Make(
-  struct 
-    type t = int   
-    let cmp = fun [@bs] (x : int) y ->
-      compare x y 
-  end
-  )
+module Icmp2 = 
+(val Bs.Cmp.make ~cmp:(fun [@bs] (x : int) y ->
+      compare x y ))
+  
 module M = Bs.Map
 module MI = Bs.MapInt
 (* module B = Bs.Bag *)
@@ -25,19 +22,15 @@ module L = Bs.List
 let m0 : (_,string,_) M.t = M.empty (module Icmp)   
 
   
-module I2 = Bs.Cmp.Make(
-  struct 
-    type t = int   
-    let cmp = fun [@bs] (x : int) y ->
-      compare y x 
-  end
-  )
+module I2 = 
+(val Bs.Cmp.make ~cmp:(fun [@bs] (x : int) y -> compare y x ))
+
   
 let m = M.empty (module Icmp2)
 let m2 : (int, string, _) M.t = M.empty (module I2)
 let vv = MI.empty 
 let vv2 = MI.empty
-
+module Md0 = Bs.MapDict
 let () = 
   let count = 1_000_00 in 
   let data = ref (M.getData m) in 
@@ -46,7 +39,7 @@ let () =
   let module Mm = ( val m_dict) in
   for i = 0 to count do 
     data := 
-      M.set0 !data 
+      Md0.set !data 
       ~cmp:  Mm.cmp
       i i 
   done ;
@@ -54,14 +47,15 @@ let () =
   Js.log newm
 module ISet = Bs.Set 
 let () =     
-  let  m = M.empty0 in 
+  let  m = Md0.empty in 
   let m11 = 
-    M.set0 ~cmp:Icmp.cmp m
+    Md0.set ~cmp:Icmp.cmp m
     1 1 
   in  
   let _m20 = M.empty (module Icmp) in 
   Js.log m11
 
+module S0 = Bs.SetDict  
 let () =   
  let count = 100_000 in 
   let v = ISet.empty (module Icmp2) in 
@@ -70,7 +64,7 @@ let () =
   let cmp = M.cmp in 
   let data = ref (ISet.getData v) in 
   for i = 0 to count do 
-    data := Bs.Set.add0 ~cmp !data i 
+    data := S0.add ~cmp !data i 
   done ;
   Js.log !data  
 

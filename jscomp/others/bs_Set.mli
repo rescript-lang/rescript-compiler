@@ -25,11 +25,15 @@
 
 
 
-type ('k,'id) t 
-val empty: dict:('elt, 'id) Bs_Cmp.t -> ('elt, 'id) t
+type ('k,'id) t
 
-val ofArray: dict:('k, 'id) Bs_Cmp.t -> 'k array -> ('k, 'id) t
-val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) Bs_Cmp.t -> ('elt,'id) t
+type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
+    
+val empty: dict:('elt, 'id) dict -> ('elt, 'id) t
+
+val ofArray:  'k array -> dict:('k, 'id) dict ->  ('k, 'id) t
+
+val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) dict -> ('elt,'id) t
     
 val isEmpty: _ t -> bool
 val has: ('elt, 'id) t -> 'elt ->  bool
@@ -84,139 +88,27 @@ val toList: ('elt, 'id) t -> 'elt list
 val toArray: ('elt, 'id) t -> 'elt array
 
 val minimum: ('elt, 'id) t -> 'elt option
-val minNull: ('elt, 'id) t -> 'elt Js.null
+val minUndefined: ('elt, 'id) t -> 'elt Js.undefined
 val maximum: ('elt, 'id) t -> 'elt option
-val maxNull: ('elt, 'id) t -> 'elt Js.null
+val maxUndefined: ('elt, 'id) t -> 'elt Js.undefined
 
 
 
 val get: ('elt, 'id) t -> 'elt -> 'elt option 
-val getNull: ('elt, 'id) t -> 'elt -> 'elt Js.null
+val getUndefined: ('elt, 'id) t -> 'elt -> 'elt Js.undefined
 val getExn: ('elt, 'id) t -> 'elt -> 'elt 
 
 val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
                                     
-val checkInvariant: _ t -> bool
+val checkInvariantInternal: _ t -> bool
 
 (****************************************************************************)
 (** Below are operations only when better performance needed,
     it is still safe API but more verbose.
     More API will be exposed by needs
 *)
-type ('k,'id) t0    
-val getData: ('k,'id) t  -> ('k,'id) t0
-val getDict: ('k,'id) t  -> ('k,'id) Bs_Cmp.t
-val packDictData: dict:('k, 'id) Bs_Cmp.t -> data:('k, 'id) t0 -> ('k, 'id) t
+
+val getData: ('k,'id) t  -> ('k,'id) Bs_SortedSetDict.t
+val getDict: ('k,'id) t  -> ('k,'id) dict
+val packDictData: dict:('k, 'id) dict -> data:('k, 'id) Bs_SortedSetDict.t -> ('k, 'id) t
     
-val empty0: ('elt, 'id) t0
-
-val ofArray0: 'k array -> cmp:('k,'id) Bs_Cmp.cmp ->  ('k, 'id) t0  
-
-val isEmpty0: ('elt, 'id) t0 -> bool
-
-val has0: 
-  ('elt, 'id) t0 ->
-  'elt ->
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  bool
-
-val add0: 
-  ('elt, 'id) t0 -> 
-  'elt ->  
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0
-
-val remove0: 
-  ('elt, 'id) t0 -> 
-  'elt ->  
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0
-    
-val mergeArray0:  
-  ('elt, 'id) t0 -> 'elt array ->
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0
-
-val removeArray0:  
-  ('elt, 'id) t0 -> 'elt array ->
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0
-
-
-
-val union0: 
-    ('elt, 'id) t0 ->
-    ('elt, 'id) t0 ->
-    cmp: ('elt,'id) Bs_Cmp.cmp ->
-    ('elt, 'id) t0
-val inter0: 
-  ('elt, 'id) t0 ->
-  ('elt, 'id) t0 ->
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0
-    
-val diff0: 
-  ('elt, 'id) t0 ->
-  ('elt, 'id) t0 ->
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  ('elt, 'id) t0
-
-
-val subset0: 
-  ('elt, 'id) t0 ->
-  ('elt, 'id) t0 ->
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  bool
-
-val cmp0: 
-  ('elt, 'id) t0 ->
-  ('elt, 'id) t0  -> 
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  int
-
-val eq0:
-  ('elt, 'id) t0 ->
-  ('elt, 'id) t0 ->
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  bool
-
-val forEach0: ('elt, 'id) t0 -> ('elt -> unit [@bs]) ->  unit
-
-val reduce0: ('elt, 'id) t0 -> 'a -> ('a -> 'elt ->  'a [@bs]) ->  'a
-val every0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
-val some0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  bool
-
-val filter0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) ->  ('elt, 'id) t0
-
-val partition0: ('elt, 'id) t0 -> ('elt -> bool [@bs]) -> ('elt, 'id) t0 * ('elt, 'id) t0
-
-val size0: ('elt, 'id) t0 -> int
-
-val toList0: ('elt, 'id) t0 -> 'elt list
-
-val toArray0: ('elt, 'id) t0 -> 'elt array
-
-
-val minimum0: ('elt, 'id) t0 -> 'elt option
-
-val maximum0: ('elt, 'id) t0 -> 'elt option
-
-val split0: 
-  ('elt, 'id) t0 -> 'elt ->
-   cmp: ('elt,'id) Bs_Cmp.cmp ->
-  (('elt, 'id) t0  * ('elt, 'id) t0) * bool
-
-val ofSortedArrayUnsafe0:
-  'elt array -> ('elt,'id) t0
-  
-
-val get0: 
-  ('elt, 'id) t0 -> 'elt ->
-  cmp: ('elt,'id) Bs_Cmp.cmp -> 
-  'elt option
-
-
-val getNull0:
-  ('elt, 'id) t0 -> 'elt ->
-  cmp: ('elt,'id) Bs_Cmp.cmp ->
-  'elt Js.null

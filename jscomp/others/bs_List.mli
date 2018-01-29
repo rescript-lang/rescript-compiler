@@ -49,7 +49,7 @@ val concat: 'a t -> 'a t -> 'a t
 
 val map: 'a t -> ('a -> 'b [@bs]) -> 'b t
 
-val map2: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
+val zipBy: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
 
 val mapWithIndex: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
 
@@ -98,9 +98,9 @@ val some: 'a t -> ('a -> bool [@bs]) -> bool
 
 val every2: 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
-val compare: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
+val cmp: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 
-val equal: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
+val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
   
 val some2:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
