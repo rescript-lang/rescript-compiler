@@ -44,7 +44,7 @@ val make: cmp:'a compare -> (module T with type t = 'a)
 (** [make cmp] create a dictionary to sign the data structure
     For example:
     {[
-      module N = make (fun[@bs] x y -> x - y)          
+      module N = make ~cmp
     ]}
     Such module [N] can be used to initiialize various datastructures,
     [N.id] will be the idenetity

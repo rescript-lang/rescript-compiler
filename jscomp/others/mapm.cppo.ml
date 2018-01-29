@@ -1,10 +1,8 @@
 #ifdef TYPE_INT
 module I = Bs_internalMapInt
-module S = Bs_SortInt
 type key = int
 #elif defined TYPE_STRING
 module I = Bs_internalMapString
-module S = Bs_SortString
 type key = string
 #else
   [%error "unknown type"]

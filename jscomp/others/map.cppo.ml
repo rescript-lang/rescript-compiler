@@ -10,7 +10,6 @@ module I = Bs_internalMapInt
 
 module N = Bs_internalAVLtree
 module A = Bs_Array 
-module S = Bs_Sort
 
 type 'a t = (key, 'a) N.t
 

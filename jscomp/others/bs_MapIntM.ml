@@ -1,8 +1,7 @@
 # 2 "mapm.cppo.ml"
 module I = Bs_internalMapInt
-module S = Bs_SortInt
 type key = int
-# 12
+# 10
 module N = Bs_internalAVLtree
 module A = Bs_Array 
 
