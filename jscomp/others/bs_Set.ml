@@ -160,4 +160,5 @@ let packDictData (type elt) (type id) ~(dict : (elt, id) dict) ~data  =
 let checkInvariantInternal d = N.checkInvariantInternal (S.data d)
 
 
-
+module Int = Bs_SetInt
+module String = Bs_SetString

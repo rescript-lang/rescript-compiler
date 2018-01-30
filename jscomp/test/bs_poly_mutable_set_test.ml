@@ -9,9 +9,12 @@ module A = Bs.Array
 module IntCmp = 
   (val Bs.Cmp.make (fun[@bs] (x:int) y -> compare x y))
 module L = Bs.List
+let ofArray = N.ofArray ~dict:(module IntCmp)
+let empty () = N.empty ~dict:(module IntCmp)
+
 
 let () = 
-  let u = N.ofArray ~dict:(module IntCmp) (I.range 0 30) in 
+  let u =  ofArray (I.range 0 30) in 
   b __LOC__ (N.removeCheck u 0);
   b __LOC__ (not (N.removeCheck u 0));
   b __LOC__ (N.removeCheck u 30);
@@ -54,7 +57,7 @@ let () =
 
 
 let () = 
-  let v = N.ofArray ~dict:(module IntCmp)  (I.randomRange 1_000 2_000) in 
+  let v = ofArray (I.randomRange 1_000 2_000) in 
   let bs = A.map (I.randomRange 500 1499) (fun [@bs] x -> N.removeCheck v x ) in 
   let indeedRemoved = A.reduce bs 0 (fun [@bs] acc x -> if x then acc + 1 else acc) in 
   eq __LOC__ indeedRemoved 500;
@@ -63,7 +66,7 @@ let () =
   let indeedAded = A.reduce cs 0 (fun[@bs] acc x -> if x then acc + 1 else acc) in 
   eq __LOC__ indeedAded 1000 ;
   eq __LOC__ (N.size v) 1_501;
-  b __LOC__ (N.isEmpty (N.empty ~dict:(module IntCmp)));
+  b __LOC__ (N.isEmpty (empty ()));
   eq __LOC__ (N.minimum v) (Some 500);
   eq __LOC__ (N.maximum v) (Some 2000);
   eq __LOC__ (N.minUndefined v) (Js.Undefined.return 500); 
@@ -92,7 +95,7 @@ let () =
   b __LOC__ (N.isEmpty (N.intersect aa bb))
 
 let (++) = N.union
-let f = N.ofArray ~dict:(module IntCmp) 
+let f = ofArray 
 let (=~) = N.eq 
 let () =   
   let aa =  f (I.randomRange 0 100) in 
@@ -110,13 +113,13 @@ let () =
     (N.intersect 
        (f @@ I.randomRange 0 20)
        (f @@ I.randomRange 21 40)
-     =~ (N.empty (module IntCmp))
+     =~ (empty ())
     );
   b __LOC__ 
     (N.intersect 
        (f @@ I.randomRange 21 40)
        (f @@ I.randomRange 0 20)      
-     =~ (N.empty (module IntCmp))
+     =~ (empty ())
     );  
   b __LOC__  
     (N.intersect 
@@ -149,7 +152,7 @@ let () =
     )     
 
 let () =   
-  let a0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 1000) in 
+  let a0 = ofArray  (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
       N.keepBy a0 (fun [@bs] x -> x mod 2  = 0),

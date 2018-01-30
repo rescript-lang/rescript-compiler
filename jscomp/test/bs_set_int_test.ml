@@ -152,5 +152,27 @@ let () =
   let a11 = N.removeMany a9 (I.randomRange 0 2000) in 
   b __LOC__ (N.isEmpty a11)
 
+let () = 
+  let (aa,bb), pres = N.split N.empty 0 in 
+  b __LOC__ (N.isEmpty aa);
+  b __LOC__ (N.isEmpty bb);
+  b __LOC__ (not pres)  
 
+let () =   
+  let v = N.ofArray (I.randomRange 0 2_000) in 
+  let v0 = N.ofArray (I.randomRange 0 2_000) in 
+  let v1 = N.ofArray (I.randomRange 1 2_001) in 
+  let v2 = N.ofArray (I.randomRange 3 2_002) in 
+  let v3 = N.removeMany v2 [|2_002; 2_001|] in   
+  let us = A.map (I.randomRange 1_000 3_000) (fun [@bs] x -> N.has v x) in 
+  let counted = A.reduce us 0 (fun [@bs] acc x -> if x then acc + 1 else acc ) in 
+  eq __LOC__ counted 1_001 ; 
+  b __LOC__ (N.eq v v0) ; 
+  b __LOC__ (N.cmp v v0 = 0);
+  b __LOC__ (N.cmp v v1 < 0); 
+  b __LOC__ (N.cmp v v2 > 0);
+  b __LOC__ (N.subset v3 v0);
+  b __LOC__ (not (N.subset v1 v0));
+  eq __LOC__ (N.get v 30 ) (Some 30);
+  eq __LOC__ (N.get v 3_000 ) None
 ;; Mt.from_pair_suites __FILE__ !suites    

@@ -119,21 +119,21 @@ let remove n x =
   | None -> N.empty
   | Some n -> removeAux n x 
 
-let rec removeArrayAux t xs i len  =
+let rec removeMany0 t xs i len  =
   if i < len then
     let ele = A.getUnsafe xs i in
     let u =  removeAux t ele  in
     match N.toOpt u with
     | None -> u
-    | Some t -> removeArrayAux t xs (i + 1) len
+    | Some t -> removeMany0 t xs (i + 1) len
   else
     N.return t
       
-let removeArray t keys =
+let removeMany t keys =
   let len = A.length keys in
   match N.toOpt t with
   | None -> N.empty
-  | Some t ->  removeArrayAux t keys 0 len
+  | Some t ->  removeMany0 t keys 0 len
 
 let mergeArray h arr =   
   let len = A.length arr in 

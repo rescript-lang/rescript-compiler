@@ -60,7 +60,7 @@ val checkInvariantInternal: _ t -> bool
 val remove: 'a t ->  key -> 'a t
 (** [remove m x] returns a map containing the same bindings as
    [m], except for [x] which is unbound in the returned map. *)
-val removeArray: 'a t -> key array -> 'a t
+val removeMany: 'a t -> key array -> 'a t
 
 val set: 'a t ->  key -> 'a -> 'a t
 (** [add m x y] returns a map containing the same bindings as

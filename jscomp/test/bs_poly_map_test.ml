@@ -14,24 +14,27 @@ module N = Bs.Set
 
 module A = Bs_Array
 module I = Array_data_util
-let f x = M.ofArray ~dict:(module Icmp) x 
-let ff x = N.ofArray ~dict:(module Icmp) x 
+
+
+let mapOfArray x = M.ofArray ~dict:(module Icmp) x 
+let setOfArray x = N.ofArray ~dict:(module Icmp) x 
+let emptyMap () = M.empty (module Icmp)
 
 let mergeInter s1 s2 = 
-  ff @@ M.keysToArray (M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray (M.merge s1 s2 (fun[@bs] k v1 v2 -> 
       match v1,v2 with 
       | Some _, Some _ -> Some ()
       | _, _ -> None
     ))
 
 let mergeUnion s1 s2 =    
-  ff @@ M.keysToArray @@ M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun[@bs] k v1 v2 -> 
       match v1,v2 with 
       | None, None -> None
       | _, _ -> Some ()
     )
 let mergeDiff s1 s2 =    
-  ff @@ M.keysToArray @@ M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun[@bs] k v1 v2 -> 
       match v1,v2 with 
       | Some _, None -> Some ()
       | Some _, Some _
@@ -42,16 +45,16 @@ let randomRange i j =
   A.map (I.randomRange i j) (fun[@bs] x -> (x,x))
 
 let () =    
-  let u0 = f (randomRange 0 100) in 
-  let u1 = f (randomRange 30 120) in 
-  b __LOC__ (N.eq (mergeInter u0 u1) (ff (I.range 30 100)));
-  b __LOC__ (N.eq (mergeUnion u0 u1) (ff (I.range 0 120)));
-  b __LOC__ (N.eq (mergeDiff u0 u1) (ff (I.range 0 29)));
-  b __LOC__ (N.eq (mergeDiff u1 u0) (ff (I.range 101 120)))
+  let u0 = mapOfArray (randomRange 0 100) in 
+  let u1 = mapOfArray (randomRange 30 120) in 
+  b __LOC__ (N.eq (mergeInter u0 u1) (setOfArray (I.range 30 100)));
+  b __LOC__ (N.eq (mergeUnion u0 u1) (setOfArray (I.range 0 120)));
+  b __LOC__ (N.eq (mergeDiff u0 u1) (setOfArray (I.range 0 29)));
+  b __LOC__ (N.eq (mergeDiff u1 u0) (setOfArray (I.range 101 120)))
 
 
 let () =   
-  let a0 = f (randomRange 0 10) in 
+  let a0 = mapOfArray (randomRange 0 10) in 
   let a1 = M.set a0 3 33 in (* (3,3) *)
   let a2 = M.remove a1 3 in  (* no 3 *)
   let a3 = M.update a2 3 (fun[@bs]  k -> 
@@ -81,18 +84,10 @@ let () =
   let a8 = M.removeMany a7 (I.randomRange 0 100) in 
   b __LOC__ (M.isEmpty a8)
 
-(* TODO: expose [Bs_Bag.bag] makes the error message
-  pretty hard to read
-  {[
-    Error: This expression has type
-         ((Icmp.t, Icmp.id) Bs_Cmp.t, (Icmp.t, Icmp.t, Icmp.id) Bs_Map.t0)
-         Bs_Bag.bag
-       but an expression was expected of type unit
-  ]}
- *)  
+
 let () =   
   let module Array = M in 
-  let u0 = f (randomRange 0 100) in 
+  let u0 = mapOfArray (randomRange 0 100) in 
   let u1 = u0.(3) <- 32  in 
   eq __LOC__ u1.(3) (Some 32); 
   eq __LOC__ u0.(3) (Some 3)
@@ -105,12 +100,46 @@ let acc m is : _ M.t =
   A.reduce is m (fun[@bs] a i -> acc a i) 
 
 let () = 
-  let m = M.empty (module Icmp) in 
+  let m = emptyMap () in 
   let m1 = acc m (A.concat (I.randomRange 0 20) (I.randomRange 10 30)) in 
   b __LOC__ 
   (M.eq m1 
-  (M.ofArray ~dict:(module Icmp) (A.makeBy 31 (fun[@bs] i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
+  (mapOfArray (A.makeBy 31 (fun[@bs] i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
   (fun[@bs] x y -> x = y)
   )
 
+let () = 
+  let v0 = emptyMap () in 
+  let v1 = M.mergeMany v0 
+  (A.map (I.randomRange 0 10_000)  (fun[@bs] x -> x , x)) in 
+
+  let v2 = mapOfArray 
+  (A.map (I.randomRange 0 10_000) (fun[@bs] x -> x, x)) in 
+
+  b __LOC__ (M.eq v1 v2 (fun [@bs] x y -> x = y ));
+
+  let inc = (fun [@bs] x -> 
+  match x with None -> Some 0
+  | Some  v -> Some (v +  1)
+  )  in 
+  let v3 = M.update v1 10 inc in 
+  let v4 = M.update v3 (-10) inc in 
+  let (v5, v6), pres = M.split v3 5_000 in  
+  b __LOC__ (match M.get v3 10 with Some 11 -> true | _ -> false);
+  b __LOC__ (match M.get v3 (-10) with None -> true | _ -> false);
+  b __LOC__ (match M.get v4 (-10) with Some 0 -> true | _ -> false);
+  b __LOC__ (M.isEmpty (M.remove (emptyMap ())  0) );
+  b __LOC__ (M.isEmpty (M.removeMany (emptyMap ())  [|0|]) );
+  b __LOC__ (match pres with Some 5_000 -> true | _ -> false);
+  b __LOC__ (A.eq (M.keysToArray v5) (A.makeBy 5_000 (fun [@bs] i -> i))  (fun[@bs] x y -> x = y) );
+  b __LOC__ (A.eq (M.keysToArray v6) (A.makeBy 5_000 (fun [@bs] i -> 5_001 +i))  (fun[@bs] x y -> x = y) );
+
+  let v7 = M.remove v3 5_000 in 
+  let (v8,v9), pres2 = M.split v7 5_000 in 
+  b __LOC__ (match pres2 with None -> true | _ -> false);
+  b __LOC__ (A.eq (M.keysToArray v8) (A.makeBy 5_000 (fun [@bs] i -> i))  (fun[@bs] x y -> x = y) );
+  b __LOC__ (A.eq (M.keysToArray v9) (A.makeBy 5_000 (fun [@bs] i -> 5_001 +i))  (fun[@bs] x y -> x = y) )
+
+  
+  
 ;; Mt.from_pair_suites __FILE__ !suites
