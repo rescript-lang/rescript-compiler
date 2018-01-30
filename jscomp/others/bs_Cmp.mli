@@ -27,7 +27,7 @@ type 'a compare = 'a -> 'a -> int [@bs]
 type ('a, 'id) cmp
 
 (** only used for data structures, not exported for client usage *)
-external getCmpIntenral: ('a,'id) cmp -> 'a compare = "%identity"
+external getCmpInternal: ('a,'id) cmp -> 'a compare = "%identity"
 
 module type T = sig
   type id

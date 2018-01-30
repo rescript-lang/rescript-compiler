@@ -48,8 +48,49 @@ let () =
   eq __LOC__ (N.size u) 10000;
   N.removeMany u (I.randomRange 10000 (20000 -1));
   eq __LOC__ (N.size u) 1 ;
-  b __LOC__ (N.has u 20000)
-(* for i =  *)
+  b __LOC__ (N.has u 20000);
+  N.removeMany u (I.randomRange 10_000 30_000);
+  b __LOC__ (N.isEmpty u)
+
+
+let () = 
+  let v = N.ofArray ~dict:(module IntCmp)  (I.randomRange 1_000 2_000) in 
+  let bs = A.map (I.randomRange 500 1499) (fun [@bs] x -> N.removeCheck v x ) in 
+  let indeedRemoved = A.reduce bs 0 (fun [@bs] acc x -> if x then acc + 1 else acc) in 
+  eq __LOC__ indeedRemoved 500;
+  eq __LOC__ (N.size v) 501;
+  let cs = A.map (I.randomRange 500 2_000) (fun [@bs] x -> N.addCheck v x) in 
+  let indeedAded = A.reduce cs 0 (fun[@bs] acc x -> if x then acc + 1 else acc) in 
+  eq __LOC__ indeedAded 1000 ;
+  eq __LOC__ (N.size v) 1_501;
+  b __LOC__ (N.isEmpty (N.empty ~dict:(module IntCmp)));
+  eq __LOC__ (N.minimum v) (Some 500);
+  eq __LOC__ (N.maximum v) (Some 2000);
+  eq __LOC__ (N.minUndefined v) (Js.Undefined.return 500); 
+  eq __LOC__ (N.maxUndefined v) (Js.Undefined.return 2000);
+  eq __LOC__ (N.reduce v 0 (fun [@bs] x y -> x + y)) ((( 500 + 2000)/2) * 1501 );
+  b __LOC__ (L.eq (N.toList v) (L.makeBy 1_501 (fun[@bs] i -> i + 500)  ) (fun[@bs] x y -> x = y) ) ;
+  eq __LOC__ (N.toArray v ) (I.range 500 2000);
+  b __LOC__ (N.checkInvariantInternal v);
+  eq __LOC__ (N.get v 3) None;
+  eq __LOC__ (N.get v 1_200) (Some 1_200);
+  let (aa, bb), pres = N.split v 1000 in 
+  b __LOC__ pres ;
+  b __LOC__ (A.eq (N.toArray aa) (I.range 500 999) (fun[@bs] x y -> x = y));
+  b __LOC__ (A.eq (N.toArray bb) (I.range 1_001 2_000) (fun[@bs] x y -> x = y));
+  b  __LOC__ (N.subset aa v); 
+  b __LOC__ (N.subset bb v) ;
+  b __LOC__ (N.isEmpty (N.intersect aa bb));
+  let c = N.removeCheck v 1_000 in 
+  b __LOC__ c ;
+  let (aa,bb), pres = N.split v 1_000 in 
+  b __LOC__ (not pres);
+  b __LOC__ (A.eq (N.toArray aa) (I.range 500 999) (fun[@bs] x y -> x = y));
+  b __LOC__ (A.eq (N.toArray bb) (I.range 1_001 2_000) (fun[@bs] x y -> x = y));
+  b  __LOC__ (N.subset aa v); 
+  b __LOC__ (N.subset bb v);
+  b __LOC__ (N.isEmpty (N.intersect aa bb))
+
 let (++) = N.union
 let f = N.ofArray ~dict:(module IntCmp) 
 let (=~) = N.eq 

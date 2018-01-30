@@ -69,7 +69,7 @@ let rec set  (t : _ t) newK newD  ~cmp =
   | None -> N.singleton newK newD 
   | Some n  ->
     let k= N.key n in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) newK k [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
       N.return (N.updateValue n newD) 
     else 
@@ -88,7 +88,7 @@ let rec update  (t : _ t) newK f  ~cmp :  _ t =
     end 
   | Some n  ->
     let k= N.key n in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) newK k [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
       match f (Some (N.value n)) [@bs] with 
       | None ->
@@ -133,7 +133,7 @@ let rec update  (t : _ t) newK f  ~cmp :  _ t =
 
 let rec removeAux0  n x ~cmp = 
   let l,v,r = N.(left n, key n, right n ) in 
-  let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
+  let c = (Bs_Cmp.getCmpInternal cmp) x v [@bs] in
   if c = 0 then
     match N.toOpt l, N.toOpt r with 
     | None, _ -> r 
@@ -174,7 +174,7 @@ let mergeMany   h arr ~cmp =
 
 let rec splitAuxPivot n x pres  ~cmp =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
-  let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in 
+  let c = (Bs_Cmp.getCmpInternal cmp) x v [@bs] in 
   if c = 0 then begin 
     pres := Some d; 
     (l,  r)

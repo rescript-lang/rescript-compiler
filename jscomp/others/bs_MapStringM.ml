@@ -92,7 +92,7 @@ let rec updateDone t (x : key)  f  =
     | None -> t)
   | Some nt -> 
     let k = N.key nt in 
-    (* let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in   *)
+    (* let  c = (Bs_Cmp.getCmpInternal cmp) x k [@bs] in   *)
     if k = x then begin     
       match f (Some (N.value nt)) [@bs] with
       | None ->

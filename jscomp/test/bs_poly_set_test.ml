@@ -134,5 +134,9 @@ let () =
   let a = N.ofArray ~dict:(module IntCmp) [||] in 
   b __LOC__ (N.isEmpty (N.keepBy a (fun[@bs] x -> x mod 2 = 0)))
 
-
+let () = 
+  let (aa,bb), pres = N.split (N.empty  ~dict:(module IntCmp)) 0 in 
+  b __LOC__ (N.isEmpty aa);
+  b __LOC__ (N.isEmpty bb);
+  b __LOC__ (not pres)
 ;; Mt.from_pair_suites __FILE__ !suites  
