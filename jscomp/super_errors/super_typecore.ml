@@ -67,6 +67,37 @@ let rec collect_missing_arguments rettype targettype = match rettype with
   end
   | _ -> None
 
+let check_bs_arity_mismatch ppf trace =
+  let arity t = match t.desc with
+    | Tvariant { row_fields = [(label,_)] } ->
+        let label_len = String.length label in
+        let arity_str = "Arity_" in
+        let arity_len = String.length arity_str in
+        if arity_len < label_len &&
+          String.sub label 0 arity_len = arity_str
+        then
+          try
+            Some (int_of_string (String.sub label arity_len (label_len-arity_len)))
+          with _ -> None
+        else None
+    | _ ->
+        None in
+  let check_mismatch t1 t2 = match (arity t1, arity t2) with
+    | Some n1, Some n2 ->
+        fprintf ppf "@[@{<info>Found uncurried application [@bs] with arity %d, where arity %d was expected.@}@]" n1 n2;
+        true
+    | None, _
+    | _, None ->
+        false in
+  let rec traverse = function
+    | (_arity1, type1) :: (_arity2, type2) :: rest ->
+        if traverse rest
+        then true
+        else check_mismatch type1 type2
+    | _ ->
+        false in
+  ignore (traverse trace)
+
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
@@ -129,6 +160,7 @@ let report_error env ppf = function
             else fprintf ppf "~%s: %a" label type_expr argtype
           )) arguments
         | None ->
+          check_bs_arity_mismatch ppf trace;
           super_report_unification_error ppf env trace
             (function ppf ->
                 fprintf ppf "This has type:")
