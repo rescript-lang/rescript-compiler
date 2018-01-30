@@ -68,7 +68,8 @@ bs_MapStringM.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
     bs_Array.cmj bs_MapStringM.cmi
 bs_MapIntM.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_Array.cmj \
     bs_MapIntM.cmi
-bs_Set.cmj : bs_SortedSetDict.cmj bs_Cmp.cmj bs_Array.cmj bs_Set.cmi
+bs_Set.cmj : bs_SortedSetDict.cmj bs_SetString.cmj bs_SetInt.cmj bs_Cmp.cmj \
+    bs_Array.cmj bs_Set.cmi
 bs_SetM.cmj : bs_internalAVLset.cmj bs_SortArray.cmj bs_SetStringM.cmj \
     bs_SetIntM.cmj bs_Cmp.cmj bs_Array.cmj bs_SetM.cmi
 bs_MapM.cmj : bs_internalAVLtree.cmj bs_MapStringM.cmj bs_MapIntM.cmj \
@@ -135,7 +136,7 @@ bs_MapString.cmi :
 bs_MapInt.cmi :
 bs_MapStringM.cmi :
 bs_MapIntM.cmi :
-bs_Set.cmi : bs_SortedSetDict.cmi bs_Cmp.cmi
+bs_Set.cmi : bs_SortedSetDict.cmi bs_SetString.cmi bs_SetInt.cmi bs_Cmp.cmi
 bs_SetM.cmi : bs_SetStringM.cmi bs_SetIntM.cmi bs_Cmp.cmi
 bs_MapM.cmi : bs_MapStringM.cmi bs_MapIntM.cmi bs_Cmp.cmi
 bs_SetInt.cmi :

@@ -462,14 +462,14 @@ let rec has   (t: _ t) x ~cmp =
   | None -> false
   | Some n ->
     let v = key n in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) x v [@bs] in
     c = 0 || has ~cmp (if c < 0 then left n else right n) x
 
 
 let rec compareAux e1 e2 ~cmp =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
-    let c = (Bs_Cmp.getCmpIntenral cmp) (key h1) (key h2) [@bs] in 
+    let c = (Bs_Cmp.getCmpInternal cmp) (key h1) (key h2) [@bs] in 
     if c = 0 then
       compareAux ~cmp 
         (stackAllLeft  (right h1) t1)
@@ -495,7 +495,7 @@ let rec subset (s1 : _ t) (s2 : _ t) ~cmp  =
   | Some t1 , Some t2  ->
     let l1,v1,r1 = (left t1, key t1, right t1) in  
     let l2,v2,r2 = (left t2, key t2, right t2) in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) v1 v2 [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) v1 v2 [@bs] in
     if c = 0 then
       subset ~cmp l1 l2 && subset ~cmp r1 r2
     else if c < 0 then
@@ -510,7 +510,7 @@ let rec get  (n : _ t) x ~cmp =
     None -> None
   | Some t (* Node(l, v, r, _) *) ->
     let v = key t in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) x v [@bs] in
     if c = 0 then Some v
     else get ~cmp  (if c < 0 then left t else right t) x
 
@@ -520,7 +520,7 @@ let rec getUndefined (n : _ t) x ~cmp  =
     None -> Js.Undefined.empty
   | Some t (* Node(l, v, r, _) *) ->
     let v = key t in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) x v [@bs] in
     if c = 0 then  Js.Undefined.return v
     else getUndefined ~cmp  (if c < 0 then left t else right t) x 
 
@@ -529,7 +529,7 @@ let rec getExn  (n : _ t) x ~cmp =
     None -> [%assert "getExn0"]
   | Some t (* Node(l, v, r, _) *) ->
     let v = key t in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) x v [@bs] in
     if c = 0 then  v
     else getExn ~cmp  (if c < 0 then left t else right t) x 
 
@@ -609,7 +609,7 @@ let rec addMutate ~cmp (t : _ t) x =
   | None -> singleton x 
   | Some nt -> 
     let k = key nt in 
-    let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  
+    let  c = (Bs_Cmp.getCmpInternal cmp) x k [@bs] in  
     if c = 0 then t 
     else
       let l, r = (left nt, right nt) in 
@@ -627,7 +627,7 @@ let ofArray  (xs : _ array) ~cmp =
   if len = 0 then empty
   else
     let next = ref (S.strictlySortedLength xs 
-      (fun [@bs] x y -> (Bs_Cmp.getCmpIntenral cmp) x y [@bs] < 0)) in     
+      (fun [@bs] x y -> (Bs_Cmp.getCmpInternal cmp) x y [@bs] < 0)) in     
     let result = 
       ref (if !next >= 0 then  
         ofSortedArrayAux xs 0 !next

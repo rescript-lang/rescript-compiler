@@ -112,3 +112,5 @@ val getData: ('k,'id) t  -> ('k,'id) Bs_SortedSetDict.t
 val getDict: ('k,'id) t  -> ('k,'id) dict
 val packDictData: dict:('k, 'id) dict -> data:('k, 'id) Bs_SortedSetDict.t -> ('k, 'id) t
     
+module Int = Bs_SetInt
+module String = Bs_SetString

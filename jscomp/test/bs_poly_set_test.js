@@ -350,6 +350,19 @@ var m$4 = Bs_Set.keepBy(a, (function (x) {
 
 b("File \"bs_poly_set_test.ml\", line 135, characters 4-11", Bs_SortedSetDict.isEmpty(m$4.data));
 
+var match$5 = Bs_Set.split({
+      cmp: IntCmp[/* cmp */0],
+      data: Bs_SortedSetDict.empty
+    }, 0);
+
+var match$6 = match$5[0];
+
+b("File \"bs_poly_set_test.ml\", line 139, characters 4-11", Bs_SortedSetDict.isEmpty(match$6[0].data));
+
+b("File \"bs_poly_set_test.ml\", line 140, characters 4-11", Bs_SortedSetDict.isEmpty(match$6[1].data));
+
+b("File \"bs_poly_set_test.ml\", line 141, characters 4-11", 1 - match$5[1]);
+
 Mt.from_pair_suites("bs_poly_set_test.ml", suites[0]);
 
 var N = 0;

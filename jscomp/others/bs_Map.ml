@@ -43,8 +43,7 @@ let remove m x  =
 let removeMany m x =     
   let cmp, odata = S.cmp m,  S.data m in
   let newData = N.removeMany odata x ~cmp in
-  if newData == odata then m
-  else S.t ~cmp  ~data:newData
+  S.t ~cmp  ~data:newData
 
 let set m key d  = 
   let cmp = S.cmp m in 

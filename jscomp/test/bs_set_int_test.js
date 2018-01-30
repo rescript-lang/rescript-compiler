@@ -309,6 +309,59 @@ var a11 = Bs_SetInt.removeMany(a9, Array_data_util.randomRange(0, 2000));
 
 b("File \"bs_set_int_test.ml\", line 153, characters 4-11", Bs_SetInt.isEmpty(a11));
 
+var match$5 = Bs_SetInt.split(Bs_SetInt.empty, 0);
+
+var match$6 = match$5[0];
+
+b("File \"bs_set_int_test.ml\", line 157, characters 4-11", Bs_SetInt.isEmpty(match$6[0]));
+
+b("File \"bs_set_int_test.ml\", line 158, characters 4-11", Bs_SetInt.isEmpty(match$6[1]));
+
+b("File \"bs_set_int_test.ml\", line 159, characters 4-11", 1 - match$5[1]);
+
+var v$12 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 2000));
+
+var v0 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 2000));
+
+var v1 = Bs_SetInt.ofArray(Array_data_util.randomRange(1, 2001));
+
+var v2 = Bs_SetInt.ofArray(Array_data_util.randomRange(3, 2002));
+
+var v3 = Bs_SetInt.removeMany(v2, /* int array */[
+      2002,
+      2001
+    ]);
+
+var us = Bs_Array.map(Array_data_util.randomRange(1000, 3000), (function (x) {
+        return Bs_SetInt.has(v$12, x);
+      }));
+
+var counted = Bs_Array.reduce(us, 0, (function (acc, x) {
+        if (x) {
+          return acc + 1 | 0;
+        } else {
+          return acc;
+        }
+      }));
+
+eq("File \"bs_set_int_test.ml\", line 169, characters 5-12", counted, 1001);
+
+b("File \"bs_set_int_test.ml\", line 170, characters 4-11", Bs_SetInt.eq(v$12, v0));
+
+b("File \"bs_set_int_test.ml\", line 171, characters 4-11", +(Bs_SetInt.cmp(v$12, v0) === 0));
+
+b("File \"bs_set_int_test.ml\", line 172, characters 4-11", +(Bs_SetInt.cmp(v$12, v1) < 0));
+
+b("File \"bs_set_int_test.ml\", line 173, characters 4-11", +(Bs_SetInt.cmp(v$12, v2) > 0));
+
+b("File \"bs_set_int_test.ml\", line 174, characters 4-11", Bs_SetInt.subset(v3, v0));
+
+b("File \"bs_set_int_test.ml\", line 175, characters 4-11", 1 - Bs_SetInt.subset(v1, v0));
+
+eq("File \"bs_set_int_test.ml\", line 176, characters 5-12", Bs_SetInt.get(v$12, 30), /* Some */[30]);
+
+eq("File \"bs_set_int_test.ml\", line 177, characters 5-12", Bs_SetInt.get(v$12, 3000), /* None */0);
+
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 
 var N = 0;

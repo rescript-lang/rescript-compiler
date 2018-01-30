@@ -69,7 +69,7 @@ let rec set  (t : _ t) newK newD  ~cmp =
   | None -> N.singleton newK newD 
   | Some n  ->
     let k= N.key n in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) newK k [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
       N.return (N.updateValue n newD) 
     else 
@@ -88,7 +88,7 @@ let rec update  (t : _ t) newK f  ~cmp :  _ t =
     end 
   | Some n  ->
     let k= N.key n in 
-    let c = (Bs_Cmp.getCmpIntenral cmp) newK k [@bs] in
+    let c = (Bs_Cmp.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
       match f (Some (N.value n)) [@bs] with 
       | None ->
@@ -133,7 +133,7 @@ let rec update  (t : _ t) newK f  ~cmp :  _ t =
 
 let rec removeAux0  n x ~cmp = 
   let l,v,r = N.(left n, key n, right n ) in 
-  let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in
+  let c = (Bs_Cmp.getCmpInternal cmp) x v [@bs] in
   if c = 0 then
     match N.toOpt l, N.toOpt r with 
     | None, _ -> r 
@@ -174,7 +174,7 @@ let mergeMany   h arr ~cmp =
 
 let rec splitAuxPivot n x pres  ~cmp =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
-  let c = (Bs_Cmp.getCmpIntenral cmp) x v [@bs] in 
+  let c = (Bs_Cmp.getCmpInternal cmp) x v [@bs] in 
   if c = 0 then begin 
     pres := Some d; 
     (l,  r)
@@ -236,13 +236,13 @@ let rec merge s1 s2 f ~cmp =
       let newRight = (merge ~cmp r1 r2 f) in 
       N.concatOrJoin newLeft v2 newD newRight
 
-let rec removeArrayAux t xs i len ~cmp =
+let rec removeMany0 t xs i len ~cmp =
   if i < len then
     let ele = A.getUnsafe xs i in
     let u =  removeAux0 t ele ~cmp in
     match N.toOpt u with
     | None -> u
-    | Some t -> removeArrayAux t xs (i + 1) len ~cmp 
+    | Some t -> removeMany0 t xs (i + 1) len ~cmp 
   else
     N.return t
       
@@ -250,7 +250,7 @@ let removeMany t keys ~cmp =
   let len = A.length keys in
   match N.toOpt t with
   | None -> N.empty
-  | Some t ->  removeArrayAux t keys 0 len ~cmp 
+  | Some t ->  removeMany0 t keys 0 len ~cmp 
 
 
 

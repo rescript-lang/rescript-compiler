@@ -43,31 +43,30 @@ end
 type ('k, 'id) t = ('k, 'id) S.t
 
 
-let rec removeMutateAux nt x ~cmp = 
+let rec remove0 nt x ~cmp = 
   let k = N.key nt in 
-  let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in 
+  let c = cmp x k [@bs] in 
   if c = 0 then 
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
+    | None, _ -> r 
+    | _, None -> l 
     | Some _,  Some nr ->  
       N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
       N.return (N.balMutate nt)
-    | None, Some _ ->
-      r  
-    | (Some _ | None ), None ->  l 
-  else 
+   else 
     begin 
       if c < 0 then 
         match N.toOpt (N.left nt) with         
         | None -> N.return nt 
         | Some l ->
-          N.leftSet nt (removeMutateAux ~cmp l x );
+          N.leftSet nt (remove0 ~cmp l x );
           N.return (N.balMutate nt)
       else 
         match N.toOpt (N.right nt) with 
         | None -> N.return nt 
         | Some r -> 
-          N.rightSet nt (removeMutateAux ~cmp r x);
+          N.rightSet nt (remove0 ~cmp r x);
           N.return (N.balMutate nt)
     end
 
@@ -76,18 +75,18 @@ let remove  d  v =
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
-    let newRoot = removeMutateAux ~cmp:(S.cmp d) oldRoot2 v in 
+    let newRoot = remove0 ~cmp:(Bs_Cmp.getCmpInternal (S.cmp d)) oldRoot2 v in 
     if newRoot != oldRoot then 
       S.dataSet d newRoot    
 
 
-let rec removeArrayMutateAux t xs i len ~cmp  =  
+let rec removeMany0 t xs i len ~cmp  =  
   if i < len then 
     let ele = A.getUnsafe xs i in 
-    let u = removeMutateAux t ele ~cmp in 
+    let u = remove0 t ele ~cmp in 
     match N.toOpt u with 
     | None -> N.empty
-    | Some t -> removeArrayMutateAux t xs (i+1) len ~cmp 
+    | Some t -> removeMany0 t xs (i+1) len ~cmp 
   else N.return t    
 
 let removeMany d xs =  
@@ -96,37 +95,36 @@ let removeMany d xs =
   | None -> ()
   | Some nt -> 
     let len = A.length xs in 
-    let newRoot = removeArrayMutateAux nt xs 0 len ~cmp:(S.cmp d) in 
-    if newRoot != oldRoot then 
-      S.dataSet d newRoot
+    S.dataSet d 
+      (removeMany0 nt xs 0 len 
+        ~cmp:(Bs_Cmp.getCmpInternal (S.cmp d)))
 
 
-let rec removeMutateCheckAux  nt x removed ~cmp= 
+let rec removeCheck0  nt x removed ~cmp= 
   let k = N.key nt in 
-  let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in 
+  let c = (Bs_Cmp.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
     let () = removed := true in  
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
+    | None, _ -> r 
+    | _, None -> l  
     | Some _,  Some nr ->  
       N.rightSet nt (N.removeMinAuxWithRootMutate nt nr);
       N.return (N.balMutate nt)
-    | None, Some _ ->
-      r  
-    | (Some _ | None ), None ->  l 
   else 
     begin 
       if c < 0 then 
         match N.toOpt (N.left nt) with         
         | None -> N.return nt 
         | Some l ->
-          N.leftSet nt (removeMutateCheckAux ~cmp l x removed);
+          N.leftSet nt (removeCheck0 ~cmp l x removed);
           N.return (N.balMutate nt)
       else 
         match N.toOpt (N.right nt) with 
         | None -> N.return nt 
         | Some r -> 
-          N.rightSet nt (removeMutateCheckAux ~cmp r x removed);
+          N.rightSet nt (removeCheck0 ~cmp r x removed);
           N.return (N.balMutate nt)
     end
 
@@ -138,72 +136,56 @@ let removeCheck d v =
   | None -> false 
   | Some oldRoot2 ->
     let removed = ref false in 
-    let newRoot = removeMutateCheckAux ~cmp:(S.cmp d) oldRoot2 v removed in 
+    let newRoot = removeCheck0 ~cmp:(S.cmp d) oldRoot2 v removed in 
     if newRoot != oldRoot then  
       S.dataSet d newRoot ;   
     !removed
 
 
 
-let rec addMutateCheckAux  t x added ~cmp  =   
+let rec addCheck0  t x added ~cmp  =   
   match N.toOpt t with 
   | None -> 
     added := true;
     N.singleton x 
   | Some nt -> 
     let k = N.key nt in 
-    let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  
+    let c = cmp x k [@bs] in  
     if c = 0 then t 
     else
       let l, r = N.(left nt, right nt) in 
       (if c < 0 then                   
-         let ll = addMutateCheckAux ~cmp l x added in
+         let ll = addCheck0 ~cmp l x added in
          N.leftSet nt ll
        else   
-         N.rightSet nt (addMutateCheckAux ~cmp r x added );
+         N.rightSet nt (addCheck0 ~cmp r x added );
       );
       N.return (N.balMutate nt)
 
 let addCheck m e = 
-  let  oldRoot = S.data m in 
+  let oldRoot = S.data m in 
   let added = ref false in 
-  let newRoot = addMutateCheckAux ~cmp:(S.cmp m) oldRoot e added in 
+  let newRoot = addCheck0 ~cmp:(Bs_Cmp.getCmpInternal (S.cmp m)) oldRoot e added in 
   if newRoot != oldRoot then 
     S.dataSet m newRoot;
   !added    
 
+let add m e = 
+  let oldRoot = S.data m in 
+  let newRoot = N.addMutate ~cmp:(S.cmp m) oldRoot e  in 
+  if newRoot != oldRoot then 
+    S.dataSet m newRoot
 
-let split d  key  =     
-  let arr = N.toArray (S.data d) in
-  let cmp = S.cmp d in 
-  let i = Sort.binarySearchBy arr key (Bs_Cmp.getCmpIntenral cmp)  in   
-  let len = A.length arr in 
-  if i < 0 then 
-    let next = - i -1 in 
-    (S.t 
-       ~data:(N.ofSortedArrayAux arr 0 next)
-       ~cmp
-     , 
-     S.t 
-       ~data:(N.ofSortedArrayAux arr next (len - next))
-       ~cmp
-    ), false
-  else 
-    (S.t 
-       ~data:(N.ofSortedArrayAux arr 0 i)
-       ~cmp,
-     S.t 
-       ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
-       ~cmp
-    ), true       
-
-let keepBy d p = 
-  S.t ~data:(N.filterCopy (S.data d) p ) ~cmp:(S.cmp d)
+let addArrayMutate t xs ~cmp =     
+  let v = ref t in 
+  for i = 0 to A.length xs - 1 do 
+    v := N.addMutate !v (A.getUnsafe xs i)  ~cmp
+  done; 
+  !v
     
-let partition d p = 
-  let cmp = S.cmp d in 
-  let a, b = N.partitionCopy (S.data d) p in 
-  S.t ~data:a ~cmp, S.t ~data:b ~cmp
+let mergeMany d xs =   
+  S.dataSet d (addArrayMutate (S.data d) xs ~cmp:(S.cmp d))
+
 
 let empty (type elt) (type id) ~(dict : (elt, id) dict) =
   let module M = (val dict) in 
@@ -242,6 +224,13 @@ let ofSortedArrayUnsafe (type elt) (type id) xs ~(dict : (elt,id) dict) : _ t =
 let checkInvariantInternal d = 
   N.checkInvariantInternal (S.data d)
     
+    
+let ofArray (type elt) (type id)  data ~(dict : (elt,id) dict) =
+  let module M = (val dict) in
+  let cmp = M.cmp in 
+  S.t ~cmp ~data:(N.ofArray ~cmp data)
+    
+  
 let cmp d0 d1 = 
   N.cmp ~cmp:(S.cmp d0) (S.data d0) (S.data d1)
 
@@ -257,29 +246,38 @@ let getUndefined  d x =
 let getExn d x = 
   N.getExn ~cmp:(S.cmp d) (S.data d) x
     
-let has d x =
-  N.has ~cmp:(S.cmp d) (S.data d) x
-    
-let ofArray (type elt) (type id)  data ~(dict : (elt,id) dict) =
-  let module M = (val dict) in
-  let cmp = M.cmp in 
-  S.t ~cmp ~data:(N.ofArray ~cmp data)
-    
-let add m e = 
-  let oldRoot = S.data m in 
-  let newRoot = N.addMutate ~cmp:(S.cmp m) oldRoot e  in 
-  if newRoot != oldRoot then 
-    S.dataSet m newRoot
 
-let addArrayMutate t xs ~cmp =     
-  let v = ref t in 
-  for i = 0 to A.length xs - 1 do 
-    v := N.addMutate !v (A.getUnsafe xs i)  ~cmp
-  done; 
-  !v
+let split d  key  =     
+  let arr = N.toArray (S.data d) in
+  let cmp = S.cmp d in 
+  let i = Sort.binarySearchBy arr key (Bs_Cmp.getCmpInternal cmp)  in   
+  let len = A.length arr in 
+  if i < 0 then 
+    let next = - i -1 in 
+    (S.t 
+       ~data:(N.ofSortedArrayAux arr 0 next)
+       ~cmp
+     , 
+     S.t 
+       ~data:(N.ofSortedArrayAux arr next (len - next))
+       ~cmp
+    ), false
+  else 
+    (S.t 
+       ~data:(N.ofSortedArrayAux arr 0 i)
+       ~cmp,
+     S.t 
+       ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
+       ~cmp
+    ), true       
+
+let keepBy d p = 
+  S.t ~data:(N.filterCopy (S.data d) p ) ~cmp:(S.cmp d)
     
-let mergeMany d xs =   
-  S.dataSet d (addArrayMutate (S.data d) xs ~cmp:(S.cmp d))
+let partition d p = 
+  let cmp = S.cmp d in 
+  let a, b = N.partitionCopy (S.data d) p in 
+  S.t ~data:a ~cmp, S.t ~data:b ~cmp  
 
 
 let subset a b = 
@@ -297,7 +295,7 @@ let intersect a b  : _ t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    let p = Bs_Cmp.getCmpIntenral cmp in 
+    let p = Bs_Cmp.getCmpInternal cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
@@ -326,7 +324,7 @@ let diff a b : _ t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    let p = Bs_Cmp.getCmpIntenral cmp in 
+    let p = Bs_Cmp.getCmpInternal cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
@@ -353,7 +351,7 @@ let union a b =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
-    let p = (Bs_Cmp.getCmpIntenral cmp)  in 
+    let p = (Bs_Cmp.getCmpInternal cmp)  in 
     if p
         (A.getUnsafe tmp (sizea - 1))
         (A.getUnsafe tmp sizea) [@bs] < 0 then 
@@ -362,6 +360,9 @@ let union a b =
       let tmp2 = A.makeUninitializedUnsafe totalSize in 
       let k = Sort.union tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.ofSortedArrayAux tmp2 0 k) ~cmp
+      
+let has d x =
+  N.has ~cmp:(S.cmp d) (S.data d) x
 
 let copy d = S.t ~data:(N.copy (S.data d)) ~cmp:(S.cmp d)
 

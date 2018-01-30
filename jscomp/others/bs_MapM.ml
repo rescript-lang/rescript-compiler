@@ -42,7 +42,7 @@ type ('k, 'v, 'id) t = ('k, 'v, 'id) S.t
 
 let rec removeMutateAux nt x ~cmp = 
   let k = N.key nt in 
-  let c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in 
+  let c = (Bs_Cmp.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
@@ -106,7 +106,7 @@ let rec updateDone t x   f  ~cmp =
     | None -> t)
   | Some nt -> 
     let k = N.key nt in 
-    let  c = (Bs_Cmp.getCmpIntenral cmp) x k [@bs] in  
+    let  c = (Bs_Cmp.getCmpInternal cmp) x k [@bs] in  
     if c = 0 then begin     
       match f (Some (N.value nt)) [@bs] with
       | None ->

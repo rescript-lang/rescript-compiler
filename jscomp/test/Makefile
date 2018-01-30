@@ -212,16 +212,18 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	gpr_2250_test\
 	gpr_1285_test\
 	defunctor_make_test\
-	bs_map_test\
 	bs_hashtbl_string_test\
 	console_log_test\
 	bs_set_bench\
 	bs_set_int_test\
-	bs_map_int_test\
 	rbset\
 	bs_rbset_int_bench\
 	bs_array_test\
+	bs_poly_mutable_set_test\
 	bs_mutable_set_test\
+	bs_poly_map_test\
+	bs_map_test\
+	bs_map_set_dict_test\
 	bs_abstract_test\
 	bs_queue_test\
 	bs_hashmap_test\
@@ -231,10 +233,8 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	bs_min_max_test\
 	bs_sort_test\
 	equal_box_test\
-	bs_poly_mutable_set_test\
 	bs_poly_set_test\
 	bs_stack_test\
-	bs_poly_map_test\
 	bs_poly_mutable_map_test\
 	imm_map_bench\
 
