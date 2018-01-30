@@ -9,43 +9,12 @@ type ('a,'b,'id) t
 type ('a, 'id) dict = ('a, 'id) Bs_Hash.t
     
 val make :  int -> dict: ('a, 'id) dict ->  ('a,'b,'id) t
-(** [Hashtbl.create n] creates a new, empty hash table, with
+(** [make n ~dict] creates a new, empty hash table, with
     initial size [n].  For best results, [n] should be on the
     order of the expected number of elements that will be in
     the table.  The table grows as needed, so [n] is just an
     initial guess.
-
-    The optional [random] parameter (a boolean) controls whether
-    the internal organization of the hash table is randomized at each
-    execution of [Hashtbl.create] or deterministic over all executions.
-
-    A hash table that is created with [~random:false] uses a
-    fixed hash function ({!Hashtbl.hash}) to distribute keys among
-    buckets.  As a consequence, collisions between keys happen
-    deterministically.  In Web-facing applications or other
-    security-sensitive applications, the deterministic collision
-    patterns can be exploited by a malicious user to create a
-    denial-of-service attack: the attacker sends input crafted to
-    create many collisions in the table, slowing the application down.
-
-    A hash table that is created with [~random:true] uses the seeded
-    hash function {!Hashtbl.seeded_hash} with a seed that is randomly
-    chosen at hash table creation time.  In effect, the hash function
-    used is randomly selected among [2^{30}] different hash functions.
-    All these hash functions have different collision patterns,
-    rendering ineffective the denial-of-service attack described above.
-    However, because of randomization, enumerating all elements of the
-    hash table using {!Hashtbl.fold} or {!Hashtbl.iter} is no longer
-    deterministic: elements are enumerated in different orders at
-    different runs of the program.
-
-    If no [~random] parameter is given, hash tables are created
-    in non-random mode by default.  This default can be changed
-    either programmatically by calling {!Hashtbl.randomize} or by
-    setting the [R] flag in the [OCAMLRUNPARAM] environment variable.
-
-    @before 4.00.0 the [random] parameter was not present and all
-    hash tables were created in non-randomized mode. *)
+*)
 
 
 val clear : ('a, 'b, 'id) t -> unit
@@ -59,14 +28,13 @@ val clear : ('a, 'b, 'id) t -> unit
 val add: ('a, 'b, 'id) t -> 'a -> 'b -> unit
 (** [add tbl x y] adds a binding of [x] to [y] in table [tbl].
     Previous bindings for [x] are not removed, but simply
-    hidden. That is, after performing {!Hashtbl.remove}[ tbl x],
+    hidden. That is, after performing [remove tbl x],
     the previous binding for [x], if any, is restored.
     (Same behavior as with association lists.) *)
 
 val get:  
   ('a, 'b, 'id) t -> 'a -> 'b option
-(** [findOpt tbl x] returns the current binding of [x] in [tbl],
-    *)
+(** [get tbl x] returns the current binding of [x] in [tbl] *)
 
 val getAll:  ('a, 'b, 'id) t -> 'a -> 'b list  
 (** [getAll tbl x] returns the list of all data
@@ -76,12 +44,12 @@ val getAll:  ('a, 'b, 'id) t -> 'a -> 'b list
 
 val has:  
   ('a, 'b, 'id) t -> 'a -> bool
-(** [Hashtbl.mem tbl x] checks if [x] is bound in [tbl]. *)
+(** [has tbl x] checks if [x] is bound in [tbl]. *)
 
   
 val remove:
 ('a, 'b, 'id) t -> 'a -> unit
-(** [Hashtbl.remove tbl x] removes the current binding of [x] in [tbl],
+(** [remove tbl x] removes the current binding of [x] in [tbl],
     restoring the previous binding if it exists.
     It does nothing if [x] is not bound in [tbl]. *)
 
@@ -91,11 +59,11 @@ val removeAll:
     
 val replace:  
   ('a, 'b, 'id) t -> 'a -> 'b -> unit
-(** [Hashtbl.replace tbl x y] replaces the current binding of [x]
+(** [replace tbl x y] replaces the current binding of [x]
     in [tbl] by a binding of [x] to [y].  If [x] is unbound in [tbl],
     a binding of [x] to [y] is added to [tbl].
-    This is functionally equivalent to {!Hashtbl.remove}[ tbl x]
-    followed by {!Hashtbl.add}[ tbl x y]. *)
+    This is functionally equivalent to [remove tbl x]
+    followed by [add tbl x y]. *)
 
 
 val forEach : ('a, 'b, 'id) t -> ('a -> 'b -> unit [@bs]) -> unit
@@ -134,7 +102,7 @@ val keepMapInPlace : ('a, 'b, 'id) t -> ('a -> 'b -> 'b option [@bs]) ->  unit
 val size  : ('a, 'b, 'id) t -> int  
 (** [size tbl] returns the number of bindings in [tbl].
     It takes constant time.  Multiple bindings are counted once each, so
-    [size] gives the number of times [Hashtbl.iter] calls its
+    [size] gives the number of times [forEach] calls its
     first argument. *)
 
 

@@ -57,3 +57,4 @@ let clear h =
     A.setUnsafe h_buckets i  emptyOpt
   done
 
+let isEmpty h = size h = 0 
