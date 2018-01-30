@@ -70,12 +70,14 @@ let rec collect_missing_arguments rettype targettype = match rettype with
 let check_bs_arity_mismatch ppf trace =
   let arity t = match t.desc with
     | Tvariant { row_fields = [(label,_)] } ->
-        let len = String.length label in
-        if len > 6 &&
-          String.sub label 0 6 = "Arity_"
+        let label_len = String.length label in
+        let arity_str = "Arity_" in
+        let arity_len = String.length arity_str in
+        if arity_len < label_len &&
+          String.sub label 0 arity_len = arity_str
         then
           try
-            Some (int_of_string (String.sub label 6 (len-6)))
+            Some (int_of_string (String.sub label arity_len (label_len-arity_len)))
           with _ -> None
         else None
     | _ ->
