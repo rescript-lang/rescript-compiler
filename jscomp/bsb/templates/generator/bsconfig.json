@@ -1,18 +1,18 @@
 {
   "name": "${bsb:name}",
   "version": "${bsb:proj-version}",
-  "sources": [{
+  "sources": {
     "dir": "src",
     "generators": [{
       "name": "cpp",
       "edge": ["test.ml", ":", "test.cpp.ml"]
-    }]
-  }],
+    }],
+    "subdirs": true  
+  },
   "generators": [{
     "name" : "cpp",
     "command": "sed 's/OCAML/3/' $in > $out"
   }],
   "bs-dependencies" : [
-      // add your bs-dependencies here 
   ]
 }
