@@ -23,6 +23,8 @@ let suites = Mt.[
         Eq( false, (f Js.true_ = [%bs.raw {|true|} ] (* not type check*))));
 ]
 
-(* let f u = Js.unsafe_js_expr u *)
+let ff u =
+    if u = Js.true_ then 1 
+    else 2 
 
 ;; Mt.from_pair_suites __FILE__ suites

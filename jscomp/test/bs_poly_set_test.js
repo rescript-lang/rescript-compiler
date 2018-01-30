@@ -180,14 +180,14 @@ var m$2 = {
   data: Bs_SortedSetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.minUndefined(m$2.data), undefined));
+b("File \"bs_poly_set_test.ml\", line 82, characters 4-11", +(Bs_SortedSetDict.minUndefined(m$2.data) === undefined));
 
 var m$3 = {
   cmp: IntCmp[/* cmp */0],
   data: Bs_SortedSetDict.empty
 };
 
-b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", Caml_obj.caml_equal(Bs_SortedSetDict.maxUndefined(m$3.data), undefined));
+b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", +(Bs_SortedSetDict.maxUndefined(m$3.data) === undefined));
 
 function testIterToList(xs) {
   var v = [/* [] */0];

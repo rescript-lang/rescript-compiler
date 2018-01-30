@@ -1301,6 +1301,13 @@ let js_bool ?comment x : t =
 
 let is_undef ?comment x = triple_equal ?comment x undefined
 
+let for_sure_js_null_undefined_boolean (x : t) = 
+  match x.expression_desc with 
+  | Var (Id ({name = "undefined" | "null"} as id)) 
+    -> Ext_ident.is_js id 
+  | Bool _ -> true
+  | _ -> false
+  
 let is_null_undefined ?comment (x: t) : t = 
   match x.expression_desc with 
   | Var (Id ({name = "undefined" | "null"} as id))

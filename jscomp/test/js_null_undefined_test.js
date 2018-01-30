@@ -242,7 +242,7 @@ var suites_001 = /* :: */[
                                           /* tuple */[
                                             "undefined = empty",
                                             (function () {
-                                                return /* Ok */Block.__(4, [Caml_obj.caml_equal(undefined, undefined)]);
+                                                return /* Ok */Block.__(4, [+(undefined === undefined)]);
                                               })
                                           ],
                                           /* :: */[

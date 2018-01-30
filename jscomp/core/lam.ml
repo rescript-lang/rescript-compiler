@@ -55,6 +55,8 @@ type meth_kind = Lambda.meth_kind
 type constant = 
   | Const_js_null 
   | Const_js_undefined 
+  | Const_js_true
+  | Const_js_false
   | Const_int of int
   | Const_char of char
   | Const_string of string  (* use record later *)
@@ -1127,8 +1129,10 @@ let if_ (a : t) (b : t) c =
         if x <> 0L then b else c
       | (Const_nativeint x) ->
         if x <> 0n then b else c
+      | Const_js_false
       | Const_js_null 
       | Const_js_undefined -> c         
+      | Const_js_true
       | Const_string _ 
       | Const_float _
       | Const_unicode _
@@ -1818,7 +1822,10 @@ let convert exports lam : _ * _  =
       prim ~primitive:Pdebugger ~args:[] loc 
     | _ when s = "#null" ->
       Lconst (Const_js_null)
-
+    | _ when s = "#true"  ->
+      Lconst (Const_js_true)
+    | _ when s = "#false"  ->
+      Lconst (Const_js_false)      
     | _ when s = "#undefined" ->
       Lconst (Const_js_undefined)
     | _ when s = "#init_mod" -> 
