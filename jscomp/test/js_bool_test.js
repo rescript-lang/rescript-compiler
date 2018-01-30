@@ -38,7 +38,7 @@ var suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 u,
-                f(true)
+                /* true */1
               ]);
     })
 ];
@@ -59,7 +59,7 @@ var suites_001 = /* :: */[
       (function () {
           return /* Eq */Block.__(0, [
                     /* false */0,
-                    +(f(true) === (true))
+                    +(/* true */1 === (true))
                   ]);
         })
     ],
@@ -81,4 +81,4 @@ exports.f3 = f3;
 exports.u = u;
 exports.v = v;
 exports.suites = suites;
-/* f3 Not a pure module */
+/* u Not a pure module */

@@ -13394,11 +13394,13 @@ let root = OCamlRes.Res.([
   Dir ("react", [
     File ("webpack.config.js",
       "const path = require('path');\n\
+       const outputDir = path.join(__dirname, \"build/\");\n\
        \n\
        module.exports = {\n\
       \  entry: './src/Index.bs.js',\n\
       \  output: {\n\
-      \    path: path.join(__dirname, \"build\"),\n\
+      \    path: outputDir,\n\
+      \    publicPath: outputDir,\n\
       \    filename: 'Index.js',\n\
       \  },\n\
        };\n\

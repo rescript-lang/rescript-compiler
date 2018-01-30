@@ -673,10 +673,20 @@ let translate loc (prim_name : string)
       -> 
       call Js_runtime_modules.obj_runtime
 
+    | "caml_equal"  ->     
+      begin match args with 
+      | [a1;b1]  when 
+        E.for_sure_js_null_undefined_boolean a1 || E.for_sure_js_null_undefined_boolean a1 
+        -> 
+        E.int_comp Ceq a1 b1 
+        (* FIXME address_equal *)
+      | _ -> 
+        Location.prerr_warning loc Warnings.Bs_polymorphic_comparison ; 
+        call Js_runtime_modules.obj_runtime
+      end
     | "caml_min"
     | "caml_max"
-    | "caml_compare"
-    | "caml_equal"
+    | "caml_compare"    
     | "caml_notequal"
     | "caml_greaterequal"
     | "caml_greaterthan"

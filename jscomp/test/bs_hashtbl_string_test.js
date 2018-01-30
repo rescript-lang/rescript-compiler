@@ -190,7 +190,9 @@ function bench4() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Bs_HashMapString.remove(table, "" + i$2);
   }
-  if (table.size) {
+  if (Bs_HashMapString.isEmpty(table)) {
+    return 0;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -199,8 +201,6 @@ function bench4() {
             2
           ]
         ];
-  } else {
-    return 0;
   }
 }
 
@@ -231,7 +231,9 @@ function bench5() {
     Bs_HashMap.remove(table, i$2);
   }
   console.timeEnd("bs_hashtbl_string_test.ml 141");
-  if (table.size) {
+  if (Bs_HashMap.isEmpty(table)) {
+    return 0;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -240,8 +242,6 @@ function bench5() {
             2
           ]
         ];
-  } else {
-    return 0;
   }
 }
 

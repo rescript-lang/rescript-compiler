@@ -5,10 +5,6 @@ function u() {
   return xx(3);
 }
 
-var a = true;
-
-var b = false;
-
 var Textarea = /* module */[];
 
 var Int32Array = /* module */[];
@@ -25,6 +21,10 @@ function f() {
   return v[0];
 }
 
+var a = true;
+
+var b = false;
+
 var c = null;
 
 var d = undefined;
@@ -38,4 +38,4 @@ exports.Textarea = Textarea;
 exports.Int32Array = Int32Array;
 exports.v = v;
 exports.f = f;
-/* a Not a pure module */
+/* No side effect */

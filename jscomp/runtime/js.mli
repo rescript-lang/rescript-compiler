@@ -93,8 +93,8 @@ type (+'a, +'e) promise
 *)
 
 
-external true_ : boolean = "true" [@@bs.val]
-external false_ : boolean = "false" [@@bs.val]
+external true_ : boolean = "#true" 
+external false_ : boolean = "#false" 
 
 external null : 'a null = "#null" 
 (** The same as [empty] in {!Js.Null} will be compiled as [null]*)

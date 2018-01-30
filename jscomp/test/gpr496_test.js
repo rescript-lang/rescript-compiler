@@ -45,13 +45,13 @@ var expected = /* tuple */[
   expected_007
 ];
 
-var u_000 = Caml_obj.caml_equal(true, false);
+var u_000 = +(true === false);
 
-var u_001 = Caml_obj.caml_equal(false, true);
+var u_001 = +(false === true);
 
-var u_002 = Caml_obj.caml_equal(false, false);
+var u_002 = +(false === false);
 
-var u_003 = Caml_obj.caml_equal(true, true);
+var u_003 = +(true === true);
 
 var u_004 = Caml_obj.caml_compare(false, true);
 
