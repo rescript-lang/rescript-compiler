@@ -1,4 +1,7 @@
 {
   "name": "${bsb:name}",
-  "sources": ["src"]
+  "sources": {
+      "dir": "src",
+      "subdirs": true
+  }
 }
