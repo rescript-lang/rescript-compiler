@@ -211,6 +211,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	gpr_2316_test\
 	gpr_2250_test\
 	gpr_1285_test\
+	gpr_2474\
 	defunctor_make_test\
 	bs_hashtbl_string_test\
 	console_log_test\
