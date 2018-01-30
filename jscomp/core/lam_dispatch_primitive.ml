@@ -676,7 +676,7 @@ let translate loc (prim_name : string)
     | "caml_equal"  ->     
       begin match args with 
       | [a1;b1]  when 
-        E.for_sure_js_null_undefined_boolean a1 || E.for_sure_js_null_undefined_boolean a1 
+        E.for_sure_js_null_undefined_boolean a1 || E.for_sure_js_null_undefined_boolean b1 
         -> 
         E.int_comp Ceq a1 b1 
         (* FIXME address_equal *)

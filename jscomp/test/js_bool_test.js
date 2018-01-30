@@ -72,6 +72,14 @@ var suites = /* :: */[
   suites_001
 ];
 
+function ff(u) {
+  if (u === true) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
 Mt.from_pair_suites("js_bool_test.ml", suites);
 
 exports.f = f;
@@ -81,4 +89,5 @@ exports.f3 = f3;
 exports.u = u;
 exports.v = v;
 exports.suites = suites;
+exports.ff = ff;
 /* u Not a pure module */
