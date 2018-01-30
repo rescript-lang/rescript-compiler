@@ -210,5 +210,16 @@ let coerce_and_group_big_lambda
     coerced_input, 
       {meta with export_idents = coerced_input.export_set ; 
         exports = coerced_input.export_list}
-  | _ -> assert false
+  | _ ->
+    (* This could happen see #2474*)
+    {
+      export_list = [];
+      export_set = Ident_set.empty;
+      export_map = Ident_map.empty ;
+      (** not used in code generation, mostly used 
+          for store some information in cmj files *)   
+      groups = [Nop lam] ; 
+      (* all code to be compiled later = original code + rebound coercions *)
+    }
+    , { meta with export_idents = Ident_set.empty ; exports= []}
 

@@ -304,6 +304,7 @@ gpr_1943_test.cmj : mt.cmj
 gpr_1946_test.cmj : ../stdlib/obj.cmj ../runtime/js.cmj
 gpr_2250_test.cmj : mt.cmj
 gpr_2316_test.cmj : mt.cmj ../runtime/js.cmj
+gpr_2474.cmj :
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj
