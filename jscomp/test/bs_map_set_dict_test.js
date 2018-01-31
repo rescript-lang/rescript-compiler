@@ -5,10 +5,10 @@ var Bs_Map = require("../../lib/js/bs_Map.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
+var Bs_MapDict = require("../../lib/js/bs_MapDict.js");
+var Bs_SetDict = require("../../lib/js/bs_SetDict.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
-var Bs_SortedMapDict = require("../../lib/js/bs_SortedMapDict.js");
-var Bs_SortedSetDict = require("../../lib/js/bs_SortedSetDict.js");
 
 var suites = [/* [] */0];
 
@@ -28,7 +28,7 @@ var Icmp2 = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
 var m0 = {
   cmp: Icmp[/* cmp */0],
-  data: Bs_SortedMapDict.empty
+  data: Bs_MapDict.empty
 };
 
 var I2 = /* module */[/* cmp */(function (x, y) {
@@ -37,12 +37,12 @@ var I2 = /* module */[/* cmp */(function (x, y) {
 
 var m = {
   cmp: Icmp2[/* cmp */0],
-  data: Bs_SortedMapDict.empty
+  data: Bs_MapDict.empty
 };
 
 var m2 = {
   cmp: I2[/* cmp */0],
-  data: Bs_SortedMapDict.empty
+  data: Bs_MapDict.empty
 };
 
 var data = m.data;
@@ -52,7 +52,7 @@ Bs_Map.getDict(m2);
 var m_dict = Bs_Map.getDict(m);
 
 for(var i = 0; i <= 100000; ++i){
-  data = Bs_SortedMapDict.set(data, i, i, m_dict[/* cmp */0]);
+  data = Bs_MapDict.set(data, i, i, m_dict[/* cmp */0]);
 }
 
 var data$1 = data;
@@ -64,13 +64,13 @@ var newm = {
 
 console.log(newm);
 
-var m11 = Bs_SortedMapDict.set(Bs_SortedMapDict.empty, 1, 1, Icmp[/* cmp */0]);
+var m11 = Bs_MapDict.set(Bs_MapDict.empty, 1, 1, Icmp[/* cmp */0]);
 
 console.log(m11);
 
 var v = {
   cmp: Icmp2[/* cmp */0],
-  data: Bs_SortedSetDict.empty
+  data: Bs_SetDict.empty
 };
 
 var m_dict$1 = Bs_Map.getDict(m);
@@ -80,7 +80,7 @@ var cmp = m_dict$1[/* cmp */0];
 var data$2 = v.data;
 
 for(var i$1 = 0; i$1 <= 100000; ++i$1){
-  data$2 = Bs_SortedSetDict.add(data$2, i$1, cmp);
+  data$2 = Bs_SetDict.add(data$2, i$1, cmp);
 }
 
 console.log(data$2);
@@ -104,7 +104,7 @@ var u0 = f(Bs_Array.map(Array_data_util.randomRange(0, 39), (function (x) {
 
 var u1 = Bs_Map.set(u0, 39, 120);
 
-b("File \"bs_map_set_dict_test.ml\", line 77, characters 4-11", Bs_Array.every2(Bs_SortedMapDict.toArray(u0.data), Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"bs_map_set_dict_test.ml\", line 77, characters 4-11", Bs_Array.every2(Bs_MapDict.toArray(u0.data), Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
                 return /* tuple */[
                         x,
                         x
@@ -117,7 +117,7 @@ b("File \"bs_map_set_dict_test.ml\", line 77, characters 4-11", Bs_Array.every2(
             }
           })));
 
-b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Bs_List.every2(Bs_SortedMapDict.toList(u0.data), Bs_Array.toList(Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Bs_List.every2(Bs_MapDict.toList(u0.data), Bs_Array.toList(Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
                     return /* tuple */[
                             x,
                             x
@@ -146,7 +146,7 @@ eq("File \"bs_map_set_dict_test.ml\", line 94, characters 4-11", Bs_Array.makeBy
                     x,
                     x
                   ];
-          })), Bs_SortedMapDict.toArray(u.data));
+          })), Bs_MapDict.toArray(u.data));
 
 Mt.from_pair_suites("bs_map_set_dict_test.ml", suites[0]);
 

@@ -15,7 +15,6 @@ module A = Bs_Array
 
 type t = elt N.t
 
-
 let rec has (t : t) (x : elt)  =
   match N.toOpt t with 
   | None -> false

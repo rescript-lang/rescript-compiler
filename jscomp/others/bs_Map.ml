@@ -12,12 +12,11 @@
 (***********************************************************************)
 (** Adapted by authors of BuckleScript without using functors          *)
 
-module N = Bs_SortedMapDict
+module N = Bs_MapDict
 module A = Bs_Array
 
-type ('key, 'id ) dict = ('key, 'id) Bs_Cmp.t
-type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
-
+type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
+type ('key, 'id ) cmp = ('key, 'id) Bs_Dict.cmp
 module S = struct 
   type ('k,'v,'id) t = {
     cmp: ('k,'id) cmp;
@@ -28,17 +27,17 @@ end
 
 type ('k, 'v, 'id ) t = ('k, 'v, 'id) S.t 
 
-let ofArray (type k) (type id) data ~(dict : (k,id) Bs_Cmp.t)  =
+let ofArray (type k) (type id) data ~(dict : (k,id) dict)  =
   let module M = (val dict) in
   let cmp = M.cmp in 
-  S.t ~cmp ~data:(N.ofArray ~cmp data)
+  S.t ~cmp ~data:(N.ofArray ~cmp data) 
 
 
 let remove m x  =   
   let cmp, odata = S.cmp m, S.data m in 
   let newData = N.remove odata x ~cmp  in
   if newData == odata then m
-  else S.t ~cmp ~data:newData
+  else S.t ~cmp ~data:newData 
 
 let removeMany m x =     
   let cmp, odata = S.cmp m,  S.data m in
@@ -47,7 +46,7 @@ let removeMany m x =
 
 let set m key d  = 
   let cmp = S.cmp m in 
-  S.t ~cmp  ~data:(N.set ~cmp (S.data m) key d)
+  S.t ~cmp  ~data:(N.set ~cmp (S.data m) key d) 
 
 let mergeMany m e = 
   let cmp = S.cmp m in 

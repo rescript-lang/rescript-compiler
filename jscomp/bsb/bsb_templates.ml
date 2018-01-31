@@ -299,19 +299,19 @@ let root = OCamlRes.Res.([
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
       \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"sources\": [{\n\
+      \  \"sources\": {\n\
       \    \"dir\": \"src\",\n\
       \    \"generators\": [{\n\
       \      \"name\": \"cpp\",\n\
       \      \"edge\": [\"test.ml\", \":\", \"test.cpp.ml\"]\n\
-      \    }]\n\
-      \  }],\n\
+      \    }],\n\
+      \    \"subdirs\": true  \n\
+      \  },\n\
       \  \"generators\": [{\n\
       \    \"name\" : \"cpp\",\n\
       \    \"command\": \"sed 's/OCAML/3/' $in > $out\"\n\
       \  }],\n\
       \  \"bs-dependencies\" : [\n\
-      \      // add your bs-dependencies here \n\
       \  ]\n\
        }") ;
     File (".gitignore",
@@ -366,7 +366,10 @@ let root = OCamlRes.Res.([
     File ("bsconfig.json",
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
-      \  \"sources\": [\"src\"]\n\
+      \  \"sources\": {\n\
+      \      \"dir\": \"src\",\n\
+      \      \"subdirs\": true\n\
+      \  }\n\
        }") ;
     File (".gitignore",
       ".DS_Store\n\
@@ -421,17 +424,17 @@ let root = OCamlRes.Res.([
       "{\n\
       \  \"name\": \"${bsb:name}\",\n\
       \  \"version\": \"${bsb:proj-version}\",\n\
-      \  \"sources\": [\n\
-      \    \"src\"\n\
-      \  ],\n\
+      \  \"sources\": {\n\
+      \      \"dir\": \"src\",\n\
+      \      \"subdirs\" : true\n\
+      \  },\n\
       \  \"package-specs\": {\n\
       \    \"module\": \"commonjs\",\n\
       \    \"in-source\": true\n\
       \  },\n\
       \  \"suffix\": \".bs.js\",\n\
       \  \"bs-dependencies\": [\n\
-      \      // add your bs-dependencies here \n\
-      \  ]\n\
+      \   ]\n\
        }") ;
     File (".gitignore",
       "*.exe\n\
@@ -566,9 +569,10 @@ let root = OCamlRes.Res.([
       \  \"reason\": {\n\
       \    \"react-jsx\": 2\n\
       \  },\n\
-      \  \"sources\": [\n\
-      \    \"src\"\n\
-      \  ],\n\
+      \  \"sources\": {\n\
+      \    \"dir\" : \"src\",\n\
+      \    \"subdirs\" : true\n\
+      \  },\n\
       \  \"package-specs\": [{\n\
       \    \"module\": \"commonjs\",\n\
       \    \"in-source\": true\n\

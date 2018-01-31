@@ -23,36 +23,41 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type 'a compare = ('a -> 'a -> int [@bs])
-type ('a,'id) cmp = 'a compare
 
-external getCmpInternal : ('a,'id) cmp -> 'a compare = "%identity"
-
-module type T = sig
+type ('a, 'id) hash
+type ('a, 'id) eq 
+type ('a, 'id) cmp
+    
+module type Comparable = sig
   type id
   type t
-  val cmp : (t,id) cmp
-end
-type ('key, 'id) t = (module T with type t = 'key and type id = 'id)
-
-module Make (M : sig
-   type t
-    val cmp : t -> t -> int [@bs]
-  end) =
-struct
-  type id
-  type t = M.t
-  let cmp = M.cmp
+  val cmp: (t, id) cmp
 end
 
-let make 
-  (type key) 
-  ~(cmp : key -> key -> int [@bs])   
-  =
-  let module M = struct 
-    type t = key
-    let cmp = cmp
-  end in  
-  let module N = Make(M) in 
-  (module N : T with type t = key)
 
+type ('key, 'id) comparable = (module Comparable with type t = 'key and type id = 'id)
+
+
+module type Hashable = sig 
+  type id 
+  type t 
+  val hash: (t,id) hash
+  val eq:  (t,id) eq
+end 
+
+type ('key, 'id) hashable = (module Hashable with type t = 'key and type id = 'id)
+
+                            
+val comparable:
+  cmp:('a -> 'a -> int [@bs]) ->
+  (module Comparable with type t = 'a)
+
+val hashable:
+  hash:('a -> int [@bs]) ->
+  eq:('a -> 'a -> bool [@bs]) -> (module Hashable with type t = 'a)
+
+(**/*)
+external getHashInternal : ('a,'id) hash -> ('a -> int [@bs]) = "%identity"
+external getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs]) = "%identity"
+external getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs]) = "%identity"
+(**/*)

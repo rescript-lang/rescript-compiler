@@ -24,7 +24,7 @@
 
 type ('key,  'value, 'id) t
 
-type ('key, 'id) cmp = ('key, 'id) Bs_Cmp.cmp
+type ('key, 'id) cmp = ('key, 'id) Bs_Dict.cmp
 
 val empty: ('k, 'v, 'id) t
 

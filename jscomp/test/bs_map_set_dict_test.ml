@@ -4,13 +4,13 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
 module Icmp = 
-  (val Bs.Cmp.make 
-    (fun[@bs] (x : int) y -> 
+  (val Bs.Dict.comparable
+    ~cmp:(fun[@bs] (x : int) y -> 
       compare x y
      )
   )
 module Icmp2 = 
-(val Bs.Cmp.make ~cmp:(fun [@bs] (x : int) y ->
+(val Bs.Dict.comparable ~cmp:(fun [@bs] (x : int) y ->
       compare x y ))
   
 module M = Bs.Map
@@ -23,7 +23,7 @@ let m0 : (_,string,_) M.t = M.empty (module Icmp)
 
   
 module I2 = 
-(val Bs.Cmp.make ~cmp:(fun [@bs] (x : int) y -> compare y x ))
+(val Bs.Dict.comparable ~cmp:(fun [@bs] (x : int) y -> compare y x ))
 
   
 let m = M.empty (module Icmp2)

@@ -15,30 +15,30 @@
 
 type ('k,'v,'id) t
 
-type ('key, 'id ) dict = ('key, 'id) Bs_Cmp.t
+type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
 (** The data associated with a comparison function *)   
 
 (*
     How we remain soundness:
     The only way to create a value of type [_ t] from scratch 
-    is through [empty] which requires [_ Bs_Cmp.t]
-    The only way to create [_ Bs_Cmp.t] is using [Bs_Cmp.Make] which
+    is through [empty] which requires [_ Bs_Dict.t]
+    The only way to create [_ Bs_Dict.t] is using [Bs_Dict.Make] which
     will create a fresh type [id] per module
 
     Generic operations over tree without [cmp] is still exported 
     (for efficient reaosns) so that [data] does not need be boxed and unboxed.
 
     The soundness is guarantted in two aspects:
-    When create a value of [_ t] it needs both [_ Bs_Cmp.t] and [_ t0].
-    [_ Bs_Cmp.t] is an abstract type. Note [add0] requires [_ Bs_Cmp.cmp] which 
-    is also an abtract type which can only come from [_ Bs_Cmp.t]
+    When create a value of [_ t] it needs both [_ Bs_Dict.t] and [_ t0].
+    [_ Bs_Dict.t] is an abstract type. Note [add0] requires [_ Bs_Dict.cmp] which 
+    is also an abtract type which can only come from [_ Bs_Dict.t]
 
     When destructing a value of [_ t], the ['id] parameter is threaded.
 
 *)
 
-(* should not export [Bs_Cmp.compare]. 
-   should only export [Bs_Cmp.t] or [Bs_Cmp.cmp] instead *)
+(* should not export [Bs_Dict.compare]. 
+   should only export [Bs_Dict.t] or [Bs_Dict.cmp] instead *)
 
 val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
@@ -172,9 +172,9 @@ val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
 
 val getDict: ('a, 'b, 'c) t -> ('a, 'c) dict
 
-val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Bs_SortedMapDict.t
+val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Bs_MapDict.t
     
-val packDictData: dict:('a, 'b) dict -> data:('a, 'c, 'b) Bs_SortedMapDict.t -> ('a, 'c, 'b) t
+val packDictData: dict:('a, 'b) dict -> data:('a, 'c, 'b) Bs_MapDict.t -> ('a, 'c, 'b) t
 
 module Int = Bs_MapInt
 module String = Bs_MapString  

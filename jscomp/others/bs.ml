@@ -26,19 +26,20 @@
 
 (**/*)
 (**/*)
-module Cmp = Bs_Cmp
-module Hash = Bs_Hash
+
+module Dict = Bs_Dict
 module Array = Bs_Array
-module Queue = Bs_Queue
+module MutableQueue = Bs_Queue
 module List = Bs_List
-module Stack = Bs_Stack
+module MutableStack = Bs_Stack
 module Range = Bs_Range
 
 (** Immutable sorted set *)
 module Set = Bs_Set
 
-(** The implementation detail for {!Bs.Set}, also slightly more efficient *)    
-module SetDict = Bs_SortedSetDict
+(** The implementation detail for {!Bs.Set}, also slightly more efficient,
+    can also be accessed via {!Bs.Set.Dict} *)    
+module SetDict = Bs_SetDict
 
 (** can also be accessed via {!Bs.Set.Int}*)    
 module SetInt = Bs_SetInt
@@ -67,8 +68,9 @@ module UnorderedMutableSetString = Bs_HashSetString
   
 module Map = Bs_Map
 
-(** The implementaion detail for {!Bs.Map},  also slightly more efficient*)    
-module MapDict = Bs_SortedMapDict
+(** The implementaion detail for {!Bs.Map},  also slightly more efficient,
+     can also be accessed via {!Bs.Map.Dict}*)    
+module MapDict = Bs_MapDict
 
 (** can also be accessed via {!Bs.Map.Int}*)  
 module MapInt = Bs_MapInt
