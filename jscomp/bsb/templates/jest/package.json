@@ -1,6 +1,6 @@
 {
-  "name": "reason-app",
-  "version": "0.1.0",
+  "name": "${bsb:name}",
+  "version": "${bsb:proj-version}",
   "scripts": {
     "build": "bsb -make-world && webpack --mode production --progress",
     "start": "bsb -make-world -w",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.3.3",
-    "bs-platform": "^2.1.0",
+    "bs-platform": "^${bsb:bs-version}",
     "bs-react-test-renderer": "^2.0.0",
     "css-loader": "^0.28.9",
     "file-loader": "^1.1.6",
