@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Page renders 1`] = `
+<div
+  className="background text"
+  onClick={[Function]}
+>
+  Hello world! will and kate!!!
+</div>
+`;

@@ -1,0 +1,45 @@
+{
+  "name": "reason-app",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "bsb -make-world && webpack --mode production --progress",
+    "start": "bsb -make-world -w",
+    "clean": "bsb -clean-world",
+    "test": "bsb -make-world && jest",
+    "webpack": "webpack -w --mode development --progress"
+  },
+  "keywords": [
+    "BuckleScript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "re-classnames": "^0.0.3",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "reason-react": ">=0.3.0"
+  },
+  "devDependencies": {
+    "@glennsl/bs-jest": "^0.3.3",
+    "bs-platform": "^2.1.0",
+    "bs-react-test-renderer": "^2.0.0",
+    "css-loader": "^0.28.9",
+    "file-loader": "^1.1.6",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^22.1.4",
+    "postcss-cssnext": "^3.1.0",
+    "postcss-import": "^11.0.0",
+    "postcss-loader": "^2.0.10",
+    "postcss-nested": "^3.0.0",
+    "style-loader": "^0.19.1",
+    "url-loader": "^0.6.2",
+    "webpack": "^4.0.0-beta.0",
+    "webpack-cli": "^2.0.4"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(scss|less|css|sass)$": "identity-obj-proxy",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/fileMock.js"
+    }
+  }
+}
