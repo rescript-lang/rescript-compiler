@@ -6,7 +6,7 @@ type ('a,'b,'id) t
   
 (** The type of hash tables from type ['a] to type ['b]. *)
 
-type ('a, 'id) dict = ('a, 'id) Bs_Hash.t
+type ('a, 'id) dict = ('a, 'id) Bs_Dict.hashable
     
 val make :  int -> dict: ('a, 'id) dict ->  ('a,'b,'id) t
 (** [make n ~dict] creates a new, empty hash table, with

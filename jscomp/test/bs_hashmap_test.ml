@@ -11,7 +11,7 @@ module S = Bs.Map.Int
 let eq = fun[@bs] (x : int) y ->  x = y 
 let hash = fun[@bs] (x : int) ->  Hashtbl.hash x 
 let cmp = fun [@bs] (x : int) y -> compare x y
-module Y = (val Bs.Hash.make ~eq ~hash)
+module Y = (val Bs.Dict.hashable ~eq ~hash)
 let empty : (int, int, _) N.t = N.make ~dict:(module Y) 30 
 
 (*

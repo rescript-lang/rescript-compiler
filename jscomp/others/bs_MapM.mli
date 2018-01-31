@@ -24,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type ('k,'v,'id) t
-type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
+type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
     
 val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool

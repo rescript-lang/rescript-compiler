@@ -27,7 +27,7 @@
 
 type ('k,'id) t
 
-type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
+type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
     
 val empty: dict:('elt, 'id) dict -> ('elt, 'id) t
 
@@ -108,9 +108,9 @@ val checkInvariantInternal: _ t -> bool
     More API will be exposed by needs
 *)
 
-val getData: ('k,'id) t  -> ('k,'id) Bs_SortedSetDict.t
+val getData: ('k,'id) t  -> ('k,'id) Bs_SetDict.t
 val getDict: ('k,'id) t  -> ('k,'id) dict
-val packDictData: dict:('k, 'id) dict -> data:('k, 'id) Bs_SortedSetDict.t -> ('k, 'id) t
+val packDictData: dict:('k, 'id) dict -> data:('k, 'id) Bs_SetDict.t -> ('k, 'id) t
     
 module Int = Bs_SetInt
 module String = Bs_SetString

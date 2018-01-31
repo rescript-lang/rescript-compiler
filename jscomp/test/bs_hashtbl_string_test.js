@@ -3,11 +3,11 @@
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_hash = require("../../lib/js/caml_hash.js");
 var Bs_HashMap = require("../../lib/js/bs_HashMap.js");
+var Bs_MapDict = require("../../lib/js/bs_MapDict.js");
 var Bs_HashMapInt = require("../../lib/js/bs_HashMapInt.js");
 var Bs_HashSetInt = require("../../lib/js/bs_HashSetInt.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Bs_HashMapString = require("../../lib/js/bs_HashMapString.js");
-var Bs_SortedMapDict = require("../../lib/js/bs_SortedMapDict.js");
 var Bs_internalBucketsType = require("../../lib/js/bs_internalBucketsType.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
@@ -130,15 +130,15 @@ function bench2(m) {
 function bench3(m) {
   var empty = {
     cmp: m[/* cmp */0],
-    data: Bs_SortedMapDict.empty
+    data: Bs_MapDict.empty
   };
   var cmp = m[/* cmp */0];
   var table = empty.data;
   for(var i = 0; i <= 1000000; ++i){
-    table = Bs_SortedMapDict.set(table, "" + i, i, cmp);
+    table = Bs_MapDict.set(table, "" + i, i, cmp);
   }
   for(var i$1 = 0; i$1 <= 1000000; ++i$1){
-    if (!Bs_SortedMapDict.has(table, "" + i$1, cmp)) {
+    if (!Bs_MapDict.has(table, "" + i$1, cmp)) {
       throw [
             Caml_builtin_exceptions.assert_failure,
             [
@@ -151,9 +151,9 @@ function bench3(m) {
     
   }
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
-    table = Bs_SortedMapDict.remove(table, "" + i$2, cmp);
+    table = Bs_MapDict.remove(table, "" + i$2, cmp);
   }
-  if (Bs_SortedMapDict.size(table)) {
+  if (Bs_MapDict.size(table)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

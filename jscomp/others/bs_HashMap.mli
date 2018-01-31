@@ -28,7 +28,10 @@
 type ('key,'value,'id) t 
 (** The type of hash tables from type ['key] to type ['value]. *)
 
-val make:  int -> dict:('key, 'id) Bs_Hash.t -> ('key,'value,'id) t
+type ('a, 'id) dict = ('a, 'id) Bs_Dict.hashable
+
+
+val make:  int -> dict:('key, 'id) dict -> ('key,'value,'id) t
 (*TODO: allow randomization for security *)
 
 val clear: ('key, 'value, 'id ) t -> unit
@@ -88,7 +91,7 @@ val size: _ t -> int
 val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array 
 val keysToArray: ('key, _, _) t -> 'key array    
 val valuesToArray: (_,'value,_) t -> 'value array    
-val ofArray: ('key * 'value) array -> dict:('key,'id) Bs_Hash.t -> ('key, 'value, 'id ) t    
+val ofArray: ('key * 'value) array -> dict:('key,'id) dict -> ('key, 'value, 'id ) t    
 val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
 val getBucketHistogram: _ t -> int array
 val logStats: _ t -> unit

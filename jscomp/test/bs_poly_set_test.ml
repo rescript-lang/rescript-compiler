@@ -7,7 +7,7 @@ module N = Bs.Set
 module I = Array_data_util
 module A = Bs.Array
 module IntCmp = 
-  (val Bs.Cmp.make (fun[@bs] (x:int) y -> compare x y))
+  (val Bs.Dict.comparable (fun[@bs] (x:int) y -> compare x y))
 module L = Bs.List
 
 let () = 

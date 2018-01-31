@@ -6,7 +6,7 @@ let b loc x  = Mt.bool_suites ~test_id ~suites loc x
 (* TEST
 *)
 
-module Q = Bs.Queue
+module Q = Bs.MutableQueue
 
 let does_raise f q =
   try

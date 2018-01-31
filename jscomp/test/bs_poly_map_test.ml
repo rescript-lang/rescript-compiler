@@ -4,7 +4,7 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
 module Icmp = 
-  (val Bs.Cmp.make 
+  (val Bs.Dict.comparable 
       (fun[@bs] (x : int) y -> 
          compare x y
       )

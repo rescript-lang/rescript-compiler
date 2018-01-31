@@ -37,7 +37,7 @@ and 'elt node  = private {
   h : int
 } [@@bs.deriving abstract]
 
-type ('a, 'b) cmp = ('a, 'b) Bs_Cmp.cmp
+type ('a, 'b) cmp = ('a, 'b) Bs_Dict.cmp
 (* TODO: node is used in [subset] *)
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"

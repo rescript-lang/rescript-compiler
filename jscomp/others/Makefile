@@ -15,7 +15,6 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_internalAVLtree\
 	bs_SetIntM\
 	bs_internalMutableAVL\
-	bs_Hash\
 	bs_Queue\
 	bs_List\
 	bs_SortArray\
@@ -30,11 +29,9 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_HashSet\
 	bs_HashSetString\
 	bs_HashSetInt\
-	bs_Bag\
-	bs_BagM\
-	bs_Cmp\
-	bs_SortedMapDict\
-	bs_SortedSetDict\
+	bs_Dict\
+	bs_MapDict\
+	bs_SetDict\
 	bs_Map\
 	bs_internalMapInt\
 	bs_internalMapString\
@@ -60,6 +57,8 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_HashMapInt\
 	bs_HashMapString\
 
+# bs_Bag\
+# bs_BagM\
 # bs_dyn bs_dyn_lib\
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))

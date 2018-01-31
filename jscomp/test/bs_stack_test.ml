@@ -10,8 +10,8 @@ and t = node Js.undefined
 
 
 
-module S = Bs.Stack
-module Q = Bs.Queue 
+module S = Bs.MutableStack
+module Q = Bs.MutableQueue 
 
 let inOrder (v : t) = 
   let current =  ref v in 

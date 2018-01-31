@@ -22,12 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-module N = Bs_SortedSetDict
+module N = Bs_SetDict
 module A = Bs_Array
 
 
-type ('key, 'id) dict = ('key, 'id) Bs_Cmp.t
-type ('key, 'id ) cmp = ('key, 'id) Bs_Cmp.cmp
+type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
+type ('key, 'id ) cmp = ('key, 'id) Bs_Dict.cmp
 
 module S = struct 
   type ('k,'id) t = {
