@@ -12,8 +12,8 @@
 (***********************************************************************)
 
 
-external length : 'a array -> int = "%array_length" 
-
+external length: 'a array -> int = "%array_length" 
+external size: 'a array -> int = "%array_length"
 val get : 'a array -> int -> 'a option
 
 val set : 'a array -> int -> 'a -> unit 

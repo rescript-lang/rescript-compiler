@@ -26,7 +26,8 @@
 type ('k,'v,'id) t
 type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
     
-val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
+val make: dict:('k, 'id) dict -> ('k, 'a, 'id) t
+val clear: _ t -> unit 
 val isEmpty: _ t -> bool
 val has: ('k, _, _) t -> 'k  -> bool
 val cmp: 

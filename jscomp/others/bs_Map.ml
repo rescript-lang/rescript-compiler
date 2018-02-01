@@ -65,7 +65,7 @@ let merge s1 s2 f =
   let cmp = S.cmp s1 in 
   S.t ~cmp ~data:(N.merge ~cmp  (S.data s1) (S.data s2) f)
 
-let empty (type elt) (type id) ~(dict: (elt, id) dict) =
+let make (type elt) (type id) ~(dict: (elt, id) dict) =
   let module M = (val dict) in 
   S.t  ~cmp:M.cmp  ~data:N.empty
 

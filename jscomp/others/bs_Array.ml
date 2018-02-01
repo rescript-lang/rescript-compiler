@@ -13,7 +13,8 @@
 
 (* Array operations *)
 
-external length : 'a array -> int = "%array_length"
+external length: 'a array -> int = "%array_length"
+external size: 'a array -> int = "%array_length"  
 external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
 external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"

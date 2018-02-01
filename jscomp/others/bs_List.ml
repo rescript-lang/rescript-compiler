@@ -368,7 +368,8 @@ let rec lengthAux x acc =
   | _::t -> lengthAux t (acc + 1)
 
 let length xs = lengthAux xs 0
-
+let size = length
+  
 let rec fillAux arr i x =
   match x with
   | [] -> ()

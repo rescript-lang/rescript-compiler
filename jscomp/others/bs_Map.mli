@@ -40,7 +40,7 @@ type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
 (* should not export [Bs_Dict.compare]. 
    should only export [Bs_Dict.t] or [Bs_Dict.cmp] instead *)
 
-val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
+val make: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
 
 val has: ('k, 'a, 'id) t -> 'k  -> bool    

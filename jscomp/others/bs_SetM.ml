@@ -187,7 +187,7 @@ let mergeMany d xs =
   S.dataSet d (addArrayMutate (S.data d) xs ~cmp:(S.cmp d))
 
 
-let empty (type elt) (type id) ~(dict : (elt, id) dict) =
+let make (type elt) (type id) ~(dict : (elt, id) dict) =
   let module M = (val dict) in 
   S.t ~cmp:M.cmp ~data:N.empty
     

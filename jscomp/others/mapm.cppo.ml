@@ -18,8 +18,9 @@ type 'a t = {
 } [@@bs.deriving abstract]
 
 
-let empty () = t ~data:N.empty
+let make () = t ~data:N.empty
 let isEmpty m = N.isEmpty (data m)
+let clear m = dataSet m N.empty
 let singleton k v = t ~data:(N.singleton k v)
 
 let minKeyUndefined m = N.minKeyUndefined (data m)

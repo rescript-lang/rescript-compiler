@@ -139,9 +139,11 @@ let update t  x f =
   if  newRoot != oldRoot then 
     S.dataSet t newRoot 
 
-let empty (type elt) (type id) ~(dict : (elt,id) dict) =
+let make (type elt) (type id) ~(dict : (elt,id) dict) =
   let module M = (val dict) in 
   S.t ~cmp:M.cmp ~data:N.empty
+
+let clear m = S.dataSet m N.empty
     
 let isEmpty d = 
   N.isEmpty (S.data d)

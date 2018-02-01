@@ -29,7 +29,8 @@ type key = int
 type 'a t
 
 
-val empty: unit -> 'a t
+val make: unit -> 'a t
+val clear: 'a t -> unit
 val isEmpty: 'a t -> bool
 
 val has:  'a t -> key -> bool

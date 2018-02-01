@@ -85,7 +85,7 @@ let split m e =
   let (l,  r), b = N.split ~cmp (S.data m) e in 
   (S.t ~cmp ~data:l, S.t ~cmp ~data:r), b
   
-let empty (type elt) (type id) ~(dict : (elt, id) dict) =
+let make (type elt) (type id) ~(dict : (elt, id) dict) =
   let module M = (val dict) in 
   S.t ~cmp:M.cmp  ~data:N.empty
 

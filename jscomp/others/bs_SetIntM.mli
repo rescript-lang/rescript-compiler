@@ -28,7 +28,7 @@ type elt = int
 
 # 33
 type t
-val empty: unit -> t
+val make: unit -> t
 
 val ofArray: elt array -> t
 val ofSortedArrayUnsafe: elt array -> t

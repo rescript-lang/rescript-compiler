@@ -27,7 +27,7 @@ type ('k,'id) t
 
 type ('k, 'id) dict = ('k, 'id) Bs_Dict.comparable
 
-val empty: dict:('elt, 'id) dict -> ('elt, 'id) t
+val make: dict:('elt, 'id) dict -> ('elt, 'id) t
 
 val ofArray: 'k array -> dict:('k, 'id) dict ->   ('k, 'id) t
 val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) dict ->  ('elt,'id) t

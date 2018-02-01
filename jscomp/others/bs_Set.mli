@@ -29,7 +29,7 @@ type ('k,'id) t
 
 type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
     
-val empty: dict:('elt, 'id) dict -> ('elt, 'id) t
+val make: dict:('elt, 'id) dict -> ('elt, 'id) t
 
 val ofArray:  'k array -> dict:('k, 'id) dict ->  ('k, 'id) t
 

@@ -54,7 +54,9 @@ val zipBy: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
 val mapWithIndex: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
 
 val length: 'a t -> int
-
+val size: 'a t -> int
+(** [size l] is the same as [lenth l] *)
+  
 val toArray: 'a t -> 'a array
 
 (* type json = Js_json.t  *)

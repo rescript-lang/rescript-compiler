@@ -31,7 +31,7 @@ type elt = int
 #endif  
 
 type t
-val empty: unit -> t
+val make: unit -> t
 
 val ofArray: elt array -> t
 val ofSortedArrayUnsafe: elt array -> t
