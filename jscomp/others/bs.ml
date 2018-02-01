@@ -106,6 +106,3 @@ module SortArrayInt = Bs_SortArrayInt
 module SortArrayString = Bs_SortArrayString
 
 
-
-
-(* module HashMultiMap = Bs_HashMultiMap *)

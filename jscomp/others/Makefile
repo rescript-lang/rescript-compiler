@@ -25,7 +25,6 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_internalSetBuckets\
 	bs_internalBuckets\
 	bs_HashMap\
-	bs_HashMultiMap\
 	bs_HashSet\
 	bs_HashSetString\
 	bs_HashSetInt\
