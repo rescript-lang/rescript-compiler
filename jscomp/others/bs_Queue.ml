@@ -13,7 +13,7 @@
 (*   special exception on linking described in the file LICENSE.          *)
 (*                                                                        *)
 (**************************************************************************)
-(* Adapted siginifcantly by BuckleScript Authors                          *)
+(* Adapted significantly by BuckleScript Authors                          *)
 module A = Bs_Array
 
 type 'a node = { 

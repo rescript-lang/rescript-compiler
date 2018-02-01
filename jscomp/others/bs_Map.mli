@@ -19,19 +19,19 @@ type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
 (** The data associated with a comparison function *)   
 
 (*
-    How we remain soundness:
+    How we retain soundness:
     The only way to create a value of type [_ t] from scratch 
     is through [empty] which requires [_ Bs_Dict.t]
     The only way to create [_ Bs_Dict.t] is using [Bs_Dict.Make] which
     will create a fresh type [id] per module
 
-    Generic operations over tree without [cmp] is still exported 
-    (for efficient reaosns) so that [data] does not need be boxed and unboxed.
+    Generic operations over tree without [cmp] are still exported 
+    (for efficient reasons) so that [data] does not need be boxed and unboxed.
 
-    The soundness is guarantted in two aspects:
+    The soundness is guaranteed in two aspects:
     When create a value of [_ t] it needs both [_ Bs_Dict.t] and [_ t0].
     [_ Bs_Dict.t] is an abstract type. Note [add0] requires [_ Bs_Dict.cmp] which 
-    is also an abtract type which can only come from [_ Bs_Dict.t]
+    is also an abstract type which can only come from [_ Bs_Dict.t]
 
     When destructing a value of [_ t], the ['id] parameter is threaded.
 
