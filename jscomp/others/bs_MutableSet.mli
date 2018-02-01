@@ -26,11 +26,11 @@
 (** specalized when key type is [int], more efficient
     than the gerneic type
 *)
-module Int = Bs_SetIntM
+module Int = Bs_MutableSetInt
 
 (** specalized when key type is [string], more efficient
     than the gerneic type *)  
-module String = Bs_SetStringM
+module String = Bs_MutableSetString
 
 type ('k,'id) t 
 

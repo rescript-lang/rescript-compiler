@@ -60,7 +60,7 @@ module Map = Bs_Map
     It also has two specialized inner modules
     {!Bs.MutableSet.Int} and {!Bs.MutableSet.String}
 *)
-module MutableSet = Bs_SetM
+module MutableSet = Bs_MutableSet
 
 (** {!Bs.MutableMap}
     The toplevel provides generic mutable map operations.
@@ -68,7 +68,7 @@ module MutableSet = Bs_SetM
     {!Bs.MutableMap.Int} and {!Bs.MutableMap.String}
 
 *)
-module MutableMap = Bs_MapM
+module MutableMap = Bs_MutableMap
 
 
 (** {!Bs.HashSet}

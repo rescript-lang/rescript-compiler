@@ -13,7 +13,6 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_Array\
 	bs_internalAVLset\
 	bs_internalAVLtree\
-	bs_SetIntM\
 	bs_internalMutableAVL\
 	bs_Queue\
 	bs_List\
@@ -36,18 +35,18 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_internalMapString\
 	bs_MapString \
 	bs_MapInt\
-	bs_MapStringM \
-	bs_MapIntM\
 	bs_internalSet\
 	bs_Set\
-	bs_SetM\
-	bs_MapM\
+	bs_MutableSet\
+	bs_MutableSetInt\
+	bs_MutableSetString\
+	bs_MutableMap\
+	bs_MutableMapInt\
+	bs_MutableMapString\
 	bs_internalSetInt\
 	bs_internalSetString\
 	bs_SetInt\
-	bs_SetIntM\
 	bs_SetString\
-	bs_SetStringM\
 	bs_Stack\
 	node_child_process \
 	js_boolean js_math\
@@ -90,14 +89,14 @@ clean::
 	bs_MapInt.ml bs_MapInt.mli  bs_MapString.ml bs_MapString.mli \
 	bs_internalSetInt.ml bs_internalSetString.ml \
 	bs_SetInt.ml bs_SetInt.mli bs_SetString.ml  bs_SetString.mli \
-	bs_SetIntM.ml bs_SetIntM.mli bs_SetStringM.ml bs_SetStringM.mli\
+	bs_MutableSetInt.ml bs_MutableSetInt.mli bs_MutableSetString.ml bs_MutableSetString.mli\
 	bs_SortArrayInt.ml bs_SortArrayInt.mli bs_SortArrayString.ml bs_SortArrayString.mli\
 	bs_internalMapInt.ml bs_internalMapInt.mli \
 	bs_internalMapIntM.ml bs_internalMapIntM.mli \
 	bs_internalMapString.ml bs_internalMapString.mli\
 	bs_internalMapStringM.ml bs_internalMapStringM.mli\
-	bs_MapStringM.mli bs_MapStringM.ml\
-	bs_MapIntM.mli bs_MapIntM.ml
+	bs_MutableMapString.mli bs_MutableMapString.ml\
+	bs_MutableMapInt.mli bs_MutableMapInt.ml
 
 ifndef BS_RELEASE_BUILD
 bs_HashSetString.ml: hashset.cppo.ml
@@ -124,13 +123,13 @@ bs_MapString.mli: map.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 bs_MapInt.mli: map.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_MapStringM.mli: mapm.cppo.mli
+bs_MutableMapString.mli: mapm.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
-bs_MapIntM.mli: mapm.cppo.mli
+bs_MutableMapInt.mli: mapm.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_MapStringM.ml: mapm.cppo.ml
+bs_MutableMapString.ml: mapm.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
-bs_MapIntM.ml: mapm.cppo.ml
+bs_MutableMapInt.ml: mapm.cppo.ml
 	cppo -D TYPE_INT $^ > $@
 bs_internalMapInt.ml : internal_map.cppo.ml
 	cppo -D TYPE_INT $^ > $@
@@ -151,13 +150,13 @@ bs_SetInt.mli: set.cppo.mli
 bs_SetString.mli: set.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 
-bs_SetIntM.ml: setm.cppo.ml
+bs_MutableSetInt.ml: setm.cppo.ml
 	cppo -D TYPE_INT $^ > $@
-bs_SetStringM.ml: setm.cppo.ml
+bs_MutableSetString.ml: setm.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
-bs_SetIntM.mli: setm.cppo.mli
+bs_MutabgleSetInt.mli: setm.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_SetStringM.mli: setm.cppo.mli
+bs_MutableSetString.mli: setm.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 
 bs_SortArrayInt.ml : sort.cppo.ml
