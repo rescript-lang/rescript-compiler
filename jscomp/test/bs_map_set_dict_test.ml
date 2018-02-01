@@ -14,7 +14,7 @@ module Icmp2 =
       compare x y ))
   
 module M = Bs.Map
-module MI = Bs.MapInt
+module MI = Bs.Map.Int
 (* module B = Bs.Bag *)
 module I = Array_data_util
 module A = Bs_Array
@@ -30,7 +30,7 @@ let m = M.make (module Icmp2)
 let m2 : (int, string, _) M.t = M.make (module I2)
 let vv = MI.empty 
 let vv2 = MI.empty
-module Md0 = Bs.MapDict
+module Md0 = Bs.Map.Dict
 let () = 
   let count = 1_000_00 in 
   let data = ref (M.getData m) in 
@@ -55,7 +55,7 @@ let () =
   let _m20 = M.make (module Icmp) in 
   Js.log m11
 
-module S0 = Bs.SetDict  
+module S0 = Bs.Set.Dict  
 let () =   
  let count = 100_000 in 
   let v = ISet.make (module Icmp2) in 

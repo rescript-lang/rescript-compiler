@@ -35,7 +35,7 @@ module Int =
   (val Bs.Dict.hashable
       ~eq:(fun[@bs] (x:int) y -> x = y )
       ~hash:(fun [@bs] x -> Hashtbl.hash x))
-module N = Bs.UnorderedMutableMap
+module N = Bs.HashMap
 let empty = 
   N.make ~dict:(module Int) 500_000
 
@@ -60,7 +60,7 @@ let initial_size = 1_000_000
     #.add (string_of_int i) i 
     #.add (string_of_int i) i
 *)    
-module M = Bs.UnorderedMutableMap
+module M = Bs.HashMap
 let bench2 (type t) (m : (string,t) Bs.Dict.hashable) = 
   let empty = 
     M.make ~dict:m initial_size in
@@ -83,7 +83,7 @@ let bench2 (type t) (m : (string,t) Bs.Dict.hashable) =
 
 (* Bs.HashMap.logStats empty *)
 module Md = Bs.Map 
-module Md0 = Bs.MapDict
+module Md0 = Bs.Map.Dict
 let bench3 (type t) (m : (string,t) Bs.Dict.comparable) = 
   
   let empty = Md.make m in
@@ -105,7 +105,7 @@ let bench3 (type t) (m : (string,t) Bs.Dict.comparable) =
   assert (Md0.size !table = 0)
 
 module Sx = (val Bs.Dict.comparable ~cmp:(fun [@bs] (x : string) y -> compare x y )) 
-module H = Bs.UnorderedMutableMap.String
+module H = Bs.HashMap.String
 let bench4 () = 
   let table = 
     H.make initial_size in
@@ -123,7 +123,7 @@ let bench4 () =
   done ;
   assert (H.isEmpty table)  
 
-module H0 = Bs.UnorderedMutableMap 
+module H0 = Bs.HashMap
 let bench5 () =   
   let table = 
     H0.make ~dict:(module Int) initial_size in 
@@ -143,7 +143,7 @@ let bench5 () =
     done ];
   assert (H0.isEmpty table)   
 
-module HI = Bs.UnorderedMutableMap.Int
+module HI = Bs.HashMap.Int
 let bench6 () = 
   let table = 
     HI.make initial_size in
@@ -161,7 +161,7 @@ let bench6 () =
   done ;
   assert (HI.size table = 0)  
 
-module S = Bs.UnorderedMutableSetInt
+module S = Bs.HashSet.Int
 let bench7 () = 
   let table = 
     (* [%time  *)

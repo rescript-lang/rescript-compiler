@@ -12,6 +12,19 @@
 (***********************************************************************)
 (** Adapted by authors of BuckleScript without using functors          *)
 
+(** specalized when key type is [int], more efficient
+    than the gerneic type
+*)
+module Int = Bs_MapInt
+(** specalized when key type is [string], more efficient
+    than the gerneic type *)  
+module String = Bs_MapString
+
+(** seprate function from data, a more verbsoe but slightly
+    more efficient
+*)  
+module Dict = Bs_MapDict
+
 module N = Bs_MapDict
 module A = Bs_Array
 
@@ -20,7 +33,7 @@ type ('key, 'id ) cmp = ('key, 'id) Bs_Dict.cmp
 module S = struct 
   type ('k,'v,'id) t = {
     cmp: ('k,'id) cmp;
-    data: ('k,'v, 'id) N.t
+    data: ('k,'v, 'id) Dict.t
   }
   [@@bs.deriving abstract]
 end
@@ -30,108 +43,108 @@ type ('k, 'v, 'id ) t = ('k, 'v, 'id) S.t
 let ofArray (type k) (type id) data ~(dict : (k,id) dict)  =
   let module M = (val dict) in
   let cmp = M.cmp in 
-  S.t ~cmp ~data:(N.ofArray ~cmp data) 
+  S.t ~cmp ~data:(Dict.ofArray ~cmp data) 
 
 
 let remove m x  =   
   let cmp, odata = S.cmp m, S.data m in 
-  let newData = N.remove odata x ~cmp  in
+  let newData = Dict.remove odata x ~cmp  in
   if newData == odata then m
   else S.t ~cmp ~data:newData 
 
 let removeMany m x =     
   let cmp, odata = S.cmp m,  S.data m in
-  let newData = N.removeMany odata x ~cmp in
+  let newData = Dict.removeMany odata x ~cmp in
   S.t ~cmp  ~data:newData
 
 let set m key d  = 
   let cmp = S.cmp m in 
-  S.t ~cmp  ~data:(N.set ~cmp (S.data m) key d) 
+  S.t ~cmp  ~data:(Dict.set ~cmp (S.data m) key d) 
 
 let mergeMany m e = 
   let cmp = S.cmp m in 
-  S.t ~cmp  ~data:(N.mergeMany ~cmp (S.data m) e)
+  S.t ~cmp  ~data:(Dict.mergeMany ~cmp (S.data m) e)
 
 let update m key f  = 
   let cmp = S.cmp m in 
-  S.t ~cmp ~data:(N.update ~cmp (S.data m) key f )
+  S.t ~cmp ~data:(Dict.update ~cmp (S.data m) key f )
 
 let split m x =   
   let cmp = S.cmp m in 
-  let (l,r),b = N.split ~cmp (S.data m) x in 
+  let (l,r),b = Dict.split ~cmp (S.data m) x in 
   (S.t ~cmp ~data:l, S.t ~cmp  ~data:r), b  
 
 let merge s1 s2 f = 
   let cmp = S.cmp s1 in 
-  S.t ~cmp ~data:(N.merge ~cmp  (S.data s1) (S.data s2) f)
+  S.t ~cmp ~data:(Dict.merge ~cmp  (S.data s1) (S.data s2) f)
 
 let make (type elt) (type id) ~(dict: (elt, id) dict) =
   let module M = (val dict) in 
-  S.t  ~cmp:M.cmp  ~data:N.empty
+  S.t  ~cmp:M.cmp  ~data:Dict.empty
 
 let isEmpty map = 
-  N.isEmpty (S.data map)
+  Dict.isEmpty (S.data map)
 
 
-let forEach m f = N.forEach (S.data m) f
+let forEach m f = Dict.forEach (S.data m) f
 
-let reduce m acc f = N.reduce (S.data m) acc f  
+let reduce m acc f = Dict.reduce (S.data m) acc f  
 
-let every m f = N.every (S.data m) f  
+let every m f = Dict.every (S.data m) f  
 
-let some m f = N.some (S.data m) f
+let some m f = Dict.some (S.data m) f
 
 let keep m f =
-  S.t ~cmp:(S.cmp m) ~data:(N.keep (S.data m) f)
+  S.t ~cmp:(S.cmp m) ~data:(Dict.keep (S.data m) f)
 
 let partition m p =   
   let cmp = S.cmp m in 
-  let l,r = N.partition (S.data m) p in 
+  let l,r = Dict.partition (S.data m) p in 
   S.t ~cmp ~data:l, S.t ~cmp ~data:r 
 
 let map m f = 
-  S.t ~cmp:(S.cmp m) ~data:(N.map (S.data m) f)
+  S.t ~cmp:(S.cmp m) ~data:(Dict.map (S.data m) f)
     
 let mapWithKey m  f = 
-  S.t ~cmp:(S.cmp m) ~data:(N.mapWithKey (S.data m) f)
+  S.t ~cmp:(S.cmp m) ~data:(Dict.mapWithKey (S.data m) f)
 
-let size map = N.size (S.data map)   
-let toList map = N.toList (S.data map) 
-let toArray m = N.toArray (S.data m)
-let keysToArray m = N.keysToArray (S.data m)
-let valuesToArray m = N.valuesToArray (S.data m)
-let minKey m = N.minKey (S.data m)
-let minKeyUndefined m = N.minKeyUndefined (S.data m)
-let maxKey m = N.maxKey (S.data m)
-let maxKeyUndefined m = N.maxKeyUndefined (S.data m)    
-let minimum m = N.minimum (S.data m)
-let minUndefined m = N.minUndefined (S.data m) 
-let maximum m = N.maximum (S.data m)
-let maxUndefined m = N.maxUndefined (S.data m)
+let size map = Dict.size (S.data map)   
+let toList map = Dict.toList (S.data map) 
+let toArray m = Dict.toArray (S.data m)
+let keysToArray m = Dict.keysToArray (S.data m)
+let valuesToArray m = Dict.valuesToArray (S.data m)
+let minKey m = Dict.minKey (S.data m)
+let minKeyUndefined m = Dict.minKeyUndefined (S.data m)
+let maxKey m = Dict.maxKey (S.data m)
+let maxKeyUndefined m = Dict.maxKeyUndefined (S.data m)    
+let minimum m = Dict.minimum (S.data m)
+let minUndefined m = Dict.minUndefined (S.data m) 
+let maximum m = Dict.maximum (S.data m)
+let maxUndefined m = Dict.maxUndefined (S.data m)
 
 let get map x  =
-  N.get ~cmp:(S.cmp map)  (S.data map) x 
+  Dict.get ~cmp:(S.cmp map)  (S.data map) x 
 
 let getUndefined map x = 
-  N.getUndefined ~cmp:(S.cmp map) (S.data map) x
+  Dict.getUndefined ~cmp:(S.cmp map) (S.data map) x
 
 let getWithDefault map x def = 
-  N.getWithDefault ~cmp:(S.cmp map) (S.data map) x  def
+  Dict.getWithDefault ~cmp:(S.cmp map) (S.data map) x  def
 
 let getExn map x = 
-  N.getExn ~cmp:(S.cmp map) (S.data map) x 
+  Dict.getExn ~cmp:(S.cmp map) (S.data map) x 
 
 let has map x = 
-  N.has ~cmp:(S.cmp map) (S.data map) x
+  Dict.has ~cmp:(S.cmp map) (S.data map) x
 
 let checkInvariantInternal m  =
-  N.checkInvariantInternal (S.data m)
+  Dict.checkInvariantInternal (S.data m)
 
 let eq m1 m2 veq = 
-  N.eq ~kcmp:(S.cmp m1) ~veq (S.data m1) (S.data m2)
+  Dict.eq ~kcmp:(S.cmp m1) ~veq (S.data m1) (S.data m2)
 
 let cmp m1 m2 vcmp =
-  N.cmp ~kcmp:(S.cmp m1)  ~vcmp (S.data m1) (S.data m2)
+  Dict.cmp ~kcmp:(S.cmp m1)  ~vcmp (S.data m1) (S.data m2)
 
 let getData = S.data
   
@@ -147,5 +160,3 @@ let packDictData (type elt) (type id) ~(dict : (elt, id) dict) ~data  =
   let module M = (val dict) in 
   S.t ~cmp:M.cmp ~data
 
-module Int = Bs_MapInt
-module String = Bs_MapString

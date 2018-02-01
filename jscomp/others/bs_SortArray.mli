@@ -23,7 +23,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** specalized when key type is [int], more efficient
+    than the gerneic type
+*)
+module Int = Bs_SortArrayInt
 
+(** specalized when key type is [string], more efficient
+    than the gerneic type *)  
+module String = Bs_SortArrayString  
 
 
 val strictlySortedLength: 
@@ -96,5 +103,3 @@ val binarySearchBy:
 
 *)
 
-module Int = Bs_SortArrayInt
-module String = Bs_SortArrayString  

@@ -23,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module Int = Bs_SetIntM
+module String = Bs_SetStringM  
 
 module N = Bs_internalAVLset
 module A = Bs_Array
@@ -367,5 +369,3 @@ let has d x =
 let copy d = S.t ~data:(N.copy (S.data d)) ~cmp:(S.cmp d)
 
 
-module Int = Bs_SetIntM
-module String = Bs_SetStringM  

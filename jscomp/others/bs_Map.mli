@@ -13,6 +13,20 @@
 (** Adapted by authors of BuckleScript without using functors          *)
 
 
+(** specalized when key type is [int], more efficient
+    than the gerneic type
+*)
+module Int = Bs_MapInt
+(** specalized when key type is [string], more efficient
+    than the gerneic type *)  
+module String = Bs_MapString
+
+(** seprate function from data, a more verbsoe but slightly
+    more efficient
+*)  
+module Dict = Bs_MapDict
+
+
 type ('k,'v,'id) t
 
 type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
@@ -176,5 +190,3 @@ val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Bs_MapDict.t
     
 val packDictData: dict:('a, 'b) dict -> data:('a, 'c, 'b) Bs_MapDict.t -> ('a, 'c, 'b) t
 
-module Int = Bs_MapInt
-module String = Bs_MapString  

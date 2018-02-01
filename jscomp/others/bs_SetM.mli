@@ -23,6 +23,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** specalized when key type is [int], more efficient
+    than the gerneic type
+*)
+module Int = Bs_SetIntM
+
+(** specalized when key type is [string], more efficient
+    than the gerneic type *)  
+module String = Bs_SetStringM
+
 type ('k,'id) t 
 
 type ('k, 'id) dict = ('k, 'id) Bs_Dict.comparable
@@ -119,5 +128,3 @@ val checkInvariantInternal: _ t -> bool
     ('elt, 'id) t0]
   2. It is not really significantly more *)
 
-module Int = Bs_SetIntM
-module String = Bs_SetStringM

@@ -1,18 +1,20 @@
 let should b = 
   if not b then Js.Exn.raiseError "IMPOSSIBLE"
+
+module M = Bs.Map.Int  
 let test () =
-  let m = ref Bs.MapInt.empty in
+  let m = ref M.empty in
   let count = 100_0000 - 1 in
   for i = 0 to count do
-    m := Bs.MapInt.set !m i i 
+    m := M.set !m i i 
   done;
   for i = 0 to count do
-    should (Bs.MapInt.get !m i <> None)
+    should (M.get !m i <> None)
   done; 
   for i = 0 to count do 
-    m := Bs.MapInt.remove !m i  ;
+    m := M.remove !m i  ;
   done ;
-  should (Bs.MapInt.size !m = 0)
+  should (M.isEmpty !m)
 
 let () =
   test ()

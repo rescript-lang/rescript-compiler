@@ -22,6 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module Int = Bs_HashSetInt
+
+module String = Bs_HashSetString
+
 
 module N = Bs_internalSetBuckets
 module C = Bs_internalBucketsType
@@ -189,5 +193,3 @@ let mergeMany h arr =
   done 
   
 
-module Int = Bs_HashSetInt
-module String = Bs_HashSetString
