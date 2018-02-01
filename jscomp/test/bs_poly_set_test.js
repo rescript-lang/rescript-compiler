@@ -247,11 +247,11 @@ b("File \"bs_poly_set_test.ml\", line 101, characters 4-11", +(Bs_Set.cmp(u0$1, 
 
 var a0 = Bs_Set.ofArray(Array_data_util.randomRange(0, 1000), IntCmp);
 
-var a1 = Bs_Set.keepBy(a0, (function (x) {
+var a1 = Bs_Set.keep(a0, (function (x) {
         return +(x % 2 === 0);
       }));
 
-var a2 = Bs_Set.keepBy(a0, (function (x) {
+var a2 = Bs_Set.keep(a0, (function (x) {
         return +(x % 2 !== 0);
       }));
 
@@ -344,7 +344,7 @@ b("File \"bs_poly_set_test.ml\", line 130, characters 4-11", Bs_List.every(/* ::
 
 var a = Bs_Set.ofArray(/* int array */[], IntCmp);
 
-var m$4 = Bs_Set.keepBy(a, (function (x) {
+var m$4 = Bs_Set.keep(a, (function (x) {
         return +(x % 2 === 0);
       }));
 

@@ -12,8 +12,8 @@
 (***********************************************************************)
 
 
-external length : 'a array -> int = "%array_length" 
-
+external length: 'a array -> int = "%array_length" 
+external size: 'a array -> int = "%array_length"
 val get : 'a array -> int -> 'a option
 
 val set : 'a array -> int -> 'a -> unit 
@@ -104,7 +104,7 @@ val map: 'a array ->  ('a -> 'b [@bs]) -> 'b array
 
 val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array    
 
-val keepBy: 'a array -> ('a -> bool [@bs]) -> 'a array
+val keep: 'a array -> ('a -> bool [@bs]) -> 'a array
 
 val keepMap: 'a array -> ('a -> 'b option [@bs]) -> 'b array 
     

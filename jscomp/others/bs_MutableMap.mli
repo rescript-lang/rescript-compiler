@@ -23,10 +23,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module Int = Bs_MutableMapInt
+
+module String = Bs_MutableMapString
+
+
 type ('k,'v,'id) t
 type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
     
-val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
+val make: dict:('k, 'id) dict -> ('k, 'a, 'id) t
+val clear: _ t -> unit 
 val isEmpty: _ t -> bool
 val has: ('k, _, _) t -> 'k  -> bool
 val cmp: 
@@ -90,7 +96,7 @@ val getExn:  ('k, 'a, 'id) t -> 'k ->  'a
 val checkInvariantInternal: _ t -> bool   
 (****************************************************************************)
 
-(*TODO: add functional [merge, partition, keepBy, split]*)
+(*TODO: add functional [merge, partition, keep, split]*)
 
 val remove:  ('k, 'a, 'id) t -> 'k -> unit
 (** [remove m x] do the in-place modification,
@@ -115,5 +121,3 @@ val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
     
 
 
-module Int = Bs_MapIntM
-module String = Bs_MapStringM  

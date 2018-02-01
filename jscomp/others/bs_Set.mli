@@ -22,14 +22,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** specalized when key type is [int], more efficient
+    than the gerneic type
+*)
+module Int = Bs_SetInt
 
+(** specalized when key type is [string], more efficient
+    than the gerneic type *)  
+module String = Bs_SetString
 
+(** seprate function from data, a more verbsoe but slightly
+    more efficient
+*)  
+module Dict = Bs_SetDict
 
 type ('k,'id) t
 
 type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
     
-val empty: dict:('elt, 'id) dict -> ('elt, 'id) t
+val make: dict:('elt, 'id) dict -> ('elt, 'id) t
 
 val ofArray:  'k array -> dict:('k, 'id) dict ->  ('k, 'id) t
 
@@ -73,8 +84,8 @@ val every: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
 val some: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
-val keepBy: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
-(** [keepBy m p] returns the set of all elements in [s]
+val keep: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
+(** [keep m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
 val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
 (** [partition m p] returns a pair of sets [(s1, s2)], where
@@ -112,5 +123,3 @@ val getData: ('k,'id) t  -> ('k,'id) Bs_SetDict.t
 val getDict: ('k,'id) t  -> ('k,'id) dict
 val packDictData: dict:('k, 'id) dict -> data:('k, 'id) Bs_SetDict.t -> ('k, 'id) t
     
-module Int = Bs_SetInt
-module String = Bs_SetString

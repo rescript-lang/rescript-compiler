@@ -23,12 +23,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-# 28
-type elt = int
+# 26
+type elt = string
 
 # 33
 type t
-val empty: unit -> t
+val make: unit -> t
 
 val ofArray: elt array -> t
 val ofSortedArrayUnsafe: elt array -> t
@@ -67,8 +67,8 @@ val some: t -> (elt -> bool [@bs]) ->  bool
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. Oder unspecified. *)
 
-val keepBy: t -> (elt -> bool [@bs]) ->  t
-(** [keepBy s p] returns a fresh copy of the set of all elements in [s]
+val keep: t -> (elt -> bool [@bs]) ->  t
+(** [keep s p] returns a fresh copy of the set of all elements in [s]
     that satisfy predicate [p]. *)
 
 val partition: t -> (elt -> bool [@bs]) ->  t * t

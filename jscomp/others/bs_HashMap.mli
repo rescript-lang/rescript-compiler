@@ -95,10 +95,6 @@ val ofArray: ('key * 'value) array -> dict:('key,'id) dict -> ('key, 'value, 'id
 val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
 val getBucketHistogram: _ t -> int array
 val logStats: _ t -> unit
-(** [logStats tbl] returns statistics about the table [tbl]:
-    number of buckets, size of the biggest bucket, distribution of
-    buckets by size.
-*)
 
 
 

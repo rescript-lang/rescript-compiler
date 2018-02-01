@@ -77,8 +77,8 @@ val some: t -> (elt -> bool [@bs]) ->  bool
 (** [some p s] checks if at least one element of
    the set satisfies the predicate [p]. Oder unspecified. *)
 
-val keepBy: t -> (elt -> bool [@bs]) ->  t
-(** [keepBy p s] returns the set of all elements in [s]
+val keep: t -> (elt -> bool [@bs]) ->  t
+(** [keep p s] returns the set of all elements in [s]
    that satisfy predicate [p]. *)
 
 val partition: t -> (elt -> bool [@bs]) ->  t * t

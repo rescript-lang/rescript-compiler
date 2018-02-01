@@ -54,7 +54,9 @@ val zipBy: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
 val mapWithIndex: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
 
 val length: 'a t -> int
-
+val size: 'a t -> int
+(** [size l] is the same as [lenth l] *)
+  
 val toArray: 'a t -> 'a array
 
 (* type json = Js_json.t  *)
@@ -69,8 +71,9 @@ val reverseConcat: 'a t -> 'a t -> 'a t
     
 val reverse: 'a t -> 'a t
 
-val concatMany: 'a t t -> 'a t
-
+val flatten: 'a t t -> 'a t
+val concatMany: 'a t array -> 'a t
+    
 val mapReverse: 'a t -> ('a -> 'b [@bs]) -> 'b t
 (** [mapReverse a f] is semantically equivalent to [reverse (map a f)]    
 *)
@@ -125,7 +128,7 @@ val removeAssocByReference:  ('a * 'b) t -> 'a -> ('a * 'b) t
 
 val getBy: 'a t -> ('a -> bool [@bs]) ->  'a option
 
-val keepBy: 'a t ->  ('a -> bool [@bs]) -> 'a t
+val keep: 'a t ->  ('a -> bool [@bs]) -> 'a t
 val keepMap: 'a t -> ('a -> 'b option [@bs]) -> 'b t
 val partition: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
 

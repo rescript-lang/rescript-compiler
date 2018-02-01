@@ -21,11 +21,14 @@ function test() {
   for(var i$2 = 0; i$2 <= 999999; ++i$2){
     m = Bs_MapInt.remove(m, i$2);
   }
-  return should(+(Bs_MapInt.size(m) === 0));
+  return should(Bs_MapInt.isEmpty(m));
 }
 
 test(/* () */0);
 
+var M = 0;
+
 exports.should = should;
+exports.M = M;
 exports.test = test;
 /*  Not a pure module */

@@ -13,6 +13,20 @@
 (** Adapted by authors of BuckleScript without using functors          *)
 
 
+(** specalized when key type is [int], more efficient
+    than the gerneic type
+*)
+module Int = Bs_MapInt
+(** specalized when key type is [string], more efficient
+    than the gerneic type *)  
+module String = Bs_MapString
+
+(** seprate function from data, a more verbsoe but slightly
+    more efficient
+*)  
+module Dict = Bs_MapDict
+
+
 type ('k,'v,'id) t
 
 type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
@@ -40,7 +54,7 @@ type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
 (* should not export [Bs_Dict.compare]. 
    should only export [Bs_Dict.t] or [Bs_Dict.cmp] instead *)
 
-val empty: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
+val make: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
 
 val has: ('k, 'a, 'id) t -> 'k  -> bool    
@@ -131,11 +145,11 @@ val mergeMany:
   ('a * 'b) array ->
   ('a, 'b, 'id) t
 
-val keepBy: 
+val keep: 
     ('k, 'a, 'id) t -> 
     ('k -> 'a -> bool [@bs]) -> 
     ('k, 'a, 'id) t
-(** [keepBy m p] returns the map with all the bindings in [m]
+(** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p]. *)
     
 val partition: 
@@ -176,5 +190,3 @@ val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Bs_MapDict.t
     
 val packDictData: dict:('a, 'b) dict -> data:('a, 'c, 'b) Bs_MapDict.t -> ('a, 'c, 'b) t
 
-module Int = Bs_MapInt
-module String = Bs_MapString  

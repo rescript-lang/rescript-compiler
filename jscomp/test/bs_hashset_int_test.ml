@@ -2,8 +2,8 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x  = Mt.bool_suites ~test_id ~suites loc x  
-module N = Bs.UnorderedMutableSet.Int
-module S = Bs.SetInt 
+module N = Bs.HashSet.Int
+module S = Bs.Set.Int 
 
 module I = Array_data_util
 let (++) = Bs.Array.concat

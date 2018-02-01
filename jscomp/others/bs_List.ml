@@ -368,7 +368,8 @@ let rec lengthAux x acc =
   | _::t -> lengthAux t (acc + 1)
 
 let length xs = lengthAux xs 0
-
+let size = length
+  
 let rec fillAux arr i x =
   match x with
   | [] -> ()
@@ -432,15 +433,27 @@ let rec flattenAux prec xs =
   | h::r -> flattenAux (copyAuxCont h prec) r
 
 
-let rec concatMany xs =     
+let rec flatten xs =     
   match xs with 
   | [] -> []
-  | []::xs -> concatMany xs
+  | []::xs -> flatten xs
   | (h::t):: r ->  
     let cell = mutableCell h [] in 
     flattenAux (copyAuxCont t cell) r ;
     cell 
 
+let concatMany xs =
+  match xs with
+  | [||] -> []
+  | [|x|] -> x
+  | _ ->
+    let len = A.length xs in
+    let v = ref (A.getUnsafe xs (len - 1)) in
+    for i = len - 2 downto 0 do
+      v := concat (A.getUnsafe xs i) !v
+    done ;
+    !v
+    
 let rec mapRevAux f accu xs = 
   match xs with 
   | [] -> accu
@@ -602,7 +615,7 @@ let rec getBy xs p =
     else getBy l p 
 
 
-let rec keepBy xs p  = 
+let rec keep xs p  = 
   match xs with 
   | [] -> []
   | h::t -> 
@@ -613,7 +626,7 @@ let rec keepBy xs p  =
         cell 
       end
     else 
-      keepBy t p
+      keep t p
         
 
 let rec keepMap xs p  = 

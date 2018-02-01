@@ -101,8 +101,8 @@ let () =
 
 let () = 
   let v = A.makeBy 10 (fun[@bs] i -> i ) in 
-  let v0 = A.keepBy v (fun[@bs] x -> x mod 2 = 0) in 
-  let v1 = A.keepBy v (fun[@bs] x -> x mod 3 = 0) in 
+  let v0 = A.keep v (fun[@bs] x -> x mod 2 = 0) in 
+  let v1 = A.keep v (fun[@bs] x -> x mod 3 = 0) in 
   let v2 = A.keepMap v (fun[@bs] x -> if x mod 2 = 0 then Some (x + 1) else None ) in 
   eq __LOC__ v0 [|0;2;4;6;8|];
   eq __LOC__ v1 [|0;3;6;9|];

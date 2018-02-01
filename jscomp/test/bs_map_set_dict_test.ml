@@ -14,23 +14,23 @@ module Icmp2 =
       compare x y ))
   
 module M = Bs.Map
-module MI = Bs.MapInt
+module MI = Bs.Map.Int
 (* module B = Bs.Bag *)
 module I = Array_data_util
 module A = Bs_Array
 module L = Bs.List
-let m0 : (_,string,_) M.t = M.empty (module Icmp)   
+let m0 : (_,string,_) M.t = M.make (module Icmp)   
 
   
 module I2 = 
 (val Bs.Dict.comparable ~cmp:(fun [@bs] (x : int) y -> compare y x ))
 
   
-let m = M.empty (module Icmp2)
-let m2 : (int, string, _) M.t = M.empty (module I2)
+let m = M.make (module Icmp2)
+let m2 : (int, string, _) M.t = M.make (module I2)
 let vv = MI.empty 
 let vv2 = MI.empty
-module Md0 = Bs.MapDict
+module Md0 = Bs.Map.Dict
 let () = 
   let count = 1_000_00 in 
   let data = ref (M.getData m) in 
@@ -52,13 +52,13 @@ let () =
     Md0.set ~cmp:Icmp.cmp m
     1 1 
   in  
-  let _m20 = M.empty (module Icmp) in 
+  let _m20 = M.make (module Icmp) in 
   Js.log m11
 
-module S0 = Bs.SetDict  
+module S0 = Bs.Set.Dict  
 let () =   
  let count = 100_000 in 
-  let v = ISet.empty (module Icmp2) in 
+  let v = ISet.make (module Icmp2) in 
   let m_dict = M.getDict m in 
   let module M = (val m_dict) in 
   let cmp = M.cmp in 

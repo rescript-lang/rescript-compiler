@@ -35,12 +35,6 @@ and ('hash, 'eq, 'a, 'b) t = ('hash, 'eq, ('a,'b) bucket) C.container
 
 module A = Bs_Array
 
-type statistics = {
-  num_bindings: int;
-  num_buckets: int;
-  max_bucket_length: int;
-  bucket_histogram: int array
-}
 
 let rec copy ( x : _ t) : _ t= 
   C.container
@@ -214,3 +208,6 @@ let linear h f =
 let keysToArray h = linear h (fun [@bs] x -> key x)  
 let valuesToArray h = linear h (fun [@bs] x -> value x)  
 let toArray h = linear h (fun [@bs]x -> key x, value x)
+
+
+

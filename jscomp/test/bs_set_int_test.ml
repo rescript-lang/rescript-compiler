@@ -4,7 +4,7 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
-module N = Bs.SetInt
+module N = Bs.Set.Int
 module I = Array_data_util
 module A = Bs_Array
 let (=~) s i = 

@@ -22,7 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** specalized when key type is [int], more efficient
+    than the gerneic type *)
+module Int = Bs_HashSetInt
 
+(** specalized when key type is [string], more efficient
+    than the gerneic type *)  
+module String = Bs_HashSetString
+  
 type ('a, 'id) t 
 
 (** The type of hash tables from type ['a] to type ['b]. *)
@@ -59,5 +66,4 @@ val mergeMany: ('a,'id) t -> 'a array -> unit
 
 val getBucketHistogram: _ t -> int array
 
-module Int = Bs_HashSetInt
-module String = Bs_HashSetString
+

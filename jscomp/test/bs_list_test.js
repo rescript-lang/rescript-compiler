@@ -90,7 +90,7 @@ eq("File \"bs_list_test.ml\", line 36, characters 5-12", Bs_List.map(u, (functio
       ]
     ]);
 
-eq("FLATTEN", Bs_List.concatMany(/* :: */[
+eq("FLATTEN", Bs_List.flatten(/* :: */[
           /* :: */[
             1,
             /* [] */0
@@ -139,9 +139,9 @@ eq("FLATTEN", Bs_List.concatMany(/* :: */[
       ]
     ]);
 
-eq("FLATTEN", Bs_List.concatMany(/* [] */0), /* [] */0);
+eq("FLATTEN", Bs_List.flatten(/* [] */0), /* [] */0);
 
-eq("FLATTEN", Bs_List.concatMany(/* :: */[
+eq("FLATTEN", Bs_List.flatten(/* :: */[
           /* [] */0,
           /* :: */[
             /* [] */0,
@@ -179,7 +179,109 @@ eq("FLATTEN", Bs_List.concatMany(/* :: */[
       ]
     ]);
 
-eq("File \"bs_list_test.ml\", line 50, characters 5-12", Bs_List.toArray(Bs_List.concat(Bs_List.makeBy(100, (function (i) {
+eq("CONCATMANY", Bs_List.concatMany(/* array */[
+          /* :: */[
+            1,
+            /* [] */0
+          ],
+          /* :: */[
+            2,
+            /* [] */0
+          ],
+          /* :: */[
+            3,
+            /* [] */0
+          ],
+          /* [] */0,
+          Bs_List.makeBy(4, (function (i) {
+                  return i;
+                }))
+        ]), /* :: */[
+      1,
+      /* :: */[
+        2,
+        /* :: */[
+          3,
+          /* :: */[
+            0,
+            /* :: */[
+              1,
+              /* :: */[
+                2,
+                /* :: */[
+                  3,
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]);
+
+eq("CONCATMANY", Bs_List.concatMany(/* array */[]), /* [] */0);
+
+eq("CONCATMANY", Bs_List.concatMany(/* array */[
+          /* [] */0,
+          /* [] */0,
+          /* :: */[
+            2,
+            /* [] */0
+          ],
+          /* :: */[
+            1,
+            /* [] */0
+          ],
+          /* :: */[
+            2,
+            /* [] */0
+          ],
+          /* [] */0
+        ]), /* :: */[
+      2,
+      /* :: */[
+        1,
+        /* :: */[
+          2,
+          /* [] */0
+        ]
+      ]
+    ]);
+
+eq("CONCATMANY", Bs_List.concatMany(/* array */[
+          /* [] */0,
+          /* [] */0,
+          /* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ],
+          /* :: */[
+            1,
+            /* [] */0
+          ],
+          /* :: */[
+            2,
+            /* [] */0
+          ],
+          /* [] */0
+        ]), /* :: */[
+      2,
+      /* :: */[
+        3,
+        /* :: */[
+          1,
+          /* :: */[
+            2,
+            /* [] */0
+          ]
+        ]
+      ]
+    ]);
+
+eq("File \"bs_list_test.ml\", line 61, characters 5-12", Bs_List.toArray(Bs_List.concat(Bs_List.makeBy(100, (function (i) {
                     return i;
                   })), Bs_List.makeBy(100, (function (i) {
                     return i;
@@ -451,7 +553,7 @@ eq("UNZIP", Bs_List.unzip(/* :: */[
       ]
     ]);
 
-eq("FILTER", Bs_List.keepBy(/* :: */[
+eq("FILTER", Bs_List.keep(/* :: */[
           1,
           /* :: */[
             2,
@@ -471,7 +573,7 @@ eq("FILTER", Bs_List.keepBy(/* :: */[
       ]
     ]);
 
-eq("FILTER", Bs_List.keepBy(/* :: */[
+eq("FILTER", Bs_List.keep(/* :: */[
           1,
           /* :: */[
             3,
@@ -482,9 +584,9 @@ eq("FILTER", Bs_List.keepBy(/* :: */[
           ]
         ], mod2), /* [] */0);
 
-eq("FILTER", Bs_List.keepBy(/* [] */0, mod2), /* [] */0);
+eq("FILTER", Bs_List.keep(/* [] */0, mod2), /* [] */0);
 
-eq("FILTER", Bs_List.keepBy(/* :: */[
+eq("FILTER", Bs_List.keep(/* :: */[
           2,
           /* :: */[
             2,
@@ -597,7 +699,7 @@ eq("MAP2", Bs_List.reverse(Bs_List.mapReverse2(length_10_id, length_10_id, add))
 
 var xs = Bs_List.reverse(Bs_List.mapReverse2(length_8_id, length_10_id, add));
 
-eq("File \"bs_list_test.ml\", line 127, characters 5-12", Bs_List.length(xs), 8);
+eq("File \"bs_list_test.ml\", line 138, characters 5-12", Bs_List.length(xs), 8);
 
 eq("MAP2", xs, Bs_List.zipBy(length_10_id, length_8_id, add));
 
@@ -1036,7 +1138,7 @@ eq("REMOVEASSOQ", Bs_List.removeAssoc(/* :: */[
       ]
     ]);
 
-eq("File \"bs_list_test.ml\", line 176, characters 5-12", /* tuple */[
+eq("File \"bs_list_test.ml\", line 187, characters 5-12", /* tuple */[
       Bs_List.head(length_10_id),
       Bs_List.tail(length_10_id)
     ], /* tuple */[
@@ -1044,59 +1146,59 @@ eq("File \"bs_list_test.ml\", line 176, characters 5-12", /* tuple */[
       Bs_List.drop(length_10_id, 1)
     ]);
 
-eq("File \"bs_list_test.ml\", line 177, characters 5-12", Bs_List.head(/* [] */0), /* None */0);
+eq("File \"bs_list_test.ml\", line 188, characters 5-12", Bs_List.head(/* [] */0), /* None */0);
 
 Bs_List.forEachWithIndex(length_10_id, (function (i, x) {
-        return eq("File \"bs_list_test.ml\", line 179, characters 9-16", Bs_List.get(length_10_id, i), /* Some */[x]);
+        return eq("File \"bs_list_test.ml\", line 190, characters 9-16", Bs_List.get(length_10_id, i), /* Some */[x]);
       }));
 
-eq("File \"bs_list_test.ml\", line 180, characters 5-12", Bs_List.tail(/* [] */0), /* None */0);
+eq("File \"bs_list_test.ml\", line 191, characters 5-12", Bs_List.tail(/* [] */0), /* None */0);
 
-eq("File \"bs_list_test.ml\", line 181, characters 5-12", Bs_List.drop(/* [] */0, 3), /* None */0);
+eq("File \"bs_list_test.ml\", line 192, characters 5-12", Bs_List.drop(/* [] */0, 3), /* None */0);
 
-eq("File \"bs_list_test.ml\", line 182, characters 5-12", Bs_List.mapWithIndex(/* [] */0, (function (i, x) {
+eq("File \"bs_list_test.ml\", line 193, characters 5-12", Bs_List.mapWithIndex(/* [] */0, (function (i, x) {
             return i + x | 0;
           })), /* [] */0);
 
-eq("File \"bs_list_test.ml\", line 183, characters 5-12", Bs_List.get(length_10_id, -1), /* None */0);
+eq("File \"bs_list_test.ml\", line 194, characters 5-12", Bs_List.get(length_10_id, -1), /* None */0);
 
-eq("File \"bs_list_test.ml\", line 184, characters 5-12", Bs_List.get(length_10_id, 12), /* None */0);
+eq("File \"bs_list_test.ml\", line 195, characters 5-12", Bs_List.get(length_10_id, 12), /* None */0);
 
-eq("File \"bs_list_test.ml\", line 185, characters 5-12", sum(/* [] */0), 0);
+eq("File \"bs_list_test.ml\", line 196, characters 5-12", sum(/* [] */0), 0);
 
-eq("File \"bs_list_test.ml\", line 186, characters 5-12", sum(length_10_id), 45);
+eq("File \"bs_list_test.ml\", line 197, characters 5-12", sum(length_10_id), 45);
 
-eq("File \"bs_list_test.ml\", line 187, characters 5-12", Bs_List.makeBy(0, id), /* [] */0);
+eq("File \"bs_list_test.ml\", line 198, characters 5-12", Bs_List.makeBy(0, id), /* [] */0);
 
-eq("File \"bs_list_test.ml\", line 188, characters 5-12", Bs_List.reverse(Bs_List.reverse(length_10_id)), length_10_id);
+eq("File \"bs_list_test.ml\", line 199, characters 5-12", Bs_List.reverse(Bs_List.reverse(length_10_id)), length_10_id);
 
-eq("File \"bs_list_test.ml\", line 189, characters 5-12", Bs_List.reverse(Bs_List.reverse(length_8_id)), length_8_id);
+eq("File \"bs_list_test.ml\", line 200, characters 5-12", Bs_List.reverse(Bs_List.reverse(length_8_id)), length_8_id);
 
-eq("File \"bs_list_test.ml\", line 190, characters 5-12", Bs_List.reverse(/* [] */0), /* [] */0);
+eq("File \"bs_list_test.ml\", line 201, characters 5-12", Bs_List.reverse(/* [] */0), /* [] */0);
 
-eq("File \"bs_list_test.ml\", line 191, characters 5-12", Bs_List.reverse(Bs_List.mapReverse(length_10_id, succx)), Bs_List.map(length_10_id, succx));
+eq("File \"bs_list_test.ml\", line 202, characters 5-12", Bs_List.reverse(Bs_List.mapReverse(length_10_id, succx)), Bs_List.map(length_10_id, succx));
 
-eq("File \"bs_list_test.ml\", line 194, characters 5-12", Bs_List.reduce(length_10_id, 0, add), 45);
+eq("File \"bs_list_test.ml\", line 205, characters 5-12", Bs_List.reduce(length_10_id, 0, add), 45);
 
-eq("File \"bs_list_test.ml\", line 196, characters 5-12", Bs_List.reduceReverse(length_10_id, 0, add), 45);
+eq("File \"bs_list_test.ml\", line 207, characters 5-12", Bs_List.reduceReverse(length_10_id, 0, add), 45);
 
-eq("File \"bs_list_test.ml\", line 200, characters 5-12", sum2(length_10_id, length_10_id), 90);
+eq("File \"bs_list_test.ml\", line 211, characters 5-12", sum2(length_10_id, length_10_id), 90);
 
-eq("File \"bs_list_test.ml\", line 201, characters 5-12", sum2(length_8_id, length_10_id), 56);
+eq("File \"bs_list_test.ml\", line 212, characters 5-12", sum2(length_8_id, length_10_id), 56);
 
-eq("File \"bs_list_test.ml\", line 202, characters 5-12", Bs_List.reduce2(length_10_id, length_8_id, 0, (function (acc, x, y) {
+eq("File \"bs_list_test.ml\", line 213, characters 5-12", Bs_List.reduce2(length_10_id, length_8_id, 0, (function (acc, x, y) {
             return (acc + x | 0) + y | 0;
           })), 56);
 
-eq("File \"bs_list_test.ml\", line 204, characters 5-12", Bs_List.reduceReverse2(length_10_id, length_8_id, 0, (function (acc, x, y) {
+eq("File \"bs_list_test.ml\", line 215, characters 5-12", Bs_List.reduceReverse2(length_10_id, length_8_id, 0, (function (acc, x, y) {
             return (acc + x | 0) + y | 0;
           })), 56);
 
-eq("File \"bs_list_test.ml\", line 206, characters 5-12", Bs_List.reduceReverse2(length_10_id, length_10_id, 0, (function (acc, x, y) {
+eq("File \"bs_list_test.ml\", line 217, characters 5-12", Bs_List.reduceReverse2(length_10_id, length_10_id, 0, (function (acc, x, y) {
             return (acc + x | 0) + y | 0;
           })), 90);
 
-eq("File \"bs_list_test.ml\", line 208, characters 5-12", Bs_List.every(/* :: */[
+eq("File \"bs_list_test.ml\", line 219, characters 5-12", Bs_List.every(/* :: */[
           2,
           /* :: */[
             4,
@@ -1107,14 +1209,14 @@ eq("File \"bs_list_test.ml\", line 208, characters 5-12", Bs_List.every(/* :: */
           ]
         ], mod2), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 209, characters 5-12", Bs_List.every(/* :: */[
+eq("File \"bs_list_test.ml\", line 220, characters 5-12", Bs_List.every(/* :: */[
           1,
           /* [] */0
         ], mod2), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 210, characters 5-12", Bs_List.every(/* [] */0, mod2), /* true */1);
+eq("File \"bs_list_test.ml\", line 221, characters 5-12", Bs_List.every(/* [] */0, mod2), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 211, characters 5-12", Bs_List.some(/* :: */[
+eq("File \"bs_list_test.ml\", line 222, characters 5-12", Bs_List.some(/* :: */[
           1,
           /* :: */[
             2,
@@ -1125,7 +1227,7 @@ eq("File \"bs_list_test.ml\", line 211, characters 5-12", Bs_List.some(/* :: */[
           ]
         ], mod2), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 212, characters 5-12", Bs_List.some(/* :: */[
+eq("File \"bs_list_test.ml\", line 223, characters 5-12", Bs_List.some(/* :: */[
           1,
           /* :: */[
             3,
@@ -1136,16 +1238,16 @@ eq("File \"bs_list_test.ml\", line 212, characters 5-12", Bs_List.some(/* :: */[
           ]
         ], mod2), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 213, characters 5-12", Bs_List.some(/* [] */0, mod2), /* false */0);
+eq("File \"bs_list_test.ml\", line 224, characters 5-12", Bs_List.some(/* [] */0, mod2), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 214, characters 5-12", Bs_List.every2(/* [] */0, /* :: */[
+eq("File \"bs_list_test.ml\", line 225, characters 5-12", Bs_List.every2(/* [] */0, /* :: */[
           1,
           /* [] */0
         ], (function (x, y) {
             return +(x > y);
           })), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 215, characters 5-12", Bs_List.every2(/* :: */[
+eq("File \"bs_list_test.ml\", line 226, characters 5-12", Bs_List.every2(/* :: */[
           2,
           /* [] */0
         ], /* :: */[
@@ -1155,7 +1257,7 @@ eq("File \"bs_list_test.ml\", line 215, characters 5-12", Bs_List.every2(/* :: *
             return +(x > y);
           })), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 216, characters 5-12", Bs_List.every2(/* :: */[
+eq("File \"bs_list_test.ml\", line 227, characters 5-12", Bs_List.every2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1171,14 +1273,14 @@ eq("File \"bs_list_test.ml\", line 216, characters 5-12", Bs_List.every2(/* :: *
             return +(x > y);
           })), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 217, characters 5-12", Bs_List.some2(/* [] */0, /* :: */[
+eq("File \"bs_list_test.ml\", line 228, characters 5-12", Bs_List.some2(/* [] */0, /* :: */[
           1,
           /* [] */0
         ], (function (x, y) {
             return +(x > y);
           })), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 218, characters 5-12", Bs_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 229, characters 5-12", Bs_List.some2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1194,7 +1296,7 @@ eq("File \"bs_list_test.ml\", line 218, characters 5-12", Bs_List.some2(/* :: */
             return +(x > y);
           })), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 219, characters 5-12", Bs_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 230, characters 5-12", Bs_List.some2(/* :: */[
           0,
           /* :: */[
             3,
@@ -1210,7 +1312,7 @@ eq("File \"bs_list_test.ml\", line 219, characters 5-12", Bs_List.some2(/* :: */
             return +(x > y);
           })), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 220, characters 5-12", Bs_List.has(/* :: */[
+eq("File \"bs_list_test.ml\", line 231, characters 5-12", Bs_List.has(/* :: */[
           1,
           /* :: */[
             2,
@@ -1223,7 +1325,7 @@ eq("File \"bs_list_test.ml\", line 220, characters 5-12", Bs_List.has(/* :: */[
             return +("" + x === s);
           })), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 221, characters 5-12", Bs_List.has(/* :: */[
+eq("File \"bs_list_test.ml\", line 232, characters 5-12", Bs_List.has(/* :: */[
           1,
           /* :: */[
             2,
@@ -1237,7 +1339,7 @@ eq("File \"bs_list_test.ml\", line 221, characters 5-12", Bs_List.has(/* :: */[
           })), /* false */0);
 
 function makeTest(n) {
-  return eq("File \"bs_list_test.ml\", line 224, characters 5-12", Bs_List.make(n, 3), Bs_List.makeBy(n, (function () {
+  return eq("File \"bs_list_test.ml\", line 235, characters 5-12", Bs_List.make(n, 3), Bs_List.makeBy(n, (function () {
                     return 3;
                   })));
 }
@@ -1262,7 +1364,7 @@ var u1 = Bs_List.keepMap(u0, (function (x) {
         }
       }));
 
-eq("File \"bs_list_test.ml\", line 235, characters 5-12", u1, /* :: */[
+eq("File \"bs_list_test.ml\", line 246, characters 5-12", u1, /* :: */[
       1,
       /* :: */[
         8,

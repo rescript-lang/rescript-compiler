@@ -225,7 +225,7 @@ let getUndefined = N.getUndefined
 
 let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe
 let subset = N.subset
-let keepBy = N.filterShared
+let keep = N.filterShared
 let partition = N.partitionShared
 
 let checkInvariantInternal = N.checkInvariantInternal

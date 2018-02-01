@@ -2,8 +2,8 @@
 
 var Mt = require("./mt.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
-var Bs_MapM = require("../../lib/js/bs_MapM.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
+var Bs_MutableMap = require("../../lib/js/bs_MutableMap.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
 var Bs_internalAVLtree = require("../../lib/js/bs_internalAVLtree.js");
@@ -23,7 +23,7 @@ function b(loc, v) {
 var Icmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
 
 function f(x) {
-  return Bs_MapM.ofArray(x, Icmp);
+  return Bs_MutableMap.ofArray(x, Icmp);
 }
 
 function ff(x) {
@@ -41,13 +41,13 @@ function randomRange(i, j) {
 
 var x = randomRange(0, 10);
 
-var a0 = Bs_MapM.ofArray(x, Icmp);
+var a0 = Bs_MutableMap.ofArray(x, Icmp);
 
-Bs_MapM.set(a0, 3, 33);
+Bs_MutableMap.set(a0, 3, 33);
 
-eq("File \"bs_poly_mutable_map_test.ml\", line 28, characters 7-14", Bs_MapM.getExn(a0, 3), 33);
+eq("File \"bs_poly_mutable_map_test.ml\", line 28, characters 7-14", Bs_MutableMap.getExn(a0, 3), 33);
 
-Bs_MapM.removeMany(a0, /* array */[
+Bs_MutableMap.removeMany(a0, /* array */[
       7,
       8,
       0,
@@ -66,7 +66,7 @@ eq("File \"bs_poly_mutable_map_test.ml\", line 30, characters 7-14", Bs_internal
       10
     ]);
 
-Bs_MapM.removeMany(a0, Array_data_util.randomRange(0, 100));
+Bs_MutableMap.removeMany(a0, Array_data_util.randomRange(0, 100));
 
 b("File \"bs_poly_mutable_map_test.ml\", line 32, characters 6-13", Bs_internalAVLtree.isEmpty(a0.data));
 

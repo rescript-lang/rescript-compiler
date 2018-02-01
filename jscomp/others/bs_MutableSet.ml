@@ -23,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module Int = Bs_MutableSetInt
+module String = Bs_MutableSetString
 
 module N = Bs_internalAVLset
 module A = Bs_Array
@@ -187,7 +189,7 @@ let mergeMany d xs =
   S.dataSet d (addArrayMutate (S.data d) xs ~cmp:(S.cmp d))
 
 
-let empty (type elt) (type id) ~(dict : (elt, id) dict) =
+let make (type elt) (type id) ~(dict : (elt, id) dict) =
   let module M = (val dict) in 
   S.t ~cmp:M.cmp ~data:N.empty
     
@@ -271,7 +273,7 @@ let split d  key  =
        ~cmp
     ), true       
 
-let keepBy d p = 
+let keep d p = 
   S.t ~data:(N.filterCopy (S.data d) p ) ~cmp:(S.cmp d)
     
 let partition d p = 
@@ -367,5 +369,3 @@ let has d x =
 let copy d = S.t ~data:(N.copy (S.data d)) ~cmp:(S.cmp d)
 
 
-module Int = Bs_SetIntM
-module String = Bs_SetStringM  

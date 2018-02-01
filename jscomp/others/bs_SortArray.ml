@@ -23,6 +23,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+
+module Int = Bs_SortArrayInt
+
+module String = Bs_SortArrayString  
+
 module A = Bs_Array 
 
 let rec sortedLengthAuxMore xs prec acc len lt = 
@@ -293,5 +298,3 @@ let binarySearchBy sorted key cmp : int =
       if c2 > 0 then - (len + 1)
       else binarySearchAux sorted 0 (len - 1) key cmp 
 
-module Int = Bs_SortArrayInt
-module String = Bs_SortArrayString  

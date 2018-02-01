@@ -144,11 +144,11 @@ val mergeMany:
   cmp:('a, 'id) cmp ->
   ('a, 'b, 'id) t
 
-val keepBy: 
+val keep: 
     ('k, 'a, 'id) t -> 
     ('k -> 'a -> bool [@bs]) -> 
     ('k, 'a, 'id) t
-(** [keepBy m p] returns the map with all the bindings in [m]
+(** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p]. *)
     
 val partition: 

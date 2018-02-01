@@ -31,7 +31,7 @@ let test () =
     should (mem v j)
   done
 
-module M =  Bs.MapInt
+module M =  Bs.Map.Int
 
 
 let test2 () = 

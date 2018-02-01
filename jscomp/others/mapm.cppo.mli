@@ -32,7 +32,8 @@ type key = int
 type 'a t
 
 
-val empty: unit -> 'a t
+val make: unit -> 'a t
+val clear: 'a t -> unit
 val isEmpty: 'a t -> bool
 
 val has:  'a t -> key -> bool
@@ -93,7 +94,7 @@ val checkInvariantInternal: _ t -> bool
 
 (****************************************************************************)
 
-(*TODO: add functional [merge, partition, keepBy, split]*)
+(*TODO: add functional [merge, partition, keep, split]*)
 
 val remove: 'a t -> key -> unit  
 (** [remove m x] do the in-place modification *)

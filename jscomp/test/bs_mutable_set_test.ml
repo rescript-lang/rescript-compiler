@@ -10,7 +10,7 @@ module R = Bs.Range
 module A = Bs.Array
 module L = Bs.List 
 let (++) = A.concat
-let empty = N.empty 
+let empty = N.make
 let ofArray = N.ofArray 
 
 (************************************************)
@@ -157,8 +157,8 @@ let () =
   let a0 = ofArray  (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
-      N.keepBy a0 (fun [@bs] x -> x mod 2  = 0),
-      N.keepBy a0 (fun [@bs] x -> x mod 2 <> 0)
+      N.keep a0 (fun [@bs] x -> x mod 2  = 0),
+      N.keep a0 (fun [@bs] x -> x mod 2 <> 0)
     ) in 
   let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
@@ -169,7 +169,7 @@ let () =
 
 (************************************************)
 let () = 
-  let v = N.empty () in 
+  let v = N.make () in 
   for i = 0 to 1_00_000 do 
     (* [%assert (N.checkInvariantInternal !v)]; *)
      N.add v i 
@@ -182,7 +182,7 @@ let () =
 
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
-  let v = N.empty () in 
+  let v = N.make () in 
   N.mergeMany v u ;
   eq __LOC__ (N.size v) 91 ; 
   eq __LOC__ (N.toArray v) (I.range 30 120)
@@ -241,9 +241,9 @@ let () =
   
 let () =   
   let v = N.ofArray (I.randomRange 0 1000) in 
-  let copyV = N.keepBy v (fun[@bs] x -> x mod 8 = 0) in 
+  let copyV = N.keep v (fun[@bs] x -> x mod 8 = 0) in 
   let aa,bb = N.partition v (fun[@bs] x -> x mod 8 = 0) in 
-  let cc = N.keepBy v (fun[@bs] x -> x mod 8 <> 0) in 
+  let cc = N.keep v (fun[@bs] x -> x mod 8 <> 0) in 
   for i = 0 to 200 do 
     N.remove v i
   done ;
@@ -283,13 +283,13 @@ let () =
     (N.intersect 
        (f @@ I.randomRange 0 20)
        (f @@ I.randomRange 21 40)
-     =~ (N.empty ())
+     =~ (N.make ())
     );
   b __LOC__ 
     (N.intersect 
        (f @@ I.randomRange 21 40)
        (f @@ I.randomRange 0 20)      
-     =~ (N.empty ())
+     =~ (N.make ())
     );  
   b __LOC__  
     (N.intersect 

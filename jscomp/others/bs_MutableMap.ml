@@ -23,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+module Int = Bs_MutableMapInt
+module String = Bs_MutableMapString
     
 module N = Bs_internalAVLtree
 module A = Bs_Array
@@ -139,9 +141,11 @@ let update t  x f =
   if  newRoot != oldRoot then 
     S.dataSet t newRoot 
 
-let empty (type elt) (type id) ~(dict : (elt,id) dict) =
+let make (type elt) (type id) ~(dict : (elt,id) dict) =
   let module M = (val dict) in 
   S.t ~cmp:M.cmp ~data:N.empty
+
+let clear m = S.dataSet m N.empty
     
 let isEmpty d = 
   N.isEmpty (S.data d)
@@ -234,7 +238,4 @@ let mergeMany d xs =
   if newRoot != oldRoot then 
     S.dataSet d newRoot
 
-
-module Int = Bs_MapIntM
-module String = Bs_MapStringM  
 

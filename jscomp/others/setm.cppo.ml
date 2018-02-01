@@ -158,7 +158,7 @@ let mergeMany d arr =
     
 
 
-let empty  () = t ~data:N.empty
+let make  () = t ~data:N.empty
 
 let isEmpty d = 
   N.isEmpty (data d)
@@ -234,7 +234,7 @@ let split d  key =
       ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
       ), true   
   
-let keepBy d p = 
+let keep d p = 
   t ~data:(N.filterCopy (data d) p )
 let partition d p = 
   let a , b = N.partitionCopy (data d) p in 
@@ -243,8 +243,8 @@ let subset a b = I.subset  (data a) (data b)
 let intersect dataa datab  = 
   let dataa, datab = data dataa, data datab in
     match N.toOpt dataa, N.toOpt datab with 
-    | None, _ -> empty ()
-    | _, None -> empty ()
+    | None, _ -> make ()
+    | _, None -> make ()
     | Some dataa0, Some datab0 ->  
     let sizea, sizeb = 
         N.lengthNode dataa0, N.lengthNode datab0 in          
@@ -259,7 +259,7 @@ let intersect dataa datab  =
       (A.getUnsafe tmp (totalSize - 1) <
       A.getUnsafe tmp 0)
       )
-       then empty ()
+       then make ()
     else 
     let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
     let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0  in 
@@ -268,7 +268,7 @@ let intersect dataa datab  =
 let diff dataa datab : t = 
   let dataa, datab = data dataa, data datab in
   match N.toOpt dataa, N.toOpt datab with 
-  | None, _ -> empty ()
+  | None, _ -> make ()
   | _, None -> t ~data:(N.copy dataa)
   | Some dataa0, Some datab0 -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  

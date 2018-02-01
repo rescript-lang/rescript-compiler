@@ -18,7 +18,7 @@ module I = Array_data_util
 
 let mapOfArray x = M.ofArray ~dict:(module Icmp) x 
 let setOfArray x = N.ofArray ~dict:(module Icmp) x 
-let emptyMap () = M.empty (module Icmp)
+let emptyMap () = M.make (module Icmp)
 
 let mergeInter s1 s2 = 
   setOfArray @@ M.keysToArray (M.merge s1 s2 (fun[@bs] k v1 v2 -> 
