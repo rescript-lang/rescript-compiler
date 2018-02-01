@@ -14,17 +14,17 @@ external clearInterval : intervalId -> unit = "" [@@bs.val]
 @example {[
 (* API for a somewhat aggressive snoozing alarm clock *)
 
-let interval = Js.Undefined.empty
+let interval = ref Js.Nullable.null
 
 let remind () =
   Js.log "Wake Up!";
   IO.punchSleepyGuy ()
-
+  
 let snooze mins =
-  interval := Js.Undefined.return \@\@ Js.Global.setInterval remind (mins * 60 * 1000)
-
+  interval := Js.Nullable.return (Js.Global.setInterval remind (mins * 60 * 1000))
+  
 let cancel () =
-  Js.Undefined.iter Js.Global.clearInterval !interval
+  Js.Nullable.iter !interval (fun[@bs] intervalId -> Js.Global.clearInterval intervalId)
 ]}
 *)
 
@@ -37,14 +37,14 @@ external clearTimeout : timeoutId -> unit = "" [@@bs.val]
 @example {[
 (* A simple model of a code monkey's brain *)
 
-let timer = Js.Undefined.empty
+let timer = ref Js.Nullable.null
 
 let work () =
   IO.closeHackerNewsTab ()
 
 let procrastinate mins =
-  Js.Undefined.iter fun Js.Global.clearTimeout !timer
-  Js.Global.setTimeout work (mins * 60 * 1000)
+  Js.Nullable.iter !timer (fun[@bs] timer -> Js.Global.clearTimeout timer);
+  timer := Js.Nullable.return (Js.Global.setTimeout work (mins * 60 * 1000))
 ]}
 *)
 
