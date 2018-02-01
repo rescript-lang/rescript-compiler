@@ -38,7 +38,7 @@ val strictlySortedLength:
 
 val isSorted: 'a array -> ('a -> 'a -> int [@bs]) -> bool
 (** [isSorted arr cmp]  
-    returns true if array is increeasingly sorted 
+    returns true if array is increasingly sorted 
    , equal is okay 
    for example 
    {[
@@ -92,7 +92,7 @@ val binarySearchBy:
   (the index of the last element plus 1)
 
   for example, if [key] is smaller than all elements return [-1] since [lnot (-1) = 0]
-  if [key] is largeer than all elements return [- (len + 1)] since [lnot (-(len+1)) = len]
+  if [key] is larger than all elements return [- (len + 1)] since [lnot (-(len+1)) = len]
 
 *)
 
