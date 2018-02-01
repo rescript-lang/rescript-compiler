@@ -329,11 +329,11 @@ var v$1 = Bs_Array.makeBy(10, (function (i) {
         return i;
       }));
 
-var v0 = Bs_Array.keepBy(v$1, (function (x) {
+var v0 = Bs_Array.keep(v$1, (function (x) {
         return +(x % 2 === 0);
       }));
 
-var v1 = Bs_Array.keepBy(v$1, (function (x) {
+var v1 = Bs_Array.keep(v$1, (function (x) {
         return +(x % 3 === 0);
       }));
 

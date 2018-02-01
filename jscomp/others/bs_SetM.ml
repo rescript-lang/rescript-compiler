@@ -271,7 +271,7 @@ let split d  key  =
        ~cmp
     ), true       
 
-let keepBy d p = 
+let keep d p = 
   S.t ~data:(N.filterCopy (S.data d) p ) ~cmp:(S.cmp d)
     
 let partition d p = 

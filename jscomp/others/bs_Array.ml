@@ -225,7 +225,7 @@ let map a f =
   r
   
   
-let keepBy a f =
+let keep a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
   let j = ref 0 in 

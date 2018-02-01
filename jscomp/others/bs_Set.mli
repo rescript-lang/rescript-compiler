@@ -73,8 +73,8 @@ val every: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
 val some: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
-val keepBy: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
-(** [keepBy m p] returns the set of all elements in [s]
+val keep: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
+(** [keep m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
 val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
 (** [partition m p] returns a pair of sets [(s1, s2)], where

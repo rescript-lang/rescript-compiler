@@ -77,10 +77,10 @@ let () =
   b __LOC__ (None = (N.get u22 59));
   let u25 = N.add u22 59 in 
   eq __LOC__ (N.size u25) 60;
-  b __LOC__ (N.minimum (N.empty (module IntCmp)) = None);
-  b __LOC__ (N.maximum (N.empty (module IntCmp)) = None);
-  b __LOC__ (N.minUndefined (N.empty (module IntCmp)) = Js.undefined);
-  b __LOC__ (N.maxUndefined (N.empty (module IntCmp)) = Js.undefined)
+  b __LOC__ (N.minimum (N.make (module IntCmp)) = None);
+  b __LOC__ (N.maximum (N.make (module IntCmp)) = None);
+  b __LOC__ (N.minUndefined (N.make (module IntCmp)) = Js.undefined);
+  b __LOC__ (N.maxUndefined (N.make (module IntCmp)) = Js.undefined)
 
 let testIterToList  xs = 
   let v = ref [] in 
@@ -104,8 +104,8 @@ let () =
   let a0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
-      N.keepBy a0 (fun [@bs] x -> x mod 2  = 0),
-      N.keepBy a0 (fun [@bs] x -> x mod 2 <> 0)
+      N.keep a0 (fun [@bs] x -> x mod 2  = 0),
+      N.keep a0 (fun [@bs] x -> x mod 2 <> 0)
     ) in 
   let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
@@ -132,10 +132,10 @@ let () =
 
 let () =   
   let a = N.ofArray ~dict:(module IntCmp) [||] in 
-  b __LOC__ (N.isEmpty (N.keepBy a (fun[@bs] x -> x mod 2 = 0)))
+  b __LOC__ (N.isEmpty (N.keep a (fun[@bs] x -> x mod 2 = 0)))
 
 let () = 
-  let (aa,bb), pres = N.split (N.empty  ~dict:(module IntCmp)) 0 in 
+  let (aa,bb), pres = N.split (N.make  ~dict:(module IntCmp)) 0 in 
   b __LOC__ (N.isEmpty aa);
   b __LOC__ (N.isEmpty bb);
   b __LOC__ (not pres)

@@ -61,7 +61,7 @@ let getExn = N.getExn
 let mapWithKey = N.mapWithKey
 let map  = N.map
 
-let keepBy = N.filterShared
+let keep = N.filterShared
 let partition = N.partitionShared
 let checkInvariantInternal = N.checkInvariantInternal
 let rec set  (t : _ t) newK newD  ~cmp =

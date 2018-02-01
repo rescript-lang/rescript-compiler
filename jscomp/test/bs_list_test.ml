@@ -39,12 +39,23 @@ let () =
   let (=~) = eq "FLATTEN" in 
 
 
-  N.(concatMany
+  N.(flatten
        [[1]; [2]; [3];[]; makeBy 4 (fun [@bs] i -> i )]
     ) =~
   [1;2;3; 0;1;2;3];
-  N.concatMany [] =~ [];  
-  N.concatMany [[];[]; [2]; [1];[2];[]] =~ [2;1;2]
+  N.flatten [] =~ [];  
+  N.flatten [[];[]; [2]; [1];[2];[]] =~ [2;1;2]
+
+let () = 
+  let (=~) = eq "CONCATMANY" in 
+  N.(concatMany
+       [|[1]; [2]; [3];[]; makeBy 4 (fun [@bs] i -> i )|]
+    ) =~
+  [1;2;3; 0;1;2;3];
+  N.concatMany [||] =~ [];  
+  N.concatMany [|[];[]; [2]; [1];[2];[]|] =~ [2;1;2];
+  N.concatMany [|[];[]; [2;3]; [1];[2];[]|] =~ [2;3;1;2]
+
 
 let () = 
   eq __LOC__
@@ -93,10 +104,10 @@ let () =
 
 let () = 
   let (=~) = eq "FILTER" in 
-  N.keepBy [1;2;3;4] mod2 =~ [2;4];
-  N.keepBy [1;3;41] mod2 =~ [];
-  N.keepBy [] mod2 =~ [];
-  N.keepBy  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
+  N.keep [1;2;3;4] mod2 =~ [2;4];
+  N.keep [1;3;41] mod2 =~ [];
+  N.keep [] mod2 =~ [];
+  N.keep  [2;2;2;4;6] mod2 =~ [2;2;2;4;6]
 let id : int -> int [@bs] = fun [@bs] x -> x 
 
 let () =   

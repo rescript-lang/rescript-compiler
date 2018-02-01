@@ -86,7 +86,7 @@ module Md = Bs.Map
 module Md0 = Bs.MapDict
 let bench3 (type t) (m : (string,t) Bs.Dict.comparable) = 
   
-  let empty = Md.empty m in
+  let empty = Md.make m in
   let module String = (val m) in 
   let cmp = String.cmp in 
   let table = ref (Md.getData empty) in 

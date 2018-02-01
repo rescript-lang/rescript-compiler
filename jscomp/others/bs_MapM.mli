@@ -91,7 +91,7 @@ val getExn:  ('k, 'a, 'id) t -> 'k ->  'a
 val checkInvariantInternal: _ t -> bool   
 (****************************************************************************)
 
-(*TODO: add functional [merge, partition, keepBy, split]*)
+(*TODO: add functional [merge, partition, keep, split]*)
 
 val remove:  ('k, 'a, 'id) t -> 'k -> unit
 (** [remove m x] do the in-place modification,

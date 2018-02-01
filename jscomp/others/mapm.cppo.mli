@@ -94,7 +94,7 @@ val checkInvariantInternal: _ t -> bool
 
 (****************************************************************************)
 
-(*TODO: add functional [merge, partition, keepBy, split]*)
+(*TODO: add functional [merge, partition, keep, split]*)
 
 val remove: 'a t -> key -> unit  
 (** [remove m x] do the in-place modification *)

@@ -234,7 +234,7 @@ let split d  key =
       ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
       ), true   
   
-let keepBy d p = 
+let keep d p = 
   t ~data:(N.filterCopy (data d) p )
 let partition d p = 
   let a , b = N.partitionCopy (data d) p in 

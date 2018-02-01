@@ -82,11 +82,11 @@ val merge:
     value, is determined with the function [f].
  *)
 
-val keepBy: 
+val keep: 
     'a t -> 
     (key -> 'a -> bool [@bs]) -> 
     'a t
-(** [keepBy m p] returns the map with all the bindings in [m]
+(** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p].
 *)
 

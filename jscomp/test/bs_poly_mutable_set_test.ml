@@ -10,7 +10,7 @@ module IntCmp =
   (val Bs.Dict.comparable (fun[@bs] (x:int) y -> compare x y))
 module L = Bs.List
 let ofArray = N.ofArray ~dict:(module IntCmp)
-let empty () = N.empty ~dict:(module IntCmp)
+let empty () = N.make ~dict:(module IntCmp)
 
 
 let () = 
@@ -155,8 +155,8 @@ let () =
   let a0 = ofArray  (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
-      N.keepBy a0 (fun [@bs] x -> x mod 2  = 0),
-      N.keepBy a0 (fun [@bs] x -> x mod 2 <> 0)
+      N.keep a0 (fun [@bs] x -> x mod 2  = 0),
+      N.keep a0 (fun [@bs] x -> x mod 2 <> 0)
     ) in 
   let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);

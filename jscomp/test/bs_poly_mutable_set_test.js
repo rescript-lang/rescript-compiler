@@ -287,11 +287,11 @@ b("File \"bs_poly_mutable_set_test.ml\", line 147, characters 4-11", Bs_SetM.eq(
 
 var a0 = ofArray(Array_data_util.randomRange(0, 1000));
 
-var a1 = Bs_SetM.keepBy(a0, (function (x) {
+var a1 = Bs_SetM.keep(a0, (function (x) {
         return +(x % 2 === 0);
       }));
 
-var a2 = Bs_SetM.keepBy(a0, (function (x) {
+var a2 = Bs_SetM.keep(a0, (function (x) {
         return +(x % 2 !== 0);
       }));
 

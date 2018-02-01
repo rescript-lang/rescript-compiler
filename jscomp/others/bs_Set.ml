@@ -106,8 +106,8 @@ let every m f  = N.every  (S.data m) f
 
 let some m f = N.some  (S.data m) f 
 
-let keepBy m f  = 
-  S.t ~cmp:(S.cmp m) ~data:(N.keepBy (S.data m) f )
+let keep m f  = 
+  S.t ~cmp:(S.cmp m) ~data:(N.keep (S.data m) f )
 
 let partition m f  = 
   let l,r = N.partition (S.data m) f in

@@ -379,11 +379,11 @@ var a0 = {
   data: Bs_internalSetInt.ofArray(xs$24)
 };
 
-var a1 = Bs_SetIntM.keepBy(a0, (function (x) {
+var a1 = Bs_SetIntM.keep(a0, (function (x) {
         return +(x % 2 === 0);
       }));
 
-var a2 = Bs_SetIntM.keepBy(a0, (function (x) {
+var a2 = Bs_SetIntM.keep(a0, (function (x) {
         return +(x % 2 !== 0);
       }));
 
@@ -599,7 +599,7 @@ var v$5 = {
   data: Bs_internalSetInt.ofArray(xs$26)
 };
 
-var copyV = Bs_SetIntM.keepBy(v$5, (function (x) {
+var copyV = Bs_SetIntM.keep(v$5, (function (x) {
         return +(x % 8 === 0);
       }));
 
@@ -607,7 +607,7 @@ var match$5 = Bs_SetIntM.partition(v$5, (function (x) {
         return +(x % 8 === 0);
       }));
 
-var cc$1 = Bs_SetIntM.keepBy(v$5, (function (x) {
+var cc$1 = Bs_SetIntM.keep(v$5, (function (x) {
         return +(x % 8 !== 0);
       }));
 
@@ -834,7 +834,7 @@ var A = 0;
 
 var L = 0;
 
-var empty = Bs_SetIntM.empty;
+var empty = Bs_SetIntM.make;
 
 var ofArray = Bs_SetIntM.ofArray;
 
