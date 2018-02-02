@@ -377,6 +377,13 @@ let rec fillAux arr i x =
     A.setUnsafe arr i h ;
     fillAux arr (i + 1) t
 
+let rec ofArrayAux a i res =
+  if i < 0 then res 
+  else ofArrayAux a (i - 1) (A.getUnsafe a i :: res) 
+    
+let ofArray a =
+  ofArrayAux a (A.length a - 1) []    
+
 let toArray ( x : _ t) =
   let len = length x in
   let arr = Bs_Array.makeUninitializedUnsafe len in

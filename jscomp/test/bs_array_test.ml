@@ -11,6 +11,7 @@ let neq loc x y =
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Neq(x,y))) :: !suites
 
 module A = Bs.Array 
+module L = Bs.List 
 type 'a t = 'a Js.Array.t
 let () =
   [| 1; 2; 3; 4 |]
@@ -90,14 +91,14 @@ let () =
   eq __LOC__ (A.map [||] addone) [||];
   eq __LOC__ (A.mapWithIndex [||] add) [||];
   eq __LOC__ (A.mapWithIndex [|1;2;3|] add) [|1;3;5|];
-  eq __LOC__ (A.toList [||]) [];
-  eq __LOC__ (A.toList [|1|]) [1];
-  eq __LOC__ (A.toList [|1;2;3|]) [1;2;3];
+  eq __LOC__ (L.ofArray [||]) [];
+  eq __LOC__ (L.ofArray [|1|]) [1];
+  eq __LOC__ (L.ofArray [|1;2;3|]) [1;2;3];
   eq __LOC__ (A.map [|1;2;3|] addone) [|2;3;4|];
-  eq __LOC__ (A.ofList []) [||];
-  eq __LOC__ (A.ofList [1]) [|1|];
-  eq __LOC__ (A.ofList [1;2]) [|1;2|];
-  eq __LOC__ (A.ofList [1;2;3]) [|1;2;3|]
+  eq __LOC__ (L.toArray []) [||];
+  eq __LOC__ (L.toArray [1]) [|1|];
+  eq __LOC__ (L.toArray [1;2]) [|1;2|];
+  eq __LOC__ (L.toArray [1;2;3]) [|1;2;3|]
 
 let () = 
   let v = A.makeBy 10 (fun[@bs] i -> i ) in 

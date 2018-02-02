@@ -27,6 +27,9 @@ let getExn arr i =
 let set arr i v =
   if i >= 0 && i < length arr then setUnsafe arr i v
 
+let setExn arr i v = 
+  [%assert i >= 0 && i < length arr];  
+  setUnsafe arr i v 
 
 
 external truncateToLengthUnsafe : 'a array -> int ->  unit = "length" [@@bs.set]  
@@ -268,29 +271,6 @@ let mapWithIndex  a f =
   done;
   r
 
-
-let toList a =
-  let rec tolist i res =
-    if i < 0 then res else tolist (i - 1) (getUnsafe a i :: res) in
-  tolist (length a - 1) []
-
-(* Cannot use List.length here because the List module depends on Array. *)
-let rec list_length accu = function
-  | [] -> accu
-  | h::t -> list_length (succ accu) t
-
-
-let rec fillAUx arr i xs =
-  match xs with 
-  |  [] -> ()
-  | hd::tl -> setUnsafe arr i hd; fillAUx arr (i+1) tl 
-
-let ofList xs = 
-  let len = list_length 0 xs in  
-  let a = makeUninitializedUnsafe len in 
-  fillAUx a 0 xs;
-  a
-
 let reduce a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
@@ -304,9 +284,6 @@ let reduceReverse a x f =
     r := f  !r (getUnsafe a i) [@bs]
   done;
   !r
-
-
-
 
 
 let rec everyAux arr i b len =   

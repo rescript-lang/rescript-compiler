@@ -14,7 +14,6 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_internalAVLset\
 	bs_internalAVLtree\
 	bs_internalMutableAVL\
-	bs_Queue\
 	bs_List\
 	bs_SortArray\
 	bs_SortArrayInt\
@@ -47,7 +46,8 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	bs_internalSetString\
 	bs_SetInt\
 	bs_SetString\
-	bs_Stack\
+	bs_MutableStack\
+	bs_MutableQueue\
 	node_child_process \
 	js_boolean js_math\
 	js_dict js_date js_global js_cast js_promise\

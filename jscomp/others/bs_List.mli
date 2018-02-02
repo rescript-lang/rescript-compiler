@@ -22,41 +22,90 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** {!Bs.List}
+    
+    Utilities for List data type
+*)
+
 type 'a t = 'a list
+
+
+val length: 'a t -> int
+val size: 'a t -> int
+(** [size l] is the same as [lenth l] *)
 
 val head: 'a t -> 'a option
 
 val tail: 'a t -> 'a t option
+
 val add: 'a t -> 'a -> 'a t
+
 val get: 'a t -> int -> 'a option
+(** [get xs n]
+
+    return the nth element in [xs]
+ *)
+
 val getExn: 'a t -> int -> 'a
-  
+(** [getExn xs n]
+
+    raise an exception if [n] is larger than the length of list
+*)  
+
 val make: int -> 'a -> 'a t
-(** [make n v] return empty if [n] is negative
+(**  [make n v] 
+  
+    - return empty if [n] is negative    
+    - return a list of length [n] filled with [v]  
 *)
     
 val makeBy: int -> (int -> 'a [@bs]) -> 'a t
-(** [makeBy n f] return empty if [n] is negative
+(** [makeBy n f] 
+    
+    - return empty if [n] is negative    
+    - return a list of length [n] filled with [f i] start from [0]to [n - 1]
+
 *)    
 
 
 val drop: 'a t -> int -> 'a t option 
+(** [drop xs n]
+    drop [n] elements from [xs]
+*)
 val take: 'a t -> int -> 'a t option 
+(** [take xs n]
+    take [n] elements from [xs]
+*)
 
 val splitAt: 'a t -> int -> ('a list * 'a list) option 
 
 val concat: 'a t -> 'a t -> 'a t
 
+val concatMany: 'a t array -> 'a t
+
+val reverseConcat: 'a t -> 'a t -> 'a t
+(**
+   [reverseConcat a b] is semantically equivalent to [concat (reverse a) b]
+*)
+    
+val flatten: 'a t t -> 'a t
+
 val map: 'a t -> ('a -> 'b [@bs]) -> 'b t
 
+val zip: 'a t -> 'b t -> ('a * 'b) t
+(** [zip xs ys]
+  stops with shorter array
+*)
+
 val zipBy: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
+(** [zipBy xs ys f]
+  stops with shorter array 
+*)
 
 val mapWithIndex: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
 
-val length: 'a t -> int
-val size: 'a t -> int
-(** [size l] is the same as [lenth l] *)
-  
+val ofArray: 'a array -> 'a t 
+   
 val toArray: 'a t -> 'a array
 
 (* type json = Js_json.t  *)
@@ -64,19 +113,14 @@ val toArray: 'a t -> 'a array
 (* val toJson : 'a t -> ('a -> json  [@bs]) -> json *)
 (* val fromJson : json -> (json -> 'a [@bs]) -> 'a t  *)
 
-val reverseConcat: 'a t -> 'a t -> 'a t
-(**
-   [reverseAppend a b] is semantically equivalent to [concat (reverse a) b]
-*)
-    
+
 val reverse: 'a t -> 'a t
 
-val flatten: 'a t t -> 'a t
-val concatMany: 'a t array -> 'a t
     
 val mapReverse: 'a t -> ('a -> 'b [@bs]) -> 'b t
 (** [mapReverse a f] is semantically equivalent to [reverse (map a f)]    
 *)
+
 val forEach: 'a t ->  ('a -> 'b [@bs]) -> unit
 
 val forEachWithIndex: 'a t -> (int -> 'a -> 'b [@bs]) -> unit
@@ -86,7 +130,10 @@ val reduce:  'a t -> 'b ->  ('b -> 'a -> 'b [@bs]) ->'b
 val reduceReverse: 'a t -> 'b -> ('a -> 'b -> 'b [@bs])  -> 'b
 
 val mapReverse2: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) ->  'c t
+(** [mapReverse2 xs ys f]
 
+    it is semantically equivalent to [reverse (map2 xs ys f)]    
+*)
 val forEach2: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> unit
 
 val reduce2:
@@ -109,7 +156,17 @@ val some2:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
 
 val has:  'a t -> 'b ->  ('a -> 'b -> bool [@bs]) -> bool
 
-val hasByReference:  'a t -> 'a ->bool
+val hasByReference:  'a t -> 'a -> bool
+
+
+val getBy: 'a t -> ('a -> bool [@bs]) ->  'a option
+
+val keep: 'a t ->  ('a -> bool [@bs]) -> 'a t
+val keepMap: 'a t -> ('a -> 'b option [@bs]) -> 'b t
+val partition: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
+
+val unzip: ('a * 'b) t -> 'a t * 'b t
+
 
 val assoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
 
@@ -125,15 +182,5 @@ val removeAssoc:
   ('a -> 'b -> bool [@bs]) -> ('a * 'c) t
 
 val removeAssocByReference:  ('a * 'b) t -> 'a -> ('a * 'b) t
-
-val getBy: 'a t -> ('a -> bool [@bs]) ->  'a option
-
-val keep: 'a t ->  ('a -> bool [@bs]) -> 'a t
-val keepMap: 'a t -> ('a -> 'b option [@bs]) -> 'b t
-val partition: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
-
-val unzip: ('a * 'b) t -> 'a t * 'b t
-
-val zip: 'a t -> 'b t -> ('a * 'b) t
 
 
