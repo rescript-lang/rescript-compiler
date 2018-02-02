@@ -91,8 +91,8 @@ let () =
   let u0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 20) in 
   let u1 = N.remove u0 17 in  
   let u2 = N.add u1 33 in 
-  b __LOC__ (L.every2 (testIterToList u0) (L.makeBy 21 (fun[@bs] i -> i)) (fun [@bs] x y -> x = y));
-  b __LOC__ (L.every2 (testIterToList u0) (N.toList u0) (fun [@bs] x y -> x = y));
+  b __LOC__ (L.every2 (testIterToList u0) (L.makeBy 21 (fun i -> i)) (fun x y -> x = y));
+  b __LOC__ (L.every2 (testIterToList u0) (N.toList u0) (fun  x y -> x = y));
   b __LOC__ (N.some u0 (fun [@bs] x -> x = 17));
   b __LOC__ (not (N.some u1 (fun [@bs] x -> x = 17)));
   b __LOC__ (N.every u0 (fun [@bs] x -> x < 24));
@@ -119,15 +119,15 @@ let () =
   let (a5,a6), pres  = N.split a0 200 in 
   b __LOC__ pres ;
   eq __LOC__ (N.toArray a5) (A.makeBy 200 (fun[@bs] i -> i));
-  eq __LOC__ (N.toList a6) (L.makeBy 800 (fun[@bs] i -> i + 201));
+  eq __LOC__ (N.toList a6) (L.makeBy 800 (fun i -> i + 201));
   let a7 = N.remove a0 200 in 
   let (a8,a9), pres  = N.split a7 200 in 
   b __LOC__ (not pres) ;
   eq __LOC__ (N.toArray a8) (A.makeBy 200 (fun[@bs] i -> i));
-  eq __LOC__ (N.toList a9) (L.makeBy 800 (fun[@bs] i -> i + 201));
+  eq __LOC__ (N.toList a9) (L.makeBy 800 (fun i -> i + 201));
   eq __LOC__ (N.minimum a8) (Some 0);
   eq __LOC__ (N.minimum a9) (Some 201);
-  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariantInternal x))
+  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun  x -> N.checkInvariantInternal x))
 
 
 let () =   

@@ -38,7 +38,8 @@ var api_doc_dir = path.join(__dirname,'..','docs','api')
 var intro = path.join(__dirname,'..','docs','api','intro.txt')
 // 
 var generator = `-g ${odoc_gendir}/generator.cmxs`
-var prefix_flags = `ocamldoc.opt ${generator}  -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
+// var generator = `-html`
+var prefix_flags = `ocamldoc.opt  ${generator}  -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
 
 // -html it is weird
 // It is weird, -html will unload the plugin

@@ -72,7 +72,7 @@ let () =
   eq __LOC__ (N.minUndefined v) (Js.Undefined.return 500); 
   eq __LOC__ (N.maxUndefined v) (Js.Undefined.return 2000);
   eq __LOC__ (N.reduce v 0 (fun [@bs] x y -> x + y)) ((( 500 + 2000)/2) * 1501 );
-  b __LOC__ (L.eq (N.toList v) (L.makeBy 1_501 (fun[@bs] i -> i + 500)  ) (fun[@bs] x y -> x = y) ) ;
+  b __LOC__ (L.eq (N.toList v) (L.makeBy 1_501 (fun i -> i + 500)  ) (fun x y -> x = y) ) ;
   eq __LOC__ (N.toArray v ) (I.range 500 2000);
   b __LOC__ (N.checkInvariantInternal v);
   eq __LOC__ (N.get v 3) None;
@@ -161,7 +161,7 @@ let () =
   let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
   b __LOC__ (N.eq a2 a4);
-  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariantInternal x))
+  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun  x -> N.checkInvariantInternal x))
 
 
 

@@ -28,7 +28,7 @@
 *)
 
 type 'a t = 'a list
-
+(** [t] is compatible with built-in [list] type *)
 
 val length: 'a t -> int
 val size: 'a t -> int
@@ -49,7 +49,7 @@ val get: 'a t -> int -> 'a option
 val getExn: 'a t -> int -> 'a
 (** [getExn xs n]
 
-    raise an exception if [n] is larger than the length of list
+    {b raise} an exception if [n] is larger than the length of list
 *)  
 
 val make: int -> 'a -> 'a t
@@ -59,11 +59,12 @@ val make: int -> 'a -> 'a t
     - return a list of length [n] filled with [v]  
 *)
     
-val makeBy: int -> (int -> 'a [@bs]) -> 'a t
+val makeByU: int -> (int -> 'a [@bs]) -> 'a t 
+val makeBy: int -> (int -> 'a) -> 'a t
 (** [makeBy n f] 
     
     - return empty if [n] is negative    
-    - return a list of length [n] filled with [f i] start from [0]to [n - 1]
+    - return a list of length [n] filled with [f i] start from [0] to [n - 1]
 
 *)    
 
@@ -78,31 +79,38 @@ val take: 'a t -> int -> 'a t option
 *)
 
 val splitAt: 'a t -> int -> ('a list * 'a list) option 
+(** [splitAt ls n]
 
+    return None when the length of [ls] is less than [n]
+*)
+    
 val concat: 'a t -> 'a t -> 'a t
 
 val concatMany: 'a t array -> 'a t
 
 val reverseConcat: 'a t -> 'a t -> 'a t
 (**
-   [reverseConcat a b] is semantically equivalent to [concat (reverse a) b]
+   [reverseConcat a b] is  equivalent to [concat (reverse a) b]
 *)
     
 val flatten: 'a t t -> 'a t
 
-val map: 'a t -> ('a -> 'b [@bs]) -> 'b t
+val mapU: 'a t -> ('a -> 'b [@bs]) -> 'b t
+val map: 'a t -> ('a -> 'b) -> 'b t 
 
 val zip: 'a t -> 'b t -> ('a * 'b) t
 (** [zip xs ys]
   stops with shorter array
 *)
 
-val zipBy: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
+val zipByU: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> 'c t
+val zipBy: 'a t -> 'b t ->  ('a -> 'b -> 'c ) -> 'c t
 (** [zipBy xs ys f]
   stops with shorter array 
 *)
 
-val mapWithIndex: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
+val mapWithIndexU: 'a t ->  (int -> 'a -> 'b [@bs]) -> 'b t
+val mapWithIndex: 'a t ->  (int -> 'a -> 'b ) -> 'b t
 
 val ofArray: 'a array -> 'a t 
    
@@ -117,70 +125,128 @@ val toArray: 'a t -> 'a array
 val reverse: 'a t -> 'a t
 
     
-val mapReverse: 'a t -> ('a -> 'b [@bs]) -> 'b t
-(** [mapReverse a f] is semantically equivalent to [reverse (map a f)]    
+val mapReverseU: 'a t -> ('a -> 'b [@bs]) -> 'b t
+val mapReverse: 'a t -> ('a -> 'b ) -> 'b t
+(** [mapReverse a f] is  equivalent to [reverse (map a f)]    
 *)
 
-val forEach: 'a t ->  ('a -> 'b [@bs]) -> unit
+val forEachU: 'a t ->  ('a -> 'b [@bs]) -> unit
+val forEach: 'a t ->  ('a -> 'b ) -> unit
 
-val forEachWithIndex: 'a t -> (int -> 'a -> 'b [@bs]) -> unit
+val forEachWithIndexU: 'a t -> (int -> 'a -> 'b [@bs]) -> unit
+val forEachWithIndex: 'a t -> (int -> 'a -> 'b) -> unit
 
-val reduce:  'a t -> 'b ->  ('b -> 'a -> 'b [@bs]) ->'b
 
-val reduceReverse: 'a t -> 'b -> ('a -> 'b -> 'b [@bs])  -> 'b
+val reduceU:  'a t -> 'b ->  ('b -> 'a -> 'b [@bs]) ->'b
+val reduce:  'a t -> 'b ->  ('b -> 'a -> 'b) ->'b
 
-val mapReverse2: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) ->  'c t
+val reduceReverseU: 'a t -> 'b -> ('a -> 'b -> 'b [@bs])  -> 'b
+val reduceReverse: 'a t -> 'b -> ('a -> 'b -> 'b )  -> 'b
+
+val mapReverse2U: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) ->  'c t
+val mapReverse2: 'a t -> 'b t -> ('a -> 'b -> 'c ) ->  'c t
 (** [mapReverse2 xs ys f]
 
-    it is semantically equivalent to [reverse (map2 xs ys f)]    
+    equivalent to [reverse (map2 xs ys f)]    
+
+    @example {[
+      mapReverse2 [1;2;3] [1;2] (+) = [4;2]
+    ]}
 *)
-val forEach2: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> unit
 
-val reduce2:
+val forEach2U: 'a t -> 'b t ->  ('a -> 'b -> 'c [@bs]) -> unit
+val forEach2: 'a t -> 'b t ->  ('a -> 'b -> 'c ) -> unit
+(** [forEach2 xs ys f] stop with the shorter list
+*)  
+
+
+val reduce2U:
   'b t -> 'c t  -> 'a  -> ('a -> 'b -> 'c -> 'a [@bs]) ->  'a
+val reduce2:
+  'b t -> 'c t  -> 'a  -> ('a -> 'b -> 'c -> 'a ) ->  'a
+(** [reduce2 xs ys init f ]
 
-val reduceReverse2:
+    stops with the shorter list. 
+*)
+
+val reduceReverse2U:
   'a t -> 'b t -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) ->  'c
+val reduceReverse2:
+  'a t -> 'b t -> 'c -> ('a -> 'b -> 'c -> 'c ) ->  'c
+(**
+   [reduceReverse2 xs ys init f ]
 
-val every: 'a t -> ('a -> bool [@bs]) ->  bool
+   Stops with the shorter list
 
-val some: 'a t -> ('a -> bool [@bs]) -> bool
+   @example {[
+     reduceReverse2 [1;2;3] [1;2] 0 (fun acc x y -> acc + x + y ) = 6
+   ]}
+*)
 
-val every2: 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val everyU: 'a t -> ('a -> bool [@bs]) ->  bool
+val every: 'a t -> ('a -> bool ) ->  bool
 
-val cmp: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
+val someU: 'a t -> ('a -> bool [@bs]) -> bool
+val some: 'a t -> ('a -> bool ) -> bool
 
-val eq: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
-  
-val some2:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
-
-val has:  'a t -> 'b ->  ('a -> 'b -> bool [@bs]) -> bool
-
-val hasByReference:  'a t -> 'a -> bool
+val every2U: 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val every2: 'a t -> 'b t -> ('a -> 'b -> bool ) -> bool
 
 
-val getBy: 'a t -> ('a -> bool [@bs]) ->  'a option
+val cmpU: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
+val cmp: 'a t -> 'a t -> ('a -> 'a -> int) -> int
+(** @example {[
+  cmp 
+]}
+*)
+val eqU: 'a t -> 'a t -> ('a -> 'a -> bool [@bs]) -> bool
+val eq: 'a t -> 'a t -> ('a -> 'a -> bool) -> bool
+(**
+    @example {[
+      eq [1;2;3] [1;2] (=) = false ;;
+      eq [1;2] [1;2] (=) = true
+    ]}
+*)  
 
-val keep: 'a t ->  ('a -> bool [@bs]) -> 'a t
-val keepMap: 'a t -> ('a -> 'b option [@bs]) -> 'b t
-val partition: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
+val some2U:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val some2:  'a t -> 'b t -> ('a -> 'b -> bool) -> bool
+
+val hasU:  'a t -> 'b ->  ('a -> 'b -> bool [@bs]) -> bool
+val has:  'a t -> 'b ->  ('a -> 'b -> bool) -> bool
+
+
+val getByU: 'a t -> ('a -> bool [@bs]) ->  'a option
+val getBy: 'a t -> ('a -> bool) ->  'a option
+
+val keepU: 'a t ->  ('a -> bool [@bs]) -> 'a t
+val keep: 'a t ->  ('a -> bool ) -> 'a t
+
+val keepMapU: 'a t -> ('a -> 'b option [@bs]) -> 'b t
+val keepMap: 'a t -> ('a -> 'b option) -> 'b t
+
+val partitionU: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
+val partition: 'a t -> ('a -> bool) ->  'a t * 'a t
 
 val unzip: ('a * 'b) t -> 'a t * 'b t
 
+val assocU: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
+val assoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool)  -> 'c option
 
-val assoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
 
-val assocByReference: ('a * 'b) t -> 'a ->  'b option
 
-val hasAssoc: ('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
+val hasAssocU: ('a * 'c) t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
+val hasAssoc: ('a * 'c) t -> 'b -> ('a -> 'b -> bool ) -> bool
 
-val hasAssocByReference: ('a * 'b) t -> 'a -> bool
 
-val removeAssoc:
+val removeAssocU:
   ('a * 'c) t ->
   'b -> 
   ('a -> 'b -> bool [@bs]) -> ('a * 'c) t
+val removeAssoc:
+  ('a * 'c) t ->
+  'b -> 
+  ('a -> 'b -> bool) -> ('a * 'c) t
 
-val removeAssocByReference:  ('a * 'b) t -> 'a -> ('a * 'b) t
+
 
 
