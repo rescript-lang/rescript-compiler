@@ -19,20 +19,20 @@ let setOfArray x = N.ofArray ~dict:(module Icmp) x
 let emptyMap () = M.make (module Icmp)
 
 let mergeInter s1 s2 = 
-  setOfArray @@ M.keysToArray (M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray (M.merge s1 s2 (fun   k v1 v2 -> 
       match v1,v2 with 
       | Some _, Some _ -> Some ()
       | _, _ -> None
     ))
 
 let mergeUnion s1 s2 =    
-  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun   k v1 v2 -> 
       match v1,v2 with 
       | None, None -> None
       | _, _ -> Some ()
     )
 let mergeDiff s1 s2 =    
-  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun   k v1 v2 -> 
       match v1,v2 with 
       | Some _, None -> Some ()
       | Some _, Some _
@@ -55,12 +55,12 @@ let () =
   let a0 = mapOfArray (randomRange 0 10) in 
   let a1 = M.set a0 3 33 in (* (3,3) *)
   let a2 = M.remove a1 3 in  (* no 3 *)
-  let a3 = M.update a2 3 (fun[@bs]  k -> 
+  let a3 = M.update a2 3 (fun    k -> 
       match k with 
       | Some k -> Some (k + 1)
       | None  ->  Some 11
     ) in  (* 3, 11 *)
-  let a4 = M.update a2 3 (fun[@bs]  k -> 
+  let a4 = M.update a2 3 (fun    k -> 
       match k with 
       | Some k-> Some (k + 1)
       | None  ->  None
@@ -92,7 +92,7 @@ let () =
 
 
 let acc m i =   
-  M.update m i (fun[@bs] n -> match n with None -> Some 1 | Some acc -> Some (acc + 1))
+  M.update m i (fun   n -> match n with None -> Some 1 | Some acc -> Some (acc + 1))
 
 let acc m is : _ M.t =   
   A.reduce is m (fun a i -> acc a i) 
@@ -103,7 +103,7 @@ let () =
   b __LOC__ 
   (M.eq m1 
   (mapOfArray (A.makeBy 31 (fun i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
-  (fun[@bs] x y -> x = y)
+  (fun   x y -> x = y)
   )
 
 let () = 
@@ -114,9 +114,9 @@ let () =
   let v2 = mapOfArray 
   (A.map (I.randomRange 0 10_000) (fun x -> x, x)) in 
 
-  b __LOC__ (M.eq v1 v2 (fun[@bs]  x y -> x = y ));
+  b __LOC__ (M.eq v1 v2 (fun    x y -> x = y ));
 
-  let inc = (fun [@bs] x -> 
+  let inc = (fun    x -> 
   match x with None -> Some 0
   | Some  v -> Some (v +  1)
   )  in 

@@ -172,58 +172,67 @@ let rec stackAllLeft v s =
   | None -> s 
   | Some x -> stackAllLeft (left x) (x::s)    
 
-let rec forEach n f = 
+let rec forEachU n f = 
   match toOpt n with 
   | None -> () 
   | Some n -> 
-    forEach (left n) f ; f (key n) (value n) [@bs]; forEach (right n) f
-
-let rec map n f = 
+    forEachU (left n) f ; f (key n) (value n) [@bs]; forEachU (right n) f
+      
+let forEach n f = forEachU n (fun [@bs] a b -> f a b)
+    
+let rec mapU n f = 
   match toOpt n with
     None  ->
     empty
   | Some n  ->
-    let newLeft = map (left n) f in
+    let newLeft = mapU (left n) f in
     let newD = f (value n) [@bs] in
-    let newRight = map (right n) f in
+    let newRight = mapU (right n) f in
     return @@ node ~left:newLeft ~key:(key n) ~value:newD ~right:newRight ~h:(h n)
 
-let rec mapWithKey n f =
+let map n f = mapU n (fun[@bs] a -> f a)
+
+let rec mapWithKeyU n f =
   match toOpt n with 
     None ->
     empty
   | Some n ->
     let key = key n in 
-    let newLeft = mapWithKey (left n) f in
+    let newLeft = mapWithKeyU (left n) f in
     let newD = f key (value n) [@bs] in
-    let newRight = mapWithKey (right n) f in
+    let newRight = mapWithKeyU (right n) f in
     return @@ node ~left:newLeft ~key ~value:newD ~right:newRight ~h:(h n)
 
-let rec reduce m accu f =
+let mapWithKey n f = mapWithKeyU n (fun [@bs] a b -> f a b)
+
+let rec reduceU m accu f =
   match toOpt m with
     None -> accu
   | Some n  ->
     let l, v, d, r = left n,  key n, value n, right n in 
-    reduce
+    reduceU
       r 
-      (f (reduce l accu f) v d [@bs]) f
+      (f (reduceU l accu f) v d [@bs]) f
 
-let rec every  n p =
+let reduce m accu f = reduceU m accu (fun [@bs] a b c -> f a b c)
+    
+let rec everyU  n p =
   match toOpt n with 
     None -> true
   | Some n  ->    
     p (key n) (value n) [@bs] && 
-    every (left n) p && 
-    every (right n) p
-
-let rec some n p = 
+    everyU (left n) p && 
+    everyU (right n) p
+let every n p = everyU n (fun [@bs] a b -> p a b)
+    
+let rec someU n p = 
   match toOpt n with 
     None -> false
   | Some n  ->
     p (key n) (value n) [@bs] || 
-    some (left n) p || 
-    some (right n) p
-
+    someU (left n) p || 
+    someU (right n) p
+let some n p  = someU n (fun[@bs] a b -> p a b)
 (* Beware: those two functions assume that the added k is *strictly*
    smaller (or bigger) than all the present keys in the tree; it
    does not test for equality with the current min (or max) key.
@@ -278,45 +287,49 @@ let concatOrJoin t1 v d t2 =
   | Some d -> join t1 v d t2
   | None -> concat t1 t2    
 
-let rec filterShared n p = 
+let rec keepSharedU n p = 
   match toOpt n with 
     None -> empty
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  v, d =  key n, value n  in 
-    let newLeft = filterShared (left n) p in
+    let newLeft = keepSharedU (left n) p in
     let pvd = p v d [@bs] in
-    let newRight = filterShared (right n) p in
+    let newRight = keepSharedU (right n) p in
     if pvd then join newLeft v d newRight else concat newLeft newRight
 
-let rec filterMap n p = 
+let keepShared n p = keepSharedU n (fun [@bs] a b -> p a b)
+    
+let rec keepMapU n p = 
   match toOpt n with 
     None -> empty
   | Some n  ->
     (* call [p] in the expected left-to-right order *)
     let  v, d =  key n, value n  in 
-    let newLeft = filterMap (left n) p in
+    let newLeft = keepMapU (left n) p in
     let pvd = p v d [@bs] in
-    let newRight = filterMap (right n) p in
+    let newRight = keepMapU (right n) p in
     match pvd with 
     | None -> concat newLeft newRight
     | Some d -> join newLeft v d newRight 
-    
 
-let rec partitionShared n p = 
+let keepMap n p = keepMapU n (fun[@bs] a b -> p a b)
+
+let rec partitionSharedU n p = 
   match toOpt n with   
     None -> (empty, empty)
   | Some n  ->
     let  key, value =  key n, value n  in
     (* call [p] in the expected left-to-right order *)    
-    let (lt, lf) = partitionShared (left n) p in
+    let (lt, lf) = partitionSharedU (left n) p in
     let pvd = p key value [@bs] in
-    let (rt, rf) = partitionShared (right n) p in
+    let (rt, rf) = partitionSharedU (right n) p in
     if pvd
     then (join lt key value rt, concat lf rf)
     else (concat lt rt, join lf key value rf)  
 
-
+let partitionShared n p = partitionSharedU n (fun [@bs] a b -> p a b)
+    
 let rec lengthNode n = 
   let l, r = left n, right n in  
   let sizeL = 
@@ -546,18 +559,24 @@ let rec eqAux e1 e2 ~kcmp ~veq =
     else  false    
   | _, _ -> true 
 
-let cmp s1 s2 ~kcmp ~vcmp =
+let cmpU s1 s2 ~kcmp ~vcmp =
   let len1,len2 = size s1, size s2 in 
   if len1 = len2 then 
     compareAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~vcmp 
   else  if len1 < len2 then -1 else 1 
 
-let eq s1 s2 ~kcmp ~veq =
+let cmp s1 s2 ~kcmp ~vcmp =
+  cmpU s1 s2 ~kcmp ~vcmp:(fun[@bs] a b -> vcmp a b)
+    
+let eqU s1 s2 ~kcmp ~veq =
   let len1, len2 = size s1, size s2 in 
   if len1 = len2 then
     eqAux (stackAllLeft s1 []) (stackAllLeft s2 []) ~kcmp ~veq
   else false
 
+let eq s1 s2 ~kcmp ~veq =
+  eqU s1 s2 ~kcmp ~veq:(fun [@bs] a b -> veq a b)
+    
 let rec get  n x ~cmp = 
   match toOpt n with 
     None -> None

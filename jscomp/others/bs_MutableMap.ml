@@ -135,12 +135,13 @@ let rec updateDone t x   f  ~cmp =
       );
       N.return (N.balMutate nt)  
       
-let update t  x f =       
+let updateU t  x f =       
   let oldRoot = S.data t in 
   let newRoot = updateDone oldRoot x f ~cmp:(S.cmp t) in 
   if  newRoot != oldRoot then 
     S.dataSet t newRoot 
-
+let update t x f = updateU t x (fun [@bs] a -> f a)
+    
 let make (type elt) (type id) ~(dict : (elt,id) dict) =
   let module M = (val dict) in 
   S.t ~cmp:M.cmp ~data:N.empty
@@ -160,14 +161,14 @@ let minUndefined m = N.minUndefined (S.data m)
 let maximum m = N.maximum (S.data m)
 let maxUndefined m = N.maxUndefined (S.data m)
 
-let forEach d f =
-  N.forEach (S.data d) f     
-let reduce d acc cb = 
-  N.reduce (S.data d) acc cb 
-let every d p = 
-  N.every (S.data d) p 
-let some d  p = 
-  N.some (S.data d) p       
+let forEachU d f = N.forEachU (S.data d) f
+let forEach d f = forEachU d (fun [@bs] a b -> f a b)
+let reduceU d acc cb = N.reduceU (S.data d) acc cb
+let reduce d acc cb = reduceU d acc (fun[@bs] a b c -> cb a b c)
+let everyU d p = N.everyU (S.data d) p
+let every d p = everyU d (fun[@bs] a b -> p a b)
+let someU d p = N.someU (S.data d) p       
+let some d p = someU d (fun [@bs] a b -> p a b)
 let size d = 
   N.size (S.data d)
 let toList d =
@@ -186,18 +187,20 @@ let ofSortedArrayUnsafe (type elt) (type id) ~(dict : (elt,id) dict) xs : _ t =
 let checkInvariantInternal d = 
   N.checkInvariantInternal (S.data d)  
 
-let cmp m1 m2 cmp = 
-  N.cmp ~kcmp:(S.cmp m1) ~vcmp:cmp (S.data m1) (S.data m2)
+let cmpU m1 m2 cmp = 
+  N.cmpU ~kcmp:(S.cmp m1) ~vcmp:cmp (S.data m1) (S.data m2)
+let cmp m1 m2 cmp = cmpU m1 m2 (fun[@bs] a b -> cmp a b)
     
-let eq m1 m2 cmp = 
-  N.eq ~kcmp:(S.cmp m1) ~veq:cmp (S.data m1) (S.data m2)
-    
-let map m f = 
-  S.t ~cmp:(S.cmp m) ~data:(N.map (S.data m) f)
-    
-let mapWithKey m  f = 
-  S.t ~cmp:(S.cmp m) ~data:(N.mapWithKey (S.data m) f)
-    
+let eqU m1 m2 cmp = 
+  N.eqU ~kcmp:(S.cmp m1) ~veq:cmp (S.data m1) (S.data m2)
+let eq m1 m2 cmp = eqU m1 m2 (fun[@bs] a b -> cmp a b)
+
+let mapU m f = 
+  S.t ~cmp:(S.cmp m) ~data:(N.mapU (S.data m) f)
+let map m f = mapU m (fun[@bs] a  -> f a )    
+let mapWithKeyU m f = 
+  S.t ~cmp:(S.cmp m) ~data:(N.mapWithKeyU (S.data m) f)
+let mapWithKey m f = mapWithKeyU m (fun [@bs] a b -> f a b)     
 let get m x  = 
   N.get ~cmp:(S.cmp m)  (S.data m) x
     
