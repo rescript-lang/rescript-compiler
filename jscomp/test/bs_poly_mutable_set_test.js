@@ -1,8 +1,10 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Bs_Dict = require("../../lib/js/bs_Dict.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Bs_MutableSet = require("../../lib/js/bs_MutableSet.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
@@ -20,7 +22,7 @@ function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
 }
 
-var IntCmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
+var IntCmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
 
 function ofArray(param) {
   return Bs_MutableSet.ofArray(param, IntCmp);
@@ -186,13 +188,9 @@ var aa = match$1[0];
 
 b("File \"bs_poly_mutable_set_test.ml\", line 81, characters 4-11", match[1]);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 82, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(aa.data), Array_data_util.range(500, 999), (function (x, y) {
-            return +(x === y);
-          })));
+b("File \"bs_poly_mutable_set_test.ml\", line 82, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(aa.data), Array_data_util.range(500, 999), Caml_obj.caml_equal));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 83, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(bb.data), Array_data_util.range(1001, 2000), (function (x, y) {
-            return +(x === y);
-          })));
+b("File \"bs_poly_mutable_set_test.ml\", line 83, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(bb.data), Array_data_util.range(1001, 2000), Caml_obj.caml_equal));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 84, characters 5-12", Bs_MutableSet.subset(aa, v));
 
@@ -216,13 +214,9 @@ var aa$1 = match$3[0];
 
 b("File \"bs_poly_mutable_set_test.ml\", line 90, characters 4-11", 1 - match$2[1]);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 91, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(aa$1.data), Array_data_util.range(500, 999), (function (x, y) {
-            return +(x === y);
-          })));
+b("File \"bs_poly_mutable_set_test.ml\", line 91, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(aa$1.data), Array_data_util.range(500, 999), Caml_obj.caml_equal));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 92, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(bb$1.data), Array_data_util.range(1001, 2000), (function (x, y) {
-            return +(x === y);
-          })));
+b("File \"bs_poly_mutable_set_test.ml\", line 92, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(bb$1.data), Array_data_util.range(1001, 2000), Caml_obj.caml_equal));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 93, characters 5-12", Bs_MutableSet.subset(aa$1, v));
 
@@ -356,4 +350,4 @@ exports.empty = empty;
 exports.$plus$plus = $plus$plus;
 exports.f = f;
 exports.$eq$tilde = $eq$tilde;
-/* u Not a pure module */
+/* IntCmp Not a pure module */

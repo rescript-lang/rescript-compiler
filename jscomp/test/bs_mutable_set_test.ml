@@ -60,12 +60,12 @@ let () =
 
 let () = 
   let v = ofArray (I.randomRange 1_000 2_000) in 
-  let bs = A.map (I.randomRange 500 1499) (fun [@bs] x -> N.removeCheck v x ) in 
-  let indeedRemoved = A.reduce bs 0 (fun [@bs] acc x -> if x then acc + 1 else acc) in 
+  let bs = A.map (I.randomRange 500 1499) (fun  x -> N.removeCheck v x ) in 
+  let indeedRemoved = A.reduce bs 0 (fun  acc x -> if x then acc + 1 else acc) in 
   eq __LOC__ indeedRemoved 500;
   eq __LOC__ (N.size v) 501;
-  let cs = A.map (I.randomRange 500 2_000) (fun [@bs] x -> N.addCheck v x) in 
-  let indeedAded = A.reduce cs 0 (fun[@bs] acc x -> if x then acc + 1 else acc) in 
+  let cs = A.map (I.randomRange 500 2_000) (fun x -> N.addCheck v x) in 
+  let indeedAded = A.reduce cs 0 (fun acc x -> if x then acc + 1 else acc) in 
   eq __LOC__ indeedAded 1000 ;
   eq __LOC__ (N.size v) 1_501;
   b __LOC__ (N.isEmpty (empty ()));
@@ -73,7 +73,7 @@ let () =
   eq __LOC__ (N.maximum v) (Some 2000);
   eq __LOC__ (N.minUndefined v) (Js.Undefined.return 500); 
   eq __LOC__ (N.maxUndefined v) (Js.Undefined.return 2000);
-  eq __LOC__ (N.reduce v 0 (fun [@bs] x y -> x + y)) ((( 500 + 2000)/2) * 1501 );
+  eq __LOC__ (N.reduce v 0 (fun  x y -> x + y)) ((( 500 + 2000)/2) * 1501 );
   b __LOC__ (L.eq (N.toList v) (L.makeBy 1_501 (fun i -> i + 500)  ) (fun x y -> x = y) ) ;
   eq __LOC__ (N.toArray v ) (I.range 500 2000);
   b __LOC__ (N.checkInvariantInternal v);
@@ -81,8 +81,8 @@ let () =
   eq __LOC__ (N.get v 1_200) (Some 1_200);
   let (aa, bb), pres = N.split v 1000 in 
   b __LOC__ pres ;
-  b __LOC__ (A.eq (N.toArray aa) (I.range 500 999) (fun[@bs] x y -> x = y));
-  b __LOC__ (A.eq (N.toArray bb) (I.range 1_001 2_000) (fun[@bs] x y -> x = y));
+  b __LOC__ (A.eq (N.toArray aa) (I.range 500 999) (fun x y -> x = y ));
+  b __LOC__ (A.eq (N.toArray bb) (I.range 1_001 2_000) (=));
   b  __LOC__ (N.subset aa v); 
   b __LOC__ (N.subset bb v) ;
   b __LOC__ (N.isEmpty (N.intersect aa bb));
@@ -90,8 +90,8 @@ let () =
   b __LOC__ c ;
   let (aa,bb), pres = N.split v 1_000 in 
   b __LOC__ (not pres);
-  b __LOC__ (A.eq (N.toArray aa) (I.range 500 999) (fun[@bs] x y -> x = y));
-  b __LOC__ (A.eq (N.toArray bb) (I.range 1_001 2_000) (fun[@bs] x y -> x = y));
+  b __LOC__ (A.eq (N.toArray aa) (I.range 500 999) (=));
+  b __LOC__ (A.eq (N.toArray bb) (I.range 1_001 2_000) (=));
   b  __LOC__ (N.subset aa v); 
   b __LOC__ (N.subset bb v);
   b __LOC__ (N.isEmpty (N.intersect aa bb))
@@ -157,10 +157,10 @@ let () =
   let a0 = ofArray  (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
-      N.keep a0 (fun [@bs] x -> x mod 2  = 0),
-      N.keep a0 (fun [@bs] x -> x mod 2 <> 0)
+      N.keep a0 (fun x -> x mod 2  = 0),
+      N.keep a0 (fun x -> x mod 2 <> 0)
     ) in 
-  let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
+  let a3, a4 = N.partition a0 (fun x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
   b __LOC__ (N.eq a2 a4);
   b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun  x -> N.checkInvariantInternal x))
@@ -175,7 +175,7 @@ let () =
      N.add v i 
   done ;
   b __LOC__ (N.checkInvariantInternal v);
-  b __LOC__ @@ R.every 0  1_00_000 (fun [@bs] i -> 
+  b __LOC__ @@ R.every 0  1_00_000 (fun  i -> 
     N.has v i 
    );  
   eq __LOC__ (N.size v) 1_00_001
@@ -207,7 +207,7 @@ let () =
   b __LOC__ (N.isEmpty v )
 
 let () = 
-  let v = N.ofArray (A.makeBy 30 (fun [@bs]i -> i)) in 
+  let v = N.ofArray (A.makeBy 30 (fun i -> i)) in 
   N.remove v 30; 
   N.remove v 29 ;
   b __LOC__ (Js.eqUndefined 28 (N.maxUndefined v ));
@@ -224,7 +224,7 @@ let () =
   let id loc x = 
     let u = (N.ofSortedArrayUnsafe x) in
     b loc (N.checkInvariantInternal u );
-    b loc (A.every2 (N.toArray u) x (fun[@bs] x y -> x = y) )
+    b loc (A.every2 (N.toArray u) x (=) )
   in 
   id __LOC__ [||] ; 
   id __LOC__ [|0|];
@@ -241,14 +241,14 @@ let () =
   
 let () =   
   let v = N.ofArray (I.randomRange 0 1000) in 
-  let copyV = N.keep v (fun[@bs] x -> x mod 8 = 0) in 
-  let aa,bb = N.partition v (fun[@bs] x -> x mod 8 = 0) in 
-  let cc = N.keep v (fun[@bs] x -> x mod 8 <> 0) in 
+  let copyV = N.keep v (fun x -> x mod 8 = 0) in 
+  let aa,bb = N.partition v (fun x -> x mod 8 = 0) in 
+  let cc = N.keep v (fun x -> x mod 8 <> 0) in 
   for i = 0 to 200 do 
     N.remove v i
   done ;
   eq __LOC__ (N.size copyV) 126; 
-  eq __LOC__ (N.toArray copyV) (A.makeBy 126 (fun[@bs] i -> i * 8));
+  eq __LOC__ (N.toArray copyV) (A.makeBy 126 (fun i -> i * 8));
   eq __LOC__ (N.size v ) 800;
   b __LOC__ (N.eq copyV aa);
   b __LOC__ (N.eq cc bb)
@@ -258,10 +258,10 @@ let () =
   let ((aa,bb),_) = N.split v 400 in 
   b __LOC__ (N.eq aa (N.ofArray (I.randomRange 0 399))) ;
   b __LOC__ (N.eq bb (N.ofArray (I.randomRange 401 1000)));
-  let d = N.ofArray (A.map (I.randomRange 0 1000) (fun[@bs] x -> x * 2)) in 
+  let d = N.ofArray (A.map (I.randomRange 0 1000) (fun x -> x * 2)) in 
   let ((cc,dd), _) = N.split d 1001 in   
-  b __LOC__ (N.eq cc (N.ofArray (A.makeBy 501 (fun[@bs] x -> x * 2))));
-  b __LOC__ (N.eq dd (N.ofArray (A.makeBy 500 (fun [@bs] x -> 1002 + x * 2))))
+  b __LOC__ (N.eq cc (N.ofArray (A.makeBy 501 (fun x -> x * 2))));
+  b __LOC__ (N.eq dd (N.ofArray (A.makeBy 500 (fun  x -> 1002 + x * 2))))
 
 
 let (++) = N.union

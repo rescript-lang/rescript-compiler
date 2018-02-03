@@ -195,7 +195,7 @@ let ofArray  (xs : (key * _) array) =
   if len = 0 then N.empty
   else
     let next = 
-        ref (S.strictlySortedLength xs 
+        ref (S.strictlySortedLengthU xs 
         (fun[@bs] (x0,_) (y0,_) -> 
             x0 < y0
         ))

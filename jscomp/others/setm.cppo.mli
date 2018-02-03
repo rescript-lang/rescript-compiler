@@ -55,26 +55,31 @@ val cmp: t -> t -> int
 val eq: t -> t -> bool
 
 
-
-val forEach: t -> (elt -> unit [@bs]) ->  unit
+val forEachU: t -> (elt -> unit [@bs]) ->  unit
+val forEach: t -> (elt -> unit ) ->  unit
 (** In increasing order*)
 
-val reduce: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
+val reduceU: t -> 'a -> ('a -> elt -> 'a [@bs]) -> 'a
+val reduce: t -> 'a -> ('a -> elt -> 'a ) -> 'a  
 (** Iterate in increasing order. *)
 
-val every: t -> (elt -> bool [@bs]) ->  bool
+val everyU: t -> (elt -> bool [@bs]) -> bool
+val every: t -> (elt -> bool) ->  bool  
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified. *)
 
-val some: t -> (elt -> bool [@bs]) ->  bool
+val someU: t -> (elt -> bool [@bs]) -> bool
+val some: t -> (elt -> bool) ->  bool  
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. Oder unspecified. *)
 
-val keep: t -> (elt -> bool [@bs]) ->  t
+val keepU: t -> (elt -> bool [@bs]) ->  t
+val keep: t -> (elt -> bool) ->  t  
 (** [keep s p] returns a fresh copy of the set of all elements in [s]
     that satisfy predicate [p]. *)
 
-val partition: t -> (elt -> bool [@bs]) ->  t * t
+val partitionU: t -> (elt -> bool [@bs]) ->  t * t
+val partition: t -> (elt -> bool) ->  t * t 
 (** [partition s p] returns a fresh copy pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of

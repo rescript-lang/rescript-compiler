@@ -128,15 +128,15 @@ let reduce h init f =
   !accu
 
 let getMaxBucketLength h =
-  A.reduce (C.buckets h) 0
+  A.reduceU (C.buckets h) 0
     (fun[@bs] m b -> 
        let len = bucketLength 0 b in
        Pervasives.max m len)
 
 let getBucketHistogram h =
   let mbl = getMaxBucketLength h in 
-  let histo = A.makeBy (mbl + 1) (fun[@bs] _ -> 0) in
-  A.forEach (C.buckets h)
+  let histo = A.makeByU (mbl + 1) (fun[@bs] _ -> 0) in
+  A.forEachU (C.buckets h)
     (fun[@bs] b ->
        let l = bucketLength 0 b in
        A.setUnsafe histo l (A.getUnsafe histo l + 1)

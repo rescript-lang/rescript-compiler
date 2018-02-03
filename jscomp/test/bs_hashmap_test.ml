@@ -8,9 +8,9 @@ module S = Bs.Map.Int
    type t = int 
 
    end *)
-let eq = fun[@bs] (x : int) y ->  x = y 
-let hash = fun[@bs] (x : int) ->  Hashtbl.hash x 
-let cmp = fun [@bs] (x : int) y -> compare x y
+let eq = fun (x : int) y ->  x = y 
+let hash = fun (x : int) ->  Hashtbl.hash x 
+let cmp = fun  (x : int) y -> compare x y
 module Y = (val Bs.Dict.hashable ~eq ~hash)
 let empty : (int, int, _) N.t = N.make ~dict:(module Y) 30 
 
@@ -54,6 +54,6 @@ let () =
     N.remove v i 
   done ;
   eqx __LOC__ (N.size v) 98_000;
-  b __LOC__ (A.every (I.range 2_001 100_000) (fun [@bs] x -> N.has v x ))
+  b __LOC__ (A.every (I.range 2_001 100_000) (fun x -> N.has v x ))
 
 ;; Mt.from_pair_suites __FILE__ !suites

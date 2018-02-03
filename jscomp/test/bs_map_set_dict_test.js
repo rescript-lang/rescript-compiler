@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Bs_Map = require("../../lib/js/bs_Map.js");
+var Bs_Dict = require("../../lib/js/bs_Dict.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
@@ -22,18 +23,18 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
+var Icmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
 
-var Icmp2 = /* module */[/* cmp */Caml_primitive.caml_int_compare];
+var Icmp2 = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
 
 var m0 = {
   cmp: Icmp[/* cmp */0],
   data: Bs_MapDict.empty
 };
 
-var I2 = /* module */[/* cmp */(function (x, y) {
-      return Caml_primitive.caml_int_compare(y, x);
-    })];
+var I2 = Bs_Dict.comparable((function (x, y) {
+        return Caml_primitive.caml_int_compare(y, x);
+      }));
 
 var m = {
   cmp: Icmp2[/* cmp */0],
@@ -192,4 +193,4 @@ exports.ISet = ISet;
 exports.S0 = S0;
 exports.f = f;
 exports.$eq$tilde = $eq$tilde;
-/* data Not a pure module */
+/* Icmp Not a pure module */

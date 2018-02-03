@@ -644,7 +644,7 @@ Bs_MutableQueue.forEach(q$5, (function (j) {
                 [
                   "bs_queue_test.ml",
                   100,
-                  29
+                  24
                 ]
               ];
         }

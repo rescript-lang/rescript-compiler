@@ -25,36 +25,43 @@
 
 
 
-let forEach s f action =
+let forEachU s f action =
   for i = s to f do
     (action i [@bs] : unit)
   done
-  
-let rec every s f p =
+
+let forEach s f action = forEachU s f (fun[@bs] a -> action a)
+    
+let rec everyU s f p =
   if s > f then true
   else
     p s [@bs] &&
-    (every (s + 1) f p )
+    (everyU (s + 1) f p )
   
-
-let rec everyBy s f ~step p =
+let every s f p = everyU s f (fun [@bs] a -> p a)
+    
+let rec everyByU s f ~step p =
   if s > f then true
   else
     p s [@bs] &&
-    (everyBy (s + step) f ~step p )
+    (everyByU (s + step) f ~step p )
     
+let everyBy s f ~step p = everyByU s f ~step (fun [@bs] a -> p a)
 
-
-let rec some s f p =  
+let rec someU s f p =  
   if s > f then false
   else
     p s [@bs] ||
-    (some (s + 1) f p )
-  
+    (someU (s + 1) f p )
 
-let rec someBy s f ~step p =  
+
+let some s f p = someU s f (fun[@bs] a -> p a)
+
+let rec someByU s f ~step p =  
   if s > f then false
   else
     p s [@bs] ||
-    (someBy (s + step) f ~step p )
+    (someByU (s + step) f ~step p )
     
+
+let someBy s f ~step p = someByU s f ~step (fun[@bs] a -> p a)

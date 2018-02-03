@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
+var Bs_Dict = require("../../lib/js/bs_Dict.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -25,7 +26,7 @@ function t(loc, x) {
   return Mt.throw_suites(test_id, suites, loc, x);
 }
 
-var IntCmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
+var IntCmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
 
 var u0 = Bs_Set.ofArray(Array_data_util.range(0, 30), IntCmp);
 
@@ -191,7 +192,7 @@ b("File \"bs_poly_set_test.ml\", line 83, characters 4-11", +(Bs_SetDict.maxUnde
 
 function testIterToList(xs) {
   var v = [/* [] */0];
-  Bs_SetDict.forEach(xs.data, (function (x) {
+  Bs_Set.forEach(xs, (function (x) {
           v[0] = /* :: */[
             x,
             v[0]
@@ -217,29 +218,21 @@ b("File \"bs_poly_set_test.ml\", line 95, characters 4-11", Bs_List.every2(testI
             return +(x === y);
           })));
 
-function f(x) {
-  return +(x === 17);
-}
+b("File \"bs_poly_set_test.ml\", line 96, characters 4-11", Bs_Set.some(u0$1, (function (x) {
+            return +(x === 17);
+          })));
 
-b("File \"bs_poly_set_test.ml\", line 96, characters 4-11", Bs_SetDict.some(u0$1.data, f));
+b("File \"bs_poly_set_test.ml\", line 97, characters 4-11", 1 - Bs_Set.some(u1$1, (function (x) {
+            return +(x === 17);
+          })));
 
-function f$1(x) {
-  return +(x === 17);
-}
+b("File \"bs_poly_set_test.ml\", line 98, characters 4-11", Bs_Set.every(u0$1, (function (x) {
+            return +(x < 24);
+          })));
 
-b("File \"bs_poly_set_test.ml\", line 97, characters 4-11", 1 - Bs_SetDict.some(u1$1.data, f$1));
-
-function f$2(x) {
-  return +(x < 24);
-}
-
-b("File \"bs_poly_set_test.ml\", line 98, characters 4-11", Bs_SetDict.every(u0$1.data, f$2));
-
-function f$3(x) {
-  return +(x < 24);
-}
-
-b("File \"bs_poly_set_test.ml\", line 99, characters 4-11", 1 - Bs_SetDict.every(u2$1.data, f$3));
+b("File \"bs_poly_set_test.ml\", line 99, characters 4-11", 1 - Bs_Set.every(u2$1, (function (x) {
+            return +(x < 24);
+          })));
 
 b("File \"bs_poly_set_test.ml\", line 100, characters 4-11", +(Bs_Set.cmp(u1$1, u0$1) < 0));
 
@@ -384,4 +377,4 @@ exports.A = A;
 exports.IntCmp = IntCmp;
 exports.L = L;
 exports.testIterToList = testIterToList;
-/* u0 Not a pure module */
+/* IntCmp Not a pure module */

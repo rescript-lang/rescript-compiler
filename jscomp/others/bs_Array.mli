@@ -74,14 +74,16 @@ val make: int -> 'a  -> 'a array
     return an array of size [n] with value [e]
  *)
 
-val makeBy: int -> (int -> 'a [@bs]) -> 'a array
+val makeByU: int -> (int -> 'a [@bs]) -> 'a array
+val makeBy: int -> (int -> 'a ) -> 'a array
 (** [makeBy n f] 
     
     return an empty array when [n] is negative 
     return an array of size [n] populated by [f i] start from [0] to [n - 1]
 *)
 
-val makeByAndShuffle: int -> (int -> 'a [@bs]) -> 'a array
+val makeByAndShuffleU: int -> (int -> 'a [@bs]) -> 'a array
+val makeByAndShuffle: int -> (int -> 'a ) -> 'a array    
 (** [makeByAndShuffle n f] is semantically equivalent to [makeBy n f]
     and return the shuffled array  *)    
 
@@ -93,7 +95,8 @@ val zip: 'a array -> 'b array -> ('a * 'b) array
  *)
 
 
- val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array    
+ val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
+ val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array         
  (**
     [zipBy a b f]
    
@@ -166,39 +169,51 @@ val blitUnsafe:
   src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit 
 
 
-val forEach: 'a array ->  ('a -> unit [@bs]) -> unit
+val forEachU: 'a array ->  ('a -> unit [@bs]) -> unit
+val forEach: 'a array ->  ('a -> unit ) -> unit
 
-val map: 'a array ->  ('a -> 'b [@bs]) -> 'b array
+val mapU: 'a array ->  ('a -> 'b [@bs]) -> 'b array
+val map: 'a array ->  ('a -> 'b ) -> 'b array
 
-val keep: 'a array -> ('a -> bool [@bs]) -> 'a array
+val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
+val keep: 'a array -> ('a -> bool ) -> 'a array
 
-val keepMap: 'a array -> ('a -> 'b option [@bs]) -> 'b array 
+
+val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
+val keepMap: 'a array -> ('a -> 'b option) -> 'b array 
     
-val forEachWithIndex: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
+val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
+val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 
-val mapWithIndex: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
+val mapWithIndexU: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
+val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array    
 
-val reduce:  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
+val reduceU:  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
+val reduce:  'b array -> 'a -> ('a -> 'b -> 'a ) ->'a
 
-val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
+val reduceReverseU: 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
+val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a ) ->  'a
+  
+val everyU: 'a array -> ('a -> bool [@bs]) -> bool
+val every: 'a array -> ('a -> bool ) -> bool
 
-val every: 'a array -> ('a -> bool [@bs]) -> bool
-
-
-val every2: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
 (** [every2 a b p] 
     - return false when [length a <> length b] 
     - return true when every pair is true [f ai bi]
 *)
 
-val cmp: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
+val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
+val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
 (** [cmp a b]
     
     if [length a <> length b] compared by length
     otherwise compare one by one [f ai bi]
 *)
 
-val eq:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
+val eqU:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
+val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
 (** [eq a b]
     
     - return false if length is not the same

@@ -701,7 +701,7 @@ let ofArray (xs : _ array) ~cmp =
   if len = 0 then empty
   else
     let next = 
-      ref (S.strictlySortedLength xs 
+      ref (S.strictlySortedLengthU xs 
              (fun[@bs] (x0,_) (y0,_) -> 
                 (Bs_Dict.getCmpInternal cmp) x0 y0 [@bs] < 0
              ))

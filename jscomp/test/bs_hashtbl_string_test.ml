@@ -6,7 +6,7 @@ external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash_string  s = 
   final_mix (caml_hash_mix_string 0 s) 
 
-let hashString : string -> int [@bs] = [%raw{|function (str) {
+let hashString : string -> int  = [%raw{|function (str) {
                                               var hash = 5381,
                                               i    = str.length | 0;
 
@@ -19,22 +19,22 @@ let hashString : string -> int [@bs] = [%raw{|function (str) {
 
 module String = 
   (val Bs.Dict.hashable 
-      ~eq:(fun[@bs] (x:string) y -> x = y )
-      ~hash:(fun [@bs] (x : string) -> Hashtbl.hash x ))
+      ~eq:(fun (x:string) y -> x = y )
+      ~hash:Hashtbl.hash)
 
 module String1 = 
   (val Bs.Dict.hashable
-      ~eq:(fun[@bs] (x:string) y -> x = y )
+      ~eq:(fun (x:string) y -> x = y )
       ~hash:hashString)
 module String2 = 
   (val Bs.Dict.hashable
-      ~eq:(fun[@bs] (x:string) y -> x = y )
-      ~hash:(fun [@bs] (x:string) -> hash_string x))
+      ~eq:(fun (x:string) y -> x = y )
+      ~hash:(fun  (x:string) -> hash_string x))
 
 module Int = 
   (val Bs.Dict.hashable
-      ~eq:(fun[@bs] (x:int) y -> x = y )
-      ~hash:(fun [@bs] x -> Hashtbl.hash x))
+      ~eq:(fun (x:int) y -> x = y )
+      ~hash:Hashtbl.hash)
 module N = Bs.HashMap
 let empty = 
   N.make ~dict:(module Int) 500_000
@@ -104,7 +104,7 @@ let bench3 (type t) (m : (string,t) Bs.Dict.comparable) =
   done ;
   assert (Md0.size !table = 0)
 
-module Sx = (val Bs.Dict.comparable ~cmp:(fun [@bs] (x : string) y -> compare x y )) 
+module Sx = (val Bs.Dict.comparable ~cmp:(fun  (x : string) y -> compare x y )) 
 module H = Bs.HashMap.String
 let bench4 () = 
   let table = 

@@ -204,14 +204,15 @@ let maximum d =
   N.maximum (S.data d)
 let maxUndefined d =
   N.maxUndefined (S.data d)
-let forEach d f =
-  N.forEach (S.data d) f     
-let reduce d acc cb = 
-  N.reduce (S.data d) acc cb 
-let every d p = 
-  N.every (S.data d) p 
-let some d  p = 
-  N.some (S.data d) p   
+
+let forEachU d f = N.forEachU (S.data d) f
+let forEach d f = forEachU d (fun[@bs] a -> f a)
+let reduceU d acc cb = N.reduceU (S.data d) acc cb
+let reduce d acc cb = reduceU d acc (fun[@bs] a b -> cb a b)    
+let everyU d p = N.everyU (S.data d) p
+let every d p = everyU d (fun[@bs] a -> p a)    
+let someU d p = N.someU (S.data d) p
+let some d p = someU d (fun[@bs] a -> p a)    
 let size d = 
   N.size (S.data d)
 let toList d =
@@ -252,7 +253,7 @@ let getExn d x =
 let split d  key  =     
   let arr = N.toArray (S.data d) in
   let cmp = S.cmp d in 
-  let i = Sort.binarySearchBy arr key (Bs_Dict.getCmpInternal cmp)  in   
+  let i = Sort.binarySearchByU arr key (Bs_Dict.getCmpInternal cmp)  in   
   let len = A.length arr in 
   if i < 0 then 
     let next = - i -1 in 
@@ -273,14 +274,17 @@ let split d  key  =
        ~cmp
     ), true       
 
-let keep d p = 
-  S.t ~data:(N.filterCopy (S.data d) p ) ~cmp:(S.cmp d)
+let keepU d p = 
+  S.t ~data:(N.keepCopyU (S.data d) p ) ~cmp:(S.cmp d)
+
+let keep d p = keepU d (fun[@bs] a -> p a)
     
-let partition d p = 
+let partitionU d p = 
   let cmp = S.cmp d in 
-  let a, b = N.partitionCopy (S.data d) p in 
+  let a, b = N.partitionCopyU (S.data d) p in 
   S.t ~data:a ~cmp, S.t ~data:b ~cmp  
 
+let partition d p = partitionU d (fun[@bs] a -> p a)
 
 let subset a b = 
   N.subset  ~cmp:(S.cmp a) (S.data a) (S.data b)
@@ -308,7 +312,7 @@ let intersect a b  : _ t =
     then S.t ~cmp ~data:N.empty
     else 
       let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
-      let k = Sort.intersect tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+      let k = Sort.intersectU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.ofSortedArrayAux tmp2 0 k)
         ~cmp
         
@@ -337,7 +341,7 @@ let diff a b : _ t =
     then S.t ~data:(N.copy dataa) ~cmp
     else 
       let tmp2 = A.makeUninitializedUnsafe sizea in 
-      let k = Sort.diff tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+      let k = Sort.diffU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.ofSortedArrayAux tmp2 0 k) ~cmp
 
 let union a b = 
@@ -360,7 +364,7 @@ let union a b =
       S.t ~data:(N.ofSortedArrayAux tmp 0 totalSize) ~cmp
     else   
       let tmp2 = A.makeUninitializedUnsafe totalSize in 
-      let k = Sort.union tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
+      let k = Sort.unionU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.ofSortedArrayAux tmp2 0 k) ~cmp
       
 let has d x =

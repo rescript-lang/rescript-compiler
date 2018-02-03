@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_Range = require("../../lib/js/bs_Range.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 var Array_data_util = require("./array_data_util.js");
 var Bs_MutableSetInt = require("../../lib/js/bs_MutableSetInt.js");
@@ -186,9 +187,7 @@ b("File \"bs_mutable_set_test.ml\", line 84, characters 4-11", Bs_Array.eq(Bs_in
             return +(x === y);
           })));
 
-b("File \"bs_mutable_set_test.ml\", line 85, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(bb.data), Array_data_util.range(1001, 2000), (function (x, y) {
-            return +(x === y);
-          })));
+b("File \"bs_mutable_set_test.ml\", line 85, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(bb.data), Array_data_util.range(1001, 2000), Caml_obj.caml_equal));
 
 b("File \"bs_mutable_set_test.ml\", line 86, characters 5-12", Bs_MutableSetInt.subset(aa, v));
 
@@ -212,13 +211,9 @@ var aa$1 = match$3[0];
 
 b("File \"bs_mutable_set_test.ml\", line 92, characters 4-11", 1 - match$2[1]);
 
-b("File \"bs_mutable_set_test.ml\", line 93, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(aa$1.data), Array_data_util.range(500, 999), (function (x, y) {
-            return +(x === y);
-          })));
+b("File \"bs_mutable_set_test.ml\", line 93, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(aa$1.data), Array_data_util.range(500, 999), Caml_obj.caml_equal));
 
-b("File \"bs_mutable_set_test.ml\", line 94, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(bb$1.data), Array_data_util.range(1001, 2000), (function (x, y) {
-            return +(x === y);
-          })));
+b("File \"bs_mutable_set_test.ml\", line 94, characters 4-11", Bs_Array.eq(Bs_internalAVLset.toArray(bb$1.data), Array_data_util.range(1001, 2000), Caml_obj.caml_equal));
 
 b("File \"bs_mutable_set_test.ml\", line 95, characters 5-12", Bs_MutableSetInt.subset(aa$1, v));
 
@@ -505,9 +500,7 @@ function id(loc, x) {
     data: Bs_internalAVLset.ofSortedArrayUnsafe(x)
   };
   b(loc, Bs_internalAVLset.checkInvariantInternal(u.data));
-  return b(loc, Bs_Array.every2(Bs_internalAVLset.toArray(u.data), x, (function (x, y) {
-                    return +(x === y);
-                  })));
+  return b(loc, Bs_Array.every2(Bs_internalAVLset.toArray(u.data), x, Caml_obj.caml_equal));
 }
 
 id("File \"bs_mutable_set_test.ml\", line 229, characters 5-12", /* int array */[]);

@@ -247,7 +247,9 @@ eq("File \"bs_array_test.ml\", line 89, characters 5-12", makeMatrixExn(1, 1, 1)
 
 eq("File \"bs_array_test.ml\", line 90, characters 5-12", Bs_Array.copy(/* array */[]), /* array */[]);
 
-eq("File \"bs_array_test.ml\", line 91, characters 5-12", Bs_Array.map(/* int array */[], addone), /* int array */[]);
+eq("File \"bs_array_test.ml\", line 91, characters 5-12", Bs_Array.map(/* int array */[], (function (prim) {
+            return prim + 1 | 0;
+          })), /* int array */[]);
 
 eq("File \"bs_array_test.ml\", line 92, characters 5-12", Bs_Array.mapWithIndex(/* int array */[], add), /* int array */[]);
 
@@ -287,7 +289,9 @@ eq("File \"bs_array_test.ml\", line 97, characters 5-12", Bs_Array.map(/* int ar
           1,
           2,
           3
-        ], addone), /* int array */[
+        ], (function (prim) {
+            return prim + 1 | 0;
+          })), /* int array */[
       2,
       3,
       4

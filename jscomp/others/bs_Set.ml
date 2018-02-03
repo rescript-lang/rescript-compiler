@@ -101,22 +101,28 @@ let cmp m n =
 let eq m n =     
   Dict.eq ~cmp:(S.cmp m) (S.data m) (S.data n)    
 
-let forEach m f  = Dict.forEach (S.data m) f 
+let forEachU m f  = Dict.forEachU (S.data m) f 
+let forEach m  f = forEachU m (fun [@bs] a -> f a)
 
-let reduce m acc f = Dict.reduce (S.data m) acc f
+let reduceU m acc f = Dict.reduceU (S.data m) acc f
+let reduce m acc f = reduceU m acc (fun [@bs] a b -> f a b)
+    
+let everyU m f  = Dict.everyU  (S.data m) f
+let every m f  = everyU m (fun [@bs] a -> f a)
+    
+let someU m f = Dict.someU  (S.data m) f
+let some m f = someU m (fun [@bs] a -> f a)
 
-let every m f  = Dict.every  (S.data m) f
-
-let some m f = Dict.some  (S.data m) f 
-
-let keep m f  = 
-  S.t ~cmp:(S.cmp m) ~data:(Dict.keep (S.data m) f )
-
-let partition m f  = 
-  let l,r = Dict.partition (S.data m) f in
+let keepU m f  = 
+  S.t ~cmp:(S.cmp m) ~data:(Dict.keepU (S.data m) f )
+let keep m f = keepU m (fun [@bs] a -> f a)
+    
+let partitionU m f  = 
+  let l,r = Dict.partitionU (S.data m) f in
   let cmp = S.cmp m in 
   S.t ~data:l ~cmp, S.t ~data:r ~cmp
-
+let partition m f = partitionU m (fun [@bs] a -> f a)
+    
 let size m = Dict.size (S.data m) 
 let toList m = Dict.toList (S.data m)
 let toArray m = Dict.toArray (S.data m)

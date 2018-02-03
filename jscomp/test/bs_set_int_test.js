@@ -155,8 +155,8 @@ function approx(loc, x, y) {
 
 eq("File \"bs_set_int_test.ml\", line 74, characters 5-12", Bs_SetInt.reduce(v$1, 0, (function (x, y) {
             return x + y | 0;
-          })), Bs_Array.reduce(ss, 0, (function (x, y) {
-            return x + y | 0;
+          })), Bs_Array.reduce(ss, 0, (function (prim, prim$1) {
+            return prim + prim$1 | 0;
           })));
 
 approx("File \"bs_set_int_test.ml\", line 75, characters 9-16", -1, minv);
@@ -219,9 +219,9 @@ var firstHalf = Bs_Array.slice(v$11, 0, 2000);
 
 var xx = Bs_Array.reduce(firstHalf, u$1, Bs_SetInt.remove);
 
-b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Bs_SetInt.checkInvariantInternal(u$1));
+b("File \"bs_set_int_test.ml\", line 105, characters 4-11", Bs_SetInt.checkInvariantInternal(u$1));
 
-b("File \"bs_set_int_test.ml\", line 107, characters 4-11", Bs_SetInt.eq(Bs_SetInt.union(Bs_SetInt.ofArray(firstHalf), xx), u$1));
+b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Bs_SetInt.eq(Bs_SetInt.union(Bs_SetInt.ofArray(firstHalf), xx), u$1));
 
 var aa = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100));
 
@@ -231,17 +231,17 @@ var cc = Bs_SetInt.ofArray(Array_data_util.randomRange(120, 200));
 
 var dd = Bs_SetInt.union(aa, cc);
 
-b("File \"bs_set_int_test.ml\", line 114, characters 4-11", Bs_SetInt.subset(aa, bb));
+b("File \"bs_set_int_test.ml\", line 113, characters 4-11", Bs_SetInt.subset(aa, bb));
 
-b("File \"bs_set_int_test.ml\", line 115, characters 4-11", Bs_SetInt.subset(dd, bb));
+b("File \"bs_set_int_test.ml\", line 114, characters 4-11", Bs_SetInt.subset(dd, bb));
 
-b("File \"bs_set_int_test.ml\", line 116, characters 4-11", Bs_SetInt.subset(Bs_SetInt.add(dd, 200), bb));
+b("File \"bs_set_int_test.ml\", line 115, characters 4-11", Bs_SetInt.subset(Bs_SetInt.add(dd, 200), bb));
 
-b("File \"bs_set_int_test.ml\", line 117, characters 4-11", +(Bs_SetInt.add(dd, 200) === dd));
+b("File \"bs_set_int_test.ml\", line 116, characters 4-11", +(Bs_SetInt.add(dd, 200) === dd));
 
-b("File \"bs_set_int_test.ml\", line 118, characters 4-11", +(Bs_SetInt.add(dd, 0) === dd));
+b("File \"bs_set_int_test.ml\", line 117, characters 4-11", +(Bs_SetInt.add(dd, 0) === dd));
 
-b("File \"bs_set_int_test.ml\", line 119, characters 4-11", 1 - Bs_SetInt.subset(Bs_SetInt.add(dd, 201), bb));
+b("File \"bs_set_int_test.ml\", line 118, characters 4-11", 1 - Bs_SetInt.subset(Bs_SetInt.add(dd, 201), bb));
 
 var aa$1 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100));
 
@@ -253,13 +253,13 @@ var dd$1 = Bs_SetInt.remove(bb$1, 99);
 
 var ee = Bs_SetInt.add(dd$1, 101);
 
-b("File \"bs_set_int_test.ml\", line 128, characters 4-11", Bs_SetInt.eq(aa$1, bb$1));
+b("File \"bs_set_int_test.ml\", line 127, characters 4-11", Bs_SetInt.eq(aa$1, bb$1));
 
-b("File \"bs_set_int_test.ml\", line 129, characters 4-11", 1 - Bs_SetInt.eq(aa$1, cc$1));
+b("File \"bs_set_int_test.ml\", line 128, characters 4-11", 1 - Bs_SetInt.eq(aa$1, cc$1));
 
-b("File \"bs_set_int_test.ml\", line 130, characters 4-11", 1 - Bs_SetInt.eq(dd$1, cc$1));
+b("File \"bs_set_int_test.ml\", line 129, characters 4-11", 1 - Bs_SetInt.eq(dd$1, cc$1));
 
-b("File \"bs_set_int_test.ml\", line 131, characters 4-11", 1 - Bs_SetInt.eq(bb$1, ee));
+b("File \"bs_set_int_test.ml\", line 130, characters 4-11", 1 - Bs_SetInt.eq(bb$1, ee));
 
 var a1 = Bs_SetInt.mergeMany(Bs_SetInt.empty, Array_data_util.randomRange(0, 100));
 
@@ -275,17 +275,17 @@ var a5 = match$2[1];
 
 var a4 = match$2[0];
 
-b("File \"bs_set_int_test.ml\", line 139, characters 4-11", Bs_SetInt.eq(a1, Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100))));
+b("File \"bs_set_int_test.ml\", line 138, characters 4-11", Bs_SetInt.eq(a1, Bs_SetInt.ofArray(Array_data_util.randomRange(0, 100))));
 
-b("File \"bs_set_int_test.ml\", line 140, characters 4-11", Bs_SetInt.eq(a2, a3));
+b("File \"bs_set_int_test.ml\", line 139, characters 4-11", Bs_SetInt.eq(a2, a3));
 
-b("File \"bs_set_int_test.ml\", line 141, characters 4-11", match$1[1]);
+b("File \"bs_set_int_test.ml\", line 140, characters 4-11", match$1[1]);
 
-b("File \"bs_set_int_test.ml\", line 142, characters 4-11", Bs_SetInt.eq(a3, a4));
+b("File \"bs_set_int_test.ml\", line 141, characters 4-11", Bs_SetInt.eq(a3, a4));
 
 var a6 = Bs_SetInt.remove(Bs_SetInt.removeMany(a1, Array_data_util.randomRange(0, 39)), 40);
 
-b("File \"bs_set_int_test.ml\", line 144, characters 4-11", Bs_SetInt.eq(a5, a6));
+b("File \"bs_set_int_test.ml\", line 143, characters 4-11", Bs_SetInt.eq(a5, a6));
 
 var a7 = Bs_SetInt.remove(a1, 40);
 
@@ -295,29 +295,29 @@ var match$4 = match$3[0];
 
 var a9 = match$4[1];
 
-b("File \"bs_set_int_test.ml\", line 147, characters 4-11", 1 - match$3[1]);
+b("File \"bs_set_int_test.ml\", line 146, characters 4-11", 1 - match$3[1]);
 
-b("File \"bs_set_int_test.ml\", line 148, characters 4-11", Bs_SetInt.eq(a4, match$4[0]));
+b("File \"bs_set_int_test.ml\", line 147, characters 4-11", Bs_SetInt.eq(a4, match$4[0]));
 
-b("File \"bs_set_int_test.ml\", line 149, characters 4-11", Bs_SetInt.eq(a5, a9));
+b("File \"bs_set_int_test.ml\", line 148, characters 4-11", Bs_SetInt.eq(a5, a9));
 
 var a10 = Bs_SetInt.removeMany(a9, Array_data_util.randomRange(42, 2000));
 
-eq("File \"bs_set_int_test.ml\", line 151, characters 5-12", Bs_SetInt.size(a10), 1);
+eq("File \"bs_set_int_test.ml\", line 150, characters 5-12", Bs_SetInt.size(a10), 1);
 
 var a11 = Bs_SetInt.removeMany(a9, Array_data_util.randomRange(0, 2000));
 
-b("File \"bs_set_int_test.ml\", line 153, characters 4-11", Bs_SetInt.isEmpty(a11));
+b("File \"bs_set_int_test.ml\", line 152, characters 4-11", Bs_SetInt.isEmpty(a11));
 
 var match$5 = Bs_SetInt.split(Bs_SetInt.empty, 0);
 
 var match$6 = match$5[0];
 
-b("File \"bs_set_int_test.ml\", line 157, characters 4-11", Bs_SetInt.isEmpty(match$6[0]));
+b("File \"bs_set_int_test.ml\", line 156, characters 4-11", Bs_SetInt.isEmpty(match$6[0]));
 
-b("File \"bs_set_int_test.ml\", line 158, characters 4-11", Bs_SetInt.isEmpty(match$6[1]));
+b("File \"bs_set_int_test.ml\", line 157, characters 4-11", Bs_SetInt.isEmpty(match$6[1]));
 
-b("File \"bs_set_int_test.ml\", line 159, characters 4-11", 1 - match$5[1]);
+b("File \"bs_set_int_test.ml\", line 158, characters 4-11", 1 - match$5[1]);
 
 var v$12 = Bs_SetInt.ofArray(Array_data_util.randomRange(0, 2000));
 
@@ -344,23 +344,23 @@ var counted = Bs_Array.reduce(us, 0, (function (acc, x) {
         }
       }));
 
-eq("File \"bs_set_int_test.ml\", line 169, characters 5-12", counted, 1001);
+eq("File \"bs_set_int_test.ml\", line 168, characters 5-12", counted, 1001);
 
-b("File \"bs_set_int_test.ml\", line 170, characters 4-11", Bs_SetInt.eq(v$12, v0));
+b("File \"bs_set_int_test.ml\", line 169, characters 4-11", Bs_SetInt.eq(v$12, v0));
 
-b("File \"bs_set_int_test.ml\", line 171, characters 4-11", +(Bs_SetInt.cmp(v$12, v0) === 0));
+b("File \"bs_set_int_test.ml\", line 170, characters 4-11", +(Bs_SetInt.cmp(v$12, v0) === 0));
 
-b("File \"bs_set_int_test.ml\", line 172, characters 4-11", +(Bs_SetInt.cmp(v$12, v1) < 0));
+b("File \"bs_set_int_test.ml\", line 171, characters 4-11", +(Bs_SetInt.cmp(v$12, v1) < 0));
 
-b("File \"bs_set_int_test.ml\", line 173, characters 4-11", +(Bs_SetInt.cmp(v$12, v2) > 0));
+b("File \"bs_set_int_test.ml\", line 172, characters 4-11", +(Bs_SetInt.cmp(v$12, v2) > 0));
 
-b("File \"bs_set_int_test.ml\", line 174, characters 4-11", Bs_SetInt.subset(v3, v0));
+b("File \"bs_set_int_test.ml\", line 173, characters 4-11", Bs_SetInt.subset(v3, v0));
 
-b("File \"bs_set_int_test.ml\", line 175, characters 4-11", 1 - Bs_SetInt.subset(v1, v0));
+b("File \"bs_set_int_test.ml\", line 174, characters 4-11", 1 - Bs_SetInt.subset(v1, v0));
 
-eq("File \"bs_set_int_test.ml\", line 176, characters 5-12", Bs_SetInt.get(v$12, 30), /* Some */[30]);
+eq("File \"bs_set_int_test.ml\", line 175, characters 5-12", Bs_SetInt.get(v$12, 30), /* Some */[30]);
 
-eq("File \"bs_set_int_test.ml\", line 177, characters 5-12", Bs_SetInt.get(v$12, 3000), /* None */0);
+eq("File \"bs_set_int_test.ml\", line 176, characters 5-12", Bs_SetInt.get(v$12, 3000), /* None */0);
 
 Mt.from_pair_suites("bs_set_int_test.ml", suites[0]);
 

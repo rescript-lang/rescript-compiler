@@ -68,8 +68,8 @@ let () =
 
     (A.
        (concat
-          (makeBy 100 (fun [@bs]  i -> i ) )
-          (makeBy 100 (fun [@bs]  i -> i)))
+          (makeBy 100 (fun  i -> i ) )
+          (makeBy 100 (fun  i -> i)))
     )
 let () = 
   let (=~) = eq "APPEND" in 

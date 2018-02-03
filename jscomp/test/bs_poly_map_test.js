@@ -3,7 +3,9 @@
 var Mt = require("./mt.js");
 var Bs_Map = require("../../lib/js/bs_Map.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
+var Bs_Dict = require("../../lib/js/bs_Dict.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Bs_MapDict = require("../../lib/js/bs_MapDict.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Array_data_util = require("./array_data_util.js");
@@ -20,7 +22,7 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
+var Icmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
 
 function mapOfArray(x) {
   return Bs_Map.ofArray(x, Icmp);
@@ -94,19 +96,19 @@ var u1 = Bs_Map.ofArray(x$1, Icmp);
 
 var x$2 = Array_data_util.range(30, 100);
 
-b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Bs_Set.eq(mergeInter(u0, u1), Bs_Set.ofArray(x$2, Icmp)));
+b("File \"bs_poly_map_test.ml\", line 48, characters 4-11", Bs_Set.eq(mergeInter(u0, u1), Bs_Set.ofArray(x$2, Icmp)));
 
 var x$3 = Array_data_util.range(0, 120);
 
-b("File \"bs_poly_map_test.ml\", line 51, characters 4-11", Bs_Set.eq(mergeUnion(u0, u1), Bs_Set.ofArray(x$3, Icmp)));
+b("File \"bs_poly_map_test.ml\", line 49, characters 4-11", Bs_Set.eq(mergeUnion(u0, u1), Bs_Set.ofArray(x$3, Icmp)));
 
 var x$4 = Array_data_util.range(0, 29);
 
-b("File \"bs_poly_map_test.ml\", line 52, characters 4-11", Bs_Set.eq(mergeDiff(u0, u1), Bs_Set.ofArray(x$4, Icmp)));
+b("File \"bs_poly_map_test.ml\", line 50, characters 4-11", Bs_Set.eq(mergeDiff(u0, u1), Bs_Set.ofArray(x$4, Icmp)));
 
 var x$5 = Array_data_util.range(101, 120);
 
-b("File \"bs_poly_map_test.ml\", line 53, characters 4-11", Bs_Set.eq(mergeDiff(u1, u0), Bs_Set.ofArray(x$5, Icmp)));
+b("File \"bs_poly_map_test.ml\", line 51, characters 4-11", Bs_Set.eq(mergeDiff(u1, u0), Bs_Set.ofArray(x$5, Icmp)));
 
 var x$6 = randomRange(0, 10);
 
@@ -136,21 +138,21 @@ var a5 = Bs_Map.remove(a0, 3);
 
 var a6 = Bs_Map.remove(a5, 3);
 
-b("File \"bs_poly_map_test.ml\", line 72, characters 4-11", +(a5 === a6));
+b("File \"bs_poly_map_test.ml\", line 70, characters 4-11", +(a5 === a6));
 
-b("File \"bs_poly_map_test.ml\", line 73, characters 4-11", Bs_Map.has(a0, 3));
+b("File \"bs_poly_map_test.ml\", line 71, characters 4-11", Bs_Map.has(a0, 3));
 
-b("File \"bs_poly_map_test.ml\", line 74, characters 4-11", 1 - Bs_Map.has(a5, 3));
+b("File \"bs_poly_map_test.ml\", line 72, characters 4-11", 1 - Bs_Map.has(a5, 3));
 
-b("File \"bs_poly_map_test.ml\", line 75, characters 4-11", +(3 === Bs_Map.getUndefined(a0, 3)));
+b("File \"bs_poly_map_test.ml\", line 73, characters 4-11", +(3 === Bs_Map.getUndefined(a0, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 76, characters 4-11", +(33 === Bs_Map.getUndefined(a1, 3)));
+b("File \"bs_poly_map_test.ml\", line 74, characters 4-11", +(33 === Bs_Map.getUndefined(a1, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(Bs_Map.getUndefined(a2, 3) === undefined));
+b("File \"bs_poly_map_test.ml\", line 75, characters 4-11", +(Bs_Map.getUndefined(a2, 3) === undefined));
 
-b("File \"bs_poly_map_test.ml\", line 79, characters 4-11", +(11 === Bs_Map.getUndefined(a3, 3)));
+b("File \"bs_poly_map_test.ml\", line 77, characters 4-11", +(11 === Bs_Map.getUndefined(a3, 3)));
 
-b("File \"bs_poly_map_test.ml\", line 80, characters 4-11", +(Bs_Map.getUndefined(a4, 3) === undefined));
+b("File \"bs_poly_map_test.ml\", line 78, characters 4-11", +(Bs_Map.getUndefined(a4, 3) === undefined));
 
 var a7 = Bs_Map.removeMany(a0, /* array */[
       7,
@@ -166,14 +168,14 @@ var a7 = Bs_Map.removeMany(a0, /* array */[
       6
     ]);
 
-eq("File \"bs_poly_map_test.ml\", line 83, characters 5-12", Bs_MapDict.keysToArray(a7.data), /* int array */[
+eq("File \"bs_poly_map_test.ml\", line 81, characters 5-12", Bs_MapDict.keysToArray(a7.data), /* int array */[
       9,
       10
     ]);
 
 var a8 = Bs_Map.removeMany(a7, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_map_test.ml\", line 85, characters 4-11", Bs_MapDict.isEmpty(a8.data));
+b("File \"bs_poly_map_test.ml\", line 83, characters 4-11", Bs_MapDict.isEmpty(a8.data));
 
 var x$7 = randomRange(0, 100);
 
@@ -181,9 +183,9 @@ var u0$1 = Bs_Map.ofArray(x$7, Icmp);
 
 var u1$1 = Bs_Map.set(u0$1, 3, 32);
 
-eq("File \"bs_poly_map_test.ml\", line 92, characters 5-12", Bs_Map.get(u1$1, 3), /* Some */[32]);
+eq("File \"bs_poly_map_test.ml\", line 90, characters 5-12", Bs_Map.get(u1$1, 3), /* Some */[32]);
 
-eq("File \"bs_poly_map_test.ml\", line 93, characters 5-12", Bs_Map.get(u0$1, 3), /* Some */[3]);
+eq("File \"bs_poly_map_test.ml\", line 91, characters 5-12", Bs_Map.get(u0$1, 3), /* Some */[3]);
 
 function acc(m, is) {
   return Bs_Array.reduce(is, m, (function (a, i) {
@@ -213,7 +215,7 @@ var x$8 = Bs_Array.makeBy(31, (function (i) {
               ];
       }));
 
-b("File \"bs_poly_map_test.ml\", line 105, characters 4-11", Bs_Map.eq(m1, Bs_Map.ofArray(x$8, Icmp), (function (x, y) {
+b("File \"bs_poly_map_test.ml\", line 103, characters 4-11", Bs_Map.eq(m1, Bs_Map.ofArray(x$8, Icmp), (function (x, y) {
             return +(x === y);
           })));
 
@@ -238,7 +240,7 @@ var x$9 = Bs_Array.map(Array_data_util.randomRange(0, 10000), (function (x) {
 
 var v2 = Bs_Map.ofArray(x$9, Icmp);
 
-b("File \"bs_poly_map_test.ml\", line 119, characters 4-11", Bs_Map.eq(v1, v2, (function (x, y) {
+b("File \"bs_poly_map_test.ml\", line 117, characters 4-11", Bs_Map.eq(v1, v2, (function (x, y) {
             return +(x === y);
           })));
 
@@ -262,43 +264,39 @@ var match$1 = match[0];
 
 var match$2 = Bs_Map.get(v3, 10);
 
-b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$2 && match$2[0] === 11 ? /* true */1 : /* false */0);
+b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 && match$2[0] === 11 ? /* true */1 : /* false */0);
 
 var match$3 = Bs_Map.get(v3, -10);
 
-b("File \"bs_poly_map_test.ml\", line 129, characters 4-11", match$3 ? /* false */0 : /* true */1);
+b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 ? /* false */0 : /* true */1);
 
 var match$4 = Bs_Map.get(v4, -10);
 
-b("File \"bs_poly_map_test.ml\", line 130, characters 4-11", match$4 && match$4[0] === 0 ? /* true */1 : /* false */0);
+b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 && match$4[0] === 0 ? /* true */1 : /* false */0);
 
 var map = Bs_Map.remove({
       cmp: Icmp[/* cmp */0],
       data: Bs_MapDict.empty
     }, 0);
 
-b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", Bs_MapDict.isEmpty(map.data));
+b("File \"bs_poly_map_test.ml\", line 129, characters 4-11", Bs_MapDict.isEmpty(map.data));
 
 var map$1 = Bs_Map.removeMany({
       cmp: Icmp[/* cmp */0],
       data: Bs_MapDict.empty
     }, /* int array */[0]);
 
-b("File \"bs_poly_map_test.ml\", line 132, characters 4-11", Bs_MapDict.isEmpty(map$1.data));
+b("File \"bs_poly_map_test.ml\", line 130, characters 4-11", Bs_MapDict.isEmpty(map$1.data));
 
-b("File \"bs_poly_map_test.ml\", line 133, characters 4-11", pres && pres[0] === 5000 ? /* true */1 : /* false */0);
+b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres && pres[0] === 5000 ? /* true */1 : /* false */0);
 
-b("File \"bs_poly_map_test.ml\", line 134, characters 4-11", Bs_Array.eq(Bs_MapDict.keysToArray(match$1[0].data), Bs_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.ml\", line 132, characters 4-11", Bs_Array.eq(Bs_MapDict.keysToArray(match$1[0].data), Bs_Array.makeBy(5000, (function (i) {
                 return i;
-              })), (function (x, y) {
-            return +(x === y);
-          })));
+              })), Caml_obj.caml_equal));
 
-b("File \"bs_poly_map_test.ml\", line 135, characters 4-11", Bs_Array.eq(Bs_MapDict.keysToArray(match$1[1].data), Bs_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.ml\", line 133, characters 4-11", Bs_Array.eq(Bs_MapDict.keysToArray(match$1[1].data), Bs_Array.makeBy(5000, (function (i) {
                 return 5001 + i | 0;
-              })), (function (x, y) {
-            return +(x === y);
-          })));
+              })), Caml_obj.caml_equal));
 
 var v7 = Bs_Map.remove(v3, 5000);
 
@@ -306,19 +304,15 @@ var match$5 = Bs_Map.split(v7, 5000);
 
 var match$6 = match$5[0];
 
-b("File \"bs_poly_map_test.ml\", line 139, characters 4-11", match$5[1] ? /* false */0 : /* true */1);
+b("File \"bs_poly_map_test.ml\", line 137, characters 4-11", match$5[1] ? /* false */0 : /* true */1);
 
-b("File \"bs_poly_map_test.ml\", line 140, characters 4-11", Bs_Array.eq(Bs_MapDict.keysToArray(match$6[0].data), Bs_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.ml\", line 138, characters 4-11", Bs_Array.eq(Bs_MapDict.keysToArray(match$6[0].data), Bs_Array.makeBy(5000, (function (i) {
                 return i;
-              })), (function (x, y) {
-            return +(x === y);
-          })));
+              })), Caml_obj.caml_equal));
 
-b("File \"bs_poly_map_test.ml\", line 141, characters 4-11", Bs_Array.eq(Bs_MapDict.keysToArray(match$6[1].data), Bs_Array.makeBy(5000, (function (i) {
+b("File \"bs_poly_map_test.ml\", line 139, characters 4-11", Bs_Array.eq(Bs_MapDict.keysToArray(match$6[1].data), Bs_Array.makeBy(5000, (function (i) {
                 return 5001 + i | 0;
-              })), (function (x, y) {
-            return +(x === y);
-          })));
+              })), Caml_obj.caml_equal));
 
 Mt.from_pair_suites("bs_poly_map_test.ml", suites[0]);
 
@@ -347,4 +341,4 @@ exports.mergeUnion = mergeUnion;
 exports.mergeDiff = mergeDiff;
 exports.randomRange = randomRange;
 exports.acc = acc;
-/* x Not a pure module */
+/* Icmp Not a pure module */

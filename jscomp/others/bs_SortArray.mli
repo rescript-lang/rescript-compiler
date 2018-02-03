@@ -33,17 +33,22 @@ module Int = Bs_SortArrayInt
 module String = Bs_SortArrayString  
 
 
-val strictlySortedLength: 
+val strictlySortedLengthU: 
   'a array -> 
   ('a -> 'a -> bool [@bs]) -> 
-  int 
+  int
+val strictlySortedLength: 
+  'a array -> 
+  ('a -> 'a -> bool) -> 
+  int   
 (**
   [strictlySortedLenght xs cmp]
   return [+n] means increasing order
   [-n] means negative order
 *)  
 
-val isSorted: 'a array -> ('a -> 'a -> int [@bs]) -> bool
+val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool
+val isSorted: 'a array -> ('a -> 'a -> int) -> bool  
 (** [isSorted arr cmp]  
     returns true if array is increasingly sorted 
    , equal is okay 
@@ -53,41 +58,19 @@ val isSorted: 'a array -> ('a -> 'a -> int [@bs]) -> bool
    ]}
 *)
 
-val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int [@bs]) -> unit 
+val stableSortInPlaceByU: 'a array -> ('a -> 'a -> int [@bs]) -> unit
+val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int ) -> unit   
 
-val stableSortBy: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
-    
-val union:   
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
-  'a array -> int -> ('a -> 'a -> int [@bs])
-  -> int
-(**
-  [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
-  assume [src] and [src2] is strictly sorted.
-  for equivalent elements, it is picked from [src]
-  also assume that [dst] is large enough to store all elements
-*)  
-
-val intersect:   
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
-  'a array -> int -> ('a -> 'a -> int [@bs])
-  -> int
-(** [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]   
-  return the [offset] in the output array
-*)
-
-val diff: 
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
-  'a array -> int -> ('a -> 'a -> int [@bs])
-  -> int
+val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
+val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array    
 
 
 
+
+val binarySearchByU:
+  'a array -> 'a -> ('a -> 'a -> int [@bs]) -> int
 val binarySearchBy:
-  'a array -> 'a -> ('a -> 'a -> int [@bs]) -> int 
+  'a array -> 'a -> ('a -> 'a -> int ) -> int   
 (**
 
   If value is not found and value is less than one or more elements in array, 
@@ -103,3 +86,46 @@ val binarySearchBy:
 
 *)
 
+(**/**)
+val unionU:   
+  'a array -> int -> int -> 
+  'a array -> int -> int -> 
+  'a array -> int -> ('a -> 'a -> int [@bs])
+  -> int
+val union:   
+  'a array -> int -> int -> 
+  'a array -> int -> int -> 
+  'a array -> int -> ('a -> 'a -> int )
+  -> int
+(**
+  [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
+  assume [src] and [src2] is strictly sorted.
+  for equivalent elements, it is picked from [src]
+  also assume that [dst] is large enough to store all elements
+*)  
+
+val intersectU:   
+  'a array -> int -> int -> 
+  'a array -> int -> int -> 
+  'a array -> int -> ('a -> 'a -> int [@bs])
+  -> int
+val intersect:   
+  'a array -> int -> int -> 
+  'a array -> int -> int -> 
+  'a array -> int -> ('a -> 'a -> int )
+  -> int  
+(** [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]   
+  return the [offset] in the output array
+*)
+
+val diffU: 
+  'a array -> int -> int -> 
+  'a array -> int -> int -> 
+  'a array -> int -> ('a -> 'a -> int [@bs])
+  -> int
+val diff: 
+  'a array -> int -> int -> 
+  'a array -> int -> int -> 
+  'a array -> int -> ('a -> 'a -> int)
+  -> int  
+(**/**)

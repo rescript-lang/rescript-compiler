@@ -23,12 +23,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val forEach: int -> int -> (int -> unit [@bs]) -> unit
-  
-val every: int -> int -> (int -> bool [@bs]) -> bool
+val forEachU: int -> int -> (int -> unit [@bs]) -> unit
+val forEach: int -> int -> (int -> unit ) -> unit
 
-val everyBy: int -> int -> step:int -> (int -> bool [@bs]) -> bool
+val everyU: int -> int -> (int -> bool [@bs]) -> bool
+val every: int -> int -> (int -> bool ) -> bool
 
-val some: int -> int -> (int -> bool [@bs]) -> bool
+val everyByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
+val everyBy: int -> int -> step:int -> (int -> bool ) -> bool
 
-val someBy: int -> int -> step:int -> (int -> bool [@bs]) -> bool
+val someU: int -> int -> (int -> bool [@bs]) -> bool
+val some: int -> int -> (int -> bool ) -> bool
+
+val someByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
+val someBy: int -> int -> step:int -> (int -> bool ) -> bool  

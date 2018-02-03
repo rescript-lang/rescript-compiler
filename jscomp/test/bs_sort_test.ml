@@ -6,7 +6,7 @@ let b loc x = Mt.bool_suites ~test_id ~suites loc x
 module I = Array_data_util
 module S = Bs.SortArray
 module R = Bs_Range
-let cmp = fun[@bs] x y -> x - y   
+let cmp = fun x y -> x - y   
 module A = Bs.Array
 
 let unions xs ys = 
@@ -48,13 +48,13 @@ let () =
   eq __LOC__ (diffs (I.range 0 2) (I.range 4 7)) [|0;1;2|]  
 let () = 
   b __LOC__ (
-    R.every 0 200 (fun [@bs] i -> 
+    R.every 0 200 (fun  i -> 
         let v = I.randomRange 0 i  in 
         S.stableSortInPlaceBy v cmp ;
         S.isSorted v cmp
       ));
   b __LOC__ (
-    R.every 0 200 (fun [@bs] i -> 
+    R.every 0 200 (fun  i -> 
         let v = I.randomRange 0 i  in 
         S.stableSortInPlaceBy v cmp ;
         S.isSorted v cmp
@@ -90,19 +90,19 @@ let () =
   eq __LOC__
     (S.stableSortBy 
        u
-       (fun [@bs] (a,_) (b,_) -> a - b))
+       (fun  (a,_) (b,_) -> a - b))
     [|1,"a"; 1, "b"; 2 ,"a"|];
   let u = [|1, "b"; 1,"a"; 1, "b"; 2, "a"|] in 
   eq __LOC__
     (S.stableSortBy 
        u
-       (fun [@bs] (a,_) (b,_) -> a - b))
+       (fun  (a,_) (b,_) -> a - b))
     [|1, "b";  1,"a"; 1, "b"; 2 ,"a"|] ;
   let u = [|1, "c"; 1, "b"; 1,"a"; 1, "b"; 1, "c"; 2, "a"|] in 
   eq __LOC__
     (S.stableSortBy 
        u
-       (fun [@bs] (a,_) (b,_) -> a - b))
+       (fun  (a,_) (b,_) -> a - b))
     [|1, "c"; 1, "b";  1,"a"; 1, "b"; 1, "c"; 2 ,"a"|]    
 
 
@@ -114,22 +114,22 @@ let () =
   eq __LOC__ (S.binarySearchBy [|1;2;3;4;33;35;36|] 3 cmp ) 2;
   eq __LOC__ (S.binarySearchBy [|1;2;3;4;33;35;36|] 4 cmp ) 3;
   let aa = I.range 0 1000 in 
-  b __LOC__ @@ R.every 0 1000 (fun [@bs] i -> 
+  b __LOC__ @@ R.every 0 1000 (fun  i -> 
       S.binarySearchBy aa i cmp = i 
   );
   (* 0, 2, 4, ... 4000 *)
-  let cc =  A.map (I.range 0 2000 ) (fun [@bs] x -> x * 2) in 
+  let cc =  A.map (I.range 0 2000 ) (fun  x -> x * 2) in 
   eq __LOC__ (lnot (S.binarySearchBy cc 5000 cmp)) (2001);
   eq __LOC__ (lnot (S.binarySearchBy cc (-1) cmp)) (0);
   eq __LOC__ (S.binarySearchBy cc 0 cmp) 0;
 
   eq __LOC__ ( lnot (S.binarySearchBy cc 1 cmp)) (1);
-  b __LOC__ @@ R.every 0 1999 (fun [@bs] i -> 
+  b __LOC__ @@ R.every 0 1999 (fun i -> 
     lnot (S.binarySearchBy cc (2 * i + 1) cmp) = (i + 1) 
     (* 1, 3, 5, ... , 3999 *)
   )
 
-let lt = fun [@bs] (x : int) y -> x < y  
+let lt = fun  (x : int) y -> x < y  
 let () =   
   eq __LOC__ (S.strictlySortedLength [||] lt) 0 ;
   eq __LOC__ (S.strictlySortedLength [|1|] lt) 1;

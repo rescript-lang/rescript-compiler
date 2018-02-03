@@ -91,22 +91,32 @@ val eq: ('elt, 'id) t -> ('elt, 'id) t ->
   cmp:('elt, 'id) cmp ->
   bool
 
-val forEach: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
+val forEachU: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
+val forEach: ('elt, 'id) t -> ('elt -> unit ) ->  unit  
 (** [forEach s f] applies [f] in turn to all elements of [s].
     In increasing order *)
-val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
+  
+val reduceU: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
+val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a) ->  'a  
 (** In increasing order. *)
-val every: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
+
+val everyU: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
+val every: ('elt, 'id) t -> ('elt -> bool) -> bool  
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified *)
 
-val some: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
+val someU: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
+val some: ('elt, 'id) t ->  ('elt -> bool) -> bool  
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
-val keep: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
+
+val keepU: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
+val keep: ('elt, 'id) t ->  ('elt -> bool) -> ('elt, 'id) t
 (** [keep m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
-val partition: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
+
+val partitionU: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
+val partition: ('elt, 'id) t -> ('elt -> bool ) ->  ('elt, 'id) t * ('elt, 'id) t                                                            
 (** [partition m p] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of

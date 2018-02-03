@@ -90,7 +90,7 @@ let make l f =
 
 (* See #6575. We could also check for maximum array size, but this depends
      on whether we create a float array or a regular one... *)
-let makeBy l f =
+let makeByU l f =
   if l <= 0 then [||]
   else 
     let res = makeUninitializedUnsafe l in 
@@ -99,11 +99,14 @@ let makeBy l f =
     done;
     res
 
-let makeByAndShuffle l f =
-  let u  = makeBy l f in
+let makeBy l f = makeByU l (fun[@bs] a -> f a) 
+
+let makeByAndShuffleU l f =
+  let u  = makeByU l f in
   shuffleInPlace u ;
   u
 
+let makeByAndShuffle l f = makeByAndShuffleU l (fun[@bs] a -> f a)
 
 
 
@@ -116,7 +119,7 @@ let zip xs ys =
   done ; 
   s 
 
-let zipBy xs ys f = 
+let zipByU xs ys f = 
   let lenx, leny = length xs, length ys in 
   let len = Pervasives.min lenx leny  in 
   let s = makeUninitializedUnsafe len in 
@@ -124,6 +127,8 @@ let zipBy xs ys f =
     setUnsafe s i (f (getUnsafe xs i) (getUnsafe ys i) [@bs])
   done ; 
   s 
+
+let zipBy xs ys f = zipByU xs ys (fun [@bs] a b -> f a b)
 
 let concat a1 a2 =
   let l1 = length a1 in
@@ -216,19 +221,22 @@ let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =
         setUnsafe a2 (j + srcofs2) (getUnsafe a1 (j + srcofs1))
       done 
 
-let forEach a f =
+let forEachU a f =
   for i = 0 to length a - 1 do f(getUnsafe a i) [@bs] done
 
-let map a f =
+let forEach a f = forEachU a (fun[@bs] a -> f a)
+  
+let mapU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in 
   for i = 0 to l - 1 do
     setUnsafe r i (f(getUnsafe a i) [@bs])
   done;
   r
+
+let map a f = mapU a (fun[@bs] a -> f a)
   
-  
-let keep a f =
+let keepU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
   let j = ref 0 in 
@@ -243,7 +251,9 @@ let keep a f =
   truncateToLengthUnsafe r !j;
   r 
 
-let keepMap a f =
+let keep a f = keepU a (fun [@bs] a -> f a)
+    
+let keepMapU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
   let j = ref 0 in 
@@ -260,10 +270,14 @@ let keepMap a f =
   truncateToLengthUnsafe r !j;
   r 
 
-let forEachWithIndex a f=
+let keepMap a f = keepMapU a (fun[@bs] a -> f a)
+    
+let forEachWithIndexU a f=
   for i = 0 to length a - 1 do f i (getUnsafe a i) [@bs] done
 
-let mapWithIndex  a f =
+let forEachWithIndex a f = forEachWithIndexU a (fun[@bs] a b -> f a b)
+    
+let mapWithIndexU  a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in 
   for i = 0 to l - 1 do
@@ -271,20 +285,25 @@ let mapWithIndex  a f =
   done;
   r
 
-let reduce a x f =
+let mapWithIndex a f = mapWithIndexU a (fun[@bs] a b -> f a b)
+  
+let reduceU a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
     r := f !r (getUnsafe a i) [@bs]
   done;
   !r
 
-let reduceReverse a x f =
+let reduce a x f = reduceU a x (fun[@bs] a b -> f a b)
+    
+let reduceReverseU a x f =
   let r = ref x in
   for i = length a - 1 downto 0 do
     r := f  !r (getUnsafe a i) [@bs]
   done;
   !r
 
+let reduceReverse a x f = reduceReverseU a x (fun[@bs] a b -> f a b)
 
 let rec everyAux arr i b len =   
   if i = len then true 
@@ -292,9 +311,11 @@ let rec everyAux arr i b len =
     everyAux arr (i + 1) b len
   else false    
 
-let every arr b =   
+let everyU arr b =   
   let len = length arr in 
   everyAux arr 0 b len 
+
+let every arr f = everyU arr (fun[@bs] b -> f b)
 
 let rec everyAux2 arr1 arr2 i b len =   
   if i = len then true 
@@ -302,13 +323,16 @@ let rec everyAux2 arr1 arr2 i b len =
     everyAux2 arr1 arr2 (i + 1) b len
   else false      
 
-let every2  a b p =   
+let every2U  a b p =   
   let lena = length a in  
   let lenb = length b in 
   if lena <> lenb then false
   else 
     everyAux2  a b 0 p lena
 
+let every2 a b p = every2U  a b (fun[@bs] a b -> p a b)
+    
+let eqU = every2U
 let eq = every2
 
 let rec everyCmpAux2 arr1 arr2 i b len =   
@@ -319,14 +343,14 @@ let rec everyCmpAux2 arr1 arr2 i b len =
       everyCmpAux2 arr1 arr2 (i + 1) b len
     else c
 
-let cmp a b p =
+let cmpU a b p =
   let lena = length a in  
   let lenb = length b in
   if lena > lenb then 1
   else if lena < lenb then -1
   else everyCmpAux2 a b 0 p lena
 
-
+let cmp a b p = cmpU a b (fun[@bs] a b -> p a b)
 
 
 

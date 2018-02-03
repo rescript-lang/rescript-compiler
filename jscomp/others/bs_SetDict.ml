@@ -207,9 +207,13 @@ let isEmpty = N.isEmpty
 let cmp = N.cmp
 let eq = N.eq
 let has = N.has
+let forEachU = N.forEachU
 let forEach = N.forEach
+let reduceU = N.reduceU                
 let reduce = N.reduce
+let everyU = N.everyU               
 let every = N.every
+let someU = N.someU                  
 let some = N.some    
 let size = N.size
 let toList = N.toList
@@ -225,7 +229,9 @@ let getUndefined = N.getUndefined
 
 let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe
 let subset = N.subset
-let keep = N.filterShared
-let partition = N.partitionShared
+let keep = N.keepShared
+let keepU = N.keepSharedU             
+let partitionU = N.partitionSharedU
+let partition = N.partitionShared 
 
 let checkInvariantInternal = N.checkInvariantInternal

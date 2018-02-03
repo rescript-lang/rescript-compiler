@@ -62,7 +62,8 @@ module type Comparable = sig
   val cmp: (t, id) cmp
 end
 
-type ('key, 'id) comparable = (module Comparable with type t = 'key and type id = 'id)
+type ('key, 'id) comparable =
+  (module Comparable with type t = 'key and type id = 'id)
 (** [('key, 'id) cmparable] is a module of functions, here it only includes [cmp].
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
@@ -74,11 +75,14 @@ type ('key, 'id) comparable = (module Comparable with type t = 'key and type id 
     mismatch if they use different comparison function
 *)
 
-val comparable:
+val comparableU:
   cmp:('a -> 'a -> int [@bs]) ->
   (module Comparable with type t = 'a)
 
-
+val comparable:
+  cmp:('a -> 'a -> int) -> 
+  (module Comparable with type t = 'a)
+  
 module type Hashable = sig 
   type id 
   type t 
@@ -86,7 +90,8 @@ module type Hashable = sig
   val eq:  (t,id) eq
 end 
 
-type ('key, 'id) hashable = (module Hashable with type t = 'key and type id = 'id)
+type ('key, 'id) hashable =
+  (module Hashable with type t = 'key and type id = 'id)
 (** [('key, 'id) hashable] is a module of functions, here it only includes [hash], [eq].
     
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
@@ -100,9 +105,17 @@ type ('key, 'id) hashable = (module Hashable with type t = 'key and type id = 'i
 
                             
 
-val hashable:
+val hashableU:
   hash:('a -> int [@bs]) ->
-  eq:('a -> 'a -> bool [@bs]) -> (module Hashable with type t = 'a)
+  eq:('a -> 'a -> bool [@bs]) ->
+  (module Hashable with type t = 'a)
+  
+val hashable:
+  hash:('a -> int ) ->
+  eq:('a -> 'a -> bool ) ->
+  (module Hashable with type t = 'a)
+
+
 
 (**/**)
 external getHashInternal : ('a,'id) hash -> ('a -> int [@bs]) = "%identity"
