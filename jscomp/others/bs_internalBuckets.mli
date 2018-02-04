@@ -34,17 +34,17 @@ and ('hash, 'eq, 'a, 'b) t = ('hash, 'eq, ('a,'b) bucket) C.container
 
 val copy : ('hash, 'eq, 'a, 'b) t -> ('hash, 'eq, 'a, 'b) t
 
+val forEachU: (_, _, 'a, 'b) t -> ('a -> 'b -> 'c [@bs]) -> unit
+val forEach: (_, _, 'a, 'b) t -> ('a -> 'b -> 'c) -> unit
 
-val forEach : (_, _, 'a, 'b) t -> ('a -> 'b -> 'c [@bs]) -> unit
-
-val reduce :
-  (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c
+val reduceU: (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c
+val reduce: (_, _, 'a, 'b) t -> 'c -> ('c -> 'a -> 'b -> 'c) -> 'c  
 
 val logStats : _ t -> unit
 
   
-val keepMapInPlace :
-  (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option [@bs]) -> unit
+val keepMapInPlaceU: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option [@bs]) -> unit
+val keepMapInPlace: (_, _, 'a, 'b) t -> ('a -> 'b -> 'b option) -> unit
 
 val fillArray : int -> ('a * 'b) array -> ('a, 'b) bucket -> int
 

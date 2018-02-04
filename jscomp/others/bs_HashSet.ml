@@ -166,8 +166,10 @@ let make (type elt) (type id)  initialize_size ~(dict: (elt, id) dict)=
 
 let clear = C.clear
 let size  = C.size
-let forEach  = N.forEach
-let reduce = N.reduce
+let forEachU  = N.forEachU
+let forEach = N.forEach                  
+let reduceU = N.reduceU
+let reduce = N.reduce                
 let logStats = N.logStats
 let toArray  = N.toArray
 let copy = N.copy

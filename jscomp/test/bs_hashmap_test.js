@@ -33,8 +33,8 @@ var Y = Bs_Dict.hashable(hash, eq);
 
 var empty = Bs_HashMap.make(30, Y);
 
-function add(x, y) {
-  return x + y | 0;
+function add(prim, prim$1) {
+  return prim + prim$1 | 0;
 }
 
 Bs_HashMap.mergeMany(empty, /* array */[

@@ -138,7 +138,9 @@ let make size = C.make size ~hash:() ~eq:()
 
 let clear = C.clear
 let size = C.size
-let forEach = N.forEach
+let forEachU = N.forEachU
+let forEach = N.forEach 
+let reduceU = N.reduceU
 let reduce = N.reduce
 let logStats = N.logStats
 let toArray = N.toArray

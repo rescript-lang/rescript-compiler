@@ -7,11 +7,11 @@ module S = Bs.Set.Int
 
 module I = Array_data_util
 let (++) = Bs.Array.concat
-let add = fun [@bs] x y -> x + y  
+let add = fun  x y -> x + y  
 
 let sum2 h = 
   let v = ref 0 in 
-  N.forEach h (fun [@bs] x -> v := !v + x) ; 
+  N.forEach h (fun x -> v := !v + x) ; 
   !v 
 let () = 
   let u = I.randomRange 30 100  ++ I.randomRange 40 120 in 

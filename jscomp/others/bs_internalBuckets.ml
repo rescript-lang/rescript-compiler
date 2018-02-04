@@ -84,13 +84,14 @@ let rec do_bucket_iter ~f buckets =
   | Some cell ->
     f (key cell)  (value cell) [@bs]; do_bucket_iter ~f (next cell)
 
-let forEach h f =
+let forEachU h f =
   let d = C.buckets h in
   for i = 0 to A.length d - 1 do
     do_bucket_iter f (A.getUnsafe d i)
   done
 
-
+let forEach h f = forEachU h (fun [@bs] a b -> f a b)
+    
 let rec do_bucket_fold ~f b accu =
   match C.toOpt b with
   | None ->
@@ -98,7 +99,7 @@ let rec do_bucket_fold ~f b accu =
   | Some cell ->
     do_bucket_fold ~f (next cell) (f accu (key cell) (value cell)  [@bs]) 
 
-let reduce  h init f =
+let reduceU  h init f =
   let d = C.buckets h in
   let accu = ref init in
   for i = 0 to A.length d - 1 do
@@ -106,6 +107,7 @@ let reduce  h init f =
   done;
   !accu
 
+let reduce h init f = reduceU h init (fun [@bs] a b c -> f a b c)
 
 
 let getMaxBucketLength h =
@@ -158,7 +160,7 @@ let rec filterMapInplaceBucket f h i prec cell =
         filterMapInplaceBucket f h i bucket nextCell
   end
 
-let keepMapInPlace h f =
+let keepMapInPlaceU h f =
   let h_buckets = C.buckets h in
   for i = 0 to A.length h_buckets - 1 do
     let v = A.getUnsafe h_buckets i in 
@@ -167,6 +169,8 @@ let keepMapInPlace h f =
     | Some v -> filterMapInplaceBucket f h i C.emptyOpt v
   done
 
+let keepMapInPlace h f = keepMapInPlaceU h (fun [@bs] a b -> f a b)
+    
 let rec fillArray i arr cell =  
   A.setUnsafe arr i (key cell, value cell);
   match C.toOpt (next cell) with 

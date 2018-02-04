@@ -23,7 +23,7 @@ let empty : (int, int, _) N.t = N.make ~dict:(module Y) 30
 
 module I = Array_data_util
 let (++) = Bs.Array.concat
-let add = fun [@bs] x y -> x + y  
+let add = (+)
 
 
 let () = 
