@@ -33,12 +33,20 @@ let empty = N.empty
 let ofArray = N.ofArray
 let isEmpty = N.isEmpty
 let cmp = N.cmp
-let eq = N.eq  
+let cmpU = N.cmpU             
+let eq = N.eq
+let eqU = N.eqU  
 let has = N.has
+
 let forEach = N.forEach
+let forEachU = N.forEachU
 let reduce = N.reduce
-let every = N.every
-let some = N.some   
+let reduceU = N.reduceU
+let every = N.every                
+let everyU = N.everyU
+let some = N.some 
+let someU = N.someU
+              
 let size = N.size
 let toList = N.toList
 let toArray = N.toArray
@@ -59,10 +67,14 @@ let getWithDefault = N.getWithDefault
 let getExn = N.getExn
 
 let mapWithKey = N.mapWithKey
-let map  = N.map
+let mapWithKeyU = N.mapWithKeyU
 
-let keep = N.filterShared
-let partition = N.partitionShared
+let mapU  = N.mapU
+let map = N.map
+let keep = N.keepShared 
+let keepU = N.keepSharedU
+let partitionU = N.partitionSharedU
+let partition = N.partitionShared                   
 let checkInvariantInternal = N.checkInvariantInternal
 let rec set  (t : _ t) newK newD  ~cmp =
   match N.toOpt t with 
@@ -79,7 +91,7 @@ let rec set  (t : _ t) newK newD  ~cmp =
       else
         N.bal l k v (set ~cmp r newK newD )
 
-let rec update  (t : _ t) newK f  ~cmp :  _ t =
+let rec updateU  (t : _ t) newK f  ~cmp :  _ t =
   match N.toOpt t with 
   | None ->
     begin match f None [@bs] with 
@@ -105,16 +117,19 @@ let rec update  (t : _ t) newK f  ~cmp :  _ t =
     else 
       let l,r,v = N.left n, N.right n, N.value n in 
       if c < 0 then
-        let ll = (update ~cmp l newK f ) in
+        let ll = (updateU ~cmp l newK f ) in
         if l == ll then
           t
         else 
           N.bal ll k v  r            
       else
-        let rr = (update ~cmp r newK f) in
+        let rr = (updateU ~cmp r newK f) in
         if r == rr then t 
         else N.bal l k v rr
 
+let update t newK f ~cmp =
+  updateU t newK (fun [@bs] a  -> f a ) ~cmp
+    
 (*  unboxing API was not exported
     since the correct API is really awkard
     [bool -> 'k Js.null -> ('a Js.null * bool)]
@@ -205,15 +220,15 @@ let split  n x ~cmp =
     let v = splitAuxPivot ~cmp n x pres in 
     v, !pres
 
-let rec merge s1 s2 f ~cmp =
+let rec mergeU s1 s2 f ~cmp =
   match N.(toOpt s1, toOpt s2) with
     (None, None) -> N.empty
   | Some _, None -> 
-    N.filterMap s1 (fun[@bs] k v -> 
+    N.keepMapU s1 (fun[@bs] k v -> 
         f k (Some v) None [@bs]
       )
   | None, Some _ -> 
-    N.filterMap s2 (fun[@bs] k v -> 
+    N.keepMapU s2 (fun[@bs] k v -> 
         f k None (Some v) [@bs]
       )
   | Some s1n , Some s2n -> 
@@ -222,20 +237,23 @@ let rec merge s1 s2 f ~cmp =
       let d2 = ref None in 
       let (l2, r2) = splitAuxPivot ~cmp s2n v1 d2 in
       let d2 = !d2 in 
-      let newLeft = merge ~cmp l1 l2 f in 
+      let newLeft = mergeU ~cmp l1 l2 f in 
       let newD = f v1 (Some d1) d2 [@bs] in 
-      let newRight = merge ~cmp r1 r2 f in 
+      let newRight = mergeU ~cmp r1 r2 f in 
       N.concatOrJoin newLeft v1 newD  newRight
     else
       let l2,v2,d2,r2 = N.(left s2n, key s2n, value s2n, right s2n) in 
       let d1 = ref None in 
       let (l1,  r1) = splitAuxPivot ~cmp s1n v2 d1 in
       let d1 = !d1 in 
-      let newLeft = merge ~cmp l1 l2 f in 
+      let newLeft = mergeU ~cmp l1 l2 f in 
       let newD = (f v2 d1 (Some d2) [@bs]) in 
-      let newRight = (merge ~cmp r1 r2 f) in 
+      let newRight = (mergeU ~cmp r1 r2 f) in 
       N.concatOrJoin newLeft v2 newD newRight
 
+let merge s1 s2 f ~cmp =
+  mergeU s1 s2 (fun[@bs] a b c -> f a b c) ~cmp
+    
 let rec removeMany0 t xs i len ~cmp =
   if i < len then
     let ele = A.getUnsafe xs i in

@@ -5,9 +5,7 @@ let b loc v  = Mt.bool_suites ~suites ~test_id loc v
 
 module Icmp = 
   (val Bs.Dict.comparable 
-      (fun[@bs] (x : int) y -> 
-         compare x y
-      )
+      (fun (x : int) y ->  compare x y)
   )
 module M = Bs.Map  
 module N = Bs.Set 
@@ -21,20 +19,20 @@ let setOfArray x = N.ofArray ~dict:(module Icmp) x
 let emptyMap () = M.make (module Icmp)
 
 let mergeInter s1 s2 = 
-  setOfArray @@ M.keysToArray (M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray (M.merge s1 s2 (fun   k v1 v2 -> 
       match v1,v2 with 
       | Some _, Some _ -> Some ()
       | _, _ -> None
     ))
 
 let mergeUnion s1 s2 =    
-  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun   k v1 v2 -> 
       match v1,v2 with 
       | None, None -> None
       | _, _ -> Some ()
     )
 let mergeDiff s1 s2 =    
-  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun[@bs] k v1 v2 -> 
+  setOfArray @@ M.keysToArray @@ M.merge s1 s2 (fun   k v1 v2 -> 
       match v1,v2 with 
       | Some _, None -> Some ()
       | Some _, Some _
@@ -42,7 +40,7 @@ let mergeDiff s1 s2 =
     )
 
 let randomRange i j = 
-  A.map (I.randomRange i j) (fun[@bs] x -> (x,x))
+  A.map (I.randomRange i j) (fun x -> (x,x))
 
 let () =    
   let u0 = mapOfArray (randomRange 0 100) in 
@@ -57,12 +55,12 @@ let () =
   let a0 = mapOfArray (randomRange 0 10) in 
   let a1 = M.set a0 3 33 in (* (3,3) *)
   let a2 = M.remove a1 3 in  (* no 3 *)
-  let a3 = M.update a2 3 (fun[@bs]  k -> 
+  let a3 = M.update a2 3 (fun    k -> 
       match k with 
       | Some k -> Some (k + 1)
       | None  ->  Some 11
     ) in  (* 3, 11 *)
-  let a4 = M.update a2 3 (fun[@bs]  k -> 
+  let a4 = M.update a2 3 (fun    k -> 
       match k with 
       | Some k-> Some (k + 1)
       | None  ->  None
@@ -94,31 +92,31 @@ let () =
 
 
 let acc m i =   
-  M.update m i (fun[@bs] n -> match n with None -> Some 1 | Some acc -> Some (acc + 1))
+  M.update m i (fun   n -> match n with None -> Some 1 | Some acc -> Some (acc + 1))
 
 let acc m is : _ M.t =   
-  A.reduce is m (fun[@bs] a i -> acc a i) 
+  A.reduce is m (fun a i -> acc a i) 
 
 let () = 
   let m = emptyMap () in 
   let m1 = acc m (A.concat (I.randomRange 0 20) (I.randomRange 10 30)) in 
   b __LOC__ 
   (M.eq m1 
-  (mapOfArray (A.makeBy 31 (fun[@bs] i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
-  (fun[@bs] x y -> x = y)
+  (mapOfArray (A.makeBy 31 (fun i -> i, if i >= 10 && i <= 20 then 2 else 1 )))
+  (fun   x y -> x = y)
   )
 
 let () = 
   let v0 = emptyMap () in 
   let v1 = M.mergeMany v0 
-  (A.map (I.randomRange 0 10_000)  (fun[@bs] x -> x , x)) in 
+  (A.map (I.randomRange 0 10_000)  (fun x -> x , x)) in 
 
   let v2 = mapOfArray 
-  (A.map (I.randomRange 0 10_000) (fun[@bs] x -> x, x)) in 
+  (A.map (I.randomRange 0 10_000) (fun x -> x, x)) in 
 
-  b __LOC__ (M.eq v1 v2 (fun [@bs] x y -> x = y ));
+  b __LOC__ (M.eq v1 v2 (fun    x y -> x = y ));
 
-  let inc = (fun [@bs] x -> 
+  let inc = (fun    x -> 
   match x with None -> Some 0
   | Some  v -> Some (v +  1)
   )  in 
@@ -131,14 +129,14 @@ let () =
   b __LOC__ (M.isEmpty (M.remove (emptyMap ())  0) );
   b __LOC__ (M.isEmpty (M.removeMany (emptyMap ())  [|0|]) );
   b __LOC__ (match pres with Some 5_000 -> true | _ -> false);
-  b __LOC__ (A.eq (M.keysToArray v5) (A.makeBy 5_000 (fun [@bs] i -> i))  (fun[@bs] x y -> x = y) );
-  b __LOC__ (A.eq (M.keysToArray v6) (A.makeBy 5_000 (fun [@bs] i -> 5_001 +i))  (fun[@bs] x y -> x = y) );
+  b __LOC__ (A.eq (M.keysToArray v5) (A.makeBy 5_000 (fun  i -> i))  (=) );
+  b __LOC__ (A.eq (M.keysToArray v6) (A.makeBy 5_000 (fun  i -> 5_001 +i))  (=) );
 
   let v7 = M.remove v3 5_000 in 
   let (v8,v9), pres2 = M.split v7 5_000 in 
   b __LOC__ (match pres2 with None -> true | _ -> false);
-  b __LOC__ (A.eq (M.keysToArray v8) (A.makeBy 5_000 (fun [@bs] i -> i))  (fun[@bs] x y -> x = y) );
-  b __LOC__ (A.eq (M.keysToArray v9) (A.makeBy 5_000 (fun [@bs] i -> 5_001 +i))  (fun[@bs] x y -> x = y) )
+  b __LOC__ (A.eq (M.keysToArray v8) (A.makeBy 5_000 (fun  i -> i))  (=) );
+  b __LOC__ (A.eq (M.keysToArray v9) (A.makeBy 5_000 (fun  i -> 5_001 +i))  (=) )
 
   
   

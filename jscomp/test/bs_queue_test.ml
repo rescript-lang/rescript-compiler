@@ -97,7 +97,7 @@ let () =
   let q = Q.make () in
   for i = 1 to 10 do Q.add q i done;
   let i = ref 1 in
-  Q.forEach q (fun[@bs] j -> assert (!i = j); incr i);
+  Q.forEach q (fun j -> assert (!i = j); incr i);
 ;;
 
 let () =
@@ -140,8 +140,8 @@ let () =
   let v = [|5; 6; 7; 8; 1; 2; 3; 4|] in 
   assert (Q.size q2 = 8); assert (Q.toArray q2 = v );
 
-  assert (Q.reduce q2 0 (fun[@bs] x y -> x - y ) = 
-          Bs.Array.reduce v 0 (fun [@bs] x y -> x - y) )
+  assert (Q.reduce q2 0 (fun x y -> x - y ) = 
+          Bs.Array.reduce v 0 (fun  x y -> x - y) )
 
 ;;
 
@@ -150,9 +150,9 @@ let () = Js.log "OK"
 
 let () = 
   let q = Q.ofArray [|1;2;3;4|] in 
-  let q1 = Q.map q (fun[@bs] x -> x - 1 ) in 
+  let q1 = Q.map q (fun x -> x - 1 ) in 
   eq __LOC__ (Q.toArray q1 ) [|0;1;2;3|];
   b __LOC__ (Q.isEmpty (Q.ofArray [||]));
-  b __LOC__ ( Q.isEmpty (Q.map ( (Q.ofArray [||])) (fun[@bs] x -> x + 1)))
+  b __LOC__ ( Q.isEmpty (Q.map ( (Q.ofArray [||])) (fun x -> x + 1)))
 
 ;; Mt.from_pair_suites __FILE__ !suites

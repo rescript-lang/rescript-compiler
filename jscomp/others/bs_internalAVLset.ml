@@ -162,39 +162,44 @@ let rec stackAllLeft v s =
   | Some x -> stackAllLeft (left x) (x::s)
 
 
-let rec forEach n f = 
+let rec forEachU n f = 
   match toOpt n with 
   | None -> ()
   | Some n  ->
-    forEach (left n) f; f (key n) [@bs]; forEach (right n) f
+    forEachU (left n) f; f (key n) [@bs]; forEachU (right n) f
 
-
-let rec reduce s accu f =
+let forEach n f = forEachU n (fun [@bs] a -> f a)
+    
+let rec reduceU s accu f =
   match toOpt s with
   | None -> accu
   | Some n  -> 
     let l,k,r = left n, key n , right n in 
-    reduce
+    reduceU
       r
-      (f (reduce  l accu f) k [@bs]) f
+      (f (reduceU  l accu f) k [@bs]) f
 
-let rec every n p  = 
+let reduce s accu f = reduceU s accu (fun [@bs] a b -> f a b)
+    
+let rec everyU n p  = 
   match toOpt n with  
   | None -> true
   | Some n  -> 
     p (key n) [@bs] && 
-    every  (left n) p &&
-    every (right n) p
+    everyU  (left n) p &&
+    everyU (right n) p
 
-let rec some n p = 
+let every n p = everyU n (fun [@bs] a -> p a )
+
+let rec someU n p = 
   match toOpt n with 
   | None -> false
   | Some n  -> 
     p (key n) [@bs] || 
-    some (left n) p || 
-    some (right n) p 
+    someU (left n) p || 
+    someU (right n) p 
 
-
+let some n p = someU n (fun[@bs] a -> p a )
 (* [addMinElement v n] and [addMaxElement v n] 
    assume that the added v is *strictly*
    smaller (or bigger) than all the present elements in the tree.
@@ -243,17 +248,19 @@ let concatShared t1 t2 =
 
 
 
-let rec partitionShared  n p =
+let rec partitionSharedU  n p =
   match toOpt n with 
   |  None -> (empty, empty)
   | Some n  ->
     let key = key n in 
-    let (lt, lf) = partitionShared (left n) p in    
+    let (lt, lf) = partitionSharedU (left n) p in    
     let pv = p key [@bs] in
-    let (rt, rf) = partitionShared (right n) p in
+    let (rt, rf) = partitionSharedU (right n) p in
     if pv
     then (joinShared lt key rt, concatShared lf rf)
     else (concatShared lt rt, joinShared lf key rf)
+
+let partitionShared n p = partitionSharedU n (fun [@bs] a -> p a)
 
 let rec lengthNode n = 
   let l, r = left n, right n in  
@@ -415,25 +422,27 @@ let rec ofSortedArrayAux arr off len =
 let ofSortedArrayUnsafe arr =     
   ofSortedArrayAux arr 0 (A.length arr)
 
-let rec filterShared n p =
+let rec keepSharedU n p =
   match toOpt n with 
   | None -> empty
   | Some n  ->
     let l,v,r = left n, key n, right n in  
-    let newL = filterShared l p in
+    let newL = keepSharedU l p in
     let pv = p v [@bs] in
-    let newR = filterShared r p in
+    let newR = keepSharedU r p in
     if pv then 
       (if l == newL && r == newR then 
          return n
        else joinShared newL v newR)
     else concatShared newL newR
+
+let keepShared n p = keepSharedU  n (fun [@bs] a -> p a)
 (* ATT: functional methods in general can be shared with 
     imperative methods, however, it does not apply when functional 
     methods makes use of referential equality
 *)
 
-let rec filterCopy n p : _ t = 
+let keepCopyU n p : _ t = 
   match toOpt n with 
   | None -> empty 
   | Some n -> 
@@ -443,7 +452,9 @@ let rec filterCopy n p : _ t =
       fillArrayWithFilter n 0 v p in 
     ofSortedArrayAux v 0 last 
 
-let partitionCopy n p  =     
+let keepCopy n p = keepCopyU n (fun [@bs] x -> p x)
+
+let partitionCopyU n p  =     
   match toOpt n with 
   | None -> empty, empty  
   | Some n -> 
@@ -456,7 +467,8 @@ let partitionCopy n p  =
     ofSortedArrayAux v 0 forwardLen,  
     ofSortedArrayRevAux v backward (size  - forwardLen)
 
-
+let partitionCopy n p = partitionCopyU n (fun[@bs] a -> p a)
+    
 let rec has   (t: _ t) x ~cmp =
   match  toOpt t with 
   | None -> false
@@ -626,7 +638,7 @@ let ofArray  (xs : _ array) ~cmp =
   let len = A.length xs in 
   if len = 0 then empty
   else
-    let next = ref (S.strictlySortedLength xs 
+    let next = ref (S.strictlySortedLengthU xs 
       (fun [@bs] x y -> (Bs_Dict.getCmpInternal cmp) x y [@bs] < 0)) in     
     let result = 
       ref (if !next >= 0 then  

@@ -47,9 +47,12 @@ val isEmpty : 'a t -> bool
 
 val size : 'a t -> int
 
-val forEach : 'a t -> ('a -> unit [@bs]) -> unit
+val forEachU : 'a t -> ('a -> unit [@bs] ) -> unit
+val forEach : 'a t -> ('a -> unit ) -> unit
 
-val dynamicPopIter : 'a t -> ('a ->  unit [@bs]) -> unit 
+
+val dynamicPopIterU : 'a t -> ('a ->  unit [@bs]) -> unit
+val dynamicPopIter : 'a t -> ('a ->  unit ) -> unit   
 (** [dynamicPopIter s f ]
   apply [f] to each element of [s]. The item is poped 
   before applying [f], [s] will be empty  after this opeartion

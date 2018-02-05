@@ -660,7 +660,7 @@ DOCS_SOURCES+=$(shell ls others/*.ml*)
 docs: ../odoc_gen/generator.cmxs
 	make -C ../lib bsppx.exe
 	node ../scripts/doc_gen.js
-# ocamldoc.opt -nostdlib -I stdlib -g ../odoc_gen/generator.cmxs -charset utf-8 -css-style ../../odoc_gen/style.css -sort -ppx bin/bsppx.exe -I others -I runtime -d ../docs/api $(DOCS_SOURCES)
+
 
 top: bs_hash.cma ext.cma bsb.cma
 repl: top

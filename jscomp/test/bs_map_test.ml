@@ -22,12 +22,12 @@ let emptyMap () = M.empty
 
 let () = 
   let v = 
-      (A.makeByAndShuffle 1_000_000 (fun[@bs] i -> (i,i))) in 
+      (A.makeByAndShuffle 1_000_000 (fun i -> (i,i))) in 
   let u = M.ofArray v in   
   b __LOC__ (M.checkInvariantInternal u);
   let firstHalf = A.slice v 0 2_000 in 
   let xx = A.reduce firstHalf u
-      (fun[@bs] acc (x,_) -> M.remove acc x)  in 
+      (fun acc (x,_) -> M.remove acc x)  in 
   b __LOC__ (M.checkInvariantInternal u);
   b __LOC__ (M.checkInvariantInternal xx);
 

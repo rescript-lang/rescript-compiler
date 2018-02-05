@@ -2,6 +2,7 @@
 
 var Mt = require("./mt.js");
 var Bs_Map = require("../../lib/js/bs_Map.js");
+var Bs_Dict = require("../../lib/js/bs_Dict.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
@@ -22,18 +23,18 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = /* module */[/* cmp */Caml_primitive.caml_int_compare];
+var Icmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
 
-var Icmp2 = /* module */[/* cmp */Caml_primitive.caml_int_compare];
+var Icmp2 = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
 
 var m0 = {
   cmp: Icmp[/* cmp */0],
   data: Bs_MapDict.empty
 };
 
-var I2 = /* module */[/* cmp */(function (x, y) {
-      return Caml_primitive.caml_int_compare(y, x);
-    })];
+var I2 = Bs_Dict.comparable((function (x, y) {
+        return Caml_primitive.caml_int_compare(y, x);
+      }));
 
 var m = {
   cmp: Icmp2[/* cmp */0],
@@ -117,7 +118,7 @@ b("File \"bs_map_set_dict_test.ml\", line 77, characters 4-11", Bs_Array.every2(
             }
           })));
 
-b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Bs_List.every2(Bs_MapDict.toList(u0.data), Bs_Array.toList(Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Bs_List.every2(Bs_MapDict.toList(u0.data), Bs_List.ofArray(Bs_Array.map(Array_data_util.range(0, 39), (function (x) {
                     return /* tuple */[
                             x,
                             x
@@ -192,4 +193,4 @@ exports.ISet = ISet;
 exports.S0 = S0;
 exports.f = f;
 exports.$eq$tilde = $eq$tilde;
-/* data Not a pure module */
+/* Icmp Not a pure module */

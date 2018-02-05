@@ -1,32 +1,32 @@
 'use strict';
 
-var Bs_Queue = require("../../lib/js/bs_Queue.js");
-var Bs_Stack = require("../../lib/js/bs_Stack.js");
 var Js_undefined = require("../../lib/js/js_undefined.js");
+var Bs_MutableQueue = require("../../lib/js/bs_MutableQueue.js");
+var Bs_MutableStack = require("../../lib/js/bs_MutableStack.js");
 
 function inOrder(v) {
   var current = v;
   var s = {
     root: null
   };
-  var q = Bs_Queue.make(/* () */0);
+  var q = Bs_MutableQueue.make(/* () */0);
   while(current !== undefined) {
     var v$1 = current;
-    Bs_Stack.push(s, v$1);
+    Bs_MutableStack.push(s, v$1);
     current = v$1.left;
   };
   while(s.root !== null) {
-    current = Bs_Stack.popUndefined(s);
+    current = Bs_MutableStack.popUndefined(s);
     var v$2 = current;
-    Bs_Queue.add(q, v$2.value);
+    Bs_MutableQueue.add(q, v$2.value);
     current = v$2.right;
     while(current !== undefined) {
       var v$3 = current;
-      Bs_Stack.push(s, v$3);
+      Bs_MutableStack.push(s, v$3);
       current = v$3.left;
     };
   };
-  return Bs_Queue.toArray(q);
+  return Bs_MutableQueue.toArray(q);
 }
 
 function inOrder3(v) {
@@ -34,23 +34,23 @@ function inOrder3(v) {
   var s = {
     root: null
   };
-  var q = Bs_Queue.make(/* () */0);
+  var q = Bs_MutableQueue.make(/* () */0);
   while(current !== undefined) {
     var v$1 = current;
-    Bs_Stack.push(s, v$1);
+    Bs_MutableStack.push(s, v$1);
     current = v$1.left;
   };
-  Bs_Stack.dynamicPopIter(s, (function (popped) {
-          Bs_Queue.add(q, popped.value);
+  Bs_MutableStack.dynamicPopIter(s, (function (popped) {
+          Bs_MutableQueue.add(q, popped.value);
           var current = popped.right;
           while(current !== undefined) {
             var v = current;
-            Bs_Stack.push(s, v);
+            Bs_MutableStack.push(s, v);
             current = v.left;
           };
           return /* () */0;
         }));
-  return Bs_Queue.toArray(q);
+  return Bs_MutableQueue.toArray(q);
 }
 
 function inOrder2(v) {
@@ -59,16 +59,16 @@ function inOrder2(v) {
   var s = {
     root: null
   };
-  var q = Bs_Queue.make(/* () */0);
+  var q = Bs_MutableQueue.make(/* () */0);
   while(todo) {
     if (cursor !== undefined) {
       var v$1 = cursor;
-      Bs_Stack.push(s, v$1);
+      Bs_MutableStack.push(s, v$1);
       cursor = v$1.left;
     } else if (s.root !== null) {
-      cursor = Bs_Stack.popUndefined(s);
+      cursor = Bs_MutableStack.popUndefined(s);
       var current = cursor;
-      Bs_Queue.add(q, current.value);
+      Bs_MutableQueue.add(q, current.value);
       cursor = current.right;
     } else {
       todo = /* false */0;
@@ -91,7 +91,7 @@ function pushAllLeft(st1, s1) {
   var current = st1;
   while(current !== undefined) {
     var v = current;
-    Bs_Stack.push(s1, v);
+    Bs_MutableStack.push(s1, v);
     current = v.left;
   };
   return /* () */0;

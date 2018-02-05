@@ -26,12 +26,14 @@ val has:  'b  t -> key -> bool
 
 val remove: 'a t -> key -> unit
 
+val forEachU: 'b t -> (key -> 'b -> unit [@bs]) -> unit
+val forEach: 'b t -> (key -> 'b -> unit) -> unit
 
-val forEach: 'b t -> (key -> 'b -> unit [@bs]) -> unit
+val reduceU: 'b t -> 'c -> ('c -> key -> 'b ->  'c [@bs]) -> 'c
+val reduce: 'b t -> 'c -> ('c -> key -> 'b ->  'c) -> 'c
 
-val reduce: 'b t -> 'c -> ('c -> key -> 'b ->  'c [@bs]) -> 'c
-
-val keepMapInPlace: 'a t ->  (key -> 'a -> 'a option [@bs]) -> unit
+val keepMapInPlaceU: 'a t ->  (key -> 'a -> 'a option [@bs]) -> unit
+val keepMapInPlace: 'a t ->  (key -> 'a -> 'a option) -> unit
 
   
 val size: _ t -> int  

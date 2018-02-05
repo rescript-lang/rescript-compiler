@@ -64,22 +64,34 @@ val isEmpty : 'a t -> bool
 
 val stackAllLeft : 'a t -> 'a node list -> 'a node list
 
-val forEach : 'a t -> ('a -> 'b [@bs]) -> unit
-val reduce : 'a t -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
-val every : 'a t -> ('a -> bool [@bs]) -> bool
-val some : 'a t -> ('a -> bool [@bs]) -> bool
+val forEachU: 'a t -> ('a -> unit [@bs]) -> unit
+val forEach: 'a t -> ('a -> unit) -> unit  
+
+val reduceU: 'a t -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
+val reduce: 'a t -> 'b -> ('b -> 'a -> 'b ) -> 'b
+
+val everyU: 'a t -> ('a -> bool [@bs]) -> bool
+val every: 'a t -> ('a -> bool ) -> bool  
+
+val someU: 'a t -> ('a -> bool [@bs]) -> bool
+val some: 'a t -> ('a -> bool ) -> bool  
 
 val joinShared : 'a t -> 'a -> 'a t -> 'a t
 val concatShared : 'a t -> 'a t -> 'a t
-val filterShared : 'a t -> ('a -> bool [@bs]) -> 'a t
-val filterCopy : 'a t -> ('a -> bool  [@bs]) -> 'a t
 
-val partitionShared:
-  'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
-val partitionCopy: 
-  'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
+val keepSharedU: 'a t -> ('a -> bool [@bs]) -> 'a t
+val keepShared: 'a t -> ('a -> bool ) -> 'a t    
 
-val lengthNode : 'a node -> int   
+val keepCopyU: 'a t -> ('a -> bool  [@bs]) -> 'a t
+val keepCopy: 'a t -> ('a -> bool ) -> 'a t    
+
+val partitionSharedU: 'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
+val partitionShared: 'a t -> ('a -> bool) -> 'a t * 'a t
+
+val partitionCopyU: 'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
+val partitionCopy: 'a t -> ('a -> bool ) -> 'a t * 'a t
+
+val lengthNode: 'a node -> int   
 val size: 'a t -> int
 
 val toList: 'a t -> 'a list

@@ -108,21 +108,23 @@ let rec split (x : key) n =
   | Some n -> 
     splitAux x n 
 
-let rec merge s1 s2 f =
+let rec mergeU s1 s2 f =
   match N.(toOpt s1, toOpt s2) with
     (None, None) -> N.empty
   | Some n (* (Node (l1, v1, d1, r1, h1), _)*), _ 
     when N.(h n >= (match N.toOpt s2 with None -> 0 | Some n -> N.h n)) ->
     let (l1,v1,d1,r1) = N.(left n, key n, value n, right n ) in 
     let (l2, d2, r2) = split v1 s2 in
-    N.concatOrJoin (merge l1 l2 f) v1 (f v1 (Some d1) d2 [@bs]) (merge r1 r2 f)
+    N.concatOrJoin (mergeU l1 l2 f) v1 (f v1 (Some d1) d2 [@bs]) (mergeU r1 r2 f)
   | (_, Some n) (* Node (l2, v2, d2, r2, h2) *)  ->
     let (l2, v2, d2, r2) = N.(left n, key n, value n, right n) in 
     let (l1, d1, r1) = split v2 s1 in
-    N.concatOrJoin (merge l1 l2 f) v2 (f v2 d1 (Some d2) [@bs]) (merge r1 r2 f)
+    N.concatOrJoin (mergeU l1 l2 f) v2 (f v2 d1 (Some d2) [@bs]) (mergeU r1 r2 f)
   | _ ->
     assert false
 
+let merge s1 s2 f = mergeU s1 s2 (fun [@bs] a b c -> f a b c)
+    
 let rec compareAux e1 e2 vcmp =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
@@ -138,7 +140,7 @@ let rec compareAux e1 e2 vcmp =
     else c 
   | _, _ -> 0    
 
-let cmp s1 s2 cmp = 
+let cmpU s1 s2 cmp = 
   let len1, len2 = N.size s1, N.size s2 in 
   if len1 = len2 then 
     compareAux 
@@ -148,6 +150,7 @@ let cmp s1 s2 cmp =
   else if len1 < len2 then -1 
   else 1 
 
+let cmp s1 s2 f = cmpU s1 s2 (fun[@bs] a b -> f a b)
 
 let rec eqAux e1 e2  eq =
   match e1,e2 with 
@@ -161,7 +164,7 @@ let rec eqAux e1 e2  eq =
     else  false    
   | _, _ -> true (*end *)  
 
-let eq s1 s2 eq =      
+let eqU s1 s2 eq =      
   let len1,len2 = N.size s1, N.size s2 in 
   if len1 = len2 then 
     eqAux 
@@ -169,6 +172,8 @@ let eq s1 s2 eq =
       (N.stackAllLeft s2 []) eq 
   else false  
 
+let eq s1 s2 f = eqU s1 s2 (fun[@bs] a b -> f a b)
+    
 let rec addMutate  (t : _ t) x data : _ t =   
   match N.toOpt t with 
   | None -> N.singleton x data
@@ -195,7 +200,7 @@ let ofArray  (xs : (key * _) array) =
   if len = 0 then N.empty
   else
     let next = 
-        ref (S.strictlySortedLength xs 
+        ref (S.strictlySortedLengthU xs 
         (fun[@bs] (x0,_) (y0,_) -> 
             x0 < y0
         ))

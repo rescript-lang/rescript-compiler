@@ -44,7 +44,7 @@ let inOrder3 (v : t) =
     S.push s v; 
     current := left v; 
   done ;
-  S.dynamicPopIter s begin fun [@bs] popped -> 
+  S.dynamicPopIter s begin fun  popped -> 
     Q.add q (value popped);
     let current = ref (right popped) in 
     while !current != Js.undefined do 

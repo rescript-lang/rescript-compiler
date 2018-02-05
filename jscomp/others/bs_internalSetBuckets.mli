@@ -32,13 +32,15 @@ and ('hash, 'eq, 'a) t = ('hash, 'eq, 'a bucket) C.container
 [@@bs.deriving abstract]
 
 val copy: ('hash, 'eq, 'a) t -> ('hash, 'eq, 'a) t
-val forEach: ('hash, 'eq, 'a) t  -> ('a -> unit [@bs]) -> unit
 
+val forEachU: ('hash, 'eq, 'a) t  -> ('a -> unit [@bs]) -> unit
+val forEach: ('hash, 'eq, 'a) t -> ('a -> unit) -> unit
 val fillArray: int -> 'a array -> 'a bucket -> int
 
 val toArray: (_,_,'a) t -> 'a array
 
-val reduce: (_,_,'a) t -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
+val reduceU: (_,_,'a) t -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
+val reduce: (_,_,'a) t -> 'b -> ('b -> 'a ->  'b) -> 'b
 
 val logStats: _ t -> unit
 

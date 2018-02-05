@@ -169,22 +169,20 @@ let minimum d =
 let minUndefined d =
   N.minUndefined (data d)
 
-let maximum d = 
-  N.maximum (data d)
+let maximum d = N.maximum (data d)
 
-let maxUndefined d =
-  N.maxUndefined (data d)
+let maxUndefined d = N.maxUndefined (data d)
 
-let forEach d f =
-  N.forEach (data d) f     
+let forEachU d f = N.forEachU (data d) f     
+let forEach d f = forEachU d (fun[@bs] a -> f a)
+    
+let reduceU d acc cb = N.reduceU (data d) acc cb
+let reduce d acc cb = reduceU d acc (fun[@bs] a b -> cb a b)    
 
-let reduce d acc cb = 
-  N.reduce (data d) acc cb 
-let every d p = 
-  N.every (data d) p 
-let some d  p = 
-  N.some (data d) p   
-
+let everyU d p = N.everyU (data d) p
+let every d p = everyU d (fun[@bs] a -> p a)    
+let someU d p = N.someU (data d) p   
+let some d p = someU d (fun [@bs] a -> p a)
 let size d = 
   N.size (data d)
 let toList d =
@@ -234,11 +232,15 @@ let split d  key =
       ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
       ), true   
   
-let keep d p = 
-  t ~data:(N.filterCopy (data d) p )
-let partition d p = 
-  let a , b = N.partitionCopy (data d) p in 
-  t ~data:a, t ~data:b  
+let keepU d p = 
+  t ~data:(N.keepCopyU (data d) p )
+let keep d p = keepU d (fun[@bs] a -> p a)
+    
+let partitionU d p = 
+  let a , b = N.partitionCopyU (data d) p in 
+  t ~data:a, t ~data:b
+let partition d p = partitionU d (fun[@bs] a -> p a)
+    
 let subset a b = I.subset  (data a) (data b)
 let intersect dataa datab  = 
   let dataa, datab = data dataa, data datab in

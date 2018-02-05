@@ -87,7 +87,7 @@ let public_method_label s : tag =
 
 module Vars =
 #if BS then
-  Bs.MapString
+  Bs.Map.String
 #else
   Map.Make(struct type t = string let compare (x:t) y = compare x y end)
 #end  
@@ -95,14 +95,14 @@ type vars = int Vars.t
 
 module Meths =
 #if BS then
-    Bs.MapString
+    Bs.Map.String
 #else      
   Map.Make(struct type t = string let compare (x:t) y = compare x y end)
 #end    
 type meths = label Meths.t
 module Labs =
 #if BS then
-    Bs.MapInt
+    Bs.Map.Int
 #else      
   Map.Make(struct type t = label let compare (x:t) y = compare x y end)
 #end  
@@ -238,7 +238,7 @@ let narrow table vars virt_meths concr_meths =
      :: table.previous_states;
   table.vars <-
 #if BS then
-     Vars.reduce table.vars Vars.empty
+     Vars.reduceU table.vars Vars.empty
       (fun[@bs] tvars lab info  ->
         if List.mem lab vars then Vars.set tvars lab info  else tvars);      
 #else    

@@ -18,12 +18,20 @@ let minimum = N.minimum
 let minUndefined = N.minUndefined
 let maximum = N.maximum
 let maxUndefined = N.maxUndefined
+
 let forEach = N.forEach
+let forEachU = N.forEachU
 let reduce = N.reduce
+let reduceU = N.reduceU
 let every = N.every
-let some = N.some   
-let keep = N.filterShared
+let everyU = N.everyU
+let some = N.some                
+let someU = N.someU
+let keep = N.keepShared              
+let keepU = N.keepSharedU
 let partition = N.partitionShared
+let partitionU = N.partitionSharedU
+                   
 let size = N.size
 let toList = N.toList
 let toArray = N.toArray

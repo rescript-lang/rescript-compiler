@@ -21,7 +21,7 @@ let should b =
   
 let count = 1_000_000 
 
-let shuffledDataAdd = (A.makeByAndShuffle (count +  1) (fun[@bs] i -> (i,i)))
+let shuffledDataAdd = (A.makeByAndShuffle (count +  1) (fun i -> (i,i)))
 
 
 

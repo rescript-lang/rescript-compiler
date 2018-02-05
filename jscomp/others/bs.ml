@@ -23,19 +23,62 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** A stdlib shipped with BuckleScript *)
 
-(**/*)
-(**/*)
+(** {!Bs.Dict}
 
+    Provide utiliites to create identified comparators or hashes for 
+    data structures used below. 
+    
+    It create a unique identifer per module of
+    functions so that different data structures with slightly different 
+    comparison functions won't mix
+*)
 module Dict = Bs_Dict
+
+(** {!Bs.Array}
+    
+    Utililites for Array functions 
+*)
 module Array = Bs_Array
-module MutableQueue = Bs_Queue
+
+(** {!Bs.SortArray}
+    
+    The toplevel provides some generic sort related utililties.
+    
+    It also has two specialized inner modules
+    {!Bs.SortArray.Int} and {!Bs.SortArray.String}
+*)
+module SortArray = Bs_SortArray
+
+(** {!Bs.MutableQueue}
+    
+    An FIFO(first in first out) queue data structure
+*)
+module MutableQueue = Bs_MutableQueue
+
+(** {!Bs.MutableStack}
+    
+    An FILO(first in last out) stack data structure
+*)
+module MutableStack = Bs_MutableStack 
+
+(** {!Bs.List}
+    
+    Utilities for List data type
+*)
 module List = Bs_List
-module MutableStack = Bs_Stack
+
+(** {!Bs.Range}
+    
+    Utilities for a closed range [(from, start)]
+*)
 module Range = Bs_Range
 
 (** {!Bs.Set}
+
     The toplevel provides generic immutable set operations.
+
     It also has three specialized inner modules
     {!Bs.Set.Int} and {!Bs.Set.String}
     {!Bs.Set.Dict}: This module separate date from function
@@ -46,7 +89,9 @@ module Set = Bs_Set
 
 
 (** {!Bs.Map},
+
     The toplevel provides generic immutable map operations.
+    
     It also has three specialized inner modules
     {!Bs.Map.Int} and {!Bs.Map.String}
     {!Bs.Map.Dict}: This module separate date from function
@@ -56,14 +101,18 @@ module Map = Bs_Map
 
 
 (** {!Bs.MutableSet}
+    
     The toplevel provides generic mutable set operations.
+    
     It also has two specialized inner modules
     {!Bs.MutableSet.Int} and {!Bs.MutableSet.String}
 *)
 module MutableSet = Bs_MutableSet
 
 (** {!Bs.MutableMap}
+    
     The toplevel provides generic mutable map operations.
+    
     It also has two specialized inner modules
     {!Bs.MutableMap.Int} and {!Bs.MutableMap.String}
 
@@ -72,7 +121,9 @@ module MutableMap = Bs_MutableMap
 
 
 (** {!Bs.HashSet}
+    
     The toplevel provides generic mutable hash set operations.
+    
     It also has two specialized inner modules
     {!Bs.HashSet.Int} and {!Bs.HashSet.String}
 *)
@@ -80,19 +131,15 @@ module HashSet = Bs_HashSet
 
 
 (** {!Bs.HashMap}
+    
     The toplevel provides generic mutable hash map operations.
+    
     It also has two specialized inner modules
     {!Bs.HashMap.Int} and {!Bs.HashMap.String}
 *)
 module HashMap = Bs_HashMap
   
 
-(** {!Bs.SortArray}
-    The toplevel provides some generic sort related utililties.
-    It also has two specialized inner modules
-    {!Bs.SortArray.Int} and {!Bs.SortArray.String}
-*)
-module SortArray = Bs_SortArray
 
 
 

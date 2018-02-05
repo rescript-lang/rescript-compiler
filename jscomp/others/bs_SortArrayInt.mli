@@ -61,6 +61,7 @@ val binarySearch: element array -> element -> int
 
 *)  
 
+(**/**)
 val union:   
   element array -> int -> int -> 
   element array -> int -> int -> 
@@ -84,3 +85,4 @@ val diff:
   element array -> int -> int -> 
   element array -> int 
   -> int
+(**/**)

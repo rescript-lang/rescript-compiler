@@ -33,13 +33,18 @@ let set (m : _ t) k v =
   if v != old_data then 
     dataSet m v 
 
-let forEach d f = N.forEach (data d) f     
-let map d f = t ~data:(N.map (data d) f)
-let mapWithKey d f = t ~data:(N.mapWithKey (data d) f) 
-let reduce d acc f  = N.reduce (data d) acc f 
-let every d f = N.every (data d) f 
-let some d f = N.some (data d) f    
-
+let forEachU d f = N.forEachU (data d) f
+let forEach d f = forEachU d (fun[@bs] a b -> f a b)    
+let mapU d f = t ~data:(N.mapU (data d) f)
+let map d f = mapU d (fun[@bs] a -> f a )    
+let mapWithKeyU d f = t ~data:(N.mapWithKeyU (data d) f)
+let mapWithKey d f = mapWithKeyU d (fun [@bs] a b -> f a b)    
+let reduceU d acc f  = N.reduceU (data d) acc f
+let reduce d acc f = reduceU d acc (fun[@bs] a b c -> f a b c)    
+let everyU d f = N.everyU (data d) f
+let every d f = everyU d (fun[@bs] a b -> f a b)    
+let someU d f = N.someU (data d) f    
+let some d f = someU d (fun[@bs] a b -> f a b)
 let size d = N.size (data d)
 let toList d = N.toList (data d)
 let toArray d = N.toArray (data d)
@@ -119,12 +124,12 @@ let rec updateDone t (x : key)  f  =
       );
       N.return (N.balMutate nt)
         
-let update t x f =       
+let updateU t x f =       
   let oldRoot = data t in 
   let newRoot = updateDone oldRoot x f  in 
   if newRoot != oldRoot then 
     dataSet t newRoot 
-
+let update t x f = updateU t x (fun[@bs] a -> f a )
 let rec removeArrayMutateAux t xs i len   =  
   if i < len then 
     let ele = A.getUnsafe xs i in 
@@ -145,9 +150,6 @@ let removeMany (type elt) (type id) (d : _ t) xs =
       dataSet d newRoot
 
 
-let cmp = I.cmp 
-let eq = I.eq 
-
 
 (* let split = I.split  *)
 (* let merge = I.merge  *)
@@ -156,10 +158,14 @@ let eq = I.eq
 let ofArray xs = 
   t  ~data:(I.ofArray xs)
 
-let cmp d0 d1 = 
-  I.cmp (data d0) (data d1)
-let eq d0 d1 = 
-  I.eq (data d0) (data d1)
+let cmpU d0 d1 f = 
+  I.cmpU (data d0) (data d1) f
+let cmp d0 d1 f = cmpU d0 d1 (fun[@bs] a b -> f a b)          
+
+let eqU d0 d1 f = 
+  I.eqU (data d0) (data d1) f
+let eq d0 d1 f = eqU d0 d1 (fun[@bs] a b -> f a b)    
+
 let get d x =   I.get (data d) x 
 let getUndefined d x = I.getUndefined (data d) x 
 let getWithDefault d x def = I.getWithDefault (data d) x def  

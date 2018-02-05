@@ -7,7 +7,7 @@ module N = Bs.Set
 module I = Array_data_util
 module A = Bs.Array
 module IntCmp = 
-  (val Bs.Dict.comparable (fun[@bs] (x:int) y -> compare x y))
+  (val Bs.Dict.comparable (fun (x:int) y -> compare x y))
 module L = Bs.List
 
 let () = 
@@ -84,19 +84,19 @@ let () =
 
 let testIterToList  xs = 
   let v = ref [] in 
-  N.forEach xs (fun[@bs] x -> v := x :: !v ) ; 
+  N.forEach xs (fun x -> v := x :: !v ) ; 
   L.reverse !v
 
 let () =   
   let u0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 20) in 
   let u1 = N.remove u0 17 in  
   let u2 = N.add u1 33 in 
-  b __LOC__ (L.every2 (testIterToList u0) (L.makeBy 21 (fun[@bs] i -> i)) (fun [@bs] x y -> x = y));
-  b __LOC__ (L.every2 (testIterToList u0) (N.toList u0) (fun [@bs] x y -> x = y));
-  b __LOC__ (N.some u0 (fun [@bs] x -> x = 17));
-  b __LOC__ (not (N.some u1 (fun [@bs] x -> x = 17)));
-  b __LOC__ (N.every u0 (fun [@bs] x -> x < 24));
-  b __LOC__ (not (N.every u2 (fun [@bs] x -> x < 24)));
+  b __LOC__ (L.every2 (testIterToList u0) (L.makeBy 21 (fun i -> i)) (fun x y -> x = y));
+  b __LOC__ (L.every2 (testIterToList u0) (N.toList u0) (fun  x y -> x = y));
+  b __LOC__ (N.some u0 (fun  x -> x = 17));
+  b __LOC__ (not (N.some u1 (fun x -> x = 17)));
+  b __LOC__ (N.every u0 (fun x -> x < 24));
+  b __LOC__ (not (N.every u2 (fun  x -> x < 24)));
   b __LOC__ (N.cmp u1 u0 < 0);
   b __LOC__ (N.cmp u0 u1 > 0)
 
@@ -104,10 +104,10 @@ let () =
   let a0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
-      N.keep a0 (fun [@bs] x -> x mod 2  = 0),
-      N.keep a0 (fun [@bs] x -> x mod 2 <> 0)
+      N.keep a0 (fun x -> x mod 2  = 0),
+      N.keep a0 (fun x -> x mod 2 <> 0)
     ) in 
-  let a3, a4 = N.partition a0 (fun [@bs] x -> x mod 2 = 0) in   
+  let a3, a4 = N.partition a0 (fun x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
   b __LOC__ (N.eq a2 a4);
   eq __LOC__ (N.getExn a0 3) 3 ;
@@ -118,21 +118,21 @@ let () =
   b __LOC__ (not @@ N.isEmpty a0);
   let (a5,a6), pres  = N.split a0 200 in 
   b __LOC__ pres ;
-  eq __LOC__ (N.toArray a5) (A.makeBy 200 (fun[@bs] i -> i));
-  eq __LOC__ (N.toList a6) (L.makeBy 800 (fun[@bs] i -> i + 201));
+  eq __LOC__ (N.toArray a5) (A.makeBy 200 (fun i -> i));
+  eq __LOC__ (N.toList a6) (L.makeBy 800 (fun i -> i + 201));
   let a7 = N.remove a0 200 in 
   let (a8,a9), pres  = N.split a7 200 in 
   b __LOC__ (not pres) ;
-  eq __LOC__ (N.toArray a8) (A.makeBy 200 (fun[@bs] i -> i));
-  eq __LOC__ (N.toList a9) (L.makeBy 800 (fun[@bs] i -> i + 201));
+  eq __LOC__ (N.toArray a8) (A.makeBy 200 (fun i -> i));
+  eq __LOC__ (N.toList a9) (L.makeBy 800 (fun i -> i + 201));
   eq __LOC__ (N.minimum a8) (Some 0);
   eq __LOC__ (N.minimum a9) (Some 201);
-  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun [@bs] x -> N.checkInvariantInternal x))
+  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun  x -> N.checkInvariantInternal x))
 
 
 let () =   
   let a = N.ofArray ~dict:(module IntCmp) [||] in 
-  b __LOC__ (N.isEmpty (N.keep a (fun[@bs] x -> x mod 2 = 0)))
+  b __LOC__ (N.isEmpty (N.keep a (fun x -> x mod 2 = 0)))
 
 let () = 
   let (aa,bb), pres = N.split (N.make  ~dict:(module IntCmp)) 0 in 

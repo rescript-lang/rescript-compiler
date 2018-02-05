@@ -55,14 +55,15 @@ val has: ('key, 'value, 'id ) t -> 'key -> bool
 
 val remove: ('key, 'value, 'id ) t -> 'key ->  unit
 
-val forEach: ('key, 'value, 'id ) t -> ('key -> 'value -> unit [@bs]) -> unit
+val forEachU: ('key, 'value, 'id ) t -> ('key -> 'value -> unit [@bs]) -> unit
+val forEach: ('key, 'value, 'id ) t -> ('key -> 'value -> unit) -> unit
 (** [forEach tbl f] applies [f] to all bindings in table [tbl].
     [f] receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to [f].
 *)
 
-
-val reduce: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c [@bs]) ->  'c
+val reduceU: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c [@bs]) ->  'c
+val reduce: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c) ->  'c
 (** [reduce  tbl init f] computes
     [(f kN dN ... (f k1 d1 init)...)],
     where [k1 ... kN] are the keys of all bindings in [tbl],
@@ -76,7 +77,8 @@ val reduce: ('key, 'value, 'id ) t -> 'c -> ('c -> 'key -> 'value ->  'c [@bs]) 
 *)
 
 
-val keepMapInPlace: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option [@bs]) ->  unit
+val keepMapInPlaceU: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option [@bs]) ->  unit
+val keepMapInPlace: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option ) ->  unit
 
 
 val size: _ t -> int  

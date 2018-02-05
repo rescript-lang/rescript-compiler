@@ -151,10 +151,11 @@ let rec copyMapAux qRes prev cell f =
     end;
     copyMapAux qRes res (next x) f
 
-let map q f =
+let mapU q f =
   copyMapAux (t  ~length:(length q) ~first:null ~last:null)  null (first q) f
     
-
+let map q f = mapU q (fun [@bs] a -> f a)
+    
 let isEmpty q =
   length q = 0
 
@@ -168,9 +169,10 @@ let rec iterAux cell f =
     f (content x) [@bs];
     iterAux (next x) f
 
-let forEach q f =
+let forEachU q f =
   iterAux (first q) f
 
+let forEach q f = forEachU q (fun[@bs] a -> f a)
     
 let rec foldAux f accu cell =
   match Js.nullToOption cell with
@@ -179,9 +181,11 @@ let rec foldAux f accu cell =
     let accu = f accu (content x) [@bs] in
     foldAux f accu (next x)
 
-let reduce q  accu f =
+let reduceU q  accu f =
   foldAux f accu (first q)
 
+let reduce q accu f = reduceU q accu (fun[@bs] a b -> f a b)
+    
 let transfer q1 q2 =
   if length q1 > 0 then
     match Js.nullToOption (last q2) with

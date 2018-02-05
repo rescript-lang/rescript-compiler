@@ -5,8 +5,7 @@ let b loc v  = Mt.bool_suites ~suites ~test_id loc v
 
 module Icmp = 
   (val Bs.Dict.comparable 
-      (fun[@bs] (x : int) y -> 
-         compare x y
+      (fun (x : int) y ->  compare x y
       )
   )
 module M = Bs.MutableMap
@@ -19,7 +18,7 @@ let ff x = N.ofArray ~dict:(module Icmp) x
 
 
 let randomRange i j = 
-  A.map (I.randomRange i j) (fun[@bs] x -> (x,x))
+  A.map (I.randomRange i j) (fun x -> (x,x))
 
 
   let () = 

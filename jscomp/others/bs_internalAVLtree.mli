@@ -71,34 +71,57 @@ val isEmpty : _ t -> bool
 val stackAllLeft :
   ('a,'b) t -> ('a, 'b) node list -> ('a, 'b) node list
 
-val forEach :  ('a,'b) t -> ('a -> 'b -> unit [@bs]) -> unit
-val map :  ('c, 'a) t -> ('a -> 'b [@bs]) -> ('c, 'b) t
-val mapWithKey :
-   ('a,'b) t -> ('a -> 'b -> 'c [@bs]) -> ('a, 'c) t
-val reduce : ('a,'b) t -> 'c -> ( 'c -> 'a -> 'b -> 'c [@bs]) ->  'c
-val every :  ('a,'b) t -> ('a -> 'b -> bool [@bs]) -> bool
-val some :  ('a,'b) t -> ('a -> 'b -> bool [@bs]) -> bool
+val forEachU:  ('a,'b) t -> ('a -> 'b -> unit [@bs]) -> unit
+val forEach:  ('a,'b) t -> ('a -> 'b -> unit) -> unit
+  
+val mapU:  ('c, 'a) t -> ('a -> 'b [@bs]) -> ('c, 'b) t
+val map:  ('c, 'a) t -> ('a -> 'b) -> ('c, 'b) t    
 
-val join : ('a,'b) t -> 'a -> 'b -> ('a,'b) t -> ('a, 'b) t
+val mapWithKeyU: ('a,'b) t -> ('a -> 'b -> 'c [@bs]) -> ('a, 'c) t
+val mapWithKey: ('a,'b) t -> ('a -> 'b -> 'c) -> ('a, 'c) t
+     
+val reduceU: ('a,'b) t -> 'c -> ( 'c -> 'a -> 'b -> 'c [@bs]) ->  'c
+val reduce: ('a,'b) t -> 'c -> ( 'c -> 'a -> 'b -> 'c ) ->  'c
 
-val concat : ('a,'b) t -> ('a,'b) t -> ('a,'b) t
+val everyU:  ('a,'b) t -> ('a -> 'b -> bool [@bs]) -> bool
+val every:  ('a,'b) t -> ('a -> 'b -> bool) -> bool
 
-val concatOrJoin :
+val someU:  ('a,'b) t -> ('a -> 'b -> bool [@bs]) -> bool
+val some:  ('a,'b) t -> ('a -> 'b -> bool) -> bool  
+
+val join: ('a,'b) t -> 'a -> 'b -> ('a,'b) t -> ('a, 'b) t
+
+val concat: ('a,'b) t -> ('a,'b) t -> ('a,'b) t
+
+val concatOrJoin:
   ('a,'b) t -> 'a -> 'b option -> ('a,'b) t -> ('a, 'b) t
 
-val filterShared : 
+val keepSharedU: 
   ('a,'b) t ->
   ('a -> 'b -> bool [@bs]) -> 
   ('a,'b) t
+val keepShared: 
+  ('a,'b) t ->
+  ('a -> 'b -> bool) -> 
+  ('a,'b) t
 
-val filterMap :    
+val keepMapU:    
   ('a, 'b) t -> 
   ('a -> 'b -> 'c option [@bs]) -> 
-  ('a, 'c) t 
+  ('a, 'c) t
+val keepMap:    
+  ('a, 'b) t -> 
+  ('a -> 'b -> 'c option ) -> 
+  ('a, 'c) t
+    
 (* seems no sharing, could be shared with mutation *)
-val partitionShared :  
+val partitionSharedU:  
   ('a,'b) t -> 
   ('a -> 'b -> bool [@bs]) ->
+  ('a,'b) t * ('a,'b) t
+val partitionShared:  
+  ('a,'b) t -> 
+  ('a -> 'b -> bool ) ->
   ('a,'b) t * ('a,'b) t
 
 
@@ -117,16 +140,28 @@ val ofSortedArrayAux : ('a * 'b) array -> int -> int -> ('a, 'b) t
 val ofSortedArrayRevAux : ('a * 'b) array -> int -> int -> ('a, 'b) t
 val ofSortedArrayUnsafe : ('a * 'b) array -> ('a, 'b) t
 
-val cmp : 
+val cmpU: 
   ('a, 'b) t -> ('a, 'c) t -> 
   kcmp:('a,_) cmp -> 
   vcmp :('b -> 'c -> int [@bs]) -> 
   int 
+val cmp: 
+  ('a, 'b) t -> ('a, 'c) t -> 
+  kcmp:('a,_) cmp -> 
+  vcmp :('b -> 'c -> int) -> 
+  int 
 
-val eq :   
+
+
+val eqU:   
   ('a, 'b) t -> ('a, 'c) t -> 
   kcmp:('a,_) cmp -> 
   veq:('b -> 'c -> bool [@bs]) -> 
+  bool
+val eq:   
+  ('a, 'b) t -> ('a, 'c) t -> 
+  kcmp:('a,_) cmp -> 
+  veq:('b -> 'c -> bool) -> 
   bool
 
 val get:  

@@ -85,16 +85,20 @@ let rec iterAux (s : _ opt_cell) f =
     f (head x) [@bs];
     iterAux (tail x) f 
 
-let forEach s f =   
+let forEachU s f =   
   iterAux (root s) f 
 
-let dynamicPopIter s f =    
+let forEach s f = forEachU s (fun [@bs] x -> f x)
+    
+let dynamicPopIterU s f =    
   let cursor = ref (root s) in 
   while !cursor != Js.null do 
     let v = Js.Null.getUnsafe !cursor in 
     rootSet s (tail v);
     f (head v) [@bs];
     cursor := root s (* using root, [f] may change it*)
-  done 
+  done
+
+let dynamicPopIter s f = dynamicPopIterU s (fun [@bs] x -> f x)
 
 

@@ -5,12 +5,12 @@ let b loc v  = Mt.bool_suites ~suites ~test_id loc v
 
 module Icmp = 
   (val Bs.Dict.comparable
-    ~cmp:(fun[@bs] (x : int) y -> 
+    ~cmp:(fun (x : int) y -> 
       compare x y
      )
   )
 module Icmp2 = 
-(val Bs.Dict.comparable ~cmp:(fun [@bs] (x : int) y ->
+(val Bs.Dict.comparable ~cmp:(fun  (x : int) y ->
       compare x y ))
   
 module M = Bs.Map
@@ -23,7 +23,7 @@ let m0 : (_,string,_) M.t = M.make (module Icmp)
 
   
 module I2 = 
-(val Bs.Dict.comparable ~cmp:(fun [@bs] (x : int) y -> compare y x ))
+(val Bs.Dict.comparable ~cmp:(fun  (x : int) y -> compare y x ))
 
   
 let m = M.make (module Icmp2)
@@ -72,27 +72,27 @@ let f = M.ofArray ~dict:(module Icmp)
 let (=~) a b = M.eq a b  
 
 let () =   
-  let u0 =  f (A.map (I.randomRange 0 39) (fun[@bs] x -> (x,x))) in  
+  let u0 =  f (A.map (I.randomRange 0 39) (fun x -> (x,x))) in  
   let u1 = M.set u0 39 120 in 
   b __LOC__
   (A.every2 (M.toArray u0) 
-   (A.map (I.range 0 39) (fun [@bs] x -> (x,x)))
-   (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
+   (A.map (I.range 0 39) (fun x -> (x,x)))
+   (fun (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
   
   b __LOC__
   (L.every2 
     (M.toList u0)
-    (A.toList (A.map (I.range 0 39) (fun [@bs] x -> (x,x))))
-    (fun[@bs] (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
+    (L.ofArray (A.map (I.range 0 39) (fun  x -> (x,x))))
+    (fun (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
   eq __LOC__ (M.get u0 39) (Some 39);
   eq __LOC__ (M.get u1 39) (Some 120)
 
 
 let () =     
   let u = f 
-    ((A.makeByAndShuffle 10_000 (fun[@bs] x  -> (x,x)))) in 
+    ((A.makeByAndShuffle 10_000 (fun x  -> (x,x)))) in 
  eq __LOC__    
-  (A.makeBy 10_000 (fun[@bs] x  -> (x,x)))
+  (A.makeBy 10_000 (fun x  -> (x,x)))
   (M.toArray u)
 
 

@@ -111,7 +111,7 @@ let get x n =
   else nthAux x n
 
 let getExn x n =
-  if n < 0 then [%assert "nthAssert"]
+  if n < 0 then [%assert "getExn"]
   else nthAuxAssert x n 
 
 let rec partitionAux p cell precX precY =
@@ -305,7 +305,7 @@ let concat xs ys =
     unsafeMutateTail (copyAuxCont t cell) ys; 
     cell
 
-let map xs f =
+let mapU xs f =
   match xs with
   | [] -> []
   | h::t ->
@@ -313,7 +313,9 @@ let map xs f =
     copyAuxWithMap t cell f;
     cell
 
-let zipBy l1 l2 f =
+let map xs f = mapU xs (fun[@bs] x -> f x )     
+
+let zipByU l1 l2 f =
   match (l1, l2) with
   | (a1::l1, a2::l2) -> 
     let cell = mutableCell (f a1 a2 [@bs]) []  in
@@ -321,7 +323,9 @@ let zipBy l1 l2 f =
     cell 
   | [], _ | _, [] -> []
 
-let mapWithIndex  xs f  = 
+let zipBy l1 l2 f = zipByU l1 l2 (fun[@bs] x y -> f x y)  
+
+let mapWithIndexU  xs f  = 
   match xs with 
     [] -> []
   | h::t -> 
@@ -329,10 +333,10 @@ let mapWithIndex  xs f  =
     copyAuxWithMapI f 1 t cell;
     cell 
 
+let mapWithIndex xs f = mapWithIndexU xs (fun[@bs] i x -> f i x)
 
 
-
-let makeBy n f =
+let makeByU n f =
   if n <= 0 then []
   else
     let headX = mutableCell (f 0 [@bs]) [] in
@@ -346,6 +350,8 @@ let makeBy n f =
     done
     ;
     headX
+
+let makeBy n f = makeByU n (fun[@bs] x -> f x)    
 
 let make n v =
   if n <= 0 then []
@@ -376,6 +382,13 @@ let rec fillAux arr i x =
   | h::t ->
     A.setUnsafe arr i h ;
     fillAux arr (i + 1) t
+
+let rec ofArrayAux a i res =
+  if i < 0 then res 
+  else ofArrayAux a (i - 1) (A.getUnsafe a i :: res) 
+    
+let ofArray a =
+  ofArrayAux a (A.length a - 1) []    
 
 let toArray ( x : _ t) =
   let len = length x in
@@ -459,74 +472,97 @@ let rec mapRevAux f accu xs =
   | [] -> accu
   | a::l -> mapRevAux f (f a [@bs] :: accu) l
 
-let mapReverse l f  =
+let mapReverseU l f  =
   mapRevAux f [] l
 
+let mapReverse l f = mapReverseU l (fun [@bs] x -> f x)
 
-let rec forEach xs f  = 
+let rec forEachU xs f  = 
   match xs with 
     [] -> ()
-  | a::l -> f a [@bs]; forEach l f 
+  | a::l -> f a [@bs]; forEachU l f 
+
+let forEach xs f = forEachU xs (fun [@bs] x -> f x)  
 
 let rec iteri xs i f  = 
   match xs with 
     [] -> ()
   | a::l -> f i a [@bs]; iteri l (i + 1) f 
 
-let forEachWithIndex l f  = iteri l 0 f 
+let forEachWithIndexU l f  = iteri l 0 f 
+let forEachWithIndex l f = forEachWithIndexU l (fun [@bs] i x -> f i x)
 
-let rec reduce l accu f   =
+let rec reduceU l accu f   =
   match l with
     [] -> accu
-  | a::l -> reduce l (f accu a [@bs]) f 
+  | a::l -> reduceU l (f accu a [@bs]) f 
 
-let rec reduceReverse l accu f  =
+let reduce l accu f =   
+  reduceU l accu (fun[@bs] acc x -> f acc x )
+
+let rec reduceReverseU l accu f  =
   match l with
     [] -> accu
-  | a::l -> f a (reduceReverse l accu f) [@bs]
+  | a::l -> f a (reduceReverseU l accu f) [@bs]
 
+let reduceReverse l accu f =   
+  reduceReverseU l accu (fun [@bs] a b -> f a b)
 
 let rec mapRevAux2 l1 l2 accu f =
   match (l1, l2) with  
   | (a1::l1, a2::l2) -> mapRevAux2  l1 l2  (f a1 a2 [@bs]:: accu) f
   | _, [] | [], _ -> accu 
 
-let mapReverse2 l1 l2 f =
+let mapReverse2U l1 l2 f =
   mapRevAux2 l1 l2  [] f
 
-let rec forEach2  l1 l2 f =
+let mapReverse2 l1 l2 f = mapReverse2U l1 l2 (fun [@bs] a b -> f a b)   
+
+let rec forEach2U  l1 l2 f =
   match (l1, l2) with
-  | (a1::l1, a2::l2) -> f a1 a2 [@bs]; forEach2  l1 l2 f
+  | (a1::l1, a2::l2) -> f a1 a2 [@bs]; forEach2U  l1 l2 f
   | [],_ | _, [] -> ()
 
-let rec reduce2 l1 l2 accu f =
+let forEach2 l1 l2 f = forEach2U l1 l2 (fun [@bs] a b -> f a b)  
+
+let rec reduce2U l1 l2 accu f =
   match (l1, l2) with
   | (a1::l1, a2::l2) -> 
-    reduce2 l1 l2 (f accu a1 a2 [@bs]) f 
+    reduce2U l1 l2 (f accu a1 a2 [@bs]) f 
   | [], _ | _, [] -> accu
 
-let rec reduceReverse2 l1 l2 accu f  =
+let reduce2 l1 l2 acc f = reduce2U l1 l2 acc (fun[@bs] a b c -> f a b c )  
+
+let rec reduceReverse2U l1 l2 accu f  =
   match (l1, l2) with
     ([], []) -> accu
-  | (a1::l1, a2::l2) -> f a1 a2 (reduceReverse2 l1 l2 accu f) [@bs]
+  | (a1::l1, a2::l2) -> f a1 a2 (reduceReverse2U l1 l2 accu f) [@bs]
   | _, [] | [], _ -> accu
 
-let rec every xs p = 
+let reduceReverse2 l1 l2 acc f = reduceReverse2U l1 l2 acc (fun [@bs] a b c -> f a b c)  
+
+let rec everyU xs p = 
   match xs with 
     [] -> true
-  | a::l -> p a [@bs] && every l p
+  | a::l -> p a [@bs] && everyU l p
 
-let rec some xs p = 
+let every xs p = everyU xs (fun[@bs] x -> p x)  
+
+let rec someU xs p = 
   match xs with 
     [] -> false
-  | a::l -> p a [@bs] || some l p 
+  | a::l -> p a [@bs] || someU l p 
 
-let rec every2 l1 l2  p =
+let some xs p = someU xs (fun[@bs] x -> p x)  
+
+let rec every2U l1 l2  p =
   match (l1, l2) with
     (_, []) | [],_ -> true
-  | (a1::l1, a2::l2) -> p a1 a2 [@bs] && every2 l1 l2 p
+  | (a1::l1, a2::l2) -> p a1 a2 [@bs] && every2U l1 l2 p
 
-let rec cmp l1 l2  p =
+let every2 l1 l2 p = every2U l1 l2 (fun[@bs] a b -> p a b)  
+
+let rec cmpU l1 l2  p =
   match (l1, l2) with
   | [], [] -> 0
   | _ , [] -> 1
@@ -534,60 +570,56 @@ let rec cmp l1 l2  p =
   | (a1::l1, a2::l2) ->
     let c = p a1 a2 [@bs] in
     if c = 0 then
-      cmp l1 l2 p
+      cmpU l1 l2 p
     else c
       
-let rec eq l1 l2  p =
+let cmp l1 l2 f = cmpU l1 l2 (fun [@bs] x y -> f x y)    
+
+let rec eqU l1 l2  p =
   match (l1, l2) with
   | [], [] -> true
   | _ , [] 
   | [], _ -> false
   | (a1::l1, a2::l2) ->
     if p a1 a2 [@bs]  then
-      eq l1 l2 p
+      eqU l1 l2 p
     else false
+let eq l1 l2 f = eqU l1 l2 (fun [@bs] x y -> f x y)
 
-let rec some2 l1 l2 p =
+let rec some2U l1 l2 p =
   match (l1, l2) with
     [], _ | _, [] -> false
-  | (a1::l1, a2::l2) -> p a1 a2 [@bs] || some2 l1 l2 p 
+  | (a1::l1, a2::l2) -> p a1 a2 [@bs] || some2U l1 l2 p 
 
+let some2 l1 l2 p = some2U l1 l2 (fun[@bs] a b -> p a b)  
 
-let rec has xs x eq  = 
+let rec hasU xs x eq  = 
   match xs with 
     [] -> false
-  | a::l -> eq a x [@bs] || has l x eq 
+  | a::l -> eq a x [@bs] || hasU l x eq 
 
-let rec hasByReference xs x = 
-  match xs with 
-    [] -> false
-  | a::l -> a == x || hasByReference l x 
+let has xs x eq = hasU xs x (fun [@bs] a b -> eq a b)  
 
-let rec assoc  xs x eq = 
+
+let rec assocU  xs x eq = 
   match xs with 
   | [] -> None
   | (a,b)::l -> 
     if eq a x [@bs] then Some b 
-    else assoc l x eq 
+    else assocU l x eq 
 
-let rec assocByReference xs x = 
-  match xs with 
-    [] -> None
-  | (a,b)::l -> if a == x then Some b else assocByReference l x 
+let assoc xs x eq = assocU xs x (fun[@bs] a b -> eq  a b)    
 
-let rec hasAssoc xs x eq = 
+
+let rec hasAssocU xs x eq = 
   match xs with 
   | [] -> false
-  | (a, b) :: l -> eq a x [@bs] || hasAssoc l x eq 
+  | (a, b) :: l -> eq a x [@bs] || hasAssocU l x eq 
 
-let rec hasAssocByReference xs x  = 
-  match xs with 
-  | [] -> false
-  | (a, b) :: l -> a == x || hasAssocByReference l x 
-
+let hasAssoc xs x eq = hasAssocU xs x (fun[@bs] a b -> eq a b)  
 
 (* remove the first pair *)  
-let  removeAssoc xs x eq  = 
+let  removeAssocU xs x eq  = 
   match xs with 
   | [] -> []
   | (a, _ as pair) :: l ->
@@ -596,26 +628,20 @@ let  removeAssoc xs x eq  =
       let cell = mutableCell pair [] in 
       removeAssocAuxWithMap l x cell eq ;
       cell 
+      
+let removeAssoc xs x eq = removeAssocU xs x (fun [@bs] a b -> eq a b)
 
-let  removeAssocByReference xs x = 
-  match xs with 
-  | [] -> []
-  | (a, b as pair) :: l -> 
-    if a == x then l 
-    else 
-      let cell = mutableCell pair [] in 
-      removeAssocAuxByReference l x cell;  
-      cell 
 
-let rec getBy xs p = 
+let rec getByU xs p = 
   match xs with 
   | [] -> None
   | x :: l -> 
     if p x [@bs] then Some x
-    else getBy l p 
+    else getByU l p 
 
+let getBy xs p = getByU xs (fun[@bs] a -> p a)    
 
-let rec keep xs p  = 
+let rec keepU xs p  = 
   match xs with 
   | [] -> []
   | h::t -> 
@@ -626,10 +652,11 @@ let rec keep xs p  =
         cell 
       end
     else 
-      keep t p
+      keepU t p
         
+let keep xs p = keepU xs (fun[@bs] x -> p x)
 
-let rec keepMap xs p  = 
+let rec keepMapU xs p  = 
   match xs with 
   | [] -> []
   | h::t -> 
@@ -641,10 +668,11 @@ let rec keepMap xs p  =
         cell 
       end
     | None -> 
-      keepMap t p
+      keepMapU t p
 
+let keepMap xs p = keepMapU xs (fun [@bs] x -> p x)      
 
-let partition l p  =    
+let partitionU l p  =    
   match l with 
   | [] -> [],[]
   | h::t -> 
@@ -657,6 +685,7 @@ let partition l p  =
     else       
       unsafeTail nextX, nextY 
 
+let partition l p = partitionU l (fun [@bs] x -> p x)      
 
 let rec unzip xs = 
   match xs with 

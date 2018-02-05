@@ -34,7 +34,7 @@ let revRange i j =
 let () = 
   let v = (ofA (Array.append (range 100 1000) (revRange  400 1500))) in     
   b __LOC__ (v =~ (range 100 1500));
-  let l, r = N.partition v (fun[@bs] x -> x mod 3 = 0)  in 
+  let l, r = N.partition v (fun x -> x mod 3 = 0)  in 
   let nl, nr = 
     let l,r = ref N.empty, ref N.empty in 
     for i = 100 to 1500 do 
@@ -71,7 +71,7 @@ let () =
   let minv, maxv = N.minUndefined v, N.maxUndefined v in 
   let approx loc (x : int)  y = 
     b loc (Js.eqUndefined x y) in 
-  eq __LOC__ (N.reduce v 0 (fun [@bs] x y -> x + y) ) (A.reduce ss 0 (fun [@bs] x y -> x + y)  ) ;
+  eq __LOC__ (N.reduce v 0 (fun  x y -> x + y) ) (A.reduce ss 0 (+)  ) ;
   approx __LOC__ (-1) minv ;
   approx __LOC__ 222 maxv;
   let v = N.remove v 3 in 
@@ -97,12 +97,11 @@ let () =
  
 let ()  = 
   let count = 1_000_000 in 
-  let v = ((A.makeByAndShuffle count (fun [@bs] i -> i))) in 
+  let v = ((A.makeByAndShuffle count (fun i -> i))) in 
   let u = N.ofArray v in 
   b __LOC__ (N.checkInvariantInternal u );
   let firstHalf = A.slice v 0 2_000 in 
-  let xx = Bs.Array.reduce firstHalf u
-    (fun[@bs] acc x -> N.remove acc x ) in 
+  let xx = Bs.Array.reduce firstHalf u N.remove in 
   b __LOC__ (N.checkInvariantInternal u);
   b __LOC__ N.(eq (union (ofArray firstHalf) xx) u)
   
@@ -164,8 +163,8 @@ let () =
   let v1 = N.ofArray (I.randomRange 1 2_001) in 
   let v2 = N.ofArray (I.randomRange 3 2_002) in 
   let v3 = N.removeMany v2 [|2_002; 2_001|] in   
-  let us = A.map (I.randomRange 1_000 3_000) (fun [@bs] x -> N.has v x) in 
-  let counted = A.reduce us 0 (fun [@bs] acc x -> if x then acc + 1 else acc ) in 
+  let us = A.map (I.randomRange 1_000 3_000) (fun x -> N.has v x) in 
+  let counted = A.reduce us 0 (fun  acc x -> if x then acc + 1 else acc ) in 
   eq __LOC__ counted 1_001 ; 
   b __LOC__ (N.eq v v0) ; 
   b __LOC__ (N.cmp v v0 = 0);

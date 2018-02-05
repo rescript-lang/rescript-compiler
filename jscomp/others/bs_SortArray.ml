@@ -46,7 +46,7 @@ let rec sortedLengthAuxLess xs prec acc len lt =
       sortedLengthAuxLess xs v (acc + 1) len lt
     else acc   
     
-let strictlySortedLength xs lt = 
+let strictlySortedLengthU xs lt = 
   let len = A.length xs in 
   match len with 
   | 0 | 1 -> len 
@@ -59,7 +59,9 @@ let strictlySortedLength xs lt =
       - (sortedLengthAuxMore xs x1 2 len lt)
     else 1  
 
-
+let strictlySortedLength xs lt =
+  strictlySortedLengthU xs (fun[@bs] x y -> lt x y)
+    
 let rec isSortedAux a i cmp last_bound = 
   (* when [i = len - 1], it reaches the last element*)
   if i = last_bound then true 
@@ -69,12 +71,13 @@ let rec isSortedAux a i cmp last_bound =
   else false 
 
 
-let isSorted a cmp =
+let isSortedU a cmp =
   let len = A.length a in 
   if len = 0 then true
   else isSortedAux a 0 cmp (len - 1)
 
-
+let isSorted a cmp = isSortedU a (fun[@bs] x y -> cmp x y)
+    
 let cutoff = 5
 
 let merge src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
@@ -98,7 +101,7 @@ let merge src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   in 
   loop src1ofs (A.getUnsafe src src1ofs) src2ofs (A.getUnsafe src2 src2ofs) dstofs
 
-let union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+let unionU src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   let src1r = src1ofs + src1len in 
   let src2r = src2ofs + src2len in
   let rec loop i1 s1 i2 s2 d =
@@ -147,8 +150,11 @@ let union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
     src2ofs 
     (A.getUnsafe src2 src2ofs) dstofs
 
-
-let intersect src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+let union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+  unionU src src1ofs src1len src2 src2ofs src2len dst dstofs
+    (fun [@bs] x y -> cmp x y)
+    
+let intersectU src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   let src1r = src1ofs + src1len in 
   let src2r = src2ofs + src2len in
   let rec loop i1 s1 i2 s2 d =
@@ -184,7 +190,11 @@ let intersect src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
     src2ofs 
     (A.getUnsafe src2 src2ofs) dstofs    
 
-let diff src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+let intersect src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+  intersectU src src1ofs src1len src2 src2ofs src2len dst dstofs
+    (fun [@bs] x y -> cmp x y)
+    
+let diffU src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
   let src1r = src1ofs + src1len in 
   let src2r = src2ofs + src2len in
   let rec loop i1 s1 i2 s2 d =
@@ -223,6 +233,10 @@ let diff src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
     src2ofs 
     (A.getUnsafe src2 src2ofs) dstofs        
 
+let diff src src1ofs src1len src2 src2ofs src2len dst dstofs cmp =
+  diffU src src1ofs src1len src2 src2ofs src2len dst dstofs
+    (fun [@bs] x y -> cmp x y)
+    
 (* [<=] alone is not enough for stable sort *)
 let insertionSort src srcofs dst dstofs len cmp =
   for i = 0 to len - 1 do
@@ -249,7 +263,7 @@ let rec sortTo src srcofs dst dstofs len cmp =
 
 
 
-let stableSortInPlaceBy  a cmp =
+let stableSortInPlaceByU  a cmp =
   let l = A.length a in
   if l <= cutoff then insertionSort a 0 a 0 l cmp 
   else begin
@@ -261,8 +275,13 @@ let stableSortInPlaceBy  a cmp =
     merge a l2 l1 t 0 l2 a 0 cmp;
   end
 
-let stableSortBy a cmp = let b = A.copy a in stableSortInPlaceBy b cmp; b
-  
+let stableSortInPlaceBy  a cmp =
+    stableSortInPlaceByU a (fun[@bs] x y -> cmp x y)
+      
+let stableSortByU a cmp =
+  let b = A.copy a in stableSortInPlaceByU b cmp; b
+
+let stableSortBy a cmp = stableSortByU a (fun [@bs] x y -> cmp x y) 
 (* 
   [binarySearchAux arr lo hi key cmp]
   range [lo, hi]
@@ -285,7 +304,7 @@ let rec binarySearchAux arr lo hi key cmp =
     else - (hi + 1)
   else binarySearchAux arr mid hi key cmp 
 
-let binarySearchBy sorted key cmp : int =  
+let binarySearchByU sorted key cmp : int =  
   let len = A.length sorted in 
   if len = 0 then -1 
   else 
@@ -298,3 +317,6 @@ let binarySearchBy sorted key cmp : int =
       if c2 > 0 then - (len + 1)
       else binarySearchAux sorted 0 (len - 1) key cmp 
 
+
+let binarySearchBy sorted key cmp =
+  binarySearchByU sorted key (fun [@bs] x y -> cmp x y)
