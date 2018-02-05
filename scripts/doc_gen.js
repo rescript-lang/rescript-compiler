@@ -39,7 +39,9 @@ var intro = path.join(__dirname,'..','docs','api','intro.txt')
 // 
 var generator = `-g ${odoc_gendir}/generator.cmxs`
 // var generator = `-html`
-var prefix_flags = `ocamldoc.opt  ${generator}  -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
+var ocamldoc = `ocamldoc.opt`
+// var ocamldoc = path.join(__dirname,'..','vendor','ocaml','ocamldoc','ocamldoc.opt')
+var prefix_flags = `${ocamldoc}  ${generator}  -w -40 -nostdlib -I ${stdlib_dir} -I ${others_dir} -I ${runtime_dir} -charset utf-8  -intro ${intro} -sort -ppx ${bsppx}  -d ${api_doc_dir}`
 
 // -html it is weird
 // It is weird, -html will unload the plugin
