@@ -35,7 +35,7 @@ var others_files =
 var odoc_gendir = path.join(__dirname,'..', 'odoc_gen')
 var bsppx = path.join(__dirname,'..','lib','bsppx.exe')
 var api_doc_dir = path.join(__dirname,'..','docs','api') 
-var intro = path.join(__dirname,'..','docs','api','intro.txt')
+var intro = path.join(__dirname,'..','jscomp','others','intro.txt')
 // 
 var generator = `-g ${odoc_gendir}/generator.cmxs`
 // var generator = `-html`
