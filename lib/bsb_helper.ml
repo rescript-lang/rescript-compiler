@@ -4615,6 +4615,7 @@ let namespace_of_package_name (s : string) : string =
         ->
         add capital ch ; 
         aux false (off + 1) len 
+      | '/'
       | '-' -> 
         aux true (off + 1) len 
       | _ -> aux capital (off+1) len

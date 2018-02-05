@@ -299,12 +299,19 @@ let suites =
       =~ "BsJson"
     end;
     __LOC__ >:: begin fun _ ->
+      let (=~) = OUnit.assert_equal ~printer:(fun x -> x) in
       Ext_namespace.namespace_of_package_name
         "reason-react"
       =~ "ReasonReact";
       Ext_namespace.namespace_of_package_name
         "reason"
-      =~ "Reason"
+      =~ "Reason";
+      Ext_namespace.namespace_of_package_name 
+        "@aa/bb"
+        =~"AaBb";
+      Ext_namespace.namespace_of_package_name 
+        "@A/bb"
+        =~"ABb"        
     end;
     __LOC__ >:: begin fun _ -> 
       Ext_namespace.js_name_of_basename false "a-b"
