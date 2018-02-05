@@ -27,7 +27,7 @@ install an OCaml compiler from scratch, and retry again
 opam update
 opam switch 4.02.3+buckle-master
 opam switch reinstall 4.02.3+buckle-master # do this if you get errors even from a clean compilation
-opam install camlp4
+opam install camlp4 cppo
 eval `opam config env`
 ```
 
@@ -41,7 +41,7 @@ make install
 
 #### build all of Bucklescript
 ```sh
-cd ../../jscomp
+cd ../../
 make world
 ```
 
@@ -147,7 +147,7 @@ opam switch 4.02.3+buckle-master
 eval `opam config env`
 opam install camlp4 ocp-ocamlres
 (cd vendor/ocaml && make world)
-(cd jscomp && node repl.js)
+(cd jscomp && BS_RELEASE_BUILD=true BS_PLAYGROUND=../../bucklescript-playground node repl.js)
 ```
 
 # Sub directories
