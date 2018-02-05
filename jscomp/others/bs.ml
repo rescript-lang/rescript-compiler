@@ -23,7 +23,92 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** A stdlib shipped with BuckleScript *)
+(** A stdlib shipped with BuckleScript 
+
+    This stdlib is still in  beta status, but we encourage you to try it out and 
+    provide feedback.
+
+    {b Motivation }
+
+    The motivation of creating such library is to provide BuckleScript users a 
+    better end-to-end user experience, since the original OCaml stdlib was not 
+    writte with JS platform in mind, below are a list of areas this lib aims to 
+    improve: {ol
+    {- 1. Consistency in name convention: camlCase, and arguments order}
+    {- 2. Exception thrown functions are all suffixed with {i Exn}, e.g, {i getExn}}
+    {- 3. Beter peformance and smaller code size running on JS platform}
+    }
+
+    {b Name Convention}
+
+    For higher order functions, it will be suffixed {b U} if it takes uncurried
+    callback.
+
+    {[
+      val forEach : 'a t -> ('a -> unit) -> unit
+      val forEachU : 'a t -> ('a -> unit [\@bs]) -> unit
+    ]}
+
+    In general, uncurried version will be faster, but it is less familiar to
+    people who have a background in functional programming.
+
+   {b A special encoding for collection safety}
+
+   When we create a collection library for a custom data type, take {i Set} for
+   example, suppose its element type is a pair of ints, 
+    it needs a custom {i compare} function. However, the {i Set} could not
+    just be typed as [ Set.t (int * int) ],
+    its customized {i compare} function needs to be
+    manifested in the signature, otherwise, if the user create another
+    customized {i compare} function, and the two collection would mix which
+    would result in runtime error.
+
+    The original OCaml stdlib solved the problem using {i functor} which is a big
+    closure in runtime; it makes dead code elimination much harder.
+    We introduced a phantom type to solve the problem
+
+    {[
+      type t = int * int 
+      module I0 =
+        (val Bs.Dict.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+             match compare a0 b0 with
+             | 0 -> compare a1 b1
+             | c -> c 
+           ))
+    let s0 = Bs.Set.make (module I0)
+    module I1 =
+      (val Bs.Dict.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+           match compare a1 b1 with
+           | 0 -> compare a0 b0
+           | c -> c 
+         ))
+    let s1 = Bs.Set.make (module I1)
+    ]}
+
+    Here the compiler would infer [s0] and [s1] having different type so that
+    it would not mix.
+
+    {[
+      val s0 : Bs.Set.t ((int * int), I0.id)
+      val s1 : Bs.Set.t ((int * int), I1.id)
+    ]}
+
+
+    {b Collection Hierachy}
+
+    In general, we provide a generic collection module, but also create specialized
+    modules for commonly used data type, take {i Bs.Set} for example
+
+    {[
+      Bs.Set
+      Bs.Set.Int
+      Bs.Set.String
+    ]}
+
+    The specialized module {i Bs.Set.Int}, {i Bs.Set.String} is in general more
+    efficient
+    
+*)
 
 (** {!Bs.Dict}
 
