@@ -22,16 +22,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** First in last out stack.
+
+    This module implements stacks, with in-place modification.
+*)
 
 type 'a t
 
 
-val create : unit -> 'a t
+val make: unit -> 'a t
+(** @return a new stack, initially empty. *)
 
-val clear : 'a t -> unit
-
+val clear: 'a t -> unit
+(** Discard all elements from the stack. *)
 val copy : 'a t -> 'a t
-(** [copy x] O(1) *)
+(** [copy x] O(1) operation, return a new stack  *)
 
 val push : 'a t -> 'a -> unit
 
@@ -54,7 +59,8 @@ val forEach : 'a t -> ('a -> unit ) -> unit
 val dynamicPopIterU : 'a t -> ('a ->  unit [@bs]) -> unit
 val dynamicPopIter : 'a t -> ('a ->  unit ) -> unit   
 (** [dynamicPopIter s f ]
-  apply [f] to each element of [s]. The item is poped 
-  before applying [f], [s] will be empty  after this opeartion
+    apply [f] to each element of [s]. The item is poped 
+    before applying [f], [s] will be empty  after this opeartion.
+    This function is useful for worklist algorithm
 *)
 

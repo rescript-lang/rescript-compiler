@@ -3,6 +3,7 @@
 var Mt = require("./mt.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_Range = require("../../lib/js/bs_Range.js");
+var Caml_obj = require("../../lib/js/caml_obj.js");
 var Bs_SortArray = require("../../lib/js/bs_SortArray.js");
 var Array_data_util = require("./array_data_util.js");
 var Bs_SortArrayInt = require("../../lib/js/bs_SortArrayInt.js");
@@ -270,15 +271,12 @@ eq("File \"bs_sort_test.ml\", line 102, characters 5-12", Bs_SortArray.stableSor
       ]
     ]);
 
-eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Bs_SortArray.binarySearchBy(/* array */[
+eq("File \"bs_sort_test.ml\", line 111, characters 5-12", Bs_SortArray.binarySearchBy(/* int array */[
           1,
-          2,
           3,
-          4,
-          33,
-          35,
-          36
-        ], 33, cmp), 4);
+          5,
+          7
+        ], 4, Caml_obj.caml_compare) ^ -1, 2);
 
 eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Bs_SortArray.binarySearchBy(/* array */[
           1,
@@ -288,7 +286,7 @@ eq("File \"bs_sort_test.ml\", line 112, characters 5-12", Bs_SortArray.binarySea
           33,
           35,
           36
-        ], 1, cmp), 0);
+        ], 33, cmp), 4);
 
 eq("File \"bs_sort_test.ml\", line 113, characters 5-12", Bs_SortArray.binarySearchBy(/* array */[
           1,
@@ -298,7 +296,7 @@ eq("File \"bs_sort_test.ml\", line 113, characters 5-12", Bs_SortArray.binarySea
           33,
           35,
           36
-        ], 2, cmp), 1);
+        ], 1, cmp), 0);
 
 eq("File \"bs_sort_test.ml\", line 114, characters 5-12", Bs_SortArray.binarySearchBy(/* array */[
           1,
@@ -308,9 +306,19 @@ eq("File \"bs_sort_test.ml\", line 114, characters 5-12", Bs_SortArray.binarySea
           33,
           35,
           36
-        ], 3, cmp), 2);
+        ], 2, cmp), 1);
 
 eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_SortArray.binarySearchBy(/* array */[
+          1,
+          2,
+          3,
+          4,
+          33,
+          35,
+          36
+        ], 3, cmp), 2);
+
+eq("File \"bs_sort_test.ml\", line 116, characters 5-12", Bs_SortArray.binarySearchBy(/* array */[
           1,
           2,
           3,
@@ -322,7 +330,7 @@ eq("File \"bs_sort_test.ml\", line 115, characters 5-12", Bs_SortArray.binarySea
 
 var aa = Array_data_util.range(0, 1000);
 
-b("File \"bs_sort_test.ml\", line 117, characters 4-11", Bs_Range.every(0, 1000, (function (i) {
+b("File \"bs_sort_test.ml\", line 118, characters 4-11", Bs_Range.every(0, 1000, (function (i) {
             return +(Bs_SortArray.binarySearchBy(aa, i, cmp) === i);
           })));
 
@@ -330,15 +338,15 @@ var cc = Bs_Array.map(Array_data_util.range(0, 2000), (function (x) {
         return (x << 1);
       }));
 
-eq("File \"bs_sort_test.ml\", line 122, characters 5-12", Bs_SortArray.binarySearchBy(cc, 5000, cmp) ^ -1, 2001);
+eq("File \"bs_sort_test.ml\", line 123, characters 5-12", Bs_SortArray.binarySearchBy(cc, 5000, cmp) ^ -1, 2001);
 
-eq("File \"bs_sort_test.ml\", line 123, characters 5-12", Bs_SortArray.binarySearchBy(cc, -1, cmp) ^ -1, 0);
+eq("File \"bs_sort_test.ml\", line 124, characters 5-12", Bs_SortArray.binarySearchBy(cc, -1, cmp) ^ -1, 0);
 
-eq("File \"bs_sort_test.ml\", line 124, characters 5-12", Bs_SortArray.binarySearchBy(cc, 0, cmp), 0);
+eq("File \"bs_sort_test.ml\", line 125, characters 5-12", Bs_SortArray.binarySearchBy(cc, 0, cmp), 0);
 
-eq("File \"bs_sort_test.ml\", line 126, characters 5-12", Bs_SortArray.binarySearchBy(cc, 1, cmp) ^ -1, 1);
+eq("File \"bs_sort_test.ml\", line 127, characters 5-12", Bs_SortArray.binarySearchBy(cc, 1, cmp) ^ -1, 1);
 
-b("File \"bs_sort_test.ml\", line 127, characters 4-11", Bs_Range.every(0, 1999, (function (i) {
+b("File \"bs_sort_test.ml\", line 128, characters 4-11", Bs_Range.every(0, 1999, (function (i) {
             return +((Bs_SortArray.binarySearchBy(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
           })));
 
@@ -346,27 +354,27 @@ function lt(x, y) {
   return +(x < y);
 }
 
-eq("File \"bs_sort_test.ml\", line 134, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[], lt), 0);
+eq("File \"bs_sort_test.ml\", line 135, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[], lt), 0);
 
-eq("File \"bs_sort_test.ml\", line 135, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[1], lt), 1);
+eq("File \"bs_sort_test.ml\", line 136, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[1], lt), 1);
 
-eq("File \"bs_sort_test.ml\", line 136, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[
+eq("File \"bs_sort_test.ml\", line 137, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[
           1,
           1
         ], lt), 1);
 
-eq("File \"bs_sort_test.ml\", line 137, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[
+eq("File \"bs_sort_test.ml\", line 138, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[
           1,
           1,
           2
         ], lt), 1);
 
-eq("File \"bs_sort_test.ml\", line 138, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[
+eq("File \"bs_sort_test.ml\", line 139, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[
           1,
           2
         ], lt), 2);
 
-eq("File \"bs_sort_test.ml\", line 139, characters 5-12", Bs_SortArray.strictlySortedLength(/* array */[
+eq("File \"bs_sort_test.ml\", line 140, characters 5-12", Bs_SortArray.strictlySortedLength(/* array */[
           1,
           2,
           3,
@@ -374,7 +382,7 @@ eq("File \"bs_sort_test.ml\", line 139, characters 5-12", Bs_SortArray.strictlyS
           3
         ], lt), 4);
 
-eq("File \"bs_sort_test.ml\", line 140, characters 5-12", Bs_SortArray.strictlySortedLength(/* array */[
+eq("File \"bs_sort_test.ml\", line 141, characters 5-12", Bs_SortArray.strictlySortedLength(/* array */[
           4,
           4,
           3,
@@ -382,14 +390,14 @@ eq("File \"bs_sort_test.ml\", line 140, characters 5-12", Bs_SortArray.strictlyS
           1
         ], lt), 1);
 
-eq("File \"bs_sort_test.ml\", line 141, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[
+eq("File \"bs_sort_test.ml\", line 142, characters 5-12", Bs_SortArray.strictlySortedLength(/* int array */[
           4,
           3,
           2,
           1
         ], lt), -4);
 
-eq("File \"bs_sort_test.ml\", line 142, characters 5-12", Bs_SortArray.strictlySortedLength(/* array */[
+eq("File \"bs_sort_test.ml\", line 143, characters 5-12", Bs_SortArray.strictlySortedLength(/* array */[
           4,
           3,
           2,

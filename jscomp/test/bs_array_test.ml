@@ -63,6 +63,11 @@ let () =
   neq __LOC__ u  v (* unlikely*);
   let sum x = A.reduce x 0 add in 
   eq __LOC__ ( sum u) (sum v)
+
+let () = 
+  eq __LOC__ (A.reduceReverse [||] 100 (-)) 100;
+  eq __LOC__ (A.reduceReverse [|1;2|] 100 (-)) 97;
+  eq __LOC__ (A.reduceReverse [|1;2;3;4|] 100 (-) ) 90
 let addone = fun [@bs] x -> x + 1
 
 let makeMatrixExn sx sy init =

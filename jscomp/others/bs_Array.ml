@@ -25,7 +25,7 @@ let getExn arr i =
     [%assert i >= 0 && i < length arr] ;
     getUnsafe arr i
 let set arr i v =
-  if i >= 0 && i < length arr then setUnsafe arr i v
+  if i >= 0 && i < length arr then (setUnsafe arr i v; true) else false
 
 let setExn arr i v = 
   [%assert i >= 0 && i < length arr];  

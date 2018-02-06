@@ -106,7 +106,12 @@
     ]}
 
     The specialized module {i Bs.Set.Int}, {i Bs.Set.String} is in general more
-    efficient
+    efficient.
+
+    Currently, both {i Bs_Set} and {i Bs.Set} are accessible to users for some
+    technical rasons,
+    we {b strongly recommend} users stick to qualified import, {i Bs.Sort}, we may hide
+    the internal, {i i.e}, {i Bs_Set} in the future
     
 *)
 
@@ -122,8 +127,8 @@
 module Dict = Bs_Dict
 
 (** {!Bs.Array}
-    
-    Utililites for Array functions 
+
+    {b mutable array}: Utililites functions
 *)
 module Array = Bs_Array
 
@@ -162,7 +167,7 @@ module Range = Bs_Range
 
 (** {!Bs.Set}
 
-    The toplevel provides generic immutable set operations.
+    The toplevel provides generic {b immutable} set operations.
 
     It also has three specialized inner modules
     {!Bs.Set.Int} and {!Bs.Set.String}
@@ -175,7 +180,7 @@ module Set = Bs_Set
 
 (** {!Bs.Map},
 
-    The toplevel provides generic immutable map operations.
+    The toplevel provides generic {b immutable} map operations.
     
     It also has three specialized inner modules
     {!Bs.Map.Int} and {!Bs.Map.String}
@@ -187,7 +192,7 @@ module Map = Bs_Map
 
 (** {!Bs.MutableSet}
     
-    The toplevel provides generic mutable set operations.
+    The toplevel provides generic {b mutable} set operations.
     
     It also has two specialized inner modules
     {!Bs.MutableSet.Int} and {!Bs.MutableSet.String}
@@ -196,7 +201,7 @@ module MutableSet = Bs_MutableSet
 
 (** {!Bs.MutableMap}
     
-    The toplevel provides generic mutable map operations.
+    The toplevel provides generic {b mutable} map operations.
     
     It also has two specialized inner modules
     {!Bs.MutableMap.Int} and {!Bs.MutableMap.String}
@@ -207,7 +212,7 @@ module MutableMap = Bs_MutableMap
 
 (** {!Bs.HashSet}
     
-    The toplevel provides generic mutable hash set operations.
+    The toplevel provides generic {b mutable} hash set operations.
     
     It also has two specialized inner modules
     {!Bs.HashSet.Int} and {!Bs.HashSet.String}
@@ -217,7 +222,7 @@ module HashSet = Bs_HashSet
 
 (** {!Bs.HashMap}
     
-    The toplevel provides generic mutable hash map operations.
+    The toplevel provides generic {b mutable} hash map operations.
     
     It also has two specialized inner modules
     {!Bs.HashMap.Int} and {!Bs.HashMap.String}

@@ -15,7 +15,7 @@ module Q = Bs.MutableQueue
 
 let inOrder (v : t) = 
   let current =  ref v in 
-  let s : node S.t = S.create () in 
+  let s : node S.t = S.make () in 
   let q : int Q.t = Q.make () in 
   while !current != Js.undefined do 
     let v = Js.Undefined.getUnsafe !current  in 
@@ -37,7 +37,7 @@ let inOrder (v : t) =
 
 let inOrder3 (v : t) = 
   let current =  ref v in 
-  let s : node S.t = S.create () in 
+  let s : node S.t = S.make () in 
   let q : int Q.t = Q.make () in 
   while !current != Js.undefined do 
     let v = Js.Undefined.getUnsafe !current  in 
@@ -58,7 +58,7 @@ let inOrder3 (v : t) =
 let inOrder2 (v : t) =   
   let todo = ref true in 
   let cursor = ref v in 
-  let s : node S.t = S.create () in 
+  let s : node S.t = S.make () in 
   let q : int Q.t = Q.make () in 
   while !todo do 
     if !cursor != Js.undefined then 
