@@ -787,7 +787,153 @@ id$1("File \"bs_array_test.ml\", line 200, characters 5-12", /* int array */[
       4
     ]);
 
-eq("File \"bs_array_test.ml\", line 204, characters 5-12", Bs_Array.concat(/* int array */[], /* int array */[
+function every2(xs, ys) {
+  var partial_arg = Bs_List.toArray(ys);
+  var partial_arg$1 = Bs_List.toArray(xs);
+  return (function (param) {
+      return Bs_Array.every2(partial_arg$1, partial_arg, param);
+    });
+}
+
+function some2(xs, ys) {
+  var partial_arg = Bs_List.toArray(ys);
+  var partial_arg$1 = Bs_List.toArray(xs);
+  return (function (param) {
+      return Bs_Array.some2(partial_arg$1, partial_arg, param);
+    });
+}
+
+eq("File \"bs_array_test.ml\", line 210, characters 5-12", every2(/* [] */0, /* :: */[
+            1,
+            /* [] */0
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_array_test.ml\", line 211, characters 5-12", every2(/* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ], /* :: */[
+            1,
+            /* [] */0
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_array_test.ml\", line 212, characters 5-12", every2(/* :: */[
+            2,
+            /* [] */0
+          ], /* :: */[
+            1,
+            /* [] */0
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_array_test.ml\", line 213, characters 5-12", every2(/* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ], /* :: */[
+            1,
+            /* :: */[
+              4,
+              /* [] */0
+            ]
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* false */0);
+
+eq("File \"bs_array_test.ml\", line 214, characters 5-12", every2(/* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ], /* :: */[
+            1,
+            /* :: */[
+              0,
+              /* [] */0
+            ]
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_array_test.ml\", line 215, characters 5-12", some2(/* [] */0, /* :: */[
+            1,
+            /* [] */0
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* false */0);
+
+eq("File \"bs_array_test.ml\", line 216, characters 5-12", some2(/* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ], /* :: */[
+            1,
+            /* [] */0
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_array_test.ml\", line 217, characters 5-12", some2(/* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ], /* :: */[
+            1,
+            /* :: */[
+              4,
+              /* [] */0
+            ]
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_array_test.ml\", line 218, characters 5-12", some2(/* :: */[
+            0,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ], /* :: */[
+            1,
+            /* :: */[
+              4,
+              /* [] */0
+            ]
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* false */0);
+
+eq("File \"bs_array_test.ml\", line 219, characters 5-12", some2(/* :: */[
+            0,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ], /* :: */[
+            3,
+            /* :: */[
+              2,
+              /* [] */0
+            ]
+          ])((function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_array_test.ml\", line 224, characters 5-12", Bs_Array.concat(/* int array */[], /* int array */[
           1,
           2,
           3
@@ -797,9 +943,9 @@ eq("File \"bs_array_test.ml\", line 204, characters 5-12", Bs_Array.concat(/* in
       3
     ]);
 
-eq("File \"bs_array_test.ml\", line 205, characters 5-12", Bs_Array.concat(/* array */[], /* array */[]), /* array */[]);
+eq("File \"bs_array_test.ml\", line 225, characters 5-12", Bs_Array.concat(/* array */[], /* array */[]), /* array */[]);
 
-eq("File \"bs_array_test.ml\", line 206, characters 5-12", Bs_Array.concat(/* int array */[
+eq("File \"bs_array_test.ml\", line 226, characters 5-12", Bs_Array.concat(/* int array */[
           3,
           2
         ], /* int array */[
@@ -814,7 +960,7 @@ eq("File \"bs_array_test.ml\", line 206, characters 5-12", Bs_Array.concat(/* in
       3
     ]);
 
-eq("File \"bs_array_test.ml\", line 207, characters 5-12", Bs_Array.concatMany(/* array */[
+eq("File \"bs_array_test.ml\", line 227, characters 5-12", Bs_Array.concatMany(/* array */[
           /* int array */[
             3,
             2
@@ -832,7 +978,7 @@ eq("File \"bs_array_test.ml\", line 207, characters 5-12", Bs_Array.concatMany(/
       3
     ]);
 
-eq("File \"bs_array_test.ml\", line 208, characters 5-12", Bs_Array.concatMany(/* array */[
+eq("File \"bs_array_test.ml\", line 228, characters 5-12", Bs_Array.concatMany(/* array */[
           /* int array */[
             3,
             2
@@ -853,7 +999,7 @@ eq("File \"bs_array_test.ml\", line 208, characters 5-12", Bs_Array.concatMany(/
       0
     ]);
 
-eq("File \"bs_array_test.ml\", line 209, characters 5-12", Bs_Array.concatMany(/* array */[
+eq("File \"bs_array_test.ml\", line 229, characters 5-12", Bs_Array.concatMany(/* array */[
           /* int array */[],
           /* int array */[
             3,
@@ -875,12 +1021,12 @@ eq("File \"bs_array_test.ml\", line 209, characters 5-12", Bs_Array.concatMany(/
       0
     ]);
 
-eq("File \"bs_array_test.ml\", line 210, characters 5-12", Bs_Array.concatMany(/* array */[
+eq("File \"bs_array_test.ml\", line 230, characters 5-12", Bs_Array.concatMany(/* array */[
           /* array */[],
           /* array */[]
         ]), /* array */[]);
 
-Mt.from_pair_suites("File \"bs_array_test.ml\", line 212, characters 23-30", suites[0]);
+Mt.from_pair_suites("File \"bs_array_test.ml\", line 232, characters 23-30", suites[0]);
 
 var A = 0;
 

@@ -241,6 +241,12 @@ val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a ) ->  'a
       reduceReverse [|1;2;3;4|] 100 (-) = 90 
     ]}
 *)
+
+val someU: 'a array -> ('a -> bool [@bs]) -> bool
+val some: 'a array -> ('a -> bool) -> bool
+(** [some xs p]
+    @return true if one of element satifies [p]
+*)
   
 val everyU: 'a array -> ('a -> bool [@bs]) -> bool
 val every: 'a array -> ('a -> bool ) -> bool
@@ -250,11 +256,26 @@ val every: 'a array -> ('a -> bool ) -> bool
   
 val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
-(** [every2 a b p] 
-    - return false when [length a <> length b] 
-    - return true when every pair is true [f ai bi]
+(** [every2 xs ys p] only tests the length of shorter
+
+    @example {[
+      every2 [|1;2;3|] [|0;1|] (>) = true;;
+      (every2 [||] [|1|] (fun   x y -> x > y)) = true;;
+      (every2 [|2;3|] [|1|] (fun   x y -> x > y)) = true;; 
+    ]}
 *)
 
+val some2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
+(** [some2 xs ys p] only tests the length of shorter
+
+    @example {[
+      some2 [|0;2|] [|1;0;3|] (>) = true ;;
+      (some2 [||] [|1|] (fun   x y -> x > y)) =  false;;
+      (some2 [|2;3|] [|1;4|] (fun   x y -> x > y)) = true;;
+    ]}
+*)
+  
 val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
 val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
 (** [cmp a b]

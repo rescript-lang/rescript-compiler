@@ -201,6 +201,26 @@ let ()  =
 ;;    
 
 let () = 
+  let module N = struct 
+    let every2 xs ys = 
+      A.every2 (L.toArray xs ) (L.toArray ys)
+    let some2 xs ys =   
+      A.some2 (L.toArray xs) (L.toArray ys)
+  end in 
+  eq __LOC__ (N.every2 [] [1] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.every2 [2;3] [1] (fun   x y -> x > y)) true;    
+  eq __LOC__ (N.every2 [2] [1] (fun   x y -> x > y)) true;
+  eq __LOC__ (N.every2 [2;3] [1;4] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.every2 [2;3] [1;0] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.some2 [] [1] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.some2 [2;3] [1] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.some2 [2;3] [1;4] (fun   x y -> x > y)) true;
+  eq __LOC__ (N.some2 [0;3] [1;4] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.some2 [0;3] [3;2] (fun   x y -> x > y)) true
+
+
+
+let () = 
   eq __LOC__ (A.concat [||] [|1;2;3|]) [|1;2;3|];
   eq __LOC__ (A.concat [||] [||]) [||];
   eq __LOC__ (A.concat [|3;2|] [|1;2;3|]) [|3;2;1;2;3|];

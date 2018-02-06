@@ -1437,14 +1437,53 @@ eq("File \"bs_list_test.ml\", line 239, characters 5-12", Bs_List.some(/* :: */[
 
 eq("File \"bs_list_test.ml\", line 240, characters 5-12", Bs_List.some(/* [] */0, mod2), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 241, characters 5-12", Bs_List.every2(/* [] */0, /* :: */[
+eq("File \"bs_list_test.ml\", line 241, characters 5-12", Bs_List.has(/* :: */[
+          1,
+          /* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ]
+        ], "2", (function (x, s) {
+            return +("" + x === s);
+          })), /* true */1);
+
+eq("File \"bs_list_test.ml\", line 242, characters 5-12", Bs_List.has(/* :: */[
+          1,
+          /* :: */[
+            2,
+            /* :: */[
+              3,
+              /* [] */0
+            ]
+          ]
+        ], "0", (function (x, s) {
+            return +("" + x === s);
+          })), /* false */0);
+
+eq("File \"bs_list_test.ml\", line 245, characters 5-12", Bs_List.every2(/* [] */0, /* :: */[
           1,
           /* [] */0
         ], (function (x, y) {
             return +(x > y);
           })), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 242, characters 5-12", Bs_List.every2(/* :: */[
+eq("File \"bs_list_test.ml\", line 246, characters 5-12", Bs_List.every2(/* :: */[
+          2,
+          /* :: */[
+            3,
+            /* [] */0
+          ]
+        ], /* :: */[
+          1,
+          /* [] */0
+        ], (function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_list_test.ml\", line 247, characters 5-12", Bs_List.every2(/* :: */[
           2,
           /* [] */0
         ], /* :: */[
@@ -1454,7 +1493,7 @@ eq("File \"bs_list_test.ml\", line 242, characters 5-12", Bs_List.every2(/* :: *
             return +(x > y);
           })), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 243, characters 5-12", Bs_List.every2(/* :: */[
+eq("File \"bs_list_test.ml\", line 248, characters 5-12", Bs_List.every2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1470,14 +1509,43 @@ eq("File \"bs_list_test.ml\", line 243, characters 5-12", Bs_List.every2(/* :: *
             return +(x > y);
           })), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 244, characters 5-12", Bs_List.some2(/* [] */0, /* :: */[
+eq("File \"bs_list_test.ml\", line 249, characters 5-12", Bs_List.every2(/* :: */[
+          2,
+          /* :: */[
+            3,
+            /* [] */0
+          ]
+        ], /* :: */[
+          1,
+          /* :: */[
+            0,
+            /* [] */0
+          ]
+        ], (function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_list_test.ml\", line 250, characters 5-12", Bs_List.some2(/* [] */0, /* :: */[
           1,
           /* [] */0
         ], (function (x, y) {
             return +(x > y);
           })), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 245, characters 5-12", Bs_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 251, characters 5-12", Bs_List.some2(/* :: */[
+          2,
+          /* :: */[
+            3,
+            /* [] */0
+          ]
+        ], /* :: */[
+          1,
+          /* [] */0
+        ], (function (x, y) {
+            return +(x > y);
+          })), /* true */1);
+
+eq("File \"bs_list_test.ml\", line 252, characters 5-12", Bs_List.some2(/* :: */[
           2,
           /* :: */[
             3,
@@ -1493,7 +1561,7 @@ eq("File \"bs_list_test.ml\", line 245, characters 5-12", Bs_List.some2(/* :: */
             return +(x > y);
           })), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 246, characters 5-12", Bs_List.some2(/* :: */[
+eq("File \"bs_list_test.ml\", line 253, characters 5-12", Bs_List.some2(/* :: */[
           0,
           /* :: */[
             3,
@@ -1509,34 +1577,24 @@ eq("File \"bs_list_test.ml\", line 246, characters 5-12", Bs_List.some2(/* :: */
             return +(x > y);
           })), /* false */0);
 
-eq("File \"bs_list_test.ml\", line 247, characters 5-12", Bs_List.has(/* :: */[
-          1,
+eq("File \"bs_list_test.ml\", line 254, characters 5-12", Bs_List.some2(/* :: */[
+          0,
+          /* :: */[
+            3,
+            /* [] */0
+          ]
+        ], /* :: */[
+          3,
           /* :: */[
             2,
-            /* :: */[
-              3,
-              /* [] */0
-            ]
+            /* [] */0
           ]
-        ], "2", (function (x, s) {
-            return +("" + x === s);
+        ], (function (x, y) {
+            return +(x > y);
           })), /* true */1);
 
-eq("File \"bs_list_test.ml\", line 248, characters 5-12", Bs_List.has(/* :: */[
-          1,
-          /* :: */[
-            2,
-            /* :: */[
-              3,
-              /* [] */0
-            ]
-          ]
-        ], "0", (function (x, s) {
-            return +("" + x === s);
-          })), /* false */0);
-
 function makeTest(n) {
-  return eq("File \"bs_list_test.ml\", line 251, characters 5-12", Bs_List.make(n, 3), Bs_List.makeBy(n, (function () {
+  return eq("File \"bs_list_test.ml\", line 257, characters 5-12", Bs_List.make(n, 3), Bs_List.makeBy(n, (function () {
                     return 3;
                   })));
 }
@@ -1549,7 +1607,7 @@ makeTest(2);
 
 makeTest(3);
 
-b("File \"bs_list_test.ml\", line 260, characters 4-11", 1 - Bs_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 266, characters 4-11", 1 - Bs_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -1568,7 +1626,7 @@ b("File \"bs_list_test.ml\", line 260, characters 4-11", 1 - Bs_List.eq(/* :: */
             return +(x === y);
           })));
 
-b("File \"bs_list_test.ml\", line 261, characters 4-11", Bs_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 267, characters 4-11", Bs_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -1590,7 +1648,7 @@ b("File \"bs_list_test.ml\", line 261, characters 4-11", Bs_List.eq(/* :: */[
             return +(x === y);
           })));
 
-b("File \"bs_list_test.ml\", line 262, characters 4-11", 1 - Bs_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 268, characters 4-11", 1 - Bs_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -1624,7 +1682,7 @@ var u1 = Bs_List.keepMap(u0, (function (x) {
         }
       }));
 
-eq("File \"bs_list_test.ml\", line 266, characters 5-12", u1, /* :: */[
+eq("File \"bs_list_test.ml\", line 272, characters 5-12", u1, /* :: */[
       1,
       /* :: */[
         8,

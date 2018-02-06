@@ -228,16 +228,42 @@ val reduceReverse2:
    ]}
 *)
 
-val everyU: 'a t -> ('a -> bool [@bs]) -> bool
-val every: 'a t -> ('a -> bool) -> bool
+val everyU: 'a t -> ('a -> bool [@bs]) ->  bool
+val every: 'a t -> ('a -> bool ) ->  bool
+(** [every ls p]
 
+    @example {[
+      every [] (fun x -> x mod 2 = 0) = true;;
+      every [2;4] (fun x -> x mod 2 = 0 ) true;;
+    ]}
+*)
 val someU: 'a t -> ('a -> bool [@bs]) -> bool
-val some: 'a t -> ('a -> bool) -> bool
+val some: 'a t -> ('a -> bool ) -> bool
+(** [some ls p]
+
+    @example {[
+      some [] (fun x -> x mod 2 = 0) = false ;;
+      some [1;2] (fun x -> x mod 2 = 0) = true;;)
+    ]}
+*)
 
 val every2U: 'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
-val every2: 'a t -> 'b t -> ('a -> 'b -> bool) -> bool
+val every2: 'a t -> 'b t -> ('a -> 'b -> bool ) -> bool
+(** [every2 xs ys p] stop with the shorter list
+    @example {[
+      (every2 [] [1] (fun   x y -> x > y)) = true;;
+      (every2 [2;3] [1] (fun   x y -> x > y)) = true;;    
+    ]}
+*)
 
-
+val some2U:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
+val some2:  'a t -> 'b t -> ('a -> 'b -> bool) -> bool
+(** [some2 xs ys p]
+    @example {[
+      (some2 [] [1] (fun   x y -> x > y)) =  false;;
+      (some2 [2;3] [1;4] (fun   x y -> x > y)) = true;;
+    ]}
+*)
 val cmpU: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 val cmp: 'a t -> 'a t -> ('a -> 'a -> int) -> int
 (**
@@ -261,8 +287,6 @@ val eq: 'a t -> 'a t -> ('a -> 'a -> bool) -> bool
     ]}
 *)  
 
-val some2U:  'a t -> 'b t -> ('a -> 'b -> bool [@bs]) -> bool
-val some2:  'a t -> 'b t -> ('a -> 'b -> bool) -> bool
 
 val hasU:  'a t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
 val has:  'a t -> 'b -> ('a -> 'b -> bool) -> bool
@@ -271,15 +295,27 @@ val has:  'a t -> 'b -> ('a -> 'b -> bool) -> bool
 val getByU: 'a t -> ('a -> bool [@bs]) -> 'a option
 val getBy: 'a t -> ('a -> bool) -> 'a option
 
-val keepU: 'a t -> ('a -> bool [@bs]) -> 'a t
-val keep: 'a t -> ('a -> bool) -> 'a t
+val keepU: 'a t ->  ('a -> bool [@bs]) -> 'a t
+val keep: 'a t ->  ('a -> bool) -> 'a t
+(** [keep  xs p]
 
+    @example {[
+      keep [1;2;3;4] (fun x -> x mod 2 = 0) =
+      [2;4]
+    ]}
+*)
 val keepMapU: 'a t -> ('a -> 'b option [@bs]) -> 'b t
 val keepMap: 'a t -> ('a -> 'b option) -> 'b t
 
-val partitionU: 'a t -> ('a -> bool [@bs]) -> 'a t * 'a t
-val partition: 'a t -> ('a -> bool) -> 'a t * 'a t
+val partitionU: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
+val partition: 'a t -> ('a -> bool) ->  'a t * 'a t
+(** [partition xs p]
 
+    @example {[
+      partition [1;2;3;4] (fun x -> x mod 2 = 0) =
+      ([2;4], [1;3])
+    ]}
+*)
 val unzip: ('a * 'b) t -> 'a t * 'b t
 
 val getAssocU: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
@@ -314,8 +350,9 @@ val removeAssoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool) -> ('a * 'c) t
 
 val setAssocU: ('a * 'c) t -> 'a -> 'c -> ('a -> 'a -> bool [@bs]) -> ('a * 'c) t
 val setAssoc: ('a * 'c) t -> 'a -> 'c -> ('a -> 'a -> bool) -> ('a * 'c) t    
-(** [setAssoc xs x eq]
-
+(** [setAssoc xs k v eq]
+    if [k] exists in [xs], replace it with the new [v], otherwise, add
+    it to the head
     @example {[
       setAssoc [1,"a"; 2, "b"; 3, "c"] 2 "x" (=) =
       [1,"a"; 2, "x"; 3,"c"] ;; 

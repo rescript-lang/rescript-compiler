@@ -568,7 +568,7 @@ let some xs p = someU xs (fun[@bs] x -> p x)
 
 let rec every2U l1 l2  p =
   match (l1, l2) with
-    (_, []) | [],_ -> true
+  | _,[] | [], _ -> true
   | (a1::l1, a2::l2) -> p a1 a2 [@bs] && every2U l1 l2 p
 
 let every2 l1 l2 p = every2U l1 l2 (fun[@bs] a b -> p a b)  
@@ -599,7 +599,7 @@ let eq l1 l2 f = eqU l1 l2 (fun [@bs] x y -> f x y)
 
 let rec some2U l1 l2 p =
   match (l1, l2) with
-    [], _ | _, [] -> false
+  | [], _ | _, [] -> false
   | (a1::l1, a2::l2) -> p a1 a2 [@bs] || some2U l1 l2 p 
 
 let some2 l1 l2 p = some2U l1 l2 (fun[@bs] a b -> p a b)  

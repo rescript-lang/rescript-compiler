@@ -238,14 +238,20 @@ let ()   =
   eq __LOC__ (N.some [1;2;5] mod2)  true;
   eq __LOC__ (N.some [1;3;5] mod2)  false;
   eq __LOC__ (N.some [] mod2)  false;
-  eq __LOC__ (N.every2 [] [1] (fun   x y -> x > y)) true;  
-  eq __LOC__ (N.every2 [2] [1] (fun   x y -> x > y)) true;
-  eq __LOC__ (N.every2 [2;3] [1;4] (fun   x y -> x > y)) false;
-  eq __LOC__ (N.some2 [] [1] (fun   x y -> x > y)) false;
-  eq __LOC__ (N.some2 [2;3] [1;4] (fun   x y -> x > y)) true;
-  eq __LOC__ (N.some2 [0;3] [1;4] (fun   x y -> x > y)) false;
   eq __LOC__ (N.has [1;2;3] "2" (fun   x s -> string_of_int x = s)) true;
   eq __LOC__ (N.has [1;2;3] "0" (fun   x s -> string_of_int x = s)) false
+
+let () = 
+  eq __LOC__ (N.every2 [] [1] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.every2 [2;3] [1] (fun   x y -> x > y)) true;    
+  eq __LOC__ (N.every2 [2] [1] (fun   x y -> x > y)) true;
+  eq __LOC__ (N.every2 [2;3] [1;4] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.every2 [2;3] [1;0] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.some2 [] [1] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.some2 [2;3] [1] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.some2 [2;3] [1;4] (fun   x y -> x > y)) true;
+  eq __LOC__ (N.some2 [0;3] [1;4] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.some2 [0;3] [3;2] (fun   x y -> x > y)) true
 
 let makeTest n =  
   eq __LOC__ (N.make n 3) (N.makeBy n (fun  _ -> 3))
