@@ -27,7 +27,7 @@ module A = Bs_Array
 
 type ('key,  'a, 'id) t = ('key, 'a) N.t
 
-type ('key, 'id) cmp = ('key, 'id)  Bs_Dict.cmp
+type ('key, 'id) cmp = ('key, 'id)  Bs_Id.cmp
 
 let empty = N.empty
 let ofArray = N.ofArray
@@ -81,7 +81,7 @@ let rec set  (t : _ t) newK newD  ~cmp =
   | None -> N.singleton newK newD 
   | Some n  ->
     let k= N.key n in 
-    let c = (Bs_Dict.getCmpInternal cmp) newK k [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
       N.return (N.updateValue n newD) 
     else 
@@ -100,7 +100,7 @@ let rec updateU  (t : _ t) newK f  ~cmp :  _ t =
     end 
   | Some n  ->
     let k= N.key n in 
-    let c = (Bs_Dict.getCmpInternal cmp) newK k [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) newK k [@bs] in
     if c = 0 then
       match f (Some (N.value n)) [@bs] with 
       | None ->
@@ -148,7 +148,7 @@ let update t newK f ~cmp =
 
 let rec removeAux0  n x ~cmp = 
   let l,v,r = N.(left n, key n, right n ) in 
-  let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+  let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
   if c = 0 then
     match N.toOpt l, N.toOpt r with 
     | None, _ -> r 
@@ -189,7 +189,7 @@ let mergeMany   h arr ~cmp =
 
 let rec splitAuxPivot n x pres  ~cmp =  
   let l,v,d,r = N.(left n , key n, value n, right n) in  
-  let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in 
+  let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in 
   if c = 0 then begin 
     pres := Some d; 
     (l,  r)

@@ -1,10 +1,8 @@
 
 let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
-let eq loc x y = 
-  incr test_id ; 
-  suites := 
-    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
+let eq loc x y = Mt.eq_suites loc x y ~test_id ~suites
+let b loc x  = Mt.bool_suites loc x ~test_id ~suites
 let neq loc x y = 
   incr test_id ; 
   suites := 
@@ -63,6 +61,23 @@ let () =
   neq __LOC__ u  v (* unlikely*);
   let sum x = A.reduce x 0 add in 
   eq __LOC__ ( sum u) (sum v)
+
+
+let () =
+  let open A in 
+  b __LOC__ (range 0 3 =  [|0;1;2;3|]);
+  b __LOC__ (range 3 0 =  [||] );
+  b __LOC__ (range 3 3 = [|3|]);
+
+  b __LOC__ (rangeBy 0 10 ~step:3 = [|0;3;6;9|]);
+  b __LOC__ (rangeBy 0 12 ~step:3 = [|0;3;6;9;12|]);
+  b __LOC__ (rangeBy 33 0 ~step:1 =  [||]);
+  b __LOC__ (rangeBy 33 0 ~step:(-1) = [||]);
+  b __LOC__ (rangeBy 3 12 ~step:(-1) = [||]);
+  b __LOC__ (rangeBy 3 3 ~step:0 = [||] );     
+  b __LOC__ (rangeBy 3 3 ~step:(1) = [|3|])
+
+
 
 let () = 
   eq __LOC__ (A.reduceReverse [||] 100 (-)) 100;

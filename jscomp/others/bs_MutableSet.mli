@@ -34,7 +34,7 @@ module String = Bs_MutableSetString
 
 type ('k,'id) t 
 
-type ('k, 'id) dict = ('k, 'id) Bs_Dict.comparable
+type ('k, 'id) dict = ('k, 'id) Bs_Id.comparable
 
 val make: dict:('elt, 'id) dict -> ('elt, 'id) t
 

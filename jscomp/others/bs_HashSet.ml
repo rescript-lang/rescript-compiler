@@ -31,9 +31,9 @@ module N = Bs_internalSetBuckets
 module C = Bs_internalBucketsType
 module A = Bs_Array
 
-type ('a, 'id) eq = ('a, 'id) Bs_Dict.eq
-type ('a, 'id) hash = ('a, 'id) Bs_Dict.hash
-type ('a, 'id) dict = ('a, 'id) Bs_Dict.hashable
+type ('a, 'id) eq = ('a, 'id) Bs_Id.eq
+type ('a, 'id) hash = ('a, 'id) Bs_Id.hash
+type ('a, 'id) dict = ('a, 'id) Bs_Id.hashable
 
 type ('a,'id) t =  ( ('a, 'id) hash, ('a, 'id) eq, 'a) N.t
 
@@ -43,7 +43,7 @@ let rec copyBucket ~hash ~h_buckets ~ndata_tail  old_bucket =
   match C.toOpt old_bucket with 
   | None -> ()
   | Some cell ->
-    let nidx = (Bs_Dict.getHashInternal hash) (N.key cell) [@bs] land (A.length h_buckets - 1) in 
+    let nidx = (Bs_Id.getHashInternal hash) (N.key cell) [@bs] land (A.length h_buckets - 1) in 
     let v = C.return cell in 
     begin match C.toOpt (A.getUnsafe ndata_tail nidx) with
       | None -> 
@@ -77,7 +77,7 @@ let tryDoubleResize ~hash h =
 
 let rec removeBucket ~eq h h_buckets  i key prec cell =
   let cell_next = N.next cell in 
-  if (Bs_Dict.getEqInternal eq) (N.key cell) key [@bs]
+  if (Bs_Id.getEqInternal eq) (N.key cell) key [@bs]
   then 
     begin
       N.nextSet prec cell_next;
@@ -93,13 +93,13 @@ let rec removeBucket ~eq h h_buckets  i key prec cell =
 let remove h key = 
   let eq = C.eq h in 
   let h_buckets = C.buckets h in 
-  let i = (Bs_Dict.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in  
+  let i = (Bs_Id.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in  
   let l = A.getUnsafe h_buckets i in 
   match C.toOpt l with 
   | None -> ()
   | Some cell -> 
     let next_cell = N.next cell in 
-    if (Bs_Dict.getEqInternal eq) (N.key cell) key [@bs] then 
+    if (Bs_Id.getEqInternal eq) (N.key cell) key [@bs] then 
       begin 
         C.sizeSet h (C.size h - 1) ;
         A.setUnsafe h_buckets i next_cell
@@ -113,7 +113,7 @@ let remove h key =
 
 
 let rec addBucket h key  cell  ~eq = 
-  if not ((Bs_Dict.getEqInternal eq) (N.key cell) key [@bs]) then
+  if not ((Bs_Id.getEqInternal eq) (N.key cell) key [@bs]) then
     let  n = N.next cell in 
     match C.toOpt n with 
     | None ->  
@@ -124,7 +124,7 @@ let rec addBucket h key  cell  ~eq =
 let add0 h key  ~hash  ~eq =
   let h_buckets = C.buckets h in 
   let buckets_len = A.length h_buckets in 
-  let i = (Bs_Dict.getHashInternal hash) key [@bs] land (buckets_len - 1) in 
+  let i = (Bs_Id.getHashInternal hash) key [@bs] land (buckets_len - 1) in 
   let l = A.getUnsafe h_buckets i in  
   (match C.toOpt l with                                    
    | None -> 
@@ -139,7 +139,7 @@ let add h key  =
   add0 ~hash:(C.hash h) ~eq:(C.eq h) h  key 
 
 let rec memInBucket ~eq key cell = 
-  (Bs_Dict.getEqInternal eq) 
+  (Bs_Id.getEqInternal eq) 
     (N.key cell) key [@bs] || 
   (match C.toOpt (N.next cell) with 
    | None -> false 
@@ -150,7 +150,7 @@ let rec memInBucket ~eq key cell =
   
 let has h key =           
   let eq, h_buckets = C.eq h, C.buckets h  in 
-  let nid = (Bs_Dict.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in 
+  let nid = (Bs_Id.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in 
   let bucket = A.getUnsafe h_buckets nid in 
   match C.toOpt bucket with 
   | None -> false 

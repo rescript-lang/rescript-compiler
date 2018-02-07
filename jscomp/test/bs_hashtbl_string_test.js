@@ -1,6 +1,6 @@
 'use strict';
 
-var Bs_Dict = require("../../lib/js/bs_Dict.js");
+var Bs_Id = require("../../lib/js/bs_Id.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Caml_hash = require("../../lib/js/caml_hash.js");
 var Bs_HashMap = require("../../lib/js/bs_HashMap.js");
@@ -27,21 +27,21 @@ var hashString = (function (str) {
                                               }
                                             );
 
-var $$String = Bs_Dict.hashable(Hashtbl.hash, (function (x, y) {
+var $$String = Bs_Id.hashable(Hashtbl.hash, (function (x, y) {
         return +(x === y);
       }));
 
-var String1 = Bs_Dict.hashable(hashString, (function (x, y) {
+var String1 = Bs_Id.hashable(hashString, (function (x, y) {
         return +(x === y);
       }));
 
-var String2 = Bs_Dict.hashable((function (x) {
+var String2 = Bs_Id.hashable((function (x) {
         return Caml_hash.caml_hash_final_mix(Caml_hash.caml_hash_mix_string(0, x));
       }), (function (x, y) {
         return +(x === y);
       }));
 
-var Int = Bs_Dict.hashable(Hashtbl.hash, (function (x, y) {
+var Int = Bs_Id.hashable(Hashtbl.hash, (function (x, y) {
         return +(x === y);
       }));
 
@@ -142,7 +142,7 @@ function bench3(m) {
   }
 }
 
-var Sx = Bs_Dict.comparable(Caml_primitive.caml_string_compare);
+var Sx = Bs_Id.comparable(Caml_primitive.caml_string_compare);
 
 function bench4() {
   var table = Bs_internalBucketsType.make(/* () */0, /* () */0, 1000000);

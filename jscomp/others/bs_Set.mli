@@ -38,7 +38,7 @@ module Dict = Bs_SetDict
 
 type ('k,'id) t
 
-type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
+type ('key, 'id) dict = ('key, 'id) Bs_Id.comparable
     
 val make: dict:('elt, 'id) dict -> ('elt, 'id) t
 

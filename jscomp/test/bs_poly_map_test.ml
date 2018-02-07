@@ -4,7 +4,7 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
 module Icmp = 
-  (val Bs.Dict.comparable 
+  (val Bs.Id.comparable 
       (fun (x : int) y ->  compare x y)
   )
 module M = Bs.Map  
@@ -14,7 +14,7 @@ module A = Bs_Array
 module I = Array_data_util
 
 
-let mapOfArray x = M.ofArray ~dict:(module Icmp) x 
+let mapOfArray x = M.ofArray ~id:(module Icmp) x 
 let setOfArray x = N.ofArray ~dict:(module Icmp) x 
 let emptyMap () = M.make (module Icmp)
 

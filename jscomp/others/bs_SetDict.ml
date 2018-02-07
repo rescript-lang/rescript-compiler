@@ -27,7 +27,7 @@ module A = Bs_Array
 
 type ('k,'id) t = 'k N.t
 
-type ('key, 'id) cmp = ('key, 'id)  Bs_Dict.cmp
+type ('key, 'id) cmp = ('key, 'id)  Bs_Id.cmp
 
 
 (* here we relies on reference transparence
@@ -39,7 +39,7 @@ let rec add  (t : _ t) x  ~cmp : _ t =
   | None -> N.singleton x 
   | Some nt ->
     let k = N.key nt in 
-    let c = (Bs_Dict.getCmpInternal cmp) x k [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) x k [@bs] in
     if c = 0 then t
     else
       let l,r = N.(left nt, right nt) in 
@@ -57,7 +57,7 @@ let rec remove (t : _ t) x  ~cmp : _ t =
     None -> t
   | Some n  ->
     let l,v,r = N.(left n , key n, right n) in 
-    let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
     if c = 0 then 
       match N.toOpt l, N.toOpt r with 
       | (None, _) -> r 
@@ -96,7 +96,7 @@ let removeMany h arr ~cmp =
 
 let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =   
   let l,v,r = N.(left n , key n, right n) in  
-  let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+  let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
   if c = 0 then l,r
   else 
   if c < 0 then
@@ -116,7 +116,7 @@ let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =
 
 let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =   
   let l,v,r = N.(left n , key n, right n) in  
-  let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+  let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
   if c = 0 then 
     begin
       pres := true;

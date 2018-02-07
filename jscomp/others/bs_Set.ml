@@ -29,8 +29,8 @@ module Dict = Bs_SetDict
 module A = Bs_Array
 
 
-type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
-type ('key, 'id ) cmp = ('key, 'id) Bs_Dict.cmp
+type ('key, 'id) dict = ('key, 'id) Bs_Id.comparable
+type ('key, 'id ) cmp = ('key, 'id) Bs_Id.cmp
 
 module S = struct 
   type ('k,'id) t = {
@@ -154,9 +154,9 @@ let ofSortedArrayUnsafe (type elt) (type id) xs ~(dict : (elt,id) dict ) =
 
 let getData = S.data
 
-let getDict (type elt) (type id) (m : (elt,id) t) : (elt, id) dict =
+let getDict (type elt) (type identity) (m : (elt,identity) t) : (elt, identity) dict =
   let module T = struct
-    type nonrec id = id
+    type nonrec identity = identity
     type nonrec t = elt
     let cmp =  S.cmp m
   end in

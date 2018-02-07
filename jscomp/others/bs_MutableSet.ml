@@ -31,8 +31,8 @@ module A = Bs_Array
 module Sort = Bs_SortArray
 
 
-type ('k, 'id) dict = ('k, 'id) Bs_Dict.comparable
-type ('key, 'id ) cmp = ('key, 'id) Bs_Dict.cmp
+type ('k, 'id) dict = ('k, 'id) Bs_Id.comparable
+type ('key, 'id ) cmp = ('key, 'id) Bs_Id.cmp
 
 module S = struct
   type ('elt,'id) t =
@@ -77,7 +77,7 @@ let remove  d  v =
   match N.toOpt oldRoot with 
   | None -> ()
   | Some oldRoot2 ->
-    let newRoot = remove0 ~cmp:(Bs_Dict.getCmpInternal (S.cmp d)) oldRoot2 v in 
+    let newRoot = remove0 ~cmp:(Bs_Id.getCmpInternal (S.cmp d)) oldRoot2 v in 
     if newRoot != oldRoot then 
       S.dataSet d newRoot    
 
@@ -99,12 +99,12 @@ let removeMany d xs =
     let len = A.length xs in 
     S.dataSet d 
       (removeMany0 nt xs 0 len 
-        ~cmp:(Bs_Dict.getCmpInternal (S.cmp d)))
+        ~cmp:(Bs_Id.getCmpInternal (S.cmp d)))
 
 
 let rec removeCheck0  nt x removed ~cmp= 
   let k = N.key nt in 
-  let c = (Bs_Dict.getCmpInternal cmp) x k [@bs] in 
+  let c = (Bs_Id.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
     let () = removed := true in  
     let l,r = N.(left nt, right nt) in       
@@ -167,7 +167,7 @@ let rec addCheck0  t x added ~cmp  =
 let addCheck m e = 
   let oldRoot = S.data m in 
   let added = ref false in 
-  let newRoot = addCheck0 ~cmp:(Bs_Dict.getCmpInternal (S.cmp m)) oldRoot e added in 
+  let newRoot = addCheck0 ~cmp:(Bs_Id.getCmpInternal (S.cmp m)) oldRoot e added in 
   if newRoot != oldRoot then 
     S.dataSet m newRoot;
   !added    
@@ -253,7 +253,7 @@ let getExn d x =
 let split d  key  =     
   let arr = N.toArray (S.data d) in
   let cmp = S.cmp d in 
-  let i = Sort.binarySearchByU arr key (Bs_Dict.getCmpInternal cmp)  in   
+  let i = Sort.binarySearchByU arr key (Bs_Id.getCmpInternal cmp)  in   
   let len = A.length arr in 
   if i < 0 then 
     let next = - i -1 in 
@@ -301,7 +301,7 @@ let intersect a b  : _ t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    let p = Bs_Dict.getCmpInternal cmp in 
+    let p = Bs_Id.getCmpInternal cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
@@ -330,7 +330,7 @@ let diff a b : _ t =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
-    let p = Bs_Dict.getCmpInternal cmp in 
+    let p = Bs_Id.getCmpInternal cmp in 
     if (p (A.getUnsafe tmp (sizea - 1))
           (A.getUnsafe tmp sizea) [@bs] < 0)
        || 
@@ -357,7 +357,7 @@ let union a b =
     let tmp = A.makeUninitializedUnsafe totalSize in 
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
-    let p = (Bs_Dict.getCmpInternal cmp)  in 
+    let p = (Bs_Id.getCmpInternal cmp)  in 
     if p
         (A.getUnsafe tmp (sizea - 1))
         (A.getUnsafe tmp sizea) [@bs] < 0 then 

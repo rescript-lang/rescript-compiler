@@ -1,8 +1,8 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Bs_Id = require("../../lib/js/bs_Id.js");
 var Bs_Map = require("../../lib/js/bs_Map.js");
-var Bs_Dict = require("../../lib/js/bs_Dict.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
@@ -23,16 +23,16 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
+var Icmp = Bs_Id.comparable(Caml_primitive.caml_int_compare);
 
-var Icmp2 = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
+var Icmp2 = Bs_Id.comparable(Caml_primitive.caml_int_compare);
 
 var m0 = {
   cmp: Icmp[/* cmp */0],
   data: Bs_MapDict.empty
 };
 
-var I2 = Bs_Dict.comparable((function (x, y) {
+var I2 = Bs_Id.comparable((function (x, y) {
         return Caml_primitive.caml_int_compare(y, x);
       }));
 
@@ -48,9 +48,9 @@ var m2 = {
 
 var data = m.data;
 
-Bs_Map.getDict(m2);
+Bs_Map.getId(m2);
 
-var m_dict = Bs_Map.getDict(m);
+var m_dict = Bs_Map.getId(m);
 
 for(var i = 0; i <= 100000; ++i){
   data = Bs_MapDict.set(data, i, i, m_dict[/* cmp */0]);
@@ -74,7 +74,7 @@ var v = {
   data: Bs_SetDict.empty
 };
 
-var m_dict$1 = Bs_Map.getDict(m);
+var m_dict$1 = Bs_Map.getId(m);
 
 var cmp = m_dict$1[/* cmp */0];
 

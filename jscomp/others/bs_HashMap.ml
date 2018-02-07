@@ -17,9 +17,9 @@ module C = Bs_internalBucketsType
 module A = Bs_Array
 
 
-type ('a, 'id) eq = ('a, 'id) Bs_Dict.eq
-type ('a, 'id) hash = ('a, 'id) Bs_Dict.hash
-type ('a, 'id) dict = ('a, 'id) Bs_Dict.hashable
+type ('a, 'id) eq = ('a, 'id) Bs_Id.eq
+type ('a, 'id) hash = ('a, 'id) Bs_Id.hash
+type ('a, 'id) dict = ('a, 'id) Bs_Id.hashable
 type ('a,'b,'id) t =
   ( ('a, 'id) hash, ('a, 'id) eq, 'a, 'b) N.t
 
@@ -110,8 +110,8 @@ let set0 h key value ~eq ~hash =
 *)      
 let set  h key value =
   set0 h key value
-   ~eq:(Bs_Dict.getEqInternal (C.eq h))
-   ~hash:(Bs_Dict.getHashInternal (C.hash h))
+   ~eq:(Bs_Id.getEqInternal (C.eq h))
+   ~hash:(Bs_Id.getHashInternal (C.hash h))
 
 let rec removeInBucket  h h_buckets  i key prec bucket ~eq =
   match C.toOpt bucket with
@@ -129,12 +129,12 @@ let rec removeInBucket  h h_buckets  i key prec bucket ~eq =
 
 let remove h key = 
   let h_buckets = C.buckets h in 
-  let i = (Bs_Dict.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in  
+  let i = (Bs_Id.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in  
   let bucket = A.getUnsafe h_buckets i in 
   match C.toOpt bucket with 
   | None -> ()
   | Some cell -> 
-    let eq = (Bs_Dict.getEqInternal (C.eq h)) in 
+    let eq = (Bs_Id.getEqInternal (C.eq h)) in 
     if eq (N.key cell ) key [@bs] then 
     begin 
       A.setUnsafe h_buckets i (N.next cell);
@@ -154,11 +154,11 @@ let rec getAux ~eq key buckets =
 
 let get h key =
   let h_buckets = C.buckets h in 
-  let nid = (Bs_Dict.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in 
+  let nid = (Bs_Id.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in 
   match C.toOpt @@ A.getUnsafe h_buckets nid with
   | None -> None
   | Some cell1  ->
-    let eq = Bs_Dict.getEqInternal (C.eq h) in
+    let eq = Bs_Id.getEqInternal (C.eq h) in
     if eq key (N.key cell1) [@bs] then 
       Some  (N.value cell1)
     else
@@ -185,12 +185,12 @@ let rec memInBucket key cell ~eq =
 
 let has h key =
   let h_buckets = C.buckets h in 
-  let nid = (Bs_Dict.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in 
+  let nid = (Bs_Id.getHashInternal (C.hash h)) key [@bs] land (A.length h_buckets - 1) in 
   let bucket = A.getUnsafe h_buckets nid in 
   match C.toOpt bucket with 
   | None -> false 
   | Some bucket -> 
-    memInBucket ~eq:(Bs_Dict.getEqInternal (C.eq h)) key bucket
+    memInBucket ~eq:(Bs_Id.getEqInternal (C.eq h)) key bucket
 
 
 
@@ -205,7 +205,7 @@ let ofArray (type a) (type id) arr ~dict:(dict:(a,id) dict) =
   let hash, eq = M.hash, M.eq in  
   let len = A.length arr in 
   let v = C.make ~hash ~eq len in 
-  let eq, hash = Bs_Dict.getEqInternal eq, Bs_Dict.getHashInternal hash in   
+  let eq, hash = Bs_Id.getEqInternal eq, Bs_Id.getHashInternal hash in   
   for i = 0 to len - 1 do 
     let key,value = (A.getUnsafe arr i) in 
     set0 ~eq ~hash v key value
@@ -213,7 +213,7 @@ let ofArray (type a) (type id) arr ~dict:(dict:(a,id) dict) =
   v
       
 let mergeMany h arr = 
-  let hash, eq = Bs_Dict.getHashInternal ( C.hash h) , Bs_Dict.getEqInternal (C.eq h) in 
+  let hash, eq = Bs_Id.getHashInternal ( C.hash h) , Bs_Id.getEqInternal (C.eq h) in 
   let len = A.length arr in 
   for i = 0 to len - 1 do 
     let key,value = (A.getUnsafe arr i) in 

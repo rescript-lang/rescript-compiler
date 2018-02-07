@@ -23,7 +23,7 @@ type ('k, 'v) node  = {
 and ('key, 'a) t = ('key, 'a) node Js.null
 [@@bs.deriving abstract]
 
-type ('k, 'id) cmp = ('k, 'id) Bs_Dict.cmp
+type ('k, 'id) cmp = ('k, 'id) Bs_Id.cmp
     
 module A = Bs_Array 
 module S = Bs_SortArray
@@ -538,7 +538,7 @@ let ofSortedArrayUnsafe arr =
 let rec compareAux e1 e2 ~kcmp ~vcmp =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
-    let c = (Bs_Dict.getCmpInternal kcmp) (key h1) (key h2) [@bs] in 
+    let c = (Bs_Id.getCmpInternal kcmp) (key h1) (key h2) [@bs] in 
     if c = 0 then 
       let cx = vcmp (value h1) (value h2) [@bs] in 
       if cx = 0 then
@@ -552,7 +552,7 @@ let rec compareAux e1 e2 ~kcmp ~vcmp =
 let rec eqAux e1 e2 ~kcmp ~veq =
   match e1,e2 with 
   | h1::t1, h2::t2 ->
-    if (Bs_Dict.getCmpInternal kcmp) (key h1) (key h2) [@bs] = 0 && 
+    if (Bs_Id.getCmpInternal kcmp) (key h1) (key h2) [@bs] = 0 && 
        veq (value h1) (value h2) [@bs] then
       eqAux ~kcmp ~veq (
         stackAllLeft  (right h1) t1 ) (stackAllLeft (right h2) t2)
@@ -582,7 +582,7 @@ let rec get  n x ~cmp =
     None -> None
   | Some n (* Node(l, v, d, r, _) *)  ->
     let v = key n in 
-    let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
     if c = 0 then Some (value n)
     else get ~cmp  (if c < 0 then left n else right n) x 
 
@@ -591,7 +591,7 @@ let rec getUndefined  n x ~cmp =
   | None -> Js.undefined
   | Some n  ->
     let v = key n in 
-    let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
     if c = 0 then Js.Undefined.return (value n )
     else getUndefined ~cmp  (if c < 0 then left n else right n) x 
 
@@ -601,7 +601,7 @@ let rec getExn   n x  ~cmp =
     [%assert "getExn0"]
   | Some n (* Node(l, v, d, r, _)*) ->
     let v = key n in 
-    let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
     if c = 0 then value n 
     else getExn ~cmp  (if c < 0 then left n else right n) x
 
@@ -611,7 +611,7 @@ let rec getWithDefault   n x def ~cmp =
     def
   | Some n (* Node(l, v, d, r, _)*) ->
     let v = key n in 
-    let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
     if c = 0 then value n 
     else getWithDefault ~cmp  (if c < 0 then left n else right n) x def
 
@@ -621,7 +621,7 @@ let rec has  n x ~cmp =
     false
   | Some n (* Node(l, v, d, r, _) *) ->
     let v = key n in 
-    let c = (Bs_Dict.getCmpInternal cmp) x v [@bs] in
+    let c = (Bs_Id.getCmpInternal cmp) x v [@bs] in
     c = 0 || has ~cmp (if c < 0 then left n else right n) x
 
 
@@ -700,7 +700,7 @@ let rec updateMutate (t : _ t) x data ~cmp =
   | None -> singleton x data
   | Some nt -> 
     let k = key nt in 
-    let  c = (Bs_Dict.getCmpInternal cmp) x k [@bs] in  
+    let  c = (Bs_Id.getCmpInternal cmp) x k [@bs] in  
     if c = 0 then begin     
       valueSet nt data;
       return nt
@@ -722,7 +722,7 @@ let ofArray (xs : _ array) ~cmp =
     let next = 
       ref (S.strictlySortedLengthU xs 
              (fun[@bs] (x0,_) (y0,_) -> 
-                (Bs_Dict.getCmpInternal cmp) x0 y0 [@bs] < 0
+                (Bs_Id.getCmpInternal cmp) x0 y0 [@bs] < 0
              ))
     in 
     let result  = ref (

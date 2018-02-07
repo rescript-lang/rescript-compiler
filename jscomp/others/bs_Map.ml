@@ -9,8 +9,8 @@
 (*  under the terms of the GNU Library General Public License, with    *)
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
+(*  Adapted by authors of BuckleScript without using functors          *)
 (***********************************************************************)
-(** Adapted by authors of BuckleScript without using functors          *)
 
 (** specalized when key type is [int], more efficient
     than the gerneic type
@@ -28,8 +28,8 @@ module Dict = Bs_MapDict
 module N = Bs_MapDict
 module A = Bs_Array
 
-type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
-type ('key, 'id ) cmp = ('key, 'id) Bs_Dict.cmp
+type ('key, 'id ) id = ('key, 'id) Bs_Id.comparable
+type ('key, 'id ) cmp = ('key, 'id) Bs_Id.cmp
 module S = struct 
   type ('k,'v,'id) t = {
     cmp: ('k,'id) cmp;
@@ -40,8 +40,8 @@ end
 
 type ('k, 'v, 'id ) t = ('k, 'v, 'id) S.t 
 
-let ofArray (type k) (type id) data ~(dict : (k,id) dict)  =
-  let module M = (val dict) in
+let ofArray (type k) (type idx) data ~(id : (k,idx) id)  =
+  let module M = (val id) in
   let cmp = M.cmp in 
   S.t ~cmp ~data:(Dict.ofArray ~cmp data) 
 
@@ -81,8 +81,8 @@ let mergeU s1 s2 f =
 let merge s1 s2 f = 
   mergeU s1 s2 (fun [@bs] a b c -> f a b c)
 
-let make (type elt) (type id) ~(dict: (elt, id) dict) =
-  let module M = (val dict) in 
+let make (type elt) (type idx) ~(id: (elt, idx) id) =
+  let module M = (val id) in 
   S.t  ~cmp:M.cmp  ~data:Dict.empty
 
 let isEmpty map = 
@@ -155,15 +155,15 @@ let cmp m1 m2 vcmp = cmpU m1 m2 (fun [@bs] a b -> vcmp a b)
     
 let getData = S.data
   
-let getDict (type elt) (type id) (m : (elt,_,id) t) : (elt, id) dict =
+let getId (type elt) (type identity) (m : (elt,_,identity) t) : (elt, identity) id =
   let module T = struct
-    type nonrec id = id
+    type nonrec identity = identity
     type nonrec t = elt
     let cmp =  S.cmp m
   end in
   (module T )
   
-let packDictData (type elt) (type id) ~(dict : (elt, id) dict) ~data  =
-  let module M = (val dict) in 
+let packIdData (type elt) (type idx) ~(id : (elt, idx) id) ~data  =
+  let module M = (val id) in 
   S.t ~cmp:M.cmp ~data
 

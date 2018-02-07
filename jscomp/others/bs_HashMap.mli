@@ -28,7 +28,7 @@
 type ('key,'value,'id) t 
 (** The type of hash tables from type ['key] to type ['value]. *)
 
-type ('a, 'id) dict = ('a, 'id) Bs_Dict.hashable
+type ('a, 'id) dict = ('a, 'id) Bs_Id.hashable
 
 
 val make:  int -> dict:('key, 'id) dict -> ('key,'value,'id) t

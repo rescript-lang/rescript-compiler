@@ -1,8 +1,8 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Bs_Id = require("../../lib/js/bs_Id.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
-var Bs_Dict = require("../../lib/js/bs_Dict.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_MutableMap = require("../../lib/js/bs_MutableMap.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
@@ -21,7 +21,7 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
+var Icmp = Bs_Id.comparable(Caml_primitive.caml_int_compare);
 
 function f(x) {
   return Bs_MutableMap.ofArray(x, Icmp);
