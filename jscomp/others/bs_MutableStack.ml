@@ -31,7 +31,7 @@ and 'a cell = {
 } [@@bs.deriving abstract]
 
 
-let create () = t ~root:Js.null
+let make () = t ~root:Js.null
 
 let clear s = rootSet s Js.null
 

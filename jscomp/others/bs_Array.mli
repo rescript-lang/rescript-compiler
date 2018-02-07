@@ -22,33 +22,39 @@ external length: 'a array -> int = "%array_length"
 external size: 'a array -> int = "%array_length"
 (** [size arr] is the same as [length arr] *)
 
-val get : 'a array -> int -> 'a option
+val get: 'a array -> int -> 'a option
 
 val getExn: 'a array -> int -> 'a  
 (** [getExn arr i]
-    raise an exception if [i] is out of range
+
+    {b raise} an exception if [i] is out of range
 *)
 
 external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
 (** [getUnasfe arr i]
-    It does not do bounds checking, this would cause type error
+
+    {b Unsafe}
+
+    no  bounds checking, this would cause type error
     if [i] does not stay within range
 *)
 external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
-(** [getUndefined arr i] does the samething in the runtime as [getUnsafe], 
-    it is type safe since the return type still track whether it is 
+(** [getUndefined arr i]
+
+    It does the samething in the runtime as {!getUnsafe}, 
+    it is {i type safe} since the return type still track whether it is 
     in range or not
 *)
 
-val set : 'a array -> int -> 'a -> unit 
+val set: 'a array -> int -> 'a -> bool
 (** [set arr n x] modifies [arr] in place, 
     it replaces the nth element of [arr] with [x] 
-    Nothing happens if [n] is out of range
+    @return false means not updated due to out of range
 *)
 
 val setExn: 'a array -> int -> 'a -> unit 
 (** [setExn arr i x]
-    raise an exception if [i] is out of range
+    {b raise} an exception if [i] is out of range
 *)
 
 external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
@@ -56,23 +62,29 @@ external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 val shuffleInPlace: 'a array -> unit
 
 val shuffle: 'a array -> 'a array  
-(** [shuffle xs] returns a new array *)
+(** [shuffle xs]
+    @return a fresh array *)
 
 val reverseInPlace: 'a array -> unit
 
 val reverse: 'a array -> 'a array
-(** [reverse x] returns a new array *)
+(** [reverse x]
+    @return a fresh array *)
 
 external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
 
 external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
+(** [makeUninitializedUnsafe n]
+
+    {b Unsafe}   
+*)
+
 
 val make: int -> 'a  -> 'a array
 (** [make n e] 
-    
-    return an empty array when [n] is negative.
-    return an array of size [n] with value [e]
- *)
+    return an array of size [n] filled  with value [e]    
+    @return an empty array when [n] is negative.
+*)
 
 val makeByU: int -> (int -> 'a [@bs]) -> 'a array
 val makeBy: int -> (int -> 'a ) -> 'a array
@@ -91,7 +103,11 @@ val makeByAndShuffle: int -> (int -> 'a ) -> 'a array
 val zip: 'a array -> 'b array -> ('a * 'b) array
 (** [zip a b] 
     
-    stop with the shorter array    
+    stop with the shorter array
+
+    @example {[
+      zip [|1;2] [|1;2;3|] = [| (1,2); (2;2)|]
+    ]}
  *)
 
 
@@ -100,13 +116,13 @@ val zip: 'a array -> 'b array -> ('a * 'b) array
  (**
     [zipBy a b f]
    
-    stops with shorter array    
+    stops with shorter array
  *)
 
 val concat: 'a array -> 'a array -> 'a array
 (** [concat xs ys]
 
-    return a fresh array containing the
+    @return a fresh array containing the
     concatenation of the arrays [v1] and [v2], so even if [v1] or [v2]
     is empty, it can not be shared 
 *)
@@ -115,7 +131,7 @@ val concatMany: 'a array array -> 'a array
 (**
     [concatMany xss]
 
-    return a fresh array as the concatenation of [xss]
+    @return a fresh array as the concatenation of [xss]
 *)
 
 val slice: 'a array -> offset:int -> len:int -> 'a array
@@ -134,14 +150,14 @@ val slice: 'a array -> offset:int -> len:int -> 'a array
 val copy: 'a array -> 'a array
 (** [copy a] 
 
-    returns a copy of [a], that is, a fresh array
+    @return a copy of [a], that is, a fresh array
    containing the same elements as [a]. *)
 
 val fill: 'a array -> offset:int -> len:int -> 'a -> unit
-(** [fill arr ofs len x] 
+(** [fill arr ~offset ~len x] 
 
     modifies [arr] in place,
-    storing [x] in elements number [ofs] to [ofs + len - 1].
+    storing [x] in elements number [offset] to [offset + len - 1].
 
     [offset] can be negative
 
@@ -151,7 +167,7 @@ val fill: 'a array -> offset:int -> len:int -> 'a -> unit
 
 val blit: 
     src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
-(** [blit v1 o1 v2 o2 len] 
+(** [blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len] 
 
     copies [len] elements
    from array [v1], starting at element number [o1], to array [v2],
@@ -177,39 +193,95 @@ val map: 'a array ->  ('a -> 'b ) -> 'b array
 
 val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keep: 'a array -> ('a -> bool ) -> 'a array
-
+(** [keep xs p ]
+    @return a new array that keep all elements satisfy [p]
+*)
 
 val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
 val keepMap: 'a array -> ('a -> 'b option) -> 'b array 
-    
+(** [keepMap xs p]
+    @return a new array that keep all elements that return a non-None applied [p]
+
+    @example {[
+      keepMap [|1;2;3|] (fun x -> if x mod 2 then Some x else None)
+      = [| 2 |]
+    ]}
+*)
+
 val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
 val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
+(** [forEachWithIndex xs f]
+
+    The same with {!forEach}, except that [f] is supplied with one
+    more argument: the index starting from 0
+*)
 
 val mapWithIndexU: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
 val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array    
+(** [mapWithIndex xs f ]
 
+    The same with {!map} except that [f] is supplied with one
+    more argument: the index starting from 0
+*)
+    
 val reduceU:  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
 val reduce:  'b array -> 'a -> ('a -> 'b -> 'a ) ->'a
+(** [reduce xs init f]
+
+    @example {[
+      reduce [|2;3;4|] 1 (+) = 10
+    ]}
+   
+*)
 
 val reduceReverseU: 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
 val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a ) ->  'a
+(** [reduceReverse xs init f]
+    @example {[
+      reduceReverse [|1;2;3;4|] 100 (-) = 90 
+    ]}
+*)
+
+val someU: 'a array -> ('a -> bool [@bs]) -> bool
+val some: 'a array -> ('a -> bool) -> bool
+(** [some xs p]
+    @return true if one of element satifies [p]
+*)
   
 val everyU: 'a array -> ('a -> bool [@bs]) -> bool
 val every: 'a array -> ('a -> bool ) -> bool
-
+(** [every xs p]
+    @return true if all elements satisfy [p]
+*)
+  
 val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
-(** [every2 a b p] 
-    - return false when [length a <> length b] 
-    - return true when every pair is true [f ai bi]
+(** [every2 xs ys p] only tests the length of shorter
+
+    @example {[
+      every2 [|1;2;3|] [|0;1|] (>) = true;;
+      (every2 [||] [|1|] (fun   x y -> x > y)) = true;;
+      (every2 [|2;3|] [|1|] (fun   x y -> x > y)) = true;; 
+    ]}
 *)
 
+val some2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
+val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
+(** [some2 xs ys p] only tests the length of shorter
+
+    @example {[
+      some2 [|0;2|] [|1;0;3|] (>) = true ;;
+      (some2 [||] [|1|] (fun   x y -> x > y)) =  false;;
+      (some2 [|2;3|] [|1;4|] (fun   x y -> x > y)) = true;;
+    ]}
+*)
+  
 val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
 val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
 (** [cmp a b]
     
-    if [length a <> length b] compared by length
-    otherwise compare one by one [f ai bi]
+    - compared by length if [length a <> length b] 
+    - otherwise compare one by one [f ai bi]
 *)
 
 val eqU:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
@@ -221,3 +293,4 @@ val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
 *)
 
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
+(** {b Unsafe} function *)

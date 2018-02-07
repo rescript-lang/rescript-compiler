@@ -88,11 +88,21 @@ let head x =
   | [] -> None
   | x::_ -> Some x
 
+let headExn x = 
+  match x with 
+  | [] -> [%assert "headExn"]  
+  | x::_ -> x 
+
 let tail x =
   match x with
   | [] -> None
   | _::xs -> Some xs 
 
+let tailExn x =   
+  match x with 
+  | [] -> [%assert "tailExn"]
+  | _::t -> t
+  
 let add xs x  = x :: xs
                 
 (* Assume [n >=0] *)
@@ -180,25 +190,26 @@ let rec copyAuxWitFilterMap f cellX prec =
 
 let rec removeAssocAuxWithMap  cellX x  prec f =  
   match cellX with 
-  | [] -> ()
+  | [] -> false
   | ((a,_) as h):: t -> 
     if f a x [@bs] then 
-      unsafeMutateTail prec t 
+      (unsafeMutateTail prec t ; true)
     else  
       let next = mutableCell h [] in 
       unsafeMutateTail prec next ; 
       removeAssocAuxWithMap t x next f 
 
-let rec removeAssocAuxByReference  cellX x  prec =  
-  match cellX with 
-  | [] -> ()
-  | ((a,_) as h):: t -> 
-    if  a == x  then 
-      unsafeMutateTail prec t 
-    else  
+let rec setAssocAuxWithMap cellX x k prec eq = 
+  match cellX with       
+  | [] -> false 
+  | ((a,_) as h) :: t -> 
+    if eq a x [@bs] then 
+      (unsafeMutateTail prec ( (x,k)::t); true)
+    else       
       let next = mutableCell h [] in 
       unsafeMutateTail prec next ; 
-      removeAssocAuxByReference t x next 
+      setAssocAuxWithMap t x k next eq 
+
       
 let rec copyAuxWithMap cellX prec f =
   match cellX with
@@ -557,7 +568,7 @@ let some xs p = someU xs (fun[@bs] x -> p x)
 
 let rec every2U l1 l2  p =
   match (l1, l2) with
-    (_, []) | [],_ -> true
+  | _,[] | [], _ -> true
   | (a1::l1, a2::l2) -> p a1 a2 [@bs] && every2U l1 l2 p
 
 let every2 l1 l2 p = every2U l1 l2 (fun[@bs] a b -> p a b)  
@@ -588,7 +599,7 @@ let eq l1 l2 f = eqU l1 l2 (fun [@bs] x y -> f x y)
 
 let rec some2U l1 l2 p =
   match (l1, l2) with
-    [], _ | _, [] -> false
+  | [], _ | _, [] -> false
   | (a1::l1, a2::l2) -> p a1 a2 [@bs] || some2U l1 l2 p 
 
 let some2 l1 l2 p = some2U l1 l2 (fun[@bs] a b -> p a b)  
@@ -601,14 +612,14 @@ let rec hasU xs x eq  =
 let has xs x eq = hasU xs x (fun [@bs] a b -> eq a b)  
 
 
-let rec assocU  xs x eq = 
+let rec getAssocU  xs x eq = 
   match xs with 
   | [] -> None
   | (a,b)::l -> 
     if eq a x [@bs] then Some b 
-    else assocU l x eq 
+    else getAssocU l x eq 
 
-let assoc xs x eq = assocU xs x (fun[@bs] a b -> eq  a b)    
+let getAssoc xs x eq = getAssocU xs x (fun[@bs] a b -> eq  a b)    
 
 
 let rec hasAssocU xs x eq = 
@@ -618,7 +629,8 @@ let rec hasAssocU xs x eq =
 
 let hasAssoc xs x eq = hasAssocU xs x (fun[@bs] a b -> eq a b)  
 
-(* remove the first pair *)  
+
+
 let  removeAssocU xs x eq  = 
   match xs with 
   | [] -> []
@@ -626,11 +638,25 @@ let  removeAssocU xs x eq  =
     if eq a x [@bs] then l 
     else 
       let cell = mutableCell pair [] in 
-      removeAssocAuxWithMap l x cell eq ;
-      cell 
+      let removed = removeAssocAuxWithMap l x cell eq in 
+      if removed then 
+        cell 
+      else xs
       
 let removeAssoc xs x eq = removeAssocU xs x (fun [@bs] a b -> eq a b)
 
+let setAssocU xs x k eq = 
+  match xs with
+  | [] -> []
+  | (a, _ as pair) :: l -> 
+    if eq a x [@bs] then l 
+    else 
+      let cell = mutableCell pair [] in 
+      let replaced = setAssocAuxWithMap l x k cell eq in 
+      if replaced then cell 
+      else (x,k)::xs 
+
+let setAssoc xs x k eq = setAssocU xs x k (fun [@bs] a b -> eq a b)
 
 let rec getByU xs p = 
   match xs with 

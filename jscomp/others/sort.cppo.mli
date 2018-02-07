@@ -24,6 +24,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+(** This is a specialized module for {!Bs_SortArray}, the docs in that module also
+    applies here, except the comparator is fixed and inlined
+*)
 
 #ifdef TYPE_INT
 type element = int 
@@ -35,9 +38,8 @@ type element = string
 
 val strictlySortedLength: element array -> int 
 (**
-  [strictlySortedLenght xs]
-  return [+n] means increasing order
-  [-n] means negative order
+  The same as {!Bs_SortArray.strictlySortedLength } except the comparator is fixed
+  @return [+n] means increasing order  [-n] means negative order
 *)
 
 
@@ -45,8 +47,12 @@ val isSorted: element array  -> bool
 (** [sorted xs] return true if [xs] is in non strict increasing order *)
 
 val stableSortInPlace: element array -> unit
+(**
+   The same as {!Bs_SortArray.stableSortInPlaceBy} except the comparator is fixed 
+*)
   
 val stableSort: element array -> element array
+(** The same as {!Bs_SortArray.stableSortBy} except the comparator is fixed *)
     
 val binarySearch: element array -> element -> int 
 (**

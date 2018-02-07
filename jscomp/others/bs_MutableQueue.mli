@@ -22,15 +22,17 @@ type 'a t
 (** The type of queues containing elements of type ['a]. *)
 
 val make: unit -> 'a t
-(** Return a new queue, initially empty. *)
+(** @return a new queue, initially empty. *)
 
 val clear: 'a t -> unit
-(** Discard all elements from a queue. *)
+(** Discard all elements from the queue. *)
 
 val isEmpty: 'a t -> bool
-(** Return [true] if the given queue is empty, [false] otherwise. *)
+(** @return [true] if the given queue is empty, [false] otherwise. *)
+
 val ofArray: 'a array -> 'a t
-(** [ofArray a] is equivalent to [Array.forEach a (Queue.add q a)] *)    
+(** [ofArray a] is equivalent to [Array.forEach a (add q a)] *)    
+
 val add: 'a t -> 'a -> unit
 (** [add q x] adds the element [x] at the end of the queue [q]. *)
     
@@ -41,6 +43,9 @@ val peek: 'a t -> 'a option
 val peekUndefined: 'a t -> 'a Js.undefined
 (** [peekUndefined q] returns [undefined] if not found *)
 val peekExn: 'a t -> 'a 
+(** [peekExn q]
+
+    {b raise} an exception if [q] is empty *)
 
 val pop: 'a t -> 'a option 
 (** [pop q] removes and returns the first element in queue [q].*)
@@ -51,25 +56,32 @@ val popUndefined: 'a t -> 'a Js.undefined
 *)
 
 val popExn: 'a t -> 'a 
+(** [popExn q]
 
+    {b raise} an exception if [q] is empty
+*)
+  
 val copy: 'a t -> 'a t
+(** [copy q]
 
+    @return a fresh queue
+*)
 
 val size: 'a t -> int
-(** Return the number of elements in a queue. *)
+(** @return the number of elements in a queue. *)
 
 val mapU: 'a t -> ('a -> 'b [@bs]) -> 'b t
 val map: 'a t -> ('a -> 'b ) -> 'b t
 
 val forEachU: 'a t -> ('a -> unit [@bs]) -> unit
 val forEach: 'a t -> ('a -> unit ) -> unit
-(** [reduce f q] applies [f] in turn to all elements of [q],
+(** [forEach q f] applies [f] in turn to all elements of [q],
     from the least recently entered to the most recently entered.
     The queue itself is unchanged. *)
 
 val reduceU: 'a t -> 'b -> ('b -> 'a -> 'b [@bs])  ->  'b
 val reduce: 'a t -> 'b -> ('b -> 'a -> 'b )  ->  'b
-(** [reduce q accu f] is equivalent to [List.reduce f accu l],
+(** [reduce q accu f] is equivalent to [List.reduce l accu f],
     where [l] is the list of [q]'s elements. The queue remains
     unchanged. *)
 

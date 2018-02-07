@@ -69,7 +69,7 @@ type ('key, 'id) comparable =
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
     by the type system). 
     
-    It can be created using function {!comparable}
+    It can be created using function {!comparableU} or{!comparable}. 
    
     The idea of a unique identity when created is that it makes sure two sets would type 
     mismatch if they use different comparison function
@@ -97,7 +97,7 @@ type ('key, 'id) hashable =
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
     by the type system). 
     
-    It can be created using function {!hashable}
+    It can be created using function {!hashableU} or {!hashable}.
 
     The idea of a unique identity when created is that it makes sure two hash sets would type 
     mismatch if they use different comparison function

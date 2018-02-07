@@ -108,6 +108,7 @@ let () =
 
 
 let () =     
+  eq __LOC__ (lnot (S.binarySearchBy [|1;3;5;7|] 4 compare)) 2 ; 
   eq __LOC__ (S.binarySearchBy [|1;2;3;4;33;35;36|] 33 cmp ) 4 ;
   eq __LOC__ (S.binarySearchBy [|1;2;3;4;33;35;36|] 1 cmp ) 0;
   eq __LOC__ (S.binarySearchBy [|1;2;3;4;33;35;36|] 2 cmp ) 1;

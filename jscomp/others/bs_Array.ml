@@ -25,7 +25,7 @@ let getExn arr i =
     [%assert i >= 0 && i < length arr] ;
     getUnsafe arr i
 let set arr i v =
-  if i >= 0 && i < length arr then setUnsafe arr i v
+  if i >= 0 && i < length arr then (setUnsafe arr i v; true) else false
 
 let setExn arr i v = 
   [%assert i >= 0 && i < length arr];  
@@ -311,29 +311,54 @@ let rec everyAux arr i b len =
     everyAux arr (i + 1) b len
   else false    
 
+let rec someAux arr i b len =
+  if i = len then false
+  else
+  if b (getUnsafe arr i) [@bs] then true
+  else someAux arr (i + 1) b len
+      
 let everyU arr b =   
   let len = length arr in 
   everyAux arr 0 b len 
 
 let every arr f = everyU arr (fun[@bs] b -> f b)
 
+let someU arr b =
+  let len = length arr in
+  someAux arr 0 b len
+let some arr f = someU arr (fun [@bs] b -> f b)
+    
 let rec everyAux2 arr1 arr2 i b len =   
   if i = len then true 
   else if b (getUnsafe arr1 i) (getUnsafe arr2 i) [@bs] then 
     everyAux2 arr1 arr2 (i + 1) b len
   else false      
 
+let rec someAux2 arr1 arr2 i b len =   
+  if i = len then false
+  else if b (getUnsafe arr1 i) (getUnsafe arr2 i) [@bs] then
+    true
+  else someAux2 arr1 arr2 (i + 1) b len
+
+
 let every2U  a b p =   
-  let lena = length a in  
-  let lenb = length b in 
-  if lena <> lenb then false
-  else 
-    everyAux2  a b 0 p lena
+  everyAux2  a b 0 p (min (length a) (length b))
 
 let every2 a b p = every2U  a b (fun[@bs] a b -> p a b)
+
+let some2U a b p =
+  someAux2 a b 0 p (min (length a) (length b))
+
+let some2 a b p = some2U a b (fun [@bs] a b -> p a b)
     
-let eqU = every2U
-let eq = every2
+let eqU a b p =
+  let lena = length a in
+  let lenb = length b in
+  if lena = lenb then 
+    everyAux2 a b 0 p lena
+  else false
+
+let eq a b p = eqU a b (fun [@bs] a b -> p a b )
 
 let rec everyCmpAux2 arr1 arr2 i b len =   
   if i = len then 0

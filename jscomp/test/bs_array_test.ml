@@ -63,6 +63,11 @@ let () =
   neq __LOC__ u  v (* unlikely*);
   let sum x = A.reduce x 0 add in 
   eq __LOC__ ( sum u) (sum v)
+
+let () = 
+  eq __LOC__ (A.reduceReverse [||] 100 (-)) 100;
+  eq __LOC__ (A.reduceReverse [|1;2|] 100 (-)) 97;
+  eq __LOC__ (A.reduceReverse [|1;2;3;4|] 100 (-) ) 90
 let addone = fun [@bs] x -> x + 1
 
 let makeMatrixExn sx sy init =
@@ -194,6 +199,26 @@ let ()  =
   id __LOC__ [|1;2;3|];
   id __LOC__ [|1;2;3;4|]
 ;;    
+
+let () = 
+  let module N = struct 
+    let every2 xs ys = 
+      A.every2 (L.toArray xs ) (L.toArray ys)
+    let some2 xs ys =   
+      A.some2 (L.toArray xs) (L.toArray ys)
+  end in 
+  eq __LOC__ (N.every2 [] [1] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.every2 [2;3] [1] (fun   x y -> x > y)) true;    
+  eq __LOC__ (N.every2 [2] [1] (fun   x y -> x > y)) true;
+  eq __LOC__ (N.every2 [2;3] [1;4] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.every2 [2;3] [1;0] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.some2 [] [1] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.some2 [2;3] [1] (fun   x y -> x > y)) true;  
+  eq __LOC__ (N.some2 [2;3] [1;4] (fun   x y -> x > y)) true;
+  eq __LOC__ (N.some2 [0;3] [1;4] (fun   x y -> x > y)) false;
+  eq __LOC__ (N.some2 [0;3] [3;2] (fun   x y -> x > y)) true
+
+
 
 let () = 
   eq __LOC__ (A.concat [||] [|1;2;3|]) [|1;2;3|];
