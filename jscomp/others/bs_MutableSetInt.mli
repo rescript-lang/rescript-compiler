@@ -1,4 +1,4 @@
-# 1 "set.cppo.mli"
+# 1 "setm.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -23,86 +23,81 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** This module is {!Bs.Set} specialized with key type to be a primitive type.
-    It is more efficient in general, the  API is the same with {!Bs_Set} except its key type is fixed,
+(** This module is {!Bs.MutableSet} specialized with key type to be a primitive type.
+
+    It is more efficient in general, the  API is the same with {!Bs.MutableSet} except its key type is fixed,
     and identity is not needed(using the built-in one)
 
     {b See} {!Bs.MutableSet}
 *)
 
-# 35
+
+# 37
 type elt = int
-# 39
+# 41
 (** The type of the set elements. *)
 
 
 type t
 (** The type of sets. *)
-
-val empty: t
-
+  
+val make: unit -> t
 
 val ofArray: elt array -> t
-val ofSortedArrayUnsafe: elt array -> t     
+val ofSortedArrayUnsafe: elt array -> t
+val copy: t -> t 
 val isEmpty: t -> bool
 val has: t -> elt -> bool
-  
-val add:  t -> elt -> t
-(** If [x] was already in [s], [s] is returned unchanged. *)
-val mergeMany: t -> elt array -> t 
-val remove:  t -> elt -> t
-(**  If [x] was not in [s], [s] is returned unchanged. *)
-val removeMany: t -> elt array -> t
+
+val add: t -> elt -> unit
+val addCheck: t -> elt -> bool 
+val mergeMany: t -> elt array -> unit
+val remove: t -> elt -> unit
+val removeCheck: t -> elt -> bool 
+val removeMany: t -> elt array -> unit
   
 val union: t -> t -> t
 val intersect: t -> t -> t
 val diff: t -> t -> t
 val subset: t -> t -> bool
-(** [subset s1 s2] tests whether the set [s1] is a subset of
-   the set [s2]. *)
   
 val cmp: t -> t -> int
-(** Total ordering between sets. Can be used as the ordering function
-   for doing sets of sets. *)
-
 val eq: t -> t -> bool
-(** [eq s1 s2] tests whether the sets [s1] and [s2] are
-   equal, that is, contain equal elements. *)
 
 
 val forEachU: t -> (elt -> unit [@bs]) ->  unit
-val forEach: t -> (elt -> unit ) ->  unit  
+val forEach: t -> (elt -> unit ) ->  unit
 (** In increasing order*)
 
-val reduceU: t -> 'a -> ('a -> elt ->  'a [@bs]) ->  'a
-val reduce: t -> 'a -> ('a -> elt ->  'a ) ->  'a  
+val reduceU: t -> 'a -> ('a -> elt -> 'a [@bs]) -> 'a
+val reduce: t -> 'a -> ('a -> elt -> 'a ) -> 'a  
 (** Iterate in increasing order. *)
 
-val everyU: t -> (elt -> bool [@bs]) ->  bool
-val every: t -> (elt -> bool ) ->  bool  
+val everyU: t -> (elt -> bool [@bs]) -> bool
+val every: t -> (elt -> bool) ->  bool  
 (** [every p s] checks if all elements of the set
-   satisfy the predicate [p]. Order unspecified. *)
+    satisfy the predicate [p]. Order unspecified. *)
 
-val someU: t -> (elt -> bool [@bs]) ->  bool
-val some: t -> (elt -> bool ) ->  bool  
+val someU: t -> (elt -> bool [@bs]) -> bool
+val some: t -> (elt -> bool) ->  bool  
 (** [some p s] checks if at least one element of
-   the set satisfies the predicate [p]. Oder unspecified. *)
+    the set satisfies the predicate [p]. Oder unspecified. *)
 
 val keepU: t -> (elt -> bool [@bs]) ->  t
-val keep: t -> (elt -> bool ) ->  t  
-(** [keep p s] returns the set of all elements in [s]
-   that satisfy predicate [p]. *)
+val keep: t -> (elt -> bool) ->  t  
+(** [keep s p] returns a fresh copy of the set of all elements in [s]
+    that satisfy predicate [p]. *)
 
 val partitionU: t -> (elt -> bool [@bs]) ->  t * t
-val partition: t -> (elt -> bool ) ->  t * t
-(** [partition p s] returns a pair of sets [(s1, s2)], where
-   [s1] is the set of all the elements of [s] that satisfy the
-   predicate [p], and [s2] is the set of all the elements of
-   [s] that do not satisfy [p]. *)
+val partition: t -> (elt -> bool) ->  t * t 
+(** [partition s p] returns a fresh copy pair of sets [(s1, s2)], where
+    [s1] is the set of all the elements of [s] that satisfy the
+    predicate [p], and [s2] is the set of all the elements of
+    [s] that do not satisfy [p]. *)
 
 val size: t -> int
 val toList: t -> elt list
-(** In increasing order with respect *)
+ (** In increasing order with respect *)
 val toArray: t -> elt array
 
 
@@ -111,20 +106,14 @@ val minUndefined: t -> elt Js.undefined
 val maximum: t -> elt option
 val maxUndefined: t -> elt Js.undefined
 
-
-
 val get:  t -> elt -> elt option
 val getUndefined:  t -> elt -> elt Js.undefined
-val getExn: t -> elt -> elt    
-val split:  t -> elt -> (t * t) * bool  
-(** [split x s] returns a triple [(l, present, r)], where
-      [l] is the set of elements of [s] that are
-      strictly less than [x];
-      [r] is the set of elements of [s] that are
-      strictly greater than [x];
-      [present] is [false] if [s] contains no element equal to [x],
-      or [true] if [s] contains an element equal to [x]. *)
+val getExn: t -> elt -> elt
+val split:  t -> elt  -> (t * t) * bool 
+(**
+    [split s key] return a fresh copy of each
+*)
+
+val checkInvariantInternal: t ->  bool
 
 
-
-val checkInvariantInternal: t -> bool 

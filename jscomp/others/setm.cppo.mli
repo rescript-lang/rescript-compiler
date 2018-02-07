@@ -22,6 +22,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** This module is {!Bs.MutableSet} specialized with key type to be a primitive type.
+
+    It is more efficient in general, the  API is the same with {!Bs.MutableSet} except its key type is fixed,
+    and identity is not needed(using the built-in one)
+
+    {b See} {!Bs.MutableSet}
+*)
+
+
 #ifdef TYPE_STRING
 type elt = string
 #elif defined TYPE_INT
@@ -29,8 +38,12 @@ type elt = int
 #else
   [%error "unknown type"]
 #endif  
+(** The type of the set elements. *)
+
 
 type t
+(** The type of sets. *)
+  
 val make: unit -> t
 
 val ofArray: elt array -> t

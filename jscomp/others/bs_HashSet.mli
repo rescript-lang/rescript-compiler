@@ -22,11 +22,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** specalized when key type is [int], more efficient
+(** A {mutable} Hash set which allows customized {!hash} behavior.
+
+*)
+
+
+(** Specalized when key type is [int], more efficient
     than the gerneic type *)
 module Int = Bs_HashSetInt
 
-(** specalized when key type is [string], more efficient
+(** Specalized when key type is [string], more efficient
     than the gerneic type *)  
 module String = Bs_HashSetString
   
@@ -34,9 +39,9 @@ type ('a, 'id) t
 
 (** The type of hash tables from type ['a] to type ['b]. *)
 
-type ('a, 'id) dict = ('a, 'id) Bs_Id.hashable
+type ('a, 'id) id = ('a, 'id) Bs_Id.hashable
 
-val make:  int -> dict:('a,'id) dict ->  ('a, 'id) t
+val make:  int -> id:('a,'id) id ->  ('a, 'id) t
 val clear: ('a, 'id) t -> unit
 val isEmpty: _ t -> bool
 
@@ -62,7 +67,7 @@ val logStats: _ t -> unit
 
 val toArray: ('a,'id) t -> 'a array 
 
-val ofArray: 'a array -> dict:('a,'id) dict -> ('a,'id) t 
+val ofArray: 'a array -> id:('a,'id) id -> ('a,'id) t 
 
 val mergeMany: ('a,'id) t -> 'a array -> unit
 

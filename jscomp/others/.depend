@@ -60,7 +60,7 @@ bs_MutableSet.cmj : bs_internalAVLset.cmj bs_SortArray.cmj \
     bs_MutableSetString.cmj bs_MutableSetInt.cmj bs_Id.cmj bs_Array.cmj \
     bs_MutableSet.cmi
 bs_MutableSetInt.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj \
-    bs_SortArrayInt.cmj bs_Array.cmj
+    bs_SortArrayInt.cmj bs_Array.cmj bs_MutableSetInt.cmi
 bs_MutableSetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_SortArrayString.cmj bs_Array.cmj bs_MutableSetString.cmi
 bs_MutableMap.cmj : bs_internalAVLtree.cmj bs_MutableMapString.cmj \
@@ -123,7 +123,8 @@ bs_Map.cmi : bs_MapString.cmi bs_MapInt.cmi bs_MapDict.cmi bs_Id.cmi
 bs_MapString.cmi :
 bs_MapInt.cmi :
 bs_Set.cmi : bs_SetString.cmi bs_SetInt.cmi bs_SetDict.cmi bs_Id.cmi
-bs_MutableSet.cmi : bs_MutableSetString.cmi bs_MutableSetInt.cmj bs_Id.cmi
+bs_MutableSet.cmi : bs_MutableSetString.cmi bs_MutableSetInt.cmi bs_Id.cmi
+bs_MutableSetInt.cmi :
 bs_MutableSetString.cmi :
 bs_MutableMap.cmi : bs_MutableMapString.cmi bs_MutableMapInt.cmi bs_Id.cmi
 bs_MutableMapInt.cmi :

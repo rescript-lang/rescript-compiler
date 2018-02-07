@@ -11,7 +11,7 @@ module IntCmp =
 module L = Bs.List
 
 let () = 
-  let u0 = N.ofArray ~dict:(module IntCmp) (I.range 0 30) in 
+  let u0 = N.ofArray ~id:(module IntCmp) (I.range 0 30) in 
   let u1 = N.remove u0 0 in 
   let u2 = N.remove u1 0 in 
   let u3 = N.remove u2 30 in 
@@ -54,10 +54,10 @@ let () =
   b __LOC__ (N.has u15 20000);
   b __LOC__ (not @@ N.has u15 2000);
   b __LOC__ (N.isEmpty u16);
-  let u17  = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 100) in 
-  let u18 = N.ofArray ~dict:(module IntCmp) (I.randomRange 59 200) in 
+  let u17  = N.ofArray ~id:(module IntCmp) (I.randomRange 0 100) in 
+  let u18 = N.ofArray ~id:(module IntCmp) (I.randomRange 59 200) in 
   let u19 = N.union u17 u18 in 
-  let u20 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 200) in 
+  let u20 = N.ofArray ~id:(module IntCmp) (I.randomRange 0 200) in 
   b __LOC__ (N.eq u19 u20);
   let u21 =  N.intersect u17 u18 in 
   eq __LOC__ (N.toArray u21) (I.range 59 100);
@@ -88,7 +88,7 @@ let testIterToList  xs =
   L.reverse !v
 
 let () =   
-  let u0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 20) in 
+  let u0 = N.ofArray ~id:(module IntCmp) (I.randomRange 0 20) in 
   let u1 = N.remove u0 17 in  
   let u2 = N.add u1 33 in 
   b __LOC__ (L.every2 (testIterToList u0) (L.makeBy 21 (fun i -> i)) (fun x y -> x = y));
@@ -101,7 +101,7 @@ let () =
   b __LOC__ (N.cmp u0 u1 > 0)
 
 let () =   
-  let a0 = N.ofArray ~dict:(module IntCmp) (I.randomRange 0 1000) in 
+  let a0 = N.ofArray ~id:(module IntCmp) (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
       N.keep a0 (fun x -> x mod 2  = 0),
@@ -131,11 +131,11 @@ let () =
 
 
 let () =   
-  let a = N.ofArray ~dict:(module IntCmp) [||] in 
+  let a = N.ofArray ~id:(module IntCmp) [||] in 
   b __LOC__ (N.isEmpty (N.keep a (fun x -> x mod 2 = 0)))
 
 let () = 
-  let (aa,bb), pres = N.split (N.make  ~dict:(module IntCmp)) 0 in 
+  let (aa,bb), pres = N.split (N.make  ~id:(module IntCmp)) 0 in 
   b __LOC__ (N.isEmpty aa);
   b __LOC__ (N.isEmpty bb);
   b __LOC__ (not pres)

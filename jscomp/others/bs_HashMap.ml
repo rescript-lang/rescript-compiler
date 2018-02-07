@@ -19,7 +19,7 @@ module A = Bs_Array
 
 type ('a, 'id) eq = ('a, 'id) Bs_Id.eq
 type ('a, 'id) hash = ('a, 'id) Bs_Id.hash
-type ('a, 'id) dict = ('a, 'id) Bs_Id.hashable
+type ('a, 'id) id = ('a, 'id) Bs_Id.hashable
 type ('a,'b,'id) t =
   ( ('a, 'id) hash, ('a, 'id) eq, 'a, 'b) N.t
 
@@ -195,13 +195,13 @@ let has h key =
 
 
 
-let make (type elt) (type id) initialize_size ~(dict : (elt,id) dict) =
-  let module M = (val dict) in 
+let make (type elt) (type identity) initialize_size ~(id : (elt,identity) id) =
+  let module M = (val id) in 
   C.make ~hash:M.hash ~eq:M.eq  initialize_size
 
   
-let ofArray (type a) (type id) arr ~dict:(dict:(a,id) dict) =     
-  let module M = (val dict) in
+let ofArray (type a) (type identity) arr ~id:(id:(a,identity) id) =     
+  let module M = (val id) in
   let hash, eq = M.hash, M.eq in  
   let len = A.length arr in 
   let v = C.make ~hash ~eq len in 

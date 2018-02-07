@@ -31,7 +31,7 @@ module A = Bs_Array
 module Sort = Bs_SortArray
 
 
-type ('k, 'id) dict = ('k, 'id) Bs_Id.comparable
+type ('k, 'id) id = ('k, 'id) Bs_Id.comparable
 type ('key, 'id ) cmp = ('key, 'id) Bs_Id.cmp
 
 module S = struct
@@ -189,8 +189,8 @@ let mergeMany d xs =
   S.dataSet d (addArrayMutate (S.data d) xs ~cmp:(S.cmp d))
 
 
-let make (type elt) (type id) ~(dict : (elt, id) dict) =
-  let module M = (val dict) in 
+let make (type elt) (type identity) ~(id : (elt, identity) id) =
+  let module M = (val id) in 
   S.t ~cmp:M.cmp ~data:N.empty
     
 let isEmpty d = 
@@ -220,16 +220,16 @@ let toList d =
 let toArray d = 
   N.toArray (S.data d)
 
-let ofSortedArrayUnsafe (type elt) (type id) xs ~(dict : (elt,id) dict) : _ t =
-  let module M = (val dict) in 
+let ofSortedArrayUnsafe (type elt) (type identity) xs ~(id : (elt,identity) id) : _ t =
+  let module M = (val id) in 
   S.t ~data:(N.ofSortedArrayUnsafe xs) ~cmp:M.cmp
     
 let checkInvariantInternal d = 
   N.checkInvariantInternal (S.data d)
     
     
-let ofArray (type elt) (type id)  data ~(dict : (elt,id) dict) =
-  let module M = (val dict) in
+let ofArray (type elt) (type identity)  data ~(id : (elt,identity) id) =
+  let module M = (val id) in
   let cmp = M.cmp in 
   S.t ~cmp ~data:(N.ofArray ~cmp data)
     

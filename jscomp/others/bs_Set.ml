@@ -29,7 +29,7 @@ module Dict = Bs_SetDict
 module A = Bs_Array
 
 
-type ('key, 'id) dict = ('key, 'id) Bs_Id.comparable
+type ('key, 'id) id = ('key, 'id) Bs_Id.comparable
 type ('key, 'id ) cmp = ('key, 'id) Bs_Id.cmp
 
 module S = struct 
@@ -41,8 +41,8 @@ end
 
 type ('k, 'id) t = ('k, 'id) S.t
     
-let ofArray (type elt) (type id) data ~(dict : (elt,id) dict)  = 
-  let module M = (val dict ) in
+let ofArray (type elt) (type identity) data ~(id : (elt,identity) id)  = 
+  let module M = (val id ) in
   let cmp = M.cmp in 
   S.t ~cmp ~data:(Dict.ofArray ~cmp data)
 
@@ -88,8 +88,8 @@ let split m e =
   let (l,  r), b = Dict.split ~cmp (S.data m) e in 
   (S.t ~cmp ~data:l, S.t ~cmp ~data:r), b
   
-let make (type elt) (type id) ~(dict : (elt, id) dict) =
-  let module M = (val dict) in 
+let make (type elt) (type identity) ~(id : (elt, identity) id) =
+  let module M = (val id) in 
   S.t ~cmp:M.cmp  ~data:Dict.empty
 
 let isEmpty m = Dict.isEmpty (S.data m)
@@ -145,8 +145,8 @@ let getExn m e =
 let has m e = 
   Dict.has ~cmp:(S.cmp m) (S.data m) e
 
-let ofSortedArrayUnsafe (type elt) (type id) xs ~(dict : (elt,id) dict ) =
-  let module M = (val dict) in 
+let ofSortedArrayUnsafe (type elt) (type identity) xs ~(id : (elt,identity) id ) =
+  let module M = (val id) in 
   S.t ~cmp:M.cmp ~data:(Dict.ofSortedArrayUnsafe xs)
 
 
@@ -154,7 +154,7 @@ let ofSortedArrayUnsafe (type elt) (type id) xs ~(dict : (elt,id) dict ) =
 
 let getData = S.data
 
-let getDict (type elt) (type identity) (m : (elt,identity) t) : (elt, identity) dict =
+let getDict (type elt) (type identity) (m : (elt,identity) t) : (elt, identity) id =
   let module T = struct
     type nonrec identity = identity
     type nonrec t = elt
@@ -162,8 +162,8 @@ let getDict (type elt) (type identity) (m : (elt,identity) t) : (elt, identity) 
   end in
   (module T)
   
-let packDictData (type elt) (type id) ~(dict : (elt, id) dict) ~data  =
-  let module M = (val dict) in 
+let packDictData (type elt) (type identity) ~(id : (elt, identity) id) ~data  =
+  let module M = (val id) in 
   S.t ~cmp:M.cmp ~data
 
 let checkInvariantInternal d = Dict.checkInvariantInternal (S.data d)

@@ -9,8 +9,8 @@ module A = Bs.Array
 module IntCmp = 
   (val Bs.Id.comparable (fun (x:int) y -> compare x y))
 module L = Bs.List
-let ofArray = N.ofArray ~dict:(module IntCmp)
-let empty () = N.make ~dict:(module IntCmp)
+let ofArray = N.ofArray ~id:(module IntCmp)
+let empty () = N.make ~id:(module IntCmp)
 
 
 let () = 

@@ -30,7 +30,7 @@ module N = Bs_internalAVLtree
 module A = Bs_Array
 
 
-type ('key, 'id) dict = ('key, 'id) Bs_Id.comparable
+type ('key, 'id) id = ('key, 'id) Bs_Id.comparable
 type ('key, 'id ) cmp = ('key, 'id) Bs_Id.cmp
     
 module S = struct    
@@ -142,8 +142,8 @@ let updateU t  x f =
     S.dataSet t newRoot 
 let update t x f = updateU t x (fun [@bs] a -> f a)
     
-let make (type elt) (type id) ~(dict : (elt,id) dict) =
-  let module M = (val dict) in 
+let make (type elt) (type identity) ~(id : (elt,identity) id) =
+  let module M = (val id) in 
   S.t ~cmp:M.cmp ~data:N.empty
 
 let clear m = S.dataSet m N.empty
@@ -180,8 +180,8 @@ let keysToArray d =
 let valuesToArray d =   
   N.valuesToArray (S.data d)
     
-let ofSortedArrayUnsafe (type elt) (type id) ~(dict : (elt,id) dict) xs : _ t =
-  let module M = (val dict) in 
+let ofSortedArrayUnsafe (type elt) (type identity) ~(id : (elt,identity) id) xs : _ t =
+  let module M = (val id) in 
   S.t ~data:(N.ofSortedArrayUnsafe xs) ~cmp:M.cmp
     
 let checkInvariantInternal d = 
@@ -216,8 +216,8 @@ let getExn m x =
 let has m x = 
   N.has ~cmp:(S.cmp m) (S.data m) x
     
-let ofArray (type k) (type id) data ~(dict : (k,id) dict)= 
-  let module M = (val dict ) in
+let ofArray (type k) (type identity) data ~(id : (k,identity) id)= 
+  let module M = (val id ) in
   let cmp = M.cmp in 
   S.t ~cmp  ~data:(N.ofArray ~cmp data)
     

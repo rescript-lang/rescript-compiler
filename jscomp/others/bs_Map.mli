@@ -12,24 +12,86 @@
 (*  Adapted by authors of BuckleScript without using functors          *)
 (***********************************************************************)
 
+(** A {i immutable} sorted map module which allows customize {i compare} behavior.
+
+   The implementation uses balanced binary trees, and therefore searching
+   and insertion take time logarithmic in the size of the map.
+
+   All data are parameterized by not its only type but also a unique identity in
+   the time of initialization, so that two {i Map of int keys} initialized with different
+   {i compare} functions will have different type.
+
+   For example:
+   {[
+     type t = int * int 
+      module I0 =
+        (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+             match Pervasives.compare a0 b0 with
+             | 0 -> Pervasives.compare a1 b1
+             | c -> c 
+           ))
+    let s0 : (_, string, _) t = make ~id:(module I0) (* value is of type string *)
+    module I1 =
+      (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+           match compare a1 b1 with
+           | 0 -> compare a0 b0
+           | c -> c 
+         ))
+    let s1 : (_, string, _) t = make ~id:(module I1)
+   ]}
+
+
+   Here the compiler would infer [s0] and [s1] having different type so that
+    it would not mix.
+
+   {[
+     val s0 : ((int * int), string,  I0.identity) t 
+     val s1 : ((int * int), string,  I1.identity) t
+   ]}
+
+   We can add elements to the collection:
+
+   {[
+
+     let s2 = add s1 (0,0) "a"
+     let s3 = add s2 (1,1) "b"
+   ]}
+
+   Since this is an immutable data strucure, [s1] will be an empty map
+   while [s2] will contain one pair, [s3] will contain two.
+
+   The [merge s0 s3 callback] will result in a type error, since their identity mismatch
+*)
+
+
 (** Specalized when key type is [int], more efficient
-    than the gerneic type
+    than the gerneic type, its compare behavior is fixed using the built-in comparison
 *)
 module Int = Bs_MapInt
+
 (** specalized when key type is [string], more efficient
-    than the gerneic type *)  
+    than the gerneic type, its compare behavior is fixed using the built-in comparison *)  
 module String = Bs_MapString
 
-(** Seprate function from data, a more verbsoe but slightly
-    more efficient
+(** This module seprate identity from data, it is a bit more verbsoe but slightly
+    more efficient due to the fact that there is no need to pack identity and data back
+    after each operation
 *)  
 module Dict = Bs_MapDict
 
 
-type ('k,'v,'id) t
+type ('key,'value,'identity) t
+(** [('key, 'identity) t]
+
+    ['key] is the element type
+
+    ['identity] the identity of the collection
+*)
+
 
 type ('key, 'id ) id = ('key, 'id) Bs_Id.comparable
-(** The data associated with a comparison function *)   
+(** The identity needed for making an empty map*)
+
 
 (*
     How we retain soundness:
@@ -53,7 +115,18 @@ type ('key, 'id ) id = ('key, 'id) Bs_Id.comparable
 (* should not export [Bs_Id.compare]. 
    should only export [Bs_Id.t] or [Bs_Id.cmp] instead *)
 
-val make: id:('k, 'id) id -> ('k, 'a, 'id) t 
+
+val make: id:('k, 'id) id -> ('k, 'a, 'id) t
+(** [make ~id]
+   
+     @example {[
+     module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.comapre x y))
+     let s = make ~id:(module IntCmp)
+    ]}
+
+*)
+
+
 val isEmpty: _ t -> bool
 
 val has: ('k, 'a, 'id) t -> 'k  -> bool    
@@ -141,7 +214,7 @@ val set:
     in [m], its previous binding disappears. *)
 val updateU: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> ('k, 'a, 'id) t      
 val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option) -> ('k, 'a, 'id) t      
-val merge:
+val mergeMany:
     ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
 
 val mergeU:
@@ -159,10 +232,6 @@ val merge:
     value, is determined with the function [f].
 *)    
 
-val mergeMany:
-  ('a, 'b, 'id) t ->
-  ('a * 'b) array ->
-  ('a, 'b, 'id) t
 
 val keepU: 
     ('k, 'a, 'id) t -> 

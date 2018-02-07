@@ -89,8 +89,8 @@
     it would not mix.
 
     {[
-      val s0 : Bs.Set.t ((int * int), I0.identity)
-      val s1 : Bs.Set.t ((int * int), I1.identity)
+      val s0 : ((int * int), I0.identity) t
+      val s1 : ((int * int), I1.identity) t
     ]}
 
     [I0.identity] and [I1.identity] are not the same using our encoding scheme.

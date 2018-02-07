@@ -23,15 +23,67 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** A {b mutable} sorted map module which allows customize {i compare} behavior.
+
+   The implementation uses balanced binary trees, and therefore searching
+   and insertion take time logarithmic in the size of the map.
+
+   All data are parameterized by not its only type but also a unique identity in
+   the time of initialization, so that two {i Sets of ints} initialized with different
+   {i compare} functions will have different type.
+
+   For example:
+   {[
+     type t = int * int 
+      module I0 =
+        (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+             match Pervasives.compare a0 b0 with
+             | 0 -> Pervasives.compare a1 b1
+             | c -> c 
+           ))
+    let s0 : (_, string,_) t = make ~id:(module I0)
+    module I1 =
+      (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+           match compare a1 b1 with
+           | 0 -> compare a0 b0
+           | c -> c 
+         ))
+    let s1 : (_, string, _) t = make ~id:(module I1)
+   ]}
+
+
+   Here the compiler would infer [s0] and [s1] having different type so that
+    it would not mix.
+
+   {[
+     val s0 : ((int * int), string, I0.identity) t 
+     val s1 : ((int * int), string, I1.identity) t 
+   ]}
+
+   We can add elements to the collection:
+
+   {[
+
+     let () =
+       add s1 (0,0) "a";
+       add s1 (1,1) "b"
+   ]}
+
+   Since this is an mutable data strucure, [s1] will contain two pairs.
+
+*)
+
+
+
 module Int = Bs_MutableMapInt
 
 module String = Bs_MutableMapString
 
 
 type ('k,'v,'id) t
-type ('key, 'id) dict = ('key, 'id) Bs_Id.comparable
+type ('key, 'id) id = ('key, 'id) Bs_Id.comparable
     
-val make: dict:('k, 'id) dict -> ('k, 'a, 'id) t
+val make: id:('k, 'id) id -> ('k, 'a, 'id) t
 val clear: _ t -> unit 
 val isEmpty: _ t -> bool
 val has: ('k, _, _) t -> 'k  -> bool
@@ -88,7 +140,7 @@ val size: ('k, 'a, 'id) t -> int
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
-val ofArray: ('k * 'a) array -> dict:('k,'id) dict ->  ('k,'a,'id) t    
+val ofArray: ('k * 'a) array -> id:('k,'id) id ->  ('k,'a,'id) t    
 val keysToArray: ('k, _, _) t -> 'k array 
 val valuesToArray: (_, 'a, _) t -> 'a array
 val minKey: ('k, _,  _) t -> 'k option

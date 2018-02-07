@@ -154,7 +154,7 @@ bs_MutableSetInt.ml: setm.cppo.ml
 	cppo -D TYPE_INT $^ > $@
 bs_MutableSetString.ml: setm.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
-bs_MutabgleSetInt.mli: setm.cppo.mli
+bs_MutableSetInt.mli: setm.cppo.mli
 	cppo -D TYPE_INT $^ > $@
 bs_MutableSetString.mli: setm.cppo.mli
 	cppo -D TYPE_STRING $^ > $@

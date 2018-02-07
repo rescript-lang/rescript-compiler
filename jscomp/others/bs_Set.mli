@@ -22,30 +22,110 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** specalized when key type is [int], more efficient
-    than the gerneic type
+(** A {i immutable} sorted set module which allows customize {i compare} behavior.
+
+   The implementation uses balanced binary trees, and therefore searching
+   and insertion take time logarithmic in the size of the map.
+
+   All data are parameterized by not its only type but also a unique identity in
+   the time of initialization, so that two {i Sets of ints} initialized with different
+   {i compare} functions will have different type.
+
+   For example:
+   {[
+     type t = int * int 
+      module I0 =
+        (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+             match Pervasives.compare a0 b0 with
+             | 0 -> Pervasives.compare a1 b1
+             | c -> c 
+           ))
+    let s0 = make ~id:(module I0)
+    module I1 =
+      (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+           match compare a1 b1 with
+           | 0 -> compare a0 b0
+           | c -> c 
+         ))
+    let s1 = make ~id:(module I1)
+   ]}
+
+
+   Here the compiler would infer [s0] and [s1] having different type so that
+    it would not mix.
+
+   {[
+     val s0 :  ((int * int), I0.identity) t
+     val s1 :  ((int * int), I1.identity) t
+   ]}
+
+   We can add elements to the collection:
+
+   {[
+
+     let s2 = add s1 (0,0)
+     let s3 = add s2 (1,1)
+   ]}
+
+   Since this is an immutable data strucure, [s1] will be an empty set
+   while [s2] will contain one element, [s3] will contain two.
+
+   The [union s0 s3] will result in a type error, since their identity mismatch
+*)
+
+(** Specalized when key type is [int], more efficient
+    than the gerneic type, its compare behavior is fixed using the built-in comparison
 *)
 module Int = Bs_SetInt
 
-(** specalized when key type is [string], more efficient
-    than the gerneic type *)  
+(** Specalized when key type is [string], more efficient
+    than the gerneic type, its compare behavior is fixed using the built-in comparison
+*)  
 module String = Bs_SetString
 
-(** seprate function from data, a more verbsoe but slightly
-    more efficient
+
+(** This module seprate identity from data, it is a bit more verbsoe but slightly
+    more efficient due to the fact that there is no need to pack identity and data back
+    after each operation
 *)  
 module Dict = Bs_SetDict
 
-type ('k,'id) t
 
-type ('key, 'id) dict = ('key, 'id) Bs_Id.comparable
-    
-val make: dict:('elt, 'id) dict -> ('elt, 'id) t
+type ('key,'identity)  t
+(** [('key, 'identity) t]
 
-val ofArray:  'k array -> dict:('k, 'id) dict ->  ('k, 'id) t
+    ['key] is the element type
 
-val ofSortedArrayUnsafe: 'elt array -> dict:('elt, 'id) dict -> ('elt,'id) t
-    
+    ['identity] the identity of the collection
+*)
+
+
+type ('key, 'id) id = ('key, 'id) Bs_Id.comparable
+(** The identity needed for making an empty set
+*)
+
+val make: id:('elt, 'id) id -> ('elt, 'id) t
+(** [make ~id]
+   
+     @example {[
+     module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.comapre x y))
+     let s = make ~id:(module IntCmp)
+    ]}
+
+*)
+
+
+val ofArray:  'k array -> id:('k, 'id) id ->  ('k, 'id) t
+
+val ofSortedArrayUnsafe: 'elt array -> id:('elt, 'id) id -> ('elt,'id) t
+(** [ofSortedArrayUnsafe xs ~id]
+
+    The same as {!ofArray} except it is after assuming the array is already sorted
+
+    {b unsafe} assuming the input is sorted
+*)
+
+
 val isEmpty: _ t -> bool
 val has: ('elt, 'id) t -> 'elt ->  bool
 
@@ -53,6 +133,7 @@ val has: ('elt, 'id) t -> 'elt ->  bool
 val add:   
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
+    
 val mergeMany: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
 
 val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
@@ -70,6 +151,7 @@ val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool
 val cmp: ('elt, 'id) t -> ('elt, 'id) t -> int
 (** Total ordering between sets. Can be used as the ordering function
     for doing sets of sets. *)
+  
 val eq: ('elt, 'id) t -> ('elt, 'id) t -> bool
 
 val forEachU: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
@@ -120,7 +202,11 @@ val getUndefined: ('elt, 'id) t -> 'elt -> 'elt Js.undefined
 val getExn: ('elt, 'id) t -> 'elt -> 'elt 
 
 val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
-                                    
+(** [split set ele]
+
+    @return  a tuple [((smaller, larger), present)],
+    [present] is true when [ele] exist in [set]
+*)                                    
 val checkInvariantInternal: _ t -> bool
 
 (****************************************************************************)
@@ -130,6 +216,6 @@ val checkInvariantInternal: _ t -> bool
 *)
 
 val getData: ('k,'id) t  -> ('k,'id) Bs_SetDict.t
-val getDict: ('k,'id) t  -> ('k,'id) dict
-val packDictData: dict:('k, 'id) dict -> data:('k, 'id) Bs_SetDict.t -> ('k, 'id) t
+val getDict: ('k,'id) t  -> ('k,'id) id
+val packDictData: id:('k, 'id) id -> data:('k, 'id) Bs_SetDict.t -> ('k, 'id) t
     

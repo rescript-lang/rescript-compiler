@@ -33,7 +33,7 @@ module A = Bs_Array
 
 type ('a, 'id) eq = ('a, 'id) Bs_Id.eq
 type ('a, 'id) hash = ('a, 'id) Bs_Id.hash
-type ('a, 'id) dict = ('a, 'id) Bs_Id.hashable
+type ('a, 'id) id = ('a, 'id) Bs_Id.hashable
 
 type ('a,'id) t =  ( ('a, 'id) hash, ('a, 'id) eq, 'a) N.t
 
@@ -160,8 +160,8 @@ let has h key =
 
 
 
-let make (type elt) (type id)  initialize_size ~(dict: (elt, id) dict)=
-  let module M = (val dict) in 
+let make (type elt) (type identity)  initialize_size ~(id: (elt, identity) id)=
+  let module M = (val id) in 
   C.make initialize_size ~hash:M.hash ~eq:M.eq
 
 let clear = C.clear
@@ -176,8 +176,8 @@ let copy = N.copy
 let getBucketHistogram  = N.getBucketHistogram 
 let isEmpty  = C.isEmpty
 
-let ofArray (type a) (type id) arr ~(dict:(a,id) dict)  =     
-  let module M = (val dict) in 
+let ofArray (type a) (type identity) arr ~(id:(a,identity) id)  =     
+  let module M = (val id) in 
   let eq, hash = M.eq , M.hash in 
     let len = A.length arr in 
   let v = C.make len ~hash ~eq  in 

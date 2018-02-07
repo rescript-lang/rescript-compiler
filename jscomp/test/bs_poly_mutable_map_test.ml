@@ -13,8 +13,8 @@ module N = Bs.Set
 
 module A = Bs_Array
 module I = Array_data_util
-let f x = M.ofArray ~dict:(module Icmp) x 
-let ff x = N.ofArray ~dict:(module Icmp) x 
+let f x = M.ofArray ~id:(module Icmp) x 
+let ff x = N.ofArray ~id:(module Icmp) x 
 
 
 let randomRange i j = 
