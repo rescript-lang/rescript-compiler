@@ -34,7 +34,7 @@ type ('a, 'id) t
 
 (** The type of hash tables from type ['a] to type ['b]. *)
 
-type ('a, 'id) dict = ('a, 'id) Bs_Dict.hashable
+type ('a, 'id) dict = ('a, 'id) Bs_Id.hashable
 
 val make:  int -> dict:('a,'id) dict ->  ('a, 'id) t
 val clear: ('a, 'id) t -> unit

@@ -1,7 +1,7 @@
 'use strict';
 
 
-var Id = 0;
+var Dict = 0;
 
 var $$Array = 0;
 
@@ -27,7 +27,7 @@ var HashSet = 0;
 
 var HashMap = 0;
 
-exports.Id = Id;
+exports.Dict = Dict;
 exports.$$Array = $$Array;
 exports.SortArray = SortArray;
 exports.MutableQueue = MutableQueue;

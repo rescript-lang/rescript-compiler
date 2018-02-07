@@ -108,7 +108,29 @@ let makeByAndShuffleU l f =
 
 let makeByAndShuffle l f = makeByAndShuffleU l (fun[@bs] a -> f a)
 
+let range start finish =
+  let cut = finish - start in 
+  if cut < 0  then [||]
+  else
+    let arr = makeUninitializedUnsafe (cut + 1 ) in
+    for i = 0 to cut do
+      setUnsafe arr i (start + i)
+    done;
+    arr
 
+let rangeBy start finish ~step =
+  let cut = finish - start in
+  if cut < 0 || step <=0 then
+    [||]
+  else
+    let nb = cut/step + 1 in
+    let arr = makeUninitializedUnsafe  nb in
+    let cur = ref start in 
+    for i = 0 to nb - 1 do
+      setUnsafe arr i !cur;
+      cur := !cur + step ; 
+    done;
+    arr 
 
 let zip xs ys = 
   let lenx, leny = length xs, length ys in 

@@ -1,9 +1,9 @@
 'use strict';
 
 var Mt = require("./mt.js");
+var Bs_Id = require("../../lib/js/bs_Id.js");
 var Bs_Map = require("../../lib/js/bs_Map.js");
 var Bs_Set = require("../../lib/js/bs_Set.js");
-var Bs_Dict = require("../../lib/js/bs_Dict.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Bs_MapDict = require("../../lib/js/bs_MapDict.js");
@@ -22,7 +22,7 @@ function b(loc, v) {
   return Mt.bool_suites(test_id, suites, loc, v);
 }
 
-var Icmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
+var Icmp = Bs_Id.comparable(Caml_primitive.caml_int_compare);
 
 function mapOfArray(x) {
   return Bs_Map.ofArray(x, Icmp);

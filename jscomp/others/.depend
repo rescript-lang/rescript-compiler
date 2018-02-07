@@ -17,9 +17,9 @@ js_console.cmj :
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
 bs_Array.cmj : js_math.cmj bs_Array.cmi
-bs_internalAVLset.cmj : bs_SortArray.cmj bs_Dict.cmj bs_Array.cmj \
+bs_internalAVLset.cmj : bs_SortArray.cmj bs_Id.cmj bs_Array.cmj \
     bs_internalAVLset.cmi
-bs_internalAVLtree.cmj : bs_SortArray.cmj bs_Dict.cmj bs_Array.cmj \
+bs_internalAVLtree.cmj : bs_SortArray.cmj bs_Id.cmj bs_Array.cmj \
     bs_internalAVLtree.cmi
 bs_List.cmj : bs_Array.cmj bs_List.cmi
 bs_SortArray.cmj : bs_SortArrayString.cmj bs_SortArrayInt.cmj bs_Array.cmj \
@@ -32,22 +32,20 @@ bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj \
     bs_internalSetBuckets.cmi
 bs_internalBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj \
     bs_internalBuckets.cmi
-bs_HashMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
-    bs_HashMapString.cmj bs_HashMapInt.cmj bs_Dict.cmj bs_Array.cmj \
-    bs_HashMap.cmi
+bs_HashMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj bs_Id.cmj \
+    bs_HashMapString.cmj bs_HashMapInt.cmj bs_Array.cmj bs_HashMap.cmi
 bs_HashSet.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
-    bs_HashSetString.cmj bs_HashSetInt.cmj bs_Dict.cmj bs_Array.cmj \
+    bs_Id.cmj bs_HashSetString.cmj bs_HashSetInt.cmj bs_Array.cmj \
     bs_HashSet.cmi
 bs_HashSetString.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
     bs_Array.cmj bs_HashSetString.cmi
 bs_HashSetInt.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
     bs_Array.cmj bs_HashSetInt.cmi
-bs_Dict.cmj : bs_Dict.cmi
-bs_MapDict.cmj : bs_internalAVLtree.cmj bs_Dict.cmj bs_Array.cmj \
+bs_Id.cmj : bs_Id.cmi
+bs_MapDict.cmj : bs_internalAVLtree.cmj bs_Id.cmj bs_Array.cmj \
     bs_MapDict.cmi
-bs_SetDict.cmj : bs_internalAVLset.cmj bs_Dict.cmj bs_Array.cmj \
-    bs_SetDict.cmi
-bs_Map.cmj : bs_MapString.cmj bs_MapInt.cmj bs_MapDict.cmj bs_Dict.cmj \
+bs_SetDict.cmj : bs_internalAVLset.cmj bs_Id.cmj bs_Array.cmj bs_SetDict.cmi
+bs_Map.cmj : bs_MapString.cmj bs_MapInt.cmj bs_MapDict.cmj bs_Id.cmj \
     bs_Array.cmj bs_Map.cmi
 bs_internalMapInt.cmj : bs_internalAVLtree.cmj bs_SortArray.cmj bs_Array.cmj
 bs_internalMapString.cmj : bs_internalAVLtree.cmj bs_SortArray.cmj \
@@ -56,17 +54,17 @@ bs_MapString.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
     bs_Array.cmj bs_MapString.cmi
 bs_MapInt.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_Array.cmj \
     bs_MapInt.cmi
-bs_Set.cmj : bs_SetString.cmj bs_SetInt.cmj bs_SetDict.cmj bs_Dict.cmj \
+bs_Set.cmj : bs_SetString.cmj bs_SetInt.cmj bs_SetDict.cmj bs_Id.cmj \
     bs_Array.cmj bs_Set.cmi
 bs_MutableSet.cmj : bs_internalAVLset.cmj bs_SortArray.cmj \
-    bs_MutableSetString.cmj bs_MutableSetInt.cmj bs_Dict.cmj bs_Array.cmj \
+    bs_MutableSetString.cmj bs_MutableSetInt.cmj bs_Id.cmj bs_Array.cmj \
     bs_MutableSet.cmi
 bs_MutableSetInt.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj \
     bs_SortArrayInt.cmj bs_Array.cmj
 bs_MutableSetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
     bs_SortArrayString.cmj bs_Array.cmj bs_MutableSetString.cmi
 bs_MutableMap.cmj : bs_internalAVLtree.cmj bs_MutableMapString.cmj \
-    bs_MutableMapInt.cmj bs_Dict.cmj bs_Array.cmj bs_MutableMap.cmi
+    bs_MutableMapInt.cmj bs_Id.cmj bs_Array.cmj bs_MutableMap.cmi
 bs_MutableMapInt.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj \
     bs_Array.cmj bs_MutableMapInt.cmi
 bs_MutableMapString.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
@@ -104,8 +102,8 @@ js_option.cmi :
 js_result.cmi :
 js_mapperRt.cmi :
 bs_Array.cmi :
-bs_internalAVLset.cmi : bs_Dict.cmi
-bs_internalAVLtree.cmi : bs_Dict.cmi
+bs_internalAVLset.cmi : bs_Id.cmi
+bs_internalAVLtree.cmi : bs_Id.cmi
 bs_List.cmi :
 bs_SortArray.cmi : bs_SortArrayString.cmi bs_SortArrayInt.cmi
 bs_SortArrayInt.cmi :
@@ -114,20 +112,20 @@ bs_Range.cmi :
 bs_internalBucketsType.cmi :
 bs_internalSetBuckets.cmi : bs_internalBucketsType.cmi
 bs_internalBuckets.cmi : bs_internalBucketsType.cmi
-bs_HashMap.cmi : bs_HashMapString.cmi bs_HashMapInt.cmi bs_Dict.cmi
-bs_HashSet.cmi : bs_HashSetString.cmi bs_HashSetInt.cmi bs_Dict.cmi
+bs_HashMap.cmi : bs_Id.cmi bs_HashMapString.cmi bs_HashMapInt.cmi
+bs_HashSet.cmi : bs_Id.cmi bs_HashSetString.cmi bs_HashSetInt.cmi
 bs_HashSetString.cmi :
 bs_HashSetInt.cmi :
-bs_Dict.cmi :
-bs_MapDict.cmi : bs_Dict.cmi
-bs_SetDict.cmi : bs_Dict.cmi
-bs_Map.cmi : bs_MapString.cmi bs_MapInt.cmi bs_MapDict.cmi bs_Dict.cmi
+bs_Id.cmi :
+bs_MapDict.cmi : bs_Id.cmi
+bs_SetDict.cmi : bs_Id.cmi
+bs_Map.cmi : bs_MapString.cmi bs_MapInt.cmi bs_MapDict.cmi bs_Id.cmi
 bs_MapString.cmi :
 bs_MapInt.cmi :
-bs_Set.cmi : bs_SetString.cmi bs_SetInt.cmi bs_SetDict.cmi bs_Dict.cmi
-bs_MutableSet.cmi : bs_MutableSetString.cmi bs_MutableSetInt.cmj bs_Dict.cmi
+bs_Set.cmi : bs_SetString.cmi bs_SetInt.cmi bs_SetDict.cmi bs_Id.cmi
+bs_MutableSet.cmi : bs_MutableSetString.cmi bs_MutableSetInt.cmj bs_Id.cmi
 bs_MutableSetString.cmi :
-bs_MutableMap.cmi : bs_MutableMapString.cmi bs_MutableMapInt.cmi bs_Dict.cmi
+bs_MutableMap.cmi : bs_MutableMapString.cmi bs_MutableMapInt.cmi bs_Id.cmi
 bs_MutableMapInt.cmi :
 bs_MutableMapString.cmi :
 bs_SetInt.cmi :

@@ -29,7 +29,7 @@ module String = Bs_MutableMapString
 
 
 type ('k,'v,'id) t
-type ('key, 'id) dict = ('key, 'id) Bs_Dict.comparable
+type ('key, 'id) dict = ('key, 'id) Bs_Id.comparable
     
 val make: dict:('k, 'id) dict -> ('k, 'a, 'id) t
 val clear: _ t -> unit 

@@ -25,7 +25,7 @@
 
 (** A stdlib shipped with BuckleScript 
 
-    This stdlib is still in  beta status, but we encourage you to try it out and 
+    This stdlib is still in {i beta} status, but we encourage you to try it out and 
     provide feedback.
 
     {b Motivation }
@@ -70,29 +70,30 @@
     {[
       type t = int * int 
       module I0 =
-        (val Bs.Dict.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+        (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
              match compare a0 b0 with
              | 0 -> compare a1 b1
              | c -> c 
            ))
-    let s0 = Bs.Set.make (module I0)
+    let s0 = Bs.Set.make ~id:(module I0)
     module I1 =
-      (val Bs.Dict.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+      (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
            match compare a1 b1 with
            | 0 -> compare a0 b0
            | c -> c 
          ))
-    let s1 = Bs.Set.make (module I1)
+    let s1 = Bs.Set.make ~id:(module I1)
     ]}
 
     Here the compiler would infer [s0] and [s1] having different type so that
     it would not mix.
 
     {[
-      val s0 : Bs.Set.t ((int * int), I0.id)
-      val s1 : Bs.Set.t ((int * int), I1.id)
+      val s0 : Bs.Set.t ((int * int), I0.identity)
+      val s1 : Bs.Set.t ((int * int), I1.identity)
     ]}
 
+    [I0.identity] and [I1.identity] are not the same using our encoding scheme.
 
     {b Collection Hierachy}
 
@@ -115,7 +116,7 @@
     
 *)
 
-(** {!Bs.Dict}
+(** {!Bs.Id}
 
     Provide utiliites to create identified comparators or hashes for 
     data structures used below. 
@@ -124,7 +125,7 @@
     functions so that different data structures with slightly different 
     comparison functions won't mix
 *)
-module Dict = Bs_Dict
+module Id = Bs_Id
 
 (** {!Bs.Array}
 

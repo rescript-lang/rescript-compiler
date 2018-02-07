@@ -39,7 +39,7 @@ external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 
-type ('k, 'id) cmp = ('k, 'id) Bs_Dict.cmp
+type ('k, 'id) cmp = ('k, 'id) Bs_Id.cmp
     
 val copy : ('k, 'v) t -> ('k, 'v) t
 val create :

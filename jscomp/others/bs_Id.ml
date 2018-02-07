@@ -34,13 +34,13 @@ external getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs]) = "%identity"
 
 
 module type Comparable = sig
-  type id
+  type identity
   type t
-  val cmp: (t, id) cmp
+  val cmp: (t, identity) cmp
 end
 
 type ('key, 'id) comparable =
-  (module Comparable with type t = 'key and type id = 'id)
+  (module Comparable with type t = 'key and type identity = 'id)
 
 
 module MakeComparable (M : sig
@@ -48,7 +48,7 @@ module MakeComparable (M : sig
    val cmp: t -> t -> int [@bs]
   end) =
 struct
-  type id
+  type identity
   type t = M.t
   let cmp = M.cmp
 end
@@ -68,13 +68,13 @@ let comparable ~cmp =
   comparableU ~cmp:(fun[@bs] a b -> cmp a b)
     
 module type Hashable = sig 
-  type id 
+  type identity 
   type t 
-  val hash: (t,id) hash
-  val eq:  (t,id) eq
+  val hash: (t,identity) hash
+  val eq:  (t,identity) eq
 end
 
-type ('key, 'id) hashable = (module Hashable with type t = 'key and type id = 'id)
+type ('key, 'id) hashable = (module Hashable with type t = 'key and type identity = 'id)
                             
 module MakeHashable (M : sig
    type t
@@ -82,7 +82,7 @@ module MakeHashable (M : sig
    val eq : t -> t -> bool [@bs]
   end) =
 struct
-  type id
+  type identity
   type t = M.t
   let hash = M.hash
   let eq = M.eq

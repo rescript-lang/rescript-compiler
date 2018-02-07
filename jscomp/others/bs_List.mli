@@ -192,7 +192,7 @@ val mapReverse2U: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> 'c t
 val mapReverse2: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
 (** [mapReverse2 xs ys f]
 
-    equivalent to [reverse (map2 xs ys f)]    
+    equivalent to [reverse (zipBy xs ys f)]    
 
     @example {[
       mapReverse2 [1;2;3] [1;2] (+) = [4;2]

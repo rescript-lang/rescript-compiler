@@ -1,7 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Bs_Dict = require("../../lib/js/bs_Dict.js");
+var Bs_Id = require("../../lib/js/bs_Id.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Bs_HashMap = require("../../lib/js/bs_HashMap.js");
@@ -29,7 +29,7 @@ var hash = Hashtbl.hash;
 
 var cmp = Caml_primitive.caml_int_compare;
 
-var Y = Bs_Dict.hashable(hash, eq);
+var Y = Bs_Id.hashable(hash, eq);
 
 var empty = Bs_HashMap.make(30, Y);
 

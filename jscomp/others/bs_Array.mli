@@ -86,6 +86,31 @@ val make: int -> 'a  -> 'a array
     @return an empty array when [n] is negative.
 *)
 
+val range: int -> int -> int array
+(** [range start finish] create an inclusive array
+    @example {[
+      range 0 3 =  [|0;1;2;3|];;
+      range 3 0 =  [||] ;;
+      range 3 3 = [|3|];;
+    ]}
+*)
+val rangeBy: int -> int -> step:int -> int array
+(** [rangeBy start finish ~step]
+
+    @return empty array when step is 0 or negative
+    it also return empty array when [start > finish]
+    
+    @example {[
+     rangeBy 0 10 ~step:3 = [|0;3;6;9|];;
+     rangeBy 0 12 ~step:3 = [|0;3;6;9;12|];;
+     rangeBy 33 0 ~step:1 =  [||];;
+     rangeBy 33 0 ~step:(-1) = [||];;
+     rangeBy 3 12 ~step:(-1) = [||];;
+     rangeBy 3 3 ~step:0 = [||] ;;     
+     rangeBy 3 3 ~step:(1) = [|3|] ;;
+   ]}
+*)    
+
 val makeByU: int -> (int -> 'a [@bs]) -> 'a array
 val makeBy: int -> (int -> 'a ) -> 'a array
 (** [makeBy n f] 

@@ -1,7 +1,7 @@
 'use strict';
 
 var Mt = require("./mt.js");
-var Bs_Dict = require("../../lib/js/bs_Dict.js");
+var Bs_Id = require("../../lib/js/bs_Id.js");
 var Bs_List = require("../../lib/js/bs_List.js");
 var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
@@ -22,7 +22,7 @@ function b(loc, x) {
   return Mt.bool_suites(test_id, suites, loc, x);
 }
 
-var IntCmp = Bs_Dict.comparable(Caml_primitive.caml_int_compare);
+var IntCmp = Bs_Id.comparable(Caml_primitive.caml_int_compare);
 
 function ofArray(param) {
   return Bs_MutableSet.ofArray(param, IntCmp);

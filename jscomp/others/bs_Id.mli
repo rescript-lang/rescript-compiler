@@ -24,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** {!Bs.Dict}
+(** {!Bs.Id}
     
     Provide utiliites to create identified comparators or hashes for 
     data structures used below. 
@@ -57,13 +57,13 @@ type ('a, 'id) cmp
 *)
     
 module type Comparable = sig
-  type id
+  type identity
   type t
-  val cmp: (t, id) cmp
+  val cmp: (t, identity) cmp
 end
 
 type ('key, 'id) comparable =
-  (module Comparable with type t = 'key and type id = 'id)
+  (module Comparable with type t = 'key and type identity = 'id)
 (** [('key, 'id) cmparable] is a module of functions, here it only includes [cmp].
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
@@ -84,14 +84,14 @@ val comparable:
   (module Comparable with type t = 'a)
   
 module type Hashable = sig 
-  type id 
+  type identity 
   type t 
-  val hash: (t,id) hash
-  val eq:  (t,id) eq
+  val hash: (t,identity) hash
+  val eq:  (t,identity) eq
 end 
 
 type ('key, 'id) hashable =
-  (module Hashable with type t = 'key and type id = 'id)
+  (module Hashable with type t = 'key and type identity = 'id)
 (** [('key, 'id) hashable] is a module of functions, here it only includes [hash], [eq].
     
     Unlike normal functions, when created, it comes with a unique identity (guaranteed

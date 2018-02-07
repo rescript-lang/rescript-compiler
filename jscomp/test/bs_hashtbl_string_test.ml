@@ -18,21 +18,21 @@ let hashString : string -> int  = [%raw{|function (str) {
                                             |}]
 
 module String = 
-  (val Bs.Dict.hashable 
+  (val Bs.Id.hashable 
       ~eq:(fun (x:string) y -> x = y )
       ~hash:Hashtbl.hash)
 
 module String1 = 
-  (val Bs.Dict.hashable
+  (val Bs.Id.hashable
       ~eq:(fun (x:string) y -> x = y )
       ~hash:hashString)
 module String2 = 
-  (val Bs.Dict.hashable
+  (val Bs.Id.hashable
       ~eq:(fun (x:string) y -> x = y )
       ~hash:(fun  (x:string) -> hash_string x))
 
 module Int = 
-  (val Bs.Dict.hashable
+  (val Bs.Id.hashable
       ~eq:(fun (x:int) y -> x = y )
       ~hash:Hashtbl.hash)
 module N = Bs.HashMap
@@ -61,7 +61,7 @@ let initial_size = 1_000_000
     #.add (string_of_int i) i
 *)    
 module M = Bs.HashMap
-let bench2 (type t) (m : (string,t) Bs.Dict.hashable) = 
+let bench2 (type t) (m : (string,t) Bs.Id.hashable) = 
   let empty = 
     M.make ~dict:m initial_size in
   let module String = (val m) in     
@@ -84,7 +84,7 @@ let bench2 (type t) (m : (string,t) Bs.Dict.hashable) =
 (* Bs.HashMap.logStats empty *)
 module Md = Bs.Map 
 module Md0 = Bs.Map.Dict
-let bench3 (type t) (m : (string,t) Bs.Dict.comparable) = 
+let bench3 (type t) (m : (string,t) Bs.Id.comparable) = 
   
   let empty = Md.make m in
   let module String = (val m) in 
@@ -104,7 +104,7 @@ let bench3 (type t) (m : (string,t) Bs.Dict.comparable) =
   done ;
   assert (Md0.size !table = 0)
 
-module Sx = (val Bs.Dict.comparable ~cmp:(fun  (x : string) y -> compare x y )) 
+module Sx = (val Bs.Id.comparable ~cmp:(fun  (x : string) y -> compare x y )) 
 module H = Bs.HashMap.String
 let bench4 () = 
   let table = 

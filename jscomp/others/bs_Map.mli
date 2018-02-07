@@ -9,11 +9,10 @@
 (*  under the terms of the GNU Library General Public License, with    *)
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
+(*  Adapted by authors of BuckleScript without using functors          *)
 (***********************************************************************)
-(** Adapted by authors of BuckleScript without using functors          *)
 
-
-(** specalized when key type is [int], more efficient
+(** Specalized when key type is [int], more efficient
     than the gerneic type
 *)
 module Int = Bs_MapInt
@@ -21,7 +20,7 @@ module Int = Bs_MapInt
     than the gerneic type *)  
 module String = Bs_MapString
 
-(** seprate function from data, a more verbsoe but slightly
+(** Seprate function from data, a more verbsoe but slightly
     more efficient
 *)  
 module Dict = Bs_MapDict
@@ -29,32 +28,32 @@ module Dict = Bs_MapDict
 
 type ('k,'v,'id) t
 
-type ('key, 'id ) dict = ('key, 'id) Bs_Dict.comparable
+type ('key, 'id ) id = ('key, 'id) Bs_Id.comparable
 (** The data associated with a comparison function *)   
 
 (*
     How we retain soundness:
     The only way to create a value of type [_ t] from scratch 
-    is through [empty] which requires [_ Bs_Dict.t]
-    The only way to create [_ Bs_Dict.t] is using [Bs_Dict.Make] which
+    is through [empty] which requires [_ Bs_Id.t]
+    The only way to create [_ Bs_Id.t] is using [Bs_Id.Make] which
     will create a fresh type [id] per module
 
     Generic operations over tree without [cmp] are still exported 
     (for efficient reasons) so that [data] does not need be boxed and unboxed.
 
     The soundness is guaranteed in two aspects:
-    When create a value of [_ t] it needs both [_ Bs_Dict.t] and [_ t0].
-    [_ Bs_Dict.t] is an abstract type. Note [add0] requires [_ Bs_Dict.cmp] which 
-    is also an abstract type which can only come from [_ Bs_Dict.t]
+    When create a value of [_ t] it needs both [_ Bs_Id.t] and [_ t0].
+    [_ Bs_Id.t] is an abstract type. Note [add0] requires [_ Bs_Id.cmp] which 
+    is also an abstract type which can only come from [_ Bs_Id.t]
 
     When destructing a value of [_ t], the ['id] parameter is threaded.
 
 *)
 
-(* should not export [Bs_Dict.compare]. 
-   should only export [Bs_Dict.t] or [Bs_Dict.cmp] instead *)
+(* should not export [Bs_Id.compare]. 
+   should only export [Bs_Id.t] or [Bs_Id.cmp] instead *)
 
-val make: dict:('k, 'id) dict -> ('k, 'a, 'id) t 
+val make: id:('k, 'id) id -> ('k, 'a, 'id) t 
 val isEmpty: _ t -> bool
 
 val has: ('k, 'a, 'id) t -> 'k  -> bool    
@@ -112,7 +111,7 @@ val size: ('k, 'a, 'id) t -> int
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
-val ofArray:  ('k * 'a) array -> dict:('k,'id) dict -> ('k,'a,'id) t         
+val ofArray:  ('k * 'a) array -> id:('k,'id) id -> ('k,'a,'id) t         
 val keysToArray: ('k, 'a, 'id) t -> 'k  array
 val valuesToArray: ('k, 'a, 'id) t -> 'a  array
 val minKey: ('k, _, _) t -> 'k option
@@ -213,9 +212,9 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b) ->  ('k ,'b,'id ) t
 val mapWithKeyU: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
 val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b) -> ('k, 'b, 'id) t
 
-val getDict: ('a, 'b, 'c) t -> ('a, 'c) dict
+val getId: ('a, 'b, 'c) t -> ('a, 'c) id
 
 val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Bs_MapDict.t
     
-val packDictData: dict:('a, 'b) dict -> data:('a, 'c, 'b) Bs_MapDict.t -> ('a, 'c, 'b) t
+val packIdData: id:('a, 'b) id -> data:('a, 'c, 'b) Bs_MapDict.t -> ('a, 'c, 'b) t
 

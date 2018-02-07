@@ -4,13 +4,13 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
 module Icmp = 
-  (val Bs.Dict.comparable
+  (val Bs.Id.comparable
     ~cmp:(fun (x : int) y -> 
       compare x y
      )
   )
 module Icmp2 = 
-(val Bs.Dict.comparable ~cmp:(fun  (x : int) y ->
+(val Bs.Id.comparable ~cmp:(fun  (x : int) y ->
       compare x y ))
   
 module M = Bs.Map
@@ -23,7 +23,7 @@ let m0 : (_,string,_) M.t = M.make (module Icmp)
 
   
 module I2 = 
-(val Bs.Dict.comparable ~cmp:(fun  (x : int) y -> compare y x ))
+(val Bs.Id.comparable ~cmp:(fun  (x : int) y -> compare y x ))
 
   
 let m = M.make (module Icmp2)
@@ -34,7 +34,7 @@ module Md0 = Bs.Map.Dict
 let () = 
   let count = 1_000_00 in 
   let data = ref (M.getData m) in 
-  let m2_dict, m_dict = M.(getDict m2, getDict m) in 
+  let m2_dict, m_dict = M.(getId m2, getId m) in 
   let module N = (val m2_dict) in 
   let module Mm = ( val m_dict) in
   for i = 0 to count do 
@@ -43,7 +43,7 @@ let () =
       ~cmp:  Mm.cmp
       i i 
   done ;
-  let newm = M.packDictData ~data:!data ~dict:m_dict in 
+  let newm = M.packIdData ~data:!data ~id:m_dict in 
   Js.log newm
 module ISet = Bs.Set 
 let () =     
@@ -59,7 +59,7 @@ module S0 = Bs.Set.Dict
 let () =   
  let count = 100_000 in 
   let v = ISet.make (module Icmp2) in 
-  let m_dict = M.getDict m in 
+  let m_dict = M.getId m in 
   let module M = (val m_dict) in 
   let cmp = M.cmp in 
   let data = ref (ISet.getData v) in 
@@ -68,7 +68,7 @@ let () =
   done ;
   Js.log !data  
 
-let f = M.ofArray ~dict:(module Icmp)
+let f = M.ofArray ~id:(module Icmp)
 let (=~) a b = M.eq a b  
 
 let () =   
