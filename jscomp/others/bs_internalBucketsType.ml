@@ -41,8 +41,8 @@ let rec power_2_above x n =
   else if x * 2 < x then x (* overflow *)
   else power_2_above (x * 2) n
 
-let make  ~hash ~eq initialSize =
-  let s = power_2_above 16 initialSize in  
+let make  ~hash ~eq ~hintSize =
+  let s = power_2_above 16 hintSize in  
   container
     ~size:0
     ~buckets:(A.makeUninitialized s)

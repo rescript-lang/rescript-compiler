@@ -124,7 +124,7 @@ let has h key =
     memInBucket key bucket
 
 
-let make size = C.make size ~hash:() ~eq:()
+let make ~hintSize = C.make ~hintSize ~hash:() ~eq:()
 
 let clear = C.clear
 let size = C.size
@@ -140,7 +140,7 @@ let isEmpty = C.isEmpty
 
 let ofArray arr  = 
   let len = A.length arr in 
-  let v = C.make len ~hash:() ~eq:() in 
+  let v = C.make ~hintSize:len ~hash:() ~eq:() in 
   for i = 0 to len - 1 do 
     add v (A.getUnsafe arr i)
   done ;

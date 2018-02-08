@@ -6,7 +6,7 @@ type key = int
 type 'b t 
 
 
-val make:  int -> 'b t 
+val make:  hintSize:int -> 'b t 
 
 val clear: 'b t -> unit
 

@@ -37,7 +37,7 @@ module Int =
       ~hash:Hashtbl.hash)
 module N = Bs.HashMap
 let empty = 
-  N.make ~dict:(module Int) 500_000
+  N.make ~id:(module Int) ~hintSize:500_000
 
 let bench() = 
   let count  = 1_000_000 in   
@@ -63,7 +63,7 @@ let initial_size = 1_000_000
 module M = Bs.HashMap
 let bench2 (type t) (m : (string,t) Bs.Id.hashable) = 
   let empty = 
-    M.make ~dict:m initial_size in
+    M.make ~id:m ~hintSize:initial_size in
   let module String = (val m) in     
   (* let hash = String.hash in 
   let eq = String.eq in  *)
@@ -126,7 +126,7 @@ let bench4 () =
 module H0 = Bs.HashMap
 let bench5 () =   
   let table = 
-    H0.make ~dict:(module Int) initial_size in 
+    H0.make ~id:(module Int) ~hintSize:initial_size in 
   (* let table_data = M.getData table in    *)
   (* let hash = Int.hash in 
   let eq = Int.eq in  *)

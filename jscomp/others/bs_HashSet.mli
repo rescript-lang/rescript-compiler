@@ -22,8 +22,50 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** A {mutable} Hash set which allows customized {!hash} behavior.
+(** A {b mutable} Hash set which allows customized {!hash} behavior.
 
+    All data are parameterized by not its only type but also a unique identity in
+    the time of initialization, so that two {i HashSets of ints} initialized with different
+    {i hash} functions will have different type.
+
+    For example:
+    {[
+      type t = int 
+      module I0 =
+        (val Bs.Id.hashableU
+            ~hash:(fun[\@bs] (a : t)  -> a & 0xff_ff)
+            ~eq:(fun[\@bs] a b -> a = b)
+        )
+      let s0 = make ~id:(module I0) ~hintSize:40
+      module I1 =
+        (val Bs.Id.hashableU
+            ~hash:(fun[\@bs] (a : t)  -> a & 0xff)
+            ~eq:(fun[\@bs] a b -> a = b)
+        )
+      let s1 = make ~id:(module I1) ~hintSize:40
+    ]}
+
+    The invariant must be held: for two elements who are {i equal},
+    their hashed value should be the same
+
+    Here the compiler would infer [s0] and [s1] having different type so that
+    it would not mix.
+
+    {[
+      val s0 :  (int, I0.identity) t
+      val s1 :  (int, I1.identity) t
+    ]}
+
+    We can add elements to the collection:
+
+    {[
+
+      let () =
+        add s1 0;
+        add s1 1
+    ]}
+
+    Since this is an mutable data strucure, [s1] will contain two pairs.
 *)
 
 
@@ -34,6 +76,13 @@ module Int = Bs_HashSetInt
 (** Specalized when key type is [string], more efficient
     than the gerneic type *)  
 module String = Bs_HashSetString
+
+(* TODO: add a poly module
+   module Poly = Bs_HashSetPoly
+   challenge:
+   - generic equal handles JS data structure
+   - eq/hash consistent
+*)
   
 type ('a, 'id) t 
 
@@ -41,7 +90,7 @@ type ('a, 'id) t
 
 type ('a, 'id) id = ('a, 'id) Bs_Id.hashable
 
-val make:  int -> id:('a,'id) id ->  ('a, 'id) t
+val make:  hintSize:int -> id:('a,'id) id ->  ('a, 'id) t
 val clear: ('a, 'id) t -> unit
 val isEmpty: _ t -> bool
 

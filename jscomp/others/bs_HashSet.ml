@@ -160,9 +160,9 @@ let has h key =
 
 
 
-let make (type elt) (type identity)  initialize_size ~(id: (elt, identity) id)=
+let make (type elt) (type identity)  ~hintSize ~(id: (elt, identity) id)=
   let module M = (val id) in 
-  C.make initialize_size ~hash:M.hash ~eq:M.eq
+  C.make ~hintSize ~hash:M.hash ~eq:M.eq
 
 let clear = C.clear
 let size  = C.size
@@ -180,7 +180,7 @@ let ofArray (type a) (type identity) arr ~(id:(a,identity) id)  =
   let module M = (val id) in 
   let eq, hash = M.eq , M.hash in 
     let len = A.length arr in 
-  let v = C.make len ~hash ~eq  in 
+  let v = C.make ~hintSize:len ~hash ~eq  in 
   for i = 0 to len - 1 do 
     add0 ~eq ~hash v (A.getUnsafe arr i)
   done ;

@@ -38,7 +38,7 @@ val emptyOpt : 'a Js.undefined
 val make :
   hash:'hash ->
   eq:'eq -> 
-  int ->
+  hintSize:int ->
   ('hash, 'eq, _) container
   
 val clear : _ container -> unit

@@ -22,6 +22,62 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+(** A {b mutable} Hash map which allows customized {!hash} behavior.
+
+    All data are parameterized by not its only type but also a unique identity in
+    the time of initialization, so that two {i HashMaps of ints} initialized with different
+    {i hash} functions will have different type.
+
+    For example:
+    {[
+      type t = int 
+      module I0 =
+        (val Bs.Id.hashableU
+            ~hash:(fun[\@bs] (a : t)  -> a & 0xff_ff)
+            ~eq:(fun[\@bs] a b -> a = b)
+        )
+      let s0 : (_, string,_) t = make ~hintSize:40 ~id:(module I0)
+      module I1 =
+        (val Bs.Id.hashableU
+            ~hash:(fun[\@bs] (a : t)  -> a & 0xff)
+            ~eq:(fun[\@bs] a b -> a = b)
+        )
+      let s1 : (_, string,_) t  = make ~hintSize:40 ~id:(module I1)
+    ]}
+
+    The invariant must be held: for two elements who are {i equal},
+    their hashed value should be the same
+
+    Here the compiler would infer [s0] and [s1] having different type so that
+    it would not mix.
+
+    {[
+      val s0 :  (int, I0.identity) t
+      val s1 :  (int, I1.identity) t
+    ]}
+
+    We can add elements to the collection:
+
+    {[
+
+      let () =
+        add s1 0 "3";
+        add s1 1 "3"
+    ]}
+
+    Since this is an mutable data strucure, [s1] will contain two pairs.
+*)
+
+
+(** Specalized when key type is [int], more efficient
+    than the gerneic type *)
+module Int = Bs_HashMapInt
+
+
+(** Specalized when key type is [string], more efficient
+    than the gerneic type *)  
+module String = Bs_HashMapString
+
 
 
 
@@ -31,7 +87,7 @@ type ('key,'value,'id) t
 type ('a, 'id) id = ('a, 'id) Bs_Id.hashable
 
 
-val make:  int -> id:('key, 'id) id -> ('key,'value,'id) t
+val make:  hintSize:int -> id:('key, 'id) id -> ('key,'value,'id) t
 (*TODO: allow randomization for security *)
 
 val clear: ('key, 'value, 'id ) t -> unit
@@ -97,10 +153,5 @@ val ofArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t
 val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
 val getBucketHistogram: _ t -> int array
 val logStats: _ t -> unit
-
-
-
-module Int = Bs_HashMapInt
-module String = Bs_HashMapString
 
 

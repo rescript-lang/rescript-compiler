@@ -12,7 +12,7 @@ let eq = fun (x : int) y ->  x = y
 let hash = fun (x : int) ->  Hashtbl.hash x 
 let cmp = fun  (x : int) y -> compare x y
 module Y = (val Bs.Id.hashable ~eq ~hash)
-let empty : (int, int, _) N.t = N.make ~dict:(module Y) 30 
+let empty : (int, int, _) N.t = N.make ~id:(module Y) ~hintSize:30 
 
 (*
 [%bs.hash {
@@ -37,13 +37,13 @@ module So = Bs.SortArray
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = A.zip u u in 
-  let xx = N.ofArray ~dict:(module Y) v  in 
+  let xx = N.ofArray ~id:(module Y) v  in 
   eqx __LOC__ (N.size xx) 91;
   eqx __LOC__ (So.stableSortBy (N.keysToArray xx) cmp) (I.range 30 120)
 
 let () = 
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
-  let v = N.make ~dict:(module Y) 40 in 
+  let v = N.make ~id:(module Y) ~hintSize:40 in 
   N.mergeMany v (A.zip u u);
   eqx __LOC__ (N.size v) 100_001;
   for i = 0 to 1_000 do 

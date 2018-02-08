@@ -9,8 +9,9 @@
 (*  under the terms of the GNU Library General Public License, with    *)
 (*  the special exception on linking described in file ../LICENSE.     *)
 (*                                                                     *)
+(*  Adapted by Authors of BuckleScript 2017                            *)
 (***********************************************************************)
-(**  Adapted by Authors of BuckleScript 2017                           *)
+
 
 module N = Bs_internalBuckets 
 module C = Bs_internalBucketsType
@@ -195,16 +196,16 @@ let has h key =
 
 
 
-let make (type elt) (type identity) initialize_size ~(id : (elt,identity) id) =
+let make (type elt) (type identity) ~hintSize ~(id : (elt,identity) id) =
   let module M = (val id) in 
-  C.make ~hash:M.hash ~eq:M.eq  initialize_size
+  C.make ~hash:M.hash ~eq:M.eq  ~hintSize
 
   
 let ofArray (type a) (type identity) arr ~id:(id:(a,identity) id) =     
   let module M = (val id) in
   let hash, eq = M.hash, M.eq in  
   let len = A.length arr in 
-  let v = C.make ~hash ~eq len in 
+  let v = C.make ~hash ~eq ~hintSize:len in 
   let eq, hash = Bs_Id.getEqInternal eq, Bs_Id.getHashInternal hash in   
   for i = 0 to len - 1 do 
     let key,value = (A.getUnsafe arr i) in 

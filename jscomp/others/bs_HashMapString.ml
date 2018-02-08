@@ -170,7 +170,7 @@ let has h key =
     memInBucket  key bucket
 
 
-let make size = C.make size ~hash:() ~eq:()
+let make ~hintSize = C.make ~hintSize ~hash:() ~eq:()
 let clear = C.clear
 let size = C.size
 let forEachU = N.forEachU 
