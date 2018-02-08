@@ -71,7 +71,7 @@ let peekUndefined q =
 
 let peekExn q =
   match Js.nullToOption (first q ) with
-  | None -> [%assert "Bs.Queue.Empty"]
+  | None -> [%assert "Belt.Queue.Empty"]
   | Some v -> content v
 
 let pop q =
@@ -92,7 +92,7 @@ let pop q =
 
 let popExn q =
   match Js.nullToOption (first q ) with
-  | None -> [%assert "Bs.Queue.Empty"]
+  | None -> [%assert "Empty"]
   | Some x  ->
     let next = next x in 
     if Js.Null.test next then 

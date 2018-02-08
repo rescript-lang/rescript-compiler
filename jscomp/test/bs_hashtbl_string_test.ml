@@ -18,24 +18,24 @@ let hashString : string -> int  = [%raw{|function (str) {
                                             |}]
 
 module String = 
-  (val Bs.Id.hashable 
+  (val Belt.Id.hashable 
       ~eq:(fun (x:string) y -> x = y )
       ~hash:Hashtbl.hash)
 
 module String1 = 
-  (val Bs.Id.hashable
+  (val Belt.Id.hashable
       ~eq:(fun (x:string) y -> x = y )
       ~hash:hashString)
 module String2 = 
-  (val Bs.Id.hashable
+  (val Belt.Id.hashable
       ~eq:(fun (x:string) y -> x = y )
       ~hash:(fun  (x:string) -> hash_string x))
 
 module Int = 
-  (val Bs.Id.hashable
+  (val Belt.Id.hashable
       ~eq:(fun (x:int) y -> x = y )
       ~hash:Hashtbl.hash)
-module N = Bs.HashMap
+module N = Belt.HashMap
 let empty = 
   N.make ~id:(module Int) ~hintSize:500_000
 
@@ -54,14 +54,14 @@ let bench() =
 
 let count  = 1_000_000 
 let initial_size = 1_000_000
-(* module B = Bs.Bag  *)
+(* module B = Belt.Bag  *)
 (*
-    (empty : _ Bs.HashMap.t)
+    (empty : _ Belt.HashMap.t)
     #.add (string_of_int i) i 
     #.add (string_of_int i) i
 *)    
-module M = Bs.HashMap
-let bench2 (type t) (m : (string,t) Bs.Id.hashable) = 
+module M = Belt.HashMap
+let bench2 (type t) (m : (string,t) Belt.Id.hashable) = 
   let empty = 
     M.make ~id:m ~hintSize:initial_size in
   let module String = (val m) in     
@@ -81,10 +81,10 @@ let bench2 (type t) (m : (string,t) Bs.Id.hashable) =
   done ;
   assert (M.size empty = 0)  
 
-(* Bs.HashMap.logStats empty *)
-module Md = Bs.Map 
-module Md0 = Bs.Map.Dict
-let bench3 (type t) (m : (string,t) Bs.Id.comparable) = 
+(* Belt.HashMap.logStats empty *)
+module Md = Belt.Map 
+module Md0 = Belt.Map.Dict
+let bench3 (type t) (m : (string,t) Belt.Id.comparable) = 
   
   let empty = Md.make m in
   let module String = (val m) in 
@@ -104,8 +104,8 @@ let bench3 (type t) (m : (string,t) Bs.Id.comparable) =
   done ;
   assert (Md0.size !table = 0)
 
-module Sx = (val Bs.Id.comparable ~cmp:(fun  (x : string) y -> compare x y )) 
-module H = Bs.HashMap.String
+module Sx = (val Belt.Id.comparable ~cmp:(fun  (x : string) y -> compare x y )) 
+module H = Belt.HashMap.String
 let bench4 () = 
   let table = 
     H.make initial_size in
@@ -123,7 +123,7 @@ let bench4 () =
   done ;
   assert (H.isEmpty table)  
 
-module H0 = Bs.HashMap
+module H0 = Belt.HashMap
 let bench5 () =   
   let table = 
     H0.make ~id:(module Int) ~hintSize:initial_size in 
@@ -143,7 +143,7 @@ let bench5 () =
     done ];
   assert (H0.isEmpty table)   
 
-module HI = Bs.HashMap.Int
+module HI = Belt.HashMap.Int
 let bench6 () = 
   let table = 
     HI.make initial_size in
@@ -161,7 +161,7 @@ let bench6 () =
   done ;
   assert (HI.size table = 0)  
 
-module S = Bs.HashSet.Int
+module S = Belt.HashSet.Int
 let bench7 () = 
   let table = 
     (* [%time  *)

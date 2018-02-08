@@ -2,8 +2,8 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eqx loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x = Mt.bool_suites ~test_id ~suites loc x 
-module N = Bs.HashMap
-module S = Bs.Map.Int
+module N = Belt.HashMap
+module S = Belt.Map.Int
 (* module Y = struct  
    type t = int 
 
@@ -11,7 +11,7 @@ module S = Bs.Map.Int
 let eq = fun (x : int) y ->  x = y 
 let hash = fun (x : int) ->  Hashtbl.hash x 
 let cmp = fun  (x : int) y -> compare x y
-module Y = (val Bs.Id.hashable ~eq ~hash)
+module Y = (val Belt.Id.hashable ~eq ~hash)
 let empty : (int, int, _) N.t = N.make ~id:(module Y) ~hintSize:30 
 
 (*
@@ -22,7 +22,7 @@ let empty : (int, int, _) N.t = N.make ~id:(module Y) ~hintSize:30
 *)
 
 module I = Array_data_util
-let (++) = Bs.Array.concat
+let (++) = Belt.Array.concat
 let add = (+)
 
 
@@ -31,8 +31,8 @@ let () =
   eqx __LOC__ (N.get empty 2) (Some 2);
   eqx __LOC__ (N.size empty) 3
   
-module A = Bs.Array 
-module So = Bs.SortArray 
+module A = Belt.Array 
+module So = Belt.SortArray 
 
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 

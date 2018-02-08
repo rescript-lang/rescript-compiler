@@ -13,7 +13,7 @@
 (* Adapted significantly by Authors of BuckleScript *)
 
 
-(** {!Bs.Array}    
+(** {!Belt.Array}    
     Utililites for Array functions 
 *)
 

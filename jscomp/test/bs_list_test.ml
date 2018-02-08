@@ -11,9 +11,9 @@ let b loc x  =
     (loc ^" id " ^ (string_of_int !test_id), 
      (fun _ -> Mt.Ok x)) :: !suites
 
-(* module N = Bs.LinkList     *)
-module N = Bs.List
-module A = Bs.Array 
+(* module N = Belt.LinkList     *)
+module N = Belt.List
+module A = Belt.Array 
 module J = Js.Json 
 let sum xs = 
   let v = ref 0 in 

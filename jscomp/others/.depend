@@ -28,7 +28,7 @@ bs_SortArrayInt.cmj : bs_Array.cmj bs_SortArrayInt.cmi
 bs_SortArrayString.cmj : bs_Array.cmj bs_SortArrayString.cmi
 bs_Range.cmj : bs_Range.cmi
 bs_internalBucketsType.cmj : bs_Array.cmj bs_internalBucketsType.cmi
-bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj bs.cmj \
+bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj \
     bs_internalSetBuckets.cmi
 bs_internalBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj \
     bs_internalBuckets.cmi

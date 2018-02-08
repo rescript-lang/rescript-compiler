@@ -4,11 +4,11 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
 module Icmp = 
-  (val Bs.Id.comparable 
+  (val Belt.Id.comparable 
       (fun (x : int) y ->  compare x y)
   )
-module M = Bs.Map  
-module N = Bs.Set 
+module M = Belt.Map  
+module N = Belt.Set 
 
 module A = Bs_Array
 module I = Array_data_util

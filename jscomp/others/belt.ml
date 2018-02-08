@@ -70,19 +70,19 @@
     {[
       type t = int * int 
       module I0 =
-        (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
              match compare a0 b0 with
              | 0 -> compare a1 b1
              | c -> c 
            ))
-    let s0 = Bs.Set.make ~id:(module I0)
+    let s0 = Belt.Set.make ~id:(module I0)
     module I1 =
-      (val Bs.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+      (val Belt.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
            match compare a1 b1 with
            | 0 -> compare a0 b0
            | c -> c 
          ))
-    let s1 = Bs.Set.make ~id:(module I1)
+    let s1 = Belt.Set.make ~id:(module I1)
     ]}
 
     Here the compiler would infer [s0] and [s1] having different type so that
@@ -98,25 +98,25 @@
     {b Collection Hierachy}
 
     In general, we provide a generic collection module, but also create specialized
-    modules for commonly used data type, take {i Bs.Set} for example
+    modules for commonly used data type, take {i Belt.Set} for example
 
     {[
-      Bs.Set
-      Bs.Set.Int
-      Bs.Set.String
+      Belt.Set
+      Belt.Set.Int
+      Belt.Set.String
     ]}
 
-    The specialized module {i Bs.Set.Int}, {i Bs.Set.String} is in general more
+    The specialized module {i Belt.Set.Int}, {i Belt.Set.String} is in general more
     efficient.
 
-    Currently, both {i Bs_Set} and {i Bs.Set} are accessible to users for some
+    Currently, both {i Bs_Set} and {i Belt.Set} are accessible to users for some
     technical rasons,
-    we {b strongly recommend} users stick to qualified import, {i Bs.Sort}, we may hide
+    we {b strongly recommend} users stick to qualified import, {i Belt.Sort}, we may hide
     the internal, {i i.e}, {i Bs_Set} in the future
     
 *)
 
-(** {!Bs.Id}
+(** {!Belt.Id}
 
     Provide utiliites to create identified comparators or hashes for 
     data structures used below. 
@@ -127,106 +127,106 @@
 *)
 module Id = Bs_Id
 
-(** {!Bs.Array}
+(** {!Belt.Array}
 
     {b mutable array}: Utililites functions
 *)
 module Array = Bs_Array
 
-(** {!Bs.SortArray}
+(** {!Belt.SortArray}
     
     The toplevel provides some generic sort related utililties.
     
     It also has two specialized inner modules
-    {!Bs.SortArray.Int} and {!Bs.SortArray.String}
+    {!Belt.SortArray.Int} and {!Belt.SortArray.String}
 *)
 module SortArray = Bs_SortArray
 
-(** {!Bs.MutableQueue}
+(** {!Belt.MutableQueue}
     
     An FIFO(first in first out) queue data structure
 *)
 module MutableQueue = Bs_MutableQueue
 
-(** {!Bs.MutableStack}
+(** {!Belt.MutableStack}
     
     An FILO(first in last out) stack data structure
 *)
 module MutableStack = Bs_MutableStack 
 
-(** {!Bs.List}
+(** {!Belt.List}
     
     Utilities for List data type
 *)
 module List = Bs_List
 
-(** {!Bs.Range}
+(** {!Belt.Range}
     
     Utilities for a closed range [(from, start)]
 *)
 module Range = Bs_Range
 
-(** {!Bs.Set}
+(** {!Belt.Set}
 
     The toplevel provides generic {b immutable} set operations.
 
     It also has three specialized inner modules
-    {!Bs.Set.Int} and {!Bs.Set.String}
-    {!Bs.Set.Dict}: This module separate date from function
+    {!Belt.Set.Int} and {!Belt.Set.String}
+    {!Belt.Set.Dict}: This module separate date from function
     which  is more verbbose but slightly more efficient
 
 *)
 module Set = Bs_Set
 
 
-(** {!Bs.Map},
+(** {!Belt.Map},
 
     The toplevel provides generic {b immutable} map operations.
     
     It also has three specialized inner modules
-    {!Bs.Map.Int} and {!Bs.Map.String}
-    {!Bs.Map.Dict}: This module separate date from function
+    {!Belt.Map.Int} and {!Belt.Map.String}
+    {!Belt.Map.Dict}: This module separate date from function
     which  is more verbbose but slightly more efficient
 *)    
 module Map = Bs_Map
 
 
-(** {!Bs.MutableSet}
+(** {!Belt.MutableSet}
     
     The toplevel provides generic {b mutable} set operations.
     
     It also has two specialized inner modules
-    {!Bs.MutableSet.Int} and {!Bs.MutableSet.String}
+    {!Belt.MutableSet.Int} and {!Belt.MutableSet.String}
 *)
 module MutableSet = Bs_MutableSet
 
-(** {!Bs.MutableMap}
+(** {!Belt.MutableMap}
     
     The toplevel provides generic {b mutable} map operations.
     
     It also has two specialized inner modules
-    {!Bs.MutableMap.Int} and {!Bs.MutableMap.String}
+    {!Belt.MutableMap.Int} and {!Belt.MutableMap.String}
 
 *)
 module MutableMap = Bs_MutableMap
 
 
-(** {!Bs.HashSet}
+(** {!Belt.HashSet}
     
     The toplevel provides generic {b mutable} hash set operations.
     
     It also has two specialized inner modules
-    {!Bs.HashSet.Int} and {!Bs.HashSet.String}
+    {!Belt.HashSet.Int} and {!Belt.HashSet.String}
 *)
 module HashSet = Bs_HashSet
 
 
-(** {!Bs.HashMap}
+(** {!Belt.HashMap}
     
     The toplevel provides generic {b mutable} hash map operations.
     
     It also has two specialized inner modules
-    {!Bs.HashMap.Int} and {!Bs.HashMap.String}
+    {!Belt.HashMap.Int} and {!Belt.HashMap.String}
 *)
 module HashMap = Bs_HashMap
   

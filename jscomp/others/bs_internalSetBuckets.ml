@@ -102,7 +102,7 @@ let rec fillArray i arr cell =
 let toArray h = 
   let d = C.buckets h in 
   let current = ref 0 in 
-  let arr = Bs.Array.makeUninitializedUnsafe (C.size h) in 
+  let arr = A.makeUninitializedUnsafe (C.size h) in 
   for i = 0 to A.length d - 1 do  
     let cell = A.getUnsafe d i in 
     match C.toOpt cell with 

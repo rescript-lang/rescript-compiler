@@ -1,7 +1,7 @@
 let should b = 
   if not b then Js.Exn.raiseError "IMPOSSIBLE"
 
-module M = Bs.Map.Int  
+module M = Belt.Map.Int  
 let test () =
   let m = ref M.empty in
   let count = 100_0000 - 1 in

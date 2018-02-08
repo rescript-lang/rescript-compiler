@@ -3,12 +3,12 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x =  Mt.bool_suites ~test_id ~suites loc x  
 let t loc x = Mt.throw_suites ~test_id ~suites loc x 
-module N = Bs.Set
+module N = Belt.Set
 module I = Array_data_util
-module A = Bs.Array
+module A = Belt.Array
 module IntCmp = 
-  (val Bs.Id.comparable (fun (x:int) y -> compare x y))
-module L = Bs.List
+  (val Belt.Id.comparable (fun (x:int) y -> compare x y))
+module L = Belt.List
 
 let () = 
   let u0 = N.ofArray ~id:(module IntCmp) (I.range 0 30) in 
