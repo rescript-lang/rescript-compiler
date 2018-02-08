@@ -10,7 +10,7 @@ module Icmp =
 module M = Belt.Map  
 module N = Belt.Set 
 
-module A = Bs_Array
+module A = Belt.Array
 module I = Array_data_util
 
 

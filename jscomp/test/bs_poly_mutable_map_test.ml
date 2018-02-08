@@ -11,7 +11,7 @@ module Icmp =
 module M = Belt.MutableMap
 module N = Belt.Set 
 
-module A = Bs_Array
+module A = Belt.Array
 module I = Array_data_util
 let f x = M.ofArray ~id:(module Icmp) x 
 let ff x = N.ofArray ~id:(module Icmp) x 

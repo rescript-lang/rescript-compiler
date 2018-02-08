@@ -5,25 +5,25 @@ let b loc x = Mt.bool_suites ~test_id ~suites loc x
 
 module I = Array_data_util
 module S = Belt.SortArray
-module R = Bs_Range
+module R = Belt.Range
 let cmp = fun x y -> x - y   
 module A = Belt.Array
 
 let unions xs ys = 
   let lenX, lenY = A.length xs, A.length ys in 
-  let o = Bs_Array.makeUninitializedUnsafe (lenX + lenY) in 
+  let o = A.makeUninitializedUnsafe (lenX + lenY) in 
   let v = S.union xs 0 lenX ys 0 lenY o 0 cmp  in 
   A.truncateToLengthUnsafe o v ;
   o 
 let inters xs ys = 
   let lenX, lenY = A.length xs, A.length ys in 
-  let o = Bs_Array.makeUninitializedUnsafe lenX in 
+  let o = A.makeUninitializedUnsafe lenX in 
   let v = S.intersect xs 0 lenX ys 0 lenY o 0 cmp  in 
   A.truncateToLengthUnsafe o v ;
   o 
 let diffs xs ys = 
   let lenX, lenY = A.length xs, A.length ys in 
-  let o = Bs_Array.makeUninitializedUnsafe lenX in 
+  let o = A.makeUninitializedUnsafe lenX in 
   let v = S.diff xs 0 lenX ys 0 lenY o 0 cmp  in 
   A.truncateToLengthUnsafe o v ;
   o 

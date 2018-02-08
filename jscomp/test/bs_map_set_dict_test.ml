@@ -17,7 +17,7 @@ module M = Belt.Map
 module MI = Belt.Map.Int
 (* module B = Belt.Bag *)
 module I = Array_data_util
-module A = Bs_Array
+module A = Belt.Array
 module L = Belt.List
 let m0 : (_,string,_) M.t = M.make (module Icmp)   
 

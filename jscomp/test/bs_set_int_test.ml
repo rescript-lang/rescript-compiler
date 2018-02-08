@@ -6,7 +6,7 @@ let b loc v  = Mt.bool_suites ~suites ~test_id loc v
 
 module N = Belt.Set.Int
 module I = Array_data_util
-module A = Bs_Array
+module A = Belt.Array
 let (=~) s i = 
   N.(eq (ofArray i) s)
 let (=*) a b =  

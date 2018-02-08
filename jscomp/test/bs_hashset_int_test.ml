@@ -36,7 +36,7 @@ let () =
     N.remove v i 
   done ; 
   eq __LOC__ (N.size v ) 98_000
-module A = Bs_Array
+module A = Belt.Array
 
 module SI = Belt.SortArray.Int
 

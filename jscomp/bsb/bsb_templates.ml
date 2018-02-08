@@ -59,8 +59,10 @@ let root = OCamlRes.Res.([
       \  ],\n\
       \  \"warnings\": {\n\
       \    \"error\" : \"+101\"\n\
-      \  }\n\
-       }") ;
+      \  },\n\
+      \  \"refmt\": 3\n\
+       }\n\
+       ") ;
     Dir (".vscode", [
       File ("tasks.json",
         "{\n\

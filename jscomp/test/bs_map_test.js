@@ -2,9 +2,9 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
-var Bs_Array = require("../../lib/js/bs_Array.js");
-var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
-var Bs_SetInt = require("../../lib/js/bs_SetInt.js");
+var Belt_Array = require("../../lib/js/belt_Array.js");
+var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
+var Belt_SetInt = require("../../lib/js/belt_SetInt.js");
 
 var suites = [/* [] */0];
 
@@ -41,34 +41,34 @@ function b(loc, v) {
   return /* () */0;
 }
 
-var mapOfArray = Bs_MapInt.ofArray;
+var mapOfArray = Belt_MapInt.ofArray;
 
-var setOfArray = Bs_SetInt.ofArray;
+var setOfArray = Belt_SetInt.ofArray;
 
 function emptyMap() {
-  return Bs_MapInt.empty;
+  return Belt_MapInt.empty;
 }
 
-var v = Bs_Array.makeByAndShuffle(1000000, (function (i) {
+var v = Belt_Array.makeByAndShuffle(1000000, (function (i) {
         return /* tuple */[
                 i,
                 i
               ];
       }));
 
-var u = Bs_MapInt.ofArray(v);
+var u = Belt_MapInt.ofArray(v);
 
-b("File \"bs_map_test.ml\", line 27, characters 4-11", Bs_MapInt.checkInvariantInternal(u));
+b("File \"bs_map_test.ml\", line 27, characters 4-11", Belt_MapInt.checkInvariantInternal(u));
 
-var firstHalf = Bs_Array.slice(v, 0, 2000);
+var firstHalf = Belt_Array.slice(v, 0, 2000);
 
-var xx = Bs_Array.reduce(firstHalf, u, (function (acc, param) {
-        return Bs_MapInt.remove(acc, param[0]);
+var xx = Belt_Array.reduce(firstHalf, u, (function (acc, param) {
+        return Belt_MapInt.remove(acc, param[0]);
       }));
 
-b("File \"bs_map_test.ml\", line 31, characters 4-11", Bs_MapInt.checkInvariantInternal(u));
+b("File \"bs_map_test.ml\", line 31, characters 4-11", Belt_MapInt.checkInvariantInternal(u));
 
-b("File \"bs_map_test.ml\", line 32, characters 4-11", Bs_MapInt.checkInvariantInternal(xx));
+b("File \"bs_map_test.ml\", line 32, characters 4-11", Belt_MapInt.checkInvariantInternal(xx));
 
 Mt.from_pair_suites("bs_map_test.ml", suites[0]);
 

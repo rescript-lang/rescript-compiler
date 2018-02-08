@@ -1,9 +1,9 @@
 'use strict';
 
-var Bs_Array = require("../../lib/js/bs_Array.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
+var Belt_Array = require("../../lib/js/belt_Array.js");
 
-var b = Bs_Array.eq(/* int array */[
+var b = Belt_Array.eq(/* int array */[
       1,
       2,
       3

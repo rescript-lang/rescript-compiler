@@ -1,8 +1,8 @@
 'use strict';
 
-var Bs_Array = require("../../lib/js/bs_Array.js");
-var Bs_MapInt = require("../../lib/js/bs_MapInt.js");
 var Immutable = require("immutable");
+var Belt_Array = require("../../lib/js/belt_Array.js");
+var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 
 var empty = new Immutable.OrderedMap();
 
@@ -23,7 +23,7 @@ function should(b) {
   }
 }
 
-var shuffledDataAdd = Bs_Array.makeByAndShuffle(1000001, (function (i) {
+var shuffledDataAdd = Belt_Array.makeByAndShuffle(1000001, (function (i) {
         return /* tuple */[
                 i,
                 i
@@ -39,9 +39,9 @@ function test() {
 }
 
 function test2() {
-  var v = Bs_MapInt.ofArray(shuffledDataAdd);
+  var v = Belt_MapInt.ofArray(shuffledDataAdd);
   for(var j = 0; j <= 1000000; ++j){
-    should(Bs_MapInt.has(v, j));
+    should(Belt_MapInt.has(v, j));
   }
   return /* () */0;
 }
