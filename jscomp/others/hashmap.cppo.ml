@@ -30,9 +30,9 @@ let hash (s : key) =
   [%error "unknown type"]
 #endif
 
-module N = Bs_internalBuckets
-module C = Bs_internalBucketsType
-module A = Bs_Array
+module N = Belt_internalBuckets
+module C = Belt_internalBucketsType
+module A = Belt_Array
 
 
 type 'b t = (unit, unit, key,'b) N.t

@@ -109,10 +109,10 @@
     The specialized module {i Belt.Set.Int}, {i Belt.Set.String} is in general more
     efficient.
 
-    Currently, both {i Bs_Set} and {i Belt.Set} are accessible to users for some
+    Currently, both {i Belt_Set} and {i Belt.Set} are accessible to users for some
     technical rasons,
     we {b strongly recommend} users stick to qualified import, {i Belt.Sort}, we may hide
-    the internal, {i i.e}, {i Bs_Set} in the future
+    the internal, {i i.e}, {i Belt_Set} in the future
     
 *)
 
@@ -125,13 +125,13 @@
     functions so that different data structures with slightly different 
     comparison functions won't mix
 *)
-module Id = Bs_Id
+module Id = Belt_Id
 
 (** {!Belt.Array}
 
     {b mutable array}: Utililites functions
 *)
-module Array = Bs_Array
+module Array = Belt_Array
 
 (** {!Belt.SortArray}
     
@@ -140,31 +140,31 @@ module Array = Bs_Array
     It also has two specialized inner modules
     {!Belt.SortArray.Int} and {!Belt.SortArray.String}
 *)
-module SortArray = Bs_SortArray
+module SortArray = Belt_SortArray
 
 (** {!Belt.MutableQueue}
     
     An FIFO(first in first out) queue data structure
 *)
-module MutableQueue = Bs_MutableQueue
+module MutableQueue = Belt_MutableQueue
 
 (** {!Belt.MutableStack}
     
     An FILO(first in last out) stack data structure
 *)
-module MutableStack = Bs_MutableStack 
+module MutableStack = Belt_MutableStack 
 
 (** {!Belt.List}
     
     Utilities for List data type
 *)
-module List = Bs_List
+module List = Belt_List
 
 (** {!Belt.Range}
     
     Utilities for a closed range [(from, start)]
 *)
-module Range = Bs_Range
+module Range = Belt_Range
 
 (** {!Belt.Set}
 
@@ -176,7 +176,7 @@ module Range = Bs_Range
     which  is more verbbose but slightly more efficient
 
 *)
-module Set = Bs_Set
+module Set = Belt_Set
 
 
 (** {!Belt.Map},
@@ -188,7 +188,7 @@ module Set = Bs_Set
     {!Belt.Map.Dict}: This module separate date from function
     which  is more verbbose but slightly more efficient
 *)    
-module Map = Bs_Map
+module Map = Belt_Map
 
 
 (** {!Belt.MutableSet}
@@ -198,7 +198,7 @@ module Map = Bs_Map
     It also has two specialized inner modules
     {!Belt.MutableSet.Int} and {!Belt.MutableSet.String}
 *)
-module MutableSet = Bs_MutableSet
+module MutableSet = Belt_MutableSet
 
 (** {!Belt.MutableMap}
     
@@ -208,7 +208,7 @@ module MutableSet = Bs_MutableSet
     {!Belt.MutableMap.Int} and {!Belt.MutableMap.String}
 
 *)
-module MutableMap = Bs_MutableMap
+module MutableMap = Belt_MutableMap
 
 
 (** {!Belt.HashSet}
@@ -218,7 +218,7 @@ module MutableMap = Bs_MutableMap
     It also has two specialized inner modules
     {!Belt.HashSet.Int} and {!Belt.HashSet.String}
 *)
-module HashSet = Bs_HashSet
+module HashSet = Belt_HashSet
 
 
 (** {!Belt.HashMap}
@@ -228,7 +228,7 @@ module HashSet = Bs_HashSet
     It also has two specialized inner modules
     {!Belt.HashMap.Int} and {!Belt.HashMap.String}
 *)
-module HashMap = Bs_HashMap
+module HashMap = Belt_HashMap
   
 
 

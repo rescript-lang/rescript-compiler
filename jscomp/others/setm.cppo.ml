@@ -23,21 +23,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 (** This module is {!Belt.MutableSet} specialized with key type to be a primitive type.
-    It is more efficient in general, the  API is the same with {!Bs_MutableSet} except its key type is fixed,
+    It is more efficient in general, the  API is the same with {!Belt_MutableSet} except its key type is fixed,
     and identity is not needed(using the built-in one) 
 *)
 
 #ifdef TYPE_INT
-module I = Bs_internalSetInt
-module S = Bs_SortArrayInt
+module I = Belt_internalSetInt
+module S = Belt_SortArrayInt
 #elif defined TYPE_STRING
-module I = Bs_internalSetString
-module S = Bs_SortArrayString
+module I = Belt_internalSetString
+module S = Belt_SortArrayString
 #else
   [%error "unknown type"]
 #endif  
-module N = Bs_internalAVLset
-module A = Bs_Array 
+module N = Belt_internalAVLset
+module A = Belt_Array 
 
 type elt = I.elt
 (** The type of the set elements. *)

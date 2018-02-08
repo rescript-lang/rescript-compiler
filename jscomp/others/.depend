@@ -16,69 +16,73 @@ js_option.cmj : js_option.cmi
 js_console.cmj :
 js_result.cmj : js_result.cmi
 js_mapperRt.cmj : js_mapperRt.cmi
-bs_Array.cmj : js_math.cmj bs_Array.cmi
-bs_internalAVLset.cmj : bs_SortArray.cmj bs_Id.cmj bs_Array.cmj \
-    bs_internalAVLset.cmi
-bs_internalAVLtree.cmj : bs_SortArray.cmj bs_Id.cmj bs_Array.cmj \
-    bs_internalAVLtree.cmi
-bs_List.cmj : bs_Array.cmj bs_List.cmi
-bs_SortArray.cmj : bs_SortArrayString.cmj bs_SortArrayInt.cmj bs_Array.cmj \
-    bs_SortArray.cmi
-bs_SortArrayInt.cmj : bs_Array.cmj bs_SortArrayInt.cmi
-bs_SortArrayString.cmj : bs_Array.cmj bs_SortArrayString.cmi
-bs_Range.cmj : bs_Range.cmi
-bs_internalBucketsType.cmj : bs_Array.cmj bs_internalBucketsType.cmi
-bs_internalSetBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj \
-    bs_internalSetBuckets.cmi
-bs_internalBuckets.cmj : bs_internalBucketsType.cmj bs_Array.cmj \
-    bs_internalBuckets.cmi
-bs_HashMap.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj bs_Id.cmj \
-    bs_HashMapString.cmj bs_HashMapInt.cmj bs_Array.cmj bs_HashMap.cmi
-bs_HashSet.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
-    bs_Id.cmj bs_HashSetString.cmj bs_HashSetInt.cmj bs_Array.cmj \
-    bs_HashSet.cmi
-bs_HashSetString.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
-    bs_Array.cmj bs_HashSetString.cmi
-bs_HashSetInt.cmj : bs_internalSetBuckets.cmj bs_internalBucketsType.cmj \
-    bs_Array.cmj bs_HashSetInt.cmi
-bs_Id.cmj : bs_Id.cmi
-bs_MapDict.cmj : bs_internalAVLtree.cmj bs_Id.cmj bs_Array.cmj \
-    bs_MapDict.cmi
-bs_SetDict.cmj : bs_internalAVLset.cmj bs_Id.cmj bs_Array.cmj bs_SetDict.cmi
-bs_Map.cmj : bs_MapString.cmj bs_MapInt.cmj bs_MapDict.cmj bs_Id.cmj \
-    bs_Array.cmj bs_Map.cmi
-bs_internalMapInt.cmj : bs_internalAVLtree.cmj bs_SortArray.cmj bs_Array.cmj
-bs_internalMapString.cmj : bs_internalAVLtree.cmj bs_SortArray.cmj \
-    bs_Array.cmj
-bs_MapString.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
-    bs_Array.cmj bs_MapString.cmi
-bs_MapInt.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj bs_Array.cmj \
-    bs_MapInt.cmi
-bs_Set.cmj : bs_SetString.cmj bs_SetInt.cmj bs_SetDict.cmj bs_Id.cmj \
-    bs_Array.cmj bs_Set.cmi
-bs_MutableSet.cmj : bs_internalAVLset.cmj bs_SortArray.cmj \
-    bs_MutableSetString.cmj bs_MutableSetInt.cmj bs_Id.cmj bs_Array.cmj \
-    bs_MutableSet.cmi
-bs_MutableSetInt.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj \
-    bs_SortArrayInt.cmj bs_Array.cmj bs_MutableSetInt.cmi
-bs_MutableSetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
-    bs_SortArrayString.cmj bs_Array.cmj bs_MutableSetString.cmi
-bs_MutableMap.cmj : bs_internalAVLtree.cmj bs_MutableMapString.cmj \
-    bs_MutableMapInt.cmj bs_Id.cmj bs_Array.cmj bs_MutableMap.cmi
-bs_MutableMapInt.cmj : bs_internalMapInt.cmj bs_internalAVLtree.cmj \
-    bs_Array.cmj bs_MutableMapInt.cmi
-bs_MutableMapString.cmj : bs_internalMapString.cmj bs_internalAVLtree.cmj \
-    bs_Array.cmj bs_MutableMapString.cmi
-bs_internalSetInt.cmj : bs_internalAVLset.cmj bs_SortArrayInt.cmj \
-    bs_Array.cmj
-bs_internalSetString.cmj : bs_internalAVLset.cmj bs_SortArrayString.cmj \
-    bs_Array.cmj
-bs_SetInt.cmj : bs_internalSetInt.cmj bs_internalAVLset.cmj bs_Array.cmj \
-    bs_SetInt.cmi
-bs_SetString.cmj : bs_internalSetString.cmj bs_internalAVLset.cmj \
-    bs_Array.cmj bs_SetString.cmi
-bs_MutableStack.cmj : bs_MutableStack.cmi
-bs_MutableQueue.cmj : bs_Array.cmj bs_MutableQueue.cmi
+belt_Array.cmj : js_math.cmj belt_Array.cmi
+belt_internalAVLset.cmj : belt_SortArray.cmj belt_Id.cmj belt_Array.cmj \
+    belt_internalAVLset.cmi
+belt_internalAVLtree.cmj : belt_SortArray.cmj belt_Id.cmj belt_Array.cmj \
+    belt_internalAVLtree.cmi
+belt_List.cmj : belt_Array.cmj belt_List.cmi
+belt_SortArray.cmj : belt_SortArrayString.cmj belt_SortArrayInt.cmj \
+    belt_Array.cmj belt_SortArray.cmi
+belt_SortArrayInt.cmj : belt_Array.cmj belt_SortArrayInt.cmi
+belt_SortArrayString.cmj : belt_Array.cmj belt_SortArrayString.cmi
+belt_Range.cmj : belt_Range.cmi
+belt_internalBucketsType.cmj : belt_Array.cmj belt_internalBucketsType.cmi
+belt_internalSetBuckets.cmj : belt_internalBucketsType.cmj belt_Array.cmj \
+    belt_internalSetBuckets.cmi
+belt_internalBuckets.cmj : belt_internalBucketsType.cmj belt_Array.cmj \
+    belt_internalBuckets.cmi
+belt_HashMap.cmj : belt_internalBucketsType.cmj belt_internalBuckets.cmj \
+    belt_Id.cmj belt_HashMapString.cmj belt_HashMapInt.cmj belt_Array.cmj \
+    belt_HashMap.cmi
+belt_HashSet.cmj : belt_internalSetBuckets.cmj belt_internalBucketsType.cmj \
+    belt_Id.cmj belt_HashSetString.cmj belt_HashSetInt.cmj belt_Array.cmj \
+    belt_HashSet.cmi
+belt_HashSetString.cmj : belt_internalSetBuckets.cmj \
+    belt_internalBucketsType.cmj belt_Array.cmj belt_HashSetString.cmi
+belt_HashSetInt.cmj : belt_internalSetBuckets.cmj \
+    belt_internalBucketsType.cmj belt_Array.cmj belt_HashSetInt.cmi
+belt_Id.cmj : belt_Id.cmi
+belt_MapDict.cmj : belt_internalAVLtree.cmj belt_Id.cmj belt_Array.cmj \
+    belt_MapDict.cmi
+belt_SetDict.cmj : belt_internalAVLset.cmj belt_Id.cmj belt_Array.cmj \
+    belt_SetDict.cmi
+belt_Map.cmj : belt_MapString.cmj belt_MapInt.cmj belt_MapDict.cmj \
+    belt_Id.cmj belt_Array.cmj belt_Map.cmi
+belt_internalMapInt.cmj : belt_internalAVLtree.cmj belt_SortArray.cmj \
+    belt_Array.cmj
+belt_internalMapString.cmj : belt_internalAVLtree.cmj belt_SortArray.cmj \
+    belt_Array.cmj
+belt_MapString.cmj : belt_internalMapString.cmj belt_internalAVLtree.cmj \
+    belt_Array.cmj belt_MapString.cmi
+belt_MapInt.cmj : belt_internalMapInt.cmj belt_internalAVLtree.cmj \
+    belt_Array.cmj belt_MapInt.cmi
+belt_Set.cmj : belt_SetString.cmj belt_SetInt.cmj belt_SetDict.cmj \
+    belt_Id.cmj belt_Array.cmj belt_Set.cmi
+belt_MutableSet.cmj : belt_internalAVLset.cmj belt_SortArray.cmj \
+    belt_MutableSetString.cmj belt_MutableSetInt.cmj belt_Id.cmj \
+    belt_Array.cmj belt_MutableSet.cmi
+belt_MutableSetInt.cmj : belt_internalSetInt.cmj belt_internalAVLset.cmj \
+    belt_SortArrayInt.cmj belt_Array.cmj belt_MutableSetInt.cmi
+belt_MutableSetString.cmj : belt_internalSetString.cmj \
+    belt_internalAVLset.cmj belt_SortArrayString.cmj belt_Array.cmj \
+    belt_MutableSetString.cmi
+belt_MutableMap.cmj : belt_internalAVLtree.cmj belt_MutableMapString.cmj \
+    belt_MutableMapInt.cmj belt_Id.cmj belt_Array.cmj belt_MutableMap.cmi
+belt_MutableMapInt.cmj : belt_internalMapInt.cmj belt_internalAVLtree.cmj \
+    belt_Array.cmj belt_MutableMapInt.cmi
+belt_MutableMapString.cmj : belt_internalMapString.cmj \
+    belt_internalAVLtree.cmj belt_Array.cmj belt_MutableMapString.cmi
+belt_internalSetInt.cmj : belt_internalAVLset.cmj belt_SortArrayInt.cmj \
+    belt_Array.cmj
+belt_internalSetString.cmj : belt_internalAVLset.cmj \
+    belt_SortArrayString.cmj belt_Array.cmj
+belt_SetInt.cmj : belt_internalSetInt.cmj belt_internalAVLset.cmj \
+    belt_Array.cmj belt_SetInt.cmi
+belt_SetString.cmj : belt_internalSetString.cmj belt_internalAVLset.cmj \
+    belt_Array.cmj belt_SetString.cmi
+belt_MutableStack.cmj : belt_MutableStack.cmi
+belt_MutableQueue.cmj : belt_Array.cmj belt_MutableQueue.cmi
 node_child_process.cmj : node.cmj
 js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
@@ -87,10 +91,10 @@ js_date.cmj :
 js_global.cmj :
 js_cast.cmj : js_cast.cmi
 js_promise.cmj :
-bs_HashMapInt.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
-    bs_Array.cmj bs_HashMapInt.cmi
-bs_HashMapString.cmj : bs_internalBucketsType.cmj bs_internalBuckets.cmj \
-    bs_Array.cmj bs_HashMapString.cmi
+belt_HashMapInt.cmj : belt_internalBucketsType.cmj belt_internalBuckets.cmj \
+    belt_Array.cmj belt_HashMapInt.cmi
+belt_HashMapString.cmj : belt_internalBucketsType.cmj \
+    belt_internalBuckets.cmj belt_Array.cmj belt_HashMapString.cmi
 node_process.cmi : js_dict.cmi
 js_re.cmi :
 js_null_undefined.cmi :
@@ -101,42 +105,46 @@ js_list.cmi : js_vector.cmi
 js_option.cmi :
 js_result.cmi :
 js_mapperRt.cmi :
-bs_Array.cmi :
-bs_internalAVLset.cmi : bs_Id.cmi
-bs_internalAVLtree.cmi : bs_Id.cmi
-bs_List.cmi :
-bs_SortArray.cmi : bs_SortArrayString.cmi bs_SortArrayInt.cmi
-bs_SortArrayInt.cmi :
-bs_SortArrayString.cmi :
-bs_Range.cmi :
-bs_internalBucketsType.cmi :
-bs_internalSetBuckets.cmi : bs_internalBucketsType.cmi
-bs_internalBuckets.cmi : bs_internalBucketsType.cmi
-bs_HashMap.cmi : bs_Id.cmi bs_HashMapString.cmi bs_HashMapInt.cmi
-bs_HashSet.cmi : bs_Id.cmi bs_HashSetString.cmi bs_HashSetInt.cmi
-bs_HashSetString.cmi :
-bs_HashSetInt.cmi :
-bs_Id.cmi :
-bs_MapDict.cmi : bs_Id.cmi
-bs_SetDict.cmi : bs_Id.cmi
-bs_Map.cmi : bs_MapString.cmi bs_MapInt.cmi bs_MapDict.cmi bs_Id.cmi
-bs_MapString.cmi :
-bs_MapInt.cmi :
-bs_Set.cmi : bs_SetString.cmi bs_SetInt.cmi bs_SetDict.cmi bs_Id.cmi
-bs_MutableSet.cmi : bs_MutableSetString.cmi bs_MutableSetInt.cmi bs_Id.cmi
-bs_MutableSetInt.cmi :
-bs_MutableSetString.cmi :
-bs_MutableMap.cmi : bs_MutableMapString.cmi bs_MutableMapInt.cmi bs_Id.cmi
-bs_MutableMapInt.cmi :
-bs_MutableMapString.cmi :
-bs_SetInt.cmi :
-bs_SetString.cmi :
-bs_MutableStack.cmi :
-bs_MutableQueue.cmi :
+belt_Array.cmi :
+belt_internalAVLset.cmi : belt_Id.cmi
+belt_internalAVLtree.cmi : belt_Id.cmi
+belt_List.cmi :
+belt_SortArray.cmi : belt_SortArrayString.cmi belt_SortArrayInt.cmi
+belt_SortArrayInt.cmi :
+belt_SortArrayString.cmi :
+belt_Range.cmi :
+belt_internalBucketsType.cmi :
+belt_internalSetBuckets.cmi : belt_internalBucketsType.cmi
+belt_internalBuckets.cmi : belt_internalBucketsType.cmi
+belt_HashMap.cmi : belt_Id.cmi belt_HashMapString.cmi belt_HashMapInt.cmi
+belt_HashSet.cmi : belt_Id.cmi belt_HashSetString.cmi belt_HashSetInt.cmi
+belt_HashSetString.cmi :
+belt_HashSetInt.cmi :
+belt_Id.cmi :
+belt_MapDict.cmi : belt_Id.cmi
+belt_SetDict.cmi : belt_Id.cmi
+belt_Map.cmi : belt_MapString.cmi belt_MapInt.cmi belt_MapDict.cmi \
+    belt_Id.cmi
+belt_MapString.cmi :
+belt_MapInt.cmi :
+belt_Set.cmi : belt_SetString.cmi belt_SetInt.cmi belt_SetDict.cmi \
+    belt_Id.cmi
+belt_MutableSet.cmi : belt_MutableSetString.cmi belt_MutableSetInt.cmi \
+    belt_Id.cmi
+belt_MutableSetInt.cmi :
+belt_MutableSetString.cmi :
+belt_MutableMap.cmi : belt_MutableMapString.cmi belt_MutableMapInt.cmi \
+    belt_Id.cmi
+belt_MutableMapInt.cmi :
+belt_MutableMapString.cmi :
+belt_SetInt.cmi :
+belt_SetString.cmi :
+belt_MutableStack.cmi :
+belt_MutableQueue.cmi :
 js_boolean.cmi :
 js_dict.cmi :
 js_cast.cmi :
 dom.cmi : dom_storage.cmi
 dom_storage.cmi :
-bs_HashMapInt.cmi :
-bs_HashMapString.cmi :
+belt_HashMapInt.cmi :
+belt_HashMapString.cmi :

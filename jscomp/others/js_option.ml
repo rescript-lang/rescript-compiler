@@ -42,7 +42,7 @@ let isNone = function
 
 let getExn x =
   match x with 
-  | None -> Js_exn.raiseError "Bs_option.getExn"
+  | None -> Js_exn.raiseError "getExn"
   | Some x -> x 
 
 let equal eq a b =
