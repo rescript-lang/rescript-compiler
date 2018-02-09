@@ -7,14 +7,14 @@
     "isShellCommand": true,
     "args": [
         "run",
-        "watch"
+        "start"
     ],
     "showOutput": "always",
     "isBackground": true,
     "problemMatcher": {
         "fileLocation": "absolute",
         "owner": "ocaml",
-        "watching": {
+        "background": {
             "activeOnStart": false,
             "beginsPattern": ">>>> Start compiling",
             "endsPattern": ">>>> Finish compiling"
