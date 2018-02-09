@@ -18,9 +18,11 @@
 *)
 
 
-external length: 'a array -> int = "%array_length" 
+external length: 'a array -> int = "%array_length"
+(** [length xs] return the size of the array *)
+  
 external size: 'a array -> int = "%array_length"
-(** [size arr] is the same as [length arr] *)
+(** {b See} {!length} *)
 
 val get: 'a array -> int -> 'a option
 
@@ -38,6 +40,7 @@ external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
     no  bounds checking, this would cause type error
     if [i] does not stay within range
 *)
+  
 external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
 (** [getUndefined arr i]
 
@@ -117,18 +120,24 @@ val makeBy: int -> (int -> 'a ) -> 'a array
     
     return an empty array when [n] is negative 
     return an array of size [n] populated by [f i] start from [0] to [n - 1]
+
+    @example {[
+      makeBy 5 (fun i -> i) = [|0;1;2;3;4|]
+    ]}
 *)
 
 val makeByAndShuffleU: int -> (int -> 'a [@bs]) -> 'a array
 val makeByAndShuffle: int -> (int -> 'a ) -> 'a array    
-(** [makeByAndShuffle n f] is semantically equivalent to [makeBy n f]
-    and return the shuffled array  *)    
+(** [makeByAndShuffle n f]
+
+    Equivalent to [shuffle (makeBy n f)]
+*)    
 
 
 val zip: 'a array -> 'b array -> ('a * 'b) array
 (** [zip a b] 
     
-    stop with the shorter array
+    Stop with the shorter array
 
     @example {[
       zip [|1;2] [|1;2;3|] = [| (1,2); (2;2)|]
@@ -139,9 +148,11 @@ val zip: 'a array -> 'b array -> ('a * 'b) array
  val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
  val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array         
  (**
-    [zipBy a b f]
+    [zipBy xs ys f]
    
-    stops with shorter array
+    Stops with shorter array
+
+    Equivalent to [map (zip xs ys) (fun (a,b) -> f a b) ]
  *)
 
 val concat: 'a array -> 'a array -> 'a array
@@ -181,13 +192,20 @@ val copy: 'a array -> 'a array
 val fill: 'a array -> offset:int -> len:int -> 'a -> unit
 (** [fill arr ~offset ~len x] 
 
-    modifies [arr] in place,
+    Modifies [arr] in place,
     storing [x] in elements number [offset] to [offset + len - 1].
 
     [offset] can be negative
 
     [fill arr offset:(-1) len:1 ] means fill the last element,
     if the array does not have enough data, [fill] will ignore it
+
+    @example {[
+
+      let arr = makeBy 5 (fun i -> i) ;;
+      fill arr ~offset:2 ~len:2 0 ;;
+      arr = [|0;1;0;0;4|];;
+    ]}
  *)
 
 val blit: 
@@ -208,18 +226,33 @@ val blit:
 
 val blitUnsafe:
   src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit 
-
+(**
+   {b Unsafe} blit without bounds checking
+*)
 
 val forEachU: 'a array ->  ('a -> unit [@bs]) -> unit
 val forEach: 'a array ->  ('a -> unit ) -> unit
+(** [forEach xs f]
 
+    Call f on each element of [xs] from the beginning to end
+*)
+  
 val mapU: 'a array ->  ('a -> 'b [@bs]) -> 'b array
 val map: 'a array ->  ('a -> 'b ) -> 'b array
+(** [map xs f ]
 
+    @return a new array by calling [f] to element of [xs] from
+    the beginning to end
+*)
+    
 val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keep: 'a array -> ('a -> bool ) -> 'a array
 (** [keep xs p ]
     @return a new array that keep all elements satisfy [p]
+
+    @example {[
+      keep [|1;2;3|] (fun x -> x mod  2 = 0) = [|2|]
+    ]}
 *)
 
 val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
@@ -305,8 +338,8 @@ val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
 val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
 (** [cmp a b]
     
-    - compared by length if [length a <> length b] 
-    - otherwise compare one by one [f ai bi]
+    - Compared by length if [length a <> length b] 
+    - Otherwise compare one by one [f ai bi]
 *)
 
 val eqU:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
@@ -318,4 +351,4 @@ val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
 *)
 
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
-(** {b Unsafe} function *)
+(** {b Unsafe}  *)

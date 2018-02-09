@@ -274,6 +274,13 @@ let () =
   eq __LOC__ (A.concatMany [|[|3;2|]; [|1;2;3|] |]) [|3;2;1;2;3|];
   eq __LOC__ (A.concatMany [|[|3;2|]; [|1;2;3|];[||];[|0|] |]) [|3;2;1;2;3;0|];
   eq __LOC__ (A.concatMany [| [||]; [|3;2|]; [|1;2;3|];[||];[|0|] |]) [|3;2;1;2;3;0|];
-  eq __LOC__ (A.concatMany [| [||]; [||] |]) [||];
+  eq __LOC__ (A.concatMany [| [||]; [||] |]) [||]
+
+let () = 
+  b __LOC__ (A.cmp [|1;2;3|] [|0;1;2;3|] compare < 0) ; 
+  b __LOC__ (A.cmp [|1;2;3|] [|0;1;2|]  (fun x y -> compare  x y) > 0);
+  b __LOC__ (A.cmp [|1;2;3|] [|1;2;3|]  (fun x y -> compare x y) = 0);
+  b __LOC__ (A.cmp [|1;2;4|] [|1;2;3|]  (fun x y -> compare x y) > 0);
+
 
 ;; Mt.from_pair_suites __LOC__ !suites  

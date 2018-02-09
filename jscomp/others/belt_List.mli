@@ -24,7 +24,13 @@
 
 (** {!Belt.List}
     
-    Utilities for List data type
+    Utilities for List data type.
+    
+    This module is compatible with original ocaml stdlib.
+    In general, all functions comes with the original stdlib also
+    applies to this collection, however, this module provides  faster
+    and stack safer utilities 
+
 *)
 
 type 'a t = 'a list
@@ -32,42 +38,69 @@ type 'a t = 'a list
 
 val length: 'a t -> int
 (** [length l]
-    return the length of the list [l]
+
+    @return the length of the list [l]
 *)
 
 val size: 'a t -> int
-(** [size l] is the same as [length l] *)
+(** {b See} {!length} *)
 
 val head: 'a t -> 'a option
-
+(**
+   @example {[
+     head [] = None ;;
+     head [1;2;3] = Some 1 ;;
+   ]}
+*)
 val headExn: 'a t -> 'a  
 (** [headExn h]
 
-    {b raise} an exception if [h] is emmpty
+    {b See} {!head}
+    
+    {b raise} an exception if [h] is empty
+
 *)
 
 val tail: 'a t -> 'a t option
+(** @example{[
 
+      tail [] = None ;;
+      tail [1;2] = Some [2];;
+    ]}
+*)
+    
 val tailExn: 'a t -> 'a t 
 (** [tailExn h]
 
+    {b See} {!tail}
+    
     {b raise} an exception if [h] is empty
 *)
 
 val add: 'a t -> 'a -> 'a t
-
+(**
+   @example{[
+     add [1] 3 = [3;1];;
+   ]}
+*)
 val get: 'a t -> int -> 'a option
 (** [get xs n]
 
     return the nth element in [xs],
     or [None] if [n] is larger than the length
+
+    @example {[
+      get [0;3;32] 2 = Some 2 ;;
+      get [0;3;32] 3 = None;;
+    ]}
  *)
 
 val getExn: 'a t -> int -> 'a
 (** [getExn xs n]
 
-    return the nth element in [xs],
-    or {b raise} an exception if [n] is larger than the length
+    {b See} {!get}
+    
+    {b raise} an exception if [n] is larger than the length
 *)  
 
 val make: int -> 'a -> 'a t
@@ -75,6 +108,10 @@ val make: int -> 'a -> 'a t
   
     - return a list of length [n] with each element filled with [v]  
     - return the empty list if [n] is negative
+
+     @example {[
+       make 3 1 =  [1;1;1]
+     ]}
 *)
     
 val makeByU: int -> (int -> 'a [@bs]) -> 'a t 
@@ -91,14 +128,28 @@ val makeBy: int -> (int -> 'a) -> 'a t
 
 val drop: 'a t -> int -> 'a t option 
 (** [drop xs n]
+
     return the list obtained by dropping the first [n] elements,
     or [None] if [xs] has fewer than [n] elements
+
+    @example {[
+      drop [1;2;3] 2 = Some [3];;
+      drop [1;2;3] 3 = Some [];;
+      drop [1;2;3] 4 = None;;
+    ]}
 *)
 
 val take: 'a t -> int -> 'a t option 
 (** [take xs n]
+
     return a list with the first [n] elements from [xs],
     or [None] if [xs] has fewer than [n] elements
+
+    @example {[
+      take [1;2;3] 1 = Some [1];;
+      take [1;2;3] 2 = Some [1;2];;
+      take [1;2;3] 4 = None;;
+    ]}
 *)
 
 val splitAt: 'a t -> int -> ('a list * 'a list) option 
@@ -106,18 +157,31 @@ val splitAt: 'a t -> int -> ('a list * 'a list) option
     [splitAt xs n]
     split the list [xs] at position [n]
     return None when the length of [xs] is less than [n]
+
+   @example{[
+     splitAt [0;1;2;3;4] 2 = Some ([0;1], [2;3;4])
+   ]} 
 *)
     
 val concat: 'a t -> 'a t -> 'a t
 (**
     [concat xs ys]
-    return the list obtained by adding [ys] after [xs]
+
+    @return the list obtained by adding [ys] after [xs]
+
+   @example {[
+     concat [1;2;3] [4;5] = [1;2;3;4;5]
+   ]}
 *)
 
 val concatMany: 'a t array -> 'a t
 (**
     [concatMany a]
     return the list obtained by concatenating in order all the lists in array [a]
+
+   @example {[
+     concatMany [| [1;2;3] ; []; [3]; [4] |] = [1;2;3;3;4]
+   ]}
 *)
 
 val reverseConcat: 'a t -> 'a t -> 'a t
@@ -132,35 +196,63 @@ val flatten: 'a t t -> 'a t
 (**
     [flatten ls]
     return the list obtained by concatenating in order all the lists in list [ls]
+
+   @example {[
+     flatten [ [1;2;3] ; []; [3]; [4] ] = [1;2;3;3;4]
+   ]}
 *)
 
 val mapU: 'a t -> ('a -> 'b [@bs]) -> 'b t
 val map: 'a t -> ('a -> 'b) -> 'b t
 (**
     [map xs f]
+
     return the list obtained by applying [f] to the element of [xs]
+
+   @example {[
+     map [1;2] (fun x-> x + 1) = [3;4]
+   ]}
 *)
 
 val zip: 'a t -> 'b t -> ('a * 'b) t
 (** [zip xs ys]
-  return a list of pairs from the two lists
-  with the length of the shorter list
+
+    @return a list of pairs from the two lists
+    with the length of the shorter list
+
+    @example {[
+      zip [1;2] [1;2;3] = [(1,1); (2,2)]
+    ]}
 *)
 
 val zipByU: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> 'c t
 val zipBy: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
 (** [zipBy xs ys f]
 
-  equivalent to [zip xs ys |> List.map (fun (x,y) -> f x y)]
+    {b See} {!zip}
+    
+    Equivalent to [zip xs ys |> List.map (fun (x,y) -> f x y)]
 *)
 
 val mapWithIndexU: 'a t -> (int -> 'a -> 'b [@bs]) -> 'b t
 val mapWithIndex: 'a t -> (int -> 'a -> 'b) -> 'b t
+(** @example {[
+      mapWithIndex [1;2;3] (fun i x -> i + x) =
+      [0 + 1; 1 + 2; 2 + 3 ]
+    ]}
+*)
 
 val ofArray: 'a array -> 'a t 
-   
-val toArray: 'a t -> 'a array
+(** @example {[
+      ofArray [|1;2;3|]  = [1;2;3]
+    ]}
+*)
 
+val toArray: 'a t -> 'a array
+(** @example {[
+      toArray [1;2;3] = [|1;2;3|]
+    ]}
+*)
 (* type json = Js_json.t  *)
 
 (* val toJson : 'a t -> ('a -> json  [@bs]) -> json *)
@@ -168,26 +260,61 @@ val toArray: 'a t -> 'a array
 
 
 val reverse: 'a t -> 'a t
-
+(** @example {[
+      reverse [1;2;3] = [3;2;1]
+    ]}
+*)
     
 val mapReverseU: 'a t -> ('a -> 'b [@bs]) -> 'b t
 val mapReverse: 'a t -> ('a -> 'b) -> 'b t
-(** [mapReverse a f] is equivalent to [reverse (map a f)]    
+(** [mapReverse a f]
+
+    Equivalent to [reverse (map a f)]    
 *)
 
 val forEachU: 'a t -> ('a -> 'b [@bs]) -> unit
 val forEach: 'a t -> ('a -> 'b) -> unit
-
+(** [forEach xs f ]
+    @example {[
+      let us = ref 0;;
+      forEach [1;2;3;4] (fun x -> us := !us + x);;
+      !us  = 1 + 2 + 3 + 4;;
+    ]}
+*)
+  
 val forEachWithIndexU: 'a t -> (int -> 'a -> 'b [@bs]) -> unit
 val forEachWithIndex: 'a t -> (int -> 'a -> 'b) -> unit
+(** [forEachWithIndex xs f]
 
+    @example {[
+      let us = ref 0 ;;
+      forEachWithIndex [1;1;1;1] (fun i x -> us := !us + x + i);;
+      !us  = 0 + 1 + 1 +  1 + 2 + 1 + 3 + 1;;
+    ]}
+*)
 
 val reduceU:  'a t -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b
 val reduce:  'a t -> 'b -> ('b -> 'a -> 'b) -> 'b
+(** [reduce xs f]
 
+    @example {[
+      reduce [1;2;3;4] 0 (+) = 10;;
+      reduce [1;2;3;4] 10 (-) = 0;;
+      reduce [1;2;3;4] [] add = [4;3;2;1];
+    ]}
+*)
+  
 val reduceReverseU: 'a t -> 'b -> ('a -> 'b -> 'b [@bs]) -> 'b
 val reduceReverse: 'a t -> 'b -> ('a -> 'b -> 'b) -> 'b
+(** [reduceReverse xs f]
 
+    @example {[
+      reduceReverse [1;2;3;4] 0 (+) = 10;;
+      reduceReverse [1;2;3;4] 10 (-) = 0;;
+      reduceReverse [1;2;3;4] [] add = [1;2;3;4];;
+    ]}
+*)
+  
 val mapReverse2U: 'a t -> 'b t -> ('a -> 'b -> 'c [@bs]) -> 'c t
 val mapReverse2: 'a t -> 'b t -> ('a -> 'b -> 'c) -> 'c t
 (** [mapReverse2 xs ys f]
@@ -290,11 +417,19 @@ val eq: 'a t -> 'a t -> ('a -> 'a -> bool) -> bool
 
 val hasU:  'a t -> 'b -> ('a -> 'b -> bool [@bs]) -> bool
 val has:  'a t -> 'b -> ('a -> 'b -> bool) -> bool
-
+(** @example {[
+      has [1;2;3] 2 (=) = true;;
+      has [1;2;3] 4 (=) = false;;
+    ]}
+*)
 
 val getByU: 'a t -> ('a -> bool [@bs]) -> 'a option
 val getBy: 'a t -> ('a -> bool) -> 'a option
-
+(** @example {[
+      getBy [1;4;3;2] (fun x -> x mod 2 = 0) = Some 4
+    ]}
+*)
+    
 val keepU: 'a t ->  ('a -> bool [@bs]) -> 'a t
 val keep: 'a t ->  ('a -> bool) -> 'a t
 (** [keep  xs p]

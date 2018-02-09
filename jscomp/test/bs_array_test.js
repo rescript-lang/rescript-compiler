@@ -8,6 +8,7 @@ var Belt_List = require("../../lib/js/belt_List.js");
 var Js_vector = require("../../lib/js/js_vector.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 var Caml_array = require("../../lib/js/caml_array.js");
+var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = [/* [] */0];
 
@@ -1203,7 +1204,48 @@ eq("File \"bs_array_test.ml\", line 277, characters 5-12", Belt_Array.concatMany
           /* array */[]
         ]), /* array */[]);
 
-Mt.from_pair_suites("File \"bs_array_test.ml\", line 279, characters 23-30", suites[0]);
+b("File \"bs_array_test.ml\", line 280, characters 4-11", +(Belt_Array.cmp(/* int array */[
+            1,
+            2,
+            3
+          ], /* int array */[
+            0,
+            1,
+            2,
+            3
+          ], Caml_obj.caml_compare) < 0));
+
+b("File \"bs_array_test.ml\", line 281, characters 4-11", +(Belt_Array.cmp(/* int array */[
+            1,
+            2,
+            3
+          ], /* int array */[
+            0,
+            1,
+            2
+          ], Caml_primitive.caml_int_compare) > 0));
+
+b("File \"bs_array_test.ml\", line 282, characters 4-11", +(Belt_Array.cmp(/* int array */[
+            1,
+            2,
+            3
+          ], /* int array */[
+            1,
+            2,
+            3
+          ], Caml_primitive.caml_int_compare) === 0));
+
+b("File \"bs_array_test.ml\", line 283, characters 4-11", +(Belt_Array.cmp(/* int array */[
+            1,
+            2,
+            4
+          ], /* int array */[
+            1,
+            2,
+            3
+          ], Caml_primitive.caml_int_compare) > 0));
+
+Mt.from_pair_suites("File \"bs_array_test.ml\", line 286, characters 23-30", suites[0]);
 
 var A = 0;
 
