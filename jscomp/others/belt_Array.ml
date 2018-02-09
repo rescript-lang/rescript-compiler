@@ -327,6 +327,17 @@ let reduceReverseU a x f =
 
 let reduceReverse a x f = reduceReverseU a x (fun[@bs] a b -> f a b)
 
+let reduceReverse2U a b x f =
+  let r = ref x in
+  let len = min (length a) (length b) in
+  for i = len - 1 downto  0 do
+    r := f !r (getUnsafe a i) (getUnsafe b i) [@bs]
+  done;
+  !r 
+
+let reduceReverse2 a b x f =
+  reduceReverse2U a b x (fun [@bs] a b c -> f a b c)
+
 let rec everyAux arr i b len =   
   if i = len then true 
   else if b (getUnsafe arr i) [@bs] then 

@@ -300,6 +300,16 @@ val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a ) ->  'a
     ]}
 *)
 
+val reduceReverse2U:
+  'a array -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
+val reduceReverse2:  
+  'a array -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c) ->  'c
+(**
+   @example {[
+     reduceReverse2 [|1;2;3|] [|1;2|] 0 (fun acc x y -> acc + x + y) = 6
+   ]}
+*)
+  
 val someU: 'a array -> ('a -> bool [@bs]) -> bool
 val some: 'a array -> ('a -> bool) -> bool
 (** [some xs p]

@@ -92,7 +92,9 @@ let () =
 let () = 
   eq __LOC__ (A.reduceReverse [||] 100 (-)) 100;
   eq __LOC__ (A.reduceReverse [|1;2|] 100 (-)) 97;
-  eq __LOC__ (A.reduceReverse [|1;2;3;4|] 100 (-) ) 90
+  eq __LOC__ (A.reduceReverse [|1;2;3;4|] 100 (-) ) 90;
+  b __LOC__
+    (A.reduceReverse2 [|1;2;3|] [|1;2|] 0 (fun acc x y -> acc + x + y) = 6)
 let addone = fun [@bs] x -> x + 1
 
 let makeMatrixExn sx sy init =

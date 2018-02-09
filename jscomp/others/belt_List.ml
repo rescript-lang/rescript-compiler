@@ -511,11 +511,19 @@ let rec reduceU l accu f   =
 let reduce l accu f =   
   reduceU l accu (fun[@bs] acc x -> f acc x )
 
-let rec reduceReverseU l accu f  =
+
+let rec reduceReverseUnsafeU l accu f  =
   match l with
     [] -> accu
-  | a::l -> f a (reduceReverseU l accu f) [@bs]
+  | a::l -> f (reduceReverseUnsafeU l accu f) a [@bs]
 
+let reduceReverseU (type a ) (type b) (l : a list) (acc : b) f =
+  let len = length  l in
+  if len < 1000 then
+    reduceReverseUnsafeU l acc f
+  else
+    A.reduceReverseU (toArray l) acc f
+      
 let reduceReverse l accu f =   
   reduceReverseU l accu (fun [@bs] a b -> f a b)
 
@@ -544,13 +552,23 @@ let rec reduce2U l1 l2 accu f =
 
 let reduce2 l1 l2 acc f = reduce2U l1 l2 acc (fun[@bs] a b c -> f a b c )  
 
-let rec reduceReverse2U l1 l2 accu f  =
+let rec reduceReverse2UnsafeU l1 l2 accu f  =
   match (l1, l2) with
     ([], []) -> accu
-  | (a1::l1, a2::l2) -> f a1 a2 (reduceReverse2U l1 l2 accu f) [@bs]
+  | (a1::l1, a2::l2) ->
+    f (reduceReverse2UnsafeU l1 l2 accu f)  a1 a2 [@bs]
   | _, [] | [], _ -> accu
 
-let reduceReverse2 l1 l2 acc f = reduceReverse2U l1 l2 acc (fun [@bs] a b c -> f a b c)  
+let reduceReverse2U (type a ) (type b ) (type c)
+    (l1 : a list) (l2 : b list) (acc : c) f  =
+  let len = length l1 in
+  if len < 1000 then
+    reduceReverse2UnsafeU l1 l2 acc f
+  else
+    A.reduceReverse2U (toArray l1) (toArray l2) acc f
+      
+let reduceReverse2 l1 l2 acc f =
+  reduceReverse2U l1 l2 acc (fun [@bs] a b c -> f a b c)  
 
 let rec everyU xs p = 
   match xs with 
@@ -573,6 +591,14 @@ let rec every2U l1 l2  p =
 
 let every2 l1 l2 p = every2U l1 l2 (fun[@bs] a b -> p a b)  
 
+let rec cmpByLength l1 l2 = 
+  match l1, l2 with
+  | [], [] -> 0
+  | _,  [] -> 1
+  | [], _ -> -1
+  | _ :: l1s , _ :: l2s ->
+    cmpByLength l1s l2s
+               
 let rec cmpU l1 l2  p =
   match (l1, l2) with
   | [], [] -> 0
@@ -583,8 +609,9 @@ let rec cmpU l1 l2  p =
     if c = 0 then
       cmpU l1 l2 p
     else c
-      
+
 let cmp l1 l2 f = cmpU l1 l2 (fun [@bs] x y -> f x y)    
+
 
 let rec eqU l1 l2  p =
   match (l1, l2) with

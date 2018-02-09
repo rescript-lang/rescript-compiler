@@ -304,8 +304,8 @@ val reduce:  'a t -> 'b -> ('b -> 'a -> 'b) -> 'b
     ]}
 *)
   
-val reduceReverseU: 'a t -> 'b -> ('a -> 'b -> 'b [@bs]) -> 'b
-val reduceReverse: 'a t -> 'b -> ('a -> 'b -> 'b) -> 'b
+val reduceReverseU: 'a t -> 'b -> ('b -> 'a ->  'b [@bs]) -> 'b
+val reduceReverse: 'a t -> 'b -> ('b -> 'a ->  'b) -> 'b
 (** [reduceReverse xs f]
 
     @example {[
@@ -342,9 +342,9 @@ val reduce2:
 *)
 
 val reduceReverse2U:
-  'a t -> 'b t -> 'c -> ('a -> 'b -> 'c -> 'c [@bs]) -> 'c
+  'a t -> 'b t -> 'c -> ('c -> 'a -> 'b ->  'c [@bs]) -> 'c
 val reduceReverse2:
-  'a t -> 'b t -> 'c -> ('a -> 'b -> 'c -> 'c) -> 'c
+  'a t -> 'b t -> 'c -> ('c -> 'a -> 'b ->  'c) -> 'c
 (**
    [reduceReverse2 xs ys init f ]
 
@@ -391,14 +391,26 @@ val some2:  'a t -> 'b t -> ('a -> 'b -> bool) -> bool
       (some2 [2;3] [1;4] (fun   x y -> x > y)) = true;;
     ]}
 *)
+
+val cmpByLength: 'a t -> 'a t -> int
+(** [cmpByLength l1 l2]
+
+    Compare two lists solely by length
+*)
+  
 val cmpU: 'a t -> 'a t -> ('a -> 'a -> int [@bs]) -> int
 val cmp: 'a t -> 'a t -> ('a -> 'a -> int) -> int
 (**
     [cmp xs ys cmpElem]
     compare lists [xs] and [ys] using [cmpElem] to compare elements
     @example {[
-      cmp [1;2;3] [1;2;3] compare = 0
+      cmp [1;2;3] [1;2;3] compare = 0;;
+      cmp [1;2;3] [0;1;2;3] compare = 1 ;;]
   ]}
+
+   {b Attention}: The total ordering of List is different from Array,
+   for Array, we compare the length first and one by one later, while
+   for lists, we just compare one by one 
 *)
 
 
@@ -441,7 +453,14 @@ val keep: 'a t ->  ('a -> bool) -> 'a t
 *)
 val keepMapU: 'a t -> ('a -> 'b option [@bs]) -> 'b t
 val keepMap: 'a t -> ('a -> 'b option) -> 'b t
+(** [keepMap xs f]
 
+    @example {[
+      keepMap [1;2;3;4] (fun x -> if x mod 2 = 0 then Some (-x ) else None)
+      =
+      [-2;-4]
+    ]}
+*)
 val partitionU: 'a t -> ('a -> bool [@bs]) ->  'a t * 'a t
 val partition: 'a t -> ('a -> bool) ->  'a t * 'a t
 (** [partition xs p]
@@ -452,7 +471,12 @@ val partition: 'a t -> ('a -> bool) ->  'a t * 'a t
     ]}
 *)
 val unzip: ('a * 'b) t -> 'a t * 'b t
+(** [unzip xs]
 
+    @example {[
+      unzip [(1,2) ; (3,4)] = ([1;3], [2;4])
+    ]}
+*)
 val getAssocU: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool [@bs])  -> 'c option
 val getAssoc: ('a * 'c) t -> 'b ->  ('a -> 'b -> bool)  -> 'c option
 (** [getAssoc xs k eq]
