@@ -10,15 +10,53 @@
                  <link rel="previous" href="Js.Global.html"><link rel="next" href="Js.Math.html">
                  <title> Js.Json </title></head> 
                <body>
-<nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
-<li><a href="Bs_dyn.html">Bs_dyn</a></li>
-<li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
 <li><a href="Js_dict.html">Js_dict</a></li>
 <li><a href="Js_exn.html">Js_exn</a></li>
@@ -29,6 +67,7 @@
 <li><a href="Js_internal.html">Js_internal</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
 <li><a href="Js_nativeint.html">Js_nativeint</a></li>
 <li><a href="Js_null.html">Js_null</a></li>
@@ -351,7 +390,7 @@
                   
 <pre><span id="VALparseExn"><span class="keyword">val</span> parseExn</span> : <code class="type">string -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">parse s</code> parses the string <code class="code">s</code> into a JSON data structure
+                    <code class="code">parseExn s</code> parses the string <code class="code">s</code> into a JSON data structure
 <p>
 
 <b>Returns</b> a JSON data structure<br>
@@ -362,42 +401,42 @@
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">(* parse a simple JSON string *)
 
-let json = 
+let json =
   try
-    Js_json.parse {| "foo" |} 
+    Js.Json.parseExn {| "foo" |}
   with
   | _ -&gt; failwith "Error parsing JSON string"
 in
-match Js.Json.reifyType json in
-| (Js.Json.String, value) -&gt; Js.log value
-| _ -&gt; failWith "Expected a string"
+match Js.Json.classify json with
+| Js.Json.JSONString value -&gt; Js.log value
+| _ -&gt; failwith "Expected a string"
 </code></pre>  </pre><pre class="example"> <pre class="codepre"><code class="code">(* parse a complex JSON string *)
 
 let getIds s =
-  let json = 
+  let json =
     try
-      Js.Json.parse s
+      Js.Json.parseExn s
     with
     | _ -&gt; failwith "Error parsing JSON string"
-  in 
-  match Js.Json.reifyType json with
-  | (Js.Json.Object, value) -&gt;
+  in
+  match Js.Json.classify json with
+  | Js.Json.JSONObject value -&gt;
     (* In this branch, compiler infer value : Js.Json.t Js.Dict.t *)
     begin match Js.Dict.get value "ids" with
-    | Some ids -&gt; 
-      begin match Js.Json.reifyType ids with
-      | (Js.Json.Array, ids) -&gt; 
+    | Some ids -&gt;
+      begin match Js.Json.classify ids with
+      | Js.Json.JSONArray ids -&gt;
         (* In this branch compiler infer ids : Js.Json.t array *)
         ids
-      | _ -&gt; failWith "Expected an array"
-      end 
-    | None -&gt; failWith "Expected an `ids` property"
-    end 
-  | _ -&gt; failWith "Expected an object"
+      | _ -&gt; failwith "Expected an array"
+      end
+    | None -&gt; failwith "Expected an `ids` property"
+    end
+  | _ -&gt; failwith "Expected an object"
 
 (* prints `1, 2, 3` *)
 let _ =
-  Js.log @@ getIds {| { "ids" : [1, 2, 3 ] } |} 
+  Js.log @@ getIds {| { "ids" : [1, 2, 3 ] } |}
 </code></pre>  </pre>
                     </div>
                     </div>

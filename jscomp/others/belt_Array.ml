@@ -225,8 +225,10 @@ let blitUnsafe ~src:a1  ~srcOffset:srcofs1 ~dst:a2 ~dstOffset:srcofs2 ~len:blitL
       setUnsafe a2 (j + srcofs2) (getUnsafe a1 (j + srcofs1))
     done 
 
-let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =
-  if len > 0 then
+(* We don't need check [blitLength] since when [blitLength < 0] the 
+   for loop will be nop
+*)    
+let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =  
     let lena1 = length a1 in
     let lena2 = length a2 in 
     let srcofs1 = if ofs1 < 0 then max (lena1 + ofs1) 0 else ofs1 in
@@ -234,14 +236,14 @@ let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =
     let blitLength =
       min len (min (lena1 - srcofs1) (lena2 - srcofs2)) in 
     (* blitUnsafe a1 srcofs1 a2 srcofs2 blitLength *)
-    if srcofs2 <= srcofs1 then
+    (if srcofs2 <= srcofs1 then
       for j = 0 to blitLength - 1 do
         setUnsafe a2 (j + srcofs2) (getUnsafe a1 (j + srcofs1))
       done
     else
       for j = blitLength - 1 downto 0 do
         setUnsafe a2 (j + srcofs2) (getUnsafe a1 (j + srcofs1))
-      done 
+      done)
 
 let forEachU a f =
   for i = 0 to length a - 1 do f(getUnsafe a i) [@bs] done
