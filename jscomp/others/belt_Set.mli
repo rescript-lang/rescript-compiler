@@ -207,7 +207,11 @@ val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
     @return  a tuple [((smaller, larger), present)],
     [present] is true when [ele] exist in [set]
 *)                                    
-val checkInvariantInternal: _ t -> bool
+val checkInvariantInternal: _ t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+  
 
 (****************************************************************************)
 (** Below are operations only when better performance needed,
@@ -216,6 +220,6 @@ val checkInvariantInternal: _ t -> bool
 *)
 
 val getData: ('k,'id) t  -> ('k,'id) Belt_SetDict.t
-val getDict: ('k,'id) t  -> ('k,'id) id
-val packDictData: id:('k, 'id) id -> data:('k, 'id) Belt_SetDict.t -> ('k, 'id) t
+val getId: ('k,'id) t  -> ('k,'id) id
+val packIdData: id:('k, 'id) id -> data:('k, 'id) Belt_SetDict.t -> ('k, 'id) t
     

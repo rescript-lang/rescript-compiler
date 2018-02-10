@@ -61,7 +61,12 @@ val get: 'a t -> key -> 'a option
 val getUndefined: 'a t -> key -> 'a Js.undefined
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a 
-val checkInvariantInternal: _ t -> bool   
+
+val checkInvariantInternal: _ t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+
 (****************************************************************************)
 
 val remove: 'a t ->  key -> 'a t
@@ -144,4 +149,9 @@ val mapWithKeyU: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
 val mapWithKey: 'a t -> (key -> 'a -> 'b) -> 'b t    
 
 
-val checkInvariantInternal: _ t -> bool 
+val checkInvariantInternal: _ t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+
+

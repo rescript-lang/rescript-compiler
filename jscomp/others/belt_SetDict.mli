@@ -148,5 +148,9 @@ val split: ('elt, 'id) t -> 'elt ->
   cmp:('elt, 'id) cmp ->
   (('elt, 'id) t  * ('elt, 'id) t) * bool
                                     
-val checkInvariantInternal: _ t -> bool
+val checkInvariantInternal: _ t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+  
 

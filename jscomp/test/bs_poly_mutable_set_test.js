@@ -172,7 +172,7 @@ b("File \"bs_poly_mutable_set_test.ml\", line 75, characters 4-11", Belt_List.eq
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 76, characters 5-12", Belt_internalAVLset.toArray(v.data), Array_data_util.range(500, 2000));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 77, characters 4-11", Belt_internalAVLset.checkInvariantInternal(v.data));
+Belt_internalAVLset.checkInvariantInternal(v.data);
 
 eq("File \"bs_poly_mutable_set_test.ml\", line 78, characters 5-12", Belt_MutableSet.get(v, 3), /* None */0);
 
@@ -301,24 +301,24 @@ b("File \"bs_poly_mutable_set_test.ml\", line 162, characters 4-11", Belt_Mutabl
 
 b("File \"bs_poly_mutable_set_test.ml\", line 163, characters 4-11", Belt_MutableSet.eq(a2, a4));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 164, characters 4-11", Belt_List.every(/* :: */[
-          a0,
+Belt_List.forEach(/* :: */[
+      a0,
+      /* :: */[
+        a1,
+        /* :: */[
+          a2,
           /* :: */[
-            a1,
+            a3,
             /* :: */[
-              a2,
-              /* :: */[
-                a3,
-                /* :: */[
-                  a4,
-                  /* [] */0
-                ]
-              ]
+              a4,
+              /* [] */0
             ]
           ]
-        ], (function (x) {
-            return Belt_internalAVLset.checkInvariantInternal(x.data);
-          })));
+        ]
+      ]
+    ], (function (x) {
+        return Belt_internalAVLset.checkInvariantInternal(x.data);
+      }));
 
 Mt.from_pair_suites("bs_poly_mutable_set_test.ml", suites[0]);
 

@@ -129,7 +129,11 @@ val lengthNode : ('a, 'b) node -> int
 val size : ('a,'b) t -> int
 
 val toList : ('a,'b) t -> ('a * 'b) list
-val checkInvariantInternal : ('a,'b) t -> bool
+val checkInvariantInternal : ('a,'b) t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+  
 
 val fillArray : ('a,'b) node -> int -> ('a * 'b) array -> int  
 

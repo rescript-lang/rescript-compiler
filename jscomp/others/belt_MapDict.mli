@@ -122,7 +122,10 @@ val getExn:
   cmp:('k, 'id) cmp ->
   'a
   
-val checkInvariantInternal: _ t -> bool   
+val checkInvariantInternal: _ t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
 
 val remove:
   ('a, 'b, 'id) t -> 'a ->

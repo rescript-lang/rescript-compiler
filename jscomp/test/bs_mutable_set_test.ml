@@ -76,7 +76,7 @@ let () =
   eq __LOC__ (N.reduce v 0 (fun  x y -> x + y)) ((( 500 + 2000)/2) * 1501 );
   b __LOC__ (L.eq (N.toList v) (L.makeBy 1_501 (fun i -> i + 500)  ) (fun x y -> x = y) ) ;
   eq __LOC__ (N.toArray v ) (I.range 500 2000);
-  b __LOC__ (N.checkInvariantInternal v);
+  (N.checkInvariantInternal v);
   eq __LOC__ (N.get v 3) None;
   eq __LOC__ (N.get v 1_200) (Some 1_200);
   let (aa, bb), pres = N.split v 1000 in 
@@ -163,7 +163,7 @@ let () =
   let a3, a4 = N.partition a0 (fun x -> x mod 2 = 0) in   
   b __LOC__ (N.eq a1 a3);
   b __LOC__ (N.eq a2 a4);
-  b __LOC__ (L.every [a0;a1;a2;a3;a4] (fun  x -> N.checkInvariantInternal x))
+  (L.forEach [a0;a1;a2;a3;a4] (fun  x -> N.checkInvariantInternal x))
 
   end : sig end)
 
@@ -174,7 +174,7 @@ let () =
     (* [%assert (N.checkInvariantInternal !v)]; *)
      N.add v i 
   done ;
-  b __LOC__ (N.checkInvariantInternal v);
+  (N.checkInvariantInternal v);
   b __LOC__ @@ R.every 0  1_00_000 (fun  i -> 
     N.has v i 
    );  
@@ -223,7 +223,7 @@ let () =
 let () =   
   let id loc x = 
     let u = (N.ofSortedArrayUnsafe x) in
-    b loc (N.checkInvariantInternal u );
+    (N.checkInvariantInternal u );
     b loc (A.every2 (N.toArray u) x (=) )
   in 
   id __LOC__ [||] ; 

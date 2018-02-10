@@ -200,7 +200,11 @@ val getUndefined: ('k, 'a, 'id) t -> 'k ->  'a Js.undefined
 val getWithDefault:
     ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
 val getExn:  ('k, 'a, 'id) t -> 'k -> 'a 
-val checkInvariantInternal: _ t -> bool   
+val checkInvariantInternal: _ t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+  
 (****************************************************************************)
 
 val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t

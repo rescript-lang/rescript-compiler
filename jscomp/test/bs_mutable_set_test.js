@@ -167,7 +167,7 @@ b("File \"bs_mutable_set_test.ml\", line 77, characters 4-11", Belt_List.eq(Belt
 
 eq("File \"bs_mutable_set_test.ml\", line 78, characters 5-12", Belt_internalAVLset.toArray(v.data), Array_data_util.range(500, 2000));
 
-b("File \"bs_mutable_set_test.ml\", line 79, characters 4-11", Belt_internalAVLset.checkInvariantInternal(v.data));
+Belt_internalAVLset.checkInvariantInternal(v.data);
 
 eq("File \"bs_mutable_set_test.ml\", line 80, characters 5-12", Belt_internalSetInt.get(v.data, 3), /* None */0);
 
@@ -394,24 +394,24 @@ b("File \"bs_mutable_set_test.ml\", line 164, characters 4-11", Belt_MutableSetI
 
 b("File \"bs_mutable_set_test.ml\", line 165, characters 4-11", Belt_MutableSetInt.eq(a2, a4));
 
-b("File \"bs_mutable_set_test.ml\", line 166, characters 4-11", Belt_List.every(/* :: */[
-          a0,
+Belt_List.forEach(/* :: */[
+      a0,
+      /* :: */[
+        a1,
+        /* :: */[
+          a2,
           /* :: */[
-            a1,
+            a3,
             /* :: */[
-              a2,
-              /* :: */[
-                a3,
-                /* :: */[
-                  a4,
-                  /* [] */0
-                ]
-              ]
+              a4,
+              /* [] */0
             ]
           ]
-        ], (function (x) {
-            return Belt_internalAVLset.checkInvariantInternal(x.data);
-          })));
+        ]
+      ]
+    ], (function (x) {
+        return Belt_internalAVLset.checkInvariantInternal(x.data);
+      }));
 
 var v$1 = {
   data: Belt_internalAVLset.empty
@@ -421,7 +421,7 @@ for(var i$2 = 0; i$2 <= 100000; ++i$2){
   Belt_MutableSetInt.add(v$1, i$2);
 }
 
-b("File \"bs_mutable_set_test.ml\", line 177, characters 4-11", Belt_internalAVLset.checkInvariantInternal(v$1.data));
+Belt_internalAVLset.checkInvariantInternal(v$1.data);
 
 b("File \"bs_mutable_set_test.ml\", line 178, characters 4-11", Belt_Range.every(0, 100000, (function (i) {
             return Belt_internalSetInt.has(v$1.data, i);
@@ -499,7 +499,7 @@ function id(loc, x) {
   var u = {
     data: Belt_internalAVLset.ofSortedArrayUnsafe(x)
   };
-  b(loc, Belt_internalAVLset.checkInvariantInternal(u.data));
+  Belt_internalAVLset.checkInvariantInternal(u.data);
   return b(loc, Belt_Array.every2(Belt_internalAVLset.toArray(u.data), x, Caml_obj.caml_equal));
 }
 

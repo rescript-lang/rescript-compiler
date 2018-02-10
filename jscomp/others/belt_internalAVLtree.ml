@@ -361,11 +361,13 @@ let toList s =
 
 let rec checkInvariantInternal (v : _ t) = 
   match toOpt v with 
-  | None -> true 
+  | None -> ()
   | Some n -> 
     let l,r = left n , right n in 
     let diff = height l - height r  in 
-    diff <=2 && diff >= -2 && checkInvariantInternal l && checkInvariantInternal r 
+    [%assert diff <=2 && diff >= -2 ];
+    checkInvariantInternal l;
+    checkInvariantInternal r 
 
 
 let rec fillArrayKey n i arr =     
