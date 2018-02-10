@@ -4,9 +4,9 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
-module N = Bs.Set.Int
+module N = Belt.Set.Int
 module I = Array_data_util
-module A = Bs_Array
+module A = Belt.Array
 let (=~) s i = 
   N.(eq (ofArray i) s)
 let (=*) a b =  
@@ -101,7 +101,7 @@ let ()  =
   let u = N.ofArray v in 
   b __LOC__ (N.checkInvariantInternal u );
   let firstHalf = A.slice v 0 2_000 in 
-  let xx = Bs.Array.reduce firstHalf u N.remove in 
+  let xx = Belt.Array.reduce firstHalf u N.remove in 
   b __LOC__ (N.checkInvariantInternal u);
   b __LOC__ N.(eq (union (ofArray firstHalf) xx) u)
   

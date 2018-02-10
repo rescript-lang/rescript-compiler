@@ -6,7 +6,7 @@ external get : map -> int -> int option = "get" [@@bs.send] [@@bs.return undefin
 external mem : map -> int -> bool = "has" [@@bs.send] 
 
 
-module A = Bs_Array
+module A = Belt.Array
 let empty = empty ()
 let ofArray kvs = 
   let v = ref empty in 
@@ -31,7 +31,7 @@ let test () =
     should (mem v j)
   done
 
-module M =  Bs.Map.Int
+module M =  Belt.Map.Int
 
 
 let test2 () = 

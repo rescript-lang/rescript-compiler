@@ -2,8 +2,8 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eqx loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x = Mt.bool_suites ~test_id ~suites loc x 
-module N = Bs.HashMap
-module S = Bs.Map.Int
+module N = Belt.HashMap
+module S = Belt.Map.Int
 (* module Y = struct  
    type t = int 
 
@@ -11,8 +11,8 @@ module S = Bs.Map.Int
 let eq = fun (x : int) y ->  x = y 
 let hash = fun (x : int) ->  Hashtbl.hash x 
 let cmp = fun  (x : int) y -> compare x y
-module Y = (val Bs.Id.hashable ~eq ~hash)
-let empty : (int, int, _) N.t = N.make ~dict:(module Y) 30 
+module Y = (val Belt.Id.hashable ~eq ~hash)
+let empty : (int, int, _) N.t = N.make ~id:(module Y) ~hintSize:30 
 
 (*
 [%bs.hash {
@@ -22,7 +22,7 @@ let empty : (int, int, _) N.t = N.make ~dict:(module Y) 30
 *)
 
 module I = Array_data_util
-let (++) = Bs.Array.concat
+let (++) = Belt.Array.concat
 let add = (+)
 
 
@@ -31,19 +31,19 @@ let () =
   eqx __LOC__ (N.get empty 2) (Some 2);
   eqx __LOC__ (N.size empty) 3
   
-module A = Bs.Array 
-module So = Bs.SortArray 
+module A = Belt.Array 
+module So = Belt.SortArray 
 
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = A.zip u u in 
-  let xx = N.ofArray ~dict:(module Y) v  in 
+  let xx = N.ofArray ~id:(module Y) v  in 
   eqx __LOC__ (N.size xx) 91;
   eqx __LOC__ (So.stableSortBy (N.keysToArray xx) cmp) (I.range 30 120)
 
 let () = 
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
-  let v = N.make ~dict:(module Y) 40 in 
+  let v = N.make ~id:(module Y) ~hintSize:40 in 
   N.mergeMany v (A.zip u u);
   eqx __LOC__ (N.size v) 100_001;
   for i = 0 to 1_000 do 

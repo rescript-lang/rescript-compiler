@@ -8,8 +8,8 @@ let neq loc x y =
   suites := 
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Neq(x,y))) :: !suites
 
-module A = Bs.Array 
-module L = Bs.List 
+module A = Belt.Array 
+module L = Belt.List 
 type 'a t = 'a Js.Array.t
 let () =
   [| 1; 2; 3; 4 |]
@@ -18,6 +18,16 @@ let () =
   |> Js.Array.reduce (fun  x y -> x + y) 0 
   |> Js.log
 
+
+let () = 
+  let v = [|1;2|] in 
+  eq __LOC__ 
+  (A.get  v 0, A.get v 1, A.get v 2, A.get v 3, A.get v (-1) )   
+  (Some 1,Some 2, None, None, None);
+
+  b __LOC__ (not (A.set [|1;2|] 2 0 ));
+  b __LOC__ (A.set [|1;2|] 0 0 );
+  b __LOC__ (A.set [|1;2|] 1 0 )
 
 
 let id x = 
@@ -82,7 +92,9 @@ let () =
 let () = 
   eq __LOC__ (A.reduceReverse [||] 100 (-)) 100;
   eq __LOC__ (A.reduceReverse [|1;2|] 100 (-)) 97;
-  eq __LOC__ (A.reduceReverse [|1;2;3;4|] 100 (-) ) 90
+  eq __LOC__ (A.reduceReverse [|1;2;3;4|] 100 (-) ) 90;
+  b __LOC__
+    (A.reduceReverse2 [|1;2;3|] [|1;2|] 0 (fun acc x y -> acc + x + y) = 6)
 let addone = fun [@bs] x -> x + 1
 
 let makeMatrixExn sx sy init =
@@ -200,7 +212,29 @@ let () =
   A.blit ~src:aa ~srcOffset:(-5) ~dst:aa ~dstOffset:4 ~len:3 ;
   eq __LOC__ (A.copy aa) [|0;8;9;3;5;6;7;7;8;9|];
   A.blit ~src:aa ~srcOffset:4 ~dst:aa ~dstOffset:5 ~len:3 ;
-  eq __LOC__ (A.copy aa) [|0;8;9;3;5;5;6;7;8;9|]
+  eq __LOC__ (A.copy aa) [|0;8;9;3;5;5;6;7;8;9|];
+  eq __LOC__ (A.make 0 3) [||];
+  eq __LOC__ (A.make (-1) 3) [||]
+
+let () =   
+  eq __LOC__ (A.zip [|1;2;3|] [|2;3;4;1|]) [|1,2;2,3;3,4|];
+  eq __LOC__ (A.zip [|2;3;4;1|] [|1;2;3|] ) [|2,1;3,2;4,3|];
+  eq __LOC__ (A.zipBy [|2;3;4;1|] [|1;2;3|] (-)) [|1;1;1|];
+  eq __LOC__ (A.zipBy [|1;2;3|] [|2;3;4;1|]  (-)) (A.map [|1;1;1|] (fun x -> -x))
+
+let sumUsingForEach xs = 
+  let v = ref 0 in 
+  A.forEach xs (fun x -> v := !v + x) ;
+  !v
+
+let () = 
+  eq __LOC__ (sumUsingForEach [|0;1;2;3;4|])  10 ;
+  b __LOC__ ( not (A.every [|0;1;2;3;4|] (fun x -> x > 2)))
+
+  
+
+
+
 
 let id loc x = 
   eq __LOC__ 
@@ -242,6 +276,13 @@ let () =
   eq __LOC__ (A.concatMany [|[|3;2|]; [|1;2;3|] |]) [|3;2;1;2;3|];
   eq __LOC__ (A.concatMany [|[|3;2|]; [|1;2;3|];[||];[|0|] |]) [|3;2;1;2;3;0|];
   eq __LOC__ (A.concatMany [| [||]; [|3;2|]; [|1;2;3|];[||];[|0|] |]) [|3;2;1;2;3;0|];
-  eq __LOC__ (A.concatMany [| [||]; [||] |]) [||];
+  eq __LOC__ (A.concatMany [| [||]; [||] |]) [||]
+
+let () = 
+  b __LOC__ (A.cmp [|1;2;3|] [|0;1;2;3|] compare < 0) ; 
+  b __LOC__ (A.cmp [|1;2;3|] [|0;1;2|]  (fun x y -> compare  x y) > 0);
+  b __LOC__ (A.cmp [|1;2;3|] [|1;2;3|]  (fun x y -> compare x y) = 0);
+  b __LOC__ (A.cmp [|1;2;4|] [|1;2;3|]  (fun x y -> compare x y) > 0);
+
 
 ;; Mt.from_pair_suites __LOC__ !suites  

@@ -6,9 +6,9 @@ type key = int
   [%error "unknown type"]
 #endif 
 
-module N = Bs_internalAVLtree
-module A = Bs_Array 
-module S = Bs_SortArray
+module N = Belt_internalAVLtree
+module A = Belt_Array 
+module S = Belt_SortArray
 
 
 
@@ -183,7 +183,7 @@ let rec addMutate  (t : _ t) x data : _ t =
   | None -> N.singleton x data
   | Some nt -> 
     let k = N.key nt in 
-    (* let  c = (Bs_Cmp.getCmpInternal cmp) x k [@bs] in   *)
+    (* let  c = (Belt_Cmp.getCmpInternal cmp) x k [@bs] in   *)
     if x = k then begin     
       N.keySet nt x;
       N.valueSet nt data;

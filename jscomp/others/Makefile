@@ -2,7 +2,7 @@ include ../Makefile.shared
 
 COMPILER=../../lib/bsc.exe
 
-MAP_FILES= node bs
+MAP_FILES= node belt
 
 SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string \
 	js_re js_null_undefined node_buffer js_types js_json js_obj \
@@ -10,54 +10,54 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	js_console\
 	js_result\
 	js_mapperRt\
-	bs_Array\
-	bs_internalAVLset\
-	bs_internalAVLtree\
-	bs_internalMutableAVL\
-	bs_List\
-	bs_SortArray\
-	bs_SortArrayInt\
-	bs_SortArrayString\
-	bs_Range\
-	bs_internalBucketsType\
-	bs_internalSetBuckets\
-	bs_internalBuckets\
-	bs_HashMap\
-	bs_HashSet\
-	bs_HashSetString\
-	bs_HashSetInt\
-	bs_Id\
-	bs_MapDict\
-	bs_SetDict\
-	bs_Map\
-	bs_internalMapInt\
-	bs_internalMapString\
-	bs_MapString \
-	bs_MapInt\
-	bs_internalSet\
-	bs_Set\
-	bs_MutableSet\
-	bs_MutableSetInt\
-	bs_MutableSetString\
-	bs_MutableMap\
-	bs_MutableMapInt\
-	bs_MutableMapString\
-	bs_internalSetInt\
-	bs_internalSetString\
-	bs_SetInt\
-	bs_SetString\
-	bs_MutableStack\
-	bs_MutableQueue\
+	belt_Array\
+	belt_internalAVLset\
+	belt_internalAVLtree\
+	belt_internalMutableAVL\
+	belt_List\
+	belt_SortArray\
+	belt_SortArrayInt\
+	belt_SortArrayString\
+	belt_Range\
+	belt_internalBucketsType\
+	belt_internalSetBuckets\
+	belt_internalBuckets\
+	belt_HashMap\
+	belt_HashSet\
+	belt_HashSetString\
+	belt_HashSetInt\
+	belt_Id\
+	belt_MapDict\
+	belt_SetDict\
+	belt_Map\
+	belt_internalMapInt\
+	belt_internalMapString\
+	belt_MapString \
+	belt_MapInt\
+	belt_internalSet\
+	belt_Set\
+	belt_MutableSet\
+	belt_MutableSetInt\
+	belt_MutableSetString\
+	belt_MutableMap\
+	belt_MutableMapInt\
+	belt_MutableMapString\
+	belt_internalSetInt\
+	belt_internalSetString\
+	belt_SetInt\
+	belt_SetString\
+	belt_MutableStack\
+	belt_MutableQueue\
 	node_child_process \
 	js_boolean js_math\
 	js_dict js_date js_global js_cast js_promise\
 	dom dom_storage\
-	bs_HashMapInt\
-	bs_HashMapString\
+	belt_HashMapInt\
+	belt_HashMapString\
 
-# bs_Bag\
-# bs_BagM\
-# bs_dyn bs_dyn_lib\
+# belt_Bag\
+# belt_BagM\
+# belt_dyn belt_dyn_lib\
 
 $(addsuffix .cmj, $(SOURCE_LIST)): $(addsuffix .cmj, $(MAP_FILES))
 
@@ -84,88 +84,88 @@ clean::
 	rm -f *~
 	rm -f  *.annot
 	rm -f *.rawlambda *.lam *.lambda *.map
-	rm -rf bs_HashSetString.ml bs_HashSetString.mli bs_HashSetInt.ml  bs_HashSetInt.mli \
-	bs_HashMapInt.ml bs_HashMapInt.mli  bs_HashMapString.ml bs_HashMapString.mli \
-	bs_MapInt.ml bs_MapInt.mli  bs_MapString.ml bs_MapString.mli \
-	bs_internalSetInt.ml bs_internalSetString.ml \
-	bs_SetInt.ml bs_SetInt.mli bs_SetString.ml  bs_SetString.mli \
-	bs_MutableSetInt.ml bs_MutableSetInt.mli bs_MutableSetString.ml bs_MutableSetString.mli\
-	bs_SortArrayInt.ml bs_SortArrayInt.mli bs_SortArrayString.ml bs_SortArrayString.mli\
-	bs_internalMapInt.ml bs_internalMapInt.mli \
-	bs_internalMapIntM.ml bs_internalMapIntM.mli \
-	bs_internalMapString.ml bs_internalMapString.mli\
-	bs_internalMapStringM.ml bs_internalMapStringM.mli\
-	bs_MutableMapString.mli bs_MutableMapString.ml\
-	bs_MutableMapInt.mli bs_MutableMapInt.ml
+	rm -rf belt_HashSetString.ml belt_HashSetString.mli belt_HashSetInt.ml  belt_HashSetInt.mli \
+	belt_HashMapInt.ml belt_HashMapInt.mli  belt_HashMapString.ml belt_HashMapString.mli \
+	belt_MapInt.ml belt_MapInt.mli  belt_MapString.ml belt_MapString.mli \
+	belt_internalSetInt.ml belt_internalSetString.ml \
+	belt_SetInt.ml belt_SetInt.mli belt_SetString.ml  belt_SetString.mli \
+	belt_MutableSetInt.ml belt_MutableSetInt.mli belt_MutableSetString.ml belt_MutableSetString.mli\
+	belt_SortArrayInt.ml belt_SortArrayInt.mli belt_SortArrayString.ml belt_SortArrayString.mli\
+	belt_internalMapInt.ml belt_internalMapInt.mli \
+	belt_internalMapIntM.ml belt_internalMapIntM.mli \
+	belt_internalMapString.ml belt_internalMapString.mli\
+	belt_internalMapStringM.ml belt_internalMapStringM.mli\
+	belt_MutableMapString.mli belt_MutableMapString.ml\
+	belt_MutableMapInt.mli belt_MutableMapInt.ml
 
 ifndef BS_RELEASE_BUILD
-bs_HashSetString.ml: hashset.cppo.ml
+belt_HashSetString.ml: hashset.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
-bs_HashSetInt.ml: hashset.cppo.ml
+belt_HashSetInt.ml: hashset.cppo.ml
 	cppo -D TYPE_INT $^ > $@
-bs_HashSetString.mli: hashset.cppo.mli
+belt_HashSetString.mli: hashset.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
-bs_HashSetInt.mli: hashset.cppo.mli
+belt_HashSetInt.mli: hashset.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_HashMapString.ml: hashmap.cppo.ml
+belt_HashMapString.ml: hashmap.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
-bs_HashMapInt.ml: hashmap.cppo.ml
+belt_HashMapInt.ml: hashmap.cppo.ml
 	cppo -D TYPE_INT $^ > $@
-bs_HashMapString.mli: hashmap.cppo.mli
+belt_HashMapString.mli: hashmap.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
-bs_HashMapInt.mli: hashmap.cppo.mli
+belt_HashMapInt.mli: hashmap.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_MapString.ml: map.cppo.ml
+belt_MapString.ml: map.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
-bs_MapInt.ml: map.cppo.ml
+belt_MapInt.ml: map.cppo.ml
 	cppo -D TYPE_INT $^ > $@
-bs_MapString.mli: map.cppo.mli
+belt_MapString.mli: map.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
-bs_MapInt.mli: map.cppo.mli
+belt_MapInt.mli: map.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_MutableMapString.mli: mapm.cppo.mli
+belt_MutableMapString.mli: mapm.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
-bs_MutableMapInt.mli: mapm.cppo.mli
+belt_MutableMapInt.mli: mapm.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_MutableMapString.ml: mapm.cppo.ml
+belt_MutableMapString.ml: mapm.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
-bs_MutableMapInt.ml: mapm.cppo.ml
+belt_MutableMapInt.ml: mapm.cppo.ml
 	cppo -D TYPE_INT $^ > $@
-bs_internalMapInt.ml : internal_map.cppo.ml
+belt_internalMapInt.ml : internal_map.cppo.ml
 	cppo -D TYPE_INT $^ > $@
-bs_internalMapString.ml : internal_map.cppo.ml
+belt_internalMapString.ml : internal_map.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
-bs_internalSetInt.ml: internal_set.cppo.ml
+belt_internalSetInt.ml: internal_set.cppo.ml
 	cppo -D TYPE_INT $^ > $@
-bs_internalSetString.ml: internal_set.cppo.ml
-	cppo -D TYPE_STRING $^ > $@
-
-bs_SetInt.ml: set.cppo.ml
-	cppo -D TYPE_INT $^ > $@
-bs_SetString.ml: set.cppo.ml
+belt_internalSetString.ml: internal_set.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
 
-bs_SetInt.mli: set.cppo.mli
+belt_SetInt.ml: set.cppo.ml
 	cppo -D TYPE_INT $^ > $@
-bs_SetString.mli: set.cppo.mli
+belt_SetString.ml: set.cppo.ml
 	cppo -D TYPE_STRING $^ > $@
 
-bs_MutableSetInt.ml: setm.cppo.ml
+belt_SetInt.mli: set.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_MutableSetString.ml: setm.cppo.ml
-	cppo -D TYPE_STRING $^ > $@
-bs_MutabgleSetInt.mli: setm.cppo.mli
-	cppo -D TYPE_INT $^ > $@
-bs_MutableSetString.mli: setm.cppo.mli
+belt_SetString.mli: set.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 
-bs_SortArrayInt.ml : sort.cppo.ml
+belt_MutableSetInt.ml: setm.cppo.ml
+	cppo -D TYPE_INT $^ > $@
+belt_MutableSetString.ml: setm.cppo.ml
+	cppo -D TYPE_STRING $^ > $@
+belt_MutableSetInt.mli: setm.cppo.mli
+	cppo -D TYPE_INT $^ > $@
+belt_MutableSetString.mli: setm.cppo.mli
+	cppo -D TYPE_STRING $^ > $@
+
+belt_SortArrayInt.ml : sort.cppo.ml
 	cppo -D TYPE_INT $^ >$@
-bs_SortArrayString.ml : sort.cppo.ml
+belt_SortArrayString.ml : sort.cppo.ml
 	cppo -D TYPE_STRING $^ >$@
-bs_SortArrayInt.mli : sort.cppo.mli
+belt_SortArrayInt.mli : sort.cppo.mli
 	cppo -D TYPE_INT $^ > $@
-bs_SortArrayString.mli : sort.cppo.mli
+belt_gSortArrayString.mli : sort.cppo.mli
 	cppo -D TYPE_STRING $^ > $@
 endif	
 

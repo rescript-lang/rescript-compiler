@@ -3,14 +3,14 @@ let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x =  Mt.bool_suites ~test_id ~suites loc x  
 
-module N = Bs.MutableSet
+module N = Belt.MutableSet
 module I = Array_data_util
-module A = Bs.Array
+module A = Belt.Array
 module IntCmp = 
-  (val Bs.Id.comparable (fun (x:int) y -> compare x y))
-module L = Bs.List
-let ofArray = N.ofArray ~dict:(module IntCmp)
-let empty () = N.make ~dict:(module IntCmp)
+  (val Belt.Id.comparable (fun (x:int) y -> compare x y))
+module L = Belt.List
+let ofArray = N.ofArray ~id:(module IntCmp)
+let empty () = N.make ~id:(module IntCmp)
 
 
 let () = 

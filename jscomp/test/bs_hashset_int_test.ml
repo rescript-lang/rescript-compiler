@@ -2,11 +2,11 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y 
 let b loc x  = Mt.bool_suites ~test_id ~suites loc x  
-module N = Bs.HashSet.Int
-module S = Bs.Set.Int 
+module N = Belt.HashSet.Int
+module S = Belt.Set.Int 
 
 module I = Array_data_util
-let (++) = Bs.Array.concat
+let (++) = Belt.Array.concat
 let add = fun  x y -> x + y  
 
 let sum2 h = 
@@ -36,9 +36,9 @@ let () =
     N.remove v i 
   done ; 
   eq __LOC__ (N.size v ) 98_000
-module A = Bs_Array
+module A = Belt.Array
 
-module SI = Bs.SortArray.Int
+module SI = Belt.SortArray.Int
 
 let () =   
   let u0 = N.ofArray (I.randomRange 0 100_000) in 

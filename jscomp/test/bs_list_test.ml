@@ -11,9 +11,9 @@ let b loc x  =
     (loc ^" id " ^ (string_of_int !test_id), 
      (fun _ -> Mt.Ok x)) :: !suites
 
-(* module N = Bs.LinkList     *)
-module N = Bs.List
-module A = Bs.Array 
+(* module N = Belt.LinkList     *)
+module N = Belt.List
+module A = Belt.Array 
 module J = Js.Json 
 let sum xs = 
   let v = ref 0 in 
@@ -33,7 +33,8 @@ let () =
   for i = 0 to 4 do 
     f i 
   done ;
-  eq __LOC__  (N.map u (fun  i -> i + 1)) [1;2;5;10;17]
+  eq __LOC__  (N.map u (fun  i -> i + 1)) [1;2;5;10;17];
+  eq __LOC__ (N.getBy [1;4;3;2] (fun x -> x mod 2 = 0)) (Some 4)
 
 let () =
   let (=~) = eq "FLATTEN" in 
@@ -54,8 +55,8 @@ let () =
   [1;2;3; 0;1;2;3];
   N.concatMany [||] =~ [];  
   N.concatMany [|[];[]; [2]; [1];[2];[]|] =~ [2;1;2];
-  N.concatMany [|[];[]; [2;3]; [1];[2];[]|] =~ [2;3;1;2]
-
+  N.concatMany [|[];[]; [2;3]; [1];[2];[]|] =~ [2;3;1;2];
+  N.concatMany [| [1;2;3]|] =~ [1;2;3] 
 
 let () = 
   eq __LOC__
@@ -195,7 +196,9 @@ let () =
   b __LOC__ (N.setAssoc [1,"a"; 2, "b"; 3, "c"] 2 "x" (=) =
       [1,"a"; 2, "x"; 3,"c"]);
   b __LOC__ (N.setAssoc [1,"a"; 3, "c"] 2 "2" (=) = 
-      [2,"2"; 1,"a"; 3, "c"])    
+      [2,"2"; 1,"a"; 3, "c"]);
+
+  b __LOC__ (N.getAssoc [ 1, "a"; 2, "b"; 3, "c"] 2 (=) = Some "b")
   
 let ()   = 
 
@@ -227,6 +230,7 @@ let ()   =
   eq __LOC__ (sum2 length_8_id length_10_id) 56;
   eq __LOC__ (N.reduce2 length_10_id length_8_id 0 
                 (fun   acc x y -> acc + x + y)) 56;
+  eq __LOC__ (N.reduce2 [1;2;3] [2;4;6] 0 (fun a b c -> a + b + c) ) 18;
   eq __LOC__ (N.reduceReverse2 length_10_id length_8_id 0 
                 (fun   acc x y -> acc + x + y)) 56;                
   eq __LOC__ (N.reduceReverse2 length_10_id length_10_id 0 
@@ -239,7 +243,16 @@ let ()   =
   eq __LOC__ (N.some [1;3;5] mod2)  false;
   eq __LOC__ (N.some [] mod2)  false;
   eq __LOC__ (N.has [1;2;3] "2" (fun   x s -> string_of_int x = s)) true;
-  eq __LOC__ (N.has [1;2;3] "0" (fun   x s -> string_of_int x = s)) false
+  eq __LOC__ (N.has [1;2;3] "0" (fun   x s -> string_of_int x = s)) false;
+  
+  b __LOC__ (N.reduceReverse [1;2;3;4] 0 (+) = 10);
+  b __LOC__ (N.reduceReverse [1;2;3;4] 10 (-) = 0);
+  b __LOC__  (N.reduceReverse [1;2;3;4] [] N.add = [1;2;3;4]);
+  b __LOC__  (N.reduce [1;2;3;4] 0 (+) = 10);
+  b __LOC__  (N.reduce [1;2;3;4] 10 (-) = 0);
+  b __LOC__ (N.reduce [1;2;3;4] [] N.add = [4;3;2;1]);
+  b __LOC__
+    (N.reduceReverse2 [1;2;3] [1;2] 0 (fun acc x y -> acc + x + y) = 6)
 
 let () = 
   eq __LOC__ (N.every2 [] [1] (fun   x y -> x > y)) true;  
@@ -256,6 +269,14 @@ let () =
 let makeTest n =  
   eq __LOC__ (N.make n 3) (N.makeBy n (fun  _ -> 3))
 
+
+let () =
+  let module A = N in 
+  b __LOC__ (A.cmp [1;2;3] [0;1;2;3] compare > 0) ; 
+  b __LOC__ (A.cmp [1;2;3] [0;1;2]  (fun x y -> compare  x y) > 0);
+  b __LOC__ (A.cmp [1;2;3] [1;2;3]  (fun x y -> compare x y) = 0);
+  b __LOC__ (A.cmp [1;2;4] [1;2;3]  (fun x y -> compare x y) > 0)
+
 let () =   
   makeTest 0;
   makeTest 1;
@@ -268,7 +289,12 @@ let () =
   b __LOC__ (not @@ N.eq [1;2;3] [1;2;4] (fun  x y -> x = y))
 let () = 
   let u0 = N.makeBy 20 (fun  x -> x) in   
-  let u1 = N.keepMap u0 (fun   x -> if x mod 7 = 0 then Some (x+1) else None) in 
-  eq __LOC__ u1 [1;8;15]
+  let u1 = N.keepMap u0
+      (fun   x -> if x mod 7 = 0 then Some (x+1) else None) in 
+  eq __LOC__ u1 [1;8;15];
+  b __LOC__
+    N.(  keepMap [1;2;3;4] (fun x -> if x mod 2  = 0 then Some (-x ) else None)
+      =
+      [-2;-4])
 
 ;; Mt.from_pair_suites __FILE__ !suites

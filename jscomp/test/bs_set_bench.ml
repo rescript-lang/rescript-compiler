@@ -1,7 +1,7 @@
 
 let count = 1_000_000 
 
-module N = Bs.Set.Int
+module N = Belt.Set.Int
 let bench () = 
   let data = ref N.empty in 
   [%time for i = 0 to count do 

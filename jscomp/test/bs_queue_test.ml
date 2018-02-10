@@ -6,7 +6,7 @@ let b loc x  = Mt.bool_suites ~test_id ~suites loc x
 (* TEST
 *)
 
-module Q = Bs.MutableQueue
+module Q = Belt.MutableQueue
 
 let does_raise f q =
   try
@@ -141,7 +141,7 @@ let () =
   assert (Q.size q2 = 8); assert (Q.toArray q2 = v );
 
   assert (Q.reduce q2 0 (fun x y -> x - y ) = 
-          Bs.Array.reduce v 0 (fun  x y -> x - y) )
+          Belt.Array.reduce v 0 (fun  x y -> x - y) )
 
 ;;
 

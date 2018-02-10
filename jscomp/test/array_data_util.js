@@ -1,18 +1,18 @@
 'use strict';
 
-var Bs_Array = require("../../lib/js/bs_Array.js");
+var Belt_Array = require("../../lib/js/belt_Array.js");
 
 function range(i, j) {
-  return Bs_Array.makeBy((j - i | 0) + 1 | 0, (function (k) {
+  return Belt_Array.makeBy((j - i | 0) + 1 | 0, (function (k) {
                 return k + i | 0;
               }));
 }
 
 function randomRange(i, j) {
-  var v = Bs_Array.makeBy((j - i | 0) + 1 | 0, (function (k) {
+  var v = Belt_Array.makeBy((j - i | 0) + 1 | 0, (function (k) {
           return k + i | 0;
         }));
-  Bs_Array.shuffleInPlace(v);
+  Belt_Array.shuffleInPlace(v);
   return v;
 }
 

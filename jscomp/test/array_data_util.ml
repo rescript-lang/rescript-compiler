@@ -1,5 +1,5 @@
 
-module A = Bs_Array 
+module A = Belt.Array
 
 (* []*)
 let range i j = 

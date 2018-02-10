@@ -4,17 +4,17 @@ let eq loc x y = Mt.eq_suites ~suites ~test_id loc x y
 let b loc v  = Mt.bool_suites ~suites ~test_id loc v 
 
 module Icmp = 
-  (val Bs.Id.comparable 
+  (val Belt.Id.comparable 
       (fun (x : int) y ->  compare x y
       )
   )
-module M = Bs.MutableMap
-module N = Bs.Set 
+module M = Belt.MutableMap
+module N = Belt.Set 
 
-module A = Bs_Array
+module A = Belt.Array
 module I = Array_data_util
-let f x = M.ofArray ~dict:(module Icmp) x 
-let ff x = N.ofArray ~dict:(module Icmp) x 
+let f x = M.ofArray ~id:(module Icmp) x 
+let ff x = N.ofArray ~id:(module Icmp) x 
 
 
 let randomRange i j = 

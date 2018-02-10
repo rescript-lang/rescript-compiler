@@ -11,9 +11,9 @@ let b loc v  =
     (loc ^" id " ^ (string_of_int !test_id), 
      (fun _ -> Mt.Ok v)) :: !suites
 
-module M = Bs.Map.Int
-module N = Bs.Set.Int
-module A = Bs.Array
+module M = Belt.Map.Int
+module N = Belt.Set.Int
+module A = Belt.Array
 
 
 let mapOfArray x = M.ofArray x 
