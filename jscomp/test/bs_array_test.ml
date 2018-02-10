@@ -8,8 +8,8 @@ let neq loc x y =
   suites := 
     (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Neq(x,y))) :: !suites
 
-module A = Bs.Array 
-module L = Bs.List 
+module A = Belt.Array 
+module L = Belt.List 
 type 'a t = 'a Js.Array.t
 let () =
   [| 1; 2; 3; 4 |]

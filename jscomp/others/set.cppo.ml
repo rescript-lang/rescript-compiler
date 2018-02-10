@@ -1,12 +1,12 @@
 #ifdef TYPE_INT
-module I = Bs_internalSetInt
+module I = Belt_internalSetInt
 #elif defined TYPE_STRING
-module I = Bs_internalSetString
+module I = Belt_internalSetString
 #else
   [%error "unknown type"]
 #endif  
-module N = Bs_internalAVLset
-module A = Bs_Array
+module N = Belt_internalAVLset
+module A = Belt_Array
 
 type elt = I.elt
 type t = I.t 

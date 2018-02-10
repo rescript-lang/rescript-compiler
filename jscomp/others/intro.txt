@@ -17,7 +17,7 @@ For example
     |> Js.log 
 ]}
 
-{!Bs}
+{!Belt}
 
 This BuckleScript stdandard library.
 

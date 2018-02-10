@@ -256,8 +256,8 @@ function bench6() {
 }
 
 function bench7() {
-  var size = 2000000;
-  var table = Bs_internalBucketsType.make(/* () */0, /* () */0, size);
+  var hintSize = 2000000;
+  var table = Bs_internalBucketsType.make(/* () */0, /* () */0, hintSize);
   for(var i = 0; i <= 1000000; ++i){
     Bs_HashSetInt.add(table, i);
   }

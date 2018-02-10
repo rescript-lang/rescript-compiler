@@ -31,7 +31,7 @@ let h = [%bs.deriving.dynval: t list list array] [|[[3]]|] [@bs]
 
 let hh = [%bs.deriving.dynval: tt list list array] [|[[[3,"3"]]]|] [@bs]
 
-let () = Js.log (Bs.Dyn_lib.to_string hh)
+let () = Js.log (Belt.Dyn_lib.to_string hh)
 
 type nonrec enum = 
   | A 
@@ -39,7 +39,7 @@ type nonrec enum =
   | C of t 
 [@@bs.deriving{dynval}]
 
-let () = Js.log (Bs.Dyn_lib.to_string ([%bs.deriving.dynval: enum] (C 3 )  [@bs]))
+let () = Js.log (Belt.Dyn_lib.to_string ([%bs.deriving.dynval: enum] (C 3 )  [@bs]))
 
 (**
 imagine:

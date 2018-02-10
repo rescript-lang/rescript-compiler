@@ -4,10 +4,10 @@ let eq loc x y = Mt.eq_suites ~test_id ~suites loc x y
 let b loc x = Mt.bool_suites ~test_id ~suites loc x 
 
 module I = Array_data_util
-module S = Bs.SortArray
+module S = Belt.SortArray
 module R = Bs_Range
 let cmp = fun x y -> x - y   
-module A = Bs.Array
+module A = Belt.Array
 
 let unions xs ys = 
   let lenX, lenY = A.length xs, A.length ys in 
@@ -71,7 +71,7 @@ let () =
     (not @@ S.isSorted [|1;0|] cmp)        
 
 
-module SI = Bs.SortArray.Int
+module SI = Belt.SortArray.Int
 let () =     
   let u = I.randomRange 0 1_000_000 in  
   let u1 = A.copy u in 

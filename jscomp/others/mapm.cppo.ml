@@ -1,14 +1,14 @@
 #ifdef TYPE_INT
-module I = Bs_internalMapInt
+module I = Belt_internalMapInt
 type key = int
 #elif defined TYPE_STRING
-module I = Bs_internalMapString
+module I = Belt_internalMapString
 type key = string
 #else
   [%error "unknown type"]
 #endif  
-module N = Bs_internalAVLtree
-module A = Bs_Array 
+module N = Belt_internalAVLtree
+module A = Belt_Array 
 
 
 
@@ -103,7 +103,7 @@ let rec updateDone t (x : key)  f  =
     | None -> t)
   | Some nt -> 
     let k = N.key nt in 
-    (* let  c = (Bs_Cmp.getCmpInternal cmp) x k [@bs] in   *)
+    (* let  c = (Belt_Cmp.getCmpInternal cmp) x k [@bs] in   *)
     if k = x then begin     
       match f (Some (N.value nt)) [@bs] with
       | None ->

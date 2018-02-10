@@ -1,16 +1,16 @@
 #ifdef TYPE_STRING
 type elt = string
-module S = Bs_SortArrayString
+module S = Belt_SortArrayString
 #elif defined TYPE_INT  
 type elt = int
-module S = Bs_SortArrayInt
+module S = Belt_SortArrayInt
 #else
   [%error "unknown type"]  
 #endif
 
 
-module N = Bs_internalAVLset
-module A = Bs_Array 
+module N = Belt_internalAVLset
+module A = Belt_Array 
 
 
 type t = elt N.t

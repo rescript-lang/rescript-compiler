@@ -1,15 +1,15 @@
 #ifdef TYPE_STRING
 type key = string
-module I = Bs_internalMapString
+module I = Belt_internalMapString
 #elif defined TYPE_INT
 type key = int
-module I = Bs_internalMapInt    
+module I = Belt_internalMapInt    
 #else 
   [%error "unknown type"]
 #endif 
 
-module N = Bs_internalAVLtree
-module A = Bs_Array 
+module N = Belt_internalAVLtree
+module A = Belt_Array 
 
 type 'a t = (key, 'a) N.t
 
