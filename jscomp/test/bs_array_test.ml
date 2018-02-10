@@ -3,6 +3,7 @@ let suites :  Mt.pair_suites ref  = ref []
 let test_id = ref 0
 let eq loc x y = Mt.eq_suites loc x y ~test_id ~suites
 let b loc x  = Mt.bool_suites loc x ~test_id ~suites
+let throw loc x = Mt.throw_suites ~test_id ~suites loc x 
 let neq loc x y = 
   incr test_id ; 
   suites := 
@@ -22,13 +23,18 @@ let () =
 let () = 
   let v = [|1;2|] in 
   eq __LOC__ 
-  (A.get  v 0, A.get v 1, A.get v 2, A.get v 3, A.get v (-1) )   
+  (A.get  v 0, A.get v 1, A.get v 2, A.get v 3, A.get v (-1) )     
   (Some 1,Some 2, None, None, None);
-
+  throw __LOC__ (fun _ -> A.getExn [|0;1|] (-1) |> ignore);
+  throw __LOC__ (fun _ -> A.getExn [|0;1|] (2) |> ignore);
+  b __LOC__ (let f = A.getExn [|0;1|] in  (f 0, f 1) =(0,1 ));
+  throw __LOC__ (fun _ -> A.setExn [|0;1|] (-1) 0);
+  throw __LOC__ (fun _ -> A.setExn [|0;1|] (2) 0);
   b __LOC__ (not (A.set [|1;2|] 2 0 ));
-  b __LOC__ (A.set [|1;2|] 0 0 );
-  b __LOC__ (A.set [|1;2|] 1 0 )
-
+  b __LOC__ (let v = [|1;2|] in  assert (A.set v 0 0) ; A.getExn v 0 = 0);
+  b __LOC__ (let v = [|1;2|] in assert (A.set v 1 0); A.getExn v 1 = 0 );
+  b __LOC__ (let v = [|1;2|] in  (A.setExn v 0 0) ; A.getExn v 0 = 0);
+  b __LOC__ (let v = [|1;2|] in (A.setExn v 1 0); A.getExn v 1 = 0 )
 
 let id x = 
   eq __LOC__ 
@@ -183,7 +189,12 @@ let () =
   A.fill a ~offset:(-13) ~len:12 7;
   eq __LOC__ (A.copy a)  (A.make 10 7);
   A.fill a ~offset:0 ~len:(-1) 2 ;
-  eq __LOC__ (A.copy a) (A.make 10 7)
+  eq __LOC__ (A.copy a) (A.make 10 7);
+  let b = [|1;2;3|] in  
+  A.fill b ~offset:0 ~len:0 0;
+  eq __LOC__ b [|1;2;3|];
+  A.fill b ~offset:4 ~len:1 0;
+  eq __LOC__ b [|1;2;3|]
 
 let () =   
   let a0 = A.makeBy 10 (fun x -> x ) in 
@@ -214,7 +225,10 @@ let () =
   A.blit ~src:aa ~srcOffset:4 ~dst:aa ~dstOffset:5 ~len:3 ;
   eq __LOC__ (A.copy aa) [|0;8;9;3;5;5;6;7;8;9|];
   eq __LOC__ (A.make 0 3) [||];
-  eq __LOC__ (A.make (-1) 3) [||]
+  eq __LOC__ (A.make (-1) 3) [||];
+  let c = [|0;1;2|] in 
+  A.blit ~src:c ~srcOffset:4 ~dst:c ~dstOffset:1 ~len:1 ;
+  eq __LOC__ c [|0;1;2|]
 
 let () =   
   eq __LOC__ (A.zip [|1;2;3|] [|2;3;4;1|]) [|1,2;2,3;3,4|];
@@ -229,9 +243,15 @@ let sumUsingForEach xs =
 
 let () = 
   eq __LOC__ (sumUsingForEach [|0;1;2;3;4|])  10 ;
-  b __LOC__ ( not (A.every [|0;1;2;3;4|] (fun x -> x > 2)))
-
-  
+  b __LOC__ ( not (A.every [|0;1;2;3;4|] (fun x -> x > 2)));
+  b __LOC__ (A.some [|1;3;7;8|] (fun x -> x mod 2 = 0));
+  b __LOC__ (not @@ A.some [|1;3;7|] (fun x -> x mod 2 = 0));
+  b __LOC__ (not @@ A.eq [|0;1|] [|1|] (=));
+  b __LOC__ (
+    let c = ref 0 in 
+    A.forEachWithIndex [|1;1;1|] (fun i v ->  c:= !c + i + v);
+    !c = 6
+    )
 
 
 
@@ -280,9 +300,10 @@ let () =
 
 let () = 
   b __LOC__ (A.cmp [|1;2;3|] [|0;1;2;3|] compare < 0) ; 
+  b __LOC__ (A.cmp [|0;1;2;3|] [|1;2;3|]  compare > 0) ; 
   b __LOC__ (A.cmp [|1;2;3|] [|0;1;2|]  (fun x y -> compare  x y) > 0);
   b __LOC__ (A.cmp [|1;2;3|] [|1;2;3|]  (fun x y -> compare x y) = 0);
   b __LOC__ (A.cmp [|1;2;4|] [|1;2;3|]  (fun x y -> compare x y) > 0);
-
+  
 
 ;; Mt.from_pair_suites __LOC__ !suites  
