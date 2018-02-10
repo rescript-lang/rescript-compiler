@@ -7,18 +7,56 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="next" href="Bs_dyn.html">
+                 <link rel="next" href="Bs_Array.html">
                  <title> Bs </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
-<li><a href="Bs_dyn.html">Bs_dyn</a></li>
-<li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
+<li><a href="Bs_Array.html">Bs_Array</a></li>
+<li><a href="Bs_HashMap.html">Bs_HashMap</a></li>
+<li><a href="Bs_HashMapInt.html">Bs_HashMapInt</a></li>
+<li><a href="Bs_HashMapString.html">Bs_HashMapString</a></li>
+<li><a href="Bs_HashSet.html">Bs_HashSet</a></li>
+<li><a href="Bs_HashSetInt.html">Bs_HashSetInt</a></li>
+<li><a href="Bs_HashSetString.html">Bs_HashSetString</a></li>
+<li><a href="Bs_Id.html">Bs_Id</a></li>
+<li><a href="Bs_List.html">Bs_List</a></li>
+<li><a href="Bs_Map.html">Bs_Map</a></li>
+<li><a href="Bs_MapDict.html">Bs_MapDict</a></li>
+<li><a href="Bs_MapInt.html">Bs_MapInt</a></li>
+<li><a href="Bs_MapString.html">Bs_MapString</a></li>
+<li><a href="Bs_MutableMap.html">Bs_MutableMap</a></li>
+<li><a href="Bs_MutableMapInt.html">Bs_MutableMapInt</a></li>
+<li><a href="Bs_MutableMapString.html">Bs_MutableMapString</a></li>
+<li><a href="Bs_MutableQueue.html">Bs_MutableQueue</a></li>
+<li><a href="Bs_MutableSet.html">Bs_MutableSet</a></li>
+<li><a href="Bs_MutableSetInt.html">Bs_MutableSetInt</a></li>
+<li><a href="Bs_MutableSetString.html">Bs_MutableSetString</a></li>
+<li><a href="Bs_MutableStack.html">Bs_MutableStack</a></li>
+<li><a href="Bs_Range.html">Bs_Range</a></li>
+<li><a href="Bs_Set.html">Bs_Set</a></li>
+<li><a href="Bs_SetDict.html">Bs_SetDict</a></li>
+<li><a href="Bs_SetInt.html">Bs_SetInt</a></li>
+<li><a href="Bs_SetString.html">Bs_SetString</a></li>
+<li><a href="Bs_SortArray.html">Bs_SortArray</a></li>
+<li><a href="Bs_SortArrayInt.html">Bs_SortArrayInt</a></li>
+<li><a href="Bs_SortArrayString.html">Bs_SortArrayString</a></li>
+<li><a href="Bs_internalAVLset.html">Bs_internalAVLset</a></li>
+<li><a href="Bs_internalAVLtree.html">Bs_internalAVLtree</a></li>
+<li><a href="Bs_internalBuckets.html">Bs_internalBuckets</a></li>
+<li><a href="Bs_internalBucketsType.html">Bs_internalBucketsType</a></li>
+<li><a href="Bs_internalMapInt.html">Bs_internalMapInt</a></li>
+<li><a href="Bs_internalMapString.html">Bs_internalMapString</a></li>
+<li><a href="Bs_internalMutableAVLMap.html">Bs_internalMutableAVLMap</a></li>
+<li><a href="Bs_internalSetBuckets.html">Bs_internalSetBuckets</a></li>
+<li><a href="Bs_internalSetInt.html">Bs_internalSetInt</a></li>
+<li><a href="Bs_internalSetString.html">Bs_internalSetString</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
 <li><a href="Js_dict.html">Js_dict</a></li>
 <li><a href="Js_exn.html">Js_exn</a></li>
@@ -29,6 +67,7 @@
 <li><a href="Js_internal.html">Js_internal</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
 <li><a href="Js_nativeint.html">Js_nativeint</a></li>
 <li><a href="Js_null.html">Js_null</a></li>
@@ -53,13 +92,118 @@
 <li><a href="Node_path.html">Node_path</a></li>
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
 <div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
-&nbsp;<a class="post" href="Bs_dyn.html" title="Bs_dyn">Next</a>
+&nbsp;<a class="post" href="Bs_Array.html" title="Bs_Array">Next</a>
 </div>
 <h1>Module <a href="type_Bs.html">Bs</a></h1>
 
 <pre><span class="keyword">module</span> Bs: <code class="code">sig</code> <a href="Bs.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
-                    Placeholder for BuckleScript data structures<br>
+                    A stdlib shipped with BuckleScript 
+<p>
+
+    This stdlib is still in <i>beta</i> status, but we encourage you to try it out and 
+    provide feedback.
+<p>
+
+    <b>Motivation </b>
+<p>
+
+    The motivation of creating such library is to provide BuckleScript users a 
+    better end-to-end user experience, since the original OCaml stdlib was not 
+    writte with JS platform in mind, below are a list of areas this lib aims to 
+    improve: <OL>
+<li>1. Consistency in name convention: camlCase, and arguments order</li>
+<li>2. Exception thrown functions are all suffixed with <i>Exn</i>, e.g, <i>getExn</i></li>
+<li>3. Beter peformance and smaller code size running on JS platform</li>
+</OL>
+
+<p>
+
+    <b>Name Convention</b>
+<p>
+
+    For higher order functions, it will be suffixed <b>U</b> if it takes uncurried
+    callback.
+<p>
+
+    <pre class="codepre"><code class="code">      val forEach : 'a t -&gt; ('a -&gt; unit) -&gt; unit
+      val forEachU : 'a t -&gt; ('a -&gt; unit [@bs]) -&gt; unit
+    </code></pre>
+<p>
+
+    In general, uncurried version will be faster, but it is less familiar to
+    people who have a background in functional programming.
+<p>
+
+   <b>A special encoding for collection safety</b>
+<p>
+
+   When we create a collection library for a custom data type, take <i>Set</i> for
+   example, suppose its element type is a pair of ints, 
+    it needs a custom <i>compare</i> function. However, the <i>Set</i> could not
+    just be typed as <code class="code"> Set.t (int * int) </code>,
+    its customized <i>compare</i> function needs to be
+    manifested in the signature, otherwise, if the user create another
+    customized <i>compare</i> function, and the two collection would mix which
+    would result in runtime error.
+<p>
+
+    The original OCaml stdlib solved the problem using <i>functor</i> which is a big
+    closure in runtime; it makes dead code elimination much harder.
+    We introduced a phantom type to solve the problem
+<p>
+
+    <pre class="codepre"><code class="code">      type t = int * int 
+      module I0 =
+        (val Bs.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
+             match compare a0 b0 with
+             | 0 -&gt; compare a1 b1
+             | c -&gt; c 
+           ))
+    let s0 = Bs.Set.make ~id:(module I0)
+    module I1 =
+      (val Bs.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
+           match compare a1 b1 with
+           | 0 -&gt; compare a0 b0
+           | c -&gt; c 
+         ))
+    let s1 = Bs.Set.make ~id:(module I1)
+    </code></pre>
+<p>
+
+    Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
+    it would not mix.
+<p>
+
+    <pre class="codepre"><code class="code">      val s0 : ((int * int), I0.identity) t
+      val s1 : ((int * int), I1.identity) t
+    </code></pre>
+<p>
+
+    <code class="code">I0.identity</code> and <code class="code">I1.identity</code> are not the same using our encoding scheme.
+<p>
+
+    <b>Collection Hierachy</b>
+<p>
+
+    In general, we provide a generic collection module, but also create specialized
+    modules for commonly used data type, take <i>Bs.Set</i> for example
+<p>
+
+    <pre class="codepre"><code class="code">      Bs.Set
+      Bs.Set.Int
+      Bs.Set.String
+    </code></pre>
+<p>
+
+    The specialized module <i>Bs.Set.Int</i>, <i>Bs.Set.String</i> is in general more
+    efficient.
+<p>
+
+    Currently, both <i>Bs_Set</i> and <i>Bs.Set</i> are accessible to users for some
+    technical rasons,
+    we <b>strongly recommend</b> users stick to qualified import, <i>Bs.Sort</i>, we may hide
+    the internal, <i>i.e</i>, <i>Bs_Set</i> in the future<br>
  
                     </div>
                     
@@ -67,16 +211,158 @@
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Bs.Dyn.html">Dyn</a>: <code class="type"><a href="Bs_dyn.html">Bs_dyn</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Bs.Id.html">Id</a>: <code class="type"><a href="Bs_Id.html">Bs_Id</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                    /<br>
+                    <a href="Bs.Id.html"><code class="code">Bs.Id</code></a>
+<p>
+
+    Provide utiliites to create identified comparators or hashes for 
+    data structures used below. 
+<p>
+
+    It create a unique identifer per module of
+    functions so that different data structures with slightly different 
+    comparison functions won't mix<br>
  
                 </div>
                 </div> 
-<pre><span class="keyword">module</span> <a href="Bs.Dyn_lib.html">Dyn_lib</a>: <code class="type"><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Bs.Array.html">Array</a>: <code class="type"><a href="Bs_Array.html">Bs_Array</a></code></pre> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <a href="Bs.Array.html"><code class="code">Bs.Array</code></a>
+<p>
+
+    <b>mutable array</b>: Utililites functions<br>
+ 
                 </div>
-                </div> <br>
-/<br>
-</body></html>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.SortArray.html">SortArray</a>: <code class="type"><a href="Bs_SortArray.html">Bs_SortArray</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.SortArray.html"><code class="code">Bs.SortArray</code></a>
+<p>
+
+    The toplevel provides some generic sort related utililties.
+<p>
+
+    It also has two specialized inner modules
+    <code class="code">Bs.SortArray.Int</code> and <code class="code">Bs.SortArray.String</code><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.MutableQueue.html">MutableQueue</a>: <code class="type"><a href="Bs_MutableQueue.html">Bs_MutableQueue</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.MutableQueue.html"><code class="code">Bs.MutableQueue</code></a>
+<p>
+
+    An FIFO(first in first out) queue data structure<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.MutableStack.html">MutableStack</a>: <code class="type"><a href="Bs_MutableStack.html">Bs_MutableStack</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.MutableStack.html"><code class="code">Bs.MutableStack</code></a>
+<p>
+
+    An FILO(first in last out) stack data structure<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.List.html">List</a>: <code class="type"><a href="Bs_List.html">Bs_List</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.List.html"><code class="code">Bs.List</code></a>
+<p>
+
+    Utilities for List data type<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.Range.html">Range</a>: <code class="type"><a href="Bs_Range.html">Bs_Range</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.Range.html"><code class="code">Bs.Range</code></a>
+<p>
+
+    Utilities for a closed range <code class="code">(from, start)</code><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.Set.html">Set</a>: <code class="type"><a href="Bs_Set.html">Bs_Set</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.Set.html"><code class="code">Bs.Set</code></a>
+<p>
+
+    The toplevel provides generic <b>immutable</b> set operations.
+<p>
+
+    It also has three specialized inner modules
+    <code class="code">Bs.Set.Int</code> and <code class="code">Bs.Set.String</code>
+    <code class="code">Bs.Set.Dict</code>: This module separate date from function
+    which  is more verbbose but slightly more efficient<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.Map.html">Map</a>: <code class="type"><a href="Bs_Map.html">Bs_Map</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.Map.html"><code class="code">Bs.Map</code></a>,
+<p>
+
+    The toplevel provides generic <b>immutable</b> map operations.
+<p>
+
+    It also has three specialized inner modules
+    <code class="code">Bs.Map.Int</code> and <code class="code">Bs.Map.String</code>
+    <code class="code">Bs.Map.Dict</code>: This module separate date from function
+    which  is more verbbose but slightly more efficient<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.MutableSet.html">MutableSet</a>: <code class="type"><a href="Bs_MutableSet.html">Bs_MutableSet</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.MutableSet.html"><code class="code">Bs.MutableSet</code></a>
+<p>
+
+    The toplevel provides generic <b>mutable</b> set operations.
+<p>
+
+    It also has two specialized inner modules
+    <code class="code">Bs.MutableSet.Int</code> and <code class="code">Bs.MutableSet.String</code><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.MutableMap.html">MutableMap</a>: <code class="type"><a href="Bs_MutableMap.html">Bs_MutableMap</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.MutableMap.html"><code class="code">Bs.MutableMap</code></a>
+<p>
+
+    The toplevel provides generic <b>mutable</b> map operations.
+<p>
+
+    It also has two specialized inner modules
+    <code class="code">Bs.MutableMap.Int</code> and <code class="code">Bs.MutableMap.String</code><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.HashSet.html">HashSet</a>: <code class="type"><a href="Bs_HashSet.html">Bs_HashSet</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.HashSet.html"><code class="code">Bs.HashSet</code></a>
+<p>
+
+    The toplevel provides generic <b>mutable</b> hash set operations.
+<p>
+
+    It also has two specialized inner modules
+    <code class="code">Bs.HashSet.Int</code> and <code class="code">Bs.HashSet.String</code><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Bs.HashMap.html">HashMap</a>: <code class="type"><a href="Bs_HashMap.html">Bs_HashMap</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Bs.HashMap.html"><code class="code">Bs.HashMap</code></a>
+<p>
+
+    The toplevel provides generic <b>mutable</b> hash map operations.
+<p>
+
+    It also has two specialized inner modules
+    <code class="code">Bs.HashMap.Int</code> and <code class="code">Bs.HashMap.String</code><br>
+ 
+                </div>
+                </div> </body></html>

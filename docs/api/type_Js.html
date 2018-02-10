@@ -9,6 +9,7 @@
                  <title> Js </title></head> 
                <body>
 <code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">MapperRt</span>&nbsp;=&nbsp;<span class="constructor">Js_mapperRt</span><br>
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Internal</span>&nbsp;=&nbsp;<span class="constructor">Js_internal</span><br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;+<span class="keywordsign">'</span>a&nbsp;t<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;+<span class="keywordsign">'</span>a&nbsp;null<br>
@@ -16,14 +17,17 @@
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;+<span class="keywordsign">'</span>a&nbsp;nullable<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;null_undefined&nbsp;=&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable<br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;toOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option&nbsp;=&nbsp;<span class="string">"#null_undefined_to_opt"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;undefinedToOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.undefined&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"#undefined_to_opt"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;nullToOption&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.null&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option&nbsp;=&nbsp;<span class="string">"#null_to_opt"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;test&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nil_undef"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;testAny&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#is_nil_undef"</span><br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;boolean<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;(+<span class="keywordsign">'</span>a,&nbsp;+<span class="keywordsign">'</span>e)&nbsp;promise<br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;true_&nbsp;:&nbsp;<span class="constructor">Js</span>.boolean&nbsp;=&nbsp;<span class="string">"true"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;false_&nbsp;:&nbsp;<span class="constructor">Js</span>.boolean&nbsp;=&nbsp;<span class="string">"false"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;null&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.null&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
-&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;undefined&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.undefined&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;true_&nbsp;:&nbsp;<span class="constructor">Js</span>.boolean&nbsp;=&nbsp;<span class="string">"#true"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;false_&nbsp;:&nbsp;<span class="constructor">Js</span>.boolean&nbsp;=&nbsp;<span class="string">"#false"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;null&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.null&nbsp;=&nbsp;<span class="string">"#null"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;undefined&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.undefined&nbsp;=&nbsp;<span class="string">"#undefined"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;to_bool&nbsp;:&nbsp;<span class="constructor">Js</span>.boolean&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#boolean_to_bool"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;typeof&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;=&nbsp;<span class="string">"#typeof"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;log&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"log"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
@@ -31,6 +35,10 @@
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;log3&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>c&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"log"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;log4&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>b&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>c&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>d&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"log"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;logMany&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"log"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;eqNull&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.null&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"%bs_equal_null"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;eqUndefined&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.undefined&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"%bs_equal_undefined"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;eqNullable&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.nullable&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"%bs_equal_nullable"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;unsafe_lt&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#unsafe_lt"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;unsafe_le&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#unsafe_le"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;unsafe_gt&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool&nbsp;=&nbsp;<span class="string">"#unsafe_gt"</span><br>
@@ -59,4 +67,5 @@
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Result</span>&nbsp;=&nbsp;<span class="constructor">Js_result</span><br>
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">List</span>&nbsp;=&nbsp;<span class="constructor">Js_list</span><br>
 &nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Vector</span>&nbsp;=&nbsp;<span class="constructor">Js_vector</span><br>
+&nbsp;&nbsp;<span class="keyword">module</span>&nbsp;<span class="constructor">Console</span>&nbsp;=&nbsp;<span class="constructor">Js_console</span><br>
 <span class="keyword">end</span></code></body></html>

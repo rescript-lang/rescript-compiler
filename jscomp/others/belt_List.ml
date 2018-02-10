@@ -674,9 +674,9 @@ let removeAssoc xs x eq = removeAssocU xs x (fun [@bs] a b -> eq a b)
 
 let setAssocU xs x k eq = 
   match xs with
-  | [] -> []
+  | [] -> [x,k]
   | (a, _ as pair) :: l -> 
-    if eq a x [@bs] then l 
+    if eq a x [@bs] then (x,k)::l 
     else 
       let cell = mutableCell pair [] in 
       let replaced = setAssocAuxWithMap l x k cell eq in 

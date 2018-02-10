@@ -10,15 +10,53 @@
                  <link rel="previous" href="Js_float.html"><link rel="next" href="Js_int.html">
                  <title> Js_global </title></head> 
                <body>
-<nav class="module-index"><ul><li><a href="Bs.html">Bs</a></li>
-<li><a href="Bs_dyn.html">Bs_dyn</a></li>
-<li><a href="Bs_dyn_lib.html">Bs_dyn_lib</a></li>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
 <li><a href="Dom.html">Dom</a></li>
 <li><a href="Dom_storage.html">Dom_storage</a></li>
 <li><a href="Js.html">Js</a></li>
 <li><a href="Js_array.html">Js_array</a></li>
 <li><a href="Js_boolean.html">Js_boolean</a></li>
 <li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
 <li><a href="Js_date.html">Js_date</a></li>
 <li><a href="Js_dict.html">Js_dict</a></li>
 <li><a href="Js_exn.html">Js_exn</a></li>
@@ -29,6 +67,7 @@
 <li><a href="Js_internal.html">Js_internal</a></li>
 <li><a href="Js_json.html">Js_json</a></li>
 <li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
 <li><a href="Js_math.html">Js_math</a></li>
 <li><a href="Js_nativeint.html">Js_nativeint</a></li>
 <li><a href="Js_null.html">Js_null</a></li>
@@ -60,7 +99,8 @@
 
 <pre><span class="keyword">module</span> Js_global: <code class="code">sig</code> <a href="Js_global.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
-                    Contains functions available in the global scope (<code class="code">window</code> in a browser context)<br>
+                    Contains functions available in the global scope
+    (<code class="code">window</code> in a browser context)<br>
  
                     </div>
                     
@@ -72,7 +112,7 @@
 </div>
 <div class="info ">
                     <div class="not-examples">
-                    identifies an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
+                    Identify an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
  
                     </div>
                     
@@ -84,7 +124,7 @@
 </div>
 <div class="info ">
                     <div class="not-examples">
-                    identifies a timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
+                    Identify timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
  
                     </div>
                     
@@ -94,24 +134,24 @@
 
 <pre><span id="VALclearInterval"><span class="keyword">val</span> clearInterval</span> : <code class="type"><a href="Js_global.html#TYPEintervalId">intervalId</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    clears an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
+                    Clear an interval started by <a href="Js_global.html#VALsetInterval"><code class="code">Js_global.setInterval</code></a><br>
 <div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearInterval">MDN</a><br>
  </div> 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">(* API for a somewhat aggressive snoozing alarm clock *)
 
-let interval = Js.Undefined.empty
+let interval = ref Js.Nullable.null
 
 let remind () =
   Js.log "Wake Up!";
   IO.punchSleepyGuy ()
-
+  
 let snooze mins =
-  interval := Js.Undefined.return @@ Js.Global.setInterval remind (mins * 60 * 1000)
-
+  interval := Js.Nullable.return (Js.Global.setInterval remind (mins * 60 * 1000))
+  
 let cancel () =
-  Js.Undefined.iter Js.Global.clearInterval !interval
+  Js.Nullable.iter !interval (fun[@bs] intervalId -&gt; Js.Global.clearInterval intervalId)
 </code></pre>  </pre>
                     </div>
                     </div>
@@ -119,21 +159,21 @@ let cancel () =
                   
 <pre><span id="VALclearTimeout"><span class="keyword">val</span> clearTimeout</span> : <code class="type"><a href="Js_global.html#TYPEtimeoutId">timeoutId</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    clears a timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
+                    Clear a timeout started by <a href="Js_global.html#VALsetTimeout"><code class="code">Js_global.setTimeout</code></a><br>
 <div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/clearTimeout">MDN</a><br>
  </div> 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">(* A simple model of a code monkey's brain *)
 
-let timer = Js.Undefined.empty
+let timer = ref Js.Nullable.null
 
 let work () =
   IO.closeHackerNewsTab ()
 
 let procrastinate mins =
-  Js.Undefined.iter fun Js.Global.clearTimeout !timer
-  Js.Global.setTimeout work (mins * 60 * 1000)
+  Js.Nullable.iter !timer (fun[@bs] timer -&gt; Js.Global.clearTimeout timer);
+  timer := Js.Nullable.return (Js.Global.setTimeout work (mins * 60 * 1000))
 </code></pre>  </pre>
                     </div>
                     </div>
@@ -141,10 +181,10 @@ let procrastinate mins =
                   
 <pre><span id="VALsetInterval"><span class="keyword">val</span> setInterval</span> : <code class="type">(unit -> unit) -> int -> <a href="Js_global.html#TYPEintervalId">intervalId</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <i>repeatedly</i> executes a callback with a specified interval (in milliseconds) between calls
+                    <i>Repeatedly</i> executes a callback with a specified interval (in milliseconds) between calls
 <p>
 
-<b>returns</b> an <a href="Js_global.html#TYPEintervalId"><code class="code">Js_global.intervalId</code></a> that can be passed to <a href="Js_global.html#VALclearInterval"><code class="code">Js_global.clearInterval</code></a> to cancel the timeout<br>
+<b>Return</b> an <a href="Js_global.html#TYPEintervalId"><code class="code">Js_global.intervalId</code></a> that can be passed to <a href="Js_global.html#VALclearInterval"><code class="code">Js_global.clearInterval</code></a> to cancel the timeout<br>
 <div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setInterval">MDN</a><br>
  </div> 
                     </div>
@@ -155,7 +195,7 @@ let count = ref 0
 
 let tick () =
   count := !count + 1; Js.log (string_of_int !count)
-
+    
 let _ =
   Js.Global.setInterval tick 1000
 </code></pre>  </pre>
@@ -165,7 +205,7 @@ let _ =
                   
 <pre><span id="VALsetTimeout"><span class="keyword">val</span> setTimeout</span> : <code class="type">(unit -> unit) -> int -> <a href="Js_global.html#TYPEtimeoutId">timeoutId</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    executes a callback after a specified delay (in milliseconds)
+                    Execute a callback after a specified delay (in milliseconds)
 <p>
 
 <b>returns</b> a <a href="Js_global.html#TYPEtimeoutId"><code class="code">Js_global.timeoutId</code></a> that can be passed to <a href="Js_global.html#VALclearTimeout"><code class="code">Js_global.clearTimeout</code></a> to cancel the timeout<br>
@@ -181,6 +221,46 @@ let _ =
   Js.Global.setTimeout (fun () -&gt; Js.log message) 1000
 </code></pre>  </pre>
                     </div>
+                    </div>
+
+                  
+<pre><span id="VALencodeURI"><span class="keyword">val</span> encodeURI</span> : <code class="type">string -> string</code></pre><div class="info ">
+                    <div class="not-examples">
+                    URL-encodes a string.<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI">MDN</a><br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALdecodeURI"><span class="keyword">val</span> decodeURI</span> : <code class="type">string -> string</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Decodes a URL-enmcoded string produced by <code class="code">encodeURI</code><br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI">MDN</a><br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALencodeURIComponent"><span class="keyword">val</span> encodeURIComponent</span> : <code class="type">string -> string</code></pre><div class="info ">
+                    <div class="not-examples">
+                    URL-encodes a string, including characters with special meaning in a URI.<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent">MDN</a><br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALdecodeURIComponent"><span class="keyword">val</span> decodeURIComponent</span> : <code class="type">string -> string</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Decodes a URL-enmcoded string produced by <code class="code">encodeURIComponent</code><br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent">MDN</a><br>
+ </div> 
+                    </div>
+                    
                     </div>
 
                   </body></html>

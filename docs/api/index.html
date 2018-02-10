@@ -35,13 +35,23 @@ BuckleScript is mostly a compiler, but it does ship some libraries for users' co
 <a href="Js.html"><code class="code">Js</code></a> 
 <p>
 
-This library are mostly bindings to JS, it should work with both NodeJS and Browser.
+This library are mostly <i>bindings</i> to JS, it should work with both NodeJS and Browser.
 It is strongly recommended to use qualified name instead of flatten module name. 
 For example
 <pre class="codepre"><code class="code">    [| 1; 2 ; 3 |] 
     |&gt; Js.Array.map (fun x -&gt; x + 1 )
     |&gt; Js.log 
 </code></pre>
+<p>
+
+<a href="Belt.html"><code class="code">Belt</code></a>
+<p>
+
+This BuckleScript standard library (<b>beta</b>).
+<p>
+
+BuckleScript also shipped the vanilla OCaml standard library.<br>
+<div class="tag"> <b>See also</b> <a href="https://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html">OCaml standard library
 <p>
 
 <a href="Node.html"><code class="code">Node</code></a>
@@ -55,17 +65,7 @@ and we may break API backward compatiblity in the future.
 <p>
 
 This library are for DOM API, currently it only defines some 
-types for diferent packages to talk to each other
-<p>
-
-<a href="Bs.html"><code class="code">Bs</code></a>
-<p>
-
-This namespace is reserved for providing some utilities in the future
-<p>
-
-BuckleScript also shipped the vanilla OCaml standard library.<br>
-<div class="tag"> <b>See also</b> <a href="https://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html">OCaml standard library</a><br>
+types for diferent packages to talk to each other</a><br>
  </div> 
                     </div>
                     
