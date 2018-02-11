@@ -45,11 +45,11 @@
     callback.
 
     {[
-      val forEach : 'a t -> ('a -> unit) -> unit
+      val forEach  : 'a t -> ('a -> unit) -> unit
       val forEachU : 'a t -> ('a -> unit [\@bs]) -> unit
     ]}
 
-    In general, uncurried version will be faster, but it is less familiar to
+    In general, uncurried version will be faster, but it may be less familiar to
     people who have a background in functional programming.
 
    {b A special encoding for collection safety}
