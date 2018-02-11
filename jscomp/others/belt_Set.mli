@@ -101,7 +101,7 @@ type ('key,'identity)  t
 
 
 type ('key, 'id) id = ('key, 'id) Belt_Id.comparable
-(** The identity needed for making an empty set
+(** The identity needed for making a set from scratch
 *)
 
 val make: id:('elt, 'id) id -> ('elt, 'id) t
@@ -116,57 +116,216 @@ val make: id:('elt, 'id) id -> ('elt, 'id) t
 
 
 val ofArray:  'k array -> id:('k, 'id) id ->  ('k, 'id) t
+(** [ofArray xs ~id]
+
+    @example{[
+     module IntCmp = (val IntCmp.comparableU
+                         ~cmp:(fun[\@bs]
+                                (x:int) y -> Pervasives.comapre x y));;
+     toArray (ofArray [1;3;2;4] (module IntCmp)) = [1;2;3;4]
+      
+    ]}
+*)
+
 
 val ofSortedArrayUnsafe: 'elt array -> id:('elt, 'id) id -> ('elt,'id) t
 (** [ofSortedArrayUnsafe xs ~id]
 
-    The same as {!ofArray} except it is after assuming the array is already sorted
+    The same as {!ofArray} except it is after assuming the input array [x] is already sorted
 
-    {b unsafe} assuming the input is sorted
+    {b Unsafe} 
 *)
 
 
 val isEmpty: _ t -> bool
+(**
+   @example {[
+     module IntCmp =
+       (val IntCmp.comparableU
+           ~cmp:(fun[\@bs]
+                  (x:int) y -> Pervasives.comapre x y));;     
+     isEmpty (ofArray [||] ~id:(module IntCmp)) = true;;
+     isEmpty (ofArray [|1|] ~id:(module IntCmp)) = true;;  
+   ]}
+*)
 val has: ('elt, 'id) t -> 'elt ->  bool
-
+(**
+   @example {[
+     module IntCmp =
+       (val IntCmp.comparableU
+           ~cmp:(fun[\@bs]
+                  (x:int) y -> Pervasives.comapre x y));;
+     let v = ofArray [|1;4;2;5|] ~id:(module IntCmp);;
+     has v 3 = false;;
+     has v 1 = true;;
+   ]}
+*)
 
 val add:   
   ('elt, 'id) t -> 'elt -> ('elt, 'id) t
-(** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
+(** [add s x] If [x] was already in [s], [s] is returned unchanged.
+
+    @example {[
+     module IntCmp =
+       (val IntCmp.comparableU
+           ~cmp:(fun[\@bs]
+                  (x:int) y -> Pervasives.comapre x y));;
+     let s0 = make ~id:(module IntCmp);;
+     let s1 = add s0 1 ;;
+     let s2 = add s1 2;;
+     let s3 = add s2 2;;
+     toArray s0 = [||];;
+     toArray s1 = [|1|];;
+     toArray s2 = [|1;2|];;
+     toArray s3 = [|1;2|];;
+     s2 == s3;;
+    ]}
+*)
     
 val mergeMany: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
+(** [mergeMany s xs]
 
+    Adding each of [xs] to [s], note unlike {!add},
+    the reference of return value might be changed even if all values in [xs]
+    exist [s]
+   
+*)
 val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
-(** [remove m x] If [x] was not in [m], [m] is returned reference unchanged. *)
+(** [remove m x] If [x] was not in [m], [m] is returned reference unchanged.
+
+    @example {[
+      module IntCmp =
+       (val IntCmp.comparableU
+           ~cmp:(fun[\@bs]
+                  (x:int) y -> Pervasives.comapre x y));;
+      let s0 = ofArray ~id:(module IntCmp) [|2;3;1;4;5|];;
+      let s1 = remove s0 1 ;;
+      let s2 = remove s1 3 ;;
+      let s3 = remove s2 3 ;;
+
+      toArray s1 = [|2;3;4;5|];;
+      toArray s2 = [|2;4;5|];;
+      s2 == s3;; 
+    ]}
+*)
 
 val removeMany:
-  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
+  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
+(** [removeMany s xs]
 
+    Removing each of [xs] to [s], note unlike {!remove},
+    the reference of return value might be changed even if none in [xs]
+    exists [s]
+*)    
 
 val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t 
-val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
-val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool     
+(**
+   [union s0 s1]
 
+   @example {[
+     module IntCmp =
+       (val IntCmp.comparableU
+           ~cmp:(fun[\@bs]
+                  (x:int) y -> Pervasives.comapre x y));;
+     let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+     let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+     toArray (union s0 s1) =  [|1;2;3;4;5;6|]
+   ]}
+*)
+
+val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+(** [intersect s0 s1]
+   @example {[
+     module IntCmp =
+       (val IntCmp.comparableU
+           ~cmp:(fun[\@bs]
+                  (x:int) y -> Pervasives.comapre x y));;
+     let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+     let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+     toArray (intersect s0 s1) =  [|2;3;5|]
+   ]}
+
+*)    
+val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+(** [diff s0 s1]
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU
+            ~cmp:(fun[\@bs]
+                   (x:int) y -> Pervasives.comapre x y));;
+      let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+      let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+      toArray (diff s0 s1) = [|6|];;
+      toArray (diff s1 s0) = [|1;4|];;
+    ]}
+*)
+
+val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool     
+(** [subset s0 s1]
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU
+            ~cmp:(fun[\@bs]
+                   (x:int) y -> Pervasives.comapre x y));;
+      let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+      let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
+      let s2 = intersect s0 s1;;
+      subset s2 s0 = true;;
+      subset s1 s0 = true;;
+      subset s1 s2 = false;;
+    ]}
+*)
+  
 val cmp: ('elt, 'id) t -> ('elt, 'id) t -> int
 (** Total ordering between sets. Can be used as the ordering function
-    for doing sets of sets. *)
+    for doing sets of sets.
+    It compare [size] first and then iterate over
+    each element following the order of elements
+*)
   
 val eq: ('elt, 'id) t -> ('elt, 'id) t -> bool
+(** [eq s0 s1]
 
+    @return true if [toArray s0 = toArray s1] 
+*)
+  
 val forEachU: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
 val forEach: ('elt, 'id) t -> ('elt -> unit ) ->  unit  
 (** [forEach s f] applies [f] in turn to all elements of [s].
-    In increasing order *)
+    In increasing order
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU
+            ~cmp:(fun[\@bs]
+                   (x:int) y -> Pervasives.comapre x y));;
+      let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+      let acc = ref [] ;;
+      forEach s0 (fun x -> acc := x !acc);;
+      !acc = [6;5;3;2];;
+    ]}
+*)
 
 val reduceU: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
 val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a ) ->  'a  
-(** In increasing order. *)
+(** In increasing order.
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU
+            ~cmp:(fun[\@bs]
+                   (x:int) y -> Pervasives.comapre x y));;
+      let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+      reduce s0 [] Bs.List.add = [6;5;3;2];;
+    ]}
+*)
 
 val everyU: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
 val every: ('elt, 'id) t -> ('elt -> bool ) -> bool  
 (** [every p s] checks if all elements of the set
-    satisfy the predicate [p]. Order unspecified *)
+    satisfy the predicate [p]. Order unspecified.
+*)
 
 val someU: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
 val some: ('elt, 'id) t ->  ('elt -> bool ) -> bool  
@@ -186,32 +345,89 @@ val partition: ('elt, 'id) t -> ('elt -> bool) ->  ('elt, 'id) t * ('elt, 'id) t
     [s] that do not satisfy [p]. *)
 
 val size:  ('elt, 'id) t -> int
-val toList: ('elt, 'id) t -> 'elt list
-(** In increasing order*)
+(** [size s]
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU
+            ~cmp:(fun[\@bs]
+                   (x:int) y -> Pervasives.comapre x y));;
+      let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+      size s0 = 4;;
+    ]}
+*)
+  
 val toArray: ('elt, 'id) t -> 'elt array
+(** [toArray s0]
+   @example {[
+      module IntCmp =
+        (val IntCmp.comparableU
+            ~cmp:(fun[\@bs]
+                   (x:int) y -> Pervasives.comapre x y));;
+      let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
+      toArray s0 = [|2;3;5;6|];;
+    ]}*)
+    
+val toList: ('elt, 'id) t -> 'elt list
+(** In increasing order
+
+    {b See} {!toArray}
+*)
 
 val minimum: ('elt, 'id) t -> 'elt option
+(** [minimum s0]
+
+    @return the minimum element of the collection, [None] if it is empty
+*)    
+
 val minUndefined: ('elt, 'id) t -> 'elt Js.undefined
+(** [minUndefined s0]
+
+   @return the minimum element of the collection, [undefined] if it is empty
+*)    
+
 val maximum: ('elt, 'id) t -> 'elt option
+(** [maximum s0]
+
+    @return the maximum element of the collection, [None] if it is empty
+*)    
 val maxUndefined: ('elt, 'id) t -> 'elt Js.undefined
+(** [maxUndefined s0]
 
+    @return the maximum element of the collection, [undefined] if it is empty
+*)    
 
+val get: ('elt, 'id) t -> 'elt -> 'elt option
+(** [get s0 k]
 
-val get: ('elt, 'id) t -> 'elt -> 'elt option 
+    @return the reference of the value [k'] which is equivalent to [k]
+    using  the comparator specifiecd by this collection, [None]
+    if it does not exist
+*)
+
 val getUndefined: ('elt, 'id) t -> 'elt -> 'elt Js.undefined
-val getExn: ('elt, 'id) t -> 'elt -> 'elt 
+(** {b See} {!get}
+    *)    
+
+val getExn: ('elt, 'id) t -> 'elt -> 'elt
+(** {b See} {!get}
+
+    {b raise} if not exist
+*)  
 
 val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
 (** [split set ele]
 
     @return  a tuple [((smaller, larger), present)],
     [present] is true when [ele] exist in [set]
-*)                                    
+*)
+
+(**/**)
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not helld
 *)  
-  
+(**/**)
 
 (****************************************************************************)
 (** Below are operations only when better performance needed,
@@ -220,6 +436,27 @@ val checkInvariantInternal: _ t -> unit
 *)
 
 val getData: ('k,'id) t  -> ('k,'id) Belt_SetDict.t
+(** [getData s0]
+
+    {b Advanced usage only}
+    
+    @return the raw data (detached from comparator),
+    but its type is still manifested, so that user can pass identity directly
+    without boxing
+*)    
 val getId: ('k,'id) t  -> ('k,'id) id
+(** [getId s0]
+
+    {b Advanced usage only}
+    
+    @return the identity of [s0]
+*)
+
 val packIdData: id:('k, 'id) id -> data:('k, 'id) Belt_SetDict.t -> ('k, 'id) t
+(** [packIdData ~id ~data]
+
+    {b Advanced usage only}
+    
+    @return the packed collection
+*)    
     
