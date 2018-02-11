@@ -443,7 +443,8 @@ val getData: ('k,'id) t  -> ('k,'id) Belt_SetDict.t
     @return the raw data (detached from comparator),
     but its type is still manifested, so that user can pass identity directly
     without boxing
-*)    
+*)
+    
 val getId: ('k,'id) t  -> ('k,'id) id
 (** [getId s0]
 

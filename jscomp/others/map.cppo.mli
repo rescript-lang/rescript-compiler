@@ -152,10 +152,10 @@ val map: 'a t -> ('a -> 'b) ->  'b t
 val mapWithKeyU: 'a t -> (key -> 'a -> 'b [@bs]) -> 'b t
 val mapWithKey: 'a t -> (key -> 'a -> 'b) -> 'b t    
 
-
+(**/**)
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not helld
 *)  
-
+(**/**)
 
