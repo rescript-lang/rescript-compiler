@@ -78,6 +78,7 @@ let build_bs_deps cwd deps =
     (fun {top; cwd} ->
        if not top then
          begin 
+           let build_artifacts_dir = Bsb_build_util.get_build_artifacts_location cwd in
            let config_opt = Bsb_ninja_regen.regenerate_ninja ~not_dev:true
                ~generate_watch_metadata:false
                ~override_package_specs:(Some deps) 
@@ -85,7 +86,7 @@ let build_bs_deps cwd deps =
                cwd bsc_dir  in (* set true to force regenrate ninja file so we have [config_opt]*)
            let command = 
             {Bsb_unix.cmd = vendor_ninja;
-              cwd = cwd // Bsb_config.lib_bs;
+              cwd = build_artifacts_dir // Bsb_config.lib_bs;
               args  = [|vendor_ninja|]
              } in     
            let eid =
@@ -98,7 +99,7 @@ let build_bs_deps cwd deps =
               Note that we can check if ninja print "no work to do", 
               then don't need reinstall more
            *)
-           install_targets cwd config_opt;
+           install_targets build_artifacts_dir config_opt;
          end
     )
 

@@ -375,7 +375,7 @@ let compile  ~filename (output_prefix : string) env _sigs
     )
 ;;
 
-let (//) = Filename.concat  
+let (//) = Ext_path.combine  
 
 let lambda_as_module 
     finalenv 

@@ -47,6 +47,9 @@ let rev_lib_bs_prefix p = rev_lib_bs // p
 
 let ocaml_bin_install_prefix p = lib_ocaml // p
 
+let lazy_build_artifacts_dir = "$build_artifacts_dir"
+let build_artifacts_dir path = lazy_build_artifacts_dir // path
+
 let lazy_src_root_dir = "$src_root_dir" 
 let proj_rel path = lazy_src_root_dir // path
 
@@ -61,3 +64,4 @@ let proj_rel path = lazy_src_root_dir // path
 
 let cmd_package_specs = ref None 
 
+let node_modules = "node_modules"

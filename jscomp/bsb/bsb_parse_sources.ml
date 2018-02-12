@@ -393,7 +393,7 @@ let rec
          let parent = Filename.concat cxt.root cxt.cwd in 
          let lib_parent = 
            Filename.concat (Filename.concat cxt.root Bsb_config.lib_bs) 
-             cxt.cwd in 
+             (Bsb_build_util.get_build_artifacts_location cxt.cwd) in 
          if not (String_map.mem (Ext_string.capitalize_ascii basename) cur_sources) then 
            begin 
              Unix.unlink (Filename.concat parent f);

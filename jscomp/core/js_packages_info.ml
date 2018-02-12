@@ -145,7 +145,7 @@ let get_js_path module_system
 *)
 let get_output_dir ~package_dir module_system 
     (info: t ) =
-  Filename.concat package_dir 
+  Ext_path.combine package_dir 
     (get_js_path module_system info)
 
 
@@ -172,7 +172,7 @@ let add_npm_package_path s (packages_info : t)  : t =
 
 
 
-let (//) = Filename.concat 
+let (//) = Ext_path.combine 
 
 
 

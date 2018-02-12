@@ -51,3 +51,5 @@ let namespace = "namespace"
 
 
 let warnings = "warnings"
+
+let build_artifacts_dir = "build_artifacts_dir"

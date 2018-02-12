@@ -32,7 +32,7 @@ let resolve_package cwd  package_name =
   let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
   {
     Bsb_config_types.package_name ;
-    package_install_path = x // Bsb_config.lib_ocaml
+    package_install_path = (Bsb_build_util.get_build_artifacts_location x) // Bsb_config.lib_ocaml
   }
 
 
@@ -187,7 +187,15 @@ let interpret_json
        ()
      | None 
      | Some _ ->
-       built_in_package := Some (resolve_package cwd Bs_version.package_name);
+     (* Inline this instead of calling resolve_package because bs-platform is a special pre-built package
+        whose artifacts are in `node_modules/bs-platform/lib` and which we don't want to rebuild. *)
+       let package_name = Bs_version.package_name in
+       let x =  Bsb_pkg.resolve_bs_package ~cwd package_name  in
+       built_in_package := Some (
+        {
+          Bsb_config_types.package_name ;
+          package_install_path = x // Bsb_config.lib_ocaml
+        });
     ) ;
     let package_specs =     
       match String_map.find_opt Bsb_build_schemas.package_specs map with 
@@ -274,7 +282,7 @@ let interpret_json
              namespace; 
             }  x in 
         if generate_watch_metadata then
-          Bsb_watcher_gen.generate_sourcedirs_meta cwd res ;     
+          Bsb_watcher_gen.generate_sourcedirs_meta (Bsb_build_util.get_build_artifacts_location cwd) res ;     
         begin match List.sort Ext_file_pp.interval_compare  res.intervals with
           | [] -> ()
           | queue ->

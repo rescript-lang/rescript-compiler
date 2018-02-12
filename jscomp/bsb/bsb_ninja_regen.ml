@@ -38,10 +38,11 @@ let regenerate_ninja
     ~generate_watch_metadata 
     ~forced cwd bsc_dir
   : _ option =
-  let output_deps = cwd // Bsb_config.lib_bs // bsdeps in
+  let build_artifacts_dir = Bsb_build_util.get_build_artifacts_location cwd in
+  let output_deps = build_artifacts_dir // Bsb_config.lib_bs // bsdeps in
   let check_result  =
     Bsb_ninja_check.check 
-      ~cwd  
+      ~cwd:build_artifacts_dir  
       ~forced ~file:output_deps in
   let () = 
     Bsb_log.info
@@ -56,9 +57,9 @@ let regenerate_ninja
     | Other _ -> 
       if check_result = Bsb_bsc_version_mismatch then begin 
         Bsb_log.info "@{<info>Different compiler version@}: clean current repo";
-        Bsb_clean.clean_self bsc_dir cwd; 
+        Bsb_clean.clean_self bsc_dir build_artifacts_dir; 
       end ; 
-      Bsb_build_util.mkp (cwd // Bsb_config.lib_bs); 
+      Bsb_build_util.mkp (build_artifacts_dir // Bsb_config.lib_bs); 
       let config = 
         Bsb_config_parse.interpret_json 
           ~override_package_specs
@@ -68,7 +69,7 @@ let regenerate_ninja
           cwd in 
       begin 
         Bsb_merlin_gen.merlin_file_gen ~cwd
-          (bsc_dir // bsppx_exe) config;       
+          (bsc_dir // bsppx_exe) config;      
         Bsb_ninja_gen.output_ninja_and_namespace_map 
           ~cwd ~bsc_dir ~not_dev config ;         
         (* PR2184: we still need record empty dir 

@@ -77,7 +77,8 @@ let output_ninja_and_namespace_map
   let custom_rules = Bsb_rule.reset generators in 
   let bsc = bsc_dir // bsc_exe in   (* The path to [bsc.exe] independent of config  *)
   let bsdep = bsc_dir // bsb_helper_exe in (* The path to [bsb_heler.exe] *)
-  let cwd_lib_bs = cwd // Bsb_config.lib_bs in 
+  let build_artifacts_dir = Bsb_build_util.get_build_artifacts_location cwd in
+  let cwd_lib_bs = build_artifacts_dir // Bsb_config.lib_bs in 
   let ppx_flags = Bsb_build_util.flag_concat dash_ppx ppx_flags in
   let bsc_flags =  String.concat Ext_string.single_space bsc_flags in
   let refmt_flags = String.concat Ext_string.single_space refmt_flags in
@@ -150,7 +151,8 @@ let output_ninja_and_namespace_map
         Bsb_ninja_global_vars.bs_package_includes, bs_package_includes;
         Bsb_ninja_global_vars.bs_package_dev_includes, bs_package_dev_includes;  
         Bsb_ninja_global_vars.namespace , namespace_flag ; 
-        Bsb_build_schemas.bsb_dir_group, "0"  (*TODO: avoid name conflict in the future *)
+        Bsb_build_schemas.bsb_dir_group, "0";  (*TODO: avoid name conflict in the future *)
+        Bsb_ninja_global_vars.build_artifacts_dir, build_artifacts_dir;
       |] oc in
   let all_includes acc  = 
     match external_includes with 
@@ -242,7 +244,7 @@ let output_ninja_and_namespace_map
        ~output:Literals.build_ninja 
    | Some ns -> 
      let namespace_dir =     
-       cwd // Bsb_config.lib_bs  in
+       build_artifacts_dir // Bsb_config.lib_bs  in
      Bsb_namespace_map_gen.output 
        ~dir:namespace_dir ns
        bs_file_groups
