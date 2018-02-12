@@ -1,4 +1,25 @@
 
+# 2.2.0
+Features:
+- A beta release for the new stdlib called Belt 
+- #2436, #2381, #2377, #2353 bs.deriving abstract support
+
+
+Performances:
+- #2452 specialized comparison with Js.null, Js.undefined, Js.boolean
+- #2412, provide specialized primitives for comparison with null/undefined
+- #2361, better  optimization for temporary tuple
+Fixes:
+- #2451 better error message when arity mismatch for reason syntax
+- #2399, turn partial application warnings to error in react template
+- #2465 build on FreeBSD
+- #2450 ignore bsb.lock
+- #2356 ship build-schema.json 
+- #2489, #2464  capitalize names in combination of '/'
+- #2459 subdirs:true by default for templates
+- #2428, fix trailing space on react-jsx
+- #2401, stop tab-aligning imports for smaller diff
+- #2383, drop bs.deriving attribute after post-processing
 # 2.1.0
 Features:
 - #2282, #2280,#2272,#2271,#2270,#2262,#2260,#2255,#2253
@@ -21,6 +42,9 @@ Performance:
 - #2213 refine caml_obj_dump into caml_array_dup better array initialization code
 
 Fixes:
+- #2316 Pattern match with exception case and a single catch-all pattern is optimized incorrectly
+- #2318 no absname in Match_failure
+- #2250 #1285, fix code gen for object oriented code
 - #2278, #2274 fix fatal errors regression and syntactice fatal errors(-werror A) don't stop building
 - #2259 fix fatal errors don't stop generating cmj file
 - #1972 bsb -init does not rely on `npm link` on *nix platform
