@@ -58,7 +58,7 @@ var v = Belt_Array.makeByAndShuffle(1000000, (function (i) {
 
 var u = Belt_MapInt.ofArray(v);
 
-b("File \"bs_map_test.ml\", line 27, characters 4-11", Belt_MapInt.checkInvariantInternal(u));
+Belt_MapInt.checkInvariantInternal(u);
 
 var firstHalf = Belt_Array.slice(v, 0, 2000);
 
@@ -66,9 +66,9 @@ var xx = Belt_Array.reduce(firstHalf, u, (function (acc, param) {
         return Belt_MapInt.remove(acc, param[0]);
       }));
 
-b("File \"bs_map_test.ml\", line 31, characters 4-11", Belt_MapInt.checkInvariantInternal(u));
+Belt_MapInt.checkInvariantInternal(u);
 
-b("File \"bs_map_test.ml\", line 32, characters 4-11", Belt_MapInt.checkInvariantInternal(xx));
+Belt_MapInt.checkInvariantInternal(xx);
 
 Mt.from_pair_suites("bs_map_test.ml", suites[0]);
 

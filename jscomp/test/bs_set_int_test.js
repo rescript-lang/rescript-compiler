@@ -213,13 +213,13 @@ var v$11 = Belt_Array.makeByAndShuffle(1000000, (function (i) {
 
 var u$1 = Belt_SetInt.ofArray(v$11);
 
-b("File \"bs_set_int_test.ml\", line 102, characters 4-11", Belt_SetInt.checkInvariantInternal(u$1));
+Belt_SetInt.checkInvariantInternal(u$1);
 
 var firstHalf = Belt_Array.slice(v$11, 0, 2000);
 
 var xx = Belt_Array.reduce(firstHalf, u$1, Belt_SetInt.remove);
 
-b("File \"bs_set_int_test.ml\", line 105, characters 4-11", Belt_SetInt.checkInvariantInternal(u$1));
+Belt_SetInt.checkInvariantInternal(u$1);
 
 b("File \"bs_set_int_test.ml\", line 106, characters 4-11", Belt_SetInt.eq(Belt_SetInt.union(Belt_SetInt.ofArray(firstHalf), xx), u$1));
 

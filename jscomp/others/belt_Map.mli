@@ -76,6 +76,8 @@ module String = Belt_MapString
 (** This module seprate identity from data, it is a bit more verbsoe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation
+
+    {b Advanced usage only}
 *)  
 module Dict = Belt_MapDict
 
@@ -120,7 +122,7 @@ val make: id:('k, 'id) id -> ('k, 'a, 'id) t
 (** [make ~id]
    
      @example {[
-     module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.comapre x y))
+     module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.comapre x y));;
      let s = make ~id:(module IntCmp)
     ]}
 
@@ -128,8 +130,21 @@ val make: id:('k, 'id) id -> ('k, 'a, 'id) t
 
 
 val isEmpty: _ t -> bool
+(** [isEmpty s0]
+    @example {[
+      module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.comapre x y));;
+      isEmpty (ofArray [|1,"1"|] ~id:(module IntCmp)) = false;;
+    ]}
+*)
 
-val has: ('k, 'a, 'id) t -> 'k  -> bool    
+val has: ('k, 'a, 'id) t -> 'k  -> bool
+(** [has s k]
+
+    @example {[
+      module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.comapre x y));;
+      has (ofArray [|1,"1"|] ~id:(module IntCmp)) 1 = true;;
+    ]}
+*)  
 
 val cmpU:
     ('k, 'v, 'id) t ->
@@ -141,6 +156,12 @@ val cmp:
     ('k, 'v, 'id) t ->
     ('v -> 'v -> int ) ->
      int
+(** [cmp s0 s1 vcmp]
+
+    Totoal ordering of map given total ordering of value function.
+
+    It will compare size first and each element following the order one by one.
+*)
 
 val eqU:  
     ('k, 'a, 'id) t -> 
@@ -152,9 +173,9 @@ val eq:
     ('k, 'a, 'id) t -> 
     ('a -> 'a -> bool) -> 
     bool
-(** [eq m1 m2 cmp] tests whether the maps [m1] and [m2] are
+(** [eq m1 m2 veq] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
-    equal data.  [cmp] is the equality predicate used to compare
+    equal data.  [veq] is the equality predicate used to compare
     the data associated with the keys. *)
 
 val forEachU:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
@@ -162,13 +183,34 @@ val forEach:  ('k, 'a, 'id) t -> ('k -> 'a -> unit) -> unit
 (** [forEach m f] applies [f] to all bindings in map [m].
     [f] receives the 'k as first argument, and the associated value
     as second argument.  The bindings are passed to [f] in increasing
-    order with respect to the ordering over the type of the keys. *)
+    order with respect to the ordering over the type of the keys.
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+
+      let s0 = ofArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
+      let acc = ref [] ;;
+      forEach s0 (fun k v -> acc := (k,v) :: !acc);;
+
+      !acc = [4,"4"; 3,"3"; 2,"2"; 1,"1"]
+    ]}
+*)
 
 val reduceU: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
-val reduce: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b) ->  'b
+val reduce: ('k, 'a, 'id) t -> 'acc ->  ('acc -> 'k -> 'a -> 'acc) ->  'acc
 (** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
     where [k1 ... kN] are the keys of all bindings in [m]
-    (in increasing order), and [d1 ... dN] are the associated data. *)
+    (in increasing order), and [d1 ... dN] are the associated data.
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+
+      let s0 = ofArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
+      reduce s0 [] (fun acc k v -> (k,v) acc ) = [4,"4";3,"3";2,"2";1,"1"];;
+    ]}
+*)
 
 val everyU: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
 val every: ('k, 'a, 'id) t -> ('k -> 'a -> bool) ->  bool
@@ -181,41 +223,192 @@ val some: ('k, 'a, 'id) t -> ('k -> 'a -> bool) ->  bool
     satisfy the predicate [p]. Order unspecified *)
 
 val size: ('k, 'a, 'id) t -> int
-val toList: ('k, 'a, 'id) t -> ('k * 'a) list
-(** In increasing order*)
+(** [size s]
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+      size (ofArray [2,"2"; 2,"1"; 3,"3"] ~id:(module IntCmp)) = 2 ;;
+    ]}
+*)
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
-val ofArray:  ('k * 'a) array -> id:('k,'id) id -> ('k,'a,'id) t         
+(** [toArray s]
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+      toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
+    ]}
+
+*)
+val toList: ('k, 'a, 'id) t -> ('k * 'a) list
+(** In increasing order
+
+    {b See} {!toArray}
+*)
+    
+val ofArray:  ('k * 'a) array -> id:('k,'id) id -> ('k,'a,'id) t
+(** [ofArray kvs ~id]
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+      toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
+    ]}
+*)    
 val keysToArray: ('k, 'a, 'id) t -> 'k  array
+(** [keysToArray s]
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+      keysToArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
+      [|1;2;3|];;
+    ]}
+*)    
 val valuesToArray: ('k, 'a, 'id) t -> 'a  array
+(** [valuesToArray s]
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+      valuesToArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
+      [|"1";"2";"3"|];;
+    ]}
+
+*)
+    
 val minKey: ('k, _, _) t -> 'k option
+(** [minKey s]
+    @return thte minimum key, None if not exist 
+*)    
+
 val minKeyUndefined: ('k, _, _) t -> 'k Js.undefined
+(** {b See} {!minKey}*)    
+
 val maxKey: ('k, _, _) t -> 'k option
+(** [maxKey s]
+    @return thte maximum key, None if not exist 
+*)    
+    
 val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
+(** {b See} {!maxKey} *)    
+
 val minimum: ('k, 'a,  _) t -> ('k * 'a) option
+(** [minimum s]
+    @return thte minimum key value pair, None if not exist 
+*)    
+    
 val minUndefined: ('k, 'a, _) t -> ('k * 'a) Js.undefined
+(** {b See} {!minimum} *)    
+
 val maximum: ('k, 'a, _) t -> ('k * 'a) option
+(** [maximum s]
+    @return thte maximum key value pair, None if not exist 
+*)    
+
 val maxUndefined:('k, 'a, _) t -> ('k * 'a) Js.undefined
+(** {b See} {!maximum}
+*)
+    
 val get:  ('k, 'a, 'id) t -> 'k -> 'a option
+(** [get s k]
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+      get (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
+      Some "2";;
+      get (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
+      None;;
+    ]}
+*)
+    
 val getUndefined: ('k, 'a, 'id) t -> 'k ->  'a Js.undefined
+(** {b See} {!get}
+
+    @return [undefined] when not found
+*)    
 val getWithDefault:
-    ('k, 'a, 'id) t -> 'k ->  'a -> 'a 
+    ('k, 'a, 'id) t -> 'k ->  'a -> 'a
+(** [getWithDefault s k default]
+
+   {b See} {!get}
+
+    @return [default] when [k] is not found
+    
+*)    
 val getExn:  ('k, 'a, 'id) t -> 'k -> 'a 
-val checkInvariantInternal: _ t -> bool   
+(** [getExn s k]
+
+   {b See} {!getExn}
+
+    {b raise} when [k] not exist
+*)
+
 (****************************************************************************)
 
 val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
-(** [remove m x] when [x] is not in [m], [m] is returned reference unchanged *)
+(** [remove m x] when [x] is not in [m], [m] is returned reference unchanged.
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+      
+      let s0 =  (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
+
+      let s1 = remove s0 1;;
+      let s2 = remove s1 1;;
+      s1 == s2 ;;
+      keysToArray s1 = [|2;3|];;
+    ]}
+    
+*)
+    
 val removeMany: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t  
+(** [removeMany s xs]
+
+    Removing each of [xs] to [s], note unlike {!remove},
+    the reference of return value might be changed even if none in [xs]
+    exists [s]
+*)    
   
 val set: 
     ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
 (** [set m x y ] returns a map containing the same bindings as
     [m], with a new binding of [x] to [y]. If [x] was already bound
-    in [m], its previous binding disappears. *)
+    in [m], its previous binding disappears.
+
+    @example {[
+      module IntCmp =
+        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.comapre x y));;
+      
+      let s0 =  (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
+
+      let s1 = set s0 2 "3";;
+
+      valuesToArray s1 =  ["1";"3";"3"];;
+    ]}
+*)
+      
 val updateU: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> ('k, 'a, 'id) t      
 val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option) -> ('k, 'a, 'id) t      
+(** [update m x f] returns a map containing the same bindings as
+    [m], except for the binding of [x].
+    Depending on the value of
+    [y] where [y] is [f (get x m)], the binding of [x] is
+    added, removed or updated. If [y] is [None], the binding is
+    removed if it exists; otherwise, if [y] is [Some z] then [x]
+    is associated to [z] in the resulting map. 
+*)
+
 val mergeMany:
     ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
+(** [mergeMany s xs]
+
+    Adding each of [xs] to [s], note unlike {!add},
+    the reference of return value might be changed even if all values in [xs]
+    exist [s]
+*)
 
 val mergeU:
    ('k, 'a, 'id ) t -> 
@@ -261,7 +454,7 @@ val partition:
 val split: 
     ('k, 'a, 'id) t -> 'k -> 
     (('k, 'a, 'id) t * ('k, 'a, 'id) t )* 'a option 
-(** [split x m] returns a triple [(l, data, r)], where
+(** [split x m] returns a tuple [(l r), data], where
       [l] is the map with all the bindings of [m] whose 'k
     is strictly less than [x];
       [r] is the map with all the bindings of [m] whose 'k
@@ -280,10 +473,44 @@ val map: ('k, 'a, 'id) t -> ('a -> 'b) ->  ('k ,'b,'id ) t
 
 val mapWithKeyU: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
 val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b) -> ('k, 'b, 'id) t
+(** [mapWithKey m f]
 
-val getId: ('a, 'b, 'c) t -> ('a, 'c) id
+    The same as {!map} except that [f] is supplied with one more argument: the key 
+
+    
+*)
+
+
 
 val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Belt_MapDict.t
-    
-val packIdData: id:('a, 'b) id -> data:('a, 'c, 'b) Belt_MapDict.t -> ('a, 'c, 'b) t
+(** [getData s0]
 
+    {b Advanced usage only}
+    
+    @return the raw data (detached from comparator),
+    but its type is still manifested, so that user can pass identity directly
+    without boxing
+*)
+
+val getId: ('a, 'b, 'c) t -> ('a, 'c) id
+(** [getId s0]
+
+    {b Advanced usage only}
+    
+    @return the identity of [s0]
+*)
+
+val packIdData: id:('a, 'b) id -> data:('a, 'c, 'b) Belt_MapDict.t -> ('a, 'c, 'b) t
+(** [packIdData ~id ~data]
+
+    {b Advanced usage only}
+    
+    @return the packed collection
+*)    
+
+(**/**)
+val checkInvariantInternal: _ t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+(**/**)

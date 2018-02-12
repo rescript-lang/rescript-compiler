@@ -45,11 +45,11 @@
     callback.
 
     {[
-      val forEach : 'a t -> ('a -> unit) -> unit
+      val forEach  : 'a t -> ('a -> unit) -> unit
       val forEachU : 'a t -> ('a -> unit [\@bs]) -> unit
     ]}
 
-    In general, uncurried version will be faster, but it is less familiar to
+    In general, uncurried version will be faster, but it may be less familiar to
     people who have a background in functional programming.
 
    {b A special encoding for collection safety}
@@ -172,8 +172,9 @@ module Range = Belt_Range
 
     It also has three specialized inner modules
     {!Belt.Set.Int} and {!Belt.Set.String}
+
     {!Belt.Set.Dict}: This module separate date from function
-    which  is more verbbose but slightly more efficient
+    which is more verbbose but slightly more efficient
 
 *)
 module Set = Belt_Set
@@ -185,6 +186,7 @@ module Set = Belt_Set
     
     It also has three specialized inner modules
     {!Belt.Map.Int} and {!Belt.Map.String}
+
     {!Belt.Map.Dict}: This module separate date from function
     which  is more verbbose but slightly more efficient
 *)    

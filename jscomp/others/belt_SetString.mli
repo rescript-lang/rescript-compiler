@@ -27,7 +27,7 @@
     It is more efficient in general, the  API is the same with {!Belt_Set} except its key type is fixed,
     and identity is not needed(using the built-in one)
 
-    {b See} {!Belt.MutableSet}
+    {b See} {!Belt.Set}
 *)
 
 # 33
@@ -127,4 +127,9 @@ val split:  t -> elt -> (t * t) * bool
 
 
 
-val checkInvariantInternal: t -> bool 
+val checkInvariantInternal: t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+
+

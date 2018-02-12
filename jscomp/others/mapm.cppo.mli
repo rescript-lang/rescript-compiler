@@ -98,7 +98,12 @@ val get: 'a t ->  key -> 'a option
 val getUndefined: 'a t -> key -> 'a Js.undefined
 val getWithDefault:  'a t -> key -> 'a  -> 'a
 val getExn: 'a t -> key -> 'a
-val checkInvariantInternal: _ t -> bool   
+val checkInvariantInternal: _ t -> unit
+(**
+   {b raise} when invariant is not helld
+*)  
+  
+
 
 (****************************************************************************)
 

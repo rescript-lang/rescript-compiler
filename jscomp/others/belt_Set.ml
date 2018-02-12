@@ -154,7 +154,7 @@ let ofSortedArrayUnsafe (type elt) (type identity) xs ~(id : (elt,identity) id )
 
 let getData = S.data
 
-let getDict (type elt) (type identity) (m : (elt,identity) t) : (elt, identity) id =
+let getId (type elt) (type identity) (m : (elt,identity) t) : (elt, identity) id =
   let module T = struct
     type nonrec identity = identity
     type nonrec t = elt
@@ -162,7 +162,7 @@ let getDict (type elt) (type identity) (m : (elt,identity) t) : (elt, identity) 
   end in
   (module T)
   
-let packDictData (type elt) (type identity) ~(id : (elt, identity) id) ~data  =
+let packIdData (type elt) (type identity) ~(id : (elt, identity) id) ~data  =
   let module M = (val id) in 
   S.t ~cmp:M.cmp ~data
 
