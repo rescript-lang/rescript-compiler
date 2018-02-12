@@ -3,13 +3,14 @@
 Features:
 - A beta release for the new stdlib called Belt 
 - #2436, #2381, #2377, #2353 bs.deriving abstract support
-- #2451 better error message when arity mismatch for reason syntax
+
 
 Performances:
 - #2452 specialized comparison with Js.null, Js.undefined, Js.boolean
 - #2412, provide specialized primitives for comparison with null/undefined
 - #2361, better  optimization for temporary tuple
 Fixes:
+- #2451 better error message when arity mismatch for reason syntax
 - #2399, turn partial application warnings to error in react template
 - #2465 build on FreeBSD
 - #2450 ignore bsb.lock
