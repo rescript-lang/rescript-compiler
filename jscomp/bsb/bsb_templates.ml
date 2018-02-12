@@ -128,47 +128,9 @@ let root = OCamlRes.Res.([
        *.mlast\n\
        *.mliast\n\
        .vscode\n\
-       .merlin")]) ;
+       .merlin\n\
+       .bsb.lock")]) ;
   Dir ("basic-reason", [
-    File ("tasks.json",
-      "{\n\
-      \    \"version\": \"${bsb:proj-version}\",\n\
-      \    \"command\": \"npm\",\n\
-      \    \"options\": {\n\
-      \        \"cwd\": \"${workspaceRoot}\"\n\
-      \    },\n\
-      \    \"isShellCommand\": true,\n\
-      \    \"args\": [\n\
-      \        \"run\",\n\
-      \        \"watch\"\n\
-      \    ],\n\
-      \    \"showOutput\": \"always\",\n\
-      \    \"isBackground\": true,\n\
-      \    \"problemMatcher\": {\n\
-      \        \"fileLocation\": \"absolute\",\n\
-      \        \"owner\": \"ocaml\",\n\
-      \        \"watching\": {\n\
-      \            \"activeOnStart\": false,\n\
-      \            \"beginsPattern\": \">>>> Start compiling\",\n\
-      \            \"endsPattern\": \">>>> Finish compiling\"\n\
-      \        },\n\
-      \        \"pattern\": [\n\
-      \            {\n\
-      \                \"regexp\": \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
-      \                \"file\": 1,\n\
-      \                \"line\": 2,\n\
-      \                \"column\": 3,\n\
-      \                \"endColumn\": 4\n\
-      \            },\n\
-      \            {\n\
-      \                \"regexp\": \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
-      \                \"severity\": 1,\n\
-      \                \"message\": 2,\n\
-      \                \"loop\": true\n\
-      \            }\n\
-      \        ]\n\
-      \    }\n\
-       }") ;
     Dir ("src", [
       File ("Demo.re",
         "Js.log(\"Hello, BuckleScript and Reason!\");\n\
@@ -237,6 +199,51 @@ let root = OCamlRes.Res.([
       \  \"refmt\": 3\n\
        }\n\
        ") ;
+    Dir (".vscode", [
+      File ("tasks.json",
+        "{\n\
+        \    \"version\": \"${bsb:proj-version}\",\n\
+        \    \"command\": \"npm\",\n\
+        \    \"options\": {\n\
+        \      \"cwd\": \"${workspaceRoot}\"\n\
+        \    },\n\
+        \    \"type\": \"shell\",\n\
+        \    \"args\": [\"run\", \"start\"],\n\
+        \    \"presentation\": {\n\
+        \      \"echo\": true,\n\
+        \      \"reveal\": \"always\",\n\
+        \      \"focus\": false,\n\
+        \      \"panel\": \"shared\"\n\
+        \    },\n\
+        \    \"isBackground\": true,\n\
+        \    \"problemMatcher\": {\n\
+        \      \"fileLocation\": \"absolute\",\n\
+        \      \"owner\": \"ocaml\",\n\
+        \      \"background\": {\n\
+        \        \"activeOnStart\": false,\n\
+        \        \"beginsPattern\": \">>>> Start compiling\",\n\
+        \        \"endsPattern\": \">>>> Finish compiling\"\n\
+        \      },\n\
+        \      \"pattern\": [\n\
+        \        {\n\
+        \          \"regexp\":\n\
+        \            \"^File \\\"(.*)\\\", line (\\\\d+)(?:, characters (\\\\d+)-(\\\\d+))?:$\",\n\
+        \          \"file\": 1,\n\
+        \          \"line\": 2,\n\
+        \          \"column\": 3,\n\
+        \          \"endColumn\": 4\n\
+        \        },\n\
+        \        {\n\
+        \          \"regexp\":\n\
+        \            \"^(?:(?:Parse\\\\s+)?(Warning|[Ee]rror)(?:\\\\s+\\\\d+)?:)?\\\\s+(.*)$\",\n\
+        \          \"severity\": 1,\n\
+        \          \"message\": 2,\n\
+        \          \"loop\": true\n\
+        \        }\n\
+        \      ]\n\
+        \    }\n\
+        \  }\n\
+         ")]) ;
     File (".gitignore",
       ".DS_Store\n\
        .merlin\n\
@@ -341,7 +348,8 @@ let root = OCamlRes.Res.([
        *.mlast\n\
        *.mliast\n\
        .vscode\n\
-       .merlin")]) ;
+       .merlin\n\
+       .bsb.lock")]) ;
   Dir ("minimal", [
     Dir ("src", [ File ("main.ml", "")]) ;
     File ("README.md",
@@ -463,7 +471,8 @@ let root = OCamlRes.Res.([
        *.mlast\n\
        *.mliast\n\
        .vscode\n\
-       .merlin")]) ;
+       .merlin\n\
+       .bsb.lock")]) ;
   Dir ("react", [
     File ("webpack.config.js",
       "const path = require('path');\n\
