@@ -1,0 +1,647 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Belt_internalSetString.N.html">
+                 <title> Belt_internalSetString.A </title></head> 
+               <body>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_boolean.html">Js_boolean</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_internal.html">Js_internal</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_nativeint.html">Js_nativeint</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
+<li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar"><a class="pre" href="Belt_internalSetString.N.html" title="Belt_internalSetString.N">Previous</a>
+&nbsp;<a class="up" href="Belt_internalSetString.html" title="Belt_internalSetString">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Belt_internalSetString.A.html">Belt_internalSetString.A</a></h1>
+
+<pre><span class="keyword">module</span> A: <code class="type"><a href="Belt_Array.html">Belt_Array</a></code></pre><hr width="100%">
+
+<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type">'a array -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">length xs</code> return the size of the array<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">'a array -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <b>See</b> <a href="Belt_Array.html#VALlength"><code class="code">Belt_Array.length</code></a><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a array -> int -> 'a option</code></pre>
+<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">'a array -> int -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getExn arr i</code>
+<p>
+
+    <b>raise</b> an exception if <code class="code">i</code> is out of range<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetUnsafe"><span class="keyword">val</span> getUnsafe</span> : <code class="type">'a array -> int -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getUnasfe arr i</code>
+<p>
+
+    <b>Unsafe</b>
+<p>
+
+    no  bounds checking, this would cause type error
+    if <code class="code">i</code> does not stay within range<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type">'a array -> int -> 'a <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getUndefined arr i</code>
+<p>
+
+    It does the samething in the runtime as <a href="Belt_Array.html#VALgetUnsafe"><code class="code">Belt_Array.getUnsafe</code></a>, 
+    it is <i>type safe</i> since the return type still track whether it is 
+    in range or not<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">'a array -> int -> 'a -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">set arr n x</code> modifies <code class="code">arr</code> in place, 
+    it replaces the nth element of <code class="code">arr</code> with <code class="code">x</code><br>
+<div class="tag"> <b>Returns</b> false means not updated due to out of range<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALsetExn"><span class="keyword">val</span> setExn</span> : <code class="type">'a array -> int -> 'a -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">setExn arr i x</code>
+    <b>raise</b> an exception if <code class="code">i</code> is out of range<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALsetUnsafe"><span class="keyword">val</span> setUnsafe</span> : <code class="type">'a array -> int -> 'a -> unit</code></pre>
+<pre><span id="VALshuffleInPlace"><span class="keyword">val</span> shuffleInPlace</span> : <code class="type">'a array -> unit</code></pre>
+<pre><span id="VALshuffle"><span class="keyword">val</span> shuffle</span> : <code class="type">'a array -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">shuffle xs</code><br>
+<div class="tag"> <b>Returns</b> a fresh array<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALreverseInPlace"><span class="keyword">val</span> reverseInPlace</span> : <code class="type">'a array -> unit</code></pre>
+<pre><span id="VALreverse"><span class="keyword">val</span> reverse</span> : <code class="type">'a array -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reverse x</code><br>
+<div class="tag"> <b>Returns</b> a fresh array<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmakeUninitialized"><span class="keyword">val</span> makeUninitialized</span> : <code class="type">int -> 'a <a href="Js.html#TYPEundefined">Js.undefined</a> array</code></pre>
+<pre><span id="VALmakeUninitializedUnsafe"><span class="keyword">val</span> makeUninitializedUnsafe</span> : <code class="type">int -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">makeUninitializedUnsafe n</code>
+<p>
+
+    <b>Unsafe</b><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">int -> 'a -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">make n e</code> 
+    return an array of size <code class="code">n</code> filled  with value <code class="code">e</code><br>
+<div class="tag"> <b>Returns</b> an empty array when <code class="code">n</code> is negative.<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALrange"><span class="keyword">val</span> range</span> : <code class="type">int -> int -> int array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">range start finish</code> create an inclusive array<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      range 0 3 =  [|0;1;2;3|];;
+      range 3 0 =  [||] ;;
+      range 3 3 = [|3|];;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALrangeBy"><span class="keyword">val</span> rangeBy</span> : <code class="type">int -> int -> step:int -> int array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">rangeBy start finish ~step</code><br>
+<div class="tag"> <b>Returns</b> empty array when step is 0 or negative
+    it also return empty array when <code class="code">start &gt; finish</code><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     rangeBy 0 10 ~step:3 = [|0;3;6;9|];;
+     rangeBy 0 12 ~step:3 = [|0;3;6;9;12|];;
+     rangeBy 33 0 ~step:1 =  [||];;
+     rangeBy 33 0 ~step:(-1) = [||];;
+     rangeBy 3 12 ~step:(-1) = [||];;
+     rangeBy 3 3 ~step:0 = [||] ;;     
+     rangeBy 3 3 ~step:(1) = [|3|] ;;
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmakeByU"><span class="keyword">val</span> makeByU</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a array</code></pre>
+<pre><span id="VALmakeBy"><span class="keyword">val</span> makeBy</span> : <code class="type">int -> (int -> 'a) -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">makeBy n f</code> 
+<p>
+
+    return an empty array when <code class="code">n</code> is negative 
+    return an array of size <code class="code">n</code> populated by <code class="code">f i</code> start from <code class="code">0</code> to <code class="code">n - 1</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      makeBy 5 (fun i -&gt; i) = [|0;1;2;3;4|]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmakeByAndShuffleU"><span class="keyword">val</span> makeByAndShuffleU</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a array</code></pre>
+<pre><span id="VALmakeByAndShuffle"><span class="keyword">val</span> makeByAndShuffle</span> : <code class="type">int -> (int -> 'a) -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">makeByAndShuffle n f</code>
+<p>
+
+    Equivalent to <code class="code">shuffle (makeBy n f)</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALzip"><span class="keyword">val</span> zip</span> : <code class="type">'a array -> 'b array -> ('a * 'b) array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">zip a b</code> 
+<p>
+
+    Stop with the shorter array<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      zip [|1;2] [|1;2;3|] = [| (1,2); (2;2)|]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALzipByU"><span class="keyword">val</span> zipByU</span> : <code class="type">'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array</code></pre>
+<pre><span id="VALzipBy"><span class="keyword">val</span> zipBy</span> : <code class="type">'a array -> 'b array -> ('a -> 'b -> 'c) -> 'c array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">zipBy xs ys f</code>
+<p>
+
+    Stops with shorter array
+<p>
+
+    Equivalent to <code class="code">map (zip xs ys) (fun (a,b) -&gt; f a b) </code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type">'a array -> 'a array -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">concat xs ys</code><br>
+<div class="tag"> <b>Returns</b> a fresh array containing the
+    concatenation of the arrays <code class="code">v1</code> and <code class="code">v2</code>, so even if <code class="code">v1</code> or <code class="code">v2</code>
+    is empty, it can not be shared<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALconcatMany"><span class="keyword">val</span> concatMany</span> : <code class="type">'a array array -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">concatMany xss</code><br>
+<div class="tag"> <b>Returns</b> a fresh array as the concatenation of <code class="code">xss</code><br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALslice"><span class="keyword">val</span> slice</span> : <code class="type">'a array -> offset:int -> len:int -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">slice arr offset len</code>
+<p>
+
+    <code class="code">offset</code> can be negative,
+    <code class="code">slice arr -1 1</code> means get the last element as a singleton array
+<p>
+
+    <code class="code">slice arr -(very_large_index) len</code> will do a copy of the array
+<p>
+
+    if the array does not have enough data, <code class="code">slice</code> extracts through
+    the end of sequence<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALcopy"><span class="keyword">val</span> copy</span> : <code class="type">'a array -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">copy a</code><br>
+<div class="tag"> <b>Returns</b> a copy of <code class="code">a</code>, that is, a fresh array
+   containing the same elements as <code class="code">a</code>.<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALfill"><span class="keyword">val</span> fill</span> : <code class="type">'a array -> offset:int -> len:int -> 'a -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">fill arr ~offset ~len x</code> 
+<p>
+
+    Modifies <code class="code">arr</code> in place,
+    storing <code class="code">x</code> in elements number <code class="code">offset</code> to <code class="code">offset + len - 1</code>.
+<p>
+
+    <code class="code">offset</code> can be negative
+<p>
+
+    <code class="code">fill arr offset:(-1) len:1 </code> means fill the last element,
+    if the array does not have enough data, <code class="code">fill</code> will ignore it<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      let arr = makeBy 5 (fun i -&gt; i) ;;
+      fill arr ~offset:2 ~len:2 0 ;;
+      arr = [|0;1;0;0;4|];;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALblit"><span class="keyword">val</span> blit</span> : <code class="type">src:'a array -><br>       srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len</code> 
+<p>
+
+    copies <code class="code">len</code> elements
+   from array <code class="code">v1</code>, starting at element number <code class="code">o1</code>, to array <code class="code">v2</code>,
+   starting at element number <code class="code">o2</code>. 
+<p>
+
+    It works correctly even if
+    <code class="code">v1</code> and <code class="code">v2</code> are the same array, and the source and
+    destination chunks overlap.
+<p>
+
+    <code class="code">offset</code> can be negative, <code class="code">-1</code> means <code class="code">len - 1</code>, if <code class="code">len + offset</code>  is still 
+    negative, it will be set as 0<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALblitUnsafe"><span class="keyword">val</span> blitUnsafe</span> : <code class="type">src:'a array -><br>       srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <b>Unsafe</b> blit without bounds checking<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">'a array -> ('a -> unit [@bs]) -> unit</code></pre>
+<pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">'a array -> ('a -> unit) -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">forEach xs f</code>
+<p>
+
+    Call f on each element of <code class="code">xs</code> from the beginning to end<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">'a array -> ('a -> 'b [@bs]) -> 'b array</code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">'a array -> ('a -> 'b) -> 'b array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">map xs f </code><br>
+<div class="tag"> <b>Returns</b> a new array by calling <code class="code">f</code> to element of <code class="code">xs</code> from
+    the beginning to end<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALkeepU"><span class="keyword">val</span> keepU</span> : <code class="type">'a array -> ('a -> bool [@bs]) -> 'a array</code></pre>
+<pre><span id="VALkeep"><span class="keyword">val</span> keep</span> : <code class="type">'a array -> ('a -> bool) -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">keep xs p </code><br>
+<div class="tag"> <b>Returns</b> a new array that keep all elements satisfy <code class="code">p</code><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      keep [|1;2;3|] (fun x -&gt; x mod  2 = 0) = [|2|]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALkeepMapU"><span class="keyword">val</span> keepMapU</span> : <code class="type">'a array -> ('a -> 'b option [@bs]) -> 'b array</code></pre>
+<pre><span id="VALkeepMap"><span class="keyword">val</span> keepMap</span> : <code class="type">'a array -> ('a -> 'b option) -> 'b array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">keepMap xs p</code><br>
+<div class="tag"> <b>Returns</b> a new array that keep all elements that return a non-None applied <code class="code">p</code><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      keepMap [|1;2;3|] (fun x -&gt; if x mod 2 then Some x else None)
+      = [| 2 |]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALforEachWithIndexU"><span class="keyword">val</span> forEachWithIndexU</span> : <code class="type">'a array -> (int -> 'a -> unit [@bs]) -> unit</code></pre>
+<pre><span id="VALforEachWithIndex"><span class="keyword">val</span> forEachWithIndex</span> : <code class="type">'a array -> (int -> 'a -> unit) -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">forEachWithIndex xs f</code>
+<p>
+
+    The same with <a href="Belt_Array.html#VALforEach"><code class="code">Belt_Array.forEach</code></a>, except that <code class="code">f</code> is supplied with one
+    more argument: the index starting from 0<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmapWithIndexU"><span class="keyword">val</span> mapWithIndexU</span> : <code class="type">'a array -> (int -> 'a -> 'b [@bs]) -> 'b array</code></pre>
+<pre><span id="VALmapWithIndex"><span class="keyword">val</span> mapWithIndex</span> : <code class="type">'a array -> (int -> 'a -> 'b) -> 'b array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">mapWithIndex xs f </code>
+<p>
+
+    The same with <a href="Belt_Array.html#VALmap"><code class="code">Belt_Array.map</code></a> except that <code class="code">f</code> is supplied with one
+    more argument: the index starting from 0<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">'b array -> 'a -> ('a -> 'b -> 'a [@bs]) -> 'a</code></pre>
+<pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">'b array -> 'a -> ('a -> 'b -> 'a) -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduce xs init f</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      reduce [|2;3;4|] 1 (+) = 10
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALreduceReverseU"><span class="keyword">val</span> reduceReverseU</span> : <code class="type">'b array -> 'a -> ('a -> 'b -> 'a [@bs]) -> 'a</code></pre>
+<pre><span id="VALreduceReverse"><span class="keyword">val</span> reduceReverse</span> : <code class="type">'b array -> 'a -> ('a -> 'b -> 'a) -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduceReverse xs init f</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      reduceReverse [|1;2;3;4|] 100 (-) = 90 
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALreduceReverse2U"><span class="keyword">val</span> reduceReverse2U</span> : <code class="type">'a array -> 'b array -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c</code></pre>
+<pre><span id="VALreduceReverse2"><span class="keyword">val</span> reduceReverse2</span> : <code class="type">'a array -> 'b array -> 'c -> ('c -> 'a -> 'b -> 'c) -> 'c</code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     reduceReverse2 [|1;2;3|] [|1;2|] 0 (fun acc x y -&gt; acc + x + y) = 6
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type">'a array -> ('a -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">'a array -> ('a -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">some xs p</code><br>
+<div class="tag"> <b>Returns</b> true if one of element satifies <code class="code">p</code><br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALeveryU"><span class="keyword">val</span> everyU</span> : <code class="type">'a array -> ('a -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">'a array -> ('a -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">every xs p</code><br>
+<div class="tag"> <b>Returns</b> true if all elements satisfy <code class="code">p</code><br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALevery2U"><span class="keyword">val</span> every2U</span> : <code class="type">'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALevery2"><span class="keyword">val</span> every2</span> : <code class="type">'a array -> 'b array -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">every2 xs ys p</code> only tests the length of shorter<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      every2 [|1;2;3|] [|0;1|] (&gt;) = true;;
+      (every2 [||] [|1|] (fun   x y -&gt; x &gt; y)) = true;;
+      (every2 [|2;3|] [|1|] (fun   x y -&gt; x &gt; y)) = true;; 
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsome2U"><span class="keyword">val</span> some2U</span> : <code class="type">'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALsome2"><span class="keyword">val</span> some2</span> : <code class="type">'a array -> 'b array -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">some2 xs ys p</code> only tests the length of shorter<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      some2 [|0;2|] [|1;0;3|] (&gt;) = true ;;
+      (some2 [||] [|1|] (fun   x y -&gt; x &gt; y)) =  false;;
+      (some2 [|2;3|] [|1;4|] (fun   x y -&gt; x &gt; y)) = true;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALcmpU"><span class="keyword">val</span> cmpU</span> : <code class="type">'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int</code></pre>
+<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">'a array -> 'a array -> ('a -> 'a -> int) -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">cmp a b</code>
+<p>
+<ul>
+<li>Compared by length if <code class="code">length a &lt;&gt; length b</code> </li>
+<li>Otherwise compare one by one <code class="code">f ai bi</code></li>
+</ul>
+<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALeqU"><span class="keyword">val</span> eqU</span> : <code class="type">'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">'a array -> 'a array -> ('a -> 'a -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">eq a b</code>
+<p>
+<ul>
+<li>return false if length is not the same</li>
+<li>equal one by one using <code class="code">f ai bi</code></li>
+</ul>
+<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALtruncateToLengthUnsafe"><span class="keyword">val</span> truncateToLengthUnsafe</span> : <code class="type">'a array -> int -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <b>Unsafe</b><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  </body></html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Belt_internalSetBuckets.html"><link rel="next" href="Belt_internalSetString.html">
+                 <title> Belt_internalSetInt </title></head> 
+               <body>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_boolean.html">Js_boolean</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_internal.html">Js_internal</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_nativeint.html">Js_nativeint</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
+<li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar"><a class="pre" href="Belt_internalSetBuckets.html" title="Belt_internalSetBuckets">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Belt_internalSetString.html" title="Belt_internalSetString">Next</a>
+</div>
+<h1>Module <a href="type_Belt_internalSetInt.html">Belt_internalSetInt</a></h1>
+
+<pre><span class="keyword">module</span> Belt_internalSetInt: <code class="code">sig</code> <a href="Belt_internalSetInt.html">..</a> <code class="code">end</code></pre><hr width="100%">
+<div class="type-declaration">
+<pre><span id="TYPEelt"><span class="keyword">type</span> <code class="type"></code>elt</span> = <code class="type">int</code> </pre>
+</div>
+
+
+<pre><span class="keyword">module</span> <a href="Belt_internalSetInt.S.html">S</a>: <code class="type"><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Belt_internalSetInt.N.html">N</a>: <code class="type"><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Belt_internalSetInt.A.html">A</a>: <code class="type"><a href="Belt_Array.html">Belt_Array</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> <div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t</code> </pre>
+</div>
+
+
+<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> bool</code></pre>
+<pre><span id="VALcompareAux"><span class="keyword">val</span> compareAux</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.node list -><br>       <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.node list -> int</code></pre>
+<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t -> int</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t -> bool</code></pre>
+<pre><span id="VALsubset"><span class="keyword">val</span> subset</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -><br>       <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> option</code></pre>
+<pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -><br>       <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> Js.Undefined.t</code></pre>
+<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a></code></pre>
+<pre><span id="VALaddMutate"><span class="keyword">val</span> addMutate</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t -><br>       <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t</code></pre>
+<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> array -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t</code></pre></body></html>

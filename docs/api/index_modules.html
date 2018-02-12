@@ -174,12 +174,12 @@
     callback.
 <p>
 
-    <pre class="codepre"><code class="code">      val forEach : 'a t -&gt; ('a -&gt; unit) -&gt; unit
+    <pre class="codepre"><code class="code">      val forEach  : 'a t -&gt; ('a -&gt; unit) -&gt; unit
       val forEachU : 'a t -&gt; ('a -&gt; unit [@bs]) -&gt; unit
     </code></pre>
 <p>
 
-    In general, uncurried version will be faster, but it is less familiar to
+    In general, uncurried version will be faster, but it may be less familiar to
     people who have a background in functional programming.
 <p>
 
@@ -791,7 +791,7 @@
     and identity is not needed(using the built-in one)
 <p>
 
-    <b>See</b> <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a><br>
+    <b>See</b> <a href="Belt.Set.html"><code class="code">Belt.Set</code></a><br>
  
                 </div>
                 </div> </td></tr>
@@ -803,7 +803,7 @@
     and identity is not needed(using the built-in one)
 <p>
 
-    <b>See</b> <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a><br>
+    <b>See</b> <a href="Belt.Set.html"><code class="code">Belt.Set</code></a><br>
  
                 </div>
                 </div> </td></tr>
@@ -833,13 +833,14 @@
 <tr><td><a href="Belt_internalAVLset.html">Belt_internalAVLset</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <b>raise</b> when invariant is not helld<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    Almost rewritten  by authors of BuckleScript<br>
+                    <b>raise</b> when invariant is not helld<br>
  
                 </div>
                 </div> </td></tr>
@@ -956,7 +957,10 @@
                 <div class="not-examples">
                     This module seprate identity from data, it is a bit more verbsoe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
-    after each operation<br>
+    after each operation
+<p>
+
+    <b>Advanced usage only</b><br>
  
                 </div>
                 </div> </td></tr>
@@ -1454,6 +1458,8 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 
     It also has three specialized inner modules
     <code class="code">Belt.Map.Int</code> and <code class="code">Belt.Map.String</code>
+<p>
+
     <code class="code">Belt.Map.Dict</code>: This module separate date from function
     which  is more verbbose but slightly more efficient<br>
  
@@ -1711,8 +1717,10 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 
     It also has three specialized inner modules
     <code class="code">Belt.Set.Int</code> and <code class="code">Belt.Set.String</code>
+<p>
+
     <code class="code">Belt.Set.Dict</code>: This module separate date from function
-    which  is more verbbose but slightly more efficient<br>
+    which is more verbbose but slightly more efficient<br>
  
                 </div>
                 </div> </td></tr>

@@ -1,0 +1,35 @@
+<html><head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 
+                 <title> Belt_internalBucketsType </title></head> 
+               <body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;opt&nbsp;=&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.undefined<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container<br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;container&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;size:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;buckets:<span class="keywordsign">'</span>c&nbsp;opt&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;hash:<span class="keywordsign">'</span>hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;eq:<span class="keywordsign">'</span>eq&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;sizeSet&nbsp;:&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;=&nbsp;<span class="string">"size"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;size&nbsp;:&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;int&nbsp;=&nbsp;<span class="string">"size"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;bucketsSet&nbsp;:&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>c&nbsp;opt&nbsp;array&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"buckets"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;buckets&nbsp;:&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>c&nbsp;opt&nbsp;array&nbsp;=&nbsp;<span class="string">"buckets"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;hash&nbsp;:&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>hash&nbsp;=&nbsp;<span class="string">"hash"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;eq&nbsp;:&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>eq&nbsp;=&nbsp;<span class="string">"eq"</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;toOpt&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Belt_internalBucketsType</span>.opt&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;option<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">"#undefined_to_opt"</span><br>
+&nbsp;&nbsp;<span class="keyword">external</span>&nbsp;return&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Belt_internalBucketsType</span>.opt&nbsp;=&nbsp;<span class="string">"%identity"</span><br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;emptyOpt&nbsp;:&nbsp;<span class="keywordsign">'</span>a&nbsp;<span class="constructor">Js</span>.undefined<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;make&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hash:<span class="keywordsign">'</span>hash&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;eq:<span class="keywordsign">'</span>eq&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;hintSize:int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;(<span class="keywordsign">'</span>hash,&nbsp;<span class="keywordsign">'</span>eq,&nbsp;<span class="keywordsign">'</span>a)&nbsp;container<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;clear&nbsp;:&nbsp;(<span class="keywordsign">'</span>a,&nbsp;<span class="keywordsign">'</span>b,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;isEmpty&nbsp;:&nbsp;(<span class="keywordsign">'</span>a,&nbsp;<span class="keywordsign">'</span>b,&nbsp;<span class="keywordsign">'</span>c)&nbsp;container&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;bool<br>
+<span class="keyword">end</span></code></body></html>
