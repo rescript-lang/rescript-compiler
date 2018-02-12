@@ -1,0 +1,846 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Belt.MutableStack.html"><link rel="next" href="Belt.Range.html">
+                 <title> Belt.List </title></head> 
+               <body>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_boolean.html">Js_boolean</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_internal.html">Js_internal</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_nativeint.html">Js_nativeint</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
+<li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar"><a class="pre" href="Belt.MutableStack.html" title="Belt.MutableStack">Previous</a>
+&nbsp;<a class="up" href="Belt.html" title="Belt">Up</a>
+&nbsp;<a class="post" href="Belt.Range.html" title="Belt.Range">Next</a>
+</div>
+<h1>Module <a href="type_Belt.List.html">Belt.List</a></h1>
+
+<pre><span class="keyword">module</span> List: <code class="type"><a href="Belt_List.html">Belt_List</a></code></pre><div class="info module top">
+                    <div class="not-examples">
+                    <a href="Belt.List.html"><code class="code">Belt.List</code></a>
+<p>
+
+    Utilities for List data type<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  <hr width="100%">
+<div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">'a</code> t</span> = <code class="type">'a list</code> </pre>
+</div>
+<div class="info ">
+                    <div class="not-examples">
+                    <code class="code">'a t</code> is compatible with built-in <code class="code">list</code> type<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+
+<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">length l</code><br>
+<div class="tag"> <b>Returns</b> the length of the list <code class="code">l</code><br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <b>See</b> <a href="Belt_List.html#VALlength"><code class="code">Belt_List.length</code></a><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALhead"><span class="keyword">val</span> head</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a option</code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     head [] = None ;;
+     head [1;2;3] = Some 1 ;;
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALheadExn"><span class="keyword">val</span> headExn</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">headExn h</code>
+<p>
+
+    <b>See</b> <a href="Belt_List.html#VALhead"><code class="code">Belt_List.head</code></a>
+<p>
+
+    <b>raise</b> an exception if <code class="code">h</code> is empty<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALtail"><span class="keyword">val</span> tail</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> option</code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      tail [] = None ;;
+      tail [1;2] = Some [2];;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALtailExn"><span class="keyword">val</span> tailExn</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">tailExn h</code>
+<p>
+
+    <b>See</b> <a href="Belt_List.html#VALtail"><code class="code">Belt_List.tail</code></a>
+<p>
+
+    <b>raise</b> an exception if <code class="code">h</code> is empty<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     add [1] 3 = [3;1];;
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int -> 'a option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">get xs n</code>
+<p>
+
+    return the nth element in <code class="code">xs</code>,
+    or <code class="code">None</code> if <code class="code">n</code> is larger than the length<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      get [0;3;32] 2 = Some 2 ;;
+      get [0;3;32] 3 = None;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getExn xs n</code>
+<p>
+
+    <b>See</b> <a href="Belt_List.html#VALget"><code class="code">Belt_List.get</code></a>
+<p>
+
+    <b>raise</b> an exception if <code class="code">n</code> is larger than the length<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">int -> 'a -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">make n v</code> 
+<p>
+<ul>
+<li>return a list of length <code class="code">n</code> with each element filled with <code class="code">v</code>  </li>
+<li>return the empty list if <code class="code">n</code> is negative</li>
+</ul>
+<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">       make 3 1 =  [1;1;1]
+     </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmakeByU"><span class="keyword">val</span> makeByU</span> : <code class="type">int -> (int -> 'a [@bs]) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmakeBy"><span class="keyword">val</span> makeBy</span> : <code class="type">int -> (int -> 'a) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">makeBy n f</code> 
+<p>
+<ul>
+<li>return a list of length <code class="code">n</code> with element <code class="code">i</code> initialized with <code class="code">f i</code></li>
+<li>return the empty list if <code class="code">n</code> is negative</li>
+</ul>
+<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      makeBy 5 (fun i -&gt; i) = [0;1;2;3;4]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALdrop"><span class="keyword">val</span> drop</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int -> 'a <a href="Belt_List.html#TYPEt">t</a> option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">drop xs n</code>
+<p>
+
+    return the list obtained by dropping the first <code class="code">n</code> elements,
+    or <code class="code">None</code> if <code class="code">xs</code> has fewer than <code class="code">n</code> elements<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      drop [1;2;3] 2 = Some [3];;
+      drop [1;2;3] 3 = Some [];;
+      drop [1;2;3] 4 = None;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALtake"><span class="keyword">val</span> take</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int -> 'a <a href="Belt_List.html#TYPEt">t</a> option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">take xs n</code>
+<p>
+
+    return a list with the first <code class="code">n</code> elements from <code class="code">xs</code>,
+    or <code class="code">None</code> if <code class="code">xs</code> has fewer than <code class="code">n</code> elements<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      take [1;2;3] 1 = Some [1];;
+      take [1;2;3] 2 = Some [1;2];;
+      take [1;2;3] 4 = None;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsplitAt"><span class="keyword">val</span> splitAt</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int -> ('a list * 'a list) option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">splitAt xs n</code>
+    split the list <code class="code">xs</code> at position <code class="code">n</code>
+    return None when the length of <code class="code">xs</code> is less than <code class="code">n</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     splitAt [0;1;2;3;4] 2 = Some ([0;1], [2;3;4])
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">concat xs ys</code><br>
+<div class="tag"> <b>Returns</b> the list obtained by adding <code class="code">ys</code> after <code class="code">xs</code><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     concat [1;2;3] [4;5] = [1;2;3;4;5]
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALconcatMany"><span class="keyword">val</span> concatMany</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> array -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">concatMany a</code>
+    return the list obtained by concatenating in order all the lists in array <code class="code">a</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     concatMany [| [1;2;3] ; []; [3]; [4] |] = [1;2;3;3;4]
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALreverseConcat"><span class="keyword">val</span> reverseConcat</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reverseConcat xs ys</code> is  equivalent to <code class="code">concat (reverse xs) ys</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     reverseConcat [1;2] [3;4] = [2;1;3;4]
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALflatten"><span class="keyword">val</span> flatten</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">flatten ls</code>
+    return the list obtained by concatenating in order all the lists in list <code class="code">ls</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     flatten [ [1;2;3] ; []; [3]; [4] ] = [1;2;3;3;4]
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">map xs f</code>
+<p>
+
+    return the list obtained by applying <code class="code">f</code> to the element of <code class="code">xs</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     map [1;2] (fun x-&gt; x + 1) = [3;4]
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALzip"><span class="keyword">val</span> zip</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a * 'b) <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">zip xs ys</code><br>
+<div class="tag"> <b>Returns</b> a list of pairs from the two lists
+    with the length of the shorter list<br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      zip [1;2] [1;2;3] = [(1,1); (2,2)]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALzipByU"><span class="keyword">val</span> zipByU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> 'c [@bs]) -> 'c <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALzipBy"><span class="keyword">val</span> zipBy</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> 'c) -> 'c <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">zipBy xs ys f</code>
+<p>
+
+    <b>See</b> <a href="Belt_List.html#VALzip"><code class="code">Belt_List.zip</code></a>
+<p>
+
+    Equivalent to <code class="code">zip xs ys |&gt; List.map (fun (x,y) -&gt; f x y)</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmapWithIndexU"><span class="keyword">val</span> mapWithIndexU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> (int -> 'a -> 'b [@bs]) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmapWithIndex"><span class="keyword">val</span> mapWithIndex</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> (int -> 'a -> 'b) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      mapWithIndex [1;2;3] (fun i x -&gt; i + x) =
+      [0 + 1; 1 + 2; 2 + 3 ]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">'a array -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      ofArray [|1;2;3|]  = [1;2;3]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a array</code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      toArray [1;2;3] = [|1;2;3|]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALreverse"><span class="keyword">val</span> reverse</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      reverse [1;2;3] = [3;2;1]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmapReverseU"><span class="keyword">val</span> mapReverseU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmapReverse"><span class="keyword">val</span> mapReverse</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">mapReverse a f</code>
+<p>
+
+    Equivalent to <code class="code">reverse (map a f)</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> unit</code></pre>
+<pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b) -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">forEach xs f </code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      let us = ref 0;;
+      forEach [1;2;3;4] (fun x -&gt; us := !us + x);;
+      !us  = 1 + 2 + 3 + 4;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALforEachWithIndexU"><span class="keyword">val</span> forEachWithIndexU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> (int -> 'a -> 'b [@bs]) -> unit</code></pre>
+<pre><span id="VALforEachWithIndex"><span class="keyword">val</span> forEachWithIndex</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> (int -> 'a -> 'b) -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">forEachWithIndex xs f</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      let us = ref 0 ;;
+      forEachWithIndex [1;1;1;1] (fun i x -&gt; us := !us + x + i);;
+      !us  = 0 + 1 + 1 +  1 + 2 + 1 + 3 + 1;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b</code></pre>
+<pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b) -> 'b</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduce xs f</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      reduce [1;2;3;4] 0 (+) = 10;;
+      reduce [1;2;3;4] 10 (-) = 0;;
+      reduce [1;2;3;4] [] add = [4;3;2;1];
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALreduceReverseU"><span class="keyword">val</span> reduceReverseU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b</code></pre>
+<pre><span id="VALreduceReverse"><span class="keyword">val</span> reduceReverse</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b) -> 'b</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduceReverse xs f</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      reduceReverse [1;2;3;4] 0 (+) = 10;;
+      reduceReverse [1;2;3;4] 10 (-) = 0;;
+      reduceReverse [1;2;3;4] [] add = [1;2;3;4];;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmapReverse2U"><span class="keyword">val</span> mapReverse2U</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> 'c [@bs]) -> 'c <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmapReverse2"><span class="keyword">val</span> mapReverse2</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> 'c) -> 'c <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">mapReverse2 xs ys f</code>
+<p>
+
+    equivalent to <code class="code">reverse (zipBy xs ys f)</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      mapReverse2 [1;2;3] [1;2] (+) = [4;2]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALforEach2U"><span class="keyword">val</span> forEach2U</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> 'c [@bs]) -> unit</code></pre>
+<pre><span id="VALforEach2"><span class="keyword">val</span> forEach2</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> 'c) -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">forEach2 xs ys f</code> stop with the shorter list<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALreduce2U"><span class="keyword">val</span> reduce2U</span> : <code class="type">'b <a href="Belt_List.html#TYPEt">t</a> -> 'c <a href="Belt_List.html#TYPEt">t</a> -> 'a -> ('a -> 'b -> 'c -> 'a [@bs]) -> 'a</code></pre>
+<pre><span id="VALreduce2"><span class="keyword">val</span> reduce2</span> : <code class="type">'b <a href="Belt_List.html#TYPEt">t</a> -> 'c <a href="Belt_List.html#TYPEt">t</a> -> 'a -> ('a -> 'b -> 'c -> 'a) -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduce2 xs ys init f </code>
+<p>
+
+    stops with the shorter list.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALreduceReverse2U"><span class="keyword">val</span> reduceReverse2U</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> 'c -> ('c -> 'a -> 'b -> 'c [@bs]) -> 'c</code></pre>
+<pre><span id="VALreduceReverse2"><span class="keyword">val</span> reduceReverse2</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> 'c -> ('c -> 'a -> 'b -> 'c) -> 'c</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduceReverse2 xs ys init f </code>
+<p>
+
+   Stops with the shorter list<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">     reduceReverse2 [1;2;3] [1;2] 0 (fun acc x y -&gt; acc + x + y) = 6
+   </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALeveryU"><span class="keyword">val</span> everyU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">every ls p</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      every [] (fun x -&gt; x mod 2 = 0) = true;;
+      every [2;4] (fun x -&gt; x mod 2 = 0 ) true;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">some ls p</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      some [] (fun x -&gt; x mod 2 = 0) = false ;;
+      some [1;2] (fun x -&gt; x mod 2 = 0) = true;;)
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALevery2U"><span class="keyword">val</span> every2U</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALevery2"><span class="keyword">val</span> every2</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">every2 xs ys p</code> stop with the shorter list<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      (every2 [] [1] (fun   x y -&gt; x &gt; y)) = true;;
+      (every2 [2;3] [1] (fun   x y -&gt; x &gt; y)) = true;;    
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsome2U"><span class="keyword">val</span> some2U</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALsome2"><span class="keyword">val</span> some2</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">some2 xs ys p</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      (some2 [] [1] (fun   x y -&gt; x &gt; y)) =  false;;
+      (some2 [2;3] [1;4] (fun   x y -&gt; x &gt; y)) = true;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALcmpByLength"><span class="keyword">val</span> cmpByLength</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">cmpByLength l1 l2</code>
+<p>
+
+    Compare two lists solely by length<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALcmpU"><span class="keyword">val</span> cmpU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> int [@bs]) -> int</code></pre>
+<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> int) -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">cmp xs ys cmpElem</code>
+    compare lists <code class="code">xs</code> and <code class="code">ys</code> using <code class="code">cmpElem</code> to compare elements<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      cmp [1;2;3] [1;2;3] compare = 0;;
+      cmp [1;2;3] [0;1;2;3] compare = 1 ;;]
+  </code></pre>
+<p>
+
+   <b>Attention</b>: The total ordering of List is different from Array,
+   for Array, we compare the length first and one by one later, while
+   for lists, we just compare one by one  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALeqU"><span class="keyword">val</span> eqU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">eq xs ys eqElem</code>
+   check equality of <code class="code">xs</code> and <code class="code">ys</code> using <code class="code">eqElem</code> for equality on elements<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      eq [1;2;3] [1;2] (=) = false ;;
+      eq [1;2] [1;2] (=) = true
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALhasU"><span class="keyword">val</span> hasU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      has [1;2;3] 2 (=) = true;;
+      has [1;2;3] 4 (=) = false;;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALgetByU"><span class="keyword">val</span> getByU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> 'a option</code></pre>
+<pre><span id="VALgetBy"><span class="keyword">val</span> getBy</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> 'a option</code></pre><div class="info ">
+                    <div class="not-examples">
+                     
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      getBy [1;4;3;2] (fun x -&gt; x mod 2 = 0) = Some 4
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALkeepU"><span class="keyword">val</span> keepU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALkeep"><span class="keyword">val</span> keep</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">keep  xs p</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      keep [1;2;3;4] (fun x -&gt; x mod 2 = 0) =
+      [2;4]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALkeepMapU"><span class="keyword">val</span> keepMapU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b option [@bs]) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALkeepMap"><span class="keyword">val</span> keepMap</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b option) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">keepMap xs f</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      keepMap [1;2;3;4] (fun x -&gt; if x mod 2 = 0 then Some (-x ) else None)
+      =
+      [-2;-4]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> 'a <a href="Belt_List.html#TYPEt">t</a> * 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> 'a <a href="Belt_List.html#TYPEt">t</a> * 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">partition xs p</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      partition [1;2;3;4] (fun x -&gt; x mod 2 = 0) =
+      ([2;4], [1;3])
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALunzip"><span class="keyword">val</span> unzip</span> : <code class="type">('a * 'b) <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> * 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">unzip xs</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      unzip [(1,2) ; (3,4)] = ([1;3], [2;4])
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALgetAssocU"><span class="keyword">val</span> getAssocU</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool [@bs]) -> 'c option</code></pre>
+<pre><span id="VALgetAssoc"><span class="keyword">val</span> getAssoc</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool) -> 'c option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getAssoc xs k eq</code>
+<p>
+
+    return the second element of a pair in <code class="code">xs</code> where the first element equals <code class="code">x</code>,
+    or <code class="code">None</code> if not found<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      getAssoc [ 1, "a"; 2, "b"; 3, "c"] 2 (=) = Some "b"
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALhasAssocU"><span class="keyword">val</span> hasAssocU</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALhasAssoc"><span class="keyword">val</span> hasAssoc</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">hasAssoc xs x eq</code>
+     return true if there is a pair in <code class="code">xs</code> where the first element equals <code class="code">x</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      hasAssoc [1, "a"; 2, "b"; 3,"c"] 1 (=) = true
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALremoveAssocU"><span class="keyword">val</span> removeAssocU</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -><br>       'b -> ('a -> 'b -> bool [@bs]) -> ('a * 'c) <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALremoveAssoc"><span class="keyword">val</span> removeAssoc</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool) -> ('a * 'c) <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">removeAssoc xs x eq</code>
+    Try to remove the first pair, if not found, leave it untouched.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      removeAssoc [1,"a"; 2, "b"; 3, "c" ] 1 (=) =
+      [2, "b"; 3, "c"]
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsetAssocU"><span class="keyword">val</span> setAssocU</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -><br>       'a -> 'c -> ('a -> 'a -> bool [@bs]) -> ('a * 'c) <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALsetAssoc"><span class="keyword">val</span> setAssoc</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -><br>       'a -> 'c -> ('a -> 'a -> bool) -> ('a * 'c) <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">setAssoc xs k v eq</code>
+    if <code class="code">k</code> exists in <code class="code">xs</code>, replace it with the new <code class="code">v</code>, otherwise, add
+    it to the head<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      setAssoc [1,"a"; 2, "b"; 3, "c"] 2 "x" (=) =
+      [1,"a"; 2, "x"; 3,"c"] ;; 
+
+      setAssoc [1,"a"; 3, "c"] 2 "2" (=) = 
+      [2,"2"; 1,"a"; 3, "c"] 
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  </body></html>

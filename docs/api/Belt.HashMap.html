@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+<head>
+                 <link rel="stylesheet" href="../api_static/tomorrow-night.css">
+                 <link rel="stylesheet" href="../api_static/style.css" type="text/css">
+                 <script src="../api_static//highlight.pack.js"></script>
+                 <script src="../api_static//script.js"></script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <meta charset="utf8">
+                 <link rel="previous" href="Belt.HashSet.html">
+                 <title> Belt.HashMap </title></head> 
+               <body>
+<nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
+<li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
+<li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
+<li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
+<li><a href="Belt_HashSet.html">Belt_HashSet</a></li>
+<li><a href="Belt_HashSetInt.html">Belt_HashSetInt</a></li>
+<li><a href="Belt_HashSetString.html">Belt_HashSetString</a></li>
+<li><a href="Belt_Id.html">Belt_Id</a></li>
+<li><a href="Belt_List.html">Belt_List</a></li>
+<li><a href="Belt_Map.html">Belt_Map</a></li>
+<li><a href="Belt_MapDict.html">Belt_MapDict</a></li>
+<li><a href="Belt_MapInt.html">Belt_MapInt</a></li>
+<li><a href="Belt_MapString.html">Belt_MapString</a></li>
+<li><a href="Belt_MutableMap.html">Belt_MutableMap</a></li>
+<li><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a></li>
+<li><a href="Belt_MutableMapString.html">Belt_MutableMapString</a></li>
+<li><a href="Belt_MutableQueue.html">Belt_MutableQueue</a></li>
+<li><a href="Belt_MutableSet.html">Belt_MutableSet</a></li>
+<li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
+<li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
+<li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Set.html">Belt_Set</a></li>
+<li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
+<li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
+<li><a href="Belt_SetString.html">Belt_SetString</a></li>
+<li><a href="Belt_SortArray.html">Belt_SortArray</a></li>
+<li><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></li>
+<li><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></li>
+<li><a href="Belt_internalAVLset.html">Belt_internalAVLset</a></li>
+<li><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a></li>
+<li><a href="Belt_internalBuckets.html">Belt_internalBuckets</a></li>
+<li><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a></li>
+<li><a href="Belt_internalMapInt.html">Belt_internalMapInt</a></li>
+<li><a href="Belt_internalMapString.html">Belt_internalMapString</a></li>
+<li><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a></li>
+<li><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a></li>
+<li><a href="Belt_internalSetInt.html">Belt_internalSetInt</a></li>
+<li><a href="Belt_internalSetString.html">Belt_internalSetString</a></li>
+<li><a href="Dom.html">Dom</a></li>
+<li><a href="Dom_storage.html">Dom_storage</a></li>
+<li><a href="Js.html">Js</a></li>
+<li><a href="Js_array.html">Js_array</a></li>
+<li><a href="Js_boolean.html">Js_boolean</a></li>
+<li><a href="Js_cast.html">Js_cast</a></li>
+<li><a href="Js_console.html">Js_console</a></li>
+<li><a href="Js_date.html">Js_date</a></li>
+<li><a href="Js_dict.html">Js_dict</a></li>
+<li><a href="Js_exn.html">Js_exn</a></li>
+<li><a href="Js_float.html">Js_float</a></li>
+<li><a href="Js_global.html">Js_global</a></li>
+<li><a href="Js_int.html">Js_int</a></li>
+<li><a href="Js_int64.html">Js_int64</a></li>
+<li><a href="Js_internal.html">Js_internal</a></li>
+<li><a href="Js_json.html">Js_json</a></li>
+<li><a href="Js_list.html">Js_list</a></li>
+<li><a href="Js_mapperRt.html">Js_mapperRt</a></li>
+<li><a href="Js_math.html">Js_math</a></li>
+<li><a href="Js_nativeint.html">Js_nativeint</a></li>
+<li><a href="Js_null.html">Js_null</a></li>
+<li><a href="Js_null_undefined.html">Js_null_undefined</a></li>
+<li><a href="Js_obj.html">Js_obj</a></li>
+<li><a href="Js_option.html">Js_option</a></li>
+<li><a href="Js_primitive.html">Js_primitive</a></li>
+<li><a href="Js_promise.html">Js_promise</a></li>
+<li><a href="Js_re.html">Js_re</a></li>
+<li><a href="Js_result.html">Js_result</a></li>
+<li><a href="Js_string.html">Js_string</a></li>
+<li><a href="Js_typed_array.html">Js_typed_array</a></li>
+<li><a href="Js_types.html">Js_types</a></li>
+<li><a href="Js_undefined.html">Js_undefined</a></li>
+<li><a href="Js_unsafe.html">Js_unsafe</a></li>
+<li><a href="Js_vector.html">Js_vector</a></li>
+<li><a href="Node.html">Node</a></li>
+<li><a href="Node_buffer.html">Node_buffer</a></li>
+<li><a href="Node_child_process.html">Node_child_process</a></li>
+<li><a href="Node_fs.html">Node_fs</a></li>
+<li><a href="Node_module.html">Node_module</a></li>
+<li><a href="Node_path.html">Node_path</a></li>
+<li><a href="Node_process.html">Node_process</a></li></ul></nav>
+<div class="navbar"><a class="pre" href="Belt.HashSet.html" title="Belt.HashSet">Previous</a>
+&nbsp;<a class="up" href="Belt.html" title="Belt">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Belt.HashMap.html">Belt.HashMap</a></h1>
+
+<pre><span class="keyword">module</span> HashMap: <code class="type"><a href="Belt_HashMap.html">Belt_HashMap</a></code></pre><div class="info module top">
+                    <div class="not-examples">
+                    <a href="Belt.HashMap.html"><code class="code">Belt.HashMap</code></a>
+<p>
+
+    The toplevel provides generic <b>mutable</b> hash map operations.
+<p>
+
+    It also has two specialized inner modules
+    <code class="code">Belt.HashMap.Int</code> and <code class="code">Belt.HashMap.String</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  <hr width="100%">
+
+<pre><span class="keyword">module</span> <a href="Belt_HashMap.Int.html">Int</a>: <code class="type"><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Specalized when key type is <code class="code">int</code>, more efficient
+    than the gerneic type<br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Belt_HashMap.String.html">String</a>: <code class="type"><a href="Belt_HashMapString.html">Belt_HashMapString</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    Specalized when key type is <code class="code">string</code>, more efficient
+    than the gerneic type<br>
+ 
+                </div>
+                </div> <div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('key, 'value, 'id)</code> t</span> </pre>
+</div>
+<div class="info ">
+                    <div class="not-examples">
+                    The type of hash tables from type <code class="code">'key</code> to type <code class="code">'value</code>.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<div class="type-declaration">
+<pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('a, 'id)</code> id</span> = <code class="type">('a, 'id) <a href="Belt_Id.html#TYPEhashable">Belt_Id.hashable</a></code> </pre>
+</div>
+
+
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">hintSize:int -><br>       id:('key, 'id) <a href="Belt_HashMap.html#TYPEid">id</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
+<pre><span id="VALclear"><span class="keyword">val</span> clear</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Empty a hash table.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALisEmpty"><span class="keyword">val</span> isEmpty</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">set tbl k v</code> if <code class="code">k</code> does not exist,
+     add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
+     <code class="code">v</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALcopy"><span class="keyword">val</span> copy</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value option</code></pre>
+<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">has tbl x</code> checks if <code class="code">x</code> is bound in <code class="code">tbl</code>.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> unit</code></pre>
+<pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key -> 'value -> unit [@bs]) -> unit</code></pre>
+<pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key -> 'value -> unit) -> unit</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">forEach tbl f</code> applies <code class="code">f</code> to all bindings in table <code class="code">tbl</code>.
+    <code class="code">f</code> receives the key as first argument, and the associated value
+    as second argument. Each binding is presented exactly once to <code class="code">f</code>.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -><br>       'c -> ('c -> 'key -> 'value -> 'c [@bs]) -> 'c</code></pre>
+<pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -><br>       'c -> ('c -> 'key -> 'value -> 'c) -> 'c</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">reduce  tbl init f</code> computes
+    <code class="code">(f kN dN ... (f k1 d1 init)...)</code>,
+    where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">tbl</code>,
+    and <code class="code">d1 ... dN</code> are the associated values.
+    Each binding is presented exactly once to <code class="code">f</code>.
+<p>
+
+    The order in which the bindings are passed to <code class="code">f</code> is unspecified.
+    However, if the table contains several bindings for the same key,
+    they are passed to <code class="code">f</code> in reverse order of introduction, that is,
+    the most recent binding is passed first.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALkeepMapInPlaceU"><span class="keyword">val</span> keepMapInPlaceU</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -><br>       ('key -> 'value -> 'value option [@bs]) -> unit</code></pre>
+<pre><span id="VALkeepMapInPlace"><span class="keyword">val</span> keepMapInPlace</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -><br>       ('key -> 'value -> 'value option) -> unit</code></pre>
+<pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">size tbl</code> returns the number of bindings in <code class="code">tbl</code>.
+    It takes constant time.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key * 'value) array</code></pre>
+<pre><span id="VALkeysToArray"><span class="keyword">val</span> keysToArray</span> : <code class="type">('key, 'a, 'b) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key array</code></pre>
+<pre><span id="VALvaluesToArray"><span class="keyword">val</span> valuesToArray</span> : <code class="type">('a, 'value, 'b) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'value array</code></pre>
+<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('key * 'value) array -><br>       id:('key, 'id) <a href="Belt_HashMap.html#TYPEid">id</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmergeMany"><span class="keyword">val</span> mergeMany</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key * 'value) array -> unit</code></pre>
+<pre><span id="VALgetBucketHistogram"><span class="keyword">val</span> getBucketHistogram</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> int array</code></pre>
+<pre><span id="VALlogStats"><span class="keyword">val</span> logStats</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> unit</code></pre></body></html>
