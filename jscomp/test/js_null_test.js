@@ -27,109 +27,131 @@ var suites_001 = /* :: */[
   ],
   /* :: */[
     /* tuple */[
-      "return",
+      "toOption - empty",
       (function () {
           return /* Eq */Block.__(0, [
-                    /* Some */["something"],
-                    Js_primitive.null_to_opt("something")
+                    /* None */0,
+                    null === null ? /* None */0 : [null]
                   ]);
         })
     ],
     /* :: */[
       /* tuple */[
-        "test - empty",
+        "toOption - 'a",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* true */1,
-                      +(null === null)
+                      /* Some */[/* () */0],
+                      Js_primitive.null_to_opt(/* () */0)
                     ]);
           })
       ],
       /* :: */[
         /* tuple */[
-          "test - 'a",
+          "return",
           (function () {
               return /* Eq */Block.__(0, [
-                        /* false */0,
-                        /* false */0
+                        /* Some */["something"],
+                        Js_primitive.null_to_opt("something")
                       ]);
             })
         ],
         /* :: */[
           /* tuple */[
-            "bind - empty",
+            "test - empty",
             (function () {
-                return /* StrictEq */Block.__(2, [
-                          null,
-                          Js_null.bind(null, (function (v) {
-                                  return v;
-                                }))
+                return /* Eq */Block.__(0, [
+                          /* true */1,
+                          +(null === null)
                         ]);
               })
           ],
           /* :: */[
             /* tuple */[
-              "bind - 'a",
+              "test - 'a",
               (function () {
-                  return /* StrictEq */Block.__(2, [
-                            4,
-                            Js_null.bind(2, (function (n) {
-                                    return (n << 1);
-                                  }))
+                  return /* Eq */Block.__(0, [
+                            /* false */0,
+                            /* false */0
                           ]);
                 })
             ],
             /* :: */[
               /* tuple */[
-                "iter - empty",
+                "bind - empty",
                 (function () {
-                    var hit = [/* false */0];
-                    Js_null.iter(null, (function () {
-                            hit[0] = /* true */1;
-                            return /* () */0;
-                          }));
-                    return /* Eq */Block.__(0, [
-                              /* false */0,
-                              hit[0]
+                    return /* StrictEq */Block.__(2, [
+                              null,
+                              Js_null.bind(null, (function (v) {
+                                      return v;
+                                    }))
                             ]);
                   })
               ],
               /* :: */[
                 /* tuple */[
-                  "iter - 'a",
+                  "bind - 'a",
                   (function () {
-                      var hit = [0];
-                      Js_null.iter(2, (function (v) {
-                              hit[0] = v;
-                              return /* () */0;
-                            }));
-                      return /* Eq */Block.__(0, [
-                                2,
-                                hit[0]
+                      return /* StrictEq */Block.__(2, [
+                                4,
+                                Js_null.bind(2, (function (n) {
+                                        return (n << 1);
+                                      }))
                               ]);
                     })
                 ],
                 /* :: */[
                   /* tuple */[
-                    "from_opt - None",
+                    "iter - empty",
                     (function () {
+                        var hit = [/* false */0];
+                        Js_null.iter(null, (function () {
+                                hit[0] = /* true */1;
+                                return /* () */0;
+                              }));
                         return /* Eq */Block.__(0, [
-                                  null,
-                                  Js_null.fromOption(/* None */0)
+                                  /* false */0,
+                                  hit[0]
                                 ]);
                       })
                   ],
                   /* :: */[
                     /* tuple */[
-                      "from_opt - Some",
+                      "iter - 'a",
                       (function () {
+                          var hit = [0];
+                          Js_null.iter(2, (function (v) {
+                                  hit[0] = v;
+                                  return /* () */0;
+                                }));
                           return /* Eq */Block.__(0, [
                                     2,
-                                    Js_null.fromOption(/* Some */[2])
+                                    hit[0]
                                   ]);
                         })
                     ],
-                    /* [] */0
+                    /* :: */[
+                      /* tuple */[
+                        "fromOption - None",
+                        (function () {
+                            return /* Eq */Block.__(0, [
+                                      null,
+                                      Js_null.fromOption(/* None */0)
+                                    ]);
+                          })
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          "fromOption - Some",
+                          (function () {
+                              return /* Eq */Block.__(0, [
+                                        2,
+                                        Js_null.fromOption(/* Some */[2])
+                                      ]);
+                            })
+                        ],
+                        /* [] */0
+                      ]
+                    ]
                   ]
                 ]
               ]
