@@ -78,7 +78,7 @@ val iter : 'a t -> ('a -> unit [@bs]) -> unit
 val fromOption: 'a option -> 'a t
 
 val from_opt : 'a option -> 'a t
-[@@ocaml.deprecated "Use fromOpiton instead"]
+[@@ocaml.deprecated "Use fromOption instead"]
 
 (** Maps ['a Js.null] to ['a option]
 
@@ -90,5 +90,8 @@ val from_opt : 'a option -> 'a t
 %}
 *)
 external toOption : 'a t -> 'a option = "#null_to_opt"
+
+external to_opt : 'a t -> 'a option = "#null_to_opt"
+[@@ocaml.deprecated "Use toOption instead"]
 
 
