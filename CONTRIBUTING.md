@@ -16,7 +16,7 @@ Prerequisites:
 opam update
 opam switch 4.02.3+buckle-master
 opam switch reinstall 4.02.3+buckle-master # do this if you get errors even from a clean compilation
-opam install camlp4
+opam install camlp4 cppo
 eval `opam config env`
 
 # Install dev-time npm dependencies
