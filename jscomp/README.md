@@ -52,7 +52,7 @@ then the only dependency is the build tool:
 `make`
 
 ```sh
-rm -rf core/js_map.ml core/js_fold.ml && make core/js_map.ml core/js_fold.ml bin/bsc.exe
+rm -rf core/js_map.ml core/js_fold.ml && make core/js_map.ml core/js_fold.ml ../lib/bsc.exe
 ```
 
 If you do want to change the JS IR, you also need
@@ -62,7 +62,7 @@ not need match the exact the same version of compiler.
 ### build the build system (bsb.exe)
 
 ```sh
-make bin/bsb.exe && make bin/bsb_helper.ml && make -C bin bsb_helper.exe
+make ../lib/bsb.exe && make ../lib/bsb_helper.ml && make ../lib/bsb_helper.exe
 ```
 
 Generate packed ML files for PR: `make force-snapshotml`
