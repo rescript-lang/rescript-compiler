@@ -48,7 +48,16 @@ let handle_external_opt
   | None -> None 
 
 
+type arg_expression = Js_of_lam_variant.arg_expression = 
+  | Splice0
+  | Splice1 of E.t 
+  | Splice2 of E.t * E.t
 
+let append_list  x xs = 
+  match x with 
+  | Splice0 -> xs 
+  | Splice1 a -> a::xs 
+  | Splice2 (a,b) -> a::b::xs
 (** The first return value is value, the second argument is side effect expressions 
     Only the [unit] with no label will be ignored
     When  we are passing a boxed value to external(optional), we need
@@ -74,7 +83,7 @@ let handle_external_opt
 let ocaml_to_js_eff 
     ({arg_label;  arg_type }:  External_arg_spec.t)
     (raw_arg : J.expression)
-  : E.t list * E.t list  =
+  : arg_expression * E.t list  =
   let arg =
     match arg_label with
     | Optional label -> Js_of_lam_option.get_default_undefined raw_arg
@@ -87,19 +96,20 @@ let ocaml_to_js_eff
   | Fn_uncurry_arity _ -> assert false  
   (* has to be preprocessed by {!Lam} module first *)
   | Extern_unit ->  
-    (if arg_label = External_arg_spec.empty_label then [] else [E.unit]), 
+    (if arg_label = External_arg_spec.empty_label then 
+      Splice0 else Splice1 E.unit), 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
        [arg]) (* leave up later to decide *)
   | Ignore -> 
-    [], 
+    Splice0, 
     (if Js_analyzer.no_side_effect_expression arg then 
        []
      else 
        [arg])
   | NullString dispatches -> 
-    [Js_of_lam_variant.eval arg dispatches],[]
+    Splice1 (Js_of_lam_variant.eval arg dispatches),[]
   | NonNullString dispatches -> 
     Js_of_lam_variant.eval_as_event arg dispatches,[]    
     (* FIXME: encode invariant below in the signature*)
@@ -108,7 +118,7 @@ let ocaml_to_js_eff
       - the value
      *)
   | Int dispatches -> 
-    [Js_of_lam_variant.eval_as_int arg dispatches],[]
+    Splice1 (Js_of_lam_variant.eval_as_int arg dispatches),[]
   | Unwrap ->
     let single_arg =
       match arg_label with
@@ -134,8 +144,8 @@ let ocaml_to_js_eff
       | _ ->
         Js_of_lam_variant.eval_as_unwrap raw_arg
     in
-    [single_arg],[]
-  | Nothing  | Array ->  [arg], []
+    Splice1 single_arg,[]
+  | Nothing  | Array ->  Splice1 arg, []
 
 
 
@@ -182,7 +192,7 @@ let assemble_args call_loc ffi  js_splice arg_types args : E.t list * E.t option
       else 
         let accs, eff = aux labels args in 
         let acc, new_eff = ocaml_to_js_eff arg_kind arg in 
-        Ext_list.append acc  accs, Ext_list.append new_eff  eff
+        append_list acc  accs, Ext_list.append new_eff  eff
     | { arg_label = Empty None | Label (_,None) | Optional _  ; _ } :: _ , [] 
       -> assert false 
     | [],  _ :: _  -> assert false      

@@ -25,6 +25,11 @@
 module E = Js_exp_make
 module S = Js_stmt_make
 
+type arg_expression = 
+  | Splice0
+  | Splice1 of E.t 
+  | Splice2 of E.t * E.t
+  
 (* we need destruct [undefined] when input is optional *)
 let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t = 
   if arg == E.undefined then E.undefined else
@@ -41,23 +46,24 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
               }) dispatches))]
 
 (** invariant: optional is not allowed in this case *)
-let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) : E.t list  = 
+let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) = 
   match arg.expression_desc with
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
     -> 
-    let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in [E.str v ; cb ]   
+    let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in 
+    Splice2(E.str v , cb )   
   | _ ->  
     let event = Ext_ident.create "action" in
-    [
-      E.ocaml_fun [event]
+    Splice2
+      (E.ocaml_fun [event]
       [(S.int_switch arg
       (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
                body = [S.return (E.index (E.var event) 0l)],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
-      ; (* TODO: improve, one dispatch later, 
+      , (* TODO: improve, one dispatch later, 
            the problem is that we can not create bindings 
            due to the 
         *)
@@ -68,7 +74,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) : E.t
                body = [S.return (E.index (E.var event) 1l)],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
-    ]
+      )
 
 (* we need destruct [undefined] when input is optional *)
 let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  = 
