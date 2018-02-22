@@ -65,9 +65,35 @@ function makeWrapper3(foo, _) {
   return tmp;
 }
 
-b("File \"gpr_2503_test.ml\", line 25, characters 5-12", +("a" === makeWrapper3(/* Some */[/* a */97], /* () */0).foo));
+function makeWrapper4(foo, _) {
+  console.log(2);
+  var tmp = { };
+  var tmp$1 = foo > 100 ? /* None */0 : (
+      foo > 10 ? /* Some */[/* b */98] : /* Some */[/* a */97]
+    );
+  if (tmp$1) {
+    tmp.foo = (function () {
+          switch (tmp$1[0]) {
+            case 97 : 
+                return "a";
+            case 98 : 
+                return "b";
+            
+          }
+        })();
+  }
+  return tmp;
+}
 
-b("File \"gpr_2503_test.ml\", line 28, characters 5-12", +(undefined === makeWrapper3(/* None */0, /* () */0).foo));
+b("File \"gpr_2503_test.ml\", line 31, characters 5-12", +("a" === makeWrapper3(/* Some */[/* a */97], /* () */0).foo));
+
+b("File \"gpr_2503_test.ml\", line 34, characters 5-12", +(undefined === makeWrapper3(/* None */0, /* () */0).foo));
+
+b("File \"gpr_2503_test.ml\", line 37, characters 5-12", +("a" === makeWrapper4(1, /* () */0).foo));
+
+b("File \"gpr_2503_test.ml\", line 40, characters 5-12", +("b" === makeWrapper4(11, /* () */0).foo));
+
+b("File \"gpr_2503_test.ml\", line 43, characters 5-12", +(undefined === makeWrapper4(111, /* () */0).foo));
 
 Mt.from_pair_suites("gpr_2503_test.ml", suites[0]);
 
@@ -78,4 +104,5 @@ exports.b = b;
 exports.makeWrapper = makeWrapper;
 exports.makeWrapper2 = makeWrapper2;
 exports.makeWrapper3 = makeWrapper3;
+exports.makeWrapper4 = makeWrapper4;
 /*  Not a pure module */

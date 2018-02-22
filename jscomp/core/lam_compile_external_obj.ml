@@ -129,10 +129,23 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
           |_ -> assert false
           end
         | Some (st,id) -> (* FIXME: see #2503 *)
-          let var_id = E.var id in         
-          st ::  
-            [S.if_ var_id [S.exp (E.assign (E.dot var_v label) 
-              (E.index var_id 0l)) ]]
+          let arg = E.var id in         
+          let acc,new_eff = 
+            Lam_compile_external_call.ocaml_to_js_eff 
+            {xlabel with arg_label =
+             External_arg_spec.empty_label}
+              (E.index arg 0l ) in 
+          begin match acc with 
+          | [ v ] ->        
+            st ::  
+            [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
+              (match new_eff with 
+              | [] -> v 
+              | x :: xs ->
+                E.seq (E.fuse_to_seq x xs) v 
+              )) ]]
+          | _ -> assert false
+          end 
         end 
       |  _ -> assert false    
       )
