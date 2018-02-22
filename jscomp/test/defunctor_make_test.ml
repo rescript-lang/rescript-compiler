@@ -2,7 +2,7 @@
 
 module Comparable : sig
     type 'a comparator
-    val getComapre : 'a comparator -> ('a -> 'a -> int [@bs])
+    val getcompare : 'a comparator -> ('a -> 'a -> int [@bs])
     module type C = sig
       type id
       type key
@@ -16,7 +16,7 @@ module Comparable : sig
       C with type key = M. key 
 end = struct
   type 'a comparator = ('a -> 'a -> int [@bs])
-    let getComapre : 'a comparator -> ('a -> 'a -> int [@bs]) = fun x -> x
+    let getcompare : 'a comparator -> ('a -> 'a -> int [@bs]) = fun x -> x
     module type C = sig
       type id
       type key
@@ -100,7 +100,7 @@ type ('k,'v, 'id) t1 =
 let  add (type k) (type v) (type id) x data (v : (k,v, id) t1)  =
   let module X = (val v.compare) in 
   {compare = v.compare ;
-   data = add x data  (Comparable.getComapre X.compare ) v.data;}
+   data = add x data  (Comparable.getcompare X.compare ) v.data;}
 
 let empty (v : _ Comparable.compare) =
   {compare = v; data = Empty }

@@ -108,7 +108,7 @@ val make: id:('elt, 'id) id -> ('elt, 'id) t
 (** [make ~id]
    
      @example {[
-     module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.comapre x y))
+     module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.compare x y))
      let s = make ~id:(module IntCmp)
     ]}
 
@@ -121,7 +121,7 @@ val ofArray:  'k array -> id:('k, 'id) id ->  ('k, 'id) t
     @example{[
      module IntCmp = (val IntCmp.comparableU
                          ~cmp:(fun[\@bs]
-                                (x:int) y -> Pervasives.comapre x y));;
+                                (x:int) y -> Pervasives.compare x y));;
      toArray (ofArray [1;3;2;4] (module IntCmp)) = [1;2;3;4]
       
     ]}
@@ -143,7 +143,7 @@ val isEmpty: _ t -> bool
      module IntCmp =
        (val IntCmp.comparableU
            ~cmp:(fun[\@bs]
-                  (x:int) y -> Pervasives.comapre x y));;     
+                  (x:int) y -> Pervasives.compare x y));;     
      isEmpty (ofArray [||] ~id:(module IntCmp)) = true;;
      isEmpty (ofArray [|1|] ~id:(module IntCmp)) = true;;  
    ]}
@@ -154,7 +154,7 @@ val has: ('elt, 'id) t -> 'elt ->  bool
      module IntCmp =
        (val IntCmp.comparableU
            ~cmp:(fun[\@bs]
-                  (x:int) y -> Pervasives.comapre x y));;
+                  (x:int) y -> Pervasives.compare x y));;
      let v = ofArray [|1;4;2;5|] ~id:(module IntCmp);;
      has v 3 = false;;
      has v 1 = true;;
@@ -169,7 +169,7 @@ val add:
      module IntCmp =
        (val IntCmp.comparableU
            ~cmp:(fun[\@bs]
-                  (x:int) y -> Pervasives.comapre x y));;
+                  (x:int) y -> Pervasives.compare x y));;
      let s0 = make ~id:(module IntCmp);;
      let s1 = add s0 1 ;;
      let s2 = add s1 2;;
@@ -197,7 +197,7 @@ val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
       module IntCmp =
        (val IntCmp.comparableU
            ~cmp:(fun[\@bs]
-                  (x:int) y -> Pervasives.comapre x y));;
+                  (x:int) y -> Pervasives.compare x y));;
       let s0 = ofArray ~id:(module IntCmp) [|2;3;1;4;5|];;
       let s1 = remove s0 1 ;;
       let s2 = remove s1 3 ;;
@@ -226,7 +226,7 @@ val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
      module IntCmp =
        (val IntCmp.comparableU
            ~cmp:(fun[\@bs]
-                  (x:int) y -> Pervasives.comapre x y));;
+                  (x:int) y -> Pervasives.compare x y));;
      let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
      let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
      toArray (union s0 s1) =  [|1;2;3;4;5;6|]
@@ -239,7 +239,7 @@ val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
      module IntCmp =
        (val IntCmp.comparableU
            ~cmp:(fun[\@bs]
-                  (x:int) y -> Pervasives.comapre x y));;
+                  (x:int) y -> Pervasives.compare x y));;
      let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
      let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
      toArray (intersect s0 s1) =  [|2;3;5|]
@@ -252,7 +252,7 @@ val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
       module IntCmp =
         (val IntCmp.comparableU
             ~cmp:(fun[\@bs]
-                   (x:int) y -> Pervasives.comapre x y));;
+                   (x:int) y -> Pervasives.compare x y));;
       let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
       toArray (diff s0 s1) = [|6|];;
@@ -267,7 +267,7 @@ val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool
       module IntCmp =
         (val IntCmp.comparableU
             ~cmp:(fun[\@bs]
-                   (x:int) y -> Pervasives.comapre x y));;
+                   (x:int) y -> Pervasives.compare x y));;
       let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
       let s2 = intersect s0 s1;;
@@ -299,7 +299,7 @@ val forEach: ('elt, 'id) t -> ('elt -> unit ) ->  unit
       module IntCmp =
         (val IntCmp.comparableU
             ~cmp:(fun[\@bs]
-                   (x:int) y -> Pervasives.comapre x y));;
+                   (x:int) y -> Pervasives.compare x y));;
       let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       let acc = ref [] ;;
       forEach s0 (fun x -> acc := x !acc);;
@@ -315,7 +315,7 @@ val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a ) ->  'a
       module IntCmp =
         (val IntCmp.comparableU
             ~cmp:(fun[\@bs]
-                   (x:int) y -> Pervasives.comapre x y));;
+                   (x:int) y -> Pervasives.compare x y));;
       let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       reduce s0 [] Bs.List.add = [6;5;3;2];;
     ]}
@@ -351,7 +351,7 @@ val size:  ('elt, 'id) t -> int
       module IntCmp =
         (val IntCmp.comparableU
             ~cmp:(fun[\@bs]
-                   (x:int) y -> Pervasives.comapre x y));;
+                   (x:int) y -> Pervasives.compare x y));;
       let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       size s0 = 4;;
     ]}
@@ -363,7 +363,7 @@ val toArray: ('elt, 'id) t -> 'elt array
       module IntCmp =
         (val IntCmp.comparableU
             ~cmp:(fun[\@bs]
-                   (x:int) y -> Pervasives.comapre x y));;
+                   (x:int) y -> Pervasives.compare x y));;
       let s0 = ofArray ~id:(module IntCmp) [|5;2;3;5;6|]];;
       toArray s0 = [|2;3;5;6|];;
     ]}*)

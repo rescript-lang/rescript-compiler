@@ -3,7 +3,7 @@
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-function getComapre(x) {
+function getcompare(x) {
   return x;
 }
 
@@ -13,7 +13,7 @@ function Make(M) {
 }
 
 var Comparable = /* module */[
-  /* getComapre */getComapre,
+  /* getcompare */getcompare,
   /* Make */Make
 ];
 
