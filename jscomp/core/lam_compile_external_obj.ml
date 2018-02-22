@@ -60,9 +60,10 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
       let accs, eff, assign = aux labels args in 
       let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff arg_kind arg in 
       begin match acc with 
-        | [ ] -> assert false
-        | x::xs -> 
-          (label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
+        | Splice2 _ 
+        | Splice0 -> assert false
+        | Splice1 x ->
+          (label, x) :: accs , Ext_list.append new_eff  eff , assign          
       end (* evaluation order is undefined *)
 
     | ({arg_label = Optional label; arg_type } as arg_kind)::labels, arg::args 
@@ -76,9 +77,10 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
           let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
             ({arg_label = External_arg_spec.label label None; arg_type}) x in 
           begin match acc with 
-          | [] -> assert false 
-          | x::xs -> 
-            (label, E.fuse_to_seq x xs ) :: accs , Ext_list.append new_eff  eff , assign
+          | Splice2 _
+          | Splice0 -> assert false 
+          | Splice1 x ->
+            (label, x) :: accs , Ext_list.append new_eff  eff , assign
           end   
         | _ ->                 
           accs, eff , (arg_kind,arg)::assign 
@@ -118,7 +120,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
              External_arg_spec.empty_label}
               (E.index arg 0l ) in 
           begin match acc with 
-          | [ v ] ->                         
+          | Splice1 v  ->                         
             [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
             (
               match new_eff with 
@@ -126,7 +128,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
               | x :: xs ->
                 E.seq (E.fuse_to_seq  x xs ) v
              ) ) ] ] 
-          |_ -> assert false
+          | Splice0 | Splice2 _ -> assert false
           end
         | Some (st,id) -> (* FIXME: see #2503 *)
           let arg = E.var id in         
@@ -136,7 +138,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
              External_arg_spec.empty_label}
               (E.index arg 0l ) in 
           begin match acc with 
-          | [ v ] ->        
+          | Splice1 v  ->        
             st ::  
             [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
               (match new_eff with 
@@ -144,7 +146,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
               | x :: xs ->
                 E.seq (E.fuse_to_seq x xs) v 
               )) ]]
-          | _ -> assert false
+          | Splice0 | Splice2 _ -> assert false
           end 
         end 
       |  _ -> assert false    
