@@ -74,7 +74,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
         | Array ([x],_)
         | Caml_block ([x],_,_,_) ->
           let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
-            ({External_arg_spec.arg_label = External_arg_spec.label label None; arg_type}) x in 
+            ({arg_label = External_arg_spec.label label None; arg_type}) x in 
           begin match acc with 
           | [] -> assert false 
           | x::xs -> 
@@ -104,21 +104,48 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
       | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)     
     end) :: 
       (Ext_list.flat_map (fun 
-        ((label : External_arg_spec.t), (arg  : J.expression )) -> 
-      match label with 
+        ((xlabel : External_arg_spec.t), (arg  : J.expression )) -> 
+      match xlabel with 
       | {arg_label = Optional label } -> 
         (* Need make sure whether assignment is effectful or not
           to avoid code duplication
         *)
         begin match Js_ast_util.named_expression arg with 
         | None ->
-          [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
-            (E.index arg 0l) ) ] ] 
-        | Some (st,id) ->
-          let var_id = E.var id in         
-          st ::  
-            [S.if_ var_id [S.exp (E.assign (E.dot var_v label) 
-              (E.index var_id 0l)) ]]
+          let acc,new_eff = 
+            Lam_compile_external_call.ocaml_to_js_eff 
+            {xlabel with arg_label =
+             External_arg_spec.empty_label}
+              (E.index arg 0l ) in 
+          begin match acc with 
+          | [ v ] ->                         
+            [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
+            (
+              match new_eff with 
+              | [] -> v 
+              | x :: xs ->
+                E.seq (E.fuse_to_seq  x xs ) v
+             ) ) ] ] 
+          |_ -> assert false
+          end
+        | Some (st,id) -> (* FIXME: see #2503 *)
+          let arg = E.var id in         
+          let acc,new_eff = 
+            Lam_compile_external_call.ocaml_to_js_eff 
+            {xlabel with arg_label =
+             External_arg_spec.empty_label}
+              (E.index arg 0l ) in 
+          begin match acc with 
+          | [ v ] ->        
+            st ::  
+            [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
+              (match new_eff with 
+              | [] -> v 
+              | x :: xs ->
+                E.seq (E.fuse_to_seq x xs) v 
+              )) ]]
+          | _ -> assert false
+          end 
         end 
       |  _ -> assert false    
       )

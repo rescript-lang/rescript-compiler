@@ -72,7 +72,7 @@ let handle_external_opt
      This would not work with [NonNullString]
 *)
 let ocaml_to_js_eff 
-    ({ External_arg_spec.arg_label;  arg_type })
+    ({arg_label;  arg_type }:  External_arg_spec.t)
     (raw_arg : J.expression)
   : E.t list * E.t list  =
   let arg =
@@ -101,7 +101,12 @@ let ocaml_to_js_eff
   | NullString dispatches -> 
     [Js_of_lam_variant.eval arg dispatches],[]
   | NonNullString dispatches -> 
-    Js_of_lam_variant.eval_as_event arg dispatches,[]
+    Js_of_lam_variant.eval_as_event arg dispatches,[]    
+    (* FIXME: encode invariant below in the signature*)
+    (* length of 2
+      - the poly var tag 
+      - the value
+     *)
   | Int dispatches -> 
     [Js_of_lam_variant.eval_as_int arg dispatches],[]
   | Unwrap ->
@@ -275,7 +280,7 @@ let translate_ffi
              name = fn;
              splice ;
              scopes
-           } -> 
+           } -> (* handle [@@bs.new]*)
     (* This has some side effect, it will 
        mark its identifier (If it has) as an object,
        ATTENTION: 

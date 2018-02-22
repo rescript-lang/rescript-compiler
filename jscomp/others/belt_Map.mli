@@ -511,6 +511,6 @@ val packIdData: id:('a, 'b) id -> data:('a, 'c, 'b) Belt_MapDict.t -> ('a, 'c, '
 (**/**)
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not helld
+   {b raise} when invariant is not held
 *)  
 (**/**)

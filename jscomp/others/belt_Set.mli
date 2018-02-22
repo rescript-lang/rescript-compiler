@@ -272,8 +272,8 @@ val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool
       let s1 = ofArray ~id:(module IntCmp) [|5;2;3;1;5;4;|];;
       let s2 = intersect s0 s1;;
       subset s2 s0 = true;;
-      subset s1 s0 = true;;
-      subset s1 s2 = false;;
+      subset s2 s1 = true;;
+      subset s1 s0 = false;;
     ]}
 *)
   
@@ -425,7 +425,7 @@ val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
 (**/**)
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not helld
+   {b raise} when invariant is not held
 *)  
 (**/**)
 
