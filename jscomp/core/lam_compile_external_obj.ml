@@ -104,17 +104,31 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
       | x::xs -> E.seq (E.fuse_to_seq x xs) (E.obj map)     
     end) :: 
       (Ext_list.flat_map (fun 
-        ((label : External_arg_spec.t), (arg  : J.expression )) -> 
-      match label with 
+        ((xlabel : External_arg_spec.t), (arg  : J.expression )) -> 
+      match xlabel with 
       | {arg_label = Optional label } -> 
         (* Need make sure whether assignment is effectful or not
           to avoid code duplication
         *)
         begin match Js_ast_util.named_expression arg with 
         | None ->
-          [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
-            (E.index arg 0l) ) ] ] 
-        | Some (st,id) ->
+          let acc,new_eff = 
+            Lam_compile_external_call.ocaml_to_js_eff 
+            {xlabel with arg_label =
+             External_arg_spec.empty_label}
+              (E.index arg 0l ) in 
+          begin match acc with 
+          | [ v ] ->                         
+            [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
+            (
+              match new_eff with 
+              | [] -> v 
+              | x :: xs ->
+                E.seq (E.fuse_to_seq  x xs ) v
+             ) ) ] ] 
+          |_ -> assert false
+          end
+        | Some (st,id) -> (* FIXME: see #2503 *)
           let var_id = E.var id in         
           st ::  
             [S.if_ var_id [S.exp (E.assign (E.dot var_v label) 
