@@ -74,7 +74,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
         | Array ([x],_)
         | Caml_block ([x],_,_,_) ->
           let acc, new_eff = Lam_compile_external_call.ocaml_to_js_eff 
-            ({External_arg_spec.arg_label = External_arg_spec.label label None; arg_type}) x in 
+            ({arg_label = External_arg_spec.label label None; arg_type}) x in 
           begin match acc with 
           | [] -> assert false 
           | x::xs -> 
