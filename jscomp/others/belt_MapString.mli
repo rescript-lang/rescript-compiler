@@ -64,7 +64,7 @@ val getExn: 'a t -> key -> 'a
 
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not helld
+   {b raise} when invariant is not held
 *)  
 
 (****************************************************************************)
@@ -151,7 +151,7 @@ val mapWithKey: 'a t -> (key -> 'a -> 'b) -> 'b t
 (**/**)
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not helld
+   {b raise} when invariant is not held
 *)  
 (**/**)
 

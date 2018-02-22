@@ -129,7 +129,7 @@ val split:  t -> elt -> (t * t) * bool
 
 val checkInvariantInternal: t -> unit
 (**
-   {b raise} when invariant is not helld
+   {b raise} when invariant is not held
 *)  
 
 

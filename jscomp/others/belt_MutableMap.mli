@@ -158,7 +158,7 @@ val getWithDefault:
 val getExn:  ('k, 'a, 'id) t -> 'k ->  'a 
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not helld
+   {b raise} when invariant is not held
 *)  
   
 (****************************************************************************)

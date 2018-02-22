@@ -181,7 +181,7 @@ val split: ('elt, 'id) t -> 'elt ->  (('elt, 'id) t * ('elt, 'id) t) * bool
 
 val checkInvariantInternal: _ t -> unit
 (**
-   {b raise} when invariant is not helld
+   {b raise} when invariant is not held
 *)  
 
 (*
