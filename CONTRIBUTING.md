@@ -76,8 +76,8 @@ This section is reserved for when you're making a change to the vendored ocaml c
 # at project root
 cd jscomp
 make force-snapshotml # make sure your changes are reflected in jscomp/bin/whole_compiler.ml
-make -C bin bsc.exe && ./install-bsc.sh
-make -C bin bsb.exe && ./install-bsb.sh
+make -C ../lib bsc.exe && ./install-bsc.sh
+make -C ../lib bsb.exe && ./install-bsb.sh
 ```
 
 ## Contributing to the runtime
