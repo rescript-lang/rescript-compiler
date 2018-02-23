@@ -144,7 +144,7 @@ let rec removeArrayMutateAux t xs i len   =
     | Some t -> removeArrayMutateAux t xs (i+1) len 
   else N.return t    
 
-let removeMany (type elt) (type id) (d : _ t) xs =  
+let removeMany (type key) (type id) (d : _ t) xs =  
   let oldRoot = data d in 
   match N.toOpt oldRoot with 
   | None -> ()

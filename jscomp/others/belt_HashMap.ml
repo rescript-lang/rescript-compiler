@@ -196,7 +196,7 @@ let has h key =
 
 
 
-let make (type elt) (type identity) ~hintSize ~(id : (elt,identity) id) =
+let make (type key) (type identity) ~hintSize ~(id : (key,identity) id) =
   let module M = (val id) in 
   C.make ~hash:M.hash ~eq:M.eq  ~hintSize
 
