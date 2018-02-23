@@ -81,7 +81,7 @@ let mergeU s1 s2 f =
 let merge s1 s2 f = 
   mergeU s1 s2 (fun [@bs] a b c -> f a b c)
 
-let make (type elt) (type idx) ~(id: (elt, idx) id) =
+let make (type key) (type idx) ~(id: (key, idx) id) =
   let module M = (val id) in 
   S.t  ~cmp:M.cmp  ~data:Dict.empty
 
@@ -155,15 +155,15 @@ let cmp m1 m2 vcmp = cmpU m1 m2 (fun [@bs] a b -> vcmp a b)
     
 let getData = S.data
   
-let getId (type elt) (type identity) (m : (elt,_,identity) t) : (elt, identity) id =
+let getId (type key) (type identity) (m : (key,_,identity) t) : (key, identity) id =
   let module T = struct
     type nonrec identity = identity
-    type nonrec t = elt
+    type nonrec t = key
     let cmp =  S.cmp m
   end in
   (module T )
   
-let packIdData (type elt) (type idx) ~(id : (elt, idx) id) ~data  =
+let packIdData (type key) (type idx) ~(id : (key, idx) id) ~data  =
   let module M = (val id) in 
   S.t ~cmp:M.cmp ~data
 

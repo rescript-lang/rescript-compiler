@@ -142,7 +142,7 @@ let updateU t  x f =
     S.dataSet t newRoot 
 let update t x f = updateU t x (fun [@bs] a -> f a)
     
-let make (type elt) (type identity) ~(id : (elt,identity) id) =
+let make (type key) (type identity) ~(id : (key,identity) id) =
   let module M = (val id) in 
   S.t ~cmp:M.cmp ~data:N.empty
 
@@ -180,7 +180,7 @@ let keysToArray d =
 let valuesToArray d =   
   N.valuesToArray (S.data d)
     
-let ofSortedArrayUnsafe (type elt) (type identity) ~(id : (elt,identity) id) xs : _ t =
+let ofSortedArrayUnsafe (type key) (type identity) ~(id : (key,identity) id) xs : _ t =
   let module M = (val id) in 
   S.t ~data:(N.ofSortedArrayUnsafe xs) ~cmp:M.cmp
     
