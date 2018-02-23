@@ -6,9 +6,9 @@
   other printer called reason_pprint_ast, our actual, main pretty-printer. Why
   is this one separated from reason_pprint_ast? Because the outcome printer's
   use-case is a bit different and needs different entry points blablabla...
-  These are mostly excuses. But for example, currently, `Js.t {. foo: bar}` by
+  These are mostly excuses. But for example, currently, `Js.t({. foo: bar})` by
   itself is *invalid syntax* for a pretty printer (the correct, minimal valid
-  code would be `type myObject = Js.t {. foo: bar}`), but the terminal error
+  code would be `type myObject = Js.t({. foo: bar})`), but the terminal error
   report do want to provide just that snippet and have you print it. Hopefully
   OCaml can unify actual code pretty-printing and terminal type info pretty-
   printing one day.
@@ -76,9 +76,64 @@ let parenthesized_ident name =
         false
     | _ -> true)
 
+#if defined BS_NO_COMPILER_PATCH then
+let ml_to_reason_swap = Syntax_util.ml_to_reason_swap
+#else
+
+(* please keep this section in sync with Reason repo's Syntax_util file's
+  helpers of the same names *)
+
+let string_add_suffix x = x ^ "_"
+let string_drop_suffix x = String.sub x 0 (String.length x - 1)
+(** Check to see if the string `s` is made up of `keyword` and zero or more
+    trailing `_` characters. *)
+let potentially_conflicts_with ~keyword s =
+  let s_length = String.length s in
+  let keyword_length = String.length keyword in
+  (* It can't be a match if s is shorter than keyword *)
+  s_length >= keyword_length && (
+    try
+      (* Ensure s starts with keyword... *)
+      for i = 0 to keyword_length - 1 do
+        if keyword.[i] <> s.[i] then raise Exit;
+      done;
+      (* ...and contains nothing else except trailing _ characters *)
+      for i = keyword_length to s_length - 1 do
+        if s.[i] <> '_' then raise Exit;
+      done;
+      (* If we've made it this far there's a potential conflict *)
+      true
+    with
+    | Exit -> false
+  )
+let ml_to_reason_swap = function
+  | "not" -> "!"
+  | "!" -> "^"
+  | "^" -> "++"
+  | "==" -> "==="
+  | "=" -> "=="
+  (* ===\/ and !==\/ are not representable in OCaml but
+   * representable in Reason
+   *)
+  | "!==" -> "\\!=="
+  |  "===" -> "\\==="
+  | "<>" -> "!="
+  | "!=" -> "!=="
+  | x when (
+    potentially_conflicts_with ~keyword:"match_" x
+    || potentially_conflicts_with ~keyword:"method_" x
+    || potentially_conflicts_with ~keyword:"private_" x) -> string_drop_suffix x
+  | x when (
+    potentially_conflicts_with ~keyword:"switch" x
+    || potentially_conflicts_with ~keyword:"pub" x
+    || potentially_conflicts_with ~keyword:"pri" x) -> string_add_suffix x
+  | everything_else -> everything_else
+
+#end
+
 let value_ident ppf name =
   if parenthesized_ident name then
-    fprintf ppf "( %s )" name
+    fprintf ppf "( %s )" (ml_to_reason_swap name)
   else
     pp_print_string ppf name
 
@@ -227,7 +282,7 @@ let rec print_out_type ppf =
         pr_vars sl
         print_out_type ty
   | ty ->
-      print_out_type_1 ppf ty
+      print_out_type_1 ~uncurried:false ppf ty
 
 and print_arg ppf (lab, typ) =
   let suffix =
@@ -247,7 +302,7 @@ and print_arg ppf (lab, typ) =
   print_out_type_2 ppf typ;
   pp_print_string ppf suffix;
 
-and print_out_type_1 ppf =
+and print_out_type_1 ~uncurried ppf =
   function
     Otyp_arrow (lab, ty1, ty2) ->
       let rec collect_args args typ = match typ with
@@ -255,13 +310,23 @@ and print_out_type_1 ppf =
         | _ -> (args, typ)
       in
       pp_open_box ppf 0;
-      pp_print_string ppf "(";
       let (args, result) = collect_args [(lab, ty1)] ty2 in
+      let should_wrap_with_parens = match (uncurried, args) with
+      (* single argument should not be wrapped *)
+      (* though uncurried type are always wrapped in parens. `. a => 1` isn't supported *)
+      | (false, [(_, Otyp_tuple _)]) -> true
+      | (false, [("", typ)]) -> false
+      | (_, args) -> true
+      in
+
+      if should_wrap_with_parens then pp_print_string ppf "(";
+      if uncurried then fprintf ppf ".@ ";
       print_list print_arg (fun ppf -> fprintf ppf ",@ ") ppf args;
-      pp_print_string ppf ")";
+      if should_wrap_with_parens then pp_print_string ppf ")";
+
       pp_print_string ppf " =>";
       pp_print_space ppf ();
-      print_out_type_1 ppf result;
+      print_out_type_1 ~uncurried ppf result;
       pp_close_box ppf ()
   | ty -> print_out_type_2 ppf ty
 and print_out_type_2 ppf =
@@ -278,8 +343,8 @@ and print_simple_out_type ppf =
   (* BuckleScript-specific external. See the manual for the usage of [@bs]. This
     [@bs] is processed into a type that looks like `Js.Internal.fn ...`. This
     leaks during error reporting, where the type is printed. Here, we print it
-    back from `Js.Internal.fn [ `Arity_2 ('c, 'd) ] 'e` into `('a => 'b => int) [@bs]` *)
-  (* same for `Js_internal.fn ...`. Either might shown *)
+    back from `Js.Internal.fn([ `Arity_2 ('c, 'd) ], 'e)` into `('a => 'b => int) [@bs]` *)
+  (* same for `Js_internal.fn(...)`. Either might shown *)
   | Otyp_constr (
       (Oide_dot (
         (Oide_dot ((Oide_ident "Js"), "Internal") | Oide_ident "Js_internal"),
@@ -313,8 +378,8 @@ and print_simple_out_type ppf =
         end
       | res ->
         begin match name  with
-        | "fn" -> fprintf ppf "@[<0>(%a)@ [@bs]@]" print_out_type_1 res
-        | "meth" -> fprintf ppf "@[<0>(%a)@ [@bs.meth]@]" print_out_type_1 res
+        | "fn" -> print_out_type_1 ~uncurried:true ppf res
+        | "meth" -> fprintf ppf "@[<0>(%a)@ [@bs.meth]@]" (print_out_type_1 ~uncurried:false) res
         | _ -> assert false
         end
       end
@@ -346,8 +411,18 @@ and print_simple_out_type ppf =
           pp_close_box ppf ()
         end
       | res ->
-        fprintf ppf "@[<0>(%a)@ [@bs.this]@]" print_out_type_1 res
+        fprintf ppf "@[<0>(%a)@ [@bs.this]@]" (print_out_type_1 ~uncurried:false) res
       end
+  (* also BuckleScript-specific. Turns Js.t({. foo: bar}) into {. "foo": bar} *)
+  | Otyp_constr (
+      (Oide_dot ((Oide_ident "Js"), "t")),
+      [Otyp_object (fields, rest)]
+    ) ->
+      let dot = match rest with
+        Some non_gen -> (if non_gen then "_" else "") ^ ".."
+      | None -> "."
+      in
+      fprintf ppf "@[<2>{%s %a}@]" dot (print_object_fields ~quote_fields:true) fields
 
   | Otyp_constr (id, tyl) ->
       pp_open_box ppf 0;
@@ -363,7 +438,7 @@ and print_simple_out_type ppf =
       Some non_gen -> (if non_gen then "_" else "") ^ ".."
     | None -> "."
     in
-    fprintf ppf "@[<2>{%s %a }@]" dot print_object_fields fields
+    fprintf ppf "@[<2>{%s %a}@]" dot (print_object_fields ~quote_fields:false) fields
   | Otyp_stuff s -> pp_print_string ppf s
   | Otyp_var (ng, s) -> fprintf ppf "'%s%s" (if ng then "_" else "") s
   | Otyp_variant (non_gen, row_fields, closed, tags) ->
@@ -407,22 +482,30 @@ and print_simple_out_type ppf =
         fprintf ppf "@[<1>(%a [@@%s])@]" print_out_type t attr.oattr_name
 #end
 
-and print_object_fields ppf =
+and print_object_fields ~quote_fields ppf =
   function
     [] -> ()
-  | [s, t] ->
-    fprintf ppf "%s : %a" s print_out_type t;
-    print_object_fields ppf []
-  | (s, t) :: l ->
-    fprintf ppf "%s : %a,@ %a" s print_out_type t print_object_fields l
+  | [field, typ] ->
+    let field = (if quote_fields then "\"" ^ field ^ "\"" else field) in
+    fprintf ppf "%s: %a" field print_out_type typ;
+    (print_object_fields ~quote_fields) ppf []
+  | (field, typ) :: rest ->
+    let field = (if quote_fields then "\"" ^ field ^ "\"" else field) in
+    fprintf ppf "%s: %a,@ %a" field print_out_type typ (print_object_fields ~quote_fields) rest
 and print_row_field ppf (l, opt_amp, tyl) =
   let pr_of ppf =
     if opt_amp then fprintf ppf " &@ "
-    else if tyl <> [] then fprintf ppf " "
-    else fprintf ppf ""
-  in
-  fprintf ppf "@[<hv 2>`%s%t%a@]" l pr_of (print_typlist print_out_type " &")
-    tyl
+    else fprintf ppf "" in
+  let parens = match tyl with
+    | [ (Otyp_tuple _) ] -> false (* tuples already have parentheses *)
+    | [ _ ] -> true
+    | _ -> false in
+  fprintf ppf "@[<hv 2>`%s%t%s%a%s@]"
+    l
+    pr_of
+    (if parens then "(" else "")
+    (print_typlist print_out_type " &") tyl
+    (if parens then ")" else "")
 and print_typlist print_elem sep ppf =
   function
     [] -> ()
@@ -620,42 +703,40 @@ and print_out_sig_item ppf =
           | Orec_next  -> "and")
         ppf td
 #if defined BS_NO_COMPILER_PATCH then
+  | Osig_ellipsis ->
+    fprintf ppf "..."
   | Osig_value {oval_name; oval_type; oval_prims; oval_attributes} ->
-    let kwd = if oval_prims = [] then "let" else "external" in
-    let pr_prims ppf =
+    let printAttributes ppf = List.iter (fun a -> fprintf ppf "[@@%s]" a.oattr_name) in
+#else
+  | Osig_value(oval_name, oval_type, oval_prims) ->
+    let printAttributes ppf attrs = () in
+    let oval_attributes = [] in
+#end
+    let keyword = if oval_prims = [] then "let" else "external" in
+    let (hackyBucklescriptExternalAnnotation, rhsValues) = List.partition (fun item ->
+      (* "BS:" is considered as a bucklescript external annotation, `[@bs.module]` and the sort.
+
+        "What's going on here? Isn't [@bs.foo] supposed to be an attribute in oval_attributes?"
+        Usually yes. But here, we're intercepting things a little too late. BuckleScript already
+        finished its pre/post-processing work before we get to print anything. The original
+        attribute is already gone, replaced by a "BS:asdfasdfasd" thing here.
+      *)
+      String.length item >= 3 && item.[0] = 'B' && item.[1] = 'S' && item.[2] = ':'
+    ) oval_prims in
+    let print_right_hand_side ppf =
       function
         [] -> ()
       | s :: sl ->
           fprintf ppf "@ = \"%s\"" s;
           List.iter (fun s -> fprintf ppf "@ \"%s\"" s) sl
     in
-    fprintf ppf "@[<2>%s %a:@ %a%a%a@]" kwd value_ident oval_name
-        !out_type oval_type pr_prims oval_prims
-        (fun ppf -> List.iter (fun a -> fprintf ppf "@ [@@@@%s]" a.oattr_name))
-        oval_attributes
-  | Osig_ellipsis ->
-    fprintf ppf "..."
-#else
-  | Osig_value(oval_name, oval_type, oval_prims) ->
-    let kwd = if oval_prims = [] then "let" else "external" in
-    let pr_prims ppf =
-      function
-        [] -> ()
-      | s :: sl ->
-          fprintf ppf "@ = \"%s\"" s;
-          List.iter (fun s -> 
-    (* TODO: in general, we should print bs attributes, some attributes like
-      bs.splice does need it *)
-    let len = String.length s in
-    if len >= 3 && s.[0] = 'B' && s.[1] = 'S' && s.[2] = ':' then
-      fprintf ppf "@ \"BuckleScript External\"" 
-    else
-      fprintf ppf "@ \"%s\"" s
-    ) sl
-    in
-    fprintf ppf "@[<2>%s %a:@ %a%a@]" kwd value_ident oval_name
-        !out_type oval_type pr_prims oval_prims
-#end
+    fprintf ppf "@[<2>%a%a%s %a:@ %a%a@]"
+      (fun ppf -> List.iter (fun _ -> fprintf ppf "[@@bs...]@ ")) hackyBucklescriptExternalAnnotation
+      printAttributes oval_attributes
+      keyword
+      value_ident oval_name
+      !out_type oval_type
+      print_right_hand_side rhsValues
 
 and print_out_type_decl kwd ppf td =
   let print_constraints ppf =
