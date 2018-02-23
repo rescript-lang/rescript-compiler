@@ -381,8 +381,9 @@ core/lam_dispatch_primitive.cmi : core/j.cmx
 core/lam_bounded_vars.cmi : core/lam.cmi ext/ident_hashtbl.cmi
 core/lam_beta_reduce.cmi : core/lam_stats.cmi core/lam_closure.cmi \
     core/lam.cmi ext/ident_map.cmi
-core/lam_compile_external_call.cmi : core/lam_compile_context.cmi core/j.cmx \
-    syntax/external_ffi_types.cmi syntax/external_arg_spec.cmi
+core/lam_compile_external_call.cmi : core/lam_compile_context.cmi \
+    core/js_of_lam_variant.cmi core/j.cmx syntax/external_ffi_types.cmi \
+    syntax/external_arg_spec.cmi
 core/lam_compile_external_obj.cmi : core/j.cmx syntax/external_arg_spec.cmi
 core/lam_compile_primitive.cmi : core/lam_compile_context.cmi core/lam.cmi \
     core/j.cmx

@@ -22,7 +22,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-val eval : J.expression -> (int * string) list -> J.expression
-val eval_as_event : J.expression -> (int * string) list -> J.expression list 
-val eval_as_int : J.expression -> (int * int) list -> J.expression
+(* module E = Js_exp_make *)
+
+type arg_expression = 
+  | Splice0
+  | Splice1 of J.expression 
+  | Splice2 of J.expression * J.expression
+  
+val eval :
+   J.expression -> (int * string) list -> J.expression
+val eval_as_event : 
+  J.expression -> (int * string) list -> arg_expression
+val eval_as_int : 
+  J.expression -> (int * int) list -> J.expression
 val eval_as_unwrap : J.expression -> J.expression
