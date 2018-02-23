@@ -60,6 +60,8 @@ let dump_program (x : J.program) oc =
 
 
 let node_program ~output_dir f ( x : J.deps_program) = 
+  P.string f L.strict_directive; 
+  P.newline f ;
   let cxt = 
     Js_dump_import_export.requires 
       L.require
@@ -78,6 +80,8 @@ let node_program ~output_dir f ( x : J.deps_program) =
 
 let amd_program ~output_dir kind f (  x : J.deps_program) = 
   let cxt = Ext_pp_scope.empty in
+  P.string f L.strict_directive; 
+  P.newline f ;
   P.vgroup f 1 @@ fun _ -> 
   P.string f L.define;
   P.string f "([";
@@ -156,9 +160,7 @@ let pp_deps_program
     P.string f empty_explanation 
     (* This is empty module, it won't be referred anywhere *)
   else 
-    let output_dir = Filename.dirname output_prefix in 
-    P.string f L.strict_directive; 
-    P.newline f ;    
+    let output_dir = Filename.dirname output_prefix in   
     begin 
       ignore (match kind with 
           | Es6 | Es6_global -> 
