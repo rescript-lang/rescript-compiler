@@ -8,7 +8,7 @@ module I = Belt_internalSetString
 module N = Belt_internalAVLset
 module A = Belt_Array
 
-type elt = I.elt
+type value = I.value
 type t = I.t 
 
 
@@ -38,7 +38,7 @@ let toArray = N.toArray
 let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe
 let checkInvariantInternal = N.checkInvariantInternal
 
-let rec add  (t : t) (x : elt) : t =
+let rec add  (t : t) (x : value) : t =
   match N.toOpt t with 
     None -> N.singleton x 
   | Some nt  ->
@@ -64,7 +64,7 @@ let mergeMany h arr =
   !v 
 
 
-let rec remove (t : t) (x : elt) : t = 
+let rec remove (t : t) (x : value) : t = 
   match N.toOpt t with 
   | None -> t
   | Some n  ->
@@ -105,7 +105,7 @@ let getExn = I.getExn
 let subset = I.subset 
 let has = I.has
 
-let rec splitAuxNoPivot (n : _ N.node) (x : elt) : t * t =   
+let rec splitAuxNoPivot (n : _ N.node) (x : value) : t * t =   
   let l,v,r = N.(left n , key n, right n) in  
   if x = v then l,  r
   else if x < v then
@@ -124,7 +124,7 @@ let rec splitAuxNoPivot (n : _ N.node) (x : elt) : t * t =
       N.joinShared l v lr,  rr
 
 
-let rec splitAuxPivot (n : _ N.node) (x : elt) pres : t  * t =   
+let rec splitAuxPivot (n : _ N.node) (x : value) pres : t  * t =   
   let l,v,r = N.(left n , key n, right n) in  
   if x = v then begin 
     pres := true;  
@@ -146,7 +146,7 @@ let rec splitAuxPivot (n : _ N.node) (x : elt) pres : t  * t =
       N.joinShared l v lr,  rr
 
 
-let split  (t : t) (x : elt) =
+let split  (t : t) (x : value) =
   match N.toOpt t with 
     None ->
     (N.empty,  N.empty), false

@@ -104,7 +104,7 @@ type ('key, 'id) id = ('key, 'id) Belt_Id.comparable
 (** The identity needed for making a set from scratch
 *)
 
-val make: id:('elt, 'id) id -> ('elt, 'id) t
+val make: id:('value, 'id) id -> ('value, 'id) t
 (** [make ~id]
    
      @example {[
@@ -128,7 +128,7 @@ val ofArray:  'k array -> id:('k, 'id) id ->  ('k, 'id) t
 *)
 
 
-val ofSortedArrayUnsafe: 'elt array -> id:('elt, 'id) id -> ('elt,'id) t
+val ofSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
 (** [ofSortedArrayUnsafe xs ~id]
 
     The same as {!ofArray} except it is after assuming the input array [x] is already sorted
@@ -148,7 +148,7 @@ val isEmpty: _ t -> bool
      isEmpty (ofArray [|1|] ~id:(module IntCmp)) = true;;  
    ]}
 *)
-val has: ('elt, 'id) t -> 'elt ->  bool
+val has: ('value, 'id) t -> 'value ->  bool
 (**
    @example {[
      module IntCmp =
@@ -162,7 +162,7 @@ val has: ('elt, 'id) t -> 'elt ->  bool
 *)
 
 val add:   
-  ('elt, 'id) t -> 'elt -> ('elt, 'id) t
+  ('value, 'id) t -> 'value -> ('value, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged.
 
     @example {[
@@ -182,7 +182,7 @@ val add:
     ]}
 *)
     
-val mergeMany: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t 
+val mergeMany: ('value, 'id) t -> 'value array -> ('value, 'id) t 
 (** [mergeMany s xs]
 
     Adding each of [xs] to [s], note unlike {!add},
@@ -190,7 +190,7 @@ val mergeMany: ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
     exist [s]
    
 *)
-val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
+val remove: ('value, 'id) t -> 'value -> ('value, 'id) t
 (** [remove m x] If [x] was not in [m], [m] is returned reference unchanged.
 
     @example {[
@@ -210,7 +210,7 @@ val remove: ('elt, 'id) t -> 'elt -> ('elt, 'id) t
 *)
 
 val removeMany:
-  ('elt, 'id) t -> 'elt array -> ('elt, 'id) t
+  ('value, 'id) t -> 'value array -> ('value, 'id) t
 (** [removeMany s xs]
 
     Removing each of [xs] to [s], note unlike {!remove},
@@ -218,7 +218,7 @@ val removeMany:
     exists [s]
 *)    
 
-val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+val union: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (**
    [union s0 s1]
 
@@ -233,7 +233,7 @@ val union: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
    ]}
 *)
 
-val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+val intersect: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (** [intersect s0 s1]
    @example {[
      module IntCmp =
@@ -246,7 +246,7 @@ val intersect: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
    ]}
 
 *)    
-val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
+val diff: ('value, 'id) t -> ('value, 'id) t -> ('value, 'id) t
 (** [diff s0 s1]
     @example {[
       module IntCmp =
@@ -260,7 +260,7 @@ val diff: ('elt, 'id) t -> ('elt, 'id) t -> ('elt, 'id) t
     ]}
 *)
 
-val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool     
+val subset: ('value, 'id) t -> ('value, 'id) t -> bool     
 (** [subset s0 s1]
 
     @example {[
@@ -277,21 +277,21 @@ val subset: ('elt, 'id) t -> ('elt, 'id) t -> bool
     ]}
 *)
   
-val cmp: ('elt, 'id) t -> ('elt, 'id) t -> int
+val cmp: ('value, 'id) t -> ('value, 'id) t -> int
 (** Total ordering between sets. Can be used as the ordering function
     for doing sets of sets.
     It compare [size] first and then iterate over
     each element following the order of elements
 *)
   
-val eq: ('elt, 'id) t -> ('elt, 'id) t -> bool
+val eq: ('value, 'id) t -> ('value, 'id) t -> bool
 (** [eq s0 s1]
 
     @return true if [toArray s0 = toArray s1] 
 *)
   
-val forEachU: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
-val forEach: ('elt, 'id) t -> ('elt -> unit ) ->  unit  
+val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
+val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit  
 (** [forEach s f] applies [f] in turn to all elements of [s].
     In increasing order
 
@@ -307,8 +307,8 @@ val forEach: ('elt, 'id) t -> ('elt -> unit ) ->  unit
     ]}
 *)
 
-val reduceU: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
-val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a ) ->  'a  
+val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
+val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a  
 (** In increasing order.
 
     @example {[
@@ -321,30 +321,30 @@ val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a ) ->  'a
     ]}
 *)
 
-val everyU: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
-val every: ('elt, 'id) t -> ('elt -> bool ) -> bool  
+val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
+val every: ('value, 'id) t -> ('value -> bool ) -> bool  
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified.
 *)
 
-val someU: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
-val some: ('elt, 'id) t ->  ('elt -> bool ) -> bool  
+val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
+val some: ('value, 'id) t ->  ('value -> bool ) -> bool  
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
-val keepU: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
-val keep: ('elt, 'id) t ->  ('elt -> bool ) -> ('elt, 'id) t    
+val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
+val keep: ('value, 'id) t ->  ('value -> bool ) -> ('value, 'id) t    
 (** [keep m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)
     
-val partitionU: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
-val partition: ('elt, 'id) t -> ('elt -> bool) ->  ('elt, 'id) t * ('elt, 'id) t
+val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
+val partition: ('value, 'id) t -> ('value -> bool) ->  ('value, 'id) t * ('value, 'id) t
 (** [partition m p] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
     [s] that do not satisfy [p]. *)
 
-val size:  ('elt, 'id) t -> int
+val size:  ('value, 'id) t -> int
 (** [size s]
 
     @example {[
@@ -357,7 +357,7 @@ val size:  ('elt, 'id) t -> int
     ]}
 *)
   
-val toArray: ('elt, 'id) t -> 'elt array
+val toArray: ('value, 'id) t -> 'value array
 (** [toArray s0]
    @example {[
       module IntCmp =
@@ -368,36 +368,36 @@ val toArray: ('elt, 'id) t -> 'elt array
       toArray s0 = [|2;3;5;6|];;
     ]}*)
     
-val toList: ('elt, 'id) t -> 'elt list
+val toList: ('value, 'id) t -> 'value list
 (** In increasing order
 
     {b See} {!toArray}
 *)
 
-val minimum: ('elt, 'id) t -> 'elt option
+val minimum: ('value, 'id) t -> 'value option
 (** [minimum s0]
 
     @return the minimum element of the collection, [None] if it is empty
 *)    
 
-val minUndefined: ('elt, 'id) t -> 'elt Js.undefined
+val minUndefined: ('value, 'id) t -> 'value Js.undefined
 (** [minUndefined s0]
 
    @return the minimum element of the collection, [undefined] if it is empty
 *)    
 
-val maximum: ('elt, 'id) t -> 'elt option
+val maximum: ('value, 'id) t -> 'value option
 (** [maximum s0]
 
     @return the maximum element of the collection, [None] if it is empty
 *)    
-val maxUndefined: ('elt, 'id) t -> 'elt Js.undefined
+val maxUndefined: ('value, 'id) t -> 'value Js.undefined
 (** [maxUndefined s0]
 
     @return the maximum element of the collection, [undefined] if it is empty
 *)    
 
-val get: ('elt, 'id) t -> 'elt -> 'elt option
+val get: ('value, 'id) t -> 'value -> 'value option
 (** [get s0 k]
 
     @return the reference of the value [k'] which is equivalent to [k]
@@ -405,17 +405,17 @@ val get: ('elt, 'id) t -> 'elt -> 'elt option
     if it does not exist
 *)
 
-val getUndefined: ('elt, 'id) t -> 'elt -> 'elt Js.undefined
+val getUndefined: ('value, 'id) t -> 'value -> 'value Js.undefined
 (** {b See} {!get}
     *)    
 
-val getExn: ('elt, 'id) t -> 'elt -> 'elt
+val getExn: ('value, 'id) t -> 'value -> 'value
 (** {b See} {!get}
 
     {b raise} if not exist
 *)  
 
-val split: ('elt, 'id) t -> 'elt -> (('elt, 'id) t  * ('elt, 'id) t) * bool
+val split: ('value, 'id) t -> 'value -> (('value, 'id) t  * ('value, 'id) t) * bool
 (** [split set ele]
 
     @return  a tuple [((smaller, larger), present)],

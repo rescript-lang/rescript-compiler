@@ -33,7 +33,7 @@
 
 
 # 37
-type elt = int
+type value = int
 # 41
 (** The type of the set elements. *)
 
@@ -43,18 +43,18 @@ type t
   
 val make: unit -> t
 
-val ofArray: elt array -> t
-val ofSortedArrayUnsafe: elt array -> t
+val ofArray: value array -> t
+val ofSortedArrayUnsafe: value array -> t
 val copy: t -> t 
 val isEmpty: t -> bool
-val has: t -> elt -> bool
+val has: t -> value -> bool
 
-val add: t -> elt -> unit
-val addCheck: t -> elt -> bool 
-val mergeMany: t -> elt array -> unit
-val remove: t -> elt -> unit
-val removeCheck: t -> elt -> bool 
-val removeMany: t -> elt array -> unit
+val add: t -> value -> unit
+val addCheck: t -> value -> bool 
+val mergeMany: t -> value array -> unit
+val remove: t -> value -> unit
+val removeCheck: t -> value -> bool 
+val removeMany: t -> value array -> unit
   
 val union: t -> t -> t
 val intersect: t -> t -> t
@@ -65,51 +65,51 @@ val cmp: t -> t -> int
 val eq: t -> t -> bool
 
 
-val forEachU: t -> (elt -> unit [@bs]) ->  unit
-val forEach: t -> (elt -> unit ) ->  unit
+val forEachU: t -> (value -> unit [@bs]) ->  unit
+val forEach: t -> (value -> unit ) ->  unit
 (** In increasing order*)
 
-val reduceU: t -> 'a -> ('a -> elt -> 'a [@bs]) -> 'a
-val reduce: t -> 'a -> ('a -> elt -> 'a ) -> 'a  
+val reduceU: t -> 'a -> ('a -> value -> 'a [@bs]) -> 'a
+val reduce: t -> 'a -> ('a -> value -> 'a ) -> 'a  
 (** Iterate in increasing order. *)
 
-val everyU: t -> (elt -> bool [@bs]) -> bool
-val every: t -> (elt -> bool) ->  bool  
+val everyU: t -> (value -> bool [@bs]) -> bool
+val every: t -> (value -> bool) ->  bool  
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified. *)
 
-val someU: t -> (elt -> bool [@bs]) -> bool
-val some: t -> (elt -> bool) ->  bool  
+val someU: t -> (value -> bool [@bs]) -> bool
+val some: t -> (value -> bool) ->  bool  
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. Oder unspecified. *)
 
-val keepU: t -> (elt -> bool [@bs]) ->  t
-val keep: t -> (elt -> bool) ->  t  
+val keepU: t -> (value -> bool [@bs]) ->  t
+val keep: t -> (value -> bool) ->  t  
 (** [keep s p] returns a fresh copy of the set of all elements in [s]
     that satisfy predicate [p]. *)
 
-val partitionU: t -> (elt -> bool [@bs]) ->  t * t
-val partition: t -> (elt -> bool) ->  t * t 
+val partitionU: t -> (value -> bool [@bs]) ->  t * t
+val partition: t -> (value -> bool) ->  t * t 
 (** [partition s p] returns a fresh copy pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
     [s] that do not satisfy [p]. *)
 
 val size: t -> int
-val toList: t -> elt list
+val toList: t -> value list
  (** In increasing order with respect *)
-val toArray: t -> elt array
+val toArray: t -> value array
 
 
-val minimum: t -> elt option
-val minUndefined: t -> elt Js.undefined
-val maximum: t -> elt option
-val maxUndefined: t -> elt Js.undefined
+val minimum: t -> value option
+val minUndefined: t -> value Js.undefined
+val maximum: t -> value option
+val maxUndefined: t -> value Js.undefined
 
-val get:  t -> elt -> elt option
-val getUndefined:  t -> elt -> elt Js.undefined
-val getExn: t -> elt -> elt
-val split:  t -> elt  -> (t * t) * bool 
+val get:  t -> value -> value option
+val getUndefined:  t -> value -> value Js.undefined
+val getExn: t -> value -> value
+val split:  t -> value  -> (t * t) * bool 
 (**
     [split s key] return a fresh copy of each
 *)

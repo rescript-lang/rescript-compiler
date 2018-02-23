@@ -26,14 +26,14 @@ type ('key, 'id) t
 
 type ('key, 'id) cmp = ('key, 'id) Belt_Id.cmp
     
-val empty: ('elt, 'id) t
+val empty: ('value, 'id) t
 
 val ofArray:
   'k array ->
   cmp:('k, 'id) cmp ->
   ('k, 'id) t
 
-val ofSortedArrayUnsafe: 'elt array ->  ('elt,'id) t
+val ofSortedArrayUnsafe: 'value array ->  ('value,'id) t
     
 val isEmpty: _ t -> bool
 val has:
@@ -49,104 +49,104 @@ val add:
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
     
 val mergeMany:
-  ('elt, 'id) t -> 'elt array ->
-  cmp:('elt, 'id) cmp ->
-  ('elt, 'id) t 
+  ('value, 'id) t -> 'value array ->
+  cmp:('value, 'id) cmp ->
+  ('value, 'id) t 
 
 val remove:
-  ('elt, 'id) t ->
-  'elt ->
-  cmp:('elt, 'id) cmp ->
-  ('elt, 'id) t
+  ('value, 'id) t ->
+  'value ->
+  cmp:('value, 'id) cmp ->
+  ('value, 'id) t
 (** [remove m x] If [x] was not in [m], [m] is returned reference unchanged. *)
 
 val removeMany:
-  ('elt, 'id) t -> 'elt array ->
-  cmp:('elt, 'id) cmp ->
-  ('elt, 'id) t 
+  ('value, 'id) t -> 'value array ->
+  cmp:('value, 'id) cmp ->
+  ('value, 'id) t 
 
 
 val union:
-  ('elt, 'id) t -> ('elt, 'id) t ->
-  cmp:('elt, 'id) cmp ->
-  ('elt, 'id) t
+  ('value, 'id) t -> ('value, 'id) t ->
+  cmp:('value, 'id) cmp ->
+  ('value, 'id) t
 val intersect:
-  ('elt, 'id) t -> ('elt, 'id) t ->
-    cmp:('elt, 'id) cmp ->
-  ('elt, 'id) t
+  ('value, 'id) t -> ('value, 'id) t ->
+    cmp:('value, 'id) cmp ->
+  ('value, 'id) t
     
-val diff: ('elt, 'id) t -> ('elt, 'id) t ->
-  cmp:('elt, 'id) cmp ->
-  ('elt, 'id) t
-val subset: ('elt, 'id) t -> ('elt, 'id) t ->
-  cmp:('elt, 'id) cmp ->
+val diff: ('value, 'id) t -> ('value, 'id) t ->
+  cmp:('value, 'id) cmp ->
+  ('value, 'id) t
+val subset: ('value, 'id) t -> ('value, 'id) t ->
+  cmp:('value, 'id) cmp ->
   bool     
 
-val cmp: ('elt, 'id) t -> ('elt, 'id) t ->
-  cmp:('elt, 'id) cmp ->
+val cmp: ('value, 'id) t -> ('value, 'id) t ->
+  cmp:('value, 'id) cmp ->
   int
 (** Total ordering between sets. Can be used as the ordering function
     for doing sets of sets. *)
-val eq: ('elt, 'id) t -> ('elt, 'id) t ->
-  cmp:('elt, 'id) cmp ->
+val eq: ('value, 'id) t -> ('value, 'id) t ->
+  cmp:('value, 'id) cmp ->
   bool
 
-val forEachU: ('elt, 'id) t -> ('elt -> unit [@bs]) ->  unit
-val forEach: ('elt, 'id) t -> ('elt -> unit ) ->  unit  
+val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
+val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit  
 (** [forEach s f] applies [f] in turn to all elements of [s].
     In increasing order *)
   
-val reduceU: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a [@bs]) ->  'a
-val reduce: ('elt, 'id) t -> 'a  -> ('a -> 'elt -> 'a) ->  'a  
+val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
+val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a) ->  'a  
 (** In increasing order. *)
 
-val everyU: ('elt, 'id) t -> ('elt -> bool [@bs]) -> bool
-val every: ('elt, 'id) t -> ('elt -> bool) -> bool  
+val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
+val every: ('value, 'id) t -> ('value -> bool) -> bool  
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified *)
 
-val someU: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> bool
-val some: ('elt, 'id) t ->  ('elt -> bool) -> bool  
+val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
+val some: ('value, 'id) t ->  ('value -> bool) -> bool  
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
-val keepU: ('elt, 'id) t ->  ('elt -> bool [@bs]) -> ('elt, 'id) t
-val keep: ('elt, 'id) t ->  ('elt -> bool) -> ('elt, 'id) t
+val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
+val keep: ('value, 'id) t ->  ('value -> bool) -> ('value, 'id) t
 (** [keep m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)    
 
-val partitionU: ('elt, 'id) t -> ('elt -> bool [@bs]) ->  ('elt, 'id) t * ('elt, 'id) t
-val partition: ('elt, 'id) t -> ('elt -> bool ) ->  ('elt, 'id) t * ('elt, 'id) t                                                            
+val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
+val partition: ('value, 'id) t -> ('value -> bool ) ->  ('value, 'id) t * ('value, 'id) t                                                            
 (** [partition m p] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
     [s] that do not satisfy [p]. *)
 
-val size:  ('elt, 'id) t -> int
-val toList: ('elt, 'id) t -> 'elt list
+val size:  ('value, 'id) t -> int
+val toList: ('value, 'id) t -> 'value list
 (** In increasing order*)
-val toArray: ('elt, 'id) t -> 'elt array
+val toArray: ('value, 'id) t -> 'value array
 
-val minimum: ('elt, 'id) t -> 'elt option
-val minUndefined: ('elt, 'id) t -> 'elt Js.undefined
-val maximum: ('elt, 'id) t -> 'elt option
-val maxUndefined: ('elt, 'id) t -> 'elt Js.undefined
+val minimum: ('value, 'id) t -> 'value option
+val minUndefined: ('value, 'id) t -> 'value Js.undefined
+val maximum: ('value, 'id) t -> 'value option
+val maxUndefined: ('value, 'id) t -> 'value Js.undefined
 
 
 
-val get: ('elt, 'id) t -> 'elt ->
-  cmp:('elt, 'id) cmp ->
-  'elt option 
-val getUndefined: ('elt, 'id) t -> 'elt ->
-  cmp:('elt, 'id) cmp ->
-  'elt Js.undefined
-val getExn: ('elt, 'id) t -> 'elt ->
-  cmp:('elt, 'id) cmp ->
-  'elt 
+val get: ('value, 'id) t -> 'value ->
+  cmp:('value, 'id) cmp ->
+  'value option 
+val getUndefined: ('value, 'id) t -> 'value ->
+  cmp:('value, 'id) cmp ->
+  'value Js.undefined
+val getExn: ('value, 'id) t -> 'value ->
+  cmp:('value, 'id) cmp ->
+  'value 
 
-val split: ('elt, 'id) t -> 'elt ->
-  cmp:('elt, 'id) cmp ->
-  (('elt, 'id) t  * ('elt, 'id) t) * bool
+val split: ('value, 'id) t -> 'value ->
+  cmp:('value, 'id) cmp ->
+  (('value, 'id) t  * ('value, 'id) t) * bool
                                     
 val checkInvariantInternal: _ t -> unit
 (**
