@@ -67,6 +67,16 @@ let rec collect_missing_arguments rettype targettype = match rettype with
   end
   | _ -> None
 
+let rec collect_missing_arguments_right_to_left rettype targettype = match rettype with
+(* TODO *)
+  | {desc=Tarrow (label, argtype, rettype, _)} when rettype.desc = targettype.desc -> Some ((label, argtype) :: [])
+  | {desc=Tarrow (label, argtype, rettype, _)} -> begin
+  match collect_missing_arguments rettype targettype with
+    | Some res -> Some ((label, argtype) :: res)
+    | None -> None
+  end
+  | _ -> None
+
 let check_bs_arity_mismatch ppf trace =
   let arity t = match t.desc with
     | Tvariant { row_fields = [(label,_)] } ->
@@ -153,12 +163,21 @@ let report_error env ppf = function
         | Some (actual, expected) -> collect_missing_arguments actual expected
         | None -> assert false
         in
+        let print_arguments = 
+          Format.pp_print_list
+            ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
+            (fun ppf (label, argtype) ->
+              if label = "" then fprintf ppf "@[%a@]" type_expr argtype
+              else fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
+            )
+        in 
         match missing_arguments with
+        | Some [singleArgument] ->
+          fprintf ppf "@[@{<info>This call is missing a final argument@} of type@ %a@]"
+            print_arguments [singleArgument]
         | Some arguments ->
-          fprintf ppf "You're missing arguments: @[%a@]" (Format.pp_print_list ~pp_sep:(fun ppf _ -> fprintf ppf ", ") (fun ppf (label, argtype) ->
-            if label = "" then type_expr ppf argtype
-            else fprintf ppf "~%s: %a" label type_expr argtype
-          )) arguments
+          fprintf ppf "@[<hv>@{<info>This call is missing final arguments@} of type:@ %a@]"
+            print_arguments arguments
         | None ->
           check_bs_arity_mismatch ppf trace;
           super_report_unification_error ppf env trace
