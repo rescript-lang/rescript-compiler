@@ -144,17 +144,31 @@ let report_error env ppf = function
           @[<v 2>- If it's a third-party dependency:@,\
             - Did you list it in bsconfig.json?@,\
             - @[Did you run `bsb` instead of `bsb -make-world`@ (latter builds third-parties)@]?\
-            @]@,\
+          @]@,\
           - Did you include the file's directory in bsconfig.json?@]\
         @]"
         longident lid;
       spellcheck ppf Env.fold_modules env lid
   | Unbound_constructor lid ->
-      fprintf ppf "Unbound constructor %a" longident lid;
+      fprintf ppf "@[<v>\
+      @{<info>The variant constructor %a can't be found.@}@,@,\
+      @[<v 2>- If it's defined in another module or file, bring it into scope by:@,\
+        @[- Annotating it with said module name:@ @{<info>let food = MyModule.Apple@}@]@,\
+        @[- Or specifying its type:@ @{<info>let food: MyModule.fruit = Apple@}@]\
+      @]@,\
+      - @[Constructors and modules are both capitalized.@ Did you want the latter?@ Then instead of @{<dim>let foo = Bar@}, try @{<info>module Foo = Bar@}.@]\
+      @]"
+      longident lid;
       Typetexp.spellcheck_simple ppf Env.fold_constructors (fun d -> d.cstr_name)
         env lid;
   | Unbound_label lid ->
-      fprintf ppf "Unbound record field %a" longident lid;
+      fprintf ppf "@[<v>\
+      @{<info>The record field %a can't be found.@}@,@,\
+      If it's defined in another module or file, bring it into scope by:@,\
+      @[- Annotating it with said module name:@ @{<info>let baby = {myModule.age: 3}@}@]@,\
+      @[- Or specifying its type:@ @{<info>let baby: MyModule.person = {age: 3}@}@]\
+      @]"
+      longident lid;
       Typetexp.spellcheck_simple ppf Env.fold_labels (fun d -> d.lbl_name) env lid;
   | Unbound_class lid ->
       fprintf ppf "Unbound class %a" longident lid;
