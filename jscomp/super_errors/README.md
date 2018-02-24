@@ -31,4 +31,4 @@ Files in `formattingTests` get printed with `-colors always` so we can test form
 
 To add a new test case, add your code to the end of a file, and run `jscomp/build_tests/super_errors/rebuild.sh`. The output will be appended.
 
-To recompile `bsc`, you can, from the `jscomp` directory, run `make bin/bsc.exe`. If this doesn't work, you likely have a problem with the ocaml installation -- go back to `Build` and make sure you followed everything to the letter.
+To test the changes on a dummy project, see [here](https://github.com/BuckleScript/bucklescript/blob/master/CONTRIBUTING.md#test-on-a-dummy-project).

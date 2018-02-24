@@ -42,7 +42,7 @@ npm -g install .
 Go somewhere else and do this:
 
 ```
-bsb -init foo
+bsb -init foo -theme basic-reason
 cd foo
 npm run build
 ```
