@@ -67,16 +67,6 @@ let rec collect_missing_arguments rettype targettype = match rettype with
   end
   | _ -> None
 
-let rec collect_missing_arguments_right_to_left rettype targettype = match rettype with
-(* TODO *)
-  | {desc=Tarrow (label, argtype, rettype, _)} when rettype.desc = targettype.desc -> Some ((label, argtype) :: [])
-  | {desc=Tarrow (label, argtype, rettype, _)} -> begin
-  match collect_missing_arguments rettype targettype with
-    | Some res -> Some ((label, argtype) :: res)
-    | None -> None
-  end
-  | _ -> None
-
 let check_bs_arity_mismatch ppf trace =
   let arity t = match t.desc with
     | Tvariant { row_fields = [(label,_)] } ->
