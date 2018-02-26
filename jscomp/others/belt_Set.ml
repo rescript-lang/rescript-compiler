@@ -41,7 +41,7 @@ end
 
 type ('k, 'id) t = ('k, 'id) S.t
     
-let ofArray (type elt) (type identity) data ~(id : (elt,identity) id)  = 
+let ofArray (type value) (type identity) data ~(id : (value,identity) id)  = 
   let module M = (val id ) in
   let cmp = M.cmp in 
   S.t ~cmp ~data:(Dict.ofArray ~cmp data)
@@ -88,7 +88,7 @@ let split m e =
   let (l,  r), b = Dict.split ~cmp (S.data m) e in 
   (S.t ~cmp ~data:l, S.t ~cmp ~data:r), b
   
-let make (type elt) (type identity) ~(id : (elt, identity) id) =
+let make (type value) (type identity) ~(id : (value, identity) id) =
   let module M = (val id) in 
   S.t ~cmp:M.cmp  ~data:Dict.empty
 
@@ -145,7 +145,7 @@ let getExn m e =
 let has m e = 
   Dict.has ~cmp:(S.cmp m) (S.data m) e
 
-let ofSortedArrayUnsafe (type elt) (type identity) xs ~(id : (elt,identity) id ) =
+let ofSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id ) =
   let module M = (val id) in 
   S.t ~cmp:M.cmp ~data:(Dict.ofSortedArrayUnsafe xs)
 
@@ -154,15 +154,15 @@ let ofSortedArrayUnsafe (type elt) (type identity) xs ~(id : (elt,identity) id )
 
 let getData = S.data
 
-let getId (type elt) (type identity) (m : (elt,identity) t) : (elt, identity) id =
+let getId (type value) (type identity) (m : (value,identity) t) : (value, identity) id =
   let module T = struct
     type nonrec identity = identity
-    type nonrec t = elt
+    type nonrec t = value
     let cmp =  S.cmp m
   end in
   (module T)
   
-let packIdData (type elt) (type identity) ~(id : (elt, identity) id) ~data  =
+let packIdData (type value) (type identity) ~(id : (value, identity) id) ~data  =
   let module M = (val id) in 
   S.t ~cmp:M.cmp ~data
 

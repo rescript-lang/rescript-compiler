@@ -1,5 +1,5 @@
 # 2 "internal_set.cppo.ml"
-type elt = string
+type value = string
 module S = Belt_SortArrayString
 
 
@@ -8,9 +8,9 @@ module N = Belt_internalAVLset
 module A = Belt_Array 
 
 
-type t = elt N.t
+type t = value N.t
 
-let rec has (t : t) (x : elt)  =
+let rec has (t : t) (x : value)  =
   match N.toOpt t with 
   | None -> false
   | Some n  ->                
@@ -21,7 +21,7 @@ let rec has (t : t) (x : elt)  =
 let rec compareAux e1 e2  =
     match e1,e2 with 
     | h1::t1, h2::t2 ->
-        let (k1 : elt) ,k2 = N.key h1, N.key h2 in 
+        let (k1 : value) ,k2 = N.key h1, N.key h2 in 
         if k1 = k2 then  
           compareAux 
             (N.stackAllLeft (N.right h1) t1 ) 
@@ -62,7 +62,7 @@ let rec subset (s1 : t) (s2 : t) =
       subset N.(create empty v1 r1 ) r2 && subset l1 s2
 
 
-let rec get (n :t) (x : elt) = 
+let rec get (n :t) (x : value) = 
   match N.toOpt n with 
   | None -> None
   | Some t  ->    
@@ -72,7 +72,7 @@ let rec get (n :t) (x : elt) =
 
 
 
-let rec getUndefined (n :t) (x : elt)   = 
+let rec getUndefined (n :t) (x : value)   = 
   match N.toOpt n with 
   | None -> Js.undefined
   | Some t  ->    
@@ -80,7 +80,7 @@ let rec getUndefined (n :t) (x : elt)   =
     if x = v then Js.Undefined.return v
     else getUndefined  (if x < v then N.left t else N.right t) x
 
-let rec getExn  (n :t) (x : elt) = 
+let rec getExn  (n :t) (x : value) = 
   match N.toOpt n with 
   | None -> [%assert "getExn"]
   | Some t  ->    
@@ -89,7 +89,7 @@ let rec getExn  (n :t) (x : elt) =
     else getExn (if x < v then N.left t else N.right t) x
 
 (****************************************************************************)
-let rec addMutate  t  (x : elt)=   
+let rec addMutate  t  (x : value)=   
   match N.toOpt t with 
   | None -> N.singleton x
   | Some nt -> 
@@ -106,7 +106,7 @@ let rec addMutate  t  (x : elt)=
 
 
 
-let ofArray (xs : elt array) =   
+let ofArray (xs : value array) =   
   let len = A.length xs in 
   if len = 0 then N.empty
   else

@@ -29,11 +29,11 @@
   Such methods could be shared between 
   [generic set/specalized set] whether mutable or immutable depends on use cases
 *)
-type 'elt t = 'elt node Js.null
-and 'elt node  = private {
-  mutable left : 'elt t;
-   key : 'elt ; 
-  mutable right : 'elt t;
+type 'value t = 'value node Js.null
+and 'value node  = private {
+  mutable left : 'value t;
+   key : 'value ; 
+  mutable right : 'value t;
   h : int
 } [@@bs.deriving abstract]
 

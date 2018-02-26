@@ -35,7 +35,7 @@ module S = Belt_SortArrayString
 module N = Belt_internalAVLset
 module A = Belt_Array 
 
-type elt = I.elt
+type value = I.value
 (** The type of the set elements. *)
              
 
@@ -45,7 +45,7 @@ type t = {
 (** The type of sets. *)
 
 
-let rec remove0 nt (x : elt)= 
+let rec remove0 nt (x : value)= 
   let k = N.key nt in 
   if x = k then 
     let l,r = N.(left nt, right nt) in       
@@ -98,7 +98,7 @@ let removeMany  (d : t) xs =
     let len = A.length xs in 
     dataSet d  (removeMany0 nt xs 0 len) 
     
-let rec removeCheck0  nt (x : elt) removed = 
+let rec removeCheck0  nt (x : value) removed = 
   let k = N.key nt in 
   if x = k then 
     let () = removed := true in  
@@ -139,7 +139,7 @@ let removeCheck  (d :  t) v =
     !removed
 
     
-let rec addCheck0  t (x : elt) added  =   
+let rec addCheck0  t (x : value) added  =   
   match N.toOpt t with 
   | None -> 
     added := true;

@@ -24,13 +24,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type 'elt node  = {
-  mutable left : 'elt t;
-  mutable key : 'elt ; 
-  mutable right : 'elt t;
+type 'value node  = {
+  mutable left : 'value t;
+  mutable key : 'value ; 
+  mutable right : 'value t;
   mutable h : int 
 }
-and 'elt t =  'elt node Js.null
+and 'value t =  'value node Js.null
 [@@bs.deriving abstract]
 
 module A = Belt_Array
