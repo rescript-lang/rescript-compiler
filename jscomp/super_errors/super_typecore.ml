@@ -58,13 +58,15 @@ let show_extra_help ppf env trace = begin
   | _ -> ();
 end
 
-let rec collect_missing_arguments rettype targettype = match rettype with
-  | {desc=Tarrow (label, argtype, rettype, _)} when rettype.desc = targettype.desc -> Some ((label, argtype) :: [])
-  | {desc=Tarrow (label, argtype, rettype, _)} -> begin
-  match collect_missing_arguments rettype targettype with
+(* given type1 is foo => bar => baz and type 2 is bar => baz, return Some(foo) *)
+let rec collect_missing_arguments type1 type2 = match type1 with
+  | {desc=Tarrow (label, argtype, typ, _)} when typ.desc = type2.desc -> 
+    Some ((label, argtype) :: [])
+  | {desc=Tarrow (label, argtype, typ, _)} -> begin
+    match collect_missing_arguments typ type2 with
     | Some res -> Some ((label, argtype) :: res)
     | None -> None
-  end
+    end
   | _ -> None
 
 let check_bs_arity_mismatch ppf trace =
@@ -135,6 +137,8 @@ let report_error env ppf = function
         (Ident.name id)
   | Expr_type_clash trace ->
       (* modified *)
+      (* this is the most frequent error. Do whatever we can to provide specific
+        guidance to this generic error before giving up *)
       if Super_reason_react.state_escape_scope trace then
         fprintf ppf "@[<v>\
           @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
@@ -149,7 +153,8 @@ let report_error env ppf = function
           @[@{<info>Here's the original error message@}@]@,\
         @]";
       begin
-        let missing_arguments = match bottom_aliases trace with
+        let bottom_aliases_result = bottom_aliases trace in 
+        let missing_arguments = match bottom_aliases_result with
         | Some (actual, expected) -> collect_missing_arguments actual expected
         | None -> assert false
         in
@@ -161,7 +166,7 @@ let report_error env ppf = function
               else fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
             )
         in 
-        match missing_arguments with
+        begin match missing_arguments with
         | Some [singleArgument] ->
           fprintf ppf "@[@{<info>This call is missing a final argument@} of type@ %a@]"
             print_arguments [singleArgument]
@@ -169,13 +174,28 @@ let report_error env ppf = function
           fprintf ppf "@[<hv>@{<info>This call is missing final arguments@} of type:@ %a@]"
             print_arguments arguments
         | None ->
-          check_bs_arity_mismatch ppf trace;
-          super_report_unification_error ppf env trace
-            (function ppf ->
-                fprintf ppf "This has type:")
-            (function ppf ->
-                fprintf ppf "But somewhere wanted:");
-          show_extra_help ppf env trace
+          let missing_parameters = match bottom_aliases_result with
+          | Some (actual, expected) -> collect_missing_arguments expected actual
+          | None -> assert false
+          in
+          begin match missing_parameters with
+          | Some [singleParameter] ->
+            fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function@ that@ takes@ an@ extra@ argument@}@ of@ type@ %a@]"
+              print_arguments [singleParameter]
+          | Some arguments ->
+            fprintf ppf "@[<hv>@[This value seems to @{<info>need to be wrapped in a function@ that@ takes@ extra@ arguments@}@ of@ type:@]@ %a@]"
+              print_arguments arguments
+          | None -> 
+            (* final fallback: show the generic type mismatch error *)
+            check_bs_arity_mismatch ppf trace;
+            super_report_unification_error ppf env trace
+              (function ppf ->
+                  fprintf ppf "This has type:")
+              (function ppf ->
+                  fprintf ppf "But somewhere wanted:");
+            show_extra_help ppf env trace;
+          end;
+        end;
       end
   | Apply_non_function typ ->
       (* modified *)
