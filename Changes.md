@@ -1,5 +1,5 @@
 
-#2.2.2:
+# 2.2.2
 
 Features:
 - Upgrade with latest reason syntax (native unucurry support etc)
