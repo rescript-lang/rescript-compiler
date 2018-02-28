@@ -126,6 +126,12 @@ val makeBy: int -> (int -> 'a) -> 'a t
     ]}
 *)    
 
+val shuffle: 'a t -> 'a t 
+(** [shuffle xs]
+   @return a new list in random order
+*)
+
+
 val drop: 'a t -> int -> 'a t option 
 (** [drop xs n]
 

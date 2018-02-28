@@ -1,4 +1,4 @@
-'use strict';
+
 
 import * as Path from "path";
 import * as Js_option from "../../lib/es6/js_option.js";
