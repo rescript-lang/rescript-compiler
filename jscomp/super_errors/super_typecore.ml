@@ -59,11 +59,11 @@ let show_extra_help ppf env trace = begin
 end
 
 (* given type1 is foo => bar => baz and type 2 is bar => baz, return Some(foo) *)
-let rec collect_missing_arguments type1 type2 = match type1 with
-  | {desc=Tarrow (label, argtype, typ, _)} when typ.desc = type2.desc -> 
-    Some ((label, argtype) :: [])
+let rec collect_missing_arguments env type1 type2 = match type1 with
+  | {desc=Tarrow (label, argtype, typ, _)} when Ctype.equal env true [typ] [type2] -> 
+    Some [(label, argtype)]
   | {desc=Tarrow (label, argtype, typ, _)} -> begin
-    match collect_missing_arguments typ type2 with
+    match collect_missing_arguments env typ type2 with
     | Some res -> Some ((label, argtype) :: res)
     | None -> None
     end
@@ -155,7 +155,7 @@ let report_error env ppf = function
       begin
         let bottom_aliases_result = bottom_aliases trace in 
         let missing_arguments = match bottom_aliases_result with
-        | Some (actual, expected) -> collect_missing_arguments actual expected
+        | Some (actual, expected) -> collect_missing_arguments env actual expected
         | None -> assert false
         in
         let print_arguments = 
@@ -175,7 +175,7 @@ let report_error env ppf = function
             print_arguments arguments
         | None ->
           let missing_parameters = match bottom_aliases_result with
-          | Some (actual, expected) -> collect_missing_arguments expected actual
+          | Some (actual, expected) -> collect_missing_arguments env expected actual
           | None -> assert false
           in
           begin match missing_parameters with
@@ -183,7 +183,7 @@ let report_error env ppf = function
             fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function@ that@ takes@ an@ extra@ argument@}@ of@ type@ %a@]"
               print_arguments [singleParameter]
           | Some arguments ->
-            fprintf ppf "@[<hv>@[This value seems to @{<info>need to be wrapped in a function@ that@ takes@ extra@ arguments@}@ of@ type:@]@ %a@]"
+            fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function that takes extra@ arguments@}@ of@ type:@ @[<hv>%a@]@]"
               print_arguments arguments
           | None -> 
             (* final fallback: show the generic type mismatch error *)
