@@ -1,4 +1,15 @@
 
+#2.2.2:
+
+Features:
+- Upgrade with latest reason syntax (native unucurry support etc)
+- #2531 add missing functions in Js.Nullable fromoption/toOption
+- #2527 Belt.List.shuffle
+
+Fixes:
+- #2503 bs.string and bs.obj interaction
+- #2549, #2548, $2548, #2542, #2541 improve error message
+
 # 2.2.0
 Features:
 - A beta release for the new stdlib called Belt 
