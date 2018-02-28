@@ -25,6 +25,7 @@
 (** Contains functionality for dealing with values that can be both [null] and [undefined] *)
 
 type + 'a t = 'a Js.nullable
+external toOption : 'a t -> 'a option = "#null_undefined_to_opt"
 external to_opt : 'a t -> 'a option = "#null_undefined_to_opt"
 external return : 'a -> 'a t = "%identity"
 external test : 'a t -> bool =  "#is_nil_undef"
@@ -41,7 +42,9 @@ let iter x f =
   | None -> ()
   | Some x -> f x [@bs]
 
-let from_opt x =
+let fromOption x =
   match x with
   | None -> undefined
   | Some x -> return x
+
+let from_opt = fromOption
