@@ -58,9 +58,10 @@ let show_extra_help ppf env trace = begin
   | _ -> ();
 end
 
-(* given type1 is foo => bar => baz and type 2 is bar => baz, return Some(foo) *)
+(* given type1 is foo => bar => baz(qux) and type 2 is bar => baz(qux), return Some(foo) *)
 let rec collect_missing_arguments env type1 type2 = match type1 with
-  | {desc=Tarrow (label, argtype, typ, _)} when Ctype.equal env true [typ] [type2] -> 
+  (* why do we use Ctype.matches here? Please see https://github.com/BuckleScript/bucklescript/pull/2554 *)
+  | {desc=Tarrow (label, argtype, typ, _)} when Ctype.matches env typ type2 ->
     Some [(label, argtype)]
   | {desc=Tarrow (label, argtype, typ, _)} -> begin
     match collect_missing_arguments env typ type2 with
@@ -153,48 +154,59 @@ let report_error env ppf = function
           @[@{<info>Here's the original error message@}@]@,\
         @]";
       begin
-        let bottom_aliases_result = bottom_aliases trace in 
+        let bottom_aliases_result = bottom_aliases trace in
         let missing_arguments = match bottom_aliases_result with
         | Some (actual, expected) -> collect_missing_arguments env actual expected
         | None -> assert false
         in
-        let print_arguments = 
+        let print_arguments =
           Format.pp_print_list
             ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
             (fun ppf (label, argtype) ->
               if label = "" then fprintf ppf "@[%a@]" type_expr argtype
               else fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
             )
-        in 
+        in
         begin match missing_arguments with
         | Some [singleArgument] ->
-          fprintf ppf "@[@{<info>This call is missing a final argument@} of type@ %a@]"
+          (* btw, you can't say "final arguments". Intermediate labeled
+            arguments might be the ones missing *)
+          fprintf ppf "@[@{<info>This call is missing an argument@} of type@ %a@]"
             print_arguments [singleArgument]
         | Some arguments ->
-          fprintf ppf "@[<hv>@{<info>This call is missing final arguments@} of type:@ %a@]"
+          fprintf ppf "@[<hv>@{<info>This call is missing arguments@} of type:@ %a@]"
             print_arguments arguments
         | None ->
           let missing_parameters = match bottom_aliases_result with
           | Some (actual, expected) -> collect_missing_arguments env expected actual
           | None -> assert false
           in
+
+          fprintf ppf "@[<v>";
+
           begin match missing_parameters with
           | Some [singleParameter] ->
-            fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function@ that@ takes@ an@ extra@ argument@}@ of@ type@ %a@]"
-              print_arguments [singleParameter]
+            fprintf ppf "@[This value might need to be @{<info>wrapped in a function@ that@ takes@ an@ extra@ parameter@}@ of@ type@ %a@]@,@,"
+              print_arguments [singleParameter];
+            fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
           | Some arguments ->
-            fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function that takes extra@ arguments@}@ of@ type:@ @[<hv>%a@]@]"
-              print_arguments arguments
-          | None -> 
-            (* final fallback: show the generic type mismatch error *)
-            check_bs_arity_mismatch ppf trace;
-            super_report_unification_error ppf env trace
-              (function ppf ->
-                  fprintf ppf "This has type:")
-              (function ppf ->
-                  fprintf ppf "But somewhere wanted:");
-            show_extra_help ppf env trace;
+            fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function that takes extra@ arguments@}@ of@ type:@ @[<hv>%a@]@]@,@,"
+              print_arguments arguments;
+            fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
+          | None -> ()
           end;
+
+          (* final fallback: show the generic type mismatch error *)
+          check_bs_arity_mismatch ppf trace;
+          super_report_unification_error ppf env trace
+            (function ppf ->
+                fprintf ppf "This has type:")
+            (function ppf ->
+                fprintf ppf "But somewhere wanted:");
+          show_extra_help ppf env trace;
+
+          fprintf ppf "@]"
+
         end;
       end
   | Apply_non_function typ ->
