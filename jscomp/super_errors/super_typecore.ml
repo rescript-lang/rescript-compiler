@@ -301,14 +301,15 @@ let report_error env ppf = function
           "This simple coercion was not fully general."
           "Consider using a double coercion."
   | Too_many_arguments (in_function, ty) ->
+      (* modified *)
       reset_and_mark_loops ty;
       if in_function then begin
-        fprintf ppf "This function expects too many arguments,@ ";
-        fprintf ppf "it should have type@ %a"
+        fprintf ppf "@[This function expects too many arguments,@ ";
+        fprintf ppf "it should have type@ %a@]"
           type_expr ty
       end else begin
-        fprintf ppf "This expression should not be a function,@ ";
-        fprintf ppf "the expected type is@ %a"
+        fprintf ppf "@[This expression should not be a function,@ ";
+        fprintf ppf "the expected type is@ %a@]"
           type_expr ty
       end
   | Abstract_wrong_label (l, ty) ->
