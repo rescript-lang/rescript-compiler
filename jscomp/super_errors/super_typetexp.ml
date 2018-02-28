@@ -182,7 +182,7 @@ let report_error env ppf = function
       fprintf ppf "@[<v>\
       @{<info>The record field %a can't be found.@}@,@,\
       If it's defined in another module or file, bring it into scope by:@,\
-      @[- Annotating it with said module name:@ @{<info>let baby = {myModule.age: 3}@}@]@,\
+      @[- Annotating it with said module name:@ @{<info>let baby = {MyModule.age: 3}@}@]@,\
       @[- Or specifying its type:@ @{<info>let baby: MyModule.person = {age: 3}@}@]\
       @]"
       longident lid;
