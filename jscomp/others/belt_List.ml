@@ -407,6 +407,11 @@ let toArray ( x : _ t) =
   fillAux arr 0 x;
   arr
 
+let shuffle xs = 
+  let v = toArray xs in
+  A.shuffleInPlace v ;
+  ofArray v 
+
 let rec fillAuxMap arr i x f =
   match x with
   | [] -> ()
