@@ -101,6 +101,71 @@ let check_bs_arity_mismatch ppf trace =
         false in
   ignore (traverse trace)
 
+let print_expr_type_clash env trace ppf =
+  (* this is the most frequent error. Do whatever we can to provide specific
+    guidance to this generic error before giving up *)
+  if Super_reason_react.state_escape_scope trace then
+    fprintf ppf "@[<v>\
+      @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
+      If so, is the type for state, retained props or action declared _after_ the component declaration?@ \
+      Moving these types above the component declaration should resolve this!@]@,@,\
+      @[@{<info>Here's the original error message@}@]@,\
+    @]"
+  else if Super_reason_react.is_array_wanted_reactElement trace then
+    fprintf ppf "@[<v>\
+      @[@{<info>Are you passing an array as a ReasonReact DOM (lower-case) component's children?@}@ If not, disregard this.@ \
+      If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/docs/en/children.html@]@,@,\
+      @[@{<info>Here's the original error message@}@]@,\
+    @]";
+  begin
+    let bottom_aliases_result = bottom_aliases trace in
+    let missing_arguments = match bottom_aliases_result with
+    | Some (actual, expected) -> collect_missing_arguments env actual expected
+    | None -> assert false
+    in
+    let print_arguments =
+      Format.pp_print_list
+        ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
+        (fun ppf (label, argtype) ->
+          if label = "" then fprintf ppf "@[%a@]" type_expr argtype
+          else fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
+        )
+    in
+    begin match missing_arguments with
+    | Some [singleArgument] ->
+      (* btw, you can't say "final arguments". Intermediate labeled
+        arguments might be the ones missing *)
+      fprintf ppf "@[@{<info>This call is missing an argument@} of type@ %a@]"
+        print_arguments [singleArgument]
+    | Some arguments ->
+      fprintf ppf "@[<hv>@{<info>This call is missing arguments@} of type:@ %a@]"
+        print_arguments arguments
+    | None ->
+      let missing_parameters = match bottom_aliases_result with
+      | Some (actual, expected) -> collect_missing_arguments env expected actual
+      | None -> assert false
+      in
+      begin match missing_parameters with
+      | Some [singleParameter] ->
+        fprintf ppf "@[This value might need to be @{<info>wrapped in a function@ that@ takes@ an@ extra@ parameter@}@ of@ type@ %a@]@,@,"
+          print_arguments [singleParameter];
+        fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
+      | Some arguments ->
+        fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function that takes extra@ arguments@}@ of@ type:@ @[<hv>%a@]@]@,@,"
+          print_arguments arguments;
+        fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
+      | None -> ()
+      end;
+      (* final fallback: show the generic type mismatch error *)
+      check_bs_arity_mismatch ppf trace;
+      super_report_unification_error ppf env trace
+        (function ppf ->
+            fprintf ppf "This has type:")
+        (function ppf ->
+            fprintf ppf "But somewhere wanted:");
+      show_extra_help ppf env trace;
+    end;
+  end
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
 let report_error env ppf = function
@@ -138,77 +203,9 @@ let report_error env ppf = function
         (Ident.name id)
   | Expr_type_clash trace ->
       (* modified *)
-      (* this is the most frequent error. Do whatever we can to provide specific
-        guidance to this generic error before giving up *)
-      if Super_reason_react.state_escape_scope trace then
-        fprintf ppf "@[<v>\
-          @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
-          If so, is the type for state, retained props or action declared _after_ the component declaration?@ \
-          Moving these types above the component declaration should resolve this!@]@,@,\
-          @[@{<info>Here's the original error message@}@]@,\
-        @]"
-      else if Super_reason_react.is_array_wanted_reactElement trace then
-        fprintf ppf "@[<v>\
-          @[@{<info>Are you passing an array as a ReasonReact DOM (lower-case) component's children?@}@ If not, disregard this.@ \
-          If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/docs/en/children.html@]@,@,\
-          @[@{<info>Here's the original error message@}@]@,\
-        @]";
-      begin
-        let bottom_aliases_result = bottom_aliases trace in
-        let missing_arguments = match bottom_aliases_result with
-        | Some (actual, expected) -> collect_missing_arguments env actual expected
-        | None -> assert false
-        in
-        let print_arguments =
-          Format.pp_print_list
-            ~pp_sep:(fun ppf _ -> fprintf ppf ",@ ")
-            (fun ppf (label, argtype) ->
-              if label = "" then fprintf ppf "@[%a@]" type_expr argtype
-              else fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
-            )
-        in
-        begin match missing_arguments with
-        | Some [singleArgument] ->
-          (* btw, you can't say "final arguments". Intermediate labeled
-            arguments might be the ones missing *)
-          fprintf ppf "@[@{<info>This call is missing an argument@} of type@ %a@]"
-            print_arguments [singleArgument]
-        | Some arguments ->
-          fprintf ppf "@[<hv>@{<info>This call is missing arguments@} of type:@ %a@]"
-            print_arguments arguments
-        | None ->
-          let missing_parameters = match bottom_aliases_result with
-          | Some (actual, expected) -> collect_missing_arguments env expected actual
-          | None -> assert false
-          in
-
-          fprintf ppf "@[<v>";
-
-          begin match missing_parameters with
-          | Some [singleParameter] ->
-            fprintf ppf "@[This value might need to be @{<info>wrapped in a function@ that@ takes@ an@ extra@ parameter@}@ of@ type@ %a@]@,@,"
-              print_arguments [singleParameter];
-            fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
-          | Some arguments ->
-            fprintf ppf "@[This value seems to @{<info>need to be wrapped in a function that takes extra@ arguments@}@ of@ type:@ @[<hv>%a@]@]@,@,"
-              print_arguments arguments;
-            fprintf ppf "@[@{<info>Here's the original error message@}@]@,"
-          | None -> ()
-          end;
-
-          (* final fallback: show the generic type mismatch error *)
-          check_bs_arity_mismatch ppf trace;
-          super_report_unification_error ppf env trace
-            (function ppf ->
-                fprintf ppf "This has type:")
-            (function ppf ->
-                fprintf ppf "But somewhere wanted:");
-          show_extra_help ppf env trace;
-
-          fprintf ppf "@]"
-
-        end;
-      end
+      fprintf ppf "@[<v>";
+      print_expr_type_clash env trace ppf;
+      fprintf ppf "@]"
   | Apply_non_function typ ->
       (* modified *)
       reset_and_mark_loops typ;
