@@ -37,7 +37,6 @@ type reason_react_jsx = string option
 
 type refmt = 
   | Refmt_none
-  | Refmt_v2
   | Refmt_v3 
   | Refmt_custom of string 
 type t = 
