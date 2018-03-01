@@ -113,8 +113,14 @@ let print_expr_type_clash env trace ppf =
     @]"
   else if Super_reason_react.is_array_wanted_reactElement trace then
     fprintf ppf "@[<v>\
-      @[@{<info>Are you passing an array as a ReasonReact DOM (lower-case) component's children?@}@ If not, disregard this.@ \
+      @[@{<info>Did you pass an array as a ReasonReact DOM (lower-case) component's children?@}@ If not, disregard this.@ \
       If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/docs/en/children.html@]@,@,\
+      @[@{<info>Here's the original error message@}@]@,\
+    @]"
+  else if Super_reason_react.is_componentSpec_wanted_reactElement trace then
+    fprintf ppf "@[<v>\
+      @[@{<info>Did you want to create a ReasonReact element without using JSX?@}@ If not, disregard this.@ \
+      If so, don't forget to wrap this value in `ReasonReact.element` yourself:@ https://reasonml.github.io/reason-react/docs/en/jsx.html#capitalized@]@,@,\
       @[@{<info>Here's the original error message@}@]@,\
     @]";
   begin
