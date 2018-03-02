@@ -83,6 +83,13 @@ let caml_make_vect len init =
   done;
   b
 
+let caml_make_float_vect len = 
+  let b = new_uninitialized len in
+  for i = 0 to len - 1 do 
+      b.(i) <- 0.
+  done;
+  b  
+  
 let caml_array_blit a1 i1 a2 i2 len = 
   if i2 <= i1 then 
     for j = 0 to len - 1 do
