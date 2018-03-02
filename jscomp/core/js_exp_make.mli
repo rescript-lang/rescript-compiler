@@ -50,7 +50,8 @@
     ]}
 *)
 type t = J.expression 
-val extract_non_pure : t -> t option
+
+val remove_pure_sub_exp : t -> t option
 
 type binary_op =   ?comment:string -> t -> t -> t 
 
@@ -63,9 +64,9 @@ type unary_op =  ?comment:string -> t -> t
 val ocaml_boolean_under_condition : t -> t 
 
 
-(* val bin : ?comment:string -> J.binop -> t -> t -> t *)
-val mk :
-  ?comment:string -> J.expression_desc -> t
+
+(* val mk :
+  ?comment:string -> J.expression_desc -> t *)
 
 val access : binary_op
 
@@ -73,21 +74,38 @@ val string_access : binary_op
 
 val var : ?comment:string  -> J.ident -> t 
 
-val runtime_var_dot : ?comment:string -> string -> string -> t
+(* val runtime_var_dot : ?comment:string -> string -> string -> t *)
 
-val runtime_var_vid : string -> string -> J.vident
+(* val runtime_var_vid : string -> string -> J.vident *)
 
+(** [ml_var_dot ocaml_module name]
+*)
 val ml_var_dot : ?comment:string -> Ident.t -> string -> t
 
-val external_var_dot : ?comment:string ->  external_name:string -> ?dot:string -> Ident.t -> t
+(** [external_var_dot ~external_name ~dot id]
+  Used in FFI
+*)
+val external_var_dot : 
+  ?comment:string ->  
+  external_name:string -> 
+  ?dot:string -> 
+  Ident.t ->
+  t
 
+val runtime_call : 
+  ?comment:string -> 
+  string -> (* module_name *)
+  string -> (* fn_name *)
+  t list -> (* args *)
+  t
 
+val runtime_ref : 
+  string -> 
+  string -> 
+  t  
 
-val ml_var : ?comment:string -> Ident.t -> t
-
-val runtime_call : ?comment:string -> string -> string -> t list -> t
 val public_method_call : string -> t -> t -> Int32.t -> t list -> t
-val runtime_ref : string -> string -> t
+
 
 val str : 
   ?pure:bool -> 
@@ -224,16 +242,24 @@ val to_json_string : unary_op
 
 val new_ : ?comment:string -> J.expression -> J.expression list -> t
 
-val arr : ?comment:string -> J.mutable_flag -> J.expression list -> t
+val array : 
+  ?comment:string -> 
+  J.mutable_flag -> 
+  J.expression list ->
+  t
 
 val make_block : 
   ?comment:string ->
-  J.expression -> J.tag_info -> J.expression list -> J.mutable_flag -> t
+  J.expression -> (* tag *)
+  J.tag_info ->  (* tag_info *)
+  J.expression list -> 
+  J.mutable_flag ->
+  t
 
 (* val uninitialized_object : 
   ?comment:string -> J.expression -> J.expression -> t *)
 
-val uninitialized_array : unary_op
+(* val uninitialized_array : unary_op *)
 
 val seq : binary_op
 val fuse_to_seq : t -> t list -> t 

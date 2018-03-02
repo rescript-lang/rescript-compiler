@@ -122,7 +122,7 @@ var glo = Bytes.make(4096, /* "\000" */0);
 
 var gpos = [0];
 
-var s = new Array(100);
+var s = Caml_string.caml_create_string(100);
 
 function getq() {
   var c = Curry._1(getch, /* () */0);

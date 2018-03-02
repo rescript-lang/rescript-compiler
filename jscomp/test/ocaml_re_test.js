@@ -1941,8 +1941,8 @@ function colorize(c, regexp) {
 }
 
 function flatten_cmap(cm) {
-  var c = new Array(256);
-  var col_repr = new Array(256);
+  var c = Caml_string.caml_create_string(256);
+  var col_repr = Caml_string.caml_create_string(256);
   var v = 0;
   c[0] = /* "\000" */0;
   col_repr[0] = /* "\000" */0;

@@ -428,15 +428,15 @@ let translate loc (prim_name : string)
         | _ -> assert false 
       end
     | "caml_create_string" -> 
+      (* Bytes.create *)
       (* Note that for invalid range, JS raise an Exception RangeError, 
          here in OCaml it's [Invalid_argument], we have to preserve this semantics.
           Also, it's creating a [bytes] which is a js array actually.
       *)
       begin match args with
-        | [{expression_desc = Number (Int {i; _}); _} as v] 
-          when i >= 0l -> 
-          E.uninitialized_array v 
-        (* TODO: inline and spits out a warning when i is negative *)
+        | [{expression_desc = Number (Int {i = 0l; _}); _}] 
+          ->
+          E.array NA []
         | _ -> 
           call Js_runtime_modules.string 
       end

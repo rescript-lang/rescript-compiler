@@ -10393,7 +10393,7 @@ var keyword_table = create_hashtable(149, /* :: */[
       ]
     ]);
 
-var initial_string_buffer = new Array(256);
+var initial_string_buffer = Caml_string.caml_create_string(256);
 
 var string_buff = [initial_string_buffer];
 
