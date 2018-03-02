@@ -462,8 +462,8 @@ let array_copy ?comment e : t =
 let dump ?comment level el : t = 
   {comment ; expression_desc = Dump(level,el)}
 
-let to_json_string ?comment e : t = 
-  { comment; expression_desc = Json_stringify e }
+(* let to_json_string ?comment e : t = 
+  { comment; expression_desc = Json_stringify e } *)
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
@@ -489,10 +489,10 @@ let obj ?comment properties : t =
   {expression_desc = Dot (var x,  e1, true); comment}  *)
 
 
-let bind_call ?comment obj  (e1 : string) args  : t = 
+(* let bind_call ?comment obj  (e1 : string) args  : t = 
   call ~info:Js_call_info.dummy {expression_desc = 
                                    Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
-                                 comment = None } args 
+                                 comment = None } args  *)
 
 (* let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
   let obj =  var x in 
@@ -502,8 +502,6 @@ let bind_call ?comment obj  (e1 : string) args  : t =
  *)
 
 (* Dot .....................**)        
-
-
 
 
 
@@ -520,12 +518,12 @@ let bool_of_boolean ?comment (e : t) : t =
   | Number _ -> e 
   | _ -> {comment ; expression_desc = Int_of_boolean e}
 
-let to_number ?comment (e : t) : t = 
+(* let to_number ?comment (e : t) : t = 
   match e.expression_desc with 
   | Int_of_boolean _
   | Anything_to_number _
   | Number _ -> e 
-  | _ -> {comment ; expression_desc = Anything_to_number e}
+  | _ -> {comment ; expression_desc = Anything_to_number e} *)
 
 let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
 
@@ -534,7 +532,7 @@ let caml_false  = int ~comment:"false" 0l
 let bool v = if  v then caml_true else caml_false
 
 (** Here we have to use JS [===], and therefore, we are introducing 
-    Js boolean, so be sure to convert it back to OCaml boolean
+    Js boolean, so be sure to convert it back to OCaml bool
 *)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
@@ -1343,16 +1341,5 @@ let not_implemented ?comment (s : string) : t =
     "not_implemented" 
     [str (s ^ " not implemented by bucklescript yet\n")]
 
-(* call ~info:Js_call_info.ml_full_call *)
-(*   { *)
-(*     comment ; *)
-(*     expression_desc =  *)
-(*       Fun (false,[], ( *)
-(*           [{J.statement_desc = *)
-(*               Throw (str ?comment  *)
-(*                        (s ^ " not implemented by bucklescript yet\n")) ; *)
-(*             comment}]) , *)
-(*            Js_fun_env.empty 0) *)
-(*   } [] *)
 
 

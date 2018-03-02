@@ -169,7 +169,7 @@ val string_append : binary_op
 
 (* val bind_var_call : ?comment:string -> Ident.t -> string -> t list -> t  *)
 
-val bind_call : ?comment:string -> J.expression -> string -> J.expression list -> t
+(* val bind_call : ?comment:string -> J.expression -> string -> J.expression list -> t *)
 val js_global_dot : ?comment:string -> string -> string -> t
 
 
@@ -256,9 +256,9 @@ val dump : ?comment:string -> Js_op.level -> t list -> t
 (* val anything_to_string : unary_op *)
 
 (** see {!https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Unary_plus}*)
-val to_number : unary_op
+(* val to_number : unary_op *)
 val int_to_string : unary_op
-val to_json_string : unary_op
+
 
 val new_ : ?comment:string -> J.expression -> J.expression list -> t
 
@@ -280,7 +280,10 @@ val make_block :
 val seq : binary_op
 val fuse_to_seq : t -> t list -> t 
 
-val obj : ?comment:string -> J.property_map -> t 
+val obj : 
+  ?comment:string -> 
+  J.property_map -> 
+  t 
 
 val caml_true : t 
 
