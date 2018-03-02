@@ -6,14 +6,8 @@ B syntax
 B core
 S stubs
 B stubs
-S runtime
-B runtime
-S stdlib
-B stdlib
-S test
-B test
-B others
-S others
+
+
 S bsb
 B bsb
 S ounit
@@ -28,5 +22,21 @@ S outcome_printer
 B outcome_printer
 
 PKG compiler-libs.common
-B +compiler-libs
+# B +compiler-libs
+
+
+# S runtime
+# B runtime
+
+# S stdlib
+# B stdlib
+
+# S others
+# B others
+
+# S test
+# B test
+
+# FLG -ppx /Users/hongbozhang/git/ocamlscript/lib/bsppx.exe
+
 FLG -w -40-30+6-23

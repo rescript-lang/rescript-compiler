@@ -403,7 +403,7 @@ let ofArray a =
 
 let toArray ( x : _ t) =
   let len = length x in
-  let arr = Belt_Array.makeUninitializedUnsafe len in
+  let arr = A.makeUninitializedUnsafe len in
   fillAux arr 0 x;
   arr
 

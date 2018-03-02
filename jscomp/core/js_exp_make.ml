@@ -29,10 +29,18 @@
 
 let no_side_effect = Js_analyzer.no_side_effect_expression
 
-type binary_op =   ?comment:string -> J.expression -> J.expression -> J.expression 
-type unary_op =  ?comment:string -> J.expression -> J.expression
+type binary_op =
+  ?comment:string ->
+  J.expression ->
+  J.expression ->
+  J.expression 
+type unary_op =
+  ?comment:string ->
+  J.expression ->
+  J.expression
+
 (*
-  remove pure part of the expression
+  Remove pure part of the expression
   and keep the non-pure part while preserve the semantics 
   (modulo return value)
  *)
