@@ -81,6 +81,16 @@ let rec remove_pure_sub_exp (x : t)  : t option =
 let var ?comment  id  : t = 
   {expression_desc = Var (Id id); comment }
 
+(* only used in property access, 
+    Invariant: it should not call an external module .. *)
+
+let js_global ?comment  (v : string) =
+  var ?comment (Ext_ident.create_js v )
+  
+let undefined  = var Ext_ident.undefined
+
+let nil = var Ext_ident.nil  
+
 let call ?comment ~info e0 args : t = 
   {expression_desc = Call(e0,args,info); comment }
 
@@ -369,13 +379,6 @@ let assign_addr ?comment (e0 : t)  e1 ~assigned_value : t =
 
 
 
-(* only used in property access, 
-    Invariant: it should not call an external module .. *)
-let js_var ?comment  (v : string) =
-  var ?comment (Ext_ident.create_js v )
-
-let js_global ?comment  (v : string) =
-  var ?comment (Ext_ident.create_js v )
 
 (** used in normal property
     like [e.length], no dependency introduced
@@ -384,10 +387,7 @@ let dot ?comment (e0 : t)  (e1 : string) : t =
   { expression_desc = Dot (e0,  e1, true); comment} 
 
 
-let undefined  = var Ext_ident.undefined
 
-
-let nil = var Ext_ident.nil
 
 (** coupled with the runtime *)
 let is_caml_block ?comment (e : t) : t = 
@@ -431,7 +431,7 @@ let function_length ?comment (e : t) : t =
 
 (** no dependency introduced *)
 let js_global_dot ?comment (x : string)  (e1 : string) : t = 
-  { expression_desc = Dot (js_var x,  e1, true); comment} 
+  { expression_desc = Dot (js_global x,  e1, true); comment} 
 
 let char_of_int ?comment (v : t) : t = 
   match v.expression_desc with
@@ -485,8 +485,8 @@ let obj ?comment properties : t =
 
 (* currently only in method call, no dependency introduced
 *)
-let var_dot ?comment (x : Ident.t)  (e1 : string) : t = 
-  {expression_desc = Dot (var x,  e1, true); comment} 
+(* let var_dot ?comment (x : Ident.t)  (e1 : string) : t = 
+  {expression_desc = Dot (var x,  e1, true); comment}  *)
 
 
 let bind_call ?comment obj  (e1 : string) args  : t = 
@@ -494,12 +494,12 @@ let bind_call ?comment obj  (e1 : string) args  : t =
                                    Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
                                  comment = None } args 
 
-let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
+(* let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
   let obj =  var x in 
   call ~info:Js_call_info.dummy {expression_desc = 
                                    Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
                                  comment = None } args 
-
+ *)
 
 (* Dot .....................**)        
 

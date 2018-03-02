@@ -65,9 +65,9 @@ val ocaml_boolean_under_condition : t -> t
 
 
 
-
-
 val var : ?comment:string  -> J.ident -> t 
+
+val js_global : ?comment:string -> string -> t
 
 (* val runtime_var_dot : ?comment:string -> string -> string -> t *)
 
@@ -137,6 +137,7 @@ val obj_int_tag_literal : t
 
 *)
 val is_out : binary_op
+
 val dot : ?comment:string -> t -> string -> t
 
 val array_length : unary_op
@@ -164,8 +165,10 @@ val string_append : binary_op
 
 
 
-val var_dot : ?comment:string -> Ident.t -> string -> t
-val bind_var_call : ?comment:string -> Ident.t -> string -> t list -> t 
+(* val var_dot : ?comment:string -> Ident.t -> string -> t *)
+
+(* val bind_var_call : ?comment:string -> Ident.t -> string -> t list -> t  *)
+
 val bind_call : ?comment:string -> J.expression -> string -> J.expression list -> t
 val js_global_dot : ?comment:string -> string -> string -> t
 
@@ -298,9 +301,6 @@ val math :
   t
 
 
-val js_var : ?comment:string -> string -> t
-
-val js_global : ?comment:string -> string -> t
 
 val undefined : t
 val is_caml_block : ?comment:string -> t -> t
