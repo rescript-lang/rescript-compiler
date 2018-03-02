@@ -131,12 +131,6 @@ let unicode ?comment s : t =
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
 
-(* TODO: could optimize literal *)
-let anything_to_string ?comment (e : t) : t =  
-  match e.expression_desc with 
-  | Str _ -> e 
-  | _ -> {expression_desc = Anything_to_string e ; comment}
-
 let array ?comment mt es : t  = 
   {expression_desc = Array (es,mt) ; comment}
 
@@ -200,7 +194,7 @@ let new_ ?comment e0 args : t =
   { expression_desc = New (e0,  Some args ); comment}
 
 
-let unit   : t = 
+let unit : t = 
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = Some "()" }
 
 
@@ -216,11 +210,14 @@ let math ?comment v args  : t =
    {[
      string_of_int 3
    ]}
+   Used in [string_of_int] and format "%d"
+   TODO: optimize
 *)
 let int_to_string ?comment (e : t) : t = 
-  anything_to_string ?comment e 
+  {expression_desc = Anything_to_string e ; comment}
 
-(* Attention: Shared *mutable state* is evil, [Js_fun_env.empty] is a mutable state ..
+(* Attention: Shared *mutable state* is evil, 
+  [Js_fun_env.empty] is a mutable state ..
 *)    
 
 let ocaml_fun 
@@ -247,10 +244,10 @@ let method_
 
 (** This is coupuled with {!Caml_obj.caml_update_dummy} *)
 let dummy_obj ?comment ()  : t = 
-  {comment  ; expression_desc = J.Array ([],Mutable)}
+  {comment  ; expression_desc = Array ([],Mutable)}
 
-let is_instance_array ?comment e : t = 
-  {comment; expression_desc = Bin(InstanceOf, e , str L.js_array_ctor) }
+(* let is_instance_array ?comment e : t = 
+  {comment; expression_desc = Bin(InstanceOf, e , str L.js_array_ctor) } *)
 
 (* TODO: complete 
     pure ...
@@ -326,7 +323,8 @@ let small_int i : t =
 
 let access ?comment (e0 : t)  (e1 : t) : t =
   match e0.expression_desc, e1.expression_desc with
-  | Array (l,_mutable_flag) , Number (Int {i; _}) when no_side_effect e0-> 
+  | Array (l,_mutable_flag) , Number (Int {i; _}) 
+    when no_side_effect e0-> 
     List.nth l  (Int32.to_int i)  (* Float i -- should not appear here *)
   | _ ->
     { expression_desc = Access (e0,e1); comment} 
@@ -353,15 +351,19 @@ let index ?comment (e0 : t)  e1 : t =
     List.nth l  (Int32.to_int e1)  (* Float i -- should not appear here *)
   | _ -> { expression_desc = Access (e0, int ?comment e1); comment = None} 
 
+let assign ?comment e0 e1 : t = 
+    {expression_desc = Bin(Eq, e0,e1); comment}
 
-let index_addr ?comment ~yes ~no (e0 : t)  e1 : t = 
+
+let assign_addr ?comment (e0 : t)  e1 ~assigned_value : t = 
   match e0.expression_desc with
-  | Array (l,_mutable_flag)  when no_side_effect e0 -> 
-    no
-  | Caml_block (l,_mutable_flag, _, _)  when no_side_effect e0 -> 
-    no
-  | _ ->
-    yes ({ expression_desc = Access (e0, int ?comment e1); comment = None} : t) 
+  | Array _  (* Temporary block -- address not held *)
+  | Caml_block _ when no_side_effect e0 -> 
+    assigned_value
+  | _ ->  
+    assign { expression_desc = 
+        Access (e0, int ?comment e1); comment = None} assigned_value
+
 
 
 
@@ -504,7 +506,7 @@ let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t =
 
 
 
-let assign ?comment e0 e1 : t = {expression_desc = Bin(Eq, e0,e1); comment}
+
 
 
 (** Convert a javascript boolean to ocaml boolean

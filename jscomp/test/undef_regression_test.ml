@@ -6,6 +6,6 @@ let f obj =
     ()
   else 
     let size = Bs_obj.size_of_any obj in
-    match Js.Undefined.to_opt size with
+    match Js.Undefined.toOption size with
     | None -> ()
     | Some s -> Js.log s (* TODO: This case should be peepwholed .. *)

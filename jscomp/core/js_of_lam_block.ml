@@ -65,7 +65,9 @@ let set_field field_info e i e0 =
       -> None
     | Fld_record_set s -> Some (s)
   in (* see GPR#631*)
-  E.index_addr ?comment e i  ~no:e0 ~yes:(fun v -> E.assign v e0)
+  E.assign_addr 
+    ?comment e i 
+   ~assigned_value:e0 
 
 
 

@@ -142,11 +142,11 @@ let translate  loc
       | [e] -> E.string_of_small_int_array e 
       | _ -> assert false 
     end 
-  | Lam.Pjs_is_instance_array -> 
+  (* | Lam.Pjs_is_instance_array -> 
     begin match args with 
       | [e] -> E.is_instance_array e 
       | _ -> assert false 
-    end 
+    end  *)
 
 
   | Pis_null -> 
