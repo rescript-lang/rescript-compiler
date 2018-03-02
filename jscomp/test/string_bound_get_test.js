@@ -15,7 +15,7 @@ function u_d() {
   return Caml_string.get("ghos", -1);
 }
 
-var u_e = new Array(32);
+var u_e = Caml_string.caml_create_string(32);
 
 var u_f = Caml_bytes.get(u_e, 0);
 

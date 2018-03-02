@@ -304,7 +304,7 @@ and compile_recursive_let ~all_bindings
        and need to be declared first 
     *)
     Js_output.of_block (
-      S.define ~kind:Variable id (E.arr Mutable []) :: 
+      S.define ~kind:Variable id (E.array Mutable []) :: 
       (List.mapi (fun i (x : Lam.t) -> 
            match x with  
            | Lvar lid
@@ -978,8 +978,8 @@ and
               |  ReturnFalse , {block = []; value =  Some out1}, 
                  {block = []; value =  Some out2} ->
                 begin
-                  match Js_exp_make.extract_non_pure out1 ,
-                        Js_exp_make.extract_non_pure out2 with
+                  match Js_exp_make.remove_pure_sub_exp out1 ,
+                        Js_exp_make.remove_pure_sub_exp out2 with
                   | None, None -> Js_output.make (Ext_list.append b  [ S.exp e]) 
                   (* FIX #1762 *)
                   | Some out1, Some out2 -> 

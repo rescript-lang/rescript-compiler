@@ -29,37 +29,42 @@
 
 let no_side_effect = Js_analyzer.no_side_effect_expression
 
+type t = J.expression 
+
 type binary_op =
   ?comment:string ->
-  J.expression ->
-  J.expression ->
-  J.expression 
+  t ->
+  t ->
+  t
 type unary_op =
   ?comment:string ->
-  J.expression ->
-  J.expression
+  t ->
+  t
+
 
 (*
-  Remove pure part of the expression
+  [remove_pure_sub_exp x]
+  Remove pure part of the expression (minor optimization)
   and keep the non-pure part while preserve the semantics 
   (modulo return value)
+  It will return None if  [x] is pure
  *)
-let rec extract_non_pure (x : J.expression)  = 
+let rec remove_pure_sub_exp (x : t)  : t option = 
   match x.expression_desc with 
   | Var _
   | Str _
   | Number _ -> None (* Can be refined later *)
   | Access (a,b) -> 
-    begin match extract_non_pure a , extract_non_pure b with 
+    begin match remove_pure_sub_exp a , remove_pure_sub_exp b with 
       | None, None -> None
       | _, _ -> Some x 
     end
   | Array (xs,_mutable_flag)  ->
-    if List.for_all (fun x -> extract_non_pure x = None)  xs then
+    if List.for_all (fun x -> remove_pure_sub_exp x = None)  xs then
       None 
     else Some x 
   | Seq (a,b) -> 
-    begin match extract_non_pure a , extract_non_pure b with 
+    begin match remove_pure_sub_exp a , remove_pure_sub_exp b with 
       | None, None  ->  None
       | Some u, Some v ->  
         Some { x with expression_desc =  Seq(u,v)}
@@ -69,20 +74,28 @@ let rec extract_non_pure (x : J.expression)  =
     end
   | _ -> Some x 
 
-type t = J.expression 
 
-let mk ?comment exp : t = 
-  {expression_desc = exp ; comment  }
+(* let mk ?comment exp : t = 
+  {expression_desc = exp ; comment  } *)
 
 let var ?comment  id  : t = 
   {expression_desc = Var (Id id); comment }
+
+let call ?comment ~info e0 args : t = 
+  {expression_desc = Call(e0,args,info); comment }
+
+let flat_call ?comment e0 es : t = 
+  (* TODO: optimization when es is known at compile time
+      to be an array
+  *)
+  {expression_desc = FlatCall (e0,es); comment }
 
 let runtime_var_dot ?comment (x : string)  (e1 : string) : J.expression = 
   {expression_desc = 
      Var (Qualified(Ext_ident.create_js x,Runtime, Some e1)); comment }
 
-let runtime_var_vid  x  e1 : J.vident = 
-  Qualified(Ext_ident.create_js x,Runtime, Some e1)
+(* let runtime_var_vid  x  e1 : J.vident = 
+  Qualified(Ext_ident.create_js x,Runtime, Some e1) *)
 
 let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =     
   {expression_desc = Var (Qualified(id, Ml, Some e)); comment }
@@ -97,8 +110,17 @@ let external_var_dot ?comment  ~external_name:name ?dot (id : Ident.t) : t =
   {expression_desc = Var (Qualified(id, External name,  dot)); comment }
 
 
-let ml_var ?comment (id : Ident.t) : t  = 
-  {expression_desc = Var (Qualified (id, Ml, None)); comment}
+(* let ml_var ?comment (id : Ident.t) : t  = 
+  {expression_desc = Var (Qualified (id, Ml, None)); comment} *)
+
+(* Dot .....................**)        
+let runtime_call ?comment module_name fn_name args = 
+  call ?comment 
+    ~info:Js_call_info.builtin_runtime_call
+    (runtime_var_dot  module_name fn_name) args
+
+let runtime_ref module_name fn_name = 
+  runtime_var_dot  module_name fn_name
 
 let str ?(pure=true)  ?comment s : t =  
   {expression_desc = Str (pure,s); comment}
@@ -109,12 +131,13 @@ let unicode ?comment s : t =
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
 
+(* TODO: could optimize literal *)
 let anything_to_string ?comment (e : t) : t =  
   match e.expression_desc with 
   | Str _ -> e 
   | _ -> {expression_desc = Anything_to_string e ; comment}
 
-let arr ?comment mt es : t  = 
+let array ?comment mt es : t  = 
   {expression_desc = Array (es,mt) ; comment}
 
 let sep = " : "
@@ -150,10 +173,10 @@ let make_block ?comment tag tag_info es mutable_flag : t =
 (* let uninitialized_object ?comment tag size : t = 
   { expression_desc = Caml_uninitialized_obj(tag,size); comment } *)
 
-let uninitialized_array ?comment (e : t) : t  = 
+(* let uninitialized_array ?comment (e : t) : t  = 
   match e.expression_desc with 
-  | Number (Int {i = 0l; _}) -> arr ?comment NA []
-  | _ -> {comment; expression_desc = Array_of_size e}
+  | Number (Int {i = 0l; _}) -> array ?comment NA []
+  | _ -> {comment; expression_desc = Array_of_size e} *)
 
 
 module L = Literals
@@ -340,23 +363,8 @@ let index_addr ?comment ~yes ~no (e0 : t)  e1 : t =
   | _ ->
     yes ({ expression_desc = Access (e0, int ?comment e1); comment = None} : t) 
 
-let call ?comment ~info e0 args : t = 
-  {expression_desc = Call(e0,args,info); comment }
 
-let flat_call ?comment e0 es : t = 
-  (* TODO: optimization when es is known at compile time
-      to be an array
-  *)
-  {expression_desc = FlatCall (e0,es); comment }
 
-(* Dot .....................**)        
-let runtime_call ?comment module_name fn_name args = 
-  call ?comment 
-    ~info:Js_call_info.builtin_runtime_call
-    (runtime_var_dot  module_name fn_name) args
-
-let runtime_ref module_name fn_name = 
-  runtime_var_dot  module_name fn_name
 
 
 (* only used in property access, 
@@ -907,7 +915,7 @@ let public_method_call meth_name obj label cache args =
       [label; 
        int cache;
        obj ;  
-       arr NA (obj::args)
+       array NA (obj::args)
       ]
 
 (* TODO: handle arbitrary length of args .. 

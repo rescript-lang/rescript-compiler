@@ -471,7 +471,8 @@ and
             else 
               begin 
                 P.string f  L.app_array;                
-                P.paren_group f 1 (fun _ -> arguments cxt f [ e ; E.arr Mutable el])
+                P.paren_group f 1 
+                  (fun _ -> arguments cxt f [ e ; E.array Mutable el])
               end)
     in
     if l > 15 then P.paren_group f 1 action   
@@ -880,7 +881,8 @@ and
         P.string f L.caml_block; 
         P.string f L.dot ;
         P.string f L.caml_block_create;
-        P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.arr mutable_flag el])
+        P.paren_group f 1 
+          (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
     end
   | Caml_block_tag e ->
     P.group f 1 (fun _ ->  

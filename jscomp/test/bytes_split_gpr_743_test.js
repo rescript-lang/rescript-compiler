@@ -28,7 +28,7 @@ function eq(loc, param) {
   return /* () */0;
 }
 
-var b = new Array(3);
+var b = Caml_string.caml_create_string(3);
 
 b[0] = /* "a" */97;
 
@@ -47,7 +47,7 @@ eq("File \"bytes_split_gpr_743_test.ml\", line 17, characters 5-12", /* tuple */
       res
     ]);
 
-var b$1 = new Array(3);
+var b$1 = Caml_string.caml_create_string(3);
 
 b$1[0] = /* "a" */97;
 
