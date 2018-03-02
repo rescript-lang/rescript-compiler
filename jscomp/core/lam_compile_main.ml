@@ -111,7 +111,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
     Js_output.of_stmt @@ S.alias_variable id
       ~exp:( 
         let arg = Ext_ident.create "param" in
-        E.ocaml_fun [arg] [S.return (E.anything_to_string (E.var arg))]
+        E.ocaml_fun [arg] [S.return (E.int_to_string (E.var arg))]
       )
 
   | Single(_, ({name="max_float";_} as id),_ ),  "pervasives.ml" ->

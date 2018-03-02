@@ -65,14 +65,9 @@ val ocaml_boolean_under_condition : t -> t
 
 
 
-(* val mk :
-  ?comment:string -> J.expression_desc -> t *)
-
-val access : binary_op
-
-val string_access : binary_op
-
 val var : ?comment:string  -> J.ident -> t 
+
+val js_global : ?comment:string -> string -> t
 
 (* val runtime_var_dot : ?comment:string -> string -> string -> t *)
 
@@ -142,6 +137,7 @@ val obj_int_tag_literal : t
 
 *)
 val is_out : binary_op
+
 val dot : ?comment:string -> t -> string -> t
 
 val array_length : unary_op
@@ -169,16 +165,40 @@ val string_append : binary_op
 
 
 
-val var_dot : ?comment:string -> Ident.t -> string -> t
-val bind_var_call : ?comment:string -> Ident.t -> string -> t list -> t 
-val bind_call : ?comment:string -> J.expression -> string -> J.expression list -> t
+(* val var_dot : ?comment:string -> Ident.t -> string -> t *)
+
+(* val bind_var_call : ?comment:string -> Ident.t -> string -> t list -> t  *)
+
+(* val bind_call : ?comment:string -> J.expression -> string -> J.expression list -> t *)
 val js_global_dot : ?comment:string -> string -> string -> t
 
-val index : ?comment:string -> t -> Int32.t -> t
 
-(** if the expression is a temporay block which has no side effect,
-    write to it does not really make sense, optimize it away *)
-val index_addr : ?comment:string -> yes:(t -> t) -> no:t -> t -> Js_op.jsint -> t
+
+val string_access : binary_op
+
+val access : 
+  ?comment:string -> 
+  t -> 
+  t ->
+  t
+val index : 
+  ?comment:string -> 
+  t -> 
+  Int32.t ->
+   t
+
+(** 
+    [assign_addr  e i v]
+    if the expression [e] is a temporay block 
+    which has no side effect,
+    write to it does not really make sense, 
+    optimize it away *)
+val assign_addr : 
+  ?comment:string -> 
+  t -> 
+  Js_op.jsint -> 
+  assigned_value:t -> 
+  t
 
 val assign :  binary_op
 
@@ -233,12 +253,12 @@ val flat_call : binary_op
 
 val dump : ?comment:string -> Js_op.level -> t list -> t
 
-val anything_to_string : unary_op
+(* val anything_to_string : unary_op *)
 
 (** see {!https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Unary_plus}*)
-val to_number : unary_op
+(* val to_number : unary_op *)
 val int_to_string : unary_op
-val to_json_string : unary_op
+
 
 val new_ : ?comment:string -> J.expression -> J.expression list -> t
 
@@ -256,15 +276,14 @@ val make_block :
   J.mutable_flag ->
   t
 
-(* val uninitialized_object : 
-  ?comment:string -> J.expression -> J.expression -> t *)
-
-(* val uninitialized_array : unary_op *)
 
 val seq : binary_op
 val fuse_to_seq : t -> t list -> t 
 
-val obj : ?comment:string -> J.property_map -> t 
+val obj : 
+  ?comment:string -> 
+  J.property_map -> 
+  t 
 
 val caml_true : t 
 
@@ -277,14 +296,17 @@ val bool : bool -> t
 val unit :   t
 (** [unit] in ocaml will be compiled into [0]  in js *)
 
-val js_var : ?comment:string -> string -> t
+(** [math "abs"] --> Math["abs"] *)    
+val math : 
+  ?comment:string -> 
+  string -> 
+  t list -> 
+  t
 
-val js_global : ?comment:string -> string -> t
+
 
 val undefined : t
 val is_caml_block : ?comment:string -> t -> t
-val math : ?comment:string -> string -> t list -> t
-(** [math "abs"] --> Math["abs"] *)    
 
 
 
@@ -306,7 +328,8 @@ val and_ : binary_op
 val or_ : binary_op
 
 (** we don't expose a general interface, since a general interface is generally not safe *)
-val is_instance_array  : unary_op
+(* val is_instance_array  : unary_op *)
+
 (** used combined with [caml_update_dummy]*)
 val dummy_obj : ?comment:string ->  unit -> t 
 

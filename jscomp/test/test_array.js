@@ -5,7 +5,7 @@ var Caml_array = require("../../lib/js/caml_array.js");
 
 var v = Caml_array.caml_make_vect(6, 5);
 
-new Array(30);
+Caml_array.caml_make_float_vect(30);
 
 var h = $$Array.sub(v, 0, 2);
 

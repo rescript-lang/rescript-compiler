@@ -137,8 +137,6 @@ let translate loc (prim_name : string)
       E.math "log1p" args 
     | "caml_power_float"  -> 
       E.math "pow" args
-    |  "caml_make_float_vect" -> 
-      E.new_ (E.js_global "Array") args 
 
 
     | "caml_array_append" -> 
@@ -583,6 +581,7 @@ let translate loc (prim_name : string)
        Not good for inline *)
 
     | "caml_array_blit"
+    | "caml_make_float_vect"
     | "caml_make_vect" -> 
       call Js_runtime_modules.array
     | "caml_ml_flush"

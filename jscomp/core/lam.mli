@@ -195,7 +195,7 @@ type primitive =
   | Pjs_function_length 
 
   | Pjs_string_of_small_array
-  | Pjs_is_instance_array
+  (* | Pjs_is_instance_array *)
   | Pcaml_obj_length
   | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  

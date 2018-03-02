@@ -223,9 +223,9 @@ let translate_scoped_module_val module_name fn  scopes =
     begin match scopes with 
       | [] -> 
         (* E.external_var_dot ~external_name ~dot:fn id  *)
-        E.js_var fn
+        E.js_global fn
       | x::rest -> 
-        let start = E.js_var x  in 
+        let start = E.js_global x  in 
         List.fold_left (fun acc x -> E.dot acc x) start (Ext_list.append rest  [fn])
     end
 

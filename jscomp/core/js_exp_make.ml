@@ -81,6 +81,16 @@ let rec remove_pure_sub_exp (x : t)  : t option =
 let var ?comment  id  : t = 
   {expression_desc = Var (Id id); comment }
 
+(* only used in property access, 
+    Invariant: it should not call an external module .. *)
+
+let js_global ?comment  (v : string) =
+  var ?comment (Ext_ident.create_js v )
+  
+let undefined  = var Ext_ident.undefined
+
+let nil = var Ext_ident.nil  
+
 let call ?comment ~info e0 args : t = 
   {expression_desc = Call(e0,args,info); comment }
 
@@ -130,12 +140,6 @@ let unicode ?comment s : t =
 
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
-
-(* TODO: could optimize literal *)
-let anything_to_string ?comment (e : t) : t =  
-  match e.expression_desc with 
-  | Str _ -> e 
-  | _ -> {expression_desc = Anything_to_string e ; comment}
 
 let array ?comment mt es : t  = 
   {expression_desc = Array (es,mt) ; comment}
@@ -200,7 +204,7 @@ let new_ ?comment e0 args : t =
   { expression_desc = New (e0,  Some args ); comment}
 
 
-let unit   : t = 
+let unit : t = 
   {expression_desc = Number (Int {i = 0l; c = None}) ; comment = Some "()" }
 
 
@@ -216,11 +220,14 @@ let math ?comment v args  : t =
    {[
      string_of_int 3
    ]}
+   Used in [string_of_int] and format "%d"
+   TODO: optimize
 *)
 let int_to_string ?comment (e : t) : t = 
-  anything_to_string ?comment e 
+  {expression_desc = Anything_to_string e ; comment}
 
-(* Attention: Shared *mutable state* is evil, [Js_fun_env.empty] is a mutable state ..
+(* Attention: Shared *mutable state* is evil, 
+  [Js_fun_env.empty] is a mutable state ..
 *)    
 
 let ocaml_fun 
@@ -247,10 +254,10 @@ let method_
 
 (** This is coupuled with {!Caml_obj.caml_update_dummy} *)
 let dummy_obj ?comment ()  : t = 
-  {comment  ; expression_desc = J.Array ([],Mutable)}
+  {comment  ; expression_desc = Array ([],Mutable)}
 
-let is_instance_array ?comment e : t = 
-  {comment; expression_desc = Bin(InstanceOf, e , str L.js_array_ctor) }
+(* let is_instance_array ?comment e : t = 
+  {comment; expression_desc = Bin(InstanceOf, e , str L.js_array_ctor) } *)
 
 (* TODO: complete 
     pure ...
@@ -326,7 +333,8 @@ let small_int i : t =
 
 let access ?comment (e0 : t)  (e1 : t) : t =
   match e0.expression_desc, e1.expression_desc with
-  | Array (l,_mutable_flag) , Number (Int {i; _}) when no_side_effect e0-> 
+  | Array (l,_mutable_flag) , Number (Int {i; _}) 
+    when no_side_effect e0-> 
     List.nth l  (Int32.to_int i)  (* Float i -- should not appear here *)
   | _ ->
     { expression_desc = Access (e0,e1); comment} 
@@ -353,27 +361,24 @@ let index ?comment (e0 : t)  e1 : t =
     List.nth l  (Int32.to_int e1)  (* Float i -- should not appear here *)
   | _ -> { expression_desc = Access (e0, int ?comment e1); comment = None} 
 
+let assign ?comment e0 e1 : t = 
+    {expression_desc = Bin(Eq, e0,e1); comment}
 
-let index_addr ?comment ~yes ~no (e0 : t)  e1 : t = 
+
+let assign_addr ?comment (e0 : t)  e1 ~assigned_value : t = 
   match e0.expression_desc with
-  | Array (l,_mutable_flag)  when no_side_effect e0 -> 
-    no
-  | Caml_block (l,_mutable_flag, _, _)  when no_side_effect e0 -> 
-    no
-  | _ ->
-    yes ({ expression_desc = Access (e0, int ?comment e1); comment = None} : t) 
+  | Array _  (* Temporary block -- address not held *)
+  | Caml_block _ when no_side_effect e0 -> 
+    assigned_value
+  | _ ->  
+    assign { expression_desc = 
+        Access (e0, int ?comment e1); comment = None} assigned_value
 
 
 
 
 
-(* only used in property access, 
-    Invariant: it should not call an external module .. *)
-let js_var ?comment  (v : string) =
-  var ?comment (Ext_ident.create_js v )
 
-let js_global ?comment  (v : string) =
-  var ?comment (Ext_ident.create_js v )
 
 (** used in normal property
     like [e.length], no dependency introduced
@@ -382,10 +387,7 @@ let dot ?comment (e0 : t)  (e1 : string) : t =
   { expression_desc = Dot (e0,  e1, true); comment} 
 
 
-let undefined  = var Ext_ident.undefined
 
-
-let nil = var Ext_ident.nil
 
 (** coupled with the runtime *)
 let is_caml_block ?comment (e : t) : t = 
@@ -429,7 +431,7 @@ let function_length ?comment (e : t) : t =
 
 (** no dependency introduced *)
 let js_global_dot ?comment (x : string)  (e1 : string) : t = 
-  { expression_desc = Dot (js_var x,  e1, true); comment} 
+  { expression_desc = Dot (js_global x,  e1, true); comment} 
 
 let char_of_int ?comment (v : t) : t = 
   match v.expression_desc with
@@ -460,8 +462,8 @@ let array_copy ?comment e : t =
 let dump ?comment level el : t = 
   {comment ; expression_desc = Dump(level,el)}
 
-let to_json_string ?comment e : t = 
-  { comment; expression_desc = Json_stringify e }
+(* let to_json_string ?comment e : t = 
+  { comment; expression_desc = Json_stringify e } *)
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
@@ -483,28 +485,26 @@ let obj ?comment properties : t =
 
 (* currently only in method call, no dependency introduced
 *)
-let var_dot ?comment (x : Ident.t)  (e1 : string) : t = 
-  {expression_desc = Dot (var x,  e1, true); comment} 
+(* let var_dot ?comment (x : Ident.t)  (e1 : string) : t = 
+  {expression_desc = Dot (var x,  e1, true); comment}  *)
 
 
-let bind_call ?comment obj  (e1 : string) args  : t = 
+(* let bind_call ?comment obj  (e1 : string) args  : t = 
   call ~info:Js_call_info.dummy {expression_desc = 
                                    Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
-                                 comment = None } args 
+                                 comment = None } args  *)
 
-let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
+(* let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
   let obj =  var x in 
   call ~info:Js_call_info.dummy {expression_desc = 
                                    Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
                                  comment = None } args 
-
+ *)
 
 (* Dot .....................**)        
 
 
 
-
-let assign ?comment e0 e1 : t = {expression_desc = Bin(Eq, e0,e1); comment}
 
 
 (** Convert a javascript boolean to ocaml boolean
@@ -518,12 +518,12 @@ let bool_of_boolean ?comment (e : t) : t =
   | Number _ -> e 
   | _ -> {comment ; expression_desc = Int_of_boolean e}
 
-let to_number ?comment (e : t) : t = 
+(* let to_number ?comment (e : t) : t = 
   match e.expression_desc with 
   | Int_of_boolean _
   | Anything_to_number _
   | Number _ -> e 
-  | _ -> {comment ; expression_desc = Anything_to_number e}
+  | _ -> {comment ; expression_desc = Anything_to_number e} *)
 
 let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
 
@@ -532,7 +532,7 @@ let caml_false  = int ~comment:"false" 0l
 let bool v = if  v then caml_true else caml_false
 
 (** Here we have to use JS [===], and therefore, we are introducing 
-    Js boolean, so be sure to convert it back to OCaml boolean
+    Js boolean, so be sure to convert it back to OCaml bool
 *)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
@@ -1341,16 +1341,5 @@ let not_implemented ?comment (s : string) : t =
     "not_implemented" 
     [str (s ^ " not implemented by bucklescript yet\n")]
 
-(* call ~info:Js_call_info.ml_full_call *)
-(*   { *)
-(*     comment ; *)
-(*     expression_desc =  *)
-(*       Fun (false,[], ( *)
-(*           [{J.statement_desc = *)
-(*               Throw (str ?comment  *)
-(*                        (s ^ " not implemented by bucklescript yet\n")) ; *)
-(*             comment}]) , *)
-(*            Js_fun_env.empty 0) *)
-(*   } [] *)
 
 
