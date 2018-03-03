@@ -76,11 +76,11 @@ type ('key, 'id) comparable =
 *)
 
 val comparableU:
-  cmp:('a -> 'a -> int [@bs]) ->
+  ('a -> 'a -> int [@bs]) ->
   (module Comparable with type t = 'a)
 
 val comparable:
-  cmp:('a -> 'a -> int) -> 
+  ('a -> 'a -> int) -> 
   (module Comparable with type t = 'a)
   
 module type Hashable = sig 

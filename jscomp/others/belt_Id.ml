@@ -55,7 +55,7 @@ end
 
 let comparableU
   (type key) 
-  ~cmp   
+  cmp   
   =
   let module N = MakeComparable(struct
       type t = key
@@ -64,8 +64,8 @@ let comparableU
   (module N : Comparable with type t = key)
 
 
-let comparable ~cmp =
-  comparableU ~cmp:(fun[@bs] a b -> cmp a b)
+let comparable cmp =
+  comparableU (fun[@bs] a b -> cmp a b)
     
 module type Hashable = sig 
   type identity 
