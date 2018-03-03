@@ -116,7 +116,7 @@ let rec mergeU s1 s2 f =
   match N.(toOpt s1, toOpt s2) with
     (None, None) -> N.empty
   | Some n (* (Node (l1, v1, d1, r1, h1), _)*), _ 
-    when N.(h n >= (match N.toOpt s2 with None -> 0 | Some n -> N.h n)) ->
+    when N.(height n >= (match N.toOpt s2 with None -> 0 | Some n -> N.height n)) ->
     let (l1,v1,d1,r1) = N.(left n, key n, value n, right n ) in 
     let (l2, d2, r2) = split v1 s2 in
     N.concatOrJoin (mergeU l1 l2 f) v1 (f v1 (Some d1) d2 [@bs]) (mergeU r1 r2 f)

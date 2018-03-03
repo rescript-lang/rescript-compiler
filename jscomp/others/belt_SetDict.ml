@@ -38,7 +38,7 @@ let rec add  (t : _ t) x  ~cmp : _ t =
   match N.toOpt t with 
   | None -> N.singleton x 
   | Some nt ->
-    let k = N.key nt in 
+    let k = N.value nt in 
     let c = (Belt_Id.getCmpInternal cmp) x k [@bs] in
     if c = 0 then t
     else
@@ -56,14 +56,14 @@ let rec remove (t : _ t) x  ~cmp : _ t =
   match N.toOpt t with 
     None -> t
   | Some n  ->
-    let l,v,r = N.(left n , key n, right n) in 
+    let l,v,r = N.(left n , value n, right n) in 
     let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in
     if c = 0 then 
       match N.toOpt l, N.toOpt r with 
       | (None, _) -> r 
       | (_, None) -> l 
       | (_, Some rn) -> 
-        let v = ref (N.key rn) in 
+        let v = ref (N.value rn) in 
         let r = N.removeMinAuxWithRef rn v in 
         N.bal l !v r 
     else
@@ -95,7 +95,7 @@ let removeMany h arr ~cmp =
   !v 
 
 let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =   
-  let l,v,r = N.(left n , key n, right n) in  
+  let l,v,r = N.(left n , value n, right n) in  
   let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in
   if c = 0 then l,r
   else 
@@ -115,7 +115,7 @@ let rec splitAuxNoPivot ~cmp (n : _ N.node) x : _ *  _ =
       N.joinShared l v lr, rr
 
 let rec splitAuxPivot ~cmp (n : _ N.node) x pres : _ *  _ =   
-  let l,v,r = N.(left n , key n, right n) in  
+  let l,v,r = N.(left n , value n, right n) in  
   let c = (Belt_Id.getCmpInternal cmp) x v [@bs] in
   if c = 0 then 
     begin
@@ -155,18 +155,18 @@ let rec union (s1 : _ t) (s2 : _ t) ~cmp : _ t =
     (None, _) -> s2
   | (_, None) -> s1
   | Some n1, Some n2 ->
-    let h1, h2 = N.(h n1 , h n2) in                 
+    let h1, h2 = N.(height n1 , height n2) in                 
     if h1 >= h2 then
-      if h2 = 1 then add ~cmp s1 (N.key n2)  
+      if h2 = 1 then add ~cmp s1 (N.value n2)  
       else begin
-        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
+        let l1, v1, r1 = N.(left n1, value n1, right n1) in      
         let l2, r2 = splitAuxNoPivot ~cmp n2 v1 in
         N.joinShared (union ~cmp l1 l2) v1 (union ~cmp r1 r2)
       end
     else
-    if h1 = 1 then add s2 ~cmp (N.key n1) 
+    if h1 = 1 then add s2 ~cmp (N.value n1) 
     else begin
-      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
+      let l2, v2, r2 = N.(left n2 , value n2, right n2) in 
       let l1, r1 = splitAuxNoPivot ~cmp n1 v2  in
       N.joinShared (union ~cmp l1 l2) v2 (union ~cmp r1 r2)
     end
@@ -176,7 +176,7 @@ let rec intersect  (s1 : _ t) (s2 : _ t) ~cmp =
   | None, _ 
   | _, None -> N.empty
   | Some n1, Some n2  ->
-    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
+    let l1,v1,r1 = N.(left n1, value n1, right n1) in  
     let pres = ref false in 
     let l2,r2 = splitAuxPivot ~cmp n2 v1 pres in 
     let ll = intersect ~cmp l1 l2 in 
@@ -189,7 +189,7 @@ let rec diff s1 s2 ~cmp  =
     (None, _) 
   | (_, None) -> s1
   | Some n1, Some n2  ->
-    let l1,v1,r1 = N.(left n1, key n1, right n1) in
+    let l1,v1,r1 = N.(left n1, value n1, right n1) in
     let pres = ref false in 
     let l2, r2 = splitAuxPivot ~cmp n2 v1 pres in 
     let ll = diff ~cmp l1 l2 in 

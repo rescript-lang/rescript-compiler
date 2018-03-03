@@ -14,11 +14,11 @@
 
 
 type ('k, 'v) node  = {
-  mutable left : ('k,'v) t;
   mutable key : 'k; 
   mutable value : 'v; 
-  mutable right : ('k,'v) t;
-  mutable h : int 
+  mutable height : int; 
+  mutable left : ('k,'v) t;
+  mutable right : ('k,'v) t
 }
 and ('key, 'a) t = ('key, 'a) node Js.null
 [@@bs.deriving abstract]
@@ -34,29 +34,29 @@ external unsafeCoerce : 'a Js.null -> 'a = "%identity"
 
 
 
-let height (n : _ t) =
+let treeHeight (n : _ t) =
   match toOpt n with 
     None -> 0
-  | Some n -> h n 
+  | Some n -> height n 
 
 let rec copy n =   
   match toOpt n with 
   | None -> n 
   | Some n -> 
     let l,r = left n, right n in
-    return @@ node ~left:(copy l) ~right:(copy r) ~value:(value n) ~key:(key n) ~h:(h n)
+    return @@ node ~left:(copy l) ~right:(copy r) ~value:(value n) ~key:(key n) ~height:(height n)
 
 let create l x d r =
-  let hl, hr  = height l,  height r in
-  return @@ node ~left:l ~key:x ~value:d ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
+  let hl, hr  = treeHeight l,  treeHeight r in
+  return @@ node ~left:l ~key:x ~value:d ~right:r ~height:(if hl >= hr then hl + 1 else hr + 1)
 
 let singleton x d = 
-  return @@ node ~left:empty ~key:x ~value:d ~right:empty ~h:1
+  return @@ node ~left:empty ~key:x ~value:d ~right:empty ~height:1
 
 let heightGe l r =   
   match toOpt l, toOpt r with  
   | _, None -> true 
-  | Some hl, Some hr -> h hl >= h hr 
+  | Some hl, Some hr -> height hl >= height hr 
   | None, Some _ -> false
 
 let updateValue n newValue =
@@ -67,15 +67,15 @@ let updateValue n newValue =
     ~right:(right n)
     ~key:(key n)
     ~value:newValue
-    ~h:(h n)
+    ~height:(height n)
 
 let bal l x d r =
-  let hl = match toOpt l with None -> 0 | Some n -> h n in
-  let hr = match toOpt r with None -> 0 | Some n -> h n in
+  let hl = match toOpt l with None -> 0 | Some n -> height n in
+  let hr = match toOpt r with None -> 0 | Some n -> height n in
   if hl > hr + 2 then begin
     let n = unsafeCoerce l in  
     let ll,lv,ld,lr = left n, key n, value n, right n in  
-    if height ll >= height lr then
+    if treeHeight ll >= treeHeight lr then
       create ll lv ld (create lr x d r)
     else begin
       let n = unsafeCoerce lr in 
@@ -85,7 +85,7 @@ let bal l x d r =
   end else if hr > hl + 2 then begin
     let n = unsafeCoerce r in 
     let rl, rv, rd, rr = left n, key n, value n, right n in  
-    if height rr >= height rl then
+    if treeHeight rr >= treeHeight rl then
       create (create l x d rl) rv rd rr
     else begin
       let n = unsafeCoerce rl in 
@@ -93,7 +93,7 @@ let bal l x d r =
       create (create l x d rll) rlv rld (create rlr rv rd rr)
     end
   end else
-    return @@ node ~left:l ~key:x ~value:d ~right:r ~h:(if hl >= hr then hl + 1 else hr + 1)
+    return @@ node ~left:l ~key:x ~value:d ~right:r ~height:(if hl >= hr then hl + 1 else hr + 1)
 
 
 let rec minKey0Aux n =  
@@ -188,7 +188,7 @@ let rec mapU n f =
     let newLeft = mapU (left n) f in
     let newD = f (value n) [@bs] in
     let newRight = mapU (right n) f in
-    return @@ node ~left:newLeft ~key:(key n) ~value:newD ~right:newRight ~h:(h n)
+    return @@ node ~left:newLeft ~key:(key n) ~value:newD ~right:newRight ~height:(height n)
 
 let map n f = mapU n (fun[@bs] a -> f a)
 
@@ -201,7 +201,7 @@ let rec mapWithKeyU n f =
     let newLeft = mapWithKeyU (left n) f in
     let newD = f key (value n) [@bs] in
     let newRight = mapWithKeyU (right n) f in
-    return @@ node ~left:newLeft ~key ~value:newD ~right:newRight ~h:(h n)
+    return @@ node ~left:newLeft ~key ~value:newD ~right:newRight ~height:(height n)
 
 let mapWithKey n f = mapWithKeyU n (fun [@bs] a b -> f a b)
 
@@ -263,8 +263,8 @@ let rec join ln v d rn =
     (None, _) -> addMinElement rn v d  
   | (_, None) -> addMaxElement ln v d  
   | Some l, Some r  ->
-    let (ll, lv, ld, lr, lh) = left l, key l, value l, right l, h l in 
-    let (rl, rv, rd, rr, rh) = left r, key r, value r, right r, h r in  
+    let (ll, lv, ld, lr, lh) = left l, key l, value l, right l, height l in 
+    let (rl, rv, rd, rr, rh) = left r, key r, value r, right r, height r in  
     if lh > rh + 2 then bal ll lv ld (join lr v d rn) else
     if rh > lh + 2 then bal (join ln v d rl) rv rd rr else
       create ln v d rn
@@ -364,7 +364,7 @@ let rec checkInvariantInternal (v : _ t) =
   | None -> ()
   | Some n -> 
     let l,r = left n , right n in 
-    let diff = height l - height r  in 
+    let diff = treeHeight l - treeHeight r  in 
     [%assert diff <=2 && diff >= -2 ];
     checkInvariantInternal l;
     checkInvariantInternal r 
@@ -489,7 +489,7 @@ let rec ofSortedArrayRevAux arr off len =
   | 2 ->  
     let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off - 1) ) 
     in 
-    return @@ node ~left:(singleton x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty
+    return @@ node ~left:(singleton x0 y0) ~key:x1 ~value:y1 ~height:2 ~right:empty
   | 3 -> 
     let (x0,y0),(x1,y1),(x2,y2) = 
       A.(getUnsafe arr off, 
@@ -499,7 +499,7 @@ let rec ofSortedArrayRevAux arr off len =
       ~right:(singleton x2 y2)
       ~key:x1
       ~value:y1
-      ~h:2
+      ~height:2
   | _ ->  
     let nl = len / 2 in 
     let left = ofSortedArrayRevAux arr off nl in 
@@ -516,7 +516,7 @@ let rec ofSortedArrayAux arr off len =
   | 2 ->  
     let (x0,y0),(x1,y1) = A.(getUnsafe arr off, getUnsafe arr (off + 1) ) 
     in 
-    return @@ node ~left:(singleton x0 y0) ~key:x1 ~value:y1 ~h:2 ~right:empty
+    return @@ node ~left:(singleton x0 y0) ~key:x1 ~value:y1 ~height:2 ~right:empty
   | 3 -> 
     let (x0,y0),(x1,y1),(x2,y2) = 
       A.(getUnsafe arr off, 
@@ -525,7 +525,7 @@ let rec ofSortedArrayAux arr off len =
     return @@ node ~left:(singleton x0 y0)
       ~right:(singleton x2 y2)
       ~key:x1 ~value:y1
-      ~h:2
+      ~height:2
   | _ ->  
     let nl = len / 2 in 
     let left = ofSortedArrayAux arr off nl in 
@@ -636,21 +636,21 @@ let rotateWithLeftChild k2 =
   let k1 = unsafeCoerce (left k2) in 
   (leftSet k2 (right k1)); 
   (rightSet k1 (return k2 ));
-  let hlk2, hrk2 = (height (left k2), (height (right k2))) in  
-  (hSet k2 
+  let hlk2, hrk2 = (treeHeight (left k2), (treeHeight (right k2))) in  
+  (heightSet k2 
      (Pervasives.max hlk2 hrk2 + 1));
-  let hlk1, hk2 = (height (left k1), (h k2)) in 
-  (hSet k1 (Pervasives.max hlk1 hk2 + 1));
+  let hlk1, hk2 = (treeHeight (left k1), (height k2)) in 
+  (heightSet k1 (Pervasives.max hlk1 hk2 + 1));
   k1  
 (* right rotation *)
 let rotateWithRightChild k1 =   
   let k2 = unsafeCoerce (right k1) in 
   (rightSet k1 (left k2));
   (leftSet k2 (return k1));
-  let hlk1, hrk1 = ((height (left k1)), (height (right k1))) in 
-  (hSet k1 (Pervasives.max  hlk1 hrk1 + 1));
-  let hrk2, hk1 = (height (right k2), (h k1)) in 
-  (hSet k2 (Pervasives.max  hrk2 hk1 + 1));
+  let hlk1, hrk1 = ((treeHeight (left k1)), (treeHeight (right k1))) in 
+  (heightSet k1 (Pervasives.max  hlk1 hrk1 + 1));
+  let hrk2, hk1 = (treeHeight (right k2), (height k1)) in 
+  (heightSet k2 (Pervasives.max  hrk2 hk1 + 1));
   k2 
 
 (*
@@ -667,13 +667,13 @@ let doubleWithRightChild k2 =
   rotateWithRightChild k2
 
 let heightUpdateMutate t = 
-  let hlt, hrt = (height (left t),(height (right t))) in 
-  hSet t (Pervasives.max hlt hrt  + 1);
+  let hlt, hrt = (treeHeight (left t),(treeHeight (right t))) in 
+  heightSet t (Pervasives.max hlt hrt  + 1);
   t
 
 let balMutate nt  =  
   let l, r = (left nt, right nt) in  
-  let hl, hr =  (height l, height r) in 
+  let hl, hr =  (treeHeight l, treeHeight r) in 
   if hl > 2 +  hr then 
     let l = unsafeCoerce l in 
     let ll, lr = (left l , right l)in
@@ -693,7 +693,7 @@ let balMutate nt  =
     ) 
   else 
     begin
-      hSet nt (max hl hr + 1);
+      heightSet nt (max hl hr + 1);
       nt
     end
 

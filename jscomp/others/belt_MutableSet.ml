@@ -46,7 +46,7 @@ type ('k, 'id) t = ('k, 'id) S.t
 
 
 let rec remove0 nt x ~cmp = 
-  let k = N.key nt in 
+  let k = N.value nt in 
   let c = cmp x k [@bs] in 
   if c = 0 then 
     let l,r = N.(left nt, right nt) in       
@@ -103,7 +103,7 @@ let removeMany d xs =
 
 
 let rec removeCheck0  nt x removed ~cmp= 
-  let k = N.key nt in 
+  let k = N.value nt in 
   let c = (Belt_Id.getCmpInternal cmp) x k [@bs] in 
   if c = 0 then 
     let () = removed := true in  
@@ -151,7 +151,7 @@ let rec addCheck0  t x added ~cmp  =
     added := true;
     N.singleton x 
   | Some nt -> 
-    let k = N.key nt in 
+    let k = N.value nt in 
     let c = cmp x k [@bs] in  
     if c = 0 then t 
     else

@@ -27,11 +27,11 @@
 type ('key, 'a) t = ('key, 'a) node Js.null
 
 and ('k,  'v) node  = private {
-  mutable left : ('k,'v) t;
   mutable key : 'k; 
   mutable value : 'v; 
-  mutable right : ('k,'v) t;
-  h : int 
+  height : int; 
+  mutable left : ('k,'v) t;
+  mutable right : ('k,'v) t
 } [@@bs.deriving abstract]
 
 
