@@ -1472,14 +1472,14 @@ and block cxt f b =
 
 
 
-let program f cxt   ( x : J.program ) = 
+(* let program f cxt   ( x : J.program ) = 
   let () = P.force_newline f in
   let cxt =  statement_list true cxt f x.block  in
   let () = P.force_newline f in
-  Js_dump_import_export.exports cxt f x.exports
+  Js_dump_import_export.exports cxt f x.exports *)
 
-let dump_program (x : J.program) oc = 
-  ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
+(* let dump_program (x : J.program) oc = 
+  ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x ) *)
 
 let string_of_block  block  
   = 

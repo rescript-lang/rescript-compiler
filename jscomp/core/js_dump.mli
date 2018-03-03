@@ -22,9 +22,9 @@
 
 
 
-(** Print JS IR to vanilla Javascript code *)
-
-
+(** Print JS IR to vanilla Javascript code 
+    Called by module {!Js_dump_program}
+*)
 val statement_list : 
   bool ->
   Ext_pp_scope.t -> 
