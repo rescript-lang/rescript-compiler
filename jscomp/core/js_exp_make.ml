@@ -101,11 +101,10 @@ let flat_call ?comment e0 es : t =
   {expression_desc = FlatCall (e0,es); comment }
 
 let runtime_var_dot ?comment (x : string)  (e1 : string) : J.expression = 
-  {expression_desc = 
-     Var (Qualified(Ext_ident.create_js x,Runtime, Some e1)); comment }
+  { expression_desc = 
+     Var (Qualified(Ident.create_persistent x,Runtime, Some e1));
+    comment }
 
-(* let runtime_var_vid  x  e1 : J.vident = 
-  Qualified(Ext_ident.create_js x,Runtime, Some e1) *)
 
 let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =     
   {expression_desc = Var (Qualified(id, Ml, Some e)); comment }
