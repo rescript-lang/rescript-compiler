@@ -85,6 +85,7 @@ big_enum.cmj :
 big_polyvar_test.cmj :
 bigarray_test.cmj : ../stdlib/int32.cmj ../stdlib/complex.cmj \
     ../stdlib/bigarray.cmj
+block_alias_test.cmj :
 boolean_test.cmj : test_bool_equal.cmj mt.cmj
 bs_MapInt_test.cmj : ../runtime/js.cmj ../others/belt.cmj
 bs_abstract_test.cmj : ../runtime/js.cmj bs_abstract_test.cmi
