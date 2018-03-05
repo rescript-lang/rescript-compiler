@@ -716,11 +716,6 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
   (*   when Ext_ident.is_js id -> *)
   (*   econd e1 t f *)
 
-  | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0l; _}); _},x)) 
-     | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0l; _});_}))), _, _ 
-    -> 
-    econd ?comment x f t 
-
   | (Bin (Ge, 
           ({expression_desc = Length _ ;
             _}), {expression_desc = Number (Int { i = 0l ; _})})), _, _ 
