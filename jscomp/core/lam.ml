@@ -1862,12 +1862,10 @@ let convert exports lam : _ * _  =
         | "#undefined_to_opt" -> Pundefined_to_opt
         | "#null_undefined_to_opt" -> Pnull_undefined_to_opt
         | "#null_to_opt" -> Pnull_to_opt
-        | "#is_nil"  -> Pis_null
-        | "#is_undef" -> Pis_undefined
         | "#is_nil_undef" -> Pis_null_undefined
         | "#string_append" -> Pstringadd
 
-        (* | "#is_instance_array" -> Pjs_is_instance_array *)
+
         | "#string_of_small_int_array" -> Pjs_string_of_small_array
         (* {[String.fromCharCode.apply(null,x)]} 
            Note if we have better suport [@bs.splice],

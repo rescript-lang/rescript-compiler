@@ -25,14 +25,17 @@
 (** Provides functionality for dealing with the ['a Js.null] type *)
 
 
-(** Local alias for ['a Js.null] *)
+
 type + 'a t = 'a Js.null
+(** Local alias for ['a Js.null] *)
 
-(** Constructs a value of ['a Js.null] containing a value of ['a] *)
 external return : 'a -> 'a t  = "%identity"
+(** Constructs a value of ['a Js.null] containing a value of ['a] *)
 
+
+val test : 'a t -> bool 
+[@@ocaml.deprecated "Use = Js.null directly "]
 (** Returns [true] if the given value is [empty] ([null]), [false] otherwise *)
-external test : 'a t -> bool = "#is_nil"
 
 (** The empty value, [null] *)
 external empty : 'a t = "#null" 

@@ -50,7 +50,7 @@ let top s =
   | None -> None 
   | Some x -> Some (head x)
 
-let isEmpty s = Js.Null.test (root s)    
+let isEmpty s = root s = Js.null
 
 let popUndefined s =   
   match Js.nullToOption (root s) with 
