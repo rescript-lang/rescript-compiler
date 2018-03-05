@@ -220,7 +220,7 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">     module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
+                    <pre class="example"> <pre class="codepre"><code class="code">     module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
      let s = make ~id:(module IntCmp)
     </code></pre>  </pre>
                     </div>
@@ -233,7 +233,7 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
+                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
       isEmpty (ofArray [|1,"1"|] ~id:(module IntCmp)) = false;;
     </code></pre>  </pre>
                     </div>
@@ -246,7 +246,7 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
+                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
       has (ofArray [|1,"1"|] ~id:(module IntCmp)) 1 = true;;
     </code></pre>  </pre>
                     </div>
@@ -293,7 +293,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
 
       let s0 = ofArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
       let acc = ref [] ;;
@@ -315,7 +315,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
 
       let s0 = ofArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
       reduce s0 [] (fun acc k v -&gt; (k,v) acc ) = [4,"4";3,"3";2,"2";1,"1"];;
@@ -353,7 +353,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
       size (ofArray [2,"2"; 2,"1"; 3,"3"] ~id:(module IntCmp)) = 2 ;;
     </code></pre>  </pre>
                     </div>
@@ -367,7 +367,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
       toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     </code></pre>  </pre>
                     </div>
@@ -393,7 +393,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
       toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     </code></pre>  </pre>
                     </div>
@@ -407,7 +407,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
       keysToArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
       [|1;2;3|];;
     </code></pre>  </pre>
@@ -422,7 +422,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
       valuesToArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
       [|"1";"2";"3"|];;
     </code></pre>  </pre>
@@ -513,7 +513,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
       get (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
       Some "2";;
       get (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
@@ -568,7 +568,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
       
       let s0 =  (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
 
@@ -604,7 +604,7 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
       
       let s0 =  (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
 
