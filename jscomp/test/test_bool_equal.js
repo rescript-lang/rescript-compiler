@@ -116,6 +116,18 @@ function f6(x) {
   }
 }
 
+function f7(x) {
+  if (x.length !== 0) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
+
+function f8() {
+  return 2;
+}
+
 exports.bool_equal = bool_equal;
 exports.assertions = assertions;
 exports.f0 = f0;
@@ -125,4 +137,6 @@ exports.f3 = f3;
 exports.f4 = f4;
 exports.f5 = f5;
 exports.f6 = f6;
+exports.f7 = f7;
+exports.f8 = f8;
 /* No side effect */

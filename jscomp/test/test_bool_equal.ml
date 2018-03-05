@@ -46,7 +46,15 @@ let f5 x =
   | [] -> 1 
   | _ -> 2 
 
-  
+
 let f6 x =   
   if x = [] then 1  
   else 2 
+
+let f7 x =   
+  if Belt.Array.length x > 0 then 1 
+  else 2 
+
+let f8 x =   
+  if Belt.Array.length x >= 0 then 1 
+  else 2   

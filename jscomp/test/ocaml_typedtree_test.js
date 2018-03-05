@@ -5182,7 +5182,7 @@ function forget_abbrev(mem, path) {
 }
 
 function is_optional(l) {
-  if (l.length) {
+  if (l.length !== 0) {
     return +(Caml_string.get(l, 0) === /* "?" */63);
   } else {
     return /* false */0;
@@ -66818,7 +66818,7 @@ function compute_variance_decl(env, check, decl, rloc) {
 
 function is_sharp(id) {
   var s = id[/* name */1];
-  if (s.length) {
+  if (s.length !== 0) {
     return +(Caml_string.get(s, 0) === /* "#" */35);
   } else {
     return /* false */0;

@@ -692,41 +692,40 @@ let rec ocaml_boolean_under_condition (b : t) =
     else {b with expression_desc = Js_not u'} 
   | _ -> b 
 
-let rec econd ?comment (b : t) (t : t) (f : t) : t = 
-  match b.expression_desc , t.expression_desc, f.expression_desc with
-
-  | Number ((Int { i = 0l; _}) ), _, _ 
-    -> f  (* TODO: constant folding: could be refined *)
-  | (Number _ | Array _ | Caml_block _), _, _ when no_side_effect b 
-    -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
-
-  | Bool true, _, _ -> t 
-  | Bool false,  _, _ -> f
-  | (Bin (Bor, v , {expression_desc = Number (Int {i = 0l ; _})})), _, _
-    -> econd v t f 
-  (* TODO: could be more non undefined cases 
+(* TODO: could be more non undefined cases 
      check [caml_obj_is_block]
      acutally we should avoid introducing undefined
      as much as we can, this kind of inlining and mirco-optimization
      can be done after we can inline runtime in the future 
   *)
-  (* | Bin (NotEqEq, ({expression_desc = Length _; _} as e1) , *)
-  (*        {expression_desc = Var (Id ({name = "undefined"; _} as id))}), *)
-  (*   _, _  *)
-  (*   when Ext_ident.is_js id -> *)
-  (*   econd e1 t f *)
+(* | Bin (NotEqEq, ({expression_desc = Length _; _} as e1) , *)
+(*        {expression_desc = Var (Id ({name = "undefined"; _} as id))}), *)
+(*   _, _  *)
+(*   when Ext_ident.is_js id -> *)
+(*   econd e1 t f *)  
+(* | (Bin (Bor, v , {expression_desc = Number (Int {i = 0l ; _})})), _, _
+    -> econd v t f   *)
 
+let rec econd ?comment (b : t) (t : t) (f : t) : t = 
+  match b.expression_desc , t.expression_desc, f.expression_desc with
+  | Bool false,  _, _ -> f
+  | Number ((Int { i = 0l; _}) ), _, _ 
+    -> f  (* TODO: constant folding: could be refined *)
+  | (Number _ | Array _ | Caml_block _), _, _ when no_side_effect b 
+    -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
+  | Bool true, _, _ -> t   
   | (Bin (Ge, 
           ({expression_desc = Length _ ;
             _}), {expression_desc = Number (Int { i = 0l ; _})})), _, _ 
     -> f
-
   | (Bin (Gt, 
           ({expression_desc = Length _;
-            _} as pred ), {expression_desc = Number (Int {i = 0l; })})), _, _
+            _} as pred ), 
+          ({expression_desc = Number (Int {i = 0l; }) }  as zero) )), _, _
     ->
     (** Add comment when simplified *)
-    econd ?comment pred t f 
+    econd ?comment {b with expression_desc = (Bin (NotEqEq, 
+           pred , zero ))} t f 
 
   | _, (Cond (p1, branch_code0, branch_code1)), _
     when Js_analyzer.eq_expression branch_code1 f
@@ -771,13 +770,8 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
     ->
     econd ?comment e f t 
   | Int_of_boolean  b, _, _  -> econd ?comment  b t f
-  (* | Bin (And ,{expression_desc = Int_of_boolean b0},b1), _, _  -> *)
-  (*   econd ?comment { b with expression_desc = Bin (And , b0,b1)} t f *)
   | _ -> 
     let b  = ocaml_boolean_under_condition b in 
-    (* if b' <> b then *)
-    (*   econd ?comment b' t f  *)
-    (* else  *)
     if Js_analyzer.eq_expression t f then
       if no_side_effect b then t else seq  ?comment b t
     else
