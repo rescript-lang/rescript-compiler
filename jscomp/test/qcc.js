@@ -1123,10 +1123,10 @@ function expr(stk) {
       push(0);
       expr(stk);
       pop(1);
-      if (ty) {
-        out(34817);
-      } else {
+      if (ty === /* Int */0) {
         out(4753665);
+      } else {
+        out(34817);
       }
       _param = /* () */0;
       continue ;

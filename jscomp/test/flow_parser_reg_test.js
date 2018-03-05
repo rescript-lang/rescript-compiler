@@ -136,15 +136,15 @@ function pos_cmp(a, b) {
 
 function compare(loc1, loc2) {
   var k = source_cmp(loc1[/* source */0], loc2[/* source */0]);
-  if (k) {
-    return k;
-  } else {
+  if (k === 0) {
     var k$1 = pos_cmp(loc1[/* start */1], loc2[/* start */1]);
-    if (k$1) {
-      return k$1;
-    } else {
+    if (k$1 === 0) {
       return pos_cmp(loc1[/* _end */2], loc2[/* _end */2]);
+    } else {
+      return k$1;
     }
+  } else {
+    return k;
   }
 }
 
@@ -1131,9 +1131,7 @@ function parse_body(_f) {
         } else {
           exit = 1;
         }
-      } else if (f[/* decimal_exponent */3]) {
-        throw No_good;
-      } else {
+      } else if (f[/* decimal_exponent */3] === /* None */0) {
         var init = eat(f);
         _f = /* record */[
           /* negative */init[/* negative */0],
@@ -1144,6 +1142,8 @@ function parse_body(_f) {
         ];
         continue ;
         
+      } else {
+        throw No_good;
       }
       if (exit === 1) {
         var ref_char_code;
@@ -1199,7 +1199,7 @@ function float_of_string(str) {
         var ret = f[/* mantissa */1];
         var match = f[/* decimal_exponent */3];
         var exponent = match ? f[/* exponent */2] + match[0] | 0 : f[/* exponent */2];
-        var ret$1 = exponent ? Math.pow(ret, exponent) : ret;
+        var ret$1 = exponent === 0 ? ret : Math.pow(ret, exponent);
         if (f[/* negative */0]) {
           return -ret$1;
         } else {
@@ -1861,14 +1861,14 @@ function token(env, lexbuf) {
             var env$8 = save_comment(match$2[0], start$2, match$2[1], buf$2, /* false */0);
             return token(env$8, lexbuf$1);
         case 7 : 
-            if (lexbuf$1[/* lex_start_pos */4]) {
+            if (lexbuf$1[/* lex_start_pos */4] === 0) {
+              var match$3 = line_comment(env$1, Buffer.create(127), lexbuf$1);
+              return token(match$3[0], lexbuf$1);
+            } else {
               return /* tuple */[
                       env$1,
                       /* T_ERROR */104
                     ];
-            } else {
-              var match$3 = line_comment(env$1, Buffer.create(127), lexbuf$1);
-              return token(match$3[0], lexbuf$1);
             }
             break;
         case 8 : 
@@ -4461,14 +4461,12 @@ function add(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, l), v, r);
-      } else {
-        return bal(l, v, add(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal(add(x, l), v, r);
+    } else {
+      return bal(l, v, add(x, r));
     }
   } else {
     return /* Node */[
@@ -4485,12 +4483,12 @@ function mem(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -5327,14 +5325,12 @@ function add$1(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$1(add$1(x, l), v, r);
-      } else {
-        return bal$1(l, v, add$1(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$1(add$1(x, l), v, r);
+    } else {
+      return bal$1(l, v, add$1(x, r));
     }
   } else {
     return /* Node */[
@@ -5351,12 +5347,12 @@ function mem$1(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -5449,13 +5445,7 @@ function add$2(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$2(add$2(x, data, l), v, d, r);
-      } else {
-        return bal$2(l, v, d, add$2(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -5463,6 +5453,10 @@ function add$2(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$2(add$2(x, data, l), v, d, r);
+    } else {
+      return bal$2(l, v, d, add$2(x, data, r));
     }
   } else {
     return /* Node */[
@@ -5480,12 +5474,12 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -5495,10 +5489,10 @@ function find(x, _param) {
 
 function compare$1(param, param$1) {
   var loc = compare(param[0], param$1[0]);
-  if (loc) {
-    return loc;
-  } else {
+  if (loc === 0) {
     return Caml_obj.caml_compare(param[1], param$1[1]);
+  } else {
+    return loc;
   }
 }
 
@@ -5582,14 +5576,12 @@ function add$3(x, t) {
     var v = t[1];
     var l = t[0];
     var c = compare$1(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$3(add$3(x, l), v, r);
-      } else {
-        return bal$3(l, v, add$3(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$3(add$3(x, l), v, r);
+    } else {
+      return bal$3(l, v, add$3(x, r));
     }
   } else {
     return /* Node */[
@@ -5606,12 +5598,12 @@ function mem$2(x, _param) {
     var param = _param;
     if (param) {
       var c = compare$1(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -7074,7 +7066,7 @@ function is_simple_param(param) {
 }
 
 function is_simple_function_params(params, defaults, rest) {
-  if (defaults === /* [] */0 && !rest) {
+  if (defaults === /* [] */0 && rest === /* None */0) {
     return List.for_all(is_simple_param, params);
   } else {
     return /* false */0;
@@ -15233,10 +15225,10 @@ function parse(content, _) {
       var match = param[1];
       var loc = param[0];
       if (typeof match === "number") {
-        if (match) {
-          return node("DebuggerStatement", loc, /* array */[]);
-        } else {
+        if (match === 0) {
           return node("EmptyStatement", loc, /* array */[]);
+        } else {
+          return node("DebuggerStatement", loc, /* array */[]);
         }
       } else {
         switch (match.tag | 0) {

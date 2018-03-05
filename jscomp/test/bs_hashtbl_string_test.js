@@ -88,7 +88,9 @@ function bench2(m) {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Belt_HashMap.remove(empty, "" + i$2);
   }
-  if (empty.size) {
+  if (empty.size === 0) {
+    return 0;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -97,8 +99,6 @@ function bench2(m) {
             2
           ]
         ];
-  } else {
-    return 0;
   }
 }
 
@@ -128,7 +128,9 @@ function bench3(m) {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     table = Belt_MapDict.remove(table, "" + i$2, cmp);
   }
-  if (Belt_MapDict.size(table)) {
+  if (Belt_MapDict.size(table) === 0) {
+    return 0;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -137,8 +139,6 @@ function bench3(m) {
             2
           ]
         ];
-  } else {
-    return 0;
   }
 }
 
@@ -241,7 +241,9 @@ function bench6() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Belt_HashMapInt.remove(table, i$2);
   }
-  if (table.size) {
+  if (table.size === 0) {
+    return 0;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -250,8 +252,6 @@ function bench6() {
             2
           ]
         ];
-  } else {
-    return 0;
   }
 }
 
@@ -277,7 +277,9 @@ function bench7() {
   for(var i$2 = 0; i$2 <= 1000000; ++i$2){
     Belt_HashSetInt.remove(table, i$2);
   }
-  if (table.size) {
+  if (table.size === 0) {
+    return 0;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -286,8 +288,6 @@ function bench7() {
             2
           ]
         ];
-  } else {
-    return 0;
   }
 }
 

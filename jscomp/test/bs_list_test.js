@@ -2258,10 +2258,10 @@ var u0 = Belt_List.makeBy(20, (function (x) {
       }));
 
 var u1 = Belt_List.keepMap(u0, (function (x) {
-        if (x % 7) {
-          return /* None */0;
-        } else {
+        if (x % 7 === 0) {
           return /* Some */[x + 1 | 0];
+        } else {
+          return /* None */0;
         }
       }));
 
@@ -2289,10 +2289,10 @@ b("File \"bs_list_test.ml\", line 325, characters 4-11", Caml_obj.caml_equal(Bel
                 ]
               ]
             ], (function (x) {
-                if (x % 2) {
-                  return /* None */0;
-                } else {
+                if (x % 2 === 0) {
                   return /* Some */[-x | 0];
+                } else {
+                  return /* None */0;
                 }
               })), /* :: */[
           -2,
@@ -2315,10 +2315,10 @@ b("File \"bs_list_test.ml\", line 329, characters 4-11", +(Belt_List.keepMap(/* 
               ]
             ]
           ], (function (x) {
-              if (x % 5) {
-                return /* None */0;
-              } else {
+              if (x % 5 === 0) {
                 return /* Some */[x];
+              } else {
+                return /* None */0;
               }
             })) === /* [] */0));
 

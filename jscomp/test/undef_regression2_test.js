@@ -66,11 +66,11 @@ function test2() {
 }
 
 function test3() {
-  if (Js_primitive.undefined_to_opt(typeof (__DEV__) === "undefined" ? undefined : (__DEV__))) {
-    return 0;
-  } else {
+  if (Js_primitive.undefined_to_opt(typeof (__DEV__) === "undefined" ? undefined : (__DEV__)) === /* None */0) {
     console.log("production mode");
     return /* () */0;
+  } else {
+    return 0;
   }
 }
 

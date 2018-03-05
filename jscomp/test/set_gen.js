@@ -569,59 +569,57 @@ function of_sorted_list(l) {
 
 function of_sorted_array(l) {
   var sub = function (start, n, l) {
-    if (n) {
-      if (n === 1) {
-        var x0 = l[start];
-        return /* Node */[
+    if (n === 0) {
+      return /* Empty */0;
+    } else if (n === 1) {
+      var x0 = l[start];
+      return /* Node */[
+              /* Empty */0,
+              x0,
+              /* Empty */0,
+              1
+            ];
+    } else if (n === 2) {
+      var x0$1 = l[start];
+      var x1 = l[start + 1 | 0];
+      return /* Node */[
+              /* Node */[
                 /* Empty */0,
-                x0,
+                x0$1,
                 /* Empty */0,
                 1
-              ];
-      } else if (n === 2) {
-        var x0$1 = l[start];
-        var x1 = l[start + 1 | 0];
-        return /* Node */[
-                /* Node */[
-                  /* Empty */0,
-                  x0$1,
-                  /* Empty */0,
-                  1
-                ],
-                x1,
+              ],
+              x1,
+              /* Empty */0,
+              2
+            ];
+    } else if (n === 3) {
+      var x0$2 = l[start];
+      var x1$1 = l[start + 1 | 0];
+      var x2 = l[start + 2 | 0];
+      return /* Node */[
+              /* Node */[
                 /* Empty */0,
-                2
-              ];
-      } else if (n === 3) {
-        var x0$2 = l[start];
-        var x1$1 = l[start + 1 | 0];
-        var x2 = l[start + 2 | 0];
-        return /* Node */[
-                /* Node */[
-                  /* Empty */0,
-                  x0$2,
-                  /* Empty */0,
-                  1
-                ],
-                x1$1,
-                /* Node */[
-                  /* Empty */0,
-                  x2,
-                  /* Empty */0,
-                  1
-                ],
-                2
-              ];
-      } else {
-        var nl = n / 2 | 0;
-        var left = sub(start, nl, l);
-        var mid = start + nl | 0;
-        var v = l[mid];
-        var right = sub(mid + 1 | 0, (n - nl | 0) - 1 | 0, l);
-        return create(left, v, right);
-      }
+                x0$2,
+                /* Empty */0,
+                1
+              ],
+              x1$1,
+              /* Node */[
+                /* Empty */0,
+                x2,
+                /* Empty */0,
+                1
+              ],
+              2
+            ];
     } else {
-      return /* Empty */0;
+      var nl = n / 2 | 0;
+      var left = sub(start, nl, l);
+      var mid = start + nl | 0;
+      var v = l[mid];
+      var right = sub(mid + 1 | 0, (n - nl | 0) - 1 | 0, l);
+      return create(left, v, right);
     }
   };
   return sub(0, l.length, l);

@@ -690,7 +690,7 @@ for(var i$4 = 1; i$4 <= 10; ++i$4){
           ]
         ];
   }
-  if (!q$4[/* length */0]) {
+  if (q$4[/* length */0] === 0) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -714,7 +714,7 @@ for(var i$5 = 10; i$5 >= 1; --i$5){
           ]
         ];
   }
-  if (!q$4[/* length */0]) {
+  if (q$4[/* length */0] === 0) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [

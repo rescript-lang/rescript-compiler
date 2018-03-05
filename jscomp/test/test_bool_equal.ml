@@ -27,3 +27,34 @@ let assertions () =
   assert (not (true = false));
   assert (not (false = true))
     
+
+let f0 x = 
+  if x = true then 1 else 2 
+let f1 x = 
+  if not (x = true) then 1 else 2 
+
+let f2 x =   
+  if x = Js.true_ then 1 else 2  
+let f3 x =   
+  if x = Js.false_ then 1 else 2 
+
+let f4 x =   
+  if not (x = Js.true_) then 1 else 2 
+
+let f5 x = 
+  match x with 
+  | [] -> 1 
+  | _ -> 2 
+
+
+let f6 x =   
+  if x = [] then 1  
+  else 2 
+
+let f7 x =   
+  if Belt.Array.length x > 0 then 1 
+  else 2 
+
+let f8 x =   
+  if Belt.Array.length x >= 0 then 1 
+  else 2   

@@ -304,7 +304,12 @@ function contain_substring(s, sub) {
 
 function non_overlap_count(sub, s) {
   var sub_len = sub.length;
-  if (sub.length) {
+  if (sub.length === 0) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Ext_string_test.non_overlap_count"
+        ];
+  } else {
     var _acc = 0;
     var _off = 0;
     while(true) {
@@ -320,11 +325,6 @@ function non_overlap_count(sub, s) {
         
       }
     };
-  } else {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Ext_string_test.non_overlap_count"
-        ];
   }
 }
 

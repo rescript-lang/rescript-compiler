@@ -484,29 +484,11 @@ let obj ?comment properties : t =
 
 (* currently only in method call, no dependency introduced
 *)
-(* let var_dot ?comment (x : Ident.t)  (e1 : string) : t = 
-  {expression_desc = Dot (var x,  e1, true); comment}  *)
 
-
-(* let bind_call ?comment obj  (e1 : string) args  : t = 
-  call ~info:Js_call_info.dummy {expression_desc = 
-                                   Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
-                                 comment = None } args  *)
-
-(* let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
-  let obj =  var x in 
-  call ~info:Js_call_info.dummy {expression_desc = 
-                                   Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
-                                 comment = None } args 
- *)
 
 (* Dot .....................**)        
 
-
-
-
-
-(** Convert a javascript boolean to ocaml boolean
+(** Convert a javascript boolean to ocaml bool
     It's necessary for return value
      this should be optmized away for [if] ,[cond] to produce 
     more readable code
@@ -517,18 +499,28 @@ let bool_of_boolean ?comment (e : t) : t =
   | Number _ -> e 
   | _ -> {comment ; expression_desc = Int_of_boolean e}
 
-(* let to_number ?comment (e : t) : t = 
-  match e.expression_desc with 
-  | Int_of_boolean _
-  | Anything_to_number _
-  | Number _ -> e 
-  | _ -> {comment ; expression_desc = Anything_to_number e} *)
 
 let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
 
 let caml_false  = int ~comment:"false" 0l
 
 let bool v = if  v then caml_true else caml_false
+
+(** Arith operators *)
+(* Dot .....................**)        
+
+let float ?comment f : t = 
+  {expression_desc = Number (Float {f}); comment}
+
+let zero_float_lit : t = 
+  {expression_desc = Number (Float {f = "0." }); comment = None}
+
+
+let float_mod ?comment e1 e2 : J.expression = 
+  { comment ; 
+    expression_desc = Bin (Mod, e1,e2)
+  }
+
 
 (** Here we have to use JS [===], and therefore, we are introducing 
     Js boolean, so be sure to convert it back to OCaml bool
@@ -562,22 +554,6 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   | _ -> 
     bool_of_boolean  {expression_desc = Bin(EqEqEq, e0,e1); comment}
 
-
-(** Arith operators *)
-(* Dot .....................**)        
-
-let float ?comment f : t = 
-  {expression_desc = Number (Float {f}); comment}
-
-let zero_float_lit : t = 
-  {expression_desc = Number (Float {f = "0." }); comment = None}
-
-
-let float_mod ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Mod, e1,e2)
-  }
-
 let bin ?comment (op : J.binop) e0 e1 : t =
   match op with
   | EqEqEq -> triple_equal ?comment e0 e1
@@ -597,6 +573,7 @@ let bin ?comment (op : J.binop) e0 e1 : t =
    We wrap all boolean functions here, since OCaml boolean is a 
    bit different from Javascript, so that we can change it in the future
 *)
+
 let rec and_ ?comment (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
   |  Int_of_boolean e1 , Int_of_boolean e2 ->
@@ -715,46 +692,40 @@ let rec ocaml_boolean_under_condition (b : t) =
     else {b with expression_desc = Js_not u'} 
   | _ -> b 
 
-let rec econd ?comment (b : t) (t : t) (f : t) : t = 
-  match b.expression_desc , t.expression_desc, f.expression_desc with
-
-  | Number ((Int { i = 0l; _}) ), _, _ 
-    -> f  (* TODO: constant folding: could be refined *)
-  | (Number _ | Array _ | Caml_block _), _, _ when no_side_effect b 
-    -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
-
-  | Bool true, _, _ -> t 
-  | Bool false,  _, _ -> f
-  | (Bin (Bor, v , {expression_desc = Number (Int {i = 0l ; _})})), _, _
-    -> econd v t f 
-  (* TODO: could be more non undefined cases 
+(* TODO: could be more non undefined cases 
      check [caml_obj_is_block]
      acutally we should avoid introducing undefined
      as much as we can, this kind of inlining and mirco-optimization
      can be done after we can inline runtime in the future 
   *)
-  (* | Bin (NotEqEq, ({expression_desc = Length _; _} as e1) , *)
-  (*        {expression_desc = Var (Id ({name = "undefined"; _} as id))}), *)
-  (*   _, _  *)
-  (*   when Ext_ident.is_js id -> *)
-  (*   econd e1 t f *)
+(* | Bin (NotEqEq, ({expression_desc = Length _; _} as e1) , *)
+(*        {expression_desc = Var (Id ({name = "undefined"; _} as id))}), *)
+(*   _, _  *)
+(*   when Ext_ident.is_js id -> *)
+(*   econd e1 t f *)  
+(* | (Bin (Bor, v , {expression_desc = Number (Int {i = 0l ; _})})), _, _
+    -> econd v t f   *)
 
-  | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0l; _}); _},x)) 
-     | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0l; _});_}))), _, _ 
-    -> 
-    econd ?comment x f t 
-
+let rec econd ?comment (b : t) (t : t) (f : t) : t = 
+  match b.expression_desc , t.expression_desc, f.expression_desc with
+  | Bool false,  _, _ -> f
+  | Number ((Int { i = 0l; _}) ), _, _ 
+    -> f  (* TODO: constant folding: could be refined *)
+  | (Number _ | Array _ | Caml_block _), _, _ when no_side_effect b 
+    -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
+  | Bool true, _, _ -> t   
   | (Bin (Ge, 
           ({expression_desc = Length _ ;
             _}), {expression_desc = Number (Int { i = 0l ; _})})), _, _ 
     -> f
-
   | (Bin (Gt, 
           ({expression_desc = Length _;
-            _} as pred ), {expression_desc = Number (Int {i = 0l; })})), _, _
+            _} as pred ), 
+          ({expression_desc = Number (Int {i = 0l; }) }  as zero) )), _, _
     ->
     (** Add comment when simplified *)
-    econd ?comment pred t f 
+    econd ?comment {b with expression_desc = (Bin (NotEqEq, 
+           pred , zero ))} t f 
 
   | _, (Cond (p1, branch_code0, branch_code1)), _
     when Js_analyzer.eq_expression branch_code1 f
@@ -799,13 +770,8 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
     ->
     econd ?comment e f t 
   | Int_of_boolean  b, _, _  -> econd ?comment  b t f
-  (* | Bin (And ,{expression_desc = Int_of_boolean b0},b1), _, _  -> *)
-  (*   econd ?comment { b with expression_desc = Bin (And , b0,b1)} t f *)
   | _ -> 
     let b  = ocaml_boolean_under_condition b in 
-    (* if b' <> b then *)
-    (*   econd ?comment b' t f  *)
-    (* else  *)
     if Js_analyzer.eq_expression t f then
       if no_side_effect b then t else seq  ?comment b t
     else
@@ -885,17 +851,11 @@ let string_of_small_int_array ?comment xs : t =
    call plain [dot]
 *)          
 
-let null ?comment () =     
-  js_global ?comment "null"
 
 let tag ?comment e : t = 
   {expression_desc = 
      Bin (Bor, {expression_desc = Caml_block_tag e; comment }, zero_int_literal );
    comment = None }    
-
-
-let bind ?comment fn obj  : t = 
-  {expression_desc = Bind (fn, obj) ; comment }
 
 
 (* according to the compiler, [Btype.hash_variant], 
@@ -1019,6 +979,19 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
       [l;r], _), 
     Number (Int {i = 0l})
     -> int_comp cmp l r (* = 0 > 0 < 0 *)
+  | Ceq, Call ({
+      expression_desc = 
+        Var (Qualified 
+               (ident, Runtime, 
+                Some ("caml_compare"))); _} as fn, 
+      ([l;r] as args), call_info), 
+    Number (Int {i = 0l})
+    -> 
+      {e0 with expression_desc =
+         Call( 
+            {fn with expression_desc = 
+              Var(Qualified (ident,Runtime, Some "caml_equal")) 
+            } , args, call_info)}
   | Ceq, _, _ -> int_equal e0 e1 
   | _ ->          
     bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1

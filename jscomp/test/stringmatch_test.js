@@ -58,13 +58,7 @@ function tst02(s) {
     } else {
       return 1;
     }
-  } else if (len) {
-    if (s === "A") {
-      return 2;
-    } else {
-      return 3;
-    }
-  } else {
+  } else if (len === 0) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -73,6 +67,10 @@ function tst02(s) {
             22
           ]
         ];
+  } else if (s === "A") {
+    return 2;
+  } else {
+    return 3;
   }
 }
 

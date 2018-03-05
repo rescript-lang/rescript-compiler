@@ -5,10 +5,10 @@ var Curry = require("../../lib/js/curry.js");
 
 function f(param) {
   if (typeof param === "number") {
-    if (param) {
-      return 5;
-    } else {
+    if (param === 0) {
       return 4;
+    } else {
+      return 5;
     }
   } else {
     switch (param.tag | 0) {

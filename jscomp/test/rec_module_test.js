@@ -21,14 +21,12 @@ var B = Caml_module.init_mod([
     ], [[0]]);
 
 function even(n) {
-  if (n) {
-    if (n === 1) {
-      return /* false */0;
-    } else {
-      return Curry._1(B[/* odd */0], n - 1 | 0);
-    }
-  } else {
+  if (n === 0) {
     return /* true */1;
+  } else if (n === 1) {
+    return /* false */0;
+  } else {
+    return Curry._1(B[/* odd */0], n - 1 | 0);
   }
 }
 
@@ -37,10 +35,10 @@ Caml_module.update_mod([[0]], A, /* module */[/* even */even]);
 function odd(n) {
   if (n === 1) {
     return /* true */1;
-  } else if (n) {
-    return Curry._1(A[/* even */0], n - 1 | 0);
-  } else {
+  } else if (n === 0) {
     return /* false */0;
+  } else {
+    return Curry._1(A[/* even */0], n - 1 | 0);
   }
 }
 
@@ -65,14 +63,12 @@ var BB = Caml_module.init_mod([
       ]]);
 
 function even$1(n) {
-  if (n) {
-    if (n === 1) {
-      return /* false */0;
-    } else {
-      return Curry._1(BB[/* odd */0], n - 1 | 0);
-    }
-  } else {
+  if (n === 0) {
     return /* true */1;
+  } else if (n === 1) {
+    return /* false */0;
+  } else {
+    return Curry._1(BB[/* odd */0], n - 1 | 0);
   }
 }
 
@@ -91,10 +87,10 @@ Caml_module.update_mod([[
 function odd$1(n) {
   if (n === 1) {
     return /* true */1;
-  } else if (n) {
-    return Curry._1(AA[/* even */0], n - 1 | 0);
-  } else {
+  } else if (n === 0) {
     return /* false */0;
+  } else {
+    return Curry._1(AA[/* even */0], n - 1 | 0);
   }
 }
 
@@ -196,14 +192,12 @@ function add(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Curry._2(AAA[/* compare */0], x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, l), v, r);
-      } else {
-        return bal(l, v, add(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal(add(x, l), v, r);
+    } else {
+      return bal(l, v, add(x, r));
     }
   } else {
     return /* Node */[
@@ -330,27 +324,25 @@ function split(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Curry._2(AAA[/* compare */0], x, v);
-    if (c) {
-      if (c < 0) {
-        var match = split(x, l);
-        return /* tuple */[
-                match[0],
-                match[1],
-                join(match[2], v, r)
-              ];
-      } else {
-        var match$1 = split(x, r);
-        return /* tuple */[
-                join(l, v, match$1[0]),
-                match$1[1],
-                match$1[2]
-              ];
-      }
-    } else {
+    if (c === 0) {
       return /* tuple */[
               l,
               /* true */1,
               r
+            ];
+    } else if (c < 0) {
+      var match = split(x, l);
+      return /* tuple */[
+              match[0],
+              match[1],
+              join(match[2], v, r)
+            ];
+    } else {
+      var match$1 = split(x, r);
+      return /* tuple */[
+              join(l, v, match$1[0]),
+              match$1[1],
+              match$1[2]
             ];
     }
   } else {
@@ -375,12 +367,12 @@ function mem(x, _param) {
     var param = _param;
     if (param) {
       var c = Curry._2(AAA[/* compare */0], x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -394,13 +386,7 @@ function remove(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Curry._2(AAA[/* compare */0], x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(remove(x, l), v, r);
-      } else {
-        return bal(l, v, remove(x, r));
-      }
-    } else {
+    if (c === 0) {
       var t1 = l;
       var t2 = r;
       if (t1) {
@@ -412,6 +398,10 @@ function remove(x, param) {
       } else {
         return t2;
       }
+    } else if (c < 0) {
+      return bal(remove(x, l), v, r);
+    } else {
+      return bal(l, v, remove(x, r));
     }
   } else {
     return /* Empty */0;
@@ -551,35 +541,35 @@ function subset(_s1, _s2) {
         var v1 = s1[1];
         var l1 = s1[0];
         var c = Curry._2(AAA[/* compare */0], v1, s2[1]);
-        if (c) {
-          if (c < 0) {
-            if (subset(/* Node */[
-                    l1,
-                    v1,
-                    /* Empty */0,
-                    0
-                  ], l2)) {
-              _s1 = r1;
-              continue ;
-              
-            } else {
-              return /* false */0;
-            }
-          } else if (subset(/* Node */[
-                  /* Empty */0,
-                  v1,
-                  r1,
-                  0
-                ], r2)) {
-            _s1 = l1;
+        if (c === 0) {
+          if (subset(l1, l2)) {
+            _s2 = r2;
+            _s1 = r1;
             continue ;
             
           } else {
             return /* false */0;
           }
-        } else if (subset(l1, l2)) {
-          _s2 = r2;
-          _s1 = r1;
+        } else if (c < 0) {
+          if (subset(/* Node */[
+                  l1,
+                  v1,
+                  /* Empty */0,
+                  0
+                ], l2)) {
+            _s1 = r1;
+            continue ;
+            
+          } else {
+            return /* false */0;
+          }
+        } else if (subset(/* Node */[
+                /* Empty */0,
+                v1,
+                r1,
+                0
+              ], r2)) {
+          _s1 = l1;
           continue ;
           
         } else {
@@ -745,12 +735,12 @@ function find(x, _param) {
     if (param) {
       var v = param[1];
       var c = Curry._2(AAA[/* compare */0], x, v);
-      if (c) {
+      if (c === 0) {
+        return v;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return v;
       }
     } else {
       throw Caml_builtin_exceptions.not_found;

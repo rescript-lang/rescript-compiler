@@ -503,10 +503,10 @@ function length_compare(_l, _n) {
       _l = l[1];
       continue ;
       
-    } else if (n) {
-      return /* Lt */17064;
-    } else {
+    } else if (n === 0) {
       return /* Eq */15500;
+    } else {
+      return /* Lt */17064;
     }
   };
 }
@@ -612,20 +612,18 @@ function drop(_n, _h) {
             Caml_builtin_exceptions.invalid_argument,
             "Ext_list_test.drop"
           ];
-    } else if (n) {
-      if (h) {
-        _h = List.tl(h);
-        _n = n - 1 | 0;
-        continue ;
-        
-      } else {
-        throw [
-              Caml_builtin_exceptions.invalid_argument,
-              "Ext_list_test.drop"
-            ];
-      }
-    } else {
+    } else if (n === 0) {
       return h;
+    } else if (h === /* [] */0) {
+      throw [
+            Caml_builtin_exceptions.invalid_argument,
+            "Ext_list_test.drop"
+          ];
+    } else {
+      _h = List.tl(h);
+      _n = n - 1 | 0;
+      continue ;
+      
     }
   };
 }

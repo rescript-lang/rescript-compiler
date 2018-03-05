@@ -59,13 +59,13 @@ function is_pos_pow(n) {
         return -2;
       } else if (n$1 === 1) {
         return c;
-      } else if (n$1 & 1) {
-        throw E;
-      } else {
+      } else if ((n$1 & 1) === 0) {
         _n = (n$1 >> 1);
         _c = c + 1 | 0;
         continue ;
         
+      } else {
+        throw E;
       }
     };
   }
@@ -131,12 +131,14 @@ function dump(r) {
         } else {
           var s = r.length;
           var t = r.tag | 0;
-          if (t) {
-            return /* false */0;
-          } else if (s === 2) {
-            _r = r[1];
-            continue ;
-            
+          if (t === 0) {
+            if (s === 2) {
+              _r = r[1];
+              continue ;
+              
+            } else {
+              return /* false */0;
+            }
           } else {
             return /* false */0;
           }
