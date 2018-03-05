@@ -1452,13 +1452,13 @@ function scan_elems$2(ib, accu) {
                     } else {
                       switch (c - 91 | 0) {
                         case 0 : 
-                            if (accu) {
-                              exit = 1;
-                            } else {
+                            if (accu === /* [] */0) {
                               return scan_elems$2(ib, /* :: */[
                                           i,
                                           accu
                                         ]);
+                            } else {
+                              exit = 1;
                             }
                             break;
                         case 1 : 
@@ -1723,12 +1723,7 @@ function scan_elems$4(ib, accu) {
                         Caml_builtin_exceptions.failure,
                         "scan_elems"
                       ];
-                } else if (accu) {
-                  throw [
-                        Caml_builtin_exceptions.failure,
-                        "scan_elems"
-                      ];
-                } else {
+                } else if (accu === /* [] */0) {
                   return Curry._1(Scanf.bscanf(ib, /* Format */[
                                   /* Scan_char_set */Block.__(20, [
                                       /* None */0,
@@ -1762,6 +1757,11 @@ function scan_elems$4(ib, accu) {
                                               }));
                                 }
                               }));
+                } else {
+                  throw [
+                        Caml_builtin_exceptions.failure,
+                        "scan_elems"
+                      ];
                 }
               }));
 }
@@ -1772,13 +1772,9 @@ function scan_int_list$3(ib) {
 
 function test18() {
   var ib = Scanf.Scanning[/* from_string */6]("[]");
-  if (List.rev(scan_elems$4(ib, /* [] */0))) {
-    return /* false */0;
-  } else {
+  if (List.rev(scan_elems$4(ib, /* [] */0)) === /* [] */0) {
     var ib$1 = Scanf.Scanning[/* from_string */6]("[ ]");
-    if (List.rev(scan_elems$4(ib$1, /* [] */0))) {
-      return /* false */0;
-    } else {
+    if (List.rev(scan_elems$4(ib$1, /* [] */0)) === /* [] */0) {
       var ib$2 = Scanf.Scanning[/* from_string */6]("[1;2;3;4]");
       if (Caml_obj.caml_equal(List.rev(scan_elems$4(ib$2, /* [] */0)), /* :: */[
               1,
@@ -1810,7 +1806,11 @@ function test18() {
       } else {
         return /* false */0;
       }
+    } else {
+      return /* false */0;
     }
+  } else {
+    return /* false */0;
   }
 }
 
@@ -3718,13 +3718,13 @@ test("File \"tscanf_test.ml\", line 1176, characters 5-12", test49(/* () */0));
 function next_char(ob, _) {
   var s = Buffer.contents(ob);
   var len = s.length;
-  if (len) {
+  if (len === 0) {
+    throw Caml_builtin_exceptions.end_of_file;
+  } else {
     var c = Caml_string.get(s, 0);
     ob[/* position */1] = 0;
     Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
     return c;
-  } else {
-    throw Caml_builtin_exceptions.end_of_file;
   }
 }
 

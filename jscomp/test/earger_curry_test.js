@@ -11,35 +11,33 @@ function map(f, a) {
   var f$1 = Curry.__1(f);
   var a$1 = a;
   var l = a$1.length;
-  if (l) {
+  if (l === 0) {
+    return /* array */[];
+  } else {
     var r = Caml_array.caml_make_vect(l, f$1(a$1[0]));
     for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
       r[i] = f$1(a$1[i]);
     }
     return r;
-  } else {
-    return /* array */[];
   }
 }
 
 function init(l, f) {
   var l$1 = l;
   var f$1 = Curry.__1(f);
-  if (l$1) {
-    if (l$1 < 0) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Array.init"
-          ];
-    } else {
-      var res = Caml_array.caml_make_vect(l$1, f$1(0));
-      for(var i = 1 ,i_finish = l$1 - 1 | 0; i <= i_finish; ++i){
-        res[i] = f$1(i);
-      }
-      return res;
-    }
-  } else {
+  if (l$1 === 0) {
     return /* array */[];
+  } else if (l$1 < 0) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "Array.init"
+        ];
+  } else {
+    var res = Caml_array.caml_make_vect(l$1, f$1(0));
+    for(var i = 1 ,i_finish = l$1 - 1 | 0; i <= i_finish; ++i){
+      res[i] = f$1(i);
+    }
+    return res;
   }
 }
 

@@ -12,7 +12,9 @@ function test() {
     while(true) {
       var acc = _acc;
       var n = _n;
-      if (n) {
+      if (n === 0) {
+        return Curry._1(acc, /* () */0);
+      } else {
         _acc = (function(n,acc){
         return function () {
           v[0] = v[0] + n | 0;
@@ -22,8 +24,6 @@ function test() {
         _n = n - 1 | 0;
         continue ;
         
-      } else {
-        return Curry._1(acc, /* () */0);
       }
     };
   };

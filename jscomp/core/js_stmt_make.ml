@@ -241,17 +241,6 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
     | Bin (Bor , {expression_desc = Number (Int { i = 0l ; _})}, a), _, _ 
       -> 
       aux ?comment a  then_ else_ acc
-
-    | (
-      (Bin (((EqEqEq ), {expression_desc = Number (Int {i = 0l; _}); _},e)) |
-       Bin ((EqEqEq ), e,{expression_desc = Number (Int {i = 0l; _});_}))
-    ),  _,  else_ 
-      (* TODO: optimize in general of preciate information based on type system 
-          like: [if_], [econd]
-      *)
-      ->
-      aux ?comment e else_  then_ acc 
-
     (* | Bin (NotEqEq, e1,  *)
     (*        {expression_desc = Var (Id ({name = "undefined"; _} as id))}), *)
     (*   _, _ *)

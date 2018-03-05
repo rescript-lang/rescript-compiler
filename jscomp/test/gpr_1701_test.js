@@ -8,7 +8,9 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 var Foo = Caml_exceptions.create("Gpr_1701_test.Foo");
 
 function test(n) {
-  if (n) {
+  if (n === 0) {
+    throw Foo;
+  } else {
     try {
       return test(n - 1 | 0);
     }
@@ -19,8 +21,6 @@ function test(n) {
         throw exn;
       }
     }
-  } else {
-    throw Foo;
   }
 }
 

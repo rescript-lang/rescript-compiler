@@ -116,12 +116,12 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var c = x - param[1] | 0;
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;

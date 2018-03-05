@@ -30,7 +30,9 @@ function bench() {
     data = Belt_SetInt.remove(data, i$2);
   }
   console.timeEnd("bs_set_bench.ml 14");
-  if (Belt_SetInt.size(data)) {
+  if (Belt_SetInt.size(data) === 0) {
+    return 0;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -39,8 +41,6 @@ function bench() {
             2
           ]
         ];
-  } else {
-    return 0;
   }
 }
 

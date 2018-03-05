@@ -5138,7 +5138,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      if (!_1) {
+      if (_1 === /* Override */0) {
         throw Escape_error;
       }
       return /* tuple */[
@@ -5194,7 +5194,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      if (!_1) {
+      if (_1 === /* Override */0) {
         throw Escape_error;
       }
       return /* tuple */[
@@ -5211,7 +5211,7 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      if (!_1) {
+      if (_1 === /* Override */0) {
         throw Escape_error;
       }
       return /* tuple */[
@@ -9659,7 +9659,13 @@ function directive_parse(token_with_comments, lexbuf) {
                       } else if (v >= 60) {
                         switch (v - 60 | 0) {
                           case 0 : 
-                              if (last_index) {
+                              if (last_index === 0) {
+                                throw [
+                                      $$Error$2,
+                                      /* Illegal_semver */Block.__(6, [str]),
+                                      loc
+                                    ];
+                              } else {
                                 match = str[1] === "=" ? /* tuple */[
                                     /* Le */17049,
                                     semantic_version_parse(str, 2, last_index)
@@ -9667,19 +9673,19 @@ function directive_parse(token_with_comments, lexbuf) {
                                     /* Lt */17064,
                                     semantic_version_parse(str, 1, last_index)
                                   ];
-                              } else {
-                                throw [
-                                      $$Error$2,
-                                      /* Illegal_semver */Block.__(6, [str]),
-                                      loc
-                                    ];
                               }
                               break;
                           case 1 : 
                               exit$3 = 1;
                               break;
                           case 2 : 
-                              if (last_index) {
+                              if (last_index === 0) {
+                                throw [
+                                      $$Error$2,
+                                      /* Illegal_semver */Block.__(6, [str]),
+                                      loc
+                                    ];
+                              } else {
                                 match = str[1] === "=" ? /* tuple */[
                                     /* Ge */15934,
                                     semantic_version_parse(str, 2, last_index)
@@ -9687,12 +9693,6 @@ function directive_parse(token_with_comments, lexbuf) {
                                     /* Gt */15949,
                                     semantic_version_parse(str, 1, last_index)
                                   ];
-                              } else {
-                                throw [
-                                      $$Error$2,
-                                      /* Illegal_semver */Block.__(6, [str]),
-                                      loc
-                                    ];
                               }
                               break;
                           
@@ -11161,16 +11161,16 @@ function token(lexbuf) {
             return /* SHARPOP */Block.__(15, [Lexing.lexeme(lexbuf$1)]);
         case 90 : 
             if (if_then_else[0] !== /* Dir_out */2) {
-              if (if_then_else[0]) {
+              if (if_then_else[0] === /* Dir_if_true */0) {
                 throw [
                       $$Error$2,
-                      /* Unterminated_else */3,
+                      /* Unterminated_if */2,
                       curr(lexbuf$1)
                     ];
               } else {
                 throw [
                       $$Error$2,
-                      /* Unterminated_if */2,
+                      /* Unterminated_else */3,
                       curr(lexbuf$1)
                     ];
               }
@@ -11280,7 +11280,7 @@ function string(lexbuf) {
             }
             break;
         case 6 : 
-            if (!comment_start_loc[0]) {
+            if (comment_start_loc[0] === /* [] */0) {
               prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
             }
             update_loc(lexbuf$1, /* None */0, 1, /* false */0, 0);
@@ -11864,11 +11864,11 @@ function skip_phrase(lexbuf) {
       if (exn[0] === $$Error$2) {
         var tmp = exn[1];
         if (typeof tmp === "number") {
-          if (tmp) {
-            throw exn;
-          } else {
+          if (tmp === 0) {
             continue ;
             
+          } else {
+            throw exn;
           }
         } else {
           switch (tmp.tag | 0) {

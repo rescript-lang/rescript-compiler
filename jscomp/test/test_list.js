@@ -60,13 +60,13 @@ function nth(l, n) {
       var n$1 = _n;
       var l$1 = _l;
       if (l$1) {
-        if (n$1) {
+        if (n$1 === 0) {
+          return l$1[0];
+        } else {
           _n = n$1 - 1 | 0;
           _l = l$1[1];
           continue ;
           
-        } else {
-          return l$1[0];
         }
       } else {
         throw [
@@ -448,12 +448,12 @@ function mem(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_obj.caml_compare(param[0], x)) {
+      if (Caml_obj.caml_compare(param[0], x) === 0) {
+        return /* true */1;
+      } else {
         _param = param[1];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -483,12 +483,12 @@ function assoc(x, _param) {
     var param = _param;
     if (param) {
       var match = param[0];
-      if (Caml_obj.caml_compare(match[0], x)) {
+      if (Caml_obj.caml_compare(match[0], x) === 0) {
+        return match[1];
+      } else {
         _param = param[1];
         continue ;
         
-      } else {
-        return match[1];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -518,12 +518,12 @@ function mem_assoc(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_obj.caml_compare(param[0][0], x)) {
+      if (Caml_obj.caml_compare(param[0][0], x) === 0) {
+        return /* true */1;
+      } else {
         _param = param[1];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -743,24 +743,22 @@ function chop(_k, _l) {
   while(true) {
     var l = _l;
     var k = _k;
-    if (k) {
-      if (l) {
-        _l = l[1];
-        _k = k - 1 | 0;
-        continue ;
-        
-      } else {
-        throw [
-              Caml_builtin_exceptions.assert_failure,
-              [
-                "test_list.ml",
-                224,
-                11
-              ]
-            ];
-      }
-    } else {
+    if (k === 0) {
       return l;
+    } else if (l) {
+      _l = l[1];
+      _k = k - 1 | 0;
+      continue ;
+      
+    } else {
+      throw [
+            Caml_builtin_exceptions.assert_failure,
+            [
+              "test_list.ml",
+              224,
+              11
+            ]
+          ];
     }
   };
 }
@@ -1115,130 +1113,14 @@ function sort_uniq(cmp, l) {
             var x2 = match[0];
             var x1 = l[0];
             var c = Curry._2(cmp, x1, x2);
-            if (c) {
-              if (c < 0) {
-                var c$1 = Curry._2(cmp, x2, x3);
-                if (c$1) {
-                  if (c$1 < 0) {
-                    return /* :: */[
-                            x1,
-                            /* :: */[
-                              x2,
-                              /* :: */[
-                                x3,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  } else {
-                    var c$2 = Curry._2(cmp, x1, x3);
-                    if (c$2 === 0) {
-                      return /* :: */[
-                              x1,
-                              /* :: */[
-                                x2,
-                                /* [] */0
-                              ]
-                            ];
-                    } else if (c$2 < 0) {
-                      return /* :: */[
-                              x1,
-                              /* :: */[
-                                x3,
-                                /* :: */[
-                                  x2,
-                                  /* [] */0
-                                ]
-                              ]
-                            ];
-                    } else {
-                      return /* :: */[
-                              x3,
-                              /* :: */[
-                                x1,
-                                /* :: */[
-                                  x2,
-                                  /* [] */0
-                                ]
-                              ]
-                            ];
-                    }
-                  }
-                } else {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x2,
-                            /* [] */0
-                          ]
-                        ];
-                }
-              } else {
-                var c$3 = Curry._2(cmp, x1, x3);
-                if (c$3) {
-                  if (c$3 < 0) {
-                    return /* :: */[
-                            x2,
-                            /* :: */[
-                              x1,
-                              /* :: */[
-                                x3,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  } else {
-                    var c$4 = Curry._2(cmp, x2, x3);
-                    if (c$4 === 0) {
-                      return /* :: */[
-                              x2,
-                              /* :: */[
-                                x1,
-                                /* [] */0
-                              ]
-                            ];
-                    } else if (c$4 < 0) {
-                      return /* :: */[
-                              x2,
-                              /* :: */[
-                                x3,
-                                /* :: */[
-                                  x1,
-                                  /* [] */0
-                                ]
-                              ]
-                            ];
-                    } else {
-                      return /* :: */[
-                              x3,
-                              /* :: */[
-                                x2,
-                                /* :: */[
-                                  x1,
-                                  /* [] */0
-                                ]
-                              ]
-                            ];
-                    }
-                  }
-                } else {
-                  return /* :: */[
-                          x2,
-                          /* :: */[
-                            x1,
-                            /* [] */0
-                          ]
-                        ];
-                }
-              }
-            } else {
-              var c$5 = Curry._2(cmp, x2, x3);
-              if (c$5 === 0) {
+            if (c === 0) {
+              var c$1 = Curry._2(cmp, x2, x3);
+              if (c$1 === 0) {
                 return /* :: */[
                         x2,
                         /* [] */0
                       ];
-              } else if (c$5 < 0) {
+              } else if (c$1 < 0) {
                 return /* :: */[
                         x2,
                         /* :: */[
@@ -1254,6 +1136,116 @@ function sort_uniq(cmp, l) {
                           /* [] */0
                         ]
                       ];
+              }
+            } else if (c < 0) {
+              var c$2 = Curry._2(cmp, x2, x3);
+              if (c$2 === 0) {
+                return /* :: */[
+                        x1,
+                        /* :: */[
+                          x2,
+                          /* [] */0
+                        ]
+                      ];
+              } else if (c$2 < 0) {
+                return /* :: */[
+                        x1,
+                        /* :: */[
+                          x2,
+                          /* :: */[
+                            x3,
+                            /* [] */0
+                          ]
+                        ]
+                      ];
+              } else {
+                var c$3 = Curry._2(cmp, x1, x3);
+                if (c$3 === 0) {
+                  return /* :: */[
+                          x1,
+                          /* :: */[
+                            x2,
+                            /* [] */0
+                          ]
+                        ];
+                } else if (c$3 < 0) {
+                  return /* :: */[
+                          x1,
+                          /* :: */[
+                            x3,
+                            /* :: */[
+                              x2,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                } else {
+                  return /* :: */[
+                          x3,
+                          /* :: */[
+                            x1,
+                            /* :: */[
+                              x2,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
+              }
+            } else {
+              var c$4 = Curry._2(cmp, x1, x3);
+              if (c$4 === 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* [] */0
+                        ]
+                      ];
+              } else if (c$4 < 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* :: */[
+                            x3,
+                            /* [] */0
+                          ]
+                        ]
+                      ];
+              } else {
+                var c$5 = Curry._2(cmp, x2, x3);
+                if (c$5 === 0) {
+                  return /* :: */[
+                          x2,
+                          /* :: */[
+                            x1,
+                            /* [] */0
+                          ]
+                        ];
+                } else if (c$5 < 0) {
+                  return /* :: */[
+                          x2,
+                          /* :: */[
+                            x3,
+                            /* :: */[
+                              x1,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                } else {
+                  return /* :: */[
+                          x3,
+                          /* :: */[
+                            x2,
+                            /* :: */[
+                              x1,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
               }
             }
           } else {
@@ -1319,31 +1311,29 @@ function sort_uniq(cmp, l) {
             var t1 = l1[1];
             var h1 = l1[0];
             var c$7 = Curry._2(cmp, h1, h2);
-            if (c$7) {
-              if (c$7 > 0) {
-                _accu = /* :: */[
-                  h1,
-                  accu
-                ];
-                _l1 = t1;
-                continue ;
-                
-              } else {
-                _accu = /* :: */[
-                  h2,
-                  accu
-                ];
-                _l2 = t2;
-                continue ;
-                
-              }
-            } else {
+            if (c$7 === 0) {
               _accu = /* :: */[
                 h1,
                 accu
               ];
               _l2 = t2;
               _l1 = t1;
+              continue ;
+              
+            } else if (c$7 > 0) {
+              _accu = /* :: */[
+                h1,
+                accu
+              ];
+              _l1 = t1;
+              continue ;
+              
+            } else {
+              _accu = /* :: */[
+                h2,
+                accu
+              ];
+              _l2 = t2;
               continue ;
               
             }
@@ -1371,130 +1361,14 @@ function sort_uniq(cmp, l) {
             var x2 = match[0];
             var x1 = l[0];
             var c = Curry._2(cmp, x1, x2);
-            if (c) {
-              if (c > 0) {
-                var c$1 = Curry._2(cmp, x2, x3);
-                if (c$1) {
-                  if (c$1 > 0) {
-                    return /* :: */[
-                            x1,
-                            /* :: */[
-                              x2,
-                              /* :: */[
-                                x3,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  } else {
-                    var c$2 = Curry._2(cmp, x1, x3);
-                    if (c$2 === 0) {
-                      return /* :: */[
-                              x1,
-                              /* :: */[
-                                x2,
-                                /* [] */0
-                              ]
-                            ];
-                    } else if (c$2 > 0) {
-                      return /* :: */[
-                              x1,
-                              /* :: */[
-                                x3,
-                                /* :: */[
-                                  x2,
-                                  /* [] */0
-                                ]
-                              ]
-                            ];
-                    } else {
-                      return /* :: */[
-                              x3,
-                              /* :: */[
-                                x1,
-                                /* :: */[
-                                  x2,
-                                  /* [] */0
-                                ]
-                              ]
-                            ];
-                    }
-                  }
-                } else {
-                  return /* :: */[
-                          x1,
-                          /* :: */[
-                            x2,
-                            /* [] */0
-                          ]
-                        ];
-                }
-              } else {
-                var c$3 = Curry._2(cmp, x1, x3);
-                if (c$3) {
-                  if (c$3 > 0) {
-                    return /* :: */[
-                            x2,
-                            /* :: */[
-                              x1,
-                              /* :: */[
-                                x3,
-                                /* [] */0
-                              ]
-                            ]
-                          ];
-                  } else {
-                    var c$4 = Curry._2(cmp, x2, x3);
-                    if (c$4 === 0) {
-                      return /* :: */[
-                              x2,
-                              /* :: */[
-                                x1,
-                                /* [] */0
-                              ]
-                            ];
-                    } else if (c$4 > 0) {
-                      return /* :: */[
-                              x2,
-                              /* :: */[
-                                x3,
-                                /* :: */[
-                                  x1,
-                                  /* [] */0
-                                ]
-                              ]
-                            ];
-                    } else {
-                      return /* :: */[
-                              x3,
-                              /* :: */[
-                                x2,
-                                /* :: */[
-                                  x1,
-                                  /* [] */0
-                                ]
-                              ]
-                            ];
-                    }
-                  }
-                } else {
-                  return /* :: */[
-                          x2,
-                          /* :: */[
-                            x1,
-                            /* [] */0
-                          ]
-                        ];
-                }
-              }
-            } else {
-              var c$5 = Curry._2(cmp, x2, x3);
-              if (c$5 === 0) {
+            if (c === 0) {
+              var c$1 = Curry._2(cmp, x2, x3);
+              if (c$1 === 0) {
                 return /* :: */[
                         x2,
                         /* [] */0
                       ];
-              } else if (c$5 > 0) {
+              } else if (c$1 > 0) {
                 return /* :: */[
                         x2,
                         /* :: */[
@@ -1510,6 +1384,116 @@ function sort_uniq(cmp, l) {
                           /* [] */0
                         ]
                       ];
+              }
+            } else if (c > 0) {
+              var c$2 = Curry._2(cmp, x2, x3);
+              if (c$2 === 0) {
+                return /* :: */[
+                        x1,
+                        /* :: */[
+                          x2,
+                          /* [] */0
+                        ]
+                      ];
+              } else if (c$2 > 0) {
+                return /* :: */[
+                        x1,
+                        /* :: */[
+                          x2,
+                          /* :: */[
+                            x3,
+                            /* [] */0
+                          ]
+                        ]
+                      ];
+              } else {
+                var c$3 = Curry._2(cmp, x1, x3);
+                if (c$3 === 0) {
+                  return /* :: */[
+                          x1,
+                          /* :: */[
+                            x2,
+                            /* [] */0
+                          ]
+                        ];
+                } else if (c$3 > 0) {
+                  return /* :: */[
+                          x1,
+                          /* :: */[
+                            x3,
+                            /* :: */[
+                              x2,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                } else {
+                  return /* :: */[
+                          x3,
+                          /* :: */[
+                            x1,
+                            /* :: */[
+                              x2,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
+              }
+            } else {
+              var c$4 = Curry._2(cmp, x1, x3);
+              if (c$4 === 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* [] */0
+                        ]
+                      ];
+              } else if (c$4 > 0) {
+                return /* :: */[
+                        x2,
+                        /* :: */[
+                          x1,
+                          /* :: */[
+                            x3,
+                            /* [] */0
+                          ]
+                        ]
+                      ];
+              } else {
+                var c$5 = Curry._2(cmp, x2, x3);
+                if (c$5 === 0) {
+                  return /* :: */[
+                          x2,
+                          /* :: */[
+                            x1,
+                            /* [] */0
+                          ]
+                        ];
+                } else if (c$5 > 0) {
+                  return /* :: */[
+                          x2,
+                          /* :: */[
+                            x3,
+                            /* :: */[
+                              x1,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                } else {
+                  return /* :: */[
+                          x3,
+                          /* :: */[
+                            x2,
+                            /* :: */[
+                              x1,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
               }
             }
           } else {
@@ -1575,31 +1559,29 @@ function sort_uniq(cmp, l) {
             var t1 = l1[1];
             var h1 = l1[0];
             var c$7 = Curry._2(cmp, h1, h2);
-            if (c$7) {
-              if (c$7 < 0) {
-                _accu = /* :: */[
-                  h1,
-                  accu
-                ];
-                _l1 = t1;
-                continue ;
-                
-              } else {
-                _accu = /* :: */[
-                  h2,
-                  accu
-                ];
-                _l2 = t2;
-                continue ;
-                
-              }
-            } else {
+            if (c$7 === 0) {
               _accu = /* :: */[
                 h1,
                 accu
               ];
               _l2 = t2;
               _l1 = t1;
+              continue ;
+              
+            } else if (c$7 < 0) {
+              _accu = /* :: */[
+                h1,
+                accu
+              ];
+              _l1 = t1;
+              continue ;
+              
+            } else {
+              _accu = /* :: */[
+                h2,
+                accu
+              ];
+              _l2 = t2;
               continue ;
               
             }

@@ -17,12 +17,12 @@ function sub(_tr, _k) {
         return tr[0];
       } else {
         _k = k / 2 | 0;
-        if (k % 2) {
-          _tr = tr[2];
+        if (k % 2 === 0) {
+          _tr = tr[1];
           continue ;
           
         } else {
-          _tr = tr[1];
+          _tr = tr[2];
           continue ;
           
         }

@@ -184,7 +184,9 @@ function iter_interval(f, _l, _param) {
     var param = _param;
     var l = _l;
     var stop = param[1];
-    if (stop) {
+    if (stop === 0) {
+      return /* () */0;
+    } else {
       var start = param[0];
       var tag = l.tag | 0;
       var match = tag === 250 ? l[0] : (
@@ -200,8 +202,6 @@ function iter_interval(f, _l, _param) {
       _l = match[1];
       continue ;
       
-    } else {
-      return /* () */0;
     }
   };
 }

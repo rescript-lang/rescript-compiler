@@ -858,14 +858,14 @@ function fib(_n, _a, _b) {
     var b = _b;
     var a = _a;
     var n = _n;
-    if (n) {
+    if (n === 0) {
+      return a;
+    } else {
       _b = Caml_int64.add(a, b);
       _a = b;
       _n = n - 1 | 0;
       continue ;
       
-    } else {
-      return a;
     }
   };
 }
@@ -874,13 +874,13 @@ function fac(_n, _acc) {
   while(true) {
     var acc = _acc;
     var n = _n;
-    if (n) {
+    if (n === 0) {
+      return acc;
+    } else {
       _acc = Caml_int64.mul(acc, Caml_int64.of_int32(n));
       _n = n - 1 | 0;
       continue ;
       
-    } else {
-      return acc;
     }
   };
 }

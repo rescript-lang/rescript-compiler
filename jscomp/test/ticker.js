@@ -249,12 +249,12 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_obj.caml_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -267,12 +267,12 @@ function mem(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_obj.caml_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -537,27 +537,25 @@ function split$1(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_obj.caml_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        var match = split$1(x, l);
-        return /* tuple */[
-                match[0],
-                match[1],
-                join(match[2], v, d, r)
-              ];
-      } else {
-        var match$1 = split$1(x, r);
-        return /* tuple */[
-                join(l, v, d, match$1[0]),
-                match$1[1],
-                match$1[2]
-              ];
-      }
-    } else {
+    if (c === 0) {
       return /* tuple */[
               l,
               /* Some */[d],
               r
+            ];
+    } else if (c < 0) {
+      var match = split$1(x, l);
+      return /* tuple */[
+              match[0],
+              match[1],
+              join(match[2], v, d, r)
+            ];
+    } else {
+      var match$1 = split$1(x, r);
+      return /* tuple */[
+              join(l, v, d, match$1[0]),
+              match$1[1],
+              match$1[2]
             ];
     }
   } else {
@@ -711,13 +709,15 @@ function equal(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        if (Caml_obj.caml_compare(e1[0], e2[0])) {
-          return /* false */0;
-        } else if (Curry._2(cmp, e1[1], e2[1])) {
-          _e2 = cons_enum(e2[2], e2[3]);
-          _e1 = cons_enum(e1[2], e1[3]);
-          continue ;
-          
+        if (Caml_obj.caml_compare(e1[0], e2[0]) === 0) {
+          if (Curry._2(cmp, e1[1], e2[1])) {
+            _e2 = cons_enum(e2[2], e2[3]);
+            _e1 = cons_enum(e1[2], e1[3]);
+            continue ;
+            
+          } else {
+            return /* false */0;
+          }
         } else {
           return /* false */0;
         }

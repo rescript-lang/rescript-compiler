@@ -12,13 +12,13 @@ function gray_decode(n) {
   while(true) {
     var n$1 = _n;
     var p = _p;
-    if (n$1) {
+    if (n$1 === 0) {
+      return p;
+    } else {
       _n = (n$1 >>> 1);
       _p = p ^ n$1;
       continue ;
       
-    } else {
-      return p;
     }
   };
 }

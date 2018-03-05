@@ -2318,30 +2318,32 @@ function find_same(id, _param) {
     if (param) {
       var k = param[1];
       var c = Caml_primitive.caml_string_compare(id[/* name */1], k[/* ident */0][/* name */1]);
-      if (c) {
+      if (c === 0) {
+        if (id[/* stamp */0] === k[/* ident */0][/* stamp */0]) {
+          return k[/* data */1];
+        } else {
+          var s = id[/* stamp */0];
+          var _param$1 = k[/* previous */2];
+          while(true) {
+            var param$1 = _param$1;
+            if (param$1) {
+              var k$1 = param$1[0];
+              if (k$1[/* ident */0][/* stamp */0] === s) {
+                return k$1[/* data */1];
+              } else {
+                _param$1 = k$1[/* previous */2];
+                continue ;
+                
+              }
+            } else {
+              throw Caml_builtin_exceptions.not_found;
+            }
+          };
+        }
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else if (id[/* stamp */0] === k[/* ident */0][/* stamp */0]) {
-        return k[/* data */1];
-      } else {
-        var s = id[/* stamp */0];
-        var _param$1 = k[/* previous */2];
-        while(true) {
-          var param$1 = _param$1;
-          if (param$1) {
-            var k$1 = param$1[0];
-            if (k$1[/* ident */0][/* stamp */0] === s) {
-              return k$1[/* data */1];
-            } else {
-              _param$1 = k$1[/* previous */2];
-              continue ;
-              
-            }
-          } else {
-            throw Caml_builtin_exceptions.not_found;
-          }
-        };
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -2355,12 +2357,12 @@ function find_name(name, _param) {
     if (param) {
       var k = param[1];
       var c = Caml_primitive.caml_string_compare(name, k[/* ident */0][/* name */1]);
-      if (c) {
+      if (c === 0) {
+        return k[/* data */1];
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return k[/* data */1];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -2386,15 +2388,15 @@ function find_all(name, _param) {
     if (param) {
       var k = param[1];
       var c = Caml_primitive.caml_string_compare(name, k[/* ident */0][/* name */1]);
-      if (c) {
-        _param = c < 0 ? param[0] : param[2];
-        continue ;
-        
-      } else {
+      if (c === 0) {
         return /* :: */[
                 k[/* data */1],
                 get_all(k[/* previous */2])
               ];
+      } else {
+        _param = c < 0 ? param[0] : param[2];
+        continue ;
+        
       }
     } else {
       return /* [] */0;
@@ -2852,12 +2854,12 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -2870,12 +2872,12 @@ function mem(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -3202,27 +3204,25 @@ function split(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        var match = split(x, l);
-        return /* tuple */[
-                match[0],
-                match[1],
-                join(match[2], v, r)
-              ];
-      } else {
-        var match$1 = split(x, r);
-        return /* tuple */[
-                join(l, v, match$1[0]),
-                match$1[1],
-                match$1[2]
-              ];
-      }
-    } else {
+    if (c === 0) {
       return /* tuple */[
               l,
               /* true */1,
               r
+            ];
+    } else if (c < 0) {
+      var match = split(x, l);
+      return /* tuple */[
+              match[0],
+              match[1],
+              join(match[2], v, r)
+            ];
+    } else {
+      var match$1 = split(x, r);
+      return /* tuple */[
+              join(l, v, match$1[0]),
+              match$1[1],
+              match$1[2]
             ];
     }
   } else {
@@ -3239,12 +3239,12 @@ function mem$2(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -3665,27 +3665,25 @@ function split$1(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Curry._2(funarg[/* compare */0], x, v);
-    if (c) {
-      if (c < 0) {
-        var match = split$1(x, l);
-        return /* tuple */[
-                match[0],
-                match[1],
-                join$1(match[2], v, r)
-              ];
-      } else {
-        var match$1 = split$1(x, r);
-        return /* tuple */[
-                join$1(l, v, match$1[0]),
-                match$1[1],
-                match$1[2]
-              ];
-      }
-    } else {
+    if (c === 0) {
       return /* tuple */[
               l,
               /* true */1,
               r
+            ];
+    } else if (c < 0) {
+      var match = split$1(x, l);
+      return /* tuple */[
+              match[0],
+              match[1],
+              join$1(match[2], v, r)
+            ];
+    } else {
+      var match$1 = split$1(x, r);
+      return /* tuple */[
+              join$1(l, v, match$1[0]),
+              match$1[1],
+              match$1[2]
             ];
     }
   } else {
@@ -3702,12 +3700,12 @@ function mem$3(x, _param) {
     var param = _param;
     if (param) {
       var c = Curry._2(funarg[/* compare */0], x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -3797,35 +3795,35 @@ function subset$1(_s1, _s2) {
         var v1 = s1[1];
         var l1 = s1[0];
         var c = Curry._2(funarg[/* compare */0], v1, s2[1]);
-        if (c) {
-          if (c < 0) {
-            if (subset$1(/* Node */[
-                    l1,
-                    v1,
-                    /* Empty */0,
-                    0
-                  ], l2)) {
-              _s1 = r1;
-              continue ;
-              
-            } else {
-              return /* false */0;
-            }
-          } else if (subset$1(/* Node */[
-                  /* Empty */0,
-                  v1,
-                  r1,
-                  0
-                ], r2)) {
-            _s1 = l1;
+        if (c === 0) {
+          if (subset$1(l1, l2)) {
+            _s2 = r2;
+            _s1 = r1;
             continue ;
             
           } else {
             return /* false */0;
           }
-        } else if (subset$1(l1, l2)) {
-          _s2 = r2;
-          _s1 = r1;
+        } else if (c < 0) {
+          if (subset$1(/* Node */[
+                  l1,
+                  v1,
+                  /* Empty */0,
+                  0
+                ], l2)) {
+            _s1 = r1;
+            continue ;
+            
+          } else {
+            return /* false */0;
+          }
+        } else if (subset$1(/* Node */[
+                /* Empty */0,
+                v1,
+                r1,
+                0
+              ], r2)) {
+          _s1 = l1;
           continue ;
           
         } else {
@@ -4010,12 +4008,12 @@ function find$1(x, _param) {
     var param = _param;
     if (param) {
       var c = Curry._2(funarg$1[/* compare */0], x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -4227,12 +4225,12 @@ function row_repr_aux(_ll, _row) {
       exit = 1;
     }
     if (exit === 1) {
-      if (ll) {
+      if (ll === /* [] */0) {
+        return row;
+      } else {
         var newrecord = row.slice();
         newrecord[/* row_fields */0] = rev_concat(row[/* row_fields */0], ll);
         return newrecord;
-      } else {
-        return row;
       }
     }
     
@@ -8642,12 +8640,12 @@ function find$2(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_obj.caml_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -8660,12 +8658,12 @@ function mem$4(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_obj.caml_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -11056,10 +11054,10 @@ function scrape_alias_safe(env, _mty) {
       var exit = 0;
       switch (path.tag | 0) {
         case 0 : 
-            if (path[0][/* stamp */0]) {
-              exit = 1;
-            } else {
+            if (path[0][/* stamp */0] === 0) {
               return /* false */0;
+            } else {
+              exit = 1;
             }
             break;
         case 1 : 
@@ -15220,7 +15218,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      if (!_1) {
+      if (_1 === /* Override */0) {
         throw Escape_error;
       }
       return /* tuple */[
@@ -15276,7 +15274,7 @@ var yyact = /* array */[
       var _1 = Parsing.peek_val(__caml_parser_env, 5);
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      if (!_1) {
+      if (_1 === /* Override */0) {
         throw Escape_error;
       }
       return /* tuple */[
@@ -15293,7 +15291,7 @@ var yyact = /* array */[
       var _3 = Parsing.peek_val(__caml_parser_env, 3);
       var _4 = Parsing.peek_val(__caml_parser_env, 2);
       var _6 = Parsing.peek_val(__caml_parser_env, 0);
-      if (!_1) {
+      if (_1 === /* Override */0) {
         throw Escape_error;
       }
       return /* tuple */[
@@ -19741,7 +19739,13 @@ function directive_parse(token_with_comments, lexbuf) {
                       } else if (v >= 60) {
                         switch (v - 60 | 0) {
                           case 0 : 
-                              if (last_index) {
+                              if (last_index === 0) {
+                                throw [
+                                      $$Error$4,
+                                      /* Illegal_semver */Block.__(6, [str]),
+                                      loc
+                                    ];
+                              } else {
                                 match = str[1] === "=" ? /* tuple */[
                                     /* Le */17049,
                                     semantic_version_parse(str, 2, last_index)
@@ -19749,19 +19753,19 @@ function directive_parse(token_with_comments, lexbuf) {
                                     /* Lt */17064,
                                     semantic_version_parse(str, 1, last_index)
                                   ];
-                              } else {
-                                throw [
-                                      $$Error$4,
-                                      /* Illegal_semver */Block.__(6, [str]),
-                                      loc
-                                    ];
                               }
                               break;
                           case 1 : 
                               exit$3 = 1;
                               break;
                           case 2 : 
-                              if (last_index) {
+                              if (last_index === 0) {
+                                throw [
+                                      $$Error$4,
+                                      /* Illegal_semver */Block.__(6, [str]),
+                                      loc
+                                    ];
+                              } else {
                                 match = str[1] === "=" ? /* tuple */[
                                     /* Ge */15934,
                                     semantic_version_parse(str, 2, last_index)
@@ -19769,12 +19773,6 @@ function directive_parse(token_with_comments, lexbuf) {
                                     /* Gt */15949,
                                     semantic_version_parse(str, 1, last_index)
                                   ];
-                              } else {
-                                throw [
-                                      $$Error$4,
-                                      /* Illegal_semver */Block.__(6, [str]),
-                                      loc
-                                    ];
                               }
                               break;
                           
@@ -21243,16 +21241,16 @@ function token(lexbuf) {
             return /* SHARPOP */Block.__(15, [Lexing.lexeme(lexbuf$1)]);
         case 90 : 
             if (if_then_else[0] !== /* Dir_out */2) {
-              if (if_then_else[0]) {
+              if (if_then_else[0] === /* Dir_if_true */0) {
                 throw [
                       $$Error$4,
-                      /* Unterminated_else */3,
+                      /* Unterminated_if */2,
                       curr(lexbuf$1)
                     ];
               } else {
                 throw [
                       $$Error$4,
-                      /* Unterminated_if */2,
+                      /* Unterminated_else */3,
                       curr(lexbuf$1)
                     ];
               }
@@ -21358,7 +21356,7 @@ function string(lexbuf) {
             }
             break;
         case 6 : 
-            if (!comment_start_loc[0]) {
+            if (comment_start_loc[0] === /* [] */0) {
               prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
             }
             update_loc(lexbuf$1, /* None */0, 1, /* false */0, 0);
@@ -21946,11 +21944,11 @@ function skip_phrase(lexbuf) {
       if (exn[0] === $$Error$4) {
         var tmp = exn[1];
         if (typeof tmp === "number") {
-          if (tmp) {
-            throw exn;
-          } else {
+          if (tmp === 0) {
             continue ;
             
+          } else {
+            throw exn;
           }
         } else {
           switch (tmp.tag | 0) {
@@ -24772,7 +24770,7 @@ function closed_schema_rec(_ty) {
               }
               break;
           case 5 : 
-              if (!field_kind_repr(match[1])) {
+              if (field_kind_repr(match[1]) === /* Fpresent */0) {
                 closed_schema_rec(match[2]);
               }
               _ty = match[3];
@@ -25039,9 +25037,7 @@ function closed_class(params, sign) {
     mark_type_node(repr(sign[/* csig_self */0]));
     List.iter((function (param) {
             var ty = param[2];
-            if (field_kind_repr(param[1])) {
-              return 0;
-            } else {
+            if (field_kind_repr(param[1]) === /* Fpresent */0) {
               try {
                 return closed_type(ty);
               }
@@ -25061,6 +25057,8 @@ function closed_class(params, sign) {
                   throw exn;
                 }
               }
+            } else {
+              return 0;
             }
           }), fields);
     iter_type_expr(mark_type, repr(sign[/* csig_self */0]));
@@ -27306,7 +27304,9 @@ function add_univars(param, param$1) {
 }
 
 function get_univar_family(univar_pairs, univars) {
-  if (univars) {
+  if (univars === /* [] */0) {
+    return /* Empty */0;
+  } else {
     var insert = function (s, param) {
       var cl2 = param[1];
       if (cl2 && List.exists((function (param) {
@@ -27319,8 +27319,6 @@ function get_univar_family(univar_pairs, univars) {
     };
     var s = List.fold_right(add$3, univars, /* Empty */0);
     return List.fold_left(insert, s, univar_pairs);
-  } else {
-    return /* Empty */0;
   }
 }
 
@@ -27938,20 +27936,7 @@ function mcomp(type_pairs, env, _t1, _t2) {
                               var match$5 = decl$prime[/* type_kind */2];
                               var exit$4 = 0;
                               if (typeof match$4 === "number") {
-                                if (match$4) {
-                                  if (typeof match$5 === "number") {
-                                    if (match$5 !== 0) {
-                                      return mcomp_list(type_pairs$1, env$1, tl1, tl2);
-                                    } else {
-                                      exit$4 = 1;
-                                    }
-                                  } else {
-                                    throw [
-                                          Unify,
-                                          /* [] */0
-                                        ];
-                                  }
-                                } else {
+                                if (match$4 === 0) {
                                   var exit$5 = 0;
                                   if (typeof match$5 === "number") {
                                     if (match$5 !== 0) {
@@ -27970,16 +27955,27 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                     }
                                   }
                                   
+                                } else if (typeof match$5 === "number") {
+                                  if (match$5 !== 0) {
+                                    return mcomp_list(type_pairs$1, env$1, tl1, tl2);
+                                  } else {
+                                    exit$4 = 1;
+                                  }
+                                } else {
+                                  throw [
+                                        Unify,
+                                        /* [] */0
+                                      ];
                                 }
                               } else if (match$4.tag) {
                                 if (typeof match$5 === "number") {
-                                  if (match$5) {
+                                  if (match$5 === 0) {
+                                    exit$4 = 1;
+                                  } else {
                                     throw [
                                           Unify,
                                           /* [] */0
                                         ];
-                                  } else {
-                                    exit$4 = 1;
                                   }
                                 } else if (match$5.tag) {
                                   mcomp_list(type_pairs$1, env$1, tl1, tl2);
@@ -28031,13 +28027,13 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                       ];
                                 }
                               } else if (typeof match$5 === "number") {
-                                if (match$5) {
+                                if (match$5 === 0) {
+                                  exit$4 = 1;
+                                } else {
                                   throw [
                                         Unify,
                                         /* [] */0
                                       ];
-                                } else {
-                                  exit$4 = 1;
                                 }
                               } else if (match$5.tag) {
                                 throw [
@@ -29383,7 +29379,9 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       break;
                   case 8 : 
                       var row2 = d2[0];
-                      if (umode[0]) {
+                      if (umode[0] === /* Expression */0) {
+                        unify_row(env, row1, row2);
+                      } else {
                         var snap = snapshot(/* () */0);
                         try {
                           unify_row(env, row1, row2);
@@ -29402,8 +29400,6 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                             throw exn$1;
                           }
                         }
-                      } else {
-                        unify_row(env, row1, row2);
                       }
                       break;
                   default:
@@ -29490,7 +29486,7 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                       }
                       catch (exn$2){
                         if (exn$2 === Caml_builtin_exceptions.not_found) {
-                          if (!umode[0]) {
+                          if (umode[0] === /* Expression */0) {
                             throw [
                                   Unify,
                                   /* [] */0
@@ -35688,49 +35684,7 @@ function print_simple_out_type(ppf, ty) {
                                         var match$10 = match$8[0];
                                         var variant$1 = match$10[0];
                                         var make$1 = function (tys, result) {
-                                          if (tys) {
-                                            if (tys) {
-                                              var single = tys[0];
-                                              var exit = 0;
-                                              if (typeof single === "number") {
-                                                exit = 1;
-                                              } else if (single.tag === 9) {
-                                                if (tys[1]) {
-                                                  throw Caml_builtin_exceptions.not_found;
-                                                } else if (variant$1 === "Arity_1") {
-                                                  return /* Otyp_arrow */Block.__(1, [
-                                                            "",
-                                                            single,
-                                                            result
-                                                          ]);
-                                                } else {
-                                                  return List.fold_right((function (x, acc) {
-                                                                return /* Otyp_arrow */Block.__(1, [
-                                                                          "",
-                                                                          x,
-                                                                          acc
-                                                                        ]);
-                                                              }), single[0], result);
-                                                }
-                                              } else {
-                                                exit = 1;
-                                              }
-                                              if (exit === 1) {
-                                                if (tys[1]) {
-                                                  throw Caml_builtin_exceptions.not_found;
-                                                } else {
-                                                  return /* Otyp_arrow */Block.__(1, [
-                                                            "",
-                                                            single,
-                                                            result
-                                                          ]);
-                                                }
-                                              }
-                                              
-                                            } else {
-                                              throw Caml_builtin_exceptions.not_found;
-                                            }
-                                          } else {
+                                          if (tys === /* [] */0) {
                                             return /* Otyp_arrow */Block.__(1, [
                                                       "",
                                                       /* Otyp_constr */Block.__(3, [
@@ -35739,6 +35693,46 @@ function print_simple_out_type(ppf, ty) {
                                                         ]),
                                                       result
                                                     ]);
+                                          } else if (tys) {
+                                            var single = tys[0];
+                                            var exit = 0;
+                                            if (typeof single === "number") {
+                                              exit = 1;
+                                            } else if (single.tag === 9) {
+                                              if (tys[1]) {
+                                                throw Caml_builtin_exceptions.not_found;
+                                              } else if (variant$1 === "Arity_1") {
+                                                return /* Otyp_arrow */Block.__(1, [
+                                                          "",
+                                                          single,
+                                                          result
+                                                        ]);
+                                              } else {
+                                                return List.fold_right((function (x, acc) {
+                                                              return /* Otyp_arrow */Block.__(1, [
+                                                                        "",
+                                                                        x,
+                                                                        acc
+                                                                      ]);
+                                                            }), single[0], result);
+                                              }
+                                            } else {
+                                              exit = 1;
+                                            }
+                                            if (exit === 1) {
+                                              if (tys[1]) {
+                                                throw Caml_builtin_exceptions.not_found;
+                                              } else {
+                                                return /* Otyp_arrow */Block.__(1, [
+                                                          "",
+                                                          single,
+                                                          result
+                                                        ]);
+                                              }
+                                            }
+                                            
+                                          } else {
+                                            throw Caml_builtin_exceptions.not_found;
                                           }
                                         };
                                         var exit$4 = 0;
@@ -39607,12 +39601,12 @@ function find$4(x, _param) {
     var param = _param;
     if (param) {
       var c = compare$2(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -39754,9 +39748,7 @@ function set_printing_env(env) {
     printing_depth[0] = 0;
     var partial_arg = iter_types((function (p, param) {
             var match = normalize_type_path(/* Some */[/* true */1], env, param[0]);
-            if (match[1]) {
-              return 0;
-            } else {
+            if (match[1] === /* Id */0) {
               var p1 = match[0];
               try {
                 var r = find$4(p1, printing_map[0]);
@@ -39789,6 +39781,8 @@ function set_printing_env(env) {
                   throw exn;
                 }
               }
+            } else {
+              return 0;
             }
           }));
     var cont = function (param) {
@@ -40216,13 +40210,13 @@ function mark_loops_rec(_visited, _ty) {
               break;
           case 5 : 
               var ty2 = match[3];
-              if (field_kind_repr(match[1])) {
+              if (field_kind_repr(match[1]) === /* Fpresent */0) {
+                mark_loops_rec(visited$1, match[2]);
                 _ty = ty2;
                 _visited = visited$1;
                 continue ;
                 
               } else {
-                mark_loops_rec(visited$1, match[2]);
                 _ty = ty2;
                 _visited = visited$1;
                 continue ;
@@ -40556,7 +40550,9 @@ function tree_of_typexp(sch, ty) {
               var ty$2 = match[0];
               if (tyl$2) {
                 var tyl$3 = List.map(repr, tyl$2);
-                if (tyl$3) {
+                if (tyl$3 === /* [] */0) {
+                  return tree_of_typexp(sch, ty$2);
+                } else {
                   var old_delayed = delayed[0];
                   List.iter(add_delayed, tyl$3);
                   var tl = List.map(name_of_type, tyl$3);
@@ -40568,8 +40564,6 @@ function tree_of_typexp(sch, ty) {
                   remove_names(tyl$3);
                   delayed[0] = old_delayed;
                   return tr;
-                } else {
-                  return tree_of_typexp(sch, ty$2);
                 }
               } else {
                 return tree_of_typexp(sch, ty$2);
@@ -43737,9 +43731,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
                 }
                 if (tmp) {
                   var match$5 = associate_fields(match$3[0], match$2[0]);
-                  if (match$5[2]) {
-                    return /* false */0;
-                  } else {
+                  if (match$5[2] === /* [] */0) {
                     var match$6 = List.split(List.map((function (param) {
                                 return /* tuple */[
                                         param[2],
@@ -43747,6 +43739,8 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
                                       ];
                               }), match$5[0]));
                     return equal$4(env, /* true */1, Pervasives.$at(params1, match$6[0]), Pervasives.$at(params2, match$6[1]));
+                  } else {
+                    return /* false */0;
                   }
                 } else {
                   return /* false */0;
@@ -43923,9 +43917,7 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
               params2
             ])) {
         return /* true */1;
-      } else if (priv2) {
-        return /* false */0;
-      } else {
+      } else if (priv2 === /* Private */0) {
         try {
           return check_super(try_expand_once_opt(env, expand_head(env, ty1)));
         }
@@ -43936,6 +43928,8 @@ function type_manifest(env, ty1, params1, ty2, params2, priv2) {
             throw exn;
           }
         }
+      } else {
+        return /* false */0;
       }
     };
     return check_super(ty1);
@@ -44623,13 +44617,13 @@ function strengthen_sig(env, sg, p) {
                       decl[/* type_params */0],
                       [/* Mnil */0]
                     ]))];
-            if (decl[/* type_kind */2]) {
+            if (decl[/* type_kind */2] === /* Type_abstract */0) {
               var newrecord = decl.slice();
+              newrecord[/* type_private */3] = /* Public */1;
               newrecord[/* type_manifest */4] = manif;
               newdecl = newrecord;
             } else {
               var newrecord$1 = decl.slice();
-              newrecord$1[/* type_private */3] = /* Public */1;
               newrecord$1[/* type_manifest */4] = manif;
               newdecl = newrecord$1;
             }
@@ -45249,27 +45243,25 @@ function split$2(x, param) {
     var v = param[1];
     var l = param[0];
     var c = compare$3(x, v);
-    if (c) {
-      if (c < 0) {
-        var match = split$2(x, l);
-        return /* tuple */[
-                match[0],
-                match[1],
-                join$2(match[2], v, r)
-              ];
-      } else {
-        var match$1 = split$2(x, r);
-        return /* tuple */[
-                join$2(l, v, match$1[0]),
-                match$1[1],
-                match$1[2]
-              ];
-      }
-    } else {
+    if (c === 0) {
       return /* tuple */[
               l,
               /* true */1,
               r
+            ];
+    } else if (c < 0) {
+      var match = split$2(x, l);
+      return /* tuple */[
+              match[0],
+              match[1],
+              join$2(match[2], v, r)
+            ];
+    } else {
+      var match$1 = split$2(x, r);
+      return /* tuple */[
+              join$2(l, v, match$1[0]),
+              match$1[1],
+              match$1[2]
             ];
     }
   } else {
@@ -45438,12 +45430,12 @@ function find$5(x, _param) {
     var param = _param;
     if (param) {
       var c = compare$3(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -45599,27 +45591,25 @@ function split$3(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_obj.caml_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        var match = split$3(x, l);
-        return /* tuple */[
-                match[0],
-                match[1],
-                join$3(match[2], v, r)
-              ];
-      } else {
-        var match$1 = split$3(x, r);
-        return /* tuple */[
-                join$3(l, v, match$1[0]),
-                match$1[1],
-                match$1[2]
-              ];
-      }
-    } else {
+    if (c === 0) {
       return /* tuple */[
               l,
               /* true */1,
               r
+            ];
+    } else if (c < 0) {
+      var match = split$3(x, l);
+      return /* tuple */[
+              match[0],
+              match[1],
+              join$3(match[2], v, r)
+            ];
+    } else {
+      var match$1 = split$3(x, r);
+      return /* tuple */[
+              join$3(l, v, match$1[0]),
+              match$1[1],
+              match$1[2]
             ];
     }
   } else {
@@ -45636,12 +45626,12 @@ function mem$5(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_obj.caml_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -46657,13 +46647,13 @@ function signatures(env, cxt, subst, sig1, sig2) {
               if (param) {
                 var match = param[0];
                 if (match[0] === pos) {
-                  if (match[1]) {
-                    return /* false */0;
-                  } else {
+                  if (match[1] === /* Tcoerce_none */0) {
                     _param = param[1];
                     _pos = pos + 1 | 0;
                     continue ;
                     
+                  } else {
+                    return /* false */0;
                   }
                 } else {
                   return /* false */0;
@@ -47895,7 +47885,9 @@ function is_big(obj) {
 }
 
 function report_error$4(ppf, errs) {
-  if (errs) {
+  if (errs === /* [] */0) {
+    return /* () */0;
+  } else {
     var match = split_last(errs);
     var pe = [/* true */1];
     var print_errs = function (ppf) {
@@ -47956,8 +47948,6 @@ function report_error$4(ppf, errs) {
                       ]),
                     "@[<v>%a%a@]"
                   ]), print_errs, match[0], include_err$2, match[1]);
-  } else {
-    return /* () */0;
   }
 }
 
@@ -51446,7 +51436,9 @@ function exhaust_gadt$1(ext, pss, n) {
   var ret = exhaust_gadt(ext, pss, n);
   if (ret) {
     var lst = ret[0];
-    if (lst) {
+    if (lst === /* [] */0) {
+      return /* Rsome */[omegas(n)];
+    } else {
       var singletons = List.map((function (param) {
               if (param) {
                 if (param[1]) {
@@ -51476,8 +51468,6 @@ function exhaust_gadt$1(ext, pss, n) {
                 Curry._1(orify_many, singletons),
                 /* [] */0
               ]];
-    } else {
-      return /* Rsome */[omegas(n)];
     }
   } else {
     return /* Rnone */0;
@@ -51509,7 +51499,12 @@ function pressure_variants(_tdefs, _pss) {
           }(tdefs));
           if (full_match(/* true */1, +(tdefs === /* None */0), constrs)) {
             return try_non_omega(constrs);
-          } else if (tdefs) {
+          } else if (tdefs === /* None */0) {
+            _pss = filter_extra(pss);
+            _tdefs = /* None */0;
+            continue ;
+            
+          } else {
             var full = full_match(/* true */1, /* true */1, constrs);
             var ok = full ? try_non_omega(constrs) : try_non_omega(filter_all(q0, mark_partial(pss)));
             if (constrs) {
@@ -51531,11 +51526,6 @@ function pressure_variants(_tdefs, _pss) {
               
             }
             return ok;
-          } else {
-            _pss = filter_extra(pss);
-            _tdefs = /* None */0;
-            continue ;
-            
           }
         } else {
           _pss = filter_extra(pss);
@@ -53714,15 +53704,15 @@ function transl_type(env, policy, styp) {
     var ty;
     if (policy === /* Univars */2) {
       ty = new_pre_univar(/* None */0, /* () */0);
-    } else if (policy) {
-      ty = newvar$1(/* None */0, /* () */0);
-    } else {
+    } else if (policy === /* Fixed */0) {
       throw [
             $$Error$6,
             styp[/* ptyp_loc */1],
             env,
             /* Unbound_type_variable */Block.__(0, ["_"])
           ];
+    } else {
+      ty = newvar$1(/* None */0, /* () */0);
     }
     return ctyp(/* Ttyp_any */0, ty);
   } else {
@@ -55949,14 +55939,14 @@ function extract_concrete_variant(env, ty) {
   var p = match[1];
   var p0 = match[0];
   if (typeof match$1 === "number") {
-    if (match$1) {
+    if (match$1 === 0) {
+      throw Caml_builtin_exceptions.not_found;
+    } else {
       return /* tuple */[
               p0,
               p,
               /* [] */0
             ];
-    } else {
-      throw Caml_builtin_exceptions.not_found;
     }
   } else if (match$1.tag) {
     return /* tuple */[
@@ -56506,7 +56496,9 @@ function build_as_type(env, _p) {
         case 6 : 
             var lpl = match[0];
             var lbl = snd3(List.hd(lpl));
-            if (lbl[/* lbl_private */7]) {
+            if (lbl[/* lbl_private */7] === /* Private */0) {
+              return p[/* pat_type */3];
+            } else {
               var ty$1 = newvar(/* None */0, /* () */0);
               var ppl = List.map((function (param) {
                       return /* tuple */[
@@ -56537,8 +56529,6 @@ function build_as_type(env, _p) {
               }(p,ty$1,ppl));
               $$Array.iter(do_label, lbl[/* lbl_all */5]);
               return ty$1;
-            } else {
-              return p[/* pat_type */3];
             }
             break;
         case 8 : 
@@ -57016,7 +57006,9 @@ function disambiguate($staropt$star, $staropt$star$1, scope, lid, env, opath, lb
         }
         catch (exn$1){
           if (exn$1 === Caml_builtin_exceptions.not_found) {
-            if (lbls) {
+            if (lbls === /* [] */0) {
+              lbl = unbound_label_error(env, lid);
+            } else {
               var tp_000 = match[0];
               var tp_001 = expand_path(env, tpath);
               var tp = /* tuple */[
@@ -57042,8 +57034,6 @@ function disambiguate($staropt$star, $staropt$star$1, scope, lid, env, opath, lb
                         tpl
                       ])
                   ];
-            } else {
-              lbl = unbound_label_error(env, lid);
             }
           } else {
             throw exn$1;
@@ -57579,7 +57569,9 @@ function disambiguate$1($staropt$star, $staropt$star$1, scope, lid, env, opath, 
         }
         catch (exn$1){
           if (exn$1 === Caml_builtin_exceptions.not_found) {
-            if (lbls) {
+            if (lbls === /* [] */0) {
+              lbl = unbound_constructor_error(env, lid);
+            } else {
               var tp_000 = match[0];
               var tp_001 = expand_path(env, tpath);
               var tp = /* tuple */[
@@ -57605,8 +57597,6 @@ function disambiguate$1($staropt$star, $staropt$star$1, scope, lid, env, opath, 
                         tpl
                       ])
                   ];
-            } else {
-              lbl = unbound_constructor_error(env, lid);
             }
           } else {
             throw exn$1;
@@ -57917,7 +57907,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             var match$5 = sp$1[/* ppat_desc */0];
             if (typeof match$5 === "number") {
               if (constr[/* cstr_arity */4] !== 1) {
-                if (!constr[/* cstr_arity */4]) {
+                if (constr[/* cstr_arity */4] === 0) {
                   prerr_warning(sp$1[/* ppat_loc */1], /* Wildcard_arg_to_constant_constr */13);
                 }
                 sargs = replicate_list(sp$1, constr[/* cstr_arity */4]);
@@ -58024,7 +58014,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
       case 7 : 
           var closed = match[1];
           var lid_sp_list = match[0];
-          if (!lid_sp_list) {
+          if (lid_sp_list === /* [] */0) {
             ill_formed_ast(loc, "Records cannot be empty.");
           }
           var match$7;
@@ -58058,7 +58048,7 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
             var match = instance_label(/* false */0, label);
             var ty_arg = match[1];
             var vars = match[0];
-            if (!vars) {
+            if (vars === /* [] */0) {
               end_def(/* () */0);
             }
             try {
@@ -59775,7 +59765,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         break;
     case 5 : 
         var sargs = match[1];
-        if (!sargs) {
+        if (sargs === /* [] */0) {
           ill_formed_ast(loc, "Function application with no argument.");
         }
         begin_def(/* () */0);
@@ -60081,7 +60071,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var args = List.map2((function (e, param) {
                 return type_argument(env$1, e, param[0], param[1]);
               }), sargs$1, List.combine(ty_args, match$21[0]));
-        if (!constr[/* cstr_private */10]) {
+        if (constr[/* cstr_private */10] === /* Private */0) {
           throw [
                 $$Error$7,
                 loc$1,
@@ -60200,7 +60190,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
     case 11 : 
         var opt_sexp = match[1];
         var lid_sexp_list = match[0];
-        if (!lid_sexp_list) {
+        if (lid_sexp_list === /* [] */0) {
           ill_formed_ast(loc, "Records cannot be empty.");
         }
         var opt_exp;
@@ -60431,7 +60421,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             ]);
         var label$1 = match$34[1];
         unify_exp(env, record$4, ty_record$1);
-        if (!label$1[/* lbl_mut */3]) {
+        if (label$1[/* lbl_mut */3] === /* Immutable */0) {
           throw [
                 $$Error$7,
                 loc,
@@ -62533,7 +62523,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
     end_def(/* () */0);
     generalize_structure$1(current_level[0], ty_arg$1);
   }
-  if (!label[/* lbl_private */7]) {
+  if (label[/* lbl_private */7] === /* Private */0) {
     if (create) {
       throw [
             $$Error$7,
@@ -62733,7 +62723,9 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
         if (match$2[2] || no_labels(ty_res)) {
           var newrecord$1 = newrecord.slice();
           unify_exp(env, (newrecord$1[/* exp_type */3] = ty_fun, newrecord$1), ty_expected);
-          if (args) {
+          if (args === /* [] */0) {
+            return newrecord;
+          } else {
             var var_pair = function (name, ty) {
               var id = create(name);
               return /* tuple */[
@@ -62851,8 +62843,6 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
                           /* exp_attributes */newrecord[/* exp_attributes */5]
                         ]);
             }
-          } else {
-            return newrecord;
           }
         } else {
           unify_exp(env, newrecord, ty_expected);
@@ -65025,7 +65015,15 @@ register_error_of_exn((function (param) {
                                                                       ]), (function (param, param$1) {
                                                                       return trace$1(/* true */1, partial_arg, txt1$1, param, param$1);
                                                                     }), tr1$1);
-                                                              if (tr2$1) {
+                                                              if (tr2$1 === /* [] */0) {
+                                                                return Format.fprintf(ppf$5, /* Format */[
+                                                                            /* Formatting_lit */Block.__(17, [
+                                                                                /* Close_box */0,
+                                                                                /* End_of_format */0
+                                                                              ]),
+                                                                            "@]"
+                                                                          ]);
+                                                              } else {
                                                                 var mis = mismatch(/* true */1, tr2$1);
                                                                 var partial_arg$1 = +(mis === /* None */0);
                                                                 return Curry._3(Format.fprintf(ppf$5, /* Format */[
@@ -65039,14 +65037,6 @@ register_error_of_exn((function (param) {
                                                                             }), tr2$1, (function (param) {
                                                                               return explanation(/* true */1, mis, param);
                                                                             }));
-                                                              } else {
-                                                                return Format.fprintf(ppf$5, /* Format */[
-                                                                            /* Formatting_lit */Block.__(17, [
-                                                                                /* Close_box */0,
-                                                                                /* End_of_format */0
-                                                                              ]),
-                                                                            "@]"
-                                                                          ]);
                                                               }
                                                             }));
                                             case 24 : 
@@ -65688,12 +65678,12 @@ function mem$6(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -65996,12 +65986,12 @@ function find$6(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -66207,7 +66197,9 @@ function check_well_founded_decl(env, loc, path, decl, to_check) {
 }
 
 function check_recursion(env, loc, path, decl, to_check) {
-  if (decl[/* type_params */0]) {
+  if (decl[/* type_params */0] === /* [] */0) {
+    return /* () */0;
+  } else {
     var visited = [/* [] */0];
     var check_regular = function (cpath, args, prev_exp, _ty) {
       while(true) {
@@ -66303,8 +66295,6 @@ function check_recursion(env, loc, path, decl, to_check) {
                   var match = instance_parameterized_type(/* Some */[/* true */1], decl[/* type_params */0], body);
                   return check_regular(path, match[0], /* [] */0, match[1]);
                 }), decl[/* type_manifest */4]);
-  } else {
-    return /* () */0;
   }
 }
 
@@ -66354,7 +66344,9 @@ function compute_variance(env, visited, vari, ty) {
                 return List.iter(compute_same, match[0]);
             case 3 : 
                 var tl = match[1];
-                if (tl) {
+                if (tl === /* [] */0) {
+                  return /* () */0;
+                } else {
                   try {
                     var decl = find_type_full(match[0], env)[0];
                     var cvari = (function(vari$1){
@@ -66393,8 +66385,6 @@ function compute_variance(env, visited, vari, ty) {
                       throw exn;
                     }
                   }
-                } else {
-                  return /* () */0;
                 }
                 break;
             case 5 : 
@@ -67142,7 +67132,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
         ];
     } else if (match.tag) {
       var lbls = match[0];
-      if (!lbls) {
+      if (lbls === /* [] */0) {
         ill_formed_ast(sdecl[/* ptype_loc */7], "Records cannot be empty.");
       }
       var all_labels = [/* Empty */0];
@@ -67204,7 +67194,7 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
       ];
     } else {
       var scstrs = match[0];
-      if (!scstrs) {
+      if (scstrs === /* [] */0) {
         ill_formed_ast(sdecl[/* ptype_loc */7], "Variant types cannot be empty.");
       }
       var all_constrs = [/* Empty */0];
@@ -67433,15 +67423,15 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
           var loc = List.assoc(id, id_loc_list);
           var path = /* Pident */Block.__(0, [id]);
           var decl = param[1];
-          if (decl[/* type_manifest */4]) {
+          if (decl[/* type_manifest */4] === /* None */0) {
+            return /* () */0;
+          } else {
             var args = List.map((function () {
                     return newvar(/* None */0, /* () */0);
                   }), decl[/* type_params */0]);
             return check_well_founded(env, loc, path, (function (param) {
                           return same(path, param);
                         }), newconstr(path, args));
-          } else {
-            return /* () */0;
           }
         }), decls);
   var to_check = function (param) {
@@ -67784,7 +67774,7 @@ function transl_extension_constructor(env, _, type_path, type_params, typext_par
           ];
     }
     var match$6 = cdescr[/* cstr_private */10];
-    if (!match$6) {
+    if (match$6 === 0) {
       if (priv !== 0) {
         throw [
               $$Error$8,
@@ -67862,7 +67852,7 @@ function transl_type_extension(check_open, env, loc, styext) {
   var type_path = match[0];
   var match$1 = type_decl[/* type_kind */2];
   if (typeof match$1 === "number") {
-    if (!match$1) {
+    if (match$1 === 0) {
       if (check_open) {
         try {
           var match$2 = List.find((function (param) {
@@ -70527,7 +70517,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                               ]]));
                     }
                     
-                  } else if (!ovf$1) {
+                  } else if (ovf$1 === /* Override */0) {
                     throw [
                           $$Error$9,
                           loc,
@@ -70666,7 +70656,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                               ]]));
                     }
                     
-                  } else if (!ovf$2) {
+                  } else if (ovf$2 === /* Override */0) {
                     throw [
                           $$Error$9,
                           loc,
@@ -71290,7 +71280,7 @@ function class_expr(cl_num, val_env, met_env, _scl) {
           break;
       case 3 : 
           var sargs = match[1];
-          if (!sargs) {
+          if (sargs === /* [] */0) {
             ill_formed_ast(scl[/* pcl_loc */1], "Function application with no argument.");
           }
           if (principal[0]) {
@@ -74657,12 +74647,12 @@ function mem$7(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -75688,7 +75678,9 @@ function check_recmodule_inclusion(env, bindings) {
 }
 
 function package_constraints(env, loc, mty, constrs) {
-  if (constrs) {
+  if (constrs === /* [] */0) {
+    return mty;
+  } else {
     var sg = extract_sig(env, loc, mty);
     var sg$prime = List.map((function (item) {
             switch (item.tag | 0) {
@@ -75775,8 +75767,6 @@ function package_constraints(env, loc, mty, constrs) {
             }
           }), sg);
     return /* Mty_signature */Block.__(1, [sg$prime]);
-  } else {
-    return mty;
   }
 }
 
@@ -75794,15 +75784,15 @@ function modtype_of_package(env, loc, p, nl, tl) {
       exit = 1;
     }
     if (exit === 1) {
-      if (nl) {
+      if (nl === /* [] */0) {
+        return /* Mty_ident */Block.__(0, [p]);
+      } else {
         throw [
               $$Error$10,
               loc,
               env,
               /* Signature_expected */0
             ];
-      } else {
-        return /* Mty_ident */Block.__(0, [p]);
       }
     }
     
@@ -76803,7 +76793,12 @@ function type_package$1(env, m, p, nl, _) {
                       ]));
         }), nl);
   end_def(/* () */0);
-  if (nl) {
+  if (nl === /* [] */0) {
+    return /* tuple */[
+            wrap_constraint(env$1, modl, /* Mty_ident */Block.__(0, [p]), /* Tmodtype_implicit */0),
+            /* [] */0
+          ];
+  } else {
     var mty = modtype_of_package(env$1, modl[/* mod_loc */1], p, nl, tl$prime);
     List.iter2((function (n, ty) {
             try {
@@ -76829,11 +76824,6 @@ function type_package$1(env, m, p, nl, _) {
     return /* tuple */[
             wrap_constraint(env$1, modl, mty, /* Tmodtype_implicit */0),
             tl$prime
-          ];
-  } else {
-    return /* tuple */[
-            wrap_constraint(env$1, modl, /* Mty_ident */Block.__(0, [p]), /* Tmodtype_implicit */0),
-            /* [] */0
           ];
   }
 }

@@ -1473,13 +1473,13 @@ function iter(_n, f, _v) {
   while(true) {
     var v = _v;
     var n = _n;
-    if (n) {
+    if (n === 0) {
+      return v;
+    } else {
       _v = Curry._1(f, v);
       _n = n - 1 | 0;
       continue ;
       
-    } else {
-      return v;
     }
   };
 }
@@ -1753,12 +1753,12 @@ function trans_set(cache, cm, s) {
         var param = _param;
         if (param) {
           var c = compare(x, param[1]);
-          if (c) {
+          if (c === 0) {
+            return param[2];
+          } else {
             _param = c < 0 ? param[0] : param[3];
             continue ;
             
-          } else {
-            return param[2];
           }
         } else {
           throw Caml_builtin_exceptions.not_found;

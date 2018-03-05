@@ -30,7 +30,9 @@ function bench() {
     data = Rbset.remove(i$2, data);
   }
   console.timeEnd("bs_rbset_int_bench.ml 14");
-  if (Rbset.cardinal(data)) {
+  if (Rbset.cardinal(data) === 0) {
+    return 0;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -39,8 +41,6 @@ function bench() {
             2
           ]
         ];
-  } else {
-    return 0;
   }
 }
 

@@ -68,7 +68,9 @@ function utf8_decode(strm) {
                             while(true) {
                               var c = _c;
                               var n = _n;
-                              if (n) {
+                              if (n === 0) {
+                                return c;
+                              } else {
                                 var match = classify(Stream.next(strm));
                                 if (typeof match === "number") {
                                   throw [
@@ -86,8 +88,6 @@ function utf8_decode(strm) {
                                         "Continuation byte expected"
                                       ];
                                 }
-                              } else {
-                                return c;
                               }
                             };
                           };
@@ -129,7 +129,12 @@ function decode(bytes, offset) {
             var offset$2 = _offset;
             var c = _c;
             var n = _n;
-            if (n) {
+            if (n === 0) {
+              return /* tuple */[
+                      c,
+                      offset$2
+                    ];
+            } else {
               var match$1 = classify(Caml_bytes.get(bytes, offset$2));
               if (typeof match$1 === "number") {
                 throw [
@@ -148,11 +153,6 @@ function decode(bytes, offset) {
                       "decode"
                     ];
               }
-            } else {
-              return /* tuple */[
-                      c,
-                      offset$2
-                    ];
             }
           };
       

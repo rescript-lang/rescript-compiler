@@ -136,15 +136,15 @@ function pos_cmp(a, b) {
 
 function compare(loc1, loc2) {
   var k = source_cmp(loc1[/* source */0], loc2[/* source */0]);
-  if (k) {
-    return k;
-  } else {
+  if (k === 0) {
     var k$1 = pos_cmp(loc1[/* start */1], loc2[/* start */1]);
     if (k$1 === 0) {
       return pos_cmp(loc1[/* _end */2], loc2[/* _end */2]);
     } else {
       return k$1;
     }
+  } else {
+    return k;
   }
 }
 
@@ -1131,9 +1131,7 @@ function parse_body(_f) {
         } else {
           exit = 1;
         }
-      } else if (f[/* decimal_exponent */3]) {
-        throw No_good;
-      } else {
+      } else if (f[/* decimal_exponent */3] === /* None */0) {
         var init = eat(f);
         _f = /* record */[
           /* negative */init[/* negative */0],
@@ -1144,6 +1142,8 @@ function parse_body(_f) {
         ];
         continue ;
         
+      } else {
+        throw No_good;
       }
       if (exit === 1) {
         var ref_char_code;
@@ -1861,14 +1861,14 @@ function token(env, lexbuf) {
             var env$8 = save_comment(match$2[0], start$2, match$2[1], buf$2, /* false */0);
             return token(env$8, lexbuf$1);
         case 7 : 
-            if (lexbuf$1[/* lex_start_pos */4]) {
+            if (lexbuf$1[/* lex_start_pos */4] === 0) {
+              var match$3 = line_comment(env$1, Buffer.create(127), lexbuf$1);
+              return token(match$3[0], lexbuf$1);
+            } else {
               return /* tuple */[
                       env$1,
                       /* T_ERROR */104
                     ];
-            } else {
-              var match$3 = line_comment(env$1, Buffer.create(127), lexbuf$1);
-              return token(match$3[0], lexbuf$1);
             }
             break;
         case 8 : 
@@ -4483,12 +4483,12 @@ function mem(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -5347,12 +5347,12 @@ function mem$1(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;
@@ -5474,12 +5474,12 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -5598,12 +5598,12 @@ function mem$2(x, _param) {
     var param = _param;
     if (param) {
       var c = compare$1(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return /* true */1;
+      } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
         
-      } else {
-        return /* true */1;
       }
     } else {
       return /* false */0;

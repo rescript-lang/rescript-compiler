@@ -153,12 +153,12 @@ function even(n) {
 function even2(_n) {
   while(true) {
     var n = _n;
-    if (n) {
+    if (n === 0) {
+      return /* true */1;
+    } else {
       _n = n - 1 | 0;
       continue ;
       
-    } else {
-      return /* true */1;
     }
   };
 }

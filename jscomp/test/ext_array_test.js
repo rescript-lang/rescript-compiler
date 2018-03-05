@@ -7,14 +7,14 @@ var Caml_array = require("../../lib/js/caml_array.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function reverse_range(a, i, len) {
-  if (len) {
+  if (len === 0) {
+    return /* () */0;
+  } else {
     for(var k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k <= k_finish; ++k){
       var t = a[i + k | 0];
       a[i + k | 0] = a[((i + len | 0) - 1 | 0) - k | 0];
       a[((i + len | 0) - 1 | 0) - k | 0] = t;
     }
-    return /* () */0;
-  } else {
     return /* () */0;
   }
 }
@@ -25,14 +25,14 @@ function reverse_in_place(a) {
 
 function reverse(a) {
   var b_len = a.length;
-  if (b_len) {
+  if (b_len === 0) {
+    return /* array */[];
+  } else {
     var b = $$Array.copy(a);
     for(var i = 0 ,i_finish = b_len - 1 | 0; i <= i_finish; ++i){
       b[i] = a[(b_len - 1 | 0) - i | 0];
     }
     return b;
-  } else {
-    return /* array */[];
   }
 }
 

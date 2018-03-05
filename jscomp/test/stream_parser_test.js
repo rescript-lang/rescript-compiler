@@ -17,15 +17,15 @@ function parse(token) {
     /* tail : None */0
   ];
   var token$1 = function () {
-    if (look_ahead[/* length */0]) {
-      return Queue.pop(look_ahead);
-    } else {
+    if (look_ahead[/* length */0] === 0) {
       try {
         return Curry._1(token, /* () */0);
       }
       catch (exn){
         return /* Kwd */Block.__(0, ["=="]);
       }
+    } else {
+      return Queue.pop(look_ahead);
     }
   };
   var parse_atom = function () {
@@ -145,15 +145,15 @@ function l_parse(token) {
     /* tail : None */0
   ];
   var token$1 = function () {
-    if (look_ahead[/* length */0]) {
-      return Queue.pop(look_ahead);
-    } else {
+    if (look_ahead[/* length */0] === 0) {
       try {
         return Curry._1(token, /* () */0);
       }
       catch (exn){
         return /* Kwd */Block.__(0, ["=="]);
       }
+    } else {
+      return Queue.pop(look_ahead);
     }
   };
   var parse_f = function () {

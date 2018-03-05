@@ -3591,12 +3591,12 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var c = Caml_obj.caml_compare(x, param[1]);
-      if (c) {
+      if (c === 0) {
+        return param[2];
+      } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
         
-      } else {
-        return param[2];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -4246,12 +4246,12 @@ function list_assoc2(x, _param) {
     var param = _param;
     if (param) {
       var match = param[0];
-      if (Caml_obj.caml_compare(match[1], x)) {
+      if (Caml_obj.caml_compare(match[1], x) === 0) {
+        return match[0];
+      } else {
         _param = param[1];
         continue ;
         
-      } else {
-        return match[0];
       }
     } else {
       throw Caml_builtin_exceptions.not_found;

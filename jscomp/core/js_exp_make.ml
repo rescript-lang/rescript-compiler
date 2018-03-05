@@ -851,17 +851,11 @@ let string_of_small_int_array ?comment xs : t =
    call plain [dot]
 *)          
 
-let null ?comment () =     
-  js_global ?comment "null"
 
 let tag ?comment e : t = 
   {expression_desc = 
      Bin (Bor, {expression_desc = Caml_block_tag e; comment }, zero_int_literal );
    comment = None }    
-
-
-let bind ?comment fn obj  : t = 
-  {expression_desc = Bind (fn, obj) ; comment }
 
 
 (* according to the compiler, [Btype.hash_variant], 
@@ -985,6 +979,19 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
       [l;r], _), 
     Number (Int {i = 0l})
     -> int_comp cmp l r (* = 0 > 0 < 0 *)
+  (* | Ceq, Call ({
+      expression_desc = 
+        Var (Qualified 
+               (ident, Runtime, 
+                Some ("caml_compare"))); _} as fn, 
+      ([l;r] as args), call_info), 
+    Number (Int {i = 0l})
+    -> 
+      {e0 with expression_desc =
+         Call( 
+            {fn with expression_desc = 
+              Var(Qualified (ident,Runtime, Some "caml_equal")) 
+            } , args, call_info)} *)
   | Ceq, _, _ -> int_equal e0 e1 
   | _ ->          
     bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1

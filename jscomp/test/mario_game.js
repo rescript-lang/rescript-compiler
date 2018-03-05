@@ -774,7 +774,7 @@ function update_vel(part) {
 
 function $$process(part) {
   part[/* life */6] = part[/* life */6] - 1 | 0;
-  if (!part[/* life */6]) {
+  if (part[/* life */6] === 0) {
     part[/* kill */5] = /* true */1;
   }
   update_vel(part);
@@ -2566,11 +2566,7 @@ function generate_coins(_block_coord) {
     if (block_coord) {
       var t = block_coord[1];
       var h = block_coord[0];
-      if (place_coin) {
-        _block_coord = t;
-        continue ;
-        
-      } else {
+      if (place_coin === 0) {
         var xc = h[1][0];
         var yc = h[1][1];
         return Pervasives.$at(/* :: */[
@@ -2583,6 +2579,10 @@ function generate_coins(_block_coord) {
                     ],
                     /* [] */0
                   ], generate_coins(t));
+      } else {
+        _block_coord = t;
+        continue ;
+        
       }
     } else {
       return /* [] */0;
@@ -3080,11 +3080,7 @@ function generate_block_enemies(_block_coord) {
     if (block_coord) {
       var t = block_coord[1];
       var h = block_coord[0];
-      if (place_enemy) {
-        _block_coord = t;
-        continue ;
-        
-      } else {
+      if (place_enemy === 0) {
         var xc = h[1][0];
         var yc = h[1][1];
         return Pervasives.$at(/* :: */[
@@ -3097,6 +3093,10 @@ function generate_block_enemies(_block_coord) {
                     ],
                     /* [] */0
                   ], generate_block_enemies(t));
+      } else {
+        _block_coord = t;
+        continue ;
+        
       }
     } else {
       return /* [] */0;
