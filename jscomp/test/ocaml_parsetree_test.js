@@ -92,10 +92,10 @@ function ansi_of_color(param) {
 
 function code_of_style(param) {
   if (typeof param === "number") {
-    if (param) {
-      return "0";
-    } else {
+    if (param === 0) {
       return "1";
+    } else {
+      return "0";
     }
   } else if (param.tag) {
     return "4" + ansi_of_color(param[0]);
@@ -387,13 +387,13 @@ function letter(param) {
     switch (switcher) {
       case 0 : 
           var loop = function (i) {
-            if (i) {
+            if (i === 0) {
+              return /* [] */0;
+            } else {
               return /* :: */[
                       i,
                       loop(i - 1 | 0)
                     ];
-            } else {
-              return /* [] */0;
             }
           };
           return loop(50);

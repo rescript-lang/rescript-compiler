@@ -67,18 +67,18 @@ var suites_001 = /* :: */[
                       ]
                     ],
                     Ext_list_test.flat_map((function (x) {
-                            if (x % 2) {
+                            if (x % 2 === 0) {
+                              return /* :: */[
+                                      0,
+                                      /* [] */0
+                                    ];
+                            } else {
                               return /* :: */[
                                       1,
                                       /* :: */[
                                         1,
                                         /* [] */0
                                       ]
-                                    ];
-                            } else {
-                              return /* :: */[
-                                      0,
-                                      /* [] */0
                                     ];
                             }
                           }), /* :: */[

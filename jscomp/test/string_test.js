@@ -118,10 +118,10 @@ function xsplit(delim, s) {
             l_000,
             l
           ];
-          var l$2 = i$prime ? l$1 : /* :: */[
+          var l$2 = i$prime === 0 ? /* :: */[
               "",
               l$1
-            ];
+            ] : l$1;
           _i = i$prime;
           _l = l$2;
           continue ;

@@ -82,14 +82,12 @@ function Make(Ord) {
       var v = t[1];
       var l = t[0];
       var c = Curry._2(Ord[/* compare */0], x, v);
-      if (c) {
-        if (c < 0) {
-          return bal(add(x, l), v, r);
-        } else {
-          return bal(l, v, add(x, r));
-        }
-      } else {
+      if (c === 0) {
         return t;
+      } else if (c < 0) {
+        return bal(add(x, l), v, r);
+      } else {
+        return bal(l, v, add(x, r));
       }
     } else {
       return /* Node */[
@@ -279,14 +277,12 @@ function Make(Ord) {
       var v = param[1];
       var l = param[0];
       var c = Curry._2(Ord[/* compare */0], x, v);
-      if (c) {
-        if (c < 0) {
-          return bal(remove(x, l), v, r);
-        } else {
-          return bal(l, v, remove(x, r));
-        }
-      } else {
+      if (c === 0) {
         return merge(l, r);
+      } else if (c < 0) {
+        return bal(remove(x, l), v, r);
+      } else {
+        return bal(l, v, remove(x, r));
       }
     } else {
       return /* Empty */0;

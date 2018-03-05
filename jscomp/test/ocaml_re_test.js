@@ -393,13 +393,7 @@ function add(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, data, l), v, d, r);
-      } else {
-        return bal(l, v, d, add(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -407,6 +401,10 @@ function add(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal(add(x, data, l), v, d, r);
+    } else {
+      return bal(l, v, d, add(x, data, r));
     }
   } else {
     return /* Node */[
@@ -572,14 +570,12 @@ function add$1(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_int_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$1(add$1(x, l), v, r);
-      } else {
-        return bal$1(l, v, add$1(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$1(add$1(x, l), v, r);
+    } else {
+      return bal$1(l, v, add$1(x, r));
     }
   } else {
     return /* Node */[
@@ -3068,7 +3064,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
     /* pos */pos$1,
     /* last */last
   ];
-  var initial_cat = pos$1 ? Curry._2(Re_automata_000[/* ++ */0], Re_automata_000[/* search_boundary */7], category(re$1, get_color(re$1, s$1, pos$1 - 1 | 0))) : Curry._2(Re_automata_000[/* ++ */0], Re_automata_000[/* search_boundary */7], Re_automata_000[/* inexistant */2]);
+  var initial_cat = pos$1 === 0 ? Curry._2(Re_automata_000[/* ++ */0], Re_automata_000[/* search_boundary */7], Re_automata_000[/* inexistant */2]) : Curry._2(Re_automata_000[/* ++ */0], Re_automata_000[/* search_boundary */7], category(re$1, get_color(re$1, s$1, pos$1 - 1 | 0)));
   var initial_state = find_initial_state(re$1, initial_cat);
   var st = scan_str(info, s$1, initial_state, groups$1);
   var res;

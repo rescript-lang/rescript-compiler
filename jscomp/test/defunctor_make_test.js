@@ -102,13 +102,7 @@ function add(x, data, compare, param) {
     var v = param[1];
     var l = param[0];
     var c = compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, data, compare, l), v, d, r);
-      } else {
-        return bal(l, v, d, add(x, data, compare, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -116,6 +110,10 @@ function add(x, data, compare, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal(add(x, data, compare, l), v, d, r);
+    } else {
+      return bal(l, v, d, add(x, data, compare, r));
     }
   } else {
     return /* Node */[

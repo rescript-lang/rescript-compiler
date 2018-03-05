@@ -9,49 +9,37 @@ var Caml_bytes = require("../../lib/js/caml_bytes.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function classify(chr) {
-  if (chr & 128) {
-    if (chr & 64) {
-      if (chr & 32) {
-        if (chr & 16) {
-          if (chr & 8) {
-            if (chr & 4) {
-              if (chr & 2) {
-                return /* Invalid */0;
-              } else {
-                return /* Leading */Block.__(2, [
-                          5,
-                          chr & 1
-                        ]);
-              }
-            } else {
-              return /* Leading */Block.__(2, [
-                        4,
-                        chr & 3
-                      ]);
-            }
-          } else {
-            return /* Leading */Block.__(2, [
-                      3,
-                      chr & 7
-                    ]);
-          }
-        } else {
-          return /* Leading */Block.__(2, [
-                    2,
-                    chr & 15
-                  ]);
-        }
-      } else {
-        return /* Leading */Block.__(2, [
-                  1,
-                  chr & 31
-                ]);
-      }
-    } else {
-      return /* Cont */Block.__(1, [chr & 63]);
-    }
-  } else {
+  if ((chr & 128) === 0) {
     return /* Single */Block.__(0, [chr]);
+  } else if ((chr & 64) === 0) {
+    return /* Cont */Block.__(1, [chr & 63]);
+  } else if ((chr & 32) === 0) {
+    return /* Leading */Block.__(2, [
+              1,
+              chr & 31
+            ]);
+  } else if ((chr & 16) === 0) {
+    return /* Leading */Block.__(2, [
+              2,
+              chr & 15
+            ]);
+  } else if ((chr & 8) === 0) {
+    return /* Leading */Block.__(2, [
+              3,
+              chr & 7
+            ]);
+  } else if ((chr & 4) === 0) {
+    return /* Leading */Block.__(2, [
+              4,
+              chr & 3
+            ]);
+  } else if ((chr & 2) === 0) {
+    return /* Leading */Block.__(2, [
+              5,
+              chr & 1
+            ]);
+  } else {
+    return /* Invalid */0;
   }
 }
 

@@ -342,10 +342,10 @@ function ansi_of_color(param) {
 
 function code_of_style(param) {
   if (typeof param === "number") {
-    if (param) {
-      return "0";
-    } else {
+    if (param === 0) {
       return "1";
+    } else {
+      return "0";
     }
   } else if (param.tag) {
     return "4" + ansi_of_color(param[0]);
@@ -637,13 +637,13 @@ function letter(param) {
     switch (switcher) {
       case 0 : 
           var loop = function (i) {
-            if (i) {
+            if (i === 0) {
+              return /* [] */0;
+            } else {
               return /* :: */[
                       i,
                       loop(i - 1 | 0)
                     ];
-            } else {
-              return /* [] */0;
             }
           };
           return loop(50);
@@ -2282,13 +2282,7 @@ function add(id, data, param) {
     var k = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(id[/* name */1], k[/* ident */0][/* name */1]);
-    if (c) {
-      if (c < 0) {
-        return balance(add(id, data, l), k, r);
-      } else {
-        return balance(l, k, add(id, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               /* record */[
@@ -2299,6 +2293,10 @@ function add(id, data, param) {
               r,
               param[3]
             ];
+    } else if (c < 0) {
+      return balance(add(id, data, l), k, r);
+    } else {
+      return balance(l, k, add(id, data, r));
     }
   } else {
     return /* Node */[
@@ -2825,13 +2823,7 @@ function add$1(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add$1(x, data, l), v, d, r);
-      } else {
-        return bal(l, v, d, add$1(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -2839,6 +2831,10 @@ function add$1(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal(add$1(x, data, l), v, d, r);
+    } else {
+      return bal(l, v, d, add$1(x, data, r));
     }
   } else {
     return /* Node */[
@@ -3092,14 +3088,12 @@ function add$2(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$1(add$2(x, l), v, r);
-      } else {
-        return bal$1(l, v, add$2(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$1(add$2(x, l), v, r);
+    } else {
+      return bal$1(l, v, add$2(x, r));
     }
   } else {
     return /* Node */[
@@ -3557,14 +3551,12 @@ function add$3(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Curry._2(funarg[/* compare */0], x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$2(add$3(x, l), v, r);
-      } else {
-        return bal$2(l, v, add$3(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$2(add$3(x, l), v, r);
+    } else {
+      return bal$2(l, v, add$3(x, r));
     }
   } else {
     return /* Node */[
@@ -3989,13 +3981,7 @@ function add$4(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Curry._2(funarg$1[/* compare */0], x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$3(add$4(x, data, l), v, d, r);
-      } else {
-        return bal$3(l, v, d, add$4(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -4003,6 +3989,10 @@ function add$4(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$3(add$4(x, data, l), v, d, r);
+    } else {
+      return bal$3(l, v, d, add$4(x, data, r));
     }
   } else {
     return /* Node */[
@@ -4227,10 +4217,10 @@ function row_repr_aux(_ll, _row) {
     } else if (match.tag === 8) {
       var f = row[/* row_fields */0];
       _row = match[0];
-      _ll = f ? /* :: */[
+      _ll = f === /* [] */0 ? ll : /* :: */[
           f,
           ll
-        ] : ll;
+        ];
       continue ;
       
     } else {
@@ -4827,10 +4817,10 @@ function copy_kind(_param) {
 }
 
 function copy_commu(c) {
-  if (commu_repr(c)) {
-    return /* Clink */[[/* Cunknown */1]];
-  } else {
+  if (commu_repr(c) === /* Cok */0) {
     return /* Cok */0;
+  } else {
+    return /* Clink */[[/* Cunknown */1]];
   }
 }
 
@@ -7905,10 +7895,10 @@ function map_type_declaration(sub, param) {
 
 function map_type_kind(sub, param) {
   if (typeof param === "number") {
-    if (param) {
-      return /* Ptype_open */1;
-    } else {
+    if (param === 0) {
       return /* Ptype_abstract */0;
+    } else {
+      return /* Ptype_open */1;
     }
   } else if (param.tag) {
     return /* Ptype_record */Block.__(1, [List.map(Curry._1(sub[/* label_declaration */19], sub), param[0])]);
@@ -8623,13 +8613,7 @@ function add$5(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_obj.caml_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$4(add$5(x, data, l), v, d, r);
-      } else {
-        return bal$4(l, v, d, add$5(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -8637,6 +8621,10 @@ function add$5(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$4(add$5(x, data, l), v, d, r);
+    } else {
+      return bal$4(l, v, d, add$5(x, data, r));
     }
   } else {
     return /* Node */[
@@ -9129,7 +9117,7 @@ function type_declaration(s, decl) {
   var match = decl[/* type_kind */2];
   var tmp;
   tmp = typeof match === "number" ? (
-      match ? /* Type_open */1 : /* Type_abstract */0
+      match === 0 ? /* Type_abstract */0 : /* Type_open */1
     ) : (
       match.tag ? /* Type_variant */Block.__(1, [List.map((function (c) {
                     return /* record */[
@@ -9821,14 +9809,12 @@ function add$7(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$5(add$7(x, l), v, r);
-      } else {
-        return bal$5(l, v, add$7(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$5(add$7(x, l), v, r);
+    } else {
+      return bal$5(l, v, add$7(x, r));
     }
   } else {
     return /* Node */[
@@ -11469,16 +11455,16 @@ function constructors_of_type(ty_path, decl) {
     var num_nonconsts = [0];
     var num_normal = [0];
     List.iter((function (param) {
-            if (param[/* cd_args */1]) {
-              num_nonconsts[0] = num_nonconsts[0] + 1 | 0;
-            } else {
+            if (param[/* cd_args */1] === /* [] */0) {
               num_consts[0] = num_consts[0] + 1 | 0;
-            }
-            if (param[/* cd_res */2]) {
-              return 0;
             } else {
+              num_nonconsts[0] = num_nonconsts[0] + 1 | 0;
+            }
+            if (param[/* cd_res */2] === /* None */0) {
               num_normal[0] = num_normal[0] + 1 | 0;
               return /* () */0;
+            } else {
+              return 0;
             }
           }), cstrs$1);
     var describe_constructors = function (idx_const, idx_nonconst, param) {
@@ -23045,7 +23031,7 @@ function TypedtreeMap_000(funarg) {
     var match = decl$1[/* typ_kind */5];
     var typ_kind;
     if (typeof match === "number") {
-      typ_kind = match ? /* Ttype_open */1 : /* Ttype_abstract */0;
+      typ_kind = match === 0 ? /* Ttype_abstract */0 : /* Ttype_open */1;
     } else if (match.tag) {
       var list = List.map((function (ld) {
               var newrecord = ld.slice();
@@ -26140,7 +26126,7 @@ function instance_declaration(decl) {
   var match = decl[/* type_kind */2];
   var tmp;
   tmp = typeof match === "number" ? (
-      match ? /* Type_open */1 : /* Type_abstract */0
+      match === 0 ? /* Type_abstract */0 : /* Type_open */1
     ) : (
       match.tag ? /* Type_variant */Block.__(1, [List.map((function (c) {
                     return /* record */[
@@ -27673,7 +27659,7 @@ function reify(env, t) {
 function is_newtype(env, p) {
   try {
     var decl = find_type_full(p, env)[0];
-    if (decl[/* type_newtype_level */6] !== /* None */0 && !decl[/* type_kind */2]) {
+    if (decl[/* type_newtype_level */6] !== /* None */0 && decl[/* type_kind */2] === /* Type_abstract */0) {
       return +(decl[/* type_private */3] === /* Public */1);
     } else {
       return /* false */0;
@@ -29594,10 +29580,10 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                   ];
             } else if (f !== dummy_method) {
               set_kind(match$8[0], /* Fabsent */1);
-              if (d2) {
-                unify(env, newty2(rem[/* level */1], /* Tnil */0), rem);
-              } else {
+              if (d2 === /* Tnil */0) {
                 unify(env, rem, t2$prime);
+              } else {
+                unify(env, newty2(rem[/* level */1], /* Tnil */0), rem);
               }
             } else {
               throw [
@@ -29972,10 +29958,10 @@ function unify_row(env, row1, row2) {
     var keep = function ($$switch) {
       return List.for_all((function (param) {
                     var match = Curry._2($$switch, param[1], param[2]);
-                    if (row_field_repr_aux(/* [] */0, match[0])) {
-                      return +(row_field_repr_aux(/* [] */0, match[1]) !== /* Rabsent */0);
-                    } else {
+                    if (row_field_repr_aux(/* [] */0, match[0]) === /* Rabsent */0) {
                       return /* true */1;
+                    } else {
+                      return +(row_field_repr_aux(/* [] */0, match[1]) !== /* Rabsent */0);
                     }
                   }), pairs);
     };
@@ -29985,10 +29971,10 @@ function unify_row(env, row1, row2) {
                   }), fields);
     };
     if (closed && (empty(r1) || row2$1[/* row_closed */3]) && (empty(r2) || row1$1[/* row_closed */3]) && List.for_all((function (param) {
-              if (row_field_repr_aux(/* [] */0, param[1])) {
-                return +(row_field_repr_aux(/* [] */0, param[2]) === /* Rabsent */0);
-              } else {
+              if (row_field_repr_aux(/* [] */0, param[1]) === /* Rabsent */0) {
                 return /* true */1;
+              } else {
+                return +(row_field_repr_aux(/* [] */0, param[2]) === /* Rabsent */0);
               }
             }), pairs)) {
       throw [
@@ -33744,8 +33730,14 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                             var match$4 = associate_fields(match$2[0], match$3[0]);
                             var miss2 = match$4[2];
                             var miss1 = match$4[1];
-                            var cstrs$4 = rest2[/* desc */0] ? (
-                                miss1 ? /* :: */[
+                            var cstrs$4 = rest2[/* desc */0] === /* Tnil */0 ? cstrs$3 : (
+                                miss1 === /* [] */0 ? subtype_rec(env$2, /* :: */[
+                                        /* tuple */[
+                                          rest1,
+                                          rest2
+                                        ],
+                                        trace$2
+                                      ], rest1, rest2, cstrs$3) : /* :: */[
                                     /* tuple */[
                                       trace$2,
                                       build_fields(repr(ty1)[/* level */1])(miss1, rest1),
@@ -33753,15 +33745,9 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                       univar_pairs[0]
                                     ],
                                     cstrs$3
-                                  ] : subtype_rec(env$2, /* :: */[
-                                        /* tuple */[
-                                          rest1,
-                                          rest2
-                                        ],
-                                        trace$2
-                                      ], rest1, rest2, cstrs$3)
-                              ) : cstrs$3;
-                            var cstrs$5 = miss2 ? /* :: */[
+                                  ]
+                              );
+                            var cstrs$5 = miss2 === /* [] */0 ? cstrs$4 : /* :: */[
                                 /* tuple */[
                                   trace$2,
                                   rest1,
@@ -33769,7 +33755,7 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                   univar_pairs[0]
                                 ],
                                 cstrs$4
-                              ] : cstrs$4;
+                              ];
                             return List.fold_left((function(env$2,trace$2){
                                       return function (cstrs, param) {
                                         var t2 = param[4];
@@ -34899,7 +34885,7 @@ function nondep_type_decl(env, mid, id, is_covariant, decl) {
     try {
       var match = decl[/* type_kind */2];
       tk = typeof match === "number" ? (
-          match ? /* Type_open */1 : /* Type_abstract */0
+          match === 0 ? /* Type_abstract */0 : /* Type_open */1
         ) : (
           match.tag ? /* Type_variant */Block.__(1, [List.map((function (c) {
                         return /* record */[
@@ -36045,9 +36031,9 @@ function print_simple_out_type(ppf, ty) {
                             ]),
                           "%s[%s@[<hv>@[<hv>%a@]%a ]@]"
                         ]), ty[0] ? "_" : "", ty[2] ? (
-                        tags ? "< " : " "
+                        tags === /* None */0 ? " " : "< "
                       ) : (
-                        tags ? "? " : "> "
+                        tags === /* None */0 ? "> " : "? "
                       ), print_fields$1, ty[1], print_present, tags);
       case 0 : 
       case 1 : 
@@ -37369,7 +37355,7 @@ function print_out_sig_item(ppf, param) {
                                 ])
                             ]),
                           "@[<hv 2>type %t +=%s@;<1 2>%a@]"
-                        ]), print_extended_type, ext$1[/* oext_private */5] ? "" : " private", print_out_constr, /* tuple */[
+                        ]), print_extended_type, ext$1[/* oext_private */5] === /* Private */0 ? " private" : "", print_out_constr, /* tuple */[
                       ext$1[/* oext_name */0],
                       ext$1[/* oext_args */3],
                       ext$1[/* oext_ret_type */4]
@@ -37723,7 +37709,9 @@ function print_out_sig_item(ppf, param) {
         };
         var print_out_tkind = function (ppf, ty) {
           if (typeof ty === "number") {
-            if (ty) {
+            if (ty === 0) {
+              return /* () */0;
+            } else {
               return Format.fprintf(ppf, /* Format */[
                           /* String_literal */Block.__(11, [
                               " = ..",
@@ -37731,8 +37719,6 @@ function print_out_sig_item(ppf, param) {
                             ]),
                           " = .."
                         ]);
-            } else {
-              return /* () */0;
             }
           } else {
             switch (ty.tag | 0) {
@@ -37866,7 +37852,7 @@ function print_out_sig_item(ppf, param) {
                       ]), print_name_params, print_out_tkind, ty, print_constraints);
     case 6 : 
         var prims = param[2];
-        var kwd$1 = prims ? "external" : "val";
+        var kwd$1 = prims === /* [] */0 ? "val" : "external";
         var pr_prims = function (ppf, param) {
           if (param) {
             Curry._1(Format.fprintf(ppf, /* Format */[
@@ -38104,7 +38090,7 @@ function print_out_type_extension(ppf, te) {
                         ])
                     ]),
                   "@[<hv 2>type %t +=%s@;<1 2>%a@]"
-                ]), print_extended_type, te[/* otyext_private */3] ? "" : " private", (function (param, param$1) {
+                ]), print_extended_type, te[/* otyext_private */3] === /* Private */0 ? " private" : "", (function (param, param$1) {
                 return print_list(print_out_constr, (function (ppf) {
                               return Format.fprintf(ppf, /* Format */[
                                           /* Formatting_lit */Block.__(17, [
@@ -39592,13 +39578,7 @@ function add$8(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = compare$2(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$6(add$8(x, data, l), v, d, r);
-      } else {
-        return bal$6(l, v, d, add$8(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -39606,6 +39586,10 @@ function add$8(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$6(add$8(x, data, l), v, d, r);
+    } else {
+      return bal$6(l, v, d, add$8(x, data, r));
     }
   } else {
     return /* Node */[
@@ -40220,10 +40204,10 @@ function mark_loops_rec(_visited, _ty) {
                   var match$3 = flatten_fields(match[0]);
                   return List.iter((function(visited$1){
                             return function (param) {
-                              if (field_kind_repr(param[1])) {
-                                return 0;
-                              } else {
+                              if (field_kind_repr(param[1]) === /* Fpresent */0) {
                                 return mark_loops_rec(visited$1, param[2]);
+                              } else {
+                                return 0;
                               }
                             }
                             }(visited$1)), match$3[0]);
@@ -40911,7 +40895,7 @@ function tree_of_type_decl(id, decl) {
     var match = decl[/* type_kind */2];
     var abstr;
     abstr = typeof match === "number" ? (
-        match ? +(decl[/* type_manifest */4] === /* None */0) : +(decl[/* type_manifest */4] === /* None */0 || decl[/* type_private */3] === /* Private */0)
+        match === 0 ? +(decl[/* type_manifest */4] === /* None */0 || decl[/* type_private */3] === /* Private */0) : +(decl[/* type_manifest */4] === /* None */0)
       ) : (
         match.tag ? +(decl[/* type_private */3] === /* Private */0) || List.exists((function (cd) {
                   return +(cd[/* cd_res */2] !== /* None */0);
@@ -40952,10 +40936,7 @@ function tree_of_type_decl(id, decl) {
   var match$8 = decl[/* type_kind */2];
   var match$9;
   match$9 = typeof match$8 === "number" ? (
-      match$8 ? /* tuple */[
-          tree_of_manifest(/* Otyp_open */1),
-          /* Public */1
-        ] : (
+      match$8 === 0 ? (
           ty_manifest ? /* tuple */[
               tree_of_typexp(/* false */0, ty_manifest[0]),
               decl[/* type_private */3]
@@ -40963,7 +40944,10 @@ function tree_of_type_decl(id, decl) {
               /* Otyp_abstract */0,
               /* Public */1
             ]
-        )
+        ) : /* tuple */[
+          tree_of_manifest(/* Otyp_open */1),
+          /* Public */1
+        ]
     ) : (
       match$8.tag ? /* tuple */[
           tree_of_manifest(/* Otyp_sum */Block.__(8, [List.map(tree_of_constructor, match$8[0])])),
@@ -41362,10 +41346,10 @@ function tree_of_cltype_declaration(id, cl, rs) {
           var lab = param[0];
           return 1 - (+(lab === dummy_method) || mem$2(lab, sign[/* csig_concr */2]));
         }), match[0]) || fold((function (_, param, b) {
-          if (param[1]) {
-            return b;
-          } else {
+          if (param[1] === /* Virtual */0) {
             return /* true */1;
+          } else {
+            return b;
           }
         }), sign[/* csig_vars */1], /* false */0);
   return /* Osig_class_type */Block.__(1, [
@@ -42852,7 +42836,7 @@ function explanation(unif, mis, ppf) {
                                 ])
                             ]),
                           "@,@[The %s object type has an abstract row, it cannot be closed@]"
-                        ]), t4[/* desc */0] ? "second" : "first");
+                        ]), t4[/* desc */0] === /* Tnil */0 ? "first" : "second");
       case 2 : 
           var exit$7 = 0;
           if (typeof match$1 === "number") {
@@ -43670,12 +43654,14 @@ function private_flags(decl1, decl2) {
   var match$1 = decl2[/* type_private */3];
   if (match !== 0 || match$1 === 0) {
     return /* true */1;
-  } else if (decl2[/* type_kind */2]) {
-    return /* false */0;
-  } else if (decl2[/* type_manifest */4]) {
-    return +(decl1[/* type_kind */2] !== /* Type_abstract */0);
+  } else if (decl2[/* type_kind */2] === /* Type_abstract */0) {
+    if (decl2[/* type_manifest */4] === /* None */0) {
+      return /* true */1;
+    } else {
+      return +(decl1[/* type_kind */2] !== /* Type_abstract */0);
+    }
   } else {
-    return /* true */1;
+    return /* false */0;
   }
 }
 
@@ -44352,15 +44338,15 @@ function type_declarations$1($staropt$star, env, name, decl1, id, decl2) {
     }
     if (exit === 1) {
       if (typeof match === "number") {
-        err = match ? (
+        err = match === 0 ? /* :: */[
+            /* Kind */2,
+            /* [] */0
+          ] : (
             typeof match$1 === "number" ? /* [] */0 : /* :: */[
                 /* Kind */2,
                 /* [] */0
               ]
-          ) : /* :: */[
-            /* Kind */2,
-            /* [] */0
-          ];
+          );
       } else if (match.tag) {
         var cstrs1 = match[0];
         if (typeof match$1 === "number") {
@@ -45195,14 +45181,12 @@ function add$9(x, t) {
     var v = t[1];
     var l = t[0];
     var c = compare$3(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$7(add$9(x, l), v, r);
-      } else {
-        return bal$7(l, v, add$9(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$7(add$9(x, l), v, r);
+    } else {
+      return bal$7(l, v, add$9(x, r));
     }
   } else {
     return /* Node */[
@@ -45425,13 +45409,7 @@ function add$10(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = compare$3(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$8(add$10(x, data, l), v, d, r);
-      } else {
-        return bal$8(l, v, d, add$10(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -45439,6 +45417,10 @@ function add$10(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$8(add$10(x, data, l), v, d, r);
+    } else {
+      return bal$8(l, v, d, add$10(x, data, r));
     }
   } else {
     return /* Node */[
@@ -45549,14 +45531,12 @@ function add$11(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_obj.caml_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$9(add$11(x, l), v, r);
-      } else {
-        return bal$9(l, v, add$11(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$9(add$11(x, l), v, r);
+    } else {
+      return bal$9(l, v, add$11(x, r));
     }
   } else {
     return /* Node */[
@@ -47812,64 +47792,62 @@ function path_of_context(param) {
 }
 
 function context$1(ppf, cxt) {
-  if (cxt) {
-    if (List.for_all((function (param) {
-              return param.tag ? /* false */0 : /* true */1;
-            }), cxt)) {
-      return Curry._2(Format.fprintf(ppf, /* Format */[
-                      /* String_literal */Block.__(11, [
-                          "In module ",
-                          /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
-                                  /* ":" */58,
-                                  /* Formatting_lit */Block.__(17, [
-                                      /* Break */Block.__(0, [
-                                          "@ ",
-                                          1,
-                                          0
-                                        ]),
-                                      /* End_of_format */0
-                                    ])
-                                ])])
-                        ]),
-                      "In module %a:@ "
-                    ]), path, path_of_context(cxt));
-    } else {
-      return Curry._2(Format.fprintf(ppf, /* Format */[
-                      /* Formatting_gen */Block.__(18, [
-                          /* Open_box */Block.__(1, [/* Format */[
-                                /* String_literal */Block.__(11, [
-                                    "<hv 2>",
-                                    /* End_of_format */0
-                                  ]),
-                                "<hv 2>"
-                              ]]),
-                          /* String_literal */Block.__(11, [
-                              "At position",
-                              /* Formatting_lit */Block.__(17, [
-                                  /* Break */Block.__(0, [
-                                      "@ ",
-                                      1,
-                                      0
-                                    ]),
-                                  /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
-                                          /* Close_box */0,
-                                          /* Formatting_lit */Block.__(17, [
-                                              /* Break */Block.__(0, [
-                                                  "@ ",
-                                                  1,
-                                                  0
-                                                ]),
-                                              /* End_of_format */0
-                                            ])
-                                        ])])
-                                ])
-                            ])
-                        ]),
-                      "@[<hv 2>At position@ %a@]@ "
-                    ]), context, cxt);
-    }
-  } else {
+  if (cxt === /* [] */0) {
     return /* () */0;
+  } else if (List.for_all((function (param) {
+            return param.tag ? /* false */0 : /* true */1;
+          }), cxt)) {
+    return Curry._2(Format.fprintf(ppf, /* Format */[
+                    /* String_literal */Block.__(11, [
+                        "In module ",
+                        /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                /* ":" */58,
+                                /* Formatting_lit */Block.__(17, [
+                                    /* Break */Block.__(0, [
+                                        "@ ",
+                                        1,
+                                        0
+                                      ]),
+                                    /* End_of_format */0
+                                  ])
+                              ])])
+                      ]),
+                    "In module %a:@ "
+                  ]), path, path_of_context(cxt));
+  } else {
+    return Curry._2(Format.fprintf(ppf, /* Format */[
+                    /* Formatting_gen */Block.__(18, [
+                        /* Open_box */Block.__(1, [/* Format */[
+                              /* String_literal */Block.__(11, [
+                                  "<hv 2>",
+                                  /* End_of_format */0
+                                ]),
+                              "<hv 2>"
+                            ]]),
+                        /* String_literal */Block.__(11, [
+                            "At position",
+                            /* Formatting_lit */Block.__(17, [
+                                /* Break */Block.__(0, [
+                                    "@ ",
+                                    1,
+                                    0
+                                  ]),
+                                /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                        /* Close_box */0,
+                                        /* Formatting_lit */Block.__(17, [
+                                            /* Break */Block.__(0, [
+                                                "@ ",
+                                                1,
+                                                0
+                                              ]),
+                                            /* End_of_format */0
+                                          ])
+                                      ])])
+                              ])
+                          ])
+                      ]),
+                    "@[<hv 2>At position@ %a@]@ "
+                  ]), context, cxt);
   }
 }
 
@@ -50342,10 +50320,10 @@ function full_match(ignore_generalized, closing, env) {
                           }), row[/* row_fields */0]);
             } else if (row[/* row_closed */3]) {
               return List.for_all((function (param) {
-                            if (row_field_repr_aux(/* [] */0, param[1])) {
-                              return List.mem(param[0], fields);
-                            } else {
+                            if (row_field_repr_aux(/* [] */0, param[1]) === /* Rabsent */0) {
                               return /* true */1;
+                            } else {
+                              return List.mem(param[0], fields);
                             }
                           }), row[/* row_fields */0]);
             } else {
@@ -54951,7 +54929,7 @@ function spellcheck(ppf, fold, env, lid) {
                             ])
                         ]),
                       "@\nHint: Did you mean %s%s%s?"
-                    ]), $$String.concat(", ", List.rev(rev_rest)), rev_rest ? " or " : "", match[0]);
+                    ]), $$String.concat(", ", List.rev(rev_rest)), rev_rest === /* [] */0 ? "" : " or ", match[0]);
     } else {
       return /* () */0;
     }
@@ -55008,21 +54986,21 @@ register_error_of_exn((function (param) {
                           var ppf = param;
                           var param$2 = param$1;
                           if (typeof param$2 === "number") {
-                            if (param$2) {
-                              return Format.fprintf(ppf, /* Format */[
-                                          /* String_literal */Block.__(11, [
-                                              "Illegal recursive module reference",
-                                              /* End_of_format */0
-                                            ]),
-                                          "Illegal recursive module reference"
-                                        ]);
-                            } else {
+                            if (param$2 === 0) {
                               return Format.fprintf(ppf, /* Format */[
                                           /* String_literal */Block.__(11, [
                                               "This type is recursive",
                                               /* End_of_format */0
                                             ]),
                                           "This type is recursive"
+                                        ]);
+                            } else {
+                              return Format.fprintf(ppf, /* Format */[
+                                          /* String_literal */Block.__(11, [
+                                              "Illegal recursive module reference",
+                                              /* End_of_format */0
+                                            ]),
+                                          "Illegal recursive module reference"
                                         ]);
                             }
                           } else {
@@ -58743,7 +58721,7 @@ function is_nonexpansive(_exp) {
           return is_nonexpansive_opt(match[1]);
       case 10 : 
           if (List.for_all((function (param) {
-                    return param[1][/* lbl_mut */3] ? /* false */0 : is_nonexpansive(param[2]);
+                    return param[1][/* lbl_mut */3] === /* Immutable */0 ? is_nonexpansive(param[2]) : /* false */0;
                   }), match[0])) {
             return is_nonexpansive_opt(match[1]);
           } else {
@@ -60445,7 +60423,7 @@ function type_expect_(in_function, env, sexp, ty_expected) {
         var lid$3 = match[1];
         var match$33 = type_label_access(env, loc, match[0], lid$3);
         var record$4 = match$33[0];
-        var ty_record$1 = match$33[2] ? record$4[/* exp_type */3] : newvar(/* None */0, /* () */0);
+        var ty_record$1 = match$33[2] === /* None */0 ? newvar(/* None */0, /* () */0) : record$4[/* exp_type */3];
         var match$34 = type_label_exp(/* false */0, env, loc, ty_record$1, /* tuple */[
               lid$3,
               match$33[1],
@@ -61663,10 +61641,10 @@ function type_function(in_function, loc, attrs, env, ty_expected, l, caselist) {
   var cases = match$3[0];
   var not_function = function (ty) {
     var match = list_labels(env, ty);
-    if (match[0]) {
-      return /* false */0;
-    } else {
+    if (match[0] === /* [] */0) {
       return 1 - match[1];
+    } else {
+      return /* false */0;
     }
   };
   if (is_optional(l) && not_function(ty_res)) {
@@ -62575,7 +62553,7 @@ function type_label_exp(create, env, loc, ty_expected, param) {
           ];
     }
   }
-  var snap = vars ? /* Some */[snapshot(/* () */0)] : /* None */0;
+  var snap = vars === /* [] */0 ? /* None */0 : /* Some */[snapshot(/* () */0)];
   var arg = type_argument(env, sarg, ty_arg$1, instance(/* None */0, env, ty_arg$1));
   end_def(/* () */0);
   var arg$1;
@@ -63092,15 +63070,15 @@ function type_application(env, funct, sargs) {
             }
             var arg = match$4[2];
             var sargs$1 = match$4[0];
-            var omitted$1 = arg ? omitted : /* :: */[
+            var omitted$1 = arg === /* None */0 ? /* :: */[
                 /* tuple */[
                   l,
                   ty,
                   lv
                 ],
                 omitted
-              ];
-            var ty_old$1 = sargs$1 ? ty_old : ty_fun$1;
+              ] : omitted;
+            var ty_old$1 = sargs$1 === /* [] */0 ? ty_fun$1 : ty_old;
             _more_sargs = match$4[1];
             _sargs = sargs$1;
             _ty_old = ty_old$1;
@@ -65515,7 +65493,7 @@ function enter_type$1(env, sdecl, id) {
 
 function is_fixed_type(sd) {
   var match = sd[/* ptype_manifest */5];
-  if (match && sd[/* ptype_kind */3] === /* Ptype_abstract */0 && !sd[/* ptype_private */4]) {
+  if (match && sd[/* ptype_kind */3] === /* Ptype_abstract */0 && sd[/* ptype_private */4] === /* Private */0) {
     var _sty = match[0];
     while(true) {
       var sty = _sty;
@@ -65688,14 +65666,12 @@ function add$12(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$10(add$12(x, l), v, r);
-      } else {
-        return bal$10(l, v, add$12(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$10(add$12(x, l), v, r);
+    } else {
+      return bal$10(l, v, add$12(x, r));
     }
   } else {
     return /* Node */[
@@ -65991,13 +65967,7 @@ function add$13(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$11(add$13(x, data, l), v, d, r);
-      } else {
-        return bal$11(l, v, d, add$13(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -66005,6 +65975,10 @@ function add$13(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$11(add$13(x, data, l), v, d, r);
+    } else {
+      return bal$11(l, v, d, add$13(x, data, r));
     }
   } else {
     return /* Node */[
@@ -67159,12 +67133,12 @@ function transl_type_decl(env, rec_flag, sdecl_list) {
     var match = sdecl[/* ptype_kind */3];
     var match$1;
     if (typeof match === "number") {
-      match$1 = match ? /* tuple */[
-          /* Ttype_open */1,
-          /* Type_open */1
-        ] : /* tuple */[
+      match$1 = match === 0 ? /* tuple */[
           /* Ttype_abstract */0,
           /* Type_abstract */0
+        ] : /* tuple */[
+          /* Ttype_open */1,
+          /* Type_open */1
         ];
     } else if (match.tag) {
       var lbls = match[0];
@@ -68172,9 +68146,9 @@ function transl_with_constraint(env, id, row_path, orig_decl, sdecl) {
     ];
   }
   var man = match$1[1];
-  var priv = sdecl[/* ptype_private */4] ? (
+  var priv = sdecl[/* ptype_private */4] === /* Private */0 ? /* Private */0 : (
       arity_ok && orig_decl$1[/* type_kind */2] !== /* Type_abstract */0 ? orig_decl$1[/* type_private */3] : sdecl[/* ptype_private */4]
-    ) : /* Private */0;
+    );
   if (arity_ok && orig_decl$1[/* type_kind */2] !== /* Type_abstract */0 && sdecl[/* ptype_private */4] === /* Private */0) {
     prerr_warning(sdecl[/* ptype_loc */7], /* Deprecated */Block.__(0, ["spurious use of private"]));
   }
@@ -69725,10 +69699,10 @@ function enter_val(cl_num, vars, inh, lab, mut, virt, ty, val_env, met_env, par_
 
 function concr_vals(vars) {
   return fold((function (id, param, s) {
-                if (param[1]) {
-                  return add$2(id, s);
-                } else {
+                if (param[1] === /* Virtual */0) {
                   return s;
+                } else {
+                  return add$2(id, s);
                 }
               }), vars, /* Empty */0);
 }
@@ -70383,7 +70357,7 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
   };
   if ($$final) {
     List.iter((function (param) {
-            var k = field_kind_repr(param[1]) ? /* Private */0 : /* Public */1;
+            var k = field_kind_repr(param[1]) === /* Fpresent */0 ? /* Public */1 : /* Private */0;
             try {
               return unify$2(val_env$1, param[2], filter_method(val_env$1, param[0], k, self_type));
             }
@@ -70966,13 +70940,13 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
           /* csig_inher */inher
         ]);
     var vals = fold((function (name, param, l) {
-            if (param[1]) {
-              return l;
-            } else {
+            if (param[1] === /* Virtual */0) {
               return /* :: */[
                       name,
                       l
                     ];
+            } else {
+              return l;
             }
           }), sign_001, /* [] */0);
     if (mets !== /* [] */0 || vals !== /* [] */0) {
@@ -71486,13 +71460,13 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                               }
                             }
                             var arg$1 = match[2];
-                            var omitted$1 = arg$1 ? omitted : /* :: */[
+                            var omitted$1 = arg$1 === /* None */0 ? /* :: */[
                                 /* tuple */[
                                   l,
                                   ty0
                                 ],
                                 omitted
-                              ];
+                              ] : omitted;
                             _more_sargs = match[1];
                             _sargs = match[0];
                             _ty_fun0 = ty_fun0[2];
@@ -72116,13 +72090,13 @@ function type_classes(define_class, approx, kind, env, cls) {
             var sign = signature_of_class_type(typ);
             var mets = virtual_methods(sign);
             var vals = fold((function (name, param, l) {
-                    if (param[1]) {
-                      return l;
-                    } else {
+                    if (param[1] === /* Virtual */0) {
                       return /* :: */[
                               name,
                               l
                             ];
+                    } else {
+                      return l;
                     }
                   }), sign[/* csig_vars */1], /* [] */0);
             if (mets !== /* [] */0 || vals !== /* [] */0) {
@@ -73486,12 +73460,12 @@ register_error_of_exn((function (param) {
                                                                         ]);
                                                             }));
                                             case 22 : 
-                                                var match = param[1] ? /* tuple */[
-                                                    "immutable",
-                                                    "mutable"
-                                                  ] : /* tuple */[
+                                                var match = param[1] === /* Immutable */0 ? /* tuple */[
                                                     "mutable",
                                                     "immutable"
+                                                  ] : /* tuple */[
+                                                    "immutable",
+                                                    "mutable"
                                                   ];
                                                 return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                                 /* Formatting_gen */Block.__(18, [
@@ -73786,7 +73760,7 @@ function add_rec_types(_env, _param) {
 function check_type_decl(env, loc, id, row_id, newdecl, decl, rs, rem) {
   var env$1 = add_type$1(/* true */1, id, newdecl, env);
   var env$2 = row_id ? add_type$1(/* true */1, row_id[0], newdecl, env$1) : env$1;
-  var env$3 = rs ? add_rec_types(env$2, rem) : env$2;
+  var env$3 = rs === /* Trec_not */0 ? env$2 : add_rec_types(env$2, rem);
   type_declarations$3(env$3, id, newdecl, decl);
   return check_coherence(env$3, loc, id, newdecl);
 }
@@ -74661,14 +74635,12 @@ function add$14(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$12(add$14(x, l), v, r);
-      } else {
-        return bal$12(l, v, add$14(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$12(add$14(x, l), v, r);
+    } else {
+      return bal$12(l, v, add$14(x, r));
     }
   } else {
     return /* Node */[
@@ -76459,7 +76431,7 @@ function type_structure($staropt$star, funct_body, anchor, env, sstr, scope) {
           var classes = match$10[0];
           return /* tuple */[
                   /* Tstr_class */Block.__(10, [List.map((function (param) {
-                              var vf = param[2][/* cty_new */3] ? /* Concrete */1 : /* Virtual */0;
+                              var vf = param[2][/* cty_new */3] === /* None */0 ? /* Virtual */0 : /* Concrete */1;
                               return /* tuple */[
                                       param[11],
                                       param[10],

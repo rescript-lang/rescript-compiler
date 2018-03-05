@@ -144,13 +144,7 @@ function add(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, data, l), v, d, r);
-      } else {
-        return bal(l, v, d, add(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -158,6 +152,10 @@ function add(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal(add(x, data, l), v, d, r);
+    } else {
+      return bal(l, v, d, add(x, data, r));
     }
   } else {
     return /* Node */[
@@ -271,13 +269,7 @@ function remove(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(remove(x, l), v, d, r);
-      } else {
-        return bal(l, v, d, remove(x, r));
-      }
-    } else {
+    if (c === 0) {
       var t1 = l;
       var t2 = r;
       if (t1) {
@@ -290,6 +282,10 @@ function remove(x, param) {
       } else {
         return t2;
       }
+    } else if (c < 0) {
+      return bal(remove(x, l), v, d, r);
+    } else {
+      return bal(l, v, d, remove(x, r));
     }
   } else {
     return /* Empty */0;
@@ -823,13 +819,7 @@ function add$1(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$1(add$1(x, data, l), v, d, r);
-      } else {
-        return bal$1(l, v, d, add$1(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -837,6 +827,10 @@ function add$1(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$1(add$1(x, data, l), v, d, r);
+    } else {
+      return bal$1(l, v, d, add$1(x, data, r));
     }
   } else {
     return /* Node */[
@@ -950,13 +944,7 @@ function remove$1(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$1(remove$1(x, l), v, d, r);
-      } else {
-        return bal$1(l, v, d, remove$1(x, r));
-      }
-    } else {
+    if (c === 0) {
       var t1 = l;
       var t2 = r;
       if (t1) {
@@ -969,6 +957,10 @@ function remove$1(x, param) {
       } else {
         return t2;
       }
+    } else if (c < 0) {
+      return bal$1(remove$1(x, l), v, d, r);
+    } else {
+      return bal$1(l, v, d, remove$1(x, r));
     }
   } else {
     return /* Empty */0;
@@ -1502,13 +1494,7 @@ function add$2(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_int_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$2(add$2(x, data, l), v, d, r);
-      } else {
-        return bal$2(l, v, d, add$2(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -1516,6 +1502,10 @@ function add$2(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$2(add$2(x, data, l), v, d, r);
+    } else {
+      return bal$2(l, v, d, add$2(x, data, r));
     }
   } else {
     return /* Node */[
@@ -1629,13 +1619,7 @@ function remove$2(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_int_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$2(remove$2(x, l), v, d, r);
-      } else {
-        return bal$2(l, v, d, remove$2(x, r));
-      }
-    } else {
+    if (c === 0) {
       var t1 = l;
       var t2 = r;
       if (t1) {
@@ -1648,6 +1632,10 @@ function remove$2(x, param) {
       } else {
         return t2;
       }
+    } else if (c < 0) {
+      return bal$2(remove$2(x, l), v, d, r);
+    } else {
+      return bal$2(l, v, d, remove$2(x, r));
     }
   } else {
     return /* Empty */0;
@@ -2203,10 +2191,10 @@ function get_method(table, label) {
 }
 
 function to_list(arr) {
-  if (arr) {
-    return $$Array.to_list(arr);
-  } else {
+  if (arr === 0) {
     return /* [] */0;
+  } else {
+    return $$Array.to_list(arr);
   }
 }
 

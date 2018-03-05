@@ -21,14 +21,12 @@ var B = Caml_module.init_mod([
     ], [[0]]);
 
 function even(n) {
-  if (n) {
-    if (n === 1) {
-      return /* false */0;
-    } else {
-      return Curry._1(B[/* odd */0], n - 1 | 0);
-    }
-  } else {
+  if (n === 0) {
     return /* true */1;
+  } else if (n === 1) {
+    return /* false */0;
+  } else {
+    return Curry._1(B[/* odd */0], n - 1 | 0);
   }
 }
 
@@ -37,10 +35,10 @@ Caml_module.update_mod([[0]], A, /* module */[/* even */even]);
 function odd(n) {
   if (n === 1) {
     return /* true */1;
-  } else if (n) {
-    return Curry._1(A[/* even */0], n - 1 | 0);
-  } else {
+  } else if (n === 0) {
     return /* false */0;
+  } else {
+    return Curry._1(A[/* even */0], n - 1 | 0);
   }
 }
 
@@ -65,14 +63,12 @@ var BB = Caml_module.init_mod([
       ]]);
 
 function even$1(n) {
-  if (n) {
-    if (n === 1) {
-      return /* false */0;
-    } else {
-      return Curry._1(BB[/* odd */0], n - 1 | 0);
-    }
-  } else {
+  if (n === 0) {
     return /* true */1;
+  } else if (n === 1) {
+    return /* false */0;
+  } else {
+    return Curry._1(BB[/* odd */0], n - 1 | 0);
   }
 }
 
@@ -91,10 +87,10 @@ Caml_module.update_mod([[
 function odd$1(n) {
   if (n === 1) {
     return /* true */1;
-  } else if (n) {
-    return Curry._1(AA[/* even */0], n - 1 | 0);
-  } else {
+  } else if (n === 0) {
     return /* false */0;
+  } else {
+    return Curry._1(AA[/* even */0], n - 1 | 0);
   }
 }
 
@@ -196,14 +192,12 @@ function add(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Curry._2(AAA[/* compare */0], x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, l), v, r);
-      } else {
-        return bal(l, v, add(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal(add(x, l), v, r);
+    } else {
+      return bal(l, v, add(x, r));
     }
   } else {
     return /* Node */[
@@ -394,13 +388,7 @@ function remove(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Curry._2(AAA[/* compare */0], x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(remove(x, l), v, r);
-      } else {
-        return bal(l, v, remove(x, r));
-      }
-    } else {
+    if (c === 0) {
       var t1 = l;
       var t2 = r;
       if (t1) {
@@ -412,6 +400,10 @@ function remove(x, param) {
       } else {
         return t2;
       }
+    } else if (c < 0) {
+      return bal(remove(x, l), v, r);
+    } else {
+      return bal(l, v, remove(x, r));
     }
   } else {
     return /* Empty */0;

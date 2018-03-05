@@ -503,10 +503,10 @@ function length_compare(_l, _n) {
       _l = l[1];
       continue ;
       
-    } else if (n) {
-      return /* Lt */17064;
-    } else {
+    } else if (n === 0) {
       return /* Eq */15500;
+    } else {
+      return /* Lt */17064;
     }
   };
 }

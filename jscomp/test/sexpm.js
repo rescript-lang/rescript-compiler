@@ -373,10 +373,10 @@ function _refill(t, k_succ, k_fail) {
   var n = Curry._3(t[/* refill */1], t[/* buf */0], 0, t[/* buf */0].length);
   t[/* i */3] = 0;
   t[/* len */4] = n;
-  if (n) {
-    return Curry._1(k_succ, t);
-  } else {
+  if (n === 0) {
     return Curry._1(k_fail, t);
+  } else {
+    return Curry._1(k_succ, t);
   }
 }
 
@@ -1011,10 +1011,10 @@ function MakeDecode(funarg) {
     return Curry._2($great$great$eq, Curry._3(t[/* refill */1], t[/* buf */0], 0, t[/* buf */0].length), (function (n) {
                   t[/* i */3] = 0;
                   t[/* len */4] = n;
-                  if (n) {
-                    return Curry._1(k_succ, t);
-                  } else {
+                  if (n === 0) {
                     return Curry._1(k_fail, t);
+                  } else {
+                    return Curry._1(k_succ, t);
                   }
                 }));
   };

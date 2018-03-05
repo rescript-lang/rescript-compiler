@@ -106,13 +106,7 @@ function Make(Ord) {
       var v = param[1];
       var l = param[0];
       var c = Curry._2(Ord[/* compare */0], x, v);
-      if (c) {
-        if (c < 0) {
-          return bal(add(x, data, l), v, d, r);
-        } else {
-          return bal(l, v, d, add(x, data, r));
-        }
-      } else {
+      if (c === 0) {
         return /* Node */[
                 l,
                 x,
@@ -120,6 +114,10 @@ function Make(Ord) {
                 r,
                 param[4]
               ];
+      } else if (c < 0) {
+        return bal(add(x, data, l), v, d, r);
+      } else {
+        return bal(l, v, d, add(x, data, r));
       }
     } else {
       return /* Node */[
@@ -227,13 +225,7 @@ function Make(Ord) {
       var v = param[1];
       var l = param[0];
       var c = Curry._2(Ord[/* compare */0], x, v);
-      if (c) {
-        if (c < 0) {
-          return bal(remove(x, l), v, d, r);
-        } else {
-          return bal(l, v, d, remove(x, r));
-        }
-      } else {
+      if (c === 0) {
         var t1 = l;
         var t2 = r;
         if (t1) {
@@ -246,6 +238,10 @@ function Make(Ord) {
         } else {
           return t2;
         }
+      } else if (c < 0) {
+        return bal(remove(x, l), v, d, r);
+      } else {
+        return bal(l, v, d, remove(x, r));
       }
     } else {
       return /* Empty */0;
@@ -769,13 +765,7 @@ function add(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_int_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, data, l), v, d, r);
-      } else {
-        return bal(l, v, d, add(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -783,6 +773,10 @@ function add(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal(add(x, data, l), v, d, r);
+    } else {
+      return bal(l, v, d, add(x, data, r));
     }
   } else {
     return /* Node */[
@@ -901,13 +895,7 @@ function remove(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_int_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(remove(x, l), v, d, r);
-      } else {
-        return bal(l, v, d, remove(x, r));
-      }
-    } else {
+    if (c === 0) {
       var t1 = l;
       var t2 = r;
       var exit = 0;
@@ -925,6 +913,10 @@ function remove(x, param) {
         return bal(t1, match[0], match[1], remove_min_binding(t2));
       }
       
+    } else if (c < 0) {
+      return bal(remove(x, l), v, d, r);
+    } else {
+      return bal(l, v, d, remove(x, r));
     }
   } else {
     return /* Empty */0;
@@ -1504,13 +1496,7 @@ function add$1(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$1(add$1(x, data, l), v, d, r);
-      } else {
-        return bal$1(l, v, d, add$1(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -1518,6 +1504,10 @@ function add$1(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$1(add$1(x, data, l), v, d, r);
+    } else {
+      return bal$1(l, v, d, add$1(x, data, r));
     }
   } else {
     return /* Node */[
@@ -1636,13 +1626,7 @@ function remove$1(x, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$1(remove$1(x, l), v, d, r);
-      } else {
-        return bal$1(l, v, d, remove$1(x, r));
-      }
-    } else {
+    if (c === 0) {
       var t1 = l;
       var t2 = r;
       var exit = 0;
@@ -1660,6 +1644,10 @@ function remove$1(x, param) {
         return bal$1(t1, match[0], match[1], remove_min_binding$1(t2));
       }
       
+    } else if (c < 0) {
+      return bal$1(remove$1(x, l), v, d, r);
+    } else {
+      return bal$1(l, v, d, remove$1(x, r));
     }
   } else {
     return /* Empty */0;

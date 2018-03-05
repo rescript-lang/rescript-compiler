@@ -79,14 +79,12 @@ function add(x, t) {
     var v = t[1];
     var l = t[0];
     var c = compare_int(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, l), v, r);
-      } else {
-        return bal(l, v, add(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal(add(x, l), v, r);
+    } else {
+      return bal(l, v, add(x, r));
     }
   } else {
     return /* Node */[
@@ -145,14 +143,12 @@ function remove(x, tree) {
     var v = tree[1];
     var l = tree[0];
     var c = compare_int(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(remove(x, l), v, r);
-      } else {
-        return bal(l, v, remove(x, r));
-      }
-    } else {
+    if (c === 0) {
       return internal_merge(l, r);
+    } else if (c < 0) {
+      return bal(remove(x, l), v, r);
+    } else {
+      return bal(l, v, remove(x, r));
     }
   } else {
     return /* Empty */0;

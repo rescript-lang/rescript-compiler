@@ -95,7 +95,20 @@ var buf = Buffer.create(5000);
 function pr(param) {
   var nh = param[1];
   var nl = param[0];
-  if (Caml_int64.compare(nh, n0)) {
+  if (Caml_int64.compare(nh, n0) === 0) {
+    return Curry._1(Printf.bprintf(buf, /* Format */[
+                    /* Int64 */Block.__(7, [
+                        /* Int_d */0,
+                        /* No_padding */0,
+                        /* No_precision */0,
+                        /* Char_literal */Block.__(12, [
+                            /* "\n" */10,
+                            /* End_of_format */0
+                          ])
+                      ]),
+                    "%Ld\n"
+                  ]), nl);
+  } else {
     return Curry._2(Printf.bprintf(buf, /* Format */[
                     /* Int64 */Block.__(7, [
                         /* Int_d */0,
@@ -116,19 +129,6 @@ function pr(param) {
                       ]),
                     "%Ld%018Ld\n"
                   ]), nh, nl);
-  } else {
-    return Curry._1(Printf.bprintf(buf, /* Format */[
-                    /* Int64 */Block.__(7, [
-                        /* Int_d */0,
-                        /* No_padding */0,
-                        /* No_precision */0,
-                        /* Char_literal */Block.__(12, [
-                            /* "\n" */10,
-                            /* End_of_format */0
-                          ])
-                      ]),
-                    "%Ld\n"
-                  ]), nl);
   }
 }
 
@@ -160,22 +160,20 @@ function merge(cmp, l1, l2) {
                 var ll1 = match[1];
                 var x1 = match[0];
                 var c = Curry._2(cmp, x1, x2);
-                if (c) {
-                  if (c < 0) {
-                    return /* Cons */[
-                            x1,
-                            merge(cmp, ll1, l2)
-                          ];
-                  } else {
-                    return /* Cons */[
-                            x2,
-                            merge(cmp, l1, ll2)
-                          ];
-                  }
-                } else {
+                if (c === 0) {
                   return /* Cons */[
                           x1,
                           merge(cmp, ll1, ll2)
+                        ];
+                } else if (c < 0) {
+                  return /* Cons */[
+                          x1,
+                          merge(cmp, ll1, l2)
+                        ];
+                } else {
+                  return /* Cons */[
+                          x2,
+                          merge(cmp, l1, ll2)
                         ];
                 }
               })]);

@@ -76,10 +76,10 @@ var l = Belt_SetInt.empty;
 var r = Belt_SetInt.empty;
 
 for(var i$1 = 100; i$1 <= 1500; ++i$1){
-  if (i$1 % 3) {
-    r = Belt_SetInt.add(r, i$1);
-  } else {
+  if (i$1 % 3 === 0) {
     l = Belt_SetInt.add(l, i$1);
+  } else {
+    r = Belt_SetInt.add(r, i$1);
   }
 }
 

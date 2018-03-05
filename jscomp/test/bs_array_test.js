@@ -530,10 +530,10 @@ var v1 = Belt_Array.keep(v$6, (function (x) {
       }));
 
 var v2 = Belt_Array.keepMap(v$6, (function (x) {
-        if (x % 2) {
-          return /* None */0;
-        } else {
+        if (x % 2 === 0) {
           return /* Some */[x + 1 | 0];
+        } else {
+          return /* None */0;
         }
       }));
 

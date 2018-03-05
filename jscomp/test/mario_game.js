@@ -1185,16 +1185,14 @@ function rev_dir(o, t, s) {
 
 function dec_health(obj) {
   var health = obj[/* health */9] - 1 | 0;
-  if (health) {
-    if (obj[/* invuln */7]) {
-      return 0;
-    } else {
-      obj[/* health */9] = health;
-      return /* () */0;
-    }
-  } else {
+  if (health === 0) {
     obj[/* kill */8] = /* true */1;
     return /* () */0;
+  } else if (obj[/* invuln */7] === 0) {
+    obj[/* health */9] = health;
+    return /* () */0;
+  } else {
+    return 0;
   }
 }
 
@@ -1724,15 +1722,15 @@ function process_collision(dir, c1, c2, state) {
                             /* None */0
                           ];
                   }
-                } else if (c1[0]) {
+                } else if (c1[0] === /* BigM */0) {
                   collide_block(/* None */0, dir, o1$3);
+                  dec_health(o2$4);
                   return /* tuple */[
                           /* None */0,
                           /* None */0
                         ];
                 } else {
                   collide_block(/* None */0, dir, o1$3);
-                  dec_health(o2$4);
                   return /* tuple */[
                           /* None */0,
                           /* None */0
@@ -2545,7 +2543,9 @@ function trim_edges(_lst, blockw, blockh) {
 }
 
 function generate_clouds(cbx, cby, typ, num) {
-  if (num) {
+  if (num === 0) {
+    return /* [] */0;
+  } else {
     return Pervasives.$at(/* :: */[
                 /* tuple */[
                   typ,
@@ -2556,8 +2556,6 @@ function generate_clouds(cbx, cby, typ, num) {
                 ],
                 /* [] */0
               ], generate_clouds(cbx + 1, cby, typ, num - 1 | 0));
-  } else {
-    return /* [] */0;
   }
 }
 
@@ -2599,7 +2597,7 @@ function choose_block_pattern(blockw, blockh, cbx, cby, prob) {
     var block_typ = Random.$$int(4);
     var stair_typ = Random.$$int(2);
     var life_block_chance = Random.$$int(5);
-    var middle_block = life_block_chance ? stair_typ : 3;
+    var middle_block = life_block_chance === 0 ? 3 : stair_typ;
     if (prob > 5 || prob < 0) {
       throw [
             Caml_builtin_exceptions.failure,

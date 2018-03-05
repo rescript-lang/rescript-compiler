@@ -51,14 +51,12 @@ function add(x, tree) {
     var v = tree[1];
     var l = tree[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return Set_gen.internal_bal(add(x, l), v, r);
-      } else {
-        return Set_gen.internal_bal(l, v, add(x, r));
-      }
-    } else {
+    if (c === 0) {
       return tree;
+    } else if (c < 0) {
+      return Set_gen.internal_bal(add(x, l), v, r);
+    } else {
+      return Set_gen.internal_bal(l, v, add(x, r));
     }
   } else {
     return /* Node */[
@@ -164,14 +162,12 @@ function remove(x, tree) {
     var v = tree[1];
     var l = tree[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return Set_gen.internal_bal(remove(x, l), v, r);
-      } else {
-        return Set_gen.internal_bal(l, v, remove(x, r));
-      }
-    } else {
+    if (c === 0) {
       return Set_gen.internal_merge(l, r);
+    } else if (c < 0) {
+      return Set_gen.internal_bal(remove(x, l), v, r);
+    } else {
+      return Set_gen.internal_bal(l, v, remove(x, r));
     }
   } else {
     return /* Empty */0;

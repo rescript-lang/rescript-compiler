@@ -572,7 +572,7 @@ test_ari.cmj : ../stdlib/list.cmj
 test_array.cmj : ../stdlib/array.cmj
 test_array_append.cmj : ../stdlib/array.cmj
 test_array_primitive.cmj : ../stdlib/array.cmj
-test_bool_equal.cmj :
+test_bool_equal.cmj : ../runtime/js.cmj
 test_bs_this.cmj : ../runtime/js.cmj
 test_bug.cmj : ../stdlib/bytes.cmj
 test_bytes.cmj : ../stdlib/bytes.cmj

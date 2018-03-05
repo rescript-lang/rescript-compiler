@@ -140,10 +140,10 @@ function compare(loc1, loc2) {
     return k;
   } else {
     var k$1 = pos_cmp(loc1[/* start */1], loc2[/* start */1]);
-    if (k$1) {
-      return k$1;
-    } else {
+    if (k$1 === 0) {
       return pos_cmp(loc1[/* _end */2], loc2[/* _end */2]);
+    } else {
+      return k$1;
     }
   }
 }
@@ -1199,7 +1199,7 @@ function float_of_string(str) {
         var ret = f[/* mantissa */1];
         var match = f[/* decimal_exponent */3];
         var exponent = match ? f[/* exponent */2] + match[0] | 0 : f[/* exponent */2];
-        var ret$1 = exponent ? Math.pow(ret, exponent) : ret;
+        var ret$1 = exponent === 0 ? ret : Math.pow(ret, exponent);
         if (f[/* negative */0]) {
           return -ret$1;
         } else {
@@ -4461,14 +4461,12 @@ function add(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal(add(x, l), v, r);
-      } else {
-        return bal(l, v, add(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal(add(x, l), v, r);
+    } else {
+      return bal(l, v, add(x, r));
     }
   } else {
     return /* Node */[
@@ -5327,14 +5325,12 @@ function add$1(x, t) {
     var v = t[1];
     var l = t[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$1(add$1(x, l), v, r);
-      } else {
-        return bal$1(l, v, add$1(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$1(add$1(x, l), v, r);
+    } else {
+      return bal$1(l, v, add$1(x, r));
     }
   } else {
     return /* Node */[
@@ -5449,13 +5445,7 @@ function add$2(x, data, param) {
     var v = param[1];
     var l = param[0];
     var c = Caml_primitive.caml_string_compare(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$2(add$2(x, data, l), v, d, r);
-      } else {
-        return bal$2(l, v, d, add$2(x, data, r));
-      }
-    } else {
+    if (c === 0) {
       return /* Node */[
               l,
               x,
@@ -5463,6 +5453,10 @@ function add$2(x, data, param) {
               r,
               param[4]
             ];
+    } else if (c < 0) {
+      return bal$2(add$2(x, data, l), v, d, r);
+    } else {
+      return bal$2(l, v, d, add$2(x, data, r));
     }
   } else {
     return /* Node */[
@@ -5495,10 +5489,10 @@ function find(x, _param) {
 
 function compare$1(param, param$1) {
   var loc = compare(param[0], param$1[0]);
-  if (loc) {
-    return loc;
-  } else {
+  if (loc === 0) {
     return Caml_obj.caml_compare(param[1], param$1[1]);
+  } else {
+    return loc;
   }
 }
 
@@ -5582,14 +5576,12 @@ function add$3(x, t) {
     var v = t[1];
     var l = t[0];
     var c = compare$1(x, v);
-    if (c) {
-      if (c < 0) {
-        return bal$3(add$3(x, l), v, r);
-      } else {
-        return bal$3(l, v, add$3(x, r));
-      }
-    } else {
+    if (c === 0) {
       return t;
+    } else if (c < 0) {
+      return bal$3(add$3(x, l), v, r);
+    } else {
+      return bal$3(l, v, add$3(x, r));
     }
   } else {
     return /* Node */[
@@ -7074,7 +7066,7 @@ function is_simple_param(param) {
 }
 
 function is_simple_function_params(params, defaults, rest) {
-  if (defaults === /* [] */0 && !rest) {
+  if (defaults === /* [] */0 && rest === /* None */0) {
     return List.for_all(is_simple_param, params);
   } else {
     return /* false */0;
@@ -15233,10 +15225,10 @@ function parse(content, _) {
       var match = param[1];
       var loc = param[0];
       if (typeof match === "number") {
-        if (match) {
-          return node("DebuggerStatement", loc, /* array */[]);
-        } else {
+        if (match === 0) {
           return node("EmptyStatement", loc, /* array */[]);
+        } else {
+          return node("DebuggerStatement", loc, /* array */[]);
         }
       } else {
         switch (match.tag | 0) {
