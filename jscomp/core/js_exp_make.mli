@@ -253,7 +253,7 @@ val flat_call : binary_op
 
 val dump : ?comment:string -> Js_op.level -> t list -> t
 
-(* val anything_to_string : unary_op *)
+
 
 (** see {!https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Unary_plus}*)
 (* val to_number : unary_op *)
@@ -309,9 +309,6 @@ val undefined : t
 val is_caml_block : ?comment:string -> t -> t
 
 
-
-
-
 val tag : ?comment:string -> J.expression -> t
 val set_tag : ?comment:string -> J.expression -> J.expression -> t
 
@@ -328,7 +325,6 @@ val and_ : binary_op
 val or_ : binary_op
 
 (** we don't expose a general interface, since a general interface is generally not safe *)
-(* val is_instance_array  : unary_op *)
 
 (** used combined with [caml_update_dummy]*)
 val dummy_obj : ?comment:string ->  unit -> t 
@@ -341,7 +337,7 @@ val raw_js_code : ?comment:string -> J.code_info ->  string -> t
 val nil : t 
 val is_nil : unary_op
 
-val js_bool :  ?comment:string -> bool -> t 
+val js_bool :  bool -> t 
 val is_undef : unary_op
 val for_sure_js_null_undefined_boolean : J.expression -> bool
 val is_null_undefined : unary_op

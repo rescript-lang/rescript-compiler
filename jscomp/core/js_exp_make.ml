@@ -1282,10 +1282,9 @@ let of_block ?comment ?e block : t =
 
 let is_nil ?comment x = triple_equal ?comment x nil 
 
-let js_bool ?comment x : t = 
-  { comment; 
-    expression_desc = Bool x
-  }
+let js_true : t = {comment = None; expression_desc = Bool true} 
+let js_false : t = {comment = None; expression_desc = Bool false} 
+let js_bool  x : t = if x then js_true else js_false
 
 let is_undef ?comment x = triple_equal ?comment x undefined
 
