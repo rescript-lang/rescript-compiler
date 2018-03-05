@@ -2,7 +2,7 @@
 ## Integration with Reason
 
 You can play with Reason using the playground
-https://bucklescript.github.io/bucklescript/reason-demo[Facebook Reason]
+https://reasonml.github.io/en/try.html[Facebook Reason]
 
 [NOTE]
 .The playgrounds are only for demos and might not be the latest
