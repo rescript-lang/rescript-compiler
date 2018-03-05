@@ -484,29 +484,11 @@ let obj ?comment properties : t =
 
 (* currently only in method call, no dependency introduced
 *)
-(* let var_dot ?comment (x : Ident.t)  (e1 : string) : t = 
-  {expression_desc = Dot (var x,  e1, true); comment}  *)
 
-
-(* let bind_call ?comment obj  (e1 : string) args  : t = 
-  call ~info:Js_call_info.dummy {expression_desc = 
-                                   Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
-                                 comment = None } args  *)
-
-(* let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
-  let obj =  var x in 
-  call ~info:Js_call_info.dummy {expression_desc = 
-                                   Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
-                                 comment = None } args 
- *)
 
 (* Dot .....................**)        
 
-
-
-
-
-(** Convert a javascript boolean to ocaml boolean
+(** Convert a javascript boolean to ocaml bool
     It's necessary for return value
      this should be optmized away for [if] ,[cond] to produce 
     more readable code
@@ -517,18 +499,28 @@ let bool_of_boolean ?comment (e : t) : t =
   | Number _ -> e 
   | _ -> {comment ; expression_desc = Int_of_boolean e}
 
-(* let to_number ?comment (e : t) : t = 
-  match e.expression_desc with 
-  | Int_of_boolean _
-  | Anything_to_number _
-  | Number _ -> e 
-  | _ -> {comment ; expression_desc = Anything_to_number e} *)
 
 let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
 
 let caml_false  = int ~comment:"false" 0l
 
 let bool v = if  v then caml_true else caml_false
+
+(** Arith operators *)
+(* Dot .....................**)        
+
+let float ?comment f : t = 
+  {expression_desc = Number (Float {f}); comment}
+
+let zero_float_lit : t = 
+  {expression_desc = Number (Float {f = "0." }); comment = None}
+
+
+let float_mod ?comment e1 e2 : J.expression = 
+  { comment ; 
+    expression_desc = Bin (Mod, e1,e2)
+  }
+
 
 (** Here we have to use JS [===], and therefore, we are introducing 
     Js boolean, so be sure to convert it back to OCaml bool
@@ -562,22 +554,6 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   | _ -> 
     bool_of_boolean  {expression_desc = Bin(EqEqEq, e0,e1); comment}
 
-
-(** Arith operators *)
-(* Dot .....................**)        
-
-let float ?comment f : t = 
-  {expression_desc = Number (Float {f}); comment}
-
-let zero_float_lit : t = 
-  {expression_desc = Number (Float {f = "0." }); comment = None}
-
-
-let float_mod ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Mod, e1,e2)
-  }
-
 let bin ?comment (op : J.binop) e0 e1 : t =
   match op with
   | EqEqEq -> triple_equal ?comment e0 e1
@@ -597,6 +573,7 @@ let bin ?comment (op : J.binop) e0 e1 : t =
    We wrap all boolean functions here, since OCaml boolean is a 
    bit different from Javascript, so that we can change it in the future
 *)
+
 let rec and_ ?comment (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
   |  Int_of_boolean e1 , Int_of_boolean e2 ->
