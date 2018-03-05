@@ -122,7 +122,7 @@ val make: id:('k, 'id) id -> ('k, 'a, 'id) t
 (** [make ~id]
    
      @example {[
-     module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.compare x y));;
+     module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -> Pervasives.compare x y));;
      let s = make ~id:(module IntCmp)
     ]}
 
@@ -132,7 +132,7 @@ val make: id:('k, 'id) id -> ('k, 'a, 'id) t
 val isEmpty: _ t -> bool
 (** [isEmpty s0]
     @example {[
-      module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.compare x y));;
+      module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -> Pervasives.compare x y));;
       isEmpty (ofArray [|1,"1"|] ~id:(module IntCmp)) = false;;
     ]}
 *)
@@ -141,7 +141,7 @@ val has: ('k, 'a, 'id) t -> 'k  -> bool
 (** [has s k]
 
     @example {[
-      module IntCmp = (val IntCmp.comparable ~cmp:(fun (x:int) y -> Pervasives.compare x y));;
+      module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -> Pervasives.compare x y));;
       has (ofArray [|1,"1"|] ~id:(module IntCmp)) 1 = true;;
     ]}
 *)  
@@ -187,7 +187,7 @@ val forEach:  ('k, 'a, 'id) t -> ('k -> 'a -> unit) -> unit
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
 
       let s0 = ofArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
       let acc = ref [] ;;
@@ -205,7 +205,7 @@ val reduce: ('k, 'a, 'id) t -> 'acc ->  ('acc -> 'k -> 'a -> 'acc) ->  'acc
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
 
       let s0 = ofArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
       reduce s0 [] (fun acc k v -> (k,v) acc ) = [4,"4";3,"3";2,"2";1,"1"];;
@@ -227,7 +227,7 @@ val size: ('k, 'a, 'id) t -> int
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
       size (ofArray [2,"2"; 2,"1"; 3,"3"] ~id:(module IntCmp)) = 2 ;;
     ]}
 *)
@@ -236,7 +236,7 @@ val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
       toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     ]}
 
@@ -251,7 +251,7 @@ val ofArray:  ('k * 'a) array -> id:('k,'id) id -> ('k,'a,'id) t
 (** [ofArray kvs ~id]
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
       toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     ]}
 *)    
@@ -260,7 +260,7 @@ val keysToArray: ('k, 'a, 'id) t -> 'k  array
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
       keysToArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
       [|1;2;3|];;
     ]}
@@ -270,7 +270,7 @@ val valuesToArray: ('k, 'a, 'id) t -> 'a  array
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
       valuesToArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
       [|"1";"2";"3"|];;
     ]}
@@ -315,7 +315,7 @@ val get:  ('k, 'a, 'id) t -> 'k -> 'a option
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
       get (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
       Some "2";;
       get (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
@@ -352,7 +352,7 @@ val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
       
       let s0 =  (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
 
@@ -380,7 +380,7 @@ val set:
 
     @example {[
       module IntCmp =
-        (val IntCmp.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
+        (val Belt.Id.comparableU ~cmp:(fun[\@bs] (x:int) y -> Pervasives.compare x y));;
       
       let s0 =  (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
 
