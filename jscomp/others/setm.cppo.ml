@@ -50,7 +50,7 @@ type t = {
 
 
 let rec remove0 nt (x : value)= 
-  let k = N.key nt in 
+  let k = N.value nt in 
   if x = k then 
     let l,r = N.(left nt, right nt) in       
     match N.(toOpt l, toOpt r) with 
@@ -103,7 +103,7 @@ let removeMany  (d : t) xs =
     dataSet d  (removeMany0 nt xs 0 len) 
     
 let rec removeCheck0  nt (x : value) removed = 
-  let k = N.key nt in 
+  let k = N.value nt in 
   if x = k then 
     let () = removed := true in  
     let l,r = N.(left nt, right nt) in       
@@ -149,7 +149,7 @@ let rec addCheck0  t (x : value) added  =
     added := true;
     N.singleton x 
   | Some nt -> 
-    let k = N.key nt in 
+    let k = N.value nt in 
     if x = k then t 
     else
       let l, r = N.(left nt, right nt) in 

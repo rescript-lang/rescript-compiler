@@ -31,10 +31,10 @@
 *)
 type 'value t = 'value node Js.null
 and 'value node  = private {
+  value : 'value; 
+  height : int;
   mutable left : 'value t;
-   key : 'value ; 
   mutable right : 'value t;
-  h : int
 } [@@bs.deriving abstract]
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp

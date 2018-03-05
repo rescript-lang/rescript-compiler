@@ -232,7 +232,7 @@ let rec mergeU s1 s2 f ~cmp =
         f k None (Some v) [@bs]
       )
   | Some s1n , Some s2n -> 
-    if N.h s1n  >= N.h s2n  then
+    if N.height s1n  >= N.height s2n  then
       let l1, v1, d1, r1 = N.(left s1n, key s1n, value s1n, right s1n) in 
       let d2 = ref None in 
       let (l2, r2) = splitAuxPivot ~cmp s2n v1 d2 in

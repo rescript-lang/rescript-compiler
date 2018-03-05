@@ -42,7 +42,7 @@ let rec add  (t : t) (x : value) : t =
   match N.toOpt t with 
     None -> N.singleton x 
   | Some nt  ->
-    let v = N.key nt in  
+    let v = N.value nt in  
     if x = v then t else
       let l, r = N.(left nt , right nt) in 
       if x < v then 
@@ -68,13 +68,13 @@ let rec remove (t : t) (x : value) : t =
   match N.toOpt t with 
   | None -> t
   | Some n  ->
-    let l,v,r = N.(left n, key n, right n) in 
+    let l,v,r = N.(left n, value n, right n) in 
     if x = v then 
       match N.toOpt l, N.toOpt r with 
       | None, _ -> r 
       | _, None -> l 
       | _, Some rn -> 
-        let v = ref (N.key rn) in 
+        let v = ref (N.value rn) in 
         let r = N.removeMinAuxWithRef rn v in 
         N.bal l !v r
     else
@@ -106,7 +106,7 @@ let subset = I.subset
 let has = I.has
 
 let rec splitAuxNoPivot (n : _ N.node) (x : value) : t * t =   
-  let l,v,r = N.(left n , key n, right n) in  
+  let l,v,r = N.(left n , value n, right n) in  
   if x = v then l,  r
   else if x < v then
     match N.toOpt l with 
@@ -125,9 +125,9 @@ let rec splitAuxNoPivot (n : _ N.node) (x : value) : t * t =
 
 
 let rec splitAuxPivot (n : _ N.node) (x : value) pres : t  * t =   
-  let l,v,r = N.(left n , key n, right n) in  
+  let l,v,r = N.(left n , value n, right n) in  
   if x = v then begin 
-    pres := true;  
+    pres := true;
     (l, r)
   end
   else if x < v then
@@ -160,16 +160,16 @@ let rec union (s1 : t) (s2 : t) =
     (None, _) -> s2
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, h1), Node(l2, v2, r2, h2)) *) ->    
-    let h1, h2 = N.(h n1 , h n2) in             
+    let h1, h2 = N.(height n1 , height n2) in             
     if h1 >= h2 then
-      if h2 = 1 then add  s1 (N.key n2) else begin
-        let l1, v1, r1 = N.(left n1, key n1, right n1) in      
+      if h2 = 1 then add  s1 (N.value n2) else begin
+        let l1, v1, r1 = N.(left n1, value n1, right n1) in      
         let (l2,  r2) = splitAuxNoPivot n2 v1 in
         N.joinShared (union l1 l2) v1 (union r1 r2)
       end
     else
-    if h1 = 1 then add  s2 (N.key n1) else begin
-      let l2, v2, r2 = N.(left n2 , key n2, right n2) in 
+    if h1 = 1 then add  s2 (N.value n1) else begin
+      let l2, v2, r2 = N.(left n2 , value n2, right n2) in 
       let (l1, r1) = splitAuxNoPivot n1 v2 in
       N.joinShared (union l1 l2) v2 (union r1 r2)
     end
@@ -179,7 +179,7 @@ let  rec intersect (s1 : t) (s2 : t) =
     (None, _) 
   | (_, None) -> N.empty
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, key n1, right n1) in  
+    let l1,v1,r1 = N.(left n1, value n1, right n1) in  
     let pres = ref false in 
     let l2,r2 =  splitAuxPivot n2 v1 pres in 
     let ll = intersect l1 l2 in 
@@ -192,7 +192,7 @@ let rec diff (s1 : t) (s2 : t) =
   | (None, _) 
   | (_, None) -> s1
   | Some n1, Some n2 (* (Node(l1, v1, r1, _), t2) *) ->
-    let l1,v1,r1 = N.(left n1, key n1, right n1) in
+    let l1,v1,r1 = N.(left n1, value n1, right n1) in
     let pres = ref false in 
     let l2, r2 = splitAuxPivot  n2 v1 pres in 
     let ll = diff  l1 l2 in 
