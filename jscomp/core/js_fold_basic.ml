@@ -71,7 +71,8 @@ class count_hard_dependencies =
         (* see [Js_exp_make.runtime_var_dot] *)
         -> 
         add_lam_module_ident hard_dependencies 
-          (Lam_module_ident.of_runtime (Ext_ident.create_js Js_runtime_modules.curry));
+          (Lam_module_ident.of_runtime 
+            (Ident.create_persistent Js_runtime_modules.curry));
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
         -> 
@@ -84,7 +85,8 @@ class count_hard_dependencies =
           | _, _
             -> 
             add_lam_module_ident hard_dependencies 
-              (Lam_module_ident.of_runtime (Ext_ident.create_js Js_runtime_modules.block));
+              (Lam_module_ident.of_runtime               
+                (Ident.create_persistent Js_runtime_modules.block));
         end;
         super#expression x 
       | _ -> super#expression x
