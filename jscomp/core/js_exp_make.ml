@@ -979,7 +979,7 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
       [l;r], _), 
     Number (Int {i = 0l})
     -> int_comp cmp l r (* = 0 > 0 < 0 *)
-  (* | Ceq, Call ({
+  | Ceq, Call ({
       expression_desc = 
         Var (Qualified 
                (ident, Runtime, 
@@ -991,7 +991,7 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
          Call( 
             {fn with expression_desc = 
               Var(Qualified (ident,Runtime, Some "caml_equal")) 
-            } , args, call_info)} *)
+            } , args, call_info)}
   | Ceq, _, _ -> int_equal e0 e1 
   | _ ->          
     bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1

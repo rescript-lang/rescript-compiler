@@ -4246,7 +4246,7 @@ function list_assoc2(x, _param) {
     var param = _param;
     if (param) {
       var match = param[0];
-      if (Caml_obj.caml_compare(match[1], x) === 0) {
+      if (Caml_obj.caml_equal(match[1], x)) {
         return match[0];
       } else {
         _param = param[1];

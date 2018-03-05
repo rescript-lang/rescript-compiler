@@ -448,7 +448,7 @@ function mem(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_obj.caml_compare(param[0], x) === 0) {
+      if (Caml_obj.caml_equal(param[0], x)) {
         return /* true */1;
       } else {
         _param = param[1];
@@ -483,7 +483,7 @@ function assoc(x, _param) {
     var param = _param;
     if (param) {
       var match = param[0];
-      if (Caml_obj.caml_compare(match[0], x) === 0) {
+      if (Caml_obj.caml_equal(match[0], x)) {
         return match[1];
       } else {
         _param = param[1];
@@ -518,7 +518,7 @@ function mem_assoc(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_obj.caml_compare(param[0][0], x) === 0) {
+      if (Caml_obj.caml_equal(param[0][0], x)) {
         return /* true */1;
       } else {
         _param = param[1];
@@ -552,7 +552,7 @@ function remove_assoc(x, param) {
   if (param) {
     var l = param[1];
     var pair = param[0];
-    if (Caml_obj.caml_compare(pair[0], x) === 0) {
+    if (Caml_obj.caml_equal(pair[0], x)) {
       return l;
     } else {
       return /* :: */[
