@@ -73,12 +73,12 @@
    The [union s0 s3] will result in a type error, since their identity mismatch
 *)
 
-(** Specalized when key type is [int], more efficient
+(** Specalized when value type is [int], more efficient
     than the gerneic type, its compare behavior is fixed using the built-in comparison
 *)
 module Int = Belt_SetInt
 
-(** Specalized when key type is [string], more efficient
+(** Specalized when value type is [string], more efficient
     than the gerneic type, its compare behavior is fixed using the built-in comparison
 *)  
 module String = Belt_SetString
@@ -91,16 +91,16 @@ module String = Belt_SetString
 module Dict = Belt_SetDict
 
 
-type ('key,'identity)  t
-(** [('key, 'identity) t]
+type ('value, 'identity) t
+(** [('value, 'identity) t]
 
-    ['key] is the element type
+    ['value] is the element type
 
     ['identity] the identity of the collection
 *)
 
 
-type ('key, 'id) id = ('key, 'id) Belt_Id.comparable
+type ('value, 'id) id = ('value, 'id) Belt_Id.comparable
 (** The identity needed for making a set from scratch
 *)
 
@@ -115,7 +115,7 @@ val make: id:('value, 'id) id -> ('value, 'id) t
 *)
 
 
-val ofArray:  'k array -> id:('k, 'id) id ->  ('k, 'id) t
+val ofArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 (** [ofArray xs ~id]
 
     @example{[
@@ -435,7 +435,7 @@ val checkInvariantInternal: _ t -> unit
     More API will be exposed by needs
 *)
 
-val getData: ('k,'id) t  -> ('k,'id) Belt_SetDict.t
+val getData: ('value, 'id) t  -> ('value, 'id) Belt_SetDict.t
 (** [getData s0]
 
     {b Advanced usage only}
@@ -445,7 +445,7 @@ val getData: ('k,'id) t  -> ('k,'id) Belt_SetDict.t
     without boxing
 *)
     
-val getId: ('k,'id) t  -> ('k,'id) id
+val getId: ('value, 'id) t  -> ('value, 'id) id
 (** [getId s0]
 
     {b Advanced usage only}
@@ -453,7 +453,7 @@ val getId: ('k,'id) t  -> ('k,'id) id
     @return the identity of [s0]
 *)
 
-val packIdData: id:('k, 'id) id -> data:('k, 'id) Belt_SetDict.t -> ('k, 'id) t
+val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('value, 'id) t
 (** [packIdData ~id ~data]
 
     {b Advanced usage only}

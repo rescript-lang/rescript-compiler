@@ -29,17 +29,17 @@ module Dict = Belt_SetDict
 module A = Belt_Array
 
 
-type ('key, 'id) id = ('key, 'id) Belt_Id.comparable
-type ('key, 'id ) cmp = ('key, 'id) Belt_Id.cmp
+type ('value, 'id) id = ('value, 'id) Belt_Id.comparable
+type ('value, 'id ) cmp = ('value, 'id) Belt_Id.cmp
 
 module S = struct 
-  type ('k,'id) t = {
-    cmp: ('k, 'id) cmp;
-    data: ('k, 'id) Dict.t;
+  type ('value, 'id) t = {
+    cmp: ('value, 'id) cmp;
+    data: ('value, 'id) Dict.t;
   } [@@bs.deriving abstract]
 end 
 
-type ('k, 'id) t = ('k, 'id) S.t
+type ('value, 'id) t = ('value, 'id) S.t
     
 let ofArray (type value) (type identity) data ~(id : (value,identity) id)  = 
   let module M = (val id ) in
