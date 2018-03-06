@@ -94,7 +94,7 @@ function f10(x) {
   return +(x === null);
 }
 
-var f11 = +(3 === null);
+var f11 = /* false */0;
 
 var Test_null = /* module */[
   /* f1 */f1,
@@ -179,7 +179,7 @@ function f10$1(x) {
   return +(x === undefined);
 }
 
-var f11$1 = +(3 === undefined);
+var f11$1 = /* false */0;
 
 var Test_def = /* module */[
   /* f1 */f1$1,

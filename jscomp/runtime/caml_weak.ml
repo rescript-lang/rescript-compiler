@@ -47,6 +47,6 @@ let caml_weak_get_copy  xs i =
   | Some x -> Some (Obj.magic (Obj.dup (Obj.repr x) ))
 
 let caml_weak_check xs i = 
-  not (xs.(i) = Js.undefined)
+  xs.(i) <> Js.undefined
 
 let caml_weak_blit = Caml_array.caml_array_blit

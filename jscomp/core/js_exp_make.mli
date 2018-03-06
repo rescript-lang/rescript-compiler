@@ -208,6 +208,8 @@ val triple_equal : binary_op
 val float_equal : binary_op
 val int_equal : binary_op
 val string_equal : binary_op    
+val eq_null_undefined_boolean: binary_op
+val neq_null_undefined_boolean: binary_op
 val is_type_number : unary_op
 val typeof : unary_op
 
@@ -335,7 +337,7 @@ val of_block : ?comment:string -> ?e:J.expression -> J.statement list -> t
 val raw_js_code : ?comment:string -> J.code_info ->  string -> t
 
 val nil : t 
-val is_nil : unary_op
+val is_null : unary_op
 
 val js_bool :  bool -> t 
 val is_undef : unary_op

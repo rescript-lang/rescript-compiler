@@ -827,6 +827,9 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
 
 
 let int_equal = float_equal 
+
+
+
 let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
   match e0.expression_desc, e1.expression_desc with     
   | Str (_, a0), Str(_, b0) 
@@ -1280,7 +1283,7 @@ let of_block ?comment ?e block : t =
             , Js_fun_env.empty 0)
     } []
 
-let is_nil ?comment x = triple_equal ?comment x nil 
+let is_null ?comment x = triple_equal ?comment x nil 
 
 let js_true : t = {comment = None; expression_desc = Bool true} 
 let js_false : t = {comment = None; expression_desc = Bool false} 
@@ -1306,6 +1309,55 @@ let is_null_undefined ?comment (x: t) : t =
       { comment ; 
         expression_desc = Is_null_undefined_to_boolean x 
       }
+
+let eq_null_undefined_boolean ?comment (a : t) (b : t) = 
+  match a.expression_desc, b.expression_desc with 
+  | Var (Id ({name = "null" | "undefined"} as id) ),   
+    (Char_of_int _ | Char_to_int _ 
+    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Fun _ | Array _ | Caml_block _ )
+    when Ext_ident.is_js id -> 
+    caml_false
+  | (Char_of_int _ | Char_to_int _ 
+    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Fun _ | Array _ | Caml_block _ ), 
+      Var (Id ({name = "null" | "undefined"} as id) )
+    when Ext_ident.is_js id -> 
+    caml_false
+  | Var (Id ({name = "null" | "undefined" as n1 } as id1) ), 
+    Var (Id ({name = "null" | "undefined" as n2 } as id2) )
+    when Ext_ident.is_js id1 && Ext_ident.is_js id2 
+   ->   
+    if  n1 = n2 then caml_true else caml_false
+  | _ ->       
+     bool_of_boolean {expression_desc = Bin(EqEqEq, a, b); comment}
+    
+
+
+let neq_null_undefined_boolean ?comment (a : t) (b : t) = 
+  match a.expression_desc, b.expression_desc with 
+  | Var (Id ({name = "null" | "undefined"} as id) ),   
+    (Char_of_int _ | Char_to_int _ 
+    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Fun _ | Array _ | Caml_block _ )
+    when Ext_ident.is_js id -> 
+    caml_true
+  | (Char_of_int _ | Char_to_int _ 
+    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Fun _ | Array _ | Caml_block _ ), 
+      Var (Id ({name = "null" | "undefined"} as id) )
+    when Ext_ident.is_js id -> 
+    caml_true
+  | Var (Id ({name = "null" | "undefined" as n1 } as id1) ), 
+    Var (Id ({name = "null" | "undefined" as n2 } as id2) )
+    when Ext_ident.is_js id1 && Ext_ident.is_js id2 
+    ->   
+    if  n1 <> n2 then caml_true else caml_false
+  | _ ->       
+     bool_of_boolean {expression_desc = Bin(NotEqEq, a, b); comment}
+
+
+
 let not_implemented ?comment (s : string) : t =  
   runtime_call
     Js_runtime_modules.missing_polyfill

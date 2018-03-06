@@ -41,7 +41,7 @@ var suites_001 = /* :: */[
         (function () {
             return /* Eq */Block.__(0, [
                       /* true */1,
-                      +(undefined === undefined)
+                      /* true */1
                     ]);
           })
       ],
@@ -51,7 +51,7 @@ var suites_001 = /* :: */[
           (function () {
               return /* Eq */Block.__(0, [
                         /* false */0,
-                        +(/* () */0 === undefined)
+                        /* false */0
                       ]);
             })
         ],
