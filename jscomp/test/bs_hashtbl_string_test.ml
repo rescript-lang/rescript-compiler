@@ -104,7 +104,7 @@ let bench3 (type t) (m : (string,t) Belt.Id.comparable) =
   done ;
   assert (Md0.size !table = 0)
 
-module Sx = (val Belt.Id.comparable ~cmp:(fun  (x : string) y -> compare x y )) 
+module Sx = (val Belt.Id.comparable (fun  (x : string) y -> compare x y )) 
 module H = Belt.HashMap.String
 let bench4 () = 
   let table = 
