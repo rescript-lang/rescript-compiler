@@ -4,6 +4,7 @@ var p = require('child_process')
 var fs = require('fs')
 var path = require('path')
 
+process.env.BS_RELEASE_BUILD = 1
 var config =
     {
         cwd: __dirname,
@@ -77,7 +78,7 @@ var includes = [`stdlib`, `runtime`, `others`].map(x => path.join(__dirname, x))
 
 var cmi_files =
     [
-        `lazy`,
+        // `lazy`,
         `js`, `js_unsafe`, `js_re`, `js_array`, `js_null`, `js_undefined`, `js_internal`,
         `js_types`, `js_null_undefined`, `js_dict`, `js_exn`, `js_string`, `js_vector`,
         `js_boolean`, `js_date`, `js_global`, `js_math`, `js_obj`, `js_int`,
@@ -85,9 +86,24 @@ var cmi_files =
         `js_promise`, `js_option`, `js_float`, `js_json`,
         `arrayLabels`, `bytesLabels`, `complex`, `gc`, `genlex`, `listLabels`,
         `moreLabels`, `queue`, `scanf`, `sort`,`stack`, `stdLabels`, `stream`,
-        `stringLabels`
+        `stringLabels`,
+
+        `belt`, 
+        `belt_Id`,
+        `belt_Array`,
+        `belt_SortArray`,
+        `belt_MutableQueue`,
+        `belt_MutableStack`,
+        `belt_List`,
+        `belt_Range`,
+        `belt_Set`,
+        `belt_Map`,
+        `belt_MutableSet`,
+        `belt_MutableMap`,
+        `belt_HashSet`,
+        `belt_HashMap`
     ].map(x => `${x}.cmi:/static/cmis/${x}.cmi`).map(x => `--file ${x}`).join(` `)
-e(`js_of_ocaml --disable share --toplevel +weak.js ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`)
+e(`js_of_ocaml --disable share --toplevel  ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`)
 
 
 
