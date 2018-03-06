@@ -10,7 +10,7 @@ module Icmp =
      )
   )
 module Icmp2 = 
-(val Belt.Id.comparable ~cmp:(fun  (x : int) y ->
+(val Belt.Id.comparable (fun  (x : int) y ->
       compare x y ))
   
 module M = Belt.Map
@@ -23,7 +23,7 @@ let m0 : (_,string,_) M.t = M.make (module Icmp)
 
   
 module I2 = 
-(val Belt.Id.comparable ~cmp:(fun  (x : int) y -> compare y x ))
+(val Belt.Id.comparable (fun  (x : int) y -> compare y x ))
 
   
 let m = M.make (module Icmp2)

@@ -36,14 +36,14 @@
    {[
      type t = int * int 
       module I0 =
-        (val Belt.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+        (val Belt.Id.comparableU (fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
              match Pervasives.compare a0 b0 with
              | 0 -> Pervasives.compare a1 b1
              | c -> c 
            ))
     let s0 = make ~id:(module I0)
     module I1 =
-      (val Belt.Id.comparableU ~cmp:(fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
+      (val Belt.Id.comparableU (fun[\@bs] ((a0,a1) : t) ((b0,b1) : t) ->
            match compare a1 b1 with
            | 0 -> compare a0 b0
            | c -> c 
