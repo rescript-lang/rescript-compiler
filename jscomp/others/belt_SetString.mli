@@ -23,8 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** This module is {!Belt.Set} specialized with key type to be a primitive type.
-    It is more efficient in general, the  API is the same with {!Belt_Set} except its key type is fixed,
+(** This module is {!Belt.Set} specialized with value type to be a primitive type.
+    It is more efficient in general, the  API is the same with {!Belt_Set} except its value type is fixed,
     and identity is not needed(using the built-in one)
 
     {b See} {!Belt.Set}
