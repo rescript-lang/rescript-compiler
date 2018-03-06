@@ -165,9 +165,8 @@ let interpret_json
       match String_map.find_opt Bsb_build_schemas.refmt map with 
       | Some (Flo {flo} as config) -> 
         begin match flo with 
-        | "2" -> Bsb_config_types.Refmt_v2
-        | "3" -> Refmt_v3
-        | _ -> Bsb_exception.config_error config "expect version 2 or 3"
+        | "3" -> Bsb_config_types.Refmt_v3
+        | _ -> Bsb_exception.config_error config "expect version 3 only"
         end
       | Some (Str {str}) 
         -> 
