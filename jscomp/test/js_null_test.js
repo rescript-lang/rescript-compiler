@@ -61,7 +61,7 @@ var suites_001 = /* :: */[
             (function () {
                 return /* Eq */Block.__(0, [
                           /* true */1,
-                          +(null === null)
+                          /* true */1
                         ]);
               })
           ],

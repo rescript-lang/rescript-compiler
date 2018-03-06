@@ -28,11 +28,12 @@ type + 'a t = 'a Js.undefined
 external to_opt : 'a t -> 'a option = "#undefined_to_opt"
 external toOption : 'a t -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a t = "%identity"
-external test : 'a t -> bool =  "#is_undef"
-external testAny : 'a -> bool = "#is_undef"
+
+
   
 external empty : 'a t = "#undefined"
-
+let test : 'a t -> bool =  fun x -> x = empty
+let testAny : 'a -> bool = fun x -> Obj.magic x = empty 
 external getUnsafe : 'a t -> 'a = "%identity"
 
 let getExn f =

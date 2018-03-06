@@ -30,15 +30,16 @@ type + 'a t = 'a Js.undefined
 (** Constructs a value of ['a Js.undefined] containing a value of ['a] *)
 external return : 'a -> 'a t = "%identity"
 
-(** Returns [true] if the given value is [empty] ([undefined]), [false] otherwise *)
-external test : 'a t -> bool =  "#is_undef"
 
+val test : 'a t -> bool 
+[@@ocaml.deprecated "Use = Js.undefined directly"]
+(** Returns [true] if the given value is [empty] ([undefined]), [false] otherwise *)
 
 (**
    @since 1.6.1
    Returns [true] if the given value is [empty] ([undefined])
 *)
-external testAny : 'a -> bool = "#is_undef"
+val testAny : 'a -> bool 
 
 
 (** The empty value, [undefined] *)

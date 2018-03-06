@@ -67,7 +67,6 @@ let create (str : string) : Caml_builtin_exceptions.exception_block =
 (*   Obj.set_tag (Obj.repr v) object_tag; *)
 (*   v  *)
 
-external isUndefined : 'a -> bool = "#is_undef"
 
 
 (**
@@ -102,12 +101,12 @@ external isUndefined : 'a -> bool = "#is_undef"
    This is not a problem in `try .. with` since the logic above is not expressible, see more design in [destruct_exn.md]
 *)
 let isCamlExceptionOrOpenVariant e = 
-  if isUndefined e then false 
+  if  Obj.magic e = Js.undefined then false 
   else 
     Obj.tag (Obj.repr e) = object_tag  (* nullary exception *)
     ||
     let slot = Obj.field (Obj.repr e) 0 in 
-    not (isUndefined slot) &&
+    not (Obj.magic slot = Js.undefined) &&
     (Obj.tag slot = object_tag)
 
 

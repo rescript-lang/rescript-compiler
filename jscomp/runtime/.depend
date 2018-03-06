@@ -4,7 +4,7 @@ caml_bytes.cmj : caml_bytes.cmi
 caml_obj.cmj : js_null.cmj js.cmj caml_array.cmj bs_obj.cmj caml_obj.cmi
 caml_int64.cmj : js_typed_array.cmj js_float.cmj js.cmj caml_utils.cmj \
     caml_int32.cmj bs_string.cmj caml_int64.cmi
-caml_exceptions.cmj : caml_builtin_exceptions.cmj caml_exceptions.cmi
+caml_exceptions.cmj : js.cmj caml_builtin_exceptions.cmj caml_exceptions.cmi
 caml_utils.cmj : caml_utils.cmi
 caml_sys.cmj : js.cmj caml_sys.cmi
 caml_io.cmj : js_undefined.cmj js.cmj bs_string.cmj

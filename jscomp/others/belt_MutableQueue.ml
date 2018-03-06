@@ -79,7 +79,7 @@ let pop q =
   | None -> None
   | Some x  ->
     let next = next x in 
-    if Js.Null.test next then 
+    if next = Js.null then 
       begin (* only one element*)
         clear q;
         Some (content x)
@@ -95,7 +95,7 @@ let popExn q =
   | None -> [%assert "Empty"]
   | Some x  ->
     let next = next x in 
-    if Js.Null.test next then 
+    if next = Js.null then 
       begin (* only one element*)
         clear q;
         content x
@@ -111,7 +111,7 @@ let popUndefined q =
   | None -> Js.undefined
   | Some x  ->
     let next = next x in 
-    if Js.Null.test next then 
+    if next = Js.null then 
       begin (* only one element*)
         clear q;
         Js.Undefined.return (content x)

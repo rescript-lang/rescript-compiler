@@ -7,7 +7,7 @@ let suites = Mt.[
   "toOption - 'a", (fun _ -> Eq(Some (), return () |> toOption));
   "return", (fun _ -> Eq(Some "something", return "something" |> toOption));
   "test - empty", (fun _ -> Eq(true, empty |> test));
-  "test - 'a", (fun _ -> Eq(false, return () |> test));
+  "test - 'a", (fun _ -> Eq(false, return () = empty));
   "bind - empty", (fun _ -> StrictEq(empty, bind empty ((fun v -> v) [@bs])));
   "bind - 'a", (fun _ -> StrictEq(return 4, bind (return 2) ((fun n -> n * 2) [@bs])));
   "iter - empty", (fun _ ->
