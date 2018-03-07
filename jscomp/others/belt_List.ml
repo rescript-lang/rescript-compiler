@@ -398,8 +398,10 @@ let rec ofArrayAux a i res =
   if i < 0 then res 
   else ofArrayAux a (i - 1) (A.getUnsafe a i :: res) 
     
-let ofArray a =
+let fromArray a =
   ofArrayAux a (A.length a - 1) []    
+
+let ofArray = fromArray
 
 let toArray ( x : _ t) =
   let len = length x in

@@ -187,7 +187,7 @@ let valuesToArray = N.valuesToArray
 let getBucketHistogram = N.getBucketHistogram 
 let isEmpty = C.isEmpty
 
-let ofArray arr  = 
+let fromArray arr = 
   let len = A.length arr in 
   let v = make len in 
   for i = 0 to len - 1 do 
@@ -195,6 +195,8 @@ let ofArray arr  =
     set v k value
   done ;
   v
+
+let ofArray = fromArray
 
 (* TOOD: optimize heuristics for resizing *)  
 let mergeMany h arr =   

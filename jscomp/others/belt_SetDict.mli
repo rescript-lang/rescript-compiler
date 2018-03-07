@@ -28,10 +28,10 @@ type ('key, 'id) cmp = ('key, 'id) Belt_Id.cmp
     
 val empty: ('value, 'id) t
 
-val ofArray:
-  'k array ->
-  cmp:('k, 'id) cmp ->
-  ('k, 'id) t
+val ofArray: 'k array -> cmp:('k, 'id) cmp -> ('k, 'id) t
+[@@ocaml.deprecated "Use fromArray instead"]
+
+val fromArray: 'k array -> cmp:('k, 'id) cmp -> ('k, 'id) t
 
 val ofSortedArrayUnsafe: 'value array ->  ('value,'id) t
     

@@ -176,7 +176,7 @@ let copy = N.copy
 let getBucketHistogram  = N.getBucketHistogram 
 let isEmpty  = C.isEmpty
 
-let ofArray (type a) (type identity) arr ~(id:(a,identity) id)  =     
+let fromArray (type a) (type identity) arr ~(id:(a,identity) id)  =     
   let module M = (val id) in 
   let eq, hash = M.eq , M.hash in 
     let len = A.length arr in 
@@ -186,6 +186,7 @@ let ofArray (type a) (type identity) arr ~(id:(a,identity) id)  =
   done ;
   v
 
+let ofArray = fromArray
 
 let mergeMany h arr = 
   let eq, hash = C.eq h, C.hash h in 

@@ -216,10 +216,12 @@ let getExn m x =
 let has m x = 
   N.has ~cmp:(S.cmp m) (S.data m) x
     
-let ofArray (type k) (type identity) data ~(id : (k,identity) id)= 
+let fromArray (type k) (type identity) data ~(id : (k,identity) id)= 
   let module M = (val id ) in
   let cmp = M.cmp in 
   S.t ~cmp  ~data:(N.ofArray ~cmp data)
+
+let ofArray = fromArray
     
 let set  m e v = 
   let oldRoot = S.data m in 

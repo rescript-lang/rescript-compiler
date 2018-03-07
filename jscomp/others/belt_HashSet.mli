@@ -117,6 +117,9 @@ val logStats: _ t -> unit
 val toArray: ('a,'id) t -> 'a array 
 
 val ofArray: 'a array -> id:('a,'id) id -> ('a,'id) t 
+[@@ocaml.deprecated "Use fromArray instead"]
+
+val fromArray: 'a array -> id:('a,'id) id -> ('a,'id) t 
 
 val mergeMany: ('a,'id) t -> 'a array -> unit
 

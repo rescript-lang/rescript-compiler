@@ -30,6 +30,7 @@ type ('key,  'a, 'id) t = ('key, 'a) N.t
 type ('key, 'id) cmp = ('key, 'id)  Belt_Id.cmp
 
 let empty = N.empty
+let fromArray = N.ofArray
 let ofArray = N.ofArray
 let isEmpty = N.isEmpty
 let cmp = N.cmp

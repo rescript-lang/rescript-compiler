@@ -40,11 +40,12 @@ end
 
 type ('k, 'v, 'id ) t = ('k, 'v, 'id) S.t 
 
-let ofArray (type k) (type idx) data ~(id : (k,idx) id)  =
+let fromArray (type k) (type idx) data ~(id : (k,idx) id)  =
   let module M = (val id) in
   let cmp = M.cmp in 
-  S.t ~cmp ~data:(Dict.ofArray ~cmp data) 
+  S.t ~cmp ~data:(Dict.fromArray ~cmp data) 
 
+let ofArray = fromArray 
 
 let remove m x  =   
   let cmp, odata = S.cmp m, S.data m in 

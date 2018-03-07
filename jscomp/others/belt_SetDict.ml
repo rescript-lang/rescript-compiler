@@ -199,6 +199,7 @@ let rec diff s1 s2 ~cmp  =
 
 
 let empty = N.empty     
+let fromArray = N.ofArray
 let ofArray = N.ofArray
 let isEmpty = N.isEmpty
 

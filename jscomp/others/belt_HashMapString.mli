@@ -42,7 +42,10 @@ val size: _ t -> int
 val toArray: 'a t -> (key * 'a) array
 val keysToArray: 'a t -> key array
 val valuesToArray: 'a t -> 'a array
-val ofArray: (key * 'a) array -> 'a t
+val fromArray: (key * 'a) array -> 'a t
 val mergeMany: 'a t -> (key * 'a) array -> unit
 val getBucketHistogram: _ t -> int array
 val logStats: _ t -> unit
+
+val ofArray: (key * 'a) array -> 'a t
+[@@ocaml.deprecated "Use fromArray instead"]

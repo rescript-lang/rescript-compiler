@@ -140,7 +140,7 @@ val size: ('k, 'a, 'id) t -> int
 val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 (** In increasing order*)
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
-val ofArray: ('k * 'a) array -> id:('k,'id) id ->  ('k,'a,'id) t    
+val fromArray: ('k * 'a) array -> id:('k,'id) id ->  ('k,'a,'id) t    
 val keysToArray: ('k, _, _) t -> 'k array 
 val valuesToArray: (_, 'a, _) t -> 'a array
 val minKey: ('k, _,  _) t -> 'k option
@@ -161,6 +161,9 @@ val checkInvariantInternal: _ t -> unit
    {b raise} when invariant is not held
 *)  
   
+val ofArray: ('k * 'a) array -> id:('k,'id) id ->  ('k,'a,'id) t    
+[@@ocaml.deprecated "Use fromArray instead"]
+
 (****************************************************************************)
 
 (*TODO: add functional [merge, partition, keep, split]*)

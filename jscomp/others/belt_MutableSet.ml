@@ -220,19 +220,22 @@ let toList d =
 let toArray d = 
   N.toArray (S.data d)
 
-let ofSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id) : _ t =
+let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id) : _ t =
   let module M = (val id) in 
   S.t ~data:(N.ofSortedArrayUnsafe xs) ~cmp:M.cmp
+
+let ofSortedArrayUnsafe = fromSortedArrayUnsafe
     
 let checkInvariantInternal d = 
   N.checkInvariantInternal (S.data d)
     
     
-let ofArray (type value) (type identity)  data ~(id : (value,identity) id) =
+let fromArray (type value) (type identity)  data ~(id : (value,identity) id) =
   let module M = (val id) in
   let cmp = M.cmp in 
   S.t ~cmp ~data:(N.ofArray ~cmp data)
-    
+
+let ofArray = fromArray
   
 let cmp d0 d1 = 
   N.cmp ~cmp:(S.cmp d0) (S.data d0) (S.data d1)
