@@ -67,7 +67,7 @@ let handle_name_tail
       then dummy
       else {block = []; value  = Some exp ; finished = False}
   | EffectCall, ReturnTrue _ ->
-      make [S.return  exp] ~finished:True
+      make [S.return_stmt  exp] ~finished:True
   | Declare (kind, n), ReturnFalse -> 
       make [ S.define ~kind n  exp]
   | Assign n ,ReturnFalse -> 
@@ -87,13 +87,14 @@ let handle_block_return
   | Assign n, ReturnFalse -> make (block @ [S.assign n exp])
   | (Declare _ | Assign _), ReturnTrue _ -> make [S.unknown_lambda lam] ~finished:True
   | EffectCall, ReturnFalse -> make block ~value:exp
-  | EffectCall, ReturnTrue _ -> make (block @ [S.return exp]) ~finished:True
+  | EffectCall, ReturnTrue _ -> make (block @ [S.return_stmt exp]) ~finished:True
   | NeedValue, _ ->  make block ~value:exp
 
 let statement_of_opt_expr (x : J.expression option) : J.statement =
   match x with 
-  | None -> S.empty ()
-  | Some x when Js_analyzer.no_side_effect_expression x -> S.empty ()
+  | None -> S.empty_stmt
+  | Some x when Js_analyzer.no_side_effect_expression x -> 
+    S.empty_stmt 
         (* TODO, pure analysis in lambda instead *)
   | Some x -> S.exp x 
 

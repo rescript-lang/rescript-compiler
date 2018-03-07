@@ -34,11 +34,15 @@
 
 type t = J.statement 
 
-val mk :  ?comment:string  -> J.statement_desc -> t
 
-val empty : ?comment:string  ->  unit -> t
+(** empty statement, block of length 0 *)  
+val empty_stmt :  
+  t
 
-val throw : ?comment:string  -> J.expression -> t
+val throw_stmt :
+  ?comment:string  ->
+  J.expression ->
+  t
 
 val if_ : 
   ?comment:string  ->
@@ -51,59 +55,132 @@ val if_ :
   J.block -> 
   t
 
-val block : ?comment:string  -> J.block -> t
+(**   
+  turn a block into  a single statement,
+  avoid nested block
+*)  
+val block : 
+  ?comment:string  -> 
+  J.block ->
+  t
 
+(** [int_switch ~declaration e clauses]
+
+  The [declaration] is attached to peepwhole 
+  such pattern 
+
+  {[
+    var x ;
+    x = yy
+  ]}
+  
+  into
+  {[
+    var x = yy;
+  ]}
+*)  
 val int_switch :
-  ?comment:string -> ?declaration:Lam.let_kind * Ident.t -> 
-  ?default:J.block -> J.expression -> int J.case_clause list -> t 
+  ?comment:string -> 
+  ?declaration:Lam.let_kind * Ident.t -> 
+  ?default:J.block -> 
+  J.expression -> 
+  int J.case_clause list -> 
+  t 
 
-val string_switch : ?comment:string -> ?declaration:Lam.let_kind * Ident.t -> 
-  ?default:J.block -> J.expression -> string J.case_clause list -> t
+val string_switch : 
+  ?comment:string -> 
+  ?declaration:Lam.let_kind * Ident.t -> 
+  ?default:J.block ->
+  J.expression -> 
+  string J.case_clause list ->
+  t
 
-val declare_variable : ?comment:string ->
-  ?ident_info:J.ident_info 
-  -> kind:Lam.let_kind -> Ident.t -> t
+val declare_variable : 
+  ?comment:string ->
+  ?ident_info:J.ident_info ->
+  kind:Lam.let_kind -> 
+  Ident.t ->
+  t
 
 val define : 
   ?comment:string ->
   ?ident_info:J.ident_info ->
-  kind:Lam.let_kind -> Ident.t -> J.expression  -> t
+  kind:Lam.let_kind -> 
+  Ident.t ->
+  J.expression ->
+  t
 
 val alias_variable :
-  ?comment:string -> ?exp:J.expression -> Ident.t -> t
-val assign : ?comment:string  -> J.ident -> J.expression -> t
+  ?comment:string ->
+  ?exp:J.expression ->
+  Ident.t ->
+  t
 
-val assign_unit : ?comment:string  -> J.ident -> t
+val assign :
+  ?comment:string  ->
+  J.ident ->
+  J.expression ->
+  t
 
-val declare_unit : ?comment:string  -> J.ident -> t
+val assign_unit :
+  ?comment:string  ->
+  J.ident ->
+  t
 
-val while_ : ?comment:string ->
-  ?label:J.label -> ?env:Js_closure.t -> J.expression -> J.block -> t
+val declare_unit :
+  ?comment:string  ->
+  J.ident ->
+  t
+
+val while_ :
+  ?comment:string ->
+  ?label:J.label ->
+  ?env:Js_closure.t ->
+  J.expression ->
+  J.block ->
+  t
 
 val for_ : 
   ?comment:string ->
   ?env:Js_closure.t ->
   J.for_ident_expression option ->
   J.finish_ident_expression ->
-  J.for_ident  -> J.for_direction -> J.block -> t
+  J.for_ident  ->
+  J.for_direction ->
+  J.block ->
+  t
 
 val try_ :
   ?comment:string  ->
-  ?with_:J.ident * J.block -> ?finally:J.block -> J.block -> t
+  ?with_:J.ident * J.block ->
+  ?finally:J.block ->
+  J.block ->
+  t
 
-val exp : ?comment:string  -> J.expression -> t
+val exp :
+  ?comment:string  ->
+  J.expression ->
+  t
 
-val return : ?comment:string  -> J.expression -> t
+val return_stmt :
+  ?comment:string  ->
+  J.expression ->
+  t
 
-val unknown_lambda : ?comment:string  -> Lam.t -> t
+val unknown_lambda :
+  ?comment:string  ->
+  Lam.t ->
+  t
 
-val return_unit : ?comment:string -> unit -> t
+val return_unit : t list
 (** for ocaml function which returns unit 
     it will be compiled into [return 0] in js *)
 
-val break : ?comment:string  -> unit -> t
-
 (** if [label] is not set, it will default to empty *)  
-val continue : ?comment:string  -> ?label:J.label -> unit  -> t
+val continue_stmt :
+  ?comment:string  ->
+  ?label:J.label ->
+  unit  ->
+  t
 
 val debugger :  t

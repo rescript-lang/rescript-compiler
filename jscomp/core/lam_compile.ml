@@ -206,7 +206,7 @@ and compile_external_field_apply
                let params = Ext_list.init (x - len)
                    (fun _ -> Ext_ident.create "param") in
                E.ocaml_fun params 
-                 [S.return (E.call ~info:{arity=Full; call_info=Call_ml}
+                 [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
                               acc (Ext_list.append args @@ Ext_list.map E.var params))]
              else E.call ~info:Js_call_info.dummy acc args
            (* alpha conversion now? --
@@ -577,7 +577,7 @@ and
                            let () = ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params in
                            assigned_params |> Ext_list.map (fun (param, arg) -> S.assign param arg))
                          @
-                         [S.continue ()(* label *)]
+                         [S.continue_stmt ()(* label *)]
                          (* Note true and continue needed to be handled together*)
             in
             begin
@@ -634,8 +634,8 @@ and
         match compile_lambda {
             cxt with should_return = ReturnFalse; st = NeedValue} e with 
         | {block = b; value =  Some v} -> 
-
-          Js_output.make (Ext_list.append b  [S.throw v])
+          Js_output.make 
+          (Ext_list.append b  [S.throw_stmt v])
             ~value:E.undefined ~finished:True
         (* FIXME -- breaks invariant when NeedValue, reason is that js [throw] is statement 
            while ocaml it's an expression, we should remove such things in lambda optimizations
@@ -1033,7 +1033,7 @@ and
 #end                 
 *)
                 Js_output.make 
-                  (Ext_list.append b  [S.return  (E.econd e  out1 out2)]) ~finished:True                         
+                  (Ext_list.append b  [S.return_stmt  (E.econd e  out1 out2)]) ~finished:True                         
               |   _, _, _  ->
                 (*              
 #if BS_DEBUG then 
@@ -1311,7 +1311,7 @@ and
            | Assign x, _  ->
              Js_output.make (Ext_list.append block  [S.assign_unit x ])
            | EffectCall, ReturnTrue _  -> 
-             Js_output.make (Ext_list.append block  [S.return_unit ()]) ~finished:True
+             Js_output.make (Ext_list.append block S.return_unit) ~finished:True
            | EffectCall, _ -> Js_output.make block
            | NeedValue, _ -> Js_output.make block ~value:E.unit end
        | _ -> assert false )
@@ -1381,7 +1381,7 @@ and
         match st, should_return with 
         | EffectCall, ReturnFalse  -> Js_output.make block
         | EffectCall, ReturnTrue _  -> 
-          Js_output.make (Ext_list.append block  [S.return_unit()]) ~finished:True
+          Js_output.make (Ext_list.append block  S.return_unit ) ~finished:True
         (* unit -> 0, order does not matter *)
         | (Declare _ | Assign _), ReturnTrue _ -> Js_output.make [S.unknown_lambda lam]
         | Declare (_kind, x), ReturnFalse  ->   
@@ -1414,7 +1414,7 @@ and
         match st, should_return with 
         | EffectCall, ReturnFalse -> Js_output.make block
         | EffectCall, ReturnTrue _ -> 
-          Js_output.make (Ext_list.append block  [S.return_unit ()]) ~finished:True
+          Js_output.make (Ext_list.append block  S.return_unit  ) ~finished:True
         | (Declare _ | Assign _ ) , ReturnTrue _ -> 
           Js_output.make [S.unknown_lambda lam]
         (* bound by a name, while in a tail position, this can not happen  *)

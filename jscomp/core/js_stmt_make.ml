@@ -31,28 +31,25 @@ module E = Js_exp_make
 
 type t = J.statement 
 
-let return ?comment e : t = 
+let return_stmt ?comment e : t = 
   {statement_desc = Return {return_value = e; } ; comment}
 
-let return_unit ?comment () : t =              
-  return ?comment  E.unit 
+let return_unit  : t list =              
+    [{ statement_desc = Return {return_value = E.unit; } ; 
+      comment = None}]
+  
+let empty_stmt  : t = 
+  { statement_desc = Block []; comment = None}
 
-let break ?comment () : t = 
-  {comment ; statement_desc = Break }
-
-let mk ?comment  statement_desc : t = 
-  {statement_desc; comment}
-
-let empty ?comment  () : t = { statement_desc = Block []; comment}
-
-let throw ?comment v : t = { statement_desc = J.Throw v; comment}
+let throw_stmt ?comment v : t = 
+  { statement_desc = J.Throw v; comment}
 
 (* avoid nested block *)
 let  rec block ?comment  (b : J.block)   : t =  
   match b with 
   | [{statement_desc = Block bs }  ] -> block bs
   | [b] -> b
-  | [] -> empty ?comment ()
+  | [] -> empty_stmt 
   | _ -> {statement_desc = Block b  ; comment}
 
 (* It's a statement, we can discard some values *)       
@@ -92,10 +89,12 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
   match e.expression_desc with 
   | Number (Int {i; _}) -> 
     let continuation =  
-      begin match List.find (fun (x : _ J.case_clause) -> x.case = (Int32.to_int i)) clauses
+      begin match Ext_list.find_opt 
+        (fun (x : _ J.case_clause) ->
+         if x.case = (Int32.to_int i) then Some (fst x.body) else None ) clauses
         with 
-        | case -> fst case.body
-        | exception Not_found -> 
+        | Some case -> case 
+        | None -> 
           begin match default with
             | Some x ->  x 
             | None -> assert false
@@ -124,11 +123,15 @@ let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : 
   match e.expression_desc with 
   | Str (_,s) -> 
     let continuation = 
-      begin match List.find 
-                    (fun  (x : string J.case_clause) -> x.case = s) clauses
+      begin match Ext_list.find_opt 
+                    (fun  (x : string J.case_clause) ->
+                      if x.case = s then 
+                        Some (fst x.body)
+                      else None  
+                      ) clauses
         with 
-        | case ->  (fst case.body)
-        | exception Not_found -> 
+        | Some case ->  case
+        | None -> 
           begin match default with 
             | Some x -> x 
             | None -> assert false 
@@ -177,7 +180,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
     | _, [ {statement_desc = Return {return_value = b; _}; _}], 
       [ {statement_desc = Return {return_value = a; _}; _}]
       ->
-      return (E.econd e b a ) :: acc 
+      return_stmt (E.econd e b a ) :: acc 
     | _,  [ {statement_desc = 
                Exp {expression_desc = Bin(Eq, ({expression_desc = Var (Id id0); _} as l0), a0); _}; _}], 
       [ {statement_desc = 
@@ -345,7 +348,7 @@ let unknown_lambda ?(comment="unknown")  (lam : Lam.t ) : t =
 (* TODO: 
     actually, only loops can be labelled
 *)    
-let continue  ?comment   ?(label="") unit  : t = 
+let continue_stmt  ?comment   ?(label="") unit  : t = 
   { 
     statement_desc = J.Continue  label;
     comment;

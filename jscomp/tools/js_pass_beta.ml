@@ -117,7 +117,7 @@ let pass_beta =
               (if b then S.break () :: self#block rest else self#block rest)
           | Inline_return 
             -> 
-              S.return (self#expression e ) :: self#block rest 
+              S.return_stmt (self#expression e ) :: self#block rest 
           end
       | x :: xs  -> self#statement x :: self#block xs
       | [] -> []

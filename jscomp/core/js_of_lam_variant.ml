@@ -41,7 +41,7 @@ let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
       [(S.int_switch arg
       (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
-               body = [S.return (E.str r)],
+               body = [S.return_stmt (E.str r)],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
 
@@ -60,7 +60,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
       [(S.int_switch arg
       (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
-               body = [S.return (E.index (E.var event) 0l)],
+               body = [S.return_stmt (E.index (E.var event) 0l)],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
       , (* TODO: improve, one dispatch later, 
@@ -71,7 +71,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
       [(S.int_switch arg
       (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
-               body = [S.return (E.index (E.var event) 1l)],
+               body = [S.return_stmt (E.index (E.var event) 1l)],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
       )
@@ -87,7 +87,7 @@ let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
       [(S.int_switch arg
       (Ext_list.map (fun (i,r) -> 
               {J.case = i ; 
-               body = [S.return (E.int (Int32.of_int  r))],
+               body = [S.return_stmt (E.int (Int32.of_int  r))],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
 
