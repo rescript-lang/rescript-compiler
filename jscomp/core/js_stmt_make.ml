@@ -74,7 +74,8 @@ let declare_variable ?comment  ?ident_info  ~kind (v:Ident.t)  : t=
                 ident_info ;};
    comment}
 
-let define ?comment  ?ident_info ~kind (v:Ident.t) exp    : t=
+let define_variable ?comment  ?ident_info 
+  ~kind (v:Ident.t) exp : t=
   let property : J.property =  kind in
   let ident_info  : J.ident_info  = 
     match ident_info with
@@ -84,6 +85,14 @@ let define ?comment  ?ident_info ~kind (v:Ident.t) exp    : t=
      Variable { ident = v; value =  Some exp; property ; 
                 ident_info ;};
    comment}
+
+let alias_variable ?comment  ~exp (v:Ident.t)  : t=
+  {statement_desc = 
+     Variable {
+       ident = v; value = Some exp; property = Alias;
+       ident_info = {used_stats = NA }   };
+   comment}   
+
 
 let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t = 
   match e.expression_desc with 
@@ -105,7 +114,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
         [ {statement_desc = Exp {expression_desc = Bin(Eq,  {expression_desc = Var (Id id) ; _}, e0); _}; _}]
         when Ident.same did id 
         -> 
-        define ?comment ~kind id e0
+        define_variable ?comment ~kind id e0
       | Some(kind,did), _ 
         -> 
         block (declare_variable ?comment ~kind did :: continuation)
@@ -142,7 +151,7 @@ let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : 
         [ {statement_desc = Exp {expression_desc = Bin(Eq,  {expression_desc = Var (Id id); _}, e0);_} ; _}]
         when Ident.same did id 
         -> 
-        define ?comment ~kind id e0
+        define_variable ?comment ~kind id e0
       | Some(kind,did), _ 
         -> 
         block @@ declare_variable ?comment ~kind did :: continuation
@@ -190,7 +199,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       begin match declaration with 
         | Some (kind,did)  when Ident.same did id0 -> 
           declared := true;
-          define ~kind id0 (E.econd e a0 b0) :: acc 
+          define_variable ~kind id0 (E.econd e a0 b0) :: acc 
         (* To hit this branch, we also need [declaration] passed down 
            TODO: check how we compile [Lifthenelse]
         *)
@@ -278,12 +287,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
 
 
 
-let alias_variable ?comment  ?exp (v:Ident.t)  : t=
-  {statement_desc = 
-     Variable {
-       ident = v; value = exp; property = Alias;
-       ident_info = {used_stats = NA }   };
-   comment}
+
 
 let assign ?comment  id e : t = 
   {
@@ -354,7 +358,7 @@ let continue_stmt  ?comment   ?(label="") unit  : t =
     comment;
   }
 
-let debugger : t = 
-  { statement_desc = J.Debugger ; 
+let debugger_block : t list = 
+  [{ statement_desc = J.Debugger ; 
     comment = None 
-  }
+  }]

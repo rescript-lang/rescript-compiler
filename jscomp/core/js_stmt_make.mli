@@ -95,6 +95,7 @@ val string_switch :
   string J.case_clause list ->
   t
 
+(** Just declaration without initialization *)  
 val declare_variable : 
   ?comment:string ->
   ?ident_info:J.ident_info ->
@@ -102,7 +103,8 @@ val declare_variable :
   Ident.t ->
   t
 
-val define : 
+(*** Declaration with initialization *)
+val define_variable : 
   ?comment:string ->
   ?ident_info:J.ident_info ->
   kind:Lam.let_kind -> 
@@ -110,9 +112,10 @@ val define :
   J.expression ->
   t
 
+(** created an alias expression *)  
 val alias_variable :
   ?comment:string ->
-  ?exp:J.expression ->
+  exp:J.expression ->
   Ident.t ->
   t
 
@@ -122,11 +125,25 @@ val assign :
   J.expression ->
   t
 
+(** Used in cases like 
+  {[
+    let x = while true do 
+      ...
+    done in ..
+  ]}
+*)  
 val assign_unit :
   ?comment:string  ->
   J.ident ->
   t
 
+(** used in cases like 
+  {[
+    let x = while true do 
+      ...
+    done in ..
+  ]}
+*)  
 val declare_unit :
   ?comment:string  ->
   J.ident ->
@@ -167,6 +184,9 @@ val return_stmt :
   J.expression ->
   t
 
+(** TODO: this should 
+    be marked as failrue
+*)  
 val unknown_lambda :
   ?comment:string  ->
   Lam.t ->
@@ -183,4 +203,4 @@ val continue_stmt :
   unit  ->
   t
 
-val debugger :  t
+val debugger_block :  t list

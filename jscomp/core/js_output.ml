@@ -69,7 +69,7 @@ let handle_name_tail
   | EffectCall, ReturnTrue _ ->
       make [S.return_stmt  exp] ~finished:True
   | Declare (kind, n), ReturnFalse -> 
-      make [ S.define ~kind n  exp]
+      make [ S.define_variable ~kind n  exp]
   | Assign n ,ReturnFalse -> 
       make [S.assign n exp ]
   | (Declare _ | Assign _ ), ReturnTrue _ -> 
@@ -83,7 +83,7 @@ let handle_block_return
     (lam : Lam.t) (block : J.block) exp : t = 
   match st, should_return with 
   | Declare (kind,n), ReturnFalse -> 
-    make (block @ [ S.define ~kind  n exp])
+    make (block @ [ S.define_variable ~kind  n exp])
   | Assign n, ReturnFalse -> make (block @ [S.assign n exp])
   | (Declare _ | Assign _), ReturnTrue _ -> make [S.unknown_lambda lam] ~finished:True
   | EffectCall, ReturnFalse -> make block ~value:exp

@@ -211,7 +211,9 @@ let subst name export_set stats  =
             (*   (Js_dump.string_of_block [st]); *)
             Js_op_util.update_used_stats v.ident_info Dead_pure;
             let block  = 
-              Ext_list.fold_right2 (fun param arg acc ->  S.define ~kind:Variable param arg :: acc)
+              Ext_list.fold_right2 
+              (fun param arg acc ->  
+                S.define_variable ~kind:Variable param arg :: acc)
                 params args  ( self#block block) (* see #278 before changes*)
                                 
             in

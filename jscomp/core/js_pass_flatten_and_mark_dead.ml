@@ -49,7 +49,8 @@ class rewrite_return ?return_value ()=
   let mk_return  = 
     match return_value with 
     | None -> fun e -> S.exp e 
-    | Some ident -> fun e -> S.define ~kind:Variable ident e in
+    | Some ident -> fun e -> 
+      S.define_variable ~kind:Variable ident e in
   object (self : 'self)
     inherit Js_map.map as super
     method! statement x =
@@ -229,8 +230,9 @@ let subst_map name = object (self)
         | _ ->  
           (* self#add_substitue ident e ; *)
           S.block @@
-          (Ext_list.rev_map_append  (fun (id,v) -> 
-               S.define ~kind:Strict id v)  bindings [original_statement] )
+          (Ext_list.rev_map_append  
+            (fun (id,v) -> 
+               S.define_variable ~kind:Strict id v)  bindings [original_statement] )
       end
     | _ -> super#statement v 
 

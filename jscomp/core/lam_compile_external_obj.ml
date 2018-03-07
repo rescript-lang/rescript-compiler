@@ -99,7 +99,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
   | _ ->     
     let v  = Ext_ident.create_tmp () in 
     let var_v = E.var v in 
-    S.define ~kind:Variable v 
+    S.define_variable ~kind:Variable v 
     (begin match eff with
       | [] -> 
         E.obj map 
