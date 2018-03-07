@@ -35,27 +35,26 @@
 
 
 
-type ('a, 'id) hash
+type ('a, 'id) hash = 'a -> int [@bs]
 (** [('a, 'id) hash]
 
     Its runtime represenation is a [hash] function, but signed with a 
     type parameter, so that different hash functions type mismatch
 *) 
 
-type ('a, 'id) eq 
+type ('a, 'id) eq = 'a -> 'a -> bool [@bs]
 (** [('a, 'id) eq]
  
     Its runtime represenation is an [eq] function, but signed with a 
     type parameter, so that different hash functions type mismatch
 *) 
 
-type ('a, 'id) cmp
+type ('a, 'id) cmp = 'a -> 'a -> int [@bs]
 (** [('a,'id) cmp]
   
     Its runtime representation is a [cmp] function, but signed with a 
     type parameter, so that different hash functions type mismatch
 *)
-    
 module type Comparable = sig
   type identity
   type t
@@ -75,6 +74,28 @@ type ('key, 'id) comparable =
     mismatch if they use different comparison function
 *)
 
+module MakeComparableU : 
+  functor (M : sig 
+    type t 
+    val cmp : t -> t -> int [@bs] 
+  end) ->
+    sig 
+      type identity
+      type t = M.t 
+      val cmp : M.t -> M.t -> int [@bs] 
+    end
+
+module MakeComparable : 
+  functor (M : sig 
+    type t 
+    val cmp : t -> t -> int 
+  end) ->
+    sig 
+      type identity
+      type t = M.t 
+      val cmp : M.t -> M.t -> int [@bs] 
+    end
+
 val comparableU:
   ('a -> 'a -> int [@bs]) ->
   (module Comparable with type t = 'a)
@@ -84,11 +105,11 @@ val comparable:
   (module Comparable with type t = 'a)
   
 module type Hashable = sig 
-  type identity 
-  type t 
-  val hash: (t,identity) hash
-  val eq:  (t,identity) eq
-end 
+  type identity
+  type t
+  val hash : (t, identity) hash
+  val eq : (t, identity) eq
+end
 
 type ('key, 'id) hashable =
   (module Hashable with type t = 'key and type identity = 'id)
@@ -105,13 +126,13 @@ type ('key, 'id) hashable =
 
                             
 
-val hashableU:
+val hashableU :
   hash:('a -> int [@bs]) ->
   eq:('a -> 'a -> bool [@bs]) ->
   (module Hashable with type t = 'a)
   
-val hashable:
-  hash:('a -> int ) ->
+val hashable :
+  hash:('a -> int) ->
   eq:('a -> 'a -> bool ) ->
   (module Hashable with type t = 'a)
 

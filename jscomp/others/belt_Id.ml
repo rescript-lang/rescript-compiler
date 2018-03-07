@@ -43,7 +43,7 @@ type ('key, 'id) comparable =
   (module Comparable with type t = 'key and type identity = 'id)
 
 
-module MakeComparable (M : sig
+module MakeComparableU (M : sig
    type t
    val cmp: t -> t -> int [@bs]
   end) =
@@ -53,11 +53,21 @@ struct
   let cmp = M.cmp
 end
 
+module MakeComparable (M : sig
+   type t
+   val cmp: t -> t -> int
+  end) =
+struct
+  type identity
+  type t = M.t
+  let cmp = (fun[@bs] a b -> M.cmp a b)
+end
+
 let comparableU
   (type key) 
   cmp   
   =
-  let module N = MakeComparable(struct
+  let module N = MakeComparableU(struct
       type t = key
       let cmp = cmp
     end) in 
