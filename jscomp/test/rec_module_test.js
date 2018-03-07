@@ -631,9 +631,7 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1])) {
-        return /* true */1;
-      } else if (exists(p, param[0])) {
+      if (Curry._1(p, param[1]) || exists(p, param[0])) {
         return /* true */1;
       } else {
         _param = param[2];

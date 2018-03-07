@@ -9255,9 +9255,7 @@ function property$1(env) {
     var match$1 = key(env);
     var tmp;
     var exit = 0;
-    if (async$1 !== 0) {
-      exit = 1;
-    } else if (match !== 0) {
+    if (async$1 !== 0 || match !== 0) {
       exit = 1;
     } else {
       var key$1 = match$1[1];
@@ -9802,9 +9800,7 @@ function class_element(env) {
   var generator$1 = generator(env, async$1);
   var match = key(env);
   var exit = 0;
-  if (async$1 !== 0) {
-    exit = 1;
-  } else if (generator$1 !== 0) {
+  if (async$1 !== 0 || generator$1 !== 0) {
     exit = 1;
   } else {
     var key$1 = match[1];
@@ -11042,7 +11038,7 @@ function assert_can_be_forin_or_forof(env, err, param) {
       var match$2 = match[0];
       var declarations = match$2[1][/* declarations */0];
       var exit = 0;
-      if (declarations && !declarations[0][1][/* init */1] && !declarations[1]) {
+      if (declarations && !(declarations[0][1][/* init */1] || declarations[1])) {
         return /* () */0;
       } else {
         exit = 1;

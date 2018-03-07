@@ -429,9 +429,7 @@ function unsafe_concat_with_length(len, sep, l) {
 function rindex_rec(s, _i, c) {
   while(true) {
     var i = _i;
-    if (i < 0) {
-      return i;
-    } else if (s.charCodeAt(i) === c) {
+    if (i < 0 || s.charCodeAt(i) === c) {
       return i;
     } else {
       _i = i - 1 | 0;

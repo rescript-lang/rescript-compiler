@@ -101,9 +101,7 @@ try {
 }
 catch (raw_exn$3){
   var exn$3 = Js_exn.internalToOCamlException(raw_exn$3);
-  if (exn$3[0] === A) {
-    a0 = exn$3[1];
-  } else if (exn$3[0] === Js_exn.$$Error) {
+  if (exn$3[0] === A || exn$3[0] === Js_exn.$$Error) {
     a0 = exn$3[1];
   } else {
     throw [

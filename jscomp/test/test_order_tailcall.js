@@ -77,12 +77,6 @@ function f7(b) {
   while(true) {
     if (b) {
       return /* true */1;
-    } else if (b) {
-      return /* true */1;
-    } else if (b) {
-      return /* true */1;
-    } else if (b) {
-      return /* true */1;
     } else {
       continue ;
       

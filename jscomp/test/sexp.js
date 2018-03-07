@@ -275,9 +275,7 @@ function to_string(e) {
 }
 
 function to_pair(e) {
-  if (typeof e === "number") {
-    return /* None */0;
-  } else if (e[0] !== 848054398) {
+  if (typeof e === "number" || e[0] !== 848054398) {
     return /* None */0;
   } else {
     var match = e[1];
@@ -312,9 +310,7 @@ function to_pair_with(f1, f2, e) {
 }
 
 function to_triple(e) {
-  if (typeof e === "number") {
-    return /* None */0;
-  } else if (e[0] !== 848054398) {
+  if (typeof e === "number" || e[0] !== 848054398) {
     return /* None */0;
   } else {
     var match = e[1];

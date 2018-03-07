@@ -378,9 +378,7 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
-        return /* true */1;
-      } else if (exists(p, param[0])) {
+      if (Curry._2(p, param[1], param[2]) || exists(p, param[0])) {
         return /* true */1;
       } else {
         _param = param[3];
@@ -1041,9 +1039,7 @@ function exists$1(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
-        return /* true */1;
-      } else if (exists$1(p, param[0])) {
+      if (Curry._2(p, param[1], param[2]) || exists$1(p, param[0])) {
         return /* true */1;
       } else {
         _param = param[3];
@@ -1704,9 +1700,7 @@ function exists$2(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
-        return /* true */1;
-      } else if (exists$2(p, param[0])) {
+      if (Curry._2(p, param[1], param[2]) || exists$2(p, param[0])) {
         return /* true */1;
       } else {
         _param = param[3];
