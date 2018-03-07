@@ -152,14 +152,10 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1])) {
-        if (for_all(p, param[0])) {
-          _param = param[2];
-          continue ;
-          
-        } else {
-          return /* false */0;
-        }
+      if (Curry._1(p, param[1]) && for_all(p, param[0])) {
+        _param = param[2];
+        continue ;
+        
       } else {
         return /* false */0;
       }

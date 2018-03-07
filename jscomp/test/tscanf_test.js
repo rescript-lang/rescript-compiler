@@ -3347,194 +3347,150 @@ function test48() {
       ]),
     "%i"
   ];
-  if (test_meta_read("%i", fmt, fmt)) {
-    if (test_meta_read("%i", /* Format */[
-            /* Int */Block.__(4, [
-                /* Int_d */0,
-                /* No_padding */0,
-                /* No_precision */0,
-                /* End_of_format */0
-              ]),
-            "%d"
-          ], /* Format */[
-            /* Int */Block.__(4, [
-                /* Int_i */3,
-                /* No_padding */0,
-                /* No_precision */0,
-                /* End_of_format */0
-              ]),
-            "%i"
-          ])) {
-      if (Curry._1(Scanf.sscanf("12 \"%i\"89 ", /* Format */[
-                  /* Int */Block.__(4, [
-                      /* Int_i */3,
-                      /* No_padding */0,
-                      /* No_precision */0,
-                      /* Char_literal */Block.__(12, [
-                          /* " " */32,
-                          /* Format_arg */Block.__(13, [
-                              /* None */0,
-                              /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
-                              /* String */Block.__(2, [
-                                  /* No_padding */0,
-                                  /* Char_literal */Block.__(12, [
-                                      /* " " */32,
-                                      /* Flush */Block.__(10, [/* End_of_format */0])
-                                    ])
+  if (test_meta_read("%i", fmt, fmt) && test_meta_read("%i", /* Format */[
+          /* Int */Block.__(4, [
+              /* Int_d */0,
+              /* No_padding */0,
+              /* No_precision */0,
+              /* End_of_format */0
+            ]),
+          "%d"
+        ], /* Format */[
+          /* Int */Block.__(4, [
+              /* Int_i */3,
+              /* No_padding */0,
+              /* No_precision */0,
+              /* End_of_format */0
+            ]),
+          "%i"
+        ]) && Curry._1(Scanf.sscanf("12 \"%i\"89 ", /* Format */[
+              /* Int */Block.__(4, [
+                  /* Int_i */3,
+                  /* No_padding */0,
+                  /* No_precision */0,
+                  /* Char_literal */Block.__(12, [
+                      /* " " */32,
+                      /* Format_arg */Block.__(13, [
+                          /* None */0,
+                          /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* " " */32,
+                                  /* Flush */Block.__(10, [/* End_of_format */0])
                                 ])
                             ])
                         ])
-                    ]),
-                  "%i %{%d%}%s %!"
-                ]), (function (i, f, s) {
-                if (i === 12 && Caml_obj.caml_equal(f, /* Format */[
-                        /* Int */Block.__(4, [
-                            /* Int_i */3,
-                            /* No_padding */0,
-                            /* No_precision */0,
-                            /* End_of_format */0
-                          ]),
-                        "%i"
-                      ])) {
-                  return +(s === "89");
-                } else {
-                  return /* false */0;
-                }
-              }))) {
-        var k = function (s) {
-          return Curry._1(Scanf.sscanf(s, /* Format */[
-                          /* Format_subst */Block.__(14, [
-                              /* None */0,
-                              /* Float_ty */Block.__(6, [/* End_of_fmtty */0]),
-                              /* End_of_format */0
-                            ]),
-                          "%(%f%)"
-                        ]), (function (_, i) {
-                        return i;
-                      }));
-        };
-        if (k("\" : %1f\": 987654321") === 9.0) {
-          if (k("\" : %2f\": 987654321") === 98.0) {
-            if (k("\" : %3f\": 9.87654321") === 9.8) {
-              if (k("\" : %4f\": 9.87654321") === 9.87) {
-                var h = function (s) {
-                  return Curry._1(Scanf.sscanf(s, /* Format */[
-                                  /* String_literal */Block.__(11, [
-                                      "Read integers with ",
-                                      /* Format_subst */Block.__(14, [
-                                          /* None */0,
-                                          /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
-                                          /* End_of_format */0
-                                        ])
-                                    ]),
-                                  "Read integers with %(%i%)"
-                                ]), (function (_, i) {
-                                return i;
-                              }));
-                };
-                if (h("Read integers with \"%1d\"987654321") === 9) {
-                  if (h("Read integers with \"%2d\"987654321") === 98) {
-                    if (h("Read integers with \"%3u\"987654321") === 987) {
-                      if (h("Read integers with \"%4x\"987654321") === 39030) {
-                        var i = function (s) {
-                          return Curry._1(Scanf.sscanf(s, /* Format */[
-                                          /* String_literal */Block.__(11, [
-                                              "with ",
-                                              /* Format_subst */Block.__(14, [
-                                                  /* None */0,
-                                                  /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
-                                                  /* End_of_format */0
-                                                ])
-                                            ]),
-                                          "with %(%i %s%)"
-                                        ]), (function (_, amount, currency) {
-                                        return /* tuple */[
-                                                amount,
-                                                currency
-                                              ];
-                                      }));
-                        };
-                        if (Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), /* tuple */[
-                                21,
-                                "euros"
-                              ])) {
-                          if (Caml_obj.caml_equal(i("with \" : %d %s\" : 987654321 dollars"), /* tuple */[
-                                  987654321,
-                                  "dollars"
-                                ])) {
-                            if (Caml_obj.caml_equal(i("with \" : %u %s\" :     54321 pounds"), /* tuple */[
-                                    54321,
-                                    "pounds"
-                                  ])) {
-                              if (Caml_obj.caml_equal(i("with \" : %x %s\" :       321 yens"), /* tuple */[
-                                      801,
-                                      "yens"
-                                    ])) {
-                                var j = function (s) {
-                                  return Curry._1(Scanf.sscanf(s, /* Format */[
-                                                  /* String_literal */Block.__(11, [
-                                                      "with ",
-                                                      /* Format_subst */Block.__(14, [
-                                                          /* None */0,
-                                                          /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
-                                                          /* End_of_format */0
-                                                        ])
-                                                    ]),
-                                                  "with %(%i %_s %s%)"
-                                                ]), (function (_, amount, currency) {
-                                                return /* tuple */[
-                                                        amount,
-                                                        currency
-                                                      ];
-                                              }));
-                                };
-                                if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), /* tuple */[
-                                        9,
-                                        "euros"
-                                      ]) && Caml_obj.caml_equal(j("with \" : %2d %_s %s\" : 987654321 dollars"), /* tuple */[
-                                        98,
-                                        "dollars"
-                                      ]) && Caml_obj.caml_equal(j("with \" : %3u %_s %s\" : 987654321 pounds"), /* tuple */[
-                                        987,
-                                        "pounds"
-                                      ])) {
-                                  return Caml_obj.caml_equal(j("with \" : %4x %_s %s\" : 987654321 yens"), /* tuple */[
-                                              39030,
-                                              "yens"
-                                            ]);
-                                } else {
-                                  return /* false */0;
-                                }
-                              } else {
-                                return /* false */0;
-                              }
-                            } else {
-                              return /* false */0;
-                            }
-                          } else {
-                            return /* false */0;
-                          }
-                        } else {
-                          return /* false */0;
-                        }
-                      } else {
-                        return /* false */0;
-                      }
-                    } else {
-                      return /* false */0;
-                    }
-                  } else {
-                    return /* false */0;
-                  }
-                } else {
-                  return /* false */0;
-                }
-              } else {
-                return /* false */0;
-              }
+                    ])
+                ]),
+              "%i %{%d%}%s %!"
+            ]), (function (i, f, s) {
+            if (i === 12 && Caml_obj.caml_equal(f, /* Format */[
+                    /* Int */Block.__(4, [
+                        /* Int_i */3,
+                        /* No_padding */0,
+                        /* No_precision */0,
+                        /* End_of_format */0
+                      ]),
+                    "%i"
+                  ])) {
+              return +(s === "89");
             } else {
               return /* false */0;
             }
+          }))) {
+    var k = function (s) {
+      return Curry._1(Scanf.sscanf(s, /* Format */[
+                      /* Format_subst */Block.__(14, [
+                          /* None */0,
+                          /* Float_ty */Block.__(6, [/* End_of_fmtty */0]),
+                          /* End_of_format */0
+                        ]),
+                      "%(%f%)"
+                    ]), (function (_, i) {
+                    return i;
+                  }));
+    };
+    if (k("\" : %1f\": 987654321") === 9.0 && k("\" : %2f\": 987654321") === 98.0 && k("\" : %3f\": 9.87654321") === 9.8 && k("\" : %4f\": 9.87654321") === 9.87) {
+      var h = function (s) {
+        return Curry._1(Scanf.sscanf(s, /* Format */[
+                        /* String_literal */Block.__(11, [
+                            "Read integers with ",
+                            /* Format_subst */Block.__(14, [
+                                /* None */0,
+                                /* Int_ty */Block.__(2, [/* End_of_fmtty */0]),
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "Read integers with %(%i%)"
+                      ]), (function (_, i) {
+                      return i;
+                    }));
+      };
+      if (h("Read integers with \"%1d\"987654321") === 9 && h("Read integers with \"%2d\"987654321") === 98 && h("Read integers with \"%3u\"987654321") === 987 && h("Read integers with \"%4x\"987654321") === 39030) {
+        var i = function (s) {
+          return Curry._1(Scanf.sscanf(s, /* Format */[
+                          /* String_literal */Block.__(11, [
+                              "with ",
+                              /* Format_subst */Block.__(14, [
+                                  /* None */0,
+                                  /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
+                                  /* End_of_format */0
+                                ])
+                            ]),
+                          "with %(%i %s%)"
+                        ]), (function (_, amount, currency) {
+                        return /* tuple */[
+                                amount,
+                                currency
+                              ];
+                      }));
+        };
+        if (Caml_obj.caml_equal(i("with \" : %d %s\" :        21 euros"), /* tuple */[
+                21,
+                "euros"
+              ]) && Caml_obj.caml_equal(i("with \" : %d %s\" : 987654321 dollars"), /* tuple */[
+                987654321,
+                "dollars"
+              ]) && Caml_obj.caml_equal(i("with \" : %u %s\" :     54321 pounds"), /* tuple */[
+                54321,
+                "pounds"
+              ]) && Caml_obj.caml_equal(i("with \" : %x %s\" :       321 yens"), /* tuple */[
+                801,
+                "yens"
+              ])) {
+          var j = function (s) {
+            return Curry._1(Scanf.sscanf(s, /* Format */[
+                            /* String_literal */Block.__(11, [
+                                "with ",
+                                /* Format_subst */Block.__(14, [
+                                    /* None */0,
+                                    /* Int_ty */Block.__(2, [/* String_ty */Block.__(1, [/* End_of_fmtty */0])]),
+                                    /* End_of_format */0
+                                  ])
+                              ]),
+                            "with %(%i %_s %s%)"
+                          ]), (function (_, amount, currency) {
+                          return /* tuple */[
+                                  amount,
+                                  currency
+                                ];
+                        }));
+          };
+          if (Caml_obj.caml_equal(j("with \" : %1d %_s %s\" : 987654321 euros"), /* tuple */[
+                  9,
+                  "euros"
+                ]) && Caml_obj.caml_equal(j("with \" : %2d %_s %s\" : 987654321 dollars"), /* tuple */[
+                  98,
+                  "dollars"
+                ]) && Caml_obj.caml_equal(j("with \" : %3u %_s %s\" : 987654321 pounds"), /* tuple */[
+                  987,
+                  "pounds"
+                ])) {
+            return Caml_obj.caml_equal(j("with \" : %4x %_s %s\" : 987654321 yens"), /* tuple */[
+                        39030,
+                        "yens"
+                      ]);
           } else {
             return /* false */0;
           }

@@ -65,20 +65,8 @@ function f5(_x, _y, z) {
 function f6(b) {
   while(true) {
     if (b) {
-      if (b) {
-        if (b) {
-          if (b) {
-            continue ;
-            
-          } else {
-            return /* false */0;
-          }
-        } else {
-          return /* false */0;
-        }
-      } else {
-        return /* false */0;
-      }
+      continue ;
+      
     } else {
       return /* false */0;
     }

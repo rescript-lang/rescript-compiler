@@ -775,20 +775,16 @@ function union(s1, s2) {
 }
 
 function inter(s1, s2) {
-  if (s1) {
-    if (s2) {
-      var r1 = s1[2];
-      var v1 = s1[1];
-      var l1 = s1[0];
-      var match = split(v1, s2);
-      var l2 = match[0];
-      if (match[1] !== 0) {
-        return join(inter(l1, l2), v1, inter(r1, match[2]));
-      } else {
-        return concat(inter(l1, l2), inter(r1, match[2]));
-      }
+  if (s1 && s2) {
+    var r1 = s1[2];
+    var v1 = s1[1];
+    var l1 = s1[0];
+    var match = split(v1, s2);
+    var l2 = match[0];
+    if (match[1] !== 0) {
+      return join(inter(l1, l2), v1, inter(r1, match[2]));
     } else {
-      return /* Empty */0;
+      return concat(inter(l1, l2), inter(r1, match[2]));
     }
   } else {
     return /* Empty */0;
@@ -956,14 +952,10 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._1(p, param[1])) {
-        if (for_all(p, param[0])) {
-          _param = param[2];
-          continue ;
-          
-        } else {
-          return /* false */0;
-        }
+      if (Curry._1(p, param[1]) && for_all(p, param[0])) {
+        _param = param[2];
+        continue ;
+        
       } else {
         return /* false */0;
       }
@@ -1367,33 +1359,17 @@ catch (raw_exn){
   var exit = 0;
   if (exn[0] === Cycle) {
     var match = exn[1];
-    if (match) {
-      if (match[0] === "go") {
-        var match$1 = match[1];
-        if (match$1) {
-          if (match$1[0] === "washup") {
-            var match$2 = match$1[1];
-            if (match$2) {
-              if (match$2[0] === "eat") {
-                var match$3 = match$2[1];
-                if (match$3) {
-                  if (match$3[0] === "go") {
-                    if (match$3[1]) {
-                      exit = 1;
-                    }
-                    
-                  } else {
-                    exit = 1;
-                  }
-                } else {
-                  exit = 1;
-                }
-              } else {
-                exit = 1;
-              }
-            } else {
+    if (match && match[0] === "go") {
+      var match$1 = match[1];
+      if (match$1 && match$1[0] === "washup") {
+        var match$2 = match$1[1];
+        if (match$2 && match$2[0] === "eat") {
+          var match$3 = match$2[1];
+          if (match$3 && match$3[0] === "go") {
+            if (match$3[1]) {
               exit = 1;
             }
+            
           } else {
             exit = 1;
           }

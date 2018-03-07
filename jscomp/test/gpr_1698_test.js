@@ -130,23 +130,15 @@ function compare(context, state, _a, _b) {
         _b = b[0];
         continue ;
         
-      } else if (a.tag === 2) {
-        if (is_number(b)) {
-          return 1;
-        } else {
-          exit$2 = 4;
-        }
+      } else if (a.tag === 2 && is_number(b)) {
+        return 1;
       } else {
         exit$2 = 4;
       }
     }
     if (exit$2 === 4) {
-      if (b.tag === 2) {
-        if (is_number(a)) {
-          return -1;
-        } else {
-          exit$1 = 3;
-        }
+      if (b.tag === 2 && is_number(a)) {
+        return -1;
       } else {
         exit$1 = 3;
       }

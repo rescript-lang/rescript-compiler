@@ -107,43 +107,39 @@ function inter(_l, _l$prime) {
   while(true) {
     var l$prime = _l$prime;
     var l = _l;
-    if (l$prime) {
-      if (l) {
-        var r$prime = l$prime[1];
-        var match = l$prime[0];
-        var c2$prime = match[1];
-        var c1$prime = match[0];
-        var r = l[1];
-        var match$1 = l[0];
-        var c2 = match$1[1];
-        var c1 = match$1[0];
-        if (Caml_obj.caml_lessthan(c2, c1$prime)) {
-          _l = r;
-          continue ;
-          
-        } else if (Caml_obj.caml_lessthan(c2$prime, c1)) {
-          _l$prime = r$prime;
-          continue ;
-          
-        } else if (Caml_obj.caml_lessthan(c2, c2$prime)) {
-          return /* :: */[
-                  /* tuple */[
-                    Caml_obj.caml_max(c1, c1$prime),
-                    c2
-                  ],
-                  inter(r, l$prime)
-                ];
-        } else {
-          return /* :: */[
-                  /* tuple */[
-                    Caml_obj.caml_max(c1, c1$prime),
-                    c2$prime
-                  ],
-                  inter(l, r$prime)
-                ];
-        }
+    if (l$prime && l) {
+      var r$prime = l$prime[1];
+      var match = l$prime[0];
+      var c2$prime = match[1];
+      var c1$prime = match[0];
+      var r = l[1];
+      var match$1 = l[0];
+      var c2 = match$1[1];
+      var c1 = match$1[0];
+      if (Caml_obj.caml_lessthan(c2, c1$prime)) {
+        _l = r;
+        continue ;
+        
+      } else if (Caml_obj.caml_lessthan(c2$prime, c1)) {
+        _l$prime = r$prime;
+        continue ;
+        
+      } else if (Caml_obj.caml_lessthan(c2, c2$prime)) {
+        return /* :: */[
+                /* tuple */[
+                  Caml_obj.caml_max(c1, c1$prime),
+                  c2
+                ],
+                inter(r, l$prime)
+              ];
       } else {
-        return /* [] */0;
+        return /* :: */[
+                /* tuple */[
+                  Caml_obj.caml_max(c1, c1$prime),
+                  c2$prime
+                ],
+                inter(l, r$prime)
+              ];
       }
     } else {
       return /* [] */0;
@@ -798,15 +794,11 @@ function equal(_l1, _l2) {
               var match$1 = l2[0];
               switch (match$1.tag | 0) {
                 case 0 : 
-                    if (match[1][/* id */0] === match$1[1][/* id */0]) {
-                      if (equal(match[0], match$1[0])) {
-                        _l2 = l2[1];
-                        _l1 = l1[1];
-                        continue ;
-                        
-                      } else {
-                        return /* false */0;
-                      }
+                    if (match[1][/* id */0] === match$1[1][/* id */0] && equal(match[0], match$1[0])) {
+                      _l2 = l2[1];
+                      _l1 = l1[1];
+                      continue ;
+                      
                     } else {
                       return /* false */0;
                     }
@@ -825,15 +817,11 @@ function equal(_l1, _l2) {
               var match$2 = l2[0];
               switch (match$2.tag | 0) {
                 case 1 : 
-                    if (match[1][/* id */0] === match$2[1][/* id */0]) {
-                      if (Caml_obj.caml_equal(match[0], match$2[0])) {
-                        _l2 = l2[1];
-                        _l1 = l1[1];
-                        continue ;
-                        
-                      } else {
-                        return /* false */0;
-                      }
+                    if (match[1][/* id */0] === match$2[1][/* id */0] && Caml_obj.caml_equal(match[0], match$2[0])) {
+                      _l2 = l2[1];
+                      _l1 = l1[1];
+                      continue ;
+                      
                     } else {
                       return /* false */0;
                     }
@@ -2050,19 +2038,11 @@ function equal$2(_x1, _x2) {
         case 3 : 
             if (typeof x2 === "number") {
               return /* false */0;
-            } else if (x2.tag === 3) {
-              if (x1[1] === x2[1]) {
-                if (Caml_obj.caml_equal(x1[2], x2[2])) {
-                  _x2 = x2[0];
-                  _x1 = x1[0];
-                  continue ;
-                  
-                } else {
-                  return /* false */0;
-                }
-              } else {
-                return /* false */0;
-              }
+            } else if (x2.tag === 3 && x1[1] === x2[1] && Caml_obj.caml_equal(x1[2], x2[2])) {
+              _x2 = x2[0];
+              _x1 = x1[0];
+              continue ;
+              
             } else {
               return /* false */0;
             }
@@ -2070,15 +2050,11 @@ function equal$2(_x1, _x2) {
         case 4 : 
             if (typeof x2 === "number") {
               return /* false */0;
-            } else if (x2.tag === 4) {
-              if (x1[0] === x2[0]) {
-                _x2 = x2[1];
-                _x1 = x1[1];
-                continue ;
-                
-              } else {
-                return /* false */0;
-              }
+            } else if (x2.tag === 4 && x1[0] === x2[0]) {
+              _x2 = x2[1];
+              _x1 = x1[1];
+              continue ;
+              
             } else {
               return /* false */0;
             }
@@ -2086,15 +2062,11 @@ function equal$2(_x1, _x2) {
         case 5 : 
             if (typeof x2 === "number") {
               return /* false */0;
-            } else if (x2.tag === 5) {
-              if (x1[0] === x2[0]) {
-                _x2 = x2[1];
-                _x1 = x1[1];
-                continue ;
-                
-              } else {
-                return /* false */0;
-              }
+            } else if (x2.tag === 5 && x1[0] === x2[0]) {
+              _x2 = x2[1];
+              _x1 = x1[1];
+              continue ;
+              
             } else {
               return /* false */0;
             }
@@ -2167,15 +2139,11 @@ function equal$2(_x1, _x2) {
         case 13 : 
             if (typeof x2 === "number") {
               return /* false */0;
-            } else if (x2.tag === 13) {
-              if (equal$2(x1[0], x2[0])) {
-                _x2 = x2[1];
-                _x1 = x1[1];
-                continue ;
-                
-              } else {
-                return /* false */0;
-              }
+            } else if (x2.tag === 13 && equal$2(x1[0], x2[0])) {
+              _x2 = x2[1];
+              _x1 = x1[1];
+              continue ;
+              
             } else {
               return /* false */0;
             }
@@ -2183,15 +2151,11 @@ function equal$2(_x1, _x2) {
         case 14 : 
             if (typeof x2 === "number") {
               return /* false */0;
-            } else if (x2.tag === 14) {
-              if (x1[0] === x2[0]) {
-                _x2 = x2[1];
-                _x1 = x1[1];
-                continue ;
-                
-              } else {
-                return /* false */0;
-              }
+            } else if (x2.tag === 14 && x1[0] === x2[0]) {
+              _x2 = x2[1];
+              _x1 = x1[1];
+              continue ;
+              
             } else {
               return /* false */0;
             }
@@ -2207,15 +2171,11 @@ function eq_list(_l1, _l2) {
     var l2 = _l2;
     var l1 = _l1;
     if (l1) {
-      if (l2) {
-        if (equal$2(l1[0], l2[0])) {
-          _l2 = l2[1];
-          _l1 = l1[1];
-          continue ;
-          
-        } else {
-          return /* false */0;
-        }
+      if (l2 && equal$2(l1[0], l2[0])) {
+        _l2 = l2[1];
+        _l1 = l1[1];
+        continue ;
+        
       } else {
         return /* false */0;
       }
@@ -2262,27 +2222,23 @@ function merge_sequences(_param) {
                     exit$1 = 2;
                   } else if (match$1.tag === 1) {
                     var match$2 = match$1[0];
-                    if (match$2) {
-                      if (equal$2(x$1, match$2[0])) {
-                        return /* :: */[
-                                /* Sequence */Block.__(1, [/* :: */[
-                                      x$1,
-                                      /* :: */[
-                                        /* Alternative */Block.__(2, [/* :: */[
-                                              sequence(y),
-                                              /* :: */[
-                                                sequence(match$2[1]),
-                                                /* [] */0
-                                              ]
-                                            ]]),
-                                        /* [] */0
-                                      ]
-                                    ]]),
-                                r$prime[1]
-                              ];
-                      } else {
-                        exit$1 = 2;
-                      }
+                    if (match$2 && equal$2(x$1, match$2[0])) {
+                      return /* :: */[
+                              /* Sequence */Block.__(1, [/* :: */[
+                                    x$1,
+                                    /* :: */[
+                                      /* Alternative */Block.__(2, [/* :: */[
+                                            sequence(y),
+                                            /* :: */[
+                                              sequence(match$2[1]),
+                                              /* [] */0
+                                            ]
+                                          ]]),
+                                      /* [] */0
+                                    ]
+                                  ]]),
+                              r$prime[1]
+                            ];
                     } else {
                       exit$1 = 2;
                     }
