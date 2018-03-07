@@ -281,7 +281,6 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
 
     (*
        {[ if a then { if b then d else e} else e ]}
-
        => if a && b then d else e 
     *)
     | _,
@@ -289,6 +288,11 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       [ another_else] when Js_analyzer.eq_statement else_ another_else
       ->
       aux ?comment (E.and_ e pred) then_ cont acc 
+    | _,
+      [ {statement_desc = If (pred, ([ then_ ] as cont), Some ( else_ )) }],
+      [ another_else] when Js_analyzer.eq_statement then_ another_else
+      ->
+      aux ?comment (E.and_ e (E.not pred)) else_ cont acc   
     | _ -> 
       let e = E.ocaml_boolean_under_condition e in 
       { statement_desc =

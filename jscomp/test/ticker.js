@@ -784,24 +784,20 @@ function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {
           var loop = function (counter, ticker) {
             var rank = ticker[/* rank */1];
-            if (typeof rank === "number") {
-              if (rank !== 0) {
-                return counter;
+            if (typeof rank === "number" && rank === 0) {
+              ticker[/* rank */1] = /* Visited */1;
+              var match = ticker[/* type_ */3];
+              if (match) {
+                var match$1 = match[0];
+                var counter$1 = loop(counter, match$1[/* lhs */2]);
+                var counter$2 = loop(counter$1, match$1[/* rhs */1]);
+                var counter$3 = counter$2 + 1 | 0;
+                ticker[/* rank */1] = /* Ranked */[counter$3];
+                return counter$3;
               } else {
-                ticker[/* rank */1] = /* Visited */1;
-                var match = ticker[/* type_ */3];
-                if (match) {
-                  var match$1 = match[0];
-                  var counter$1 = loop(counter, match$1[/* lhs */2]);
-                  var counter$2 = loop(counter$1, match$1[/* rhs */1]);
-                  var counter$3 = counter$2 + 1 | 0;
-                  ticker[/* rank */1] = /* Ranked */[counter$3];
-                  return counter$3;
-                } else {
-                  var counter$4 = counter + 1 | 0;
-                  ticker[/* rank */1] = /* Ranked */[counter$4];
-                  return counter$4;
-                }
+                var counter$4 = counter + 1 | 0;
+                ticker[/* rank */1] = /* Ranked */[counter$4];
+                return counter$4;
               }
             } else {
               return counter;

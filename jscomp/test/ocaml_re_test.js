@@ -278,17 +278,13 @@ function hash_rec(param) {
 }
 
 function one_char(param) {
-  if (param) {
-    if (param[1]) {
-      return /* None */0;
+  if (param && !param[1]) {
+    var match = param[0];
+    var i = match[0];
+    if (Caml_obj.caml_equal(i, match[1])) {
+      return /* Some */[i];
     } else {
-      var match = param[0];
-      var i = match[0];
-      if (Caml_obj.caml_equal(i, match[1])) {
-        return /* Some */[i];
-      } else {
-        return /* None */0;
-      }
+      return /* None */0;
     }
   } else {
     return /* None */0;
@@ -694,12 +690,8 @@ function seq$1(ids, kind, x, y) {
   var exit$1 = 0;
   if (typeof match === "number") {
     return y;
-  } else if (match.tag === 1) {
-    if (match[0]) {
-      exit$1 = 2;
-    } else {
-      return x;
-    }
+  } else if (match.tag === 1 && !match[0]) {
+    return x;
   } else {
     exit$1 = 2;
   }
@@ -710,12 +702,8 @@ function seq$1(ids, kind, x, y) {
       } else {
         exit = 1;
       }
-    } else if (match$1.tag === 1) {
-      if (match$1[0]) {
-        exit = 1;
-      } else {
-        return y;
-      }
+    } else if (match$1.tag === 1 && !match$1[0]) {
+      return y;
     } else {
       exit = 1;
     }
@@ -901,18 +889,14 @@ function tseq(kind, x, y, rem) {
     var match = x[0];
     switch (match.tag | 0) {
       case 1 : 
-          if (typeof match[1][/* def */1] === "number") {
-            if (x[1]) {
-              exit = 1;
-            } else {
-              return /* :: */[
-                      /* TExp */Block.__(1, [
-                          match[0],
-                          y
-                        ]),
-                      rem
-                    ];
-            }
+          if (typeof match[1][/* def */1] === "number" && !x[1]) {
+            return /* :: */[
+                    /* TExp */Block.__(1, [
+                        match[0],
+                        y
+                      ]),
+                    rem
+                  ];
           } else {
             exit = 1;
           }
@@ -2377,16 +2361,12 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
         case 2 : 
             var merged_sequences = merge_sequences(param[0]);
             var exit = 0;
-            if (merged_sequences) {
-              if (merged_sequences[1]) {
-                exit = 1;
-              } else {
-                var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences[0]);
-                return /* tuple */[
-                        enforce_kind(ids, kind, match[1], match[0]),
-                        kind
-                      ];
-              }
+            if (merged_sequences && !merged_sequences[1]) {
+              var match = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, merged_sequences[0]);
+              return /* tuple */[
+                      enforce_kind(ids, kind, match[1], match[0]),
+                      kind
+                    ];
             } else {
               exit = 1;
             }

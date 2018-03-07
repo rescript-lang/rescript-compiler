@@ -51,12 +51,8 @@ function test_js_error4() {
       exit$1 = 2;
     }
     if (exit$1 === 2) {
-      if (e[0] === A) {
-        if (e[1] !== 2) {
-          exit = 1;
-        } else {
-          return 4;
-        }
+      if (e[0] === A && e[1] === 2) {
+        return 4;
       } else {
         exit = 1;
       }
