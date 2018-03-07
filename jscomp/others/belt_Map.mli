@@ -82,16 +82,18 @@ module String = Belt_MapString
 module Dict = Belt_MapDict
 
 
-type ('key,'value,'identity) t
+type ('key, 'value, 'identity) t
 (** [('key, 'identity) t]
 
-    ['key] is the element type
+    ['key] is the field type
+
+    ['value] is the element type
 
     ['identity] the identity of the collection
 *)
 
 
-type ('key, 'id ) id = ('key, 'id) Belt_Id.comparable
+type ('key, 'id) id = ('key, 'id) Belt_Id.comparable
 (** The identity needed for making an empty map*)
 
 
@@ -118,7 +120,7 @@ type ('key, 'id ) id = ('key, 'id) Belt_Id.comparable
    should only export [Belt_Id.t] or [Belt_Id.cmp] instead *)
 
 
-val make: id:('k, 'id) id -> ('k, 'a, 'id) t
+val make: id:('k, 'id) id -> ('k, 'v, 'id) t
 (** [make ~id]
    
      @example {[
@@ -137,7 +139,7 @@ val isEmpty: _ t -> bool
     ]}
 *)
 
-val has: ('k, 'a, 'id) t -> 'k  -> bool
+val has: ('k, 'v, 'id) t -> 'k  -> bool
 (** [has s k]
 
     @example {[
@@ -164,22 +166,22 @@ val cmp:
 *)
 
 val eqU:  
-    ('k, 'a, 'id) t -> 
-    ('k, 'a, 'id) t -> 
-    ('a -> 'a -> bool [@bs]) -> 
+    ('k, 'v, 'id) t -> 
+    ('k, 'v, 'id) t -> 
+    ('v -> 'v -> bool [@bs]) -> 
     bool
 val eq:  
-    ('k, 'a, 'id) t -> 
-    ('k, 'a, 'id) t -> 
-    ('a -> 'a -> bool) -> 
+    ('k, 'v, 'id) t -> 
+    ('k, 'v, 'id) t -> 
+    ('v -> 'v -> bool) -> 
     bool
 (** [eq m1 m2 veq] tests whether the maps [m1] and [m2] are
     equal, that is, contain equal keys and associate them with
     equal data.  [veq] is the equality predicate used to compare
     the data associated with the keys. *)
 
-val forEachU:  ('k, 'a, 'id) t -> ('k -> 'a -> unit [@bs]) -> unit
-val forEach:  ('k, 'a, 'id) t -> ('k -> 'a -> unit) -> unit
+val forEachU:  ('k, 'v, 'id) t -> ('k -> 'v -> unit [@bs]) -> unit
+val forEach:  ('k, 'v, 'id) t -> ('k -> 'v -> unit) -> unit
 (** [forEach m f] applies [f] to all bindings in map [m].
     [f] receives the 'k as first argument, and the associated value
     as second argument.  The bindings are passed to [f] in increasing
@@ -197,8 +199,8 @@ val forEach:  ('k, 'a, 'id) t -> ('k -> 'a -> unit) -> unit
     ]}
 *)
 
-val reduceU: ('k, 'a, 'id) t -> 'b ->  ('b -> 'k -> 'a -> 'b [@bs]) ->  'b
-val reduce: ('k, 'a, 'id) t -> 'acc ->  ('acc -> 'k -> 'a -> 'acc) ->  'acc
+val reduceU: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc [@bs]) -> 'acc
+val reduce: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc) -> 'acc
 (** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
     where [k1 ... kN] are the keys of all bindings in [m]
     (in increasing order), and [d1 ... dN] are the associated data.
@@ -212,17 +214,17 @@ val reduce: ('k, 'a, 'id) t -> 'acc ->  ('acc -> 'k -> 'a -> 'acc) ->  'acc
     ]}
 *)
 
-val everyU: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
-val every: ('k, 'a, 'id) t -> ('k -> 'a -> bool) ->  bool
+val everyU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool
+val every: ('k, 'v, 'id) t -> ('k -> 'v -> bool) ->  bool
 (** [every m p] checks if all the bindings of the map
     satisfy the predicate [p]. Order unspecified *)
 
-val someU: ('k, 'a, 'id) t -> ('k -> 'a -> bool [@bs]) ->  bool
-val some: ('k, 'a, 'id) t -> ('k -> 'a -> bool) ->  bool
+val someU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool
+val some: ('k, 'v, 'id) t -> ('k -> 'v -> bool) ->  bool
 (** [some m p] checks if at least one binding of the map
     satisfy the predicate [p]. Order unspecified *)
 
-val size: ('k, 'a, 'id) t -> int
+val size: ('k, 'v, 'id) t -> int
 (** [size s]
 
     @example {[
@@ -231,7 +233,7 @@ val size: ('k, 'a, 'id) t -> int
       size (ofArray [2,"2"; 2,"1"; 3,"3"] ~id:(module IntCmp)) = 2 ;;
     ]}
 *)
-val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
+val toArray: ('k, 'v, 'id) t -> ('k * 'v) array
 (** [toArray s]
 
     @example {[
@@ -241,13 +243,13 @@ val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
     ]}
 
 *)
-val toList: ('k, 'a, 'id) t -> ('k * 'a) list
+val toList: ('k, 'v, 'id) t -> ('k * 'v) list
 (** In increasing order
 
     {b See} {!toArray}
 *)
     
-val ofArray:  ('k * 'a) array -> id:('k,'id) id -> ('k,'a,'id) t
+val ofArray:  ('k * 'v) array -> id:('k,'id) id -> ('k,'v,'id) t
 (** [ofArray kvs ~id]
     @example {[
       module IntCmp =
@@ -255,7 +257,7 @@ val ofArray:  ('k * 'a) array -> id:('k,'id) id -> ('k,'a,'id) t
       toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     ]}
 *)    
-val keysToArray: ('k, 'a, 'id) t -> 'k  array
+val keysToArray: ('k, 'v, 'id) t -> 'k  array
 (** [keysToArray s]
 
     @example {[
@@ -265,7 +267,7 @@ val keysToArray: ('k, 'a, 'id) t -> 'k  array
       [|1;2;3|];;
     ]}
 *)    
-val valuesToArray: ('k, 'a, 'id) t -> 'a  array
+val valuesToArray: ('k, 'v, 'id) t -> 'v  array
 (** [valuesToArray s]
 
     @example {[
@@ -293,24 +295,24 @@ val maxKey: ('k, _, _) t -> 'k option
 val maxKeyUndefined: ('k, _, _) t -> 'k Js.undefined
 (** {b See} {!maxKey} *)    
 
-val minimum: ('k, 'a,  _) t -> ('k * 'a) option
+val minimum: ('k, 'v,  _) t -> ('k * 'v) option
 (** [minimum s]
     @return thte minimum key value pair, None if not exist 
 *)    
     
-val minUndefined: ('k, 'a, _) t -> ('k * 'a) Js.undefined
+val minUndefined: ('k, 'v, _) t -> ('k * 'v) Js.undefined
 (** {b See} {!minimum} *)    
 
-val maximum: ('k, 'a, _) t -> ('k * 'a) option
+val maximum: ('k, 'v, _) t -> ('k * 'v) option
 (** [maximum s]
     @return thte maximum key value pair, None if not exist 
 *)    
 
-val maxUndefined:('k, 'a, _) t -> ('k * 'a) Js.undefined
+val maxUndefined:('k, 'v, _) t -> ('k * 'v) Js.undefined
 (** {b See} {!maximum}
 *)
     
-val get:  ('k, 'a, 'id) t -> 'k -> 'a option
+val get:  ('k, 'v, 'id) t -> 'k -> 'v option
 (** [get s k]
 
     @example {[
@@ -323,13 +325,13 @@ val get:  ('k, 'a, 'id) t -> 'k -> 'a option
     ]}
 *)
     
-val getUndefined: ('k, 'a, 'id) t -> 'k ->  'a Js.undefined
+val getUndefined: ('k, 'v, 'id) t -> 'k ->  'v Js.undefined
 (** {b See} {!get}
 
     @return [undefined] when not found
 *)    
 val getWithDefault:
-    ('k, 'a, 'id) t -> 'k ->  'a -> 'a
+    ('k, 'v, 'id) t -> 'k ->  'v -> 'v
 (** [getWithDefault s k default]
 
    {b See} {!get}
@@ -337,7 +339,7 @@ val getWithDefault:
     @return [default] when [k] is not found
     
 *)    
-val getExn:  ('k, 'a, 'id) t -> 'k -> 'a 
+val getExn:  ('k, 'v, 'id) t -> 'k -> 'v 
 (** [getExn s k]
 
    {b See} {!getExn}
@@ -347,7 +349,7 @@ val getExn:  ('k, 'a, 'id) t -> 'k -> 'a
 
 (****************************************************************************)
 
-val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
+val remove:  ('k, 'v, 'id) t -> 'k -> ('k, 'v, 'id) t
 (** [remove m x] when [x] is not in [m], [m] is returned reference unchanged.
 
     @example {[
@@ -364,7 +366,7 @@ val remove:  ('k, 'a, 'id) t -> 'k -> ('k, 'a, 'id) t
     
 *)
     
-val removeMany: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t  
+val removeMany: ('k, 'v, 'id) t -> 'k array -> ('k, 'v, 'id) t  
 (** [removeMany s xs]
 
     Removing each of [xs] to [s], note unlike {!remove},
@@ -373,7 +375,7 @@ val removeMany: ('k, 'a, 'id) t -> 'k array -> ('k, 'a, 'id) t
 *)    
   
 val set: 
-    ('k, 'a, 'id) t -> 'k -> 'a ->  ('k, 'a, 'id) t
+    ('k, 'v, 'id) t -> 'k -> 'v ->  ('k, 'v, 'id) t
 (** [set m x y ] returns a map containing the same bindings as
     [m], with a new binding of [x] to [y]. If [x] was already bound
     in [m], its previous binding disappears.
@@ -390,8 +392,8 @@ val set:
     ]}
 *)
       
-val updateU: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option [@bs]) -> ('k, 'a, 'id) t      
-val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option) -> ('k, 'a, 'id) t      
+val updateU: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option [@bs]) -> ('k, 'v, 'id) t      
+val update: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option) -> ('k, 'v, 'id) t      
 (** [update m x f] returns a map containing the same bindings as
     [m], except for the binding of [x].
     Depending on the value of
@@ -402,7 +404,7 @@ val update: ('k, 'a, 'id) t -> 'k -> ('a option -> 'a option) -> ('k, 'a, 'id) t
 *)
 
 val mergeMany:
-    ('k, 'a, 'id) t -> ('k * 'a) array ->  ('k, 'a, 'id) t
+    ('k, 'v, 'id) t -> ('k * 'v) array ->  ('k, 'v, 'id) t
 (** [mergeMany s xs]
 
     Adding each of [xs] to [s], note unlike {!add},
@@ -411,15 +413,15 @@ val mergeMany:
 *)
 
 val mergeU:
-   ('k, 'a, 'id ) t -> 
-   ('k, 'b,'id) t ->
-   ('k -> 'a option -> 'b option -> 'c option [@bs]) -> 
-   ('k, 'c,'id) t
+   ('k, 'v, 'id ) t -> 
+   ('k, 'v2, 'id) t ->
+   ('k -> 'v option -> 'v2 option -> 'v3 option [@bs]) -> 
+   ('k, 'v3, 'id) t
 val merge:
-   ('k, 'a, 'id ) t -> 
-   ('k, 'b,'id) t ->
-   ('k -> 'a option -> 'b option -> 'c option) -> 
-   ('k, 'c,'id) t
+   ('k, 'v, 'id ) t -> 
+   ('k, 'v2, 'id) t ->
+   ('k -> 'v option -> 'v2 option -> 'v3 option) -> 
+   ('k, 'v3, 'id) t
 (** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
     and of [m2]. The presence of each such binding, and the corresponding
     value, is determined with the function [f].
@@ -427,24 +429,24 @@ val merge:
 
 
 val keepU: 
-    ('k, 'a, 'id) t -> 
-    ('k -> 'a -> bool [@bs]) -> 
-    ('k, 'a, 'id) t
+    ('k, 'v, 'id) t -> 
+    ('k -> 'v -> bool [@bs]) -> 
+    ('k, 'v, 'id) t
 val keep: 
-    ('k, 'a, 'id) t -> 
-    ('k -> 'a -> bool) -> 
-    ('k, 'a, 'id) t
+    ('k, 'v, 'id) t -> 
+    ('k -> 'v -> bool) -> 
+    ('k, 'v, 'id) t
 (** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p]. *)
     
 val partitionU: 
-    ('k, 'a, 'id) t ->
-    ('k -> 'a -> bool [@bs]) -> 
-    ('k, 'a, 'id) t * ('k, 'a, 'id) t
+    ('k, 'v, 'id) t ->
+    ('k -> 'v -> bool [@bs]) -> 
+    ('k, 'v, 'id) t * ('k, 'v, 'id) t
 val partition: 
-    ('k, 'a, 'id) t ->
-    ('k -> 'a -> bool) -> 
-    ('k, 'a, 'id) t * ('k, 'a, 'id) t
+    ('k, 'v, 'id) t ->
+    ('k -> 'v -> bool) -> 
+    ('k, 'v, 'id) t * ('k, 'v, 'id) t
 (** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
@@ -452,8 +454,8 @@ val partition:
 *)
 
 val split: 
-    ('k, 'a, 'id) t -> 'k -> 
-    (('k, 'a, 'id) t * ('k, 'a, 'id) t )* 'a option 
+    ('k, 'v, 'id) t -> 'k -> 
+    (('k, 'v, 'id) t * ('k, 'v, 'id) t )* 'v option 
 (** [split x m] returns a tuple [(l r), data], where
       [l] is the map with all the bindings of [m] whose 'k
     is strictly less than [x];
@@ -463,16 +465,16 @@ val split:
       or [Some v] if [m] binds [v] to [x].
 *)
 
-val mapU: ('k, 'a, 'id) t -> ('a -> 'b [@bs]) ->  ('k ,'b,'id ) t
-val map: ('k, 'a, 'id) t -> ('a -> 'b) ->  ('k ,'b,'id ) t
+val mapU: ('k, 'v, 'id) t -> ('v -> 'v2 [@bs]) ->  ('k, 'v2, 'id) t
+val map: ('k, 'v, 'id) t -> ('v -> 'v2) ->  ('k, 'v2, 'id) t
 (** [map m f] returns a map with same domain as [m], where the
     associated value [a] of all bindings of [m] has been
     replaced by the result of the application of [f] to [a].
     The bindings are passed to [f] in increasing order
     with respect to the ordering over the type of the keys. *)
 
-val mapWithKeyU: ('k, 'a, 'id) t -> ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) t
-val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b) -> ('k, 'b, 'id) t
+val mapWithKeyU: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2 [@bs]) -> ('k, 'v2, 'id) t
+val mapWithKey: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) t
 (** [mapWithKey m f]
 
     The same as {!map} except that [f] is supplied with one more argument: the key 
@@ -482,7 +484,7 @@ val mapWithKey: ('k, 'a, 'id) t -> ('k -> 'a -> 'b) -> ('k, 'b, 'id) t
 
 
 
-val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Belt_MapDict.t
+val getData: ('k, 'v, 'id) t -> ('k, 'v, 'id) Belt_MapDict.t
 (** [getData s0]
 
     {b Advanced usage only}
@@ -492,7 +494,7 @@ val getData: ('a, 'b, 'c) t -> ('a, 'b, 'c) Belt_MapDict.t
     without boxing
 *)
 
-val getId: ('a, 'b, 'c) t -> ('a, 'c) id
+val getId: ('k, 'v, 'id) t -> ('k, 'id) id
 (** [getId s0]
 
     {b Advanced usage only}
@@ -500,7 +502,7 @@ val getId: ('a, 'b, 'c) t -> ('a, 'c) id
     @return the identity of [s0]
 *)
 
-val packIdData: id:('a, 'b) id -> data:('a, 'c, 'b) Belt_MapDict.t -> ('a, 'c, 'b) t
+val packIdData: id:('k, 'id) id -> data:('k, 'v, 'id) Belt_MapDict.t -> ('k, 'v, 'id) t
 (** [packIdData ~id ~data]
 
     {b Advanced usage only}
