@@ -30,9 +30,9 @@
     {b See} {!Belt.Set}
 *)
 
-# 33
+# 33 "set.cppo.mli"
 type value = string
-# 39
+# 39 "set.cppo.mli"
 (** The type of the set elements. *)
 
 

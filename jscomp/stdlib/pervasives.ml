@@ -425,8 +425,14 @@ let print_string s = output_string stdout s
 let print_bytes s = output_bytes stdout s
 let print_int i = output_string stdout (string_of_int i)
 let print_float f = output_string stdout (string_of_float f)
+
+#if BS then
+external print_endline : string -> unit = "log" 
+[@@bs.val] [@@bs.scope "console"]
+#else    
 let print_endline s =
   output_string stdout s; output_char stdout '\n'; flush stdout
+#end    
 let print_newline () = output_char stdout '\n'; flush stdout
 
 (* Output functions on standard error *)
@@ -436,8 +442,13 @@ let prerr_string s = output_string stderr s
 let prerr_bytes s = output_bytes stderr s
 let prerr_int i = output_string stderr (string_of_int i)
 let prerr_float f = output_string stderr (string_of_float f)
+#if BS then
+external prerr_endline : string -> unit = "error" 
+[@@bs.val] [@@bs.scope "console"]    
+#else    
 let prerr_endline s =
   output_string stderr s; output_char stderr '\n'; flush stderr
+#end    
 let prerr_newline () = output_char stderr '\n'; flush stderr
 
 (* Input functions on standard input *)

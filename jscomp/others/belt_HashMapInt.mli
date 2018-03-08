@@ -2,7 +2,7 @@
 type key = int
 
 
-# 10
+# 10 "hashmap.cppo.mli"
 type 'b t 
 
 

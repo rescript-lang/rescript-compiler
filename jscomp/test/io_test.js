@@ -2,10 +2,10 @@
 
 
 function f() {
-  var v = (console.error("x"), /* () */0);
-  console.log(v);
-  var u = (console.log("hi"), /* () */0);
-  console.log(u);
+  console.error("x");
+  console.log(/* () */0);
+  console.log("hi");
+  console.log(/* () */0);
   return /* () */0;
 }
 

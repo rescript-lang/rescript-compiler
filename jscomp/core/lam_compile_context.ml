@@ -60,7 +60,7 @@ type return_type =
 
 type let_kind = Lam.let_kind
 
-type cont = 
+type continuation = 
   | EffectCall
   | Declare of let_kind * J.ident (* bound value *)
   | NeedValue 
@@ -69,7 +69,7 @@ type cont =
 type jmp_table =   value  HandlerMap.t
 
 type t = {
-  st : cont ;
+  st : continuation ;
   should_return : return_type;
   jmp_table : jmp_table;
   meta : Lam_stats.t ;
