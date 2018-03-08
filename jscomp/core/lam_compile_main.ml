@@ -74,19 +74,6 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
   | Single(_, ({name="nan";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id ~exp:(E.js_global "NaN")
 
-  (* TODO: 
-      Make it more safe, we should rewrite the last one...
-       checkout [E.mldot], it would make sense that cross module inlining done there
-       In general, we would like to do such specialization on primitive specialization
-        [Lam_dispatch_primitive], here it makes an exception since this function is not a primitive
-  *) 
-  | Single(_, ({name="^";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.alias_variable id 
-      ~exp:(let a = Ext_ident.create "a" in 
-            let b = Ext_ident.create "b" in
-            E.ocaml_fun [a;b] [S.return_stmt (E.string_append (E.var a) (E.var b))]
-           )
-
   (* QUICK hack to make hello world example nicer,
      Note the arity of [print_endline] is already analyzed before, 
      so it should be safe
