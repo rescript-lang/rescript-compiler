@@ -53,6 +53,7 @@ let bsc_flags =
 
 let refmt_flags = ["--print"; "binary"]
 
-
+let refmt_v3 = "refmt.exe"
+let refmt_none = "refmt.exe"
 
 let main_entries = [Bsb_config_types.JsTarget "Index"]

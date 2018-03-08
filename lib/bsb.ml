@@ -10165,7 +10165,9 @@ val bsc_flags : string list
 
 val refmt_flags : string list  
 
+val refmt_v3 : string
 
+val refmt_none : string
 
 val main_entries : Bsb_config_types.entries_t list
 
@@ -10226,7 +10228,8 @@ let bsc_flags =
 
 let refmt_flags = ["--print"; "binary"]
 
-
+let refmt_v3 = "refmt.exe"
+let refmt_none = "refmt.exe"
 
 let main_entries = [Bsb_config_types.JsTarget "Index"]
 
@@ -10587,8 +10590,6 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let config_file_bak = "bsconfig.json.bak"
-let refmt3_exe = "refmt3.exe"
-let refmt2_exe = "refmt.exe"
 let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_path.combine
 
@@ -12496,9 +12497,9 @@ let output_ninja_and_namespace_map
             (match refmt with 
             | Refmt_none -> 
               Bsb_log.warn "@{<warning>Warning:@} refmt version missing. Please set it explicitly, since we may change the default in the future.@.";
-              bsc_dir // "refmt.exe"
+              bsc_dir // Bsb_default.refmt_none
             | Refmt_v3 -> 
-              bsc_dir // "refmt3.exe"
+              bsc_dir // Bsb_default.refmt_v3
             | Refmt_custom x -> x );
           Bsb_ninja_global_vars.reason_react_jsx, reason_react_jsx_flag; 
           Bsb_ninja_global_vars.refmt_flags, refmt_flags;

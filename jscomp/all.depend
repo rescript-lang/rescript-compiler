@@ -892,9 +892,9 @@ bsb/bsb_ninja_gen.cmx : ext/string_map.cmx ext/literals.cmx \
     bsb/bsb_rule.cmx bsb/bsb_parse_sources.cmx bsb/bsb_ninja_util.cmx \
     bsb/bsb_ninja_global_vars.cmx bsb/bsb_ninja_file_groups.cmx \
     bsb/bsb_namespace_map_gen.cmx bsb/bsb_log.cmx bsb/bsb_exception.cmx \
-    bsb/bsb_dir_index.cmx bsb/bsb_db.cmx bsb/bsb_config_types.cmx \
-    bsb/bsb_config.cmx bsb/bsb_build_util.cmx bsb/bsb_build_schemas.cmx \
-    bsb/bsb_ninja_gen.cmi
+    bsb/bsb_dir_index.cmx bsb/bsb_default.cmx bsb/bsb_db.cmx \
+    bsb/bsb_config_types.cmx bsb/bsb_config.cmx bsb/bsb_build_util.cmx \
+    bsb/bsb_build_schemas.cmx bsb/bsb_ninja_gen.cmi
 bsb/bsb_ninja_global_vars.cmx :
 bsb/bsb_ninja_regen.cmx : ext/literals.cmx ext/ext_path.cmx \
     bsb/bsb_ninja_gen.cmx bsb/bsb_ninja_check.cmx bsb/bsb_merlin_gen.cmx \
