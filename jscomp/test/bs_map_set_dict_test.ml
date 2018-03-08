@@ -5,7 +5,7 @@ let b loc v  = Mt.bool_suites ~suites ~test_id loc v
 
 module Icmp = 
   (val Belt.Id.comparable
-    ~cmp:(fun (x : int) y -> 
+    (fun (x : int) y -> 
       compare x y
      )
   )

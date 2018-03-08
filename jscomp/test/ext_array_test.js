@@ -202,9 +202,7 @@ function rfind_with_index(arr, cmp, v) {
   var _i = len - 1 | 0;
   while(true) {
     var i = _i;
-    if (i < 0) {
-      return i;
-    } else if (Curry._2(cmp, arr[i], v)) {
+    if (i < 0 || Curry._2(cmp, arr[i], v)) {
       return i;
     } else {
       _i = i - 1 | 0;

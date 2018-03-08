@@ -206,7 +206,7 @@ and compile_external_field_apply
                let params = Ext_list.init (x - len)
                    (fun _ -> Ext_ident.create "param") in
                E.ocaml_fun params 
-                 [S.return (E.call ~info:{arity=Full; call_info=Call_ml}
+                 [S.return_stmt (E.call ~info:{arity=Full; call_info=Call_ml}
                               acc (Ext_list.append args @@ Ext_list.map E.var params))]
              else E.call ~info:Js_call_info.dummy acc args
            (* alpha conversion now? --
@@ -281,7 +281,7 @@ and compile_recursive_let ~all_bindings
                 (
                   Ident_map.fold
                     (fun old new_param  acc ->
-                       S.define ~kind:Alias old (E.var new_param) :: acc) 
+                       S.define_variable ~kind:Alias old (E.var new_param) :: acc) 
                     ret.new_params body_block
                 )
             ]
@@ -304,7 +304,7 @@ and compile_recursive_let ~all_bindings
        and need to be declared first 
     *)
     Js_output.of_block (
-      S.define ~kind:Variable id (E.array Mutable []) :: 
+      S.define_variable ~kind:Variable id (E.array Mutable []) :: 
       (List.mapi (fun i (x : Lam.t) -> 
            match x with  
            | Lvar lid
@@ -375,7 +375,7 @@ and compile_recursive_lets_aux cxt id_args : Js_output.t =
   | [] -> output_code
   | _ ->  
     (Js_output.of_block  @@
-     Ext_list.map (fun id -> S.define ~kind:Variable id (E.dummy_obj ())) ids ) 
+     Ext_list.map (fun id -> S.define_variable ~kind:Variable id (E.dummy_obj ())) ids ) 
     ++  output_code
 and compile_recursive_lets cxt id_args : Js_output.t  = 
 
@@ -577,7 +577,7 @@ and
                            let () = ret.new_params <- Ident_map.disjoint_merge new_params ret.new_params in
                            assigned_params |> Ext_list.map (fun (param, arg) -> S.assign param arg))
                          @
-                         [S.continue ()(* label *)]
+                         [S.continue_stmt ()(* label *)]
                          (* Note true and continue needed to be handled together*)
             in
             begin
@@ -634,8 +634,8 @@ and
         match compile_lambda {
             cxt with should_return = ReturnFalse; st = NeedValue} e with 
         | {block = b; value =  Some v} -> 
-
-          Js_output.make (Ext_list.append b  [S.throw v])
+          Js_output.make 
+          (Ext_list.append b  [S.throw_stmt v])
             ~value:E.undefined ~finished:True
         (* FIXME -- breaks invariant when NeedValue, reason is that js [throw] is statement 
            while ocaml it's an expression, we should remove such things in lambda optimizations
@@ -691,7 +691,8 @@ and
       -> 
       (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer      *)
-      Js_output.handle_block_return st should_return lam [S.debugger] E.unit
+      Js_output.handle_block_return st should_return lam 
+      S.debugger_block E.unit
 
 
 
@@ -933,7 +934,7 @@ and
                 (* Invariant: should_return is false*)
                 Js_output.make @@ 
                 Ext_list.append b  [
-                  S.define ~kind id (E.econd e out1 out2) ]
+                  S.define_variable ~kind id (E.econd e out1 out2) ]
               | _, _ -> 
                 Js_output.make 
                   ( Ext_list.append b [
@@ -1033,7 +1034,7 @@ and
 #end                 
 *)
                 Js_output.make 
-                  (Ext_list.append b  [S.return  (E.econd e  out1 out2)]) ~finished:True                         
+                  (Ext_list.append b  [S.return_stmt  (E.econd e  out1 out2)]) ~finished:True                         
               |   _, _, _  ->
                 (*              
 #if BS_DEBUG then 
@@ -1140,7 +1141,7 @@ and
             | _ -> 
               let v = Ext_ident.create_tmp () in  
               (* Necessary avoid duplicated computation*)
-              (S.define ~kind:Variable v e ) ::  dispatch (E.var v)
+              (S.define_variable ~kind:Variable v e ) ::  dispatch (E.var v)
           end
         | _, _, {value =  None; _}  -> assert false 
       in
@@ -1235,7 +1236,7 @@ and
             TODO: wait for a bug fix
       *)
       let declares = 
-        S.define ~kind:Variable exit_id
+        S.define_variable ~kind:Variable exit_id
           E.zero_int_literal :: 
         (* we should always make it zero here, since [zero] is reserved in our mapping*)
         Ext_list.map (fun x -> S.declare_variable ~kind:Variable x ) bindings in
@@ -1311,7 +1312,7 @@ and
            | Assign x, _  ->
              Js_output.make (Ext_list.append block  [S.assign_unit x ])
            | EffectCall, ReturnTrue _  -> 
-             Js_output.make (Ext_list.append block  [S.return_unit ()]) ~finished:True
+             Js_output.make (Ext_list.append block S.return_unit) ~finished:True
            | EffectCall, _ -> Js_output.make block
            | NeedValue, _ -> Js_output.make block ~value:E.unit end
        | _ -> assert false )
@@ -1366,7 +1367,7 @@ and
                                              body) ])
               | _ , _
                 -> 
-                Ext_list.append b1 (S.define ~kind:Variable id e1 :: (Ext_list.append b2   [
+                Ext_list.append b1 (S.define_variable ~kind:Variable id e1 :: (Ext_list.append b2   [
                     S.for_ None e2 id direction 
                       (Js_output.to_block @@ 
                        compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
@@ -1381,7 +1382,7 @@ and
         match st, should_return with 
         | EffectCall, ReturnFalse  -> Js_output.make block
         | EffectCall, ReturnTrue _  -> 
-          Js_output.make (Ext_list.append block  [S.return_unit()]) ~finished:True
+          Js_output.make (Ext_list.append block  S.return_unit ) ~finished:True
         (* unit -> 0, order does not matter *)
         | (Declare _ | Assign _), ReturnTrue _ -> Js_output.make [S.unknown_lambda lam]
         | Declare (_kind, x), ReturnFalse  ->   
@@ -1414,7 +1415,7 @@ and
         match st, should_return with 
         | EffectCall, ReturnFalse -> Js_output.make block
         | EffectCall, ReturnTrue _ -> 
-          Js_output.make (Ext_list.append block  [S.return_unit ()]) ~finished:True
+          Js_output.make (Ext_list.append block  S.return_unit  ) ~finished:True
         | (Declare _ | Assign _ ) , ReturnTrue _ -> 
           Js_output.make [S.unknown_lambda lam]
         (* bound by a name, while in a tail position, this can not happen  *)

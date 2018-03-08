@@ -84,7 +84,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let a = Ext_ident.create "a" in 
             let b = Ext_ident.create "b" in
-            E.ocaml_fun [a;b] [S.return (E.string_append (E.var a) (E.var b))]
+            E.ocaml_fun [a;b] [S.return_stmt (E.string_append (E.var a) (E.var b))]
            )
 
   (* QUICK hack to make hello world example nicer,
@@ -94,14 +94,14 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
   | Single(_, ({name="print_endline";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let param = Ext_ident.create "param" in 
-            E.ocaml_fun [param] [S.return 
+            E.ocaml_fun [param] [S.return_stmt 
                                    (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
                                              (E.js_global "console.log") [E.var param]) 
                                       E.zero_int_literal )] )
   | Single(_, ({name="prerr_endline";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(let param = Ext_ident.create "param" in 
-            E.ocaml_fun [param] [S.return 
+            E.ocaml_fun [param] [S.return_stmt 
                                    (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
                                              (E.js_global "console.error") [E.var param]) 
                                       E.zero_int_literal )] )
@@ -111,7 +111,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
     Js_output.of_stmt @@ S.alias_variable id
       ~exp:( 
         let arg = Ext_ident.create "param" in
-        E.ocaml_fun [arg] [S.return (E.int_to_string (E.var arg))]
+        E.ocaml_fun [arg] [S.return_stmt (E.int_to_string (E.var arg))]
       )
 
   | Single(_, ({name="max_float";_} as id),_ ),  "pervasives.ml" ->
@@ -128,7 +128,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
     Js_output.of_stmt @@ S.alias_variable id
       ~exp:(let a = Ext_ident.create "a" in 
             let b = Ext_ident.create "b" in
-            E.ocaml_fun [a;b] [S.return (E.array_append (E.var a) (E.var b))]
+            E.ocaml_fun [a;b] [S.return_stmt (E.array_append (E.var a) (E.var b))]
            )
 
   (** Special handling for values in [Sys] *)

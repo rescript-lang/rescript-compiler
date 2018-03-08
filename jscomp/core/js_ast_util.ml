@@ -39,6 +39,6 @@ let rec named_expression (e : J.expression)
   else 
     let obj = Ext_ident.create_tmp () in 
     let obj_code = 
-      S.define
+      S.define_variable
         ~kind:Strict obj e in 
     Some (obj_code, obj)

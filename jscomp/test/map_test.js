@@ -177,19 +177,11 @@ function equal(cmp, m1, m2) {
     var e2 = _e2;
     var e1 = _e1;
     if (e1) {
-      if (e2) {
-        if (e1[0] === e2[0]) {
-          if (Curry._2(cmp, e1[1], e2[1])) {
-            _e2 = cons_enum(e2[2], e2[3]);
-            _e1 = cons_enum(e1[2], e1[3]);
-            continue ;
-            
-          } else {
-            return /* false */0;
-          }
-        } else {
-          return /* false */0;
-        }
+      if (e2 && e1[0] === e2[0] && Curry._2(cmp, e1[1], e2[1])) {
+        _e2 = cons_enum(e2[2], e2[3]);
+        _e1 = cons_enum(e1[2], e1[3]);
+        continue ;
+        
       } else {
         return /* false */0;
       }

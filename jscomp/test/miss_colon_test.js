@@ -72,18 +72,14 @@ function $star$colon(_f, _g) {
       }
     }
     if (exit$2 === 3) {
-      if (g.tag) {
-        exit$1 = 2;
-      } else if (g[0] !== 0) {
+      if (g.tag || g[0] !== 0) {
         exit$1 = 2;
       } else {
         return /* Int */Block.__(0, [0]);
       }
     }
     if (exit$1 === 2) {
-      if (f.tag) {
-        exit = 1;
-      } else if (f[0] !== 1) {
+      if (f.tag || f[0] !== 1) {
         exit = 1;
       } else {
         return g;

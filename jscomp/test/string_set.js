@@ -95,20 +95,16 @@ function union(s1, s2) {
 }
 
 function inter(s1, s2) {
-  if (s1) {
-    if (s2) {
-      var r1 = s1[2];
-      var v1 = s1[1];
-      var l1 = s1[0];
-      var match = split(v1, s2);
-      var l2 = match[0];
-      if (match[1] !== 0) {
-        return Set_gen.internal_join(inter(l1, l2), v1, inter(r1, match[2]));
-      } else {
-        return Set_gen.internal_concat(inter(l1, l2), inter(r1, match[2]));
-      }
+  if (s1 && s2) {
+    var r1 = s1[2];
+    var v1 = s1[1];
+    var l1 = s1[0];
+    var match = split(v1, s2);
+    var l2 = match[0];
+    if (match[1] !== 0) {
+      return Set_gen.internal_join(inter(l1, l2), v1, inter(r1, match[2]));
     } else {
-      return /* Empty */0;
+      return Set_gen.internal_concat(inter(l1, l2), inter(r1, match[2]));
     }
   } else {
     return /* Empty */0;

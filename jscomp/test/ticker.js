@@ -437,14 +437,10 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
-        if (for_all(p, param[0])) {
-          _param = param[3];
-          continue ;
-          
-        } else {
-          return /* false */0;
-        }
+      if (Curry._2(p, param[1], param[2]) && for_all(p, param[0])) {
+        _param = param[3];
+        continue ;
+        
       } else {
         return /* false */0;
       }
@@ -458,9 +454,7 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Curry._2(p, param[1], param[2])) {
-        return /* true */1;
-      } else if (exists(p, param[0])) {
+      if (Curry._2(p, param[1], param[2]) || exists(p, param[0])) {
         return /* true */1;
       } else {
         _param = param[3];
@@ -708,19 +702,11 @@ function equal(cmp, m1, m2) {
     var e2 = _e2;
     var e1 = _e1;
     if (e1) {
-      if (e2) {
-        if (Caml_obj.caml_equal(e1[0], e2[0])) {
-          if (Curry._2(cmp, e1[1], e2[1])) {
-            _e2 = cons_enum(e2[2], e2[3]);
-            _e1 = cons_enum(e1[2], e1[3]);
-            continue ;
-            
-          } else {
-            return /* false */0;
-          }
-        } else {
-          return /* false */0;
-        }
+      if (e2 && Caml_obj.caml_equal(e1[0], e2[0]) && Curry._2(cmp, e1[1], e2[1])) {
+        _e2 = cons_enum(e2[2], e2[3]);
+        _e1 = cons_enum(e1[2], e1[3]);
+        continue ;
+        
       } else {
         return /* false */0;
       }
@@ -796,24 +782,20 @@ function compute_update_sequences(all_tickers) {
   List.fold_left((function (counter, ticker) {
           var loop = function (counter, ticker) {
             var rank = ticker[/* rank */1];
-            if (typeof rank === "number") {
-              if (rank !== 0) {
-                return counter;
+            if (typeof rank === "number" && rank === 0) {
+              ticker[/* rank */1] = /* Visited */1;
+              var match = ticker[/* type_ */3];
+              if (match) {
+                var match$1 = match[0];
+                var counter$1 = loop(counter, match$1[/* lhs */2]);
+                var counter$2 = loop(counter$1, match$1[/* rhs */1]);
+                var counter$3 = counter$2 + 1 | 0;
+                ticker[/* rank */1] = /* Ranked */[counter$3];
+                return counter$3;
               } else {
-                ticker[/* rank */1] = /* Visited */1;
-                var match = ticker[/* type_ */3];
-                if (match) {
-                  var match$1 = match[0];
-                  var counter$1 = loop(counter, match$1[/* lhs */2]);
-                  var counter$2 = loop(counter$1, match$1[/* rhs */1]);
-                  var counter$3 = counter$2 + 1 | 0;
-                  ticker[/* rank */1] = /* Ranked */[counter$3];
-                  return counter$3;
-                } else {
-                  var counter$4 = counter + 1 | 0;
-                  ticker[/* rank */1] = /* Ranked */[counter$4];
-                  return counter$4;
-                }
+                var counter$4 = counter + 1 | 0;
+                ticker[/* rank */1] = /* Ranked */[counter$4];
+                return counter$4;
               }
             } else {
               return counter;
@@ -889,14 +871,10 @@ function process_quote(ticker_map, new_ticker, new_value) {
                   var match$2 = match$1[/* lhs */2][/* value */0];
                   var match$3 = match$1[/* rhs */1][/* value */0];
                   var value;
-                  if (match$2) {
-                    if (match$3) {
-                      var y = match$3[0];
-                      var x = match$2[0];
-                      value = match$1[/* op */0] !== 0 ? /* Some */[x - y] : /* Some */[x + y];
-                    } else {
-                      value = /* None */0;
-                    }
+                  if (match$2 && match$3) {
+                    var y = match$3[0];
+                    var x = match$2[0];
+                    value = match$1[/* op */0] !== 0 ? /* Some */[x - y] : /* Some */[x + y];
                   } else {
                     value = /* None */0;
                   }

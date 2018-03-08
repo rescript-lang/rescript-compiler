@@ -131,14 +131,10 @@ function dump(r) {
         } else {
           var s = r.length;
           var t = r.tag | 0;
-          if (t === 0) {
-            if (s === 2) {
-              _r = r[1];
-              continue ;
-              
-            } else {
-              return /* false */0;
-            }
+          if (t === 0 && s === 2) {
+            _r = r[1];
+            continue ;
+            
           } else {
             return /* false */0;
           }

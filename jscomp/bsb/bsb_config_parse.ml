@@ -23,8 +23,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 let config_file_bak = "bsconfig.json.bak"
-let refmt3_exe = "refmt3.exe"
-let refmt2_exe = "refmt.exe"
 let get_list_string = Bsb_build_util.get_list_string
 let (//) = Ext_path.combine
 

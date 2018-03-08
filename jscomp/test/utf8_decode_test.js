@@ -165,15 +165,11 @@ function eq_list(cmp, _xs, _ys) {
     var ys = _ys;
     var xs = _xs;
     if (xs) {
-      if (ys) {
-        if (Curry._2(cmp, xs[0], ys[0])) {
-          _ys = ys[1];
-          _xs = xs[1];
-          continue ;
-          
-        } else {
-          return /* false */0;
-        }
+      if (ys && Curry._2(cmp, xs[0], ys[0])) {
+        _ys = ys[1];
+        _xs = xs[1];
+        continue ;
+        
       } else {
         return /* false */0;
       }

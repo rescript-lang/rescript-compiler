@@ -715,15 +715,11 @@ function for_all2_no_exn(p, _l1, _l2) {
     var l2 = _l2;
     var l1 = _l1;
     if (l1) {
-      if (l2) {
-        if (Curry._2(p, l1[0], l2[0])) {
-          _l2 = l2[1];
-          _l1 = l1[1];
-          continue ;
-          
-        } else {
-          return /* false */0;
-        }
+      if (l2 && Curry._2(p, l1[0], l2[0])) {
+        _l2 = l2[1];
+        _l1 = l1[1];
+        continue ;
+        
       } else {
         return /* false */0;
       }

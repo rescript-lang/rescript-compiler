@@ -64,8 +64,8 @@ let flatten_map =
           end
       | Return ( {return_value = {expression_desc = Cond (a,b,c);  comment}}) 
         -> 
-          { statement_desc = If (a, [self#statement (S.return b)],  
-                                 Some [ self#statement (S.return c)]); comment}
+          { statement_desc = If (a, [self#statement (S.return_stmt b)],  
+                                 Some [ self#statement (S.return_stmt c)]); comment}
 
       | Return ({return_value = {expression_desc = Seq _; _} as v}) ->
           let block = Js_analyzer.rev_flatten_seq v  in
@@ -73,7 +73,7 @@ let flatten_map =
           | {statement_desc = Exp last_one ; _} :: rest_rev
             ->  
               super#statement 
-                (S.block (Ext_list.rev_map_append (self#statement) rest_rev [S.return last_one]))
+                (S.block (Ext_list.rev_map_append (self#statement) rest_rev [S.return_stmt last_one]))
           | _ -> assert false
           end
       | Block [x]

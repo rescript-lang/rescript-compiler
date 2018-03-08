@@ -31,28 +31,25 @@ module E = Js_exp_make
 
 type t = J.statement 
 
-let return ?comment e : t = 
+let return_stmt ?comment e : t = 
   {statement_desc = Return {return_value = e; } ; comment}
 
-let return_unit ?comment () : t =              
-  return ?comment  E.unit 
+let return_unit  : t list =              
+    [{ statement_desc = Return {return_value = E.unit; } ; 
+      comment = None}]
+  
+let empty_stmt  : t = 
+  { statement_desc = Block []; comment = None}
 
-let break ?comment () : t = 
-  {comment ; statement_desc = Break }
-
-let mk ?comment  statement_desc : t = 
-  {statement_desc; comment}
-
-let empty ?comment  () : t = { statement_desc = Block []; comment}
-
-let throw ?comment v : t = { statement_desc = J.Throw v; comment}
+let throw_stmt ?comment v : t = 
+  { statement_desc = J.Throw v; comment}
 
 (* avoid nested block *)
 let  rec block ?comment  (b : J.block)   : t =  
   match b with 
   | [{statement_desc = Block bs }  ] -> block bs
   | [b] -> b
-  | [] -> empty ?comment ()
+  | [] -> empty_stmt 
   | _ -> {statement_desc = Block b  ; comment}
 
 (* It's a statement, we can discard some values *)       
@@ -77,7 +74,8 @@ let declare_variable ?comment  ?ident_info  ~kind (v:Ident.t)  : t=
                 ident_info ;};
    comment}
 
-let define ?comment  ?ident_info ~kind (v:Ident.t) exp    : t=
+let define_variable ?comment  ?ident_info 
+  ~kind (v:Ident.t) exp : t=
   let property : J.property =  kind in
   let ident_info  : J.ident_info  = 
     match ident_info with
@@ -88,14 +86,24 @@ let define ?comment  ?ident_info ~kind (v:Ident.t) exp    : t=
                 ident_info ;};
    comment}
 
+let alias_variable ?comment  ~exp (v:Ident.t)  : t=
+  {statement_desc = 
+     Variable {
+       ident = v; value = Some exp; property = Alias;
+       ident_info = {used_stats = NA }   };
+   comment}   
+
+
 let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t = 
   match e.expression_desc with 
   | Number (Int {i; _}) -> 
     let continuation =  
-      begin match List.find (fun (x : _ J.case_clause) -> x.case = (Int32.to_int i)) clauses
+      begin match Ext_list.find_opt 
+        (fun (x : _ J.case_clause) ->
+         if x.case = (Int32.to_int i) then Some (fst x.body) else None ) clauses
         with 
-        | case -> fst case.body
-        | exception Not_found -> 
+        | Some case -> case 
+        | None -> 
           begin match default with
             | Some x ->  x 
             | None -> assert false
@@ -103,32 +111,39 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
       end in
     begin match declaration, continuation with 
       | Some (kind, did), 
-        [ {statement_desc = Exp {expression_desc = Bin(Eq,  {expression_desc = Var (Id id) ; _}, e0); _}; _}]
+        [ {statement_desc = 
+            Exp {
+                expression_desc = 
+                Bin(Eq,  {expression_desc = Var (Id id) ; _}, e0); _}; _}]
         when Ident.same did id 
         -> 
-        define ?comment ~kind id e0
+        define_variable ?comment ~kind id e0
       | Some(kind,did), _ 
         -> 
         block (declare_variable ?comment ~kind did :: continuation)
       | None, _ -> block continuation
     end
-
   | _ -> 
-    match declaration with 
+    begin match declaration with 
     | Some (kind, did) -> 
       block [declare_variable ?comment ~kind did ;
              { statement_desc = J.Int_switch (e,clauses, default); comment}]
     | None ->  { statement_desc = J.Int_switch (e,clauses, default); comment}
+    end
 
 let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : t= 
   match e.expression_desc with 
   | Str (_,s) -> 
     let continuation = 
-      begin match List.find 
-                    (fun  (x : string J.case_clause) -> x.case = s) clauses
+      begin match Ext_list.find_opt 
+                    (fun  (x : string J.case_clause) ->
+                      if x.case = s then 
+                        Some (fst x.body)
+                      else None  
+                      ) clauses
         with 
-        | case ->  (fst case.body)
-        | exception Not_found -> 
+        | Some case ->  case
+        | None -> 
           begin match default with 
             | Some x -> x 
             | None -> assert false 
@@ -139,7 +154,7 @@ let string_switch ?comment ?declaration  ?default (e : J.expression)  clauses : 
         [ {statement_desc = Exp {expression_desc = Bin(Eq,  {expression_desc = Var (Id id); _}, e0);_} ; _}]
         when Ident.same did id 
         -> 
-        define ?comment ~kind id e0
+        define_variable ?comment ~kind id e0
       | Some(kind,did), _ 
         -> 
         block @@ declare_variable ?comment ~kind did :: continuation
@@ -174,20 +189,26 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
   let declared = ref false in
   let rec aux ?comment (e : J.expression) (then_ : J.block) (else_ : J.block ) acc   =
     match e.expression_desc, then_, (else_ : J.block ) with 
-    | _, [ {statement_desc = Return {return_value = b; _}; _}], 
+    | _,
+      [ {statement_desc = Return {return_value = b; _}; _}], 
       [ {statement_desc = Return {return_value = a; _}; _}]
       ->
-      return (E.econd e b a ) :: acc 
-    | _,  [ {statement_desc = 
-               Exp {expression_desc = Bin(Eq, ({expression_desc = Var (Id id0); _} as l0), a0); _}; _}], 
+      return_stmt (E.econd e b a ) :: acc 
+    | _,
       [ {statement_desc = 
-           Exp ({ expression_desc = Bin(Eq, 
-                                        {expression_desc = Var (Id id1); _}, b0); _}); _}]
+           Exp
+             {expression_desc = Bin(Eq, ({expression_desc = Var (Id id0); _} as l0), a0); _};
+         _}], 
+      [ {statement_desc = 
+           Exp (
+             { expression_desc =
+                 Bin(Eq, 
+                     {expression_desc = Var (Id id1); _}, b0); _}); _}]
       when Ident.same id0 id1 -> 
       begin match declaration with 
         | Some (kind,did)  when Ident.same did id0 -> 
           declared := true;
-          define ~kind id0 (E.econd e a0 b0) :: acc 
+          define_variable ~kind id0 (E.econd e a0 b0) :: acc 
         (* To hit this branch, we also need [declaration] passed down 
            TODO: check how we compile [Lifthenelse]
         *)
@@ -195,13 +216,13 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
           exp (E.assign l0 (E.econd e a0 b0)) :: acc 
       end
 
-    | _,  _,  
-      [ {statement_desc = Exp {expression_desc = Number _}; _}]
+    | _,  _,
+      ({statement_desc = Exp {expression_desc = Number _}; _}::more_else)
       ->
-      aux ?comment e then_ [] acc 
-    | _, [ {statement_desc = Exp {expression_desc = Number _}; _}], _
+      aux ?comment e then_ more_else acc 
+    | _, ({statement_desc = Exp {expression_desc = Number _}; _} :: more_then), _
       ->
-      aux ?comment e [] else_ acc 
+      aux ?comment e more_then else_ acc 
 
     | _,  [ {statement_desc = Exp b; _}],  [ {statement_desc = Exp a; _}]
       ->
@@ -222,6 +243,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
           move code outside of branch is generally helpful later
       *)
       aux ?comment e ys xs (y::acc)
+        
 
     |  Number ( Int { i = 0l; _}) , _,  _
       ->  
@@ -257,13 +279,42 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       (** Add comment when simplified *)
       aux ?comment e then_ else_ acc 
 
+    (*
+       {[ if a then { if b then d else e} else e ]}
+       => if a && b then d else e 
+    *)
+    | _,
+      [ {statement_desc = If (pred, then_, Some ([else_] as cont)) }],
+      [ another_else] when Js_analyzer.eq_statement else_ another_else
+      ->
+      aux ?comment (E.and_ e pred) then_ cont acc 
+    | _,
+      [ {statement_desc = If (pred, ([ then_ ] as cont), Some ( else_ )) }],
+      [ another_else] when Js_analyzer.eq_statement then_ another_else
+      ->
+      aux ?comment (E.and_ e (E.not pred)) else_ cont acc   
+    | _,      
+      ([ another_then] as cont), 
+      [ {statement_desc = If (pred, [then_], Some (else_ )) }]
+      when Js_analyzer.eq_statement then_ another_then
+      ->
+      aux ?comment (E.or_ e pred) cont else_ acc       
+
+    | _,      
+      ([ another_then] as cont), 
+      [ {statement_desc = If (pred, then_, Some [else_] ) }]
+      when Js_analyzer.eq_statement else_ another_then
+      ->
+      aux ?comment (E.or_ e (E.not pred)) cont then_ acc       
+
     | _ -> 
       let e = E.ocaml_boolean_under_condition e in 
-      { statement_desc = If (e, 
-                             then_,
-                             (match else_ with 
-                              | [] -> None
-                              |  v -> Some  v)); 
+      { statement_desc =
+          If (e, 
+              then_,
+              (match else_ with 
+               | [] -> None
+               |  v -> Some  v)); 
         comment } :: acc in
   let if_block = 
     aux ?comment e then_ (match else_ with None -> [] | Some v -> v) [] in
@@ -275,12 +326,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
 
 
 
-let alias_variable ?comment  ?exp (v:Ident.t)  : t=
-  {statement_desc = 
-     Variable {
-       ident = v; value = exp; property = Alias;
-       ident_info = {used_stats = NA }   };
-   comment}
+
 
 let assign ?comment  id e : t = 
   {
@@ -345,13 +391,13 @@ let unknown_lambda ?(comment="unknown")  (lam : Lam.t ) : t =
 (* TODO: 
     actually, only loops can be labelled
 *)    
-let continue  ?comment   ?(label="") unit  : t = 
+let continue_stmt  ?comment   ?(label="") unit  : t = 
   { 
     statement_desc = J.Continue  label;
     comment;
   }
 
-let debugger : t = 
-  { statement_desc = J.Debugger ; 
+let debugger_block : t list = 
+  [{ statement_desc = J.Debugger ; 
     comment = None 
-  }
+  }]

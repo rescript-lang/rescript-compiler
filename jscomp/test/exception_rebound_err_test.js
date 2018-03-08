@@ -45,22 +45,14 @@ function test_js_error4() {
     var exit$1 = 0;
     if (e === Caml_builtin_exceptions.not_found) {
       return 2;
-    } else if (e[0] === Caml_builtin_exceptions.invalid_argument) {
-      if (e[1] === "x") {
-        return 3;
-      } else {
-        exit$1 = 2;
-      }
+    } else if (e[0] === Caml_builtin_exceptions.invalid_argument && e[1] === "x") {
+      return 3;
     } else {
       exit$1 = 2;
     }
     if (exit$1 === 2) {
-      if (e[0] === A) {
-        if (e[1] !== 2) {
-          exit = 1;
-        } else {
-          return 4;
-        }
+      if (e[0] === A && e[1] === 2) {
+        return 4;
       } else {
         exit = 1;
       }

@@ -1350,58 +1350,54 @@ function kill(collid, ctx) {
     case 3 : 
         var o$2 = collid[2];
         var t = collid[0];
-        if (typeof t === "number") {
-          if (t !== 1) {
-            return /* [] */0;
-          } else {
-            var pos_000$1 = o$2[/* pos */1][/* x */0];
-            var pos_001$1 = o$2[/* pos */1][/* y */1];
-            var pos$1 = /* tuple */[
-              pos_000$1,
-              pos_001$1
-            ];
-            var p1 = make$1(/* Some */[/* tuple */[
-                    -5,
-                    -5
-                  ]], /* Some */[/* tuple */[
-                    0,
-                    0.2
-                  ]], /* BrickChunkL */1, pos$1, ctx);
-            var p2 = make$1(/* Some */[/* tuple */[
-                    -3,
-                    -4
-                  ]], /* Some */[/* tuple */[
-                    0,
-                    0.2
-                  ]], /* BrickChunkL */1, pos$1, ctx);
-            var p3 = make$1(/* Some */[/* tuple */[
-                    3,
-                    -4
-                  ]], /* Some */[/* tuple */[
-                    0,
-                    0.2
-                  ]], /* BrickChunkR */2, pos$1, ctx);
-            var p4 = make$1(/* Some */[/* tuple */[
-                    5,
-                    -5
-                  ]], /* Some */[/* tuple */[
-                    0,
-                    0.2
-                  ]], /* BrickChunkR */2, pos$1, ctx);
-            return /* :: */[
-                    p1,
+        if (typeof t === "number" && t === 1) {
+          var pos_000$1 = o$2[/* pos */1][/* x */0];
+          var pos_001$1 = o$2[/* pos */1][/* y */1];
+          var pos$1 = /* tuple */[
+            pos_000$1,
+            pos_001$1
+          ];
+          var p1 = make$1(/* Some */[/* tuple */[
+                  -5,
+                  -5
+                ]], /* Some */[/* tuple */[
+                  0,
+                  0.2
+                ]], /* BrickChunkL */1, pos$1, ctx);
+          var p2 = make$1(/* Some */[/* tuple */[
+                  -3,
+                  -4
+                ]], /* Some */[/* tuple */[
+                  0,
+                  0.2
+                ]], /* BrickChunkL */1, pos$1, ctx);
+          var p3 = make$1(/* Some */[/* tuple */[
+                  3,
+                  -4
+                ]], /* Some */[/* tuple */[
+                  0,
+                  0.2
+                ]], /* BrickChunkR */2, pos$1, ctx);
+          var p4 = make$1(/* Some */[/* tuple */[
+                  5,
+                  -5
+                ]], /* Some */[/* tuple */[
+                  0,
+                  0.2
+                ]], /* BrickChunkR */2, pos$1, ctx);
+          return /* :: */[
+                  p1,
+                  /* :: */[
+                    p2,
                     /* :: */[
-                      p2,
+                      p3,
                       /* :: */[
-                        p3,
-                        /* :: */[
-                          p4,
-                          /* [] */0
-                        ]
+                        p4,
+                        /* [] */0
                       ]
                     ]
-                  ];
-          }
+                  ]
+                ];
         } else {
           return /* [] */0;
         }
@@ -1677,16 +1673,12 @@ function process_collision(dir, c1, c2, state) {
               var t = c2[0];
               if (dir !== 0) {
                 var exit$1 = 0;
-                if (typeof t === "number") {
-                  if (t !== 4) {
-                    exit$1 = 4;
-                  } else {
-                    game_win(state[/* ctx */1]);
-                    return /* tuple */[
-                            /* None */0,
-                            /* None */0
-                          ];
-                  }
+                if (typeof t === "number" && t === 4) {
+                  game_win(state[/* ctx */1]);
+                  return /* tuple */[
+                          /* None */0,
+                          /* None */0
+                        ];
                 } else {
                   exit$1 = 4;
                 }
