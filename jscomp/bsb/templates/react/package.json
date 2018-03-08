@@ -7,7 +7,7 @@
     "clean": "bsb -clean-world",
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w",
-    "webpack:build": "NODE_ENV=production webpack"
+    "webpack:production": "NODE_ENV=production webpack"
   },
   "keywords": [
     "BuckleScript"
