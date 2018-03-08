@@ -16,6 +16,8 @@ let handleClick = (_event, _self) => Js.log("clicked!");
    `ReasonReact.element(Page.make(~message="hello", [||]))` */
 let make = (~message, _children) => {
   ...component,
-  render: (self) =>
-    <div onClick=(self.handle(handleClick))> (ReasonReact.stringToElement(message)) </div>
+  render: self =>
+    <div onClick=(self.handle(handleClick))>
+      (ReasonReact.stringToElement(message))
+    </div>,
 };
