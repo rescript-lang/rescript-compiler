@@ -394,12 +394,12 @@ let rec fillAux arr i x =
     A.setUnsafe arr i h ;
     fillAux arr (i + 1) t
 
-let rec ofArrayAux a i res =
+let rec fromArrayAux a i res =
   if i < 0 then res 
-  else ofArrayAux a (i - 1) (A.getUnsafe a i :: res) 
+  else fromArrayAux a (i - 1) (A.getUnsafe a i :: res) 
     
 let fromArray a =
-  ofArrayAux a (A.length a - 1) []    
+  fromArrayAux a (A.length a - 1) []    
 
 let ofArray = fromArray
 
@@ -412,7 +412,7 @@ let toArray ( x : _ t) =
 let shuffle xs = 
   let v = toArray xs in
   A.shuffleInPlace v ;
-  ofArray v 
+  fromArray v 
 
 let rec fillAuxMap arr i x f =
   match x with
