@@ -160,8 +160,10 @@ let removeMany (type key) (type id) (d : _ t) xs =
 (* let merge = I.merge  *)
 
 
-let ofArray xs = 
-  t  ~data:(I.ofArray xs)
+let fromArray xs = 
+  t  ~data:(I.fromArray xs)
+
+let ofArray = fromArray
 
 let cmpU d0 d1 f = 
   I.cmpU (data d0) (data d1) f

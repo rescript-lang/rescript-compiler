@@ -41,9 +41,9 @@ function b(loc, v) {
   return /* () */0;
 }
 
-var mapOfArray = Belt_MapInt.ofArray;
+var mapOfArray = Belt_MapInt.fromArray;
 
-var setOfArray = Belt_SetInt.ofArray;
+var setOfArray = Belt_SetInt.fromArray;
 
 function emptyMap() {
   return Belt_MapInt.empty;
@@ -56,7 +56,7 @@ var v = Belt_Array.makeByAndShuffle(1000000, (function (i) {
               ];
       }));
 
-var u = Belt_MapInt.ofArray(v);
+var u = Belt_MapInt.fromArray(v);
 
 Belt_MapInt.checkInvariantInternal(u);
 

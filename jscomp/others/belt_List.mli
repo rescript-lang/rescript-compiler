@@ -249,8 +249,11 @@ val mapWithIndex: 'a t -> (int -> 'a -> 'b) -> 'b t
 *)
 
 val ofArray: 'a array -> 'a t 
+[@@ocaml.deprecated "Use fromArray instead"]
+
+val fromArray: 'a array -> 'a t 
 (** @example {[
-      ofArray [|1;2;3|]  = [1;2;3]
+      fromArray [|1;2;3|]  = [1;2;3]
     ]}
 *)
 

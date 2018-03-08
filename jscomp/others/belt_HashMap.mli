@@ -149,9 +149,11 @@ val size: _ t -> int
 val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array 
 val keysToArray: ('key, _, _) t -> 'key array    
 val valuesToArray: (_,'value,_) t -> 'value array    
-val ofArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t    
+val fromArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t    
 val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
 val getBucketHistogram: _ t -> int array
 val logStats: _ t -> unit
 
+val ofArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t    
+[@@ocaml.deprecated "Use fromArray instead"]
 

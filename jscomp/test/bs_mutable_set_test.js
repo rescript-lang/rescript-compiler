@@ -26,7 +26,7 @@ function b(loc, x) {
 var xs = Array_data_util.range(0, 30);
 
 var u = {
-  data: Belt_internalSetInt.ofArray(xs)
+  data: Belt_internalSetInt.fromArray(xs)
 };
 
 b("File \"bs_mutable_set_test.ml\", line 20, characters 4-11", Belt_MutableSetInt.removeCheck(u, 0));
@@ -106,7 +106,7 @@ b("File \"bs_mutable_set_test.ml\", line 58, characters 4-11", Belt_internalAVLs
 var xs$1 = Array_data_util.randomRange(1000, 2000);
 
 var v = {
-  data: Belt_internalSetInt.ofArray(xs$1)
+  data: Belt_internalSetInt.fromArray(xs$1)
 };
 
 var bs = Belt_Array.map(Array_data_util.randomRange(500, 1499), (function (x) {
@@ -226,13 +226,13 @@ b("File \"bs_mutable_set_test.ml\", line 97, characters 4-11", Belt_internalAVLs
 var xs$2 = Array_data_util.randomRange(0, 100);
 
 var aa$2 = {
-  data: Belt_internalSetInt.ofArray(xs$2)
+  data: Belt_internalSetInt.fromArray(xs$2)
 };
 
 var xs$3 = Array_data_util.randomRange(40, 120);
 
 var bb$2 = {
-  data: Belt_internalSetInt.ofArray(xs$3)
+  data: Belt_internalSetInt.fromArray(xs$3)
 };
 
 var cc = Belt_MutableSetInt.union(aa$2, bb$2);
@@ -240,7 +240,7 @@ var cc = Belt_MutableSetInt.union(aa$2, bb$2);
 var xs$4 = Array_data_util.randomRange(0, 120);
 
 b("File \"bs_mutable_set_test.ml\", line 106, characters 4-11", Belt_MutableSetInt.eq(cc, {
-          data: Belt_internalSetInt.ofArray(xs$4)
+          data: Belt_internalSetInt.fromArray(xs$4)
         }));
 
 var xs$5 = Array_data_util.randomRange(0, 20);
@@ -250,11 +250,11 @@ var xs$6 = Array_data_util.randomRange(21, 40);
 var xs$7 = Array_data_util.randomRange(0, 40);
 
 b("File \"bs_mutable_set_test.ml\", line 108, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.union({
-              data: Belt_internalSetInt.ofArray(xs$5)
+              data: Belt_internalSetInt.fromArray(xs$5)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$6)
+              data: Belt_internalSetInt.fromArray(xs$6)
             }), {
-          data: Belt_internalSetInt.ofArray(xs$7)
+          data: Belt_internalSetInt.fromArray(xs$7)
         }));
 
 var dd = Belt_MutableSetInt.intersect(aa$2, bb$2);
@@ -262,7 +262,7 @@ var dd = Belt_MutableSetInt.intersect(aa$2, bb$2);
 var xs$8 = Array_data_util.randomRange(40, 100);
 
 b("File \"bs_mutable_set_test.ml\", line 113, characters 4-11", Belt_MutableSetInt.eq(dd, {
-          data: Belt_internalSetInt.ofArray(xs$8)
+          data: Belt_internalSetInt.fromArray(xs$8)
         }));
 
 var xs$9 = Array_data_util.randomRange(0, 20);
@@ -270,9 +270,9 @@ var xs$9 = Array_data_util.randomRange(0, 20);
 var xs$10 = Array_data_util.randomRange(21, 40);
 
 b("File \"bs_mutable_set_test.ml\", line 114, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect({
-              data: Belt_internalSetInt.ofArray(xs$9)
+              data: Belt_internalSetInt.fromArray(xs$9)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$10)
+              data: Belt_internalSetInt.fromArray(xs$10)
             }), {
           data: Belt_internalAVLset.empty
         }));
@@ -282,15 +282,15 @@ var xs$11 = Array_data_util.randomRange(21, 40);
 var xs$12 = Array_data_util.randomRange(0, 20);
 
 b("File \"bs_mutable_set_test.ml\", line 120, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect({
-              data: Belt_internalSetInt.ofArray(xs$11)
+              data: Belt_internalSetInt.fromArray(xs$11)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$12)
+              data: Belt_internalSetInt.fromArray(xs$12)
             }), {
           data: Belt_internalAVLset.empty
         }));
 
 b("File \"bs_mutable_set_test.ml\", line 126, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect({
-              data: Belt_internalSetInt.ofArray(/* array */[
+              data: Belt_internalSetInt.fromArray(/* array */[
                     1,
                     3,
                     4,
@@ -299,7 +299,7 @@ b("File \"bs_mutable_set_test.ml\", line 126, characters 4-11", Belt_MutableSetI
                     9
                   ])
             }, {
-              data: Belt_internalSetInt.ofArray(/* array */[
+              data: Belt_internalSetInt.fromArray(/* array */[
                     2,
                     4,
                     5,
@@ -308,7 +308,7 @@ b("File \"bs_mutable_set_test.ml\", line 126, characters 4-11", Belt_MutableSetI
                     10
                   ])
             }), {
-          data: Belt_internalSetInt.ofArray(/* int array */[
+          data: Belt_internalSetInt.fromArray(/* int array */[
                 4,
                 5
               ])
@@ -317,13 +317,13 @@ b("File \"bs_mutable_set_test.ml\", line 126, characters 4-11", Belt_MutableSetI
 var xs$13 = Array_data_util.randomRange(0, 39);
 
 b("File \"bs_mutable_set_test.ml\", line 132, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(aa$2, bb$2), {
-          data: Belt_internalSetInt.ofArray(xs$13)
+          data: Belt_internalSetInt.fromArray(xs$13)
         }));
 
 var xs$14 = Array_data_util.randomRange(101, 120);
 
 b("File \"bs_mutable_set_test.ml\", line 134, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(bb$2, aa$2), {
-          data: Belt_internalSetInt.ofArray(xs$14)
+          data: Belt_internalSetInt.fromArray(xs$14)
         }));
 
 var xs$15 = Array_data_util.randomRange(21, 40);
@@ -333,11 +333,11 @@ var xs$16 = Array_data_util.randomRange(0, 20);
 var xs$17 = Array_data_util.randomRange(21, 40);
 
 b("File \"bs_mutable_set_test.ml\", line 136, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff({
-              data: Belt_internalSetInt.ofArray(xs$15)
+              data: Belt_internalSetInt.fromArray(xs$15)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$16)
+              data: Belt_internalSetInt.fromArray(xs$16)
             }), {
-          data: Belt_internalSetInt.ofArray(xs$17)
+          data: Belt_internalSetInt.fromArray(xs$17)
         }));
 
 var xs$18 = Array_data_util.randomRange(0, 20);
@@ -347,11 +347,11 @@ var xs$19 = Array_data_util.randomRange(21, 40);
 var xs$20 = Array_data_util.randomRange(0, 20);
 
 b("File \"bs_mutable_set_test.ml\", line 142, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff({
-              data: Belt_internalSetInt.ofArray(xs$18)
+              data: Belt_internalSetInt.fromArray(xs$18)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$19)
+              data: Belt_internalSetInt.fromArray(xs$19)
             }), {
-          data: Belt_internalSetInt.ofArray(xs$20)
+          data: Belt_internalSetInt.fromArray(xs$20)
         }));
 
 var xs$21 = Array_data_util.randomRange(0, 20);
@@ -361,17 +361,17 @@ var xs$22 = Array_data_util.randomRange(0, 40);
 var xs$23 = Array_data_util.randomRange(0, -1);
 
 b("File \"bs_mutable_set_test.ml\", line 149, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff({
-              data: Belt_internalSetInt.ofArray(xs$21)
+              data: Belt_internalSetInt.fromArray(xs$21)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$22)
+              data: Belt_internalSetInt.fromArray(xs$22)
             }), {
-          data: Belt_internalSetInt.ofArray(xs$23)
+          data: Belt_internalSetInt.fromArray(xs$23)
         }));
 
 var xs$24 = Array_data_util.randomRange(0, 1000);
 
 var a0 = {
-  data: Belt_internalSetInt.ofArray(xs$24)
+  data: Belt_internalSetInt.fromArray(xs$24)
 };
 
 var a1 = Belt_MutableSetInt.keep(a0, (function (x) {
@@ -444,7 +444,7 @@ eq("File \"bs_mutable_set_test.ml\", line 188, characters 5-12", Belt_internalAV
 var u$2 = Belt_Array.concat(Array_data_util.randomRange(0, 100000), Array_data_util.randomRange(0, 100));
 
 var v$3 = {
-  data: Belt_internalSetInt.ofArray(u$2)
+  data: Belt_internalSetInt.fromArray(u$2)
 };
 
 eq("File \"bs_mutable_set_test.ml\", line 193, characters 5-12", Belt_internalAVLset.size(v$3.data), 100001);
@@ -472,7 +472,7 @@ var xs$25 = Belt_Array.makeBy(30, (function (i) {
       }));
 
 var v$4 = {
-  data: Belt_internalSetInt.ofArray(xs$25)
+  data: Belt_internalSetInt.fromArray(xs$25)
 };
 
 Belt_MutableSetInt.remove(v$4, 30);
@@ -496,9 +496,7 @@ for(var i$5 = 0 ,i_finish$3 = vv$1.length - 1 | 0; i$5 <= i_finish$3; ++i$5){
 eq("File \"bs_mutable_set_test.ml\", line 221, characters 5-12", Belt_internalAVLset.size(v$4.data), 0);
 
 function id(loc, x) {
-  var u = {
-    data: Belt_internalAVLset.ofSortedArrayUnsafe(x)
-  };
+  var u = Belt_MutableSetInt.ofSortedArrayUnsafe(x);
   Belt_internalAVLset.checkInvariantInternal(u.data);
   return b(loc, Belt_Array.every2(Belt_internalAVLset.toArray(u.data), x, Caml_obj.caml_equal));
 }
@@ -589,7 +587,7 @@ id("File \"bs_mutable_set_test.ml\", line 240, characters 5-12", Array_data_util
 var xs$26 = Array_data_util.randomRange(0, 1000);
 
 var v$5 = {
-  data: Belt_internalSetInt.ofArray(xs$26)
+  data: Belt_internalSetInt.fromArray(xs$26)
 };
 
 var copyV = Belt_MutableSetInt.keep(v$5, (function (x) {
@@ -623,7 +621,7 @@ b("File \"bs_mutable_set_test.ml\", line 254, characters 4-11", Belt_MutableSetI
 var xs$27 = Array_data_util.randomRange(0, 1000);
 
 var v$6 = {
-  data: Belt_internalSetInt.ofArray(xs$27)
+  data: Belt_internalSetInt.fromArray(xs$27)
 };
 
 var match$6 = Belt_MutableSetInt.split(v$6, 400);
@@ -633,13 +631,13 @@ var match$7 = match$6[0];
 var xs$28 = Array_data_util.randomRange(0, 399);
 
 b("File \"bs_mutable_set_test.ml\", line 259, characters 4-11", Belt_MutableSetInt.eq(match$7[0], {
-          data: Belt_internalSetInt.ofArray(xs$28)
+          data: Belt_internalSetInt.fromArray(xs$28)
         }));
 
 var xs$29 = Array_data_util.randomRange(401, 1000);
 
 b("File \"bs_mutable_set_test.ml\", line 260, characters 4-11", Belt_MutableSetInt.eq(match$7[1], {
-          data: Belt_internalSetInt.ofArray(xs$29)
+          data: Belt_internalSetInt.fromArray(xs$29)
         }));
 
 var xs$30 = Belt_Array.map(Array_data_util.randomRange(0, 1000), (function (x) {
@@ -647,7 +645,7 @@ var xs$30 = Belt_Array.map(Array_data_util.randomRange(0, 1000), (function (x) {
       }));
 
 var d$3 = {
-  data: Belt_internalSetInt.ofArray(xs$30)
+  data: Belt_internalSetInt.fromArray(xs$30)
 };
 
 var match$8 = Belt_MutableSetInt.split(d$3, 1001);
@@ -659,7 +657,7 @@ var xs$31 = Belt_Array.makeBy(501, (function (x) {
       }));
 
 b("File \"bs_mutable_set_test.ml\", line 263, characters 4-11", Belt_MutableSetInt.eq(match$9[0], {
-          data: Belt_internalSetInt.ofArray(xs$31)
+          data: Belt_internalSetInt.fromArray(xs$31)
         }));
 
 var xs$32 = Belt_Array.makeBy(500, (function (x) {
@@ -667,19 +665,19 @@ var xs$32 = Belt_Array.makeBy(500, (function (x) {
       }));
 
 b("File \"bs_mutable_set_test.ml\", line 264, characters 4-11", Belt_MutableSetInt.eq(match$9[1], {
-          data: Belt_internalSetInt.ofArray(xs$32)
+          data: Belt_internalSetInt.fromArray(xs$32)
         }));
 
 var xs$33 = Array_data_util.randomRange(0, 100);
 
 var aa$3 = {
-  data: Belt_internalSetInt.ofArray(xs$33)
+  data: Belt_internalSetInt.fromArray(xs$33)
 };
 
 var xs$34 = Array_data_util.randomRange(40, 120);
 
 var bb$3 = {
-  data: Belt_internalSetInt.ofArray(xs$34)
+  data: Belt_internalSetInt.fromArray(xs$34)
 };
 
 var cc$2 = Belt_MutableSetInt.union(aa$3, bb$3);
@@ -687,7 +685,7 @@ var cc$2 = Belt_MutableSetInt.union(aa$3, bb$3);
 var xs$35 = Array_data_util.randomRange(0, 120);
 
 b("File \"bs_mutable_set_test.ml\", line 274, characters 4-11", Belt_MutableSetInt.eq(cc$2, {
-          data: Belt_internalSetInt.ofArray(xs$35)
+          data: Belt_internalSetInt.fromArray(xs$35)
         }));
 
 var xs$36 = Array_data_util.randomRange(0, 20);
@@ -697,11 +695,11 @@ var xs$37 = Array_data_util.randomRange(21, 40);
 var xs$38 = Array_data_util.randomRange(0, 40);
 
 b("File \"bs_mutable_set_test.ml\", line 276, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.union({
-              data: Belt_internalSetInt.ofArray(xs$36)
+              data: Belt_internalSetInt.fromArray(xs$36)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$37)
+              data: Belt_internalSetInt.fromArray(xs$37)
             }), {
-          data: Belt_internalSetInt.ofArray(xs$38)
+          data: Belt_internalSetInt.fromArray(xs$38)
         }));
 
 var dd$1 = Belt_MutableSetInt.intersect(aa$3, bb$3);
@@ -709,7 +707,7 @@ var dd$1 = Belt_MutableSetInt.intersect(aa$3, bb$3);
 var xs$39 = Array_data_util.randomRange(40, 100);
 
 b("File \"bs_mutable_set_test.ml\", line 281, characters 4-11", Belt_MutableSetInt.eq(dd$1, {
-          data: Belt_internalSetInt.ofArray(xs$39)
+          data: Belt_internalSetInt.fromArray(xs$39)
         }));
 
 var xs$40 = Array_data_util.randomRange(0, 20);
@@ -717,9 +715,9 @@ var xs$40 = Array_data_util.randomRange(0, 20);
 var xs$41 = Array_data_util.randomRange(21, 40);
 
 b("File \"bs_mutable_set_test.ml\", line 282, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect({
-              data: Belt_internalSetInt.ofArray(xs$40)
+              data: Belt_internalSetInt.fromArray(xs$40)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$41)
+              data: Belt_internalSetInt.fromArray(xs$41)
             }), {
           data: Belt_internalAVLset.empty
         }));
@@ -729,15 +727,15 @@ var xs$42 = Array_data_util.randomRange(21, 40);
 var xs$43 = Array_data_util.randomRange(0, 20);
 
 b("File \"bs_mutable_set_test.ml\", line 288, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect({
-              data: Belt_internalSetInt.ofArray(xs$42)
+              data: Belt_internalSetInt.fromArray(xs$42)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$43)
+              data: Belt_internalSetInt.fromArray(xs$43)
             }), {
           data: Belt_internalAVLset.empty
         }));
 
 b("File \"bs_mutable_set_test.ml\", line 294, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.intersect({
-              data: Belt_internalSetInt.ofArray(/* array */[
+              data: Belt_internalSetInt.fromArray(/* array */[
                     1,
                     3,
                     4,
@@ -746,7 +744,7 @@ b("File \"bs_mutable_set_test.ml\", line 294, characters 4-11", Belt_MutableSetI
                     9
                   ])
             }, {
-              data: Belt_internalSetInt.ofArray(/* array */[
+              data: Belt_internalSetInt.fromArray(/* array */[
                     2,
                     4,
                     5,
@@ -755,7 +753,7 @@ b("File \"bs_mutable_set_test.ml\", line 294, characters 4-11", Belt_MutableSetI
                     10
                   ])
             }), {
-          data: Belt_internalSetInt.ofArray(/* int array */[
+          data: Belt_internalSetInt.fromArray(/* int array */[
                 4,
                 5
               ])
@@ -764,13 +762,13 @@ b("File \"bs_mutable_set_test.ml\", line 294, characters 4-11", Belt_MutableSetI
 var xs$44 = Array_data_util.randomRange(0, 39);
 
 b("File \"bs_mutable_set_test.ml\", line 300, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(aa$3, bb$3), {
-          data: Belt_internalSetInt.ofArray(xs$44)
+          data: Belt_internalSetInt.fromArray(xs$44)
         }));
 
 var xs$45 = Array_data_util.randomRange(101, 120);
 
 b("File \"bs_mutable_set_test.ml\", line 302, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff(bb$3, aa$3), {
-          data: Belt_internalSetInt.ofArray(xs$45)
+          data: Belt_internalSetInt.fromArray(xs$45)
         }));
 
 var xs$46 = Array_data_util.randomRange(21, 40);
@@ -780,11 +778,11 @@ var xs$47 = Array_data_util.randomRange(0, 20);
 var xs$48 = Array_data_util.randomRange(21, 40);
 
 b("File \"bs_mutable_set_test.ml\", line 304, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff({
-              data: Belt_internalSetInt.ofArray(xs$46)
+              data: Belt_internalSetInt.fromArray(xs$46)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$47)
+              data: Belt_internalSetInt.fromArray(xs$47)
             }), {
-          data: Belt_internalSetInt.ofArray(xs$48)
+          data: Belt_internalSetInt.fromArray(xs$48)
         }));
 
 var xs$49 = Array_data_util.randomRange(0, 20);
@@ -794,11 +792,11 @@ var xs$50 = Array_data_util.randomRange(21, 40);
 var xs$51 = Array_data_util.randomRange(0, 20);
 
 b("File \"bs_mutable_set_test.ml\", line 310, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff({
-              data: Belt_internalSetInt.ofArray(xs$49)
+              data: Belt_internalSetInt.fromArray(xs$49)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$50)
+              data: Belt_internalSetInt.fromArray(xs$50)
             }), {
-          data: Belt_internalSetInt.ofArray(xs$51)
+          data: Belt_internalSetInt.fromArray(xs$51)
         }));
 
 var xs$52 = Array_data_util.randomRange(0, 20);
@@ -808,11 +806,11 @@ var xs$53 = Array_data_util.randomRange(0, 40);
 var xs$54 = Array_data_util.randomRange(0, -1);
 
 b("File \"bs_mutable_set_test.ml\", line 317, characters 4-11", Belt_MutableSetInt.eq(Belt_MutableSetInt.diff({
-              data: Belt_internalSetInt.ofArray(xs$52)
+              data: Belt_internalSetInt.fromArray(xs$52)
             }, {
-              data: Belt_internalSetInt.ofArray(xs$53)
+              data: Belt_internalSetInt.fromArray(xs$53)
             }), {
-          data: Belt_internalSetInt.ofArray(xs$54)
+          data: Belt_internalSetInt.fromArray(xs$54)
         }));
 
 Mt.from_pair_suites("bs_mutable_set_test.ml", suites[0]);
@@ -829,11 +827,11 @@ var L = 0;
 
 var empty = Belt_MutableSetInt.make;
 
-var ofArray = Belt_MutableSetInt.ofArray;
+var fromArray = Belt_MutableSetInt.fromArray;
 
 var $plus$plus = Belt_MutableSetInt.union;
 
-var f = Belt_MutableSetInt.ofArray;
+var f = Belt_MutableSetInt.fromArray;
 
 var $eq$tilde = Belt_MutableSetInt.eq;
 
@@ -847,7 +845,7 @@ exports.R = R;
 exports.A = A;
 exports.L = L;
 exports.empty = empty;
-exports.ofArray = ofArray;
+exports.fromArray = fromArray;
 exports.$plus$plus = $plus$plus;
 exports.f = f;
 exports.$eq$tilde = $eq$tilde;

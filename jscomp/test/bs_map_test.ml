@@ -16,14 +16,14 @@ module N = Belt.Set.Int
 module A = Belt.Array
 
 
-let mapOfArray x = M.ofArray x 
-let setOfArray x = N.ofArray  x 
+let mapOfArray x = M.fromArray x 
+let setOfArray x = N.fromArray  x 
 let emptyMap () = M.empty 
 
 let () = 
   let v = 
       (A.makeByAndShuffle 1_000_000 (fun i -> (i,i))) in 
-  let u = M.ofArray v in   
+  let u = M.fromArray v in   
    (M.checkInvariantInternal u);
   let firstHalf = A.slice v 0 2_000 in 
   let xx = A.reduce firstHalf u

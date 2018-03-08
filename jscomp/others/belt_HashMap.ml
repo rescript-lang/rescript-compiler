@@ -201,7 +201,7 @@ let make (type key) (type identity) ~hintSize ~(id : (key,identity) id) =
   C.make ~hash:M.hash ~eq:M.eq  ~hintSize
 
   
-let ofArray (type a) (type identity) arr ~id:(id:(a,identity) id) =     
+let fromArray (type a) (type identity) arr ~id:(id:(a,identity) id) =     
   let module M = (val id) in
   let hash, eq = M.hash, M.eq in  
   let len = A.length arr in 
@@ -212,6 +212,8 @@ let ofArray (type a) (type identity) arr ~id:(id:(a,identity) id) =
     set0 ~eq ~hash v key value
   done ;
   v
+
+let ofArray = fromArray
       
 let mergeMany h arr = 
   let hash, eq = Belt_Id.getHashInternal ( C.hash h) , Belt_Id.getEqInternal (C.eq h) in 

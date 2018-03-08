@@ -89,8 +89,8 @@ type ('k, 'id) id = ('k, 'id) Belt_Id.comparable
 
 val make: id:('value, 'id) id -> ('value, 'id) t
 
-val ofArray: 'k array -> id:('k, 'id) id ->   ('k, 'id) t
-val ofSortedArrayUnsafe: 'value array -> id:('value, 'id) id ->  ('value,'id) t
+val fromArray: 'k array -> id:('k, 'id) id ->   ('k, 'id) t
+val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id ->  ('value,'id) t
 val copy: ('k, 'id) t -> ('k, 'id) t     
 val isEmpty: _ t -> bool
 val has:  ('value, _) t -> 'value ->  bool
@@ -192,3 +192,9 @@ val checkInvariantInternal: _ t -> unit
     ('value, 'id) t0]
   2. It is not really significantly more *)
 
+
+val ofArray: 'k array -> id:('k, 'id) id ->   ('k, 'id) t
+[@@ocaml.deprecated "Use fromArray instead"]
+
+val ofSortedArrayUnsafe: 'value array -> id:('value, 'id) id ->  ('value,'id) t
+[@@ocaml.deprecated "Use fromSortedArrayUnsafe instead"]

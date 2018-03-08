@@ -41,10 +41,12 @@ end
 
 type ('value, 'id) t = ('value, 'id) S.t
     
-let ofArray (type value) (type identity) data ~(id : (value,identity) id)  = 
+let fromArray (type value) (type identity) data ~(id : (value,identity) id)  = 
   let module M = (val id ) in
   let cmp = M.cmp in 
-  S.t ~cmp ~data:(Dict.ofArray ~cmp data)
+  S.t ~cmp ~data:(Dict.fromArray ~cmp data)
+
+let ofArray = fromArray
 
 let remove m e =      
   let cmp, data  = S.cmp m, S.data m  in
@@ -145,11 +147,11 @@ let getExn m e =
 let has m e = 
   Dict.has ~cmp:(S.cmp m) (S.data m) e
 
-let ofSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id ) =
+let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id ) =
   let module M = (val id) in 
-  S.t ~cmp:M.cmp ~data:(Dict.ofSortedArrayUnsafe xs)
+  S.t ~cmp:M.cmp ~data:(Dict.fromSortedArrayUnsafe xs)
 
-
+let ofSortedArrayUnsafe = fromSortedArrayUnsafe
   
 
 let getData = S.data

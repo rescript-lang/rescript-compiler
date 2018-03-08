@@ -482,7 +482,7 @@ let valuesToArray n =
     ignore (fillArrayValue n 0 v : int);  (* may add assertion *)
     v         
     
-let rec ofSortedArrayRevAux arr off len =     
+let rec fromSortedArrayRevAux arr off len =     
   match len with 
   | 0 -> empty
   | 1 -> let k, v = (A.getUnsafe arr off) in singleton k v 
@@ -502,14 +502,14 @@ let rec ofSortedArrayRevAux arr off len =
       ~height:2
   | _ ->  
     let nl = len / 2 in 
-    let left = ofSortedArrayRevAux arr off nl in 
+    let left = fromSortedArrayRevAux arr off nl in 
     let midK,midV = A.getUnsafe arr (off - nl) in 
     let right = 
-      ofSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
+      fromSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
     create left midK midV right    
 
 
-let rec ofSortedArrayAux arr off len =     
+let rec fromSortedArrayAux arr off len =     
   match len with 
   | 0 -> empty
   | 1 -> let k, v = (A.getUnsafe arr off) in singleton k v 
@@ -528,14 +528,14 @@ let rec ofSortedArrayAux arr off len =
       ~height:2
   | _ ->  
     let nl = len / 2 in 
-    let left = ofSortedArrayAux arr off nl in 
+    let left = fromSortedArrayAux arr off nl in 
     let midK, midV = A.getUnsafe arr (off + nl) in 
     let right = 
-      ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
+      fromSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left midK midV right    
 
-let ofSortedArrayUnsafe arr =     
-  ofSortedArrayAux arr 0 (A.length arr)
+let fromSortedArrayUnsafe arr =     
+  fromSortedArrayAux arr 0 (A.length arr)
 
 let rec compareAux e1 e2 ~kcmp ~vcmp =
   match e1,e2 with 
@@ -717,7 +717,7 @@ let rec updateMutate (t : _ t) x data ~cmp =
       );
       return (balMutate nt)  
 
-let ofArray (xs : _ array) ~cmp =   
+let fromArray (xs : _ array) ~cmp =   
   let len = A.length xs in 
   if len = 0 then empty
   else
@@ -729,10 +729,10 @@ let ofArray (xs : _ array) ~cmp =
     in 
     let result  = ref (
         if !next >= 0 then 
-          ofSortedArrayAux xs 0 !next 
+          fromSortedArrayAux xs 0 !next 
         else begin   
           next := - !next; 
-          ofSortedArrayRevAux xs (!next - 1) (!next)
+          fromSortedArrayRevAux xs (!next - 1) (!next)
         end  
       ) in 
     for i = !next to len - 1 do 

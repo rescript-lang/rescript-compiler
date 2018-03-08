@@ -51,6 +51,8 @@ val toList: 'v t -> (key * 'v) list
 (** In increasing order with respect *)
 val toArray: 'v t -> (key * 'v) array
 val ofArray: (key * 'v) array -> 'v t     
+[@@ocaml.deprecated "Use fromArray instead"]
+val fromArray: (key * 'v) array -> 'v t     
 val keysToArray: 'v t -> key array 
 val valuesToArray: 'v t -> 'v array
 val minKey: _ t -> key option 

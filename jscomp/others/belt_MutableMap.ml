@@ -180,9 +180,9 @@ let keysToArray d =
 let valuesToArray d =   
   N.valuesToArray (S.data d)
     
-let ofSortedArrayUnsafe (type key) (type identity) ~(id : (key,identity) id) xs : _ t =
+let fromSortedArrayUnsafe (type key) (type identity) ~(id : (key,identity) id) xs : _ t =
   let module M = (val id) in 
-  S.t ~data:(N.ofSortedArrayUnsafe xs) ~cmp:M.cmp
+  S.t ~data:(N.fromSortedArrayUnsafe xs) ~cmp:M.cmp
     
 let checkInvariantInternal d = 
   N.checkInvariantInternal (S.data d)  
@@ -216,10 +216,12 @@ let getExn m x =
 let has m x = 
   N.has ~cmp:(S.cmp m) (S.data m) x
     
-let ofArray (type k) (type identity) data ~(id : (k,identity) id)= 
+let fromArray (type k) (type identity) data ~(id : (k,identity) id)= 
   let module M = (val id ) in
   let cmp = M.cmp in 
-  S.t ~cmp  ~data:(N.ofArray ~cmp data)
+  S.t ~cmp  ~data:(N.fromArray ~cmp data)
+
+let ofArray = fromArray
     
 let set  m e v = 
   let oldRoot = S.data m in 

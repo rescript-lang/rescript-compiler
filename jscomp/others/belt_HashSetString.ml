@@ -139,13 +139,15 @@ let copy = N.copy
 let getBucketHistogram = N.getBucketHistogram 
 let isEmpty = C.isEmpty
 
-let ofArray arr  = 
+let fromArray arr = 
   let len = A.length arr in 
   let v = C.make ~hintSize:len ~hash:() ~eq:() in 
   for i = 0 to len - 1 do 
     add v (A.getUnsafe arr i)
   done ;
   v
+
+let ofArray = fromArray
 
 (* TOOD: optimize heuristics for resizing *)  
 let mergeMany h arr =   

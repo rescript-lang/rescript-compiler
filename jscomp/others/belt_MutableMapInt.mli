@@ -80,7 +80,11 @@ val size: 'a t -> int
 val toList: 'a t -> (key * 'a) list
 (** In increasing order *)
 val toArray: 'a t -> (key * 'a) array   
+
 val ofArray: (key * 'a) array -> 'a t 
+[@@ocaml.deprecated "Use fromArray instead"]
+
+val fromArray: (key * 'a) array -> 'a t 
 val keysToArray: 'a t -> key array 
 val valuesToArray: 'a t -> 'a array
 val minKey: _ t -> key option 

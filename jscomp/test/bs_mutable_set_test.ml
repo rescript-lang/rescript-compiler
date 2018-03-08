@@ -11,12 +11,12 @@ module A = Belt.Array
 module L = Belt.List 
 let (++) = A.concat
 let empty = N.make
-let ofArray = N.ofArray 
+let fromArray = N.fromArray 
 
 (************************************************)
 include (struct 
 let () = 
-  let u =  ofArray (I.range 0 30) in 
+  let u =  fromArray (I.range 0 30) in 
   b __LOC__ (N.removeCheck u 0);
   b __LOC__ (not (N.removeCheck u 0));
   b __LOC__ (N.removeCheck u 30);
@@ -59,7 +59,7 @@ let () =
 
 
 let () = 
-  let v = ofArray (I.randomRange 1_000 2_000) in 
+  let v = fromArray (I.randomRange 1_000 2_000) in 
   let bs = A.map (I.randomRange 500 1499) (fun  x -> N.removeCheck v x ) in 
   let indeedRemoved = A.reduce bs 0 (fun  acc x -> if x then acc + 1 else acc) in 
   eq __LOC__ indeedRemoved 500;
@@ -97,7 +97,7 @@ let () =
   b __LOC__ (N.isEmpty (N.intersect aa bb))
 
 let (++) = N.union
-let f = ofArray 
+let f = fromArray 
 let (=~) = N.eq 
 let () =   
   let aa =  f (I.randomRange 0 100) in 
@@ -154,7 +154,7 @@ let () =
     )     
 
 let () =   
-  let a0 = ofArray  (I.randomRange 0 1000) in 
+  let a0 = fromArray  (I.randomRange 0 1000) in 
   let a1,a2 = 
     (
       N.keep a0 (fun x -> x mod 2  = 0),
@@ -189,7 +189,7 @@ let () =
 
 let () =   
   let u = I.randomRange 0 100_000 ++ I.randomRange 0 100 in 
-  let v = N.ofArray u in 
+  let v = N.fromArray u in 
   eq __LOC__ (N.size v) 100_001;
   let u = I.randomRange 50_000 80_000 in 
   
@@ -207,7 +207,7 @@ let () =
   b __LOC__ (N.isEmpty v )
 
 let () = 
-  let v = N.ofArray (A.makeBy 30 (fun i -> i)) in 
+  let v = N.fromArray (A.makeBy 30 (fun i -> i)) in 
   N.remove v 30; 
   N.remove v 29 ;
   b __LOC__ (Js.eqUndefined 28 (N.maxUndefined v ));
@@ -240,7 +240,7 @@ let () =
   id __LOC__ (I.range 0 1000)
   
 let () =   
-  let v = N.ofArray (I.randomRange 0 1000) in 
+  let v = N.fromArray (I.randomRange 0 1000) in 
   let copyV = N.keep v (fun x -> x mod 8 = 0) in 
   let aa,bb = N.partition v (fun x -> x mod 8 = 0) in 
   let cc = N.keep v (fun x -> x mod 8 <> 0) in 
@@ -254,18 +254,18 @@ let () =
   b __LOC__ (N.eq cc bb)
 
 let () =   
-  let v = N.ofArray (I.randomRange 0 1000) in 
+  let v = N.fromArray (I.randomRange 0 1000) in 
   let ((aa,bb),_) = N.split v 400 in 
-  b __LOC__ (N.eq aa (N.ofArray (I.randomRange 0 399))) ;
-  b __LOC__ (N.eq bb (N.ofArray (I.randomRange 401 1000)));
-  let d = N.ofArray (A.map (I.randomRange 0 1000) (fun x -> x * 2)) in 
+  b __LOC__ (N.eq aa (N.fromArray (I.randomRange 0 399))) ;
+  b __LOC__ (N.eq bb (N.fromArray (I.randomRange 401 1000)));
+  let d = N.fromArray (A.map (I.randomRange 0 1000) (fun x -> x * 2)) in 
   let ((cc,dd), _) = N.split d 1001 in   
-  b __LOC__ (N.eq cc (N.ofArray (A.makeBy 501 (fun x -> x * 2))));
-  b __LOC__ (N.eq dd (N.ofArray (A.makeBy 500 (fun  x -> 1002 + x * 2))))
+  b __LOC__ (N.eq cc (N.fromArray (A.makeBy 501 (fun x -> x * 2))));
+  b __LOC__ (N.eq dd (N.fromArray (A.makeBy 500 (fun  x -> 1002 + x * 2))))
 
 
 let (++) = N.union
-let f = N.ofArray 
+let f = N.fromArray 
 let (=~) = N.eq 
 let () =   
   let aa =  f (I.randomRange 0 100) in 

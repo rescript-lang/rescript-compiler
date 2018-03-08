@@ -8,10 +8,10 @@ module N = Belt.Set.Int
 module I = Array_data_util
 module A = Belt.Array
 let (=~) s i = 
-  N.(eq (ofArray i) s)
+  N.(eq (fromArray i) s)
 let (=*) a b =  
-  N.(eq (ofArray a) (ofArray b))
-let ofA = N.ofArray
+  N.(eq (fromArray a) (fromArray b))
+let ofA = N.fromArray
 
 let ()= 
   b __LOC__ 
@@ -98,17 +98,17 @@ let () =
 let ()  = 
   let count = 1_000_000 in 
   let v = ((A.makeByAndShuffle count (fun i -> i))) in 
-  let u = N.ofArray v in 
+  let u = N.fromArray v in 
   (N.checkInvariantInternal u );
   let firstHalf = A.slice v 0 2_000 in 
   let xx = Belt.Array.reduce firstHalf u N.remove in 
   (N.checkInvariantInternal u);
-  b __LOC__ N.(eq (union (ofArray firstHalf) xx) u)
+  b __LOC__ N.(eq (union (fromArray firstHalf) xx) u)
   
 let () =   
-  let aa = N.ofArray (I.randomRange 0 100) in
-  let bb = N.ofArray (I.randomRange 0 200) in 
-  let cc = N.ofArray (I.randomRange 120 200) in 
+  let aa = N.fromArray (I.randomRange 0 100) in
+  let bb = N.fromArray (I.randomRange 0 200) in 
+  let cc = N.fromArray (I.randomRange 120 200) in 
   let dd = N.union aa cc in 
   b __LOC__ (N.subset aa bb);
   b __LOC__ (N.subset dd bb);
@@ -119,8 +119,8 @@ let () =
 
 
 let () =   
-  let aa = N.ofArray (I.randomRange 0 100) in 
-  let bb = N.ofArray (I.randomRange 0 100) in 
+  let aa = N.fromArray (I.randomRange 0 100) in 
+  let bb = N.fromArray (I.randomRange 0 100) in 
   let cc = N.add bb 101 in 
   let dd = N.remove bb 99 in 
   let ee = N.add dd 101 in 
@@ -133,9 +133,9 @@ let () =
   let a0 = N.empty in 
   let a1 = N.mergeMany a0 (I.randomRange 0 100) in 
   let a2 = N.removeMany a1 (I.randomRange 40 100) in 
-  let a3 = N.ofArray (I.randomRange 0 39) in 
+  let a3 = N.fromArray (I.randomRange 0 39) in 
   let (a4,a5), pres = N.split a1 40 in 
-  b __LOC__ (N.eq a1 (N.ofArray (I.randomRange 0 100)));
+  b __LOC__ (N.eq a1 (N.fromArray (I.randomRange 0 100)));
   b __LOC__ (N.eq a2 a3);
   b __LOC__ pres;
   b __LOC__ (N.eq a3 a4);
@@ -158,10 +158,10 @@ let () =
   b __LOC__ (not pres)  
 
 let () =   
-  let v = N.ofArray (I.randomRange 0 2_000) in 
-  let v0 = N.ofArray (I.randomRange 0 2_000) in 
-  let v1 = N.ofArray (I.randomRange 1 2_001) in 
-  let v2 = N.ofArray (I.randomRange 3 2_002) in 
+  let v = N.fromArray (I.randomRange 0 2_000) in 
+  let v0 = N.fromArray (I.randomRange 0 2_000) in 
+  let v1 = N.fromArray (I.randomRange 1 2_001) in 
+  let v2 = N.fromArray (I.randomRange 3 2_002) in 
   let v3 = N.removeMany v2 [|2_002; 2_001|] in   
   let us = A.map (I.randomRange 1_000 3_000) (fun x -> N.has v x) in 
   let counted = A.reduce us 0 (fun  acc x -> if x then acc + 1 else acc ) in 

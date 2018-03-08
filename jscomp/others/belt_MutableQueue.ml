@@ -212,10 +212,12 @@ let toArray x =
   fillAux 0 v (first x);
   v
 
-(*TODO: optimzie *)
-let ofArray arr =
+(*TODO: optimize *)
+let fromArray arr =
   let q = make () in
   for i = 0 to A.length arr - 1 do
     add q (A.getUnsafe arr i)
   done ;
   q
+
+let ofArray = fromArray
