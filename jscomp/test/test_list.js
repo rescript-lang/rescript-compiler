@@ -767,9 +767,9 @@ function stable_sort(cmp, l) {
   var sort = function (n, l) {
     var exit = 0;
     if (n !== 2) {
-      if (n !== 3) {
+      if (n !== 3 || !l) {
         exit = 1;
-      } else if (l) {
+      } else {
         var match = l[1];
         if (match) {
           var match$1 = match[1];
@@ -852,8 +852,6 @@ function stable_sort(cmp, l) {
         } else {
           exit = 1;
         }
-      } else {
-        exit = 1;
       }
     } else if (l) {
       var match$2 = l[1];
@@ -930,9 +928,9 @@ function stable_sort(cmp, l) {
   var rev_sort = function (n, l) {
     var exit = 0;
     if (n !== 2) {
-      if (n !== 3) {
+      if (n !== 3 || !l) {
         exit = 1;
-      } else if (l) {
+      } else {
         var match = l[1];
         if (match) {
           var match$1 = match[1];
@@ -1015,8 +1013,6 @@ function stable_sort(cmp, l) {
         } else {
           exit = 1;
         }
-      } else {
-        exit = 1;
       }
     } else if (l) {
       var match$2 = l[1];
@@ -1102,9 +1098,9 @@ function sort_uniq(cmp, l) {
   var sort = function (n, l) {
     var exit = 0;
     if (n !== 2) {
-      if (n !== 3) {
+      if (n !== 3 || !l) {
         exit = 1;
-      } else if (l) {
+      } else {
         var match = l[1];
         if (match) {
           var match$1 = match[1];
@@ -1254,8 +1250,6 @@ function sort_uniq(cmp, l) {
         } else {
           exit = 1;
         }
-      } else {
-        exit = 1;
       }
     } else if (l) {
       var match$2 = l[1];
@@ -1350,9 +1344,9 @@ function sort_uniq(cmp, l) {
   var rev_sort = function (n, l) {
     var exit = 0;
     if (n !== 2) {
-      if (n !== 3) {
+      if (n !== 3 || !l) {
         exit = 1;
-      } else if (l) {
+      } else {
         var match = l[1];
         if (match) {
           var match$1 = match[1];
@@ -1502,8 +1496,6 @@ function sort_uniq(cmp, l) {
         } else {
           exit = 1;
         }
-      } else {
-        exit = 1;
       }
     } else if (l) {
       var match$2 = l[1];

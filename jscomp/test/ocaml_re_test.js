@@ -2020,90 +2020,76 @@ function equal$2(_x1, _x2) {
             }
             break;
         case 3 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || !(x2.tag === 3 && x1[1] === x2[1] && Caml_obj.caml_equal(x1[2], x2[2]))) {
               return /* false */0;
-            } else if (x2.tag === 3 && x1[1] === x2[1] && Caml_obj.caml_equal(x1[2], x2[2])) {
+            } else {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         case 4 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || !(x2.tag === 4 && x1[0] === x2[0])) {
               return /* false */0;
-            } else if (x2.tag === 4 && x1[0] === x2[0]) {
+            } else {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         case 5 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || !(x2.tag === 5 && x1[0] === x2[0])) {
               return /* false */0;
-            } else if (x2.tag === 5 && x1[0] === x2[0]) {
+            } else {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         case 6 : 
             return /* false */0;
             break;
         case 7 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || x2.tag !== 7) {
               return /* false */0;
-            } else if (x2.tag === 7) {
+            } else {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         case 8 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || x2.tag !== 8) {
               return /* false */0;
-            } else if (x2.tag === 8) {
+            } else {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         case 9 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || x2.tag !== 9) {
               return /* false */0;
-            } else if (x2.tag === 9) {
+            } else {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         case 10 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || x2.tag !== 10) {
               return /* false */0;
-            } else if (x2.tag === 10) {
+            } else {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         case 11 : 
@@ -2121,27 +2107,23 @@ function equal$2(_x1, _x2) {
             }
             break;
         case 13 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || !(x2.tag === 13 && equal$2(x1[0], x2[0]))) {
               return /* false */0;
-            } else if (x2.tag === 13 && equal$2(x1[0], x2[0])) {
+            } else {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         case 14 : 
-            if (typeof x2 === "number") {
+            if (typeof x2 === "number" || !(x2.tag === 14 && x1[0] === x2[0])) {
               return /* false */0;
-            } else if (x2.tag === 14 && x1[0] === x2[0]) {
+            } else {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
               
-            } else {
-              return /* false */0;
             }
             break;
         
@@ -2202,9 +2184,9 @@ function merge_sequences(_param) {
                 var exit$1 = 0;
                 if (r$prime) {
                   var match$1 = r$prime[0];
-                  if (typeof match$1 === "number") {
+                  if (typeof match$1 === "number" || match$1.tag !== 1) {
                     exit$1 = 2;
-                  } else if (match$1.tag === 1) {
+                  } else {
                     var match$2 = match$1[0];
                     if (match$2 && equal$2(x$1, match$2[0])) {
                       return /* :: */[
@@ -2226,8 +2208,6 @@ function merge_sequences(_param) {
                     } else {
                       exit$1 = 2;
                     }
-                  } else {
-                    exit$1 = 2;
                   }
                 } else {
                   exit$1 = 2;

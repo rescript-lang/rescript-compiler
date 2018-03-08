@@ -9603,15 +9603,15 @@ function directive_parse(token_with_comments, lexbuf) {
         case "=~" : 
             if (calc) {
               var exit$1 = 0;
-              if (typeof lhs === "number") {
+              if (typeof lhs === "number" || lhs.tag !== 3) {
                 exit$1 = 2;
-              } else if (lhs.tag === 3) {
+              } else {
                 var curr_loc = curr(lexbuf);
                 var rhs = value_of_token(curr_loc, token(/* () */0));
                 var exit$2 = 0;
-                if (typeof rhs === "number") {
+                if (typeof rhs === "number" || rhs.tag !== 3) {
                   exit$2 = 3;
-                } else if (rhs.tag === 3) {
+                } else {
                   var loc = curr_loc;
                   var lhs$1 = lhs[0];
                   var str = rhs[0];
@@ -9722,8 +9722,6 @@ function directive_parse(token_with_comments, lexbuf) {
                       return Caml_obj.caml_greaterequal(lversion, version);
                     }
                   }
-                } else {
-                  exit$2 = 3;
                 }
                 if (exit$2 === 3) {
                   throw [
@@ -9736,8 +9734,6 @@ function directive_parse(token_with_comments, lexbuf) {
                       ];
                 }
                 
-              } else {
-                exit$1 = 2;
               }
               if (exit$1 === 2) {
                 throw [
@@ -11885,13 +11881,11 @@ function wrap(parsing_fun, lexbuf) {
     var exit$2 = 0;
     if (err[0] === $$Error$2) {
       var tmp = err[1];
-      if (typeof tmp === "number" || tmp.tag) {
+      if (typeof tmp === "number" || tmp.tag || input_name[0] !== "//toplevel//") {
         exit$2 = 3;
-      } else if (input_name[0] === "//toplevel//") {
+      } else {
         skip_phrase(lexbuf);
         throw err;
-      } else {
-        exit$2 = 3;
       }
     } else {
       exit$2 = 3;
@@ -12133,7 +12127,7 @@ if (match) {
                                                                                                                                                                   var match$95 = match$94[/* loc_start */0];
                                                                                                                                                                   if (match$95[/* pos_fname */0] === "" && !(match$95[/* pos_lnum */1] !== 1 || match$95[/* pos_bol */2] !== 0 || match$95[/* pos_cnum */3] !== 6)) {
                                                                                                                                                                     var match$96 = match$94[/* loc_end */1];
-                                                                                                                                                                    if (match$96[/* pos_fname */0] === "" && !(match$96[/* pos_lnum */1] !== 4 || match$96[/* pos_bol */2] !== 46 || match$96[/* pos_cnum */3] !== 71) && match$94[/* loc_ghost */2] !== 0 && !(match$13[/* pexp_attributes */2] || match$3[/* pvb_attributes */2])) {
+                                                                                                                                                                    if (match$96[/* pos_fname */0] === "" && !(match$96[/* pos_lnum */1] !== 4 || match$96[/* pos_bol */2] !== 46 || match$96[/* pos_cnum */3] !== 71 || !(match$94[/* loc_ghost */2] !== 0 && !(match$13[/* pexp_attributes */2] || match$3[/* pvb_attributes */2])))) {
                                                                                                                                                                       var match$97 = match$3[/* pvb_loc */3];
                                                                                                                                                                       var match$98 = match$97[/* loc_start */0];
                                                                                                                                                                       if (match$98[/* pos_fname */0] === "" && !(match$98[/* pos_lnum */1] !== 1 || match$98[/* pos_bol */2] !== 0 || match$98[/* pos_cnum */3] !== 0)) {

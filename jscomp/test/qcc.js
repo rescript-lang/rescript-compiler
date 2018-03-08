@@ -1115,9 +1115,9 @@ function expr(stk) {
   var _param = /* () */0;
   while(true) {
     var t = Curry._1(next$1, /* () */0);
-    if (t.tag) {
+    if (t.tag || t[0] !== "=") {
       return Curry._1(unnext, t);
-    } else if (t[0] === "=") {
+    } else {
       patchlval(/* () */0);
       var ty = lval[0][1];
       push(0);
@@ -1131,8 +1131,6 @@ function expr(stk) {
       _param = /* () */0;
       continue ;
       
-    } else {
-      return Curry._1(unnext, t);
     }
   };
 }

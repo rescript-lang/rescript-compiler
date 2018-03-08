@@ -2989,12 +2989,10 @@ function endline(s) {
 
 function gen_pp_field(field_type) {
   var exit = 0;
-  if (typeof field_type === "number") {
+  if (typeof field_type === "number" || !field_type.tag) {
     exit = 1;
-  } else if (field_type.tag) {
-    return function_name_of_user_defined("pp", field_type[0]);
   } else {
-    exit = 1;
+    return function_name_of_user_defined("pp", field_type[0]);
   }
   if (exit === 1) {
     return Curry._1(Printf.sprintf(/* Format */[
