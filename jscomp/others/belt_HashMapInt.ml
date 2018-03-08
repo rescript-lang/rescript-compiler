@@ -13,7 +13,7 @@
 (***********************************************************************)
 (**  Adapted by Authors of BuckleScript 2017                           *)
 
-# 23
+# 23 "hashmap.cppo.ml"
 type key = int
 type seed = int
 external caml_hash_mix_int : seed -> int -> seed  = "caml_hash_mix_int"
@@ -21,7 +21,7 @@ external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash (s : key) = 
   final_mix (caml_hash_mix_int 0 s)
 
-# 33
+# 33 "hashmap.cppo.ml"
 module N = Belt_internalBuckets
 module C = Belt_internalBucketsType
 module A = Belt_Array

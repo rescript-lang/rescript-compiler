@@ -48,7 +48,7 @@ type value = {
 
 type let_kind = Lam.let_kind
 
-type cont = 
+type continuation = 
   | EffectCall
   | Declare of let_kind * J.ident (* bound value *)
   | NeedValue 
@@ -78,7 +78,7 @@ type return_type =
 type jmp_table 
 
 type t = {
-  st : cont ;
+  st : continuation ;
   should_return : return_type;
   jmp_table : jmp_table;
   meta : Lam_stats.t ;

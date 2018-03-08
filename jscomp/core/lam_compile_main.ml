@@ -91,22 +91,6 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
      Note the arity of [print_endline] is already analyzed before, 
      so it should be safe
   *)
-  | Single(_, ({name="print_endline";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.alias_variable id 
-      ~exp:(let param = Ext_ident.create "param" in 
-            E.ocaml_fun [param] [S.return_stmt 
-                                   (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
-                                             (E.js_global "console.log") [E.var param]) 
-                                      E.zero_int_literal )] )
-  | Single(_, ({name="prerr_endline";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.alias_variable id 
-      ~exp:(let param = Ext_ident.create "param" in 
-            E.ocaml_fun [param] [S.return_stmt 
-                                   (E.seq (E.call ~info:{arity=Full; call_info = Call_na} 
-                                             (E.js_global "console.error") [E.var param]) 
-                                      E.zero_int_literal )] )
-
-
   | Single(_, ({name="string_of_int";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id
       ~exp:( 
