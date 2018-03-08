@@ -149,7 +149,7 @@ let has m e =
 
 let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id ) =
   let module M = (val id) in 
-  S.t ~cmp:M.cmp ~data:(Dict.ofSortedArrayUnsafe xs)
+  S.t ~cmp:M.cmp ~data:(Dict.fromSortedArrayUnsafe xs)
 
 let ofSortedArrayUnsafe = fromSortedArrayUnsafe
   

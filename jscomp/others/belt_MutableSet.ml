@@ -222,7 +222,7 @@ let toArray d =
 
 let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id) : _ t =
   let module M = (val id) in 
-  S.t ~data:(N.ofSortedArrayUnsafe xs) ~cmp:M.cmp
+  S.t ~data:(N.fromSortedArrayUnsafe xs) ~cmp:M.cmp
 
 let ofSortedArrayUnsafe = fromSortedArrayUnsafe
     
@@ -233,7 +233,7 @@ let checkInvariantInternal d =
 let fromArray (type value) (type identity)  data ~(id : (value,identity) id) =
   let module M = (val id) in
   let cmp = M.cmp in 
-  S.t ~cmp ~data:(N.ofArray ~cmp data)
+  S.t ~cmp ~data:(N.fromArray ~cmp data)
 
 let ofArray = fromArray
   
@@ -261,19 +261,19 @@ let split d  key  =
   if i < 0 then 
     let next = - i -1 in 
     (S.t 
-       ~data:(N.ofSortedArrayAux arr 0 next)
+       ~data:(N.fromSortedArrayAux arr 0 next)
        ~cmp
      , 
      S.t 
-       ~data:(N.ofSortedArrayAux arr next (len - next))
+       ~data:(N.fromSortedArrayAux arr next (len - next))
        ~cmp
     ), false
   else 
     (S.t 
-       ~data:(N.ofSortedArrayAux arr 0 i)
+       ~data:(N.fromSortedArrayAux arr 0 i)
        ~cmp,
      S.t 
-       ~data:(N.ofSortedArrayAux arr (i+1) (len - i - 1))
+       ~data:(N.fromSortedArrayAux arr (i+1) (len - i - 1))
        ~cmp
     ), true       
 
@@ -316,7 +316,7 @@ let intersect a b  : _ t =
     else 
       let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
       let k = Sort.intersectU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
-      S.t ~data:(N.ofSortedArrayAux tmp2 0 k)
+      S.t ~data:(N.fromSortedArrayAux tmp2 0 k)
         ~cmp
         
 let diff a b : _ t = 
@@ -345,7 +345,7 @@ let diff a b : _ t =
     else 
       let tmp2 = A.makeUninitializedUnsafe sizea in 
       let k = Sort.diffU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
-      S.t ~data:(N.ofSortedArrayAux tmp2 0 k) ~cmp
+      S.t ~data:(N.fromSortedArrayAux tmp2 0 k) ~cmp
 
 let union a b = 
   let cmp = S.cmp a in 
@@ -364,11 +364,11 @@ let union a b =
     if p
         (A.getUnsafe tmp (sizea - 1))
         (A.getUnsafe tmp sizea) [@bs] < 0 then 
-      S.t ~data:(N.ofSortedArrayAux tmp 0 totalSize) ~cmp
+      S.t ~data:(N.fromSortedArrayAux tmp 0 totalSize) ~cmp
     else   
       let tmp2 = A.makeUninitializedUnsafe totalSize in 
       let k = Sort.unionU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
-      S.t ~data:(N.ofSortedArrayAux tmp2 0 k) ~cmp
+      S.t ~data:(N.fromSortedArrayAux tmp2 0 k) ~cmp
       
 let has d x =
   N.has ~cmp:(S.cmp d) (S.data d) x

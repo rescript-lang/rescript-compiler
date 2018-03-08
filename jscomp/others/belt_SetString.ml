@@ -31,7 +31,8 @@ let partitionU = N.partitionSharedU
 let size = N.size
 let toList = N.toList
 let toArray = N.toArray
-let ofSortedArrayUnsafe = N.ofSortedArrayUnsafe
+let fromSortedArrayUnsafe = N.fromSortedArrayUnsafe
+let ofSortedArrayUnsafe = N.fromSortedArrayUnsafe
 let checkInvariantInternal = N.checkInvariantInternal
 
 let rec add  (t : t) (x : value) : t =
@@ -92,7 +93,8 @@ let removeMany h arr =
   done ;
   !v 
           
-let ofArray = I.ofArray
+let fromArray = I.fromArray
+let ofArray = I.fromArray
 let cmp = I.cmp 
 let eq = I.eq 
 let get = I.get

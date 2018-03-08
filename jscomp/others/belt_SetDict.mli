@@ -30,10 +30,12 @@ val empty: ('value, 'id) t
 
 val ofArray: 'k array -> cmp:('k, 'id) cmp -> ('k, 'id) t
 [@@ocaml.deprecated "Use fromArray instead"]
+val ofSortedArrayUnsafe: 'value array ->  ('value,'id) t
+[@@ocaml.deprecated "Use fromSortedArrayUnsafe instead"]
 
 val fromArray: 'k array -> cmp:('k, 'id) cmp -> ('k, 'id) t
 
-val ofSortedArrayUnsafe: 'value array ->  ('value,'id) t
+val fromSortedArrayUnsafe: 'value array ->  ('value,'id) t
     
 val isEmpty: _ t -> bool
 val has:

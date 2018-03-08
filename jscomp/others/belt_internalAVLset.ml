@@ -370,7 +370,7 @@ let toArray n =
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v 
 
-let rec ofSortedArrayRevAux arr off len =     
+let rec fromSortedArrayRevAux arr off len =     
   match len with 
   | 0 -> empty
   | 1 -> singleton (A.getUnsafe arr off)
@@ -389,14 +389,14 @@ let rec ofSortedArrayRevAux arr off len =
       ~height:2
   | _ ->  
     let nl = len / 2 in 
-    let left = ofSortedArrayRevAux arr off nl in 
+    let left = fromSortedArrayRevAux arr off nl in 
     let mid = A.getUnsafe arr (off - nl) in 
     let right = 
-      ofSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
+      fromSortedArrayRevAux arr (off - nl - 1) (len - nl - 1) in 
     create left mid right    
 
 
-let rec ofSortedArrayAux arr off len =     
+let rec fromSortedArrayAux arr off len =     
   match len with 
   | 0 -> empty
   | 1 -> singleton (A.getUnsafe arr off)
@@ -415,14 +415,14 @@ let rec ofSortedArrayAux arr off len =
       ~height:2
   | _ ->  
     let nl = len / 2 in 
-    let left = ofSortedArrayAux arr off nl in 
+    let left = fromSortedArrayAux arr off nl in 
     let mid = A.getUnsafe arr (off + nl) in 
     let right = 
-      ofSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
+      fromSortedArrayAux arr (off + nl + 1) (len - nl - 1) in 
     create left mid right    
 
-let ofSortedArrayUnsafe arr =     
-  ofSortedArrayAux arr 0 (A.length arr)
+let fromSortedArrayUnsafe arr =     
+  fromSortedArrayAux arr 0 (A.length arr)
 
 let rec keepSharedU n p =
   match toOpt n with 
@@ -452,7 +452,7 @@ let keepCopyU n p : _ t =
     let  v = A.makeUninitializedUnsafe size in 
     let last =     
       fillArrayWithFilter n 0 v p in 
-    ofSortedArrayAux v 0 last 
+    fromSortedArrayAux v 0 last 
 
 let keepCopy n p = keepCopyU n (fun [@bs] x -> p x)
 
@@ -466,8 +466,8 @@ let partitionCopyU n p  =
     let cursor = cursor ~forward:0 ~backward in 
     fillArrayWithPartition n cursor v p ;
     let forwardLen = forward cursor in 
-    ofSortedArrayAux v 0 forwardLen,  
-    ofSortedArrayRevAux v backward (size  - forwardLen)
+    fromSortedArrayAux v 0 forwardLen,  
+    fromSortedArrayRevAux v backward (size  - forwardLen)
 
 let partitionCopy n p = partitionCopyU n (fun[@bs] a -> p a)
     
@@ -636,7 +636,7 @@ let rec addMutate ~cmp (t : _ t) x =
       return (balMutate nt)
 
 
-let ofArray  (xs : _ array) ~cmp =   
+let fromArray (xs : _ array) ~cmp =   
   let len = A.length xs in 
   if len = 0 then empty
   else
@@ -644,10 +644,10 @@ let ofArray  (xs : _ array) ~cmp =
       (fun [@bs] x y -> (Belt_Id.getCmpInternal cmp) x y [@bs] < 0)) in     
     let result = 
       ref (if !next >= 0 then  
-        ofSortedArrayAux xs 0 !next
+        fromSortedArrayAux xs 0 !next
       else begin   
         next := - !next ; 
-        ofSortedArrayRevAux xs (!next - 1) !next
+        fromSortedArrayRevAux xs (!next - 1) !next
       end)  in 
     for i = !next to len - 1 do 
       result := addMutate ~cmp !result (A.getUnsafe xs i) 

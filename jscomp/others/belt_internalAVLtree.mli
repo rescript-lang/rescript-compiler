@@ -140,9 +140,9 @@ val fillArray : ('a,'b) node -> int -> ('a * 'b) array -> int
 val toArray : ('a, 'b) t -> ('a * 'b) array  
 val keysToArray : ('a, 'b) t -> 'a array
 val valuesToArray : ('a, 'b) t -> 'b array 
-val ofSortedArrayAux : ('a * 'b) array -> int -> int -> ('a, 'b) t
-val ofSortedArrayRevAux : ('a * 'b) array -> int -> int -> ('a, 'b) t
-val ofSortedArrayUnsafe : ('a * 'b) array -> ('a, 'b) t
+val fromSortedArrayAux : ('a * 'b) array -> int -> int -> ('a, 'b) t
+val fromSortedArrayRevAux : ('a * 'b) array -> int -> int -> ('a, 'b) t
+val fromSortedArrayUnsafe : ('a * 'b) array -> ('a, 'b) t
 
 val cmpU: 
   ('a, 'b) t -> ('a, 'c) t -> 
@@ -200,7 +200,7 @@ val has:
 
 
   
-val ofArray : ('a * 'b) array ->  cmp:('a,'id) cmp -> ('a, 'b) t
+val fromArray : ('a * 'b) array ->  cmp:('a,'id) cmp -> ('a, 'b) t
 
 val updateMutate :   
   ('a, 'b) t -> 'a -> 'b -> 

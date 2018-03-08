@@ -166,5 +166,5 @@ let getExn = I.getExn
 let split = I.split
 let mergeU = I.mergeU 
 let merge = I.merge 
-let fromArray = I.ofArray
-let ofArray = I.ofArray
+let fromArray = I.fromArray
+let ofArray = I.fromArray

@@ -111,7 +111,7 @@ let rec addMutate  t  (x : value)=
 
 
 
-let ofArray (xs : value array) =   
+let fromArray (xs : value array) =   
   let len = A.length xs in 
   if len = 0 then N.empty
   else
@@ -119,10 +119,10 @@ let ofArray (xs : value array) =
     let result  = 
         ref (
           if !next >= 0 then 
-            N.ofSortedArrayAux xs 0 !next
+            N.fromSortedArrayAux xs 0 !next
           else begin 
             next := - !next ;  
-            N.ofSortedArrayRevAux xs (!next - 1) !next
+            N.fromSortedArrayRevAux xs (!next - 1) !next
           end
           ) in 
     for i = !next to len - 1 do 

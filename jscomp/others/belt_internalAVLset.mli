@@ -101,9 +101,9 @@ val checkInvariantInternal: _ t -> unit
 *)  
 val fillArray: 'a node -> int -> 'a array -> int 
 val toArray: 'a t -> 'a array
-val ofSortedArrayAux : 'a array -> int -> int -> 'a t
-val ofSortedArrayRevAux : 'a array -> int -> int -> 'a t
-val ofSortedArrayUnsafe : 'a array -> 'a t
+val fromSortedArrayAux : 'a array -> int -> int -> 'a t
+val fromSortedArrayRevAux : 'a array -> int -> int -> 'a t
+val fromSortedArrayUnsafe : 'a array -> 'a t
 val has:  'a t ->  'a -> cmp:('a, 'b) cmp -> bool
 val cmp: 'a t -> 'a t -> cmp:('a, 'b) cmp -> int
 val eq:  'a t -> 'a t -> cmp:('a, 'b) cmp -> bool
@@ -113,7 +113,7 @@ val getUndefined: 'a t -> 'a -> cmp:('a, 'b) cmp -> 'a Js.undefined
 val getExn: 'a t -> 'a ->  cmp:('a, 'b) cmp -> 'a 
 
 
-val ofArray: 'a array ->  cmp:('a, 'b) cmp -> 'a t
+val fromArray: 'a array ->  cmp:('a, 'b) cmp -> 'a t
 
 
 val addMutate : cmp:('a, 'b) cmp -> 'a t -> 'a -> 'a t

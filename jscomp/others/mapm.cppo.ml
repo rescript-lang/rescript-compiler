@@ -161,7 +161,7 @@ let removeMany (type key) (type id) (d : _ t) xs =
 
 
 let fromArray xs = 
-  t  ~data:(I.ofArray xs)
+  t  ~data:(I.fromArray xs)
 
 let ofArray = fromArray
 
