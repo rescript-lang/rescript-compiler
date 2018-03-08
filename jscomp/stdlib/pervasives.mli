@@ -628,7 +628,12 @@ val print_int : int -> unit
 val print_float : float -> unit
 (** Print a floating-point number, in decimal, on standard output. *)
 
+#if BS then
+external print_endline : string -> unit = "log" 
+[@@bs.val] [@@bs.scope "console"]
+#else    
 val print_endline : string -> unit
+#end
 (** Print a string, followed by a newline character, on
    standard output and flush standard output. *)
 
@@ -656,7 +661,12 @@ val prerr_int : int -> unit
 val prerr_float : float -> unit
 (** Print a floating-point number, in decimal, on standard error. *)
 
+#if BS then
+external prerr_endline : string -> unit = "error" 
+[@@bs.val] [@@bs.scope "console"]
+#else    
 val prerr_endline : string -> unit
+#end  
 (** Print a string, followed by a newline character on standard
    error and flush standard error. *)
 
