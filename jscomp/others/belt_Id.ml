@@ -73,10 +73,9 @@ let comparableU
     end) in 
   (module N : Comparable with type t = key)
 
-
 let comparable cmp =
   comparableU (fun[@bs] a b -> cmp a b)
-    
+
 module type Hashable = sig 
   type identity 
   type t 
@@ -86,9 +85,9 @@ end
 
 type ('key, 'id) hashable = (module Hashable with type t = 'key and type identity = 'id)
                             
-module MakeHashable (M : sig
+module MakeHashableU (M : sig
    type t
-   val hash : t -> int  [@bs]
+   val hash : t -> int [@bs]
    val eq : t -> t -> bool [@bs]
   end) =
 struct
@@ -97,9 +96,21 @@ struct
   let hash = M.hash
   let eq = M.eq
 end
-  
+
+module MakeHashable (M : sig
+   type t
+   val hash : t -> int
+   val eq : t -> t -> bool
+  end) =
+struct
+  type identity
+  type t = M.t
+  let hash = (fun[@bs] a -> M.hash a)
+  let eq = (fun[@bs] a b -> M.eq a b)
+end
+
 let hashableU (type key) ~hash ~eq = 
-  let module N = MakeHashable(struct 
+  let module N = MakeHashableU(struct 
     type t = key 
     let hash = hash 
     let eq = eq 

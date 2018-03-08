@@ -35,21 +35,21 @@
 
 
 
-type ('a, 'id) hash = 'a -> int [@bs]
+type ('a, 'id) hash
 (** [('a, 'id) hash]
 
     Its runtime represenation is a [hash] function, but signed with a 
     type parameter, so that different hash functions type mismatch
 *) 
 
-type ('a, 'id) eq = 'a -> 'a -> bool [@bs]
+type ('a, 'id) eq
 (** [('a, 'id) eq]
  
     Its runtime represenation is an [eq] function, but signed with a 
     type parameter, so that different hash functions type mismatch
 *) 
 
-type ('a, 'id) cmp = 'a -> 'a -> int [@bs]
+type ('a, 'id) cmp
 (** [('a,'id) cmp]
   
     Its runtime representation is a [cmp] function, but signed with a 
@@ -78,31 +78,25 @@ module MakeComparableU :
   functor (M : sig 
     type t 
     val cmp : t -> t -> int [@bs] 
-  end) ->
-    sig 
-      type identity
-      type t = M.t 
-      val cmp : M.t -> M.t -> int [@bs] 
-    end
+  end) -> 
+  Comparable with type t = M.t
 
 module MakeComparable : 
   functor (M : sig 
     type t 
     val cmp : t -> t -> int 
   end) ->
-    sig 
-      type identity
-      type t = M.t 
-      val cmp : M.t -> M.t -> int [@bs] 
-    end
+  Comparable with type t = M.t
 
 val comparableU:
   ('a -> 'a -> int [@bs]) ->
   (module Comparable with type t = 'a)
+[@@ocaml.deprecated "Use the MakeComparableU functor API instead"]
 
 val comparable:
   ('a -> 'a -> int) -> 
   (module Comparable with type t = 'a)
+[@@ocaml.deprecated "Use the MakeComparable functor API instead"]
   
 module type Hashable = sig 
   type identity
@@ -124,17 +118,33 @@ type ('key, 'id) hashable =
     mismatch if they use different comparison function
 *)
 
-                            
+module MakeHashableU : 
+  functor (M : sig 
+    type t 
+     val hash : t -> int [@bs]
+     val eq : t -> t -> bool [@bs]
+  end) ->
+  Hashable with type t = M.t
+
+module MakeHashable : 
+  functor (M : sig 
+    type t 
+     val hash : t -> int
+     val eq : t -> t -> bool
+  end) ->
+  Hashable with type t = M.t
 
 val hashableU :
   hash:('a -> int [@bs]) ->
   eq:('a -> 'a -> bool [@bs]) ->
   (module Hashable with type t = 'a)
-  
+[@@ocaml.deprecated "Use the MakeHashableU functor API instead"]
+
 val hashable :
   hash:('a -> int) ->
   eq:('a -> 'a -> bool ) ->
   (module Hashable with type t = 'a)
+[@@ocaml.deprecated "Use the MakeHashable functor API instead"]
 
 
 
