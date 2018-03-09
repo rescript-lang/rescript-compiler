@@ -467,11 +467,11 @@ var int_map_suites_001 = /* :: */[
         (function () {
             var m = /* Empty */0;
             for(var i = 0; i <= 10000; ++i){
-              m = add$1("" + i, "" + i, m);
+              m = add$1(String(i), String(i), m);
             }
             var v = -1;
             for(var i$1 = 0; i$1 <= 10000; ++i$1){
-              if (find("" + i$1, m) !== "" + i$1) {
+              if (find(String(i$1), m) !== String(i$1)) {
                 v = i$1;
               }
               

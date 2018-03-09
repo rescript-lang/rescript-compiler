@@ -222,7 +222,7 @@ function pop_back(param) {
 function pp(fmt, s) {
   var v = "[ ";
   for(var i = 0 ,i_finish = length(s) - 1 | 0; i <= i_finish; ++i){
-    v = v + (", " + get(s, i));
+    v = v + (", " + String(get(s, i)));
   }
   v = v + "]";
   return Curry._1(Format.fprintf(fmt, /* Format */[

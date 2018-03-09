@@ -7,7 +7,7 @@ var Pervasives = require("../../lib/js/pervasives.js");
 var ff = Pervasives.string_of_float;
 
 function f(v) {
-  return "" + v;
+  return String(v);
 }
 
 Mt.from_pair_suites("to_string_test.ml", /* :: */[

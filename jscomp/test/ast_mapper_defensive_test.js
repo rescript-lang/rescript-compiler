@@ -12,7 +12,7 @@ function $$throw(loc, x) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
+      loc + (" id " + String(test_id[0])),
       (function () {
           return /* ThrowAny */Block.__(7, [x]);
         })

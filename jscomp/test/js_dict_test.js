@@ -219,7 +219,7 @@ var suites_001 = /* :: */[
                                           bar: "86"
                                         },
                                         Js_dict.map((function (i) {
-                                                return "" + i;
+                                                return String(i);
                                               }), {
                                               foo: 43,
                                               bar: 86

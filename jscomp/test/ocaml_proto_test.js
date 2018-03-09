@@ -3761,7 +3761,9 @@ function strong_connect(g, sccs, stack, index, v) {
                           ])
                       ]),
                     "[Graph] sub w [%i], w.index: %s\n"
-                  ]), w[/* core */0][/* id */0], string_of_option(Pervasives.string_of_int, w[/* index */1]));
+                  ]), w[/* core */0][/* id */0], string_of_option((function (prim) {
+                      return String(prim);
+                    }), w[/* index */1]));
           var match = w[/* index */1];
           if (match) {
             if (w[/* on_stack */3]) {
@@ -3821,7 +3823,11 @@ function strong_connect(g, sccs, stack, index, v) {
                   ])
               ]),
             "[Graph] after sub for v [%i], lowlink: %s, index: %s\n"
-          ]), v[/* core */0][/* id */0], string_of_option(Pervasives.string_of_int, v[/* lowlink */2]), string_of_option(Pervasives.string_of_int, v[/* index */1]));
+          ]), v[/* core */0][/* id */0], string_of_option((function (prim) {
+              return String(prim);
+            }), v[/* lowlink */2]), string_of_option((function (prim) {
+              return String(prim);
+            }), v[/* index */1]));
   Curry._1(log(/* Format */[
             /* String_literal */Block.__(11, [
                 "[Graph]   -> stack : ",
@@ -3835,7 +3841,7 @@ function strong_connect(g, sccs, stack, index, v) {
               ]),
             "[Graph]   -> stack : %s\n"
           ]), "[" + ($$String.concat(";", List.map((function (param) {
-                    return "" + param[/* core */0][/* id */0];
+                    return String(param[/* core */0][/* id */0]);
                   }), stack$2)) + "]"));
   if (eq_value(/* tuple */[
           v[/* lowlink */2],
@@ -5671,7 +5677,7 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           if (field_default$1) {
             var match$2 = field_default$1[0];
             if (match$2.tag === 2) {
-              return "" + match$2[0];
+              return String(match$2[0]);
             } else {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             }
@@ -7093,7 +7099,7 @@ function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
+      loc + (" id " + String(test_id[0])),
       (function () {
           return /* Eq */Block.__(0, [
                     x,

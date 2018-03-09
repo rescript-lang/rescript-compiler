@@ -13,7 +13,7 @@ var counter = [0];
 
 function add_test(loc, test) {
   counter[0] = counter[0] + 1 | 0;
-  var id = loc + (" id " + counter[0]);
+  var id = loc + (" id " + String(counter[0]));
   suites[0] = /* :: */[
     /* tuple */[
       id,

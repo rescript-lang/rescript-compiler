@@ -28,7 +28,7 @@ function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
+      loc + (" id " + String(test_id[0])),
       (function () {
           return /* Eq */Block.__(0, [
                     x,
@@ -63,7 +63,7 @@ function printable_point_init($$class) {
           }),
         print,
         (function (self$1) {
-            return "" + Curry._1(self$1[0][get_x], self$1);
+            return String(Curry._1(self$1[0][get_x], self$1));
           })
       ]);
   return (function (_, self, x_init) {
@@ -240,7 +240,7 @@ eq("File \"class5_test.ml\", line 67, characters 5-12", /* tuple */[
               return x + y | 0;
             }), 0),
       Caml_oo_curry.js3(-1010803711, 6, l$1, (function (s, x) {
-              return s + (x + " ");
+              return s + (String(x) + " ");
             }), "")
     ]);
 

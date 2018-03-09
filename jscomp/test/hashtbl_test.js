@@ -33,10 +33,10 @@ function f() {
 function g(count) {
   var tbl = Hashtbl.create(/* None */0, 17);
   for(var i = 0; i <= count; ++i){
-    Hashtbl.replace(tbl, (i << 1), "" + i);
+    Hashtbl.replace(tbl, (i << 1), String(i));
   }
   for(var i$1 = 0; i$1 <= count; ++i$1){
-    Hashtbl.replace(tbl, (i$1 << 1), "" + i$1);
+    Hashtbl.replace(tbl, (i$1 << 1), String(i$1));
   }
   var v = to_list(tbl);
   return $$Array.of_list(List.sort((function (param, param$1) {
@@ -74,7 +74,7 @@ var suites_001 = /* :: */[
                   $$Array.init(1001, (function (i) {
                           return /* tuple */[
                                   (i << 1),
-                                  "" + i
+                                  String(i)
                                 ];
                         })),
                   g(1000)

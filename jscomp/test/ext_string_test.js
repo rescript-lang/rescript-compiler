@@ -352,7 +352,7 @@ function rfind(sub, s) {
 function tail_from(s, x) {
   var len = s.length;
   if (x > len) {
-    var s$1 = "Ext_string_test.tail_from " + (s + (" : " + x));
+    var s$1 = "Ext_string_test.tail_from " + (s + (" : " + String(x)));
     throw [
           Caml_builtin_exceptions.invalid_argument,
           s$1

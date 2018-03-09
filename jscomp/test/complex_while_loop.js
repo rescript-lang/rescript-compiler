@@ -13,7 +13,7 @@ function f() {
           };
           return +(fib(n) > 10);
         })()) {
-    console.log("" + n);
+    console.log(String(n));
     n = n + 1 | 0;
   };
   return /* () */0;

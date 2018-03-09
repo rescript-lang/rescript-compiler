@@ -12,7 +12,7 @@ var v2 = {
 };
 
 process.on("exit", (function (exit_code) {
-        return "" + exit_code;
+        return String(exit_code);
       }));
 
 process.on(1, (function () {
@@ -20,11 +20,11 @@ process.on(1, (function () {
       }));
 
 process.on((function (i) {
-        return "" + i;
+        return String(i);
       }), "exit");
 
 process.on((function (i) {
-        return "" + i;
+        return String(i);
       }), 1);
 
 xx(3, 3, "xxx", "a", "b");
@@ -47,7 +47,7 @@ function f(x) {
 }
 
 process.on("exit", (function (exit_code) {
-        console.log("error code: " + exit_code);
+        console.log("error code: " + String(exit_code));
         return /* () */0;
       }));
 

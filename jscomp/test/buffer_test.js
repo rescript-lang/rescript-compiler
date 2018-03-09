@@ -48,7 +48,7 @@ var suites_001 = /* :: */[
       (function () {
           var v = Buffer.create(30);
           for(var i = 0; i <= 10; ++i){
-            Buffer.add_string(v, "" + i);
+            Buffer.add_string(v, String(i));
           }
           return /* Eq */Block.__(0, [
                     Buffer.contents(v),

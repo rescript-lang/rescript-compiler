@@ -17,7 +17,7 @@ var hash = Hashtbl.hash;
 function of_int(x) {
   return /* `Atom */[
           726615281,
-          "" + x
+          String(x)
         ];
 }
 

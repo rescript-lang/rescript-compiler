@@ -103,7 +103,7 @@ function bad_argf(fmt) {
 
 function dump(r) {
   if (typeof r === "number") {
-    return "" + r;
+    return String(r);
   } else {
     var get_fields = function (_acc, _n) {
       while(true) {
@@ -201,7 +201,7 @@ function dump(r) {
         return "<forward>";
       } else if (t < Obj.no_scan_tag) {
         var fields$2 = get_fields(/* [] */0, s);
-        return "Tag" + (t + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
+        return "Tag" + (String(t) + (" (" + ($$String.concat(", ", List.map(dump, fields$2)) + ")")));
       } else if (t === Obj.string_tag) {
         return "\"" + ($$String.escaped(r) + "\"");
       } else if (t === Obj.double_tag) {

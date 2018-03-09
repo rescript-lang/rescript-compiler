@@ -32,7 +32,7 @@ $$Array.iter((function (x) {
         return Curry._1(x, /* () */0);
       }), arr);
 
-console.log("" + v[0]);
+console.log(String(v[0]));
 
 if (v[0] !== 45) {
   throw [

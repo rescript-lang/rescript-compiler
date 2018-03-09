@@ -7,7 +7,7 @@ function odd(_z) {
     var z = _z;
     var even = Caml_int32.imul(z, z);
     var a = (even + 4 | 0) + even | 0;
-    console.log("" + a);
+    console.log(String(a));
     _z = 32;
     continue ;
     
