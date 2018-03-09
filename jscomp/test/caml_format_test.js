@@ -1305,17 +1305,17 @@ var float_data = /* array */[
   ],
   /* tuple */[
     "%f",
-    Pervasives.nan,
+    Number.NaN,
     "nan"
   ],
   /* tuple */[
     "%f",
-    Pervasives.infinity,
+    Number.POSITIVE_INFINITY,
     "inf"
   ],
   /* tuple */[
     "%f",
-    Pervasives.neg_infinity,
+    Number.NEGATIVE_INFINITY,
     "-inf"
   ],
   /* tuple */[

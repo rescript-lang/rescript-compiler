@@ -66,13 +66,6 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
          to make those parts pure (not a function call), then it can be removed 
          if unused 
       *)                     
-  | Single(_, ({name="infinity";_} as id),_ ),  "pervasives.ml" 
-    -> (* TODO: check relative path to compiler*)
-    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.js_global "Infinity")
-  | Single(_, ({name="neg_infinity";_} as id),_ ), "pervasives.ml" ->
-    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.js_global "-Infinity")
-  | Single(_, ({name="nan";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.js_global "NaN")
 
   (* QUICK hack to make hello world example nicer,
      Note the arity of [print_endline] is already analyzed before, 
@@ -84,23 +77,6 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
         let arg = Ext_ident.create "param" in
         E.ocaml_fun [arg] [S.return_stmt (E.int_to_string (E.var arg))]
       )
-
-  | Single(_, ({name="max_float";_} as id),_ ),  "pervasives.ml" ->
-
-    Js_output.of_stmt @@ S.alias_variable id 
-      ~exp:(E.js_global_dot "Number" "MAX_VALUE")
-  | Single(_, ({name="min_float";_} as id) ,_ ), "pervasives.ml" ->
-    Js_output.of_stmt @@  S.alias_variable id
-      ~exp:(E.js_global_dot  "Number" "MIN_VALUE")
-  | Single(_, ({name="epsilon_float";_} as id) ,_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.alias_variable id 
-      ~exp:(E.float "2.220446049250313e-16")
-  | Single(_, ({name="cat";_} as id) ,_ ),  "bytes.ml" ->
-    Js_output.of_stmt @@ S.alias_variable id
-      ~exp:(let a = Ext_ident.create "a" in 
-            let b = Ext_ident.create "b" in
-            E.ocaml_fun [a;b] [S.return_stmt (E.array_append (E.var a) (E.var b))]
-           )
 
   (** Special handling for values in [Sys] *)
   | Single(_, ({name="max_array_length" | "max_string_length";_} as id) ,_ ),  "sys.ml" ->

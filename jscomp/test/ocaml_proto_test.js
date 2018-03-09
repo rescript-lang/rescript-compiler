@@ -1628,7 +1628,7 @@ function lexer(lexbuf) {
         case 15 : 
             return /* FLOAT */Block.__(4, [Caml_format.caml_float_of_string(Lexing.lexeme(lexbuf$1))]);
         case 16 : 
-            return /* FLOAT */Block.__(4, [Pervasives.nan]);
+            return /* FLOAT */Block.__(4, [Number.NaN]);
         case 17 : 
             update_loc(lexbuf$1);
             ___ocaml_lex_state = 0;
