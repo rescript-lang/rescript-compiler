@@ -1,6 +1,6 @@
 
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,18 +18,18 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
 (** {!Belt.Id}
-    
-    Provide utiliites to create identified comparators or hashes for 
-    data structures used below. 
-    
-    It create a unique identifer per module of functions so that different data structures with slightly different 
+
+    Provide utiliites to create identified comparators or hashes for
+    data structures used below.
+
+    It create a unique identifer per module of functions so that different data structures with slightly different
     comparison functions won't mix.
 *)
 
@@ -38,21 +38,21 @@
 type ('a, 'id) hash
 (** [('a, 'id) hash]
 
-    Its runtime represenation is a [hash] function, but signed with a 
+    Its runtime represenation is a [hash] function, but signed with a
     type parameter, so that different hash functions type mismatch
-*) 
+*)
 
 type ('a, 'id) eq
 (** [('a, 'id) eq]
- 
-    Its runtime represenation is an [eq] function, but signed with a 
+
+    Its runtime represenation is an [eq] function, but signed with a
     type parameter, so that different hash functions type mismatch
-*) 
+*)
 
 type ('a, 'id) cmp
 (** [('a,'id) cmp]
-  
-    Its runtime representation is a [cmp] function, but signed with a 
+
+    Its runtime representation is a [cmp] function, but signed with a
     type parameter, so that different hash functions type mismatch
 *)
 module type Comparable = sig
@@ -66,39 +66,39 @@ type ('key, 'id) comparable =
 (** [('key, 'id) cmparable] is a module of functions, here it only includes [cmp].
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
-    by the type system). 
-    
-    It can be created using function {!comparableU} or{!comparable}. 
-   
-    The idea of a unique identity when created is that it makes sure two sets would type 
+    by the type system).
+
+    It can be created using function {!comparableU} or{!comparable}.
+
+    The idea of a unique identity when created is that it makes sure two sets would type
     mismatch if they use different comparison function
 *)
 
-module MakeComparableU : 
-  functor (M : sig 
-    type t 
-    val cmp : t -> t -> int [@bs] 
-  end) -> 
+module MakeComparableU :
+  functor (M : sig
+    type t
+    val cmp : t -> t -> int [@bs]
+  end) ->
   Comparable with type t = M.t
 
-module MakeComparable : 
-  functor (M : sig 
-    type t 
-    val cmp : t -> t -> int 
+module MakeComparable :
+  functor (M : sig
+    type t
+    val cmp : t -> t -> int
   end) ->
   Comparable with type t = M.t
 
 val comparableU:
-  ('a -> 'a -> int [@bs]) ->
+  cmp:('a -> 'a -> int [@bs]) ->
   (module Comparable with type t = 'a)
 [@@ocaml.deprecated "Use the MakeComparableU functor API instead"]
 
 val comparable:
-  ('a -> 'a -> int) -> 
+  cmp:('a -> 'a -> int) ->
   (module Comparable with type t = 'a)
 [@@ocaml.deprecated "Use the MakeComparable functor API instead"]
-  
-module type Hashable = sig 
+
+module type Hashable = sig
   type identity
   type t
   val hash : (t, identity) hash
@@ -108,27 +108,27 @@ end
 type ('key, 'id) hashable =
   (module Hashable with type t = 'key and type identity = 'id)
 (** [('key, 'id) hashable] is a module of functions, here it only includes [hash], [eq].
-    
+
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
-    by the type system). 
-    
+    by the type system).
+
     It can be created using function {!hashableU} or {!hashable}.
 
-    The idea of a unique identity when created is that it makes sure two hash sets would type 
+    The idea of a unique identity when created is that it makes sure two hash sets would type
     mismatch if they use different comparison function
 *)
 
-module MakeHashableU : 
-  functor (M : sig 
-    type t 
+module MakeHashableU :
+  functor (M : sig
+    type t
      val hash : t -> int [@bs]
      val eq : t -> t -> bool [@bs]
   end) ->
   Hashable with type t = M.t
 
-module MakeHashable : 
-  functor (M : sig 
-    type t 
+module MakeHashable :
+  functor (M : sig
+    type t
      val hash : t -> int
      val eq : t -> t -> bool
   end) ->
