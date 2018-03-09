@@ -40,11 +40,13 @@ let pred n = sub n 1n
 let abs n = if n >= 0n then n else neg n
 #if BS then
 let size = 54 (* 54 is not a multiple of 8 *)
+let min_int = -9007199254740991n
+let max_int = 9007199254740991n
 #else
 let size = Sys.word_size
-#end
 let min_int = shift_left 1n (size - 1)
 let max_int = sub min_int 1n
+#end
 let lognot n = logxor n (-1n)
 
 external format : string -> nativeint -> string = "caml_nativeint_format"
