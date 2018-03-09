@@ -4,29 +4,58 @@
   and related comments *)
 open Types
 
-let rec deconstruct_component_type t =
+let rec drill_through_tlink_and_tsubst t =
   match t.desc with
-  | Tconstr (p, types, _) when Path.last p = "componentSpec" -> Some types
   | Tlink t
-  | Tsubst t -> deconstruct_component_type t
-  | _ -> None
+  | Tsubst t -> drill_through_tlink_and_tsubst t
+  | t -> t
 
-let type_is_component_spec t =
-  deconstruct_component_type t <> None
+let is_weak_type_after_drilling t =
+  match drill_through_tlink_and_tsubst t with
+  | Tvar _ -> true
+  | _ -> false
 
-let sig_item_is_component_spec (si: Types.signature_item) = match si with
-  | Sig_value (_id, value_desc) ->
-      let typ = value_desc.val_type in
-      type_is_component_spec typ
-  | _ ->
-      false
+let component_spec_weak_type_variables t =
+  match drill_through_tlink_and_tsubst t with
+  (* ReasonReact <=0.3.4 *)
+  | Tconstr (
+      Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _),
+      [state; _initial_state; retained_props; _initial_retained_props; action],
+      _
+    ) ->
+    (
+      state |> is_weak_type_after_drilling,
+      retained_props |> is_weak_type_after_drilling,
+      action |> is_weak_type_after_drilling
+    )
+  (* future ReasonReact version with retainedProps removed *)
+  | Tconstr (
+      Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _),
+      [state; _initial_state; action],
+      _
+    ) ->
+    (
+      state |> is_weak_type_after_drilling,
+      false,
+      action |> is_weak_type_after_drilling
+    )
+  | _ -> (false, false, false)
 
-let module_type_is_component_spec (mty : Types.module_type) = match mty with
-  | Mty_signature sg ->
-      List.exists sig_item_is_component_spec sg
-  |  _ ->
-      false
-
+let component_spec_weak_type_variables_in_module_type (mty : Types.module_type) =
+  match mty with
+  | Mty_signature signature_values ->
+      signature_values
+        |> List.map (function
+          | Sig_value (_id, value_desc) ->
+            let typ = value_desc.val_type in
+            component_spec_weak_type_variables typ
+          | _ -> (false, false, false)
+        )
+        |> List.filter (function
+          | (false, false, false) -> false
+          | _ -> true
+        )
+  | _ -> []
 
 (* recursively drill down the types (first item is the type alias, if any. Second is the content of the alias) *)
 let rec get_to_bottom_of_aliases f = function

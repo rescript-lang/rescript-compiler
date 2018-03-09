@@ -1,7 +1,7 @@
-val type_is_component_spec: Types.type_expr -> bool
+val component_spec_weak_type_variables: Types.type_expr -> bool * bool * bool
 (** Used by super_typemod when we detect the message "... contains type variables that cannot be generalized" *)
 
-val module_type_is_component_spec: Types.module_type -> bool
+val component_spec_weak_type_variables_in_module_type: Types.module_type -> (bool * bool * bool) list
 (** Used by super_typemod when we detect the message "... contains type variables that cannot be generalized" *)
 
 val state_escape_scope: (Types.type_expr * Types.type_expr) list -> bool
