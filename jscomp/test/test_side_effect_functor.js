@@ -5,7 +5,7 @@ var v = 0;
 
 v = v + 1 | 0;
 
-console.log("" + v);
+console.log(String(v));
 
 function unuse_v() {
   return 35;

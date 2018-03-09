@@ -71,12 +71,12 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
      Note the arity of [print_endline] is already analyzed before, 
      so it should be safe
   *)
-  | Single(_, ({name="string_of_int";_} as id),_ ),  "pervasives.ml" ->
+  (* | Single(_, ({name="string_of_int";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id
       ~exp:( 
         let arg = Ext_ident.create "param" in
         E.ocaml_fun [arg] [S.return_stmt (E.int_to_string (E.var arg))]
-      )
+      ) *)
 
   (** Special handling for values in [Sys] *)
   | Single(_, ({name="max_array_length" | "max_string_length";_} as id) ,_ ),  "sys.ml" ->

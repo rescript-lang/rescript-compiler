@@ -6,7 +6,7 @@ function collect_eq(test_id, suites, loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
+      loc + (" id " + String(test_id[0])),
       (function () {
           return /* Eq */Block.__(0, [
                     x,
@@ -23,7 +23,7 @@ function collect_neq(test_id, suites, loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
+      loc + (" id " + String(test_id[0])),
       (function () {
           return /* Neq */Block.__(1, [
                     x,
@@ -40,7 +40,7 @@ function collect_approx(test_id, suites, loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
+      loc + (" id " + String(test_id[0])),
       (function () {
           return /* Approx */Block.__(5, [
                     x,

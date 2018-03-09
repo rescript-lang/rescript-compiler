@@ -12,7 +12,7 @@ function f(_n, _acc) {
     } else {
       _acc = (function(n,acc){
       return function () {
-        console.log("" + n);
+        console.log(String(n));
         return Curry._1(acc, /* () */0);
       }
       }(n,acc));

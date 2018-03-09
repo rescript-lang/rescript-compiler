@@ -4,7 +4,6 @@ var Mt = require("./mt.js");
 var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
-var Pervasives = require("../../lib/js/pervasives.js");
 var String_set = require("./string_set.js");
 
 var suites = [/* [] */0];
@@ -15,7 +14,7 @@ function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
+      loc + (" id " + String(test_id[0])),
       (function () {
           return /* Eq */Block.__(0, [
                     x,
@@ -43,7 +42,9 @@ function map(f, x) {
 }
 
 function make(foo) {
-  var partial_arg = map(Pervasives.string_of_int, foo);
+  var partial_arg = map((function (prim) {
+          return String(prim);
+        }), foo);
   return (function () {
       var tmp = { };
       if (partial_arg) {

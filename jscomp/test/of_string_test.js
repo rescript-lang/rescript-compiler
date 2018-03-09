@@ -20,7 +20,7 @@ var suites_001 = /* :: */[
     (function () {
         return /* Eq */Block.__(0, [
                   "10",
-                  "" + 10
+                  String(10)
                 ]);
       })
   ],

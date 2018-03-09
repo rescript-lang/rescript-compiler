@@ -3690,7 +3690,7 @@ function send_string(ob, s) {
 }
 
 function send_int(ob, i) {
-  return send_string(ob, "" + i);
+  return send_string(ob, String(i));
 }
 
 function writer(ib, ob) {
@@ -3722,7 +3722,7 @@ function writer(ib, ob) {
                                   }));
                   default:
                     var i = Caml_format.caml_int_of_string(s);
-                    send_string(ob, "" + i);
+                    send_string(ob, String(i));
                     return reader(ib, ob);
                 }
               }));
@@ -3755,9 +3755,9 @@ function reader(ib, ob) {
                     count[0] = l + count[0] | 0;
                     if (count[0] >= 100) {
                       send_string(ob, "stop");
-                      send_string(ob, "" + count[0]);
+                      send_string(ob, String(count[0]));
                     } else {
-                      send_string(ob, "" + l);
+                      send_string(ob, String(l));
                     }
                     return writer(ib, ob);
                   }

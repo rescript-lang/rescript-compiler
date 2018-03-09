@@ -59,7 +59,6 @@ var Pervasives$1 = /* module */[
   /* char_of_int */Pervasives.char_of_int,
   /* string_of_bool */Pervasives.string_of_bool,
   /* bool_of_string */Pervasives.bool_of_string,
-  /* string_of_int */Pervasives.string_of_int,
   /* string_of_float */Pervasives.string_of_float,
   /* @ */Pervasives.$at,
   /* stdin */Pervasives.stdin,

@@ -244,9 +244,12 @@ let bool_of_string = function
   | "false" -> false
   | _ -> invalid_arg "bool_of_string"
 
+#if BS then   
+external string_of_int : int -> string = "String" [@@bs.val]
+#else
 let string_of_int n =
   format_int "%d" n
-
+#end
 external int_of_string : string -> int = "caml_int_of_string"
 external string_get : string -> int -> char = "%string_safe_get"
 

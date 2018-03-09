@@ -1665,7 +1665,7 @@ eq("File \"bs_list_test.ml\", line 259, characters 5-12", Belt_List.has(/* :: */
             ]
           ]
         ], "2", (function (x, s) {
-            return +("" + x === s);
+            return +(String(x) === s);
           })), /* true */1);
 
 eq("File \"bs_list_test.ml\", line 260, characters 5-12", Belt_List.has(/* :: */[
@@ -1678,7 +1678,7 @@ eq("File \"bs_list_test.ml\", line 260, characters 5-12", Belt_List.has(/* :: */
             ]
           ]
         ], "0", (function (x, s) {
-            return +("" + x === s);
+            return +(String(x) === s);
           })), /* false */0);
 
 b("File \"bs_list_test.ml\", line 262, characters 4-11", +(Belt_List.reduceReverse(/* :: */[

@@ -12,7 +12,7 @@ function eq(loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
   suites[0] = /* :: */[
     /* tuple */[
-      loc + (" id " + test_id[0]),
+      loc + (" id " + String(test_id[0])),
       (function () {
           return /* Eq */Block.__(0, [
                     x,
@@ -28,7 +28,7 @@ function eq(loc, x, y) {
 var s = String_set.empty;
 
 for(var i = 0; i <= 99999; ++i){
-  s = String_set.add("" + i, s);
+  s = String_set.add(String(i), s);
 }
 
 eq("File \"string_set_test.ml\", line 16, characters 5-12", String_set.cardinal(s), 100000);

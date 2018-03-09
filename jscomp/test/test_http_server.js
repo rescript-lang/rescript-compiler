@@ -11,7 +11,7 @@ function create_server(http) {
           return resp.end("Hello world\n");
         }));
   return server.listen(3000, hostname, (function () {
-                console.log("Server running at http://" + (hostname + (":" + (3000 + "/"))));
+                console.log("Server running at http://" + (hostname + (":" + (String(3000) + "/"))));
                 return /* () */0;
               }));
 }

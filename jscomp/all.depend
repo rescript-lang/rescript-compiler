@@ -675,8 +675,8 @@ core/lam_compile_main.cmx : ext/literals.cmx core/lam_util.cmx \
     core/js_exp_make.cmx core/js_dump_program.cmx common/js_config.cmx \
     core/js_cmj_format.cmx core/j.cmx ext/ident_set.cmx ext/ext_string.cmx \
     ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_namespace.cmx \
-    common/ext_log.cmx ext/ext_list.cmx ext/ext_ident.cmx \
-    ext/ext_filename.cmx ext/ext_char.cmx core/lam_compile_main.cmi
+    common/ext_log.cmx ext/ext_list.cmx ext/ext_filename.cmx ext/ext_char.cmx \
+    core/lam_compile_main.cmi
 core/js_implementation.cmx : core/ocaml_parse.cmx ext/literals.cmx \
     core/lam_compile_main.cmx core/lam_compile_env.cmx common/js_config.cmx \
     ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_namespace.cmx \
