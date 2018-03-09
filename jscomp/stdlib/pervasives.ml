@@ -146,6 +146,22 @@ external float_of_int : int -> float = "%floatofint"
 external truncate : float -> int = "%intoffloat"
 external int_of_float : float -> int = "%intoffloat"
 external float_of_bits : int64 -> float = "caml_int64_float_of_bits"
+
+#if BS then 
+external infinity : float = "POSITIVE_INFINITY" 
+[@@bs.val]  [@@bs.scope "Number"]
+external neg_infinity : float = "NEGATIVE_INFINITY"
+[@@bs.val]  [@@bs.scope "Number"]
+external nan : float = "NaN"
+[@@bs.val]  [@@bs.scope "Number"]
+external max_float : float = "MAX_VALUE"
+[@@bs.val]  [@@bs.scope "Number"]
+external min_float : float = "MIN_VALUE"
+[@@bs.val]  [@@bs.scope "Number"]
+(* external epsilon_float : float = "EPSILON" (* ES 2015 *)
+[@@bs.val]  [@@bs.scope "Number"]   *)
+let epsilon_float = 2.220446049250313e-16
+#else
 let infinity =
   float_of_bits 0x7F_F0_00_00_00_00_00_00L
 let neg_infinity =
@@ -157,7 +173,8 @@ let max_float =
 let min_float =
   float_of_bits 0x00_10_00_00_00_00_00_00L
 let epsilon_float =
-  float_of_bits 0x3C_B0_00_00_00_00_00_00L
+  float_of_bits 0x3C_B0_00_00_00_00_00_00L    
+#end  
 
 type fpclass =
     FP_normal
