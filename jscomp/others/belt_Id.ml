@@ -60,7 +60,9 @@ module MakeComparable (M : sig
 struct
   type identity
   type t = M.t
-  let cmp = (fun[@bs] a b -> M.cmp a b)
+  (* see https://github.com/BuckleScript/bucklescript/pull/2589/files/5ef875b7665ee08cfdc59af368fc52bac1fe9130#r173330825 *)
+  let cmp = 
+    let cmp = M.cmp in fun[@bs] a b -> cmp a b
 end
 
 let comparableU
@@ -73,8 +75,15 @@ let comparableU
     end) in 
   (module N : Comparable with type t = key)
 
-let comparable cmp =
-  comparableU (fun[@bs] a b -> cmp a b)
+let comparable
+  (type key) 
+  cmp   
+  =
+  let module N = MakeComparable(struct
+      type t = key
+      let cmp = cmp
+    end) in 
+  (module N : Comparable with type t = key)
 
 module type Hashable = sig 
   type identity 
@@ -105,8 +114,10 @@ module MakeHashable (M : sig
 struct
   type identity
   type t = M.t
-  let hash = (fun[@bs] a -> M.hash a)
-  let eq = (fun[@bs] a b -> M.eq a b)
+  let hash = 
+    let hash = M.hash in fun[@bs] a -> hash a
+  let eq = 
+    let eq = M.eq in fun[@bs] a b -> eq a b
 end
 
 let hashableU (type key) ~hash ~eq = 
@@ -117,7 +128,10 @@ let hashableU (type key) ~hash ~eq =
   end) in 
   (module N : Hashable with type t = key) 
 
-let hashable ~hash ~eq =
-  hashableU
-    ~hash:(fun [@bs] a -> hash a)
-    ~eq:(fun [@bs] a b -> eq a b)
+let hashable (type key) ~hash ~eq = 
+  let module N = MakeHashable(struct 
+    type t = key 
+    let hash = hash 
+    let eq = eq 
+  end) in 
+  (module N : Hashable with type t = key) 
