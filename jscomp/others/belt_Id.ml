@@ -43,7 +43,7 @@ type ('key, 'id) comparable =
   (module Comparable with type t = 'key and type identity = 'id)
 
 
-module MakeComparable (M : sig
+module MakeComparableU (M : sig
    type t
    val cmp: t -> t -> int [@bs]
   end) =
@@ -53,7 +53,29 @@ struct
   let cmp = M.cmp
 end
 
+module MakeComparable (M : sig
+   type t
+   val cmp: t -> t -> int
+  end) =
+struct
+  type identity
+  type t = M.t
+  (* see https://github.com/BuckleScript/bucklescript/pull/2589/files/5ef875b7665ee08cfdc59af368fc52bac1fe9130#r173330825 *)
+  let cmp = 
+    let cmp = M.cmp in fun[@bs] a b -> cmp a b
+end
+
 let comparableU
+  (type key) 
+  cmp   
+  =
+  let module N = MakeComparableU(struct
+      type t = key
+      let cmp = cmp
+    end) in 
+  (module N : Comparable with type t = key)
+
+let comparable
   (type key) 
   cmp   
   =
@@ -63,10 +85,6 @@ let comparableU
     end) in 
   (module N : Comparable with type t = key)
 
-
-let comparable cmp =
-  comparableU (fun[@bs] a b -> cmp a b)
-    
 module type Hashable = sig 
   type identity 
   type t 
@@ -76,9 +94,9 @@ end
 
 type ('key, 'id) hashable = (module Hashable with type t = 'key and type identity = 'id)
                             
-module MakeHashable (M : sig
+module MakeHashableU (M : sig
    type t
-   val hash : t -> int  [@bs]
+   val hash : t -> int [@bs]
    val eq : t -> t -> bool [@bs]
   end) =
 struct
@@ -87,16 +105,33 @@ struct
   let hash = M.hash
   let eq = M.eq
 end
-  
+
+module MakeHashable (M : sig
+   type t
+   val hash : t -> int
+   val eq : t -> t -> bool
+  end) =
+struct
+  type identity
+  type t = M.t
+  let hash = 
+    let hash = M.hash in fun[@bs] a -> hash a
+  let eq = 
+    let eq = M.eq in fun[@bs] a b -> eq a b
+end
+
 let hashableU (type key) ~hash ~eq = 
-  let module N = MakeHashable(struct 
+  let module N = MakeHashableU(struct 
     type t = key 
     let hash = hash 
     let eq = eq 
   end) in 
   (module N : Hashable with type t = key) 
 
-let hashable ~hash ~eq =
-  hashableU
-    ~hash:(fun [@bs] a -> hash a)
-    ~eq:(fun [@bs] a b -> eq a b)
+let hashable (type key) ~hash ~eq = 
+  let module N = MakeHashable(struct 
+    type t = key 
+    let hash = hash 
+    let eq = eq 
+  end) in 
+  (module N : Hashable with type t = key) 
