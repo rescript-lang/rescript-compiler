@@ -43,8 +43,6 @@ let get_cmj_case output_prefix : Ext_namespace.file_kind =
   | false, false -> Upper_js
   
 
-open Js_output.Ops 
-
 let compile_group ({filename = file_name; env;} as meta : Lam_stats.t) 
     (x : Lam_group.t) : Js_output.t  = 
   match x, file_name with 
@@ -58,8 +56,9 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.t)
   (** Special handling for values in [Pervasives] *)
   | Single(_, ({name="stdout"|"stderr"|"stdin";_} as id),_ ),
     "pervasives.ml" -> 
-    Js_output.of_stmt @@ S.alias_variable id
-      ~exp:(E.runtime_ref  Js_runtime_modules.io id.name)
+    Js_output.make 
+      [ S.alias_variable id
+        ~exp:(E.runtime_ref  Js_runtime_modules.io id.name)]
   (* 
          we delegate [stdout, stderr, and stdin] into [caml_io] module, 
          the motivation is to help dead code eliminatiion, it's helpful 
@@ -234,7 +233,7 @@ let compile  ~filename (output_prefix : string) env _sigs
     groups
     |> Ext_list.map (fun group -> compile_group meta group)
     |> Js_output.concat
-    |> Js_output.to_block
+    |> Js_output.output_as_block
   in
 #if BS_DEBUG then 
   let () = Ext_log.dwarn __LOC__ "\n@[[TIME:]Post-compile: %f@]@."  (Sys.time () *. 1000.) in      

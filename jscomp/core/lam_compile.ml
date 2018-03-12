@@ -22,15 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-open Js_output.Ops 
-
 module E = Js_exp_make 
 
 module S = Js_stmt_make  
@@ -276,7 +267,7 @@ and compile_recursive_let ~all_bindings
           jmp_table = Lam_compile_context.empty_handler_map}  body in
     let result = 
       if ret.triggered then 
-        let body_block = Js_output.to_block output in
+        let body_block = Js_output.output_as_block output in
         E.ocaml_fun
           (* TODO:  save computation of length several times 
              Here we always create [ocaml_fun], 
@@ -299,7 +290,7 @@ and compile_recursive_let ~all_bindings
           ]
 
       else            (* TODO:  save computation of length several times *)
-        E.ocaml_fun params (Js_output.to_block output )
+        E.ocaml_fun params (Js_output.output_as_block output )
     in 
     Js_output.output_of_expression (Declare (Alias, id))
       ReturnFalse arg result, [] 
@@ -317,7 +308,7 @@ and compile_recursive_let ~all_bindings
        {[ let rec a = { b} and b = { a} ]} they are indeed captured 
        and need to be declared first 
     *)
-    Js_output.of_block (
+    Js_output.make (
       S.define_variable ~kind:Variable id (E.array Mutable []) :: 
       (List.mapi (fun i (x : Lam.t) -> 
            match x with  
@@ -341,7 +332,7 @@ and compile_recursive_let ~all_bindings
         (* TODO: check recursive value .. 
             could be improved for simple cases
         *)
-        Js_output.of_block  
+        Js_output.make  
           (Ext_list.append
              b   
              [S.exp
@@ -386,15 +377,19 @@ and compile_recursive_lets_aux cxt id_args : Js_output.t =
       (fun (ident,arg) (acc, ids) -> 
          let code, declare_ids  =
            compile_recursive_let ~all_bindings:id_args cxt ident arg in
-         (code ++ acc, Ext_list.append declare_ids  ids )
+         (Js_output.append_output code  acc, Ext_list.append declare_ids  ids )
       )  id_args (Js_output.dummy, [])
   in
   match ids with 
   | [] -> output_code
   | _ ->  
-    (Js_output.of_block  @@
-     Ext_list.map (fun id -> S.define_variable ~kind:Variable id (E.dummy_obj ())) ids ) 
-    ++  output_code
+     Js_output.append_output     
+      (Js_output.make  
+      (Ext_list.map 
+        (fun id -> S.define_variable ~kind:Variable id (E.dummy_obj ())) 
+        ids )
+       )
+      output_code
 and compile_recursive_lets cxt id_args : Js_output.t  = 
 
   match id_args with 
@@ -406,7 +401,9 @@ and compile_recursive_lets cxt id_args : Js_output.t  =
       | first::rest  ->
         let acc = compile_recursive_lets_aux cxt first in 
         List.fold_left
-          (fun acc x -> acc ++ compile_recursive_lets_aux cxt x ) acc rest 
+          (fun acc x ->
+            Js_output.append_output
+             acc  (compile_recursive_lets_aux cxt x )) acc rest 
     end  
 and compile_general_cases : 
   'a . 
@@ -431,7 +428,7 @@ and compile_general_cases :
     in
     match table, default with 
     | [], Default lam ->  
-      Js_output.to_block  (compile_lambda cxt lam)
+      Js_output.output_as_block  (compile_lambda cxt lam)
     | [], (Complete | NonComplete) ->  []
     | [(id,lam)],Complete -> 
       (* To take advantage of such optimizations, 
@@ -440,18 +437,18 @@ and compile_general_cases :
           otherwise the compiler engine would think that 
           it's also complete
       *)
-      Js_output.to_block @@ compile_lambda cxt lam 
+      Js_output.output_as_block @@ compile_lambda cxt lam 
     | [(id,lam)], NonComplete 
       ->
       wrap cxt @@ fun cxt define  ->
       [S.if_ ?declaration:define (eq v (f id) )
-         (Js_output.to_block @@ compile_lambda cxt lam )]
+         (Js_output.output_as_block @@ compile_lambda cxt lam )]
 
     | ([(id,lam)], Default x) | ([(id,lam); (_,x)], Complete)
       ->
       wrap cxt  @@ fun cxt define -> 
-      let else_block = Js_output.to_block (compile_lambda cxt x) in
-      let then_block = Js_output.to_block (compile_lambda cxt lam)  in
+      let else_block = Js_output.output_as_block (compile_lambda cxt x) in
+      let then_block = Js_output.output_as_block (compile_lambda cxt lam)  in
       [ S.if_ ?declaration:define (eq v (f id) )
           then_block
           ~else_:else_block
@@ -470,7 +467,7 @@ and compile_general_cases :
         match default with
         | Complete -> None
         | NonComplete -> None
-        | Default lam -> Some (Js_output.to_block  (compile_lambda cxt lam))
+        | Default lam -> Some (Js_output.output_as_block  (compile_lambda cxt lam))
       in
       let body = 
         table 
@@ -518,7 +515,7 @@ and
            (* Invariant:  jmp_table can not across function boundary,
               here we share env
            *)
-           (Js_output.to_block 
+           (Js_output.output_as_block 
               ( compile_lambda
                   { cxt with st = EffectCall;  
                              should_return = ReturnTrue None; (* Refine*)
@@ -609,7 +606,7 @@ and
             in
             begin
               (* Ext_log.dwarn __LOC__ "size : %d" (List.length block); *)
-              Js_output.of_block  ~finished:True block 
+              Js_output.make  ~finished:True block 
             end
           | _ -> 
 
@@ -630,8 +627,9 @@ and
       (* Order matters..  see comment below in [Lletrec] *)
       let args_code =
         compile_let  let_kind cxt id arg  in 
-      args_code ++
-      compile_lambda  cxt  body
+      Js_output.append_output 
+      args_code 
+      (compile_lambda  cxt  body)
 
     | Lletrec (id_args, body) -> 
       (* There is a bug in our current design, 
@@ -645,7 +643,8 @@ and
          1. scan the lambda layer first, register js identifier before proceeding
          2. delay the method call into javascript ast
       *)
-      let v =  compile_recursive_lets cxt  id_args in v ++ compile_lambda cxt  body
+      let v =  compile_recursive_lets cxt  id_args in 
+      Js_output.append_output v  (compile_lambda cxt  body)
 
     | Lvar id -> Js_output.output_of_expression st  should_return lam (E.var id )
     | Lconst c -> 
@@ -911,7 +910,7 @@ and
                (* Invariant:  jmp_table can not across function boundary,
                   here we share env
                *)
-               (Js_output.to_block 
+               (Js_output.output_as_block 
                   ( compile_lambda
                       { cxt with st = EffectCall;  
                                  should_return = ReturnTrue None; 
@@ -970,7 +969,7 @@ and
         compile_lambda {cxt with st = EffectCall; should_return =  ReturnFalse} l1 in
       let output_l2 = 
         compile_lambda cxt l2  in
-      output_l1 ++ output_l2
+      Js_output.append_output output_l1  output_l2
 
 
     | Lifthenelse(p,t_br,f_br) ->
@@ -1010,8 +1009,8 @@ and
                      (Ext_list.append 
                         (S.declare_variable ~kind:Variable id :: b)  [
                         S.if_ e 
-                          (Js_output.to_block out1) 
-                          ~else_:(Js_output.to_block out2 )
+                          (Js_output.output_as_block out1) 
+                          ~else_:(Js_output.output_as_block out2 )
                       ])
                      ~value:(E.var id)
                 )
@@ -1030,9 +1029,9 @@ and
                 Js_output.make 
                   ( Ext_list.append b [
                         S.if_ ~declaration:(kind,id) e 
-                          (Js_output.to_block @@ 
+                          (Js_output.output_as_block @@ 
                            compile_lambda {cxt with st = Assign id}  t_br)
-                          ~else_:(Js_output.to_block @@  
+                          ~else_:(Js_output.output_as_block @@  
                                   (compile_lambda {cxt with st = Assign id} f_br))
                       ])
               end
@@ -1051,10 +1050,10 @@ and
                               Js_output.make [S.assign id (E.econd e out1 out2)]
                             | _, _ -> *)
               let then_output = 
-                Js_output.to_block @@ 
+                Js_output.output_as_block @@ 
                 (compile_lambda cxt  t_br) in
               let else_output = 
-                Js_output.to_block @@ 
+                Js_output.output_as_block @@ 
                 (compile_lambda cxt f_br) in
               Js_output.make (Ext_list.append b  [
                   S.if_ e 
@@ -1092,14 +1091,14 @@ and
                 if Js_analyzer.no_side_effect_expression out1 then 
                   Js_output.make
                     (Ext_list.append b [ S.if_ (E.not e)
-                                           (Js_output.to_block @@
+                                           (Js_output.output_as_block @@
                                             (compile_lambda cxt f_br))])
                 else 
                   Js_output.make 
                     (Ext_list.append b [S.if_ e 
-                                          (Js_output.to_block 
+                                          (Js_output.output_as_block 
                                            @@ compile_lambda cxt t_br)
-                                          ~else_:(Js_output.to_block @@  
+                                          ~else_:(Js_output.output_as_block @@  
                                                   (compile_lambda cxt f_br))]
                     )
 
@@ -1109,11 +1108,11 @@ and
                     None 
                   else 
                     Some (
-                      Js_output.to_block @@
+                      Js_output.output_as_block @@
                       compile_lambda cxt f_br) in 
                 Js_output.make 
                   (Ext_list.append b [S.if_ e 
-                                        (Js_output.to_block @@
+                                        (Js_output.output_as_block @@
                                          compile_lambda cxt t_br)
                                         ?else_])
 
@@ -1133,10 +1132,10 @@ and
 #end 
 *)
                 let then_output = 
-                  Js_output.to_block @@ 
+                  Js_output.output_as_block @@ 
                   (compile_lambda cxt  t_br) in
                 let else_output = 
-                  Js_output.to_block @@ 
+                  Js_output.output_as_block @@ 
                   (compile_lambda cxt f_br) in
                 Js_output.make (Ext_list.append b  [
                     S.if_ e 
@@ -1271,9 +1270,9 @@ and
                     compile_lambda {cxt with st = Assign arg ; should_return =  ReturnFalse} x 
               ) largs (args : Ident.t list)) 
           in
-          args_code ++ (* Declared in [Lstaticraise ]*)
-          Js_output.make [S.assign exit_id (E.small_int  order_id)]
-            ~value:E.undefined
+          Js_output.append_output args_code (* Declared in [Lstaticraise ]*)
+          (Js_output.make [S.assign exit_id (E.small_int  order_id)]
+            ~value:E.undefined)
         | exception Not_found ->
           Js_output.make [S.unknown_lambda ~comment:"error" lam]
           (* staticraise is always enclosed by catch  *)
@@ -1342,20 +1341,21 @@ and
                                       jmp_table = jmp_table;
                                       st = Assign v
                                      } body in
-          Js_output.make  (S.declare_variable ~kind:Variable v  :: declares) ++ 
-          lbody ++ Js_output.make (
+          Js_output.append_output 
+          (Js_output.make  (S.declare_variable ~kind:Variable v  :: declares) )
+          (Js_output.append_output lbody (Js_output.make (
             compile_cases 
               {cxt with st = Assign v;
                         jmp_table = jmp_table} 
-              exit_expr handlers  NonComplete)  ~value:(E.var v )
+              exit_expr handlers  NonComplete)  ~value:(E.var v )))
         | Declare (kind, id)
           (* declare first this we will do branching*) ->
           let declares = 
             S.declare_variable ~kind id  :: declares in   
           let lbody = compile_lambda {cxt with jmp_table = jmp_table; st = Assign id } body in
-          Js_output.make  declares ++ 
-          lbody ++ 
-          Js_output.make (compile_cases 
+          Js_output.append_output (Js_output.make  declares)
+          (Js_output.append_output lbody 
+          (Js_output.make (compile_cases 
                             {cxt with jmp_table = jmp_table; st = Assign id} 
                             exit_expr 
                             handlers
@@ -1363,16 +1363,16 @@ and
                             (* place holder -- tell the compiler that 
                                we don't know if it's complete
                             *)
-                         )
+                         )))
         | EffectCall | Assign _  -> 
           let lbody = compile_lambda {cxt with jmp_table = jmp_table } body in
-          Js_output.make declares ++
-          lbody ++
-          Js_output.make (compile_cases
+          Js_output.append_output (Js_output.make declares)
+          (Js_output.append_output lbody 
+          (Js_output.make (compile_cases
                             {cxt with jmp_table = jmp_table}
                             exit_expr
                             handlers
-                            NonComplete)
+                            NonComplete)))
       end
     | Lwhile(p,body) ->  
       (* Note that ``J.While(expression * statement )``
@@ -1392,7 +1392,7 @@ and
            [
              S.while_
                e
-               (Js_output.to_block @@ 
+               (Js_output.output_as_block @@ 
                 compile_lambda 
                   {cxt with st = EffectCall; should_return = ReturnFalse}
                   body)
@@ -1443,7 +1443,7 @@ and
               match b1,b2 with
               | _,[] -> 
                 Ext_list.append b1 [S.for_ (Some e1) e2  id direction 
-                                      (Js_output.to_block @@ 
+                                      (Js_output.output_as_block @@ 
                                        compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
                                          body) ]
               | _, _ when Js_analyzer.no_side_effect_expression e1 
@@ -1455,14 +1455,14 @@ and
                 -> 
                 Ext_list.append b1 
                   (Ext_list.append b2  [S.for_ (Some e1) e2  id direction 
-                                          (Js_output.to_block @@ 
+                                          (Js_output.output_as_block @@ 
                                            compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
                                              body) ])
               | _ , _
                 -> 
                 Ext_list.append b1 (S.define_variable ~kind:Variable id e1 :: (Ext_list.append b2   [
                     S.for_ None e2 id direction 
-                      (Js_output.to_block @@ 
+                      (Js_output.output_as_block @@ 
                        compile_lambda {cxt with should_return = ReturnFalse ; st = EffectCall}
                          body) 
                   ]))
@@ -1558,12 +1558,12 @@ and
         (* should_return is passed down *)
         (* #1701 *)
         [ S.try_ 
-            (Js_output.to_block (compile_lambda 
+            (Js_output.output_as_block (compile_lambda 
                                    (match should_return with 
                                     | ReturnTrue (Some _ ) -> {cxt with st = st; should_return = ReturnTrue None}
                                     | ReturnTrue None | ReturnFalse -> {cxt with st = st}) lam))
             ~with_:(id, 
-                    Js_output.to_block @@ 
+                    Js_output.output_as_block @@ 
                     compile_lambda {cxt with st = st} catch )
 
         ] in 

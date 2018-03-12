@@ -24,11 +24,6 @@
 
 
 
-
-
-
-
-
 module E = Js_exp_make 
 module S = Js_stmt_make 
 
@@ -49,11 +44,6 @@ type continuation = Lam_compile_context.continuation
 let make ?value ?(finished=False) block =
     { block ; value ; finished }
 
-let of_stmt ?value ?(finished = False) stmt = 
-    { block = [stmt] ; value ; finished }
-
-let of_block ?value ?(finished = False) block = 
-    { block  ; value ; finished }
 
 let dummy = 
     {value = None; block = []; finished = Dummy }
@@ -94,47 +84,65 @@ let output_of_block_and_expression
   | NeedValue, (ReturnTrue _ | ReturnFalse) -> 
     make block ~value:exp
 
-let statement_of_opt_expr (x : J.expression option) : J.statement =
-  match x with 
-  | None -> S.empty_stmt
-  | Some x when Js_analyzer.no_side_effect_expression x -> 
-    S.empty_stmt 
-        (* TODO, pure analysis in lambda instead *)
-  | Some x -> S.exp x 
 
-let rec unroll_block (block : J.block) = 
+
+let block_with_opt_expr block (x : J.expression option) : J.block =   
+    match x with 
+    | None  -> block
+    | Some x when Js_analyzer.no_side_effect_expression x -> block
+    | Some x -> block @ [S.exp x ]
+
+let opt_expr_with_block (x : J.expression option) block : J.block =     
+    match x with 
+    | None  -> block
+    | Some x when Js_analyzer.no_side_effect_expression x -> block
+    | Some x -> (S.exp x) :: block
+    
+
+let rec unnest_block (block : J.block) : J.block = 
   match block with 
-  | [{statement_desc = Block block}] -> unroll_block block 
+  | [{statement_desc = Block block}] -> unnest_block block 
   |  _ -> block 
 
-let to_block ( x : t)  : J.block = 
+let output_as_block ( x : t)  : J.block = 
   match x with 
   | {block; value = opt; finished} ->
-      let block = unroll_block block in
+      let block = unnest_block block in
       if finished = True  then block
       else 
-        begin match opt with 
-        | None -> block (* TODO, pure analysis in lambda instead *)
-        | Some x when Js_analyzer.no_side_effect_expression x -> block
-        | Some x -> block @ [S.exp x ]
-        end
+        block_with_opt_expr block opt
+   
 
 let to_break_block (x : t) : J.block * bool = 
+    let block = unnest_block x.block in 
     match x with 
-    | {finished = True; block ; _ } -> 
-        unroll_block block, false 
+    | {finished = True;  _ } -> 
+        block, false 
        (* value does not matter when [finished] is true
            TODO: check if it has side efects
         *)
-    | {block; value =  None; finished } -> 
-        let block = unroll_block block in 
+    | { value =  None; finished } -> 
         block, (match finished with | True -> false | (False | Dummy)  -> true  )
 
-    | {block; value = opt; _} -> 
-        let block = unroll_block block in
-        block @ [statement_of_opt_expr opt], true
+    | {value = opt; _} -> 
+        block_with_opt_expr block opt, true
 
-let rec append  (x : t ) (y : t ) : t =  
+
+(** TODO: make everything expression make inlining hard, and code not readable?
+           1. readability dpends on how we print the expression 
+           2. inlining needs generate symbols, which are statements, type mismatch
+              we need capture [Exp e]
+
+           can we call them all [statement]? statement has no value 
+        *)
+(* | {block = [{statement_desc = Exp e }]; value = None ; _}, _ *)
+(*   -> *)
+(*     append { x with block = []; value = Some e} y *)
+(* |  _ , {block = [{statement_desc = Exp e }]; value = None ; _} *)
+(*   -> *)
+(*     append x { y with block = []; value = Some e} *)
+        
+let rec append_output  (x : t ) (y : t ) : t =  
     match x , y with (* ATTTENTION: should not optimize [opt_e2], it has to conform to [NeedValue]*)
     | {finished = True; _ }, _ -> x  
     | _, {block = []; value= None; finished = Dummy } -> x 
@@ -151,34 +159,17 @@ let rec append  (x : t ) (y : t ) : t =
           {block = []; value = Some (E.seq e1 e2); finished}
           (* {block = [S.exp e1]; value =  Some e2(\* (E.seq e1 e2) *\); finished} *)
 
-       (** TODO: make everything expression make inlining hard, and code not readable?
-
-           1. readability pends on how we print the expression 
-           2. inlining needs generate symbols, which are statements, type mismatch
-              we need capture [Exp e]
-
-           can we call them all [statement]? statement has no value 
-        *)
-    (* | {block = [{statement_desc = Exp e }]; value = None ; _}, _ *)
-    (*   -> *)
-    (*     append { x with block = []; value = Some e} y *)
-    (* |  _ , {block = [{statement_desc = Exp e }]; value = None ; _} *)
-    (*   -> *)
-    (*     append x { y with block = []; value = Some e} *)
-
     | {block = block1; value = opt_e1; _},  {block = block2; value = opt_e2; finished} -> 
-        let block1 = unroll_block block1 in
-        make (block1 @ (statement_of_opt_expr opt_e1  :: unroll_block block2))
+        let block1 = unnest_block block1 in
+        make (block1 @ (opt_expr_with_block opt_e1  @@ unnest_block block2))
           ?value:opt_e2 ~finished
 
 
-module Ops = struct 
-  let (++)  (x : t ) (y : t ) : t =  append x y 
-end
+
 
 (* Fold right is more efficient *)
 let concat (xs : t list) : t = 
-  Ext_list.fold_right (fun x acc -> append x  acc) xs dummy
+  Ext_list.fold_right (fun x acc -> append_output x  acc) xs dummy
 
 let to_string x   = 
-  Js_dump.string_of_block (to_block x)
+  Js_dump.string_of_block (output_as_block x)
