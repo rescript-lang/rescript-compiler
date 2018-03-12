@@ -714,20 +714,32 @@ and
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
           compile_lambda cxt @@ Lam.sequor l r
-        | _ ->
-          let l_block,l_expr =
-            match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} l with
-            | {block = a; value = Some b} -> a, b
-            | _ -> assert false
-          in
-          let r_block, r_expr =
-            match compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} r with
-            | {block = a; value = Some b} -> a, b
-            | _ -> assert false
-          in
-          let args_code =  Ext_list.append l_block r_block  in
-          let exp =  E.or_ l_expr r_expr  in
-          Js_output.output_of_block_and_expression st should_return lam args_code exp
+        | {should_return = ReturnFalse } ->
+          let new_cxt = {cxt with st = NeedValue} in 
+          match compile_lambda new_cxt l with
+          | {value = None } -> assert false
+          | {block = l_block; value = Some l_expr} -> 
+            match compile_lambda new_cxt r with
+            | {value = None} -> assert false
+            | {block = []; value = Some r_expr} -> 
+              let exp =  E.or_ l_expr r_expr  in
+              Js_output.output_of_block_and_expression 
+                st should_return lam l_block exp
+            | {block = r_block; value = Some r_expr} ->
+              let v = Ext_ident.create_tmp () in 
+              Js_output.output_of_block_and_expression
+              st 
+              should_return
+              lam 
+              (S.define_variable ~kind:Variable v E.caml_true
+              :: l_block @ 
+              [ S.if_ (E.not l_expr)
+                (r_block @ [
+                  S.assign v r_expr
+                ])
+               ]
+              )
+              (E.var v)
       end
     | Lprim {primitive = Pdebugger ; _}
       -> 

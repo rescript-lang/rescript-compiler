@@ -27,7 +27,20 @@ if (List.length(/* [] */0) > 0) {
 
 var huntGrootCondition = tmp;
 
-eq("File \"gpr_2608_test.ml\", line 17, characters 5-12", huntGrootCondition, /* false */0);
+var tmp$1 = /* true */1;
+
+if (List.length(/* [] */0) < 0) {
+  var x$1 = List.filter((function () {
+            return +(List.hd(/* [] */0) <= 1000);
+          }))(oppHeroes);
+  tmp$1 = +(List.length(x$1) === 0);
+}
+
+var huntGrootCondition2 = tmp$1;
+
+eq("File \"gpr_2608_test.ml\", line 23, characters 5-12", huntGrootCondition, /* false */0);
+
+eq("File \"gpr_2608_test.ml\", line 24, characters 5-12", huntGrootCondition2, /* true */1);
 
 Mt.from_pair_suites("gpr_2608_test.ml", suites[0]);
 
@@ -39,4 +52,5 @@ exports.eq = eq;
 exports.nearestGroots = nearestGroots;
 exports.oppHeroes = oppHeroes;
 exports.huntGrootCondition = huntGrootCondition;
+exports.huntGrootCondition2 = huntGrootCondition2;
 /* huntGrootCondition Not a pure module */

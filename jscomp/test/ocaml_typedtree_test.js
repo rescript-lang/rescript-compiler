@@ -8958,10 +8958,22 @@ function typexp(s, ty) {
                   }
                 }
                 if (exit$2 === 4) {
-                  var match$6 = more[/* desc */0];
-                  var tmp$2;
-                  tmp$2 = typeof match$6 === "number" || match$6.tag !== 3 ? /* false */0 : /* true */1;
-                  var dup = s[/* for_saving */3] || +(more[/* level */1] === 100000000) || static_row(row) || tmp$2;
+                  var tmp$2 = /* true */1;
+                  if (!s[/* for_saving */3]) {
+                    var tmp$3 = /* true */1;
+                    if (more[/* level */1] !== 100000000) {
+                      var tmp$4 = /* true */1;
+                      if (!static_row(row)) {
+                        var match$6 = more[/* desc */0];
+                        var tmp$5;
+                        tmp$5 = typeof match$6 === "number" || match$6.tag !== 3 ? /* false */0 : /* true */1;
+                        tmp$4 = tmp$5;
+                      }
+                      tmp$3 = tmp$4;
+                    }
+                    tmp$2 = tmp$3;
+                  }
+                  var dup = tmp$2;
                   var match$7 = more[/* desc */0];
                   var more$prime;
                   var exit$3 = 0;
@@ -10171,18 +10183,22 @@ function normalize_path(lax, env, path) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      var tmp;
-      switch (path$1.tag | 0) {
-        case 0 : 
-            tmp = +(path$1[0][/* stamp */0] !== 0);
-            break;
-        case 1 : 
-        case 2 : 
-            tmp = /* true */1;
-            break;
-        
+      var tmp = /* true */1;
+      if (!lax) {
+        var tmp$1;
+        switch (path$1.tag | 0) {
+          case 0 : 
+              tmp$1 = +(path$1[0][/* stamp */0] !== 0);
+              break;
+          case 1 : 
+          case 2 : 
+              tmp$1 = /* true */1;
+              break;
+          
+        }
+        tmp = tmp$1;
       }
-      if (lax || tmp) {
+      if (tmp) {
         return path$1;
       } else {
         throw exn;
@@ -29035,8 +29051,10 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                             return unify_list(env, tl1, tl2);
                           }));
                   } else {
-                    var partial_arg = env[0];
-                    if (in_current_module(p1) || List.exists((function (param) {
+                    var tmp = /* true */1;
+                    if (!in_current_module(p1)) {
+                      var partial_arg = env[0];
+                      tmp = List.exists((function (param) {
                               return expands_to_datatype(partial_arg, param);
                             }), /* :: */[
                             t1$prime,
@@ -29047,7 +29065,9 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                                 /* [] */0
                               ]
                             ]
-                          ])) {
+                          ]);
+                    }
+                    if (tmp) {
                       unify_list(env, tl1, tl2);
                     } else {
                       var inj;
@@ -29169,20 +29189,20 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                             var match$6 = match$5[0][1];
                             if (match$6) {
                               var match$7 = repr(match$6[0])[/* desc */0];
-                              var tmp;
+                              var tmp$1;
                               if (typeof match$7 === "number") {
-                                tmp = /* true */1;
+                                tmp$1 = /* true */1;
                               } else {
                                 switch (match$7.tag | 0) {
                                   case 0 : 
                                   case 9 : 
-                                      tmp = /* true */1;
+                                      tmp$1 = /* true */1;
                                       break;
                                   default:
-                                    tmp = /* false */0;
+                                    tmp$1 = /* false */0;
                                 }
                               }
-                              if (!tmp) {
+                              if (!tmp$1) {
                                 set_name(nm2, nm1[0]);
                               }
                               
@@ -62335,19 +62355,23 @@ function type_application(env, funct, sargs) {
     }
   };
   var ignored = [/* [] */0];
-  var match = list_labels(env, funct[/* exp_type */3]);
-  var tmp = /* false */0;
-  if (!match[1]) {
-    var labels = List.filter((function (l) {
-              return 1 - is_optional(l);
-            }))(match[0]);
-    tmp = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
-            return +(param[0] === "");
-          }), sargs) && List.exists((function (l) {
-            return +(l !== "");
-          }), labels) && (prerr_warning(funct[/* exp_loc */1], /* Labels_omitted */3), /* true */1);
+  var tmp = /* true */1;
+  if (!classic[0]) {
+    var match = list_labels(env, funct[/* exp_type */3]);
+    var tmp$1 = /* false */0;
+    if (!match[1]) {
+      var labels = List.filter((function (l) {
+                return 1 - is_optional(l);
+              }))(match[0]);
+      tmp$1 = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
+              return +(param[0] === "");
+            }), sargs) && List.exists((function (l) {
+              return +(l !== "");
+            }), labels) && (prerr_warning(funct[/* exp_loc */1], /* Labels_omitted */3), /* true */1);
+    }
+    tmp = tmp$1;
   }
-  var ignore_labels = classic[0] || tmp;
+  var ignore_labels = tmp;
   var warned = [/* false */0];
   var type_args = function (_args, _omitted, _ty_fun, _ty_fun0, _ty_old, _sargs, _more_sargs) {
     while(true) {
@@ -65564,21 +65588,25 @@ function check_well_founded(env, loc, path, to_check, ty) {
       catch (raw_exn){
         var exn$1 = Js_exn.internalToOCamlException(raw_exn);
         if (exn$1 === Cannot_expand) {
-          var match$3 = ty$1[/* desc */0];
-          var tmp$1;
-          if (typeof match$3 === "number") {
-            tmp$1 = /* false */0;
-          } else {
-            switch (match$3.tag | 0) {
-              case 4 : 
-              case 8 : 
-                  tmp$1 = /* true */1;
-                  break;
-              default:
-                tmp$1 = /* false */0;
+          var tmp$1 = /* true */1;
+          if (!(recursive_types[0] && is_contractive(env, ty$1))) {
+            var match$3 = ty$1[/* desc */0];
+            var tmp$2;
+            if (typeof match$3 === "number") {
+              tmp$2 = /* false */0;
+            } else {
+              switch (match$3.tag | 0) {
+                case 4 : 
+                case 8 : 
+                    tmp$2 = /* true */1;
+                    break;
+                default:
+                  tmp$2 = /* false */0;
+              }
             }
+            tmp$1 = tmp$2;
           }
-          var nodes = recursive_types[0] && is_contractive(env, ty$1) || tmp$1 ? /* Empty */0 : exp_nodes$1;
+          var nodes = tmp$1 ? /* Empty */0 : exp_nodes$1;
           return iter_type_expr((function (param) {
                         return check(ty0, nodes, param);
                       }), ty$1);
@@ -70707,12 +70735,16 @@ function class_expr(cl_num, val_env, met_env, _scl) {
               }
             };
           };
-          var labels = nonopt_labels(/* [] */0, cl$2[/* cl_type */2]);
-          var ignore_labels = classic[0] || +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
-                  return +(param[0] === "");
-                }), sargs) && List.exists((function (l) {
-                  return +(l !== "");
-                }), labels) && (prerr_warning(cl$2[/* cl_loc */1], /* Labels_omitted */3), /* true */1);
+          var tmp = /* true */1;
+          if (!classic[0]) {
+            var labels = nonopt_labels(/* [] */0, cl$2[/* cl_type */2]);
+            tmp = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
+                    return +(param[0] === "");
+                  }), sargs) && List.exists((function (l) {
+                    return +(l !== "");
+                  }), labels) && (prerr_warning(cl$2[/* cl_loc */1], /* Labels_omitted */3), /* true */1);
+          }
+          var ignore_labels = tmp;
           var type_args = (function(cl$2,ignore_labels){
           return function type_args(_args, _omitted, _ty_fun, _ty_fun0, _sargs, _more_sargs) {
             while(true) {
