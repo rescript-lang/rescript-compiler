@@ -23,7 +23,7 @@ var hashString = (function (str) {
                                               while(i !== 0) {
                                               hash = (hash * 33) ^ str.charCodeAt(--i);
                                               }
-                                              return hash  
+                                              return hash
                                               }
                                             );
 
