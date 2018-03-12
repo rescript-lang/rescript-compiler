@@ -8958,10 +8958,21 @@ function typexp(s, ty) {
                   }
                 }
                 if (exit$2 === 4) {
-                  var match$6 = more[/* desc */0];
-                  var tmp$2;
-                  tmp$2 = typeof match$6 === "number" || match$6.tag !== 3 ? /* false */0 : /* true */1;
-                  var dup = s[/* for_saving */3] || +(more[/* level */1] === 100000000) || static_row(row) || tmp$2;
+                  var dup = /* true */1;
+                  if (!s[/* for_saving */3]) {
+                    var tmp$2 = /* true */1;
+                    if (more[/* level */1] !== 100000000) {
+                      var tmp$3 = /* true */1;
+                      if (!static_row(row)) {
+                        var match$6 = more[/* desc */0];
+                        var tmp$4;
+                        tmp$4 = typeof match$6 === "number" || match$6.tag !== 3 ? /* false */0 : /* true */1;
+                        tmp$3 = tmp$4;
+                      }
+                      tmp$2 = tmp$3;
+                    }
+                    dup = tmp$2;
+                  }
                   var match$7 = more[/* desc */0];
                   var more$prime;
                   var exit$3 = 0;
@@ -10171,18 +10182,22 @@ function normalize_path(lax, env, path) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      var tmp;
-      switch (path$1.tag | 0) {
-        case 0 : 
-            tmp = +(path$1[0][/* stamp */0] !== 0);
-            break;
-        case 1 : 
-        case 2 : 
-            tmp = /* true */1;
-            break;
-        
+      var tmp = /* true */1;
+      if (!lax) {
+        var tmp$1;
+        switch (path$1.tag | 0) {
+          case 0 : 
+              tmp$1 = +(path$1[0][/* stamp */0] !== 0);
+              break;
+          case 1 : 
+          case 2 : 
+              tmp$1 = /* true */1;
+              break;
+          
+        }
+        tmp = tmp$1;
       }
-      if (lax || tmp) {
+      if (tmp) {
         return path$1;
       } else {
         throw exn;
@@ -25047,10 +25062,14 @@ function generalize_structure(var_level, ty) {
     if (is_Tvar(ty$1) && ty$1[/* level */1] > var_level) {
       return set_level(ty$1, var_level);
     } else {
-      var match = ty$1[/* desc */0];
-      var tmp;
-      tmp = typeof match === "number" || match.tag !== 3 ? /* true */1 : 1 - is_object_type(match[0]) && (match[2][0] = /* Mnil */0, /* true */1);
-      if (ty$1[/* level */1] > current_level[0] && tmp) {
+      var tmp = /* false */0;
+      if (ty$1[/* level */1] > current_level[0]) {
+        var match = ty$1[/* desc */0];
+        var tmp$1;
+        tmp$1 = typeof match === "number" || match.tag !== 3 ? /* true */1 : 1 - is_object_type(match[0]) && (match[2][0] = /* Mnil */0, /* true */1);
+        tmp = tmp$1;
+      }
+      if (tmp) {
         set_level(ty$1, 100000000);
         return iter_type_expr((function (param) {
                       return generalize_structure(var_level, param);
@@ -25809,10 +25828,18 @@ function copy(env, partial, keep_names, ty) {
                           return /* false */0;
                         }
                       };
-                      var param$1 = Curry._1(match$13[0], ty$1);
-                      match$12 = row$1[/* row_closed */3] && !row$1[/* row_fixed */4] && (
-                        param$1 ? /* false */0 : /* true */1
-                      ) && !List.for_all(not_reither, row$1[/* row_fields */0]) ? /* tuple */[
+                      var tmp$2 = /* false */0;
+                      if (row$1[/* row_closed */3]) {
+                        var tmp$3 = /* false */0;
+                        if (!row$1[/* row_fixed */4]) {
+                          var param$1 = Curry._1(match$13[0], ty$1);
+                          tmp$3 = (
+                            param$1 ? /* false */0 : /* true */1
+                          ) && 1 - List.for_all(not_reither, row$1[/* row_fields */0]);
+                        }
+                        tmp$2 = tmp$3;
+                      }
+                      match$12 = tmp$2 ? /* tuple */[
                           more$prime$1,
                           /* record */[
                             /* row_fields */List.filter(not_reither)(row$1[/* row_fields */0]),
@@ -27058,34 +27085,38 @@ function occur_univar(env, ty) {
       var ty = _ty;
       var bound = _bound;
       var ty$1 = repr(ty);
-      var tmp;
-      if (bound ? /* false */0 : /* true */1) {
-        ty$1[/* level */1] = pivot_level - ty$1[/* level */1] | 0;
-        tmp = /* true */1;
-      } else {
-        try {
-          var bound$prime = find$1(ty$1, visited[0]);
-          if (exists((function(bound){
-                return function (x) {
-                  return 1 - mem$3(x, bound);
-                }
-                }(bound)), bound$prime)) {
-            visited[0] = add$4(ty$1, inter$2(bound, bound$prime), visited[0]);
-            tmp = /* true */1;
-          } else {
-            tmp = /* false */0;
+      var tmp = /* false */0;
+      if (ty$1[/* level */1] >= 0) {
+        var tmp$1;
+        if (bound ? /* false */0 : /* true */1) {
+          ty$1[/* level */1] = pivot_level - ty$1[/* level */1] | 0;
+          tmp$1 = /* true */1;
+        } else {
+          try {
+            var bound$prime = find$1(ty$1, visited[0]);
+            if (exists((function(bound){
+                  return function (x) {
+                    return 1 - mem$3(x, bound);
+                  }
+                  }(bound)), bound$prime)) {
+              visited[0] = add$4(ty$1, inter$2(bound, bound$prime), visited[0]);
+              tmp$1 = /* true */1;
+            } else {
+              tmp$1 = /* false */0;
+            }
+          }
+          catch (exn){
+            if (exn === Caml_builtin_exceptions.not_found) {
+              visited[0] = add$4(ty$1, bound, visited[0]);
+              tmp$1 = /* true */1;
+            } else {
+              throw exn;
+            }
           }
         }
-        catch (exn){
-          if (exn === Caml_builtin_exceptions.not_found) {
-            visited[0] = add$4(ty$1, bound, visited[0]);
-            tmp = /* true */1;
-          } else {
-            throw exn;
-          }
-        }
+        tmp = tmp$1;
       }
-      if (ty$1[/* level */1] >= 0 && tmp) {
+      if (tmp) {
         var match = ty$1[/* desc */0];
         if (typeof match === "number") {
           return iter_type_expr((function(bound){
@@ -29019,8 +29050,10 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                             return unify_list(env, tl1, tl2);
                           }));
                   } else {
-                    var partial_arg = env[0];
-                    if (in_current_module(p1) || List.exists((function (param) {
+                    var tmp = /* true */1;
+                    if (!in_current_module(p1)) {
+                      var partial_arg = env[0];
+                      tmp = List.exists((function (param) {
                               return expands_to_datatype(partial_arg, param);
                             }), /* :: */[
                             t1$prime,
@@ -29031,7 +29064,9 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                                 /* [] */0
                               ]
                             ]
-                          ])) {
+                          ]);
+                    }
+                    if (tmp) {
                       unify_list(env, tl1, tl2);
                     } else {
                       var inj;
@@ -29153,20 +29188,20 @@ function unify3(env, t1, t1$prime, t2, t2$prime) {
                             var match$6 = match$5[0][1];
                             if (match$6) {
                               var match$7 = repr(match$6[0])[/* desc */0];
-                              var tmp;
+                              var tmp$1;
                               if (typeof match$7 === "number") {
-                                tmp = /* true */1;
+                                tmp$1 = /* true */1;
                               } else {
                                 switch (match$7.tag | 0) {
                                   case 0 : 
                                   case 9 : 
-                                      tmp = /* true */1;
+                                      tmp$1 = /* true */1;
                                       break;
                                   default:
-                                    tmp = /* false */0;
+                                    tmp$1 = /* false */0;
                                 }
                               }
-                              if (!tmp) {
+                              if (!tmp$1) {
                                 set_name(nm2, nm1[0]);
                               }
                               
@@ -29943,26 +29978,29 @@ function unify_row(env, row1, row2) {
                               var m2 = f2$2[2];
                               var tl2 = f2$2[1];
                               var c2 = f2$2[0];
-                              var match = Pervasives.$at(tl1, tl2);
-                              var tmp;
-                              if (match) {
-                                var t1 = match[0];
-                                if (c1 || c2) {
-                                  throw [
-                                        Unify,
-                                        /* [] */0
-                                      ];
+                              var redo = /* false */0;
+                              if (m1 || m2 || fixed1$1 || fixed2$1 || rigid_variants[0] && (List.length(tl1) === 1 || List.length(tl2) === 1)) {
+                                var match = Pervasives.$at(tl1, tl2);
+                                var tmp;
+                                if (match) {
+                                  var t1 = match[0];
+                                  if (c1 || c2) {
+                                    throw [
+                                          Unify,
+                                          /* [] */0
+                                        ];
+                                  }
+                                  List.iter((function(t1){
+                                      return function (param) {
+                                        return unify(env$1, t1, param);
+                                      }
+                                      }(t1)), match[1]);
+                                  tmp = +(e1[0] !== /* None */0 || e2[0] !== /* None */0);
+                                } else {
+                                  tmp = /* false */0;
                                 }
-                                List.iter((function(t1){
-                                    return function (param) {
-                                      return unify(env$1, t1, param);
-                                    }
-                                    }(t1)), match[1]);
-                                tmp = +(e1[0] !== /* None */0 || e2[0] !== /* None */0);
-                              } else {
-                                tmp = /* false */0;
+                                redo = tmp;
                               }
-                              var redo = (m1 || m2 || fixed1$1 || fixed2$1 || rigid_variants[0] && +(List.length(tl1) === 1 || List.length(tl2) === 1)) && tmp;
                               if (redo) {
                                 _f2 = f2$2;
                                 _f1 = f1$2;
@@ -39577,19 +39615,23 @@ function best_type_path(p) {
       };
     };
     while((function () {
-            var tmp;
-            try {
-              get_path(/* () */0);
-              tmp = /* false */0;
-            }
-            catch (exn){
-              if (exn === Caml_builtin_exceptions.not_found) {
-                tmp = /* true */1;
-              } else {
-                throw exn;
+            var tmp = /* false */0;
+            if (printing_cont[0] !== /* [] */0) {
+              var tmp$1;
+              try {
+                get_path(/* () */0);
+                tmp$1 = /* false */0;
               }
+              catch (exn){
+                if (exn === Caml_builtin_exceptions.not_found) {
+                  tmp$1 = /* true */1;
+                } else {
+                  throw exn;
+                }
+              }
+              tmp = tmp$1;
             }
-            return +(printing_cont[0] !== /* [] */0) && tmp;
+            return tmp;
           })()) {
       printing_cont[0] = List.map((function (prim) {
               return prim[1];
@@ -49257,10 +49299,12 @@ function do_set_args(erase_mutable, q, r) {
                           List.map2((function (param, arg) {
                                   var lbl = param[1];
                                   var lid = param[0];
-                                  var match = lbl[/* lbl_mut */3];
-                                  if (erase_mutable && (
-                                      match !== 0 ? /* true */1 : /* false */0
-                                    )) {
+                                  var tmp = /* false */0;
+                                  if (erase_mutable) {
+                                    var match = lbl[/* lbl_mut */3];
+                                    tmp = match !== 0 ? /* true */1 : /* false */0;
+                                  }
+                                  if (tmp) {
                                     return /* tuple */[
                                             lid,
                                             lbl,
@@ -55988,10 +56032,17 @@ function build_as_type(env, _p) {
                 var ty_arg = match[1];
                 var newrecord = p.slice();
                 unify_pat(env, (newrecord[/* pat_type */3] = ty$1, newrecord), match[2]);
-                var match$1 = repr(lbl[/* lbl_arg */2])[/* desc */0];
-                var tmp;
-                tmp = typeof match$1 === "number" || match$1.tag !== 10 ? /* true */1 : /* false */0;
-                var refinable = +(lbl[/* lbl_mut */3] === /* Immutable */0) && List.mem_assoc(lbl[/* lbl_pos */4], ppl) && tmp;
+                var refinable = /* false */0;
+                if (lbl[/* lbl_mut */3] === /* Immutable */0) {
+                  var tmp = /* false */0;
+                  if (List.mem_assoc(lbl[/* lbl_pos */4], ppl)) {
+                    var match$1 = repr(lbl[/* lbl_arg */2])[/* desc */0];
+                    var tmp$1;
+                    tmp$1 = typeof match$1 === "number" || match$1.tag !== 10 ? /* true */1 : /* false */0;
+                    tmp = tmp$1;
+                  }
+                  refinable = tmp;
+                }
                 if (refinable) {
                   var arg = List.assoc(lbl[/* lbl_pos */4], ppl);
                   var newrecord$1 = arg.slice();
@@ -60120,24 +60171,28 @@ function type_expect_(in_function, env, sexp, ty_expected) {
           }
           if (exit$2 === 1) {
             if (free_variables$1(/* Some */[env], arg$4[/* exp_type */3]) === /* [] */0 && free_variables$1(/* Some */[env], ty$prime$1) === /* [] */0) {
-              var snap = snapshot(/* () */0);
-              var match$45 = enlarge_type(env, ty$prime$1);
-              var tmp$3;
-              try {
-                Curry._1(force, /* () */0);
-                unify$2(env, arg$4[/* exp_type */3], match$45[0]);
-                tmp$3 = /* true */1;
-              }
-              catch (raw_exn$1){
-                var exn$3 = Js_exn.internalToOCamlException(raw_exn$1);
-                if (exn$3[0] === Unify) {
-                  backtrack(snap);
-                  tmp$3 = /* false */0;
-                } else {
-                  throw exn$3;
+              var tmp$3 = /* false */0;
+              if (!gen$1) {
+                var snap = snapshot(/* () */0);
+                var match$45 = enlarge_type(env, ty$prime$1);
+                var tmp$4;
+                try {
+                  Curry._1(force, /* () */0);
+                  unify$2(env, arg$4[/* exp_type */3], match$45[0]);
+                  tmp$4 = /* true */1;
                 }
+                catch (raw_exn$1){
+                  var exn$3 = Js_exn.internalToOCamlException(raw_exn$1);
+                  if (exn$3[0] === Unify) {
+                    backtrack(snap);
+                    tmp$4 = /* false */0;
+                  } else {
+                    throw exn$3;
+                  }
+                }
+                tmp$3 = tmp$4;
               }
-              if (!(!gen$1 && tmp$3)) {
+              if (!tmp$3) {
                 try {
                   var force$prime = subtype(env, arg$4[/* exp_type */3], ty$prime$1);
                   Curry._1(force, /* () */0);
@@ -62297,15 +62352,22 @@ function type_application(env, funct, sargs) {
     }
   };
   var ignored = [/* [] */0];
-  var match = list_labels(env, funct[/* exp_type */3]);
-  var labels = List.filter((function (l) {
-            return 1 - is_optional(l);
-          }))(match[0]);
-  var ignore_labels = classic[0] || 1 - match[1] && +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
-          return +(param[0] === "");
-        }), sargs) && List.exists((function (l) {
-          return +(l !== "");
-        }), labels) && (prerr_warning(funct[/* exp_loc */1], /* Labels_omitted */3), /* true */1);
+  var ignore_labels = /* true */1;
+  if (!classic[0]) {
+    var match = list_labels(env, funct[/* exp_type */3]);
+    var tmp = /* false */0;
+    if (!match[1]) {
+      var labels = List.filter((function (l) {
+                return 1 - is_optional(l);
+              }))(match[0]);
+      tmp = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
+              return +(param[0] === "");
+            }), sargs) && List.exists((function (l) {
+              return +(l !== "");
+            }), labels) && (prerr_warning(funct[/* exp_loc */1], /* Labels_omitted */3), /* true */1);
+    }
+    ignore_labels = tmp;
+  }
   var warned = [/* false */0];
   var type_args = function (_args, _omitted, _ty_fun, _ty_fun0, _ty_old, _sargs, _more_sargs) {
     while(true) {
@@ -65522,21 +65584,25 @@ function check_well_founded(env, loc, path, to_check, ty) {
       catch (raw_exn){
         var exn$1 = Js_exn.internalToOCamlException(raw_exn);
         if (exn$1 === Cannot_expand) {
-          var match$3 = ty$1[/* desc */0];
-          var tmp$1;
-          if (typeof match$3 === "number") {
-            tmp$1 = /* false */0;
-          } else {
-            switch (match$3.tag | 0) {
-              case 4 : 
-              case 8 : 
-                  tmp$1 = /* true */1;
-                  break;
-              default:
-                tmp$1 = /* false */0;
+          var tmp$1 = /* true */1;
+          if (!(recursive_types[0] && is_contractive(env, ty$1))) {
+            var match$3 = ty$1[/* desc */0];
+            var tmp$2;
+            if (typeof match$3 === "number") {
+              tmp$2 = /* false */0;
+            } else {
+              switch (match$3.tag | 0) {
+                case 4 : 
+                case 8 : 
+                    tmp$2 = /* true */1;
+                    break;
+                default:
+                  tmp$2 = /* false */0;
+              }
             }
+            tmp$1 = tmp$2;
           }
-          var nodes = recursive_types[0] && is_contractive(env, ty$1) || tmp$1 ? /* Empty */0 : exp_nodes$1;
+          var nodes = tmp$1 ? /* Empty */0 : exp_nodes$1;
           return iter_type_expr((function (param) {
                         return check(ty0, nodes, param);
                       }), ty$1);
@@ -70665,12 +70731,15 @@ function class_expr(cl_num, val_env, met_env, _scl) {
               }
             };
           };
-          var labels = nonopt_labels(/* [] */0, cl$2[/* cl_type */2]);
-          var ignore_labels = classic[0] || +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
-                  return +(param[0] === "");
-                }), sargs) && List.exists((function (l) {
-                  return +(l !== "");
-                }), labels) && (prerr_warning(cl$2[/* cl_loc */1], /* Labels_omitted */3), /* true */1);
+          var ignore_labels = /* true */1;
+          if (!classic[0]) {
+            var labels = nonopt_labels(/* [] */0, cl$2[/* cl_type */2]);
+            ignore_labels = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
+                    return +(param[0] === "");
+                  }), sargs) && List.exists((function (l) {
+                    return +(l !== "");
+                  }), labels) && (prerr_warning(cl$2[/* cl_loc */1], /* Labels_omitted */3), /* true */1);
+          }
           var type_args = (function(cl$2,ignore_labels){
           return function type_args(_args, _omitted, _ty_fun, _ty_fun0, _sargs, _more_sargs) {
             while(true) {
