@@ -16,27 +16,23 @@ var oppHeroes = /* :: */[
   /* [] */0
 ];
 
-var tmp = /* false */0;
+var huntGrootCondition = /* false */0;
 
 if (List.length(/* [] */0) > 0) {
   var x = List.filter((function () {
             return +(List.hd(/* [] */0) <= 1000);
           }))(oppHeroes);
-  tmp = +(List.length(x) === 0);
+  huntGrootCondition = +(List.length(x) === 0);
 }
 
-var huntGrootCondition = tmp;
-
-var tmp$1 = /* true */1;
+var huntGrootCondition2 = /* true */1;
 
 if (List.length(/* [] */0) < 0) {
   var x$1 = List.filter((function () {
             return +(List.hd(/* [] */0) <= 1000);
           }))(oppHeroes);
-  tmp$1 = +(List.length(x$1) === 0);
+  huntGrootCondition2 = +(List.length(x$1) === 0);
 }
-
-var huntGrootCondition2 = tmp$1;
 
 eq("File \"gpr_2608_test.ml\", line 23, characters 5-12", huntGrootCondition, /* false */0);
 

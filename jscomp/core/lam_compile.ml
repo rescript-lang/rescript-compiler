@@ -691,21 +691,39 @@ and
                 st 
                 should_return lam l_block (E.and_ l_expr r_expr)
             | { block = r_block; value = Some r_expr} ->    
-              let v = Ext_ident.create_tmp () in 
-              Js_output.output_of_block_and_expression
-              st 
-              should_return 
-              lam
-              (S.define_variable ~kind:Variable v E.caml_false :: 
-                l_block @
-                [S.if_ l_expr                  
-                  (r_block @ [
-                    S.assign v r_expr
-                  ]
-                  )
-                ]
-              )
-              (E.var v)
+              begin match cxt.st with 
+                | Assign v ->
+                  (* Refernece Js_output.output_of_block_and_expression *)
+                  Js_output.make
+                    (
+                      l_block @
+                      [S.if_ l_expr (r_block @ [ S.assign v r_expr])
+                         ~else_:[S.assign v E.caml_false]
+                      ]
+                    )
+                | Declare (_kind,v) ->
+                  (* Refernece Js_output.output_of_block_and_expression *)
+                  Js_output.make 
+                    (
+                      l_block @                
+                      [ S.define_variable ~kind:Variable v E.caml_false ; 
+                        S.if_ l_expr                  
+                          (r_block @ [S.assign v r_expr])])
+                | EffectCall
+                | NeedValue ->
+                  let v = Ext_ident.create_tmp () in 
+                  Js_output.make
+                    (S.define_variable ~kind:Variable v E.caml_false :: 
+                     l_block @
+                     [S.if_ l_expr                  
+                        (r_block @ [
+                            S.assign v r_expr
+                          ]
+                        )
+                     ]
+                    )
+                    ~value:(E.var v)                    
+              end
       end
     | Lprim {primitive = Psequor; args =  [l;r]}
       ->
@@ -726,20 +744,39 @@ and
               Js_output.output_of_block_and_expression 
                 st should_return lam l_block exp
             | {block = r_block; value = Some r_expr} ->
-              let v = Ext_ident.create_tmp () in 
-              Js_output.output_of_block_and_expression
-              st 
-              should_return
-              lam 
-              (S.define_variable ~kind:Variable v E.caml_true
-              :: l_block @ 
-              [ S.if_ (E.not l_expr)
-                (r_block @ [
-                  S.assign v r_expr
-                ])
-               ]
-              )
-              (E.var v)
+              begin match cxt.st with 
+                | Assign v -> 
+                  (* Reference Js_output.output_of_block_and_expression *)
+                  Js_output.make 
+                    (l_block @ 
+                     [ S.if_ (E.not l_expr)
+                         (r_block @ [
+                             S.assign v r_expr
+                           ])
+                         ~else_:[S.assign v E.caml_true] ])
+                | Declare(_kind,v) ->
+                  Js_output.make 
+                    (
+                      l_block @  
+                      [ S.define_variable ~kind:Variable v E.caml_true;
+                        S.if_ (E.not l_expr)
+                          (r_block @ [S.assign v r_expr])
+                      ]
+                    )
+                | EffectCall
+                | NeedValue ->
+                  let v = Ext_ident.create_tmp () in 
+                  Js_output.make
+                    ( l_block @ 
+                      [S.define_variable ~kind:Variable v E.caml_true;
+                       S.if_ (E.not l_expr)
+                         (r_block @ [
+                             S.assign v r_expr
+                           ])
+                      ]
+                    )
+                    ~value:(E.var v)
+              end
       end
     | Lprim {primitive = Pdebugger ; _}
       -> 

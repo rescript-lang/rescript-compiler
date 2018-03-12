@@ -90,8 +90,9 @@ let output_of_block_and_expression
   | Assign n, ReturnFalse -> make (block @ [S.assign n exp])  
   | EffectCall, ReturnTrue _ -> make (block @ [S.return_stmt exp]) ~finished:True
   | (Declare _ | Assign _), ReturnTrue _ ->
-     make [S.unknown_lambda lam] ~finished:True
-  | NeedValue, _ ->  make block ~value:exp
+    make [S.unknown_lambda lam] ~finished:True
+  | NeedValue, (ReturnTrue _ | ReturnFalse) -> 
+    make block ~value:exp
 
 let statement_of_opt_expr (x : J.expression option) : J.statement =
   match x with 

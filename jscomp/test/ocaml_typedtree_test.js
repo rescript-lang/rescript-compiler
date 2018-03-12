@@ -8958,22 +8958,21 @@ function typexp(s, ty) {
                   }
                 }
                 if (exit$2 === 4) {
-                  var tmp$2 = /* true */1;
+                  var dup = /* true */1;
                   if (!s[/* for_saving */3]) {
-                    var tmp$3 = /* true */1;
+                    var tmp$2 = /* true */1;
                     if (more[/* level */1] !== 100000000) {
-                      var tmp$4 = /* true */1;
+                      var tmp$3 = /* true */1;
                       if (!static_row(row)) {
                         var match$6 = more[/* desc */0];
-                        var tmp$5;
-                        tmp$5 = typeof match$6 === "number" || match$6.tag !== 3 ? /* false */0 : /* true */1;
-                        tmp$4 = tmp$5;
+                        var tmp$4;
+                        tmp$4 = typeof match$6 === "number" || match$6.tag !== 3 ? /* false */0 : /* true */1;
+                        tmp$3 = tmp$4;
                       }
-                      tmp$3 = tmp$4;
+                      tmp$2 = tmp$3;
                     }
-                    tmp$2 = tmp$3;
+                    dup = tmp$2;
                   }
-                  var dup = tmp$2;
                   var match$7 = more[/* desc */0];
                   var more$prime;
                   var exit$3 = 0;
@@ -29979,10 +29978,10 @@ function unify_row(env, row1, row2) {
                               var m2 = f2$2[2];
                               var tl2 = f2$2[1];
                               var c2 = f2$2[0];
-                              var tmp = /* false */0;
+                              var redo = /* false */0;
                               if (m1 || m2 || fixed1$1 || fixed2$1 || rigid_variants[0] && (List.length(tl1) === 1 || List.length(tl2) === 1)) {
                                 var match = Pervasives.$at(tl1, tl2);
-                                var tmp$1;
+                                var tmp;
                                 if (match) {
                                   var t1 = match[0];
                                   if (c1 || c2) {
@@ -29996,13 +29995,12 @@ function unify_row(env, row1, row2) {
                                         return unify(env$1, t1, param);
                                       }
                                       }(t1)), match[1]);
-                                  tmp$1 = +(e1[0] !== /* None */0 || e2[0] !== /* None */0);
+                                  tmp = +(e1[0] !== /* None */0 || e2[0] !== /* None */0);
                                 } else {
-                                  tmp$1 = /* false */0;
+                                  tmp = /* false */0;
                                 }
-                                tmp = tmp$1;
+                                redo = tmp;
                               }
-                              var redo = tmp;
                               if (redo) {
                                 _f2 = f2$2;
                                 _f1 = f1$2;
@@ -56034,18 +56032,17 @@ function build_as_type(env, _p) {
                 var ty_arg = match[1];
                 var newrecord = p.slice();
                 unify_pat(env, (newrecord[/* pat_type */3] = ty$1, newrecord), match[2]);
-                var tmp = /* false */0;
+                var refinable = /* false */0;
                 if (lbl[/* lbl_mut */3] === /* Immutable */0) {
-                  var tmp$1 = /* false */0;
+                  var tmp = /* false */0;
                   if (List.mem_assoc(lbl[/* lbl_pos */4], ppl)) {
                     var match$1 = repr(lbl[/* lbl_arg */2])[/* desc */0];
-                    var tmp$2;
-                    tmp$2 = typeof match$1 === "number" || match$1.tag !== 10 ? /* true */1 : /* false */0;
-                    tmp$1 = tmp$2;
+                    var tmp$1;
+                    tmp$1 = typeof match$1 === "number" || match$1.tag !== 10 ? /* true */1 : /* false */0;
+                    tmp = tmp$1;
                   }
-                  tmp = tmp$1;
+                  refinable = tmp;
                 }
-                var refinable = tmp;
                 if (refinable) {
                   var arg = List.assoc(lbl[/* lbl_pos */4], ppl);
                   var newrecord$1 = arg.slice();
@@ -62355,23 +62352,22 @@ function type_application(env, funct, sargs) {
     }
   };
   var ignored = [/* [] */0];
-  var tmp = /* true */1;
+  var ignore_labels = /* true */1;
   if (!classic[0]) {
     var match = list_labels(env, funct[/* exp_type */3]);
-    var tmp$1 = /* false */0;
+    var tmp = /* false */0;
     if (!match[1]) {
       var labels = List.filter((function (l) {
                 return 1 - is_optional(l);
               }))(match[0]);
-      tmp$1 = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
+      tmp = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
               return +(param[0] === "");
             }), sargs) && List.exists((function (l) {
               return +(l !== "");
             }), labels) && (prerr_warning(funct[/* exp_loc */1], /* Labels_omitted */3), /* true */1);
     }
-    tmp = tmp$1;
+    ignore_labels = tmp;
   }
-  var ignore_labels = tmp;
   var warned = [/* false */0];
   var type_args = function (_args, _omitted, _ty_fun, _ty_fun0, _ty_old, _sargs, _more_sargs) {
     while(true) {
@@ -70735,16 +70731,15 @@ function class_expr(cl_num, val_env, met_env, _scl) {
               }
             };
           };
-          var tmp = /* true */1;
+          var ignore_labels = /* true */1;
           if (!classic[0]) {
             var labels = nonopt_labels(/* [] */0, cl$2[/* cl_type */2]);
-            tmp = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
+            ignore_labels = +(List.length(labels) === List.length(sargs)) && List.for_all((function (param) {
                     return +(param[0] === "");
                   }), sargs) && List.exists((function (l) {
                     return +(l !== "");
                   }), labels) && (prerr_warning(cl$2[/* cl_loc */1], /* Labels_omitted */3), /* true */1);
           }
-          var ignore_labels = tmp;
           var type_args = (function(cl$2,ignore_labels){
           return function type_args(_args, _omitted, _ty_fun, _ty_fun0, _sargs, _more_sargs) {
             while(true) {
