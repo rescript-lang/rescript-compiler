@@ -676,26 +676,37 @@ and
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
           compile_lambda cxt (Lam.sequand  l r )
-        | _ -> 
-
+        | {should_return = ReturnFalse } -> 
+          let new_cxt = {cxt with st = NeedValue} in
           match
-            compile_lambda 
-              {cxt with st = NeedValue; should_return = ReturnFalse} l with 
+            compile_lambda new_cxt l with 
           | { value = None } -> assert false   
           | {block = l_block; value = Some l_expr} ->
-            match
-              compile_lambda
-                {cxt with st = NeedValue; should_return = ReturnFalse} r
+            match compile_lambda new_cxt r
             with
             | { value = None } -> assert false 
-            | {block = r_block; value = Some r_expr} -> 
-              let args_code =  Ext_list.append l_block  r_block  in
-              let exp =  E.and_ l_expr r_expr  in
+            | {block = []; value = Some r_expr} 
+              ->               
               Js_output.output_of_block_and_expression 
                 st 
-                should_return lam args_code exp           
+                should_return lam l_block (E.and_ l_expr r_expr)
+            | { block = r_block; value = Some r_expr} ->    
+              let v = Ext_ident.create_tmp () in 
+              Js_output.output_of_block_and_expression
+              st 
+              should_return 
+              lam
+              (S.define_variable ~kind:Variable v E.caml_false :: 
+                l_block @
+                [S.if_ l_expr                  
+                  (r_block @ [
+                    S.assign v r_expr
+                  ]
+                  )
+                ]
+              )
+              (E.var v)
       end
-
     | Lprim {primitive = Psequor; args =  [l;r]}
       ->
       begin match cxt with
@@ -1184,7 +1195,9 @@ and
              when branches are minimial (less than 2)
           *)
           let v = Ext_ident.create_tmp () in
-          Js_output.make (S.declare_variable ~kind:Variable v   :: compile_whole {cxt with st = Assign v})
+          Js_output.make 
+            (S.declare_variable ~kind:Variable v   :: 
+              compile_whole {cxt with st = Assign v})
             ~value:(E.var  v)
 
         | Declare (kind,id) -> 

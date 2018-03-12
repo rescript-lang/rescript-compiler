@@ -59,15 +59,23 @@ function trim(s) {
   var i = 0;
   var j = s.length;
   while((function () {
-          var u = s.charCodeAt(i);
-          return +(i < j && (u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32));
+          var tmp = /* false */0;
+          if (i < j) {
+            var u = s.charCodeAt(i);
+            tmp = +(u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32);
+          }
+          return tmp;
         })()) {
     i = i + 1 | 0;
   };
   var k = j - 1 | 0;
   while((function () {
-          var u = s.charCodeAt(k);
-          return +(k >= i && (u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32));
+          var tmp = /* false */0;
+          if (k >= i) {
+            var u = s.charCodeAt(k);
+            tmp = +(u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32);
+          }
+          return tmp;
         })()) {
     k = k - 1 | 0;
   };
