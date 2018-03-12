@@ -65,6 +65,21 @@ val output_as_block :
 val to_break_block :
   t ->
   J.block * bool 
+  (* the second argument is 
+    [true] means [break] needed
+
+    When we know the output is gonna finished true
+    we can reduce 
+    {[
+      return xx ; 
+      break
+    ]}
+    into 
+    {[
+      return ; 
+    ]}
+
+  *)
 
 val append_output: t -> t -> t   
 

@@ -117,14 +117,14 @@ let to_break_block (x : t) : J.block * bool =
     let block = unnest_block x.block in 
     match x with 
     | {finished = True;  _ } -> 
-        block, false 
+        block, false
        (* value does not matter when [finished] is true
            TODO: check if it has side efects
         *)
     | { value =  None; finished } -> 
         block, (match finished with | True -> false | (False | Dummy)  -> true  )
 
-    | {value = opt; _} -> 
+    | {value = Some _ as opt; _} -> 
         block_with_opt_expr block opt, true
 
 
