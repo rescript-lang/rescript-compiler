@@ -19,9 +19,9 @@ external id : 'a -> 'a = "%identity"
 let const v = fun _ -> v
 
 (** Functor interface *)
-let map f = bimap id f
+let map f = bimap f id
 let (<$>) = map
-let mapLeft f = bimap f id
+let mapError f = bimap id f
 
 (** Predicates *)
 let isOk v = result (const true) (const false) v

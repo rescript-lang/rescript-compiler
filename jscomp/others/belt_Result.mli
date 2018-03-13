@@ -7,9 +7,9 @@ val error : 'b -> ('a, 'b) t
 
 val result : ('a -> 'c) -> ('b -> 'c) -> ('a, 'b) t -> 'c
 
-val map : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
-val (<$>) : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
-val mapLeft : ('a -> 'c) -> ('a, 'b) t -> ('c, 'b) t
+val map : ('a -> 'c) -> ('a, 'b) t -> ('c, 'b) t
+val (<$>) : ('a -> 'c) -> ('a, 'b) t -> ('c, 'b) t  
+val mapError : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
 
 val bimap : ('a -> 'c) -> ('b -> 'd) -> ('a, 'b) t -> ('c, 'd) t
 
