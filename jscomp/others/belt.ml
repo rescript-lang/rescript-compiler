@@ -232,9 +232,9 @@ module HashSet = Belt_HashSet
 *)
 module HashMap = Belt_HashMap
   
-(** {!Belt.Either}
+(** {!Belt.Result}
     
     The top level provides generic {b immutable} either operations.
 *)
 
-module Either = Belt_Either               
+module Result = Belt_Result
