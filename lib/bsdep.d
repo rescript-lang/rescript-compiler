@@ -72,6 +72,7 @@
 ../lib/bsdep.ml : ./common/lam_methname.mli
 ../lib/bsdep.ml : ./ext/string_hash_set.mli
 ../lib/bsdep.ml : ./syntax/ast_core_type.ml
+../lib/bsdep.ml : ./syntax/ast_exp_apply.ml
 ../lib/bsdep.ml : ./syntax/ast_signature.ml
 ../lib/bsdep.ml : ./syntax/ast_structure.ml
 ../lib/bsdep.ml : ./syntax/bs_ast_mapper.ml
@@ -88,6 +89,7 @@
 ../lib/bsdep.ml : ../vendor/ocaml/utils/warnings.ml
 ../lib/bsdep.ml : ./syntax/ast_attributes.ml
 ../lib/bsdep.ml : ./syntax/ast_core_type.mli
+../lib/bsdep.ml : ./syntax/ast_exp_apply.mli
 ../lib/bsdep.ml : ./syntax/ast_signature.mli
 ../lib/bsdep.ml : ./syntax/ast_structure.mli
 ../lib/bsdep.ml : ./syntax/bs_ast_mapper.mli
@@ -112,6 +114,7 @@
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/location.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/longident.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/syntaxerr.ml
+../lib/bsdep.ml : ./syntax/ast_exp_extension.ml
 ../lib/bsdep.ml : ./syntax/bs_ast_invariant.mli
 ../lib/bsdep.ml : ./syntax/external_arg_spec.ml
 ../lib/bsdep.ml : ./syntax/external_process.mli
@@ -121,6 +124,7 @@
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/longident.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/parsetree.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/syntaxerr.mli
+../lib/bsdep.ml : ./syntax/ast_exp_extension.mli
 ../lib/bsdep.ml : ./syntax/external_arg_spec.mli
 ../lib/bsdep.ml : ./syntax/external_ffi_types.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/ast_helper.mli
@@ -139,3 +143,7 @@
 ../lib/bsdep.ml : ./syntax/ast_derive_projector.mli
 ../lib/bsdep.ml : ./syntax/ast_utf8_string_interp.ml
 ../lib/bsdep.ml : ./syntax/ast_utf8_string_interp.mli
+../lib/bsdep.ml : ./syntax/ast_core_type_class_type.ml
+../lib/bsdep.ml : ./syntax/ast_core_type_class_type.mli
+../lib/bsdep.ml : ./syntax/ast_tuple_pattern_flatten.ml
+../lib/bsdep.ml : ./syntax/ast_tuple_pattern_flatten.mli

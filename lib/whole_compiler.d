@@ -255,6 +255,7 @@
 ../lib/whole_compiler.ml : ./depends/bs_exception.ml
 ../lib/whole_compiler.ml : ./ext/string_hash_set.mli
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.ml
+../lib/whole_compiler.ml : ./syntax/ast_exp_apply.ml
 ../lib/whole_compiler.ml : ./syntax/ast_signature.ml
 ../lib/whole_compiler.ml : ./syntax/ast_structure.ml
 ../lib/whole_compiler.ml : ./syntax/bs_ast_mapper.ml
@@ -295,6 +296,7 @@
 ../lib/whole_compiler.ml : ./depends/bs_exception.mli
 ../lib/whole_compiler.ml : ./syntax/ast_attributes.ml
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.mli
+../lib/whole_compiler.ml : ./syntax/ast_exp_apply.mli
 ../lib/whole_compiler.ml : ./syntax/ast_signature.mli
 ../lib/whole_compiler.ml : ./syntax/ast_structure.mli
 ../lib/whole_compiler.ml : ./syntax/bs_ast_mapper.mli
@@ -393,6 +395,7 @@
 ../lib/whole_compiler.ml : ./ext/hash_set_ident_mask.mli
 ../lib/whole_compiler.ml : ./ext/ordered_hash_map_gen.ml
 ../lib/whole_compiler.ml : ./super_errors/super_misc.mli
+../lib/whole_compiler.ml : ./syntax/ast_exp_extension.ml
 ../lib/whole_compiler.ml : ./syntax/bs_ast_invariant.mli
 ../lib/whole_compiler.ml : ./syntax/external_arg_spec.ml
 ../lib/whole_compiler.ml : ./syntax/external_process.mli
@@ -417,6 +420,7 @@
 ../lib/whole_compiler.ml : ./core/lam_compile_context.mli
 ../lib/whole_compiler.ml : ./core/ocaml_batch_compile.mli
 ../lib/whole_compiler.ml : ./super_errors/super_pparse.ml
+../lib/whole_compiler.ml : ./syntax/ast_exp_extension.mli
 ../lib/whole_compiler.ml : ./syntax/external_arg_spec.mli
 ../lib/whole_compiler.ml : ./syntax/external_ffi_types.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/bytecomp/translcore.ml
@@ -479,9 +483,13 @@
 ../lib/whole_compiler.ml : ./core/lam_compile_external_call.mli
 ../lib/whole_compiler.ml : ./core/lam_pass_alpha_conversion.mli
 ../lib/whole_compiler.ml : ./super_errors/super_reason_react.ml
+../lib/whole_compiler.ml : ./syntax/ast_core_type_class_type.ml
 ../lib/whole_compiler.ml : ./ext/ordered_hash_map_local_ident.ml
 ../lib/whole_compiler.ml : ./super_errors/super_reason_react.mli
+../lib/whole_compiler.ml : ./syntax/ast_core_type_class_type.mli
+../lib/whole_compiler.ml : ./syntax/ast_tuple_pattern_flatten.ml
 ../lib/whole_compiler.ml : ./ext/ordered_hash_map_local_ident.mli
+../lib/whole_compiler.ml : ./syntax/ast_tuple_pattern_flatten.mli
 ../lib/whole_compiler.ml : ./core/js_pass_flatten_and_mark_dead.ml
 ../lib/whole_compiler.ml : ./outcome_printer/outcome_printer_ns.ml
 ../lib/whole_compiler.ml : ./core/js_pass_flatten_and_mark_dead.mli

@@ -478,8 +478,11 @@ let root = OCamlRes.Res.([
       "const path = require('path');\n\
        const outputDir = path.join(__dirname, \"build/\");\n\
        \n\
+       const isProd = process.env.NODE_ENV === 'production';\n\
+       \n\
        module.exports = {\n\
       \  entry: './src/Index.bs.js',\n\
+      \  mode: isProd ? 'production' : 'development',\n\
       \  output: {\n\
       \    path: outputDir,\n\
       \    publicPath: outputDir,\n\
@@ -488,7 +491,78 @@ let root = OCamlRes.Res.([
        };\n\
        ") ;
     Dir  ("src", [
-      File  ("Page.re",
+      File  ("Index.re",
+        "ReactDOMRe.renderToElementWithId(<Component1 message=\"Hello!\" />, \"index1\");\n\
+         \n\
+         ReactDOMRe.renderToElementWithId(<Component2 greeting=\"Hello!\" />, \"index2\");\n\
+         ") ;
+      File  ("index.html",
+        "<!DOCTYPE html>\n\
+         <html lang=\"en\">\n\
+         <head>\n\
+        \  <meta charset=\"UTF-8\">\n\
+        \  <title>ReasonReact Examples</title>\n\
+         </head>\n\
+         <body>\n\
+        \  Component 1:\n\
+        \  <div id=\"index1\"></div>\n\
+        \  Component 2:\n\
+        \  <div id=\"index2\"></div>\n\
+         \n\
+        \  <script src=\"../build/Index.js\"></script>\n\
+         </body>\n\
+         </html>\n\
+         ") ;
+      File  ("Component2.re",
+        "/* State declaration */\n\
+         type state = {\n\
+        \  count: int,\n\
+        \  show: bool,\n\
+         };\n\
+         \n\
+         /* Action declaration */\n\
+         type action =\n\
+        \  | Click\n\
+        \  | Toggle;\n\
+         \n\
+         /* Component template declaration.\n\
+        \   Needs to be **after** state and action declarations! */\n\
+         let component = ReasonReact.reducerComponent(\"Example\");\n\
+         \n\
+         /* greeting and children are props. `children` isn't used, therefore ignored.\n\
+        \   We ignore it by prepending it with an underscore */\n\
+         let make = (~greeting, _children) => {\n\
+        \  /* spread the other default fields of component here and override a few */\n\
+        \  ...component,\n\
+         \n\
+        \  initialState: () => {count: 0, show: true},\n\
+         \n\
+        \  /* State transitions */\n\
+        \  reducer: (action, state) =>\n\
+        \    switch (action) {\n\
+        \    | Click => ReasonReact.Update({...state, count: state.count + 1})\n\
+        \    | Toggle => ReasonReact.Update({...state, show: ! state.show})\n\
+        \    },\n\
+         \n\
+        \  render: self => {\n\
+        \    let message =\n\
+        \      \"You've clicked this \" ++ string_of_int(self.state.count) ++ \" times(s)\";\n\
+        \    <div>\n\
+        \      <button onClick=(_event => self.send(Click))>\n\
+        \        (ReasonReact.stringToElement(message))\n\
+        \      </button>\n\
+        \      <button onClick=(_event => self.send(Toggle))>\n\
+        \        (ReasonReact.stringToElement(\"Toggle greeting\"))\n\
+        \      </button>\n\
+        \      (\n\
+        \        self.state.show ?\n\
+        \          ReasonReact.stringToElement(greeting) : ReasonReact.nullElement\n\
+        \      )\n\
+        \    </div>;\n\
+        \  },\n\
+         };\n\
+         ") ;
+      File  ("Component1.re",
         "/* This is the basic component. */\n\
          let component = ReasonReact.statelessComponent(\"Page\");\n\
          \n\
@@ -507,41 +581,35 @@ let root = OCamlRes.Res.([
         \   `ReasonReact.element(Page.make(~message=\"hello\", [||]))` */\n\
          let make = (~message, _children) => {\n\
         \  ...component,\n\
-        \  render: (self) =>\n\
-        \    <div onClick=(self.handle(handleClick))> (ReasonReact.stringToElement(message)) </div>\n\
+        \  render: self =>\n\
+        \    <div onClick=(self.handle(handleClick))>\n\
+        \      (ReasonReact.stringToElement(message))\n\
+        \    </div>,\n\
          };\n\
-         ") ;
-      File  ("Index.re",
-        "ReactDOMRe.renderToElementWithId(<Page message=\"Hello!\" />, \"index\");\n\
-         ") ;
-      File  ("index.html",
-        "<!DOCTYPE html>\n\
-         <html lang=\"en\">\n\
-         <head>\n\
-        \  <meta charset=\"UTF-8\">\n\
-        \  <title>Pure Reason Example</title>\n\
-         </head>\n\
-         <body>\n\
-        \  <div id=\"index\"></div>\n\
-        \  <script src=\"../build/Index.js\"></script>\n\
-         </body>\n\
-         </html>\n\
          ")]) ;
     File  ("README.md",
       "# ${bsb:name}\n\
        \n\
-       Run this project:\n\
+       ## Run Project\n\
        \n\
-       ```\n\
+       ```sh\n\
        npm install\n\
        npm start\n\
        # in another tab\n\
        npm run webpack\n\
        ```\n\
-       \n\
-       After you see the webpack compilation succeed (the `npm run webpack` step), open up the nested html files in `src/*` (**no server needed!**). Then modify whichever file in `src` and refresh the page to see the changes.\n\
+       After you see the webpack compilation succeed (the `npm run webpack` step), open up `src/index.html` (**no server needed!**). Then modify whichever `.re` file in `src` and refresh the page to see the changes.\n\
        \n\
        **For more elaborate ReasonReact examples**, please see https://github.com/reasonml-community/reason-react-example\n\
+       \n\
+       ## Build for Production\n\
+       \n\
+       ```sh\n\
+       npm run build\n\
+       npm run webpack:production\n\
+       ```\n\
+       \n\
+       This will replace the development artifact `build/Index.js` for an optimized version.\n\
        ") ;
     File  ("package.json",
       "{\n\
@@ -552,7 +620,8 @@ let root = OCamlRes.Res.([
       \    \"start\": \"bsb -make-world -w\",\n\
       \    \"clean\": \"bsb -clean-world\",\n\
       \    \"test\": \"echo \\\"Error: no test specified\\\" && exit 1\",\n\
-      \    \"webpack\": \"webpack -w\"\n\
+      \    \"webpack\": \"webpack -w\",\n\
+      \    \"webpack:production\": \"NODE_ENV=production webpack\"\n\
       \  },\n\
       \  \"keywords\": [\n\
       \    \"BuckleScript\"\n\
@@ -560,13 +629,14 @@ let root = OCamlRes.Res.([
       \  \"author\": \"\",\n\
       \  \"license\": \"MIT\",\n\
       \  \"dependencies\": {\n\
-      \    \"react\": \"^15.4.2\",\n\
-      \    \"react-dom\": \"^15.4.2\",\n\
-      \    \"reason-react\": \">=0.3.0\"\n\
+      \    \"react\": \"^16.2.0\",\n\
+      \    \"react-dom\": \"^16.2.0\",\n\
+      \    \"reason-react\": \">=0.3.4\"\n\
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
-      \    \"webpack\": \"^3.8.1\"\n\
+      \    \"webpack\": \"^4.0.1\",\n\
+      \    \"webpack-cli\": \"^2.0.10\"\n\
       \  }\n\
        }\n\
        ") ;
@@ -585,7 +655,7 @@ let root = OCamlRes.Res.([
       \    \"subdirs\" : true\n\
       \  },\n\
       \  \"package-specs\": [{\n\
-      \    \"module\": \"commonjs\",\n\
+      \    \"module\": \"es6\",\n\
       \    \"in-source\": true\n\
       \  }],\n\
       \  \"suffix\": \".bs.js\",\n\

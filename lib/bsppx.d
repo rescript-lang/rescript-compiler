@@ -68,6 +68,7 @@
 ../lib/bsppx.ml : ./common/lam_methname.mli
 ../lib/bsppx.ml : ./ext/string_hash_set.mli
 ../lib/bsppx.ml : ./syntax/ast_core_type.ml
+../lib/bsppx.ml : ./syntax/ast_exp_apply.ml
 ../lib/bsppx.ml : ./syntax/ast_signature.ml
 ../lib/bsppx.ml : ./syntax/ast_structure.ml
 ../lib/bsppx.ml : ./syntax/bs_ast_mapper.ml
@@ -77,6 +78,7 @@
 ../lib/bsppx.ml : ../vendor/ocaml/utils/warnings.ml
 ../lib/bsppx.ml : ./syntax/ast_attributes.ml
 ../lib/bsppx.ml : ./syntax/ast_core_type.mli
+../lib/bsppx.ml : ./syntax/ast_exp_apply.mli
 ../lib/bsppx.ml : ./syntax/ast_signature.mli
 ../lib/bsppx.ml : ./syntax/ast_structure.mli
 ../lib/bsppx.ml : ./syntax/bs_ast_mapper.mli
@@ -97,6 +99,7 @@
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/asttypes.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/location.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/longident.ml
+../lib/bsppx.ml : ./syntax/ast_exp_extension.ml
 ../lib/bsppx.ml : ./syntax/bs_ast_invariant.mli
 ../lib/bsppx.ml : ./syntax/external_arg_spec.ml
 ../lib/bsppx.ml : ./syntax/external_process.mli
@@ -104,6 +107,7 @@
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/docstrings.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/longident.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/parsetree.mli
+../lib/bsppx.ml : ./syntax/ast_exp_extension.mli
 ../lib/bsppx.ml : ./syntax/external_arg_spec.mli
 ../lib/bsppx.ml : ./syntax/external_ffi_types.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_helper.mli
@@ -119,3 +123,7 @@
 ../lib/bsppx.ml : ./syntax/ast_derive_projector.mli
 ../lib/bsppx.ml : ./syntax/ast_utf8_string_interp.ml
 ../lib/bsppx.ml : ./syntax/ast_utf8_string_interp.mli
+../lib/bsppx.ml : ./syntax/ast_core_type_class_type.ml
+../lib/bsppx.ml : ./syntax/ast_core_type_class_type.mli
+../lib/bsppx.ml : ./syntax/ast_tuple_pattern_flatten.ml
+../lib/bsppx.ml : ./syntax/ast_tuple_pattern_flatten.mli
