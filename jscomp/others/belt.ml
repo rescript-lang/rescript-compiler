@@ -232,12 +232,9 @@ module HashSet = Belt_HashSet
 *)
 module HashMap = Belt_HashMap
   
-(** {!Belt.HashMap}
+(** {!Belt.Either}
     
-    The top level provides generic {b mutable} hash map operations.
-    
-    It also has two specialized inner modules
-    {!Belt.HashMap.Int} and {!Belt.HashMap.String}
+    The top level provides generic {b immutable} either operations.
 *)
 
 module Either = Belt_Either               
