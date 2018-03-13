@@ -289,7 +289,11 @@ let () =
 let makeTest n =  
   eq __LOC__ (N.make n 3) (N.makeBy n (fun  _ -> 3))
 
-
+let () = 
+  eq __LOC__
+   ([]
+   |. N.add 3 
+   |. N.add 2 )  [2;3]
 let () =
   
   b __LOC__ (N.cmp [1;2;3] [0;1;2;3] compare > 0) ; 
@@ -319,13 +323,12 @@ let () =
   b __LOC__ (not @@ N.eq [1;2;3] [1;2;3;4] (=))
 let () = 
   let u0 = N.makeBy 20 (fun  x -> x) in   
-  let u1 = N.keepMap u0
-      (fun   x -> if x mod 7 = 0 then Some (x+1) else None) in 
+  let u1 = u0 |. N.keepMap (fun   x -> if x mod 7 = 0 then Some (x+1) else None) in 
   eq __LOC__ u1 [1;8;15];
   b __LOC__
-    N.(  keepMap [1;2;3;4] (fun x -> if x mod 2  = 0 then Some (-x ) else None)
-      =
-      [-2;-4]);
+    N.(  
+      
+    [1;2;3;4] |. keepMap  (fun x -> if x mod 2  = 0 then Some (-x ) else None)  =  [-2;-4]);
   b __LOC__ (
     N.keepMap [1;2;3;4] (fun x -> if x mod 5 = 0 then Some x else None) = []
   ) 

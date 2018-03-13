@@ -18007,28 +18007,50 @@ let handle_exp_apply
     (args : (Asttypes.label * Parsetree.expression) list)
   = 
   let loc = e.pexp_loc in 
-  begin match fn with 
-    | {pexp_desc = 
-         Pexp_apply (
+  begin match fn.pexp_desc with 
+    | Pexp_apply (
            {pexp_desc = 
               Pexp_ident  {txt = Lident "##"  ; loc} ; _},
            [("", obj) ;
             ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-           ]);
-       _} ->  (* f##paint 1 2 *)
+           ])
+        ->  (* f##paint 1 2 *)
       {e with pexp_desc = Ast_util.method_apply loc self obj name args }
-    | {pexp_desc = 
-         Pexp_apply (
+    | Pexp_apply (
            {pexp_desc = 
               Pexp_ident  {txt = Lident "#@"  ; loc} ; _},
            [("", obj) ;
             ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-           ]);
-       _} ->  (* f##paint 1 2 *)
+           ])
+        ->  (* f##paint 1 2 *)
       {e with pexp_desc = Ast_util.property_apply loc self obj name args  }
+    | Pexp_ident {txt = Lident "|."} -> 
+      (* a |. f b c [@bs]  --> f a b c [@bs]
+      *)
+      begin match args with 
+      |  [ "", obj_arg;
+           "", ({pexp_desc = Pexp_apply (fn, args)} as app )           
+        ] -> 
+          let obj_arg = self.expr self obj_arg in 
+          let fn = self.expr self fn in 
+          let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in           
+          Bs_ast_invariant.warn_unused_attributes app.pexp_attributes;
+          { app 
+            with pexp_desc = Pexp_apply(fn, ("", obj_arg) :: args);
+               pexp_attributes = []
+          }
+       (* a |. f [@bs] 
+       *)   
+      | [ "", obj_arg ; 
+          "", fn
+        ] -> 
+          Exp.apply ~loc (self.expr self fn) ["", self.expr self obj_arg]
+      | _ -> 
+        Location.raise_errorf ~loc
+            "invalid |. syntax "
+    end 
 
-    | {pexp_desc = 
-         Pexp_ident  {txt = Lident "##" ; loc} ; _} 
+    | Pexp_ident  {txt = Lident "##" ; loc}
       -> 
       begin match args with 
         | [("", obj) ;
@@ -18072,9 +18094,7 @@ let handle_exp_apply
          end
        ]}
     *)
-    | {pexp_desc = 
-         Pexp_ident {txt = Lident  ("#=" )}
-      } -> 
+    | Pexp_ident {txt = Lident "#=" } -> 
       begin match args with 
         | ["", 
            {pexp_desc = 
