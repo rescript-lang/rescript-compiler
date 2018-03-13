@@ -101,7 +101,10 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   )
   :: 
   ("-bs-re-out",
-    Arg.Unit Reason_outcome_printer_main.setup,
+    Arg.Unit (fun () -> 
+      Reason_outcome_printer_main.setup ();
+      Super_reason_flag.using_reason_syntax := true
+    ),
    " Print compiler output in Reason syntax"
   )
   ::

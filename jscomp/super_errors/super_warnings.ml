@@ -19,6 +19,9 @@ let message (warning : Warnings.t)  =
       "Note: some build systems might e.g. turn kebab-case into CamelCase module, which is why this isn't a hard error."
   | Statement_type -> "This expression returns a value, but you're not doing anything with it. If this is on purpose, put `|> ignore` at the end."
   | Useless_record_with ->
-      "All the fields are already explicitly listed in this record. You can remove the `...` spread."
+      if !Super_reason_flag.using_reason_syntax then
+        "All the fields are already explicitly listed in this record. You can remove the `...` spread."
+      else
+        "All the fields are explicitly listed in this record. You can remove the `with` clause."
   | _ -> Warnings.message warning
 ;;

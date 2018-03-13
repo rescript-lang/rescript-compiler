@@ -234,13 +234,22 @@ let report_error env ppf = function
           _
         )
         ->
-          fprintf
-            ppf
-            "@[<v>This is an uncurried BuckleScript function. @{<info>It must be applied with a dot@}.@,@,\
-            Like this: @{<info>foo(. a, b)@}@,\
-            Not like this: @{<dim>foo(a, b)@}@,@,\
-            This guarantees that your function is fully applied. More info here:@,\
-            https://bucklescript.github.io/docs/en/function.html#solution-guaranteed-uncurrying@]"
+          if !Super_reason_flag.using_reason_syntax then
+            fprintf
+              ppf
+              "@[<v>This is an uncurried BuckleScript function. @{<info>It must be applied with a dot@}.@,@,\
+              Like this: @{<info>foo(. a, b)@}@,\
+              Not like this: @{<dim>foo(a, b)@}@,@,\
+              This guarantees that your function is fully applied. More info here:@,\
+              https://bucklescript.github.io/docs/en/function.html#solution-guaranteed-uncurrying@]"
+          else
+            fprintf
+              ppf
+              "@[<v>This is an uncurried BuckleScript function. @{<info>It must be applied with [@@bs]@}.@,@,\
+              Like this: @{<info>foo 1 2 [@bs]@}@,\
+              Not like this: @{<dim>foo 1 2@}@,@,\
+              This guarantees that your function is fully applied. More info here:@,\
+              https://bucklescript.github.io/docs/en/function.html#solution-guaranteed-uncurrying@]"
       | _ ->
           fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
             type_expr typ
