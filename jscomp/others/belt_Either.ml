@@ -71,14 +71,14 @@ let rights xs =
       | Right r -> List.append acc [r]
     ) [] xs
 
-let array_lefts xs =
+let arrayLefts xs =
   Array.fold_left(fun acc x ->
       match x with
       | Left l -> Array.append acc [|l|]
       | Right r -> acc
     ) [||] xs
 
-let array_rights xs =
+let arrayRights xs =
   Array.fold_left(fun acc x ->
       match x with
       | Left l -> acc

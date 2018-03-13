@@ -37,5 +37,5 @@ val fold : ('b -> 'c -> 'c) -> 'c -> ('a, 'b) t -> 'c
 
 val lefts: (('a, 'b) t) list -> 'a list
 val rights: (('a, 'b) t) list -> 'b list
-val array_lefts: (('a, 'b) t) array -> 'a array
-val array_rights: (('a, 'b) t) array -> 'b array
+val arrayLefts: (('a, 'b) t) array -> 'a array
+val arrayRights: (('a, 'b) t) array -> 'b array
