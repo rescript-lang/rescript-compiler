@@ -8,32 +8,32 @@ let rec drill_through_tlink_and_tsubst t =
   match t.desc with
   | Tlink t
   | Tsubst t -> drill_through_tlink_and_tsubst t
-  | t -> t
+  | _ -> t
 
 let is_weak_type_after_drilling t =
   match drill_through_tlink_and_tsubst t with
-  | Tvar _ -> true
+  | {desc = Tvar _} -> true
   | _ -> false
 
 let component_spec_weak_type_variables t =
   match drill_through_tlink_and_tsubst t with
   (* ReasonReact <=0.3.4 *)
-  | Tconstr (
+  | {desc = Tconstr (
       Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _),
       [state; _initial_state; retained_props; _initial_retained_props; action],
       _
-    ) ->
+    )} ->
     (
       state |> is_weak_type_after_drilling,
       retained_props |> is_weak_type_after_drilling,
       action |> is_weak_type_after_drilling
     )
   (* future ReasonReact version with retainedProps removed *)
-  | Tconstr (
+  | {desc = Tconstr (
       Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _),
       [state; _initial_state; action],
       _
-    ) ->
+    )} ->
     (
       state |> is_weak_type_after_drilling,
       false,
@@ -66,6 +66,7 @@ let rec get_to_bottom_of_aliases f = function
     end
   | _ -> false
 
+
 let state_escape_scope = get_to_bottom_of_aliases (function
   (* https://github.com/BuckleScript/ocaml/blob/ddf5a739cc0978dab5e553443825791ba7b0cef9/typing/printtyp.ml?#L1348 *)
   (* so apparently that's the logic for detecting "the constructor out of scope" error *)
@@ -74,14 +75,42 @@ let state_escape_scope = get_to_bottom_of_aliases (function
   | _ -> false
 )
 
-let is_array_wanted_reactElement = get_to_bottom_of_aliases (function
-  | ({desc = Tconstr (path1, _, _)}, {desc = Tconstr (path2, _, _)})
-    when Path.last path1 = "array" && Path.last path2 = "reactElement" -> true
+let trace_both_component_spec = get_to_bottom_of_aliases (fun (t1, t2) ->
+  match (t1, t2) with
+  | ({desc = Tconstr (
+      (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
+      ([state1; _; _; _; action1] | [state1; _; action1]),
+      _
+    )},
+    {desc = Tconstr (
+      (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
+      ([state2; _; _; _; action2] | [state2; _; action2]),
+      _
+    )})
+    -> true
   | _ -> false
 )
 
-let is_componentSpec_wanted_reactElement = get_to_bottom_of_aliases (function
-  | ({desc = Tconstr (path1, _, _)}, {desc = Tconstr (path2, _, _)})
-    when Path.last path1 = "componentSpec" && Path.last path2 = "reactElement" -> true
+let is_array_wanted_reactElement = get_to_bottom_of_aliases (function
+  | ({desc = Tconstr (path1, _, _)},
+    {desc = Tconstr (
+      (Pdot ((Pident {name = "ReasonReact"}), "reactElement", _)),
+      _,
+      _
+    )}) when Path.last path1 = "array"-> true
+  | _ -> false
+)
+
+let is_component_spec_wanted_reactElement = get_to_bottom_of_aliases (function
+  | ({desc = Tconstr (
+      (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
+      ([state1; _; _; _; action1] | [state1; _; action1]),
+      _
+    )},
+    {desc = Tconstr (
+      (Pdot ((Pident {name = "ReasonReact"}), "reactElement", _)),
+      _,
+      _
+    )}) -> true
   | _ -> false
 )
