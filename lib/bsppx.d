@@ -119,3 +119,7 @@
 ../lib/bsppx.ml : ./syntax/ast_derive_projector.mli
 ../lib/bsppx.ml : ./syntax/ast_utf8_string_interp.ml
 ../lib/bsppx.ml : ./syntax/ast_utf8_string_interp.mli
+../lib/bsppx.ml : ./syntax/ast_core_type_class_type.ml
+../lib/bsppx.ml : ./syntax/ast_core_type_class_type.mli
+../lib/bsppx.ml : ./syntax/ast_tuple_pattern_flatten.ml
+../lib/bsppx.ml : ./syntax/ast_tuple_pattern_flatten.mli

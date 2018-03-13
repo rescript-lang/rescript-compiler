@@ -479,9 +479,13 @@
 ../lib/whole_compiler.ml : ./core/lam_compile_external_call.mli
 ../lib/whole_compiler.ml : ./core/lam_pass_alpha_conversion.mli
 ../lib/whole_compiler.ml : ./super_errors/super_reason_react.ml
+../lib/whole_compiler.ml : ./syntax/ast_core_type_class_type.ml
 ../lib/whole_compiler.ml : ./ext/ordered_hash_map_local_ident.ml
 ../lib/whole_compiler.ml : ./super_errors/super_reason_react.mli
+../lib/whole_compiler.ml : ./syntax/ast_core_type_class_type.mli
+../lib/whole_compiler.ml : ./syntax/ast_tuple_pattern_flatten.ml
 ../lib/whole_compiler.ml : ./ext/ordered_hash_map_local_ident.mli
+../lib/whole_compiler.ml : ./syntax/ast_tuple_pattern_flatten.mli
 ../lib/whole_compiler.ml : ./core/js_pass_flatten_and_mark_dead.ml
 ../lib/whole_compiler.ml : ./outcome_printer/outcome_printer_ns.ml
 ../lib/whole_compiler.ml : ./core/js_pass_flatten_and_mark_dead.mli

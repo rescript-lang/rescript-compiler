@@ -70,25 +70,11 @@ let reset () =
   record_as_js_object := false ;
   no_export  :=  false
 
-let rec is_simple_pattern (p : Parsetree.pattern) =   
-  match p.ppat_desc with 
-  | Ppat_any -> true 
-  | Ppat_var _ -> true 
-  | Ppat_constraint(p,_) -> is_simple_pattern p  
-  | _ -> false
 
-let rec destruct 
-    acc (e : Parsetree.expression) = 
-  match e.pexp_desc with 
-  | Pexp_open (flag, lid, cont)
-    -> 
-    destruct 
-      ((flag, lid, e.pexp_loc, e.pexp_attributes) :: acc)
-      cont 
-  | Pexp_tuple es -> Some (acc, es)
-  | _ -> None
 
-let newTdcls tdcls newAttrs =   
+let newTdcls 
+  (tdcls : Parsetree.type_declaration list) 
+  (newAttrs : Parsetree.attributes) : Parsetree.type_declaration list =   
   match tdcls with 
   | [ x ] -> 
     [{ x with Parsetree.ptype_attributes = newAttrs}]
@@ -97,233 +83,8 @@ let newTdcls tdcls newAttrs =
       (fun last x -> 
          if last then { x with Parsetree.ptype_attributes = newAttrs} else x )
       tdcls 
-(*
-  [let (a,b) = M.N.(c,d) ]
-  => 
-  [ let a = M.N.c 
-    and b = M.N.d ]
-*)  
-let flattern_tuple_pattern_vb 
-    (self : Bs_ast_mapper.mapper)   
-    ({pvb_loc } as vb :  Parsetree.value_binding)
-    acc : Parsetree.value_binding list =
-  let pvb_pat = self.pat self vb.pvb_pat in 
-  let pvb_expr = self.expr self vb.pvb_expr in  
-  let pvb_attributes = self.attributes self vb.pvb_attributes in 
-  match destruct [] pvb_expr, pvb_pat.ppat_desc with 
-  | Some (wholes, es), Ppat_tuple xs 
-    when 
-      List.for_all is_simple_pattern xs &&
-      Ext_list.same_length es xs 
-    -> 
-    (Ext_list.fold_right2 (fun pat exp acc-> 
-         {Parsetree.
-           pvb_pat = 
-             pat;
-           pvb_expr =  
-             ( match wholes with 
-               | [] -> exp  
-               | _ ->
-                 List.fold_left (fun x (flag,lid,loc,attrs)  ->
-                     {Parsetree.
-                       pexp_desc = Pexp_open(flag,lid,x); 
-                       pexp_attributes = attrs;
-                       pexp_loc = loc
-                     }
-                   ) exp wholes) ;
-           pvb_attributes; 
-           pvb_loc ;
-         } :: acc 
-       ) xs es) acc
-  | _ -> 
-    {pvb_pat ; 
-     pvb_expr ;
-     pvb_loc ;
-     pvb_attributes} :: acc 
 
 
-
-let process_getter_setter ~no ~get ~set
-    loc name
-    (attrs : Ast_attributes.t)
-    (ty : Parsetree.core_type) acc  =
-  match Ast_attributes.process_method_attributes_rev attrs with 
-  | {get = None; set = None}, _  ->  no ty :: acc 
-  | st , pctf_attributes
-    -> 
-    let get_acc = 
-      match st.set with 
-      | Some `No_get -> acc 
-      | None 
-      | Some `Get -> 
-        let lift txt = 
-          Typ.constr ~loc {txt ; loc} [ty] in
-        let (null,undefined) =                
-          match st with 
-          | {get = Some (null, undefined) } -> (null, undefined)
-          | {get = None} -> (false, false ) in 
-        let ty = 
-          match (null,undefined) with 
-          | false, false -> ty
-          | true, false -> lift Ast_literal.Lid.js_null
-          | false, true -> lift Ast_literal.Lid.js_undefined
-          | true , true -> lift Ast_literal.Lid.js_null_undefined in
-        get ty name pctf_attributes
-        :: acc  
-    in 
-    if st.set = None then get_acc 
-    else
-      set ty (name ^ Literals.setter_suffix) pctf_attributes         
-      :: get_acc 
-
-
-
-let handle_class_type_field self
-    ({pctf_loc = loc } as ctf : Parsetree.class_type_field)
-    acc =
-  match ctf.pctf_desc with 
-  | Pctf_method 
-      (name, private_flag, virtual_flag, ty) 
-    ->
-    let no (ty : Parsetree.core_type) =
-      let ty = 
-        match ty.ptyp_desc with 
-        | Ptyp_arrow (label, args, body) 
-          ->
-          Ast_util.to_method_type
-            ty.ptyp_loc  self label args body
-
-        | Ptyp_poly (strs, {ptyp_desc = Ptyp_arrow (label, args, body);
-                            ptyp_loc})
-          ->
-          {ty with ptyp_desc = 
-                     Ptyp_poly(strs,             
-                               Ast_util.to_method_type
-                                 ptyp_loc  self label args body  )}
-        | _ -> 
-          self.typ self ty
-      in 
-      {ctf with 
-       pctf_desc = 
-         Pctf_method (name , private_flag, virtual_flag, ty)}
-    in
-    let get ty name pctf_attributes =
-      {ctf with 
-       pctf_desc =  
-         Pctf_method (name , 
-                      private_flag, 
-                      virtual_flag, 
-                      self.typ self ty
-                     );
-       pctf_attributes} in
-    let set ty name pctf_attributes =
-      {ctf with 
-       pctf_desc =
-         Pctf_method (name, 
-                      private_flag,
-                      virtual_flag,
-                      Ast_util.to_method_type
-                        loc self "" ty
-                        (Ast_literal.type_unit ~loc ())
-                     );
-       pctf_attributes} in
-    process_getter_setter ~no ~get ~set loc name ctf.pctf_attributes ty acc     
-
-  | Pctf_inherit _ 
-  | Pctf_val _ 
-  | Pctf_constraint _
-  | Pctf_attribute _ 
-  | Pctf_extension _  -> 
-    Bs_ast_mapper.default_mapper.class_type_field self ctf :: acc 
-
-(*
-  Attributes are very hard to attribute
-  (since ptyp_attributes could happen in so many places), 
-  and write ppx extensions correctly, 
-  we can only use it locally
-*)
-
-let handle_core_type 
-    (super : Bs_ast_mapper.mapper) 
-    (self : Bs_ast_mapper.mapper)
-    (ty : Parsetree.core_type) = 
-  match ty with
-  | {ptyp_desc = Ptyp_extension({txt = ("bs.obj"|"obj")}, PTyp ty)}
-    -> 
-    Ext_ref.non_exn_protect record_as_js_object true 
-      (fun _ -> self.typ self ty )
-  | {ptyp_attributes ;
-     ptyp_desc = Ptyp_arrow (label, args, body);
-     (* let it go without regard label names, 
-        it will report error later when the label is not empty
-     *)     
-     ptyp_loc = loc
-    } ->
-    begin match  Ast_attributes.process_attributes_rev ptyp_attributes with 
-      | `Uncurry , ptyp_attributes ->
-        Ast_util.to_uncurry_type loc self label args body 
-      |  `Meth_callback, ptyp_attributes ->
-        Ast_util.to_method_callback_type loc self label args body
-      | `Method, ptyp_attributes ->
-        Ast_util.to_method_type loc self label args body
-      | `Nothing , _ -> 
-        Bs_ast_mapper.default_mapper.typ self ty
-    end
-  | {
-    ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
-    ptyp_loc = loc 
-  } -> 
-    let (+>) attr (typ : Parsetree.core_type) =
-      {typ with ptyp_attributes = attr :: typ.ptyp_attributes} in           
-    let new_methods =
-      Ext_list.fold_right (fun (label, ptyp_attrs, core_type) acc ->
-          let get ty name attrs =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev attrs with
-              | `Nothing, attrs -> attrs, ty (* #1678 *)
-              | `Uncurry, attrs ->
-                attrs, Ast_attributes.bs +> ty
-              | `Method, _
-                -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
-              | `Meth_callback, attrs ->
-                attrs, Ast_attributes.bs_this +> ty 
-            in 
-            name , attrs, self.typ self core_type in
-          let set ty name attrs =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev attrs with
-              | `Nothing, attrs -> attrs, ty
-              | `Uncurry, attrs ->
-                attrs, Ast_attributes.bs +> ty 
-              | `Method, _
-                -> Location.raise_errorf ~loc "bs.get/set conflicts with bs.meth"
-              | `Meth_callback, attrs ->
-                attrs, Ast_attributes.bs_this +> ty
-            in               
-            name, attrs, Ast_util.to_method_type loc self "" core_type 
-              (Ast_literal.type_unit ~loc ()) in
-          let no ty =
-            let attrs, core_type =
-              match Ast_attributes.process_attributes_rev ptyp_attrs with
-              | `Nothing, attrs -> attrs, ty
-              | `Uncurry, attrs ->
-                attrs, Ast_attributes.bs +> ty 
-              | `Method, attrs -> 
-                attrs, Ast_attributes.bs_method +> ty 
-              | `Meth_callback, attrs ->
-                attrs, Ast_attributes.bs_this +> ty  in            
-            label, attrs, self.typ self core_type in
-          process_getter_setter ~no ~get ~set
-            loc label ptyp_attrs core_type acc
-        ) methods [] in      
-    let inner_type =
-      { ty
-        with ptyp_desc = Ptyp_object(new_methods, closed_flag);
-      } in 
-    if !record_as_js_object then 
-      Ast_comb.to_js_type loc inner_type          
-    else inner_type
-  | _ -> super.typ self ty
 
 let rec unsafe_mapper : Bs_ast_mapper.mapper =   
   { Bs_ast_mapper.default_mapper with 
@@ -685,7 +446,8 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           end            
         | _ ->  Bs_ast_mapper.default_mapper.expr self e
       );
-    typ = (fun self typ -> handle_core_type Bs_ast_mapper.default_mapper self typ);
+    typ = (fun self typ -> 
+      Ast_core_type_class_type.handle_core_type self typ record_as_js_object);
     class_type = 
       (fun self ({pcty_attributes; pcty_loc} as ctd) -> 
          match Ast_attributes.process_bs pcty_attributes with 
@@ -700,7 +462,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
                {ctd with
                 pcty_desc = Pcty_signature {
                     pcsig_self ;
-                    pcsig_fields = Ext_list.fold_right (handle_class_type_field self)  pcsig_fields []
+                    pcsig_fields = Ast_core_type_class_type.handle_class_type_fields self pcsig_fields
                   };
                 pcty_attributes                    
                }                    
@@ -798,12 +560,7 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       | _  -> Bs_ast_mapper.default_mapper.pat self pat
 
     end;
-    value_bindings = begin  fun self (vbs : Parsetree.value_binding list) -> 
-      (* Bs_ast_mapper.default_mapper.value_bindings self  vbs   *)
-      List.fold_right (fun vb acc ->
-          flattern_tuple_pattern_vb self vb acc 
-        ) vbs []
-    end;
+    value_bindings = Ast_tuple_pattern_flatten.handle_value_bindings;
     structure_item = begin fun self (str : Parsetree.structure_item) -> 
       begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs) 
