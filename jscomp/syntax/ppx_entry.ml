@@ -91,178 +91,9 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
     expr = (fun self ({ pexp_loc = loc } as e) -> 
         match e.pexp_desc with 
         (** Its output should not be rewritten anymore *)        
-        | Pexp_extension (
-            {txt = ("bs.raw" | "raw"); loc} , payload)
-          -> 
-          Ast_util.handle_raw loc payload
-        | Pexp_extension (
-            {txt = ("bs.re" | "re"); loc} , payload)
-          ->
-          Exp.constraint_ ~loc
-            (Ast_util.handle_raw ~check_js_regex:true loc payload)
-            (Ast_comb.to_js_re_type loc)
-        | Pexp_extension ({txt = "bs.external" | "external" ; loc }, payload) -> 
-          begin match Ast_payload.as_ident payload with 
-            | Some {txt = Lident x}
-              -> Ast_util.handle_external loc x
-            (* do we need support [%external gg.xx ] 
-
-               {[ Js.Undefined.to_opt (if Js.typeof x == "undefined" then x else Js.Undefined.empty ) ]}
-            *)
-
-            | None | Some _ -> 
-              Location.raise_errorf ~loc 
-                "external expects a single identifier"
-          end 
-        | Pexp_extension ({txt = "bs.time"| "time"; loc}, payload)  
-          -> 
-          (
-            match payload with 
-            | PStr [{pstr_desc = Pstr_eval (e,_)}] -> 
-              let locString = 
-                if loc.loc_ghost then 
-                  "GHOST LOC"
-                else 
-                  let loc_start = loc.loc_start in 
-                  let (file, lnum, __) = Location.get_pos_info loc_start in                  
-                  Printf.sprintf "%s %d"
-                    file lnum in   
-              let e = self.expr self e in 
-              Exp.sequence ~loc
-                (Exp.apply ~loc     
-                   (Exp.ident ~loc {loc; 
-                                    txt = 
-                                      Ldot (Ldot (Lident "Js", "Console"), "timeStart")   
-                                   })
-                   ["", Exp.constant ~loc (Const_string (locString,None))]
-                )     
-                ( Exp.let_ ~loc Nonrecursive
-                    [Vb.mk ~loc (Pat.var ~loc {loc; txt = "timed"}) e ;
-                    ]
-                    (Exp.sequence ~loc
-                       (Exp.apply ~loc     
-                          (Exp.ident ~loc {loc; 
-                                           txt = 
-                                             Ldot (Ldot (Lident "Js", "Console"), "timeEnd")   
-                                          })
-                          ["", Exp.constant ~loc (Const_string (locString,None))]
-                       )    
-                       (Exp.ident ~loc {loc; txt = Lident "timed"})
-                    )
-                )
-            | _ -> 
-              Location.raise_errorf 
-                ~loc "expect a boolean expression in the payload"
-          )
-        | Pexp_extension({txt = "bs.assert" | "assert";loc},payload) 
-          ->
-          (
-            match payload with 
-            | PStr [ {pstr_desc = Pstr_eval( e,_)}] -> 
-
-              let locString = 
-                if loc.loc_ghost then 
-                  "ASSERT FAILURE"
-                else 
-                  let loc_start = loc.loc_start in 
-                  let (file, lnum, cnum) = Location.get_pos_info loc_start in
-                  let enum = 
-                    loc.Location.loc_end.Lexing.pos_cnum -
-                    loc_start.Lexing.pos_cnum + cnum in
-                  Printf.sprintf "File %S, line %d, characters %d-%d"
-                    file lnum cnum enum in   
-              let raiseWithString  locString =      
-                (Exp.apply ~loc 
-                   (Exp.ident ~loc {loc; txt = 
-                                           Ldot(Ldot (Lident "Js","Exn"),"raiseError")})
-                   ["",
-
-                    Exp.constant (Const_string (locString,None))    
-                   ])
-              in 
-              (match e.pexp_desc with
-               | Pexp_construct({txt = Lident "false"},None) -> 
-                 (* The backend will convert [assert false] into a nop later *)
-                 if !Clflags.no_assert_false  then 
-                   Exp.assert_ ~loc 
-                     (Exp.construct ~loc {txt = Lident "false";loc} None)
-                 else 
-                   (raiseWithString locString)
-               | Pexp_constant (Const_string (r, _)) -> 
-                 if !Clflags.noassert then 
-                   Exp.assert_ ~loc (Exp.construct ~loc {txt = Lident "true"; loc} None)
-                   (* Need special handling to make it type check*)
-                 else   
-                   raiseWithString r
-               | _ ->    
-                 let e = self.expr self  e in 
-                 if !Clflags.noassert then 
-                   (* pass down so that it still type check, but the backend will
-                      make it a nop
-                   *)
-                   Exp.assert_ ~loc e
-                 else 
-                   Exp.ifthenelse ~loc
-                     (Exp.apply ~loc
-                        (Exp.ident {loc ; txt = Ldot(Lident "Pervasives","not")})
-                        ["", e]
-                     )
-                     (raiseWithString locString)
-                     None
-              )
-            | _ -> 
-              Location.raise_errorf 
-                ~loc "expect a boolean expression in the payload"
-          )
-          (*
-          [%%bs.import Bs_internalAVLSet.(a,b,c)]
-          *)
-        | Pexp_extension
-            ({txt = ("bs.node" | "node"); loc},
-             payload)
-          ->          
-          let strip s =
-            match s with 
-            | "_module" -> "module" 
-            | x -> x  in 
-          begin match Ast_payload.as_ident payload with
-            | Some {txt = Lident
-                        ( "__filename"
-                        | "__dirname"
-                        | "_module"
-                        | "require" as name); loc}
-              ->
-              let exp =
-                Ast_util.handle_external loc (strip name)  in
-              let typ =
-                Ast_core_type.lift_option_type  
-                @@                 
-                if name = "_module" then
-                  Typ.constr ~loc
-                    { txt = Ldot (Lident "Node", "node_module") ;
-                      loc} []   
-                else if name = "require" then
-                  (Typ.constr ~loc
-                     { txt = Ldot (Lident "Node", "node_require") ;
-                       loc} [] )  
-                else
-                  Ast_literal.type_string ~loc () in                  
-              Exp.constraint_ ~loc exp typ                
-            | Some _ | None ->
-              begin match payload with 
-                | PTyp _ -> 
-                  Location.raise_errorf 
-                    ~loc "Illegal payload, expect an expression payload instead of type payload"              
-                | PPat _ ->
-                  Location.raise_errorf 
-                    ~loc "Illegal payload, expect an expression payload instead of pattern  payload"        
-                | _ -> 
-                  Location.raise_errorf 
-                    ~loc "Illegal payload"
-              end
-
-          end             
-        |Pexp_constant (Const_string (s, (Some delim))) 
+        | Pexp_extension extension ->
+          Ast_exp_extension.handle_extension record_as_js_object e self extension
+        | Pexp_constant (Const_string (s, (Some delim))) 
           ->         
           if Ext_string.equal delim Literals.unescaped_js_delimiter then 
             let js_str = Ast_utf8_string.transform loc s in 
@@ -271,27 +102,11 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           else if Ext_string.equal delim Literals.unescaped_j_delimiter then 
             Ast_utf8_string_interp.transform_interp loc s             
           else e 
-
-        (** [bs.debugger], its output should not be rewritten any more*)
-        | Pexp_extension ({txt = ("bs.debugger"|"debugger"); loc} , payload)
-          -> {e with pexp_desc = Ast_util.handle_debugger loc payload}
-        | Pexp_extension ({txt = ("bs.obj" | "obj"); loc},  payload)
-          -> 
-          begin match payload with 
-            | PStr [{pstr_desc = Pstr_eval (e,_)}]
-              -> 
-              Ext_ref.non_exn_protect record_as_js_object true
-                (fun () -> self.expr self e ) 
-            | _ -> Location.raise_errorf ~loc "Expect an expression here"
-          end
-        | Pexp_extension({txt ; loc} as lid, PTyp typ) 
-          when Ext_string.starts_with txt Literals.bs_deriving_dot -> 
-          self.expr self @@ 
-          Ast_derive.gen_expression lid typ
-
         (** End rewriting *)
         | Pexp_function cases -> 
-          begin match Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes with 
+          begin match
+              Ast_attributes.process_pexp_fun_attributes_rev e.pexp_attributes
+            with 
             | `Nothing, _ -> 
               Bs_ast_mapper.default_mapper.expr self  e 
             | `Exn, pexp_attributes -> 
@@ -446,8 +261,8 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           end            
         | _ ->  Bs_ast_mapper.default_mapper.expr self e
       );
-    typ = (fun self typ -> 
-      Ast_core_type_class_type.handle_core_type self typ record_as_js_object);
+    typ = (fun self typ ->
+        Ast_core_type_class_type.handle_core_type self typ record_as_js_object);
     class_type = 
       (fun self ({pcty_attributes; pcty_loc} as ctd) -> 
          match Ast_attributes.process_bs pcty_attributes with 

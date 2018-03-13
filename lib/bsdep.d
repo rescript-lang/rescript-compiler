@@ -112,6 +112,7 @@
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/location.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/longident.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/syntaxerr.ml
+../lib/bsdep.ml : ./syntax/ast_exp_extension.ml
 ../lib/bsdep.ml : ./syntax/bs_ast_invariant.mli
 ../lib/bsdep.ml : ./syntax/external_arg_spec.ml
 ../lib/bsdep.ml : ./syntax/external_process.mli
@@ -121,6 +122,7 @@
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/longident.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/parsetree.mli
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/syntaxerr.mli
+../lib/bsdep.ml : ./syntax/ast_exp_extension.mli
 ../lib/bsdep.ml : ./syntax/external_arg_spec.mli
 ../lib/bsdep.ml : ./syntax/external_ffi_types.ml
 ../lib/bsdep.ml : ../vendor/ocaml/parsing/ast_helper.mli

@@ -97,6 +97,7 @@
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/asttypes.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/location.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/longident.ml
+../lib/bsppx.ml : ./syntax/ast_exp_extension.ml
 ../lib/bsppx.ml : ./syntax/bs_ast_invariant.mli
 ../lib/bsppx.ml : ./syntax/external_arg_spec.ml
 ../lib/bsppx.ml : ./syntax/external_process.mli
@@ -104,6 +105,7 @@
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/docstrings.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/longident.mli
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/parsetree.mli
+../lib/bsppx.ml : ./syntax/ast_exp_extension.mli
 ../lib/bsppx.ml : ./syntax/external_arg_spec.mli
 ../lib/bsppx.ml : ./syntax/external_ffi_types.ml
 ../lib/bsppx.ml : ../vendor/ocaml/parsing/ast_helper.mli
