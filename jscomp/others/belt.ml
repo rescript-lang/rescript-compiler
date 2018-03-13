@@ -32,11 +32,11 @@
 
     The motivation of creating such library is to provide BuckleScript users a 
     better end-to-end user experience, since the original OCaml stdlib was not 
-    writte with JS platform in mind, below are a list of areas this lib aims to 
+    written with JS platform in mind, below are a list of areas this lib aims to 
     improve: {ol
     {- 1. Consistency in name convention: camlCase, and arguments order}
     {- 2. Exception thrown functions are all suffixed with {i Exn}, e.g, {i getExn}}
-    {- 3. Beter peformance and smaller code size running on JS platform}
+    {- 3. Better performance and smaller code size running on JS platform}
     }
 
     {b Name Convention}
@@ -95,7 +95,7 @@
 
     [I0.identity] and [I1.identity] are not the same using our encoding scheme.
 
-    {b Collection Hierachy}
+    {b Collection Hierarchy}
 
     In general, we provide a generic collection module, but also create specialized
     modules for commonly used data type, take {i Belt.Set} for example
@@ -110,7 +110,7 @@
     efficient.
 
     Currently, both {i Belt_Set} and {i Belt.Set} are accessible to users for some
-    technical rasons,
+    technical reasons,
     we {b strongly recommend} users stick to qualified import, {i Belt.Sort}, we may hide
     the internal, {i i.e}, {i Belt_Set} in the future
     
@@ -118,10 +118,10 @@
 
 (** {!Belt.Id}
 
-    Provide utiliites to create identified comparators or hashes for 
+    Provide utilities to create identified comparators or hashes for 
     data structures used below. 
     
-    It create a unique identifer per module of
+    It create a unique identifier per module of
     functions so that different data structures with slightly different 
     comparison functions won't mix
 *)
@@ -129,13 +129,13 @@ module Id = Belt_Id
 
 (** {!Belt.Array}
 
-    {b mutable array}: Utililites functions
+    {b mutable array}: Utilities functions
 *)
 module Array = Belt_Array
 
 (** {!Belt.SortArray}
     
-    The toplevel provides some generic sort related utililties.
+    The top level provides some generic sort related utilities.
     
     It also has two specialized inner modules
     {!Belt.SortArray.Int} and {!Belt.SortArray.String}
@@ -168,13 +168,13 @@ module Range = Belt_Range
 
 (** {!Belt.Set}
 
-    The toplevel provides generic {b immutable} set operations.
+    The top level provides generic {b immutable} set operations.
 
     It also has three specialized inner modules
     {!Belt.Set.Int} and {!Belt.Set.String}
 
     {!Belt.Set.Dict}: This module separate date from function
-    which is more verbbose but slightly more efficient
+    which is more verbose but slightly more efficient
 
 *)
 module Set = Belt_Set
@@ -182,20 +182,20 @@ module Set = Belt_Set
 
 (** {!Belt.Map},
 
-    The toplevel provides generic {b immutable} map operations.
+    The top level provides generic {b immutable} map operations.
     
     It also has three specialized inner modules
     {!Belt.Map.Int} and {!Belt.Map.String}
 
     {!Belt.Map.Dict}: This module separate date from function
-    which  is more verbbose but slightly more efficient
+    which  is more verbose but slightly more efficient
 *)    
 module Map = Belt_Map
 
 
 (** {!Belt.MutableSet}
     
-    The toplevel provides generic {b mutable} set operations.
+    The top level provides generic {b mutable} set operations.
     
     It also has two specialized inner modules
     {!Belt.MutableSet.Int} and {!Belt.MutableSet.String}
@@ -204,7 +204,7 @@ module MutableSet = Belt_MutableSet
 
 (** {!Belt.MutableMap}
     
-    The toplevel provides generic {b mutable} map operations.
+    The top level provides generic {b mutable} map operations.
     
     It also has two specialized inner modules
     {!Belt.MutableMap.Int} and {!Belt.MutableMap.String}
@@ -215,7 +215,7 @@ module MutableMap = Belt_MutableMap
 
 (** {!Belt.HashSet}
     
-    The toplevel provides generic {b mutable} hash set operations.
+    The top level provides generic {b mutable} hash set operations.
     
     It also has two specialized inner modules
     {!Belt.HashSet.Int} and {!Belt.HashSet.String}
@@ -225,7 +225,7 @@ module HashSet = Belt_HashSet
 
 (** {!Belt.HashMap}
     
-    The toplevel provides generic {b mutable} hash map operations.
+    The top level provides generic {b mutable} hash map operations.
     
     It also has two specialized inner modules
     {!Belt.HashMap.Int} and {!Belt.HashMap.String}
