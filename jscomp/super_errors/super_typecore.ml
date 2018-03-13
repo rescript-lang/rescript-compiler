@@ -104,25 +104,26 @@ let check_bs_arity_mismatch ppf trace =
 let print_expr_type_clash env trace ppf =
   (* this is the most frequent error. Do whatever we can to provide specific
     guidance to this generic error before giving up *)
-  if Super_reason_react.state_escape_scope trace then
+  if Super_reason_react.state_escape_scope trace && Super_reason_react.trace_both_component_spec trace then
     fprintf ppf "@[<v>\
       @[@{<info>Is this a ReasonReact reducerComponent or component with retained props?@}@ \
-      If so, is the type for state, retained props or action declared _after_ the component declaration?@ \
-      Moving these types above the component declaration should resolve this!@]@,@,\
-      @[@{<info>Here's the original error message@}@]@,\
+      If so, is the type for state, retained props or action declared _after_@ the component declaration?@ \
+      @{<info>Moving these types above the component declaration@} should resolve this!@]\
     @]"
-  else if Super_reason_react.is_array_wanted_reactElement trace then
+    (* This one above shouldn't catch any false positives, so we can safely not display the original type clash error. *)
+  else begin
+    if Super_reason_react.is_array_wanted_react_element trace then
     fprintf ppf "@[<v>\
       @[@{<info>Did you pass an array as a ReasonReact DOM (lower-case) component's children?@}@ If not, disregard this.@ \
       If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/docs/en/children.html@]@,@,\
       @[@{<info>Here's the original error message@}@]@,\
     @]"
-  else if Super_reason_react.is_componentSpec_wanted_reactElement trace then
-    fprintf ppf "@[<v>\
-      @[@{<info>Did you want to create a ReasonReact element without using JSX?@}@ If not, disregard this.@ \
-      If so, don't forget to wrap this value in `ReasonReact.element` yourself:@ https://reasonml.github.io/reason-react/docs/en/jsx.html#capitalized@]@,@,\
-      @[@{<info>Here's the original error message@}@]@,\
-    @]";
+    else if Super_reason_react.is_component_spec_wanted_react_element trace then
+      fprintf ppf "@[<v>\
+        @[@{<info>Did you want to create a ReasonReact element without using JSX?@}@ If not, disregard this.@ \
+        If so, don't forget to wrap this value in `ReasonReact.element` yourself:@ https://reasonml.github.io/reason-react/docs/en/jsx.html#capitalized@]@,@,\
+        @[@{<info>Here's the original error message@}@]@,\
+      @]";
   begin
     let bottom_aliases_result = bottom_aliases trace in
     let missing_arguments = match bottom_aliases_result with
@@ -137,7 +138,7 @@ let print_expr_type_clash env trace ppf =
           else fprintf ppf "@[(~%s: %a)@]" label type_expr argtype
         )
     in
-    begin match missing_arguments with
+    match missing_arguments with
     | Some [singleArgument] ->
       (* btw, you can't say "final arguments". Intermediate labeled
         arguments might be the ones missing *)
@@ -170,7 +171,7 @@ let print_expr_type_clash env trace ppf =
         (function ppf ->
             fprintf ppf "But somewhere wanted:");
       show_extra_help ppf env trace;
-    end;
+    end
   end
 (* taken from https://github.com/BuckleScript/ocaml/blob/d4144647d1bf9bc7dc3aadc24c25a7efa3a67915/typing/typecore.ml#L3769 *)
 (* modified branches are commented *)
