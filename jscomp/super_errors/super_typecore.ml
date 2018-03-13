@@ -112,13 +112,13 @@ let print_expr_type_clash env trace ppf =
     @]"
     (* This one above shouldn't catch any false positives, so we can safely not display the original type clash error. *)
   else begin
-    if Super_reason_react.is_array_wanted_reactElement trace then
+    if Super_reason_react.is_array_wanted_react_element trace then
     fprintf ppf "@[<v>\
       @[@{<info>Did you pass an array as a ReasonReact DOM (lower-case) component's children?@}@ If not, disregard this.@ \
       If so, please use `ReasonReact.createDomElement`:@ https://reasonml.github.io/reason-react/docs/en/children.html@]@,@,\
       @[@{<info>Here's the original error message@}@]@,\
     @]"
-    else if Super_reason_react.is_component_spec_wanted_reactElement trace then
+    else if Super_reason_react.is_component_spec_wanted_react_element trace then
       fprintf ppf "@[<v>\
         @[@{<info>Did you want to create a ReasonReact element without using JSX?@}@ If not, disregard this.@ \
         If so, don't forget to wrap this value in `ReasonReact.element` yourself:@ https://reasonml.github.io/reason-react/docs/en/jsx.html#capitalized@]@,@,\

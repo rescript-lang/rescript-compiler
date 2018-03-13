@@ -57,17 +57,31 @@ let component_spec_weak_type_variables_in_module_type (mty : Types.module_type) 
         )
   | _ -> []
 
-(* recursively drill down the types (first item is the type alias, if any. Second is the content of the alias) *)
-let rec get_to_bottom_of_aliases f = function
-  | (_alias1, type1) :: (_alias2, type2) :: rest ->
-    begin match get_to_bottom_of_aliases f rest with
-    | false -> f (type1, type2)
-    | true -> true
-    end
+(* `trace` is a funny data structure. It's an always even list of tuples. This error:
+  this is foo (aliased as array(int)), wanted bar (aliased as array(string))
+  the incompatible part: int vs string
+  gives the following `trace` data structure:
+  [
+    (foo, array(int)),
+    (bar, array(string)),
+    (_, int),
+    (_, string)
+  ]
+ *)
+(* recursively walk the trace from right to left, calling f and checking if f matches part of the trace *)
+let check_each_trace_chunk_bottom_up f = fun t ->
+  let t_flipped = List.rev t in
+  let rec check f = function
+  (* we flipped the trace, so instead of [t1, t2, t3, t4, ...] it's [t4, t3, ...] *)
+  | (_alias2, type2) :: (_alias1, type1) :: rest ->
+    if f (type1, type2) then true
+    else check f rest
   | _ -> false
+  in
+  check f t_flipped
 
 
-let state_escape_scope = get_to_bottom_of_aliases (function
+let state_escape_scope = check_each_trace_chunk_bottom_up (function
   (* https://github.com/BuckleScript/ocaml/blob/ddf5a739cc0978dab5e553443825791ba7b0cef9/typing/printtyp.ml?#L1348 *)
   (* so apparently that's the logic for detecting "the constructor out of scope" error *)
   | ({desc = Tconstr (p, _, _)}, {desc = Tvar _; level})
@@ -75,8 +89,7 @@ let state_escape_scope = get_to_bottom_of_aliases (function
   | _ -> false
 )
 
-let trace_both_component_spec = get_to_bottom_of_aliases (fun (t1, t2) ->
-  match (t1, t2) with
+let trace_both_component_spec = check_each_trace_chunk_bottom_up (function
   | ({desc = Tconstr (
       (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
       ([state1; _; _; _; action1] | [state1; _; action1]),
@@ -91,7 +104,7 @@ let trace_both_component_spec = get_to_bottom_of_aliases (fun (t1, t2) ->
   | _ -> false
 )
 
-let is_array_wanted_reactElement = get_to_bottom_of_aliases (function
+let is_array_wanted_react_element = check_each_trace_chunk_bottom_up (function
   | ({desc = Tconstr (path1, _, _)},
     {desc = Tconstr (
       (Pdot ((Pident {name = "ReasonReact"}), "reactElement", _)),
@@ -101,7 +114,7 @@ let is_array_wanted_reactElement = get_to_bottom_of_aliases (function
   | _ -> false
 )
 
-let is_component_spec_wanted_reactElement = get_to_bottom_of_aliases (function
+let is_component_spec_wanted_react_element = check_each_trace_chunk_bottom_up (function
   | ({desc = Tconstr (
       (Pdot ((Pident {name = "ReasonReact"}), "componentSpec", _)),
       ([state1; _; _; _; action1] | [state1; _; action1]),
