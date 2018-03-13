@@ -588,8 +588,8 @@ core/js_output.cmx : core/lam_compile_context.cmx core/lam_analysis.cmx \
     core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx core/js_output.cmi
 core/lam_compile_global.cmx : core/ocaml_types.cmx core/lam_module_ident.cmx \
     core/lam_compile_env.cmx core/lam.cmx core/js_stmt_make.cmx \
-    core/js_output.cmx core/js_of_lam_module.cmx core/js_exp_make.cmx \
-    core/j.cmx ext/ext_list.cmx core/lam_compile_global.cmi
+    core/js_of_lam_module.cmx core/js_exp_make.cmx core/j.cmx \
+    ext/ext_list.cmx core/lam_compile_global.cmi
 core/lam_dispatch_primitive.cmx : core/js_stmt_make.cmx \
     core/js_runtime_modules.cmx core/js_of_lam_tuple.cmx \
     core/js_of_lam_exception.cmx core/js_of_lam_array.cmx core/js_long.cmx \

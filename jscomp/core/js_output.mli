@@ -46,6 +46,7 @@ type t  =  {
   value : J.expression option;
   finished : finished
 }
+
 (** When [finished] is true the block is already terminated, 
     value does not make sense
     [finished]  default to false, which is conservative
@@ -57,29 +58,31 @@ val make :
   J.block ->
   t
 
-val of_stmt :
-  ?value: J.expression ->
-  ?finished:finished ->
-  J.statement ->
-  t
-
-val of_block :
-  ?value:J.expression ->
-  ?finished:finished ->
-  J.block ->
-  t
-
-val to_block :
+val output_as_block :
   t ->
   J.block
 
 val to_break_block :
   t ->
   J.block * bool 
+  (* the second argument is 
+    [true] means [break] needed
 
-module Ops : sig 
-  val (++) : t -> t -> t 
-end
+    When we know the output is gonna finished true
+    we can reduce 
+    {[
+      return xx ; 
+      break
+    ]}
+    into 
+    {[
+      return ; 
+    ]}
+
+  *)
+
+val append_output: t -> t -> t   
+
 
 val dummy : t 
 

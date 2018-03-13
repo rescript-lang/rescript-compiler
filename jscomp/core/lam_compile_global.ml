@@ -32,8 +32,6 @@
 module E = Js_exp_make  
 module S = Js_stmt_make
 
-open Js_output.Ops
-
 (* TODO: used in functor inlining, so that it can not be an exception
    Make(S), S can not be an exception
 *)
