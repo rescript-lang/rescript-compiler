@@ -255,6 +255,7 @@
 ../lib/whole_compiler.ml : ./depends/bs_exception.ml
 ../lib/whole_compiler.ml : ./ext/string_hash_set.mli
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.ml
+../lib/whole_compiler.ml : ./syntax/ast_exp_apply.ml
 ../lib/whole_compiler.ml : ./syntax/ast_signature.ml
 ../lib/whole_compiler.ml : ./syntax/ast_structure.ml
 ../lib/whole_compiler.ml : ./syntax/bs_ast_mapper.ml
@@ -295,6 +296,7 @@
 ../lib/whole_compiler.ml : ./depends/bs_exception.mli
 ../lib/whole_compiler.ml : ./syntax/ast_attributes.ml
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.mli
+../lib/whole_compiler.ml : ./syntax/ast_exp_apply.mli
 ../lib/whole_compiler.ml : ./syntax/ast_signature.mli
 ../lib/whole_compiler.ml : ./syntax/ast_structure.mli
 ../lib/whole_compiler.ml : ./syntax/bs_ast_mapper.mli

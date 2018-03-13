@@ -72,6 +72,7 @@
 ../lib/bsdep.ml : ./common/lam_methname.mli
 ../lib/bsdep.ml : ./ext/string_hash_set.mli
 ../lib/bsdep.ml : ./syntax/ast_core_type.ml
+../lib/bsdep.ml : ./syntax/ast_exp_apply.ml
 ../lib/bsdep.ml : ./syntax/ast_signature.ml
 ../lib/bsdep.ml : ./syntax/ast_structure.ml
 ../lib/bsdep.ml : ./syntax/bs_ast_mapper.ml
@@ -88,6 +89,7 @@
 ../lib/bsdep.ml : ../vendor/ocaml/utils/warnings.ml
 ../lib/bsdep.ml : ./syntax/ast_attributes.ml
 ../lib/bsdep.ml : ./syntax/ast_core_type.mli
+../lib/bsdep.ml : ./syntax/ast_exp_apply.mli
 ../lib/bsdep.ml : ./syntax/ast_signature.mli
 ../lib/bsdep.ml : ./syntax/ast_structure.mli
 ../lib/bsdep.ml : ./syntax/bs_ast_mapper.mli

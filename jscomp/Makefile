@@ -255,6 +255,7 @@ SYNTAX_SRCS= \
 	external_ffi_types\
 	external_process\
 	ast_util\
+	ast_exp_apply\
 	ast_exp_extension\
 	ast_core_type_class_type\
 	ast_tuple_pattern_flatten\
