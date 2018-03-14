@@ -22,6 +22,6 @@ let exists = function
   | Some _ -> true
   | None -> false
 
-let empty = function
+let isEmpty = function
   | Some _ -> false
   | None -> true
