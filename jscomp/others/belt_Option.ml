@@ -45,14 +45,14 @@ let flatMapU opt f = match opt with
 
 let flatMap opt f = flatMapU opt (fun[@bs] x -> f x)
 
-let getOrElse opt default = match opt with
+let getWithDefault opt default = match opt with
   | Some x -> x
   | None -> default
 
-let has = function
+let isSome = function
   | Some _ -> true
   | None -> false
 
-let isEmpty = function
+let isNone = function
   | Some _ -> false
   | None -> true
