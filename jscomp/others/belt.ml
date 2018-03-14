@@ -232,7 +232,11 @@ module HashSet = Belt_HashSet
 *)
 module HashMap = Belt_HashMap
   
+(** {!Belt.Option}
 
+    Utilities for option data type
+*)
 
+module Option = Belt_Option
 
 
