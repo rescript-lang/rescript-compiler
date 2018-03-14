@@ -610,6 +610,8 @@ let root = OCamlRes.Res.([
        ```\n\
        \n\
        This will replace the development artifact `build/Index.js` for an optimized version.\n\
+       \n\
+       **To enable dead code elimination**, change `bsconfig.json`'s `package-specs` `module` from `\"commonjs\"` to `\"es6\"`. Then re-run the above 2 commands. This will allow Webpack to remove unused code.\n\
        ") ;
     File  ("package.json",
       "{\n\
@@ -655,7 +657,7 @@ let root = OCamlRes.Res.([
       \    \"subdirs\" : true\n\
       \  },\n\
       \  \"package-specs\": [{\n\
-      \    \"module\": \"es6\",\n\
+      \    \"module\": \"commonjs\",\n\
       \    \"in-source\": true\n\
       \  }],\n\
       \  \"suffix\": \".bs.js\",\n\
