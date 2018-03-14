@@ -1982,7 +1982,21 @@ function makeTest(n) {
                   })));
 }
 
-b("File \"bs_list_test.ml\", line 295, characters 4-11", +(Belt_List.cmp(/* :: */[
+eq("File \"bs_list_test.ml\", line 293, characters 5-12", /* :: */[
+      2,
+      /* :: */[
+        3,
+        /* [] */0
+      ]
+    ], /* :: */[
+      2,
+      /* :: */[
+        3,
+        /* [] */0
+      ]
+    ]);
+
+b("File \"bs_list_test.ml\", line 299, characters 4-11", +(Belt_List.cmp(/* :: */[
             1,
             /* :: */[
               2,
@@ -2005,7 +2019,7 @@ b("File \"bs_list_test.ml\", line 295, characters 4-11", +(Belt_List.cmp(/* :: *
             ]
           ], Caml_obj.caml_compare) > 0));
 
-b("File \"bs_list_test.ml\", line 296, characters 4-11", +(Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 300, characters 4-11", +(Belt_List.cmp(/* :: */[
             1,
             /* :: */[
               2,
@@ -2028,7 +2042,7 @@ b("File \"bs_list_test.ml\", line 296, characters 4-11", +(Belt_List.cmp(/* :: *
             ]
           ], Caml_obj.caml_compare) > 0));
 
-b("File \"bs_list_test.ml\", line 297, characters 4-11", +(Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 301, characters 4-11", +(Belt_List.cmp(/* :: */[
             1,
             /* :: */[
               2,
@@ -2051,7 +2065,7 @@ b("File \"bs_list_test.ml\", line 297, characters 4-11", +(Belt_List.cmp(/* :: *
             ]
           ], Caml_obj.caml_compare) < 0));
 
-b("File \"bs_list_test.ml\", line 298, characters 4-11", +(Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 302, characters 4-11", +(Belt_List.cmp(/* :: */[
             1,
             /* :: */[
               2,
@@ -2071,7 +2085,7 @@ b("File \"bs_list_test.ml\", line 298, characters 4-11", +(Belt_List.cmp(/* :: *
             ]
           ], Caml_primitive.caml_int_compare) > 0));
 
-b("File \"bs_list_test.ml\", line 299, characters 4-11", +(Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 303, characters 4-11", +(Belt_List.cmp(/* :: */[
             1,
             /* :: */[
               2,
@@ -2091,7 +2105,7 @@ b("File \"bs_list_test.ml\", line 299, characters 4-11", +(Belt_List.cmp(/* :: *
             ]
           ], Caml_primitive.caml_int_compare) === 0));
 
-b("File \"bs_list_test.ml\", line 300, characters 4-11", +(Belt_List.cmp(/* :: */[
+b("File \"bs_list_test.ml\", line 304, characters 4-11", +(Belt_List.cmp(/* :: */[
             1,
             /* :: */[
               2,
@@ -2111,19 +2125,19 @@ b("File \"bs_list_test.ml\", line 300, characters 4-11", +(Belt_List.cmp(/* :: *
             ]
           ], Caml_primitive.caml_int_compare) > 0));
 
-b("File \"bs_list_test.ml\", line 301, characters 4-11", +(Belt_List.cmpByLength(/* [] */0, /* [] */0) === 0));
+b("File \"bs_list_test.ml\", line 305, characters 4-11", +(Belt_List.cmpByLength(/* [] */0, /* [] */0) === 0));
 
-b("File \"bs_list_test.ml\", line 302, characters 4-11", +(Belt_List.cmpByLength(/* :: */[
+b("File \"bs_list_test.ml\", line 306, characters 4-11", +(Belt_List.cmpByLength(/* :: */[
             1,
             /* [] */0
           ], /* [] */0) > 0));
 
-b("File \"bs_list_test.ml\", line 303, characters 4-11", +(Belt_List.cmpByLength(/* [] */0, /* :: */[
+b("File \"bs_list_test.ml\", line 307, characters 4-11", +(Belt_List.cmpByLength(/* [] */0, /* :: */[
             1,
             /* [] */0
           ]) < 0));
 
-b("File \"bs_list_test.ml\", line 304, characters 4-11", +(Belt_List.cmpByLength(/* :: */[
+b("File \"bs_list_test.ml\", line 308, characters 4-11", +(Belt_List.cmpByLength(/* :: */[
             1,
             /* :: */[
               2,
@@ -2134,7 +2148,7 @@ b("File \"bs_list_test.ml\", line 304, characters 4-11", +(Belt_List.cmpByLength
             /* [] */0
           ]) > 0));
 
-b("File \"bs_list_test.ml\", line 305, characters 4-11", +(Belt_List.cmpByLength(/* :: */[
+b("File \"bs_list_test.ml\", line 309, characters 4-11", +(Belt_List.cmpByLength(/* :: */[
             1,
             /* [] */0
           ], /* :: */[
@@ -2145,7 +2159,7 @@ b("File \"bs_list_test.ml\", line 305, characters 4-11", +(Belt_List.cmpByLength
             ]
           ]) < 0));
 
-b("File \"bs_list_test.ml\", line 306, characters 4-11", +(Belt_List.cmpByLength(/* :: */[
+b("File \"bs_list_test.ml\", line 310, characters 4-11", +(Belt_List.cmpByLength(/* :: */[
             1,
             /* :: */[
               3,
@@ -2167,7 +2181,7 @@ makeTest(2);
 
 makeTest(3);
 
-b("File \"bs_list_test.ml\", line 316, characters 4-11", 1 - Belt_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 320, characters 4-11", 1 - Belt_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -2186,7 +2200,7 @@ b("File \"bs_list_test.ml\", line 316, characters 4-11", 1 - Belt_List.eq(/* :: 
             return +(x === y);
           })));
 
-b("File \"bs_list_test.ml\", line 317, characters 4-11", Belt_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 321, characters 4-11", Belt_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -2208,7 +2222,7 @@ b("File \"bs_list_test.ml\", line 317, characters 4-11", Belt_List.eq(/* :: */[
             return +(x === y);
           })));
 
-b("File \"bs_list_test.ml\", line 318, characters 4-11", 1 - Belt_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 322, characters 4-11", 1 - Belt_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -2230,7 +2244,7 @@ b("File \"bs_list_test.ml\", line 318, characters 4-11", 1 - Belt_List.eq(/* :: 
             return +(x === y);
           })));
 
-b("File \"bs_list_test.ml\", line 319, characters 4-11", 1 - Belt_List.eq(/* :: */[
+b("File \"bs_list_test.ml\", line 323, characters 4-11", 1 - Belt_List.eq(/* :: */[
           1,
           /* :: */[
             2,
@@ -2265,7 +2279,7 @@ var u1 = Belt_List.keepMap(u0, (function (x) {
         }
       }));
 
-eq("File \"bs_list_test.ml\", line 324, characters 5-12", u1, /* :: */[
+eq("File \"bs_list_test.ml\", line 327, characters 5-12", u1, /* :: */[
       1,
       /* :: */[
         8,
@@ -2276,7 +2290,7 @@ eq("File \"bs_list_test.ml\", line 324, characters 5-12", u1, /* :: */[
       ]
     ]);
 
-b("File \"bs_list_test.ml\", line 325, characters 4-11", Caml_obj.caml_equal(Belt_List.keepMap(/* :: */[
+b("File \"bs_list_test.ml\", line 328, characters 4-11", Caml_obj.caml_equal(Belt_List.keepMap(/* :: */[
               1,
               /* :: */[
                 2,
@@ -2302,7 +2316,7 @@ b("File \"bs_list_test.ml\", line 325, characters 4-11", Caml_obj.caml_equal(Bel
           ]
         ]));
 
-b("File \"bs_list_test.ml\", line 329, characters 4-11", +(Belt_List.keepMap(/* :: */[
+b("File \"bs_list_test.ml\", line 332, characters 4-11", +(Belt_List.keepMap(/* :: */[
             1,
             /* :: */[
               2,

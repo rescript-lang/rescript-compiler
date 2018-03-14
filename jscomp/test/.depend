@@ -481,6 +481,7 @@ offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 oo_js_test_date.cmj : mt.cmj ../runtime/js.cmj
 optional_ffi_test.cmj : mt.cmj
 pipe_send_readline.cmj : ../runtime/js.cmj
+pipe_syntax.cmj :
 poly_type.cmj : ../runtime/js.cmj
 poly_variant_test.cmj : mt.cmj ../runtime/js.cmj poly_variant_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi
