@@ -37,3 +37,7 @@ val flatMap : 'a option -> ('a -> 'b option) -> 'b option
 val getWithDefault : 'a option -> 'a -> 'a
 val isSome : 'a option -> bool
 val isNone : 'a option -> bool
+val eqU : 'a option -> 'b option -> ('a -> 'b -> bool [@bs]) -> bool
+val eq : 'a option -> 'b option -> ('a -> 'b -> bool) -> bool
+val cmpU : 'a option -> 'b option -> ('a -> 'b -> int [@bs]) -> int
+val cmp : 'a option -> 'b option -> ('a -> 'b -> int) -> int

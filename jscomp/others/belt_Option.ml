@@ -56,3 +56,19 @@ let isSome = function
 let isNone = function
   | Some _ -> false
   | None -> true
+
+let eqU a b f = match (a, b) with
+  | (Some a, Some b) -> f a b [@bs]
+  | (None, Some _)
+  | (Some _, None) -> false
+  | (None, None) -> true
+
+let eq a b f = eqU a b (fun[@bs] x y -> f x y)
+
+let cmpU a b f = match (a, b) with
+  | (Some a, Some b) -> f a b [@bs]
+  | (None, Some _) -> -1
+  | (Some _, None) -> 1
+  | (None, None) -> 0
+
+let cmp a b f = cmpU a b (fun[@bs] x y -> f x y)
