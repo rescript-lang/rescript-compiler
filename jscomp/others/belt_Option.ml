@@ -1,6 +1,6 @@
 let getExn = function
   | Some x -> x
-  | None -> assert false
+  | None -> [%assert "getExn"]
 
 let fold opt default f = match opt with
   | Some x -> f x
