@@ -18,7 +18,7 @@ let getOrElse opt default = match opt with
   | Some x -> x
   | None -> default
 
-let exists = function
+let has = function
   | Some _ -> true
   | None -> false
 
