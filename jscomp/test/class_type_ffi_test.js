@@ -27,7 +27,8 @@ function sum_poly(zero, add, arr) {
 }
 
 function test_set(x) {
-  return x.length = 3;
+  x.length = 3;
+  return /* () */0;
 }
 
 function f(x) {

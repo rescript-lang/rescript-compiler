@@ -41,10 +41,11 @@ function f4(h, x, y) {
     x,
     y
   ];
-  return h.paint.draw = /* tuple */[
-          x,
-          y
-        ];
+  h.paint.draw = /* tuple */[
+    x,
+    y
+  ];
+  return /* () */0;
 }
 
 eq("File \"chain_code_test.ml\", line 28, characters 5-12", 32, ({

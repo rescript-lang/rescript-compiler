@@ -72,7 +72,8 @@ function makeLock() {
             }),
           release: (function () {
               var self = this ;
-              return self.isBuilding = /* false */0;
+              self.isBuilding = /* false */0;
+              return /* () */0;
             })
         };
 }
