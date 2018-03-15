@@ -233,7 +233,6 @@ val eq: ('value, 'id) t -> ('value, 'id) t -> bool
     @return true if [toArray s0 = toArray s1]
 *)
 
-val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
 val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
 (** [forEach s f] applies [f] in turn to all elements of [s].
     In increasing order
@@ -246,7 +245,6 @@ val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
     ]}
 *)
 
-val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
 val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
 (** In increasing order.
 
@@ -256,23 +254,19 @@ val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a ) ->  'a
     ]}
 *)
 
-val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
 val every: ('value, 'id) t -> ('value -> bool ) -> bool
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified.
 *)
 
-val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
 val some: ('value, 'id) t ->  ('value -> bool ) -> bool
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
-val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
 val keep: ('value, 'id) t ->  ('value -> bool ) -> ('value, 'id) t
 (** [keep m p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)
 
-val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
 val partition: ('value, 'id) t -> ('value -> bool) ->  ('value, 'id) t * ('value, 'id) t
 (** [partition m p] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
@@ -388,3 +382,18 @@ val packIdData: id:('value, 'id) id -> data:('value, 'id) Belt_SetDict.t -> ('va
     @return the packed collection
 *)
 
+
+(** {1 Uncurried version} *)
+
+
+val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
+
+val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
+
+val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
+
+val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
+
+val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
+
+val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
