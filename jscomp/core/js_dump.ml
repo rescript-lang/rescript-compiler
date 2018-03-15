@@ -359,7 +359,7 @@ and  pp_function method_
 and output_one : 'a . 
   _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _
   = fun cxt f  pp_cond
-    ({case = e; body = (sl,break)} : _ J.case_clause) -> 
+    ({switch_case = e; switch_body = (sl,should_break)} : _ J.case_clause) -> 
     let cxt = 
       P.group f 1 @@ fun _ -> 
       P.group f 1 @@ (fun _ -> 
@@ -378,7 +378,7 @@ and output_one : 'a .
           P.newline f ;
           statement_list false cxt  f sl
       in
-      (if break then 
+      (if should_break then 
          begin
            P.newline f ;
            P.string f L.break;

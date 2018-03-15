@@ -245,6 +245,7 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	pipe_syntax\
 	gpr_2352_test\
 	gpr_2633_test\
+	gpr_2413_test\
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test

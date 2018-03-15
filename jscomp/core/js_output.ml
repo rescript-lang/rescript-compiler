@@ -122,7 +122,8 @@ let to_break_block (x : t) : J.block * bool =
            TODO: check if it has side efects
         *)
     | { value =  None; finished } -> 
-        block, (match finished with | True -> false | (False | Dummy)  -> true  )
+        block, 
+        (match finished with | True -> false | (False | Dummy)  -> true  )
 
     | {value = Some _ as opt; _} -> 
         block_with_opt_expr block opt, true

@@ -480,10 +480,10 @@ and compile_general_cases :
              |> Ext_list.map_last 
                (fun last (x,lam) -> 
                   if last 
-                  then {J.case =  x;
-                        body =
+                  then {J.switch_case =  x;
+                        switch_body =
                           Js_output.to_break_block (compile_lambda cxt lam) }
-                  else { case = x; body = [],false }))
+                  else { switch_case = x; switch_body = [],false }))
           (* TODO: we should also group default *)
           (* The last clause does not need [break]
               common break through, *)
