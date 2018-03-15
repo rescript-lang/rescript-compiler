@@ -14,7 +14,7 @@
 (* Array operations *)
 
 external length: 'a array -> int = "%array_length"
-external size: 'a array -> int = "%array_length"  
+external size: 'a array -> int = "%array_length"
 external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
 external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
@@ -27,34 +27,34 @@ let getExn arr i =
 let set arr i v =
   if i >= 0 && i < length arr then (setUnsafe arr i v; true) else false
 
-let setExn arr i v = 
-  [%assert i >= 0 && i < length arr];  
-  setUnsafe arr i v 
+let setExn arr i v =
+  [%assert i >= 0 && i < length arr];
+  setUnsafe arr i v
 
 
-external truncateToLengthUnsafe : 'a array -> int ->  unit = "length" [@@bs.set]  
+external truncateToLengthUnsafe : 'a array -> int ->  unit = "length" [@@bs.set]
 external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe : int -> 'a  array = "Array" [@@bs.new]
 
 
 let copy a =
-  let l = length a in 
-  let v = makeUninitializedUnsafe l in 
-  for i = 0 to l - 1 do 
+  let l = length a in
+  let v = makeUninitializedUnsafe l in
+  for i = 0 to l - 1 do
     setUnsafe v i (getUnsafe a i)
   done ;
   v
 
-let swapUnsafe xs i j =    
-  let tmp = getUnsafe xs i in 
+let swapUnsafe xs i j =
+  let tmp = getUnsafe xs i in
   setUnsafe xs i (getUnsafe xs j) ;
   setUnsafe xs j tmp
 
-let shuffleInPlace xs =     
-  let len = length xs in 
+let shuffleInPlace xs =
+  let len = length xs in
   for i = 0 to len - 1 do
     swapUnsafe xs i (Js_math.random_int i len) (* [i,len)*)
-  done 
+  done
 
 let shuffle xs =
   let result = copy xs in
@@ -72,16 +72,16 @@ let reverseInPlace xs =
 
 let reverse xs =
   let len = length xs in
-  let result = makeUninitializedUnsafe len in 
+  let result = makeUninitializedUnsafe len in
   for i = 0 to len - 1 do
     setUnsafe result i (getUnsafe xs (len - 1 - i))
   done;
   result
-  
+
 let make l f =
   if l <= 0 then [||]
-  else 
-    let res = makeUninitializedUnsafe l in 
+  else
+    let res = makeUninitializedUnsafe l in
     for i = 0 to  l - 1 do
       setUnsafe res i f
     done;
@@ -92,14 +92,14 @@ let make l f =
      on whether we create a float array or a regular one... *)
 let makeByU l f =
   if l <= 0 then [||]
-  else 
-    let res = makeUninitializedUnsafe l in 
+  else
+    let res = makeUninitializedUnsafe l in
     for i = 0 to  l - 1 do
       setUnsafe res i (f i [@bs])
     done;
     res
 
-let makeBy l f = makeByU l (fun[@bs] a -> f a) 
+let makeBy l f = makeByU l (fun[@bs] a -> f a)
 
 let makeByAndShuffleU l f =
   let u  = makeByU l f in
@@ -109,7 +109,7 @@ let makeByAndShuffleU l f =
 let makeByAndShuffle l f = makeByAndShuffleU l (fun[@bs] a -> f a)
 
 let range start finish =
-  let cut = finish - start in 
+  let cut = finish - start in
   if cut < 0  then [||]
   else
     let arr = makeUninitializedUnsafe (cut + 1 ) in
@@ -125,36 +125,36 @@ let rangeBy start finish ~step =
   else
     let nb = cut/step + 1 in
     let arr = makeUninitializedUnsafe  nb in
-    let cur = ref start in 
+    let cur = ref start in
     for i = 0 to nb - 1 do
       setUnsafe arr i !cur;
-      cur := !cur + step ; 
+      cur := !cur + step ;
     done;
-    arr 
+    arr
 
-let zip xs ys = 
-  let lenx, leny = length xs, length ys in 
-  let len = Pervasives.min lenx leny  in 
-  let s = makeUninitializedUnsafe len in 
-  for i = 0 to len - 1 do 
+let zip xs ys =
+  let lenx, leny = length xs, length ys in
+  let len = Pervasives.min lenx leny  in
+  let s = makeUninitializedUnsafe len in
+  for i = 0 to len - 1 do
     setUnsafe s i (getUnsafe xs i, getUnsafe ys i)
-  done ; 
-  s 
+  done ;
+  s
 
-let zipByU xs ys f = 
-  let lenx, leny = length xs, length ys in 
-  let len = Pervasives.min lenx leny  in 
-  let s = makeUninitializedUnsafe len in 
-  for i = 0 to len - 1 do 
+let zipByU xs ys f =
+  let lenx, leny = length xs, length ys in
+  let len = Pervasives.min lenx leny  in
+  let s = makeUninitializedUnsafe len in
+  for i = 0 to len - 1 do
     setUnsafe s i (f (getUnsafe xs i) (getUnsafe ys i) [@bs])
-  done ; 
-  s 
+  done ;
+  s
 
 let zipBy xs ys f = zipByU xs ys (fun [@bs] a b -> f a b)
 
 let concat a1 a2 =
   let l1 = length a1 in
-  let l2 = length a2 in 
+  let l2 = length a2 in
   let a1a2 = makeUninitializedUnsafe (l1 + l2) in
   for i = 0 to l1 - 1 do
     setUnsafe a1a2 i (getUnsafe a1 i)
@@ -166,21 +166,21 @@ let concat a1 a2 =
 
 let concatMany arrs =
   let lenArrs = length arrs in
-  let totalLen = ref 0 in 
+  let totalLen = ref 0 in
   for i = 0 to lenArrs - 1 do
     totalLen := !totalLen + length (getUnsafe arrs i)
   done;
   let result = makeUninitializedUnsafe !totalLen in
-  totalLen := 0 ; 
+  totalLen := 0 ;
   for j = 0 to lenArrs - 1 do
-    let cur = getUnsafe arrs j in 
+    let cur = getUnsafe arrs j in
     for k = 0 to length cur - 1 do
       setUnsafe result !totalLen (getUnsafe cur k);
       incr totalLen
-    done 
+    done
   done ;
   result
-  
+
 let slice a ~offset ~len =
   if len <= 0  then  [||]
   else
@@ -189,7 +189,7 @@ let slice a ~offset ~len =
       if offset < 0 then
         max (lena + offset) 0
       else offset in
-    let hasLen = lena - ofs in  
+    let hasLen = lena - ofs in
     let copyLength = min hasLen len in
     if copyLength <= 0 then [||]
     else
@@ -201,19 +201,19 @@ let slice a ~offset ~len =
 
 
 let fill a ~offset ~len v =
-  if len > 0 then 
+  if len > 0 then
     let lena = length a in
     let ofs =
       if offset < 0 then
         max (lena + offset ) 0
       else offset in
-    let hasLen = lena - ofs in      
+    let hasLen = lena - ofs in
     let fillLength = min hasLen len in
     if fillLength > 0 then
       for i = ofs to  ofs + fillLength - 1 do
-        setUnsafe a i v 
-      done 
-        
+        setUnsafe a i v
+      done
+
 
 let blitUnsafe ~src:a1  ~srcOffset:srcofs1 ~dst:a2 ~dstOffset:srcofs2 ~len:blitLength =
   if srcofs2 <= srcofs1 then
@@ -223,18 +223,18 @@ let blitUnsafe ~src:a1  ~srcOffset:srcofs1 ~dst:a2 ~dstOffset:srcofs2 ~len:blitL
   else
     for j = blitLength - 1 downto 0 do
       setUnsafe a2 (j + srcofs2) (getUnsafe a1 (j + srcofs1))
-    done 
+    done
 
-(* We don't need check [blitLength] since when [blitLength < 0] the 
+(* We don't need check [blitLength] since when [blitLength < 0] the
    for loop will be nop
-*)    
-let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =  
+*)
+let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =
     let lena1 = length a1 in
-    let lena2 = length a2 in 
+    let lena2 = length a2 in
     let srcofs1 = if ofs1 < 0 then max (lena1 + ofs1) 0 else ofs1 in
     let srcofs2 = if ofs2 < 0 then max (lena2 + ofs2) 0 else ofs2 in
     let blitLength =
-      min len (min (lena1 - srcofs1) (lena2 - srcofs2)) in 
+      min len (min (lena1 - srcofs1) (lena2 - srcofs2)) in
     (* blitUnsafe a1 srcofs1 a2 srcofs2 blitLength *)
     (if srcofs2 <= srcofs1 then
       for j = 0 to blitLength - 1 do
@@ -249,68 +249,68 @@ let forEachU a f =
   for i = 0 to length a - 1 do f(getUnsafe a i) [@bs] done
 
 let forEach a f = forEachU a (fun[@bs] a -> f a)
-  
+
 let mapU a f =
   let l = length a in
-  let r = makeUninitializedUnsafe l in 
+  let r = makeUninitializedUnsafe l in
   for i = 0 to l - 1 do
     setUnsafe r i (f(getUnsafe a i) [@bs])
   done;
   r
 
 let map a f = mapU a (fun[@bs] a -> f a)
-  
+
 let keepU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
-  let j = ref 0 in 
+  let j = ref 0 in
   for i = 0 to l - 1 do
-    let v = (getUnsafe a i) in 
+    let v = (getUnsafe a i) in
     if f v [@bs] then
-      begin 
+      begin
         setUnsafe r !j v;
-        incr j 
+        incr j
       end
   done;
   truncateToLengthUnsafe r !j;
-  r 
+  r
 
 let keep a f = keepU a (fun [@bs] a -> f a)
-    
+
 let keepMapU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
-  let j = ref 0 in 
+  let j = ref 0 in
   for i = 0 to l - 1 do
-    let v = getUnsafe a i in 
+    let v = getUnsafe a i in
     match f v [@bs] with
     | None -> ()
-    | Some v -> 
-      begin 
+    | Some v ->
+      begin
         setUnsafe r !j v;
-        incr j 
+        incr j
       end
   done;
   truncateToLengthUnsafe r !j;
-  r 
+  r
 
 let keepMap a f = keepMapU a (fun[@bs] a -> f a)
-    
+
 let forEachWithIndexU a f=
   for i = 0 to length a - 1 do f i (getUnsafe a i) [@bs] done
 
 let forEachWithIndex a f = forEachWithIndexU a (fun[@bs] a b -> f a b)
-    
+
 let mapWithIndexU  a f =
   let l = length a in
-  let r = makeUninitializedUnsafe l in 
+  let r = makeUninitializedUnsafe l in
   for i = 0 to l - 1 do
     setUnsafe r i (f i (getUnsafe a i) [@bs])
   done;
   r
 
 let mapWithIndex a f = mapWithIndexU a (fun[@bs] a b -> f a b)
-  
+
 let reduceU a x f =
   let r = ref x in
   for i = 0 to length a - 1 do
@@ -319,42 +319,48 @@ let reduceU a x f =
   !r
 
 let reduce a x f = reduceU a x (fun[@bs] a b -> f a b)
-    
-let reduceReverseU a x f =
+
+let reduceRightU a x f =
   let r = ref x in
   for i = length a - 1 downto 0 do
     r := f  !r (getUnsafe a i) [@bs]
   done;
   !r
 
-let reduceReverse a x f = reduceReverseU a x (fun[@bs] a b -> f a b)
+let reduceRight a x f = reduceRightU a x (fun[@bs] a b -> f a b)
 
-let reduceReverse2U a b x f =
+let reduceReverseU = reduceRightU
+let reduceReverse = reduceRight
+
+let reduceRight2U a b x f =
   let r = ref x in
   let len = min (length a) (length b) in
   for i = len - 1 downto  0 do
     r := f !r (getUnsafe a i) (getUnsafe b i) [@bs]
   done;
-  !r 
+  !r
 
-let reduceReverse2 a b x f =
-  reduceReverse2U a b x (fun [@bs] a b c -> f a b c)
+let reduceRight2 a b x f =
+  reduceRight2U a b x (fun [@bs] a b c -> f a b c)
 
-let rec everyAux arr i b len =   
-  if i = len then true 
-  else if b (getUnsafe arr i) [@bs] then 
+let reduceReverse2U = reduceRight2U
+let reduceReverse2 = reduceRight2
+
+let rec everyAux arr i b len =
+  if i = len then true
+  else if b (getUnsafe arr i) [@bs] then
     everyAux arr (i + 1) b len
-  else false    
+  else false
 
 let rec someAux arr i b len =
   if i = len then false
   else
   if b (getUnsafe arr i) [@bs] then true
   else someAux arr (i + 1) b len
-      
-let everyU arr b =   
-  let len = length arr in 
-  everyAux arr 0 b len 
+
+let everyU arr b =
+  let len = length arr in
+  everyAux arr 0 b len
 
 let every arr f = everyU arr (fun[@bs] b -> f b)
 
@@ -362,21 +368,21 @@ let someU arr b =
   let len = length arr in
   someAux arr 0 b len
 let some arr f = someU arr (fun [@bs] b -> f b)
-    
-let rec everyAux2 arr1 arr2 i b len =   
-  if i = len then true 
-  else if b (getUnsafe arr1 i) (getUnsafe arr2 i) [@bs] then 
-    everyAux2 arr1 arr2 (i + 1) b len
-  else false      
 
-let rec someAux2 arr1 arr2 i b len =   
+let rec everyAux2 arr1 arr2 i b len =
+  if i = len then true
+  else if b (getUnsafe arr1 i) (getUnsafe arr2 i) [@bs] then
+    everyAux2 arr1 arr2 (i + 1) b len
+  else false
+
+let rec someAux2 arr1 arr2 i b len =
   if i = len then false
   else if b (getUnsafe arr1 i) (getUnsafe arr2 i) [@bs] then
     true
   else someAux2 arr1 arr2 (i + 1) b len
 
 
-let every2U  a b p =   
+let every2U  a b p =
   everyAux2  a b 0 p (min (length a) (length b))
 
 let every2 a b p = every2U  a b (fun[@bs] a b -> p a b)
@@ -385,26 +391,26 @@ let some2U a b p =
   someAux2 a b 0 p (min (length a) (length b))
 
 let some2 a b p = some2U a b (fun [@bs] a b -> p a b)
-    
+
 let eqU a b p =
   let lena = length a in
   let lenb = length b in
-  if lena = lenb then 
+  if lena = lenb then
     everyAux2 a b 0 p lena
   else false
 
 let eq a b p = eqU a b (fun [@bs] a b -> p a b )
 
-let rec everyCmpAux2 arr1 arr2 i b len =   
+let rec everyCmpAux2 arr1 arr2 i b len =
   if i = len then 0
   else
-    let c = b (getUnsafe arr1 i) (getUnsafe arr2 i) [@bs]  in 
-    if c = 0 then 
+    let c = b (getUnsafe arr1 i) (getUnsafe arr2 i) [@bs]  in
+    if c = 0 then
       everyCmpAux2 arr1 arr2 (i + 1) b len
     else c
 
 let cmpU a b p =
-  let lena = length a in  
+  let lena = length a in
   let lenb = length b in
   if lena > lenb then 1
   else if lena < lenb then -1
