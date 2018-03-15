@@ -832,37 +832,35 @@ and
             args = [obj]} as fn;
            arg]
           -> 
-          begin 
-            let obj_block = 
-              compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} obj
-            in 
-            let value_block = 
-              compile_lambda {cxt with st = NeedValue; should_return = ReturnFalse} arg
-            in 
-            let cont block0 block1 obj_code = 
+          begin
+            let need_value_no_return_cxt = {cxt with st = NeedValue; should_return = ReturnFalse} in 
+            let obj_output = compile_lambda  need_value_no_return_cxt obj in 
+            let arg_output = compile_lambda need_value_no_return_cxt arg in 
+            let cont obj_block arg_block obj_code = 
               Js_output.output_of_block_and_expression st should_return lam 
                 (
                   match obj_code with
-                  | None -> Ext_list.append block0  block1
-                  | Some obj_code -> Ext_list.append block0 @@ obj_code :: block1
+                  | None -> Ext_list.append obj_block  arg_block
+                  | Some obj_code -> Ext_list.append obj_block (obj_code :: arg_block)
                 )
             in 
-            match obj_block, value_block with 
-            | {block = block0; value = Some obj }, 
-              {block = block1; value = Some value}
+            match obj_output, arg_output with 
+            | {block = obj_block; value = Some obj }, 
+              {block = arg_block; value = Some value}
               ->
               if  Ext_string.ends_with method_name Literals.setter_suffix then 
                 let property =
-                  Lam_methname.translate ~loc @@ 
-                  String.sub method_name 0 
-                    (String.length method_name - Literals.setter_suffix_len) in 
+                  Lam_methname.translate ~loc
+                    (String.sub method_name 0 
+                      (String.length method_name - Literals.setter_suffix_len)) in 
                 match Js_ast_util.named_expression  obj with
                 | None ->
-                  cont block0 block1 None (E.assign (E.dot obj property) value)
+                  cont obj_block arg_block None 
+                    (E.seq (E.assign (E.dot obj property) value) E.unit)
                 | Some (obj_code, obj)
                   ->
-                  cont block0 block1 (Some obj_code)
-                    (E.assign (E.dot (E.var obj) property) value)
+                  cont obj_block arg_block (Some obj_code) 
+                    (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
               else 
                 compile_lambda cxt
                   (Lam.apply fn [arg]  

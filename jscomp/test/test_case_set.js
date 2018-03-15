@@ -3,7 +3,8 @@
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 
 function f(x) {
-  return x.case = 3;
+  x.case = 3;
+  return /* () */0;
 }
 
 function g(x) {

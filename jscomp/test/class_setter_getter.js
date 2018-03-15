@@ -2,7 +2,8 @@
 
 
 function fff(x) {
-  return x.height = 2;
+  x.height = 2;
+  return /* () */0;
 }
 
 function ff(x, z) {

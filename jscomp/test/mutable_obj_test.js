@@ -2,12 +2,13 @@
 
 
 function f(x) {
-  return x.dec = (function (x) {
-            return {
-                    x: x,
-                    y: x
-                  };
-          });
+  x.dec = (function (x) {
+      return {
+              x: x,
+              y: x
+            };
+    });
+  return /* () */0;
 }
 
 exports.f = f;
