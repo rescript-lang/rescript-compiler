@@ -18,5 +18,7 @@ let message (warning : Warnings.t)  =
       "This file's name is potentially invalid. The build systems conventionally turn a file name into a module name by upper-casing the first letter. " ^ modname ^ " isn't a valid module name.\n" ^
       "Note: some build systems might e.g. turn kebab-case into CamelCase module, which is why this isn't a hard error."
   | Statement_type -> "This expression returns a value, but you're not doing anything with it. If this is on purpose, put `|> ignore` at the end."
+  | Useless_record_with ->
+      "All the fields are already explicitly listed in this record. You can remove the `...` spread."
   | _ -> Warnings.message warning
 ;;
