@@ -841,7 +841,7 @@ and
                 (
                   match obj_code with
                   | None -> Ext_list.append obj_block  arg_block
-                  | Some obj_code -> Ext_list.append obj_block @@ obj_code :: arg_block
+                  | Some obj_code -> Ext_list.append obj_block (obj_code :: arg_block)
                 )
             in 
             match obj_output, arg_output with 
@@ -860,7 +860,7 @@ and
                 | Some (obj_code, obj)
                   ->
                   cont obj_block arg_block (Some obj_code) 
-                    (E.assign (E.dot (E.var obj) property) value)
+                    (E.seq (E.assign (E.dot (E.var obj) property) value) E.unit)
               else 
                 compile_lambda cxt
                   (Lam.apply fn [arg]  
