@@ -361,30 +361,29 @@ and output_one : 'a .
   = fun cxt f  pp_cond
     ({switch_case = e; switch_body = (sl,should_break)} : _ J.case_clause) -> 
     let cxt = 
-      P.group f 1 @@ fun _ -> 
-      P.group f 1 @@ (fun _ -> 
-          P.string f L.case;
-          P.space f ;
-          pp_cond  f e; (* could be integer or string*)
-          P.space f ;
-          P.string f L.colon  );
-
-      P.space f;
-      P.group f 1 @@ fun _ ->
-      let cxt =
-        match sl with 
-        | [] -> cxt 
-        | _ ->
-          P.newline f ;
-          statement_list false cxt  f sl
-      in
-      (if should_break then 
-         begin
-           P.newline f ;
-           P.string f L.break;
-           semi f;
-         end) ;
-      cxt
+      P.group f 1  (fun _ -> 
+          P.group f 1 (fun _ -> 
+              P.string f L.case;
+              P.space f ;
+              pp_cond  f e; (* could be integer or string *)
+              P.space f ;
+              P.string f L.colon  );
+          P.space f;
+          P.group f 1 (fun _ ->
+              let cxt =
+                match sl with 
+                | [] -> cxt 
+                | _ ->
+                  P.newline f ;
+                  statement_list false cxt  f sl
+              in
+              (if should_break then 
+                 begin
+                   P.newline f ;
+                   P.string f L.break;
+                   semi f;
+                 end) ;
+              cxt))
     in
     P.newline f;
     cxt 
