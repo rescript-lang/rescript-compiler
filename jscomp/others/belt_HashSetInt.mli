@@ -1,7 +1,7 @@
 
 # 2 "hashset.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -40,37 +40,43 @@ type key = int
 # 44 "hashset.cppo.mli"
 type t
 
-val make: hintSize:int -> t 
+val make: hintSize:int -> t
 
 val clear: t -> unit
 
 val isEmpty: t -> bool
-  
+
 val add:  t -> key -> unit
 
 val copy: t -> t
-  
+
 val has: t -> key -> bool
-  
+
 val remove: t -> key -> unit
 
-val forEachU: t -> (key  -> unit [@bs]) ->  unit
 val forEach: t -> (key  -> unit) ->  unit
-  
-val reduceU: t -> 'c -> ( 'c -> key -> 'c [@bs]) ->   'c
+
 val reduce: t -> 'c -> ( 'c -> key -> 'c) ->   'c
-  
-val size: t -> int  
+
+val size: t -> int
 
 val logStats: t -> unit
 
-val toArray: t -> key array 
+val toArray: t -> key array
 
-val ofArray: key array -> t 
+val ofArray: key array -> t
 [@@ocaml.deprecated "Use fromArray instead"]
 
-val fromArray: key array -> t 
+val fromArray: key array -> t
 
 val mergeMany: t -> key array -> unit
 
 val getBucketHistogram: t -> int array
+
+
+(** {1 Uncurried version} *)
+
+
+val forEachU: t -> (key  -> unit [@bs]) ->  unit
+
+val reduceU: t -> 'c -> ( 'c -> key -> 'c [@bs]) ->   'c
