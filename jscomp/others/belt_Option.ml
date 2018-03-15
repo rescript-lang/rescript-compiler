@@ -27,11 +27,11 @@ let getExn = function
   | Some x -> x
   | None -> [%assert "getExn"]
 
-let foldU opt default f = match opt with
+let mapWithDefaultU opt default f = match opt with
   | Some x -> (f x [@bs])
   | None -> default
 
-let fold opt default f = foldU opt default (fun[@bs] x -> f x)
+let mapWithDefault opt default f = mapWithDefaultU opt default (fun[@bs] x -> f x)
 
 let mapU opt f = match opt with
   | Some x -> Some (f x [@bs])
