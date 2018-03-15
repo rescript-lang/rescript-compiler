@@ -228,8 +228,19 @@ let report_error env ppf = function
             type_expr typ;
           fprintf ppf "@ @[It only accepts %i %s; here, it's called with more.@]@]"
                       acceptsCount (if acceptsCount == 1 then "argument" else "arguments")
-      | Tconstr ((Path.Pdot (((Pdot (Path.Pident {name="Js"}, "Internal", _))| (Pident {name="Js_internal"})), ("fn" | "meth"), _)), _, _)
-        -> fprintf ppf "This is an uncurried bucklescript function. It must be applied with [@bs]."
+      | Tconstr (
+          (Path.Pdot (((Pdot (Path.Pident {name="Js"}, "Internal", _)) | (Pident {name="Js_internal"})), ("fn" | "meth"), _)),
+          _,
+          _
+        )
+        ->
+          fprintf
+            ppf
+            "@[<v>This is an uncurried BuckleScript function. @{<info>It must be applied with a dot@}.@,@,\
+            Like this: @{<info>foo(. a, b)@}@,\
+            Not like this: @{<dim>foo(a, b)@}@,@,\
+            This guarantees that your function is fully applied. More info here:@,\
+            https://bucklescript.github.io/docs/en/function.html#solution-guaranteed-uncurrying@]"
       | _ ->
           fprintf ppf "@[<v>@[<2>This expression has type@ %a@]@ %s@]"
             type_expr typ
