@@ -74,13 +74,6 @@ type ('key, 'id) comparable =
     mismatch if they use different comparison function
 *)
 
-module MakeComparableU :
-  functor (M : sig
-    type t
-    val cmp : t -> t -> int [@bs]
-  end) ->
-  Comparable with type t = M.t
-
 module MakeComparable :
   functor (M : sig
     type t
@@ -118,14 +111,6 @@ type ('key, 'id) hashable =
     mismatch if they use different comparison function
 *)
 
-module MakeHashableU :
-  functor (M : sig
-    type t
-     val hash : t -> int [@bs]
-     val eq : t -> t -> bool [@bs]
-  end) ->
-  Hashable with type t = M.t
-
 module MakeHashable :
   functor (M : sig
     type t
@@ -153,3 +138,23 @@ external getHashInternal : ('a,'id) hash -> ('a -> int [@bs]) = "%identity"
 external getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs]) = "%identity"
 external getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs]) = "%identity"
 (**/**)
+
+
+(** {1 Uncurried version} *)
+
+
+module MakeComparableU :
+  functor (M : sig
+    type t
+    val cmp : t -> t -> int [@bs]
+  end) ->
+  Comparable with type t = M.t
+
+
+module MakeHashableU :
+  functor (M : sig
+    type t
+     val hash : t -> int [@bs]
+     val eq : t -> t -> bool [@bs]
+  end) ->
+  Hashable with type t = M.t
