@@ -117,6 +117,11 @@ val has: ('k, 'v, 'id) t -> 'k  -> bool
     ]}
   *)
 
+val cmpU:
+    ('k, 'v, 'id) t ->
+    ('k, 'v, 'id) t ->
+    ('v -> 'v -> int [@bs]) ->
+     int
 val cmp:
     ('k, 'v, 'id) t ->
     ('k, 'v, 'id) t ->
@@ -129,6 +134,11 @@ val cmp:
     It will compare size first and each element following the order one by one.
 *)
 
+val eqU:
+    ('k, 'v, 'id) t ->
+    ('k, 'v, 'id) t ->
+    ('v -> 'v -> bool [@bs]) ->
+    bool
 val eq:
     ('k, 'v, 'id) t ->
     ('k, 'v, 'id) t ->
@@ -139,6 +149,7 @@ val eq:
     equal data.  [veq] is the equality predicate used to compare
     the data associated with the keys. *)
 
+val forEachU:  ('k, 'v, 'id) t -> ('k -> 'v -> unit [@bs]) -> unit
 val forEach:  ('k, 'v, 'id) t -> ('k -> 'v -> unit) -> unit
 (** [forEach m f] applies [f] to all bindings in map [m].
     [f] receives the 'k as first argument, and the associated value
@@ -154,6 +165,7 @@ val forEach:  ('k, 'v, 'id) t -> ('k -> 'v -> unit) -> unit
     ]}
 *)
 
+val reduceU: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc [@bs]) -> 'acc
 val reduce: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc) -> 'acc
 (** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
     where [k1 ... kN] are the keys of all bindings in [m]
@@ -165,10 +177,12 @@ val reduce: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc) -> 'acc
     ]}
 *)
 
+val everyU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool
 val every: ('k, 'v, 'id) t -> ('k -> 'v -> bool) ->  bool
 (** [every m p] checks if all the bindings of the map
     satisfy the predicate [p]. Order unspecified *)
 
+val someU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool
 val some: ('k, 'v, 'id) t -> ('k -> 'v -> bool) ->  bool
 (** [some m p] checks if at least one binding of the map
     satisfy the predicate [p]. Order unspecified *)
@@ -324,6 +338,7 @@ val set:
     ]}
 *)
 
+val updateU: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option [@bs]) -> ('k, 'v, 'id) t
 val update: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option) -> ('k, 'v, 'id) t
 (** [update m x f] returns a map containing the same bindings as
     [m], except for the binding of [x].
@@ -343,6 +358,11 @@ val mergeMany:
     exist [s]
 *)
 
+val mergeU:
+   ('k, 'v, 'id ) t ->
+   ('k, 'v2, 'id) t ->
+   ('k -> 'v option -> 'v2 option -> 'v3 option [@bs]) ->
+   ('k, 'v3, 'id) t
 val merge:
    ('k, 'v, 'id ) t ->
    ('k, 'v2, 'id) t ->
@@ -354,6 +374,10 @@ val merge:
 *)
 
 
+val keepU:
+    ('k, 'v, 'id) t ->
+    ('k -> 'v -> bool [@bs]) ->
+    ('k, 'v, 'id) t
 val keep:
     ('k, 'v, 'id) t ->
     ('k -> 'v -> bool) ->
@@ -361,6 +385,10 @@ val keep:
 (** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p]. *)
 
+val partitionU:
+    ('k, 'v, 'id) t ->
+    ('k -> 'v -> bool [@bs]) ->
+    ('k, 'v, 'id) t * ('k, 'v, 'id) t
 val partition:
     ('k, 'v, 'id) t ->
     ('k -> 'v -> bool) ->
@@ -383,6 +411,7 @@ val split:
       or [Some v] if [m] binds [v] to [x].
 *)
 
+val mapU: ('k, 'v, 'id) t -> ('v -> 'v2 [@bs]) ->  ('k, 'v2, 'id) t
 val map: ('k, 'v, 'id) t -> ('v -> 'v2) ->  ('k, 'v2, 'id) t
 (** [map m f] returns a map with same domain as [m], where the
     associated value [a] of all bindings of [m] has been
@@ -390,6 +419,7 @@ val map: ('k, 'v, 'id) t -> ('v -> 'v2) ->  ('k, 'v2, 'id) t
     The bindings are passed to [f] in increasing order
     with respect to the ordering over the type of the keys. *)
 
+val mapWithKeyU: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2 [@bs]) -> ('k, 'v2, 'id) t
 val mapWithKey: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) t
 (** [mapWithKey m f]
 
@@ -397,52 +427,6 @@ val mapWithKey: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) t
 *)
 
 
-(** {1 Uncurried version} *)
-
-
-val cmpU:
-    ('k, 'v, 'id) t ->
-    ('k, 'v, 'id) t ->
-    ('v -> 'v -> int [@bs]) ->
-     int
-
-val eqU:
-    ('k, 'v, 'id) t ->
-    ('k, 'v, 'id) t ->
-    ('v -> 'v -> bool [@bs]) ->
-    bool
-
-val forEachU:  ('k, 'v, 'id) t -> ('k -> 'v -> unit [@bs]) -> unit
-
-val reduceU: ('k, 'v, 'id) t -> 'acc -> ('acc -> 'k -> 'v -> 'acc [@bs]) -> 'acc
-
-val everyU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool
-
-val someU: ('k, 'v, 'id) t -> ('k -> 'v -> bool [@bs]) ->  bool
-
-val updateU: ('k, 'v, 'id) t -> 'k -> ('v option -> 'v option [@bs]) -> ('k, 'v, 'id) t
-
-val mergeU:
-   ('k, 'v, 'id ) t ->
-   ('k, 'v2, 'id) t ->
-   ('k -> 'v option -> 'v2 option -> 'v3 option [@bs]) ->
-   ('k, 'v3, 'id) t
-
-val keepU:
-    ('k, 'v, 'id) t ->
-    ('k -> 'v -> bool [@bs]) ->
-    ('k, 'v, 'id) t
-
-val partitionU:
-    ('k, 'v, 'id) t ->
-    ('k -> 'v -> bool [@bs]) ->
-    ('k, 'v, 'id) t * ('k, 'v, 'id) t
-
-val mapU: ('k, 'v, 'id) t -> ('v -> 'v2 [@bs]) ->  ('k, 'v2, 'id) t
-
-val mapWithKeyU: ('k, 'v, 'id) t -> ('k -> 'v -> 'v2 [@bs]) -> ('k, 'v2, 'id) t
-
-(** {1 Advanced} *)
 
 val getData: ('k, 'v, 'id) t -> ('k, 'v, 'id) Belt_MapDict.t
 (** [getData s0]

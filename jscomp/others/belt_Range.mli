@@ -1,6 +1,6 @@
 
 (* Copyright (C) 2017 Authors of BuckleScript
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,49 +27,41 @@
     it use a for-loop internally instead of creating an array
 *)
 
+val forEachU: int -> int -> (int -> unit [@bs]) -> unit
 val forEach: int -> int -> (int -> unit ) -> unit
 (** [forEach start finish action]
 
     equivalent to [Belt.Array.(forEach (range start finish) action)]
 *)
-
+  
+val everyU: int -> int -> (int -> bool [@bs]) -> bool
 val every: int -> int -> (int -> bool ) -> bool
 (** [every start finish p]
 
     equivalent to [Belt.Array.(every (range start finish) p )]
 *)
-
+  
+val everyByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
 val everyBy: int -> int -> step:int -> (int -> bool ) -> bool
 (** [everyBy start finish ~step p]
 
     {b See} {!Belt_Array.rangeBy}
-
+    
     equivalent to [Belt.Array.(every (rangeBy start finish ~step) p)]
 *)
-
+  
+val someU: int -> int -> (int -> bool [@bs]) -> bool
 val some: int -> int -> (int -> bool ) -> bool
 (** [some start finish p]
 
     equivalent to [Belt.Array.(some (range start finish) p)]
 *)
 
-val someBy: int -> int -> step:int -> (int -> bool ) -> bool
+val someByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
+val someBy: int -> int -> step:int -> (int -> bool ) -> bool  
 (** [someBy start finish ~step  p]
 
     {b See} {!Belt_Array.rangeBy}
-
+    
     equivalent to [Belt.Array.(some (rangeBy start finish ~step) p)]
 *)
-
-
-(** {1 Uncurried version} *)
-
-val forEachU: int -> int -> (int -> unit [@bs]) -> unit
-
-val everyU: int -> int -> (int -> bool [@bs]) -> bool
-
-val everyByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool
-
-val someU: int -> int -> (int -> bool [@bs]) -> bool
-
-val someByU: int -> int -> step:int -> (int -> bool [@bs]) -> bool

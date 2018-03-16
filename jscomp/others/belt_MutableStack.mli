@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -42,28 +42,25 @@ val push : 'a t -> 'a -> unit
 
 val popUndefined : 'a t -> 'a Js.undefined
 
-val pop : 'a t -> 'a option
+val pop : 'a t -> 'a option 
 
 val topUndefined : 'a t -> 'a Js.undefined
 
-val top : 'a t -> 'a option
+val top : 'a t -> 'a option 
 
 val isEmpty : 'a t -> bool
 
 val size : 'a t -> int
 
+val forEachU : 'a t -> ('a -> unit [@bs] ) -> unit
 val forEach : 'a t -> ('a -> unit ) -> unit
 
-val dynamicPopIter : 'a t -> ('a ->  unit ) -> unit
+
+val dynamicPopIterU : 'a t -> ('a ->  unit [@bs]) -> unit
+val dynamicPopIter : 'a t -> ('a ->  unit ) -> unit   
 (** [dynamicPopIter s f ]
-    apply [f] to each element of [s]. The item is poped
+    apply [f] to each element of [s]. The item is poped 
     before applying [f], [s] will be empty  after this opeartion.
     This function is useful for worklist algorithm
 *)
 
-
-(** {1 Uncurried version} *)
-
-val forEachU : 'a t -> ('a -> unit [@bs] ) -> unit
-
-val dynamicPopIterU : 'a t -> ('a ->  unit [@bs]) -> unit
