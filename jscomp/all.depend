@@ -537,7 +537,7 @@ core/js_pass_tailcall_inline.cmx : core/js_stmt_make.cmx core/js_op_util.cmx \
     core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx ext/ident_hashtbl.cmx \
     ext/ext_list.cmx core/js_pass_tailcall_inline.cmi
 core/js_of_lam_variant.cmx : core/js_stmt_make.cmx core/js_exp_make.cmx \
-    core/j.cmx ext/ext_list.cmx ext/ext_ident.cmx core/js_of_lam_variant.cmi
+    core/j.cmx ext/ext_list.cmx core/js_of_lam_variant.cmi
 core/js_pass_flatten_and_mark_dead.cmx : core/js_stmt_make.cmx \
     core/js_op_util.cmx core/js_map.cmx core/js_fold.cmx core/js_exp_make.cmx \
     common/js_config.cmx core/js_analyzer.cmx core/j.cmx ext/ident_set.cmx \
