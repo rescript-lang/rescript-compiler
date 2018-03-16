@@ -396,6 +396,9 @@ class virtual map =
           let _x = o#expression _x in Is_null_undefined_to_boolean _x
       | Array_of_size _x -> let _x = o#expression _x in Array_of_size _x
       | Array_copy _x -> let _x = o#expression _x in Array_copy _x
+      | Object_assign (_x, _x_i1) ->
+          let _x = o#option (fun o -> o#expression) _x in
+          let _x_i1 = o#expression _x_i1 in Object_assign (_x, _x_i1)
       | Array_append (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Array_append (_x, _x_i1)

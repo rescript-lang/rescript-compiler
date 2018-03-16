@@ -55,6 +55,8 @@ let make ~lo ~hi =
     Immutable
 let get_lo x = E.index x 1l
 let get_hi x = E.index x 0l
+let get_lo x = E.dot x "lo"
+let get_hi x = E.dot x "hi"
 
 
 (* below should  not depend on layout *)

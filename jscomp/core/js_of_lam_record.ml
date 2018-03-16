@@ -54,5 +54,5 @@ let field field_info  e i =
    this is due to we encode record as an array, it is going to change
    if we have another encoding       
 *)    
-let copy  = E.array_copy
+let copy ?comment  = E.object_assign ?comment None
 

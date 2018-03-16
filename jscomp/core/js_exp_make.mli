@@ -157,6 +157,7 @@ val char_to_int : unary_op
 val array_append : binary_op
 
 val array_copy : unary_op
+val object_assign : ?comment:string -> (t option) -> t -> t
 val string_append : binary_op
 (**
    When in ES6 mode, we can use Symbol to guarantee its uniquess,

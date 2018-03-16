@@ -45,7 +45,7 @@ let comment_of_tag_info  (x : Lambda.tag_info) =
   | Blk_constructor (n, _) -> Some n 
   | Blk_tuple -> Some "tuple"
   | Blk_variant x -> Some ("`" ^  x)
-  | Blk_record _ -> Some "record"
+  | Blk_record _ -> Some "record" (* XXX *)
 
   | Blk_array -> Some "array"
   | Blk_module _ ->  

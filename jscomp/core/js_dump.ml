@@ -536,6 +536,21 @@ and
         cxt 
       )
 
+  | Object_assign (e1_opt, e2) -> 
+    P.group f 1 (fun _ ->
+        P.string f "Object.assign(";
+        let cxt = match e1_opt with
+          | Some e1 ->
+            expression 15 cxt f e1
+          | None ->
+            P.string f "{}";
+            cxt in
+        P.string f ", ";
+        let cxt = expression 15 cxt f e2 in
+        P.string f ")";
+        cxt 
+      )
+
   | Dump (level, el) -> 
     let obj = 
       match level with 
@@ -871,7 +886,7 @@ and
         (Blk_tuple | Blk_array | Blk_variant _ | Blk_record _ | Blk_na | Blk_module _
         |  Blk_constructor (_, 1) (* Sync up with {!Js_dump}*)
         ) 
-        -> expression_desc cxt l f  (Array (el, mutable_flag))
+        -> (* XXX *) expression_desc cxt l f  (Array (el, mutable_flag))
       (* TODO: for numbers like 248, 255 we can reverse engineer to make it 
          [Obj.xx_flag], but we can not do this in runtime libraries
       *)
@@ -1129,6 +1144,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Call _ 
       | Array_append _ 
       | Array_copy _ 
+      | Object_assign _
       | Caml_block_tag _ 
       | Seq _
       | Dot _

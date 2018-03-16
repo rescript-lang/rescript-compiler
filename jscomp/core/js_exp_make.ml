@@ -173,6 +173,21 @@ let make_block ?comment tag tag_info es mutable_flag : t =
     comment 
   }    
 
+let make_block ?comment tag tag_info es mutable_flag : t =
+  let comment = 
+    match comment with 
+    | None -> Lam_compile_util.comment_of_tag_info tag_info 
+    | _ -> comment in
+  match tag_info with
+  | Blk_record des ->
+    let property_map = List.mapi (fun i e -> (des.(i), e)) es in
+    {
+      expression_desc = Object property_map;
+      comment 
+    }
+  | _ -> make_block ?comment tag tag_info es mutable_flag 
+
+
 (* let uninitialized_object ?comment tag size : t = 
   { expression_desc = Caml_uninitialized_obj(tag,size); comment } *)
 
@@ -453,6 +468,9 @@ let array_append ?comment e el : t =
 
 let array_copy ?comment e : t = 
   { comment ; expression_desc = Array_copy e}
+
+let object_assign ?comment e1 e2 : t = 
+  { comment ; expression_desc = Object_assign (e1, e2) }
 
 (* Note that this return [undefined] in JS, 
     it should be wrapped to avoid leak [undefined] into 

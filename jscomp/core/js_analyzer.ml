@@ -116,7 +116,8 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
     op <> Eq && no_side_effect a && no_side_effect b     
   | Math _ 
   | Array_of_size _
-  | Array_copy _ 
+  | Array_copy _
+  | Object_assign _ 
   (* | Tag_ml_obj _ *)
   | Int_of_boolean _ 
   | J.Anything_to_number _
@@ -268,7 +269,8 @@ let rec eq_expression
     | Char_to_int _ 
     | Is_null_undefined_to_boolean _ 
     | Array_of_size _
-    | Array_copy _ 
+    | Array_copy _
+    | Object_assign _ 
     | Array_append _ 
     | String_append _ 
     | Int_of_boolean _ 
