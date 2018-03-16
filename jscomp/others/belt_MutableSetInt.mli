@@ -1,6 +1,6 @@
 # 1 "setm.cppo.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -40,7 +40,7 @@ type value = int
 
 type t
 (** The type of sets. *)
-
+  
 val make: unit -> t
 
 val fromArray: value array -> t
@@ -51,45 +51,51 @@ val ofArray: value array -> t
 val ofSortedArrayUnsafe: value array -> t
 [@@ocaml.deprecated "Use fromSortedArrayUnsafe instead"]
 
-val copy: t -> t
+val copy: t -> t 
 val isEmpty: t -> bool
 val has: t -> value -> bool
 
 val add: t -> value -> unit
-val addCheck: t -> value -> bool
+val addCheck: t -> value -> bool 
 val mergeMany: t -> value array -> unit
 val remove: t -> value -> unit
-val removeCheck: t -> value -> bool
+val removeCheck: t -> value -> bool 
 val removeMany: t -> value array -> unit
-
+  
 val union: t -> t -> t
 val intersect: t -> t -> t
 val diff: t -> t -> t
 val subset: t -> t -> bool
-
+  
 val cmp: t -> t -> int
 val eq: t -> t -> bool
 
 
+val forEachU: t -> (value -> unit [@bs]) ->  unit
 val forEach: t -> (value -> unit ) ->  unit
 (** In increasing order*)
 
-val reduce: t -> 'a -> ('a -> value -> 'a ) -> 'a
+val reduceU: t -> 'a -> ('a -> value -> 'a [@bs]) -> 'a
+val reduce: t -> 'a -> ('a -> value -> 'a ) -> 'a  
 (** Iterate in increasing order. *)
 
-val every: t -> (value -> bool) ->  bool
+val everyU: t -> (value -> bool [@bs]) -> bool
+val every: t -> (value -> bool) ->  bool  
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified. *)
 
-val some: t -> (value -> bool) ->  bool
+val someU: t -> (value -> bool [@bs]) -> bool
+val some: t -> (value -> bool) ->  bool  
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. Oder unspecified. *)
 
-val keep: t -> (value -> bool) ->  t
+val keepU: t -> (value -> bool [@bs]) ->  t
+val keep: t -> (value -> bool) ->  t  
 (** [keep s p] returns a fresh copy of the set of all elements in [s]
     that satisfy predicate [p]. *)
 
-val partition: t -> (value -> bool) ->  t * t
+val partitionU: t -> (value -> bool [@bs]) ->  t * t
+val partition: t -> (value -> bool) ->  t * t 
 (** [partition s p] returns a fresh copy pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
@@ -109,7 +115,7 @@ val maxUndefined: t -> value Js.undefined
 val get:  t -> value -> value option
 val getUndefined:  t -> value -> value Js.undefined
 val getExn: t -> value -> value
-val split:  t -> value  -> (t * t) * bool
+val split:  t -> value  -> (t * t) * bool 
 (**
     [split s key] return a fresh copy of each
 *)
@@ -117,20 +123,8 @@ val split:  t -> value  -> (t * t) * bool
 val checkInvariantInternal: t -> unit
 (**
    {b raise} when invariant is not held
-*)
+*)  
 
 
-(** {1 Uncurried version} *)
 
 
-val forEachU: t -> (value -> unit [@bs]) ->  unit
-
-val reduceU: t -> 'a -> ('a -> value -> 'a [@bs]) -> 'a
-
-val everyU: t -> (value -> bool [@bs]) -> bool
-
-val someU: t -> (value -> bool [@bs]) -> bool
-
-val keepU: t -> (value -> bool [@bs]) ->  t
-
-val partitionU: t -> (value -> bool [@bs]) ->  t * t

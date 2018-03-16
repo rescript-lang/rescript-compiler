@@ -1,5 +1,5 @@
 (* Copyright (C) 2017 Authors of BuckleScript
- *
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -25,7 +25,7 @@
 type ('key, 'id) t
 
 type ('key, 'id) cmp = ('key, 'id) Belt_Id.cmp
-
+    
 val empty: ('value, 'id) t
 
 val ofArray: 'k array -> cmp:('k, 'id) cmp -> ('k, 'id) t
@@ -36,7 +36,7 @@ val ofSortedArrayUnsafe: 'value array ->  ('value,'id) t
 val fromArray: 'k array -> cmp:('k, 'id) cmp -> ('k, 'id) t
 
 val fromSortedArrayUnsafe: 'value array ->  ('value,'id) t
-
+    
 val isEmpty: _ t -> bool
 val has:
   ('k, 'id) t -> 'k ->
@@ -44,16 +44,16 @@ val has:
   bool
 
 
-val add:
+val add:   
   ('k, 'id) t -> 'k ->
   cmp:('k, 'id) cmp ->
   ('k, 'id) t
 (** [add s x] If [x] was already in [s], [s] is returned unchanged. *)
-
+    
 val mergeMany:
   ('value, 'id) t -> 'value array ->
   cmp:('value, 'id) cmp ->
-  ('value, 'id) t
+  ('value, 'id) t 
 
 val remove:
   ('value, 'id) t ->
@@ -65,7 +65,7 @@ val remove:
 val removeMany:
   ('value, 'id) t -> 'value array ->
   cmp:('value, 'id) cmp ->
-  ('value, 'id) t
+  ('value, 'id) t 
 
 
 val union:
@@ -76,13 +76,13 @@ val intersect:
   ('value, 'id) t -> ('value, 'id) t ->
     cmp:('value, 'id) cmp ->
   ('value, 'id) t
-
+    
 val diff: ('value, 'id) t -> ('value, 'id) t ->
   cmp:('value, 'id) cmp ->
   ('value, 'id) t
 val subset: ('value, 'id) t -> ('value, 'id) t ->
   cmp:('value, 'id) cmp ->
-  bool
+  bool     
 
 val cmp: ('value, 'id) t -> ('value, 'id) t ->
   cmp:('value, 'id) cmp ->
@@ -93,26 +93,32 @@ val eq: ('value, 'id) t -> ('value, 'id) t ->
   cmp:('value, 'id) cmp ->
   bool
 
-val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit
+val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
+val forEach: ('value, 'id) t -> ('value -> unit ) ->  unit  
 (** [forEach s f] applies [f] in turn to all elements of [s].
     In increasing order *)
-
-val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a) ->  'a
+  
+val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
+val reduce: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a) ->  'a  
 (** In increasing order. *)
 
-val every: ('value, 'id) t -> ('value -> bool) -> bool
+val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
+val every: ('value, 'id) t -> ('value -> bool) -> bool  
 (** [every p s] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified *)
 
-val some: ('value, 'id) t ->  ('value -> bool) -> bool
+val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
+val some: ('value, 'id) t ->  ('value -> bool) -> bool  
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
+val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
 val keep: ('value, 'id) t ->  ('value -> bool) -> ('value, 'id) t
 (** [keep m p] returns the set of all elements in [s]
-    that satisfy predicate [p]. *)
+    that satisfy predicate [p]. *)    
 
-val partition: ('value, 'id) t -> ('value -> bool ) ->  ('value, 'id) t * ('value, 'id) t
+val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t
+val partition: ('value, 'id) t -> ('value -> bool ) ->  ('value, 'id) t * ('value, 'id) t                                                            
 (** [partition m p] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
     predicate [p], and [s2] is the set of all the elements of
@@ -132,35 +138,21 @@ val maxUndefined: ('value, 'id) t -> 'value Js.undefined
 
 val get: ('value, 'id) t -> 'value ->
   cmp:('value, 'id) cmp ->
-  'value option
+  'value option 
 val getUndefined: ('value, 'id) t -> 'value ->
   cmp:('value, 'id) cmp ->
   'value Js.undefined
 val getExn: ('value, 'id) t -> 'value ->
   cmp:('value, 'id) cmp ->
-  'value
+  'value 
 
 val split: ('value, 'id) t -> 'value ->
   cmp:('value, 'id) cmp ->
   (('value, 'id) t  * ('value, 'id) t) * bool
-
+                                    
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not held
-*)
+*)  
+  
 
-
-(** {1 Uncurried version} *)
-
-
-val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
-
-val reduceU: ('value, 'id) t -> 'a  -> ('a -> 'value -> 'a [@bs]) ->  'a
-
-val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
-
-val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
-
-val keepU: ('value, 'id) t ->  ('value -> bool [@bs]) -> ('value, 'id) t
-
-val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) ->  ('value, 'id) t * ('value, 'id) t

@@ -13,20 +13,20 @@
 (* Adapted significantly by Authors of BuckleScript *)
 
 
-(** {!Belt.Array}
-    Utililites for Array functions
+(** {!Belt.Array}    
+    Utililites for Array functions 
 *)
 
 
 external length: 'a array -> int = "%array_length"
 (** [length xs] return the size of the array *)
-
+  
 external size: 'a array -> int = "%array_length"
 (** {b See} {!length} *)
 
 val get: 'a array -> int -> 'a option
 
-val getExn: 'a array -> int -> 'a
+val getExn: 'a array -> int -> 'a  
 (** [getExn arr i]
 
     {b raise} an exception if [i] is out of range
@@ -40,22 +40,22 @@ external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
     no  bounds checking, this would cause type error
     if [i] does not stay within range
 *)
-
+  
 external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
 (** [getUndefined arr i]
 
-    It does the samething in the runtime as {!getUnsafe},
-    it is {i type safe} since the return type still track whether it is
+    It does the samething in the runtime as {!getUnsafe}, 
+    it is {i type safe} since the return type still track whether it is 
     in range or not
 *)
 
 val set: 'a array -> int -> 'a -> bool
-(** [set arr n x] modifies [arr] in place,
-    it replaces the nth element of [arr] with [x]
+(** [set arr n x] modifies [arr] in place, 
+    it replaces the nth element of [arr] with [x] 
     @return false means not updated due to out of range
 *)
 
-val setExn: 'a array -> int -> 'a -> unit
+val setExn: 'a array -> int -> 'a -> unit 
 (** [setExn arr i x]
     {b raise} an exception if [i] is out of range
 *)
@@ -64,7 +64,7 @@ external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
 
 val shuffleInPlace: 'a array -> unit
 
-val shuffle: 'a array -> 'a array
+val shuffle: 'a array -> 'a array  
 (** [shuffle xs]
     @return a fresh array *)
 
@@ -79,13 +79,13 @@ external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
 (** [makeUninitializedUnsafe n]
 
-    {b Unsafe}
+    {b Unsafe}   
 *)
 
 
 val make: int -> 'a  -> 'a array
-(** [make n e]
-    return an array of size [n] filled  with value [e]
+(** [make n e] 
+    return an array of size [n] filled  with value [e]    
     @return an empty array when [n] is negative.
 *)
 
@@ -102,22 +102,23 @@ val rangeBy: int -> int -> step:int -> int array
 
     @return empty array when step is 0 or negative
     it also return empty array when [start > finish]
-
+    
     @example {[
      rangeBy 0 10 ~step:3 = [|0;3;6;9|];;
      rangeBy 0 12 ~step:3 = [|0;3;6;9;12|];;
      rangeBy 33 0 ~step:1 =  [||];;
      rangeBy 33 0 ~step:(-1) = [||];;
      rangeBy 3 12 ~step:(-1) = [||];;
-     rangeBy 3 3 ~step:0 = [||] ;;
+     rangeBy 3 3 ~step:0 = [||] ;;     
      rangeBy 3 3 ~step:(1) = [|3|] ;;
    ]}
-*)
+*)    
 
+val makeByU: int -> (int -> 'a [@bs]) -> 'a array
 val makeBy: int -> (int -> 'a ) -> 'a array
-(** [makeBy n f]
-
-    return an empty array when [n] is negative
+(** [makeBy n f] 
+    
+    return an empty array when [n] is negative 
     return an array of size [n] populated by [f i] start from [0] to [n - 1]
 
     @example {[
@@ -125,16 +126,17 @@ val makeBy: int -> (int -> 'a ) -> 'a array
     ]}
 *)
 
-val makeByAndShuffle: int -> (int -> 'a ) -> 'a array
+val makeByAndShuffleU: int -> (int -> 'a [@bs]) -> 'a array
+val makeByAndShuffle: int -> (int -> 'a ) -> 'a array    
 (** [makeByAndShuffle n f]
 
     Equivalent to [shuffle (makeBy n f)]
-*)
+*)    
 
 
 val zip: 'a array -> 'b array -> ('a * 'b) array
-(** [zip a b]
-
+(** [zip a b] 
+    
     Stop with the shorter array
 
     @example {[
@@ -143,10 +145,11 @@ val zip: 'a array -> 'b array -> ('a * 'b) array
  *)
 
 
-val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array
+ val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
+ val zipBy: 'a array -> 'b array -> ('a -> 'b -> 'c ) -> 'c array         
  (**
     [zipBy xs ys f]
-
+   
     Stops with shorter array
 
     Equivalent to [map (zip xs ys) (fun (a,b) -> f a b) ]
@@ -157,7 +160,7 @@ val concat: 'a array -> 'a array -> 'a array
 
     @return a fresh array containing the
     concatenation of the arrays [v1] and [v2], so even if [v1] or [v2]
-    is empty, it can not be shared
+    is empty, it can not be shared 
 *)
 
 val concatMany: 'a array array -> 'a array
@@ -169,25 +172,25 @@ val concatMany: 'a array array -> 'a array
 
 val slice: 'a array -> offset:int -> len:int -> 'a array
 (** [slice arr offset len]
-
+    
     [offset] can be negative,
     [slice arr -1 1] means get the last element as a singleton array
 
     [slice arr -(very_large_index) len] will do a copy of the array
-
+    
     if the array does not have enough data, [slice] extracts through
     the end of sequence
 *)
 
 
 val copy: 'a array -> 'a array
-(** [copy a]
+(** [copy a] 
 
     @return a copy of [a], that is, a fresh array
    containing the same elements as [a]. *)
 
 val fill: 'a array -> offset:int -> len:int -> 'a -> unit
-(** [fill arr ~offset ~len x]
+(** [fill arr ~offset ~len x] 
 
     Modifies [arr] in place,
     storing [x] in elements number [offset] to [offset + len - 1].
@@ -205,41 +208,44 @@ val fill: 'a array -> offset:int -> len:int -> 'a -> unit
     ]}
  *)
 
-val blit:
+val blit: 
     src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
-(** [blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len]
+(** [blit ~src:v1 ~srcOffset:o1 ~dst:v2 ~dstOffset:o2 ~len] 
 
     copies [len] elements
    from array [v1], starting at element number [o1], to array [v2],
-   starting at element number [o2].
-
+   starting at element number [o2]. 
+   
     It works correctly even if
     [v1] and [v2] are the same array, and the source and
     destination chunks overlap.
 
-    [offset] can be negative, [-1] means [len - 1], if [len + offset]  is still
-    negative, it will be set as 0
+    [offset] can be negative, [-1] means [len - 1], if [len + offset]  is still 
+    negative, it will be set as 0   
 *)
 
 val blitUnsafe:
-  src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit
+  src:'a array -> srcOffset:int -> dst:'a array -> dstOffset:int -> len:int -> unit 
 (**
    {b Unsafe} blit without bounds checking
 *)
 
+val forEachU: 'a array ->  ('a -> unit [@bs]) -> unit
 val forEach: 'a array ->  ('a -> unit ) -> unit
 (** [forEach xs f]
 
     Call f on each element of [xs] from the beginning to end
 *)
-
+  
+val mapU: 'a array ->  ('a -> 'b [@bs]) -> 'b array
 val map: 'a array ->  ('a -> 'b ) -> 'b array
 (** [map xs f ]
 
     @return a new array by calling [f] to element of [xs] from
     the beginning to end
 *)
-
+    
+val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
 val keep: 'a array -> ('a -> bool ) -> 'a array
 (** [keep xs p ]
     @return a new array that keep all elements satisfy [p]
@@ -249,7 +255,8 @@ val keep: 'a array -> ('a -> bool ) -> 'a array
     ]}
 *)
 
-val keepMap: 'a array -> ('a -> 'b option) -> 'b array
+val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
+val keepMap: 'a array -> ('a -> 'b option) -> 'b array 
 (** [keepMap xs p]
     @return a new array that keep all elements that return a non-None applied [p]
 
@@ -259,6 +266,7 @@ val keepMap: 'a array -> ('a -> 'b option) -> 'b array
     ]}
 *)
 
+val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
 val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
 (** [forEachWithIndex xs f]
 
@@ -266,57 +274,66 @@ val forEachWithIndex: 'a array ->  (int -> 'a -> unit ) -> unit
     more argument: the index starting from 0
 *)
 
-val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array
+val mapWithIndexU: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
+val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array    
 (** [mapWithIndex xs f ]
 
     The same with {!map} except that [f] is supplied with one
     more argument: the index starting from 0
 *)
-
+    
+val reduceU:  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
 val reduce:  'b array -> 'a -> ('a -> 'b -> 'a ) ->'a
 (** [reduce xs init f]
 
     @example {[
       reduce [|2;3;4|] 1 (+) = 10
     ]}
-
+   
 *)
 
+val reduceReverseU: 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
 val reduceReverse: 'b array -> 'a -> ('a -> 'b ->  'a ) ->  'a
 (** [reduceReverse xs init f]
     @example {[
-      reduceReverse [|1;2;3;4|] 100 (-) = 90
+      reduceReverse [|1;2;3;4|] 100 (-) = 90 
     ]}
 *)
 
-val reduceReverse2:
+val reduceReverse2U:
+  'a array -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
+val reduceReverse2:  
   'a array -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c) ->  'c
 (**
    @example {[
      reduceReverse2 [|1;2;3|] [|1;2|] 0 (fun acc x y -> acc + x + y) = 6
    ]}
 *)
-
+  
+val someU: 'a array -> ('a -> bool [@bs]) -> bool
 val some: 'a array -> ('a -> bool) -> bool
 (** [some xs p]
     @return true if one of element satifies [p]
 *)
-
+  
+val everyU: 'a array -> ('a -> bool [@bs]) -> bool
 val every: 'a array -> ('a -> bool ) -> bool
 (** [every xs p]
     @return true if all elements satisfy [p]
 *)
-
+  
+val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 val every2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
 (** [every2 xs ys p] only tests the length of shorter
 
     @example {[
       every2 [|1;2;3|] [|0;1|] (>) = true;;
       (every2 [||] [|1|] (fun   x y -> x > y)) = true;;
-      (every2 [|2;3|] [|1|] (fun   x y -> x > y)) = true;;
+      (every2 [|2;3|] [|1|] (fun   x y -> x > y)) = true;; 
     ]}
 *)
 
+val some2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
 val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
 (** [some2 xs ys p] only tests the length of shorter
 
@@ -326,61 +343,22 @@ val some2: 'a array -> 'b array -> ('a -> 'b -> bool ) -> bool
       (some2 [|2;3|] [|1;4|] (fun   x y -> x > y)) = true;;
     ]}
 *)
-
+  
+val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
 val cmp: 'a array -> 'a array -> ('a -> 'a -> int ) -> int
 (** [cmp a b]
-
-    - Compared by length if [length a <> length b]
+    
+    - Compared by length if [length a <> length b] 
     - Otherwise compare one by one [f ai bi]
 *)
 
+val eqU:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
 val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
 (** [eq a b]
-
+    
     - return false if length is not the same
     - equal one by one using [f ai bi]
 *)
 
 external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
 (** {b Unsafe}  *)
-
-
-(** {1 Uncurried version} *)
-
-
-val makeByU: int -> (int -> 'a [@bs]) -> 'a array
-
-val makeByAndShuffleU: int -> (int -> 'a [@bs]) -> 'a array
-
-val zipByU: 'a array -> 'b array -> ('a -> 'b -> 'c [@bs]) -> 'c array
-
-val forEachU: 'a array ->  ('a -> unit [@bs]) -> unit
-
-val mapU: 'a array ->  ('a -> 'b [@bs]) -> 'b array
-
-val keepU: 'a array -> ('a -> bool [@bs]) -> 'a array
-
-val keepMapU: 'a array -> ('a -> 'b option [@bs]) -> 'b array
-
-val forEachWithIndexU: 'a array ->  (int -> 'a -> unit [@bs]) -> unit
-
-val mapWithIndexU: 'a array ->  (int -> 'a -> 'b [@bs]) -> 'b array
-
-val reduceU:  'b array -> 'a -> ('a -> 'b -> 'a [@bs]) ->'a
-
-val reduceReverseU: 'b array -> 'a -> ('a -> 'b ->  'a [@bs]) ->  'a
-
-val reduceReverse2U:
-  'a array -> 'b array -> 'c  -> ('c -> 'a -> 'b ->  'c [@bs]) ->  'c
-
-val someU: 'a array -> ('a -> bool [@bs]) -> bool
-
-val everyU: 'a array -> ('a -> bool [@bs]) -> bool
-
-val every2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
-
-val some2U: 'a array -> 'b array -> ('a -> 'b -> bool [@bs]) -> bool
-
-val cmpU: 'a array -> 'a array -> ('a -> 'a -> int [@bs]) -> int
-
-val eqU:  'a array -> 'a array -> ('a -> 'a -> bool [@bs]) -> bool
