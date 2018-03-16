@@ -24,12 +24,12 @@
 
 (*
   This file's shared between the Reason repo and the BuckleScript repo. In
-  Reason, it's in src/reason_oprint.ml. In BuckleScript, it's in
-  jscomp/outcome_printer/tweaked_reason_oprint.ml. We periodically copy
-  this file from Reason (the source of truth) to BuckleScript, then uncomment
-  the #if #else #end cppo macros you see in the file. That's because
-  BuckleScript's on OCaml 4.02 while Reason's on 4.04; so the #if macros
-  surround the pieces of code that are different between the two compilers.
+  Reason, it's in src/reason-parser/. In BuckleScript, it's in
+  jscomp/outcome_printer/. We periodically copy this file from Reason (the
+  source of truth) to BuckleScript, then uncomment the #if #else #end cppo
+  macros you see in the file. That's because BuckleScript's on OCaml 4.02 while
+  Reason's on 4.04; so the #if macros surround the pieces of code that are
+  different between the two compilers.
 
   When you modify this file, please make sure you're not dragging in too many
   things. You don't necessarily have to test the file on both Reason and
@@ -76,64 +76,9 @@ let parenthesized_ident name =
         false
     | _ -> true)
 
-#if defined BS_NO_COMPILER_PATCH then
-let ml_to_reason_swap = Syntax_util.ml_to_reason_swap
-#else
-
-(* please keep this section in sync with Reason repo's Syntax_util file's
-  helpers of the same names *)
-
-let string_add_suffix x = x ^ "_"
-let string_drop_suffix x = String.sub x 0 (String.length x - 1)
-(** Check to see if the string `s` is made up of `keyword` and zero or more
-    trailing `_` characters. *)
-let potentially_conflicts_with ~keyword s =
-  let s_length = String.length s in
-  let keyword_length = String.length keyword in
-  (* It can't be a match if s is shorter than keyword *)
-  s_length >= keyword_length && (
-    try
-      (* Ensure s starts with keyword... *)
-      for i = 0 to keyword_length - 1 do
-        if keyword.[i] <> s.[i] then raise Exit;
-      done;
-      (* ...and contains nothing else except trailing _ characters *)
-      for i = keyword_length to s_length - 1 do
-        if s.[i] <> '_' then raise Exit;
-      done;
-      (* If we've made it this far there's a potential conflict *)
-      true
-    with
-    | Exit -> false
-  )
-let ml_to_reason_swap = function
-  | "not" -> "!"
-  | "!" -> "^"
-  | "^" -> "++"
-  | "==" -> "==="
-  | "=" -> "=="
-  (* ===\/ and !==\/ are not representable in OCaml but
-   * representable in Reason
-   *)
-  | "!==" -> "\\!=="
-  |  "===" -> "\\==="
-  | "<>" -> "!="
-  | "!=" -> "!=="
-  | x when (
-    potentially_conflicts_with ~keyword:"match_" x
-    || potentially_conflicts_with ~keyword:"method_" x
-    || potentially_conflicts_with ~keyword:"private_" x) -> string_drop_suffix x
-  | x when (
-    potentially_conflicts_with ~keyword:"switch" x
-    || potentially_conflicts_with ~keyword:"pub" x
-    || potentially_conflicts_with ~keyword:"pri" x) -> string_add_suffix x
-  | everything_else -> everything_else
-
-#end
-
 let value_ident ppf name =
   if parenthesized_ident name then
-    fprintf ppf "( %s )" (ml_to_reason_swap name)
+    fprintf ppf "( %s )" (Reason_syntax_util.ml_to_reason_swap name)
   else
     pp_print_string ppf name
 
@@ -205,7 +150,7 @@ let print_out_value ppf tree =
     | Oval_float f -> pp_print_string ppf (float_repres f)
     | Oval_char c -> fprintf ppf "%C" c
     | Oval_string s ->
-        begin try fprintf ppf "%S" s with
+        begin try fprintf ppf "\"%s\"" (Reason_syntax_util.escape_string s) with
           Invalid_argument "String.create" -> fprintf ppf "<huge string>"
         end
     | Oval_list tl ->
@@ -528,10 +473,9 @@ and print_typargs ppf =
       print_out_wrap_type ppf ty1;
       pp_print_string ppf ")"
   | tyl ->
-      pp_print_space ppf ();
       pp_print_string ppf "(";
       pp_open_box ppf 1;
-      print_typlist print_out_wrap_type ", " ppf tyl;
+      print_typlist print_out_wrap_type "," ppf tyl;
       pp_close_box ppf ();
       pp_print_string ppf ")"
 
