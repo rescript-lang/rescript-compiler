@@ -34,6 +34,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	belt_internalMapString\
 	belt_MapString \
 	belt_MapInt\
+	belt_Option\
 	belt_internalSet\
 	belt_Set\
 	belt_MutableSet\
