@@ -76,25 +76,31 @@ val cmp:
 val eq:
   ('value, 'id) t -> ('value, 'id) t -> bool
 
+val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
 val forEach: ('value, 'id) t -> ('value -> unit) ->  unit
 (** [forEach m f] applies [f] in turn to all elements of [m].
     In increasing order *)
 
+val reduceU: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a [@bs]) -> 'a
 val reduce: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a) -> 'a
 (** In increasing order. *)
 
+val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
 val every: ('value, 'id) t -> ('value -> bool) -> bool
 (** [every s p] checks if all elements of the set
     satisfy the predicate [p]. Order unspecified *)
 
+val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
 val some: ('value, 'id) t ->  ('value -> bool) -> bool
 (** [some p s] checks if at least one element of
     the set satisfies the predicate [p]. *)
 
+val keepU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t
 val keep: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t
 (** [keep s p] returns the set of all elements in [s]
     that satisfy predicate [p]. *)
 
+val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t * ('value, 'id) t
 val partition: ('value, 'id) t -> ('value -> bool) -> ('value, 'id) t * ('value, 'id) t
 (** [partition p s] returns a pair of sets [(s1, s2)], where
     [s1] is the set of all the elements of [s] that satisfy the
@@ -147,19 +153,3 @@ val ofArray: 'k array -> id:('k, 'id) id ->   ('k, 'id) t
 
 val ofSortedArrayUnsafe: 'value array -> id:('value, 'id) id ->  ('value,'id) t
 [@@ocaml.deprecated "Use fromSortedArrayUnsafe instead"]
-
-
-(** {1 Uncurried version} *)
-
-
-val forEachU: ('value, 'id) t -> ('value -> unit [@bs]) ->  unit
-
-val reduceU: ('value, 'id) t -> 'a -> ('a -> 'value -> 'a [@bs]) -> 'a
-
-val everyU: ('value, 'id) t -> ('value -> bool [@bs]) -> bool
-
-val someU: ('value, 'id) t ->  ('value -> bool [@bs]) -> bool
-
-val keepU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t
-
-val partitionU: ('value, 'id) t -> ('value -> bool [@bs]) -> ('value, 'id) t * ('value, 'id) t

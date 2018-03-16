@@ -4,38 +4,44 @@ type key = string
 type key = int
 #else
 [%error "unknown type"]
-#endif
+#endif  
 type 'value t
 (** The type of maps from type [key] to type ['value]. *)
 
 val empty: 'v t
 val isEmpty: 'v t -> bool
-val has:  'v t -> key -> bool
+val has:  'v t -> key -> bool    
 
+val cmpU:  'v t -> 'v t -> ('v -> 'v -> int [@bs]) -> int
 val cmp:  'v t -> 'v t -> ('v -> 'v -> int) -> int
 
+val eqU: 'v t -> 'v t -> ('v -> 'v -> bool [@bs]) -> bool
 val eq: 'v t -> 'v t -> ('v -> 'v -> bool) -> bool
 (** [equal m1 m2 cmp] tests whether the maps [m1] and [m2] are
    equal, that is, contain equal keys and associate them with
    equal data.  [cmp] is the equality predicate used to compare
    the data associated with the keys. *)
 
+val forEachU: 'v t -> (key -> 'v -> unit [@bs]) ->  unit
 val forEach: 'v t -> (key -> 'v -> unit) ->  unit
 (** [forEach m f] applies [f] to all bindings in map [m].
    [f] receives the key as first argument, and the associated value
    as second argument.  The bindings are passed to [f] in increasing
    order with respect to the ordering over the type of the keys. *)
 
+val reduceU:  'v t -> 'v2 -> ('v2 -> key -> 'v -> 'v2 [@bs]) -> 'v2
 val reduce:  'v t -> 'v2 -> ('v2 -> key -> 'v -> 'v2) -> 'v2
 (** [reduce m a f] computes [(f kN dN ... (f k1 d1 a)...)],
    where [k1 ... kN] are the keys of all bindings in [m]
    (in increasing order), and [d1 ... dN] are the associated data. *)
 
+val everyU:  'v t -> (key -> 'v -> bool [@bs]) -> bool
 val every:  'v t -> (key -> 'v -> bool) -> bool
 (** [every m p] checks if all the bindings of the map
     satisfy the predicate [p].
  *)
 
+val someU:  'v t -> (key -> 'v -> bool [@bs]) -> bool
 val some:  'v t -> (key -> 'v -> bool) -> bool
 (** [some m p] checks if at least one binding of the map
     satisfy the predicate [p].
@@ -44,12 +50,12 @@ val size: 'v t -> int
 val toList: 'v t -> (key * 'v) list
 (** In increasing order with respect *)
 val toArray: 'v t -> (key * 'v) array
-val ofArray: (key * 'v) array -> 'v t
+val ofArray: (key * 'v) array -> 'v t     
 [@@ocaml.deprecated "Use fromArray instead"]
-val fromArray: (key * 'v) array -> 'v t
-val keysToArray: 'v t -> key array
+val fromArray: (key * 'v) array -> 'v t     
+val keysToArray: 'v t -> key array 
 val valuesToArray: 'v t -> 'v array
-val minKey: _ t -> key option
+val minKey: _ t -> key option 
 val minKeyUndefined: _ t -> key Js.undefined
 val maxKey: _ t -> key option
 val maxKeyUndefined: _ t -> key Js.undefined
@@ -60,12 +66,12 @@ val maxUndefined: 'v t -> (key * 'v) Js.undefined
 val get: 'v t -> key -> 'v option
 val getUndefined: 'v t -> key -> 'v Js.undefined
 val getWithDefault:  'v t -> key -> 'v  -> 'v
-val getExn: 'v t -> key -> 'v
+val getExn: 'v t -> key -> 'v 
 
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not held
-*)
+*)  
 
 (****************************************************************************)
 
@@ -79,30 +85,43 @@ val set: 'v t ->  key -> 'v -> 'v t
    [m], plus a binding of [x] to [y]. If [x] was already bound
    in [m], its previous binding disappears. *)
 
-val update: 'v t -> key -> ('v option -> 'v option) -> 'v t
+val updateU: 'v t -> key -> ('v option -> 'v option [@bs]) -> 'v t 
+val update: 'v t -> key -> ('v option -> 'v option) -> 'v t 
 val mergeArray: 'v t -> (key * 'v) array -> 'v t
-
+    
+val mergeU:
+    'v t -> 'v2 t ->
+    (key -> 'v option -> 'v2 option -> 'c option [@bs]) ->
+    'c t
 val merge:
     'v t -> 'v2 t ->
     (key -> 'v option -> 'v2 option -> 'c option) ->
-    'c t
+    'c t      
 (** [merge m1 m2 f] computes a map whose keys is a subset of keys of [m1]
     and of [m2]. The presence of each such binding, and the corresponding
     value, is determined with the function [f].
  *)
 
-val keep:
-    'v t ->
-    (key -> 'v -> bool) ->
+val keepU: 
+    'v t -> 
+    (key -> 'v -> bool [@bs]) -> 
     'v t
+val keep: 
+    'v t -> 
+    (key -> 'v -> bool) -> 
+    'v t      
 (** [keep m p] returns the map with all the bindings in [m]
     that satisfy predicate [p].
 *)
 
-val partition:
-    'v t ->
-    (key -> 'v -> bool) ->
+val partitionU: 
+    'v t -> 
+    (key -> 'v -> bool [@bs]) -> 
     'v t * 'v t
+val partition: 
+    'v t -> 
+    (key -> 'v -> bool) -> 
+    'v t * 'v t      
 (** [partition m p] returns a pair of maps [(m1, m2)], where
     [m1] contains all the bindings of [s] that satisfy the
     predicate [p], and [m2] is the map with all the bindings of
@@ -124,45 +143,21 @@ val split: key -> 'v t -> 'v t * 'v option * 'v t
  *)
 
 
-val map: 'v t -> ('v -> 'v2) ->  'v2 t
+val mapU: 'v t -> ('v -> 'v2 [@bs]) ->  'v2 t
+val map: 'v t -> ('v -> 'v2) ->  'v2 t    
 (** [map m f] returns a map with same domain as [m], where the
    associated value [a] of all bindings of [m] has been
    replaced by the result of the application of [f] to [a].
    The bindings are passed to [f] in increasing order
    with respect to the ordering over the type of the keys. *)
 
-val mapWithKey: 'v t -> (key -> 'v -> 'v2) -> 'v2 t
-
-
-(** {1 Uncurried version} *)
-
-
-val cmpU:  'v t -> 'v t -> ('v -> 'v -> int [@bs]) -> int
-val eqU: 'v t -> 'v t -> ('v -> 'v -> bool [@bs]) -> bool
-val forEachU: 'v t -> (key -> 'v -> unit [@bs]) ->  unit
-val reduceU:  'v t -> 'v2 -> ('v2 -> key -> 'v -> 'v2 [@bs]) -> 'v2
-val everyU:  'v t -> (key -> 'v -> bool [@bs]) -> bool
-val someU:  'v t -> (key -> 'v -> bool [@bs]) -> bool
-val updateU: 'v t -> key -> ('v option -> 'v option [@bs]) -> 'v t
-val mergeU:
-    'v t -> 'v2 t ->
-    (key -> 'v option -> 'v2 option -> 'c option [@bs]) ->
-    'c t
-val keepU:
-    'v t ->
-    (key -> 'v -> bool [@bs]) ->
-    'v t
-val partitionU:
-    'v t ->
-    (key -> 'v -> bool [@bs]) ->
-    'v t * 'v t
-val mapU: 'v t -> ('v -> 'v2 [@bs]) ->  'v2 t
 val mapWithKeyU: 'v t -> (key -> 'v -> 'v2 [@bs]) -> 'v2 t
+val mapWithKey: 'v t -> (key -> 'v -> 'v2) -> 'v2 t    
 
 (**/**)
 val checkInvariantInternal: _ t -> unit
 (**
    {b raise} when invariant is not held
-*)
+*)  
 (**/**)
 
