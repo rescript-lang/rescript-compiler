@@ -428,19 +428,16 @@ and compile_general_cases
    (switch_exp : J.expression)
    (table : (_ * Lam.t) list)
    (default : default_case) ->
-    let wrap (cxt : Lam_compile_context.t) k =
-      let cxt, define =
+    let morph_declare_to_assign (cxt : Lam_compile_context.t) k =
         match cxt.st with
         | Declare (kind, did)
           ->
-          {cxt with st = Assign did}, Some (kind,did)
-        | _ -> cxt, None
-      in
-      k cxt  define
+          k {cxt with st = Assign did} (Some (kind,did))
+        | _ -> k cxt None
     in
     match table, default with
     | [], Default lam ->
-      Js_output.output_as_block  (compile_lambda cxt lam)
+      Js_output.output_as_block (compile_lambda cxt lam)
     | [], (Complete | NonComplete) ->  []
     | [(id,lam)],Complete ->
       (* To take advantage of such optimizations,
@@ -452,19 +449,20 @@ and compile_general_cases
       Js_output.output_as_block (compile_lambda cxt lam)
     | [(id,lam)], NonComplete
       ->
-      wrap cxt @@ fun cxt define  ->
-      [S.if_ ?declaration:define (eq_exp switch_exp (make_exp id) )
-         (Js_output.output_as_block @@ compile_lambda cxt lam )]
+      morph_declare_to_assign cxt (fun cxt define  ->
+          [S.if_ ?declaration:define (eq_exp switch_exp (make_exp id) )
+             (Js_output.output_as_block (compile_lambda cxt lam) )
+          ])
 
     | ([(id,lam)], Default x) | ([(id,lam); (_,x)], Complete)
       ->
-      wrap cxt  @@ fun cxt define ->
-      let else_block = Js_output.output_as_block (compile_lambda cxt x) in
-      let then_block = Js_output.output_as_block (compile_lambda cxt lam)  in
-      [ S.if_ ?declaration:define (eq_exp switch_exp (make_exp id) )
-          then_block
-          ~else_:else_block
-      ]
+      morph_declare_to_assign cxt (fun cxt define ->
+          let else_block = Js_output.output_as_block (compile_lambda cxt x) in
+          let then_block = Js_output.output_as_block (compile_lambda cxt lam)  in
+          [ S.if_ ?declaration:define (eq_exp switch_exp (make_exp id) )
+              then_block
+              ~else_:else_block
+          ])
     | _ , _ ->
       (* TODO: this is not relevant to switch case
           however, in a subset of switch-case if we can analysis
@@ -474,34 +472,38 @@ and compile_general_cases
           TODO: grouping can be delayed untile JS IR
       *)
       (*TOOD: disabled temporarily since it's not perfect yet *)
-      wrap cxt @@ fun cxt declaration  ->
-      let default =
-        match default with
-        | Complete -> None
-        | NonComplete -> None
-        | Default lam -> Some (Js_output.output_as_block  (compile_lambda cxt lam))
-      in
-      let body =
-        table
-        |> Ext_list.stable_group
-          (fun (_,lam) (_,lam1)
-            -> Lam_analysis.eq_lambda lam lam1)
-        |> Ext_list.flat_map
-          (fun group ->
-             group
-             |> Ext_list.map_last
-               (fun last (x,lam) ->
-                  if last
-                  then {J.switch_case =  x;
-                        switch_body =
-                          Js_output.to_break_block (compile_lambda cxt lam) }
-                  else { switch_case = x; switch_body = [],false }))
-          (* TODO: we should also group default *)
-          (* The last clause does not need [break]
-              common break through, *)
+      morph_declare_to_assign cxt ( fun cxt declaration  ->
+          let default =
+            match default with
+            | Complete -> None
+            | NonComplete -> None
+            | Default lam -> Some (Js_output.output_as_block  (compile_lambda cxt lam))
+          in
+          let body =
+            table
+            |> Ext_list.stable_group
+              (fun (_,lam) (_,lam1)
+                -> Lam_analysis.eq_lambda lam lam1)
+            |> Ext_list.flat_map
+              (fun group ->
+                 Ext_list.map_last
+                   (fun last (switch_case,lam) ->
+                      if last
+                      then {J.switch_case ;
+                            switch_body =
+                              Js_output.to_break_block (compile_lambda cxt lam) }
+                      else
+                        { switch_case; switch_body = [],false }
+                    )
+                   group
+              )
+              (* TODO: we should also group default *)
+              (* The last clause does not need [break]
+                  common break through, *)
 
-      in
-      [switch ?default ?declaration switch_exp body]
+          in
+          [switch ?default ?declaration switch_exp body]
+        )
 
 and compile_cases cxt switch_exp table default =
   compile_general_cases
@@ -631,7 +633,7 @@ and
             in
             begin
               (* Ext_log.dwarn __LOC__ "size : %d" (List.length block); *)
-              Js_output.make  ~finished:True block
+              Js_output.make  ~output_finished:True block
             end
           | _ ->
 
@@ -687,7 +689,7 @@ and
         | {block = b; value =  Some v} ->
           Js_output.make
           (Ext_list.append b  [S.throw_stmt v])
-            ~value:E.undefined ~finished:True
+            ~value:E.undefined ~output_finished:True
         (* FIXME -- breaks invariant when NeedValue, reason is that js [throw] is statement
            while ocaml it's an expression, we should remove such things in lambda optimizations
         *)
@@ -1147,7 +1149,8 @@ and
 #end
 *)
                 Js_output.make
-                  (Ext_list.append b  [S.return_stmt  (E.econd e  out1 out2)]) ~finished:True
+                  (Ext_list.append b  [S.return_stmt  (E.econd e  out1 out2)])
+                   ~output_finished:True
               |   _, _, _  ->
                 (*
 #if BS_DEBUG then
@@ -1428,7 +1431,8 @@ and
            | Assign x, _  ->
              Js_output.make (Ext_list.append block  [S.assign_unit x ])
            | EffectCall, ReturnTrue _  ->
-             Js_output.make (Ext_list.append block S.return_unit) ~finished:True
+             Js_output.make (Ext_list.append block S.return_unit)
+             ~output_finished:True
            | EffectCall, _ -> Js_output.make block
            | NeedValue, _ -> Js_output.make block ~value:E.unit end
        | _ -> assert false )
@@ -1498,7 +1502,8 @@ and
         match st, should_return with
         | EffectCall, ReturnFalse  -> Js_output.make block
         | EffectCall, ReturnTrue _  ->
-          Js_output.make (Ext_list.append block  S.return_unit ) ~finished:True
+          Js_output.make (Ext_list.append block  S.return_unit )
+          ~output_finished:True
         (* unit -> 0, order does not matter *)
         | (Declare _ | Assign _), ReturnTrue _ -> Js_output.make [S.unknown_lambda lam]
         | Declare (_kind, x), ReturnFalse  ->
@@ -1531,7 +1536,9 @@ and
         match st, should_return with
         | EffectCall, ReturnFalse -> Js_output.make block
         | EffectCall, ReturnTrue _ ->
-          Js_output.make (Ext_list.append block  S.return_unit  ) ~finished:True
+          Js_output.make
+            (Ext_list.append block  S.return_unit  )
+            ~output_finished:True
         | (Declare _ | Assign _ ) , ReturnTrue _ ->
           Js_output.make [S.unknown_lambda lam]
         (* bound by a name, while in a tail position, this can not happen  *)
