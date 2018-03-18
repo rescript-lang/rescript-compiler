@@ -501,14 +501,17 @@ and compile_general_cases
                               (** see #2413
                                   In general, we know it is last call,
                                   there is no need to print [break];
-                                  there is an exception when two conditions meet:
-                                  - should_break does not imply
-                                    There is one case (tailcall)
-                                    where [should_break] inferred false while our
-                                    exit engine could not infer
-                                  - has_exit
+                                  But we need make sure the last call lambda does not
+                                  have `(exit ..)` due to we pass should_return from Lstaticcath downwards
+                                  Since this is a rough approximation, some `(exit ..)` does not destroy
+                                  last call property, we use exiting should_break to improve preciseness
+                                  (and it indeed help catch more cases)
+
+                                  - tailcall or not does not matter, if it is the tailcall
+                                    break still should not be printed (it will be continuned)
                                *)
-                              should_break && (Lam_exit_code.has_exit lam)
+                              should_break &&
+                              (Lam_exit_code.has_exit lam)
                         in
                         {J.switch_case ;
                             switch_body = switch_block, should_break
