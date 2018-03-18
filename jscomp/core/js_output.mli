@@ -94,6 +94,8 @@ val output_of_expression :
     J.expression -> (* compiled expression *)
     t
 
+(** - needed for instrument [return] statement properly
+*)
 val output_of_block_and_expression :
     Lam_compile_context.continuation ->
     Lam_compile_context.return_type ->

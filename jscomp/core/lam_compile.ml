@@ -1300,22 +1300,22 @@ and
       begin
         match Lam_compile_context.find_exn i cxt  with
         | {exit_id; args ; order_id} ->
-          let args_code  =
-            (Js_output.concat @@ Ext_list.map2 (
-                fun (x : Lam.t) (arg : Ident.t) ->
-                  match x with
-                  | Lvar id ->
+          Ext_list.fold_right2
+           (fun (x : Lam.t) (arg: Ident.t) acc ->
+            let new_output =
+                match x with
+                | Lvar id ->
                     Js_output.make [S.assign arg (E.var id)]
 
-                  | _ -> (* TODO: should be Assign -- Assign is an optimization *)
-                    compile_lambda {cxt with st = Assign arg ; should_return =  ReturnFalse} x
-              ) largs (args : Ident.t list))
-          in
-          Js_output.append_output args_code (* Declared in [Lstaticraise ]*)
-          (Js_output.make [S.assign exit_id (E.small_int  order_id)]
-            ~value:E.undefined)
+                | _ -> (* TODO: should be Assign -- Assign is an optimization *)
+                  compile_lambda {cxt with st = Assign arg ; should_return =  ReturnFalse} x
+            in Js_output.append_output new_output acc
+           )
+           largs args
+           (Js_output.make [S.assign exit_id (E.small_int  order_id)]
+              ~value:E.undefined)
         | exception Not_found ->
-          Js_output.make [S.unknown_lambda ~comment:"error" lam]
+          assert false
           (* staticraise is always enclosed by catch  *)
       end
     (* Invariant: code can not be reused
@@ -1328,11 +1328,6 @@ and
         if not we should use ``javascript break`` or ``continue``
     *)
     | Lstaticcatch _  ->
-      let code_table, body =  flatten_caches lam in
-
-
-      let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
-
       (* compile_list name l false (\*\) *)
       (* if exit_code_id == code
          handler -- ids are not useful, since
@@ -1358,16 +1353,14 @@ and
          ]}
       *)
       (* TODO: handle NeedValue *)
-      let exit_id =   Ext_ident.create_tmp ~name:"exit" () in
+      let code_table, body = flatten_caches lam in
+      let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
+      let exit_id = Ext_ident.create_tmp ~name:"exit" () in
       let exit_expr = E.var exit_id in
       let jmp_table, handlers =
         Lam_compile_context.add_jmps exit_id code_table jmp_table in
 
       (* Declaration First, body and handler have the same value *)
-      (* There is a bug in google closure compiler:
-            https://github.com/google/closure-compiler/issues/1234#issuecomment-151976340
-            TODO: wait for a bug fix
-      *)
       let declares =
         S.define_variable ~kind:Variable exit_id
           E.zero_int_literal ::
