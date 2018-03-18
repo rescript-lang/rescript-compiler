@@ -941,7 +941,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                   "Invalid input line"
                 ];
           }
-          break;
       case "R" : 
           var match$2 = tokens[1];
           if (match$2) {
@@ -980,7 +979,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                             "Invalid input line"
                           ];
                     }
-                    break;
                 case "-" : 
                     var match$6 = match$3[1];
                     if (match$6) {
@@ -1012,7 +1010,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                             "Invalid input line"
                           ];
                     }
-                    break;
                 case "S" : 
                     if (match$3[1]) {
                       throw [
@@ -1033,7 +1030,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ticker_map
                             ];
                     }
-                    break;
                 default:
                   throw [
                         Caml_builtin_exceptions.failure,
@@ -1052,7 +1048,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                   "Invalid input line"
                 ];
           }
-          break;
       default:
         throw [
               Caml_builtin_exceptions.failure,

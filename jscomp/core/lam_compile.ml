@@ -488,21 +488,31 @@ and compile_general_cases
               (fun group ->
                  Ext_list.map_last
                    (fun last (switch_case,lam) ->
-                      (* let switch_block, should_break  =
-                        Js_output.to_break_block (compile_lambda cxt lam) in
-                      let should_break =
-                        match cxt.should_return with
-                        | ReturnFalse -> should_break
-                        | ReturnTrue _ -> false
-                      in *)
-
                       if last
                       then
                         (* merge and shared *)
-                        let switch_body = Js_output.to_break_block (compile_lambda cxt lam) in
+                        let switch_block, should_break  =
+                            Js_output.to_break_block (compile_lambda cxt lam)
+                        in
+                        let should_break =
+                            match cxt.should_return with
+                            | ReturnFalse -> should_break
+                            | ReturnTrue _ ->
+                              (** see #2413
+                                  In general, we know it is last call,
+                                  there is no need to print [break];
+                                  there is an exception when two conditions meet:
+                                  - should_break does not imply
+                                    There is one case (tailcall)
+                                    where [should_break] inferred false while our
+                                    exit engine could not infer
+                                  - has_exit
+                               *)
+                              should_break && (Lam_exit_code.has_exit lam)
+                        in
                         {J.switch_case ;
-                            switch_body
-                            }
+                            switch_body = switch_block, should_break
+                        }
                       else
                         { switch_case; switch_body = [],false }
                     )

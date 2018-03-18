@@ -289,7 +289,6 @@ function eq_at_i(loc, json, i, kind, expected) {
           } else {
             return eq(loc, ty$1[0], expected);
           }
-          break;
       case 1 : 
           if (typeof ty$1 === "number") {
             return add_test(loc, (function () {
@@ -302,7 +301,6 @@ function eq_at_i(loc, json, i, kind, expected) {
                           return /* Ok */Block.__(4, [/* false */0]);
                         }));
           }
-          break;
       case 2 : 
           if (typeof ty$1 === "number") {
             return add_test(loc, (function () {
@@ -315,7 +313,6 @@ function eq_at_i(loc, json, i, kind, expected) {
                           return /* Ok */Block.__(4, [/* false */0]);
                         }));
           }
-          break;
       case 3 : 
           if (typeof ty$1 === "number") {
             return add_test(loc, (function () {
@@ -328,7 +325,6 @@ function eq_at_i(loc, json, i, kind, expected) {
                           return /* Ok */Block.__(4, [/* false */0]);
                         }));
           }
-          break;
       case 4 : 
           if (typeof ty$1 === "number") {
             switch (ty$1) {
@@ -347,7 +343,6 @@ function eq_at_i(loc, json, i, kind, expected) {
                           return /* Ok */Block.__(4, [/* false */0]);
                         }));
           }
-          break;
       case 5 : 
           if (typeof ty$1 === "number") {
             if (ty$1 >= 2) {

@@ -14,7 +14,6 @@ function f(param) {
           var a$1 = match[0];
           return a$1 + a$1 | 0;
         }
-        break;
     case 1 : 
     case 2 : 
         exit = 1;

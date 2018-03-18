@@ -1837,7 +1837,6 @@ function token(env, lexbuf) {
               var env$6 = save_comment(match$1[0], start$1, match$1[1], buf$1, /* true */1);
               return token(env$6, lexbuf$1);
             }
-            break;
         case 5 : 
             if (env$1[/* lex_in_comment_syntax */2]) {
               var env$7 = in_comment_syntax(/* false */0, env$1);
@@ -1849,7 +1848,6 @@ function token(env, lexbuf) {
                       /* T_MULT */97
                     ];
             }
-            break;
         case 6 : 
             var start$2 = loc_of_lexbuf(env$1, lexbuf$1);
             var buf$2 = Buffer.create(127);
@@ -1866,7 +1864,6 @@ function token(env, lexbuf) {
                       /* T_ERROR */104
                     ];
             }
-            break;
         case 8 : 
             var quote = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
             var start$3 = loc_of_lexbuf(env$1, lexbuf$1);
@@ -1957,7 +1954,6 @@ function token(env, lexbuf) {
                 throw exn;
               }
             }
-            break;
         case 23 : 
             return /* tuple */[
                     env$1,
@@ -3792,7 +3788,6 @@ function type_token(env, lexbuf) {
               var env$5 = save_comment(match$1[0], start$1, match$1[1], buf$1, /* true */1);
               return type_token(env$5, lexbuf$1);
             }
-            break;
         case 4 : 
             if (env$1[/* lex_in_comment_syntax */2]) {
               var env$6 = in_comment_syntax(/* false */0, env$1);
@@ -3804,7 +3799,6 @@ function type_token(env, lexbuf) {
                       /* T_MULT */97
                     ];
             }
-            break;
         case 5 : 
             var start$2 = loc_of_lexbuf(env$1, lexbuf$1);
             var buf$2 = Buffer.create(127);
@@ -3914,7 +3908,6 @@ function type_token(env, lexbuf) {
                 throw exn$1;
               }
             }
-            break;
         case 15 : 
             var neg$8 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0));
             var num$8 = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
@@ -3958,7 +3951,6 @@ function type_token(env, lexbuf) {
                 throw exn$2;
               }
             }
-            break;
         case 22 : 
             return /* tuple */[
                     env$1,
@@ -7575,7 +7567,6 @@ function call(env, _left) {
               continue ;
               
             }
-            break;
         case 5 : 
             token$4(env, /* T_LBRACKET */5);
             var expr = Curry._1(Parse[/* expression */6], env);
@@ -8036,7 +8027,6 @@ function primary$1(env) {
                       ]])
                 ];
         }
-        break;
     case 2 : 
         var raw$4 = Curry._2(Parser_env_048[/* value */1], /* None */0, env);
         token$4(env, token$5);
@@ -14087,7 +14077,6 @@ function parse(content, _) {
                             ]
                           ]);
               }
-              break;
           case 6 : 
               var binary = match[0];
               var match$4 = binary[/* operator */0];

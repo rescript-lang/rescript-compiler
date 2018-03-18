@@ -13,7 +13,6 @@ function is_number(_expr) {
           } else {
             return /* true */1;
           }
-          break;
       case 1 : 
           _expr = expr[0];
           continue ;
@@ -167,7 +166,6 @@ function compare(context, state, _a, _b) {
             default:
               return -1;
           }
-          break;
       case 2 : 
           var denom = compare(context, state, da, db);
           var match = +(denom === 0);
@@ -179,7 +177,6 @@ function compare(context, state, _a, _b) {
           } else {
             return denom;
           }
-          break;
       
     }
   };

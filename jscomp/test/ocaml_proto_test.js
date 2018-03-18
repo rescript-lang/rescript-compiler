@@ -1605,7 +1605,6 @@ function lexer(lexbuf) {
             } else {
               return /* EOF */25;
             }
-            break;
         case 12 : 
             var match$1 = __ocaml_lex_multi_line_comment_rec(/* [] */0, lexbuf$1, 47);
             if (match$1) {
@@ -1615,7 +1614,6 @@ function lexer(lexbuf) {
             } else {
               return /* EOF */25;
             }
-            break;
         case 13 : 
             var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf$1, 55);
             if (match$2) {
@@ -1988,7 +1986,6 @@ function runtime_function(param) {
                         ];
                 
               }
-              break;
           case 1 : 
               switch (param[2]) {
                 case 1 : 
@@ -2007,7 +2004,6 @@ function runtime_function(param) {
                         ];
                 
               }
-              break;
           case 2 : 
               var match$2 = param[2];
               if (match$2 !== 5) {
@@ -2022,7 +2018,6 @@ function runtime_function(param) {
               } else {
                 return "Pbrt.Encoder.bytes";
               }
-              break;
           
         }
       } else if (match$1[0] !== 0) {
@@ -2086,7 +2081,6 @@ function runtime_function(param) {
                       ];
               
             }
-            break;
         case 1 : 
             switch (param[2]) {
               case 1 : 
@@ -2105,7 +2099,6 @@ function runtime_function(param) {
                       ];
               
             }
-            break;
         case 2 : 
             var match$4 = param[2];
             if (match$4 !== 5) {
@@ -2120,7 +2113,6 @@ function runtime_function(param) {
             } else {
               return "Pbrt.Decoder.bytes";
             }
-            break;
         
       }
     } else if (match$3[0] !== 0) {
@@ -4110,14 +4102,12 @@ function compile_default_p2(all_types, field) {
             } else {
               return invalid_default_value(/* Some */[field_name$1], "invalid default type (bool expected)", /* () */0);
             }
-            break;
         case 13 : 
             if (constant.tag) {
               return invalid_default_value(/* Some */[field_name$1], "invalid default type (string expected)", /* () */0);
             } else {
               return /* Some */[constant];
             }
-            break;
         case 14 : 
             return invalid_default_value(/* Some */[field_name$1], "default value not supported for bytes", /* () */0);
         
@@ -4156,14 +4146,12 @@ function compile_default_p2(all_types, field) {
             default:
               return invalid_default_value(/* Some */[field_name$1], "invalid default type (float/int expected)", /* () */0);
           }
-          break;
       case 2 : 
           if (constant.tag === 2) {
             return /* Some */[constant];
           } else {
             return invalid_default_value(/* Some */[field_name$1], "invalid default type (int expected)", /* () */0);
           }
-          break;
       case 3 : 
           if (constant.tag === 2) {
             if (constant[0] >= 0) {
@@ -4174,7 +4162,6 @@ function compile_default_p2(all_types, field) {
           } else {
             return invalid_default_value(/* Some */[field_name$1], "invalid default type (int expected)", /* () */0);
           }
-          break;
       
     }
   } else {
@@ -5660,7 +5647,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "\"\"";
           }
-          break;
       case 1 : 
           if (field_default$1) {
             var match$1 = field_default$1[0];
@@ -5672,7 +5658,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "0.";
           }
-          break;
       case 2 : 
           if (field_default$1) {
             var match$2 = field_default$1[0];
@@ -5684,7 +5669,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "0";
           }
-          break;
       case 3 : 
           if (field_default$1) {
             var match$3 = field_default$1[0];
@@ -5707,7 +5691,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "0l";
           }
-          break;
       case 4 : 
           if (field_default$1) {
             var match$4 = field_default$1[0];
@@ -5730,7 +5713,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "0L";
           }
-          break;
       case 5 : 
           if (field_default$1) {
             var match$5 = field_default$1[0];
@@ -5754,7 +5736,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "Bytes.create 64";
           }
-          break;
       case 6 : 
           if (field_default$1) {
             var match$6 = field_default$1[0];
@@ -5771,7 +5752,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "false";
           }
-          break;
       
     }
   }
