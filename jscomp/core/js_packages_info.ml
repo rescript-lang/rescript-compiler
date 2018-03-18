@@ -238,8 +238,8 @@ let string_of_module_id
           else  
             begin match module_system with 
               | AmdJS | NodeJS | Es6 -> 
-                (* HACK - TODO Replace bs-stdlib upstream and not here *)
-                let upd_dep_package_name = if dep_package_name = "bs-platform" then "bs-stdlib" else dep_package_name in
+                (* HACK - TODO Replace belt-js upstream and not here *)
+                let upd_dep_package_name = if dep_package_name = "bs-platform" then "belt-js" else dep_package_name in
                 upd_dep_package_name // dep_path // js_file
               (** Note we did a post-processing when working on Windows *)
               | Es6_global 

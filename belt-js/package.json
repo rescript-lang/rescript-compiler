@@ -1,7 +1,7 @@
 {
-  "name": "bs-stdlib",
-  "version": "1.9.4",
-  "description": "BuckleScript compiled JS standard library",
+  "name": "belt-js",
+  "version": "2.2.3",
+  "description": "BuckleScript compiled standard libraries",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bucklescript/bucklescript.git"
