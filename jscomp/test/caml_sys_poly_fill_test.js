@@ -4,6 +4,7 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
 var Node_process = require("../../lib/js/node_process.js");
+var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 var suites = [/* [] */0];
 
@@ -46,7 +47,11 @@ try {
   tmp = Caml_sys.caml_sys_getenv("caml_sys_poly_fill_test.ml");
 }
 catch (exn){
-  tmp = "Z";
+  if (exn === Caml_builtin_exceptions.not_found) {
+    tmp = "Z";
+  } else {
+    throw exn;
+  }
 }
 
 eq("File \"caml_sys_poly_fill_test.ml\", line 23, characters 5-12", "Z", tmp);

@@ -1564,27 +1564,6 @@ and
         | NeedValue, _ ->
           Js_output.make block ~value:E.unit
       end
-    | (Ltrywith(
-        (Lprim {primitive = Pccall {prim_name = "caml_sys_getenv"; _};
-                args = [Lconst _]} as body),
-        id,
-        Lifthenelse
-          (Lprim{primitive = Pintcomp(Ceq);
-                 args = [Lvar id2 ;
-                         Lprim{primitive = Pglobal_exception {name = "Not_found"}; _}]},
-           cont, _reraise )
-      )
-      | Ltrywith(
-          (Lprim {primitive = Pccall {prim_name = "caml_sys_getenv"; _};
-                  args = [Lconst _]} as body),
-          id,
-          Lifthenelse(Lprim{primitive = Pintcomp(Ceq);
-                            args = [
-                              Lprim { primitive = Pglobal_exception {name = "Not_found"; _}; _}; Lvar id2 ]},
-                      cont, _reraise )
-        )) when Ident.same id id2
-      ->
-      compile_lambda cxt (Lam.try_ body id cont)
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       (*
          tail --> should be renamed to `shouldReturn`
