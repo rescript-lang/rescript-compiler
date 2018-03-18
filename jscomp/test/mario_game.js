@@ -968,7 +968,6 @@ function update_player(player, keys, context) {
                   player$1[/* dir */6] = /* Left */0;
                   return /* () */0;
                 }
-                break;
             case 1 : 
                 if (player$1[/* crouch */10]) {
                   return 0;
@@ -979,7 +978,6 @@ function update_player(player, keys, context) {
                   player$1[/* dir */6] = /* Right */1;
                   return /* () */0;
                 }
-                break;
             case 2 : 
                 if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
                   player$1[/* jumping */4] = /* true */1;
@@ -1401,7 +1399,6 @@ function kill(collid, ctx) {
         } else {
           return /* [] */0;
         }
-        break;
     
   }
 }
@@ -1886,7 +1883,6 @@ function process_collision(dir, c1, c2, state) {
                         /* None */0
                       ];
               }
-              break;
           
         }
         break;
@@ -2021,7 +2017,6 @@ function process_collision(dir, c1, c2, state) {
                   /* None */0
                 ];
         }
-        break;
     
   }
 }

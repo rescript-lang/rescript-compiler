@@ -949,7 +949,6 @@ function unary(stk) {
               return 0;
             }
         }
-        break;
     case 1 : 
         return load(0, match[0]);
     case 2 : 
@@ -1445,7 +1444,6 @@ function top(_param) {
                           "[var] or ) expected"
                         ];
                   }
-                  break;
               case 1 : 
               case 2 : 
                   throw [

@@ -1038,7 +1038,6 @@ function message(param) {
           } else {
             return "this pattern-matching is fragile.\nIt will remain exhaustive when constructors are added to type " + (s + ".");
           }
-          break;
       case 2 : 
           var match = param[0];
           if (match) {
@@ -1068,7 +1067,6 @@ function message(param) {
                   ]
                 ];
           }
-          break;
       case 3 : 
           var s$1 = param[0];
           if (s$1 === "") {
@@ -1076,7 +1074,6 @@ function message(param) {
           } else {
             return "this pattern-matching is not exhaustive.\nHere is an example of a value that is not matched:\n" + s$1;
           }
-          break;
       case 4 : 
           return "the following labels are not bound in this record pattern:\n" + (param[0] + "\nEither bind these labels explicitly or add '; _' to the pattern.");
       case 5 : 
@@ -1108,7 +1105,6 @@ function message(param) {
                   ]
                 ];
           }
-          break;
       case 6 : 
           return "the following private methods were made public implicitly:\n " + ($$String.concat(" ", param[0]) + ".");
       case 7 : 
@@ -2418,7 +2414,6 @@ function same(_p1, _p2) {
                 return /* false */0;
             
           }
-          break;
       case 1 : 
           switch (p2.tag | 0) {
             case 1 : 
@@ -2430,13 +2425,11 @@ function same(_p1, _p2) {
                 } else {
                   return /* false */0;
                 }
-                break;
             case 0 : 
             case 2 : 
                 return /* false */0;
             
           }
-          break;
       case 2 : 
           switch (p2.tag | 0) {
             case 0 : 
@@ -2451,10 +2444,8 @@ function same(_p1, _p2) {
                 } else {
                   return /* false */0;
                 }
-                break;
             
           }
-          break;
       
     }
   };
@@ -2477,7 +2468,6 @@ function isfree(id, _param) {
             continue ;
             
           }
-          break;
       
     }
   };
@@ -3393,7 +3383,6 @@ function equal_tag(t1, t2) {
               return /* false */0;
           
         }
-        break;
     case 1 : 
         switch (t2.tag | 0) {
           case 1 : 
@@ -3403,7 +3392,6 @@ function equal_tag(t1, t2) {
               return /* false */0;
           
         }
-        break;
     case 2 : 
         switch (t2.tag | 0) {
           case 0 : 
@@ -3417,7 +3405,6 @@ function equal_tag(t1, t2) {
               }
           
         }
-        break;
     
   }
 }
@@ -4099,7 +4086,6 @@ function repr(_t) {
             } else {
               return t;
             }
-            break;
         case 6 : 
             _t = match[0];
             continue ;
@@ -4387,7 +4373,6 @@ function has_constr_row(t) {
           } else {
             return /* true */1;
           }
-          break;
       default:
         return /* false */0;
     }
@@ -4834,7 +4819,6 @@ function copy_type_desc(_$staropt$star, f, _ty) {
                         [/* None */0]
                       ]);
             }
-            break;
         case 5 : 
             return /* Tfield */Block.__(5, [
                       ty[0],
@@ -5592,7 +5576,6 @@ function free_vars(ty) {
                   continue ;
                   
                 }
-                break;
             default:
               return iter_type_expr(loop, ty$1);
           }
@@ -8748,7 +8731,6 @@ function module_path(s, p) {
             throw exn;
           }
         }
-        break;
     case 1 : 
         return /* Pdot */Block.__(1, [
                   module_path(s, p[0]),
@@ -8782,7 +8764,6 @@ function modtype_path(s, p) {
             throw exn;
           }
         }
-        break;
     case 1 : 
         return /* Pdot */Block.__(1, [
                   module_path(s, p[0]),
@@ -8808,7 +8789,6 @@ function type_path(s, p) {
             throw exn;
           }
         }
-        break;
     case 1 : 
         return /* Pdot */Block.__(1, [
                   module_path(s, p[0]),
@@ -9059,7 +9039,6 @@ function typexp(s, ty) {
         } else {
           return ty$1;
         }
-        break;
     
   }
 }
@@ -9319,7 +9298,6 @@ function modtype(s, mty) {
                   throw exn;
                 }
               }
-              break;
           case 1 : 
               return /* Mty_ident */Block.__(0, [/* Pdot */Block.__(1, [
                             module_path(s, p[0]),
@@ -9330,7 +9308,6 @@ function modtype(s, mty) {
               return fatal_error("Subst.modtype");
           
         }
-        break;
     case 1 : 
         return /* Mty_signature */Block.__(1, [signature$2(s, mty[0])]);
     case 2 : 
@@ -9474,7 +9451,6 @@ function force(f, x) {
           x[0] = /* Raise */Block.__(1, [e]);
           throw e;
         }
-        break;
     
   }
 }
@@ -9989,7 +9965,6 @@ function find_module_descr(path, env) {
             throw exn;
           }
         }
-        break;
     case 1 : 
         var match = force(components_of_module_maker$prime[0], find_module_descr(path[0], env));
         if (match.tag) {
@@ -9997,7 +9972,6 @@ function find_module_descr(path, env) {
         } else {
           return find$2(path[1], match[0][/* comp_components */6])[0];
         }
-        break;
     case 2 : 
         var p1 = path[0];
         var match$1 = force(components_of_module_maker$prime[0], find_module_descr(p1, env));
@@ -10006,7 +9980,6 @@ function find_module_descr(path, env) {
         } else {
           throw Caml_builtin_exceptions.not_found;
         }
-        break;
     
   }
 }
@@ -10022,7 +9995,6 @@ function find$3(proj1, proj2, path, env) {
         } else {
           return find$2(path[1], Curry._1(proj2, match[0]))[0];
         }
-        break;
     case 2 : 
         throw Caml_builtin_exceptions.not_found;
     
@@ -10080,7 +10052,6 @@ function find_module(alias, path, env) {
             throw exn;
           }
         }
-        break;
     case 1 : 
         var match = force(components_of_module_maker$prime[0], find_module_descr(path[0], env));
         if (match.tag) {
@@ -10089,7 +10060,6 @@ function find_module(alias, path, env) {
           var match$1 = find$2(path[1], match[0][/* comp_modules */4]);
           return md(force(subst_modtype_maker, match$1[0]));
         }
-        break;
     case 2 : 
         var p2 = path[1];
         var desc1 = find_module_descr(path[0], env);
@@ -10120,7 +10090,6 @@ function find_module(alias, path, env) {
         } else {
           throw Caml_builtin_exceptions.not_found;
         }
-        break;
     
   }
 }
@@ -10336,7 +10305,6 @@ function is_functor_arg(_path, env) {
               throw exn;
             }
           }
-          break;
       case 1 : 
           _path = path[0];
           continue ;
@@ -10374,7 +10342,6 @@ function lookup_module_descr(lid, env) {
             throw exn;
           }
         }
-        break;
     case 1 : 
         var s$1 = lid[1];
         var match = lookup_module_descr(lid[0], env);
@@ -10392,7 +10359,6 @@ function lookup_module_descr(lid, env) {
                   match$2[0]
                 ];
         }
-        break;
     case 2 : 
         var match$3 = lookup_module_descr(lid[0], env);
         var p1 = match$3[0];
@@ -10412,7 +10378,6 @@ function lookup_module_descr(lid, env) {
         } else {
           throw Caml_builtin_exceptions.not_found;
         }
-        break;
     
   }
 }
@@ -10468,7 +10433,6 @@ function lookup_module(load, lid, env) {
             throw exn;
           }
         }
-        break;
     case 1 : 
         var s$1 = lid[1];
         var match$1 = lookup_module_descr(lid[0], env);
@@ -10483,7 +10447,6 @@ function lookup_module(load, lid, env) {
                     match$3[1]
                   ]);
         }
-        break;
     case 2 : 
         var match$4 = lookup_module_descr(lid[0], env);
         var p2 = lookup_module(/* true */1, lid[1], env);
@@ -10500,7 +10463,6 @@ function lookup_module(load, lid, env) {
         } else {
           throw Caml_builtin_exceptions.not_found;
         }
-        break;
     
   }
 }
@@ -10526,7 +10488,6 @@ function lookup(proj1, proj2, lid, env) {
                   match$2[0]
                 ];
         }
-        break;
     case 2 : 
         throw Caml_builtin_exceptions.not_found;
     
@@ -10582,7 +10543,6 @@ function lookup_all_simple(proj1, proj2, shadow, lid, env) {
                               ];
                       }), comps);
         }
-        break;
     case 2 : 
         throw Caml_builtin_exceptions.not_found;
     
@@ -10605,7 +10565,6 @@ function cstr_shadow(cstr1, cstr2) {
               return /* true */1;
           
         }
-        break;
     
   }
 }
@@ -10924,7 +10883,6 @@ function mark_constructor(usage, env, name, desc) {
               throw exn;
             }
           }
-          break;
       
     }
     if (exit === 1) {
@@ -11369,7 +11327,6 @@ function scrape_alias(env, path, mty) {
             throw exn;
           }
         }
-        break;
     case 1 : 
     case 2 : 
         exit = 1;
@@ -11386,7 +11343,6 @@ function scrape_alias(env, path, mty) {
             throw exn$1;
           }
         }
-        break;
     
   }
   if (exit === 1) {
@@ -11931,7 +11887,6 @@ function components_of_module_maker(param) {
                       } else {
                         return /* () */0;
                       }
-                      break;
                   case 1 : 
                       var decl$1 = item[1];
                       var id = item[0];
@@ -19914,7 +19869,6 @@ function directive_parse(token_with_comments, lexbuf) {
                     curr(lexbuf)
                   ];
             }
-            break;
         case 91 : 
             return /* true */1;
         default:
@@ -20900,7 +20854,6 @@ function token(lexbuf) {
                 throw exn;
               }
             }
-            break;
         case 11 : 
             warn_latin1(lexbuf$1);
             return /* LIDENT */Block.__(11, [Lexing.lexeme(lexbuf$1)]);
@@ -20925,7 +20878,6 @@ function token(lexbuf) {
                 throw exn$1;
               }
             }
-            break;
         case 15 : 
             return /* FLOAT */Block.__(1, [remove_underscores(Lexing.lexeme(lexbuf$1))]);
         case 16 : 
@@ -20944,7 +20896,6 @@ function token(lexbuf) {
                 throw exn$2;
               }
             }
-            break;
         case 17 : 
             try {
               return /* INT64 */Block.__(9, [cvt_int64_literal(Lexing.lexeme(lexbuf$1))]);
@@ -20961,7 +20912,6 @@ function token(lexbuf) {
                 throw exn$3;
               }
             }
-            break;
         case 18 : 
             try {
               return /* NATIVEINT */Block.__(12, [cvt_nativeint_literal(Lexing.lexeme(lexbuf$1))]);
@@ -20978,7 +20928,6 @@ function token(lexbuf) {
                 throw exn$4;
               }
             }
-            break;
         case 19 : 
             reset_string_buffer(/* () */0);
             is_in_string[0] = /* true */1;
@@ -21206,7 +21155,6 @@ function token(lexbuf) {
             } else {
               return /* EOF */25;
             }
-            break;
         case 91 : 
             throw [
                   $$Error$4,
@@ -21253,7 +21201,6 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
               continue ;
               
             }
-            break;
         case 3 : 
             store_string_char(Lexing.lexeme_char(lexbuf, 0));
             ___ocaml_lex_state = 183;
@@ -21303,7 +21250,6 @@ function string(lexbuf) {
               store_string_char(Lexing.lexeme_char(lexbuf$1, 1));
               return string(lexbuf$1);
             }
-            break;
         case 6 : 
             if (comment_start_loc[0] === /* [] */0) {
               prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
@@ -21374,7 +21320,6 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     ]
                   ];
             }
-            break;
         case 2 : 
             string_start_loc[0] = curr(lexbuf);
             store_string_char(/* "\"" */34);
@@ -21502,7 +21447,6 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                     ]
                   ];
             }
-            break;
         case 11 : 
             update_loc(lexbuf, /* None */0, 1, /* false */0, 0);
             store_string(Lexing.lexeme(lexbuf));
@@ -21616,7 +21560,6 @@ function token$1(lexbuf) {
                           if_then_else[0] = /* Dir_out */2;
                           return Curry._1(cont, lexbuf$1);
                         }
-                        break;
                     case 37 : 
                         if (if_then_else$1 >= 2) {
                           if (directive_parse(token_with_comments, lexbuf$1)) {
@@ -21682,7 +21625,6 @@ function token$1(lexbuf) {
                                 curr(lexbuf$1)
                               ];
                         }
-                        break;
                     default:
                       return Curry._1(look_ahead, match);
                   }
@@ -22165,7 +22107,6 @@ function alpha_pat(env, p) {
               throw exn$1;
             }
           }
-          break;
       default:
         exit = 1;
     }
@@ -24699,7 +24640,6 @@ function closed_schema_rec(_ty) {
               } else {
                 return iter_type_expr(closed_schema_rec, ty$1);
               }
-              break;
           case 5 : 
               if (field_kind_repr(match[1]) === /* Fpresent */0) {
                 closed_schema_rec(match[2]);
@@ -24716,7 +24656,6 @@ function closed_schema_rec(_ty) {
                 continue ;
                 
               }
-              break;
           default:
             return iter_type_expr(closed_schema_rec, ty$1);
         }
@@ -24822,7 +24761,6 @@ function free_vars_rec(_real, _ty) {
                 continue ;
                 
               }
-              break;
           default:
             exit = 1;
         }
@@ -27155,7 +27093,6 @@ function occur_univar(env, ty) {
                 } else {
                   return /* () */0;
                 }
-                break;
             case 9 : 
                 if (mem$3(ty$1, bound)) {
                   return 0;
@@ -27171,7 +27108,6 @@ function occur_univar(env, ty) {
                         ]
                       ];
                 }
-                break;
             case 10 : 
                 var bound$1 = List.fold_right(add$3, List.map(repr, match[1]), bound);
                 _ty = match[0];
@@ -27264,14 +27200,12 @@ function univars_escape(env, univar_pairs, vl, ty) {
                 } else {
                   return /* () */0;
                 }
-                break;
             case 9 : 
                 if (mem$3(t$1, family)) {
                   throw Occur;
                 } else {
                   return 0;
                 }
-                break;
             case 10 : 
                 if (List.exists((function (t) {
                           return mem$3(repr(t), family);
@@ -27282,7 +27216,6 @@ function univars_escape(env, univar_pairs, vl, ty) {
                   continue ;
                   
                 }
-                break;
             default:
               return iter_type_expr(occur, t$1);
           }
@@ -27750,7 +27683,6 @@ function mcomp(type_pairs, env, _t1, _t2) {
                                         /* [] */0
                                       ];
                                 }
-                                break;
                             case 3 : 
                                 exit$3 = 3;
                                 break;
@@ -30374,7 +30306,6 @@ function filter_arrow(env, t, l) {
                   /* [] */0
                 ];
           }
-          break;
       default:
         throw [
               Unify,
@@ -30420,7 +30351,6 @@ function filter_method_field(env, name, priv, _ty) {
               continue ;
               
             }
-            break;
         default:
           throw [
                 Unify,
@@ -30608,7 +30538,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 1 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -30633,7 +30562,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 2 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -30648,7 +30576,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 3 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -30670,7 +30597,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 4 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -30685,7 +30611,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 5 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -30700,7 +30625,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 6 : 
                     case 7 : 
                         throw [
@@ -30973,7 +30897,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 9 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -30988,7 +30911,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 10 : 
                         var tl1 = match$2[1];
                         var t1$2 = match$2[0];
@@ -31058,7 +30980,6 @@ function moregen(inst_nongen, type_pairs, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     
                   }
                 }
@@ -31273,7 +31194,6 @@ function rigidify_rec(vars, _ty) {
                 continue ;
                 
               }
-              break;
           default:
             return iter_type_expr((function (param) {
                           return rigidify_rec(vars, param);
@@ -31516,7 +31436,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 1 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -31541,7 +31460,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 2 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -31556,7 +31474,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 3 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -31578,7 +31495,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 4 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -31593,7 +31509,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 5 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -31608,7 +31523,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 6 : 
                     case 7 : 
                         throw [
@@ -31808,7 +31722,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 9 : 
                         if (typeof match$3 === "number") {
                           throw [
@@ -31823,7 +31736,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     case 10 : 
                         var tl1 = match$2[1];
                         var t1$2 = match$2[0];
@@ -31893,7 +31805,6 @@ function eqtype(rename, type_pairs, subst, env, t1, t2) {
                                 /* [] */0
                               ];
                         }
-                        break;
                     
                   }
                 }
@@ -32190,7 +32101,6 @@ function moregen_clty(trace, type_pairs, env, cty1, cty2) {
                         /* [] */0
                       ];
                 }
-                break;
             
           }
           break;
@@ -32900,7 +32810,6 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     /* Unchanged */0
                   ];
           }
-          break;
       case 1 : 
           if (memq_warn(t$1, visited)) {
             return /* tuple */[
@@ -32932,7 +32841,6 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     ];
             }
           }
-          break;
       case 2 : 
           if (memq_warn(t$1, visited)) {
             return /* tuple */[
@@ -32963,7 +32871,6 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     ];
             }
           }
-          break;
       case 3 : 
           var tl = match[1];
           var p = match[0];
@@ -33150,7 +33057,6 @@ function build_subtype(env, visited, loops, posi, level, t) {
               }
             }
           }
-          break;
       case 4 : 
           var t1 = match[0];
           if (memq_warn(t$1, visited) || opened_object(t1)) {
@@ -33182,7 +33088,6 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     ];
             }
           }
-          break;
       case 5 : 
           var match$12 = build_subtype(env, visited, loops, posi, level, match[2]);
           var match$13 = build_subtype(env, visited, loops, posi, level, match[3]);
@@ -33310,7 +33215,6 @@ function build_subtype(env, visited, loops, posi, level, t) {
                     /* Changed */2
                   ];
           }
-          break;
       case 10 : 
           var match$14 = build_subtype(env, visited, loops, posi, level, match[0]);
           var c$7 = match$14[1];
@@ -33751,7 +33655,6 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                                     } else {
                                       throw Pervasives.Exit;
                                     }
-                                    break;
                                 default:
                                   throw Pervasives.Exit;
                               }
@@ -33873,7 +33776,6 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                               throw exn$1;
                             }
                           }
-                          break;
                       default:
                         exit = 1;
                     }
@@ -33954,7 +33856,6 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                               continue ;
                               
                             }
-                            break;
                         default:
                           exit = 1;
                       }
@@ -34036,7 +33937,6 @@ function subtype_rec(env, _trace, _t1, _t2, _cstrs) {
                               throw exn$4;
                             }
                           }
-                          break;
                       default:
                         exit = 1;
                     }
@@ -34837,7 +34737,6 @@ function nondep_class_type(env, id, _param) {
                       nondep_class_type(env, id, cty)
                     ]);
           }
-          break;
       case 1 : 
           return /* Cty_signature */Block.__(1, [nondep_class_signature(env, id, param[0])]);
       case 2 : 
@@ -39198,7 +39097,6 @@ function compare$2(_p1, _p2) {
                 return Caml_obj.caml_compare(p1, p2);
             
           }
-          break;
       case 2 : 
           switch (p2.tag | 0) {
             case 0 : 
@@ -39214,10 +39112,8 @@ function compare$2(_p1, _p2) {
                   continue ;
                   
                 }
-                break;
             
           }
-          break;
       
     }
   };
@@ -39939,7 +39835,6 @@ function mark_loops_rec(_visited, _ty) {
                             }(visited$1)), match$3[0]);
                 }
               }
-              break;
           case 5 : 
               var ty2 = match[3];
               if (field_kind_repr(match[1]) === /* Fpresent */0) {
@@ -39954,7 +39849,6 @@ function mark_loops_rec(_visited, _ty) {
                 continue ;
                 
               }
-              break;
           case 6 : 
               return fatal_error("Printtyp.mark_loops_rec (2)");
           case 7 : 
@@ -39995,7 +39889,6 @@ function mark_loops_rec(_visited, _ty) {
                             }(visited$1)), row);
                 }
               }
-              break;
           case 0 : 
           case 9 : 
               return add_named_var(ty$1);
@@ -40296,7 +40189,6 @@ function tree_of_typexp(sch, ty) {
               } else {
                 return tree_of_typexp(sch, ty$2);
               }
-              break;
           case 11 : 
               var n = List.map((function (li) {
                       return $$String.concat(".", flat(/* [] */0, li));
@@ -40828,7 +40720,6 @@ function prepare_class_type(params, _param) {
           } else {
             return List.iter(mark_loops, tyl);
           }
-          break;
       case 1 : 
           var sign = param[0];
           var sty$1 = repr(sign[/* csig_self */0]);
@@ -40876,7 +40767,6 @@ function tree_of_class_type(sch, params, _param) {
                             }), param[1])
                     ]);
           }
-          break;
       case 1 : 
           var sign = param[0];
           var sty$1 = repr(sign[/* csig_self */0]);
@@ -41128,7 +41018,6 @@ function filter_rem_sig(item, rem) {
                   rem
                 ];
         }
-        break;
     case 6 : 
         if (rem) {
           var match$2 = rem[1];
@@ -41155,7 +41044,6 @@ function filter_rem_sig(item, rem) {
                   rem
                 ];
         }
-        break;
     default:
       return /* tuple */[
               /* [] */0,
@@ -42662,7 +42550,6 @@ function path_same_name(_p1, _p2) {
                 return /* () */0;
             
           }
-          break;
       case 1 : 
           switch (p2.tag | 0) {
             case 1 : 
@@ -42674,13 +42561,11 @@ function path_same_name(_p1, _p2) {
                 } else {
                   return /* () */0;
                 }
-                break;
             case 0 : 
             case 2 : 
                 return /* () */0;
             
           }
-          break;
       case 2 : 
           switch (p2.tag | 0) {
             case 0 : 
@@ -42693,7 +42578,6 @@ function path_same_name(_p1, _p2) {
                 continue ;
                 
           }
-          break;
       
     }
   };
@@ -43349,7 +43233,6 @@ function is_absrow(env, ty) {
                 return /* false */0;
             }
           }
-          break;
       case 1 : 
       case 2 : 
           return /* false */0;
@@ -44357,7 +44240,6 @@ function nondep_supertype(env, mid, mty) {
             } else {
               return mty;
             }
-            break;
         case 1 : 
             return /* Mty_signature */Block.__(1, [nondep_sig(env, va, mty[0])]);
         case 2 : 
@@ -44394,7 +44276,6 @@ function nondep_supertype(env, mid, mty) {
             } else {
               return mty;
             }
-            break;
         
       }
     };
@@ -44483,7 +44364,6 @@ function nondep_supertype(env, mid, mty) {
                 throw exn;
               }
             }
-            break;
         case 5 : 
             return /* :: */[
                     /* Sig_class */Block.__(5, [
@@ -44680,7 +44560,6 @@ function contains_type(env, _param) {
               throw exn;
             }
           }
-          break;
       case 1 : 
           return List.iter((function (param) {
                         var env$1 = env;
@@ -44698,7 +44577,6 @@ function contains_type(env, _param) {
                               } else {
                                 throw Pervasives.Exit;
                               }
-                              break;
                           case 3 : 
                               return contains_type(env$1, param$1[1][/* md_type */0]);
                           case 4 : 
@@ -45369,7 +45247,6 @@ function rollback_path(subst, _p) {
                 continue ;
                 
               }
-              break;
           case 0 : 
           case 2 : 
               return p;
@@ -45477,7 +45354,6 @@ function remove_aliases(env, excl, _mty) {
             continue ;
             
           }
-          break;
       
     }
   };
@@ -45847,7 +45723,6 @@ function is_runtime_component(param) {
         } else {
           return /* false */0;
         }
-        break;
     case 1 : 
     case 4 : 
     case 6 : 
@@ -45971,7 +45846,6 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
                   } else {
                     throw Dont_match$1;
                   }
-                  break;
               case 1 : 
               case 3 : 
                   throw Dont_match$1;
@@ -45999,7 +45873,6 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
                               ]);
                     }
                   }
-                  break;
               case 1 : 
               case 3 : 
                   throw Dont_match$1;
@@ -46069,7 +45942,6 @@ function try_modtypes(env, cxt, subst, _mty1, mty2) {
                       modtypes(env, cxt, subst, mty1$1, mty2)
                     ]);
           }
-          break;
       
     }
     if (exit === 1) {
@@ -47676,14 +47548,12 @@ function const_compare(x, y) {
         } else {
           return Caml_obj.caml_compare(x, y);
         }
-        break;
     case 3 : 
         if (y.tag === 3) {
           return Caml_primitive.caml_float_compare(Caml_format.caml_float_of_string(x[0]), Caml_format.caml_float_of_string(y[0]));
         } else {
           return Caml_obj.caml_compare(x, y);
         }
-        break;
     default:
       return Caml_obj.caml_compare(x, y);
   }
@@ -47881,7 +47751,6 @@ function compat(_p, _q) {
                       } else {
                         return /* false */0;
                       }
-                      break;
                   case 8 : 
                       exit = 2;
                       break;
@@ -48002,7 +47871,6 @@ function compat(_p, _q) {
                 }
             }
           }
-          break;
       case 2 : 
           if (compat(p, match$1[0])) {
             return /* true */1;
@@ -48011,7 +47879,6 @@ function compat(_p, _q) {
             continue ;
             
           }
-          break;
       case 3 : 
           throw [
                 Caml_builtin_exceptions.assert_failure,
@@ -49872,7 +49739,6 @@ function full_match(ignore_generalized, closing, env) {
             } else {
               return /* false */0;
             }
-            break;
         case 4 : 
             var c = match[1];
             if (c[/* cstr_consts */6] < 0) {
@@ -49883,7 +49749,6 @@ function full_match(ignore_generalized, closing, env) {
             } else {
               return +(List.length(env) === (c[/* cstr_consts */6] + c[/* cstr_nonconsts */7] | 0));
             }
-            break;
         case 5 : 
             var fields = List.map((function (param) {
                     var match = param[0][/* pat_desc */0];
@@ -50432,7 +50297,6 @@ function build_other(ext, env) {
                               }), 0, Nativeint.succ, p, env);
               
             }
-            break;
         case 4 : 
             var c = match[1];
             var exit = 0;
@@ -50644,7 +50508,6 @@ function has_instance(_p) {
             } else {
               return /* true */1;
             }
-            break;
         case 6 : 
             return has_instances(List.map((function (param) {
                               return param[2];
@@ -50660,7 +50523,6 @@ function has_instance(_p) {
               continue ;
               
             }
-            break;
         case 1 : 
         case 9 : 
             _p = match[0];
@@ -50733,7 +50595,6 @@ function satisfiable(_pss, _qs) {
                   continue ;
                   
                 }
-                break;
             default:
               exit = 2;
           }
@@ -50767,7 +50628,6 @@ function satisfiable(_pss, _qs) {
                 continue ;
                 
               }
-              break;
           case 2 : 
               var q0$1 = discr_pat(q, pss);
               _qs = Pervasives.$at(simple_match_args(q0$1, q), qs[1]);
@@ -51467,7 +51327,6 @@ function every_satisfiables(_pss, _qs) {
                 continue ;
                 
               }
-              break;
           default:
             exit = 1;
         }
@@ -51494,7 +51353,6 @@ function every_satisfiables(_pss, _qs) {
               continue ;
               
             }
-            break;
         
       }
     } else {
@@ -51728,7 +51586,6 @@ function le_pat(_p, _q) {
                       } else {
                         return /* false */0;
                       }
-                      break;
                   default:
                     exit = 1;
                 }
@@ -52265,7 +52122,6 @@ function conv(typed) {
                         /* [] */0
                       ];
               }
-              break;
           case 6 : 
               var subpatterns = match[0];
               var pats = select(List.map((function (param) {
@@ -52442,7 +52298,6 @@ function collect_paths_from_pat(_r, _p) {
             } else {
               return r;
             }
-            break;
         case 6 : 
             return List.fold_left((function (r, param) {
                           return collect_paths_from_pat(r, param[2]);
@@ -52540,7 +52395,6 @@ function string_of_payload(param) {
         } else {
           return /* None */0;
         }
-        break;
     case 1 : 
     case 2 : 
         return /* None */0;
@@ -52906,13 +52760,11 @@ function find_component(lookup, make_error, env, loc, lid) {
                 } else {
                   return Curry._2(lookup, lid, env);
                 }
-                break;
             case 1 : 
             case 2 : 
                 return Curry._2(lookup, lid, env);
             
           }
-          break;
       case 0 : 
       case 2 : 
           return Curry._2(lookup, lid, env);
@@ -53450,7 +53302,6 @@ function transl_type(env, policy, styp) {
                           } else {
                             throw Caml_builtin_exceptions.not_found;
                           }
-                          break;
                       default:
                         throw Caml_builtin_exceptions.not_found;
                     }
@@ -55993,7 +55844,6 @@ function build_as_type(env, _p) {
                     }), List.combine(pl, tyl$1), match$1[0]);
               return match$1[1];
             }
-            break;
         case 5 : 
             var ty = may_map((function (param) {
                     return build_as_type(env, param);
@@ -56057,7 +55907,6 @@ function build_as_type(env, _p) {
               $$Array.iter(do_label, lbl[/* lbl_all */5]);
               return ty$1;
             }
-            break;
         case 8 : 
             var row = match[2];
             var p2 = match[1];
@@ -56079,7 +55928,6 @@ function build_as_type(env, _p) {
               unify_pat(env, (newrecord[/* pat_type */3] = ty2, newrecord), ty1);
               return ty1;
             }
-            break;
         default:
           return p[/* pat_type */3];
       }
@@ -56402,7 +56250,6 @@ function lookup_from_type(env, tpath, lid) {
             throw exn;
           }
         }
-        break;
     case 1 : 
     case 2 : 
         throw Caml_builtin_exceptions.not_found;
@@ -56963,7 +56810,6 @@ function lookup_from_type$1(env, tpath, lid) {
             throw exn;
           }
         }
-        break;
     case 1 : 
     case 2 : 
         throw Caml_builtin_exceptions.not_found;
@@ -57306,7 +57152,6 @@ function type_pat(constrs, labels, no_existentials, mode, env, sp, expected_ty) 
                   /* Invalid_interval */5
                 ];
           }
-          break;
       case 4 : 
           var spl = match[0];
           if (List.length(spl) < 2) {
@@ -58163,7 +58008,6 @@ function final_subexpression(_sexp) {
           } else {
             return sexp;
           }
-          break;
       case 7 : 
           _sexp = match[0];
           continue ;
@@ -58192,7 +58036,6 @@ function is_nonexpansive(_exp) {
           } else {
             return /* false */0;
           }
-          break;
       case 0 : 
       case 1 : 
       case 3 : 
@@ -58259,7 +58102,6 @@ function is_nonexpansive(_exp) {
           } else {
             return /* false */0;
           }
-          break;
       case 11 : 
       case 25 : 
           _exp = match[0];
@@ -58277,7 +58119,6 @@ function is_nonexpansive(_exp) {
                         var match$1 = match[3];
                         count[0] = count[0] + 1 | 0;
                         return match$1.tag ? is_nonexpansive(match$1[1]) : /* true */1;
-                        break;
                     case 4 : 
                         return is_nonexpansive(match[0]);
                     default:
@@ -58329,7 +58170,6 @@ function is_nonexpansive_mod(_mexp) {
                               } else {
                                 return /* false */0;
                               }
-                              break;
                           case 6 : 
                               return is_nonexpansive_mod(match[0][/* mb_expr */2]);
                           case 7 : 
@@ -58412,7 +58252,6 @@ function approx_type(env, _sty) {
                 throw exn;
               }
             }
-            break;
         case 8 : 
             _sty = match[1];
             continue ;
@@ -58446,7 +58285,6 @@ function type_approx(env, _sexp) {
           } else {
             return newvar(/* None */0, /* () */0);
           }
-          break;
       case 4 : 
           var e = match[3];
           var p = match[0];
@@ -58471,7 +58309,6 @@ function type_approx(env, _sexp) {
               ]);
             return newty2(current_level[0], desc$2);
           }
-          break;
       case 6 : 
           var match$2 = match[1];
           if (match$2) {
@@ -58481,7 +58318,6 @@ function type_approx(env, _sexp) {
           } else {
             return newvar(/* None */0, /* () */0);
           }
-          break;
       case 7 : 
           _sexp = match[0];
           continue ;
@@ -59119,7 +58955,6 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       /* exp_attributes */sexp[/* pexp_attributes */2]
                     ]);
         }
-        break;
     case 2 : 
         var rec_flag = match[0];
         var exit = 0;
@@ -59259,7 +59094,6 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       /* [] */0
                     ]);
         }
-        break;
     case 5 : 
         var sargs = match[1];
         if (sargs === /* [] */0) {
@@ -59679,7 +59513,6 @@ function type_expect_(in_function, env, sexp, ty_expected) {
             throw exn$1;
           }
         }
-        break;
     case 11 : 
         var opt_sexp = match[1];
         var lid_sexp_list = match[0];
@@ -59985,7 +59818,6 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                       /* exp_attributes */sexp[/* pexp_attributes */2]
                     ]);
         }
-        break;
     case 16 : 
         var exp1 = type_statement(env, match[0]);
         var exp2 = type_expect(/* None */0, env, match[1], ty_expected);
@@ -60524,7 +60356,6 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 /* Virtual_class */Block.__(18, [cl[/* txt */0]])
               ];
         }
-        break;
     case 23 : 
         var lab = match[0];
         try {
@@ -60683,7 +60514,6 @@ function type_expect_(in_function, env, sexp, ty_expected) {
                 ]
               ];
         }
-        break;
     case 25 : 
         var name$2 = match[0];
         var ty$7 = newvar(/* None */0, /* () */0);
@@ -62092,7 +61922,6 @@ function type_argument(env, sarg, ty_expected$prime, ty_expected) {
             } else {
               return /* false */0;
             }
-            break;
         case 16 : 
             _sexp = match[1];
             continue ;
@@ -65819,7 +65648,6 @@ function compute_variance(env, visited, vari, ty) {
                     }
                   }
                 }
-                break;
             case 5 : 
                 compute_variance_rec(vari$1, match[2]);
                 _ty = match[3];
@@ -68250,7 +68078,6 @@ function report_error$5(ppf, param) {
                           return l[/* ld_id */0][/* name */1] + ": ";
                         }));
           }
-          break;
       case 10 : 
           return Curry._3(Format.fprintf(ppf, /* Format */[
                           /* Formatting_gen */Block.__(18, [
@@ -68971,7 +68798,6 @@ function closed_class$1(cty) {
             } else {
               return /* false */0;
             }
-            break;
         
       }
     };
@@ -70036,7 +69862,6 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           local_vals
                         ];
                 }
-                break;
             case 2 : 
                 var match$11 = match[0];
                 var match$12 = match$11[2];
@@ -70214,7 +70039,6 @@ function class_structure(cl_num, $$final, val_env, met_env, loc, param) {
                           local_vals
                         ];
                 }
-                break;
             case 3 : 
                 var match$18 = match[0];
                 var match$19 = type_constraint(val_env, match$18[0], match$18[1], loc);
@@ -70688,7 +70512,6 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                         /* cl_attributes */scl[/* pcl_attributes */2]
                       ]);
           }
-          break;
       case 3 : 
           var sargs = match[1];
           if (sargs === /* [] */0) {
@@ -70726,7 +70549,6 @@ function class_expr(cl_num, val_env, met_env, _scl) {
                       continue ;
                       
                     }
-                    break;
                 
               }
             };
@@ -71896,7 +71718,6 @@ function unify_parents_struct(env, ty, st) {
                                   ];
                             }
                           }
-                          break;
                       case 1 : 
                           return unify_parents_struct(env$1, ty$1, match$1[0]);
                       case 2 : 
@@ -72975,7 +72796,6 @@ register_error_of_exn((function (param) {
                                                                   "@[The %s `%s'@ has no previous definition@]"
                                                                 ]), param[0], name);
                                                 }
-                                                break;
                                             case 24 : 
                                                 return Curry._2(Format.fprintf(ppf$1, /* Format */[
                                                                 /* Formatting_gen */Block.__(18, [
@@ -74838,7 +74658,6 @@ function simplify_signature(sg) {
                       add$14(name$1, ext_names)
                     ];
             }
-            break;
         default:
           var match$1 = aux(param[1]);
           return /* tuple */[
@@ -74879,7 +74698,6 @@ function path_of_module(_mexp) {
           } else {
             throw Not_a_path;
           }
-          break;
       case 4 : 
           _mexp = match[0];
           continue ;
@@ -75094,7 +74912,6 @@ function package_constraints(env, loc, mty, constrs) {
                       return item;
                     }
                   }
-                  break;
               case 3 : 
                   var md = item[1];
                   var id$1 = item[0];
@@ -75456,7 +75273,6 @@ function type_module$1($staropt$star, sttn, funct_body, anchor, env, smod) {
                 /* Cannot_apply */Block.__(0, [funct[/* mod_type */2]])
               ];
         }
-        break;
     case 4 : 
         var arg$1 = type_module$1(/* Some */[alias], /* true */1, funct_body, anchor, env, match[0]);
         var mty$4 = transl_modtype$1(env, match[1]);
@@ -76309,7 +76125,6 @@ function type_implementation_more(sourcefile, outputprefix, modulename, initial_
                               /* Non_generalizable_module */Block.__(9, [md[/* mod_type */2]])
                             ];
                       }
-                      break;
                   default:
                     return /* () */0;
                 }

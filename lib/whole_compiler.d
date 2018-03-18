@@ -492,6 +492,7 @@
 ../lib/whole_compiler.ml : ./syntax/ast_tuple_pattern_flatten.mli
 ../lib/whole_compiler.ml : ./core/js_pass_flatten_and_mark_dead.ml
 ../lib/whole_compiler.ml : ./outcome_printer/outcome_printer_ns.ml
+../lib/whole_compiler.ml : ./outcome_printer/reason_syntax_util.ml
 ../lib/whole_compiler.ml : ./core/js_pass_flatten_and_mark_dead.mli
 ../lib/whole_compiler.ml : ./outcome_printer/outcome_printer_ns.mli
 ../lib/whole_compiler.ml : ./outcome_printer/tweaked_reason_oprint.ml

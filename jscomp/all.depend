@@ -761,9 +761,11 @@ super_errors/super_main.cmx : super_errors/super_typetexp.cmx \
     super_errors/super_env.cmx
 super_errors/super_reason_react.cmi :
 super_errors/super_misc.cmi :
+outcome_printer/reason_syntax_util.cmx :
 outcome_printer/outcome_printer_ns.cmx : ext/ext_namespace.cmx \
     outcome_printer/outcome_printer_ns.cmi
-outcome_printer/tweaked_reason_oprint.cmx :
+outcome_printer/tweaked_reason_oprint.cmx : \
+    outcome_printer/reason_syntax_util.cmx
 outcome_printer/reason_outcome_printer_main.cmx : \
     outcome_printer/tweaked_reason_oprint.cmx
 outcome_printer/outcome_printer_ns.cmi :

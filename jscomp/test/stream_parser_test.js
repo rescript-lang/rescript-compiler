@@ -55,7 +55,6 @@ function parse(token) {
                   "unexpected token"
                 ];
           }
-          break;
       case 2 : 
           return e[0];
       default:
@@ -182,7 +181,6 @@ function l_parse(token) {
                   "Unexpected token"
                 ];
           }
-          break;
       case 2 : 
           return t[0];
       default:

@@ -790,7 +790,6 @@ function equal(_l1, _l2) {
                     } else {
                       return /* false */0;
                     }
-                    break;
                 case 1 : 
                 case 2 : 
                     return /* false */0;
@@ -799,7 +798,6 @@ function equal(_l1, _l2) {
             } else {
               return /* false */0;
             }
-            break;
         case 1 : 
             if (l2) {
               var match$2 = l2[0];
@@ -813,7 +811,6 @@ function equal(_l1, _l2) {
                     } else {
                       return /* false */0;
                     }
-                    break;
                 case 0 : 
                 case 2 : 
                     return /* false */0;
@@ -822,7 +819,6 @@ function equal(_l1, _l2) {
             } else {
               return /* false */0;
             }
-            break;
         case 2 : 
             if (l2) {
               var match$3 = l2[0];
@@ -839,13 +835,11 @@ function equal(_l1, _l2) {
                     } else {
                       return /* false */0;
                     }
-                    break;
                 
               }
             } else {
               return /* false */0;
             }
-            break;
         
       }
     } else if (l2) {
@@ -1130,7 +1124,6 @@ function remove_duplicates(prev, _l, y) {
                       ];
               }
             }
-            break;
         case 2 : 
             return /* tuple */[
                     /* :: */[
@@ -1781,7 +1774,6 @@ function is_charset(_param) {
             } else {
               return /* false */0;
             }
-            break;
         default:
           return /* false */0;
       }
@@ -2004,21 +1996,18 @@ function equal$2(_x1, _x2) {
             } else {
               return Caml_obj.caml_equal(x1[0], x2[0]);
             }
-            break;
         case 1 : 
             if (typeof x2 === "number" || x2.tag !== 1) {
               return /* false */0;
             } else {
               return eq_list(x1[0], x2[0]);
             }
-            break;
         case 2 : 
             if (typeof x2 === "number" || x2.tag !== 2) {
               return /* false */0;
             } else {
               return eq_list(x1[0], x2[0]);
             }
-            break;
         case 3 : 
             if (typeof x2 === "number" || !(x2.tag === 3 && x1[1] === x2[1] && Caml_obj.caml_equal(x1[2], x2[2]))) {
               return /* false */0;
@@ -2028,7 +2017,6 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         case 4 : 
             if (typeof x2 === "number" || !(x2.tag === 4 && x1[0] === x2[0])) {
               return /* false */0;
@@ -2038,7 +2026,6 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         case 5 : 
             if (typeof x2 === "number" || !(x2.tag === 5 && x1[0] === x2[0])) {
               return /* false */0;
@@ -2048,10 +2035,8 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         case 6 : 
             return /* false */0;
-            break;
         case 7 : 
             if (typeof x2 === "number" || x2.tag !== 7) {
               return /* false */0;
@@ -2061,7 +2046,6 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         case 8 : 
             if (typeof x2 === "number" || x2.tag !== 8) {
               return /* false */0;
@@ -2071,7 +2055,6 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         case 9 : 
             if (typeof x2 === "number" || x2.tag !== 9) {
               return /* false */0;
@@ -2081,7 +2064,6 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         case 10 : 
             if (typeof x2 === "number" || x2.tag !== 10) {
               return /* false */0;
@@ -2091,21 +2073,18 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         case 11 : 
             if (typeof x2 === "number" || x2.tag !== 11) {
               return /* false */0;
             } else {
               return eq_list(x1[0], x2[0]);
             }
-            break;
         case 12 : 
             if (typeof x2 === "number" || x2.tag !== 12) {
               return /* false */0;
             } else {
               return eq_list(x1[0], x2[0]);
             }
-            break;
         case 13 : 
             if (typeof x2 === "number" || !(x2.tag === 13 && equal$2(x1[0], x2[0]))) {
               return /* false */0;
@@ -2115,7 +2094,6 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         case 14 : 
             if (typeof x2 === "number" || !(x2.tag === 14 && x1[0] === x2[0])) {
               return /* false */0;
@@ -2125,7 +2103,6 @@ function equal$2(_x1, _x2) {
               continue ;
               
             }
-            break;
         
       }
     }
@@ -2429,7 +2406,6 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
                       match$3[1]
                     ];
             }
-            break;
         case 7 : 
             _param = param[0];
             _ign_group = /* true */1;
@@ -2659,7 +2635,6 @@ function anchored(_param) {
             } else {
               return /* false */0;
             }
-            break;
         case 6 : 
         case 7 : 
         case 8 : 
