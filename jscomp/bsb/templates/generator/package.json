@@ -11,6 +11,9 @@
   ],
   "author": "",
   "license": "MIT",
+  "dependencies": {
+    "belt-js": "${bsb:bs-version}"
+  },
   "devDependencies": {
     "bs-platform": "^${bsb:bs-version}"
   }
