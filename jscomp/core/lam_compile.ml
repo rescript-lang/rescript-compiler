@@ -488,10 +488,21 @@ and compile_general_cases
               (fun group ->
                  Ext_list.map_last
                    (fun last (switch_case,lam) ->
+                      (* let switch_block, should_break  =
+                        Js_output.to_break_block (compile_lambda cxt lam) in
+                      let should_break =
+                        match cxt.should_return with
+                        | ReturnFalse -> should_break
+                        | ReturnTrue _ -> false
+                      in *)
+
                       if last
-                      then {J.switch_case ;
-                            switch_body =
-                              Js_output.to_break_block (compile_lambda cxt lam) }
+                      then
+                        (* merge and shared *)
+                        let switch_body = Js_output.to_break_block (compile_lambda cxt lam) in
+                        {J.switch_case ;
+                            switch_body
+                            }
                       else
                         { switch_case; switch_body = [],false }
                     )
@@ -1242,28 +1253,28 @@ and
           block @
           (if sw_numconsts = 0 then
              compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default
-          else if sw_numblocks = 0 then
-            compile_cases cxt e  sw_consts sw_num_default
-          else
-            (* [e] will be used twice  *)
-            let dispatch e =
-              S.if_
-                (E.is_type_number e )
-                (compile_cases cxt e sw_consts sw_num_default
-                )
-                (* default still needed, could simplified*)
-                ~else_:
-                  (compile_cases  cxt (E.tag e ) sw_blocks
-                     sw_blocks_default)
-            in
-            begin
-              match e.expression_desc with
-              | J.Var _  -> [ dispatch e]
-              | _ ->
-                let v = Ext_ident.create_tmp () in
-                (* Necessary avoid duplicated computation*)
-                [ S.define_variable ~kind:Variable v e ;  dispatch (E.var v)]
-            end )
+           else if sw_numblocks = 0 then
+             compile_cases cxt e  sw_consts sw_num_default
+           else
+             (* [e] will be used twice  *)
+             let dispatch e =
+               S.if_
+                 (E.is_type_number e )
+                 (compile_cases cxt e sw_consts sw_num_default
+                 )
+                 (* default still needed, could simplified*)
+                 ~else_:
+                   (compile_cases  cxt (E.tag e ) sw_blocks
+                      sw_blocks_default)
+             in
+             begin
+               match e.expression_desc with
+               | J.Var _  -> [ dispatch e]
+               | _ ->
+                 let v = Ext_ident.create_tmp () in
+                 (* Necessary avoid duplicated computation*)
+                 [ S.define_variable ~kind:Variable v e ;  dispatch (E.var v)]
+             end )
       in
       begin
         match st with  (* Needs declare first *)
