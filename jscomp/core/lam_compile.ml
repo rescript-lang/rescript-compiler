@@ -1231,17 +1231,22 @@ and
           if Ext_list.length_ge sw_blocks sw_numblocks
           then Complete
           else Default x in
-      let compile_whole  ({st; _} as cxt  : Lam_compile_context.t ) =
-        match sw_numconsts, sw_numblocks,
-              compile_lambda {cxt with should_return = ReturnFalse; st = NeedValue}
-                lam with
-        | 0 , _ , {block; value =  Some e}  ->
-          compile_cases cxt (E.tag e )  sw_blocks sw_blocks_default
-        | _, 0, {block; value =  Some e} ->
-          compile_cases cxt e  sw_consts sw_num_default
-        | _, _,  { block; value =  Some e} -> (* [e] will be used twice  *)
-          let dispatch e =
-            [
+      let compile_whole  (cxt  : Lam_compile_context.t ) =
+        match
+          compile_lambda
+                {cxt with should_return = ReturnFalse; st = NeedValue}
+                lam
+        with
+        | {value =  None; _}  -> assert false
+        | { block; value = Some e } ->
+          block @
+          (if sw_numconsts = 0 then
+             compile_cases cxt (E.tag e)  sw_blocks sw_blocks_default
+          else if sw_numblocks = 0 then
+            compile_cases cxt e  sw_consts sw_num_default
+          else
+            (* [e] will be used twice  *)
+            let dispatch e =
               S.if_
                 (E.is_type_number e )
                 (compile_cases cxt e sw_consts sw_num_default
@@ -1250,16 +1255,15 @@ and
                 ~else_:
                   (compile_cases  cxt (E.tag e ) sw_blocks
                      sw_blocks_default)
-            ] in
-          begin
-            match e.expression_desc with
-            | J.Var _  -> dispatch e
-            | _ ->
-              let v = Ext_ident.create_tmp () in
-              (* Necessary avoid duplicated computation*)
-              (S.define_variable ~kind:Variable v e ) ::  dispatch (E.var v)
-          end
-        | _, _, {value =  None; _}  -> assert false
+            in
+            begin
+              match e.expression_desc with
+              | J.Var _  -> [ dispatch e]
+              | _ ->
+                let v = Ext_ident.create_tmp () in
+                (* Necessary avoid duplicated computation*)
+                [ S.define_variable ~kind:Variable v e ;  dispatch (E.var v)]
+            end )
       in
       begin
         match st with  (* Needs declare first *)

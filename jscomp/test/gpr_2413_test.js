@@ -28,5 +28,16 @@ function f(param) {
   
 }
 
+function ff(c) {
+  c[0] = c[0] + 1 | 0;
+  var match = (1 + c[0] | 0) + 1 | 0;
+  if (match > 3 || match < 0) {
+    return 0;
+  } else {
+    return match + 1 | 0;
+  }
+}
+
 exports.f = f;
+exports.ff = ff;
 /* No side effect */
