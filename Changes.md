@@ -11,6 +11,7 @@ Features:
 Performances:
 - #2438 using concrete predicates for integer comparison
 - #2584 better handling of if then else common sub expression
+
 Fixes:
 - #2303 defining or using a module named "Block" causes runtime errors
 - #2616,#2612,#2554 better error message
@@ -19,6 +20,8 @@ Fixes:
 - #2633 [@bs.string] in FFI
 - #2608 short-circuiting of && fails due to extraction of variable
 - #2559 fix Bytes.create semantics
+- #2638, bsb -w on windows freez
+- #2448, js_int.ml not installed on windows
 
 # 2.2.2
 
