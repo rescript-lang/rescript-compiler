@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -150,7 +151,7 @@
 <pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">('a, 'b) t -> ('a * 'b) list</code></pre>
 <pre><span id="VALcheckInvariantInternal"><span class="keyword">val</span> checkInvariantInternal</span> : <code class="type">('a, 'b) t -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <b>raise</b> when invariant is not helld<br>
+                    <b>raise</b> when invariant is not held<br>
  
                     </div>
                     
@@ -161,9 +162,9 @@
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('a, 'b) t -> ('a * 'b) array</code></pre>
 <pre><span id="VALkeysToArray"><span class="keyword">val</span> keysToArray</span> : <code class="type">('a, 'b) t -> 'a array</code></pre>
 <pre><span id="VALvaluesToArray"><span class="keyword">val</span> valuesToArray</span> : <code class="type">('a, 'b) t -> 'b array</code></pre>
-<pre><span id="VALofSortedArrayAux"><span class="keyword">val</span> ofSortedArrayAux</span> : <code class="type">('a * 'b) array -> int -> int -> ('a, 'b) t</code></pre>
-<pre><span id="VALofSortedArrayRevAux"><span class="keyword">val</span> ofSortedArrayRevAux</span> : <code class="type">('a * 'b) array -> int -> int -> ('a, 'b) t</code></pre>
-<pre><span id="VALofSortedArrayUnsafe"><span class="keyword">val</span> ofSortedArrayUnsafe</span> : <code class="type">('a * 'b) array -> ('a, 'b) t</code></pre>
+<pre><span id="VALfromSortedArrayAux"><span class="keyword">val</span> fromSortedArrayAux</span> : <code class="type">('a * 'b) array -> int -> int -> ('a, 'b) t</code></pre>
+<pre><span id="VALfromSortedArrayRevAux"><span class="keyword">val</span> fromSortedArrayRevAux</span> : <code class="type">('a * 'b) array -> int -> int -> ('a, 'b) t</code></pre>
+<pre><span id="VALfromSortedArrayUnsafe"><span class="keyword">val</span> fromSortedArrayUnsafe</span> : <code class="type">('a * 'b) array -> ('a, 'b) t</code></pre>
 <pre><span id="VALcmpU"><span class="keyword">val</span> cmpU</span> : <code class="type">('a, 'b) t -><br>       ('a, 'c) t -><br>       kcmp:('a, 'd) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -> vcmp:('b -> 'c -> int [@bs]) -> int</code></pre>
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">('a, 'b) t -><br>       ('a, 'c) t -><br>       kcmp:('a, 'd) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -> vcmp:('b -> 'c -> int) -> int</code></pre>
 <pre><span id="VALeqU"><span class="keyword">val</span> eqU</span> : <code class="type">('a, 'b) t -><br>       ('a, 'c) t -><br>       kcmp:('a, 'd) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -><br>       veq:('b -> 'c -> bool [@bs]) -> bool</code></pre>
@@ -173,7 +174,7 @@
 <pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">('a, 'b) t -> 'a -> 'b -> cmp:('a, 'c) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -> 'b</code></pre>
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('a, 'b) t -> 'a -> cmp:('a, 'c) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -> 'b</code></pre>
 <pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">('a, 'b) t -> 'a -> cmp:('a, 'c) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -> bool</code></pre>
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('a * 'b) array -> cmp:('a, 'id) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -> ('a, 'b) t</code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">('a * 'b) array -> cmp:('a, 'id) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -> ('a, 'b) t</code></pre>
 <pre><span id="VALupdateMutate"><span class="keyword">val</span> updateMutate</span> : <code class="type">('a, 'b) t -><br>       'a -> 'b -> cmp:('a, 'id) <a href="Belt_internalAVLtree.html#TYPEcmp">cmp</a> -> ('a, 'b) t</code></pre>
 <pre><span id="VALbalMutate"><span class="keyword">val</span> balMutate</span> : <code class="type">('a, 'b) node -> ('a, 'b) node</code></pre>
 <pre><span id="VALremoveMinAuxWithRootMutate"><span class="keyword">val</span> removeMinAuxWithRootMutate</span> : <code class="type">('a, 'b) node -> ('a, 'b) node -> ('a, 'b) t</code></pre></body></html>
