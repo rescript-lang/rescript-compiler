@@ -33,6 +33,7 @@
 ../lib/bsppx.ml : ./ext/ext_position.ml
 ../lib/bsppx.ml : ./ext/hash_set_gen.ml
 ../lib/bsppx.ml : ./syntax/ast_comb.mli
+../lib/bsppx.ml : ./syntax/ast_tdcls.ml
 ../lib/bsppx.ml : ./syntax/ast_util.mli
 ../lib/bsppx.ml : ./syntax/ppx_entry.ml
 ../lib/bsppx.ml : ../vendor/ocaml/utils/misc.ml
@@ -42,6 +43,7 @@
 ../lib/bsppx.ml : ./ext/ext_position.mli
 ../lib/bsppx.ml : ./ext/hash_set_poly.ml
 ../lib/bsppx.ml : ./syntax/ast_derive.ml
+../lib/bsppx.ml : ./syntax/ast_tdcls.mli
 ../lib/bsppx.ml : ./syntax/ppx_entry.mli
 ../lib/bsppx.ml : ../vendor/ocaml/utils/misc.mli
 ../lib/bsppx.ml : ./common/bs_version.mli
