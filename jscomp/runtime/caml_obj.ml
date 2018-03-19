@@ -131,6 +131,16 @@ let caml_update_dummy x y =
 
 type 'a selector = 'a -> 'a -> 'a 
 
+module O = struct
+  external object_ : Obj.t = "Object" [@@bs.val]
+  let is_object : Obj.t -> bool = fun x -> (Obj.magic x)##constructor == object_
+  type keys
+  type key = Obj.t
+  external keys : Obj.t -> keys = "Object.keys" [@@bs.val]
+  external length : keys -> int = "%array_length"
+  external get_key : keys -> int -> key = "%array_unsafe_get"
+  external get_value : Obj.t -> key -> Obj.t = "%array_unsafe_get"
+end
 
 let unsafe_js_compare x y =
   if x == y then 0 else
@@ -198,6 +208,17 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
         else
           let len_a = Bs_obj.length a in
           let len_b = Bs_obj.length b in
+          if len_a = 0 && len_b = 0 && O.is_object a && O.is_object b then
+            begin
+              let keys_a = O.keys a in
+              let keys_b = O.keys b in
+              let len_a = O.length keys_a in
+              let len_b = O.length keys_b in
+              let min_len = min len_a len_b in
+              let default_res = len_a - len_b in
+              aux_obj_compare a keys_a b keys_b 0 min_len default_res
+            end
+        else
           if len_a = len_b then
             aux_same_length a b 0 len_a
           else if len_a < len_b then
@@ -223,6 +244,16 @@ and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
     let res = caml_compare (Obj.field a i) (Obj.field b i) in
     if res <> 0 then res
     else aux_length_b_short a b (i+1) short_length
+and aux_obj_compare (a: Obj.t) keys_a (b: Obj.t) keys_b i min_len default_res =
+  if i = min_len then default_res
+  else
+    let key_a = O.get_key keys_a i in
+    let key_b = O.get_key keys_b i in
+    let res = caml_compare key_a key_b in
+    if res <> 0 then res else
+      let res = caml_compare (O.get_value a key_a) (O.get_value b key_b) in
+      if res <> 0 then res
+      else aux_obj_compare a keys_a b keys_b (i+1) min_len default_res
 
 type eq = Obj.t -> Obj.t -> bool
 
