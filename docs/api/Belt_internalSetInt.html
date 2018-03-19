@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -99,7 +100,7 @@
 
 <pre><span class="keyword">module</span> Belt_internalSetInt: <code class="code">sig</code> <a href="Belt_internalSetInt.html">..</a> <code class="code">end</code></pre><hr width="100%">
 <div class="type-declaration">
-<pre><span id="TYPEelt"><span class="keyword">type</span> <code class="type"></code>elt</span> = <code class="type">int</code> </pre>
+<pre><span id="TYPEvalue"><span class="keyword">type</span> <code class="type"></code>value</span> = <code class="type">int</code> </pre>
 </div>
 
 
@@ -118,17 +119,17 @@
                      
                 </div>
                 </div> <div class="type-declaration">
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t</code> </pre>
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> = <code class="type"><a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.t</code> </pre>
 </div>
 
 
-<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> bool</code></pre>
-<pre><span id="VALcompareAux"><span class="keyword">val</span> compareAux</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.node list -><br>       <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.node list -> int</code></pre>
-<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t -> int</code></pre>
-<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t -> bool</code></pre>
+<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEvalue">value</a> -> bool</code></pre>
+<pre><span id="VALcompareAux"><span class="keyword">val</span> compareAux</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.node list -><br>       <a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.node list -> int</code></pre>
+<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.t -> <a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.t -> int</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.t -> bool</code></pre>
 <pre><span id="VALsubset"><span class="keyword">val</span> subset</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -><br>       <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> option</code></pre>
-<pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -><br>       <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> Js.Undefined.t</code></pre>
-<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a></code></pre>
-<pre><span id="VALaddMutate"><span class="keyword">val</span> addMutate</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t -><br>       <a href="Belt_internalSetInt.html#TYPEelt">elt</a> -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t</code></pre>
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEelt">elt</a> array -> <a href="Belt_internalSetInt.html#TYPEelt">elt</a> N.t</code></pre></body></html>
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -><br>       <a href="Belt_internalSetInt.html#TYPEvalue">value</a> -> <a href="Belt_internalSetInt.html#TYPEvalue">value</a> option</code></pre>
+<pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -><br>       <a href="Belt_internalSetInt.html#TYPEvalue">value</a> -> <a href="Belt_internalSetInt.html#TYPEvalue">value</a> Js.Undefined.t</code></pre>
+<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEt">t</a> -><br>       <a href="Belt_internalSetInt.html#TYPEvalue">value</a> -> <a href="Belt_internalSetInt.html#TYPEvalue">value</a></code></pre>
+<pre><span id="VALaddMutate"><span class="keyword">val</span> addMutate</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.t -><br>       <a href="Belt_internalSetInt.html#TYPEvalue">value</a> -> <a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.t</code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type"><a href="Belt_internalSetInt.html#TYPEvalue">value</a> array -> <a href="Belt_internalSetInt.html#TYPEvalue">value</a> N.t</code></pre></body></html>

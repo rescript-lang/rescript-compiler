@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -275,6 +276,16 @@
                     </div>
 
                   
+<pre><span id="VALshuffle"><span class="keyword">val</span> shuffle</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">shuffle xs</code><br>
+<div class="tag"> <b>Returns</b> a new list in random order<br>
+ </div> 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALdrop"><span class="keyword">val</span> drop</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int -> 'a <a href="Belt_List.html#TYPEt">t</a> option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">drop xs n</code>
@@ -435,12 +446,13 @@
                     </div>
 
                   
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">'a array -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">'a array -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">'a array -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                      
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      ofArray [|1;2;3|]  = [1;2;3]
+                    <pre class="example"> <pre class="codepre"><code class="code">      fromArray [|1;2;3|]  = [1;2;3]
     </code></pre>  </pre>
                     </div>
                     </div>

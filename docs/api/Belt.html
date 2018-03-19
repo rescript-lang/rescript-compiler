@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -98,18 +99,18 @@
 
 <pre><span class="keyword">module</span> Belt: <code class="code">sig</code> <a href="Belt.html">..</a> <code class="code">end</code></pre><div class="info module top">
                     <div class="not-examples">
-                    A stdlib shipped with BuckleScript 
+                    A stdlib shipped with BuckleScript
 <p>
 
-    This stdlib is still in <i>beta</i> status, but we encourage you to try it out and 
+    This stdlib is still in <i>beta</i> status, but we encourage you to try it out and
     provide feedback.
 <p>
 
     <b>Motivation </b>
 <p>
 
-    The motivation of creating such library is to provide BuckleScript users a 
-    better end-to-end user experience, since the original OCaml stdlib was not 
+    The motivation of creating such library is to provide BuckleScript users a
+    better end-to-end user experience, since the original OCaml stdlib was not
     written with JS platform in mind, below are a list of areas this lib aims to
     improve: <OL>
 <li>1. Consistency in name convention: camlCase, and arguments order</li>
@@ -139,7 +140,7 @@
 <p>
 
    When we create a collection library for a custom data type, take <i>Set</i> for
-   example, suppose its element type is a pair of ints, 
+   example, suppose its element type is a pair of ints,
     it needs a custom <i>compare</i> function. However, the <i>Set</i> could not
     just be typed as <code class="code"> Set.t (int * int) </code>,
     its customized <i>compare</i> function needs to be
@@ -153,34 +154,38 @@
     We introduced a phantom type to solve the problem
 <p>
 
-    <pre class="codepre"><code class="code">      type t = int * int 
-      module I0 =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-             match compare a0 b0 with
-             | 0 -&gt; compare a1 b1
-             | c -&gt; c 
-           ))
-    let s0 = Belt.Set.make ~id:(module I0)
-    module I1 =
-      (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-           match compare a1 b1 with
-           | 0 -&gt; compare a0 b0
-           | c -&gt; c 
-         ))
-    let s1 = Belt.Set.make ~id:(module I1)
+    <pre class="codepre"><code class="code">      module Comparable1 = Belt.Id.MakeComparable(struct
+        type t = int * int
+        let cmp (a0, a1) (b0, b1) =
+          match Pervasives.compare a0 b0 with
+          | 0 -&gt; Pervasives.compare a1 b1
+          | c -&gt; c
+      end)
+
+    let mySet1 = Belt.Set.make ~id:(module Comparable1)
+
+    module Comparable2 = Belt.Id.MakeComparable(struct
+      type t = int * int
+      let cmp (a0, a1) (b0, b1) =
+        match Pervasives.compare a0 b0 with
+        | 0 -&gt; Pervasives.compare a1 b1
+        | c -&gt; c
+    end)
+
+    let mySet2 = Belt.Set.make ~id:(module Comparable2)
     </code></pre>
 <p>
 
-    Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
-    it would not mix.
+    Here, the compiler would infer <code class="code">mySet1</code> and <code class="code">mySet2</code> having different type, so
+    e.g. a `merge` operation that tries to merge these two sets will correctly fail.
 <p>
 
-    <pre class="codepre"><code class="code">      val s0 : ((int * int), I0.identity) t
-      val s1 : ((int * int), I1.identity) t
+    <pre class="codepre"><code class="code">      val mySet1 : ((int * int), Comparable1.identity) t
+      val mySet2 : ((int * int), Comparable2.identity) t
     </code></pre>
 <p>
 
-    <code class="code">I0.identity</code> and <code class="code">I1.identity</code> are not the same using our encoding scheme.
+    <code class="code">Comparable1.identity</code> and <code class="code">Comparable2.identity</code> are not the same using our encoding scheme.
 <p>
 
     <b>Collection Hierarchy</b>
@@ -217,11 +222,11 @@
 <p>
 
     Provide utilities to create identified comparators or hashes for
-    data structures used below. 
+    data structures used below.
 <p>
 
     It create a unique identifier per module of
-    functions so that different data structures with slightly different 
+    functions so that different data structures with slightly different
     comparison functions won't mix<br>
  
                 </div>
@@ -367,6 +372,15 @@
 
     It also has two specialized inner modules
     <code class="code">Belt.HashMap.Int</code> and <code class="code">Belt.HashMap.String</code><br>
+ 
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Belt.Option.html">Option</a>: <code class="type"><a href="Belt_Option.html">Belt_Option</a></code></pre> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
+<p>
+
+    Utilities for option data type<br>
  
                 </div>
                 </div> </body></html>

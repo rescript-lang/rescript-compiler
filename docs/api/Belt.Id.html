@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -101,12 +102,12 @@
                     <a href="Belt.Id.html"><code class="code">Belt.Id</code></a>
 <p>
 
-    Provide utiliites to create identified comparators or hashes for 
-    data structures used below. 
+    Provide utilities to create identified comparators or hashes for
+    data structures used below.
 <p>
 
-    It create a unique identifer per module of
-    functions so that different data structures with slightly different 
+    It create a unique identifier per module of
+    functions so that different data structures with slightly different
     comparison functions won't mix<br>
  
                     </div>
@@ -122,7 +123,7 @@
                     <code class="code">('a, 'id) hash</code>
 <p>
 
-    Its runtime represenation is a <code class="code">hash</code> function, but signed with a 
+    Its runtime represenation is a <code class="code">hash</code> function, but signed with a
     type parameter, so that different hash functions type mismatch<br>
  
                     </div>
@@ -138,7 +139,7 @@
                     <code class="code">('a, 'id) eq</code>
 <p>
 
-    Its runtime represenation is an <code class="code">eq</code> function, but signed with a 
+    Its runtime represenation is an <code class="code">eq</code> function, but signed with a
     type parameter, so that different hash functions type mismatch<br>
  
                     </div>
@@ -154,7 +155,7 @@
                     <code class="code">('a,'id) cmp</code>
 <p>
 
-    Its runtime representation is a <code class="code">cmp</code> function, but signed with a 
+    Its runtime representation is a <code class="code">cmp</code> function, but signed with a
     type parameter, so that different hash functions type mismatch<br>
  
                     </div>
@@ -176,13 +177,13 @@
 <p>
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
-    by the type system). 
+    by the type system).
 <p>
 
-    It can be created using function <a href="Belt_Id.html#VALcomparableU"><code class="code">Belt_Id.comparableU</code></a> or<a href="Belt_Id.html#VALcomparable"><code class="code">Belt_Id.comparable</code></a>. 
+    It can be created using function <a href="Belt_Id.html#VALcomparableU"><code class="code">Belt_Id.comparableU</code></a> or<a href="Belt_Id.html#VALcomparable"><code class="code">Belt_Id.comparable</code></a>.
 <p>
 
-    The idea of a unique identity when created is that it makes sure two sets would type 
+    The idea of a unique identity when created is that it makes sure two sets would type
     mismatch if they use different comparison function<br>
  
                     </div>
@@ -191,6 +192,26 @@
 
                   
 
+<pre><span class="keyword">module</span> <a href="Belt_Id.MakeComparableU.html">MakeComparableU</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="code">sig</code><div class="sig_block"><div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+</div>
+
+
+<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">(t -> t -> int [@bs])</code></pre></div><code class="code">end</code><code class="code">) -&gt; </code><code class="type"><a href="Belt_Id.Comparable.html">Comparable</a></code><code class="type">  with type t = M.t</code></div></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Belt_Id.MakeComparable.html">MakeComparable</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="code">sig</code><div class="sig_block"><div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+</div>
+
+
+<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">t -> t -> int</code></pre></div><code class="code">end</code><code class="code">) -&gt; </code><code class="type"><a href="Belt_Id.Comparable.html">Comparable</a></code><code class="type">  with type t = M.t</code></div></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> 
 <pre><span id="VALcomparableU"><span class="keyword">val</span> comparableU</span> : <code class="type">cmp:('a -> 'a -> int [@bs]) -> (module Belt_Id.Comparable with type t = 'a)</code></pre>
 <pre><span id="VALcomparable"><span class="keyword">val</span> comparable</span> : <code class="type">cmp:('a -> 'a -> int) -> (module Belt_Id.Comparable with type t = 'a)</code></pre>
 <pre><span class="keyword">module type</span> <a href="Belt_Id.Hashable.html">Hashable</a> = <code class="code">sig</code> <a href="Belt_Id.Hashable.html">..</a> <code class="code">end</code></pre> <div class="info">                     
@@ -206,13 +227,13 @@
 <p>
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
-    by the type system). 
+    by the type system).
 <p>
 
     It can be created using function <a href="Belt_Id.html#VALhashableU"><code class="code">Belt_Id.hashableU</code></a> or <a href="Belt_Id.html#VALhashable"><code class="code">Belt_Id.hashable</code></a>.
 <p>
 
-    The idea of a unique identity when created is that it makes sure two hash sets would type 
+    The idea of a unique identity when created is that it makes sure two hash sets would type
     mismatch if they use different comparison function<br>
  
                     </div>
@@ -221,5 +242,27 @@
 
                   
 
+<pre><span class="keyword">module</span> <a href="Belt_Id.MakeHashableU.html">MakeHashableU</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="code">sig</code><div class="sig_block"><div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+</div>
+
+
+<pre><span id="VALhash"><span class="keyword">val</span> hash</span> : <code class="type">(t -> int [@bs])</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">(t -> t -> bool [@bs])</code></pre></div><code class="code">end</code><code class="code">) -&gt; </code><code class="type"><a href="Belt_Id.Hashable.html">Hashable</a></code><code class="type">  with type t = M.t</code></div></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> 
+<pre><span class="keyword">module</span> <a href="Belt_Id.MakeHashable.html">MakeHashable</a>: <div class="sig_block"><code class="code">functor (</code><code class="code">M</code><code class="code"> : </code><code class="code">sig</code><div class="sig_block"><div class="type-declaration">
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+</div>
+
+
+<pre><span id="VALhash"><span class="keyword">val</span> hash</span> : <code class="type">t -> int</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">t -> t -> bool</code></pre></div><code class="code">end</code><code class="code">) -&gt; </code><code class="type"><a href="Belt_Id.Hashable.html">Hashable</a></code><code class="type">  with type t = M.t</code></div></pre> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> 
 <pre><span id="VALhashableU"><span class="keyword">val</span> hashableU</span> : <code class="type">hash:('a -> int [@bs]) -><br>       eq:('a -> 'a -> bool [@bs]) -> (module Belt_Id.Hashable with type t = 'a)</code></pre>
 <pre><span id="VALhashable"><span class="keyword">val</span> hashable</span> : <code class="type">hash:('a -> int) -><br>       eq:('a -> 'a -> bool) -> (module Belt_Id.Hashable with type t = 'a)</code></pre></body></html>
