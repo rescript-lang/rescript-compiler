@@ -16,7 +16,7 @@ libs:
 	$(MAKE) -C jscomp/runtime -j8 all
 	$(MAKE) -C jscomp/others -j8 all
 	$(MAKE) -C jscomp/stdlib -j8 all
-	
+
 
 DEST=lib/ocaml
 RUNTIME=jscomp/runtime
@@ -26,6 +26,8 @@ OTHERS=jscomp/others
 # scripts/build_uitil.js
 # function install
 # scripts/build_util.install
+
+# ATTENTION: syncup build_util.install for windows
 install:
 	@echo "Installation"
 	cp $(RUNTIME)/*.cmt* $(RUNTIME)/*.cmj* $(RUNTIME)/js.ml  $(RUNTIME)/js.cmi \

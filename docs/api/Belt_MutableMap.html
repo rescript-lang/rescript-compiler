@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -102,53 +103,7 @@
                     A <b>mutable</b> sorted map module which allows customize <i>compare</i> behavior.
 <p>
 
-   The implementation uses balanced binary trees, and therefore searching
-   and insertion take time logarithmic in the size of the map.
-<p>
-
-   All data are parameterized by not its only type but also a unique identity in
-   the time of initialization, so that two <i>Sets of ints</i> initialized with different
-   <i>compare</i> functions will have different type.
-<p>
-
-   For example:
-   <pre class="codepre"><code class="code">     type t = int * int 
-      module I0 =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-             match Pervasives.compare a0 b0 with
-             | 0 -&gt; Pervasives.compare a1 b1
-             | c -&gt; c 
-           ))
-    let s0 : (_, string,_) t = make ~id:(module I0)
-    module I1 =
-      (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-           match compare a1 b1 with
-           | 0 -&gt; compare a0 b0
-           | c -&gt; c 
-         ))
-    let s1 : (_, string, _) t = make ~id:(module I1)
-   </code></pre>
-<p>
-
-   Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
-    it would not mix.
-<p>
-
-   <pre class="codepre"><code class="code">     val s0 : ((int * int), string, I0.identity) t 
-     val s1 : ((int * int), string, I1.identity) t 
-   </code></pre>
-<p>
-
-   We can add elements to the collection:
-<p>
-
-   <pre class="codepre"><code class="code">     let () =
-       add s1 (0,0) "a";
-       add s1 (1,1) "b"
-   </code></pre>
-<p>
-
-   Since this is an mutable data strucure, <code class="code">s1</code> will contain two pairs.<br>
+   Same as Belt.Map, but mutable.<br>
  
                     </div>
                     
@@ -261,7 +216,7 @@
 
                   
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -> ('k * 'a) array</code></pre>
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('k * 'a) array -><br>       id:('k, 'id) <a href="Belt_MutableMap.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">('k * 'a) array -><br>       id:('k, 'id) <a href="Belt_MutableMap.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a></code></pre>
 <pre><span id="VALkeysToArray"><span class="keyword">val</span> keysToArray</span> : <code class="type">('k, 'a, 'b) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k array</code></pre>
 <pre><span id="VALvaluesToArray"><span class="keyword">val</span> valuesToArray</span> : <code class="type">('b, 'a, 'c) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'a array</code></pre>
 <pre><span id="VALminKey"><span class="keyword">val</span> minKey</span> : <code class="type">('k, 'a, 'b) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k option</code></pre>
@@ -278,13 +233,14 @@
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k -> 'a</code></pre>
 <pre><span id="VALcheckInvariantInternal"><span class="keyword">val</span> checkInvariantInternal</span> : <code class="type">('a, 'b, 'c) <a href="Belt_MutableMap.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <b>raise</b> when invariant is not helld<br>
+                    <b>raise</b> when invariant is not held<br>
  
                     </div>
                     
                     </div>
 
                   
+<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('k * 'a) array -><br>       id:('k, 'id) <a href="Belt_MutableMap.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a></code></pre>
 <pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">remove m x</code> do the in-place modification,<br>

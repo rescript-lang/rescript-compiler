@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -102,7 +103,7 @@
                     <a href="Belt.Map.html"><code class="code">Belt.Map</code></a>,
 <p>
 
-    The toplevel provides generic <b>immutable</b> map operations.
+    The top level provides generic <b>immutable</b> map operations.
 <p>
 
     It also has three specialized inner modules
@@ -110,7 +111,7 @@
 <p>
 
     <code class="code">Belt.Map.Dict</code>: This module separate date from function
-    which  is more verbbose but slightly more efficient<br>
+    which  is more verbose but slightly more efficient<br>
  
                     </div>
                     
@@ -150,7 +151,10 @@
                     <code class="code">('key, 'identity) t</code>
 <p>
 
-    <code class="code">'key</code> is the element type
+    <code class="code">'key</code> is the field type
+<p>
+
+    <code class="code">'value</code> is the element type
 <p>
 
     <code class="code">'identity</code> the identity of the collection<br>
@@ -173,14 +177,13 @@
 
                   
 
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">id:('k, 'id) <a href="Belt_Map.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">id:('k, 'id) <a href="Belt_Map.html#TYPEid">id</a> -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">make ~id</code><br>
+                    <code class="code">make ~id</code> creates a new map by taking in the comparator<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">     module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
-     let s = make ~id:(module IntCmp)
+                    <pre class="example"> <pre class="codepre"><code class="code">      let m = Belt.Map.make ~id:(module IntCmp)
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -188,25 +191,23 @@
                   
 <pre><span id="VALisEmpty"><span class="keyword">val</span> isEmpty</span> : <code class="type">('a, 'b, 'c) <a href="Belt_Map.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">isEmpty s0</code><br>
+                    <code class="code">isEmpty m</code> checks whether a map m is empty<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
-      isEmpty (ofArray [|1,"1"|] ~id:(module IntCmp)) = false;;
+                    <pre class="example"> <pre class="codepre"><code class="code">      isEmpty (fromArray [|1,"1"|] ~id:(module IntCmp)) = false
     </code></pre>  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> bool</code></pre><div class="info ">
+<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">has s k</code><br>
+                    <code class="code">has m k</code> checks whether m has the key k<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp = (val Belt.Id.comparable ~cmp:(fun (x:int) y -&gt; Pervasives.compare x y));;
-      has (ofArray [|1,"1"|] ~id:(module IntCmp)) 1 = true;;
+                    <pre class="example"> <pre class="codepre"><code class="code">      has (fromArray [|1,"1"|] ~id:(module IntCmp)) 1 = true
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -215,10 +216,10 @@
 <pre><span id="VALcmpU"><span class="keyword">val</span> cmpU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('v -> 'v -> int [@bs]) -> int</code></pre>
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('v -> 'v -> int) -> int</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">cmp s0 s1 vcmp</code>
+                    <code class="code">cmp m0 m1 vcmp</code>
 <p>
 
-    Totoal ordering of map given total ordering of value function.
+    Total ordering of map given total ordering of value function.
 <p>
 
     It will compare size first and each element following the order one by one.<br>
@@ -228,8 +229,8 @@
                     </div>
 
                   
-<pre><span id="VALeqU"><span class="keyword">val</span> eqU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('a -> 'a -> bool [@bs]) -> bool</code></pre>
-<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('a -> 'a -> bool) -> bool</code></pre><div class="info ">
+<pre><span id="VALeqU"><span class="keyword">val</span> eqU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('v -> 'v -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('v -> 'v -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">eq m1 m2 veq</code> tests whether the maps <code class="code">m1</code> and <code class="code">m2</code> are
     equal, that is, contain equal keys and associate them with
@@ -241,8 +242,8 @@
                     </div>
 
                   
-<pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'a -> unit [@bs]) -> unit</code></pre>
-<pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'a -> unit) -> unit</code></pre><div class="info ">
+<pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> unit [@bs]) -> unit</code></pre>
+<pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> unit) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">forEach m f</code> applies <code class="code">f</code> to all bindings in map <code class="code">m</code>.
     <code class="code">f</code> receives the 'k as first argument, and the associated value
@@ -251,10 +252,7 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-
-      let s0 = ofArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
+                    <pre class="example"> <pre class="codepre"><code class="code">      let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
       let acc = ref [] ;;
       forEach s0 (fun k v -&gt; acc := (k,v) :: !acc);;
 
@@ -264,8 +262,8 @@
                     </div>
 
                   
-<pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'b -> ('b -> 'k -> 'a -> 'b [@bs]) -> 'b</code></pre>
-<pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'acc -> ('acc -> 'k -> 'a -> 'acc) -> 'acc</code></pre><div class="info ">
+<pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'acc -> ('acc -> 'k -> 'v -> 'acc [@bs]) -> 'acc</code></pre>
+<pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'acc -> ('acc -> 'k -> 'v -> 'acc) -> 'acc</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">reduce m a f</code> computes <code class="code">(f kN dN ... (f k1 d1 a)...)</code>,
     where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">m</code>
@@ -273,18 +271,15 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-
-      let s0 = ofArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
+                    <pre class="example"> <pre class="codepre"><code class="code">      let s0 = fromArray ~id:(module IntCmp) [|4,"4";1,"1";2,"2,"3""|];;
       reduce s0 [] (fun acc k v -&gt; (k,v) acc ) = [4,"4";3,"3";2,"2";1,"1"];;
     </code></pre>  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALeveryU"><span class="keyword">val</span> everyU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'a -> bool [@bs]) -> bool</code></pre>
-<pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'a -> bool) -> bool</code></pre><div class="info ">
+<pre><span id="VALeveryU"><span class="keyword">val</span> everyU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">every m p</code> checks if all the bindings of the map
     satisfy the predicate <code class="code">p</code>. Order unspecified<br>
@@ -294,8 +289,8 @@
                     </div>
 
                   
-<pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'a -> bool [@bs]) -> bool</code></pre>
-<pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'a -> bool) -> bool</code></pre><div class="info ">
+<pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> bool [@bs]) -> bool</code></pre>
+<pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">some m p</code> checks if at least one binding of the map
     satisfy the predicate <code class="code">p</code>. Order unspecified<br>
@@ -305,35 +300,31 @@
                     </div>
 
                   
-<pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+<pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">size s</code><br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-      size (ofArray [2,"2"; 2,"1"; 3,"3"] ~id:(module IntCmp)) = 2 ;;
+                    <pre class="example"> <pre class="codepre"><code class="code">      size (fromArray [2,"2"; 2,"1"; 3,"3"] ~id:(module IntCmp)) = 2 ;;
     </code></pre>  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'a) array</code></pre><div class="info ">
+<pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">toArray s</code><br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-      toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
+                    <pre class="example"> <pre class="codepre"><code class="code">      toArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     </code></pre>  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'a) list</code></pre><div class="info ">
+<pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) list</code></pre><div class="info ">
                     <div class="not-examples">
                     In increasing order
 <p>
@@ -345,44 +336,39 @@
                     </div>
 
                   
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('k * 'a) array -> id:('k, 'id) <a href="Belt_Map.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('k * 'v) array -> id:('k, 'id) <a href="Belt_Map.html#TYPEid">id</a> -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">('k * 'v) array -> id:('k, 'id) <a href="Belt_Map.html#TYPEid">id</a> -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">ofArray kvs ~id</code><br>
+                    <code class="code">fromArray kvs ~id</code><br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-      toArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
+                    <pre class="example"> <pre class="codepre"><code class="code">      toArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) = [1,"1";2,"2";3,"3"]
     </code></pre>  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALkeysToArray"><span class="keyword">val</span> keysToArray</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k array</code></pre><div class="info ">
+<pre><span id="VALkeysToArray"><span class="keyword">val</span> keysToArray</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">keysToArray s</code><br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-      keysToArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
+                    <pre class="example"> <pre class="codepre"><code class="code">      keysToArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
       [|1;2;3|];;
     </code></pre>  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALvaluesToArray"><span class="keyword">val</span> valuesToArray</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'a array</code></pre><div class="info ">
+<pre><span id="VALvaluesToArray"><span class="keyword">val</span> valuesToArray</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'v array</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">valuesToArray s</code><br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-      valuesToArray (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
+                    <pre class="example"> <pre class="codepre"><code class="code">      valuesToArray (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) =
       [|"1";"2";"3"|];;
     </code></pre>  </pre>
                     </div>
@@ -392,7 +378,7 @@
 <pre><span id="VALminKey"><span class="keyword">val</span> minKey</span> : <code class="type">('k, 'a, 'b) <a href="Belt_Map.html#TYPEt">t</a> -> 'k option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">minKey s</code><br>
-<div class="tag"> <b>Returns</b> thte minimum key, None if not exist<br>
+<div class="tag"> <b>Returns</b> the minimum key, None if not exist<br>
  </div> 
                     </div>
                     
@@ -411,7 +397,7 @@
 <pre><span id="VALmaxKey"><span class="keyword">val</span> maxKey</span> : <code class="type">('k, 'a, 'b) <a href="Belt_Map.html#TYPEt">t</a> -> 'k option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">maxKey s</code><br>
-<div class="tag"> <b>Returns</b> thte maximum key, None if not exist<br>
+<div class="tag"> <b>Returns</b> the maximum key, None if not exist<br>
  </div> 
                     </div>
                     
@@ -427,17 +413,17 @@
                     </div>
 
                   
-<pre><span id="VALminimum"><span class="keyword">val</span> minimum</span> : <code class="type">('k, 'a, 'b) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'a) option</code></pre><div class="info ">
+<pre><span id="VALminimum"><span class="keyword">val</span> minimum</span> : <code class="type">('k, 'v, 'a) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">minimum s</code><br>
-<div class="tag"> <b>Returns</b> thte minimum key value pair, None if not exist<br>
+<div class="tag"> <b>Returns</b> the minimum key value pair, None if not exist<br>
  </div> 
                     </div>
                     
                     </div>
 
                   
-<pre><span id="VALminUndefined"><span class="keyword">val</span> minUndefined</span> : <code class="type">('k, 'a, 'b) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'a) <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
+<pre><span id="VALminUndefined"><span class="keyword">val</span> minUndefined</span> : <code class="type">('k, 'v, 'a) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <b>See</b> <a href="Belt_Map.html#VALminimum"><code class="code">Belt_Map.minimum</code></a><br>
  
@@ -446,17 +432,17 @@
                     </div>
 
                   
-<pre><span id="VALmaximum"><span class="keyword">val</span> maximum</span> : <code class="type">('k, 'a, 'b) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'a) option</code></pre><div class="info ">
+<pre><span id="VALmaximum"><span class="keyword">val</span> maximum</span> : <code class="type">('k, 'v, 'a) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">maximum s</code><br>
-<div class="tag"> <b>Returns</b> thte maximum key value pair, None if not exist<br>
+<div class="tag"> <b>Returns</b> the maximum key value pair, None if not exist<br>
  </div> 
                     </div>
                     
                     </div>
 
                   
-<pre><span id="VALmaxUndefined"><span class="keyword">val</span> maxUndefined</span> : <code class="type">('k, 'a, 'b) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'a) <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
+<pre><span id="VALmaxUndefined"><span class="keyword">val</span> maxUndefined</span> : <code class="type">('k, 'v, 'a) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <b>See</b> <a href="Belt_Map.html#VALmaximum"><code class="code">Belt_Map.maximum</code></a><br>
  
@@ -465,24 +451,22 @@
                     </div>
 
                   
-<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'a option</code></pre><div class="info ">
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">get s k</code><br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-      get (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
+                    <pre class="example"> <pre class="codepre"><code class="code">      get (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
       Some "2";;
-      get (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
+      get (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp)) 2 =
       None;;
     </code></pre>  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'a <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
+<pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <b>See</b> <a href="Belt_Map.html#VALget"><code class="code">Belt_Map.get</code></a><br>
 <div class="tag"> <b>Returns</b> <code class="code">undefined</code> when not found<br>
@@ -492,7 +476,7 @@
                     </div>
 
                   
-<pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'a -> 'a</code></pre><div class="info ">
+<pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v -> 'v</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getWithDefault s k default</code>
 <p>
@@ -505,7 +489,7 @@
                     </div>
 
                   
-<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'a</code></pre><div class="info ">
+<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getExn s k</code>
 <p>
@@ -520,16 +504,13 @@
                     </div>
 
                   
-<pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">remove m x</code> when <code class="code">x</code> is not in <code class="code">m</code>, <code class="code">m</code> is returned reference unchanged.<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-      
-      let s0 =  (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
+                    <pre class="example"> <pre class="codepre"><code class="code">      let s0 =  (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
 
       let s1 = remove s0 1;;
       let s2 = remove s1 1;;
@@ -540,7 +521,7 @@
                     </div>
 
                   
-<pre><span id="VALremoveMany"><span class="keyword">val</span> removeMany</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k array -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALremoveMany"><span class="keyword">val</span> removeMany</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k array -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">removeMany s xs</code>
 <p>
@@ -554,7 +535,7 @@
                     </div>
 
                   
-<pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'a -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> 'k -> 'v -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">set m x y </code> returns a map containing the same bindings as
     <code class="code">m</code>, with a new binding of <code class="code">x</code> to <code class="code">y</code>. If <code class="code">x</code> was already bound
@@ -562,10 +543,7 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      module IntCmp =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] (x:int) y -&gt; Pervasives.compare x y));;
-      
-      let s0 =  (ofArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
+                    <pre class="example"> <pre class="codepre"><code class="code">      let s0 =  (fromArray [2,"2"; 1,"1"; 3,"3"] ~id:(module IntCmp));;
 
       let s1 = set s0 2 "3";;
 
@@ -575,8 +553,8 @@
                     </div>
 
                   
-<pre><span id="VALupdateU"><span class="keyword">val</span> updateU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       'k -> ('a option -> 'a option [@bs]) -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
-<pre><span id="VALupdate"><span class="keyword">val</span> update</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       'k -> ('a option -> 'a option) -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALupdateU"><span class="keyword">val</span> updateU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       'k -> ('v option -> 'v option [@bs]) -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALupdate"><span class="keyword">val</span> update</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       'k -> ('v option -> 'v option) -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">update m x f</code> returns a map containing the same bindings as
     <code class="code">m</code>, except for the binding of <code class="code">x</code>.
@@ -591,7 +569,7 @@
                     </div>
 
                   
-<pre><span id="VALmergeMany"><span class="keyword">val</span> mergeMany</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'a) array -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALmergeMany"><span class="keyword">val</span> mergeMany</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k * 'v) array -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">mergeMany s xs</code>
 <p>
@@ -605,8 +583,8 @@
                     </div>
 
                   
-<pre><span id="VALmergeU"><span class="keyword">val</span> mergeU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'b, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'a option -> 'b option -> 'c option [@bs]) -> ('k, 'c, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmerge"><span class="keyword">val</span> merge</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'b, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'a option -> 'b option -> 'c option) -> ('k, 'c, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALmergeU"><span class="keyword">val</span> mergeU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'v2, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'v option -> 'v2 option -> 'v3 option [@bs]) -><br>       ('k, 'v3, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmerge"><span class="keyword">val</span> merge</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k, 'v2, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'v option -> 'v2 option -> 'v3 option) -> ('k, 'v3, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">merge m1 m2 f</code> computes a map whose keys is a subset of keys of <code class="code">m1</code>
     and of <code class="code">m2</code>. The presence of each such binding, and the corresponding
@@ -617,8 +595,8 @@
                     </div>
 
                   
-<pre><span id="VALkeepU"><span class="keyword">val</span> keepU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'a -> bool [@bs]) -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
-<pre><span id="VALkeep"><span class="keyword">val</span> keep</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'a -> bool) -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALkeepU"><span class="keyword">val</span> keepU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'v -> bool [@bs]) -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALkeep"><span class="keyword">val</span> keep</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> bool) -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">keep m p</code> returns the map with all the bindings in <code class="code">m</code>
     that satisfy predicate <code class="code">p</code>.<br>
@@ -628,8 +606,8 @@
                     </div>
 
                   
-<pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'a -> bool [@bs]) -><br>       ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> * ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
-<pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'a -> bool) -> ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> * ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'v -> bool [@bs]) -><br>       ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> * ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'v -> bool) -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> * ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">partition m p</code> returns a pair of maps <code class="code">(m1, m2)</code>, where
     <code class="code">m1</code> contains all the bindings of <code class="code">s</code> that satisfy the
@@ -641,7 +619,7 @@
                     </div>
 
                   
-<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       'k -> (('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> * ('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a>) * 'a option</code></pre><div class="info ">
+<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       'k -> (('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> * ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a>) * 'v option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">split x m</code> returns a tuple <code class="code">(l r), data</code>, where
       <code class="code">l</code> is the map with all the bindings of <code class="code">m</code> whose 'k
@@ -656,8 +634,8 @@
                     </div>
 
                   
-<pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> ('k, 'b, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('a -> 'b) -> ('k, 'b, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('v -> 'v2 [@bs]) -> ('k, 'v2, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('v -> 'v2) -> ('k, 'v2, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">map m f</code> returns a map with same domain as <code class="code">m</code>, where the
     associated value <code class="code">a</code> of all bindings of <code class="code">m</code> has been
@@ -670,8 +648,8 @@
                     </div>
 
                   
-<pre><span id="VALmapWithKeyU"><span class="keyword">val</span> mapWithKeyU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
-<pre><span id="VALmapWithKey"><span class="keyword">val</span> mapWithKey</span> : <code class="type">('k, 'a, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'a -> 'b) -> ('k, 'b, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALmapWithKeyU"><span class="keyword">val</span> mapWithKeyU</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -><br>       ('k -> 'v -> 'v2 [@bs]) -> ('k, 'v2, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmapWithKey"><span class="keyword">val</span> mapWithKey</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k -> 'v -> 'v2) -> ('k, 'v2, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">mapWithKey m f</code>
 <p>
@@ -683,7 +661,7 @@
                     </div>
 
                   
-<pre><span id="VALgetData"><span class="keyword">val</span> getData</span> : <code class="type">('a, 'b, 'c) <a href="Belt_Map.html#TYPEt">t</a> -> ('a, 'b, 'c) <a href="Belt_MapDict.html#TYPEt">Belt_MapDict.t</a></code></pre><div class="info ">
+<pre><span id="VALgetData"><span class="keyword">val</span> getData</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k, 'v, 'id) <a href="Belt_MapDict.html#TYPEt">Belt_MapDict.t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getData s0</code>
 <p>
@@ -698,7 +676,7 @@
                     </div>
 
                   
-<pre><span id="VALgetId"><span class="keyword">val</span> getId</span> : <code class="type">('a, 'b, 'c) <a href="Belt_Map.html#TYPEt">t</a> -> ('a, 'c) <a href="Belt_Map.html#TYPEid">id</a></code></pre><div class="info ">
+<pre><span id="VALgetId"><span class="keyword">val</span> getId</span> : <code class="type">('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a> -> ('k, 'id) <a href="Belt_Map.html#TYPEid">id</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">getId s0</code>
 <p>
@@ -711,7 +689,7 @@
                     </div>
 
                   
-<pre><span id="VALpackIdData"><span class="keyword">val</span> packIdData</span> : <code class="type">id:('a, 'b) <a href="Belt_Map.html#TYPEid">id</a> -><br>       data:('a, 'c, 'b) <a href="Belt_MapDict.html#TYPEt">Belt_MapDict.t</a> -> ('a, 'c, 'b) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALpackIdData"><span class="keyword">val</span> packIdData</span> : <code class="type">id:('k, 'id) <a href="Belt_Map.html#TYPEid">id</a> -><br>       data:('k, 'v, 'id) <a href="Belt_MapDict.html#TYPEt">Belt_MapDict.t</a> -> ('k, 'v, 'id) <a href="Belt_Map.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">packIdData ~id ~data</code>
 <p>

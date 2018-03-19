@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-rm ../lib/js/*.js 
+rm -f ../lib/js/*.js
 git clean -dfx . ../lib
 make clean
 make themes
