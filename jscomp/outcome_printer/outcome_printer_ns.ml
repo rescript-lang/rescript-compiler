@@ -96,6 +96,8 @@ let out_ident ppf s =
     | "Belt_MapInt" -> "Belt.Map.Int"
     | "Belt_MapString" -> "Belt.Map.String"
 
+    | "Belt_Option" -> "Belt.Option"
+
     | "Belt_MutableSet" -> "Belt.MutableSet"
     | "Belt_MutableSetInt" -> "Belt.MutableSet.Int"
     | "Belt_MutableSetString" -> "Belt.MutableSet.String"
