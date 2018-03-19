@@ -31,6 +31,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -132,7 +133,7 @@
                     <a href="Belt.Array.html"><code class="code">Belt.Array</code></a>
 <p>
 
-    <b>mutable array</b>: Utililites functions<br>
+    <b>mutable array</b>: Utilities functions<br>
  
                 </div>
                 </div> </td></tr>
@@ -146,23 +147,23 @@
 <tr><td><a href="Belt.html">Belt</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    A stdlib shipped with BuckleScript 
+                    A stdlib shipped with BuckleScript
 <p>
 
-    This stdlib is still in <i>beta</i> status, but we encourage you to try it out and 
+    This stdlib is still in <i>beta</i> status, but we encourage you to try it out and
     provide feedback.
 <p>
 
     <b>Motivation </b>
 <p>
 
-    The motivation of creating such library is to provide BuckleScript users a 
-    better end-to-end user experience, since the original OCaml stdlib was not 
-    written with JS platform in mind, below are a list of areas this lib aims to 
+    The motivation of creating such library is to provide BuckleScript users a
+    better end-to-end user experience, since the original OCaml stdlib was not
+    written with JS platform in mind, below are a list of areas this lib aims to
     improve: <OL>
 <li>1. Consistency in name convention: camlCase, and arguments order</li>
 <li>2. Exception thrown functions are all suffixed with <i>Exn</i>, e.g, <i>getExn</i></li>
-<li>3. Beter peformance and smaller code size running on JS platform</li>
+<li>3. Better performance and smaller code size running on JS platform</li>
 </OL>
 
 <p>
@@ -187,7 +188,7 @@
 <p>
 
    When we create a collection library for a custom data type, take <i>Set</i> for
-   example, suppose its element type is a pair of ints, 
+   example, suppose its element type is a pair of ints,
     it needs a custom <i>compare</i> function. However, the <i>Set</i> could not
     just be typed as <code class="code"> Set.t (int * int) </code>,
     its customized <i>compare</i> function needs to be
@@ -201,37 +202,41 @@
     We introduced a phantom type to solve the problem
 <p>
 
-    <pre class="codepre"><code class="code">      type t = int * int 
-      module I0 =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-             match compare a0 b0 with
-             | 0 -&gt; compare a1 b1
-             | c -&gt; c 
-           ))
-    let s0 = Belt.Set.make ~id:(module I0)
-    module I1 =
-      (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-           match compare a1 b1 with
-           | 0 -&gt; compare a0 b0
-           | c -&gt; c 
-         ))
-    let s1 = Belt.Set.make ~id:(module I1)
+    <pre class="codepre"><code class="code">      module Comparable1 = Belt.Id.MakeComparable(struct
+        type t = int * int
+        let cmp (a0, a1) (b0, b1) =
+          match Pervasives.compare a0 b0 with
+          | 0 -&gt; Pervasives.compare a1 b1
+          | c -&gt; c
+      end)
+
+    let mySet1 = Belt.Set.make ~id:(module Comparable1)
+
+    module Comparable2 = Belt.Id.MakeComparable(struct
+      type t = int * int
+      let cmp (a0, a1) (b0, b1) =
+        match Pervasives.compare a0 b0 with
+        | 0 -&gt; Pervasives.compare a1 b1
+        | c -&gt; c
+    end)
+
+    let mySet2 = Belt.Set.make ~id:(module Comparable2)
     </code></pre>
 <p>
 
-    Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
-    it would not mix.
+    Here, the compiler would infer <code class="code">mySet1</code> and <code class="code">mySet2</code> having different type, so
+    e.g. a `merge` operation that tries to merge these two sets will correctly fail.
 <p>
 
-    <pre class="codepre"><code class="code">      val s0 : ((int * int), I0.identity) t
-      val s1 : ((int * int), I1.identity) t
+    <pre class="codepre"><code class="code">      val mySet1 : ((int * int), Comparable1.identity) t
+      val mySet2 : ((int * int), Comparable2.identity) t
     </code></pre>
 <p>
 
-    <code class="code">I0.identity</code> and <code class="code">I1.identity</code> are not the same using our encoding scheme.
+    <code class="code">Comparable1.identity</code> and <code class="code">Comparable2.identity</code> are not the same using our encoding scheme.
 <p>
 
-    <b>Collection Hierachy</b>
+    <b>Collection Hierarchy</b>
 <p>
 
     In general, we provide a generic collection module, but also create specialized
@@ -249,7 +254,7 @@
 <p>
 
     Currently, both <i>Belt_Set</i> and <i>Belt.Set</i> are accessible to users for some
-    technical rasons,
+    technical reasons,
     we <b>strongly recommend</b> users stick to qualified import, <i>Belt.Sort</i>, we may hide
     the internal, <i>i.e</i>, <i>Belt_Set</i> in the future<br>
  
@@ -423,11 +428,11 @@
                     <a href="Belt.Id.html"><code class="code">Belt.Id</code></a>
 <p>
 
-    Provide utiliites to create identified comparators or hashes for 
-    data structures used below. 
+    Provide utiliites to create identified comparators or hashes for
+    data structures used below.
 <p>
 
-    It create a unique identifer per module of functions so that different data structures with slightly different 
+    It create a unique identifer per module of functions so that different data structures with slightly different
     comparison functions won't mix.<br>
  
                 </div>
@@ -458,52 +463,11 @@
    and insertion take time logarithmic in the size of the map.
 <p>
 
-   All data are parameterized by not its only type but also a unique identity in
-   the time of initialization, so that two <i>Map of int keys</i> initialized with different
-   <i>compare</i> functions will have different type.
+  For more info on this module's usage of identity, `make` and others, please see
+  the top level documentation of Belt, <b>A special encoding for collection safety</b>.
 <p>
 
-   For example:
-   <pre class="codepre"><code class="code">     type t = int * int 
-      module I0 =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-             match Pervasives.compare a0 b0 with
-             | 0 -&gt; Pervasives.compare a1 b1
-             | c -&gt; c 
-           ))
-    let s0 : (_, string, _) t = make ~id:(module I0) (* value is of type string *)
-    module I1 =
-      (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-           match compare a1 b1 with
-           | 0 -&gt; compare a0 b0
-           | c -&gt; c 
-         ))
-    let s1 : (_, string, _) t = make ~id:(module I1)
-   </code></pre>
-<p>
-
-   Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
-    it would not mix.
-<p>
-
-   <pre class="codepre"><code class="code">     val s0 : ((int * int), string,  I0.identity) t 
-     val s1 : ((int * int), string,  I1.identity) t
-   </code></pre>
-<p>
-
-   We can add elements to the collection:
-<p>
-
-   <pre class="codepre"><code class="code">     let s2 = add s1 (0,0) "a"
-     let s3 = add s2 (1,1) "b"
-   </code></pre>
-<p>
-
-   Since this is an immutable data strucure, <code class="code">s1</code> will be an empty map
-   while <code class="code">s2</code> will contain one pair, <code class="code">s3</code> will contain two.
-<p>
-
-   The <code class="code">merge s0 s3 callback</code> will result in a type error, since their identity mismatch<br>
+  Example usage:<br>
  
                 </div>
                 </div> </td></tr>
@@ -520,14 +484,14 @@
 <tr><td><a href="Belt_MapInt.html">Belt_MapInt</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    The type of maps from type <code class="code">key</code> to type <code class="code">'a</code>.<br>
+                    The type of maps from type <code class="code">key</code> to type <code class="code">'value</code>.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapString.html">Belt_MapString</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    The type of maps from type <code class="code">key</code> to type <code class="code">'a</code>.<br>
+                    The type of maps from type <code class="code">key</code> to type <code class="code">'value</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -537,53 +501,7 @@
                     A <b>mutable</b> sorted map module which allows customize <i>compare</i> behavior.
 <p>
 
-   The implementation uses balanced binary trees, and therefore searching
-   and insertion take time logarithmic in the size of the map.
-<p>
-
-   All data are parameterized by not its only type but also a unique identity in
-   the time of initialization, so that two <i>Sets of ints</i> initialized with different
-   <i>compare</i> functions will have different type.
-<p>
-
-   For example:
-   <pre class="codepre"><code class="code">     type t = int * int 
-      module I0 =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-             match Pervasives.compare a0 b0 with
-             | 0 -&gt; Pervasives.compare a1 b1
-             | c -&gt; c 
-           ))
-    let s0 : (_, string,_) t = make ~id:(module I0)
-    module I1 =
-      (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-           match compare a1 b1 with
-           | 0 -&gt; compare a0 b0
-           | c -&gt; c 
-         ))
-    let s1 : (_, string, _) t = make ~id:(module I1)
-   </code></pre>
-<p>
-
-   Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
-    it would not mix.
-<p>
-
-   <pre class="codepre"><code class="code">     val s0 : ((int * int), string, I0.identity) t 
-     val s1 : ((int * int), string, I1.identity) t 
-   </code></pre>
-<p>
-
-   We can add elements to the collection:
-<p>
-
-   <pre class="codepre"><code class="code">     let () =
-       add s1 (0,0) "a";
-       add s1 (1,1) "b"
-   </code></pre>
-<p>
-
-   Since this is an mutable data strucure, <code class="code">s1</code> will contain two pairs.<br>
+   Same as Belt.Map, but mutable.<br>
  
                 </div>
                 </div> </td></tr>
@@ -621,53 +539,7 @@
                     A <i>mutable</i> sorted set module which allows customize <i>compare</i> behavior.
 <p>
 
-   The implementation uses balanced binary trees, and therefore searching
-   and insertion take time logarithmic in the size of the map.
-<p>
-
-   All data are parameterized by not its only type but also a unique identity in
-   the time of initialization, so that two <i>Sets of ints</i> initialized with different
-   <i>compare</i> functions will have different type.
-<p>
-
-   For example:
-   <pre class="codepre"><code class="code">     type t = int * int 
-      module I0 =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-             match Pervasives.compare a0 b0 with
-             | 0 -&gt; Pervasives.compare a1 b1
-             | c -&gt; c 
-           ))
-    let s0 = make ~id:(module I0)
-    module I1 =
-      (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-           match compare a1 b1 with
-           | 0 -&gt; compare a0 b0
-           | c -&gt; c 
-         ))
-    let s1 = make ~id:(module I1)
-   </code></pre>
-<p>
-
-   Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
-    it would not mix.
-<p>
-
-   <pre class="codepre"><code class="code">     val s0 : ((int * int), I0.identity) t 
-     val s1 : ((int * int), I1.identity) t 
-   </code></pre>
-<p>
-
-   We can add elements to the collection:
-<p>
-
-   <pre class="codepre"><code class="code">     let () =
-       add s1 (0,0);
-       add s1 (1,1)
-   </code></pre>
-<p>
-
-   Since this is an mutable data strucure, <code class="code">s1</code> will contain two pairs.<br>
+   Same as Belt.Set, but mutable.<br>
  
                 </div>
                 </div> </td></tr>
@@ -709,6 +581,16 @@
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_Option.html">Belt_Option</a> </td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
+<p>
+
+    Utilities for option data type<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt_Range.html">Belt_Range</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -727,52 +609,11 @@
    and insertion take time logarithmic in the size of the map.
 <p>
 
-   All data are parameterized by not its only type but also a unique identity in
-   the time of initialization, so that two <i>Sets of ints</i> initialized with different
-   <i>compare</i> functions will have different type.
+  For more info on this module's usage of identity, `make` and others, please see
+  the top level documentation of Belt, <b>A special encoding for collection safety</b>.
 <p>
 
-   For example:
-   <pre class="codepre"><code class="code">     type t = int * int 
-      module I0 =
-        (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-             match Pervasives.compare a0 b0 with
-             | 0 -&gt; Pervasives.compare a1 b1
-             | c -&gt; c 
-           ))
-    let s0 = make ~id:(module I0)
-    module I1 =
-      (val Belt.Id.comparableU ~cmp:(fun[@bs] ((a0,a1) : t) ((b0,b1) : t) -&gt;
-           match compare a1 b1 with
-           | 0 -&gt; compare a0 b0
-           | c -&gt; c 
-         ))
-    let s1 = make ~id:(module I1)
-   </code></pre>
-<p>
-
-   Here the compiler would infer <code class="code">s0</code> and <code class="code">s1</code> having different type so that
-    it would not mix.
-<p>
-
-   <pre class="codepre"><code class="code">     val s0 :  ((int * int), I0.identity) t
-     val s1 :  ((int * int), I1.identity) t
-   </code></pre>
-<p>
-
-   We can add elements to the collection:
-<p>
-
-   <pre class="codepre"><code class="code">     let s2 = add s1 (0,0)
-     let s3 = add s2 (1,1)
-   </code></pre>
-<p>
-
-   Since this is an immutable data strucure, <code class="code">s1</code> will be an empty set
-   while <code class="code">s2</code> will contain one element, <code class="code">s3</code> will contain two.
-<p>
-
-   The <code class="code">union s0 s3</code> will result in a type error, since their identity mismatch<br>
+  Example usage:<br>
  
                 </div>
                 </div> </td></tr>
@@ -786,8 +627,8 @@
 <tr><td><a href="Belt_SetInt.html">Belt_SetInt</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    This module is <a href="Belt.Set.html"><code class="code">Belt.Set</code></a> specialized with key type to be a primitive type.
-    It is more efficient in general, the  API is the same with <a href="Belt_Set.html"><code class="code">Belt_Set</code></a> except its key type is fixed,
+                    This module is <a href="Belt.Set.html"><code class="code">Belt.Set</code></a> specialized with value type to be a primitive type.
+    It is more efficient in general, the  API is the same with <a href="Belt_Set.html"><code class="code">Belt_Set</code></a> except its value type is fixed,
     and identity is not needed(using the built-in one)
 <p>
 
@@ -798,8 +639,8 @@
 <tr><td><a href="Belt_SetString.html">Belt_SetString</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    This module is <a href="Belt.Set.html"><code class="code">Belt.Set</code></a> specialized with key type to be a primitive type.
-    It is more efficient in general, the  API is the same with <a href="Belt_Set.html"><code class="code">Belt_Set</code></a> except its key type is fixed,
+                    This module is <a href="Belt.Set.html"><code class="code">Belt.Set</code></a> specialized with value type to be a primitive type.
+    It is more efficient in general, the  API is the same with <a href="Belt_Set.html"><code class="code">Belt_Set</code></a> except its value type is fixed,
     and identity is not needed(using the built-in one)
 <p>
 
@@ -833,14 +674,14 @@
 <tr><td><a href="Belt_internalAVLset.html">Belt_internalAVLset</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <b>raise</b> when invariant is not helld<br>
+                    <b>raise</b> when invariant is not held<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a> </td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <b>raise</b> when invariant is not helld<br>
+                    <b>raise</b> when invariant is not held<br>
  
                 </div>
                 </div> </td></tr>
@@ -1046,7 +887,7 @@
                     <a href="Belt.HashMap.html"><code class="code">Belt.HashMap</code></a>
 <p>
 
-    The toplevel provides generic <b>mutable</b> hash map operations.
+    The top level provides generic <b>mutable</b> hash map operations.
 <p>
 
     It also has two specialized inner modules
@@ -1060,7 +901,7 @@
                     <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a>
 <p>
 
-    The toplevel provides generic <b>mutable</b> hash set operations.
+    The top level provides generic <b>mutable</b> hash set operations.
 <p>
 
     It also has two specialized inner modules
@@ -1075,12 +916,12 @@
                     <a href="Belt.Id.html"><code class="code">Belt.Id</code></a>
 <p>
 
-    Provide utiliites to create identified comparators or hashes for 
-    data structures used below. 
+    Provide utilities to create identified comparators or hashes for
+    data structures used below.
 <p>
 
-    It create a unique identifer per module of
-    functions so that different data structures with slightly different 
+    It create a unique identifier per module of
+    functions so that different data structures with slightly different
     comparison functions won't mix<br>
  
                 </div>
@@ -1133,7 +974,7 @@
 <tr><td><a href="Belt_Set.Int.html">Int</a> [<a href="Belt_Set.html">Belt_Set</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    Specalized when key type is <code class="code">int</code>, more efficient
+                    Specalized when value type is <code class="code">int</code>, more efficient
     than the gerneic type, its compare behavior is fixed using the built-in comparison<br>
  
                 </div>
@@ -1447,13 +1288,37 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>M</td></tr>
+<tr><td><a href="Belt_Id.MakeComparable.html">MakeComparable</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Id.MakeComparableU.html">MakeComparableU</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Id.MakeHashable.html">MakeHashable</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Id.MakeHashableU.html">MakeHashableU</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt.Map.html">Map</a> [<a href="Belt.html">Belt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Map.html"><code class="code">Belt.Map</code></a>,
 <p>
 
-    The toplevel provides generic <b>immutable</b> map operations.
+    The top level provides generic <b>immutable</b> map operations.
 <p>
 
     It also has three specialized inner modules
@@ -1461,7 +1326,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <p>
 
     <code class="code">Belt.Map.Dict</code>: This module separate date from function
-    which  is more verbbose but slightly more efficient<br>
+    which  is more verbose but slightly more efficient<br>
  
                 </div>
                 </div> </td></tr>
@@ -1484,7 +1349,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
                     <a href="Belt.MutableMap.html"><code class="code">Belt.MutableMap</code></a>
 <p>
 
-    The toplevel provides generic <b>mutable</b> map operations.
+    The top level provides generic <b>mutable</b> map operations.
 <p>
 
     It also has two specialized inner modules
@@ -1508,7 +1373,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
                     <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a>
 <p>
 
-    The toplevel provides generic <b>mutable</b> set operations.
+    The top level provides generic <b>mutable</b> set operations.
 <p>
 
     It also has two specialized inner modules
@@ -1636,6 +1501,16 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt.Option.html">Option</a> [<a href="Belt.html">Belt</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
+<p>
+
+    Utilities for option data type<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td align="left"><br>P</td></tr>
 <tr><td><a href="Node.Path.html">Path</a> [<a href="Node.html">Node</a>]</td>
 <td> <div class="info">                     
@@ -1712,7 +1587,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
                     <a href="Belt.Set.html"><code class="code">Belt.Set</code></a>
 <p>
 
-    The toplevel provides generic <b>immutable</b> set operations.
+    The top level provides generic <b>immutable</b> set operations.
 <p>
 
     It also has three specialized inner modules
@@ -1720,7 +1595,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <p>
 
     <code class="code">Belt.Set.Dict</code>: This module separate date from function
-    which is more verbbose but slightly more efficient<br>
+    which is more verbose but slightly more efficient<br>
  
                 </div>
                 </div> </td></tr>
@@ -1730,7 +1605,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
                     <a href="Belt.SortArray.html"><code class="code">Belt.SortArray</code></a>
 <p>
 
-    The toplevel provides some generic sort related utililties.
+    The top level provides some generic sort related utilities.
 <p>
 
     It also has two specialized inner modules
@@ -1792,7 +1667,7 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 <tr><td><a href="Belt_Set.String.html">String</a> [<a href="Belt_Set.html">Belt_Set</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    Specalized when key type is <code class="code">string</code>, more efficient
+                    Specalized when value type is <code class="code">string</code>, more efficient
     than the gerneic type, its compare behavior is fixed using the built-in comparison<br>
  
                 </div>

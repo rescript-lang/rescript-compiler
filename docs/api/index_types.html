@@ -31,6 +31,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -473,7 +474,7 @@
                     <code class="code">('a,'id) cmp</code>
 <p>
 
-    Its runtime representation is a <code class="code">cmp</code> function, but signed with a 
+    Its runtime representation is a <code class="code">cmp</code> function, but signed with a
     type parameter, so that different hash functions type mismatch<br>
  
                 </div>
@@ -491,13 +492,13 @@
 <p>
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
-    by the type system). 
+    by the type system).
 <p>
 
-    It can be created using function <a href="Belt_Id.html#VALcomparableU"><code class="code">Belt_Id.comparableU</code></a> or<a href="Belt_Id.html#VALcomparable"><code class="code">Belt_Id.comparable</code></a>. 
+    It can be created using function <a href="Belt_Id.html#VALcomparableU"><code class="code">Belt_Id.comparableU</code></a> or<a href="Belt_Id.html#VALcomparable"><code class="code">Belt_Id.comparable</code></a>.
 <p>
 
-    The idea of a unique identity when created is that it makes sure two sets would type 
+    The idea of a unique identity when created is that it makes sure two sets would type
     mismatch if they use different comparison function<br>
  
                 </div>
@@ -630,53 +631,13 @@
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_internalSetString.html#TYPEelt">elt</a> [<a href="Belt_internalSetString.html">Belt_internalSetString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_internalSetInt.html#TYPEelt">elt</a> [<a href="Belt_internalSetInt.html">Belt_internalSetInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableSetString.html#TYPEelt">elt</a> [<a href="Belt_MutableSetString.html">Belt_MutableSetString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                    The type of the set elements.<br>
- 
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableSetInt.html#TYPEelt">elt</a> [<a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                    The type of the set elements.<br>
- 
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_SetString.html#TYPEelt">elt</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                    The type of the set elements.<br>
- 
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_SetInt.html#TYPEelt">elt</a> [<a href="Belt_SetInt.html">Belt_SetInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                    The type of the set elements.<br>
- 
-                </div>
-                </div> </td></tr>
 <tr><td><a href="Belt_Id.html#TYPEeq">eq</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">('a, 'id) eq</code>
 <p>
 
-    Its runtime represenation is an <code class="code">eq</code> function, but signed with a 
+    Its runtime represenation is an <code class="code">eq</code> function, but signed with a
     type parameter, so that different hash functions type mismatch<br>
  
                 </div>
@@ -756,7 +717,7 @@
                     <code class="code">('a, 'id) hash</code>
 <p>
 
-    Its runtime represenation is a <code class="code">hash</code> function, but signed with a 
+    Its runtime represenation is a <code class="code">hash</code> function, but signed with a
     type parameter, so that different hash functions type mismatch<br>
  
                 </div>
@@ -768,13 +729,13 @@
 <p>
 
     Unlike normal functions, when created, it comes with a unique identity (guaranteed
-    by the type system). 
+    by the type system).
 <p>
 
     It can be created using function <a href="Belt_Id.html#VALhashableU"><code class="code">Belt_Id.hashableU</code></a> or <a href="Belt_Id.html#VALhashable"><code class="code">Belt_Id.hashable</code></a>.
 <p>
 
-    The idea of a unique identity when created is that it makes sure two hash sets would type 
+    The idea of a unique identity when created is that it makes sure two hash sets would type
     mismatch if they use different comparison function<br>
  
                 </div>
@@ -1525,14 +1486,14 @@
 <tr><td><a href="Belt_MapString.html#TYPEt">t</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    The type of maps from type <code class="code">key</code> to type <code class="code">'a</code>.<br>
+                    The type of maps from type <code class="code">key</code> to type <code class="code">'value</code>.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapInt.html#TYPEt">t</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    The type of maps from type <code class="code">key</code> to type <code class="code">'a</code>.<br>
+                    The type of maps from type <code class="code">key</code> to type <code class="code">'value</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -1542,7 +1503,10 @@
                     <code class="code">('key, 'identity) t</code>
 <p>
 
-    <code class="code">'key</code> is the element type
+    <code class="code">'key</code> is the field type
+<p>
+
+    <code class="code">'value</code> is the element type
 <p>
 
     <code class="code">'identity</code> the identity of the collection<br>
@@ -1572,10 +1536,10 @@
 <tr><td><a href="Belt_Set.html#TYPEt">t</a> [<a href="Belt_Set.html">Belt_Set</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">('key, 'identity) t</code>
+                    <code class="code">('value, 'identity) t</code>
 <p>
 
-    <code class="code">'key</code> is the element type
+    <code class="code">'value</code> is the element type
 <p>
 
     <code class="code">'identity</code> the identity of the collection<br>
@@ -1700,6 +1664,47 @@
 <td> <div class="info">                     
                 <div class="not-examples">
                     This type has only one value <code class="code">undefined</code><br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td align="left"><br>V</td></tr>
+<tr><td><a href="Belt_internalSetString.html#TYPEvalue">value</a> [<a href="Belt_internalSetString.html">Belt_internalSetString</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_internalSetInt.html#TYPEvalue">value</a> [<a href="Belt_internalSetInt.html">Belt_internalSetInt</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MutableSetString.html#TYPEvalue">value</a> [<a href="Belt_MutableSetString.html">Belt_MutableSetString</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    The type of the set elements.<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MutableSetInt.html#TYPEvalue">value</a> [<a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    The type of the set elements.<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_SetString.html#TYPEvalue">value</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    The type of the set elements.<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_SetInt.html#TYPEvalue">value</a> [<a href="Belt_SetInt.html">Belt_SetInt</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    The type of the set elements.<br>
  
                 </div>
                 </div> </td></tr>
