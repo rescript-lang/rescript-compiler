@@ -865,7 +865,6 @@ function fib(_n, _a, _b) {
       _a = b;
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -880,7 +879,6 @@ function fac(_n, _acc) {
       _acc = Caml_int64.mul(acc, Caml_int64.of_int32(n));
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }

@@ -16,11 +16,9 @@ function $$eval(_bdd, vars) {
     } else if (Caml_array.caml_array_get(vars, bdd[1])) {
       _bdd = bdd[3];
       continue ;
-      
     } else {
       _bdd = bdd[0];
       continue ;
-      
     }
   };
 }
@@ -75,7 +73,6 @@ function resize(newSize) {
               ]);
           _bucket = bucket[1];
           continue ;
-          
         }
       } else {
         return /* () */0;
@@ -143,7 +140,6 @@ function mkNode(low, v, high) {
         } else {
           _b = b[1];
           continue ;
-          
         }
       } else {
         var n_002 = (nodeC[0] = nodeC[0] + 1 | 0, nodeC[0]);

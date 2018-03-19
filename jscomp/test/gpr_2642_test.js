@@ -10,13 +10,12 @@ function isfree(id, _param) {
       case 1 : 
           _param = param[0];
           continue ;
-          case 2 : 
+      case 2 : 
           if (isfree(id, param[0])) {
             return /* true */1;
           } else {
             _param = param[1];
             continue ;
-            
           }
       
     }

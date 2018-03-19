@@ -47,7 +47,6 @@ function read_lines(inc) {
         acc
       ];
       continue ;
-      
     } else {
       return List.rev(acc);
     }
@@ -77,7 +76,6 @@ function read_lines2(inc) {
         acc
       ];
       continue ;
-      
     }
     
   };

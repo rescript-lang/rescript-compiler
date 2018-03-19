@@ -59,7 +59,6 @@ function advance_loop(state) {
       Curry._1(format_pp_token(state, size$1 < 0 ? 1000000010 : size$1), match[/* token */1]);
       state[/* pp_left_total */1] = match[/* length */2] + state[/* pp_left_total */1] | 0;
       continue ;
-      
     }
   };
 }

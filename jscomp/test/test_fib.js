@@ -83,7 +83,6 @@ function fib3(n) {
       _b = a + b | 0;
       _a = b;
       continue ;
-      
     } else {
       return a;
     }

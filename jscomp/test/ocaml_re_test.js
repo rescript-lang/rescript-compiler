@@ -81,7 +81,6 @@ function union(_l, _l$prime) {
           ];
           _l = r;
           continue ;
-          
         } else {
           _l$prime = r$prime;
           _l = /* :: */[
@@ -92,7 +91,6 @@ function union(_l, _l$prime) {
             r
           ];
           continue ;
-          
         }
       } else {
         return l$prime;
@@ -119,11 +117,9 @@ function inter(_l, _l$prime) {
       if (Caml_obj.caml_lessthan(c2, c1$prime)) {
         _l = r;
         continue ;
-        
       } else if (Caml_obj.caml_lessthan(c2$prime, c1)) {
         _l$prime = r$prime;
         continue ;
-        
       } else if (Caml_obj.caml_lessthan(c2, c2$prime)) {
         return /* :: */[
                 /* tuple */[
@@ -172,7 +168,6 @@ function diff(_l, _l$prime) {
         } else if (c2$prime < c1) {
           _l$prime = r$prime;
           continue ;
-          
         } else {
           var r$prime$prime = c2$prime < c2 ? /* :: */[
               /* tuple */[
@@ -193,7 +188,6 @@ function diff(_l, _l$prime) {
             _l$prime = r$prime;
             _l = r$prime$prime;
             continue ;
-            
           }
         }
       } else {
@@ -260,7 +254,6 @@ function mem(c, _s) {
       } else {
         _s = s[1];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -599,7 +592,6 @@ function hash(m, accu) {
       _accu = hash_combine(match[0], hash_combine(match[1], accu$1));
       _l = l[1];
       continue ;
-      
     } else {
       return accu$1;
     }
@@ -642,7 +634,6 @@ function first(f, _param) {
       } else {
         _param = param[1];
         continue ;
-        
       }
     } else {
       return /* None */0;
@@ -786,7 +777,6 @@ function equal(_l1, _l2) {
                       _l2 = l2[1];
                       _l1 = l1[1];
                       continue ;
-                      
                     } else {
                       return /* false */0;
                     }
@@ -807,7 +797,6 @@ function equal(_l1, _l2) {
                       _l2 = l2[1];
                       _l1 = l1[1];
                       continue ;
-                      
                     } else {
                       return /* false */0;
                     }
@@ -831,7 +820,6 @@ function equal(_l1, _l2) {
                       _l2 = l2[1];
                       _l1 = l1[1];
                       continue ;
-                      
                     } else {
                       return /* false */0;
                     }
@@ -861,15 +849,15 @@ function hash$1(_l, _accu) {
             _accu = hash_combine(388635598, hash_combine(match[1][/* id */0], hash$1(match[0], accu)));
             _l = l[1];
             continue ;
-            case 1 : 
+        case 1 : 
             _accu = hash_combine(726404471, hash_combine(match[1][/* id */0], hash(match[0], accu)));
             _l = l[1];
             continue ;
-            case 2 : 
+        case 2 : 
             _accu = hash_combine(471882453, hash(match[0], accu));
             _l = l[1];
             continue ;
-            
+        
       }
     } else {
       return accu;
@@ -1006,7 +994,6 @@ function find_free(tbl, _idx, len) {
     } else {
       _idx = idx + 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -1049,7 +1036,7 @@ function split_at_match_rec(_l$prime, _param) {
               l$prime
             ];
             continue ;
-            case 2 : 
+        case 2 : 
             return /* tuple */[
                     List.rev(l$prime),
                     Curry._1(remove_matches, param[1])
@@ -1090,7 +1077,6 @@ function remove_duplicates(prev, _l, y) {
               if (List.memq(y[/* id */0], prev)) {
                 _l = r;
                 continue ;
-                
               } else {
                 var match$2 = remove_duplicates(/* :: */[
                       y[/* id */0],
@@ -1109,7 +1095,6 @@ function remove_duplicates(prev, _l, y) {
               if (List.memq(x$2[/* id */0], prev)) {
                 _l = r$1;
                 continue ;
-                
               } else {
                 var match$3 = remove_duplicates(/* :: */[
                       x$2[/* id */0],
@@ -1444,7 +1429,6 @@ function iter(_n, f, _v) {
       _v = Curry._1(f, v);
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -1536,7 +1520,6 @@ function loop(info, s, pos, st) {
           _st = st$prime$1;
           _pos = pos$2;
           continue ;
-          
         } else {
           Caml_array.caml_array_set(info$1[/* positions */2], st$prime$1[/* idx */0], pos$2);
           return st$prime$1;
@@ -1661,7 +1644,6 @@ function scan_str(info, s, initial_state, groups) {
           var st$prime$1 = find_state(info$2[/* re */0], desc$prime);
           Caml_array.caml_array_set(st$1[/* next */2], c, st$prime$1);
           continue ;
-          
         }
       };
     }
@@ -1682,13 +1664,11 @@ function scan_str(info, s, initial_state, groups) {
           _st = st$prime$2;
           _pos = pos$2 + 1 | 0;
           continue ;
-          
         } else if (st$prime$2[/* idx */0] === -3) {
           return st$prime$2;
         } else {
           validate(info$3, s$1, pos$2, st$2);
           continue ;
-          
         }
       } else {
         return st$2;
@@ -1723,7 +1703,6 @@ function trans_set(cache, cm, s) {
           } else {
             _param = c < 0 ? param[0] : param[3];
             continue ;
-            
           }
         } else {
           throw Caml_builtin_exceptions.not_found;
@@ -1757,12 +1736,12 @@ function is_charset(_param) {
         case 5 : 
             _param = param[1];
             continue ;
-            case 7 : 
+        case 7 : 
         case 9 : 
         case 10 : 
             _param = param[0];
             continue ;
-            case 2 : 
+        case 2 : 
         case 11 : 
         case 12 : 
             return List.for_all(is_charset, param[0]);
@@ -1770,7 +1749,6 @@ function is_charset(_param) {
             if (is_charset(param[0])) {
               _param = param[1];
               continue ;
-              
             } else {
               return /* false */0;
             }
@@ -1795,7 +1773,6 @@ function split(s, cm) {
       Curry._2(f, match[0], match[1]);
       _t = t[1];
       continue ;
-      
     } else {
       return /* () */0;
     }
@@ -1878,12 +1855,12 @@ function colorize(c, regexp) {
           case 8 : 
               _regexp = regexp[0];
               continue ;
-              case 4 : 
+          case 4 : 
           case 5 : 
           case 14 : 
               _regexp = regexp[1];
               continue ;
-              default:
+          default:
             throw [
                   Caml_builtin_exceptions.assert_failure,
                   [
@@ -2015,7 +1992,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
-              
             }
         case 4 : 
             if (typeof x2 === "number" || !(x2.tag === 4 && x1[0] === x2[0])) {
@@ -2024,7 +2000,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
-              
             }
         case 5 : 
             if (typeof x2 === "number" || !(x2.tag === 5 && x1[0] === x2[0])) {
@@ -2033,7 +2008,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
-              
             }
         case 6 : 
             return /* false */0;
@@ -2044,7 +2018,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
-              
             }
         case 8 : 
             if (typeof x2 === "number" || x2.tag !== 8) {
@@ -2053,7 +2026,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
-              
             }
         case 9 : 
             if (typeof x2 === "number" || x2.tag !== 9) {
@@ -2062,7 +2034,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
-              
             }
         case 10 : 
             if (typeof x2 === "number" || x2.tag !== 10) {
@@ -2071,7 +2042,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[0];
               _x1 = x1[0];
               continue ;
-              
             }
         case 11 : 
             if (typeof x2 === "number" || x2.tag !== 11) {
@@ -2092,7 +2062,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
-              
             }
         case 14 : 
             if (typeof x2 === "number" || !(x2.tag === 14 && x1[0] === x2[0])) {
@@ -2101,7 +2070,6 @@ function equal$2(_x1, _x2) {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
-              
             }
         
       }
@@ -2118,7 +2086,6 @@ function eq_list(_l1, _l2) {
         _l2 = l2[1];
         _l1 = l1[1];
         continue ;
-        
       } else {
         return /* false */0;
       }
@@ -2206,7 +2173,7 @@ function merge_sequences(_param) {
           case 2 : 
               _param = Pervasives.$at(x[0], param[1]);
               continue ;
-              default:
+          default:
             exit = 1;
         }
       }
@@ -2391,12 +2358,11 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
             _param = param[1];
             _greedy = param[0];
             continue ;
-            case 6 : 
+        case 6 : 
             var r$prime = param[0];
             if (ign_group) {
               _param = r$prime;
               continue ;
-              
             } else {
               var p = pos[0];
               pos[0] = pos[0] + 2 | 0;
@@ -2410,7 +2376,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
             _param = param[0];
             _ign_group = /* true */1;
             continue ;
-            case 8 : 
+        case 8 : 
             var b = pos[0];
             var match$4 = translate(ids, kind, ign_group, ign_case, greedy, pos, cache, c, param[0]);
             var kind$prime$2 = match$4[1];
@@ -2575,11 +2541,11 @@ function handle_case(_ign_case, _r) {
             _r = r[0];
             _ign_case = /* false */0;
             continue ;
-            case 10 : 
+        case 10 : 
             _r = r[0];
             _ign_case = /* true */1;
             continue ;
-            case 11 : 
+        case 11 : 
             var l$prime$1 = List.map((function(ign_case){
                 return function (r) {
                   return handle_case(ign_case, r);
@@ -2631,7 +2597,6 @@ function anchored(_param) {
             if (param[1] > 0) {
               _param = param[0];
               continue ;
-              
             } else {
               return /* false */0;
             }
@@ -2642,12 +2607,12 @@ function anchored(_param) {
         case 10 : 
             _param = param[0];
             continue ;
-            case 4 : 
+        case 4 : 
         case 5 : 
         case 14 : 
             _param = param[1];
             continue ;
-            default:
+        default:
           return /* false */0;
       }
     }
@@ -3122,7 +3087,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
           left
         ];
         continue ;
-        
       }
     };
   };
@@ -3138,7 +3102,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               ]
             ]);
         continue ;
-        
       } else {
         return left;
       }
@@ -3176,7 +3139,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
                   s
                 ];
                 continue ;
-                
               } else {
                 return /* :: */[
                         /* Set */Block.__(0, [single(c)]),
@@ -3202,7 +3164,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               s
             ];
             continue ;
-            
           }
         } else {
           _s = /* :: */[
@@ -3210,7 +3171,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
             s
           ];
           continue ;
-          
         }
       }
     };
@@ -3534,7 +3494,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               }
               _i = i$prime;
               continue ;
-              
             }
           }
         };
@@ -3565,7 +3524,6 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
               i[0] = i[0] + 1 | 0;
               _param = /* () */0;
               continue ;
-              
             }
           };
         } else {

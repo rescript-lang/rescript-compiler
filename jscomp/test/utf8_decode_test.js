@@ -81,7 +81,6 @@ function utf8_decode(strm) {
                                   _c = (c << 6) | match[0] & 63;
                                   _n = n - 1 | 0;
                                   continue ;
-                                  
                                 } else {
                                   throw [
                                         Stream.$$Error,
@@ -146,7 +145,6 @@ function decode(bytes, offset) {
                 _c = (c << 6) | match$1[0] & 63;
                 _n = n - 1 | 0;
                 continue ;
-                
               } else {
                 throw [
                       Caml_builtin_exceptions.invalid_argument,
@@ -169,7 +167,6 @@ function eq_list(cmp, _xs, _ys) {
         _ys = ys[1];
         _xs = xs[1];
         continue ;
-        
       } else {
         return /* false */0;
       }

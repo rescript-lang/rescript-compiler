@@ -70,7 +70,6 @@ function Make(funarg) {
             Curry._3(H[/* add */4], l_labels, top$1, Caml_primitive.caml_int_max(Curry._2(H[/* find */6], l_labels, top$1), x));
             _successors = successors[1];
             continue ;
-            
           } else {
             return step2(successor, /* :: */[
                         /* tuple */[
@@ -102,7 +101,6 @@ function Make(funarg) {
             _top = new_top;
             _successors = match[1];
             continue ;
-            
           } else {
             return cut_set[0];
           }

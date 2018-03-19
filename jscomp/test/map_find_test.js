@@ -125,7 +125,6 @@ function find(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -280,7 +279,6 @@ function find$1(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;

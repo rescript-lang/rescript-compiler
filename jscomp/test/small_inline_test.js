@@ -31,7 +31,6 @@ function f(_x) {
     var x = _x;
     _x = (((x + 1 | 0) + 1 | 0) + 1 | 0) + 1 | 0;
     continue ;
-    
   };
 }
 
@@ -42,14 +41,12 @@ function ff(_x, _y) {
     _y = x + 1 | 0;
     _x = y;
     continue ;
-    
   };
 }
 
 function fff(_, _$1) {
   while(true) {
     continue ;
-    
   };
 }
 

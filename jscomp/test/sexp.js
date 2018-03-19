@@ -177,7 +177,6 @@ function map_opt(f, l) {
           acc
         ];
         continue ;
-        
       } else {
         return /* None */0;
       }
@@ -200,7 +199,6 @@ function list_any(f, e) {
         } else {
           _l = l[1];
           continue ;
-          
         }
       } else {
         return /* None */0;
@@ -229,10 +227,8 @@ function list_all(f, e) {
             acc
           ];
           continue ;
-          
         } else {
           continue ;
-          
         }
       } else {
         return List.rev(acc);
@@ -381,11 +377,9 @@ function get_field(name, e) {
         if (typeof match === "number") {
           _l = l[1];
           continue ;
-          
         } else if (match[0] !== 848054398) {
           _l = l[1];
           continue ;
-          
         } else {
           var match$1 = match[1];
           if (match$1) {
@@ -393,35 +387,29 @@ function get_field(name, e) {
             if (typeof match$2 === "number") {
               _l = l[1];
               continue ;
-              
             } else if (match$2[0] !== 726615281) {
               _l = l[1];
               continue ;
-              
             } else {
               var match$3 = match$1[1];
               if (match$3) {
                 if (match$3[1]) {
                   _l = l[1];
                   continue ;
-                  
                 } else if (Caml_obj.caml_equal(name$1, match$2[1])) {
                   return /* Some */[match$3[0]];
                 } else {
                   _l = l[1];
                   continue ;
-                  
                 }
               } else {
                 _l = l[1];
                 continue ;
-                
               }
             }
           } else {
             _l = l[1];
             continue ;
-            
           }
         }
       } else {
@@ -445,11 +433,9 @@ function _get_field_list(name, _l) {
       if (typeof match === "number") {
         _l = l[1];
         continue ;
-        
       } else if (match[0] !== 848054398) {
         _l = l[1];
         continue ;
-        
       } else {
         var match$1 = match[1];
         if (match$1) {
@@ -457,22 +443,18 @@ function _get_field_list(name, _l) {
           if (typeof match$2 === "number") {
             _l = l[1];
             continue ;
-            
           } else if (match$2[0] !== 726615281) {
             _l = l[1];
             continue ;
-            
           } else if (Caml_obj.caml_equal(name, match$2[1])) {
             return /* Some */[match$1[1]];
           } else {
             _l = l[1];
             continue ;
-            
           }
         } else {
           _l = l[1];
           continue ;
-          
         }
       }
     } else {
@@ -499,7 +481,6 @@ function _get_variant(s, args, _l) {
       } else {
         _l = l[1];
         continue ;
-        
       }
     } else {
       return /* None */0;

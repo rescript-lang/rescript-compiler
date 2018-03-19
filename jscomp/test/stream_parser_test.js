@@ -202,10 +202,10 @@ function l_parse(token) {
           case "*" : 
               _a = Caml_int32.imul(a, parse_f(/* () */0));
               continue ;
-              case "/" : 
+          case "/" : 
               _a = Caml_int32.div(a, parse_f(/* () */0));
               continue ;
-              default:
+          default:
             Queue.push(t, look_ahead);
             return a;
         }
@@ -224,10 +224,10 @@ function l_parse(token) {
           case "+" : 
               _a = a + parse_f_aux(parse_f(/* () */0)) | 0;
               continue ;
-              case "-" : 
+          case "-" : 
               _a = a - parse_f_aux(parse_f(/* () */0)) | 0;
               continue ;
-              default:
+          default:
             Queue.push(t, look_ahead);
             return a;
         }

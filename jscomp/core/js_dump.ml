@@ -1349,7 +1349,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
     P.space f ;
     P.string f s;
     semi f;
-    P.newline f;
+    (* P.newline f; *)
+    (* #2642 *)
     cxt
   | Debugger
     ->

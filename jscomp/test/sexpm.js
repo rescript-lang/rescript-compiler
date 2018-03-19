@@ -459,11 +459,9 @@ function expr(k, t) {
           return expr_starting_with(c, k, t);
         } else {
           continue ;
-          
         }
       } else if (c >= 9) {
         continue ;
-        
       } else {
         return expr_starting_with(c, k, t);
       }
@@ -563,7 +561,6 @@ function expr_list(acc, k, t) {
         }
       } else if (switcher > 22 || switcher < 2) {
         continue ;
-        
       } else {
         exit = 1;
       }
@@ -674,7 +671,7 @@ function atom(k, t) {
         case 1 : 
             Buffer.add_char(t[/* atom */2], c);
             continue ;
-            case 2 : 
+        case 2 : 
             return _return_atom(/* Some */[c], k, t);
         
       }
@@ -706,7 +703,6 @@ function quoted(k, t) {
       if (exit === 1) {
         Buffer.add_char(t[/* atom */2], c);
         continue ;
-        
       }
       
     }
@@ -850,7 +846,6 @@ function skip_comment(k, t) {
       var match = _get(t);
       if (match !== 10) {
         continue ;
-        
       } else {
         return Curry._2(k, /* None */0, /* () */0);
       }
@@ -873,11 +868,9 @@ function expr_or_end(k, t) {
           return expr_starting_with(c, k, t);
         } else {
           continue ;
-          
         }
       } else if (c >= 9) {
         continue ;
-        
       } else {
         return expr_starting_with(c, k, t);
       }
@@ -968,7 +961,6 @@ function parse_chan_list(bufsize, ic) {
         acc
       ];
       continue ;
-      
     }
   };
 }
@@ -1094,11 +1086,9 @@ function MakeDecode(funarg) {
             return expr_starting_with(c, k, t);
           } else {
             continue ;
-            
           }
         } else if (c >= 9) {
           continue ;
-          
         } else {
           return expr_starting_with(c, k, t);
         }
@@ -1196,7 +1186,6 @@ function MakeDecode(funarg) {
           }
         } else if (switcher > 22 || switcher < 2) {
           continue ;
-          
         } else {
           exit = 1;
         }
@@ -1305,7 +1294,7 @@ function MakeDecode(funarg) {
           case 1 : 
               Buffer.add_char(t[/* atom */2], c);
               continue ;
-              case 2 : 
+          case 2 : 
               return _return_atom(/* Some */[c], k, t);
           
         }
@@ -1336,7 +1325,6 @@ function MakeDecode(funarg) {
         if (exit === 1) {
           Buffer.add_char(t[/* atom */2], c);
           continue ;
-          
         }
         
       }
@@ -1476,7 +1464,6 @@ function MakeDecode(funarg) {
         var match = _get(t);
         if (match !== 10) {
           continue ;
-          
         } else {
           return Curry._2(k, /* None */0, /* () */0);
         }
@@ -1498,11 +1485,9 @@ function MakeDecode(funarg) {
             return expr_starting_with(c, k, t);
           } else {
             continue ;
-            
           }
         } else if (c >= 9) {
           continue ;
-          
         } else {
           return expr_starting_with(c, k, t);
         }

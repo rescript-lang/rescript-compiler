@@ -9,7 +9,6 @@ function test3(_n) {
     } else {
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -22,7 +21,6 @@ function test2(_n) {
     } else {
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -39,13 +37,11 @@ function test0(_n) {
         } else {
           _n$1 = n$1 - 1 | 0;
           continue ;
-          
         }
       };
     } else {
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }

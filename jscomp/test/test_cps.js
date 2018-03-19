@@ -18,7 +18,6 @@ function f(_n, _acc) {
       }(n,acc));
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }

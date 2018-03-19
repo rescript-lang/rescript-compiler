@@ -16,7 +16,7 @@ function is_number(_expr) {
       case 1 : 
           _expr = expr[0];
           continue ;
-          case 2 : 
+      case 2 : 
       case 3 : 
       case 4 : 
       case 5 : 
@@ -68,7 +68,7 @@ function compare(context, state, _a, _b) {
       case 1 : 
           _a = a[0];
           continue ;
-          case 2 : 
+      case 2 : 
       case 3 : 
           exit$3 = 5;
           break;
@@ -128,7 +128,6 @@ function compare(context, state, _a, _b) {
       if (b.tag === 1) {
         _b = b[0];
         continue ;
-        
       } else if (a.tag === 2 && is_number(b)) {
         return 1;
       } else {
@@ -173,7 +172,6 @@ function compare(context, state, _a, _b) {
             _b = nb;
             _a = na;
             continue ;
-            
           } else {
             return denom;
           }

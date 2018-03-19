@@ -130,7 +130,6 @@ function cons_enum(_m, _e) {
       ];
       _m = m[0];
       continue ;
-      
     } else {
       return e;
     }
@@ -156,7 +155,6 @@ function compare(cmp, m1, m2) {
             _e2 = cons_enum(e2[2], e2[3]);
             _e1 = cons_enum(e1[2], e1[3]);
             continue ;
-            
           }
         }
       } else {
@@ -181,7 +179,6 @@ function equal(cmp, m1, m2) {
         _e2 = cons_enum(e2[2], e2[3]);
         _e1 = cons_enum(e1[2], e1[3]);
         continue ;
-        
       } else {
         return /* false */0;
       }
@@ -320,7 +317,6 @@ function find(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;

@@ -30,7 +30,6 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 

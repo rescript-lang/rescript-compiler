@@ -1119,7 +1119,6 @@ function parse_body(_f) {
         } else {
           _f = eat(f);
           continue ;
-          
         }
       } else if (c !== 46) {
         if (c >= 80) {
@@ -1137,7 +1136,6 @@ function parse_body(_f) {
           /* todo */init[/* todo */4]
         ];
         continue ;
-        
       } else {
         throw No_good;
       }
@@ -1165,7 +1163,6 @@ function parse_body(_f) {
           /* todo */init$1[/* todo */4]
         ];
         continue ;
-        
       }
       
     } else {
@@ -1254,7 +1251,6 @@ function unicode_fix_cols(lb) {
         _acc = acc$1;
         _start = start + 1 | 0;
         continue ;
-        
       }
     };
   };
@@ -1789,7 +1785,6 @@ function token(env, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -2262,7 +2257,6 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -3138,18 +3132,17 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             Lexing.new_line(lexbuf);
             ___ocaml_lex_state = 393;
             continue ;
-            case 1 : 
+        case 1 : 
             unicode_fix_cols(lexbuf);
             ___ocaml_lex_state = 393;
             continue ;
-            case 2 : 
+        case 2 : 
             var start = loc_of_lexbuf(env, lexbuf);
             var buf = Buffer.create(127);
             var match = line_comment(env, buf, lexbuf);
@@ -3157,7 +3150,7 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
             ___ocaml_lex_state = 393;
             _env = env$1;
             continue ;
-            case 3 : 
+        case 3 : 
             var start$1 = loc_of_lexbuf(env, lexbuf);
             var buf$1 = Buffer.create(127);
             var match$1 = comment(env, buf$1, lexbuf);
@@ -3165,7 +3158,7 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
             ___ocaml_lex_state = 393;
             _env = env$2;
             continue ;
-            case 4 : 
+        case 4 : 
             var start$2 = loc_of_lexbuf(env, lexbuf);
             var cooked = Buffer.create(127);
             var raw = Buffer.create(127);
@@ -3219,7 +3212,6 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -3289,7 +3281,6 @@ function string_escape(env, buf, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -3461,7 +3452,6 @@ function regexp_class(env, buf, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -3502,7 +3492,6 @@ function regexp_body(env, buf, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -3568,7 +3557,6 @@ function line_comment(env, buf, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -3618,7 +3606,6 @@ function comment(env, buf, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -3673,7 +3660,6 @@ function string_quote(env, q, buf, raw, octal, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -3743,7 +3729,6 @@ function type_token(env, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -4098,7 +4083,6 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -4110,11 +4094,11 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
             Lexing.new_line(lexbuf);
             ___ocaml_lex_state = 291;
             continue ;
-            case 2 : 
+        case 2 : 
             unicode_fix_cols(lexbuf);
             ___ocaml_lex_state = 291;
             continue ;
-            case 3 : 
+        case 3 : 
             var start = loc_of_lexbuf(env, lexbuf);
             var buf = Buffer.create(127);
             var match = line_comment(env, buf, lexbuf);
@@ -4122,7 +4106,7 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
             ___ocaml_lex_state = 291;
             _env = env$1;
             continue ;
-            case 4 : 
+        case 4 : 
             var start$1 = loc_of_lexbuf(env, lexbuf);
             var buf$1 = Buffer.create(127);
             var match$1 = comment(env, buf$1, lexbuf);
@@ -4130,7 +4114,7 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
             ___ocaml_lex_state = 291;
             _env = env$2;
             continue ;
-            case 5 : 
+        case 5 : 
             var start$2 = loc_of_lexbuf(env, lexbuf);
             var buf$2 = Buffer.create(127);
             var match$2 = regexp_body(env, buf$2, lexbuf);
@@ -4166,7 +4150,6 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -4178,11 +4161,11 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
             Lexing.new_line(lexbuf);
             ___ocaml_lex_state = 333;
             continue ;
-            case 2 : 
+        case 2 : 
             unicode_fix_cols(lexbuf);
             ___ocaml_lex_state = 333;
             continue ;
-            case 3 : 
+        case 3 : 
             var start = loc_of_lexbuf(env, lexbuf);
             var buf = Buffer.create(127);
             var match = line_comment(env, buf, lexbuf);
@@ -4190,7 +4173,7 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
             ___ocaml_lex_state = 333;
             _env = env$1;
             continue ;
-            case 4 : 
+        case 4 : 
             var start$1 = loc_of_lexbuf(env, lexbuf);
             var buf$1 = Buffer.create(127);
             var match$1 = comment(env, buf$1, lexbuf);
@@ -4198,7 +4181,7 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
             ___ocaml_lex_state = 333;
             _env = env$2;
             continue ;
-            case 5 : 
+        case 5 : 
             return /* tuple */[
                     env,
                     /* T_LESS_THAN */89
@@ -4283,7 +4266,6 @@ function jsx_child(env, start, buf, raw, lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -4476,7 +4458,6 @@ function mem(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -4506,7 +4487,6 @@ function next_power_of_two(n) {
     } else {
       _i = (i << 1);
       continue ;
-      
     }
   };
 }
@@ -5340,7 +5320,6 @@ function mem$1(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -5467,7 +5446,6 @@ function find(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -5591,7 +5569,6 @@ function mem$2(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -5806,7 +5783,6 @@ function postfix_with(env, _t) {
       ];
       _t = t$1;
       continue ;
-      
     } else {
       return t;
     }
@@ -6108,7 +6084,6 @@ function params(env, _acc) {
       }
       _acc = acc$1;
       continue ;
-      
     }
     
   };
@@ -6165,7 +6140,7 @@ function function_param_list_without_parens(env) {
               }
               _acc = acc$1;
               continue ;
-              case 2 : 
+          case 2 : 
               var rest = t === /* T_ELLIPSIS */11 ? (token$4(env$1, /* T_ELLIPSIS */11), /* Some */[param(env$1)]) : /* None */0;
               return /* tuple */[
                       rest,
@@ -6251,7 +6226,6 @@ function params$1(env, allow_default, _require_default, _acc) {
         _acc = acc$1;
         _require_default = match$3[1];
         continue ;
-        
       }
     }
     
@@ -6295,7 +6269,6 @@ function intersection_with(env, left) {
           acc
         ];
         continue ;
-        
       } else {
         exit = 1;
       }
@@ -6331,7 +6304,6 @@ function union_with(env, left) {
           acc
         ];
         continue ;
-        
       } else {
         exit = 1;
       }
@@ -6370,7 +6342,6 @@ function types(env, _acc) {
       }
       _acc = acc$1;
       continue ;
-      
     }
     
   };
@@ -6521,7 +6492,7 @@ function properties(allow_static, env, _param) {
                     callProperties
                   ];
                   continue ;
-                  
+              
             }
           }
         } else {
@@ -6585,7 +6556,7 @@ function properties(allow_static, env, _param) {
             callProperties
           ];
           continue ;
-          case 2 : 
+      case 2 : 
           return /* tuple */[
                   List.rev(acc),
                   List.rev(indexers),
@@ -6603,7 +6574,7 @@ function properties(allow_static, env, _param) {
             ]
           ];
           continue ;
-          
+      
     }
   };
 }
@@ -6650,7 +6621,6 @@ function identifier(env, _param) {
         qualification$1
       ];
       continue ;
-      
     } else {
       return /* tuple */[
               q_loc,
@@ -6759,7 +6729,7 @@ function pattern(check_env, _param) {
       case 2 : 
           _param = p[0][/* left */0];
           continue ;
-          case 3 : 
+      case 3 : 
           var param$1 = check_env;
           var id = p[0];
           var name = id[1][/* name */0];
@@ -6932,7 +6902,7 @@ function param_list(env, _param) {
             has_default$1
           ];
           continue ;
-          case 2 : 
+      case 2 : 
           var rest = t === /* T_ELLIPSIS */11 ? (token$4(env, /* T_ELLIPSIS */11), /* Some */[Curry._2(Parse[/* identifier_with_type */12], env, /* StrictParamName */28)]) : /* None */0;
           if (Curry._2(Parser_env_048[/* token */0], /* None */0, env) !== /* T_RPAREN */4) {
             error$1(env, /* ParameterAfterRestParameter */47);
@@ -7134,7 +7104,6 @@ function helper(env, _decls, _errs) {
       _errs = errs$1;
       _decls = decls$1;
       continue ;
-      
     } else {
       var end_loc = decl[0];
       var declarations = List.rev(decls$1);
@@ -7565,7 +7534,6 @@ function call(env, _left) {
                     ]])
               ];
               continue ;
-              
             }
         case 5 : 
             token$4(env, /* T_LBRACKET */5);
@@ -7582,7 +7550,7 @@ function call(env, _left) {
                   ]])
             ];
             continue ;
-            case 9 : 
+        case 9 : 
             token$4(env, /* T_PERIOD */9);
             var match$2 = identifier_or_reserved_keyword(env);
             var id = match$2[0];
@@ -7595,7 +7563,7 @@ function call(env, _left) {
                   ]])
             ];
             continue ;
-            default:
+        default:
           return left;
       }
     } else if (match.tag === 2) {
@@ -7643,7 +7611,6 @@ function _new(env, _finish_fn) {
       }(finish_fn,start_loc));
       _finish_fn = finish_fn$prime;
       continue ;
-      
     } else {
       exit = 1;
     }
@@ -8066,7 +8033,6 @@ function sequence(env, _acc) {
         acc
       ];
       continue ;
-      
     } else {
       exit = 1;
     }
@@ -8333,7 +8299,6 @@ function logical_and(env, _left, _lloc) {
         _lloc = loc;
         _left = make_logical(left, match$1[1], /* And */1, loc);
         continue ;
-        
       }
     } else {
       return /* tuple */[
@@ -8363,7 +8328,6 @@ function logical_or(env, _left, _lloc) {
         _lloc = loc;
         _left = make_logical(left, match$2[1], /* Or */0, loc);
         continue ;
-        
       }
     } else {
       return /* tuple */[
@@ -8579,7 +8543,6 @@ function add_to_stack(_right, _param, _rloc, _stack) {
         ];
         _right = right$1;
         continue ;
-        
       } else {
         exit = 1;
       }
@@ -8639,7 +8602,6 @@ function binary(env) {
             match$2[1]
           ], right_loc, stack);
       continue ;
-      
     } else {
       var _right = right;
       var _rloc = right_loc;
@@ -8655,7 +8617,6 @@ function binary(env) {
           _rloc = loc;
           _right = make_binary(match$3[0], right$1, match$3[1][0], loc);
           continue ;
-          
         } else {
           return right$1;
         }
@@ -8705,7 +8666,6 @@ function arguments$prime(env, _acc) {
       }
       _acc = acc$1;
       continue ;
-      
     }
     
   };
@@ -8793,7 +8753,6 @@ function template_parts(env, _quasis, _expressions) {
         _expressions = expressions$1;
         _quasis = quasis$1;
         continue ;
-        
       }
     } else {
       exit = 1;
@@ -8882,7 +8841,7 @@ function elements(env, _acc) {
                   acc
                 ];
                 continue ;
-                case 0 : 
+            case 0 : 
             case 1 : 
             case 2 : 
             case 3 : 
@@ -8907,7 +8866,7 @@ function elements(env, _acc) {
                   acc
                 ];
                 continue ;
-                
+            
           }
         }
       } else {
@@ -8926,7 +8885,6 @@ function elements(env, _acc) {
         acc
       ];
       continue ;
-      
     }
     
   };
@@ -9067,7 +9025,6 @@ function decorator_list_helper(env, _decorators) {
         decorators
       ];
       continue ;
-      
     } else {
       return decorators;
     }
@@ -9616,7 +9573,6 @@ function properties$1(env, _param) {
         ]
       ];
       continue ;
-      
     }
     
   };
@@ -9660,7 +9616,6 @@ function class_implements(env, _acc) {
       token$4(env, /* T_COMMA */8);
       _acc = acc$1;
       continue ;
-      
     } else {
       return List.rev(acc$1);
     }
@@ -9902,7 +9857,6 @@ function elements$1(env, _acc) {
       } else {
         token$4(env, /* T_SEMICOLON */7);
         continue ;
-        
       }
     } else {
       exit = 1;
@@ -9913,7 +9867,6 @@ function elements$1(env, _acc) {
         acc
       ];
       continue ;
-      
     }
     
   };
@@ -10378,7 +10331,6 @@ function export_specifiers_and_errs(env, _specifiers, _errs) {
         specifiers
       ];
       continue ;
-      
     }
     
   };
@@ -10775,7 +10727,6 @@ function supers(env, _acc) {
       token$4(env, /* T_COMMA */8);
       _acc = acc$1;
       continue ;
-      
     } else {
       return List.rev(acc$1);
     }
@@ -10818,7 +10769,6 @@ function supers$1(env, _acc) {
       token$4(env, /* T_COMMA */8);
       _acc = acc$1;
       continue ;
-      
     } else {
       return List.rev(acc$1);
     }
@@ -10943,7 +10893,6 @@ function module_items(env, _module_kind, _acc) {
       ];
       _module_kind = module_kind$1;
       continue ;
-      
     }
     
   };
@@ -10978,7 +10927,7 @@ function fold(acc, _param) {
       case 2 : 
           _param = match[0][/* left */0];
           continue ;
-          case 3 : 
+      case 3 : 
           var match$1 = match[0];
           return /* :: */[
                   /* tuple */[
@@ -11126,7 +11075,6 @@ function case_list(env, _param) {
         acc$1
       ];
       continue ;
-      
     }
     
   };
@@ -11235,7 +11183,6 @@ function specifier_list(env, _acc) {
         acc
       ];
       continue ;
-      
     }
     
   };
@@ -11513,10 +11460,8 @@ function _object$2(restricted_error) {
             acc
           ];
           continue ;
-          
         } else {
           continue ;
-          
         }
       }
       
@@ -11572,7 +11517,7 @@ function _array(restricted_error) {
                     acc
                   ];
                   continue ;
-                  case 0 : 
+              case 0 : 
               case 1 : 
               case 2 : 
               case 3 : 
@@ -11597,7 +11542,7 @@ function _array(restricted_error) {
                     acc
                   ];
                   continue ;
-                  
+              
             }
           }
         } else {
@@ -11633,7 +11578,6 @@ function _array(restricted_error) {
           acc
         ];
         continue ;
-        
       }
       
     };
@@ -11757,7 +11701,6 @@ function member_expression(env, _member) {
       ];
       _member = member$1;
       continue ;
-      
     } else {
       return member;
     }
@@ -11924,7 +11867,6 @@ function attributes(env, _acc) {
           acc
         ];
         continue ;
-        
       }
     } else {
       exit = 1;
@@ -11936,7 +11878,6 @@ function attributes(env, _acc) {
         acc
       ];
       continue ;
-      
     }
     
   };
@@ -12049,7 +11990,6 @@ function children_and_closing(env, _acc) {
             acc
           ];
           continue ;
-          
         } else {
           error_unexpected(env);
           return /* tuple */[
@@ -12072,7 +12012,6 @@ function children_and_closing(env, _acc) {
             acc
           ];
           continue ;
-          
         } else {
           return /* tuple */[
                   List.rev(acc),
@@ -12086,7 +12025,6 @@ function children_and_closing(env, _acc) {
         acc
       ];
       continue ;
-      
     }
   };
 }
@@ -13243,7 +13181,6 @@ function statement(env) {
       error_unexpected(env);
       token$3(env);
       continue ;
-      
     }
     
   };
@@ -13371,7 +13308,6 @@ function module_body(term_fn, env) {
           acc
         ];
         continue ;
-        
       }
     }
     
@@ -13458,7 +13394,6 @@ function statement_list(_env, term_fn, item_fn, _param) {
               ];
               _env = with_strict(strict, env);
               continue ;
-              
             }
           } else {
             return /* tuple */[
@@ -13538,7 +13473,6 @@ function statement_list$1(term_fn, env) {
           acc
         ];
         continue ;
-        
       }
     }
     
