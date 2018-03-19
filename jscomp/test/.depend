@@ -309,6 +309,7 @@ gpr_2503_test.cmj : mt.cmj ../runtime/js.cmj
 gpr_2608_test.cmj : mt.cmj ../stdlib/list.cmj
 gpr_2633_test.cmj :
 gpr_2642_test.cmj :
+gpr_2652_test.cmj : ../others/node.cmj ../stdlib/buffer.cmj
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj

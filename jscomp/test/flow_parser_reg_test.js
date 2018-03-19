@@ -11,7 +11,7 @@ var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Queue = require("../../lib/js/queue.js");
-var Buffer = require("../../lib/js/buffer.js");
+var $$Buffer = require("../../lib/js/buffer.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Lexing = require("../../lib/js/lexing.js");
 var Printf = require("../../lib/js/printf.js");
@@ -1214,7 +1214,7 @@ function float_of_string(str) {
 
 function save_comment(env, start, _end, buf, multiline) {
   var loc = btwn(start, _end);
-  var s = Buffer.contents(buf);
+  var s = $$Buffer.contents(buf);
   var c = multiline ? /* Block */Block.__(0, [s]) : /* Line */Block.__(1, [s]);
   var lex_comments_acc_000 = /* tuple */[
     loc,
@@ -1798,7 +1798,7 @@ function token(env, lexbuf) {
             return token(env$1, lexbuf$1);
         case 3 : 
             var start = loc_of_lexbuf(env$1, lexbuf$1);
-            var buf = Buffer.create(127);
+            var buf = $$Buffer.create(127);
             var match = comment(env$1, buf, lexbuf$1);
             var env$3 = save_comment(match[0], start, match[1], buf, /* true */1);
             return token(env$3, lexbuf$1);
@@ -1825,9 +1825,9 @@ function token(env, lexbuf) {
               }
             } else {
               var start$1 = loc_of_lexbuf(env$1, lexbuf$1);
-              var buf$1 = Buffer.create(127);
-              Buffer.add_string(buf$1, sp);
-              Buffer.add_string(buf$1, escape_type);
+              var buf$1 = $$Buffer.create(127);
+              $$Buffer.add_string(buf$1, sp);
+              $$Buffer.add_string(buf$1, escape_type);
               var match$1 = comment(env$1, buf$1, lexbuf$1);
               var env$6 = save_comment(match$1[0], start$1, match$1[1], buf$1, /* true */1);
               return token(env$6, lexbuf$1);
@@ -1845,13 +1845,13 @@ function token(env, lexbuf) {
             }
         case 6 : 
             var start$2 = loc_of_lexbuf(env$1, lexbuf$1);
-            var buf$2 = Buffer.create(127);
+            var buf$2 = $$Buffer.create(127);
             var match$2 = line_comment(env$1, buf$2, lexbuf$1);
             var env$8 = save_comment(match$2[0], start$2, match$2[1], buf$2, /* false */0);
             return token(env$8, lexbuf$1);
         case 7 : 
             if (lexbuf$1[/* lex_start_pos */4] === 0) {
-              var match$3 = line_comment(env$1, Buffer.create(127), lexbuf$1);
+              var match$3 = line_comment(env$1, $$Buffer.create(127), lexbuf$1);
               return token(match$3[0], lexbuf$1);
             } else {
               return /* tuple */[
@@ -1862,24 +1862,24 @@ function token(env, lexbuf) {
         case 8 : 
             var quote = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
             var start$3 = loc_of_lexbuf(env$1, lexbuf$1);
-            var buf$3 = Buffer.create(127);
-            var raw = Buffer.create(127);
-            Buffer.add_char(raw, quote);
+            var buf$3 = $$Buffer.create(127);
+            var raw = $$Buffer.create(127);
+            $$Buffer.add_char(raw, quote);
             var match$4 = string_quote(env$1, quote, buf$3, raw, /* false */0, lexbuf$1);
             return /* tuple */[
                     match$4[0],
                     /* T_STRING */Block.__(1, [/* tuple */[
                           btwn(start$3, match$4[1]),
-                          Buffer.contents(buf$3),
-                          Buffer.contents(raw),
+                          $$Buffer.contents(buf$3),
+                          $$Buffer.contents(raw),
                           match$4[2]
                         ]])
                   ];
         case 9 : 
-            var cooked = Buffer.create(127);
-            var raw$1 = Buffer.create(127);
-            var literal = Buffer.create(127);
-            Buffer.add_string(literal, Lexing.lexeme(lexbuf$1));
+            var cooked = $$Buffer.create(127);
+            var raw$1 = $$Buffer.create(127);
+            var literal = $$Buffer.create(127);
+            $$Buffer.add_string(literal, Lexing.lexeme(lexbuf$1));
             var start$4 = loc_of_lexbuf(env$1, lexbuf$1);
             var match$5 = template_part(env$1, start$4, cooked, raw$1, literal, lexbuf$1);
             return /* tuple */[
@@ -1887,9 +1887,9 @@ function token(env, lexbuf) {
                     /* T_TEMPLATE_PART */Block.__(2, [/* tuple */[
                           match$5[1],
                           /* record */[
-                            /* cooked */Buffer.contents(cooked),
-                            /* raw */Buffer.contents(raw$1),
-                            /* literal */Buffer.contents(literal)
+                            /* cooked */$$Buffer.contents(cooked),
+                            /* raw */$$Buffer.contents(raw$1),
+                            /* literal */$$Buffer.contents(literal)
                           ],
                           match$5[2]
                         ]])
@@ -2301,8 +2301,8 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
               
             }
             if (exit === 1) {
-              Buffer.add_char(raw$1, c);
-              Buffer.add_char(buf$1, c);
+              $$Buffer.add_char(raw$1, c);
+              $$Buffer.add_char(buf$1, c);
               return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
             }
             break;
@@ -2314,32 +2314,32 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
                   ];
         case 2 : 
             var lt = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
-            Buffer.add_string(raw$1, lt);
-            Buffer.add_string(buf$1, lt);
+            $$Buffer.add_string(raw$1, lt);
+            $$Buffer.add_string(buf$1, lt);
             Lexing.new_line(lexbuf$1);
             return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
         case 3 : 
             var n = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4] + 3 | 0, lexbuf$1[/* lex_curr_pos */5] - 1 | 0);
             var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
-            Buffer.add_string(raw$1, s);
+            $$Buffer.add_string(raw$1, s);
             var code = Caml_format.caml_int_of_string("0x" + n);
             List.iter((function (param) {
-                    return Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf$1, param);
                   }), utf16to8(code));
             return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
         case 4 : 
             var n$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4] + 2 | 0, lexbuf$1[/* lex_curr_pos */5] - 1 | 0);
             var s$1 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
-            Buffer.add_string(raw$1, s$1);
+            $$Buffer.add_string(raw$1, s$1);
             var code$1 = Caml_format.caml_int_of_string(n$1);
             List.iter((function (param) {
-                    return Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf$1, param);
                   }), utf16to8(code$1));
             return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
         case 5 : 
             var entity = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4] + 1 | 0, lexbuf$1[/* lex_curr_pos */5] - 1 | 0);
             var s$2 = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
-            Buffer.add_string(raw$1, s$2);
+            $$Buffer.add_string(raw$1, s$2);
             var code$2;
             switch (entity) {
               case "'int'" : 
@@ -3106,16 +3106,16 @@ function jsx_text(env, mode, buf, raw, lexbuf) {
             }
             if (code$2) {
               List.iter((function (param) {
-                      return Buffer.add_char(buf$1, param);
+                      return $$Buffer.add_char(buf$1, param);
                     }), utf16to8(code$2[0]));
             } else {
-              Buffer.add_string(buf$1, "&" + (entity + ";"));
+              $$Buffer.add_string(buf$1, "&" + (entity + ";"));
             }
             return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
         case 6 : 
             var c$1 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(raw$1, c$1);
-            Buffer.add_char(buf$1, c$1);
+            $$Buffer.add_char(raw$1, c$1);
+            $$Buffer.add_char(buf$1, c$1);
             return jsx_text(env$1, mode$1, buf$1, raw$1, lexbuf$1);
         
       }
@@ -3144,7 +3144,7 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
             continue ;
         case 2 : 
             var start = loc_of_lexbuf(env, lexbuf);
-            var buf = Buffer.create(127);
+            var buf = $$Buffer.create(127);
             var match = line_comment(env, buf, lexbuf);
             var env$1 = save_comment(match[0], start, match[1], buf, /* true */1);
             ___ocaml_lex_state = 393;
@@ -3152,7 +3152,7 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
             continue ;
         case 3 : 
             var start$1 = loc_of_lexbuf(env, lexbuf);
-            var buf$1 = Buffer.create(127);
+            var buf$1 = $$Buffer.create(127);
             var match$1 = comment(env, buf$1, lexbuf);
             var env$2 = save_comment(match$1[0], start$1, match$1[1], buf$1, /* true */1);
             ___ocaml_lex_state = 393;
@@ -3160,19 +3160,19 @@ function __ocaml_lex_template_tail_rec(_env, lexbuf, ___ocaml_lex_state) {
             continue ;
         case 4 : 
             var start$2 = loc_of_lexbuf(env, lexbuf);
-            var cooked = Buffer.create(127);
-            var raw = Buffer.create(127);
-            var literal = Buffer.create(127);
-            Buffer.add_string(literal, "}");
+            var cooked = $$Buffer.create(127);
+            var raw = $$Buffer.create(127);
+            var literal = $$Buffer.create(127);
+            $$Buffer.add_string(literal, "}");
             var match$2 = template_part(env, start$2, cooked, raw, literal, lexbuf);
             return /* tuple */[
                     match$2[0],
                     /* T_TEMPLATE_PART */Block.__(2, [/* tuple */[
                           match$2[1],
                           /* record */[
-                            /* cooked */Buffer.contents(cooked),
-                            /* raw */Buffer.contents(raw),
-                            /* literal */Buffer.contents(literal)
+                            /* cooked */$$Buffer.contents(cooked),
+                            /* raw */$$Buffer.contents(raw),
+                            /* literal */$$Buffer.contents(literal)
                           ],
                           match$2[2]
                         ]])
@@ -3222,46 +3222,46 @@ function template_part(env, start, cooked, raw, literal, lexbuf) {
                     /* true */1
                   ];
         case 1 : 
-            Buffer.add_char(literal$1, /* "`" */96);
+            $$Buffer.add_char(literal$1, /* "`" */96);
             return /* tuple */[
                     env$1,
                     btwn(start$1, loc_of_lexbuf(env$1, lexbuf$1)),
                     /* true */1
                   ];
         case 2 : 
-            Buffer.add_string(literal$1, "${");
+            $$Buffer.add_string(literal$1, "${");
             return /* tuple */[
                     env$1,
                     btwn(start$1, loc_of_lexbuf(env$1, lexbuf$1)),
                     /* false */0
                   ];
         case 3 : 
-            Buffer.add_char(raw$1, /* "\\" */92);
-            Buffer.add_char(literal$1, /* "\\" */92);
+            $$Buffer.add_char(raw$1, /* "\\" */92);
+            $$Buffer.add_char(literal$1, /* "\\" */92);
             var match = string_escape(env$1, cooked$1, lexbuf$1);
             var str = Lexing.lexeme(lexbuf$1);
-            Buffer.add_string(raw$1, str);
-            Buffer.add_string(literal$1, str);
+            $$Buffer.add_string(raw$1, str);
+            $$Buffer.add_string(literal$1, str);
             return template_part(match[0], start$1, cooked$1, raw$1, literal$1, lexbuf$1);
         case 4 : 
             var lf = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_start_pos */4] + 2 | 0);
-            Buffer.add_string(raw$1, lf);
-            Buffer.add_string(literal$1, lf);
-            Buffer.add_string(cooked$1, "\n");
+            $$Buffer.add_string(raw$1, lf);
+            $$Buffer.add_string(literal$1, lf);
+            $$Buffer.add_string(cooked$1, "\n");
             Lexing.new_line(lexbuf$1);
             return template_part(env$1, start$1, cooked$1, raw$1, literal$1, lexbuf$1);
         case 5 : 
             var lf$1 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(raw$1, lf$1);
-            Buffer.add_char(literal$1, lf$1);
-            Buffer.add_char(cooked$1, /* "\n" */10);
+            $$Buffer.add_char(raw$1, lf$1);
+            $$Buffer.add_char(literal$1, lf$1);
+            $$Buffer.add_char(cooked$1, /* "\n" */10);
             Lexing.new_line(lexbuf$1);
             return template_part(env$1, start$1, cooked$1, raw$1, literal$1, lexbuf$1);
         case 6 : 
             var c = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(raw$1, c);
-            Buffer.add_char(literal$1, c);
-            Buffer.add_char(cooked$1, c);
+            $$Buffer.add_char(raw$1, c);
+            $$Buffer.add_char(literal$1, c);
+            $$Buffer.add_char(cooked$1, c);
             return template_part(env$1, start$1, cooked$1, raw$1, literal$1, lexbuf$1);
         
       }
@@ -3289,7 +3289,7 @@ function string_escape(env, buf, lexbuf) {
                     /* false */0
                   ];
         case 1 : 
-            Buffer.add_string(buf$1, "\\");
+            $$Buffer.add_string(buf$1, "\\");
             return /* tuple */[
                     env$1,
                     /* false */0
@@ -3299,7 +3299,7 @@ function string_escape(env, buf, lexbuf) {
             var b = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4] + 2 | 0);
             var code = (hexa_to_int(a) << 4) + hexa_to_int(b) | 0;
             List.iter((function (param) {
-                    return Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf$1, param);
                   }), utf16to8(code));
             return /* tuple */[
                     env$1,
@@ -3312,14 +3312,14 @@ function string_escape(env, buf, lexbuf) {
             var code$1 = ((oct_to_int(a$1) << 6) + (oct_to_int(b$1) << 3) | 0) + oct_to_int(c) | 0;
             if (code$1 < 256) {
               List.iter((function (param) {
-                      return Buffer.add_char(buf$1, param);
+                      return $$Buffer.add_char(buf$1, param);
                     }), utf16to8(code$1));
             } else {
               var code$2 = (oct_to_int(a$1) << 3) + oct_to_int(b$1) | 0;
               List.iter((function (param) {
-                      return Buffer.add_char(buf$1, param);
+                      return $$Buffer.add_char(buf$1, param);
                     }), utf16to8(code$2));
-              Buffer.add_char(buf$1, c);
+              $$Buffer.add_char(buf$1, c);
             }
             return /* tuple */[
                     env$1,
@@ -3330,50 +3330,50 @@ function string_escape(env, buf, lexbuf) {
             var b$2 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4] + 1 | 0);
             var code$3 = (oct_to_int(a$2) << 3) + oct_to_int(b$2) | 0;
             List.iter((function (param) {
-                    return Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf$1, param);
                   }), utf16to8(code$3));
             return /* tuple */[
                     env$1,
                     /* true */1
                   ];
         case 5 : 
-            Buffer.add_char(buf$1, Char.chr(0));
+            $$Buffer.add_char(buf$1, Char.chr(0));
             return /* tuple */[
                     env$1,
                     /* false */0
                   ];
         case 6 : 
-            Buffer.add_char(buf$1, Char.chr(8));
+            $$Buffer.add_char(buf$1, Char.chr(8));
             return /* tuple */[
                     env$1,
                     /* false */0
                   ];
         case 7 : 
-            Buffer.add_char(buf$1, Char.chr(12));
+            $$Buffer.add_char(buf$1, Char.chr(12));
             return /* tuple */[
                     env$1,
                     /* false */0
                   ];
         case 8 : 
-            Buffer.add_char(buf$1, Char.chr(10));
+            $$Buffer.add_char(buf$1, Char.chr(10));
             return /* tuple */[
                     env$1,
                     /* false */0
                   ];
         case 9 : 
-            Buffer.add_char(buf$1, Char.chr(13));
+            $$Buffer.add_char(buf$1, Char.chr(13));
             return /* tuple */[
                     env$1,
                     /* false */0
                   ];
         case 10 : 
-            Buffer.add_char(buf$1, Char.chr(9));
+            $$Buffer.add_char(buf$1, Char.chr(9));
             return /* tuple */[
                     env$1,
                     /* false */0
                   ];
         case 11 : 
-            Buffer.add_char(buf$1, Char.chr(11));
+            $$Buffer.add_char(buf$1, Char.chr(11));
             return /* tuple */[
                     env$1,
                     /* false */0
@@ -3382,7 +3382,7 @@ function string_escape(env, buf, lexbuf) {
             var a$3 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
             var code$4 = oct_to_int(a$3);
             List.iter((function (param) {
-                    return Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf$1, param);
                   }), utf16to8(code$4));
             return /* tuple */[
                     env$1,
@@ -3395,7 +3395,7 @@ function string_escape(env, buf, lexbuf) {
             var d = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4] + 4 | 0);
             var code$5 = (((hexa_to_int(a$4) << 12) + (hexa_to_int(b$3) << 8) | 0) + (hexa_to_int(c$1) << 4) | 0) + hexa_to_int(d) | 0;
             List.iter((function (param) {
-                    return Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf$1, param);
                   }), utf16to8(code$5));
             return /* tuple */[
                     env$1,
@@ -3406,7 +3406,7 @@ function string_escape(env, buf, lexbuf) {
             var code$6 = Caml_format.caml_int_of_string("0x" + hex_code);
             var env$2 = code$6 > 1114111 ? lex_error(env$1, loc_of_lexbuf(env$1, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"])) : env$1;
             List.iter((function (param) {
-                    return Buffer.add_char(buf$1, param);
+                    return $$Buffer.add_char(buf$1, param);
                   }), utf16to8(code$6));
             return /* tuple */[
                     env$2,
@@ -3415,7 +3415,7 @@ function string_escape(env, buf, lexbuf) {
         case 15 : 
             var c$2 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
             var env$3 = lex_error(env$1, loc_of_lexbuf(env$1, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
-            Buffer.add_char(buf$1, c$2);
+            $$Buffer.add_char(buf$1, c$2);
             return /* tuple */[
                     env$3,
                     /* false */0
@@ -3428,7 +3428,7 @@ function string_escape(env, buf, lexbuf) {
                   ];
         case 17 : 
             var c$3 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(buf$1, c$3);
+            $$Buffer.add_char(buf$1, c$3);
             return /* tuple */[
                     env$1,
                     /* false */0
@@ -3462,18 +3462,18 @@ function regexp_class(env, buf, lexbuf) {
             break;
         case 3 : 
             var c = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(buf$1, c);
+            $$Buffer.add_char(buf$1, c);
             return env$1;
         case 4 : 
             var c$1 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(buf$1, c$1);
+            $$Buffer.add_char(buf$1, c$1);
             return regexp_class(env$1, buf$1, lexbuf$1);
         
       }
     }
     if (exit === 1) {
       var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_start_pos */4] + 2 | 0);
-      Buffer.add_string(buf$1, s);
+      $$Buffer.add_string(buf$1, s);
       return regexp_class(env$1, buf$1, lexbuf$1);
     }
     
@@ -3510,7 +3510,7 @@ function regexp_body(env, buf, lexbuf) {
                   ];
         case 2 : 
             var s = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_start_pos */4] + 2 | 0);
-            Buffer.add_string(buf$1, s);
+            $$Buffer.add_string(buf$1, s);
             return regexp_body(env$1, buf$1, lexbuf$1);
         case 3 : 
             var flags = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4] + 1 | 0, lexbuf$1[/* lex_curr_pos */5]);
@@ -3525,7 +3525,7 @@ function regexp_body(env, buf, lexbuf) {
                   ];
         case 5 : 
             var c = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(buf$1, c);
+            $$Buffer.add_char(buf$1, c);
             var env$4 = regexp_class(env$1, buf$1, lexbuf$1);
             return regexp_body(env$4, buf$1, lexbuf$1);
         case 6 : 
@@ -3537,7 +3537,7 @@ function regexp_body(env, buf, lexbuf) {
                   ];
         case 7 : 
             var c$1 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(buf$1, c$1);
+            $$Buffer.add_char(buf$1, c$1);
             return regexp_body(env$1, buf$1, lexbuf$1);
         
       }
@@ -3586,7 +3586,7 @@ function line_comment(env, buf, lexbuf) {
                   ];
         case 2 : 
             var c = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(buf$1, c);
+            $$Buffer.add_char(buf$1, c);
             return line_comment(env$1, buf$1, lexbuf$1);
         
       }
@@ -3616,7 +3616,7 @@ function comment(env, buf, lexbuf) {
                   ];
         case 1 : 
             Lexing.new_line(lexbuf$1);
-            Buffer.add_char(buf$1, /* "\n" */10);
+            $$Buffer.add_char(buf$1, /* "\n" */10);
             return comment(env$1, buf$1, lexbuf$1);
         case 2 : 
             var loc = loc_of_lexbuf(env$1, lexbuf$1);
@@ -3632,12 +3632,12 @@ function comment(env, buf, lexbuf) {
                       loc_of_lexbuf(env$1, lexbuf$1)
                     ];
             } else {
-              Buffer.add_string(buf$1, "*-/");
+              $$Buffer.add_string(buf$1, "*-/");
               return comment(env$1, buf$1, lexbuf$1);
             }
         case 4 : 
             var c = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(buf$1, c);
+            $$Buffer.add_char(buf$1, c);
             return comment(env$1, buf$1, lexbuf$1);
         
       }
@@ -3664,7 +3664,7 @@ function string_quote(env, q, buf, raw, octal, lexbuf) {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             var q$prime = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(raw$1, q$prime);
+            $$Buffer.add_char(raw$1, q$prime);
             if (q$1 === q$prime) {
               return /* tuple */[
                       env$1,
@@ -3672,21 +3672,21 @@ function string_quote(env, q, buf, raw, octal, lexbuf) {
                       octal$1
                     ];
             } else {
-              Buffer.add_char(buf$1, q$prime);
+              $$Buffer.add_char(buf$1, q$prime);
               return string_quote(env$1, q$1, buf$1, raw$1, octal$1, lexbuf$1);
             }
         case 1 : 
             var e = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(raw$1, e);
+            $$Buffer.add_char(raw$1, e);
             var match = string_escape(env$1, buf$1, lexbuf$1);
             var octal$2 = match[1] || octal$1;
-            Buffer.add_string(raw$1, Lexing.lexeme(lexbuf$1));
+            $$Buffer.add_string(raw$1, Lexing.lexeme(lexbuf$1));
             return string_quote(match[0], q$1, buf$1, raw$1, octal$2, lexbuf$1);
         case 2 : 
             var x = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
-            Buffer.add_string(raw$1, x);
+            $$Buffer.add_string(raw$1, x);
             var env$2 = lex_error(env$1, loc_of_lexbuf(env$1, lexbuf$1), /* UnexpectedToken */Block.__(1, ["ILLEGAL"]));
-            Buffer.add_string(buf$1, x);
+            $$Buffer.add_string(buf$1, x);
             return /* tuple */[
                     env$2,
                     loc_of_lexbuf(env$2, lexbuf$1),
@@ -3694,8 +3694,8 @@ function string_quote(env, q, buf, raw, octal, lexbuf) {
                   ];
         case 3 : 
             var x$1 = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(raw$1, x$1);
-            Buffer.add_char(buf$1, x$1);
+            $$Buffer.add_char(raw$1, x$1);
+            $$Buffer.add_char(buf$1, x$1);
             return string_quote(env$1, q$1, buf$1, raw$1, octal$1, lexbuf$1);
         
       }
@@ -3739,7 +3739,7 @@ function type_token(env, lexbuf) {
             return type_token(env$1, lexbuf$1);
         case 2 : 
             var start = loc_of_lexbuf(env$1, lexbuf$1);
-            var buf = Buffer.create(127);
+            var buf = $$Buffer.create(127);
             var match = comment(env$1, buf, lexbuf$1);
             var env$2 = save_comment(match[0], start, match[1], buf, /* true */1);
             return type_token(env$2, lexbuf$1);
@@ -3766,9 +3766,9 @@ function type_token(env, lexbuf) {
               }
             } else {
               var start$1 = loc_of_lexbuf(env$1, lexbuf$1);
-              var buf$1 = Buffer.create(127);
-              Buffer.add_string(buf$1, sp);
-              Buffer.add_string(buf$1, escape_type);
+              var buf$1 = $$Buffer.create(127);
+              $$Buffer.add_string(buf$1, sp);
+              $$Buffer.add_string(buf$1, escape_type);
               var match$1 = comment(env$1, buf$1, lexbuf$1);
               var env$5 = save_comment(match$1[0], start$1, match$1[1], buf$1, /* true */1);
               return type_token(env$5, lexbuf$1);
@@ -3786,23 +3786,23 @@ function type_token(env, lexbuf) {
             }
         case 5 : 
             var start$2 = loc_of_lexbuf(env$1, lexbuf$1);
-            var buf$2 = Buffer.create(127);
+            var buf$2 = $$Buffer.create(127);
             var match$2 = line_comment(env$1, buf$2, lexbuf$1);
             var env$7 = save_comment(match$2[0], start$2, match$2[1], buf$2, /* true */1);
             return type_token(env$7, lexbuf$1);
         case 6 : 
             var quote = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
             var start$3 = loc_of_lexbuf(env$1, lexbuf$1);
-            var buf$3 = Buffer.create(127);
-            var raw = Buffer.create(127);
-            Buffer.add_char(raw, quote);
+            var buf$3 = $$Buffer.create(127);
+            var raw = $$Buffer.create(127);
+            $$Buffer.add_char(raw, quote);
             var match$3 = string_quote(env$1, quote, buf$3, raw, /* false */0, lexbuf$1);
             return /* tuple */[
                     match$3[0],
                     /* T_STRING */Block.__(1, [/* tuple */[
                           btwn(start$3, match$3[1]),
-                          Buffer.contents(buf$3),
-                          Buffer.contents(raw),
+                          $$Buffer.contents(buf$3),
+                          $$Buffer.contents(raw),
                           match$3[2]
                         ]])
                   ];
@@ -4100,7 +4100,7 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
             continue ;
         case 3 : 
             var start = loc_of_lexbuf(env, lexbuf);
-            var buf = Buffer.create(127);
+            var buf = $$Buffer.create(127);
             var match = line_comment(env, buf, lexbuf);
             var env$1 = save_comment(match[0], start, match[1], buf, /* true */1);
             ___ocaml_lex_state = 291;
@@ -4108,7 +4108,7 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
             continue ;
         case 4 : 
             var start$1 = loc_of_lexbuf(env, lexbuf);
-            var buf$1 = Buffer.create(127);
+            var buf$1 = $$Buffer.create(127);
             var match$1 = comment(env, buf$1, lexbuf);
             var env$2 = save_comment(match$1[0], start$1, match$1[1], buf$1, /* true */1);
             ___ocaml_lex_state = 291;
@@ -4116,7 +4116,7 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
             continue ;
         case 5 : 
             var start$2 = loc_of_lexbuf(env, lexbuf);
-            var buf$2 = Buffer.create(127);
+            var buf$2 = $$Buffer.create(127);
             var match$2 = regexp_body(env, buf$2, lexbuf);
             var env$3 = match$2[0];
             var end_ = loc_of_lexbuf(env$3, lexbuf);
@@ -4125,7 +4125,7 @@ function __ocaml_lex_regexp_rec(_env, lexbuf, ___ocaml_lex_state) {
                     env$3,
                     /* T_REGEXP */Block.__(3, [/* tuple */[
                           loc,
-                          Buffer.contents(buf$2),
+                          $$Buffer.contents(buf$2),
                           match$2[1]
                         ]])
                   ];
@@ -4167,7 +4167,7 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
             continue ;
         case 3 : 
             var start = loc_of_lexbuf(env, lexbuf);
-            var buf = Buffer.create(127);
+            var buf = $$Buffer.create(127);
             var match = line_comment(env, buf, lexbuf);
             var env$1 = save_comment(match[0], start, match[1], buf, /* true */1);
             ___ocaml_lex_state = 333;
@@ -4175,7 +4175,7 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
             continue ;
         case 4 : 
             var start$1 = loc_of_lexbuf(env, lexbuf);
-            var buf$1 = Buffer.create(127);
+            var buf$1 = $$Buffer.create(127);
             var match$1 = comment(env, buf$1, lexbuf);
             var env$2 = save_comment(match$1[0], start$1, match$1[1], buf$1, /* true */1);
             ___ocaml_lex_state = 333;
@@ -4225,14 +4225,14 @@ function __ocaml_lex_jsx_tag_rec(_env, lexbuf, ___ocaml_lex_state) {
         case 13 : 
             var quote = Caml_bytes.get(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4]);
             var start$2 = loc_of_lexbuf(env, lexbuf);
-            var buf$2 = Buffer.create(127);
-            var raw = Buffer.create(127);
-            Buffer.add_char(raw, quote);
+            var buf$2 = $$Buffer.create(127);
+            var raw = $$Buffer.create(127);
+            $$Buffer.add_char(raw, quote);
             var mode = quote === /* "'" */39 ? /* JSX_SINGLE_QUOTED_TEXT */0 : /* JSX_DOUBLE_QUOTED_TEXT */1;
             var match$2 = jsx_text(env, mode, buf$2, raw, lexbuf);
-            Buffer.add_char(raw, quote);
-            var value = Buffer.contents(buf$2);
-            var raw$1 = Buffer.contents(raw);
+            $$Buffer.add_char(raw, quote);
+            var value = $$Buffer.contents(buf$2);
+            var raw$1 = $$Buffer.contents(raw);
             return /* tuple */[
                     match$2[0],
                     /* T_JSX_TEXT */Block.__(4, [/* tuple */[
@@ -4270,12 +4270,12 @@ function jsx_child(env, start, buf, raw, lexbuf) {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             var lt = Lexing.sub_lexeme(lexbuf$1, lexbuf$1[/* lex_start_pos */4], lexbuf$1[/* lex_curr_pos */5]);
-            Buffer.add_string(raw$1, lt);
-            Buffer.add_string(buf$1, lt);
+            $$Buffer.add_string(raw$1, lt);
+            $$Buffer.add_string(buf$1, lt);
             Lexing.new_line(lexbuf$1);
             var match = jsx_text(env$1, /* JSX_CHILD_TEXT */2, buf$1, raw$1, lexbuf$1);
-            var value = Buffer.contents(buf$1);
-            var raw$2 = Buffer.contents(raw$1);
+            var value = $$Buffer.contents(buf$1);
+            var raw$2 = $$Buffer.contents(raw$1);
             return /* tuple */[
                     match[0],
                     /* T_JSX_TEXT */Block.__(4, [/* tuple */[
@@ -4301,11 +4301,11 @@ function jsx_child(env, start, buf, raw, lexbuf) {
                   ];
         case 4 : 
             var c = Caml_bytes.get(lexbuf$1[/* lex_buffer */1], lexbuf$1[/* lex_start_pos */4]);
-            Buffer.add_char(raw$1, c);
-            Buffer.add_char(buf$1, c);
+            $$Buffer.add_char(raw$1, c);
+            $$Buffer.add_char(buf$1, c);
             var match$1 = jsx_text(env$1, /* JSX_CHILD_TEXT */2, buf$1, raw$1, lexbuf$1);
-            var value$1 = Buffer.contents(buf$1);
-            var raw$3 = Buffer.contents(raw$1);
+            var value$1 = $$Buffer.contents(buf$1);
+            var raw$3 = $$Buffer.contents(raw$1);
             return /* tuple */[
                     match$1[0],
                     /* T_JSX_TEXT */Block.__(4, [/* tuple */[
@@ -4326,8 +4326,8 @@ function regexp(env) {
 
 function jsx_child$1(env) {
   var start = from_curr_lb(env[/* lex_source */0], env[/* lex_lb */1]);
-  var buf = Buffer.create(127);
-  var raw = Buffer.create(127);
+  var buf = $$Buffer.create(127);
+  var raw = $$Buffer.create(127);
   var match = jsx_child(env, start, buf, raw, env[/* lex_lb */1]);
   return get_result_and_clear_state(/* tuple */[
               match[0],
@@ -7884,13 +7884,13 @@ function primary$1(env) {
           }
           var raw_flags = match$5[2];
           pop_lex_mode(env$3);
-          var filtered_flags = Buffer.create(raw_flags.length);
+          var filtered_flags = $$Buffer.create(raw_flags.length);
           var f = function (c) {
             if (c >= 110) {
               if (c !== 121) {
                 return /* () */0;
               } else {
-                return Buffer.add_char(filtered_flags, c);
+                return $$Buffer.add_char(filtered_flags, c);
               }
             } else if (c >= 103) {
               switch (c - 103 | 0) {
@@ -7902,7 +7902,7 @@ function primary$1(env) {
                 case 0 : 
                 case 2 : 
                 case 6 : 
-                    return Buffer.add_char(filtered_flags, c);
+                    return $$Buffer.add_char(filtered_flags, c);
                 
               }
             } else {
@@ -7910,7 +7910,7 @@ function primary$1(env) {
             }
           };
           Bytes.iter(f, Caml_string.bytes_of_string(raw_flags));
-          var flags = Buffer.contents(filtered_flags);
+          var flags = $$Buffer.contents(filtered_flags);
           if (flags !== raw_flags) {
             error$1(env$3, /* InvalidRegExpFlags */Block.__(3, [raw_flags]));
           }

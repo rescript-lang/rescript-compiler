@@ -5,7 +5,7 @@ var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
-var Buffer = require("../../lib/js/buffer.js");
+var $$Buffer = require("../../lib/js/buffer.js");
 var Digest = require("../../lib/js/digest.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Printf = require("../../lib/js/printf.js");
@@ -28,31 +28,31 @@ var tscanf_data_file_lines = /* :: */[
 
 function create_tscanf_data(ob, lines) {
   var add_line = function (param) {
-    Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */[
+    $$Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */[
                   /* Caml_string */Block.__(3, [
                       /* No_padding */0,
                       /* End_of_format */0
                     ]),
                   "%S"
                 ]), param[0]));
-    Buffer.add_string(ob, " -> ");
-    Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */[
+    $$Buffer.add_string(ob, " -> ");
+    $$Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */[
                   /* Caml_string */Block.__(3, [
                       /* No_padding */0,
                       /* End_of_format */0
                     ]),
                   "%S"
                 ]), param[1]));
-    return Buffer.add_string(ob, ";\n");
+    return $$Buffer.add_string(ob, ";\n");
   };
   return List.iter(add_line, lines);
 }
 
 function write_tscanf_data_file(fname, lines) {
   var oc = Pervasives.open_out(fname);
-  var ob = Buffer.create(42);
+  var ob = $$Buffer.create(42);
   create_tscanf_data(ob, lines);
-  Buffer.output_buffer(oc, ob);
+  $$Buffer.output_buffer(oc, ob);
   Caml_io.caml_ml_flush(oc);
   return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
 }
@@ -155,11 +155,11 @@ function add_digest_ib(ob, ib) {
                   ]), f);
   };
   var output_line_digest = function (s) {
-    Buffer.add_string(ob, s);
-    Buffer.add_char(ob, /* "#" */35);
+    $$Buffer.add_string(ob, s);
+    $$Buffer.add_char(ob, /* "#" */35);
     var s$1 = Digest.to_hex(Digest.string(s));
-    Buffer.add_string(ob, Caml_string.bytes_to_string(Bytes.uppercase(Caml_string.bytes_of_string(s$1))));
-    return Buffer.add_char(ob, /* "\n" */10);
+    $$Buffer.add_string(ob, Caml_string.bytes_to_string(Bytes.uppercase(Caml_string.bytes_of_string(s$1))));
+    return $$Buffer.add_char(ob, /* "\n" */10);
   };
   try {
     while(true) {
@@ -178,9 +178,9 @@ function add_digest_ib(ob, ib) {
 
 function digest_file(fname) {
   var ib = Scanf.Scanning[/* from_file */4](fname);
-  var ob = Buffer.create(42);
+  var ob = $$Buffer.create(42);
   add_digest_ib(ob, ib);
-  return Buffer.contents(ob);
+  return $$Buffer.contents(ob);
 }
 
 function test54() {
@@ -188,13 +188,13 @@ function test54() {
 }
 
 function test55() {
-  var ob = Buffer.create(42);
+  var ob = $$Buffer.create(42);
   create_tscanf_data(ob, tscanf_data_file_lines);
-  var s = Buffer.contents(ob);
+  var s = $$Buffer.contents(ob);
   ob[/* position */1] = 0;
   var ib = Scanf.Scanning[/* from_string */6](s);
   add_digest_ib(ob, ib);
-  var tscanf_data_file_lines_digest = Buffer.contents(ob);
+  var tscanf_data_file_lines_digest = $$Buffer.contents(ob);
   return +(digest_file(tscanf_data_file) === tscanf_data_file_lines_digest);
 }
 
