@@ -11,7 +11,7 @@ var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Int32 = require("../../lib/js/int32.js");
 var Int64 = require("../../lib/js/int64.js");
-var Buffer = require("../../lib/js/buffer.js");
+var $$Buffer = require("../../lib/js/buffer.js");
 var Digest = require("../../lib/js/digest.js");
 var Format = require("../../lib/js/format.js");
 var Js_exn = require("../../lib/js/js_exn.js");
@@ -1965,7 +1965,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
           ];
   };
   var fmt$1 = fmt;
-  var buf = Buffer.create(64);
+  var buf = $$Buffer.create(64);
   var ppf = Format.formatter_of_buffer(buf);
   Curry._1(Misc_043[/* set_color_tag_handling */5], ppf);
   if (before) {
@@ -1973,7 +1973,7 @@ function errorf($staropt$star, $staropt$star$1, $staropt$star$2, fmt) {
   }
   return Format.kfprintf((function () {
                 Format.pp_print_flush(ppf, /* () */0);
-                return Curry._1(k, Buffer.contents(buf));
+                return Curry._1(k, $$Buffer.contents(buf));
               }), ppf, fmt$1);
 }
 
@@ -51996,14 +51996,14 @@ function do_check_partial(pred, exhaust, loc, casel, pss) {
           }
           if (exit === 1) {
             try {
-              var buf = Buffer.create(16);
+              var buf = $$Buffer.create(16);
               var fmt = Format.formatter_of_buffer(buf);
               top_pretty(fmt, v$1);
               var match$4 = check_partial_all(v$1, casel);
               if (match$4) {
-                Buffer.add_string(buf, "\n(However, some guarded clause may match this value.)");
+                $$Buffer.add_string(buf, "\n(However, some guarded clause may match this value.)");
               }
-              errmsg = Buffer.contents(buf);
+              errmsg = $$Buffer.contents(buf);
             }
             catch (exn){
               errmsg = "";

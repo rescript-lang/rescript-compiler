@@ -5,7 +5,7 @@ var $$Array = require("../../lib/js/array.js");
 var Block = require("../../lib/js/block.js");
 var Curry = require("../../lib/js/curry.js");
 var Int64 = require("../../lib/js/int64.js");
-var Buffer = require("../../lib/js/buffer.js");
+var $$Buffer = require("../../lib/js/buffer.js");
 var Format = require("../../lib/js/format.js");
 var Printf = require("../../lib/js/printf.js");
 var Caml_float = require("../../lib/js/caml_float.js");
@@ -2209,7 +2209,7 @@ var int64_suites_001 = /* :: */[
                                                   /* tuple */[
                                                     "missing_newline2",
                                                     (function () {
-                                                        var buf = Buffer.create(30);
+                                                        var buf = $$Buffer.create(30);
                                                         return /* Eq */Block.__(0, [
                                                                   (Curry._1(Printf.bprintf(buf, /* Format */[
                                                                               /* Int64 */Block.__(7, [
@@ -2225,7 +2225,7 @@ var int64_suites_001 = /* :: */[
                                                                             ]), /* int64 */[
                                                                           /* hi */0,
                                                                           /* lo */32
-                                                                        ]), Buffer.contents(buf)),
+                                                                        ]), $$Buffer.contents(buf)),
                                                                   "32\n"
                                                                 ]);
                                                       })

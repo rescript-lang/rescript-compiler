@@ -6,7 +6,7 @@ var List = require("../../lib/js/list.js");
 var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
-var Buffer = require("../../lib/js/buffer.js");
+var $$Buffer = require("../../lib/js/buffer.js");
 var Format = require("../../lib/js/format.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Printf = require("../../lib/js/printf.js");
@@ -103,14 +103,14 @@ function to_buf(b, t) {
     var l = t[1];
     if (l) {
       if (l[1]) {
-        Buffer.add_char(b, /* "(" */40);
+        $$Buffer.add_char(b, /* "(" */40);
         List.iteri((function (i, t$prime) {
                 if (i > 0) {
-                  Buffer.add_char(b, /* " " */32);
+                  $$Buffer.add_char(b, /* " " */32);
                 }
                 return to_buf(b, t$prime);
               }), l);
-        return Buffer.add_char(b, /* ")" */41);
+        return $$Buffer.add_char(b, /* ")" */41);
       } else {
         return Curry._2(Printf.bprintf(b, /* Format */[
                         /* Char_literal */Block.__(12, [
@@ -124,7 +124,7 @@ function to_buf(b, t) {
                       ]), to_buf, l[0]);
       }
     } else {
-      return Buffer.add_string(b, "()");
+      return $$Buffer.add_string(b, "()");
     }
   } else {
     var s = t[1];
@@ -143,15 +143,15 @@ function to_buf(b, t) {
                       "\"%s\""
                     ]), $$String.escaped(s));
     } else {
-      return Buffer.add_string(b, s);
+      return $$Buffer.add_string(b, s);
     }
   }
 }
 
 function to_string(t) {
-  var b = Buffer.create(128);
+  var b = $$Buffer.create(128);
   to_buf(b, t);
-  return Buffer.contents(b);
+  return $$Buffer.contents(b);
 }
 
 function print(fmt, t) {
@@ -353,7 +353,7 @@ function make($staropt$star, refill) {
   return /* record */[
           /* buf */Caml_string.caml_create_string(bufsize$1),
           /* refill */refill,
-          /* atom */Buffer.create(32),
+          /* atom */$$Buffer.create(32),
           /* i */0,
           /* len */0,
           /* line */1,
@@ -403,7 +403,7 @@ function _get(t) {
 }
 
 function _error(t, msg) {
-  var b = Buffer.create(32);
+  var b = $$Buffer.create(32);
   Curry._2(Printf.bprintf(b, /* Format */[
             /* String_literal */Block.__(11, [
                 "at ",
@@ -428,7 +428,7 @@ function _error(t, msg) {
             "at %d, %d: "
           ]), t[/* line */5], t[/* col */6]);
   return Printf.kbprintf((function (b) {
-                var msg$prime = Buffer.contents(b);
+                var msg$prime = $$Buffer.contents(b);
                 return /* `Error */[
                         106380200,
                         msg$prime
@@ -525,7 +525,7 @@ function expr_starting_with(c, k, t) {
   }
   switch (exit) {
     case 1 : 
-        Buffer.add_char(t[/* atom */2], c);
+        $$Buffer.add_char(t[/* atom */2], c);
         return atom(k, t);
     case 2 : 
         throw [
@@ -607,7 +607,7 @@ function expr_list(acc, k, t) {
 }
 
 function _return_atom(last, k, t) {
-  var s = Buffer.contents(t[/* atom */2]);
+  var s = $$Buffer.contents(t[/* atom */2]);
   t[/* atom */2][/* position */1] = 0;
   return Curry._2(k, last, /* `Atom */[
               726615281,
@@ -669,7 +669,7 @@ function atom(k, t) {
       }
       switch (exit) {
         case 1 : 
-            Buffer.add_char(t[/* atom */2], c);
+            $$Buffer.add_char(t[/* atom */2], c);
             continue ;
         case 2 : 
             return _return_atom(/* Some */[c], k, t);
@@ -693,7 +693,7 @@ function quoted(k, t) {
           exit = 1;
         } else {
           return escaped((function (c) {
-                        Buffer.add_char(t[/* atom */2], c);
+                        $$Buffer.add_char(t[/* atom */2], c);
                         return quoted(k, t);
                       }), t);
         }
@@ -701,7 +701,7 @@ function quoted(k, t) {
         return _return_atom(/* None */0, k, t);
       }
       if (exit === 1) {
-        Buffer.add_char(t[/* atom */2], c);
+        $$Buffer.add_char(t[/* atom */2], c);
         continue ;
       }
       
@@ -985,7 +985,7 @@ function MakeDecode(funarg) {
     return /* record */[
             /* buf */Caml_string.caml_create_string(bufsize$1),
             /* refill */refill,
-            /* atom */Buffer.create(32),
+            /* atom */$$Buffer.create(32),
             /* i */0,
             /* len */0,
             /* line */1,
@@ -1032,7 +1032,7 @@ function MakeDecode(funarg) {
     return c;
   };
   var _error = function (t, msg) {
-    var b = Buffer.create(32);
+    var b = $$Buffer.create(32);
     Curry._2(Printf.bprintf(b, /* Format */[
               /* String_literal */Block.__(11, [
                   "at ",
@@ -1057,7 +1057,7 @@ function MakeDecode(funarg) {
               "at %d, %d: "
             ]), t[/* line */5], t[/* col */6]);
     return Printf.kbprintf((function (b) {
-                  var msg$prime = Buffer.contents(b);
+                  var msg$prime = $$Buffer.contents(b);
                   return Curry._1(funarg[/* return */0], /* `Error */[
                               106380200,
                               msg$prime
@@ -1151,7 +1151,7 @@ function MakeDecode(funarg) {
     }
     switch (exit) {
       case 1 : 
-          Buffer.add_char(t[/* atom */2], c);
+          $$Buffer.add_char(t[/* atom */2], c);
           return atom(k, t);
       case 2 : 
           throw [
@@ -1231,7 +1231,7 @@ function MakeDecode(funarg) {
     };
   };
   var _return_atom = function (last, k, t) {
-    var s = Buffer.contents(t[/* atom */2]);
+    var s = $$Buffer.contents(t[/* atom */2]);
     t[/* atom */2][/* position */1] = 0;
     return Curry._2(k, last, /* `Atom */[
                 726615281,
@@ -1292,7 +1292,7 @@ function MakeDecode(funarg) {
         }
         switch (exit) {
           case 1 : 
-              Buffer.add_char(t[/* atom */2], c);
+              $$Buffer.add_char(t[/* atom */2], c);
               continue ;
           case 2 : 
               return _return_atom(/* Some */[c], k, t);
@@ -1315,7 +1315,7 @@ function MakeDecode(funarg) {
             exit = 1;
           } else {
             return escaped((function (c) {
-                          Buffer.add_char(t[/* atom */2], c);
+                          $$Buffer.add_char(t[/* atom */2], c);
                           return quoted(k, t);
                         }), t);
           }
@@ -1323,7 +1323,7 @@ function MakeDecode(funarg) {
           return _return_atom(/* None */0, k, t);
         }
         if (exit === 1) {
-          Buffer.add_char(t[/* atom */2], c);
+          $$Buffer.add_char(t[/* atom */2], c);
           continue ;
         }
         

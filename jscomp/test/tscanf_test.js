@@ -6,7 +6,7 @@ var Block = require("../../lib/js/block.js");
 var Bytes = require("../../lib/js/bytes.js");
 var Curry = require("../../lib/js/curry.js");
 var Scanf = require("../../lib/js/scanf.js");
-var Buffer = require("../../lib/js/buffer.js");
+var $$Buffer = require("../../lib/js/buffer.js");
 var Js_exn = require("../../lib/js/js_exn.js");
 var Printf = require("../../lib/js/printf.js");
 var $$String = require("../../lib/js/string.js");
@@ -3672,21 +3672,21 @@ function test49() {
 test("File \"tscanf_test.ml\", line 1176, characters 5-12", test49(/* () */0));
 
 function next_char(ob, _) {
-  var s = Buffer.contents(ob);
+  var s = $$Buffer.contents(ob);
   var len = s.length;
   if (len === 0) {
     throw Caml_builtin_exceptions.end_of_file;
   } else {
     var c = Caml_string.get(s, 0);
     ob[/* position */1] = 0;
-    Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
+    $$Buffer.add_string(ob, $$String.sub(s, 1, len - 1 | 0));
     return c;
   }
 }
 
 function send_string(ob, s) {
-  Buffer.add_string(ob, s);
-  return Buffer.add_char(ob, /* "\n" */10);
+  $$Buffer.add_string(ob, s);
+  return $$Buffer.add_char(ob, /* "\n" */10);
 }
 
 function send_int(ob, i) {
@@ -3766,7 +3766,7 @@ function reader(ib, ob) {
 }
 
 function go() {
-  var ob = Buffer.create(17);
+  var ob = $$Buffer.create(17);
   var ib = Scanf.Scanning[/* from_function */7]((function (param) {
           return next_char(ob, param);
         }));
