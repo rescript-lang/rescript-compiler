@@ -591,7 +591,6 @@ function parse_opt(error, active, flags, s) {
           _i = i + 1 | 0;
           _n = (Caml_int32.imul(10, n) + Caml_string.get(s, i) | 0) - /* "0" */48 | 0;
           continue ;
-          
         }
       }
     };
@@ -640,7 +639,6 @@ function parse_opt(error, active, flags, s) {
               List.iter(clear, letter(Caml_string.get(s, i)));
               _i = i + 1 | 0;
               continue ;
-              
             }
           } else if (c >= 91) {
             throw [
@@ -651,7 +649,6 @@ function parse_opt(error, active, flags, s) {
             List.iter(set, letter(Char.lowercase(Caml_string.get(s, i))));
             _i = i + 1 | 0;
             continue ;
-            
           }
         } else if (c >= 46) {
           if (c >= 64) {
@@ -1402,7 +1399,6 @@ function highlight_locations(ppf, locs) {
       } else {
         status[0] = Caml_missing_polyfill.not_implemented("caml_terminfo_setup not implemented by bucklescript yet\n");
         continue ;
-        
       }
     } else {
       var match$2 = input_lexbuf[0];
@@ -1439,7 +1435,6 @@ function show_filename(file) {
         } else if (base === Filename.current_dir_name) {
           _s = dir;
           continue ;
-          
         } else if (base === Filename.parent_dir_name) {
           return Curry._1(Filename.dirname, aux(dir));
         } else {
@@ -1688,11 +1683,9 @@ function prerr_warning(loc, w) {
           _c = c + 1 | 0;
           _i = i + 1 | 0;
           continue ;
-          
         } else {
           _i = i + 1 | 0;
           continue ;
-          
         }
       };
     };
@@ -2146,7 +2139,6 @@ function get_docstring(info, dsl) {
       } else {
         _param = param[1];
         continue ;
-        
       }
     } else {
       return /* None */0;
@@ -2171,11 +2163,9 @@ function get_docstrings(dsl) {
           acc
         ];
         continue ;
-        
       } else {
         _param = param[1];
         continue ;
-        
       }
     } else {
       return List.rev(acc);
@@ -9383,7 +9373,6 @@ function semantic_version_parse(str, start, last_index) {
             _acc = Caml_int32.imul(acc, 10) + v | 0;
             _start = start + 1 | 0;
             continue ;
-            
           } else {
             return /* tuple */[
                     acc,
@@ -9551,7 +9540,7 @@ function directive_parse(token_with_comments, lexbuf) {
             case 100 : 
                 _param = /* () */0;
                 continue ;
-                default:
+            default:
               return t;
           }
         } else {
@@ -9560,7 +9549,7 @@ function directive_parse(token_with_comments, lexbuf) {
             case 19 : 
                 _param = /* () */0;
                 continue ;
-                default:
+            default:
               return t;
           }
         }
@@ -10527,11 +10516,9 @@ function remove_underscores(s) {
         _dst = dst + 1 | 0;
         _src = src + 1 | 0;
         continue ;
-        
       } else {
         _src = src + 1 | 0;
         continue ;
-        
       }
     }
   };
@@ -10794,7 +10781,6 @@ function token(lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -11161,7 +11147,6 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -11169,7 +11154,7 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 183;
             continue ;
-            case 1 : 
+        case 1 : 
             is_in_string[0] = /* false */0;
             throw [
                   $$Error$2,
@@ -11185,13 +11170,12 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
               store_string(Lexing.lexeme(lexbuf));
               ___ocaml_lex_state = 183;
               continue ;
-              
             }
         case 3 : 
             store_string_char(Lexing.lexeme_char(lexbuf, 0));
             ___ocaml_lex_state = 183;
             continue ;
-            
+        
       }
     }
   };
@@ -11212,7 +11196,6 @@ function string(lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -11271,7 +11254,6 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -11282,7 +11264,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 132;
             continue ;
-            case 1 : 
+        case 1 : 
             var match = comment_start_loc[0];
             if (match) {
               var l = match[1];
@@ -11291,7 +11273,6 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 store_string(Lexing.lexeme(lexbuf));
                 ___ocaml_lex_state = 132;
                 continue ;
-                
               } else {
                 comment_start_loc[0] = /* [] */0;
                 return curr(lexbuf);
@@ -11355,7 +11336,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             store_string_char(/* "\"" */34);
             ___ocaml_lex_state = 132;
             continue ;
-            case 3 : 
+        case 3 : 
             var delim = Lexing.lexeme(lexbuf);
             var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
             string_start_loc[0] = curr(lexbuf);
@@ -11408,12 +11389,12 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             store_string_char(/* "}" */125);
             ___ocaml_lex_state = 132;
             continue ;
-            case 5 : 
+        case 5 : 
             update_loc(lexbuf, /* None */0, 1, /* false */0, 1);
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 132;
             continue ;
-            case 10 : 
+        case 10 : 
             var match$5 = comment_start_loc[0];
             if (match$5) {
               var start$2 = List.hd(List.rev(comment_start_loc[0]));
@@ -11438,7 +11419,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 132;
             continue ;
-            case 4 : 
+        case 4 : 
         case 6 : 
         case 7 : 
         case 8 : 
@@ -11447,7 +11428,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 132;
             continue ;
-            
+        
       }
     }
   };
@@ -11593,14 +11574,12 @@ function token$1(lexbuf) {
                                   } else {
                                     _param = /* () */0;
                                     continue ;
-                                    
                                   }
                                 }
                                 
                               } else {
                                 _param = /* () */0;
                                 continue ;
-                                
                               }
                             };
                           }
@@ -11659,7 +11638,6 @@ function token$1(lexbuf) {
                             } else {
                               _else_seen = /* true */1;
                               continue ;
-                              
                             }
                           } else if (switcher$1 !== 14) {
                             exit$3 = 1;
@@ -11682,13 +11660,11 @@ function token$1(lexbuf) {
                                 ];
                           } else {
                             continue ;
-                            
                           }
                         }
                         
                       } else {
                         continue ;
-                        
                       }
                     };
                   }
@@ -11702,7 +11678,7 @@ function token$1(lexbuf) {
               var lines$prime = lines !== 0 ? /* BlankLine */2 : /* NewLine */1;
               _lines = lines$prime;
               continue ;
-              default:
+          default:
             exit = 1;
         }
       } else {
@@ -11716,7 +11692,7 @@ function token$1(lexbuf) {
               var lines$prime$1 = lines >= 2 ? /* BlankLine */2 : /* NoLine */0;
               _lines = lines$prime$1;
               continue ;
-              case 19 : 
+          case 19 : 
               var doc = tok[0];
               add_docstring_comment(doc);
               var docs$prime;
@@ -11768,7 +11744,7 @@ function token$1(lexbuf) {
               _docs = docs$prime;
               _lines = /* NoLine */0;
               continue ;
-              default:
+          default:
             exit = 1;
         }
       }
@@ -11819,7 +11795,6 @@ function skip_phrase(lexbuf) {
         if (typeof tmp === "number") {
           if (tmp === 0) {
             continue ;
-            
           } else {
             throw exn;
           }
@@ -11829,7 +11804,7 @@ function skip_phrase(lexbuf) {
             case 2 : 
             case 3 : 
                 continue ;
-                default:
+            default:
               throw exn;
           }
         }

@@ -23,7 +23,6 @@ function test() {
         }(n,acc));
         _n = n - 1 | 0;
         continue ;
-        
       }
     };
   };

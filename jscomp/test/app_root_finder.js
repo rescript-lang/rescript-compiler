@@ -18,7 +18,6 @@ function find_package_json(_dir) {
       } else {
         _dir = new_dir;
         continue ;
-        
       }
     }
   };

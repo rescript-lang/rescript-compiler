@@ -27,7 +27,6 @@ function findFile(_prev, _cwd, f) {
       _cwd = Path.dirname(cwd);
       _prev = cwd;
       continue ;
-      
     }
   };
 }

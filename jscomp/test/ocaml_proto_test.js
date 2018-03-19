@@ -243,7 +243,6 @@ function apply_until(f, _param) {
       } else {
         _param = param[1];
         continue ;
-        
       }
     } else {
       return /* None */0;
@@ -280,7 +279,6 @@ function string_fold_lefti(f, e0, s) {
       _i = i + 1 | 0;
       _acc = Curry._3(f, acc, i, s.charCodeAt(i));
       continue ;
-      
     }
   };
 }
@@ -1469,7 +1467,6 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -1480,7 +1477,7 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
               l
             ];
             continue ;
-            case 1 : 
+        case 1 : 
             return /* String_value */[$$String.concat("", List.rev(l))];
         case 2 : 
             ___ocaml_lex_state = 55;
@@ -1489,7 +1486,7 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
               l
             ];
             continue ;
-            case 3 : 
+        case 3 : 
             return /* String_eof */0;
         
       }
@@ -1506,7 +1503,6 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -1519,7 +1515,7 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
               l
             ];
             continue ;
-            case 2 : 
+        case 2 : 
             return /* Comment_eof */0;
         
       }
@@ -1536,14 +1532,13 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             update_loc(lexbuf);
             ___ocaml_lex_state = 47;
             continue ;
-            case 1 : 
+        case 1 : 
             Lexing.lexeme(lexbuf);
             return /* Comment_value */[$$String.concat("", List.rev(l))];
         case 2 : 
@@ -1553,7 +1548,7 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
               l
             ];
             continue ;
-            case 3 : 
+        case 3 : 
             return /* Comment_eof */0;
         
       }
@@ -1571,7 +1566,6 @@ function lexer(lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -1601,7 +1595,6 @@ function lexer(lexbuf) {
             if (match) {
               ___ocaml_lex_state = 0;
               continue ;
-              
             } else {
               return /* EOF */25;
             }
@@ -1610,7 +1603,6 @@ function lexer(lexbuf) {
             if (match$1) {
               ___ocaml_lex_state = 0;
               continue ;
-              
             } else {
               return /* EOF */25;
             }
@@ -1631,10 +1623,10 @@ function lexer(lexbuf) {
             update_loc(lexbuf$1);
             ___ocaml_lex_state = 0;
             continue ;
-            case 18 : 
+        case 18 : 
             ___ocaml_lex_state = 0;
             continue ;
-            case 19 : 
+        case 19 : 
             var loc = from_lexbuf(lexbuf$1);
             var ident = Lexing.lexeme(lexbuf$1);
             switch (ident) {
@@ -1938,7 +1930,6 @@ function print(scope) {
           _param = param[1];
           _acc = Pervasives.$at(sub, acc);
           continue ;
-          
         } else {
           _param = param[1];
           _acc = /* :: */[
@@ -1946,7 +1937,6 @@ function print(scope) {
             acc
           ];
           continue ;
-          
         }
       } else {
         return acc;
@@ -3586,7 +3576,6 @@ function find(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -3619,7 +3608,6 @@ function fold(f, _m, _accu) {
       _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
       _m = m[3];
       continue ;
-      
     } else {
       return accu;
     }
@@ -4242,7 +4230,6 @@ function list_assoc2(x, _param) {
       } else {
         _param = param[1];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -4469,7 +4456,6 @@ function compile_message_p2(types, param, message) {
               scopes
             ];
             continue ;
-            
           } else {
             return /* :: */[
                     field_scope,

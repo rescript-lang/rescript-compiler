@@ -20,11 +20,9 @@ function sub(_tr, _k) {
         if (k % 2 === 0) {
           _tr = tr[1];
           continue ;
-          
         } else {
           _tr = tr[2];
           continue ;
-          
         }
       }
     } else {

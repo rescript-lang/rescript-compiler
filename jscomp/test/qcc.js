@@ -80,7 +80,6 @@ function find(s, _n) {
     } else {
       _n = n + 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -163,33 +162,28 @@ function skip(_param) {
             if (match !== 42) {
               _param$1 = /* () */0;
               continue ;
-              
             } else if (peekch(/* () */0) === /* "/" */47) {
               return skip((Curry._1(getch, /* () */0), /* () */0));
             } else {
               _param$1 = /* () */0;
               continue ;
-              
             }
           };
         }
       } else {
         _param = /* () */0;
         continue ;
-        
       }
     } else if (ch >= 11) {
       if (ch >= 13) {
         _param = /* () */0;
         continue ;
-        
       } else {
         return ch;
       }
     } else if (ch >= 9) {
       _param = /* () */0;
       continue ;
-      
     } else {
       return ch;
     }
@@ -225,7 +219,6 @@ function next() {
             } else {
               _n = (Caml_int32.imul(10, n) + Curry._1(getch, /* () */0) | 0) - 48 | 0;
               continue ;
-              
             }
           };
         }
@@ -253,7 +246,6 @@ function next() {
           glo[e] = getq(/* () */0);
           _e = e + 1 | 0;
           continue ;
-          
         } else {
           Curry._1(getch, /* () */0);
           gpos[0] = e + 8 & -8;
@@ -276,7 +268,6 @@ function next() {
             _ch = Curry._1(getch, /* () */0);
             _n$1 = n$1 + 1 | 0;
             continue ;
-            
           } else {
             return /* Sym */Block.__(3, [Curry._1(addsym, Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))]);
           }
@@ -324,7 +315,6 @@ function next() {
             } else {
               _param = param[1];
               continue ;
-              
             }
           } else {
             return /* Op */Block.__(0, [Caml_string.bytes_to_string(Bytes.make(1, ch$2))]);
@@ -816,7 +806,6 @@ function binary(stk, lvl) {
           binary(stk, lvl - 1 | 0);
           _loc = loc$prime;
           continue ;
-          
         } else {
           Curry._1(unnext, t);
           return loc;
@@ -845,7 +834,6 @@ function binary(stk, lvl) {
             }
             _param = /* () */0;
             continue ;
-            
           } else {
             return Curry._1(unnext, t);
           }
@@ -1018,7 +1006,6 @@ function postfix(stk) {
                   l
                 ];
                 continue ;
-                
               }
             };
           };
@@ -1129,7 +1116,6 @@ function expr(stk) {
       }
       _param = /* () */0;
       continue ;
-      
     }
   };
 }
@@ -1189,7 +1175,6 @@ function decl(g, _n, _stk) {
                 _stk = stk$prime;
                 _n = n$prime;
                 continue ;
-                
               } else {
                 return /* tuple */[
                         n$prime,
@@ -1228,7 +1213,6 @@ function decl(g, _n, _stk) {
       _stk = match[1];
       _n = n + match[0] | 0;
       continue ;
-      
     } else {
       Curry._1(unnext, t);
       if (!g && n !== 0) {
@@ -1412,7 +1396,6 @@ function top(_param) {
       decl(/* true */1, 0, /* [] */0);
       _param = /* () */0;
       continue ;
-      
     } else {
       var match = Curry._1(next$1, /* () */0);
       if (match.tag === 3) {
@@ -1468,7 +1451,7 @@ function top(_param) {
                   _n = n + 1 | 0;
                   _regs = List.tl(regs);
                   continue ;
-                  
+              
             }
           };
         };
@@ -1522,7 +1505,6 @@ function top(_param) {
         }
         _param = /* () */0;
         continue ;
-        
       } else {
         throw [
               Caml_builtin_exceptions.failure,
@@ -1665,7 +1647,6 @@ function elfgen(outf) {
                 le(64, 0);
                 _l = get32(l);
                 continue ;
-                
               } else {
                 return 0;
               }
@@ -1863,7 +1844,6 @@ function main() {
             ppsym(tok);
             _param = /* () */0;
             continue ;
-            
           } else if (tok[0] === "EOF!") {
             return Printf.printf(/* Format */[
                         /* String_literal */Block.__(11, [
@@ -1876,7 +1856,6 @@ function main() {
             ppsym(tok);
             _param = /* () */0;
             continue ;
-            
           }
         };
     default:

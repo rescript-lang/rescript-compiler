@@ -46,11 +46,9 @@ function mem(x, _param) {
       } else if (x < y) {
         _param = param[1];
         continue ;
-        
       } else {
         _param = param[3];
         continue ;
-        
       }
     } else {
       return /* false */0;

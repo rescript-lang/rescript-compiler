@@ -63,7 +63,6 @@ function is_pos_pow(n) {
         _n = (n$1 >> 1);
         _c = c + 1 | 0;
         continue ;
-        
       } else {
         throw E;
       }
@@ -117,7 +116,6 @@ function dump(r) {
             acc
           ];
           continue ;
-          
         } else {
           return acc;
         }
@@ -134,7 +132,6 @@ function dump(r) {
           if (t === 0 && s === 2) {
             _r = r[1];
             continue ;
-            
           } else {
             return /* false */0;
           }

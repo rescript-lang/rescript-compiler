@@ -262,7 +262,6 @@ function min_elt(_param) {
       if (l) {
         _param = l;
         continue ;
-        
       } else {
         return param[1];
       }
@@ -280,7 +279,6 @@ function max_elt(_param) {
       if (r) {
         _param = r;
         continue ;
-        
       } else {
         return param[1];
       }
@@ -372,7 +370,6 @@ function mem(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -486,7 +483,6 @@ function cons_enum(_s, _e) {
       ];
       _s = s[0];
       continue ;
-      
     } else {
       return e;
     }
@@ -508,7 +504,6 @@ function compare(s1, s2) {
           _e2 = cons_enum(e2[1], e2[2]);
           _e1 = cons_enum(e1[1], e1[2]);
           continue ;
-          
         }
       } else {
         return 1;
@@ -542,7 +537,6 @@ function subset(_s1, _s2) {
             _s2 = r2;
             _s1 = r1;
             continue ;
-            
           } else {
             return /* false */0;
           }
@@ -555,7 +549,6 @@ function subset(_s1, _s2) {
                 ], l2)) {
             _s1 = r1;
             continue ;
-            
           } else {
             return /* false */0;
           }
@@ -567,7 +560,6 @@ function subset(_s1, _s2) {
               ], r2)) {
           _s1 = l1;
           continue ;
-          
         } else {
           return /* false */0;
         }
@@ -588,7 +580,6 @@ function iter(f, _param) {
       Curry._1(f, param[1]);
       _param = param[2];
       continue ;
-      
     } else {
       return /* () */0;
     }
@@ -603,7 +594,6 @@ function fold(f, _s, _accu) {
       _accu = Curry._2(f, s[1], fold(f, s[0], accu));
       _s = s[2];
       continue ;
-      
     } else {
       return accu;
     }
@@ -617,7 +607,6 @@ function for_all(p, _param) {
       if (Curry._1(p, param[1]) && for_all(p, param[0])) {
         _param = param[2];
         continue ;
-        
       } else {
         return /* false */0;
       }
@@ -636,7 +625,6 @@ function exists(p, _param) {
       } else {
         _param = param[2];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -708,7 +696,6 @@ function elements_aux(_accu, _param) {
         elements_aux(accu, param[2])
       ];
       continue ;
-      
     } else {
       return accu;
     }
@@ -730,7 +717,6 @@ function find(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;

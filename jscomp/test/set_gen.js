@@ -18,7 +18,6 @@ function cons_enum(_s, _e) {
       ];
       _s = s[0];
       continue ;
-      
     } else {
       return e;
     }
@@ -41,7 +40,6 @@ function min_elt(_param) {
       if (l) {
         _param = l;
         continue ;
-        
       } else {
         return param[1];
       }
@@ -59,7 +57,6 @@ function max_elt(_param) {
       if (r) {
         _param = r;
         continue ;
-        
       } else {
         return param[1];
       }
@@ -85,7 +82,6 @@ function cardinal_aux(_acc, _param) {
       _param = param[0];
       _acc = cardinal_aux(acc + 1 | 0, param[2]);
       continue ;
-      
     } else {
       return acc;
     }
@@ -107,7 +103,6 @@ function elements_aux(_accu, _param) {
         elements_aux(accu, param[2])
       ];
       continue ;
-      
     } else {
       return accu;
     }
@@ -126,7 +121,6 @@ function iter(f, _param) {
       Curry._1(f, param[1]);
       _param = param[2];
       continue ;
-      
     } else {
       return /* () */0;
     }
@@ -141,7 +135,6 @@ function fold(f, _s, _accu) {
       _accu = Curry._2(f, s[1], fold(f, s[0], accu));
       _s = s[2];
       continue ;
-      
     } else {
       return accu;
     }
@@ -155,7 +148,6 @@ function for_all(p, _param) {
       if (Curry._1(p, param[1]) && for_all(p, param[0])) {
         _param = param[2];
         continue ;
-        
       } else {
         return /* false */0;
       }
@@ -174,7 +166,6 @@ function exists(p, _param) {
       } else {
         _param = param[2];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -714,7 +705,6 @@ function compare_aux(cmp, _e1, _e2) {
           _e2 = cons_enum(e2[1], e2[2]);
           _e1 = cons_enum(e1[1], e1[2]);
           continue ;
-          
         }
       } else {
         return 1;
