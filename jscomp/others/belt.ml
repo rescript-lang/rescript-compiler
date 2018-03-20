@@ -175,9 +175,9 @@ module Range = Belt_Range
     The top level provides generic {b immutable} set operations.
 
     It also has three specialized inner modules
-    {!Belt.Set.Int} and {!Belt.Set.String}
+    {!Belt.Set.Int}, {!Belt.Set.String} and
 
-    {!Belt.Set.Dict}: This module separate date from function
+    {!Belt.Set.Dict}: This module separates data from function
     which is more verbose but slightly more efficient
 
 *)
@@ -189,9 +189,9 @@ module Set = Belt_Set
     The top level provides generic {b immutable} map operations.
 
     It also has three specialized inner modules
-    {!Belt.Map.Int} and {!Belt.Map.String}
+    {!Belt.Map.Int}, {!Belt.Map.String} and
 
-    {!Belt.Map.Dict}: This module separate date from function
+    {!Belt.Map.Dict}: This module separates data from function
     which  is more verbose but slightly more efficient
 *)
 module Map = Belt_Map
