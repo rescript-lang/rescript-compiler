@@ -127,6 +127,7 @@
 ../lib/whole_compiler.ml : ./ext/int_vec_vec.mli
 ../lib/whole_compiler.ml : ./ext/resize_array.ml
 ../lib/whole_compiler.ml : ./syntax/ast_comb.mli
+../lib/whole_compiler.ml : ./syntax/ast_tdcls.ml
 ../lib/whole_compiler.ml : ./syntax/ast_util.mli
 ../lib/whole_compiler.ml : ./syntax/ppx_entry.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/env.ml
@@ -160,6 +161,7 @@
 ../lib/whole_compiler.ml : ./ext/int_vec_util.mli
 ../lib/whole_compiler.ml : ./ext/resize_array.mli
 ../lib/whole_compiler.ml : ./syntax/ast_derive.ml
+../lib/whole_compiler.ml : ./syntax/ast_tdcls.mli
 ../lib/whole_compiler.ml : ./syntax/ppx_entry.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/env.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/path.ml
