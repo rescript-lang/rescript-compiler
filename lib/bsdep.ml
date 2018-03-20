@@ -28969,9 +28969,9 @@ let () =
   *)
 
   open Parsetree
-  
+
   (** {2 A generic Parsetree mapper} *)
-  
+
   type mapper = {
     attribute: mapper -> attribute -> attribute;
     attributes: mapper -> attribute list -> attribute list;
@@ -29012,13 +29012,16 @@ let () =
     structure_item: mapper -> structure_item -> structure_item;
     typ: mapper -> core_type -> core_type;
     type_declaration: mapper -> type_declaration -> type_declaration;
+(* XXXXX *)
+    type_declaration_list: mapper -> type_declaration list -> type_declaration list;
+(* XXXXX *)
     type_extension: mapper -> type_extension -> type_extension;
     type_kind: mapper -> type_kind -> type_kind;
     value_binding: mapper -> value_binding -> value_binding;
-(* XXXXX *)    
+(* XXXXX *)
     value_bindings_rec: mapper -> value_binding list -> value_binding list;
     value_bindings: mapper -> value_binding list -> value_binding list;
-(* XXXXX *)        
+(* XXXXX *)
     value_description: mapper -> value_description -> value_description;
     with_constraint: mapper -> with_constraint -> with_constraint;
   }
@@ -29026,10 +29029,10 @@ let () =
       using an open recursion style: each method takes as its first
       argument the mapper to be applied to children in the syntax
       tree. *)
-  
+
   val default_mapper: mapper
   (** A default mapper, which implements a "deep identity" mapping. *)
-  
+
 end = struct
 #1 "bs_ast_mapper.ml"
 (***********************************************************************)
@@ -29097,13 +29100,16 @@ type mapper = {
   structure_item: mapper -> structure_item -> structure_item;
   typ: mapper -> core_type -> core_type;
   type_declaration: mapper -> type_declaration -> type_declaration;
+(* XXXX *)
+  type_declaration_list : mapper -> type_declaration list -> type_declaration list;
+(* XXXX *)
   type_extension: mapper -> type_extension -> type_extension;
   type_kind: mapper -> type_kind -> type_kind;
   value_binding: mapper -> value_binding -> value_binding;
 (* XXXX *)
-  value_bindings_rec : mapper -> value_binding list -> value_binding list; 
-  value_bindings : mapper -> value_binding list -> value_binding list; 
-(* XXXXX *)  
+  value_bindings_rec : mapper -> value_binding list -> value_binding list;
+  value_bindings : mapper -> value_binding list -> value_binding list;
+(* XXXXX *)
   value_description: mapper -> value_description -> value_description;
   with_constraint: mapper -> with_constraint -> with_constraint;
 }
@@ -29167,7 +29173,9 @@ module T = struct
       ?manifest:(map_opt (sub.typ sub) ptype_manifest)
       ~loc:(sub.location sub ptype_loc)
       ~attrs:(sub.attributes sub ptype_attributes)
-
+(* XXXX *)
+  let map_type_declaration_list sub l = List.map  (sub.type_declaration sub) l
+(* XXXX *)
   let map_type_kind sub = function
     | Ptype_abstract -> Ptype_abstract
     | Ptype_variant l ->
@@ -29276,7 +29284,7 @@ module MT = struct
     let loc = sub.location sub loc in
     match desc with
     | Psig_value vd -> value ~loc (sub.value_description sub vd)
-    | Psig_type l -> type_ ~loc (List.map (sub.type_declaration sub) l)
+    | Psig_type l -> type_ ~loc (sub.type_declaration_list sub l)
     | Psig_typext te -> type_extension ~loc (sub.type_extension sub te)
     | Psig_exception ed -> exception_ ~loc (sub.extension_constructor sub ed)
     | Psig_module x -> module_ ~loc (sub.module_declaration sub x)
@@ -29322,15 +29330,15 @@ module M = struct
     match desc with
     | Pstr_eval (x, attrs) ->
         eval ~loc ~attrs:(sub.attributes sub attrs) (sub.expr sub x)
-    | Pstr_value (r, vbs) -> 
-(* XXX *)    
+    | Pstr_value (r, vbs) ->
+(* XXX *)
 (* value ~loc r (List.map (sub.value_binding sub) vbs) *)
-      value ~loc r 
+      value ~loc r
       ((if r = Recursive then sub.value_bindings_rec else sub.value_bindings)
        sub vbs)
-(* XXX *)          
+(* XXX *)
     | Pstr_primitive vd -> primitive ~loc (sub.value_description sub vd)
-    | Pstr_type l -> type_ ~loc (List.map (sub.type_declaration sub) l)
+    | Pstr_type l -> type_ ~loc (sub.type_declaration_list sub l)
     | Pstr_typext te -> type_extension ~loc (sub.type_extension sub te)
     | Pstr_exception ed -> exception_ ~loc (sub.extension_constructor sub ed)
     | Pstr_module x -> module_ ~loc (sub.module_binding sub x)
@@ -29357,16 +29365,16 @@ module E = struct
     | Pexp_ident x -> ident ~loc ~attrs (map_loc sub x)
     | Pexp_constant x -> constant ~loc ~attrs x
     | Pexp_let (r, vbs, e) ->
-(* XXXX *)    
+(* XXXX *)
         (* let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
           (sub.expr sub e) *)
-        let_ ~loc ~attrs r 
+        let_ ~loc ~attrs r
         (
-          (if r = Recursive then sub.value_bindings_rec else sub.value_bindings)  
+          (if r = Recursive then sub.value_bindings_rec else sub.value_bindings)
           sub vbs
-        ) 
+        )
         (sub.expr sub e)
-(* XXXX *)              
+(* XXXX *)
     | Pexp_fun (lab, def, p, e) ->
         fun_ ~loc ~attrs lab (map_opt (sub.expr sub) def) (sub.pat sub p)
           (sub.expr sub e)
@@ -29479,14 +29487,14 @@ module CE = struct
         apply ~loc ~attrs (sub.class_expr sub ce)
           (List.map (map_snd (sub.expr sub)) l)
     | Pcl_let (r, vbs, ce) ->
-(* XXXX *)    
+(* XXXX *)
         (* let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
           (sub.class_expr sub ce) *)
-          let_ ~loc ~attrs r 
+          let_ ~loc ~attrs r
           ((if r = Recursive then sub.value_bindings_rec else sub.value_bindings)
             sub vbs)
           (sub.class_expr sub ce)
-(* XXXX *)              
+(* XXXX *)
     | Pcl_constraint (ce, ct) ->
         constraint_ ~loc ~attrs (sub.class_expr sub ce) (sub.class_type sub ct)
     | Pcl_extension x -> extension ~loc ~attrs (sub.extension sub x)
@@ -29553,6 +29561,7 @@ let default_mapper =
     class_description =
       (fun this -> CE.class_infos this (this.class_type this));
     type_declaration = T.map_type_declaration;
+    type_declaration_list = T.map_type_declaration_list;
     type_kind = T.map_type_kind;
     typ = T.map;
     type_extension = T.map_type_extension;
@@ -29620,13 +29629,13 @@ let default_mapper =
            ~attrs:(this.attributes this pincl_attributes)
       );
 
-    value_bindings = (fun this vbs -> 
-      match vbs with 
+    value_bindings = (fun this vbs ->
+      match vbs with
       | [vb] -> [ this.value_binding this vb ]
       | _ -> List.map (this.value_binding this) vbs
     );
-    value_bindings_rec = (fun this vbs -> 
-      match vbs with 
+    value_bindings_rec = (fun this vbs ->
+      match vbs with
       | [vb] -> [ this.value_binding this vb ]
       | _ -> List.map (this.value_binding this) vbs
     );
@@ -29684,6 +29693,7 @@ let default_mapper =
          | PPat (x, g) -> PPat (this.pat this x, map_opt (this.expr this) g)
       );
   }
+
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -36562,7 +36572,9 @@ end = struct
 
 open Ast_helper
 
-
+(**
+   [newTdcls tdcls newAttrs]
+   functional update attributes of last declaration *)
 let newTdcls
     (tdcls : Parsetree.type_declaration list)
     (newAttrs : Parsetree.attributes)
@@ -36585,17 +36597,16 @@ let handleTdclsInSigi
     (self : Bs_ast_mapper.mapper)
     (sigi : Parsetree.signature_item)
     (tdcls : Parsetree.type_declaration list)
-    : Ast_signature.item =
+  : Ast_signature.item =
   begin match Ast_attributes.process_derive_type
                 (Ext_list.last tdcls).ptype_attributes  with
   | {bs_deriving = Some actions; explict_nonrec}, newAttrs
     ->
     let loc = sigi.psig_loc in
-    let newTdcls = newTdcls tdcls newAttrs in
-    let newSigi =
-      self.signature_item self {sigi with psig_desc = Psig_type newTdcls} in
+    let originalTdclsNewAttrs = newTdcls tdcls newAttrs in (* remove the processed attr*)
+    let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
     if Ast_payload.isAbstract actions then
-      let  codes = Ast_derive_abstract.handleTdclsInSig newTdcls in
+      let  codes = Ast_derive_abstract.handleTdclsInSig originalTdclsNewAttrs in
       Ast_signature.fuseAll ~loc
         (
           Sig.include_ ~loc
@@ -36605,23 +36616,18 @@ let handleTdclsInSigi
                      (Mod.structure ~loc [
                          { pstr_loc = loc;
                            pstr_desc =
-                             Pstr_type
-                               (match newSigi.psig_desc with
-                                | Psig_type x -> x
-                                | _ -> assert false)
+                             Pstr_type newTdclsNewAttrs
                          }] )
                      (Mty.signature ~loc [])) ) )
-          ::
-          self.signature self
-            codes
+          :: (* include module type of struct [processed_code for checking like invariance ]end *)
+          self.signature self  codes
         )
     else
       Ast_signature.fuseAll ~loc
-        (newSigi::
+        ( {psig_desc = Psig_type newTdclsNewAttrs; psig_loc = loc}::
          self.signature
            self
-           (
-             Ast_derive.gen_signature tdcls actions explict_nonrec))
+           (Ast_derive.gen_signature tdcls actions explict_nonrec))
   | {bs_deriving = None }, _  ->
     Bs_ast_mapper.default_mapper.signature_item self sigi
 
@@ -36632,7 +36638,7 @@ let handleTdclsInStru
     (self : Bs_ast_mapper.mapper)
     (str : Parsetree.structure_item)
     (tdcls : Parsetree.type_declaration list)
-    : Ast_structure.item =
+  : Ast_structure.item =
   begin match
       Ast_attributes.process_derive_type
         ((Ext_list.last tdcls).ptype_attributes) with
@@ -36640,19 +36646,19 @@ let handleTdclsInStru
      explict_nonrec
     }, newAttrs ->
     let loc = str.pstr_loc in
-    let tdcls2 = newTdcls tdcls newAttrs in
-    let newStr =
-      self.structure_item self
-        {str with pstr_desc = Pstr_type tdcls2} in
+    let originalTdclsNewAttrs = newTdcls tdcls newAttrs in
+    let newStr : Parsetree.structure_item =
+      { pstr_desc = Pstr_type (self.type_declaration_list self originalTdclsNewAttrs);
+        pstr_loc = loc}
+    in
     if Ast_payload.isAbstract actions then
-      let codes = Ast_derive_abstract.handleTdclsInStr tdcls2 in
+      let codes = Ast_derive_abstract.handleTdclsInStr originalTdclsNewAttrs in
       (* use [tdcls2] avoid nonterminating *)
       Ast_structure.fuseAll ~loc
         (
-          Ast_structure.constraint_ ~loc
-            [newStr] []::
-          self.structure self
-            codes)
+          Ast_structure.constraint_ ~loc [newStr] []
+          :: (* [include struct end : sig end] for error checking *)
+          self.structure self codes)
     else
       Ast_structure.fuseAll ~loc
         (newStr ::
