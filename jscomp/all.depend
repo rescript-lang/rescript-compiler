@@ -243,6 +243,8 @@ syntax/ast_tdcls.cmx : ext/ext_list.cmx syntax/bs_ast_mapper.cmx \
     syntax/ast_structure.cmx syntax/ast_signature.cmx syntax/ast_payload.cmx \
     syntax/ast_derive_abstract.cmx syntax/ast_derive.cmx \
     syntax/ast_attributes.cmx syntax/ast_tdcls.cmi
+syntax/ast_primitive.cmx : syntax/external_process.cmx \
+    syntax/bs_ast_mapper.cmx syntax/ast_primitive.cmi
 syntax/ast_exp_apply.cmx : ext/literals.cmx ext/ext_list.cmx \
     syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
     syntax/ast_literal.cmx syntax/ast_attributes.cmx syntax/ast_exp_apply.cmi
@@ -257,14 +259,14 @@ syntax/ast_core_type_class_type.cmx : ext/literals.cmx ext/ext_ref.cmx \
 syntax/ast_tuple_pattern_flatten.cmx : ext/ext_list.cmx \
     syntax/bs_ast_mapper.cmx syntax/ast_tuple_pattern_flatten.cmi
 syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
-    syntax/external_process.cmx ext/ext_string.cmx syntax/bs_ast_mapper.cmx \
-    syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
-    syntax/ast_utf8_string_interp.cmx syntax/ast_utf8_string.cmx \
-    syntax/ast_tuple_pattern_flatten.cmx syntax/ast_tdcls.cmx \
-    syntax/ast_payload.cmx syntax/ast_exp_extension.cmx \
-    syntax/ast_exp_apply.cmx syntax/ast_derive_projector.cmx \
-    syntax/ast_derive_js_mapper.cmx syntax/ast_core_type_class_type.cmx \
-    syntax/ast_attributes.cmx syntax/ppx_entry.cmi
+    ext/ext_string.cmx syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx \
+    syntax/ast_util.cmx syntax/ast_utf8_string_interp.cmx \
+    syntax/ast_utf8_string.cmx syntax/ast_tuple_pattern_flatten.cmx \
+    syntax/ast_tdcls.cmx syntax/ast_primitive.cmx syntax/ast_payload.cmx \
+    syntax/ast_exp_extension.cmx syntax/ast_exp_apply.cmx \
+    syntax/ast_derive_projector.cmx syntax/ast_derive_js_mapper.cmx \
+    syntax/ast_core_type_class_type.cmx syntax/ast_attributes.cmx \
+    syntax/ppx_entry.cmi
 syntax/bs_syntaxerr.cmi :
 syntax/ast_utf8_string.cmi :
 syntax/ast_utf8_string_interp.cmi :
@@ -297,6 +299,7 @@ syntax/external_process.cmi : common/bs_loc.cmi syntax/ast_core_type.cmi \
 syntax/ast_util.cmi : syntax/bs_ast_mapper.cmi syntax/ast_payload.cmi
 syntax/ast_tdcls.cmi : syntax/bs_ast_mapper.cmi syntax/ast_structure.cmi \
     syntax/ast_signature.cmi
+syntax/ast_primitive.cmi : syntax/bs_ast_mapper.cmi
 syntax/ast_exp_apply.cmi : syntax/bs_ast_mapper.cmi
 syntax/ast_exp_extension.cmi : syntax/bs_ast_mapper.cmi
 syntax/ast_core_type_class_type.cmi : syntax/bs_ast_mapper.cmi
@@ -765,13 +768,15 @@ super_errors/super_main.cmx : super_errors/super_typetexp.cmx \
     super_errors/super_env.cmx
 super_errors/super_reason_react.cmi :
 super_errors/super_misc.cmi :
-outcome_printer/reason_syntax_util.cmx :
+outcome_printer/reason_syntax_util.cmx : \
+    outcome_printer/reason_syntax_util.cmi
 outcome_printer/outcome_printer_ns.cmx : ext/ext_namespace.cmx \
     outcome_printer/outcome_printer_ns.cmi
 outcome_printer/tweaked_reason_oprint.cmx : \
     outcome_printer/reason_syntax_util.cmx
 outcome_printer/reason_outcome_printer_main.cmx : \
     outcome_printer/tweaked_reason_oprint.cmx
+outcome_printer/reason_syntax_util.cmi :
 outcome_printer/outcome_printer_ns.cmi :
 ounit_tests/ounit_cmd_util.cmi :
 ounit_tests/ounit_tests_main.cmi :

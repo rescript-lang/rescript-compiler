@@ -10912,9 +10912,9 @@ let () =
   *)
 
   open Parsetree
-  
+
   (** {2 A generic Parsetree mapper} *)
-  
+
   type mapper = {
     attribute: mapper -> attribute -> attribute;
     attributes: mapper -> attribute list -> attribute list;
@@ -10955,13 +10955,16 @@ let () =
     structure_item: mapper -> structure_item -> structure_item;
     typ: mapper -> core_type -> core_type;
     type_declaration: mapper -> type_declaration -> type_declaration;
+(* XXXXX *)
+    type_declaration_list: mapper -> type_declaration list -> type_declaration list;
+(* XXXXX *)
     type_extension: mapper -> type_extension -> type_extension;
     type_kind: mapper -> type_kind -> type_kind;
     value_binding: mapper -> value_binding -> value_binding;
-(* XXXXX *)    
+(* XXXXX *)
     value_bindings_rec: mapper -> value_binding list -> value_binding list;
     value_bindings: mapper -> value_binding list -> value_binding list;
-(* XXXXX *)        
+(* XXXXX *)
     value_description: mapper -> value_description -> value_description;
     with_constraint: mapper -> with_constraint -> with_constraint;
   }
@@ -10969,10 +10972,10 @@ let () =
       using an open recursion style: each method takes as its first
       argument the mapper to be applied to children in the syntax
       tree. *)
-  
+
   val default_mapper: mapper
   (** A default mapper, which implements a "deep identity" mapping. *)
-  
+
 end = struct
 #1 "bs_ast_mapper.ml"
 (***********************************************************************)
@@ -11040,13 +11043,16 @@ type mapper = {
   structure_item: mapper -> structure_item -> structure_item;
   typ: mapper -> core_type -> core_type;
   type_declaration: mapper -> type_declaration -> type_declaration;
+(* XXXX *)
+  type_declaration_list : mapper -> type_declaration list -> type_declaration list;
+(* XXXX *)
   type_extension: mapper -> type_extension -> type_extension;
   type_kind: mapper -> type_kind -> type_kind;
   value_binding: mapper -> value_binding -> value_binding;
 (* XXXX *)
-  value_bindings_rec : mapper -> value_binding list -> value_binding list; 
-  value_bindings : mapper -> value_binding list -> value_binding list; 
-(* XXXXX *)  
+  value_bindings_rec : mapper -> value_binding list -> value_binding list;
+  value_bindings : mapper -> value_binding list -> value_binding list;
+(* XXXXX *)
   value_description: mapper -> value_description -> value_description;
   with_constraint: mapper -> with_constraint -> with_constraint;
 }
@@ -11110,7 +11116,9 @@ module T = struct
       ?manifest:(map_opt (sub.typ sub) ptype_manifest)
       ~loc:(sub.location sub ptype_loc)
       ~attrs:(sub.attributes sub ptype_attributes)
-
+(* XXXX *)
+  let map_type_declaration_list sub l = List.map  (sub.type_declaration sub) l
+(* XXXX *)
   let map_type_kind sub = function
     | Ptype_abstract -> Ptype_abstract
     | Ptype_variant l ->
@@ -11219,7 +11227,7 @@ module MT = struct
     let loc = sub.location sub loc in
     match desc with
     | Psig_value vd -> value ~loc (sub.value_description sub vd)
-    | Psig_type l -> type_ ~loc (List.map (sub.type_declaration sub) l)
+    | Psig_type l -> type_ ~loc (sub.type_declaration_list sub l)
     | Psig_typext te -> type_extension ~loc (sub.type_extension sub te)
     | Psig_exception ed -> exception_ ~loc (sub.extension_constructor sub ed)
     | Psig_module x -> module_ ~loc (sub.module_declaration sub x)
@@ -11265,15 +11273,15 @@ module M = struct
     match desc with
     | Pstr_eval (x, attrs) ->
         eval ~loc ~attrs:(sub.attributes sub attrs) (sub.expr sub x)
-    | Pstr_value (r, vbs) -> 
-(* XXX *)    
+    | Pstr_value (r, vbs) ->
+(* XXX *)
 (* value ~loc r (List.map (sub.value_binding sub) vbs) *)
-      value ~loc r 
+      value ~loc r
       ((if r = Recursive then sub.value_bindings_rec else sub.value_bindings)
        sub vbs)
-(* XXX *)          
+(* XXX *)
     | Pstr_primitive vd -> primitive ~loc (sub.value_description sub vd)
-    | Pstr_type l -> type_ ~loc (List.map (sub.type_declaration sub) l)
+    | Pstr_type l -> type_ ~loc (sub.type_declaration_list sub l)
     | Pstr_typext te -> type_extension ~loc (sub.type_extension sub te)
     | Pstr_exception ed -> exception_ ~loc (sub.extension_constructor sub ed)
     | Pstr_module x -> module_ ~loc (sub.module_binding sub x)
@@ -11300,16 +11308,16 @@ module E = struct
     | Pexp_ident x -> ident ~loc ~attrs (map_loc sub x)
     | Pexp_constant x -> constant ~loc ~attrs x
     | Pexp_let (r, vbs, e) ->
-(* XXXX *)    
+(* XXXX *)
         (* let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
           (sub.expr sub e) *)
-        let_ ~loc ~attrs r 
+        let_ ~loc ~attrs r
         (
-          (if r = Recursive then sub.value_bindings_rec else sub.value_bindings)  
+          (if r = Recursive then sub.value_bindings_rec else sub.value_bindings)
           sub vbs
-        ) 
+        )
         (sub.expr sub e)
-(* XXXX *)              
+(* XXXX *)
     | Pexp_fun (lab, def, p, e) ->
         fun_ ~loc ~attrs lab (map_opt (sub.expr sub) def) (sub.pat sub p)
           (sub.expr sub e)
@@ -11422,14 +11430,14 @@ module CE = struct
         apply ~loc ~attrs (sub.class_expr sub ce)
           (List.map (map_snd (sub.expr sub)) l)
     | Pcl_let (r, vbs, ce) ->
-(* XXXX *)    
+(* XXXX *)
         (* let_ ~loc ~attrs r (List.map (sub.value_binding sub) vbs)
           (sub.class_expr sub ce) *)
-          let_ ~loc ~attrs r 
+          let_ ~loc ~attrs r
           ((if r = Recursive then sub.value_bindings_rec else sub.value_bindings)
             sub vbs)
           (sub.class_expr sub ce)
-(* XXXX *)              
+(* XXXX *)
     | Pcl_constraint (ce, ct) ->
         constraint_ ~loc ~attrs (sub.class_expr sub ce) (sub.class_type sub ct)
     | Pcl_extension x -> extension ~loc ~attrs (sub.extension sub x)
@@ -11496,6 +11504,7 @@ let default_mapper =
     class_description =
       (fun this -> CE.class_infos this (this.class_type this));
     type_declaration = T.map_type_declaration;
+    type_declaration_list = T.map_type_declaration_list;
     type_kind = T.map_type_kind;
     typ = T.map;
     type_extension = T.map_type_extension;
@@ -11563,13 +11572,13 @@ let default_mapper =
            ~attrs:(this.attributes this pincl_attributes)
       );
 
-    value_bindings = (fun this vbs -> 
-      match vbs with 
+    value_bindings = (fun this vbs ->
+      match vbs with
       | [vb] -> [ this.value_binding this vb ]
       | _ -> List.map (this.value_binding this) vbs
     );
-    value_bindings_rec = (fun this vbs -> 
-      match vbs with 
+    value_bindings_rec = (fun this vbs ->
+      match vbs with
       | [vb] -> [ this.value_binding this vb ]
       | _ -> List.map (this.value_binding this) vbs
     );
@@ -11627,6 +11636,7 @@ let default_mapper =
          | PPat (x, g) -> PPat (this.pat this x, map_opt (this.expr this) g)
       );
   }
+
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
@@ -18201,6 +18211,138 @@ let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
   end 
 
 end
+module Ast_primitive : sig 
+#1 "ast_primitive.mli"
+(* Copyright (C) 2018 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+val handlePrimitiveInSig:
+  Bs_ast_mapper.mapper ->
+  Parsetree.value_description ->
+  Parsetree.signature_item ->
+  Parsetree.signature_item
+
+val handlePrimitiveInStru:
+  Bs_ast_mapper.mapper ->
+  Parsetree.value_description ->
+  Parsetree.structure_item ->
+  Parsetree.structure_item
+  
+
+end = struct
+#1 "ast_primitive.ml"
+(* Copyright (C) 2018 Authors of BuckleScript
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let handlePrimitiveInSig
+    (self : Bs_ast_mapper.mapper)
+    ({pval_attributes;
+      pval_type;
+      pval_loc;
+      pval_prim;
+      pval_name ;
+     } as prim : Parsetree.value_description)
+    (sigi : Parsetree.signature_item)
+  : Parsetree.signature_item
+  =
+  let pval_type = self.typ self pval_type in
+  let pval_attributes = self.attributes self pval_attributes in
+  let pval_type, pval_prim, pval_attributes =
+    match pval_prim with
+    | [ v ] ->
+      External_process.handle_attributes_as_string
+        pval_loc
+        pval_name.txt
+        pval_type
+        pval_attributes v
+    | _ ->
+      Location.raise_errorf
+        ~loc:pval_loc
+        "only a single string is allowed in bs external" in
+  {sigi with
+   psig_desc =
+     Psig_value
+       {prim with
+        pval_type ;
+        pval_prim ;
+        pval_attributes
+       }}
+
+let handlePrimitiveInStru
+    (self : Bs_ast_mapper.mapper)
+    ({pval_attributes;
+      pval_prim;
+      pval_type;
+      pval_name;
+      pval_loc} as prim : Parsetree.value_description)
+    (str : Parsetree.structure_item)
+    : Parsetree.structure_item =
+  let pval_type = self.typ self pval_type in
+  let pval_attributes = self.attributes self pval_attributes in
+  let pval_type, pval_prim, pval_attributes =
+    match pval_prim with
+    | [ v] ->
+      External_process.handle_attributes_as_string
+        pval_loc
+        pval_name.txt
+        pval_type pval_attributes v
+
+    | _ -> Location.raise_errorf
+             ~loc:pval_loc "only a single string is allowed in bs external" in
+  {str with
+   pstr_desc =
+     Pstr_primitive
+       {prim with
+        pval_type ;
+        pval_prim;
+        pval_attributes
+       }}
+
+end
 module Ast_derive_abstract : sig 
 #1 "ast_derive_abstract.mli"
 (* Copyright (C) 2017 Authors of BuckleScript
@@ -18436,7 +18578,9 @@ end = struct
 
 open Ast_helper
 
-
+(**
+   [newTdcls tdcls newAttrs]
+   functional update attributes of last declaration *)
 let newTdcls
     (tdcls : Parsetree.type_declaration list)
     (newAttrs : Parsetree.attributes)
@@ -18459,17 +18603,16 @@ let handleTdclsInSigi
     (self : Bs_ast_mapper.mapper)
     (sigi : Parsetree.signature_item)
     (tdcls : Parsetree.type_declaration list)
-    : Ast_signature.item =
+  : Ast_signature.item =
   begin match Ast_attributes.process_derive_type
                 (Ext_list.last tdcls).ptype_attributes  with
   | {bs_deriving = Some actions; explict_nonrec}, newAttrs
     ->
     let loc = sigi.psig_loc in
-    let newTdcls = newTdcls tdcls newAttrs in
-    let newSigi =
-      self.signature_item self {sigi with psig_desc = Psig_type newTdcls} in
+    let originalTdclsNewAttrs = newTdcls tdcls newAttrs in (* remove the processed attr*)
+    let newTdclsNewAttrs = self.type_declaration_list self originalTdclsNewAttrs in
     if Ast_payload.isAbstract actions then
-      let  codes = Ast_derive_abstract.handleTdclsInSig newTdcls in
+      let  codes = Ast_derive_abstract.handleTdclsInSig originalTdclsNewAttrs in
       Ast_signature.fuseAll ~loc
         (
           Sig.include_ ~loc
@@ -18479,23 +18622,18 @@ let handleTdclsInSigi
                      (Mod.structure ~loc [
                          { pstr_loc = loc;
                            pstr_desc =
-                             Pstr_type
-                               (match newSigi.psig_desc with
-                                | Psig_type x -> x
-                                | _ -> assert false)
+                             Pstr_type newTdclsNewAttrs
                          }] )
                      (Mty.signature ~loc [])) ) )
-          ::
-          self.signature self
-            codes
+          :: (* include module type of struct [processed_code for checking like invariance ]end *)
+          self.signature self  codes
         )
     else
       Ast_signature.fuseAll ~loc
-        (newSigi::
+        ( {psig_desc = Psig_type newTdclsNewAttrs; psig_loc = loc}::
          self.signature
            self
-           (
-             Ast_derive.gen_signature tdcls actions explict_nonrec))
+           (Ast_derive.gen_signature tdcls actions explict_nonrec))
   | {bs_deriving = None }, _  ->
     Bs_ast_mapper.default_mapper.signature_item self sigi
 
@@ -18506,7 +18644,7 @@ let handleTdclsInStru
     (self : Bs_ast_mapper.mapper)
     (str : Parsetree.structure_item)
     (tdcls : Parsetree.type_declaration list)
-    : Ast_structure.item =
+  : Ast_structure.item =
   begin match
       Ast_attributes.process_derive_type
         ((Ext_list.last tdcls).ptype_attributes) with
@@ -18514,19 +18652,19 @@ let handleTdclsInStru
      explict_nonrec
     }, newAttrs ->
     let loc = str.pstr_loc in
-    let tdcls2 = newTdcls tdcls newAttrs in
-    let newStr =
-      self.structure_item self
-        {str with pstr_desc = Pstr_type tdcls2} in
+    let originalTdclsNewAttrs = newTdcls tdcls newAttrs in
+    let newStr : Parsetree.structure_item =
+      { pstr_desc = Pstr_type (self.type_declaration_list self originalTdclsNewAttrs);
+        pstr_loc = loc}
+    in
     if Ast_payload.isAbstract actions then
-      let codes = Ast_derive_abstract.handleTdclsInStr tdcls2 in
+      let codes = Ast_derive_abstract.handleTdclsInStr originalTdclsNewAttrs in
       (* use [tdcls2] avoid nonterminating *)
       Ast_structure.fuseAll ~loc
         (
-          Ast_structure.constraint_ ~loc
-            [newStr] []::
-          self.structure self
-            codes)
+          Ast_structure.constraint_ ~loc [newStr] []
+          :: (* [include struct end : sig end] for error checking *)
+          self.structure self codes)
     else
       Ast_structure.fuseAll ~loc
         (newStr ::
@@ -19839,38 +19977,10 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       match sigi.psig_desc with
       | Psig_type (_ :: _ as tdcls) ->
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
-      | Psig_value
-          ({pval_attributes;
-            pval_type;
-            pval_loc;
-            pval_prim;
-            pval_name ;
-           } as prim)
-        when Ast_attributes.process_external pval_attributes
+      | Psig_value prim
+        when Ast_attributes.process_external prim.pval_attributes
         ->
-        let pval_type = self.typ self pval_type in
-        let pval_attributes = self.attributes self pval_attributes in
-        let pval_type, pval_prim, pval_attributes =
-          match pval_prim with
-          | [ v ] ->
-            External_process.handle_attributes_as_string
-              pval_loc
-              pval_name.txt
-              pval_type
-              pval_attributes v
-          | _ ->
-            Location.raise_errorf
-              ~loc:pval_loc
-              "only a single string is allowed in bs external" in
-        {sigi with
-         psig_desc =
-           Psig_value
-             {prim with
-              pval_type ;
-              pval_prim ;
-              pval_attributes
-             }}
-
+          Ast_primitive.handlePrimitiveInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
@@ -19888,34 +19998,10 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           Ast_util.handle_raw_structure loc payload
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
-        | Pstr_primitive
-            ({pval_attributes;
-              pval_prim;
-              pval_type;
-              pval_name;
-              pval_loc} as prim)
-          when Ast_attributes.process_external pval_attributes
+        | Pstr_primitive prim
+          when Ast_attributes.process_external prim.pval_attributes
           ->
-          let pval_type = self.typ self pval_type in
-          let pval_attributes = self.attributes self pval_attributes in
-          let pval_type, pval_prim, pval_attributes =
-            match pval_prim with
-            | [ v] ->
-              External_process.handle_attributes_as_string
-                pval_loc
-                pval_name.txt
-                pval_type pval_attributes v
-
-            | _ -> Location.raise_errorf
-                     ~loc:pval_loc "only a single string is allowed in bs external" in
-          {str with
-           pstr_desc =
-             Pstr_primitive
-               {prim with
-                pval_type ;
-                pval_prim;
-                pval_attributes
-               }}
+          Ast_primitive.handlePrimitiveInStru self prim str
         | _ -> Bs_ast_mapper.default_mapper.structure_item self str
       end
     end

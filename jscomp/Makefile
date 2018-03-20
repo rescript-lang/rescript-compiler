@@ -256,6 +256,7 @@ SYNTAX_SRCS= \
 	external_process\
 	ast_util\
 	ast_tdcls\
+	ast_primitive\
 	ast_exp_apply\
 	ast_exp_extension\
 	ast_core_type_class_type\
