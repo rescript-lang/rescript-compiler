@@ -71,6 +71,7 @@
 ../lib/bsppx.ml : ./ext/string_hash_set.mli
 ../lib/bsppx.ml : ./syntax/ast_core_type.ml
 ../lib/bsppx.ml : ./syntax/ast_exp_apply.ml
+../lib/bsppx.ml : ./syntax/ast_primitive.ml
 ../lib/bsppx.ml : ./syntax/ast_signature.ml
 ../lib/bsppx.ml : ./syntax/ast_structure.ml
 ../lib/bsppx.ml : ./syntax/bs_ast_mapper.ml
@@ -81,6 +82,7 @@
 ../lib/bsppx.ml : ./syntax/ast_attributes.ml
 ../lib/bsppx.ml : ./syntax/ast_core_type.mli
 ../lib/bsppx.ml : ./syntax/ast_exp_apply.mli
+../lib/bsppx.ml : ./syntax/ast_primitive.mli
 ../lib/bsppx.ml : ./syntax/ast_signature.mli
 ../lib/bsppx.ml : ./syntax/ast_structure.mli
 ../lib/bsppx.ml : ./syntax/bs_ast_mapper.mli

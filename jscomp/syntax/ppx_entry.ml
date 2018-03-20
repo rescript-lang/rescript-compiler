@@ -192,38 +192,10 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
       match sigi.psig_desc with
       | Psig_type (_ :: _ as tdcls) ->
           Ast_tdcls.handleTdclsInSigi self sigi tdcls
-      | Psig_value
-          ({pval_attributes;
-            pval_type;
-            pval_loc;
-            pval_prim;
-            pval_name ;
-           } as prim)
-        when Ast_attributes.process_external pval_attributes
+      | Psig_value prim
+        when Ast_attributes.process_external prim.pval_attributes
         ->
-        let pval_type = self.typ self pval_type in
-        let pval_attributes = self.attributes self pval_attributes in
-        let pval_type, pval_prim, pval_attributes =
-          match pval_prim with
-          | [ v ] ->
-            External_process.handle_attributes_as_string
-              pval_loc
-              pval_name.txt
-              pval_type
-              pval_attributes v
-          | _ ->
-            Location.raise_errorf
-              ~loc:pval_loc
-              "only a single string is allowed in bs external" in
-        {sigi with
-         psig_desc =
-           Psig_value
-             {prim with
-              pval_type ;
-              pval_prim ;
-              pval_attributes
-             }}
-
+          Ast_primitive.handlePrimitiveInSig self prim sigi
       | _ -> Bs_ast_mapper.default_mapper.signature_item self sigi
     end;
     pat = begin fun self (pat : Parsetree.pattern) ->
@@ -241,34 +213,10 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
           Ast_util.handle_raw_structure loc payload
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
-        | Pstr_primitive
-            ({pval_attributes;
-              pval_prim;
-              pval_type;
-              pval_name;
-              pval_loc} as prim)
-          when Ast_attributes.process_external pval_attributes
+        | Pstr_primitive prim
+          when Ast_attributes.process_external prim.pval_attributes
           ->
-          let pval_type = self.typ self pval_type in
-          let pval_attributes = self.attributes self pval_attributes in
-          let pval_type, pval_prim, pval_attributes =
-            match pval_prim with
-            | [ v] ->
-              External_process.handle_attributes_as_string
-                pval_loc
-                pval_name.txt
-                pval_type pval_attributes v
-
-            | _ -> Location.raise_errorf
-                     ~loc:pval_loc "only a single string is allowed in bs external" in
-          {str with
-           pstr_desc =
-             Pstr_primitive
-               {prim with
-                pval_type ;
-                pval_prim;
-                pval_attributes
-               }}
+          Ast_primitive.handlePrimitiveInStru self prim str
         | _ -> Bs_ast_mapper.default_mapper.structure_item self str
       end
     end
