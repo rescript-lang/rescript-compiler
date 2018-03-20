@@ -33,7 +33,7 @@ var shuffledDataAdd = Belt_Array.makeByAndShuffle(1000001, (function (i) {
 function test() {
   var v = ofArray(shuffledDataAdd);
   for(var j = 0; j <= 1000000; ++j){
-    should(+v.has(j));
+    should(v.has(j));
   }
   return /* () */0;
 }

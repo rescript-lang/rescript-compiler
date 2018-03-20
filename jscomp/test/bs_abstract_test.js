@@ -10,7 +10,7 @@ v.tl = v;
 
 var f = {
   k: (function (x, y) {
-      return +(x === y);
+      return x === y;
     }),
   y: "x"
 };

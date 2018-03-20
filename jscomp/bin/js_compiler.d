@@ -121,6 +121,7 @@ bin/js_compiler.ml : ./ext/int_vec_util.ml
 bin/js_compiler.ml : ./ext/int_vec_vec.mli
 bin/js_compiler.ml : ./ext/resize_array.ml
 bin/js_compiler.ml : ./syntax/ast_comb.mli
+bin/js_compiler.ml : ./syntax/ast_tdcls.ml
 bin/js_compiler.ml : ./syntax/ast_util.mli
 bin/js_compiler.ml : ./syntax/ppx_entry.ml
 bin/js_compiler.ml : ../vendor/ocaml/typing/env.ml
@@ -152,6 +153,7 @@ bin/js_compiler.ml : ./ext/ident_hashtbl.ml
 bin/js_compiler.ml : ./ext/int_vec_util.mli
 bin/js_compiler.ml : ./ext/resize_array.mli
 bin/js_compiler.ml : ./syntax/ast_derive.ml
+bin/js_compiler.ml : ./syntax/ast_tdcls.mli
 bin/js_compiler.ml : ./syntax/ppx_entry.mli
 bin/js_compiler.ml : ../vendor/ocaml/typing/env.mli
 bin/js_compiler.ml : ../vendor/ocaml/typing/path.ml
@@ -240,6 +242,7 @@ bin/js_compiler.ml : ./depends/bs_exception.ml
 bin/js_compiler.ml : ./ext/string_hash_set.mli
 bin/js_compiler.ml : ./syntax/ast_core_type.ml
 bin/js_compiler.ml : ./syntax/ast_exp_apply.ml
+bin/js_compiler.ml : ./syntax/ast_primitive.ml
 bin/js_compiler.ml : ./syntax/ast_signature.ml
 bin/js_compiler.ml : ./syntax/ast_structure.ml
 bin/js_compiler.ml : ./syntax/bs_ast_mapper.ml
@@ -280,6 +283,7 @@ bin/js_compiler.ml : ./depends/bs_exception.mli
 bin/js_compiler.ml : ./syntax/ast_attributes.ml
 bin/js_compiler.ml : ./syntax/ast_core_type.mli
 bin/js_compiler.ml : ./syntax/ast_exp_apply.mli
+bin/js_compiler.ml : ./syntax/ast_primitive.mli
 bin/js_compiler.ml : ./syntax/ast_signature.mli
 bin/js_compiler.ml : ./syntax/ast_structure.mli
 bin/js_compiler.ml : ./syntax/bs_ast_mapper.mli

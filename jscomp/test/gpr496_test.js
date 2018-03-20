@@ -2,7 +2,6 @@
 
 var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
-var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
 var suites = [/* [] */0];
@@ -26,40 +25,48 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var expected_004 = Caml_primitive.caml_int_compare(/* false */0, /* true */1);
+var expected_000 = true === false;
 
-var expected_005 = Caml_primitive.caml_int_compare(/* true */1, /* false */0);
+var expected_001 = false === true;
 
-var expected_006 = Caml_primitive.caml_int_compare(/* false */0, /* false */0);
+var expected_002 = false === false;
 
-var expected_007 = Caml_primitive.caml_int_compare(/* true */1, /* true */1);
+var expected_003 = true === true;
+
+var expected_004 = Caml_primitive.caml_int_compare(false, true);
+
+var expected_005 = Caml_primitive.caml_int_compare(true, false);
+
+var expected_006 = Caml_primitive.caml_int_compare(false, false);
+
+var expected_007 = Caml_primitive.caml_int_compare(true, true);
 
 var expected = /* tuple */[
-  /* false */0,
-  /* false */0,
-  /* true */1,
-  /* true */1,
+  expected_000,
+  expected_001,
+  expected_002,
+  expected_003,
   expected_004,
   expected_005,
   expected_006,
   expected_007
 ];
 
-var u_000 = +(true === false);
+var u_000 = true === false;
 
-var u_001 = +(false === true);
+var u_001 = false === true;
 
-var u_002 = +(false === false);
+var u_002 = false === false;
 
-var u_003 = +(true === true);
+var u_003 = true === true;
 
-var u_004 = Caml_obj.caml_compare(false, true);
+var u_004 = Caml_primitive.caml_int_compare(false, true);
 
-var u_005 = Caml_obj.caml_compare(true, false);
+var u_005 = Caml_primitive.caml_int_compare(true, false);
 
-var u_006 = Caml_obj.caml_compare(false, false);
+var u_006 = Caml_primitive.caml_int_compare(false, false);
 
-var u_007 = Caml_obj.caml_compare(true, true);
+var u_007 = Caml_primitive.caml_int_compare(true, true);
 
 var u = /* tuple */[
   u_000,

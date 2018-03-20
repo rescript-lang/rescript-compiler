@@ -195,7 +195,7 @@ function test55() {
   var ib = Scanf.Scanning[/* from_string */6](s);
   add_digest_ib(ob, ib);
   var tscanf_data_file_lines_digest = $$Buffer.contents(ob);
-  return +(digest_file(tscanf_data_file) === tscanf_data_file_lines_digest);
+  return digest_file(tscanf_data_file) === tscanf_data_file_lines_digest;
 }
 
 exports.tscanf_data_file = tscanf_data_file;

@@ -262,7 +262,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                           "test_unsafe_obj_ffi_ppx.cmi",
                                           /* [] */0
                                         ],
-                                        Ext_string_test.split(/* Some */[/* false */0], " test_unsafe_obj_ffi_ppx.cmi", /* " " */32)
+                                        Ext_string_test.split(/* Some */[false], " test_unsafe_obj_ffi_ppx.cmi", /* " " */32)
                                       ]);
                             })
                         ],

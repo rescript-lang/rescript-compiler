@@ -51,7 +51,7 @@ console.log(/* int array */[
             3,
             4
           ].filter((function (x) {
-                return +(x > 2);
+                return x > 2;
               })).map((function (x, i) {
               return x + i | 0;
             })).reduce((function (x, y) {
@@ -124,7 +124,7 @@ $$throw("File \"bs_array_test.ml\", line 32, characters 8-15", (function () {
                   ], 2, 0);
       }));
 
-b("File \"bs_array_test.ml\", line 33, characters 4-11", 1 - Belt_Array.set(/* int array */[
+b("File \"bs_array_test.ml\", line 33, characters 4-11", !Belt_Array.set(/* int array */[
           1,
           2
         ], 2, 0));
@@ -145,7 +145,7 @@ if (!Belt_Array.set(v$1, 0, 0)) {
       ];
 }
 
-b("File \"bs_array_test.ml\", line 34, characters 4-11", +(Belt_Array.getExn(v$1, 0) === 0));
+b("File \"bs_array_test.ml\", line 34, characters 4-11", Belt_Array.getExn(v$1, 0) === 0);
 
 var v$2 = /* int array */[
   1,
@@ -163,21 +163,21 @@ if (!Belt_Array.set(v$2, 1, 0)) {
       ];
 }
 
-b("File \"bs_array_test.ml\", line 35, characters 4-11", +(Belt_Array.getExn(v$2, 1) === 0));
+b("File \"bs_array_test.ml\", line 35, characters 4-11", Belt_Array.getExn(v$2, 1) === 0);
 
 var v$3 = /* int array */[
   1,
   2
 ];
 
-b("File \"bs_array_test.ml\", line 36, characters 4-11", (Belt_Array.setExn(v$3, 0, 0), +(Belt_Array.getExn(v$3, 0) === 0)));
+b("File \"bs_array_test.ml\", line 36, characters 4-11", (Belt_Array.setExn(v$3, 0, 0), Belt_Array.getExn(v$3, 0) === 0));
 
 var v$4 = /* int array */[
   1,
   2
 ];
 
-b("File \"bs_array_test.ml\", line 37, characters 4-11", (Belt_Array.setExn(v$4, 1, 0), +(Belt_Array.getExn(v$4, 1) === 0)));
+b("File \"bs_array_test.ml\", line 37, characters 4-11", (Belt_Array.setExn(v$4, 1, 0), Belt_Array.getExn(v$4, 1) === 0));
 
 function id(x) {
   return eq("File \"bs_array_test.ml\", line 40, characters 5-12", Js_vector.toList(Js_list.toVector(x)), x);
@@ -223,7 +223,7 @@ var a = Js_vector.init(5, (function (i) {
       }));
 
 eq("File \"bs_array_test.ml\", line 50, characters 5-12", (Js_vector.filterInPlace((function (j) {
-              return +(j % 2 === 0);
+              return j % 2 === 0;
             }), a), a), /* int array */[
       2,
       4
@@ -234,7 +234,7 @@ var a$1 = Js_vector.init(5, (function (i) {
       }));
 
 eq("File \"bs_array_test.ml\", line 57, characters 5-12", (Js_vector.filterInPlace((function (j) {
-              return +(j % 2 !== 0);
+              return j % 2 !== 0;
             }), a$1), a$1), /* int array */[
       1,
       3,
@@ -359,16 +359,16 @@ eq("File \"bs_array_test.ml\", line 101, characters 5-12", Belt_Array.reduceReve
             return prim - prim$1 | 0;
           })), 90);
 
-b("File \"bs_array_test.ml\", line 102, characters 4-11", +(Belt_Array.reduceReverse2(/* int array */[
-            1,
-            2,
-            3
-          ], /* int array */[
-            1,
-            2
-          ], 0, (function (acc, x, y) {
-              return (acc + x | 0) + y | 0;
-            })) === 6));
+b("File \"bs_array_test.ml\", line 102, characters 4-11", Belt_Array.reduceReverse2(/* int array */[
+          1,
+          2,
+          3
+        ], /* int array */[
+          1,
+          2
+        ], 0, (function (acc, x, y) {
+            return (acc + x | 0) + y | 0;
+          })) === 6);
 
 function addone(x) {
   return x + 1 | 0;
@@ -522,11 +522,11 @@ var v$6 = Belt_Array.makeBy(10, (function (i) {
       }));
 
 var v0 = Belt_Array.keep(v$6, (function (x) {
-        return +(x % 2 === 0);
+        return x % 2 === 0;
       }));
 
 var v1 = Belt_Array.keep(v$6, (function (x) {
-        return +(x % 3 === 0);
+        return x % 3 === 0;
       }));
 
 var v2 = Belt_Array.keepMap(v$6, (function (x) {
@@ -1068,14 +1068,14 @@ eq("File \"bs_array_test.ml\", line 245, characters 5-12", sumUsingForEach(/* ar
           4
         ]), 10);
 
-b("File \"bs_array_test.ml\", line 246, characters 4-11", 1 - Belt_Array.every(/* array */[
+b("File \"bs_array_test.ml\", line 246, characters 4-11", !Belt_Array.every(/* array */[
           0,
           1,
           2,
           3,
           4
         ], (function (x) {
-            return +(x > 2);
+            return x > 2;
           })));
 
 b("File \"bs_array_test.ml\", line 247, characters 4-11", Belt_Array.some(/* int array */[
@@ -1084,18 +1084,18 @@ b("File \"bs_array_test.ml\", line 247, characters 4-11", Belt_Array.some(/* int
           7,
           8
         ], (function (x) {
-            return +(x % 2 === 0);
+            return x % 2 === 0;
           })));
 
-b("File \"bs_array_test.ml\", line 248, characters 4-11", 1 - Belt_Array.some(/* int array */[
+b("File \"bs_array_test.ml\", line 248, characters 4-11", !Belt_Array.some(/* int array */[
           1,
           3,
           7
         ], (function (x) {
-            return +(x % 2 === 0);
+            return x % 2 === 0;
           })));
 
-b("File \"bs_array_test.ml\", line 249, characters 4-11", 1 - Belt_Array.eq(/* int array */[
+b("File \"bs_array_test.ml\", line 249, characters 4-11", !Belt_Array.eq(/* int array */[
           0,
           1
         ], /* int array */[1], Caml_obj.caml_equal));
@@ -1109,7 +1109,7 @@ b("File \"bs_array_test.ml\", line 250, characters 4-11", (Belt_Array.forEachWit
           ], (function (i, v) {
               c$1[0] = (c$1[0] + i | 0) + v | 0;
               return /* () */0;
-            })), +(c$1[0] === 6)));
+            })), c$1[0] === 6));
 
 function id$1(_, x) {
   var u = Belt_Array.copy(x);
@@ -1158,8 +1158,8 @@ eq("File \"bs_array_test.ml\", line 279, characters 5-12", every2(/* [] */0, /* 
             1,
             /* [] */0
           ])((function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_array_test.ml\", line 280, characters 5-12", every2(/* :: */[
             2,
@@ -1171,8 +1171,8 @@ eq("File \"bs_array_test.ml\", line 280, characters 5-12", every2(/* :: */[
             1,
             /* [] */0
           ])((function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_array_test.ml\", line 281, characters 5-12", every2(/* :: */[
             2,
@@ -1181,8 +1181,8 @@ eq("File \"bs_array_test.ml\", line 281, characters 5-12", every2(/* :: */[
             1,
             /* [] */0
           ])((function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_array_test.ml\", line 282, characters 5-12", every2(/* :: */[
             2,
@@ -1197,8 +1197,8 @@ eq("File \"bs_array_test.ml\", line 282, characters 5-12", every2(/* :: */[
               /* [] */0
             ]
           ])((function (x, y) {
-            return +(x > y);
-          })), /* false */0);
+            return x > y;
+          })), false);
 
 eq("File \"bs_array_test.ml\", line 283, characters 5-12", every2(/* :: */[
             2,
@@ -1213,15 +1213,15 @@ eq("File \"bs_array_test.ml\", line 283, characters 5-12", every2(/* :: */[
               /* [] */0
             ]
           ])((function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_array_test.ml\", line 284, characters 5-12", some2(/* [] */0, /* :: */[
             1,
             /* [] */0
           ])((function (x, y) {
-            return +(x > y);
-          })), /* false */0);
+            return x > y;
+          })), false);
 
 eq("File \"bs_array_test.ml\", line 285, characters 5-12", some2(/* :: */[
             2,
@@ -1233,8 +1233,8 @@ eq("File \"bs_array_test.ml\", line 285, characters 5-12", some2(/* :: */[
             1,
             /* [] */0
           ])((function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_array_test.ml\", line 286, characters 5-12", some2(/* :: */[
             2,
@@ -1249,8 +1249,8 @@ eq("File \"bs_array_test.ml\", line 286, characters 5-12", some2(/* :: */[
               /* [] */0
             ]
           ])((function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_array_test.ml\", line 287, characters 5-12", some2(/* :: */[
             0,
@@ -1265,8 +1265,8 @@ eq("File \"bs_array_test.ml\", line 287, characters 5-12", some2(/* :: */[
               /* [] */0
             ]
           ])((function (x, y) {
-            return +(x > y);
-          })), /* false */0);
+            return x > y;
+          })), false);
 
 eq("File \"bs_array_test.ml\", line 288, characters 5-12", some2(/* :: */[
             0,
@@ -1281,8 +1281,8 @@ eq("File \"bs_array_test.ml\", line 288, characters 5-12", some2(/* :: */[
               /* [] */0
             ]
           ])((function (x, y) {
-            return +(x > y);
-          })), /* true */1);
+            return x > y;
+          })), true);
 
 eq("File \"bs_array_test.ml\", line 293, characters 5-12", Belt_Array.concat(/* int array */[], /* int array */[
           1,
@@ -1377,57 +1377,57 @@ eq("File \"bs_array_test.ml\", line 299, characters 5-12", Belt_Array.concatMany
           /* array */[]
         ]), /* array */[]);
 
-b("File \"bs_array_test.ml\", line 302, characters 4-11", +(Belt_Array.cmp(/* int array */[
-            1,
-            2,
-            3
-          ], /* int array */[
-            0,
-            1,
-            2,
-            3
-          ], Caml_obj.caml_compare) < 0));
+b("File \"bs_array_test.ml\", line 302, characters 4-11", Belt_Array.cmp(/* int array */[
+          1,
+          2,
+          3
+        ], /* int array */[
+          0,
+          1,
+          2,
+          3
+        ], Caml_obj.caml_compare) < 0);
 
-b("File \"bs_array_test.ml\", line 303, characters 4-11", +(Belt_Array.cmp(/* int array */[
-            0,
-            1,
-            2,
-            3
-          ], /* int array */[
-            1,
-            2,
-            3
-          ], Caml_obj.caml_compare) > 0));
+b("File \"bs_array_test.ml\", line 303, characters 4-11", Belt_Array.cmp(/* int array */[
+          0,
+          1,
+          2,
+          3
+        ], /* int array */[
+          1,
+          2,
+          3
+        ], Caml_obj.caml_compare) > 0);
 
-b("File \"bs_array_test.ml\", line 304, characters 4-11", +(Belt_Array.cmp(/* int array */[
-            1,
-            2,
-            3
-          ], /* int array */[
-            0,
-            1,
-            2
-          ], Caml_primitive.caml_int_compare) > 0));
+b("File \"bs_array_test.ml\", line 304, characters 4-11", Belt_Array.cmp(/* int array */[
+          1,
+          2,
+          3
+        ], /* int array */[
+          0,
+          1,
+          2
+        ], Caml_primitive.caml_int_compare) > 0);
 
-b("File \"bs_array_test.ml\", line 305, characters 4-11", +(Belt_Array.cmp(/* int array */[
-            1,
-            2,
-            3
-          ], /* int array */[
-            1,
-            2,
-            3
-          ], Caml_primitive.caml_int_compare) === 0));
+b("File \"bs_array_test.ml\", line 305, characters 4-11", Belt_Array.cmp(/* int array */[
+          1,
+          2,
+          3
+        ], /* int array */[
+          1,
+          2,
+          3
+        ], Caml_primitive.caml_int_compare) === 0);
 
-b("File \"bs_array_test.ml\", line 306, characters 4-11", +(Belt_Array.cmp(/* int array */[
-            1,
-            2,
-            4
-          ], /* int array */[
-            1,
-            2,
-            3
-          ], Caml_primitive.caml_int_compare) > 0));
+b("File \"bs_array_test.ml\", line 306, characters 4-11", Belt_Array.cmp(/* int array */[
+          1,
+          2,
+          4
+        ], /* int array */[
+          1,
+          2,
+          3
+        ], Caml_primitive.caml_int_compare) > 0);
 
 Mt.from_pair_suites("File \"bs_array_test.ml\", line 309, characters 23-30", suites[0]);
 

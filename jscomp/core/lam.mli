@@ -57,6 +57,7 @@ type constant =
   | Const_js_true
   | Const_js_false  
   | Const_int of int
+  | Const_bool of bool
   | Const_char of char
   | Const_string of string 
   | Const_unicode of string 
@@ -190,7 +191,6 @@ type primitive =
   | Pis_undefined
   | Pis_null_undefined
 
-  | Pjs_boolean_to_bool
   | Pjs_typeof
   | Pjs_function_length 
 

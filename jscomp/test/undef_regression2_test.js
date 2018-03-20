@@ -75,10 +75,10 @@ function test3() {
 }
 
 function f(x) {
-  return +(x === undefined);
+  return x === undefined;
 }
 
-ok("File \"undef_regression2_test.ml\", line 44, characters 5-12", +(a > 0));
+ok("File \"undef_regression2_test.ml\", line 44, characters 5-12", a > 0);
 
 eq("File \"undef_regression2_test.ml\", line 45, characters 5-12", a, 1);
 

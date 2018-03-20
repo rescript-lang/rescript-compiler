@@ -88,6 +88,7 @@ let rec print_struct_const = function
   | Const_base(Const_int32 i) -> printf "%ldl" i
   | Const_base(Const_nativeint i) -> printf "%ndn" i
   | Const_base(Const_int64 i) -> printf "%LdL" i
+  | Const_bool b -> printf "%b" b
   | Const_pointer (n,_) -> printf "%da" n
   | Const_block(tag, _, args) ->
       printf "<%d>" tag;

@@ -12,27 +12,27 @@ function blackify(s) {
                 s[2],
                 s[3]
               ],
-              /* false */0
+              false
             ];
     } else {
       return /* tuple */[
               s,
-              /* true */1
+              true
             ];
     }
   } else {
     return /* tuple */[
             s,
-            /* true */1
+            true
           ];
   }
 }
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -42,7 +42,7 @@ function mem(x, _param) {
     if (param) {
       var y = param[2];
       if (x === y) {
-        return /* true */1;
+        return true;
       } else if (x < y) {
         _param = param[1];
         continue ;
@@ -51,7 +51,7 @@ function mem(x, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -222,7 +222,7 @@ function unbalanced_left(param) {
                       match[2],
                       match[3]
                     ], param[2], param[3]),
-                /* false */0
+                false
               ];
       } else {
         exit = 1;
@@ -245,7 +245,7 @@ function unbalanced_left(param) {
                             match$2[3]
                           ], param[2], param[3])
                     ],
-                    /* false */0
+                    false
                   ];
           } else {
             exit = 1;
@@ -258,7 +258,7 @@ function unbalanced_left(param) {
                         match$1[2],
                         match$1[3]
                       ], param[2], param[3]),
-                  /* true */1
+                  true
                 ];
         }
       } else {
@@ -294,7 +294,7 @@ function unbalanced_right(param) {
                       match[2],
                       match[3]
                     ]),
-                /* false */0
+                false
               ];
       } else {
         exit = 1;
@@ -319,7 +319,7 @@ function unbalanced_right(param) {
                       match$1[2],
                       match$1[3]
                     ],
-                    /* false */0
+                    false
                   ];
           } else {
             exit = 1;
@@ -332,7 +332,7 @@ function unbalanced_right(param) {
                         match$1[2],
                         match$1[3]
                       ]),
-                  /* true */1
+                  true
                 ];
         }
       } else {
@@ -574,7 +574,7 @@ function remove_min(param) {
         return /* tuple */[
                 param[3],
                 param[2],
-                /* false */0
+                false
               ];
       }
     } else if (param[1]) {
@@ -592,7 +592,7 @@ function remove_min(param) {
                     match[3]
                   ],
                   x,
-                  /* false */0
+                  false
                 ];
         } else {
           throw [
@@ -608,7 +608,7 @@ function remove_min(param) {
         return /* tuple */[
                 /* Empty */0,
                 x,
-                /* true */1
+                true
               ];
       }
     }
@@ -635,7 +635,7 @@ function remove_min(param) {
         return /* tuple */[
                 s,
                 y,
-                /* false */0
+                false
               ];
       }
     }
@@ -674,13 +674,13 @@ function remove_aux(x, n) {
         } else {
           return /* tuple */[
                   n$1,
-                  /* false */0
+                  false
                 ];
         }
       } else if (c === /* Red */1) {
         return /* tuple */[
                 l,
-                /* false */0
+                false
               ];
       } else {
         return blackify(l);
@@ -699,7 +699,7 @@ function remove_aux(x, n) {
       } else {
         return /* tuple */[
                 n$2,
-                /* false */0
+                false
               ];
       }
     } else {
@@ -716,14 +716,14 @@ function remove_aux(x, n) {
       } else {
         return /* tuple */[
                 n$3,
-                /* false */0
+                false
               ];
       }
     }
   } else {
     return /* tuple */[
             /* Empty */0,
-            /* false */0
+            false
           ];
   }
 }

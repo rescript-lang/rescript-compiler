@@ -108,7 +108,7 @@ b("File \"bs_sort_test.ml\", line 68, characters 4-11", Belt_SortArray.isSorted(
           1
         ], cmp));
 
-b("File \"bs_sort_test.ml\", line 70, characters 4-11", 1 - Belt_SortArray.isSorted(/* int array */[
+b("File \"bs_sort_test.ml\", line 70, characters 4-11", !Belt_SortArray.isSorted(/* int array */[
           1,
           0
         ], cmp));
@@ -331,7 +331,7 @@ eq("File \"bs_sort_test.ml\", line 116, characters 5-12", Belt_SortArray.binaryS
 var aa = Array_data_util.range(0, 1000);
 
 b("File \"bs_sort_test.ml\", line 118, characters 4-11", Belt_Range.every(0, 1000, (function (i) {
-            return +(Belt_SortArray.binarySearchBy(aa, i, cmp) === i);
+            return Belt_SortArray.binarySearchBy(aa, i, cmp) === i;
           })));
 
 var cc = Belt_Array.map(Array_data_util.range(0, 2000), (function (x) {
@@ -347,11 +347,11 @@ eq("File \"bs_sort_test.ml\", line 125, characters 5-12", Belt_SortArray.binaryS
 eq("File \"bs_sort_test.ml\", line 127, characters 5-12", Belt_SortArray.binarySearchBy(cc, 1, cmp) ^ -1, 1);
 
 b("File \"bs_sort_test.ml\", line 128, characters 4-11", Belt_Range.every(0, 1999, (function (i) {
-            return +((Belt_SortArray.binarySearchBy(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0));
+            return (Belt_SortArray.binarySearchBy(cc, (i << 1) + 1 | 0, cmp) ^ -1) === (i + 1 | 0);
           })));
 
 function lt(x, y) {
-  return +(x < y);
+  return x < y;
 }
 
 eq("File \"bs_sort_test.ml\", line 135, characters 5-12", Belt_SortArray.strictlySortedLength(/* int array */[], lt), 0);

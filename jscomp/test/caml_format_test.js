@@ -188,8 +188,8 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
             "isnan_of_string",
             (function () {
                 return /* Eq */Block.__(0, [
-                          /* true */1,
-                          +(Caml_float.caml_classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4)
+                          true,
+                          Caml_float.caml_classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4
                         ]);
               })
           ],
@@ -663,8 +663,8 @@ var formatter_suites_001 = /* :: */[
                           4,
                           5,
                           6,
-                          /* true */1,
-                          /* false */0,
+                          true,
+                          false,
                           0,
                           1,
                           2,
@@ -991,8 +991,8 @@ var formatter_suites_001 = /* :: */[
                             4,
                             5,
                             6,
-                            /* true */1,
-                            /* false */0,
+                            true,
+                            false,
                             0,
                             1,
                             2,

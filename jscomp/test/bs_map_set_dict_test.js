@@ -112,9 +112,9 @@ b("File \"bs_map_set_dict_test.ml\", line 77, characters 4-11", Belt_Array.every
                       ];
               })), (function (param, param$1) {
             if (param[0] === param$1[0]) {
-              return +(param[1] === param$1[1]);
+              return param[1] === param$1[1];
             } else {
-              return /* false */0;
+              return false;
             }
           })));
 
@@ -125,9 +125,9 @@ b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Belt_List.every2
                           ];
                   }))), (function (param, param$1) {
             if (param[0] === param$1[0]) {
-              return +(param[1] === param$1[1]);
+              return param[1] === param$1[1];
             } else {
-              return /* false */0;
+              return false;
             }
           })));
 

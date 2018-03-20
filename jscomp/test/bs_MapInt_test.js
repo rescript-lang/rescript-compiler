@@ -16,7 +16,7 @@ function test() {
     m = Belt_MapInt.set(m, i, i);
   }
   for(var i$1 = 0; i$1 <= 999999; ++i$1){
-    should(+(Belt_MapInt.get(m, i$1) !== /* None */0));
+    should(Belt_MapInt.get(m, i$1) !== /* None */0);
   }
   for(var i$2 = 0; i$2 <= 999999; ++i$2){
     m = Belt_MapInt.remove(m, i$2);

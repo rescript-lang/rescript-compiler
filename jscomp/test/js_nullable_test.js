@@ -39,13 +39,13 @@ function f(x, y) {
   return x + y | 0;
 }
 
-eq("File \"js_nullable_test.ml\", line 26, characters 7-14", /* false */0, /* false */0);
+eq("File \"js_nullable_test.ml\", line 26, characters 7-14", false, false);
 
-eq("File \"js_nullable_test.ml\", line 28, characters 7-14", +(f(1, 2) == null), /* false */0);
+eq("File \"js_nullable_test.ml\", line 28, characters 7-14", (f(1, 2) == null), false);
 
-eq("File \"js_nullable_test.ml\", line 30, characters 6-13", +((null) == null), /* true */1);
+eq("File \"js_nullable_test.ml\", line 30, characters 6-13", ((null) == null), true);
 
-eq("File \"js_nullable_test.ml\", line 34, characters 3-10", /* false */0, /* false */0);
+eq("File \"js_nullable_test.ml\", line 34, characters 3-10", false, false);
 
 Mt.from_pair_suites("js_nullable_test.ml", suites[0]);
 

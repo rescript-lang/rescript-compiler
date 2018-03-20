@@ -2152,6 +2152,14 @@ let call_switcher fail arg low high int_lambda_list =
     as_interval fail low high int_lambda_list in
   Switcher.zyva edges arg cases actions
 
+let call_switcher_bool loc arg = function
+  | [(i1, act1); (_,act2)] ->
+      let c1 = Const_bool (i1 <> 0) in
+      Lifthenelse
+        (Lprim ((Pintcomp Cneq), [arg ; Lconst c1], loc),
+         act2,
+         act1)
+  | _ -> fatal_error "Matching.call_switcher_bool"
 
 let exists_ctx ok ctx =
   List.exists
@@ -2440,6 +2448,8 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
           with
           | (1, 1, [0, act1], [0, act2]) ->
               Lifthenelse(arg, act2, act1)
+          | (2,_,_,[]) when cstr.cstr_name = "true" || cstr.cstr_name = "false"  ->
+               call_switcher_bool loc arg consts
           | (n,_,_,[])  ->
               call_switcher None arg 0 (n-1) consts
           | (n, _, _, _) ->
