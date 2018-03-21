@@ -69,42 +69,59 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
   match tdcl.ptype_kind with
   | Ptype_record label_declarations ->
     let setter_accessor =
-      Ext_list.fold_right (fun (x: Parsetree.label_declaration) acc ->
-          let pld_name = x.pld_name.txt in
-          let pld_loc = x.pld_name.loc in
-          let pld_type = x.pld_type in
+      Ext_list.fold_right (fun
+          ({pld_name = {txt = label_name; loc = label_loc} as pld_name;
+            pld_type;
+            pld_mutable;
+            pld_attributes
+            }:
+          Parsetree.label_declaration) acc ->
           let () = checkNotFunciton pld_type in
-          let setter =
+          let prim =
+            match Ast_attributes.iter_process_bs_string_as pld_attributes with
+            | None -> [label_name]
+            | Some new_name -> [new_name]
+          in
+          let getter =
             Val.mk
-              {loc = pld_loc; txt = pld_name}
+              pld_name (* we always use this: it is fixed in ocaml API*)
               ~attrs:[Ast_attributes.bs_get]
-              ~prim:[pld_name]
+              ~prim
               (Typ.arrow "" core_type pld_type) :: acc in
-          match x.pld_mutable with
+          match pld_mutable with
           | Mutable ->
             Val.mk
-              {loc = pld_loc; txt = pld_name ^ "Set"}
+              {loc = label_loc; txt = label_name ^ "Set"}
+              (* setter *)
               ~attrs:[Ast_attributes.bs_set]
-              ~prim:[pld_name]
-              (Typ.arrow "" core_type (Typ.arrow "" pld_type (Ast_literal.type_unit ()))) :: setter
-          | Immutable -> setter
+              ~prim
+              (Typ.arrow "" core_type (Typ.arrow "" pld_type (Ast_literal.type_unit ()))) :: getter
+          | Immutable -> getter
         ) label_declarations []
     in
-
     newTdcl,
     (match tdcl.ptype_private with
      | Private -> setter_accessor
      | Public ->
        let ty =
-         Ext_list.fold_right (fun (label_declaration : Parsetree.label_declaration) acc ->
-             Typ.arrow
-               label_declaration.pld_name.txt label_declaration.pld_type acc
+         Ext_list.fold_right (fun ({pld_name = {txt}; pld_type}: Parsetree.label_declaration) acc ->
+             Typ.arrow txt pld_type acc
            ) label_declarations  core_type in
-       let maker =
-         Val.mk  {loc; txt = type_name}
-           ~attrs:[Ast_attributes.bs_obj]
-           ~prim:[""] ty in
-       (maker :: setter_accessor))
+       let myPrims =
+         External_process.pval_prim_of_labels
+           (List.map
+              (fun ({pld_name; pld_attributes} : Parsetree.label_declaration) ->
+                match Ast_attributes.iter_process_bs_string_as pld_attributes with
+                | None -> pld_name
+                | Some new_name -> {pld_name with txt = new_name}
+              )
+              label_declarations)
+       in
+       let myMaker =
+        Val.mk  ~loc
+        {loc; txt = type_name}
+        ~prim:myPrims ty in
+       (myMaker :: setter_accessor))
 
   | Ptype_abstract
   | Ptype_variant _

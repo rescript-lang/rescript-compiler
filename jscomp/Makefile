@@ -247,13 +247,13 @@ SYNTAX_SRCS= \
 	ast_core_type\
 	bs_ast_invariant\
 	ast_attributes\
-	ast_derive_abstract\
 	ast_polyvar\
+	external_ffi_types\
+	external_process\
+	ast_derive_abstract\
 	ast_derive_dyn\
 	ast_derive_projector \
 	ast_derive_js_mapper\
-	external_ffi_types\
-	external_process\
 	ast_util\
 	ast_tdcls\
 	ast_primitive\
