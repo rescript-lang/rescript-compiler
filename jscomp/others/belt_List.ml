@@ -692,6 +692,13 @@ let setAssocU xs x k eq =
 
 let setAssoc xs x k eq = setAssocU xs x k (fun [@bs] a b -> eq a b)
 
+let sort xs cmp =
+  let arr = toArray xs in
+  begin
+    Belt_SortArray.stableSortInPlaceBy arr cmp;
+    fromArray arr;
+  end
+
 let rec getByU xs p = 
   match xs with 
   | [] -> None
