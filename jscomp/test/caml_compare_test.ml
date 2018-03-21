@@ -50,7 +50,33 @@ let suites = Mt.[
     __LOC__ , begin fun _ -> 
         Eq(false,  [2;6;1;1;2;1;4;2;1;409] = [2;6;1;1;2;1;4;2;1])
     end;
-    
+
+    "cmp_id", (fun _ -> Eq (compare [%bs.obj {x=1; y=2}] [%bs.obj {x=1; y=2}], 0));
+    "cmp_val", (fun _ -> Eq (compare [%bs.obj {x=1}] [%bs.obj {x=2}], -1));
+    "cmp_val2", (fun _ -> Eq (compare [%bs.obj {x=2}] [%bs.obj {x=1}], 1));
+    "cmp_empty", (fun _ -> Eq (compare [%bs.raw "{}"] [%bs.raw "{}"], 0));
+    "cmp_empty2", (fun _ -> Eq (compare [%bs.raw "{}"] [%bs.raw "{x:1}"], -1));
+    "cmp_swap", (fun _ -> Eq (compare [%bs.obj {x=1; y=2}] [%bs.obj {y=2; x=1}], 0));
+    "cmp_size", (fun _ -> Eq (compare [%bs.raw "{x:1}"] [%bs.raw "{x:1, y:2}"], -1));
+    "cmp_size2", (fun _ -> Eq (compare [%bs.raw "{x:1, y:2}"] [%bs.raw "{x:1}"], 1));
+    "cmp_order", (fun _ -> Eq (compare [%bs.obj {x=0; y=1}] [%bs.obj {x=1; y=0}], -1));
+    "cmp_order2", (fun _ -> Eq (compare [%bs.obj {x=1; y=0}] [%bs.obj {x=0; y=1}], 1));
+    "cmp_in_list", (fun _ -> Eq (compare [[%bs.obj {x=1}]] [[%bs.obj {x=2}]], -1));
+    "cmp_in_list2", (fun _ -> Eq (compare [[%bs.obj {x=2}]] [[%bs.obj {x=1}]], 1));
+    "cmp_with_list", (fun _ -> Eq (compare [%bs.obj {x=[0]}] [%bs.obj {x=[1]}], -1));
+    "cmp_with_list2", (fun _ -> Eq (compare [%bs.obj {x=[1]}] [%bs.obj {x=[0]}], 1));
+    "eq_id", (fun _ -> Ok ([%bs.obj {x=1; y=2}] = [%bs.obj {x=1; y=2}]));
+    "eq_val", (fun _ -> Eq ([%bs.obj {x=1}] = [%bs.obj {x=2}], false));
+    "eq_val2", (fun _ -> Eq ([%bs.obj {x=2}] = [%bs.obj {x=1}], false));
+    "eq_empty", (fun _ -> Eq ([%bs.raw "{}"] = [%bs.raw "{}"], true));
+    "eq_empty2", (fun _ -> Eq ([%bs.raw "{}"] = [%bs.raw "{x:1}"], false));
+    "eq_swap", (fun _ -> Ok ([%bs.obj {x=1; y=2}] = [%bs.obj {y=2; x=1}]));
+    "eq_size", (fun _ -> Eq ([%bs.raw "{x:1}"] = [%bs.raw "{x:1, y:2}"], false));
+    "eq_size2", (fun _ -> Eq ([%bs.raw "{x:1, y:2}"] = [%bs.raw "{x:1}"], false));
+    "eq_in_list", (fun _ -> Eq ([[%bs.obj {x=1}]] = [[%bs.obj {x=2}]], false));
+    "eq_in_list2", (fun _ -> Eq ([[%bs.obj {x=2}]] = [[%bs.obj {x=2}]], true));
+    "eq_with_list", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[0]}], true));
+    "eq_with_list2", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[1]}], false));
 ]
 ;;
 
