@@ -222,7 +222,8 @@ syntax/external_process.cmx : common/lam_methname.cmx \
     syntax/external_process.cmi
 syntax/ast_derive_abstract.cmx : syntax/external_process.cmx \
     ext/ext_list.cmx syntax/ast_literal.cmx syntax/ast_derive_util.cmx \
-    syntax/ast_attributes.cmx syntax/ast_derive_abstract.cmi
+    syntax/ast_core_type.cmx syntax/ast_attributes.cmx \
+    syntax/ast_derive_abstract.cmi
 syntax/ast_derive_dyn.cmx : ext/ext_list.cmx syntax/bs_syntaxerr.cmx \
     syntax/ast_structure.cmx syntax/ast_derive_util.cmx syntax/ast_derive.cmx \
     syntax/ast_attributes.cmx syntax/ast_derive_dyn.cmi
