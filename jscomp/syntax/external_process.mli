@@ -54,4 +54,6 @@ val pval_prim_of_labels : string Asttypes.loc list -> string list
 
 
 val pval_prim_of_option_labels :
-  (bool * string Asttypes.loc) list -> string list
+  (bool * string Asttypes.loc) list ->
+  bool ->
+  string list

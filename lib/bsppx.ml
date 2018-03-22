@@ -8037,7 +8037,7 @@ end
 module Ast_core_type : sig 
 #1 "ast_core_type.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -8055,28 +8055,32 @@ module Ast_core_type : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.core_type 
+type t = Parsetree.core_type
 
 
-val extract_option_type_exn : t -> t 
-val lift_option_type : t -> t 
-val is_any : t -> bool 
+val extract_option_type_exn : t -> t
+val extract_option_type : t -> t option
+
+val lift_option_type : t -> t
+val is_any : t -> bool
 val replace_result : t -> t -> t
 
-val is_unit : t -> bool 
-val is_array : t -> bool 
+val opt_arrow: Location.t -> string -> t -> t -> t
+
+val is_unit : t -> bool
+val is_array : t -> bool
 type arg_label =
-  | Label of string 
-  | Optional of string 
+  | Label of string
+  | Optional of string
   | Empty
 
 
-(** for 
+(** for
        [x:t] -> "x"
        [?x:t] -> "?x"
 *)
@@ -8086,7 +8090,7 @@ val label_name : string -> arg_label
 
 
 
-(** return a function type 
+(** return a function type
     [from_labels ~loc tyvars labels]
     example output:
     {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
@@ -8099,31 +8103,31 @@ val make_obj :
   (string * Parsetree.attributes * t) list ->
   t
 
-val is_user_option : t -> bool 
+val is_user_option : t -> bool
 
 val is_user_bool : t -> bool
 
 val is_user_int : t -> bool
 
-val is_optional_label : string -> bool 
+val is_optional_label : string -> bool
 
-(** 
-  returns 0 when it can not tell arity from the syntax 
+(**
+  returns 0 when it can not tell arity from the syntax
 *)
 val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 
 
 (** fails when Ptyp_poly *)
-val list_of_arrow : 
-  t -> 
+val list_of_arrow :
+  t ->
   t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
 
-val is_arity_one : t -> bool 
+val is_arity_one : t -> bool
 
 end = struct
 #1 "ast_core_type.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -8141,162 +8145,177 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.core_type 
+type t = Parsetree.core_type
 
 type arg_label =
-  | Label of string 
-  | Optional of string 
+  | Label of string
+  | Optional of string
   | Empty (* it will be ignored , side effect will be recorded *)
 
 
 
-let extract_option_type_exn (ty : t) = 
+let extract_option_type_exn (ty : t) =
   begin match ty with
     | {ptyp_desc =
-         Ptyp_constr({txt =
-                        Ldot (Lident "*predef*", "option") },
-                     [ty])}
-      ->                
+         Ptyp_constr
+           ({txt =
+               Ldot (Lident "*predef*", "option")
+               | Lident "option"
+            },
+            [ty])}
+      ->
       ty
-    | _ -> assert false                 
-  end      
+    | _ -> assert false
+  end
 
-let predef_option : Longident.t = Longident.Ldot (Lident "*predef*", "option")
-let predef_int : Longident.t = Ldot (Lident "*predef*", "int")
+let extract_option_type (ty : t) =
+  match ty.ptyp_desc with
+  | Ptyp_constr(
+    {txt = (Ldot (Lident "*predef*", "option")
+      | Lident "option")},
+     [ty]) -> Some ty
+  | _ -> None
+
+let predef_option : Longident.t =
+  Longident.Ldot (Lident "*predef*", "option")
+
+let predef_int : Longident.t =
+  Ldot (Lident "*predef*", "int")
 
 
-let lift_option_type (ty:t) : t = 
+let lift_option_type ({ptyp_loc} as ty:t) : t =
   {ptyp_desc =
      Ptyp_constr(
        {txt = predef_option;
-        loc = ty.ptyp_loc} 
+        loc = ptyp_loc}
         , [ty]);
-        ptyp_loc = ty.ptyp_loc;
+        ptyp_loc = ptyp_loc;
       ptyp_attributes = []
     }
 
-let is_any (ty : t) = 
-  match ty with {ptyp_desc = Ptyp_any} -> true | _ -> false
+let is_any (ty : t) =
+  ty.ptyp_desc = Ptyp_any
 
 open Ast_helper
 
-let replace_result ty result = 
-  let rec aux (ty : Parsetree.core_type) = 
-    match ty with 
-    | { ptyp_desc = 
+let replace_result (ty : t) (result : t) : t =
+  let rec aux (ty : Parsetree.core_type) =
+    match ty with
+    | { ptyp_desc =
           Ptyp_arrow (label,t1,t2)
       } -> { ty with ptyp_desc = Ptyp_arrow(label,t1, aux t2)}
-    | {ptyp_desc = Ptyp_poly(fs,ty)} 
+    | {ptyp_desc = Ptyp_poly(fs,ty)}
       ->  {ty with ptyp_desc = Ptyp_poly(fs, aux ty)}
-    | _ -> result in 
-  aux ty 
+    | _ -> result in
+  aux ty
 
-let is_unit (ty : t ) = 
-  match ty.ptyp_desc with 
+let is_unit (ty : t ) =
+  match ty.ptyp_desc with
   | Ptyp_constr({txt =Lident "unit"}, []) -> true
-  | _ -> false 
+  | _ -> false
 
-let is_array (ty : t) = 
-  match ty.ptyp_desc with 
+let is_array (ty : t) =
+  match ty.ptyp_desc with
   | Ptyp_constr({txt =Lident "array"}, [_]) -> true
-  | _ -> false 
+  | _ -> false
 
-let is_user_option (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "option"},[_]) -> true 
-  | _ -> false 
+let is_user_option (ty : t) =
+  match ty.ptyp_desc with
+  | Ptyp_constr({txt = Lident "option"},[_]) -> true
+  | _ -> false
 
-let is_user_bool (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "bool"},[]) -> true 
-  | _ -> false 
+let is_user_bool (ty : t) =
+  match ty.ptyp_desc with
+  | Ptyp_constr({txt = Lident "bool"},[]) -> true
+  | _ -> false
 
-let is_user_int (ty : t) = 
-  match ty.ptyp_desc with 
-  | Ptyp_constr({txt = Lident "int"},[]) -> true 
-  | _ -> false 
+let is_user_int (ty : t) =
+  match ty.ptyp_desc with
+  | Ptyp_constr({txt = Lident "int"},[]) -> true
+  | _ -> false
 
 let is_optional_label l =
   String.length l > 0 && l.[0] = '?'
 
 let label_name l : arg_label =
-  if l = "" then Empty else 
-  if is_optional_label l 
+  if l = "" then Empty else
+  if is_optional_label l
   then Optional (String.sub l 1 (String.length l - 1))
   else Label l
 
 
-(* Note that OCaml type checker will not allow arbitrary 
+(* Note that OCaml type checker will not allow arbitrary
    name as type variables, for example:
    {[
      '_x'_
    ]}
    will be recognized as a invalid program
 *)
-let from_labels ~loc arity labels 
+let from_labels ~loc arity labels
   : t =
-  let tyvars = 
-    ((Ext_list.init arity (fun i ->      
+  let tyvars =
+    ((Ext_list.init arity (fun i ->
          Typ.var ~loc ("a" ^ string_of_int i)))) in
   let result_type =
-    Ast_comb.to_js_type loc  
+    Ast_comb.to_js_type loc
       (Typ.object_ ~loc
          (Ext_list.map2 (fun x y -> x.Asttypes.txt ,[], y) labels tyvars) Closed)
-  in 
-  Ext_list.fold_right2 
+  in
+  Ext_list.fold_right2
     (fun {Asttypes.loc ; txt = label }
       tyvar acc -> Typ.arrow ~loc label tyvar acc) labels tyvars  result_type
 
 
 let make_obj ~loc xs =
-  Ast_comb.to_js_type loc @@
-  Ast_helper.Typ.object_  ~loc xs   Closed
+  Ast_comb.to_js_type loc
+    (Ast_helper.Typ.object_  ~loc xs Closed)
 
 
+let opt_arrow loc label ty1 ty2 =
+  Typ.arrow ~loc ("?" ^ label) ty1 ty2
+(**
 
-(** 
-
-{[ 'a . 'a -> 'b ]} 
+{[ 'a . 'a -> 'b ]}
 OCaml does not support such syntax yet
 {[ 'a -> ('a. 'a -> 'b) ]}
 
 *)
-let rec get_uncurry_arity_aux  (ty : t) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(_, _ , new_ty) -> 
+let rec get_uncurry_arity_aux  (ty : t) acc =
+    match ty.ptyp_desc with
+    | Ptyp_arrow(_, _ , new_ty) ->
       get_uncurry_arity_aux new_ty (succ acc)
-    | Ptyp_poly (_,ty) -> 
-      get_uncurry_arity_aux ty acc 
-    | _ -> acc 
+    | Ptyp_poly (_,ty) ->
+      get_uncurry_arity_aux ty acc
+    | _ -> acc
 
 (**
-   {[ unit -> 'a1 -> a2']}  arity 2 
-   {[ unit -> 'b ]} return arity 0 
-   {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N   
+   {[ unit -> 'a1 -> a2']}  arity 2
+   {[ unit -> 'b ]} return arity 0
+   {[ 'a1 -> 'a2 -> ... 'aN -> 'b ]} return arity N
 *)
-let get_uncurry_arity (ty : t ) = 
-  match ty.ptyp_desc  with 
-  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, 
+let get_uncurry_arity (ty : t ) =
+  match ty.ptyp_desc  with
+  | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))},
     ({ptyp_desc = Ptyp_arrow _ } as rest  )) -> `Arity (get_uncurry_arity_aux rest 1 )
   | Ptyp_arrow("", {ptyp_desc = (Ptyp_constr ({txt = Lident "unit"}, []))}, _) -> `Arity 0
-  | Ptyp_arrow(_,_,rest ) -> 
+  | Ptyp_arrow(_,_,rest ) ->
     `Arity(get_uncurry_arity_aux rest 1)
-  | _ -> `Not_function 
+  | _ -> `Not_function
 
 let get_curry_arity  ty =
   get_uncurry_arity_aux ty 0
 
 let is_arity_one ty = get_curry_arity ty =  1
-                      
-let list_of_arrow (ty : t) = 
-  let rec aux (ty : t) acc = 
-    match ty.ptyp_desc with 
-    | Ptyp_arrow(label,t1,t2) -> 
+
+let list_of_arrow (ty : t) =
+  let rec aux (ty : t) acc =
+    match ty.ptyp_desc with
+    | Ptyp_arrow(label,t1,t2) ->
       aux t2 ((label,t1,ty.ptyp_attributes,ty.ptyp_loc) ::acc)
     | Ptyp_poly(_, ty) -> (* should not happen? *)
       Bs_syntaxerr.err ty.ptyp_loc Unhandled_poly_type
@@ -10237,7 +10256,9 @@ val bs_obj : attr
 
 
 val bs_get : attr 
-val bs_set : attr 
+val bs_set : attr
+val bs_return_undefined : attr  
+
 end = struct
 #1 "ast_attributes.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -10534,8 +10555,9 @@ let iter_process_bs_string_or_int_as attrs =
     ) attrs;
   !st
 
+let locg = Location.none
 let bs : attr
-  =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs" ; loc = locg}, Ast_payload.empty
 
 let is_bs (attr : attr) =
   match attr with
@@ -10543,19 +10565,35 @@ let is_bs (attr : attr) =
   | _ -> false
 
 let bs_this : attr
-  =  {txt = "bs.this" ; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.this" ; loc = locg}, Ast_payload.empty
 
 let bs_method : attr
-  =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.meth"; loc = locg}, Ast_payload.empty
 
 let bs_obj : attr
-  =  {txt = "bs.obj"; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.obj"; loc = locg}, Ast_payload.empty
 
 let bs_get : attr
-  =  {txt = "bs.get"; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
 
 let bs_set : attr
-  =  {txt = "bs.set"; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.set"; loc = locg}, Ast_payload.empty
+
+let bs_return_undefined : attr
+  =
+  {txt = "bs.return"; loc = locg },
+  PStr
+    [
+      {pstr_desc =
+         Pstr_eval (
+           {pexp_desc =
+              Pexp_ident
+                { txt = Lident "undefined_to_opt";
+                  loc = locg};
+            pexp_loc = locg;
+            pexp_attributes = []
+           },[])
+      ; pstr_loc = locg}]
 
 
 end
@@ -13930,7 +13968,7 @@ let valid_global_name ?loc txt =
 
 (*
   We loose such check (see #2583),
-  it 
+  it also helps with the implementation deriving abstract [@bs.as]
 *)
 
 let valid_method_name ?loc txt =
@@ -14348,7 +14386,7 @@ end
 module External_process : sig 
 #1 "external_process.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -14366,7 +14404,7 @@ module External_process : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -14376,32 +14414,36 @@ module External_process : sig
 
 
 (**
-  [handle_attributes_as_string 
+  [handle_attributes_as_string
   loc pval_name.txt pval_type pval_attributes pval_prim]
   [pval_name.txt] is the name of identifier
   [pval_prim] is the name of string literal
-  
+
   return value is of [pval_type, pval_prims, new_attrs]
-*)    
-val handle_attributes_as_string : 
+*)
+val handle_attributes_as_string :
   Bs_loc.t ->
   string  ->
   Ast_core_type.t ->
-  Ast_attributes.t -> 
+  Ast_attributes.t ->
   string   ->
   Ast_core_type.t * string list * Ast_attributes.t
 
 
 
 
-(** [pval_prim_of_labels labels] 
-    return [pval_prims] for FFI, it is specialized for 
-    external object which is used in 
+(** [pval_prim_of_labels labels]
+    return [pval_prims] for FFI, it is specialized for
+    external object which is used in
     {[ [%obj { x = 2; y = 1} ] ]}
-*)  
+*)
 val pval_prim_of_labels : string Asttypes.loc list -> string list
 
 
+val pval_prim_of_option_labels :
+  (bool * string Asttypes.loc) list ->
+  bool ->
+  string list
 
 end = struct
 #1 "external_process.ml"
@@ -14470,7 +14512,10 @@ let variant_can_bs_unwrap_fields row_fields =
 let get_arg_type ~nolabel optional
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr * Ast_core_type.t  =
-  let ptyp = if optional then Ast_core_type.extract_option_type_exn ptyp else ptyp in
+  let ptyp =
+    if optional then
+      Ast_core_type.extract_option_type_exn ptyp
+    else ptyp in
   if Ast_core_type.is_any ptyp then (* (_[@bs.as ])*)
     if optional then
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
@@ -15383,22 +15428,48 @@ let handle_attributes_as_string
 
 
 
-let pval_prim_of_labels labels =
+let pval_prim_of_labels (labels : string Asttypes.loc list)
+   =
+  let arg_kinds =
+    Ext_list.fold_right
+      (fun {Asttypes.loc ; txt } arg_kinds
+        ->
+          let arg_label =
+            External_arg_spec.label
+              (Lam_methname.translate ~loc txt) None in
+          {External_arg_spec.arg_type = Nothing ;
+           arg_label  } :: arg_kinds
+      )
+      labels [] in
   let encoding =
-    let arg_kinds =
-      Ext_list.fold_right
-        (fun {Asttypes.loc ; txt } arg_kinds
-          ->
-            let arg_label =
-                External_arg_spec.label
-                  (Lam_methname.translate ~loc txt) None in
-            {External_arg_spec.arg_type = Nothing ;
-             arg_label  } :: arg_kinds
-        )
-        labels [] in
-    External_ffi_types.to_string
-      (Ffi_obj_create arg_kinds)   in
+    External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
   [""; encoding]
+
+let pval_prim_of_option_labels
+(labels : (bool * string Asttypes.loc) list)
+(ends_with_unit : bool)
+  =
+ let arg_kinds =
+   Ext_list.fold_right
+     (fun (is_option,{Asttypes.loc ; txt }) arg_kinds
+       ->
+       let label_name = (Lam_methname.translate ~loc txt) in
+       let arg_label =
+          if is_option then
+            External_arg_spec.optional label_name
+          else External_arg_spec.label label_name None
+       in
+         {External_arg_spec.arg_type = Nothing ;
+          arg_label  } :: arg_kinds
+     )
+     labels
+     (if ends_with_unit then
+        [External_arg_spec.empty_kind Extern_unit]
+     else [])
+in
+ let encoding =
+   External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
+ [""; encoding]
 
 
 end
@@ -18443,6 +18514,10 @@ let rec checkNotFunciton (ty : Parsetree.core_type) =
   | Ptyp_extension _ -> ()
 
 
+let get_optional_attrs =
+  [Ast_attributes.bs_get; Ast_attributes.bs_return_undefined]
+let get_attrs = [ Ast_attributes.bs_get ]
+let set_attrs = [Ast_attributes.bs_set]
 let handleTdcl (tdcl : Parsetree.type_declaration) =
   let core_type = U.core_type_of_type_declaration tdcl in
   let loc = tdcl.ptype_loc in
@@ -18455,59 +18530,83 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
   } in
   match tdcl.ptype_kind with
   | Ptype_record label_declarations ->
-    let setter_accessor =
-      Ext_list.fold_right (fun
-          ({pld_name = {txt = label_name; loc = label_loc} as pld_name;
+    let is_private = tdcl.ptype_private = Private in
+    let has_optional_field =
+      List.exists (fun ({pld_type} : Parsetree.label_declaration) ->
+          Ast_core_type.is_user_option pld_type
+        ) label_declarations in
+    let setter_accessor, makeType, labels =
+      Ext_list.fold_right
+        (fun
+          ({pld_name =
+              {txt = label_name; loc = label_loc} as pld_name;
             pld_type;
             pld_mutable;
-            pld_attributes
-            }:
-          Parsetree.label_declaration) acc ->
+            pld_attributes;
+            pld_loc
+           }:
+             Parsetree.label_declaration) (acc, maker, labels) ->
           let () = checkNotFunciton pld_type in
-          let prim =
+          (* TODO: explain why *)
+          let prim, newLabel =
             match Ast_attributes.iter_process_bs_string_as pld_attributes with
-            | None -> [label_name]
-            | Some new_name -> [new_name]
+            | None ->
+              [label_name], pld_name
+            | Some new_name ->
+              [new_name], {pld_name with txt = new_name}
           in
-          let getter =
-            Val.mk
-              pld_name (* we always use this: it is fixed in ocaml API*)
-              ~attrs:[Ast_attributes.bs_get]
-              ~prim
-              (Typ.arrow "" core_type pld_type) :: acc in
-          match pld_mutable with
-          | Mutable ->
-            Val.mk
-              {loc = label_loc; txt = label_name ^ "Set"}
-              (* setter *)
-              ~attrs:[Ast_attributes.bs_set]
-              ~prim
-              (Typ.arrow "" core_type (Typ.arrow "" pld_type (Ast_literal.type_unit ()))) :: getter
-          | Immutable -> getter
-        ) label_declarations []
+          let is_option = Ast_core_type.is_user_option pld_type in
+          let getter_type =
+            Typ.arrow ~loc "" core_type pld_type in
+          let acc =
+            Val.mk pld_name
+              ~attrs:(
+                if is_option then get_optional_attrs
+                else get_attrs)
+              ~prim getter_type :: acc in
+          let is_current_field_mutable = pld_mutable = Mutable in
+          let acc =
+            if is_current_field_mutable then
+              let setter_type =
+                (Typ.arrow "" core_type
+                   (Typ.arrow ""
+                      (if is_option then
+                         Ast_core_type.extract_option_type_exn pld_type
+                       else pld_type)
+                      (Ast_literal.type_unit ()))) in
+              Val.mk
+                {loc = label_loc; txt = label_name ^ "Set"}
+                (* setter *)
+                ~attrs:set_attrs
+                ~prim setter_type
+              :: acc
+            else acc in
+          acc,
+          (if  is_option then
+             Ast_core_type.opt_arrow pld_loc label_name pld_type maker
+           else Typ.arrow ~loc:pld_loc label_name pld_type maker
+          ),
+          (is_option, newLabel)::labels
+        ) label_declarations
+        ([],
+         (if has_optional_field then
+            Typ.arrow ~loc "" (Ast_literal.type_unit ()) core_type
+          else  core_type),
+         [])
     in
     newTdcl,
-    (match tdcl.ptype_private with
-     | Private -> setter_accessor
-     | Public ->
-       let ty =
-         Ext_list.fold_right (fun ({pld_name = {txt}; pld_type}: Parsetree.label_declaration) acc ->
-             Typ.arrow txt pld_type acc
-           ) label_declarations  core_type in
+    (if is_private then
+       setter_accessor
+     else
        let myPrims =
-         External_process.pval_prim_of_labels
-           (List.map
-              (fun ({pld_name; pld_attributes} : Parsetree.label_declaration) ->
-                match Ast_attributes.iter_process_bs_string_as pld_attributes with
-                | None -> pld_name
-                | Some new_name -> {pld_name with txt = new_name}
-              )
-              label_declarations)
-       in
+        External_process.pval_prim_of_option_labels
+          labels
+          has_optional_field
+        in
        let myMaker =
-        Val.mk  ~loc
-        {loc; txt = type_name}
-        ~prim:myPrims ty in
+         Val.mk  ~loc
+           {loc; txt = type_name}
+           ~prim:myPrims makeType in
        (myMaker :: setter_accessor))
 
   | Ptype_abstract

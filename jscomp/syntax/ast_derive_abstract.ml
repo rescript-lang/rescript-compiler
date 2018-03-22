@@ -56,6 +56,10 @@ let rec checkNotFunciton (ty : Parsetree.core_type) =
   | Ptyp_extension _ -> ()
 
 
+let get_optional_attrs =
+  [Ast_attributes.bs_get; Ast_attributes.bs_return_undefined]
+let get_attrs = [ Ast_attributes.bs_get ]
+let set_attrs = [Ast_attributes.bs_set]
 let handleTdcl (tdcl : Parsetree.type_declaration) =
   let core_type = U.core_type_of_type_declaration tdcl in
   let loc = tdcl.ptype_loc in
@@ -68,59 +72,83 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
   } in
   match tdcl.ptype_kind with
   | Ptype_record label_declarations ->
-    let setter_accessor =
-      Ext_list.fold_right (fun
-          ({pld_name = {txt = label_name; loc = label_loc} as pld_name;
+    let is_private = tdcl.ptype_private = Private in
+    let has_optional_field =
+      List.exists (fun ({pld_type} : Parsetree.label_declaration) ->
+          Ast_core_type.is_user_option pld_type
+        ) label_declarations in
+    let setter_accessor, makeType, labels =
+      Ext_list.fold_right
+        (fun
+          ({pld_name =
+              {txt = label_name; loc = label_loc} as pld_name;
             pld_type;
             pld_mutable;
-            pld_attributes
-            }:
-          Parsetree.label_declaration) acc ->
+            pld_attributes;
+            pld_loc
+           }:
+             Parsetree.label_declaration) (acc, maker, labels) ->
           let () = checkNotFunciton pld_type in
-          let prim =
+          (* TODO: explain why *)
+          let prim, newLabel =
             match Ast_attributes.iter_process_bs_string_as pld_attributes with
-            | None -> [label_name]
-            | Some new_name -> [new_name]
+            | None ->
+              [label_name], pld_name
+            | Some new_name ->
+              [new_name], {pld_name with txt = new_name}
           in
-          let getter =
-            Val.mk
-              pld_name (* we always use this: it is fixed in ocaml API*)
-              ~attrs:[Ast_attributes.bs_get]
-              ~prim
-              (Typ.arrow "" core_type pld_type) :: acc in
-          match pld_mutable with
-          | Mutable ->
-            Val.mk
-              {loc = label_loc; txt = label_name ^ "Set"}
-              (* setter *)
-              ~attrs:[Ast_attributes.bs_set]
-              ~prim
-              (Typ.arrow "" core_type (Typ.arrow "" pld_type (Ast_literal.type_unit ()))) :: getter
-          | Immutable -> getter
-        ) label_declarations []
+          let is_option = Ast_core_type.is_user_option pld_type in
+          let getter_type =
+            Typ.arrow ~loc "" core_type pld_type in
+          let acc =
+            Val.mk pld_name
+              ~attrs:(
+                if is_option then get_optional_attrs
+                else get_attrs)
+              ~prim getter_type :: acc in
+          let is_current_field_mutable = pld_mutable = Mutable in
+          let acc =
+            if is_current_field_mutable then
+              let setter_type =
+                (Typ.arrow "" core_type
+                   (Typ.arrow ""
+                      (if is_option then
+                         Ast_core_type.extract_option_type_exn pld_type
+                       else pld_type)
+                      (Ast_literal.type_unit ()))) in
+              Val.mk
+                {loc = label_loc; txt = label_name ^ "Set"}
+                (* setter *)
+                ~attrs:set_attrs
+                ~prim setter_type
+              :: acc
+            else acc in
+          acc,
+          (if  is_option then
+             Ast_core_type.opt_arrow pld_loc label_name pld_type maker
+           else Typ.arrow ~loc:pld_loc label_name pld_type maker
+          ),
+          (is_option, newLabel)::labels
+        ) label_declarations
+        ([],
+         (if has_optional_field then
+            Typ.arrow ~loc "" (Ast_literal.type_unit ()) core_type
+          else  core_type),
+         [])
     in
     newTdcl,
-    (match tdcl.ptype_private with
-     | Private -> setter_accessor
-     | Public ->
-       let ty =
-         Ext_list.fold_right (fun ({pld_name = {txt}; pld_type}: Parsetree.label_declaration) acc ->
-             Typ.arrow txt pld_type acc
-           ) label_declarations  core_type in
+    (if is_private then
+       setter_accessor
+     else
        let myPrims =
-         External_process.pval_prim_of_labels
-           (List.map
-              (fun ({pld_name; pld_attributes} : Parsetree.label_declaration) ->
-                match Ast_attributes.iter_process_bs_string_as pld_attributes with
-                | None -> pld_name
-                | Some new_name -> {pld_name with txt = new_name}
-              )
-              label_declarations)
-       in
+        External_process.pval_prim_of_option_labels
+          labels
+          has_optional_field
+        in
        let myMaker =
-        Val.mk  ~loc
-        {loc; txt = type_name}
-        ~prim:myPrims ty in
+         Val.mk  ~loc
+           {loc; txt = type_name}
+           ~prim:myPrims makeType in
        (myMaker :: setter_accessor))
 
   | Ptype_abstract
