@@ -292,8 +292,9 @@ let iter_process_bs_string_or_int_as attrs =
     ) attrs;
   !st
 
+let locg = Location.none
 let bs : attr
-  =  {txt = "bs" ; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs" ; loc = locg}, Ast_payload.empty
 
 let is_bs (attr : attr) =
   match attr with
@@ -301,17 +302,33 @@ let is_bs (attr : attr) =
   | _ -> false
 
 let bs_this : attr
-  =  {txt = "bs.this" ; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.this" ; loc = locg}, Ast_payload.empty
 
 let bs_method : attr
-  =  {txt = "bs.meth"; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.meth"; loc = locg}, Ast_payload.empty
 
 let bs_obj : attr
-  =  {txt = "bs.obj"; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.obj"; loc = locg}, Ast_payload.empty
 
 let bs_get : attr
-  =  {txt = "bs.get"; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
 
 let bs_set : attr
-  =  {txt = "bs.set"; loc = Location.none}, Ast_payload.empty
+  =  {txt = "bs.set"; loc = locg}, Ast_payload.empty
+
+let bs_return_undefined : attr
+  =
+  {txt = "bs.return"; loc = locg },
+  PStr
+    [
+      {pstr_desc =
+         Pstr_eval (
+           {pexp_desc =
+              Pexp_ident
+                { txt = Lident "undefined_to_opt";
+                  loc = locg};
+            pexp_loc = locg;
+            pexp_attributes = []
+           },[])
+      ; pstr_loc = locg}]
 

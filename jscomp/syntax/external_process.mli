@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,29 +27,31 @@
 
 
 (**
-  [handle_attributes_as_string 
+  [handle_attributes_as_string
   loc pval_name.txt pval_type pval_attributes pval_prim]
   [pval_name.txt] is the name of identifier
   [pval_prim] is the name of string literal
-  
+
   return value is of [pval_type, pval_prims, new_attrs]
-*)    
-val handle_attributes_as_string : 
+*)
+val handle_attributes_as_string :
   Bs_loc.t ->
   string  ->
   Ast_core_type.t ->
-  Ast_attributes.t -> 
+  Ast_attributes.t ->
   string   ->
   Ast_core_type.t * string list * Ast_attributes.t
 
 
 
 
-(** [pval_prim_of_labels labels] 
-    return [pval_prims] for FFI, it is specialized for 
-    external object which is used in 
+(** [pval_prim_of_labels labels]
+    return [pval_prims] for FFI, it is specialized for
+    external object which is used in
     {[ [%obj { x = 2; y = 1} ] ]}
-*)  
+*)
 val pval_prim_of_labels : string Asttypes.loc list -> string list
 
 
+val pval_prim_of_option_labels :
+  (bool * string Asttypes.loc) list -> string list
