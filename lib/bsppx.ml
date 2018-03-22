@@ -15449,27 +15449,27 @@ let pval_prim_of_option_labels
 (labels : (bool * string Asttypes.loc) list)
 (ends_with_unit : bool)
   =
- let arg_kinds =
-   Ext_list.fold_right
-     (fun (is_option,{Asttypes.loc ; txt }) arg_kinds
-       ->
-       let label_name = (Lam_methname.translate ~loc txt) in
-       let arg_label =
-          if is_option then
-            External_arg_spec.optional label_name
-          else External_arg_spec.label label_name None
-       in
-         {External_arg_spec.arg_type = Nothing ;
-          arg_label  } :: arg_kinds
-     )
-     labels
-     (if ends_with_unit then
-        [External_arg_spec.empty_kind Extern_unit]
-     else [])
-in
- let encoding =
-   External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
- [""; encoding]
+  let arg_kinds =
+    Ext_list.fold_right
+      (fun (is_option,{Asttypes.loc ; txt }) arg_kinds
+        ->
+          let label_name = (Lam_methname.translate ~loc txt) in
+          let arg_label =
+            if is_option then
+              External_arg_spec.optional label_name
+            else External_arg_spec.label label_name None
+          in
+          {External_arg_spec.arg_type = Nothing ;
+           arg_label  } :: arg_kinds
+      )
+      labels
+      (if ends_with_unit then
+         [External_arg_spec.empty_kind Extern_unit]
+       else [])
+  in
+  let encoding =
+    External_ffi_types.to_string (Ffi_obj_create arg_kinds) in
+  [""; encoding]
 
 
 end

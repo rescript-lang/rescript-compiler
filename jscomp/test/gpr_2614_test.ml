@@ -61,3 +61,32 @@ let hh2 x =
   match x |. low with
   | None -> 0
   | Some _ -> 1
+
+type css =
+  {
+    a0 : int option ;
+    a1 : int option ;
+    a2 : int option ;
+    a3 : int option ;
+    a4 : int option ;
+    a5 : int option ;
+    a6 : int option ;
+    a7 : int option ;
+    a8 : int option ;
+    a9 : int option
+    [@bs.as "xx-yy"];
+    a10 : int option ;
+    a11 : int option ;
+    a12 : int option ;
+    a13 : int option ;
+    a14 : int option ;
+    a15 : int option ;
+  }
+  [@@bs.deriving abstract]
+
+
+let u = css ~a9:3 ()
+let v =
+  match u |. a9 with
+  | None -> 0
+  | Some x -> x 

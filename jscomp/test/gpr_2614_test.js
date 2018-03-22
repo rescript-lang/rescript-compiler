@@ -55,7 +55,14 @@ function hh2(x) {
   }
 }
 
-exports.v = v;
+var u = {
+  "xx-yy": 3
+};
+
+var match = u["xx-yy"];
+
+var v$1 = match !== undefined ? match : 0;
+
 exports.b = b;
 exports.c = c;
 exports.ff = ff;
@@ -64,4 +71,6 @@ exports.h1 = h1;
 exports.h2 = h2;
 exports.hh = hh;
 exports.hh2 = hh2;
+exports.u = u;
+exports.v = v$1;
 /*  Not a pure module */
