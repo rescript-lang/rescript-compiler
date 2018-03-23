@@ -436,6 +436,18 @@ let eq_record_representation ( p : Types.record_representation) ( p1 : Types.rec
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
 *)
+
+let eq_field_dbg_info (lhs : Lambda.field_dbg_info) (rhs : Lambda.field_dbg_info) =
+  match lhs with
+  | Fld_na -> rhs = Fld_na
+  | Fld_record s1 -> (match rhs with Fld_record s2 -> s1 = s2 | _ -> false)
+  | Fld_module s1 -> (match rhs with Fld_module s2 -> s1 = s2 | _ -> false)
+
+let eq_set_field_dbg_info (lhs : Lambda.set_field_dbg_info) (rhs : Lambda.set_field_dbg_info) =
+  match lhs with
+  | Fld_set_na -> rhs = Fld_set_na
+  | Fld_record_set s1 -> (match rhs with Fld_record_set s2 -> s1 = s2 | _ -> false)
+
 let rec 
   eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   match l1 with 
@@ -548,12 +560,12 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pcaml_obj_length -> rhs = Pcaml_obj_length
   | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length
   | Pccall {prim_name = n0 ;  prim_native_name = nn0} ->  (match rhs with Pccall {prim_name = n1; prim_native_name = nn1} ->    n0 = n1 && nn0 = nn1 | _ -> false )    
-  | Pfield (n0, _dbg_info0) ->  (match rhs with Pfield (n1, _dbg_info1) ->  n0 = n1  | _ -> false )    
-  | Psetfield(i0, b0, _dbg_info0) -> (match rhs with Psetfield(i1, b1, _dbg_info1) ->  i0 = i1 && b0 = b1 | _ -> false)
+  | Pfield (n0, dbg_info0) ->  (match rhs with Pfield (n1, dbg_info1) ->  n0 = n1 && eq_field_dbg_info dbg_info0 dbg_info1 | _ -> false )    
+  | Psetfield(i0, b0, dbg_info0) -> (match rhs with Psetfield(i1, b1, dbg_info1) ->  i0 = i1 && b0 = b1 && eq_set_field_dbg_info dbg_info0 dbg_info1 | _ -> false)
   | Pglobal_exception ident -> (match rhs with Pglobal_exception ident2 ->  Ident.same ident ident2 | _ -> false )
   | Pmakeblock (i, _tag_info, mutable_flag) -> (match rhs with Pmakeblock(i1,_,mutable_flag1) ->  i = i1 && mutable_flag = mutable_flag1  | _ -> false)
-  | Pfloatfield (i0,_dbg_info) -> (match rhs with Pfloatfield (i1,_) -> i0 = i1   | _ -> false)
-  | Psetfloatfield (i0,_dbg_info) ->  (match rhs with Psetfloatfield(i1,_) -> i0 = i1  | _ -> false)
+  | Pfloatfield (i0, dbg_info0) -> (match rhs with Pfloatfield (i1, dbg_info1) -> i0 = i1 && eq_field_dbg_info dbg_info0 dbg_info1 | _ -> false)
+  | Psetfloatfield (i0, dbg_info0) ->  (match rhs with Psetfloatfield(i1, dbg_info1) -> i0 = i1 && eq_set_field_dbg_info dbg_info0 dbg_info1 | _ -> false)
   | Pduprecord (record_repesentation0,i1) -> (match rhs with Pduprecord(record_repesentation1,i2) ->  eq_record_representation record_repesentation0 record_repesentation1 && i1 = i2    | _ -> false)
   | Pjs_call (prim_name, arg_types, ffi) ->  ( match rhs with Pjs_call(prim_name1, arg_types1,ffi1) -> prim_name = prim_name1 && arg_types = arg_types1 && ffi = ffi1 | _ -> false)
   | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
