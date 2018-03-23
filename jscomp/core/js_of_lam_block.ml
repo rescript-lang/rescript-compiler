@@ -52,8 +52,10 @@ let field field_info e i =
   match field_info with 
   | Lambda.Fld_na -> 
     E.index e i 
-  | Lambda.Fld_record s 
-    -> E.dot e s
+  | Lambda.Fld_record s ->
+    if s = "contents"
+    then E.index ~comment:s e i
+    else E.dot e s
   | Lambda.Fld_module s 
     -> E.index ~comment:s e i
 
@@ -75,7 +77,9 @@ let set_field field_info e i e0 =
   | Lambda.Fld_set_na ->
     set_field field_info e i e0
   | Fld_record_set s ->
-    E.assign (E.dot e s) e0
+    if s = "contents"
+    then set_field field_info e i e0
+    else E.assign (E.dot e s) e0
 
 
 
