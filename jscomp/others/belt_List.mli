@@ -530,6 +530,8 @@ val setAssoc: ('a * 'c) t -> 'a -> 'c -> ('a -> 'a -> bool) -> ('a * 'c) t
     ]}
 *)
 
+
+val sortU: 'a t -> ('a -> 'a -> int [@bs]) -> 'a t
 val sort: 'a t -> ('a -> 'a -> int) -> 'a t
 (** [sort xs]
     Returns a sorted list.

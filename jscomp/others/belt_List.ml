@@ -699,6 +699,13 @@ let sort xs cmp =
     fromArray arr;
   end
 
+let sortU xs cmp =
+  let arr = toArray xs in
+  begin
+    Belt_SortArray.stableSortInPlaceByU arr cmp;
+    fromArray arr;
+  end
+
 let rec getByU xs p = 
   match xs with 
   | [] -> None
