@@ -153,13 +153,13 @@ external ff :
         (Ext_string.contain_substring  should_err.stderr "simple")
     end;
 
-    __LOC__ >:: begin fun _ ->
+    (* __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
      external f : string -> unit -> unit = "x.y" [@@bs.send]
      |} in
       OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Not a valid method name")
-    end;
+    end; *)
 
 
 
