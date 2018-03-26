@@ -532,7 +532,7 @@ core/lam_eta_conversion.cmx : ext/literals.cmx core/lam.cmx ext/ext_list.cmx \
     ext/ext_ident.cmx core/lam_eta_conversion.cmi
 core/lam_group.cmx : core/lam_print.cmx core/lam.cmx core/lam_group.cmi
 core/lam_pass_deep_flatten.cmx : core/lam_util.cmx core/lam_group.cmx \
-    core/lam.cmx core/js_number.cmx ext/ident_set.cmx ext/ext_list.cmx \
+    core/lam.cmx ext/int_map.cmx ext/ident_set.cmx ext/ext_list.cmx \
     core/lam_pass_deep_flatten.cmi
 core/js_stmt_make.cmx : core/lam_print.cmx core/lam.cmx core/js_exp_make.cmx \
     core/js_closure.cmx core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx \

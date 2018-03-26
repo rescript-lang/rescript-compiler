@@ -83,9 +83,13 @@ for(var i$1 = 100; i$1 <= 1500; ++i$1){
   }
 }
 
-b("File \"bs_set_int_test.ml\", line 47, characters 4-11", Belt_SetInt.eq(match[0], l));
+var nl = l;
 
-b("File \"bs_set_int_test.ml\", line 48, characters 4-11", Belt_SetInt.eq(match[1], r));
+var nr = r;
+
+b("File \"bs_set_int_test.ml\", line 47, characters 4-11", Belt_SetInt.eq(match[0], nl));
+
+b("File \"bs_set_int_test.ml\", line 48, characters 4-11", Belt_SetInt.eq(match[1], nr));
 
 var i$2 = range(50, 100);
 

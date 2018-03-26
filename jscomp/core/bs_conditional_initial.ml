@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,22 +17,22 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-let setup_env () = 
-#if BS_DEBUG then    
-    Js_config.set_debug_file "gpr_2413_test.ml";
-#end       
+let setup_env () =
+#if BS_DEBUG then
+    Js_config.set_debug_file "tuple_alloc.ml";
+#end
   Lexer.replace_directive_bool "BS" true;
   Lexer.replace_directive_string "BS_VERSION"  Bs_version.version
 
-let standard_library =   
-#if BS_DEBUG then   
+let standard_library =
+#if BS_DEBUG then
   Filename.concat (Filename.dirname Sys.executable_name)  "ocaml"
-#else   
+#else
   Config.standard_library
 #end
