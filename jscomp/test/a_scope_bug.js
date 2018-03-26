@@ -10,7 +10,6 @@ function odd(_z) {
     console.log(String(a));
     _z = 32;
     continue ;
-    
   };
 }
 

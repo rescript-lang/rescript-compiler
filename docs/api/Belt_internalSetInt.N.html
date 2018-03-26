@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -143,7 +144,7 @@
 <pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">'a t -> 'a list</code></pre>
 <pre><span id="VALcheckInvariantInternal"><span class="keyword">val</span> checkInvariantInternal</span> : <code class="type">'a t -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <b>raise</b> when invariant is not helld<br>
+                    <b>raise</b> when invariant is not held<br>
  
                     </div>
                     
@@ -152,9 +153,9 @@
                   
 <pre><span id="VALfillArray"><span class="keyword">val</span> fillArray</span> : <code class="type">'a node -> int -> 'a array -> int</code></pre>
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">'a t -> 'a array</code></pre>
-<pre><span id="VALofSortedArrayAux"><span class="keyword">val</span> ofSortedArrayAux</span> : <code class="type">'a array -> int -> int -> 'a t</code></pre>
-<pre><span id="VALofSortedArrayRevAux"><span class="keyword">val</span> ofSortedArrayRevAux</span> : <code class="type">'a array -> int -> int -> 'a t</code></pre>
-<pre><span id="VALofSortedArrayUnsafe"><span class="keyword">val</span> ofSortedArrayUnsafe</span> : <code class="type">'a array -> 'a t</code></pre>
+<pre><span id="VALfromSortedArrayAux"><span class="keyword">val</span> fromSortedArrayAux</span> : <code class="type">'a array -> int -> int -> 'a t</code></pre>
+<pre><span id="VALfromSortedArrayRevAux"><span class="keyword">val</span> fromSortedArrayRevAux</span> : <code class="type">'a array -> int -> int -> 'a t</code></pre>
+<pre><span id="VALfromSortedArrayUnsafe"><span class="keyword">val</span> fromSortedArrayUnsafe</span> : <code class="type">'a array -> 'a t</code></pre>
 <pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">'a t -> 'a -> cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> bool</code></pre>
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">'a t -> 'a t -> cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> int</code></pre>
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">'a t -> 'a t -> cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> bool</code></pre>
@@ -162,7 +163,7 @@
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">'a t -> 'a -> cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> 'a option</code></pre>
 <pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type">'a t -> 'a -> cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> 'a <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre>
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">'a t -> 'a -> cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> 'a</code></pre>
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">'a array -> cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> 'a t</code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">'a array -> cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> 'a t</code></pre>
 <pre><span id="VALaddMutate"><span class="keyword">val</span> addMutate</span> : <code class="type">cmp:('a, 'b) <a href="Belt_internalAVLset.html#TYPEcmp">cmp</a> -> 'a t -> 'a -> 'a t</code></pre>
 <pre><span id="VALbalMutate"><span class="keyword">val</span> balMutate</span> : <code class="type">'a node -> 'a node</code></pre>
 <pre><span id="VALremoveMinAuxWithRootMutate"><span class="keyword">val</span> removeMinAuxWithRootMutate</span> : <code class="type">'a node -> 'a node -> 'a t</code></pre></body></html>

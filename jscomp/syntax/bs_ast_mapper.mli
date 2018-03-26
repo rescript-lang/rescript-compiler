@@ -46,9 +46,9 @@ let () =
   *)
 
   open Parsetree
-  
+
   (** {2 A generic Parsetree mapper} *)
-  
+
   type mapper = {
     attribute: mapper -> attribute -> attribute;
     attributes: mapper -> attribute list -> attribute list;
@@ -89,13 +89,16 @@ let () =
     structure_item: mapper -> structure_item -> structure_item;
     typ: mapper -> core_type -> core_type;
     type_declaration: mapper -> type_declaration -> type_declaration;
+(* XXXXX *)
+    type_declaration_list: mapper -> type_declaration list -> type_declaration list;
+(* XXXXX *)
     type_extension: mapper -> type_extension -> type_extension;
     type_kind: mapper -> type_kind -> type_kind;
     value_binding: mapper -> value_binding -> value_binding;
-(* XXXXX *)    
+(* XXXXX *)
     value_bindings_rec: mapper -> value_binding list -> value_binding list;
     value_bindings: mapper -> value_binding list -> value_binding list;
-(* XXXXX *)        
+(* XXXXX *)
     value_description: mapper -> value_description -> value_description;
     with_constraint: mapper -> with_constraint -> with_constraint;
   }
@@ -103,7 +106,6 @@ let () =
       using an open recursion style: each method takes as its first
       argument the mapper to be applied to children in the syntax
       tree. *)
-  
+
   val default_mapper: mapper
   (** A default mapper, which implements a "deep identity" mapping. *)
-  

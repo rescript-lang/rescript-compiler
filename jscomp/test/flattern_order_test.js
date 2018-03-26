@@ -38,7 +38,6 @@ function even(_n) {
     } else {
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }

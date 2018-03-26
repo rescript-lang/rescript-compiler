@@ -450,14 +450,14 @@ eq("File \"bs_array_test.ml\", line 131, characters 5-12", Belt_Array.mapWithInd
       5
     ]);
 
-eq("File \"bs_array_test.ml\", line 132, characters 5-12", Belt_List.ofArray(/* array */[]), /* [] */0);
+eq("File \"bs_array_test.ml\", line 132, characters 5-12", Belt_List.fromArray(/* array */[]), /* [] */0);
 
-eq("File \"bs_array_test.ml\", line 133, characters 5-12", Belt_List.ofArray(/* int array */[1]), /* :: */[
+eq("File \"bs_array_test.ml\", line 133, characters 5-12", Belt_List.fromArray(/* int array */[1]), /* :: */[
       1,
       /* [] */0
     ]);
 
-eq("File \"bs_array_test.ml\", line 134, characters 5-12", Belt_List.ofArray(/* int array */[
+eq("File \"bs_array_test.ml\", line 134, characters 5-12", Belt_List.fromArray(/* int array */[
           1,
           2,
           3

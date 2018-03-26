@@ -1,4 +1,28 @@
 
+# 2.2.3
+
+Features:
+- #2646,#2622 Adding Belt.Option
+- #2342, #2624 (|.) pipe syntax for t first convention
+- #2589 Expose Id.MakeComparable functor
+- #2587 Added production ready settings for react theme
+- * remove refmt syntax version 2
+
+Performances:
+- #2438 using concrete predicates for integer comparison
+- #2584 better handling of if then else common sub expression
+
+Fixes:
+- #2303 defining or using a module named "Block" causes runtime errors
+- #2616,#2612,#2554 better error message
+- #2352 return value of assignment expression
+- #2413 no break generated after return statement in some code branches
+- #2633 [@bs.string] in FFI
+- #2608 short-circuiting of && fails due to extraction of variable
+- #2559 fix Bytes.create semantics
+- #2638, bsb -w on windows freez
+- #2448, js_int.ml not installed on windows
+
 # 2.2.2
 
 Features:
@@ -12,7 +36,7 @@ Fixes:
 
 # 2.2.0
 Features:
-- A beta release for the new stdlib called Belt 
+- A beta release for the new stdlib called Belt
 - #2436, #2381, #2377, #2353 bs.deriving abstract support
 
 
@@ -25,7 +49,7 @@ Fixes:
 - #2399, turn partial application warnings to error in react template
 - #2465 build on FreeBSD
 - #2450 ignore bsb.lock
-- #2356 ship build-schema.json 
+- #2356 ship build-schema.json
 - #2489, #2464  capitalize names in combination of '/'
 - #2459 subdirs:true by default for templates
 - #2428, fix trailing space on react-jsx
@@ -35,11 +59,11 @@ Fixes:
 Features:
 - #2282, #2280,#2272,#2271,#2270,#2262,#2260,#2255,#2253
   Automatically derive js converter between ocaml and Js values
-  see docs: https://bucklescript.github.io/bucklescript/Manual.html#_mapping_between_js_values_and_ocaml_values_since_2_1_0  
-- #2238, #2225, #2221  
+  see docs: https://bucklescript.github.io/bucklescript/Manual.html#_mapping_between_js_values_and_ocaml_values_since_2_1_0
+- #2238, #2225, #2221
   Make the compiler relocatable
   prebuilt compiler (this release for Mac/Win)
-- #2276  update reason syntax@d0d18 
+- #2276  update reason syntax@d0d18
 - #2229 improve error message with regard to `@bs`
 - #2266, add Js_global.(encode|decode)URI(Component) bindings
 - #2220 make watcher mode in linux accept ninja progress animation
@@ -69,7 +93,7 @@ Features
 
 # 1.10.3
 Features:
-- #2112, introduced a key `suffix`, so that user can 
+- #2112, introduced a key `suffix`, so that user can
   choose `suffix : ".bs.js"`
 - #2138, in combination of `.bs.js` suffix and `in-source` build,
   bsb is able to remove staled build artifact
@@ -78,7 +102,7 @@ Features:
   it in reason syntax
 - #2096, clorized ninja build output
 
-- #2120 better error message in the location of `{json||json}`  
+- #2120 better error message in the location of `{json||json}`
 - #2123 avoid namespace leaking in types
 - #2130 make Sys module not break React Native bindings
 - #2159, #2165 enhance user expereince of bsb (less verbose, status bar when failed)

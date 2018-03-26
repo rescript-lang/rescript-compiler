@@ -242,12 +242,19 @@ OTHERS := test_literals a test_ari test_export2 test_internalOO test_obj_simple_
 	gpr_2503_test\
 	block_alias_test\
 	gpr_2608_test\
+	pipe_syntax\
+	gpr_2352_test\
+	gpr_2633_test\
+	gpr_2413_test\
+	gpr_2642_test\
+	gpr_2652_test\
+	gpr_2614_test\
 # bs_uncurry_test
 # needs Lam to get rid of Uncurry arity first
 # simple_derive_test
 # simple_derive_use
-# derive_type_test 
-# derive_dyntype 
+# derive_type_test
+# derive_dyntype
 
 
 SOURCE_LIST :=  $(OTHERS)
@@ -257,7 +264,7 @@ $(addsuffix .cmi, $(OTHERS)): ../runtime/js.cmi
 $(addsuffix .cmj, $(OTHERS)): ../runtime/js.cmj
 
 # It is okay to test deprecated API
-COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error A+8-3-30-26+101-102-103-104 
+COMPFLAGS+=  $(MODULE_FLAGS) -w -40 -warn-error A+8-3-30-26+101-102-103-104
 COMPFLAGS+=  -bs-no-version-header -absname -bs-diagnose -bs-cross-module-opt -bs-package-name  bs-platform -bs-package-output commonjs:jscomp/test
 
 

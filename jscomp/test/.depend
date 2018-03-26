@@ -301,10 +301,16 @@ gpr_1943_test.cmj : mt.cmj
 gpr_1946_test.cmj : ../stdlib/obj.cmj ../runtime/js.cmj
 gpr_2250_test.cmj : mt.cmj
 gpr_2316_test.cmj : mt.cmj ../runtime/js.cmj
+gpr_2352_test.cmj :
+gpr_2413_test.cmj :
 gpr_2474.cmj :
 gpr_2487.cmj : ../others/belt.cmj
 gpr_2503_test.cmj : mt.cmj ../runtime/js.cmj
 gpr_2608_test.cmj : mt.cmj ../stdlib/list.cmj
+gpr_2614_test.cmj :
+gpr_2633_test.cmj :
+gpr_2642_test.cmj :
+gpr_2652_test.cmj : ../others/node.cmj ../stdlib/buffer.cmj
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj
@@ -481,6 +487,7 @@ offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 oo_js_test_date.cmj : mt.cmj ../runtime/js.cmj
 optional_ffi_test.cmj : mt.cmj
 pipe_send_readline.cmj : ../runtime/js.cmj
+pipe_syntax.cmj :
 poly_type.cmj : ../runtime/js.cmj
 poly_variant_test.cmj : mt.cmj ../runtime/js.cmj poly_variant_test.cmi
 polymorphism_test.cmj : polymorphism_test.cmi

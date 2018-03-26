@@ -3913,60 +3913,60 @@ let (=~) = OUnit.assert_equal
 
 
 (* let output_of_exec_command command args =
-    let readme, writeme = Unix.pipe () in 
-    let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in 
+    let readme, writeme = Unix.pipe () in
+    let pid = Unix.create_process command args Unix.stdin writeme Unix.stderr in
     let in_chan = Unix.in_channel_of_descr readme *)
 
 
 
 let perform_bsc = Ounit_cmd_util.perform_bsc
-let bsc_check_eval = Ounit_cmd_util.bsc_check_eval 
+let bsc_check_eval = Ounit_cmd_util.bsc_check_eval
 
 
-let suites = 
+let suites =
   __FILE__
   >::: [
-    __LOC__ >:: begin fun _ -> 
-      let v_output = perform_bsc  [| "-v" |] in 
+    __LOC__ >:: begin fun _ ->
+      let v_output = perform_bsc  [| "-v" |] in
       OUnit.assert_bool __LOC__ ((perform_bsc [| "-h" |]).exit_code  <> 0  );
       OUnit.assert_bool __LOC__ (v_output.exit_code = 0);
       (* Printf.printf "\n*>%s" v_output.stdout; *)
       (* Printf.printf "\n*>%s" v_output.stderr ; *)
-    end; 
-    __LOC__ >:: begin fun _ -> 
-      let v_output = 
-        perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in 
+    end;
+    __LOC__ >:: begin fun _ ->
+      let v_output =
+        perform_bsc  [| "-bs-eval"; {|let str = "'a'" |}|] in
       OUnit.assert_bool __LOC__ (v_output.exit_code = 0)
     end;
-    __LOC__ >:: begin fun _ -> 
-      let should_be_warning = 
-        bsc_check_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in 
+    __LOC__ >:: begin fun _ ->
+      let should_be_warning =
+        bsc_check_eval  {|let bla4 foo x y= foo##(method1 x y [@bs]) |} in
       (* debug_output should_be_warning; *)
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring
                                    should_be_warning.stderr "Unused")
     end;
-     __LOC__ >:: begin fun _ ->    
-      let should_be_warning = 
-        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "" [@@bs.val] |} in 
-        OUnit.assert_bool __LOC__ 
+     __LOC__ >:: begin fun _ ->
+      let should_be_warning =
+        bsc_check_eval  {| external mk : int -> ([`a|`b [@bs.string]]) = "" [@@bs.val] |} in
+        OUnit.assert_bool __LOC__
         (Ext_string.contain_substring
                                    should_be_warning.stderr "Unused")
      end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-external ff : 
-    resp -> (_ [@bs.as "x"]) -> int -> unit = 
-    "x" [@@bs.set]      
-      |} in 
-      OUnit.assert_bool __LOC__ 
+external ff :
+    resp -> (_ [@bs.as "x"]) -> int -> unit =
+    "x" [@@bs.set]
+      |} in
+      OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr
            "Ill defined"
         )
     end;
 
-    __LOC__ >:: begin fun _ -> 
-      (** used in return value 
-          This should fail, we did not 
+    __LOC__ >:: begin fun _ ->
+      (** used in return value
+          This should fail, we did not
           support uncurry return value yet
       *)
       let should_err = bsc_check_eval {|
@@ -3974,92 +3974,92 @@ external ff :
     int -> int -> (int -> int -> int [@bs.uncurry])
     = ""[@@bs.val]
 
-    |} in 
+    |} in
       (* Ounit_cmd_util.debug_output should_err;*)
       OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring 
+        (Ext_string.contain_substring
            should_err.stderr "bs.uncurry")
     end ;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-    external v4 :  
+    external v4 :
     (int -> int -> int [@bs.uncurry]) = ""
     [@@bs.val]
 
-    |} in 
+    |} in
       (* Ounit_cmd_util.debug_output should_err ; *)
       OUnit.assert_bool __LOC__
-        (Ext_string.contain_substring 
+        (Ext_string.contain_substring
            should_err.stderr "bs.uncurry")
     end ;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       {js| \uFFF|js}
-      |} in 
+      |} in
       OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       external mk : int -> ([`a|`b] [@bs.string]) = "" [@@bs.val]
-      |} in 
+      |} in
       OUnit.assert_bool __LOC__ (not @@ Ext_string.is_empty should_err.stderr)
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
       external mk : int -> ([`a|`b] ) = "" [@@bs.val]
-      |} in 
+      |} in
       OUnit.assert_bool __LOC__ ( Ext_string.is_empty should_err.stderr)
-      (* give a warning or ? 
-         ( [`a | `b ] [@bs.string] ) 
+      (* give a warning or ?
+         ( [`a | `b ] [@bs.string] )
          (* auto-convert to ocaml poly-variant *)
       *)
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-      type t 
+      type t
       external mk : int -> (_ [@bs.as {json| { x : 3 } |json}]) ->  t = "" [@@bs.val]
-      |} in 
+      |} in
       OUnit.assert_bool __LOC__ (Ext_string.contain_substring should_err.stderr "Invalid json literal")
     end
     ;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-      type t 
+      type t
       external mk : int -> (_ [@bs.as {json| { "x" : 3 } |json}]) ->  t = "" [@@bs.val]
-      |} in 
+      |} in
       OUnit.assert_bool __LOC__ (Ext_string.is_empty should_err.stderr)
     end
     ;
     (* #1510 *)
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-       let should_fail = fun [@bs.this] (Some x) y u -> y + u 
-      |} in 
-      OUnit.assert_bool __LOC__ 
+       let should_fail = fun [@bs.this] (Some x) y u -> y + u
+      |} in
+      OUnit.assert_bool __LOC__
         (Ext_string.contain_substring  should_err.stderr "simple")
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
-       let should_fail = fun [@bs.this] (Some x as v) y u -> y + u 
-      |} in 
+       let should_fail = fun [@bs.this] (Some x as v) y u -> y + u
+      |} in
       (* Ounit_cmd_util.debug_output should_err; *)
-      OUnit.assert_bool __LOC__ 
+      OUnit.assert_bool __LOC__
         (Ext_string.contain_substring  should_err.stderr "simple")
     end;
 
-    __LOC__ >:: begin fun _ -> 
+    (* __LOC__ >:: begin fun _ ->
       let should_err = bsc_check_eval {|
      external f : string -> unit -> unit = "x.y" [@@bs.send]
-     |} in 
-      OUnit.assert_bool __LOC__ 
+     |} in
+      OUnit.assert_bool __LOC__
         (Ext_string.contain_substring should_err.stderr "Not a valid method name")
-    end;
+    end; *)
 
 
 
@@ -4103,50 +4103,50 @@ external ff :
         (not (Ext_string.is_empty should_err.stderr))
 
     end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
     let should_err = bsc_check_eval {|
     external foo_bar :
     (_ [@bs.as "foo"]) ->
     string ->
     string = "bar"
   [@@bs.send]
-    |} in 
-    OUnit.assert_bool __LOC__ 
+    |} in
+    OUnit.assert_bool __LOC__
     (Ext_string.contain_substring should_err.stderr "Ill defined attribute")
   end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
     let should_err = bsc_check_eval {|
       let bla4 foo x y = foo##(method1 x y [@bs])
-    |} in 
+    |} in
     (* Ounit_cmd_util.debug_output should_err ;  *)
-    OUnit.assert_bool __LOC__ 
+    OUnit.assert_bool __LOC__
     (Ext_string.contain_substring should_err.stderr
     "Unused")
   end;
-    __LOC__ >:: begin fun _ -> 
+    __LOC__ >:: begin fun _ ->
     let should_err = bsc_check_eval {|
-    external mk : int -> 
+    external mk : int ->
   (
-    [`a|`b] 
-     [@bs.string] 
-  ) = "" [@@bs.val]       
-    |} in 
+    [`a|`b]
+     [@bs.string]
+  ) = "" [@@bs.val]
+    |} in
     (* Ounit_cmd_util.debug_output should_err ;  *)
-    OUnit.assert_bool __LOC__ 
+    OUnit.assert_bool __LOC__
     (Ext_string.contain_substring should_err.stderr
     "Unused")
   end;
-  __LOC__ >:: begin fun _ -> 
+  __LOC__ >:: begin fun _ ->
     let should_err = bsc_check_eval {|
     type -'a t = {k : 'a } [@@bs.deriving abstract]
-    |} in 
+    |} in
     OUnit.assert_bool __LOC__
     (Ext_string.contain_substring should_err.stderr "contravariant")
   end;
-  __LOC__ >:: begin fun _ -> 
+  __LOC__ >:: begin fun _ ->
     let should_err = bsc_check_eval {|
     type 'a t = {k : int -> 'a } [@@bs.deriving abstract]
-    |} in 
+    |} in
     OUnit.assert_bool __LOC__
     (Ext_string.contain_substring should_err.stderr "not allowed")
   end
@@ -6906,7 +6906,7 @@ val equal : Ident.t -> Ident.t -> bool
 end = struct
 #1 "ext_ident.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -6924,7 +6924,7 @@ end = struct
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -6948,32 +6948,32 @@ let js_flag = 0b1_000 (* check with ocaml compiler *)
 *)
 let js_object_flag = 0b100_000 (* javascript object flags *)
 
-let is_js (i : Ident.t) = 
-  i.flags land js_flag <> 0 
+let is_js (i : Ident.t) =
+  i.flags land js_flag <> 0
 
-let is_js_or_global (i : Ident.t) = 
-  i.flags land (8 lor 1) <> 0 
+let is_js_or_global (i : Ident.t) =
+  i.flags land (8 lor 1) <> 0
 
 
-let is_js_object (i : Ident.t) = 
-  i.flags land js_object_flag <> 0 
+let is_js_object (i : Ident.t) =
+  i.flags land js_object_flag <> 0
 
-let make_js_object (i : Ident.t) = 
-  i.flags <- i.flags lor js_object_flag 
+let make_js_object (i : Ident.t) =
+  i.flags <- i.flags lor js_object_flag
 
 (* It's a js function hard coded by js api, so when printing,
-   it should preserve the name 
+   it should preserve the name
 *)
-let create_js (name : string) : Ident.t  = 
+let create_js (name : string) : Ident.t  =
   { name = name; flags = js_flag ; stamp = 0}
 
 let create = Ident.create
 
 (* FIXME: no need for `$' operator *)
-let create_tmp ?(name=Literals.tmp) () = create name 
+let create_tmp ?(name=Literals.tmp) () = create name
 
 
-let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31 
+let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 
 (* This is for a js exeternal module, we can change it when printing
    for example
@@ -6984,25 +6984,25 @@ let js_module_table : Ident.t String_hashtbl.t = String_hashtbl.create 31
 
    Given a name, if duplicated, they should  have the same id
 *)
-let create_js_module (name : string) : Ident.t = 
-  let name = 
-    String.concat "" @@ Ext_list.map (Ext_string.capitalize_ascii ) @@ 
+let create_js_module (name : string) : Ident.t =
+  let name =
+    String.concat "" @@ Ext_list.map (Ext_string.capitalize_ascii ) @@
     Ext_string.split name '-' in
   (* TODO: if we do such transformation, we should avoid       collision for example:
-      react-dom 
+      react-dom
       react--dom
       check collision later
   *)
-  match String_hashtbl.find_exn js_module_table name  with 
-  | exception Not_found -> 
+  match String_hashtbl.find_exn js_module_table name  with
+  | exception Not_found ->
     let ans = Ident.create name in
     (* let ans = { v with flags = js_module_flag} in  *)
     String_hashtbl.add js_module_table name ans;
     ans
-  | v -> (* v *) Ident.rename v  
+  | v -> (* v *) Ident.rename v
 
 
-let reserved_words = 
+let reserved_words =
   [|
     (* keywork *)
     "break";
@@ -7039,7 +7039,7 @@ let reserved_words =
     (* also reserved in ECMAScript 3 *)
     "abstract"; "boolean"; "byte"; "char"; "const"; "double";
     "final"; "float"; "goto"; "int"; "long"; "native"; "short";
-    "synchronized"; 
+    "synchronized";
     (* "throws";  *)
     (* seems to be fine, like nodejs [assert.throws] *)
     "transient"; "volatile";
@@ -7064,7 +7064,7 @@ let reserved_words =
     "String";
     "Boolean";
     "Number";
-
+    "Buffer"; (* Node *)
     "Map"; (* es6*)
     "Set";
 
@@ -7091,7 +7091,7 @@ let reserved_words =
     "parseFloat";
     "parseInt";
 
-    (** reserved for commonjs and NodeJS globals*)   
+    (** reserved for commonjs and NodeJS globals*)
     "require";
     "exports";
     "module";
@@ -7110,36 +7110,36 @@ let reserved_words =
     "__esModule"
   |]
 
-let reserved_map = 
-  let len = Array.length reserved_words in 
+let reserved_map =
+  let len = Array.length reserved_words in
   let set =  String_hash_set.create 1024 in (* large hash set for perfect hashing *)
-  for i = 0 to len - 1 do 
+  for i = 0 to len - 1 do
     String_hash_set.add set reserved_words.(i);
   done ;
-  set 
+  set
 
 
 
-exception Not_normal_letter of int 
-let name_mangle name = 
+exception Not_normal_letter of int
+let name_mangle name =
 
   let len = String.length name  in
   try
-    for i  = 0 to len - 1 do 
-      match String.unsafe_get name i with 
+    for i  = 0 to len - 1 do
+      match String.unsafe_get name i with
       | 'a' .. 'z' | 'A' .. 'Z'
       | '0' .. '9' | '_' | '$'
         -> ()
       | _ -> raise (Not_normal_letter i)
     done;
     name (* Normal letter *)
-  with 
+  with
   | Not_normal_letter 0 ->
 
-    let buffer = Buffer.create len in 
-    for j = 0 to  len - 1 do 
+    let buffer = Buffer.create len in
+    for j = 0 to  len - 1 do
       let c = String.unsafe_get name j in
-      match c with 
+      match c with
       | '*' -> Buffer.add_string buffer "$star"
       | '\'' -> Buffer.add_string buffer "$prime"
       | '!' -> Buffer.add_string buffer "$bang"
@@ -7157,17 +7157,17 @@ let name_mangle name =
       | '~' -> Buffer.add_string buffer "$tilde"
       | '#' -> Buffer.add_string buffer "$hash"
       | ':' -> Buffer.add_string buffer "$colon"
-      | 'a'..'z' | 'A'..'Z'| '_' 
+      | 'a'..'z' | 'A'..'Z'| '_'
       | '$'
       | '0'..'9'-> Buffer.add_char buffer  c
       | _ -> Buffer.add_string buffer "$unknown"
     done; Buffer.contents buffer
-  | Not_normal_letter i -> 
+  | Not_normal_letter i ->
     String.sub name 0 i ^
-    (let buffer = Buffer.create len in 
-     for j = i to  len - 1 do 
+    (let buffer = Buffer.create len in
+     for j = i to  len - 1 do
        let c = String.unsafe_get name j in
-       match c with 
+       match c with
        | '*' -> Buffer.add_string buffer "$star"
        | '\'' -> Buffer.add_string buffer "$prime"
        | '!' -> Buffer.add_string buffer "$bang"
@@ -7175,7 +7175,7 @@ let name_mangle name =
        | '<' -> Buffer.add_string buffer "$less"
        | '=' -> Buffer.add_string buffer "$eq"
        | '+' -> Buffer.add_string buffer "$plus"
-       | '-' -> Buffer.add_string buffer "$" 
+       | '-' -> Buffer.add_string buffer "$"
         (* Note ocaml compiler also has [self-] *)
        | '@' -> Buffer.add_string buffer "$at"
        | '^' -> Buffer.add_string buffer "$caret"
@@ -7187,7 +7187,7 @@ let name_mangle name =
        | '#' -> Buffer.add_string buffer "$hash"
        | ':' -> Buffer.add_string buffer "$colon"
        | '$' -> Buffer.add_string buffer "$dollar"
-       | 'a'..'z' | 'A'..'Z'| '_'        
+       | 'a'..'z' | 'A'..'Z'| '_'
        | '0'..'9'-> Buffer.add_char buffer  c
        | _ -> Buffer.add_string buffer "$unknown"
      done; Buffer.contents buffer)
@@ -7198,16 +7198,16 @@ let name_mangle name =
      - : string = "$caret"
    ]}
    [convert name] if [name] is a js keyword,add "$$"
-   otherwise do the name mangling to make sure ocaml identifier it is 
+   otherwise do the name mangling to make sure ocaml identifier it is
    a valid js identifier
 *)
-let convert (name : string) = 
-  if  String_hash_set.mem reserved_map name  then "$$" ^ name 
-  else name_mangle name 
+let convert (name : string) =
+  if  String_hash_set.mem reserved_map name  then "$$" ^ name
+  else name_mangle name
 
 (** keyword could be used in property *)
 
-(* It is currently made a persistent ident to avoid fresh ids 
+(* It is currently made a persistent ident to avoid fresh ids
     which would result in different signature files
     - other solution: use lazy values
 *)
@@ -7215,24 +7215,24 @@ let make_unused () = create "_"
 
 
 
-let reset () = 
+let reset () =
   String_hashtbl.clear js_module_table
 
 
 let undefined = create_js "undefined"
 let nil = create_js "null"
 
-(* Has to be total order, [x < y] 
+(* Has to be total order, [x < y]
    and [x > y] should be consistent
-   flags are not relevant here 
+   flags are not relevant here
 *)
-let compare (x : Ident.t ) ( y : Ident.t) = 
+let compare (x : Ident.t ) ( y : Ident.t) =
   let u = x.stamp - y.stamp in
-  if u = 0 then 
-    Ext_string.compare x.name y.name 
-  else u 
+  if u = 0 then
+    Ext_string.compare x.name y.name
+  else u
 
-let equal ( x : Ident.t) ( y : Ident.t) = 
+let equal ( x : Ident.t) ( y : Ident.t) =
   if x.stamp <> 0 then x.stamp = y.stamp
   else y.stamp = 0 && x.name = y.name
 

@@ -247,14 +247,16 @@ SYNTAX_SRCS= \
 	ast_core_type\
 	bs_ast_invariant\
 	ast_attributes\
-	ast_derive_abstract\
 	ast_polyvar\
+	external_ffi_types\
+	external_process\
+	ast_derive_abstract\
 	ast_derive_dyn\
 	ast_derive_projector \
 	ast_derive_js_mapper\
-	external_ffi_types\
-	external_process\
 	ast_util\
+	ast_tdcls\
+	ast_primitive\
 	ast_exp_apply\
 	ast_exp_extension\
 	ast_core_type_class_type\
@@ -366,7 +368,7 @@ BSB_SRCS= bsb_config\
 	bsb_templates\
 	bsb_theme_init
 SUPER_ERRORS_SRCS=super_reason_react super_misc super_warnings super_location super_env super_pparse super_typecore super_typemod super_typetexp super_main
-REASON_OUTCOME_PRINTER_SRCS= outcome_printer_ns tweaked_reason_oprint reason_outcome_printer_main
+REASON_OUTCOME_PRINTER_SRCS=reason_syntax_util outcome_printer_ns tweaked_reason_oprint reason_outcome_printer_main
 
 BSB_CMXS=$(addprefix bsb/, $(addsuffix .cmx, $(BSB_SRCS)))
 BSB_CMOS=$(addprefix bsb/, $(addsuffix .cmo, $(BSB_SRCS)))
@@ -472,7 +474,7 @@ depend:
 
 
 
-# this target  is used to make 
+# this target  is used to make
 ./bin/bspack.exe: bin/bspack.mli bin/bspack.ml
 	$(MAKE) -C bin bspack.exe
 
@@ -517,7 +519,7 @@ depend:
 themes:
 	cd bsb && ./pack-templates.sh
 
-snapshotml:./bin/bspack.exe 
+snapshotml:./bin/bspack.exe
 	$(MAKE) -j9 $(SNAPSHOT_SRCS)
 
 force-snapshotml:

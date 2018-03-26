@@ -51,7 +51,6 @@ function searchForSureExists(xs, k) {
     } else {
       _i = i + 1 | 0;
       continue ;
-      
     }
   };
 }

@@ -968,7 +968,6 @@ function update_player(player, keys, context) {
                   player$1[/* dir */6] = /* Left */0;
                   return /* () */0;
                 }
-                break;
             case 1 : 
                 if (player$1[/* crouch */10]) {
                   return 0;
@@ -979,7 +978,6 @@ function update_player(player, keys, context) {
                   player$1[/* dir */6] = /* Right */1;
                   return /* () */0;
                 }
-                break;
             case 2 : 
                 if (!player$1[/* jumping */4] && player$1[/* grounded */5]) {
                   player$1[/* jumping */4] = /* true */1;
@@ -1401,7 +1399,6 @@ function kill(collid, ctx) {
         } else {
           return /* [] */0;
         }
-        break;
     
   }
 }
@@ -1886,7 +1883,6 @@ function process_collision(dir, c1, c2, state) {
                         /* None */0
                       ];
               }
-              break;
           
         }
         break;
@@ -2021,7 +2017,6 @@ function process_collision(dir, c1, c2, state) {
                   /* None */0
                 ];
         }
-        break;
     
   }
 }
@@ -2098,7 +2093,6 @@ function check_collisions(collid, all_collids, state) {
         _acc = acc$1;
         _cs = cs$1[1];
         continue ;
-        
       } else {
         return acc;
       }
@@ -2418,7 +2412,6 @@ function mem_loc(checkloc, _loclist) {
       } else {
         _loclist = loclist[1];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -2495,7 +2488,6 @@ function avoid_overlap(_lst, currentLst) {
       if (mem_loc(h[1], currentLst)) {
         _lst = t;
         continue ;
-        
       } else {
         return Pervasives.$at(/* :: */[
                     h,
@@ -2521,7 +2513,6 @@ function trim_edges(_lst, blockw, blockh) {
       if (cx < 128 || pixx - cx < 528 || cy === 0 || pixy - cy < 48) {
         _lst = t;
         continue ;
-        
       } else {
         return Pervasives.$at(/* :: */[
                     h,
@@ -2574,7 +2565,6 @@ function generate_coins(_block_coord) {
       } else {
         _block_coord = t;
         continue ;
-        
       }
     } else {
       return /* [] */0;
@@ -3032,14 +3022,12 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
       _cby = 0;
       _cbx = cbx + 1;
       continue ;
-      
     } else if (mem_loc(/* tuple */[
             cbx,
             cby
           ], acc) || cby === 0) {
       _cby = cby + 1;
       continue ;
-      
     } else {
       var prob = Random.$$int(30);
       if (prob < 3 && blockh - 1 === cby) {
@@ -3058,7 +3046,6 @@ function generate_enemies(blockw, blockh, _cbx, _cby, acc) {
       } else {
         _cby = cby + 1;
         continue ;
-        
       }
     }
   };
@@ -3088,7 +3075,6 @@ function generate_block_enemies(_block_coord) {
       } else {
         _block_coord = t;
         continue ;
-        
       }
     } else {
       return /* [] */0;
@@ -3107,14 +3093,12 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
       _cby = 0;
       _cbx = cbx + 1;
       continue ;
-      
     } else if (mem_loc(/* tuple */[
             cbx,
             cby
           ], acc) || cby === 0) {
       _cby = cby + 1;
       continue ;
-      
     } else {
       var prob = Random.$$int(100);
       if (prob < 5) {
@@ -3124,11 +3108,9 @@ function generate_block_locs(blockw, blockh, _cbx, _cby, _acc) {
         _acc = called_acc;
         _cby = cby + 1;
         continue ;
-        
       } else {
         _cby = cby + 1;
         continue ;
-        
       }
     }
   };
@@ -3162,12 +3144,10 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       if (skip === 7 && blockw - inc > 32) {
         _inc = inc + 1;
         continue ;
-        
       } else {
         _acc = newacc;
         _inc = inc + 1;
         continue ;
-        
       }
     } else {
       var newacc$1 = Pervasives.$at(acc, /* :: */[
@@ -3183,7 +3163,6 @@ function generate_ground(blockw, blockh, _inc, _acc) {
       _acc = newacc$1;
       _inc = inc + 1;
       continue ;
-      
     }
   };
 }

@@ -105,7 +105,7 @@ Currently all tests are in `jscomp/test` directory and you should either add/mod
 - Run the tests:
   `mocha -R list jscomp/test/your_test_file.js`
   To build libs, tests and run all tests:
-  `make libs && make -C test all && npm test`
+  `make libs && make -C jscomp/test all && npm test`
 
 - See the coverage: `npm run cover`
 

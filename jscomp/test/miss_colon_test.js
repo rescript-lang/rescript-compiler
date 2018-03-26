@@ -37,7 +37,7 @@ function $plus$colon(_f, _g) {
             _g = g[1];
             _f = $plus$colon(f, g[0]);
             continue ;
-            case 1 : 
+        case 1 : 
         case 3 : 
             return /* Add */Block.__(2, [
                       f,
@@ -106,7 +106,7 @@ function $star$colon(_f, _g) {
             _g = g[1];
             _f = $star$colon(f, g[0]);
             continue ;
-            
+        
       }
     }
     

@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,28 +17,32 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type t = Parsetree.core_type 
+type t = Parsetree.core_type
 
 
-val extract_option_type_exn : t -> t 
-val lift_option_type : t -> t 
-val is_any : t -> bool 
+val extract_option_type_exn : t -> t
+val extract_option_type : t -> t option
+
+val lift_option_type : t -> t
+val is_any : t -> bool
 val replace_result : t -> t -> t
 
-val is_unit : t -> bool 
-val is_array : t -> bool 
+val opt_arrow: Location.t -> string -> t -> t -> t
+
+val is_unit : t -> bool
+val is_array : t -> bool
 type arg_label =
-  | Label of string 
-  | Optional of string 
+  | Label of string
+  | Optional of string
   | Empty
 
 
-(** for 
+(** for
        [x:t] -> "x"
        [?x:t] -> "?x"
 *)
@@ -48,7 +52,7 @@ val label_name : string -> arg_label
 
 
 
-(** return a function type 
+(** return a function type
     [from_labels ~loc tyvars labels]
     example output:
     {[x:'a0 -> y:'a1 -> < x :'a0 ;y :'a1  > Js.t]}
@@ -61,23 +65,23 @@ val make_obj :
   (string * Parsetree.attributes * t) list ->
   t
 
-val is_user_option : t -> bool 
+val is_user_option : t -> bool
 
 val is_user_bool : t -> bool
 
 val is_user_int : t -> bool
 
-val is_optional_label : string -> bool 
+val is_optional_label : string -> bool
 
-(** 
-  returns 0 when it can not tell arity from the syntax 
+(**
+  returns 0 when it can not tell arity from the syntax
 *)
 val get_uncurry_arity : t -> [`Arity of int | `Not_function ]
 
 
 (** fails when Ptyp_poly *)
-val list_of_arrow : 
-  t -> 
+val list_of_arrow :
+  t ->
   t *  (Asttypes.label * t * Parsetree.attributes * Location.t) list
 
-val is_arity_one : t -> bool 
+val is_arity_one : t -> bool

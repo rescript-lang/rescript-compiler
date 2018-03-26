@@ -239,6 +239,7 @@ bin/js_compiler.ml : ./core/lam_stats_util.mli
 bin/js_compiler.ml : ./depends/bs_exception.ml
 bin/js_compiler.ml : ./ext/string_hash_set.mli
 bin/js_compiler.ml : ./syntax/ast_core_type.ml
+bin/js_compiler.ml : ./syntax/ast_exp_apply.ml
 bin/js_compiler.ml : ./syntax/ast_signature.ml
 bin/js_compiler.ml : ./syntax/ast_structure.ml
 bin/js_compiler.ml : ./syntax/bs_ast_mapper.ml
@@ -278,6 +279,7 @@ bin/js_compiler.ml : ./core/lam_stats_export.ml
 bin/js_compiler.ml : ./depends/bs_exception.mli
 bin/js_compiler.ml : ./syntax/ast_attributes.ml
 bin/js_compiler.ml : ./syntax/ast_core_type.mli
+bin/js_compiler.ml : ./syntax/ast_exp_apply.mli
 bin/js_compiler.ml : ./syntax/ast_signature.mli
 bin/js_compiler.ml : ./syntax/ast_structure.mli
 bin/js_compiler.ml : ./syntax/bs_ast_mapper.mli
@@ -364,6 +366,7 @@ bin/js_compiler.ml : ./core/lam_compile_global.mli
 bin/js_compiler.ml : ./core/lam_eta_conversion.mli
 bin/js_compiler.ml : ./ext/hash_set_ident_mask.mli
 bin/js_compiler.ml : ./ext/ordered_hash_map_gen.ml
+bin/js_compiler.ml : ./syntax/ast_exp_extension.ml
 bin/js_compiler.ml : ./syntax/bs_ast_invariant.mli
 bin/js_compiler.ml : ./syntax/external_arg_spec.ml
 bin/js_compiler.ml : ./syntax/external_process.mli
@@ -384,6 +387,7 @@ bin/js_compiler.ml : ./core/js_name_of_module_id.ml
 bin/js_compiler.ml : ./core/js_of_lam_exception.mli
 bin/js_compiler.ml : ./core/lam_beta_reduce_util.ml
 bin/js_compiler.ml : ./core/lam_compile_context.mli
+bin/js_compiler.ml : ./syntax/ast_exp_extension.mli
 bin/js_compiler.ml : ./syntax/external_arg_spec.mli
 bin/js_compiler.ml : ./syntax/external_ffi_types.ml
 bin/js_compiler.ml : ../vendor/ocaml/bytecomp/translcore.ml
@@ -440,8 +444,12 @@ bin/js_compiler.ml : ./core/lam_pass_alpha_conversion.ml
 bin/js_compiler.ml : ./syntax/ast_utf8_string_interp.mli
 bin/js_compiler.ml : ./core/lam_compile_external_call.mli
 bin/js_compiler.ml : ./core/lam_pass_alpha_conversion.mli
+bin/js_compiler.ml : ./syntax/ast_core_type_class_type.ml
 bin/js_compiler.ml : ./ext/ordered_hash_map_local_ident.ml
+bin/js_compiler.ml : ./syntax/ast_core_type_class_type.mli
+bin/js_compiler.ml : ./syntax/ast_tuple_pattern_flatten.ml
 bin/js_compiler.ml : ./ext/ordered_hash_map_local_ident.mli
+bin/js_compiler.ml : ./syntax/ast_tuple_pattern_flatten.mli
 bin/js_compiler.ml : ./core/js_pass_flatten_and_mark_dead.ml
 bin/js_compiler.ml : ./outcome_printer/outcome_printer_ns.ml
 bin/js_compiler.ml : ./core/js_pass_flatten_and_mark_dead.mli

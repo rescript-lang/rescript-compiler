@@ -7,7 +7,7 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Belt.HashSet.html">
+                 <link rel="previous" href="Belt.HashSet.html"><link rel="next" href="Belt.Option.html">
                  <title> Belt.HashMap </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -93,7 +94,8 @@
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
 <div class="navbar"><a class="pre" href="Belt.HashSet.html" title="Belt.HashSet">Previous</a>
 &nbsp;<a class="up" href="Belt.html" title="Belt">Up</a>
-&nbsp;</div>
+&nbsp;<a class="post" href="Belt.Option.html" title="Belt.Option">Next</a>
+</div>
 <h1>Module <a href="type_Belt.HashMap.html">Belt.HashMap</a></h1>
 
 <pre><span class="keyword">module</span> HashMap: <code class="type"><a href="Belt_HashMap.html">Belt_HashMap</a></code></pre><div class="info module top">
@@ -101,7 +103,7 @@
                     <a href="Belt.HashMap.html"><code class="code">Belt.HashMap</code></a>
 <p>
 
-    The toplevel provides generic <b>mutable</b> hash map operations.
+    The top level provides generic <b>mutable</b> hash map operations.
 <p>
 
     It also has two specialized inner modules
@@ -224,7 +226,8 @@
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key * 'value) array</code></pre>
 <pre><span id="VALkeysToArray"><span class="keyword">val</span> keysToArray</span> : <code class="type">('key, 'a, 'b) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key array</code></pre>
 <pre><span id="VALvaluesToArray"><span class="keyword">val</span> valuesToArray</span> : <code class="type">('a, 'value, 'b) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'value array</code></pre>
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('key * 'value) array -><br>       id:('key, 'id) <a href="Belt_HashMap.html#TYPEid">id</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">('key * 'value) array -><br>       id:('key, 'id) <a href="Belt_HashMap.html#TYPEid">id</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
 <pre><span id="VALmergeMany"><span class="keyword">val</span> mergeMany</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key * 'value) array -> unit</code></pre>
 <pre><span id="VALgetBucketHistogram"><span class="keyword">val</span> getBucketHistogram</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> int array</code></pre>
-<pre><span id="VALlogStats"><span class="keyword">val</span> logStats</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> unit</code></pre></body></html>
+<pre><span id="VALlogStats"><span class="keyword">val</span> logStats</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> unit</code></pre>
+<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('key * 'value) array -><br>       id:('key, 'id) <a href="Belt_HashMap.html#TYPEid">id</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre></body></html>

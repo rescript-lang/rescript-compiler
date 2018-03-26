@@ -142,7 +142,6 @@ function mem(x, _tree) {
       } else {
         _tree = c < 0 ? tree[0] : tree[2];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -193,7 +192,6 @@ function subset(_s1, _s2) {
             _s2 = r2;
             _s1 = r1;
             continue ;
-            
           } else {
             return /* false */0;
           }
@@ -206,7 +204,6 @@ function subset(_s1, _s2) {
                 ], l2)) {
             _s1 = r1;
             continue ;
-            
           } else {
             return /* false */0;
           }
@@ -218,7 +215,6 @@ function subset(_s1, _s2) {
               ], r2)) {
           _s1 = l1;
           continue ;
-          
         } else {
           return /* false */0;
         }
@@ -242,7 +238,6 @@ function find(x, _tree) {
       } else {
         _tree = c < 0 ? tree[0] : tree[2];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;

@@ -18,7 +18,6 @@ function is_sorted(x) {
     } else if (Caml_obj.caml_lessthan(Caml_array.caml_array_get(x, i), Caml_array.caml_array_get(x, i + 1 | 0))) {
       _i = i + 1 | 0;
       continue ;
-      
     } else {
       return /* false */0;
     }

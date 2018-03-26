@@ -147,7 +147,6 @@ function Make(Ord) {
         if (l) {
           _param = l;
           continue ;
-          
         } else {
           return param[1];
         }
@@ -164,7 +163,6 @@ function Make(Ord) {
         if (r) {
           _param = r;
           continue ;
-          
         } else {
           return param[1];
         }
@@ -262,7 +260,6 @@ function Make(Ord) {
         } else {
           _param = c < 0 ? param[0] : param[2];
           continue ;
-          
         }
       } else {
         return /* false */0;
@@ -361,7 +358,6 @@ function Make(Ord) {
         ];
         _s = s[0];
         continue ;
-        
       } else {
         return e;
       }
@@ -380,7 +376,6 @@ function Make(Ord) {
             _e2 = cons_enum(e2[1], e2[2]);
             _e1 = cons_enum(e1[1], e1[2]);
             continue ;
-            
           }
         } else {
           return 1;
@@ -415,7 +410,6 @@ function Make(Ord) {
               _s2 = r2;
               _s1 = r1;
               continue ;
-              
             } else {
               return /* false */0;
             }
@@ -428,7 +422,6 @@ function Make(Ord) {
                   ], l2)) {
               _s1 = r1;
               continue ;
-              
             } else {
               return /* false */0;
             }
@@ -440,7 +433,6 @@ function Make(Ord) {
                 ], r2)) {
             _s1 = l1;
             continue ;
-            
           } else {
             return /* false */0;
           }
@@ -460,7 +452,6 @@ function Make(Ord) {
         Curry._1(f, param[1]);
         _param = param[2];
         continue ;
-        
       } else {
         return /* () */0;
       }
@@ -474,7 +465,6 @@ function Make(Ord) {
         _accu = Curry._2(f, s[1], fold(f, s[0], accu));
         _s = s[2];
         continue ;
-        
       } else {
         return accu;
       }
@@ -487,7 +477,6 @@ function Make(Ord) {
         if (Curry._1(p, param[1]) && for_all(p, param[0])) {
           _param = param[2];
           continue ;
-          
         } else {
           return /* false */0;
         }
@@ -505,7 +494,6 @@ function Make(Ord) {
         } else {
           _param = param[2];
           continue ;
-          
         }
       } else {
         return /* false */0;
@@ -573,7 +561,6 @@ function Make(Ord) {
           elements_aux(accu, param[2])
         ];
         continue ;
-        
       } else {
         return accu;
       }
@@ -593,7 +580,6 @@ function Make(Ord) {
         } else {
           _param = c < 0 ? param[0] : param[2];
           continue ;
-          
         }
       } else {
         throw Caml_builtin_exceptions.not_found;

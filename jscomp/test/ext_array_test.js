@@ -50,7 +50,6 @@ function reverse_of_list(l) {
         _param = param[1];
         _i = i + 1 | 0;
         continue ;
-        
       } else {
         return a;
       }
@@ -78,11 +77,9 @@ function filter(f, a) {
           acc
         ];
         continue ;
-        
       } else {
         _i = i + 1 | 0;
         continue ;
-        
       }
     }
   };
@@ -107,10 +104,8 @@ function filter_map(f, a) {
           acc
         ];
         continue ;
-        
       } else {
         continue ;
-        
       }
     }
   };
@@ -158,7 +153,6 @@ function tolist_aux(a, f, _i, _res) {
         ] : res;
       _i = i - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -187,7 +181,6 @@ function of_list_map(f, a) {
         _param = param[1];
         _i = i + 1 | 0;
         continue ;
-        
       } else {
         return arr;
       }
@@ -207,7 +200,6 @@ function rfind_with_index(arr, cmp, v) {
     } else {
       _i = i - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -240,7 +232,6 @@ function find_with_index(arr, cmp, v) {
     } else {
       _i = i + 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -272,7 +263,6 @@ function exists(p, a) {
     } else {
       _i = i + 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -289,7 +279,6 @@ function unsafe_loop(_index, len, p, xs, ys) {
     } else if (Curry._2(p, xs[index], ys[index])) {
       _index = index + 1 | 0;
       continue ;
-      
     } else {
       return /* false */0;
     }

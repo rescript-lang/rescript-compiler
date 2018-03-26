@@ -27,7 +27,6 @@ function findFile(_prev, _cwd, f) {
       _cwd = Path.dirname(cwd);
       _prev = cwd;
       continue ;
-      
     }
   };
 }
@@ -72,7 +71,8 @@ function makeLock() {
             }),
           release: (function () {
               var self = this ;
-              return self.isBuilding = /* false */0;
+              self.isBuilding = /* false */0;
+              return /* () */0;
             })
         };
 }

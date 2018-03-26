@@ -104,46 +104,30 @@ function read$1(name) {
 }
 
 function test(readline, x) {
-  readline.on((function (action) {
-          switch (x) {
-            case -944564236 : 
-                return action[0];
-            case -933029960 : 
-                return action[0];
-            
-          }
-        }), (function (action) {
-          switch (x) {
-            case -944564236 : 
-                return action[1];
-            case -933029960 : 
-                return action[1];
-            
-          }
-        }));
+  readline.on((function () {
+            switch (x[0]) {
+              case -944564236 : 
+                  return "line";
+              case -933029960 : 
+                  return "close";
+              
+            }
+          })(), x[1]);
   return /* () */0;
 }
 
 Mt.from_pair_suites("poly_variant_test.ml", suites[0]);
 
 function on2(prim, prim$1) {
-  prim.on2((function (action) {
-          switch (prim$1) {
-            case -944564236 : 
-                return action[0];
-            case -933029960 : 
-                return action[0];
-            
-          }
-        }), (function (action) {
-          switch (prim$1) {
-            case -944564236 : 
-                return action[1];
-            case -933029960 : 
-                return action[1];
-            
-          }
-        }));
+  prim.on2((function () {
+            switch (prim$1[0]) {
+              case -944564236 : 
+                  return "line";
+              case -933029960 : 
+                  return "close";
+              
+            }
+          })(), prim$1[1]);
   return /* () */0;
 }
 

@@ -158,7 +158,6 @@ function even2(_n) {
     } else {
       _n = n - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -182,7 +181,6 @@ function sum(_acc, _n) {
       _n = n - 1 | 0;
       _acc = acc + n | 0;
       continue ;
-      
     } else {
       return acc;
     }

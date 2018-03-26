@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -25,69 +25,69 @@
 module E = Js_exp_make
 module S = Js_stmt_make
 
-type arg_expression = 
+type arg_expression =
   | Splice0
-  | Splice1 of E.t 
+  | Splice1 of E.t
   | Splice2 of E.t * E.t
-  
+
 (* we need destruct [undefined] when input is optional *)
-let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t = 
+let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
   if arg == E.undefined then E.undefined else
   match arg.expression_desc with
-  | Number (Int {i} | Uint i) -> 
-    E.str (Ext_list.assoc_by_int None (Int32.to_int i) dispatches) 
-  | _ ->  
+  | Number (Int {i} | Uint i) ->
+    E.str (Ext_list.assoc_by_int None (Int32.to_int i) dispatches)
+  | _ ->
     E.of_block
       [(S.int_switch arg
-      (Ext_list.map (fun (i,r) -> 
-              {J.case = i ; 
-               body = [S.return_stmt (E.str r)],
+      (Ext_list.map (fun (i,r) ->
+              {J.switch_case = i ;
+               switch_body = [S.return_stmt (E.str r)],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
 
 (** invariant: optional is not allowed in this case *)
-let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) = 
+let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
   match arg.expression_desc with
   | Array ([{expression_desc = Number (Int {i} | Uint i)}; cb], _)
   | Caml_block([{expression_desc = Number (Int {i} | Uint i)}; cb], _, _, _)
-    -> 
-    let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in 
-    Splice2(E.str v , cb )   
-  | _ ->  
-    let event = Ext_ident.create "action" in
+    ->
+    let v = Ext_list.assoc_by_int None (Int32.to_int i) dispatches in
+    Splice2(E.str v , cb )
+  | _ ->
     Splice2
-      (E.ocaml_fun [event]
-      [(S.int_switch arg
-      (Ext_list.map (fun (i,r) -> 
-              {J.case = i ; 
-               body = [S.return_stmt (E.index (E.var event) 0l)],
+      (E.of_block
+      [(S.int_switch (E.index arg 0l)
+      (Ext_list.map (fun (i,r) ->
+              {J.switch_case = i ;
+               switch_body = [S.return_stmt (E.str r)],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
-      , (* TODO: improve, one dispatch later, 
-           the problem is that we can not create bindings 
-           due to the 
+      , (* TODO: improve, one dispatch later,
+           the problem is that we can not create bindings
+           due to the
         *)
-      E.ocaml_fun [event]
-      [(S.int_switch arg
-      (Ext_list.map (fun (i,r) -> 
-              {J.case = i ; 
-               body = [S.return_stmt (E.index (E.var event) 1l)],
-                      false (* FIXME: if true, still print break*)
-              }) dispatches))]
+     E.index arg 1l
       )
+      (** FIXME:
+        1. duplicated evaluation of expressions arg
+           Solution: calcuate the arg once in the beginning
+        2. avoid block for branches <  3
+          or always?
+          a === 444? "a" : a==222? "b"
+      *)
 
 (* we need destruct [undefined] when input is optional *)
-let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  = 
-  if arg == E.undefined then E.undefined else 
+let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
+  if arg == E.undefined then E.undefined else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
-    E.int (Int32.of_int (Ext_list.assoc_by_int None (Int32.to_int i) dispatches))    
-  | _ ->  
+    E.int (Int32.of_int (Ext_list.assoc_by_int None (Int32.to_int i) dispatches))
+  | _ ->
     E.of_block
       [(S.int_switch arg
-      (Ext_list.map (fun (i,r) -> 
-              {J.case = i ; 
-               body = [S.return_stmt (E.int (Int32.of_int  r))],
+      (Ext_list.map (fun (i,r) ->
+              {J.switch_case = i ;
+               switch_body = [S.return_stmt (E.int (Int32.of_int  r))],
                       false (* FIXME: if true, still print break*)
               }) dispatches))]
 

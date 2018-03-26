@@ -32,6 +32,7 @@
 <li><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a></li>
 <li><a href="Belt_MutableSetString.html">Belt_MutableSetString</a></li>
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
+<li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
@@ -102,7 +103,7 @@
                     <a href="Belt.MutableMap.html"><code class="code">Belt.MutableMap</code></a>
 <p>
 
-    The toplevel provides generic <b>mutable</b> map operations.
+    The top level provides generic <b>mutable</b> map operations.
 <p>
 
     It also has two specialized inner modules
@@ -219,7 +220,7 @@
 
                   
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -> ('k * 'a) array</code></pre>
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('k * 'a) array -><br>       id:('k, 'id) <a href="Belt_MutableMap.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">('k * 'a) array -><br>       id:('k, 'id) <a href="Belt_MutableMap.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a></code></pre>
 <pre><span id="VALkeysToArray"><span class="keyword">val</span> keysToArray</span> : <code class="type">('k, 'a, 'b) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k array</code></pre>
 <pre><span id="VALvaluesToArray"><span class="keyword">val</span> valuesToArray</span> : <code class="type">('b, 'a, 'c) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'a array</code></pre>
 <pre><span id="VALminKey"><span class="keyword">val</span> minKey</span> : <code class="type">('k, 'a, 'b) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k option</code></pre>
@@ -236,13 +237,14 @@
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k -> 'a</code></pre>
 <pre><span id="VALcheckInvariantInternal"><span class="keyword">val</span> checkInvariantInternal</span> : <code class="type">('a, 'b, 'c) <a href="Belt_MutableMap.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <b>raise</b> when invariant is not helld<br>
+                    <b>raise</b> when invariant is not held<br>
  
                     </div>
                     
                     </div>
 
                   
+<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('k * 'a) array -><br>       id:('k, 'id) <a href="Belt_MutableMap.html#TYPEid">id</a> -> ('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a></code></pre>
 <pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MutableMap.html#TYPEt">t</a> -> 'k -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">remove m x</code> do the in-place modification,<br>

@@ -103,6 +103,7 @@ var cmi_files =
         `belt_SetString`,
         `belt_Map`,
         `belt_MapInt`,
+        `belt_Option`,
         `belt_MapString`,
         `belt_MutableSet`,
         `belt_MutableSetInt`,

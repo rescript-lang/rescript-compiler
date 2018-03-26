@@ -146,8 +146,8 @@ function checkPrebuilt() {
 
 
 function non_windows_npm_release() {
-    if (fs.existsSync(path.join(lib_dir, 'bsc.exe'))) {
-        console.log('Found bsc.exe, assume it was already built')
+    if (fs.existsSync(path.join(lib_dir,'ocaml','pervasives.cmi'))) {
+        console.log('Found pervasives.cmi, assume it was already built')
         return true // already built before
     }
     if (checkPrebuilt()) {

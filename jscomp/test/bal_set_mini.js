@@ -106,7 +106,6 @@ function min_elt(_def, _param) {
         _param = l;
         _def = param[1];
         continue ;
-        
       } else {
         return param[1];
       }
@@ -165,7 +164,6 @@ function mem(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
-        
       }
     } else {
       return /* false */0;

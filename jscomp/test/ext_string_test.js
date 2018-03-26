@@ -40,17 +40,14 @@ function split_by($staropt$star, is_delim, str) {
           acc
         ];
         continue ;
-        
       } else {
         _pos = pos - 1 | 0;
         _last_pos = pos;
         continue ;
-        
       }
     } else {
       _pos = pos - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -133,7 +130,6 @@ function ends_with_index(s, end_) {
         _k = k - 1 | 0;
         _j = j - 1 | 0;
         continue ;
-        
       } else {
         return -1;
       }
@@ -171,7 +167,6 @@ function check_any_suffix_case_then_chop(s, suffixes) {
       } else {
         _suffixes = suffixes$1[1];
         continue ;
-        
       }
     } else {
       return /* None */0;
@@ -195,14 +190,12 @@ function escaped(s) {
             } else {
               _i = i + 1 | 0;
               continue ;
-              
             }
           } else if (switcher > 57 || switcher < 1) {
             return /* true */1;
           } else {
             _i = i + 1 | 0;
             continue ;
-            
           }
         } else {
           return /* true */1;
@@ -225,7 +218,6 @@ function unsafe_for_all_range(s, _start, finish, p) {
     } else if (Curry._1(p, s.charCodeAt(start))) {
       _start = start + 1 | 0;
       continue ;
-      
     } else {
       return /* false */0;
     }
@@ -271,7 +263,6 @@ function unsafe_is_sub(sub, i, s, j, len) {
       } else if (sub[i + k | 0] === s[j + k | 0]) {
         _k = k + 1 | 0;
         continue ;
-        
       } else {
         return /* false */0;
       }
@@ -330,7 +321,6 @@ function non_overlap_count(sub, s) {
         _off = i + sub_len | 0;
         _acc = acc + 1 | 0;
         continue ;
-        
       }
     };
   }
@@ -384,7 +374,6 @@ function digits_of_str(s, offset, x) {
       _acc = (Caml_int32.imul(10, acc) + Caml_string.get(s$1, offset + i | 0) | 0) - 48 | 0;
       _i = i + 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -442,7 +431,6 @@ function rindex_rec(s, _i, c) {
     } else {
       _i = i - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -457,7 +445,6 @@ function rindex_rec_opt(s, _i, c) {
     } else {
       _i = i - 1 | 0;
       continue ;
-      
     }
   };
 }
@@ -596,7 +583,6 @@ function unsafe_no_char(x, ch, _i, last_idx) {
     } else if (x.charCodeAt(i) !== ch) {
       _i = i + 1 | 0;
       continue ;
-      
     } else {
       return /* false */0;
     }
@@ -611,7 +597,6 @@ function unsafe_no_char_idx(x, ch, _i, last_idx) {
     } else if (x.charCodeAt(i) !== ch) {
       _i = i + 1 | 0;
       continue ;
-      
     } else {
       return i;
     }

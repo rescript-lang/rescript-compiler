@@ -32,6 +32,7 @@
 ../lib/bsdep.ml : ./ext/ext_position.ml
 ../lib/bsdep.ml : ./ext/hash_set_gen.ml
 ../lib/bsdep.ml : ./syntax/ast_comb.mli
+../lib/bsdep.ml : ./syntax/ast_tdcls.ml
 ../lib/bsdep.ml : ./syntax/ast_util.mli
 ../lib/bsdep.ml : ./syntax/ppx_entry.ml
 ../lib/bsdep.ml : ../vendor/ocaml/utils/misc.ml
@@ -41,6 +42,7 @@
 ../lib/bsdep.ml : ./ext/ext_position.mli
 ../lib/bsdep.ml : ./ext/hash_set_poly.ml
 ../lib/bsdep.ml : ./syntax/ast_derive.ml
+../lib/bsdep.ml : ./syntax/ast_tdcls.mli
 ../lib/bsdep.ml : ./syntax/ppx_entry.mli
 ../lib/bsdep.ml : ../vendor/ocaml/utils/ccomp.ml
 ../lib/bsdep.ml : ../vendor/ocaml/utils/misc.mli
@@ -73,6 +75,7 @@
 ../lib/bsdep.ml : ./ext/string_hash_set.mli
 ../lib/bsdep.ml : ./syntax/ast_core_type.ml
 ../lib/bsdep.ml : ./syntax/ast_exp_apply.ml
+../lib/bsdep.ml : ./syntax/ast_primitive.ml
 ../lib/bsdep.ml : ./syntax/ast_signature.ml
 ../lib/bsdep.ml : ./syntax/ast_structure.ml
 ../lib/bsdep.ml : ./syntax/bs_ast_mapper.ml
@@ -90,6 +93,7 @@
 ../lib/bsdep.ml : ./syntax/ast_attributes.ml
 ../lib/bsdep.ml : ./syntax/ast_core_type.mli
 ../lib/bsdep.ml : ./syntax/ast_exp_apply.mli
+../lib/bsdep.ml : ./syntax/ast_primitive.mli
 ../lib/bsdep.ml : ./syntax/ast_signature.mli
 ../lib/bsdep.ml : ./syntax/ast_structure.mli
 ../lib/bsdep.ml : ./syntax/bs_ast_mapper.mli

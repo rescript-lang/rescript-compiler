@@ -127,6 +127,7 @@
 ../lib/whole_compiler.ml : ./ext/int_vec_vec.mli
 ../lib/whole_compiler.ml : ./ext/resize_array.ml
 ../lib/whole_compiler.ml : ./syntax/ast_comb.mli
+../lib/whole_compiler.ml : ./syntax/ast_tdcls.ml
 ../lib/whole_compiler.ml : ./syntax/ast_util.mli
 ../lib/whole_compiler.ml : ./syntax/ppx_entry.ml
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/env.ml
@@ -160,6 +161,7 @@
 ../lib/whole_compiler.ml : ./ext/int_vec_util.mli
 ../lib/whole_compiler.ml : ./ext/resize_array.mli
 ../lib/whole_compiler.ml : ./syntax/ast_derive.ml
+../lib/whole_compiler.ml : ./syntax/ast_tdcls.mli
 ../lib/whole_compiler.ml : ./syntax/ppx_entry.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/env.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/path.ml
@@ -256,6 +258,7 @@
 ../lib/whole_compiler.ml : ./ext/string_hash_set.mli
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.ml
 ../lib/whole_compiler.ml : ./syntax/ast_exp_apply.ml
+../lib/whole_compiler.ml : ./syntax/ast_primitive.ml
 ../lib/whole_compiler.ml : ./syntax/ast_signature.ml
 ../lib/whole_compiler.ml : ./syntax/ast_structure.ml
 ../lib/whole_compiler.ml : ./syntax/bs_ast_mapper.ml
@@ -297,6 +300,7 @@
 ../lib/whole_compiler.ml : ./syntax/ast_attributes.ml
 ../lib/whole_compiler.ml : ./syntax/ast_core_type.mli
 ../lib/whole_compiler.ml : ./syntax/ast_exp_apply.mli
+../lib/whole_compiler.ml : ./syntax/ast_primitive.mli
 ../lib/whole_compiler.ml : ./syntax/ast_signature.mli
 ../lib/whole_compiler.ml : ./syntax/ast_structure.mli
 ../lib/whole_compiler.ml : ./syntax/bs_ast_mapper.mli
@@ -492,7 +496,9 @@
 ../lib/whole_compiler.ml : ./syntax/ast_tuple_pattern_flatten.mli
 ../lib/whole_compiler.ml : ./core/js_pass_flatten_and_mark_dead.ml
 ../lib/whole_compiler.ml : ./outcome_printer/outcome_printer_ns.ml
+../lib/whole_compiler.ml : ./outcome_printer/reason_syntax_util.ml
 ../lib/whole_compiler.ml : ./core/js_pass_flatten_and_mark_dead.mli
 ../lib/whole_compiler.ml : ./outcome_printer/outcome_printer_ns.mli
+../lib/whole_compiler.ml : ./outcome_printer/reason_syntax_util.mli
 ../lib/whole_compiler.ml : ./outcome_printer/tweaked_reason_oprint.ml
 ../lib/whole_compiler.ml : ./outcome_printer/reason_outcome_printer_main.ml

@@ -102,21 +102,22 @@ function ui_layout(compile, lookup, appContext) {
           }
         }));
   Runtime.setInterval((function () {
-          return grid.dataSource = Array.prototype.map.call(data, (function (param) {
-                        var price = param[/* price */1];
-                        var bid = price + 20 * Math.random();
-                        var ask = price + 20 * Math.random();
-                        var result = Curry._1(computeFunction[0], {
-                              bid: bid,
-                              ask: ask
-                            });
-                        return /* array */[
-                                mk_titleRow(param[/* ticker */0]),
-                                mk_titleRow(bid.toFixed(2)),
-                                mk_titleRow(ask.toFixed(2)),
-                                mk_titleRow(result.toFixed(2))
-                              ];
-                      }));
+          grid.dataSource = Array.prototype.map.call(data, (function (param) {
+                  var price = param[/* price */1];
+                  var bid = price + 20 * Math.random();
+                  var ask = price + 20 * Math.random();
+                  var result = Curry._1(computeFunction[0], {
+                        bid: bid,
+                        ask: ask
+                      });
+                  return /* array */[
+                          mk_titleRow(param[/* ticker */0]),
+                          mk_titleRow(bid.toFixed(2)),
+                          mk_titleRow(ask.toFixed(2)),
+                          mk_titleRow(result.toFixed(2))
+                        ];
+                }));
+          return /* () */0;
         }), 100);
   return hw1;
 }

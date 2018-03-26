@@ -243,7 +243,6 @@ function apply_until(f, _param) {
       } else {
         _param = param[1];
         continue ;
-        
       }
     } else {
       return /* None */0;
@@ -280,7 +279,6 @@ function string_fold_lefti(f, e0, s) {
       _i = i + 1 | 0;
       _acc = Curry._3(f, acc, i, s.charCodeAt(i));
       continue ;
-      
     }
   };
 }
@@ -1469,7 +1467,6 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -1480,7 +1477,7 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
               l
             ];
             continue ;
-            case 1 : 
+        case 1 : 
             return /* String_value */[$$String.concat("", List.rev(l))];
         case 2 : 
             ___ocaml_lex_state = 55;
@@ -1489,7 +1486,7 @@ function __ocaml_lex_string_rec(_l, lexbuf, ___ocaml_lex_state) {
               l
             ];
             continue ;
-            case 3 : 
+        case 3 : 
             return /* String_eof */0;
         
       }
@@ -1506,7 +1503,6 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -1519,7 +1515,7 @@ function __ocaml_lex_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
               l
             ];
             continue ;
-            case 2 : 
+        case 2 : 
             return /* Comment_eof */0;
         
       }
@@ -1536,14 +1532,13 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
       Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             update_loc(lexbuf);
             ___ocaml_lex_state = 47;
             continue ;
-            case 1 : 
+        case 1 : 
             Lexing.lexeme(lexbuf);
             return /* Comment_value */[$$String.concat("", List.rev(l))];
         case 2 : 
@@ -1553,7 +1548,7 @@ function __ocaml_lex_multi_line_comment_rec(_l, lexbuf, ___ocaml_lex_state) {
               l
             ];
             continue ;
-            case 3 : 
+        case 3 : 
             return /* Comment_eof */0;
         
       }
@@ -1571,7 +1566,6 @@ function lexer(lexbuf) {
       Curry._1(lexbuf$1[/* refill_buff */0], lexbuf$1);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
-      
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
@@ -1601,21 +1595,17 @@ function lexer(lexbuf) {
             if (match) {
               ___ocaml_lex_state = 0;
               continue ;
-              
             } else {
               return /* EOF */25;
             }
-            break;
         case 12 : 
             var match$1 = __ocaml_lex_multi_line_comment_rec(/* [] */0, lexbuf$1, 47);
             if (match$1) {
               ___ocaml_lex_state = 0;
               continue ;
-              
             } else {
               return /* EOF */25;
             }
-            break;
         case 13 : 
             var match$2 = __ocaml_lex_string_rec(/* [] */0, lexbuf$1, 55);
             if (match$2) {
@@ -1633,10 +1623,10 @@ function lexer(lexbuf) {
             update_loc(lexbuf$1);
             ___ocaml_lex_state = 0;
             continue ;
-            case 18 : 
+        case 18 : 
             ___ocaml_lex_state = 0;
             continue ;
-            case 19 : 
+        case 19 : 
             var loc = from_lexbuf(lexbuf$1);
             var ident = Lexing.lexeme(lexbuf$1);
             switch (ident) {
@@ -1940,7 +1930,6 @@ function print(scope) {
           _param = param[1];
           _acc = Pervasives.$at(sub, acc);
           continue ;
-          
         } else {
           _param = param[1];
           _acc = /* :: */[
@@ -1948,7 +1937,6 @@ function print(scope) {
             acc
           ];
           continue ;
-          
         }
       } else {
         return acc;
@@ -1988,7 +1976,6 @@ function runtime_function(param) {
                         ];
                 
               }
-              break;
           case 1 : 
               switch (param[2]) {
                 case 1 : 
@@ -2007,7 +1994,6 @@ function runtime_function(param) {
                         ];
                 
               }
-              break;
           case 2 : 
               var match$2 = param[2];
               if (match$2 !== 5) {
@@ -2022,7 +2008,6 @@ function runtime_function(param) {
               } else {
                 return "Pbrt.Encoder.bytes";
               }
-              break;
           
         }
       } else if (match$1[0] !== 0) {
@@ -2086,7 +2071,6 @@ function runtime_function(param) {
                       ];
               
             }
-            break;
         case 1 : 
             switch (param[2]) {
               case 1 : 
@@ -2105,7 +2089,6 @@ function runtime_function(param) {
                       ];
               
             }
-            break;
         case 2 : 
             var match$4 = param[2];
             if (match$4 !== 5) {
@@ -2120,7 +2103,6 @@ function runtime_function(param) {
             } else {
               return "Pbrt.Decoder.bytes";
             }
-            break;
         
       }
     } else if (match$3[0] !== 0) {
@@ -3594,7 +3576,6 @@ function find(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -3627,7 +3608,6 @@ function fold(f, _m, _accu) {
       _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
       _m = m[3];
       continue ;
-      
     } else {
       return accu;
     }
@@ -4110,14 +4090,12 @@ function compile_default_p2(all_types, field) {
             } else {
               return invalid_default_value(/* Some */[field_name$1], "invalid default type (bool expected)", /* () */0);
             }
-            break;
         case 13 : 
             if (constant.tag) {
               return invalid_default_value(/* Some */[field_name$1], "invalid default type (string expected)", /* () */0);
             } else {
               return /* Some */[constant];
             }
-            break;
         case 14 : 
             return invalid_default_value(/* Some */[field_name$1], "default value not supported for bytes", /* () */0);
         
@@ -4156,14 +4134,12 @@ function compile_default_p2(all_types, field) {
             default:
               return invalid_default_value(/* Some */[field_name$1], "invalid default type (float/int expected)", /* () */0);
           }
-          break;
       case 2 : 
           if (constant.tag === 2) {
             return /* Some */[constant];
           } else {
             return invalid_default_value(/* Some */[field_name$1], "invalid default type (int expected)", /* () */0);
           }
-          break;
       case 3 : 
           if (constant.tag === 2) {
             if (constant[0] >= 0) {
@@ -4174,7 +4150,6 @@ function compile_default_p2(all_types, field) {
           } else {
             return invalid_default_value(/* Some */[field_name$1], "invalid default type (int expected)", /* () */0);
           }
-          break;
       
     }
   } else {
@@ -4255,7 +4230,6 @@ function list_assoc2(x, _param) {
       } else {
         _param = param[1];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -4482,7 +4456,6 @@ function compile_message_p2(types, param, message) {
               scopes
             ];
             continue ;
-            
           } else {
             return /* :: */[
                     field_scope,
@@ -5660,7 +5633,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "\"\"";
           }
-          break;
       case 1 : 
           if (field_default$1) {
             var match$1 = field_default$1[0];
@@ -5672,7 +5644,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "0.";
           }
-          break;
       case 2 : 
           if (field_default$1) {
             var match$2 = field_default$1[0];
@@ -5684,7 +5655,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "0";
           }
-          break;
       case 3 : 
           if (field_default$1) {
             var match$3 = field_default$1[0];
@@ -5707,7 +5677,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "0l";
           }
-          break;
       case 4 : 
           if (field_default$1) {
             var match$4 = field_default$1[0];
@@ -5730,7 +5699,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "0L";
           }
-          break;
       case 5 : 
           if (field_default$1) {
             var match$5 = field_default$1[0];
@@ -5754,7 +5722,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "Bytes.create 64";
           }
-          break;
       case 6 : 
           if (field_default$1) {
             var match$6 = field_default$1[0];
@@ -5771,7 +5738,6 @@ function default_value_of_field_type(field_name, field_type, field_default) {
           } else {
             return "false";
           }
-          break;
       
     }
   }

@@ -55,7 +55,6 @@ function to_list(s) {
         acc
       ];
       continue ;
-      
     }
     
   };

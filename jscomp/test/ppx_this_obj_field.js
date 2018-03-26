@@ -59,11 +59,13 @@ var v = {
   y: 0,
   reset: (function () {
       var self = this ;
-      return self.y = 0;
+      self.y = 0;
+      return /* () */0;
     }),
   incr: (function () {
       var self = this ;
-      return self.y = self.y + 1 | 0;
+      self.y = self.y + 1 | 0;
+      return /* () */0;
     }),
   getY: (function () {
       var self = this ;
@@ -139,7 +141,8 @@ var zz = {
   x: 3,
   setX: (function (x) {
       var self = this ;
-      return self.x = x;
+      self.x = x;
+      return /* () */0;
     }),
   getX: (function () {
       var self = this ;

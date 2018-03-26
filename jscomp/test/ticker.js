@@ -49,7 +49,6 @@ function split(delim, s) {
           _i = i$prime;
           _l = l$2;
           continue ;
-          
         }
         
       } else {
@@ -254,7 +253,6 @@ function find(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;
@@ -272,7 +270,6 @@ function mem(x, _param) {
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -288,7 +285,6 @@ function min_binding(_param) {
       if (l) {
         _param = l;
         continue ;
-        
       } else {
         return /* tuple */[
                 param[1],
@@ -309,7 +305,6 @@ function max_binding(_param) {
       if (r) {
         _param = r;
         continue ;
-        
       } else {
         return /* tuple */[
                 param[1],
@@ -376,7 +371,6 @@ function iter(f, _param) {
       Curry._2(f, param[1], param[2]);
       _param = param[3];
       continue ;
-      
     } else {
       return /* () */0;
     }
@@ -426,7 +420,6 @@ function fold(f, _m, _accu) {
       _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
       _m = m[3];
       continue ;
-      
     } else {
       return accu;
     }
@@ -440,7 +433,6 @@ function for_all(p, _param) {
       if (Curry._2(p, param[1], param[2]) && for_all(p, param[0])) {
         _param = param[3];
         continue ;
-        
       } else {
         return /* false */0;
       }
@@ -459,7 +451,6 @@ function exists(p, _param) {
       } else {
         _param = param[3];
         continue ;
-        
       }
     } else {
       return /* false */0;
@@ -655,7 +646,6 @@ function cons_enum(_m, _e) {
       ];
       _m = m[0];
       continue ;
-      
     } else {
       return e;
     }
@@ -681,7 +671,6 @@ function compare(cmp, m1, m2) {
             _e2 = cons_enum(e2[2], e2[3]);
             _e1 = cons_enum(e1[2], e1[3]);
             continue ;
-            
           }
         }
       } else {
@@ -706,7 +695,6 @@ function equal(cmp, m1, m2) {
         _e2 = cons_enum(e2[2], e2[3]);
         _e1 = cons_enum(e1[2], e1[3]);
         continue ;
-        
       } else {
         return /* false */0;
       }
@@ -740,7 +728,6 @@ function bindings_aux(_accu, _param) {
         bindings_aux(accu, param[3])
       ];
       continue ;
-      
     } else {
       return accu;
     }
@@ -825,7 +812,6 @@ function compute_update_sequences(all_tickers) {
                     up
                   ];
                   continue ;
-                  
                 } else {
                   var l = find(ticker_name, map);
                   return add(ticker_name, Pervasives.$at(up, l), map);
@@ -941,7 +927,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                   "Invalid input line"
                 ];
           }
-          break;
       case "R" : 
           var match$2 = tokens[1];
           if (match$2) {
@@ -980,7 +965,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                             "Invalid input line"
                           ];
                     }
-                    break;
                 case "-" : 
                     var match$6 = match$3[1];
                     if (match$6) {
@@ -1012,7 +996,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                             "Invalid input line"
                           ];
                     }
-                    break;
                 case "S" : 
                     if (match$3[1]) {
                       throw [
@@ -1033,7 +1016,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ticker_map
                             ];
                     }
-                    break;
                 default:
                   throw [
                         Caml_builtin_exceptions.failure,
@@ -1052,7 +1034,6 @@ function process_input_line(ticker_map, all_tickers, line) {
                   "Invalid input line"
                 ];
           }
-          break;
       default:
         throw [
               Caml_builtin_exceptions.failure,
@@ -1076,7 +1057,6 @@ function loop(_lines, _param) {
       _param = process_input_line(param[1], all_tickers, lines[0]);
       _lines = lines[1];
       continue ;
-      
     } else {
       return print_all_composite(all_tickers);
     }

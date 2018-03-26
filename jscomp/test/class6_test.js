@@ -108,7 +108,6 @@ function lookup_obj(obj, _param) {
       } else {
         _param = param[1];
         continue ;
-        
       }
     } else {
       throw Caml_builtin_exceptions.not_found;

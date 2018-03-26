@@ -19,7 +19,6 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
       } else if (Curry._2(is_dir_sep, name, n)) {
         _n = n - 1 | 0;
         continue ;
-        
       } else {
         var _n$1 = n;
         var p = n + 1 | 0;
@@ -32,7 +31,6 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
           } else {
             _n$1 = n$1 - 1 | 0;
             continue ;
-            
           }
         };
       }
