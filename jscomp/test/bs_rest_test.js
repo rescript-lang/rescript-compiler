@@ -10,9 +10,7 @@ x("3");
 
 var v = x(3);
 
-var include = /* module */[/* x */x];
-
-var xxx = include[0];
+var xxx = x;
 
 var u = xxx(3);
 

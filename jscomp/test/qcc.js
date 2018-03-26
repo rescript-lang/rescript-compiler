@@ -84,13 +84,13 @@ function find(s, _n) {
   };
 }
 
-function match_000(s) {
+function addsym(s) {
   var sid = find(s, 0);
   Caml_array.caml_array_set(symtab, sid, s);
   return sid;
 }
 
-function match_001(n) {
+function symstr(n) {
   if (n >= syms[0]) {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -104,18 +104,12 @@ function match_001(n) {
   return Caml_array.caml_array_get(symtab, n);
 }
 
-function match_002(f) {
+function symitr(f) {
   for(var i = 0 ,i_finish = syms[0] - 1 | 0; i <= i_finish; ++i){
     Curry._2(f, i, Caml_array.caml_array_get(symtab, i));
   }
   return /* () */0;
 }
-
-var symitr = match_002;
-
-var symstr = match_001;
-
-var addsym = match_000;
 
 var glo = Bytes.make(4096, /* "\000" */0);
 
@@ -269,7 +263,7 @@ function next() {
             _n$1 = n$1 + 1 | 0;
             continue ;
           } else {
-            return /* Sym */Block.__(3, [Curry._1(addsym, Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))]);
+            return /* Sym */Block.__(3, [addsym(Bytes.to_string(Bytes.sub(s, 0, n$1 + 1 | 0)))]);
           }
         };
       } else {
@@ -767,21 +761,21 @@ var inss = /* :: */[
   ]
 ];
 
-var tokint = /* Sym */Block.__(3, [Curry._1(addsym, "int")]);
+var tokint = /* Sym */Block.__(3, [addsym("int")]);
 
-var tokchar = /* Sym */Block.__(3, [Curry._1(addsym, "char")]);
+var tokchar = /* Sym */Block.__(3, [addsym("char")]);
 
-var tokret = /* Sym */Block.__(3, [Curry._1(addsym, "return")]);
+var tokret = /* Sym */Block.__(3, [addsym("return")]);
 
-var tokif = /* Sym */Block.__(3, [Curry._1(addsym, "if")]);
+var tokif = /* Sym */Block.__(3, [addsym("if")]);
 
-var tokelse = /* Sym */Block.__(3, [Curry._1(addsym, "else")]);
+var tokelse = /* Sym */Block.__(3, [addsym("else")]);
 
-var tokwhile = /* Sym */Block.__(3, [Curry._1(addsym, "while")]);
+var tokwhile = /* Sym */Block.__(3, [addsym("while")]);
 
-var tokfor = /* Sym */Block.__(3, [Curry._1(addsym, "for")]);
+var tokfor = /* Sym */Block.__(3, [addsym("for")]);
 
-var tokbreak = /* Sym */Block.__(3, [Curry._1(addsym, "break")]);
+var tokbreak = /* Sym */Block.__(3, [addsym("break")]);
 
 function binary(stk, lvl) {
   if (lvl === -1) {
@@ -1501,7 +1495,7 @@ function top(_param) {
                           ])
                       ]),
                     "done with function %s\n"
-                  ]), Curry._1(symstr, f));
+                  ]), symstr(f));
         }
         _param = /* () */0;
         continue ;
@@ -1575,7 +1569,7 @@ function elfphdr(ty, off, sz, align) {
 
 function elfgen(outf) {
   var entry = opos[0];
-  var main = Curry._1(addsym, "main");
+  var main = addsym("main");
   var gmain = Caml_array.caml_array_get(globs, main);
   out(1217084452);
   out(-1921768440);
@@ -1591,7 +1585,7 @@ function elfgen(outf) {
   out(3845);
   var off = 232 + gpos[0] | 0;
   var itr = function (f) {
-    return Curry._1(symitr, (function (i, s) {
+    return symitr((function (i, s) {
                   var g = Caml_array.caml_array_get(globs, i);
                   if (g[/* va */1] < 0 && g[/* loc */0] !== 0) {
                     return Curry._3(f, s, s.length, g[/* loc */0]);
@@ -1613,7 +1607,7 @@ function elfgen(outf) {
       return 0;
     }
   };
-  Curry._1(symitr, patchloc);
+  symitr(patchloc);
   var strtab = opos[0];
   opos[0] = opos[0] + 1 | 0;
   $$String.blit("/lib64/ld-linux-x86-64.so.2\0libc.so.6", 0, obuf, opos[0], 37);
@@ -1817,7 +1811,7 @@ function main() {
                                 ])
                             ]),
                           "Symbol '%s' (%d)\n"
-                        ]), Curry._1(symstr, i), i);
+                        ]), symstr(i), i);
       
     }
   };

@@ -3198,7 +3198,7 @@ test("File \"tscanf_test.ml\", line 1067, characters 5-12", test42(/* () */0));
 
 var ib$1 = Scanf.Scanning[/* from_string */6]("");
 
-function match_000() {
+function test43() {
   return Curry._1(Scanf.bscanf(ib$1, /* Format */[
                   /* Int */Block.__(4, [
                       /* Int_i */3,
@@ -3212,7 +3212,7 @@ function match_000() {
               }));
 }
 
-function match_001() {
+function test44() {
   return Curry._1(Scanf.bscanf(ib$1, /* Format */[
                   /* Flush */Block.__(10, [/* Int */Block.__(4, [
                           /* Int_i */3,
@@ -3225,10 +3225,6 @@ function match_001() {
                 return i;
               }));
 }
-
-var test44 = match_001;
-
-var test43 = match_000;
 
 Testing.test_raises_this_exc(Caml_builtin_exceptions.end_of_file)(test43, /* () */0) && Testing.test_raises_this_exc(Caml_builtin_exceptions.end_of_file)(test44, /* () */0);
 
