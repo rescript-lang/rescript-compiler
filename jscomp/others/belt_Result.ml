@@ -23,9 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type ('a, 'b) t =
-  | Ok of 'a
-  | Error of 'b
+type ('a,'b) t = ('a, 'b) Js_result.t
 
 let getExn = function
   | Ok x -> x
