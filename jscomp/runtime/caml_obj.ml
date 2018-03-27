@@ -132,8 +132,7 @@ let caml_update_dummy x y =
 type 'a selector = 'a -> 'a -> 'a 
 
 module O = struct
-  external object_ : Obj.t = "Object" [@@bs.val]
-  let is_object : Obj.t -> bool = fun x -> (Obj.magic x)##constructor == object_
+  external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
   type key = string
   let for_in : (Obj.t -> (key -> unit) -> unit) [@bs] = [%bs.raw
     {|function (o, foo) {
@@ -212,9 +211,9 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
           let len_a = Bs_obj.length a in
           let len_b = Bs_obj.length b in
           if len_a = len_b then
-            if O.is_object a && O.is_object b
-            then aux_obj_compare a b
-            else aux_same_length a b 0 len_a
+            if O.isArray(a)
+            then aux_same_length a b 0 len_a
+            else aux_obj_compare a b
           else if len_a < len_b then
             aux_length_a_short a b 0 len_a
           else
@@ -304,9 +303,9 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
           let len_a = Bs_obj.length a in
           let len_b = Bs_obj.length b in
           if len_a = len_b then
-            if O.is_object a && O.is_object b
-            then aux_obj_equal a b
-            else aux_equal_length a b 0 len_a
+            if O.isArray(a)
+            then aux_equal_length a b 0 len_a
+            else aux_obj_equal a b
           else false
 and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
   if i = same_length then
