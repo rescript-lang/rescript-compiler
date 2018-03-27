@@ -185,9 +185,9 @@ let rec mapU n f =
     None  ->
     empty
   | Some n  ->
-    let newLeft = mapU (left n) f in
+    let newLeft = n |. left |. mapU  f in
     let newD = f (value n) [@bs] in
-    let newRight = mapU (right n) f in
+    let newRight = n |. right |. mapU  f in
     return @@ node ~left:newLeft ~key:(key n) ~value:newD ~right:newRight ~height:(height n)
 
 let map n f = mapU n (fun[@bs] a -> f a)
@@ -198,9 +198,9 @@ let rec mapWithKeyU n f =
     empty
   | Some n ->
     let key = key n in
-    let newLeft = mapWithKeyU (left n) f in
+    let newLeft = n |. left |. mapWithKeyU  f in
     let newD = f key (value n) [@bs] in
-    let newRight = mapWithKeyU (right n) f in
+    let newRight = n |. right |. mapWithKeyU  f in
     return @@ node ~left:newLeft ~key ~value:newD ~right:newRight ~height:(height n)
 
 let mapWithKey n f = mapWithKeyU n (fun [@bs] a b -> f a b)
@@ -349,14 +349,15 @@ let size n =
   | Some n  ->
     lengthNode n
 
-let rec toListAux accu n =
+let rec toListAux n accu =
   match toOpt n with
   | None -> accu
   | Some n  ->
-    toListAux ((key n, value n) :: toListAux accu (right n)) (left n)
+    let l, r , k, v = n |. (left, right, key, value ) in
+    l |. toListAux ((k, v) :: ( r |. toListAux accu ))
 
 let toList s =
-  toListAux [] s
+  toListAux  s []
 
 
 let rec checkInvariantInternal (v : _ t) =
@@ -371,7 +372,7 @@ let rec checkInvariantInternal (v : _ t) =
 
 
 let rec fillArrayKey n i arr =
-  let l,v,r = left n, key n, right n in
+  let l,v,r = n |. (left, key, right) in
   let next =
     match toOpt l with
     | None -> i

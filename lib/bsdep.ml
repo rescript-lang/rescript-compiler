@@ -36152,19 +36152,19 @@ let handle_exp_apply
         | [ "", obj_arg ;
             "", fn
           ] ->
-          let obj_arg = self.expr self obj_arg in
+          let new_obj_arg = self.expr self obj_arg in
           begin match fn with
             | {pexp_desc = Pexp_apply (fn, args); pexp_loc; pexp_attributes} ->
               let fn = self.expr self fn in
               let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
               Bs_ast_invariant.warn_unused_attributes pexp_attributes;
-              { pexp_desc = Pexp_apply(fn, ("", obj_arg) :: args);
+              { pexp_desc = Pexp_apply(fn, ("", new_obj_arg) :: args);
                 pexp_attributes = [];
                 pexp_loc = pexp_loc}
             | _ ->
               let try_dispatch_by_tuple =
-                Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs attrs ->
-                    bound obj_arg @@  fun obj_arg ->
+                Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs tuple_attrs ->
+                    bound new_obj_arg @@  fun bounded_obj_arg ->
                     {
                       pexp_desc =
                         Pexp_tuple (
@@ -36175,22 +36175,22 @@ let handle_exp_apply
                                 let fn = self.expr self fn in
                                 let args = Ext_list.map (fun (lab,exp) -> lab, self.expr self exp ) args in
                                 Bs_ast_invariant.warn_unused_attributes pexp_attributes;
-                                { Parsetree.pexp_desc = Pexp_apply(fn, ("", obj_arg) :: args);
+                                { Parsetree.pexp_desc = Pexp_apply(fn, ("", bounded_obj_arg) :: args);
                                   pexp_attributes = [];
                                   pexp_loc = pexp_loc}
                               | _ ->
                                 Exp.apply ~loc:fn.pexp_loc
                                   (self.expr self fn )
-                                  ["", obj_arg]
+                                  ["", bounded_obj_arg]
                             ) xs );
-                      pexp_attributes = attrs;
+                      pexp_attributes = tuple_attrs;
                       pexp_loc = fn.pexp_loc;
                     }
                   ) in
               begin match try_dispatch_by_tuple  with
                 | Some x -> x
                 | None ->
-                  Exp.apply ~loc (self.expr self fn) ["", obj_arg]
+                  Exp.apply ~loc (self.expr self fn) ["", new_obj_arg]
               end
           end
         | _ ->

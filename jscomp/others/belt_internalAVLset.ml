@@ -56,7 +56,7 @@ let rec copy n =
   match toOpt n with
   | None -> n
   | Some n ->
-    let l,r = left n, right n in
+    let l,r = n |. (left , right) in
     return @@ node
       ~left:(copy l) ~right:(copy r)
       ~value:(value n) ~height:(height n)
@@ -86,23 +86,23 @@ let bal l v r =
   let hl = match toOpt l with None -> 0 | Some n -> height n in
   let hr = match toOpt r with None -> 0 | Some n -> height n in
   if hl > hr + 2 then begin
-    let n = unsafeCoerce l in   (* [l] could not be empty *)
-    let ll,lv,lr = left n, value n, right n in
+    (* [l] could not be empty *)
+    let ll,lv,lr = l |. unsafeCoerce |. (left , value , right) in
     if heightGe ll  lr then
       create ll lv (create lr v r)
     else begin
-      let n = unsafeCoerce lr in (* [lr] could not be empty*)
-      let lrl, lrv, lrr = left n, value n, right n in
+      (* [lr] could not be empty*)
+      let lrl, lrv, lrr = lr |. unsafeCoerce |. (left , value , right) in
       create (create ll lv lrl) lrv (create lrr v r)
     end
   end else if hr > hl + 2 then begin
-    let n = unsafeCoerce r in  (* [r] could not be empty *)
-    let rl,rv,rr = left n, value n, right n in
+    (* [r] could not be empty *)
+    let rl,rv,rr = r |. unsafeCoerce |. (left , value , right) in
     if heightGe rr  rl then
       create (create l v rl) rv rr
     else begin
-      let n = unsafeCoerce rl in (* [rl] could not be empty *)
-      let rll, rlv, rlr = left n, value n, right n in
+      (* [rl] could not be empty *)
+      let rll, rlv, rlr = rl |. unsafeCoerce |. (left , value , right) in
       create (create l v rll) rlv (create rlr rv rr)
     end
   end else
@@ -142,7 +142,7 @@ let maxUndefined n =
   | Some n -> Js.Undefined.return (max0Aux n)
 
 let rec removeMinAuxWithRef n v =
-  let ln, rn, kn = left n, right n, value n in
+  let ln, rn, kn = n |. (left , right , value) in
   match toOpt ln with
   | None ->  v:= kn ; rn
   | Some ln -> bal (removeMinAuxWithRef ln v) kn rn
@@ -186,8 +186,8 @@ let rec everyU n p  =
   | None -> true
   | Some n  ->
     p (value n) [@bs] &&
-    everyU  (left n) p &&
-    everyU (right n) p
+    n |. left  |. everyU  p &&
+    n |. right |. everyU  p
 
 let every n p = everyU n (fun [@bs] a -> p a )
 
@@ -196,8 +196,8 @@ let rec someU n p =
   | None -> false
   | Some n  ->
     p (value n) [@bs] ||
-    someU (left n) p ||
-    someU (right n) p
+    n |. left |. someU  p ||
+    n |. right |. someU  p
 
 let some n p = someU n (fun[@bs] a -> p a )
 (* [addMinElement v n] and [addMaxElement v n]
@@ -281,16 +281,17 @@ let  size n =
   | Some n  ->
     lengthNode n
 
-let rec toListAux accu n =
+let rec toListAux n accu  =
   match toOpt n with
   | None -> accu
   | Some n  ->
     toListAux
-      ((value n) :: toListAux accu (right n))
       (left n)
+      ((value n) :: toListAux (right n) accu)
+
 
 let toList s =
-  toListAux [] s
+  toListAux s []
 
 let rec checkInvariantInternal (v : _ t) =
   match toOpt v with
