@@ -59,7 +59,7 @@ let isOk = function
 
 let isError = function
   | Ok _ -> false
-  | Error -> true
+  | Error _ -> true
 
 let eqU a b f = match (a, b) with
   | (Ok a, Ok b) -> f a b [@bs]
