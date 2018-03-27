@@ -1102,6 +1102,10 @@ let apply fn args loc status : t =
       | exception _ ->
         Lapply { fn; args;  loc;    status }
     end
+  (* | Lfunction {params;body} when Ext_list.same_length params args ->
+      Ext_list.fold_right2 (fun p arg acc ->
+        Llet(Strict,p,arg,acc)
+      ) params args body *) (* TODO: more rigirous analysis on [let_kind] *)
   | _ ->
     Lapply { fn; args;  loc  ; status }
 
