@@ -27,7 +27,7 @@
     Utilities for result data type.
 *)
 
-type ('a,'b) t = ('a, 'b) Js_result.t
+type ('a,'b) t = ('a, 'b) Js_result.t = Ok of 'a | Error of 'b
 
 val getExn : ('a, 'b) t -> 'a
 val mapWithDefaultU : ('a, 'c) t -> 'b -> ('a -> 'b [@bs]) -> 'b

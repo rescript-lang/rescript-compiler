@@ -23,41 +23,41 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type ('a,'b) t = ('a, 'b) Js_result.t
+type ('a,'b) t = ('a, 'b) Js_result.t = Ok of 'a | Error of 'b
 
 let getExn = function
-  | Ok x -> x
-  | Error _ -> [%assert "getExn"]
+  | Js_result.Ok x -> x
+  | Js_result.Error _ -> [%assert "getExn"]
 
 let mapWithDefaultU opt default f = match opt with
-  | Ok x -> (f x [@bs])
-  | Error _ -> default
+  | Js_result.Ok x -> (f x [@bs])
+  | Js_result.Error _ -> default
 
 let mapWithDefault opt default f = mapWithDefaultU opt default (fun[@bs] x -> f x)
 
 let mapU opt f = match opt with
-  | Ok x -> Ok (f x [@bs])
-  | Error y -> Error y
+  | Js_result.Ok x -> Js_result.Ok (f x [@bs])
+  | Js_result.Error y -> Js_result.Error y
 
 let map opt f = mapU opt (fun[@bs] x -> f x)
 
 let flatMapU opt f = match opt with
-  | Ok x -> (f x [@bs])
-  | Error y -> Error y
+  | Js_result.Ok x -> (f x [@bs])
+  | Js_result.Error y -> Js_result.Error y
 
 let flatMap opt f = flatMapU opt (fun[@bs] x -> f x)
 
 let getWithDefault opt default = match opt with
-  | Ok x -> x
-  | Error _ -> default
+  | Js_result.Ok x -> x
+  | Js_result.Error _ -> default
 
 let isOk = function
-  | Ok _ -> true
-  | Error _ -> false
+  | Js_result.Ok _ -> true
+  | Js_result.Error _ -> false
 
 let isError = function
-  | Ok _ -> false
-  | Error _ -> true
+  | Js_result.Ok _ -> false
+  | Js_result.Error _ -> true
 
 let eqU a b f = match (a, b) with
   | (Ok a, Ok b) -> f a b [@bs]
