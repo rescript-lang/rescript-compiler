@@ -295,13 +295,9 @@ var distance_point = CamlinternalOO.make_class([
 
 var p$1 = Curry._2(distance_point[0], 0, 3);
 
-var match_000 = Caml_oo_curry.js2(-335965387, 8, p$1, Curry._2(point[0], 0, 8));
+var a = Caml_oo_curry.js2(-335965387, 8, p$1, Curry._2(point[0], 0, 8));
 
-var match_001 = Caml_oo_curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], 0, 1, "blue"));
-
-var b = match_001;
-
-var a = match_000;
+var b = Caml_oo_curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], 0, 1, "blue"));
 
 eq("File \"class5_test.ml\", line 94, characters 5-12", /* tuple */[
       5,

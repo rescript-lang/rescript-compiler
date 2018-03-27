@@ -4,6 +4,7 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_io = require("../../lib/js/caml_io.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -56,6 +57,36 @@ function lnot(x) {
 }
 
 var min_int = -2147483648;
+
+var infinity = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */2146435072,
+      /* lo */0
+    ]);
+
+var neg_infinity = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */-1048576,
+      /* lo */0
+    ]);
+
+var nan = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */2146435072,
+      /* lo */1
+    ]);
+
+var max_float = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */2146435071,
+      /* lo */4294967295
+    ]);
+
+var min_float = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */1048576,
+      /* lo */0
+    ]);
+
+var epsilon_float = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */1018167296,
+      /* lo */0
+    ]);
 
 function $caret(s1, s2) {
   var l1 = s1.length;
@@ -503,18 +534,6 @@ function exit(retcode) {
 }
 
 var max_int = 2147483647;
-
-var infinity = Infinity;
-
-var neg_infinity = -Infinity;
-
-var nan = NaN;
-
-var max_float = 1.79769313486231571e+308;
-
-var min_float = 2.22507385850720138e-308;
-
-var epsilon_float = 2.22044604925031308e-16;
 
 exports.failwith = failwith;
 exports.invalid_arg = invalid_arg;

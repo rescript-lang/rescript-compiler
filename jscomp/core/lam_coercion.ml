@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -39,36 +39,36 @@
   We should add this check as early as possible
 *)
 
-(*           
-- {[ Ident.same id eid]} is more  correct, 
-        however, it will introduce a coercion, which is not necessary, 
-        as long as its name is the same, we want to avoid 
-        another coercion                
-        In most common cases, it will be 
+(*
+- {[ Ident.same id eid]} is more  correct,
+        however, it will introduce a coercion, which is not necessary,
+        as long as its name is the same, we want to avoid
+        another coercion
+        In most common cases, it will be
    {[
      let export/100 =a fun ..
-         export/100    
+         export/100
    ]}
-        This comes from we have lambda as below 
+        This comes from we have lambda as below
    {[
      (* let export/100 =a export/99  *)
      (* above is probably the cause but does not have to be  *)
-     (export/99)                
+     (export/99)
    ]}
-        [export/100] was not eliminated due to that it is export id, 
-        if we rename export/99 to be export id, then we don't need 
+        [export/100] was not eliminated due to that it is export id,
+        if we rename export/99 to be export id, then we don't need
         the  coercion any more, and export/100 will be dced later
    - avoid rebound
-   check [map.ml] here coercion, we introduced 
-                    rebound which is not corrrect 
+   check [map.ml] here coercion, we introduced
+                    rebound which is not corrrect
    {[
      let Make/identifier = function (funarg){
          var $$let = Make/identifier(funarg);
                  return [0, ..... ]
        }
    ]}
-                    Possible fix ? 
-                    change export identifier, we should do this in the very 
+                    Possible fix ?
+                    change export identifier, we should do this in the very
                     beginning since lots of optimizations depend on this
                     however
 *)
@@ -77,91 +77,91 @@ type t = {
   export_list : Ident.t list ;
   export_set : Ident_set.t;
   export_map : Lam.t Ident_map.t ;
-  (** not used in code generation, mostly used 
-      for store some information in cmj files *)   
-  groups : Lam_group.t list ; 
+  (** not used in code generation, mostly used
+      for store some information in cmj files *)
+  groups : Lam_group.t list ;
   (* all code to be compiled later = original code + rebound coercions *)
-}               
+}
 
 
 let handle_exports (meta : Lam_stats.t)
     (lambda_exports : Lam.t list)  (reverse_input : Lam_group.t list) =
-   
-  let (original_exports : Ident.t list) = meta.exports in 
-  let (original_export_set : Ident_set.t) = meta.export_idents in   
-  let len = List.length original_exports in   
-  let tbl = String_hash_set.create len in 
-  let ({export_list ; export_set  ;  groups = coercion_groups } as result)  = 
-    Ext_list.fold_right2 
+
+  let (original_exports : Ident.t list) = meta.exports in
+  let (original_export_set : Ident_set.t) = meta.export_idents in
+  let len = List.length original_exports in
+  let tbl = String_hash_set.create len in
+  let ({export_list ; export_set  ;  groups = coercion_groups } as result)  =
+    Ext_list.fold_right2
       (fun  (original_export_id : Ident.t) (lam : Lam.t) (acc : t)  ->
-         let original_name = original_export_id.name in 
-         if not @@ String_hash_set.check_add tbl original_name then 
+         let original_name = original_export_id.name in
+         if not @@ String_hash_set.check_add tbl original_name then
            Bs_exception.error (Bs_duplicate_exports original_name);
-         (match lam  with 
+         (match lam  with
           | Lvar id ->
-            if 
+            if
              Ident.name id = original_name then
-            { acc with 
-              export_list = id :: acc.export_list ; 
-              export_set = 
-                if id.stamp = original_export_id.stamp then acc.export_set 
+            { acc with
+              export_list = id :: acc.export_list ;
+              export_set =
+                if id.stamp = original_export_id.stamp then acc.export_set
                 else (Ident_set.add id (Ident_set.remove original_export_id acc.export_set))
             }
             else
-             let newid = Ident.rename original_export_id in 
-             let kind : Lam.let_kind = Alias in 
+             let newid = Ident.rename original_export_id in
+             let kind : Lam.let_kind = Alias in
              Lam_util.alias_ident_or_global meta newid id NA kind;
-              { acc with 
+              { acc with
               export_list = newid :: acc.export_list;
-              export_map = Ident_map.add newid lam acc.export_map;              
+              export_map = Ident_map.add newid lam acc.export_map;
               groups = Single(kind, newid, lam) :: acc.groups
               }
-          | _ -> 
+          | _ ->
             (*
               Example:
               {[
               let N = [a0,a1,a2,a3]
               in [[ N[0], N[2]]]
-              
+
               ]}
               After optimization
               {[
-                [ [ a0, a2] ] 
+                [ [ a0, a2] ]
               ]}
               Here [N] is elminated while N is still exported identifier
-              Invariant: [eid] can not be bound before 
-              FIX: this invariant is not guaranteed. 
-              Bug manifested: when querying arity info about N, it returns an array 
+              Invariant: [eid] can not be bound before
+              FIX: this invariant is not guaranteed.
+              Bug manifested: when querying arity info about N, it returns an array
               of size 4 instead of 2
               *)
-             let newid = Ident.rename original_export_id in    
-             (match Lam_stats_util.get_arity meta lam with 
+             let newid = Ident.rename original_export_id in
+             (match Lam_stats_util.get_arity meta lam with
              | NA
              | Determin(_,[],_) ->
-              ()  
+              ()
              | Determin _ as v  ->
-              Ident_hashtbl.add meta.ident_tbl newid 
+              Ident_hashtbl.add meta.ident_tbl newid
                 (FunctionId{
                  arity = v; lambda = lam;
                    rec_flag = Non_rec }))
             ;
-            { acc with 
+            { acc with
               export_list = newid :: acc.export_list;
-              export_map = Ident_map.add newid lam acc.export_map;              
+              export_map = Ident_map.add newid lam acc.export_map;
               groups = Single(Strict, newid, lam) :: acc.groups
             })
       )
-      original_exports 
-      lambda_exports 
+      original_exports
+      lambda_exports
       {export_list = []; export_set = original_export_set; export_map = Ident_map.empty; groups = []}
 
   in
 
-  let (export_map, coerced_input) = 
-    List.fold_left 
+  let (export_map, coerced_input) =
+    List.fold_left
       (fun (export_map, acc) x ->
-         (match (x : Lam_group.t)  with 
-          | Single (_,id,lam) when Ident_set.mem id export_set 
+         (match (x : Lam_group.t)  with
+          | Single (_,id,lam) when Ident_set.mem id export_set
             -> Ident_map.add id lam export_map
               (** relies on the Invariant that [eoid] can not be bound before
                   FIX: such invariant may not hold
@@ -169,46 +169,46 @@ let handle_exports (meta : Lam_stats.t)
           | _ -> export_map), x :: acc ) (result.export_map, result.groups) reverse_input in
   { result with export_map ; groups = Lam_dce.remove export_list coerced_input }
 
-(** TODO: more flattening, 
+(** TODO: more flattening,
     - also for function compilation, flattening should be done first
     - [compile_group] and [compile] become mutually recursive function
 *)
 ;;
-let rec flatten 
-    (acc :  Lam_group.t list ) 
-    (lam : Lam.t) :  Lam.t *  Lam_group.t list = 
-  match lam with 
-  | Llet (str,id,arg,body) -> 
+let rec flatten
+    (acc :  Lam_group.t list )
+    (lam : Lam.t) :  Lam.t *  Lam_group.t list =
+  match lam with
+  | Llet (str,id,arg,body) ->
     let (res,l) = flatten acc arg  in
     flatten (Single(str, id, res ) :: l) body
-  | Lletrec (bind_args, body) -> 
+  | Lletrec (bind_args, body) ->
     flatten
       (
         Recursive bind_args :: acc
       )
       body
-  | Lsequence (l,r) -> 
+  | Lsequence (l,r) ->
     let (res, l)  = flatten acc l in
-    flatten (Nop res :: l)  r
-  | x ->  
+    flatten (Lam_group.nop_cons res  l)  r
+  | x ->
     x, acc
 
 (** Invarinat to hold:
-    [export_map] is sound, for every rebinded export id, its key is indeed in 
-    [export_map] since we know its old bindings are no longer valid, i.e 
+    [export_map] is sound, for every rebinded export id, its key is indeed in
+    [export_map] since we know its old bindings are no longer valid, i.e
     Lam_stats.t is not valid
-*)    
-let coerce_and_group_big_lambda 
-    (meta : Lam_stats.t) 
-    lam = 
-  match flatten [] lam with 
-  | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input 
-    -> 
-    let coerced_input = 
+*)
+let coerce_and_group_big_lambda
+    (meta : Lam_stats.t)
+    lam =
+  match flatten [] lam with
+  | Lprim {primitive = Pmakeblock _;  args = lambda_exports }, reverse_input
+    ->
+    let coerced_input =
       handle_exports
-      meta lambda_exports reverse_input  in 
-    coerced_input, 
-      {meta with export_idents = coerced_input.export_set ; 
+      meta lambda_exports reverse_input  in
+    coerced_input,
+      {meta with export_idents = coerced_input.export_set ;
         exports = coerced_input.export_list}
   | _ ->
     (* This could happen see #2474*)
@@ -216,9 +216,9 @@ let coerce_and_group_big_lambda
       export_list = [];
       export_set = Ident_set.empty;
       export_map = Ident_map.empty ;
-      (** not used in code generation, mostly used 
-          for store some information in cmj files *)   
-      groups = [Nop lam] ; 
+      (** not used in code generation, mostly used
+          for store some information in cmj files *)
+      groups = [Nop lam] ;
       (* all code to be compiled later = original code + rebound coercions *)
     }
     , { meta with export_idents = Ident_set.empty ; exports= []}
