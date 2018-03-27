@@ -246,9 +246,13 @@ syntax/ast_tdcls.cmx : ext/ext_list.cmx syntax/bs_ast_mapper.cmx \
     syntax/ast_attributes.cmx syntax/ast_tdcls.cmi
 syntax/ast_primitive.cmx : syntax/external_process.cmx \
     syntax/bs_ast_mapper.cmx syntax/ast_primitive.cmi
+syntax/ast_tuple_pattern_flatten.cmx : ext/ext_list.cmx \
+    syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx \
+    syntax/ast_tuple_pattern_flatten.cmi
 syntax/ast_exp_apply.cmx : ext/literals.cmx ext/ext_list.cmx \
     syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
-    syntax/ast_literal.cmx syntax/ast_attributes.cmx syntax/ast_exp_apply.cmi
+    syntax/ast_tuple_pattern_flatten.cmx syntax/ast_literal.cmx \
+    syntax/ast_attributes.cmx syntax/ast_exp_apply.cmi
 syntax/ast_exp_extension.cmx : ext/literals.cmx ext/ext_string.cmx \
     ext/ext_ref.cmx syntax/bs_ast_mapper.cmx syntax/ast_util.cmx \
     syntax/ast_payload.cmx syntax/ast_literal.cmx syntax/ast_derive.cmx \
@@ -257,8 +261,6 @@ syntax/ast_core_type_class_type.cmx : ext/literals.cmx ext/ext_ref.cmx \
     ext/ext_list.cmx syntax/bs_ast_mapper.cmx syntax/ast_util.cmx \
     syntax/ast_literal.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
     syntax/ast_core_type_class_type.cmi
-syntax/ast_tuple_pattern_flatten.cmx : ext/ext_list.cmx \
-    syntax/bs_ast_mapper.cmx syntax/ast_tuple_pattern_flatten.cmi
 syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
     ext/ext_string.cmx syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx \
     syntax/ast_util.cmx syntax/ast_utf8_string_interp.cmx \
@@ -301,10 +303,10 @@ syntax/ast_util.cmi : syntax/bs_ast_mapper.cmi syntax/ast_payload.cmi
 syntax/ast_tdcls.cmi : syntax/bs_ast_mapper.cmi syntax/ast_structure.cmi \
     syntax/ast_signature.cmi
 syntax/ast_primitive.cmi : syntax/bs_ast_mapper.cmi
+syntax/ast_tuple_pattern_flatten.cmi : syntax/bs_ast_mapper.cmi
 syntax/ast_exp_apply.cmi : syntax/bs_ast_mapper.cmi
 syntax/ast_exp_extension.cmi : syntax/bs_ast_mapper.cmi
 syntax/ast_core_type_class_type.cmi : syntax/bs_ast_mapper.cmi
-syntax/ast_tuple_pattern_flatten.cmi : syntax/bs_ast_mapper.cmi
 syntax/ppx_entry.cmi :
 depends/bs_exception.cmi :
 depends/ast_extract.cmi : ext/string_map.cmi ext/string_hashtbl.cmi \

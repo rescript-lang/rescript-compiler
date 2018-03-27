@@ -157,7 +157,7 @@ let deep_flatten
       *)
       let (res,l) = flatten acc arg  in
       begin match id.name, str, res with
-        | ("match" | "include"),
+        | ("match" | "include"| "param"),
           (Alias | Strict | StrictOpt),
           Lprim {primitive = Pmakeblock(_,_, Immutable); args} ->
           begin match eliminate_tuple id body Int_map.empty with
