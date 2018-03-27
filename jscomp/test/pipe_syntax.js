@@ -40,11 +40,12 @@ function f2(a, b, c, d) {
   return u + v | 0;
 }
 
-function f3(a, b, c, d) {
+function f3(a, b, c, d, e) {
   var __ocaml_internal_obj = Curry._1(a, b);
-  var u = Curry._1(c, __ocaml_internal_obj);
-  var v = Curry._1(d, __ocaml_internal_obj);
-  return u + v | 0;
+  var u = Curry._2(c, __ocaml_internal_obj, d);
+  var v = Curry._3(d, __ocaml_internal_obj, 1, 2);
+  var h = Curry._1(e, __ocaml_internal_obj);
+  return (u + v | 0) + h | 0;
 }
 
 function f4(a, b, c) {
@@ -52,6 +53,13 @@ function f4(a, b, c) {
           Curry._2(b, a, c),
           Curry._2(b, a, c)
         ];
+}
+
+function f5(a, b, c, d) {
+  var v0 = Curry._3(b, a, c, c);
+  var v1 = Curry._3(b, a, c, c);
+  var v2 = Curry._3(b, a, d, d);
+  return (v0 + v1 | 0) + v2 | 0;
 }
 
 exports.t0 = t0;
@@ -63,4 +71,5 @@ exports.f1 = f1;
 exports.f2 = f2;
 exports.f3 = f3;
 exports.f4 = f4;
+exports.f5 = f5;
 /* No side effect */

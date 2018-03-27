@@ -34,10 +34,17 @@ let f2 a b c d =
   let u,v = (a b) |. (c,d) in
   u + v
 
-let f3 a b c d =
+let f3 a b c d e =
   ( a b)
-  |. (c, d)
-  |. (fun (u,v) -> u + v)
+  |. (c d, d 1 2, e)
+  |. (fun (u,v,h) -> u + v + h)
 
 let f4 a b  c =
    a |. (b c , b c )
+
+let f5 a b c d =
+  let v0, v1, v2 =
+  a
+  |. (b c c, b c c, b d d) in
+  v0 + v1 + v2 
+

@@ -17937,7 +17937,7 @@ type whole =
       (Asttypes.override_flag * Longident.t Asttypes.loc * loc *
        Parsetree.attributes)
 
-type acc = whole list
+type wholes = whole list
 
 let rec is_simple_pattern (p : Parsetree.pattern) =
   match p.ppat_desc with
@@ -17946,6 +17946,9 @@ let rec is_simple_pattern (p : Parsetree.pattern) =
   | Ppat_constraint(p,_) -> is_simple_pattern p
   | _ -> false
 
+type destruct_output =
+  exp list
+  
 (**
    destruct such pattern
    {[ A.B.let open C in (a,b)]}
@@ -17953,7 +17956,7 @@ let rec is_simple_pattern (p : Parsetree.pattern) =
 let rec destruct_open_tuple
     (e : Parsetree.expression)
     (acc : whole list)
-  : (_ * Parsetree.expression list * _) option =
+  : (wholes * destruct_output * _) option =
   match e.pexp_desc with
   | Pexp_open (flag, lid, cont)
     ->
