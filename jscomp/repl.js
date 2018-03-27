@@ -118,7 +118,7 @@ var cmi_files =
         `belt_HashMapInt`,
         `belt_HashMapString`,
     ].map(x => `${x}.cmi:/static/cmis/${x}.cmi`).map(x => `--file ${x}`).join(` `)
-e(`js_of_ocaml --disable share --toplevel  ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`)
+e(`js_of_ocaml --disable share --toplevel +weak.js ./polyfill.js jsc.byte ${includes} ${cmi_files} -o ${playground}/exports.js`)
 
 
 
