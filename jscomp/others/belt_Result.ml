@@ -38,7 +38,7 @@ let mapWithDefaultU opt default f = match opt with
 let mapWithDefault opt default f = mapWithDefaultU opt default (fun[@bs] x -> f x)
 
 let mapU opt f = match opt with
-  | Ok x -> Some (f x [@bs])
+  | Ok x -> Ok (f x [@bs])
   | Error y -> Error y
 
 let map opt f = mapU opt (fun[@bs] x -> f x)
