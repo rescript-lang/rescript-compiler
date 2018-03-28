@@ -8,6 +8,7 @@
  */
 
 var child_process = require('child_process')
+var os = require('os');
 
 var bsconfig = 'bsconfig.json'
 var bsb_exe = __filename + ".exe"
@@ -97,8 +98,10 @@ if (watch_mode) {
             process.on('uncaughtException', onExit)
             process.stdin.on('close',onExit)
             // close when stdin stops
-            // process.stdin.on('end', onExit)
-            // process.stdin.resume()
+            if (os.platform() !== "win32") {
+                process.stdin.on('end', onExit)
+                process.stdin.resume()
+            }
 
             return true
         } catch (exn) {
