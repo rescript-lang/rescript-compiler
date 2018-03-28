@@ -316,6 +316,12 @@ let () =
   makeTest 2;
   makeTest 3
 
+let () =
+  let (=~) = eq "SORT" in
+  let cmp a b = a - b in
+  N.sort [5; 4; 3; 2] cmp =~ [2; 3; 4; 5];
+  N.sort [3; 9; 37; 3; 1] cmp =~ [1; 3; 3; 9; 37]
+
 let () = 
   b __LOC__ (not @@ N.eq [1;2;3] [1;2] (fun  x y -> x = y));
   b __LOC__ (N.eq [1;2;3] [1;2;3] (fun  x y -> x = y));
