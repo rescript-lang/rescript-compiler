@@ -21,7 +21,7 @@ belt_internalAVLset.cmj : belt_SortArray.cmj belt_Id.cmj belt_Array.cmj \
     belt_internalAVLset.cmi
 belt_internalAVLtree.cmj : belt_SortArray.cmj belt_Id.cmj belt_Array.cmj \
     belt_internalAVLtree.cmi
-belt_List.cmj : belt_Array.cmj belt_SortArray.cmj belt_List.cmi
+belt_List.cmj : belt_SortArray.cmj belt_Array.cmj belt_List.cmi
 belt_SortArray.cmj : belt_SortArrayString.cmj belt_SortArrayInt.cmj \
     belt_Array.cmj belt_SortArray.cmi
 belt_SortArrayInt.cmj : belt_Array.cmj belt_SortArrayInt.cmi
