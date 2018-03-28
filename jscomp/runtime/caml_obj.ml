@@ -258,29 +258,6 @@ and aux_obj_compare (a: Obj.t) (b: Obj.t) =
     | None, (Some _) -> 1
     | (Some x), (Some y) -> compare x y in
   res
-(*
-and aux_obj_compare (a: Obj.t) (b: Obj.t) : int = [%bs.raw {|
-  function (a, b) {
-    var min_key_lhs;
-    var min_key_rhs;
-    for (var key in a) {
-      if (!b.hasOwnProperty(key) || caml_compare(a[key], b[key]) > 0) {
-        if (!min_key_rhs || key < min_key_rhs) { min_key_rhs = key }
-      }
-    }
-    for (var key in b) {
-      if (!a.hasOwnProperty(key) || caml_compare(b[key], a[key]) > 0) {
-        if (!min_key_lhs || key < min_key_lhs) { min_key_lhs = key }
-      }
-    }
-    if (!min_key_lhs) { return !min_key_rhs ? 0 : 1}
-    if (!min_key_rhs) { return -1 }
-    return min_key_lhs < min_key_rhs ? -1 : 1
-  }
-  |}]
-  a b [@bs]
-*)
-
 
 type eq = Obj.t -> Obj.t -> bool
 
@@ -348,24 +325,6 @@ and aux_obj_equal (a: Obj.t) (b: Obj.t) =
   O.for_in a do_key_a [@bs];
   if !result then O.for_in b do_key_b [@bs];
   !result
-(*
-and aux_obj_equal (a: Obj.t) (b: Obj.t) : bool = [%bs.raw {|
-  function (a, b) {
-    for (var key in a) {
-      if (!b.hasOwnProperty(key)) {
-        return false
-      }
-    }
-    for (var key in b) {
-      if (!a.hasOwnProperty(key) || !caml_equal(a[key], b[key])) {
-        return false
-      }
-    }
-    return true
-  }
-  |}]
-  a b [@bs]
-*)
 
 let caml_equal_null (x : Obj.t) (y : Obj.t Js.null) = 
   match Js.nullToOption y with    
