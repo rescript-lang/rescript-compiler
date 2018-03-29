@@ -240,6 +240,20 @@ let iter_process_bs_string_as  (attrs : t) : string option =
     ) attrs;
   !st
 
+let has_bs_optional  (attrs : t) : bool =
+  List.exists
+    (fun
+      (({txt ; loc}, _payload ) as attr : attr)  ->
+      match  txt with
+      | "bs.optional"
+        ->
+        Bs_ast_invariant.mark_used_bs_attribute attr ;
+        true
+      | _  -> false
+    ) attrs
+
+
+
 let iter_process_bs_int_as  attrs =
   let st = ref None in
   List.iter

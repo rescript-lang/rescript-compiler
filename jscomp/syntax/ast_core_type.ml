@@ -98,7 +98,10 @@ let is_array (ty : t) =
 
 let is_user_option (ty : t) =
   match ty.ptyp_desc with
-  | Ptyp_constr({txt = Lident "option"},[_]) -> true
+  | Ptyp_constr(
+    {txt = Lident "option" |
+     (Ldot (Lident "*predef*", "option")) },
+    [_]) -> true
   | _ -> false
 
 let is_user_bool (ty : t) =

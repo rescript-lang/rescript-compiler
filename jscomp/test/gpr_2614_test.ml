@@ -28,8 +28,9 @@ let ff () =
 
 
 type a = {
-  mutable low : string option
-      [@bs.as "lo-x"]
+  mutable low : string
+  [@bs.optional]
+  [@bs.as "lo-x"]
 ;
   hi : int
 } [@@bs.deriving abstract]
@@ -62,25 +63,42 @@ let hh2 x =
   | None -> 0
   | Some _ -> 1
 
+
 type css =
   {
-    a0 : int option ;
-    a1 : int option ;
-    a2 : int option ;
-    a3 : int option ;
-    a4 : int option ;
-    a5 : int option ;
-    a6 : int option ;
-    a7 : int option ;
-    a8 : int option ;
-    a9 : int option
+    a0 : int
+    [@bs.optional] ;
+    a1 : int
+    [@bs.optional];
+    a2 : int
+    [@bs.optional];
+    a3 : int
+    [@bs.optional];
+    a4 : int
+    [@bs.optional];
+    a5 : int
+    [@bs.optional];
+    a6 : int
+    [@bs.optional];
+    a7 : int
+    [@bs.optional];
+    a8 : int
+    [@bs.optional];
+    a9 : int
+    [@bs.optional]
     [@bs.as "xx-yy"];
-    a10 : int option ;
-    a11 : int option ;
-    a12 : int option ;
-    a13 : int option ;
-    a14 : int option ;
-    a15 : int option ;
+    a10 : int
+    [@bs.optional];
+    a11 : int
+    [@bs.optional];
+    a12 : int
+    [@bs.optional];
+    a13 : int
+    [@bs.optional];
+    a14 : int
+    [@bs.optional];
+    a15 : int
+    [@bs.optional] ;
   }
   [@@bs.deriving abstract]
 
@@ -89,4 +107,4 @@ let u = css ~a9:3 ()
 let v =
   match u |. a9 with
   | None -> 0
-  | Some x -> x 
+  | Some x -> x
