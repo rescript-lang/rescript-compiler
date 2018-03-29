@@ -311,40 +311,6 @@ let jsxMapper () =
 #end
 
 #if BS_COMPILER_IN_BROWSER then
-let rewrite code =
-  let mapper = jsxMapper () in
-  Location.input_name := "//toplevel//";
-  try
-    let lexer = Lexing.from_string code in
-    let pstr = Parse.implementation lexer in
-    let pstr = mapper.structure mapper pstr in
-    Pprintast.structure Format.str_formatter pstr;
-    let ocaml_code = Format.flush_str_formatter () in
-    Printf.sprintf "{\"ocaml_code\": %S}" ocaml_code
-  with e ->
-    match Location.error_of_exn e with
-    | Some error ->
-        let (file, line, startchar) =
-          Location.get_pos_info error.loc.loc_start in
-        let (file, endline, endchar) =
-          Location.get_pos_info error.loc.loc_end in
-        let result =
-          Printf.sprintf
-            "{ \
-              \"ppx_error_msg\": %S, \
-              \"row\": %d, \
-              \"column\": %d, \
-              \"endRow\": %d, \
-              \"endColumn\": %d, \
-              \"text\": %S, \
-              \"type\": \"error\" \
-            }"
-            (Printf.sprintf "Line %d, %d: %s" line startchar error.msg)
-            (line - 1) startchar (endline - 1) endchar error.msg in
-        Location.report_error Format.std_formatter error;
-        result
-    | None ->
-        Printf.sprintf "{\"js_error_msg\": %S}" (Printexc.to_string e)
 
 module Js = struct
   module Unsafe = struct
@@ -365,6 +331,40 @@ module Js = struct
   external to_string : js_string t -> string = "caml_js_to_string"
 end
 
+(* keep in sync with jscomp/core/jsoo_main.ml `let implementation` *)
+let rewrite code =
+  let mapper = jsxMapper () in
+  Location.input_name := "//toplevel//";
+  try
+    let lexer = Lexing.from_string code in
+    let pstr = Parse.implementation lexer in
+    let pstr = mapper.structure mapper pstr in
+    let buffer = Buffer.create 1000 in
+    Pprintast.structure Format.str_formatter pstr;
+    let ocaml_code = Format.flush_str_formatter () in
+    Js.Unsafe.(obj [| "ocaml_code", inject @@ Js.string ocaml_code |])
+  with e ->
+    match Location.error_of_exn e with
+    | Some error ->
+        Location.report_error Format.std_formatter error;
+        let (file, line, startchar) = Location.get_pos_info error.loc.loc_start in
+        let (file, endline, endchar) = Location.get_pos_info error.loc.loc_end in
+        Js.Unsafe.(obj
+          [|
+            "ppx_error_msg", inject @@ Js.string (Printf.sprintf "Line %d, %d: %s" line startchar error.msg);
+            "row", inject (line - 1);
+            "column", inject startchar;
+            "endRow", inject (endline - 1);
+            "endColumn", inject endchar;
+            "text", inject @@ Js.string error.msg;
+            "type", inject @@ Js.string "error";
+          |]
+        )
+    | None ->
+        Js.Unsafe.(obj [|
+          "js_error_msg" , inject @@ Js.string (Printexc.to_string e)
+        |])
+
 let export (field : string) v =
   Js.Unsafe.set (Js.Unsafe.global) field v
 
@@ -374,9 +374,9 @@ let make_ppx name =
                   [|"rewrite",
                     inject @@
                     Js.wrap_meth_callback
-                      (fun _ code ->
-                         Js.string (rewrite (Js.to_string code)));
+                      (fun _ code -> rewrite (Js.to_string code));
                   |]))
+
 let () = make_ppx "jsxv2"
 #elif defined BS_NO_COMPILER_PATCH then
 let () = Compiler_libs.Ast_mapper.register "JSX" (fun _argv -> jsxMapper ())
