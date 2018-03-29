@@ -8226,7 +8226,10 @@ let is_array (ty : t) =
 
 let is_user_option (ty : t) =
   match ty.ptyp_desc with
-  | Ptyp_constr({txt = Lident "option"},[_]) -> true
+  | Ptyp_constr(
+    {txt = Lident "option" |
+     (Ldot (Lident "*predef*", "option")) },
+    [_]) -> true
   | _ -> false
 
 let is_user_bool (ty : t) =
@@ -10176,7 +10179,7 @@ end
 module Ast_attributes : sig 
 #1 "ast_attributes.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -10194,70 +10197,73 @@ module Ast_attributes : sig
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type attr =  Parsetree.attribute
-type t =  attr list 
+type t =  attr list
 
-type ('a,'b) st = 
-  { get : 'a option ; 
+type ('a,'b) st =
+  { get : 'a option ;
     set : 'b option }
 
-val process_method_attributes_rev : 
+val process_method_attributes_rev :
   t ->
-  (bool * bool , [`Get | `No_get ]) st * t 
+  (bool * bool , [`Get | `No_get ]) st * t
 
-val process_attributes_rev : 
-  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
+val process_attributes_rev :
+  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t
 
 val process_pexp_fun_attributes_rev :
-  t -> [ `Nothing | `Exn ] * t 
-val process_bs : 
-  t -> [ `Nothing | `Has] * t 
+  t -> [ `Nothing | `Exn ] * t
+val process_bs :
+  t -> [ `Nothing | `Has] * t
 
-val process_external : t -> bool 
+val process_external : t -> bool
 
 type derive_attr = {
   explict_nonrec : bool;
-  bs_deriving : Ast_payload.action list option 
+  bs_deriving : Ast_payload.action list option
 }
 val process_bs_string_int_unwrap_uncurry :
   t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
 
 
 val iter_process_bs_string_as :
-  t -> string option 
+  t -> string option
 
-val iter_process_bs_int_as : 
-  t -> int option 
+val has_bs_optional :
+  t -> bool 
+
+val iter_process_bs_int_as :
+  t -> int option
 
 
-val iter_process_bs_string_or_int_as : 
+val iter_process_bs_string_or_int_as :
     t ->
-    [ `Int of int 
+    [ `Int of int
     | `Str of string
-    | `Json_str of string  ] option 
-    
-
-val process_derive_type : 
-  t -> derive_attr * t 
-
-val iter_process_derive_type : 
-  t -> derive_attr  
+    | `Json_str of string  ] option
 
 
-val bs : attr 
+val process_derive_type :
+  t -> derive_attr * t
+
+val iter_process_derive_type :
+  t -> derive_attr
+
+
+val bs : attr
 val is_bs : attr -> bool
 val bs_this : attr
 val bs_method : attr
-val bs_obj : attr 
+val bs_obj : attr
 
 
-val bs_get : attr 
+val bs_get : attr
 val bs_set : attr
-val bs_return_undefined : attr  
+val bs_return_undefined : attr
 
 end = struct
 #1 "ast_attributes.ml"
@@ -10502,6 +10508,20 @@ let iter_process_bs_string_as  (attrs : t) : string option =
       | _  -> ()
     ) attrs;
   !st
+
+let has_bs_optional  (attrs : t) : bool =
+  List.exists
+    (fun
+      (({txt ; loc}, _payload ) as attr : attr)  ->
+      match  txt with
+      | "bs.optional"
+        ->
+        Bs_ast_invariant.mark_used_bs_attribute attr ;
+        true
+      | _  -> false
+    ) attrs
+
+
 
 let iter_process_bs_int_as  attrs =
   let st = ref None in
@@ -18764,8 +18784,8 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
   | Ptype_record label_declarations ->
     let is_private = tdcl.ptype_private = Private in
     let has_optional_field =
-      List.exists (fun ({pld_type} : Parsetree.label_declaration) ->
-          Ast_core_type.is_user_option pld_type
+      List.exists (fun ({pld_type; pld_attributes} : Parsetree.label_declaration) ->
+          Ast_attributes.has_bs_optional pld_attributes
         ) label_declarations in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
@@ -18787,9 +18807,16 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
             | Some new_name ->
               [new_name], {pld_name with txt = new_name}
           in
-          let is_option = Ast_core_type.is_user_option pld_type in
-          let getter_type =
-            Typ.arrow ~loc "" core_type pld_type in
+          let is_option = Ast_attributes.has_bs_optional pld_attributes in
+          let maker, getter_type =
+            if is_option then
+              let optional_type = Ast_core_type.lift_option_type pld_type in
+              Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
+              Typ.arrow ~loc "" core_type optional_type
+            else
+              Typ.arrow ~loc:pld_loc label_name pld_type maker,
+               Typ.arrow ~loc "" core_type pld_type
+          in
           let acc =
             Val.mk pld_name
               ~attrs:(
@@ -18802,9 +18829,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
               let setter_type =
                 (Typ.arrow "" core_type
                    (Typ.arrow ""
-                      (if is_option then
-                         Ast_core_type.extract_option_type_exn pld_type
-                       else pld_type)
+                      pld_type (* setter *)
                       (Ast_literal.type_unit ()))) in
               Val.mk
                 {loc = label_loc; txt = label_name ^ "Set"}
@@ -18814,10 +18839,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
               :: acc
             else acc in
           acc,
-          (if  is_option then
-             Ast_core_type.opt_arrow pld_loc label_name pld_type maker
-           else Typ.arrow ~loc:pld_loc label_name pld_type maker
-          ),
+          maker,
           (is_option, newLabel)::labels
         ) label_declarations
         ([],

@@ -74,8 +74,8 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
   | Ptype_record label_declarations ->
     let is_private = tdcl.ptype_private = Private in
     let has_optional_field =
-      List.exists (fun ({pld_type} : Parsetree.label_declaration) ->
-          Ast_core_type.is_user_option pld_type
+      List.exists (fun ({pld_type; pld_attributes} : Parsetree.label_declaration) ->
+          Ast_attributes.has_bs_optional pld_attributes
         ) label_declarations in
     let setter_accessor, makeType, labels =
       Ext_list.fold_right
@@ -97,9 +97,16 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
             | Some new_name ->
               [new_name], {pld_name with txt = new_name}
           in
-          let is_option = Ast_core_type.is_user_option pld_type in
-          let getter_type =
-            Typ.arrow ~loc "" core_type pld_type in
+          let is_option = Ast_attributes.has_bs_optional pld_attributes in
+          let maker, getter_type =
+            if is_option then
+              let optional_type = Ast_core_type.lift_option_type pld_type in
+              Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
+              Typ.arrow ~loc "" core_type optional_type
+            else
+              Typ.arrow ~loc:pld_loc label_name pld_type maker,
+               Typ.arrow ~loc "" core_type pld_type
+          in
           let acc =
             Val.mk pld_name
               ~attrs:(
@@ -112,9 +119,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
               let setter_type =
                 (Typ.arrow "" core_type
                    (Typ.arrow ""
-                      (if is_option then
-                         Ast_core_type.extract_option_type_exn pld_type
-                       else pld_type)
+                      pld_type (* setter *)
                       (Ast_literal.type_unit ()))) in
               Val.mk
                 {loc = label_loc; txt = label_name ^ "Set"}
@@ -124,10 +129,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
               :: acc
             else acc in
           acc,
-          (if  is_option then
-             Ast_core_type.opt_arrow pld_loc label_name pld_type maker
-           else Typ.arrow ~loc:pld_loc label_name pld_type maker
-          ),
+          maker,
           (is_option, newLabel)::labels
         ) label_declarations
         ([],
