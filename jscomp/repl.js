@@ -88,7 +88,7 @@ var cmi_files =
         `moreLabels`, `queue`, `scanf`, `sort`,`stack`, `stdLabels`, `stream`,
         `stringLabels`,
 
-        `belt`, 
+        `belt`,
         `belt_Id`,
         `belt_Array`,
         `belt_SortArray`,
