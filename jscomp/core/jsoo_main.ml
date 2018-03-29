@@ -126,19 +126,11 @@ let implementation prefix impl  str  : Js.Unsafe.obj =
 
 
 
-let string_of_fmt (f : Format.formatter -> 'a -> unit) v =
-  let buf = Buffer.create 37 in
-  let fmt  = Format.formatter_of_buffer buf in
-  let () =
-    f fmt v;
-    Format.pp_print_flush fmt () in
-  Buffer.contents buf
-
 let compile  impl : string -> Js.Unsafe.obj =
     implementation  false impl
 (** TODO: add `[@@bs.config{no_export}]\n# 1 "repl.ml"`*)
 let shake_compile impl : string -> Js.Unsafe.obj =
-   implementation true impl 
+   implementation true impl
 
 
 
