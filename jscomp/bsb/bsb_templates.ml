@@ -350,6 +350,29 @@ let root = OCamlRes.Res.([
        \n\
        # Editor\n\
        If you use `vscode`, Press `Windows + Shift + B` it will build automatically")]) ;
+  Dir  ("interop", [
+    Dir  ("src", [ Dir  ("reason", [ File  ("index.re", "")])]) ;
+    File  ("bsconfig.json",
+      "{\n\
+      \  \"name\": \"${bsb:name}\",\n\
+      \  \"sources\": {\n\
+      \    \"dir\" : \"src\",\n\
+      \    \"subdirs\" : true\n\
+      \  },\n\
+      \  \"package-specs\": {\n\
+      \    \"module\": \"commonjs\",\n\
+      \    \"in-source\": true\n\
+      \  },\n\
+      \  \"suffix\": \".js\",\n\
+      \  \"bs-dependencies\": [\n\
+      \      // add your bs-dependencies here \n\
+      \  ],\n\
+      \  \"warnings\": {\n\
+      \    \"error\" : \"+101\"\n\
+      \  },\n\
+      \  \"refmt\": 3\n\
+       }\n\
+       ")]) ;
   Dir  ("minimal", [
     Dir  ("src", [ File  ("main.ml", "")]) ;
     File  ("bsconfig.json",

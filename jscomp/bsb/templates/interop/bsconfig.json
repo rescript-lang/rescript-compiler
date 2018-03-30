@@ -8,7 +8,7 @@
     "module": "commonjs",
     "in-source": true
   },
-  "suffix": ".bs.js",
+  "suffix": ".js",
   "bs-dependencies": [
       // add your bs-dependencies here 
   ],

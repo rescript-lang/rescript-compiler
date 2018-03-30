@@ -115,7 +115,8 @@ let init_sample_project ~cwd ~theme name =
     "bs-version", Bs_version.version;
     "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
   ];
-  let action = fun _ ->
+  let action ?(theme=theme) () =
+    Printf.printf "using %s theme\n" theme;  (* debug *)
     process_themes env theme Filename.current_dir_name Bsb_templates.root;
     run_npm_link cwd name
   in
@@ -125,7 +126,7 @@ let init_sample_project ~cwd ~theme name =
       if Ext_namespace.is_valid_npm_package_name name then
         begin
           String_hashtbl.add env "name" name;
-          action ()
+          action ~theme:"interop" ()
         end
       else
         begin
