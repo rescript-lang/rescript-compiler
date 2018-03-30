@@ -99,6 +99,8 @@ let implementation prefix impl  str  : Js.Unsafe.obj =
       (* Format.fprintf output_ppf {| { "js_code" : %S }|} v ) *)
   with
   | e ->
+      Misc.Color.setup Clflags.Always;
+      Super_main.setup ();
       begin match Location.error_of_exn  e with
       | Some error ->
           Location.report_error Format.std_formatter  error;
@@ -107,7 +109,7 @@ let implementation prefix impl  str  : Js.Unsafe.obj =
           Js.Unsafe.(obj
           [|
             "js_error_msg",
-              inject @@ Js.string (Printf.sprintf "Line %d, %d: %s"  line startchar error.msg);
+              inject @@ Js.string (Printf.sprintf "Line %d, %d:\n  %s"  line startchar error.msg);
                "row"    , inject (line - 1);
                "column" , inject startchar;
                "endRow" , inject (endline - 1);
