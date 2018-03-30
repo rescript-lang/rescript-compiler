@@ -38,3 +38,5 @@ all: bsc.exe bsb.exe bsppx.exe bsb_helper.exe  refmt.exe reactjs_jsx_ppx_2.exe
 # bsppx.exe is needed for merlin
 # reactjs_jsx_ppx_3.exe
 # .PHONY: test
+
+.PHONY: bsppx.exe bspp.exe bsdep.exe bsb.exe bsb_helper.exe refmt.exe reactjs_jsx_ppx_2.exe bsc.exe
