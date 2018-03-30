@@ -8,7 +8,7 @@ Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Eq
 val f : (M.s, [ `A | `B ]) t -> string = <fun>
-#   Exception: Match_failure ("//toplevel//", 14, 39).
+#   Exception: Match_failure ("toplevel", 14, 39).
 #                     module N :
   sig
     type s = private < a : int; .. >
