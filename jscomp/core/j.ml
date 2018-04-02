@@ -120,7 +120,6 @@ and expression_desc =
      [typeof] is an operator     
   *)
   | Typeof of expression
-  | Caml_not of expression (* 1 - v *)
   | Js_not of expression (* !v *)
   | String_of_small_int_array of expression 
     (* String.fromCharCode.apply(null, args) *)

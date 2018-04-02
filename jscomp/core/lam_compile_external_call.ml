@@ -322,8 +322,6 @@ let translate_ffi
        we need know whether we should call [add_js_module] or not 
     *)
     begin match name, handle_external_opt external_module_name , scopes with 
-      | "true", None, []  -> E.js_bool true
-      | "false", None, [] -> E.js_bool false
       | "null", None, [] -> E.nil 
       | "undefined", None, [] -> E.undefined
       | _, _, _ -> 

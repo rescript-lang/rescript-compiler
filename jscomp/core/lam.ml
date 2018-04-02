@@ -1828,10 +1828,6 @@ let convert exports lam : _ * _  =
       prim ~primitive:Pdebugger ~args:[] loc
     | _ when s = "#null" ->
       Lconst (Const_js_null)
-    | _ when s = "#true"  ->
-      Lconst (Const_js_true)
-    | _ when s = "#false"  ->
-      Lconst (Const_js_false)
     | _ when s = "#undefined" ->
       Lconst (Const_js_undefined)
     | _ when s = "#init_mod" ->
