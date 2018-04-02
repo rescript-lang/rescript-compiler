@@ -10,7 +10,7 @@ function to_buffer(buff, ofs, len, _, _$1) {
           "Marshal.to_buffer: substring out of bounds"
         ];
   } else {
-    return Caml_missing_polyfill.not_implemented("caml_output_value_to_buffer not implemented by bucklescript yet\n");
+    return Caml_missing_polyfill.not_implemented("caml_output_value_to_buffer");
   }
 }
 

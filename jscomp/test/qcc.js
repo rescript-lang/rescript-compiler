@@ -1858,7 +1858,7 @@ function main() {
       top(/* () */0);
       elfgen(oc);
       Caml_io.caml_ml_flush(oc);
-      return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+      return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
   }
 }
 
