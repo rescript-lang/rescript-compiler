@@ -108,13 +108,14 @@ val eq : 'a option -> 'b option -> ('a -> 'b -> bool) -> bool
 (** [eq optA optB f] compares two optional values for equality with respect to function [f]
 
   {b Returns:}
-  
-    [false] if one of [optA] and [optB] is [Some x] and the other is [None]
-    
-    [true] if both [optA] and [optB] are [None]
-    
-    the result of [f a b] where [optA] is [Some a] and [optB] is [Some b]
-    
+
+{ul 
+  {- [false] if one of [optA] and [optB] is [Some x] and the other is [None]}
+  {- [true] if both [optA] and [optB] are [None]}
+  {- the result of [f a b] where [optA] is [Some a] and [optB] is [Some b]}
+}
+
+
   The following example tests if two optional integers are equivalent mod 12.
   
   @example {[
@@ -136,15 +137,13 @@ val cmp : 'a option -> 'b option -> ('a -> 'b -> int) -> int
 
   {b Returns:}
   
-    [-1] (meaning "less than") if  [optA] is [None] and [optB] is [Some x]
-    
-    [1] (meaning "greater than") if [optA] is [Some x] [optB] is [None]
-    
-    [0] (meaning "equal") if both [optA] and [optB] are [None]
-    
-    the result of [f a b] where [optA] is [Some a] and [optB] is [Some b]; this result will be
-    [-1] for less than, [0] for equal, and [1] for greater than.
-    
+{ul
+  {- [-1] (meaning "less than") if  [optA] is [None] and [optB] is [Some x]}
+  {- [1] (meaning "greater than") if [optA] is [Some x] [optB] is [None]}
+  {- [0] (meaning "equal") if both [optA] and [optB] are [None]}
+  {- the result of [f a b] where [optA] is [Some a] and [optB] is [Some b]; this result will be  [-1] for less than, [0] for equal, and [1] for greater than.}
+}
+
   The following example tests compares two optional integers using the built-in [compare] function.
   
   @example {[
