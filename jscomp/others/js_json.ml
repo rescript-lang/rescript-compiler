@@ -51,7 +51,7 @@ let classify  (x : t) : tagged_t =
   else if ty = "number" then 
     JSONNumber (Obj.magic x )
   else if ty = "boolean" then
-    if (Obj.magic x) == Js.true_ then JSONTrue
+    if (Obj.magic x) = true then JSONTrue
     else JSONFalse 
   else if (Obj.magic x) == Js.null then
     JSONNull 

@@ -10,13 +10,13 @@ var v = [
   2
 ];
 
-var vv = /* float array */[
+var vv = /* array */[
   1,
   2,
   3
 ];
 
-var long_v = /* float array */[
+var long_v = /* array */[
   1,
   2,
   3,
@@ -34,7 +34,7 @@ var long_int_v = /* array */[
   6
 ];
 
-var short_int_v = /* int array */[1];
+var short_int_v = /* array */[1];
 
 var empty = /* array */[];
 

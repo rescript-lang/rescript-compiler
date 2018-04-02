@@ -204,7 +204,7 @@ eq("File \"class7_test.ml\", line 47, characters 5-12", /* array */[
       1,
       1,
       1
-    ], /* int array */[
+    ], /* array */[
       get(p$1, 0),
       get(p$1, 1),
       get(p$1, 2),
@@ -297,7 +297,7 @@ eq("File \"class7_test.ml\", line 63, characters 5-12", /* array */[
       0,
       0,
       0
-    ], /* int array */[
+    ], /* array */[
       get(p$2, 0),
       get(p$2, 1),
       get(p$2, 2),

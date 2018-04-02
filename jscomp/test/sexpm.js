@@ -87,11 +87,11 @@ function _must_escape(s) {
       }
       
     }
-    return /* false */0;
+    return false;
   }
   catch (exn){
     if (exn === Pervasives.Exit) {
-      return /* true */1;
+      return true;
     } else {
       throw exn;
     }
@@ -363,9 +363,9 @@ function make($staropt$star, refill) {
 
 function _is_digit(c) {
   if (/* "0" */48 <= c) {
-    return +(c <= /* "9" */57);
+    return c <= /* "9" */57;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -889,12 +889,12 @@ function next(t) {
 
 function parse_string(s) {
   var n = s.length;
-  var stop = [/* false */0];
+  var stop = [false];
   var refill = function (bytes, i, _) {
     if (stop[0]) {
       return 0;
     } else {
-      stop[0] = /* true */1;
+      stop[0] = true;
       Bytes.blit_string(s, 0, bytes, i, n);
       return n;
     }
@@ -994,9 +994,9 @@ function MakeDecode(funarg) {
   };
   var _is_digit = function (c) {
     if (/* "0" */48 <= c) {
-      return +(c <= /* "9" */57);
+      return c <= /* "9" */57;
     } else {
-      return /* false */0;
+      return false;
     }
   };
   var _refill = function (t, k_succ, k_fail) {

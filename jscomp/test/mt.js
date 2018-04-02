@@ -20,15 +20,15 @@ function is_mocha() {
     if (match$1) {
       var exec = Path.basename(match$1[0]);
       if (exec === "mocha") {
-        return /* true */1;
+        return true;
       } else {
-        return +(exec === "_mocha");
+        return exec === "_mocha";
       }
     } else {
-      return /* false */0;
+      return false;
     }
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -52,7 +52,7 @@ function from_suites(name, suite) {
 
 function close_enough($staropt$star, a, b) {
   var threshold = $staropt$star ? $staropt$star[0] : 0.0000001;
-  return +(Math.abs(a - b) < threshold);
+  return Math.abs(a - b) < threshold;
 }
 
 function handleCode(spec) {
@@ -70,25 +70,24 @@ function handleCode(spec) {
         Assert.notStrictEqual(spec[0], spec[1]);
         return /* () */0;
     case 4 : 
-        var b = spec[0];
-        Assert.ok(b ? true : false);
+        Assert.ok(spec[0]);
         return /* () */0;
     case 5 : 
-        var b$1 = spec[1];
+        var b = spec[1];
         var a = spec[0];
-        if (close_enough(/* None */0, a, b$1)) {
+        if (close_enough(/* None */0, a, b)) {
           return 0;
         } else {
-          Assert.deepEqual(a, b$1);
+          Assert.deepEqual(a, b);
           return /* () */0;
         }
     case 6 : 
-        var b$2 = spec[2];
+        var b$1 = spec[2];
         var a$1 = spec[1];
-        if (close_enough(/* Some */[spec[0]], a$1, b$2)) {
+        if (close_enough(/* Some */[spec[0]], a$1, b$1)) {
           return 0;
         } else {
-          Assert.deepEqual(a$1, b$2);
+          Assert.deepEqual(a$1, b$1);
           return /* () */0;
         }
     case 7 : 

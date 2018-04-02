@@ -9,9 +9,9 @@ function is_number(_expr) {
     switch (expr.tag | 0) {
       case 0 : 
           if (expr[0].tag) {
-            return /* false */0;
+            return false;
           } else {
-            return /* true */1;
+            return true;
           }
       case 1 : 
           _expr = expr[0];
@@ -20,7 +20,7 @@ function is_number(_expr) {
       case 3 : 
       case 4 : 
       case 5 : 
-          return /* false */0;
+          return false;
       
     }
   };
@@ -167,8 +167,8 @@ function compare(context, state, _a, _b) {
           }
       case 2 : 
           var denom = compare(context, state, da, db);
-          var match = +(denom === 0);
-          if (match !== 0) {
+          var match = denom === 0;
+          if (match) {
             _b = nb;
             _a = na;
             continue ;
@@ -190,6 +190,6 @@ var a = /* Sum */Block.__(2, [/* :: */[
 
 var b = /* Val */Block.__(0, [/* Symbol */Block.__(1, ["x"])]);
 
-console.log(compare(/* InSum */0, /* record */[/* complex : true */1], a, b));
+console.log(compare(/* InSum */0, /* record */[/* complex */true], a, b));
 
 /*  Not a pure module */

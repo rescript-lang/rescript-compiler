@@ -26,34 +26,34 @@ function eq(loc, x, y) {
 
 function check_healty(check) {
   if (!check.a && !check.b) {
-    return 1 - check.c;
+    return !check.c;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
 function basic_not(x) {
-  return 1 - x;
+  return !x;
 }
 
 function f(check) {
   if (check.x) {
     return check.y;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
 eq("File \"gpr_904_test.ml\", line 23, characters 5-12", f({
-          x: /* true */1,
-          y: /* false */0
-        }), /* false */0);
+          x: true,
+          y: false
+        }), false);
 
 eq("File \"gpr_904_test.ml\", line 26, characters 5-12", check_healty({
-          a: /* false */0,
-          b: /* false */0,
-          c: /* true */1
-        }), /* false */0);
+          a: false,
+          b: false,
+          c: true
+        }), false);
 
 Mt.from_pair_suites("gpr_904_test.ml", suites[0]);
 

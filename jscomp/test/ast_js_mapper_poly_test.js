@@ -50,30 +50,30 @@ function uFromJs(param) {
 }
 
 function eqU(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 function eqUOpt(x, y) {
   if (x) {
     if (y) {
-      return +(x[0] === y[0]);
+      return x[0] === y[0];
     } else {
-      return /* false */0;
+      return false;
     }
   } else if (y) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), /* Some */[/* f */102]), /* true */1);
+eq("File \"ast_js_mapper_poly_test.ml\", line 25, characters 5-12", eqUOpt(uFromJs("x"), /* Some */[/* f */102]), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), /* Some */[/* D */68]), /* true */1);
+eq("File \"ast_js_mapper_poly_test.ml\", line 26, characters 5-12", eqUOpt(uFromJs("D"), /* Some */[/* D */68]), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), /* Some */[/* C */67]), /* true */1);
+eq("File \"ast_js_mapper_poly_test.ml\", line 27, characters 5-12", eqUOpt(uFromJs("C"), /* Some */[/* C */67]), true);
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), /* None */0), /* true */1);
+eq("File \"ast_js_mapper_poly_test.ml\", line 28, characters 5-12", eqUOpt(uFromJs("f"), /* None */0), true);
 
 eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(uToJs, /* array */[
           /* D */68,
@@ -85,7 +85,7 @@ eq("File \"ast_js_mapper_poly_test.ml\", line 29, characters 5-12", $$Array.map(
       "x"
     ]);
 
-var jsMapperConstantArray$1 = /* int array */[
+var jsMapperConstantArray$1 = /* array */[
   0,
   3,
   4,
@@ -101,20 +101,20 @@ function vFromJs(param) {
 }
 
 function eqV(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 function eqVOpt(x, y) {
   if (x) {
     if (y) {
-      return +(x[0] === y[0]);
+      return x[0] === y[0];
     } else {
-      return /* false */0;
+      return false;
     }
   } else if (y) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -132,12 +132,12 @@ function s(param) {
   }
 }
 
-eq("File \"ast_js_mapper_poly_test.ml\", line 54, characters 5-12", $$Array.map(vToJs, /* int array */[
+eq("File \"ast_js_mapper_poly_test.ml\", line 54, characters 5-12", $$Array.map(vToJs, /* array */[
           /* A0 */0,
           /* A1 */1,
           /* A2 */2,
           /* A3 */3
-        ]), /* int array */[
+        ]), /* array */[
       0,
       3,
       4,

@@ -10,7 +10,7 @@ var suites_000 = /* tuple */[
               return /* () */0;
             }), 0);
       clearTimeout(handle);
-      return /* Ok */Block.__(4, [/* true */1]);
+      return /* Ok */Block.__(4, [true]);
     })
 ];
 
@@ -22,7 +22,7 @@ var suites_001 = /* :: */[
                 return /* () */0;
               }), 0);
         clearInterval(handle);
-        return /* Ok */Block.__(4, [/* true */1]);
+        return /* Ok */Block.__(4, [true]);
       })
   ],
   /* :: */[

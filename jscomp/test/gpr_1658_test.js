@@ -30,12 +30,12 @@ eq("File \"gpr_1658_test.ml\", line 11, characters 7-14", null, null);
 var match = Js_types.reify_type(null);
 
 if (match[0] !== 1) {
-  eq("File \"gpr_1658_test.ml\", line 16, characters 11-18", /* true */1, /* false */0);
+  eq("File \"gpr_1658_test.ml\", line 16, characters 11-18", true, false);
 } else {
-  eq("File \"gpr_1658_test.ml\", line 14, characters 11-18", /* true */1, /* true */1);
+  eq("File \"gpr_1658_test.ml\", line 14, characters 11-18", true, true);
 }
 
-eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", /* true */1, Js_types.test(null, /* Null */1));
+eq("File \"gpr_1658_test.ml\", line 17, characters 7-14", true, Js_types.test(null, /* Null */1));
 
 Mt.from_pair_suites("File \"gpr_1658_test.ml\", line 19, characters 22-29", suites[0]);
 

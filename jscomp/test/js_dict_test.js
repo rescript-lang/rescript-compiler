@@ -119,7 +119,7 @@ var suites_001 = /* :: */[
                 "values",
                 (function () {
                     return /* Eq */Block.__(0, [
-                              /* int array */[
+                              /* array */[
                                 43,
                                 86
                               ],

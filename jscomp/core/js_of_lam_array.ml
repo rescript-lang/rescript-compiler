@@ -56,15 +56,8 @@ module E  = Js_exp_make
 
 (* Parrayref(u|s) *)
 let make_array mt (kind : Lambda.array_kind) args = 
-  match kind with 
-  | Pgenarray
-  | Paddrarray -> 
-    E.array ~comment:"array" mt args 
-  | Pintarray  -> 
-    E.array ~comment:"int array" mt args 
-  | Pfloatarray -> 
-    E.array ~comment:"float array" mt args
-
+  E.array ~comment:"array" mt args 
+ 
 let set_array  e e0 e1 = 
   E.assign (E.access e e0)  e1
 

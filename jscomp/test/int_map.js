@@ -94,9 +94,9 @@ function bal(l, x, d, r) {
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -154,13 +154,13 @@ function mem(x, _param) {
     if (param) {
       var c = Caml_primitive.caml_int_compare(x, param[1]);
       if (c === 0) {
-        return /* true */1;
+        return true;
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -322,10 +322,10 @@ function for_all(p, _param) {
         _param = param[3];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -335,13 +335,13 @@ function exists(p, _param) {
     var param = _param;
     if (param) {
       if (Curry._2(p, param[1], param[2]) || exists(p, param[0])) {
-        return /* true */1;
+        return true;
       } else {
         _param = param[3];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -584,12 +584,12 @@ function equal(cmp, m1, m2) {
         _e1 = cons_enum(e1[2], e1[3]);
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else if (e2) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }

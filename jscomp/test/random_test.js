@@ -43,23 +43,23 @@ Mt_global.collect_neq(id, suites, "File \"random_test.ml\", line 12, characters 
 
 Random.init(0);
 
-var v = Caml_array.caml_make_vect(10, /* false */0);
+var v = Caml_array.caml_make_vect(10, false);
 
 for(var i = 0; i <= 9; ++i){
   Caml_array.caml_array_set(v, i, Random.bool(/* () */0));
 }
 
 var param$2 = /* array */[
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* false */0,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* false */0
+  true,
+  true,
+  true,
+  true,
+  true,
+  false,
+  true,
+  true,
+  true,
+  false
 ];
 
 Mt_global.collect_eq(id, suites, "File \"random_test.ml\", line 26, characters 5-12", v, param$2);

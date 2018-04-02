@@ -13775,7 +13775,6 @@ type return_wrapper =
   | Return_undefined_to_opt
   | Return_null_to_opt
   | Return_null_undefined_to_opt
-  | Return_to_ocaml_bool
   | Return_replaced_with_unit
 
 type t  =
@@ -13935,7 +13934,6 @@ type return_wrapper =
   | Return_undefined_to_opt
   | Return_null_to_opt
   | Return_null_undefined_to_opt
-  | Return_to_ocaml_bool
   | Return_replaced_with_unit
 type t  =
   | Ffi_bs of External_arg_spec.t list  *
@@ -14834,8 +14832,6 @@ let check_return_wrapper
   | Return_unset  ->
     if Ast_core_type.is_unit result_type then
       Return_replaced_with_unit
-    else if Ast_core_type.is_user_bool result_type then
-      Return_to_ocaml_bool
     else
       wrapper
   | Return_undefined_to_opt
@@ -14846,8 +14842,7 @@ let check_return_wrapper
       wrapper
     else
       Bs_syntaxerr.err loc Expect_opt_in_bs_return_to_opt
-  | Return_replaced_with_unit
-  | Return_to_ocaml_bool  ->
+  | Return_replaced_with_unit ->
     assert false (* Not going to happen from user input*)
 
 

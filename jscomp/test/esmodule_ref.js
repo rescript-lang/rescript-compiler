@@ -1,6 +1,6 @@
 'use strict';
 
 
-console.log(/* false */0);
+console.log(false);
 
 /*  Not a pure module */

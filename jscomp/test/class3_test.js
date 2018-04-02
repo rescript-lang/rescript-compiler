@@ -258,7 +258,7 @@ Caml_oo_curry.js1(-794843549, 6, my_int);
 
 console.log(Caml_oo_curry.js1(5393365, 7, my_int));
 
-var v = /* int array */[
+var v = /* array */[
   0,
   3
 ];
@@ -300,7 +300,7 @@ var printable_point2 = CamlinternalOO.make_class(shared$9, printable_point2_init
 
 Curry._2(printable_point2[0], 0, 31);
 
-eq("File \"class3_test.ml\", line 81, characters 12-19", v, /* int array */[
+eq("File \"class3_test.ml\", line 81, characters 12-19", v, /* array */[
       30,
       3
     ]);

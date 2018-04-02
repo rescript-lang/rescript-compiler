@@ -25,7 +25,11 @@
 
 let caml_int_compare (x : int) (y: int) : int =
   if  x < y then -1 else if x = y then 0 else  1
-
+let caml_bool_compare (x : bool) (y : bool): int = 
+  match x,y with 
+  | true, true | false , false -> 0 
+  | true, false -> 1 
+  | false, true -> -1
 
 let caml_int32_compare = caml_int_compare
 let caml_nativeint_compare = caml_int_compare
@@ -46,6 +50,8 @@ let caml_string_compare (s1 : string) (s2 : string) : int =
 type 'a selector = 'a -> 'a -> 'a 
 
 (* could be replaced by [Math.min], but it seems those built-ins are slower *)
+let caml_bool_min (x : bool) y : bool =  
+    if x then y else x 
 let caml_int_min (x : int) (y : int) : int =
   if x < y then x else y 
 let caml_float_min (x : float) y   =
@@ -57,6 +63,8 @@ let caml_nativeint_min (x : nativeint) y =
 let caml_int32_min (x : int32) y   = 
   if x < y then x else y 
 
+let caml_bool_max (x : bool) y : bool =   
+  if x then x else y
 let caml_int_max (x : int) (y : int) : int =
   if x > y then x else y 
 let caml_float_max (x : float) y   =

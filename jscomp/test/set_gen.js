@@ -68,9 +68,9 @@ function max_elt(_param) {
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -149,10 +149,10 @@ function for_all(p, _param) {
         _param = param[2];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -162,13 +162,13 @@ function exists(p, _param) {
     var param = _param;
     if (param) {
       if (Curry._1(p, param[1]) || exists(p, param[0])) {
-        return /* true */1;
+        return true;
       } else {
         _param = param[2];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -684,7 +684,7 @@ function is_ordered(cmp, tree) {
       return /* Empty */50834029;
     }
   };
-  return +(is_ordered_min_max(tree) !== /* No */17505);
+  return is_ordered_min_max(tree) !== /* No */17505;
 }
 
 function invariant(cmp, t) {

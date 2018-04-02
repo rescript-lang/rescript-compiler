@@ -28,7 +28,7 @@ function eq(loc, param) {
   return /* () */0;
 }
 
-var v = /* int array */[
+var v = /* array */[
   1,
   2,
   3,

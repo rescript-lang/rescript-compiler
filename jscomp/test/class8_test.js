@@ -53,7 +53,7 @@ function money_init($$class) {
           }),
         leq,
         (function (self$2, p) {
-            return +(self$2[repr] <= Caml_oo_curry.js1(834174833, 1, p));
+            return self$2[repr] <= Caml_oo_curry.js1(834174833, 1, p);
           })
       ]);
   return (function (_, self, x) {

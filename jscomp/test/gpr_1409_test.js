@@ -136,7 +136,7 @@ function keys(xs, ys) {
 eq("File \"gpr_1409_test.ml\", line 69, characters 6-13", keys(/* :: */[
           "hi",
           /* [] */0
-        ], Object.keys(test3(/* None */0, /* None */0))), /* true */1);
+        ], Object.keys(test3(/* None */0, /* None */0))), true);
 
 eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
           "hi",
@@ -144,7 +144,7 @@ eq("File \"gpr_1409_test.ml\", line 71, characters 6-13", keys(/* :: */[
             "open",
             /* [] */0
           ]
-        ], Object.keys(test3(/* Some */[2], /* None */0))), /* true */1);
+        ], Object.keys(test3(/* Some */[2], /* None */0))), true);
 
 eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
           "hi",
@@ -155,7 +155,7 @@ eq("File \"gpr_1409_test.ml\", line 73, characters 6-13", keys(/* :: */[
               /* [] */0
             ]
           ]
-        ], Object.keys(test3(/* Some */[2], /* Some */[2]))), /* true */1);
+        ], Object.keys(test3(/* Some */[2], /* Some */[2]))), true);
 
 Mt.from_pair_suites("gpr_1409_test.ml", suites[0]);
 

@@ -22,7 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type array_kind = Lambda.array_kind
+type array_kind = Lambda.array_kind 
+  (*TODO: only [Pfloatarray] makes sense *)
 type boxed_integer = Lambda.boxed_integer
 type comparison = Lambda.comparison
 type bigarray_kind = Lambda.bigarray_kind
@@ -194,7 +195,6 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
-  | Pjs_boolean_to_bool
   | Pjs_typeof
   | Pjs_function_length
 
@@ -1068,7 +1068,6 @@ let apply fn args loc status : t =
                                 Pnull_undefined_to_opt |
                                 Pis_null |
                                 Pis_null_undefined |
-                                Pjs_boolean_to_bool |
                                 Pjs_typeof ) as wrap;
                              args = [Lprim ({primitive; args = inner_args} as primitive_call)]
                             }
@@ -1198,10 +1197,10 @@ let stringswitch (lam : t) cases default : t =
 
 
 let true_ : t =
-  Lconst (Const_pointer ( 1, Pt_constructor "true"))
+  Lconst (Const_pointer ( 1, Pt_builtin_boolean))
 
 let false_ : t =
-  Lconst (Const_pointer( 0, Pt_constructor "false"))
+  Lconst (Const_pointer( 0, Pt_builtin_boolean))
 
 let unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "()"))
@@ -1472,8 +1471,6 @@ let result_wrap loc (result_type : External_ffi_types.return_wrapper) result  =
   | Return_null_to_opt -> prim ~primitive:Pnull_to_opt ~args:[result] loc
   | Return_null_undefined_to_opt -> prim ~primitive:Pnull_undefined_to_opt ~args:[result] loc
   | Return_undefined_to_opt -> prim ~primitive:Pundefined_to_opt ~args:[result] loc
-  | Return_to_ocaml_bool ->
-    prim ~primitive:Pjs_boolean_to_bool ~args:[result] loc
   | Return_unset
   | Return_identity ->
     result
@@ -1881,8 +1878,6 @@ let convert exports lam : _ * _  =
            we can get rid of it*)
         | "#obj_set_length" -> Pcaml_obj_set_length
         | "#obj_length" -> Pcaml_obj_length
-        | "#boolean_to_bool" -> Pjs_boolean_to_bool
-
         | "#function_length" -> Pjs_function_length
 
         | "#unsafe_lt" -> Pjscomp Clt

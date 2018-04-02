@@ -34,7 +34,7 @@ function print_newline() {
             ]);
 }
 
-var s = /* float array */[1.0];
+var s = /* array */[1.0];
 
 print_float(s[/* f */0]);
 

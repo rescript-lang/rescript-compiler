@@ -85,7 +85,7 @@ let classify (x : 'a) : tagged_t =
   if ty = "string" then 
     JSString (Obj.magic x) else 
   if ty = "boolean" then 
-    if (Obj.magic x) ==  Js.true_ then JSTrue 
+    if (Obj.magic x) =  true then JSTrue 
     else JSFalse else 
   if ty = "function" then 
     JSFunction (Obj.magic x) else 

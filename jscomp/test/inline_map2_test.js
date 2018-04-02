@@ -94,9 +94,9 @@ function Make(Ord) {
   };
   var is_empty = function (param) {
     if (param) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
   var add = function (x, data, param) {
@@ -151,13 +151,13 @@ function Make(Ord) {
       if (param) {
         var c = Curry._2(Ord[/* compare */0], x, param[1]);
         if (c === 0) {
-          return /* true */1;
+          return true;
         } else {
           _param = c < 0 ? param[0] : param[3];
           continue ;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     };
   };
@@ -310,10 +310,10 @@ function Make(Ord) {
           _param = param[3];
           continue ;
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        return /* true */1;
+        return true;
       }
     };
   };
@@ -322,13 +322,13 @@ function Make(Ord) {
       var param = _param;
       if (param) {
         if (Curry._2(p, param[1], param[2]) || exists(p, param[0])) {
-          return /* true */1;
+          return true;
         } else {
           _param = param[3];
           continue ;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     };
   };
@@ -559,12 +559,12 @@ function Make(Ord) {
           _e1 = cons_enum(e1[2], e1[3]);
           continue ;
         } else {
-          return /* false */0;
+          return false;
         }
       } else if (e2) {
-        return /* false */0;
+        return false;
       } else {
-        return /* true */1;
+        return true;
       }
     };
   };
@@ -726,9 +726,9 @@ function bal(l, x, d, r) {
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -786,13 +786,13 @@ function mem(x, _param) {
     if (param) {
       var c = Caml_primitive.caml_int_compare(x, param[1]);
       if (c === 0) {
-        return /* true */1;
+        return true;
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -964,10 +964,10 @@ function for_all(p, _param) {
         _param = param[3];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -977,13 +977,13 @@ function exists(p, _param) {
     var param = _param;
     if (param) {
       if (Curry._2(p, param[1], param[2]) || exists(p, param[0])) {
-        return /* true */1;
+        return true;
       } else {
         _param = param[3];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -1231,12 +1231,12 @@ function equal(cmp, m1, m2) {
         _e1 = cons_enum(e1[2], e1[3]);
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else if (e2) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -1429,9 +1429,9 @@ function bal$1(l, x, d, r) {
 
 function is_empty$1(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -1489,13 +1489,13 @@ function mem$1(x, _param) {
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c === 0) {
-        return /* true */1;
+        return true;
       } else {
         _param = c < 0 ? param[0] : param[3];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -1667,10 +1667,10 @@ function for_all$1(p, _param) {
         _param = param[3];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -1680,13 +1680,13 @@ function exists$1(p, _param) {
     var param = _param;
     if (param) {
       if (Curry._2(p, param[1], param[2]) || exists$1(p, param[0])) {
-        return /* true */1;
+        return true;
       } else {
         _param = param[3];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -1934,12 +1934,12 @@ function equal$1(cmp, m1, m2) {
         _e1 = cons_enum$1(e1[2], e1[3]);
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else if (e2) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }

@@ -190,6 +190,7 @@ type pointer_info =
   | Pt_constructor of string
   | Pt_variant of string 
   | Pt_module_alias
+  | Pt_builtin_boolean
   | Pt_na
 
 let default_pointer_info = Pt_na

@@ -2440,6 +2440,9 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
           with
           | (1, 1, [0, act1], [0, act2]) ->
               Lifthenelse(arg, act2, act1)
+          | (2,0, [(i1,act1); (_,act2)],[]) ->
+            if i1 = 0 then Lifthenelse(arg, act2, act1)
+            else Lifthenelse (arg,act1,act2)
           | (n,_,_,[])  ->
               call_switcher None arg 0 (n-1) consts
           | (n, _, _, _) ->

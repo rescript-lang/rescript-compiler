@@ -4,7 +4,7 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function blackify(s) {
   if (s) {
-    if (s[0] !== 0) {
+    if (s[0]) {
       return /* tuple */[
               /* Node */[
                 /* Black */0,
@@ -12,27 +12,27 @@ function blackify(s) {
                 s[2],
                 s[3]
               ],
-              /* false */0
+              false
             ];
     } else {
       return /* tuple */[
               s,
-              /* true */1
+              true
             ];
     }
   } else {
     return /* tuple */[
             s,
-            /* true */1
+            true
           ];
   }
 }
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -42,7 +42,7 @@ function mem(x, _param) {
     if (param) {
       var y = param[2];
       if (x === y) {
-        return /* true */1;
+        return true;
       } else if (x < y) {
         _param = param[1];
         continue ;
@@ -51,7 +51,7 @@ function mem(x, _param) {
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -65,10 +65,10 @@ function balance_left(l, x, r) {
   var c;
   var z;
   var d;
-  if (l && l[0] !== 0) {
+  if (l && l[0]) {
     var a$1 = l[1];
     var exit$1 = 0;
-    if (a$1 && a$1[0] !== 0) {
+    if (a$1 && a$1[0]) {
       a = a$1[1];
       x$1 = a$1[2];
       b = a$1[3];
@@ -82,7 +82,7 @@ function balance_left(l, x, r) {
     }
     if (exit$1 === 3) {
       var match = l[3];
-      if (match && match[0] !== 0) {
+      if (match && match[0]) {
         a = a$1;
         x$1 = l[2];
         b = match[1];
@@ -137,10 +137,10 @@ function balance_right(l, x, r) {
   var c;
   var z;
   var d;
-  if (r && r[0] !== 0) {
+  if (r && r[0]) {
     var b$1 = r[1];
     var exit$1 = 0;
-    if (b$1 && b$1[0] !== 0) {
+    if (b$1 && b$1[0]) {
       a = l;
       x$1 = x;
       b = b$1[1];
@@ -154,7 +154,7 @@ function balance_right(l, x, r) {
     }
     if (exit$1 === 3) {
       var match = r[3];
-      if (match && match[0] !== 0) {
+      if (match && match[0]) {
         a = l;
         x$1 = x;
         b = b$1;
@@ -212,9 +212,9 @@ function singleton(x) {
 function unbalanced_left(param) {
   var exit = 0;
   if (param) {
-    if (param[0] !== 0) {
+    if (param[0]) {
       var match = param[1];
-      if (match && match[0] === 0) {
+      if (match && !match[0]) {
         return /* tuple */[
                 balance_left(/* Node */[
                       /* Red */1,
@@ -222,7 +222,7 @@ function unbalanced_left(param) {
                       match[2],
                       match[3]
                     ], param[2], param[3]),
-                /* false */0
+                false
               ];
       } else {
         exit = 1;
@@ -230,9 +230,9 @@ function unbalanced_left(param) {
     } else {
       var match$1 = param[1];
       if (match$1) {
-        if (match$1[0] !== 0) {
+        if (match$1[0]) {
           var match$2 = match$1[3];
-          if (match$2 && match$2[0] === 0) {
+          if (match$2 && !match$2[0]) {
             return /* tuple */[
                     /* Node */[
                       /* Black */0,
@@ -245,7 +245,7 @@ function unbalanced_left(param) {
                             match$2[3]
                           ], param[2], param[3])
                     ],
-                    /* false */0
+                    false
                   ];
           } else {
             exit = 1;
@@ -258,7 +258,7 @@ function unbalanced_left(param) {
                         match$1[2],
                         match$1[3]
                       ], param[2], param[3]),
-                  /* true */1
+                  true
                 ];
         }
       } else {
@@ -284,9 +284,9 @@ function unbalanced_left(param) {
 function unbalanced_right(param) {
   var exit = 0;
   if (param) {
-    if (param[0] !== 0) {
+    if (param[0]) {
       var match = param[3];
-      if (match && match[0] === 0) {
+      if (match && !match[0]) {
         return /* tuple */[
                 balance_right(param[1], param[2], /* Node */[
                       /* Red */1,
@@ -294,7 +294,7 @@ function unbalanced_right(param) {
                       match[2],
                       match[3]
                     ]),
-                /* false */0
+                false
               ];
       } else {
         exit = 1;
@@ -304,9 +304,9 @@ function unbalanced_right(param) {
       if (match$1) {
         var x = param[2];
         var a = param[1];
-        if (match$1[0] !== 0) {
+        if (match$1[0]) {
           var match$2 = match$1[1];
-          if (match$2 && match$2[0] === 0) {
+          if (match$2 && !match$2[0]) {
             return /* tuple */[
                     /* Node */[
                       /* Black */0,
@@ -319,7 +319,7 @@ function unbalanced_right(param) {
                       match$1[2],
                       match$1[3]
                     ],
-                    /* false */0
+                    false
                   ];
           } else {
             exit = 1;
@@ -332,7 +332,7 @@ function unbalanced_right(param) {
                         match$1[2],
                         match$1[3]
                       ]),
-                  /* true */1
+                  true
                 ];
         }
       } else {
@@ -357,11 +357,11 @@ function unbalanced_right(param) {
 
 function lbalance(x1, x2, x3) {
   if (x1) {
-    if (x1[0] !== 0) {
+    if (x1[0]) {
       var r = x1[3];
       var l = x1[1];
       var exit = 0;
-      if (l && l[0] !== 0) {
+      if (l && l[0]) {
         return /* Node */[
                 /* Red */1,
                 /* Node */[
@@ -383,7 +383,7 @@ function lbalance(x1, x2, x3) {
       }
       if (exit === 1) {
         if (r) {
-          if (r[0] !== 0) {
+          if (r[0]) {
             var y = r[2];
             return /* Node */[
                     /* Red */1,
@@ -439,10 +439,10 @@ function lbalance(x1, x2, x3) {
 
 function rbalance(x1, x2, x3) {
   var exit = 0;
-  if (x3 && x3[0] !== 0) {
+  if (x3 && x3[0]) {
     var b = x3[1];
     var exit$1 = 0;
-    if (b && b[0] !== 0) {
+    if (b && b[0]) {
       return /* Node */[
               /* Red */1,
               /* Node */[
@@ -464,7 +464,7 @@ function rbalance(x1, x2, x3) {
     }
     if (exit$1 === 2) {
       var match = x3[3];
-      if (match && match[0] !== 0) {
+      if (match && match[0]) {
         return /* Node */[
                 /* Red */1,
                 /* Node */[
@@ -502,7 +502,7 @@ function rbalance(x1, x2, x3) {
 
 function ins(x, s) {
   if (s) {
-    if (s[0] !== 0) {
+    if (s[0]) {
       var y = s[2];
       if (x === y) {
         return s;
@@ -551,7 +551,7 @@ function ins(x, s) {
 
 function add(x, s) {
   var s$1 = ins(x, s);
-  if (s$1 && s$1[0] !== 0) {
+  if (s$1 && s$1[0]) {
     return /* Node */[
             /* Black */0,
             s$1[1],
@@ -567,14 +567,14 @@ function remove_min(param) {
   if (param) {
     var c = param[0];
     var exit = 0;
-    if (c !== 0) {
+    if (c) {
       if (param[1]) {
         exit = 1;
       } else {
         return /* tuple */[
                 param[3],
                 param[2],
-                /* false */0
+                false
               ];
       }
     } else if (param[1]) {
@@ -583,7 +583,7 @@ function remove_min(param) {
       var match = param[3];
       var x = param[2];
       if (match) {
-        if (match[0] !== 0) {
+        if (match[0]) {
           return /* tuple */[
                   /* Node */[
                     /* Black */0,
@@ -592,7 +592,7 @@ function remove_min(param) {
                     match[3]
                   ],
                   x,
-                  /* false */0
+                  false
                 ];
         } else {
           throw [
@@ -608,7 +608,7 @@ function remove_min(param) {
         return /* tuple */[
                 /* Empty */0,
                 x,
-                /* true */1
+                true
               ];
       }
     }
@@ -635,7 +635,7 @@ function remove_min(param) {
         return /* tuple */[
                 s,
                 y,
-                /* false */0
+                false
               ];
       }
     }
@@ -674,13 +674,13 @@ function remove_aux(x, n) {
         } else {
           return /* tuple */[
                   n$1,
-                  /* false */0
+                  false
                 ];
         }
       } else if (c === /* Red */1) {
         return /* tuple */[
                 l,
-                /* false */0
+                false
               ];
       } else {
         return blackify(l);
@@ -699,7 +699,7 @@ function remove_aux(x, n) {
       } else {
         return /* tuple */[
                 n$2,
-                /* false */0
+                false
               ];
       }
     } else {
@@ -716,14 +716,14 @@ function remove_aux(x, n) {
       } else {
         return /* tuple */[
                 n$3,
-                /* false */0
+                false
               ];
       }
     }
   } else {
     return /* tuple */[
             /* Empty */0,
-            /* false */0
+            false
           ];
   }
 }

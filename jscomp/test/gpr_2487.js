@@ -3,11 +3,11 @@
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Belt_Array = require("../../lib/js/belt_Array.js");
 
-var b = Belt_Array.eq(/* int array */[
+var b = Belt_Array.eq(/* array */[
       1,
       2,
       3
-    ], /* int array */[
+    ], /* array */[
       1,
       2,
       3

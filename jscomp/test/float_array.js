@@ -3,7 +3,7 @@
 
 function small_float_array(x) {
   return /* tuple */[
-          /* float array */[
+          /* array */[
             1,
             2,
             3
@@ -14,7 +14,7 @@ function small_float_array(x) {
 
 function longer_float_array(x) {
   return /* tuple */[
-          /* float array */[
+          /* array */[
             1,
             2,
             3,

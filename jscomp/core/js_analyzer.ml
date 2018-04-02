@@ -118,7 +118,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Array_of_size _
   | Array_copy _ 
   (* | Tag_ml_obj _ *)
-  | Int_of_boolean _ 
   | J.Anything_to_number _
   | Caml_not _ 
   | Js_not _
@@ -271,7 +270,6 @@ let rec eq_expression
     | Array_copy _ 
     | Array_append _ 
     | String_append _ 
-    | Int_of_boolean _ 
     | Anything_to_number _ 
 
     | Typeof _ 

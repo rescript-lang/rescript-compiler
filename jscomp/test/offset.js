@@ -219,7 +219,7 @@ function split(x, param) {
     if (c === 0) {
       return /* tuple */[
               l,
-              /* true */1,
+              true,
               r
             ];
     } else if (c < 0) {
@@ -240,7 +240,7 @@ function split(x, param) {
   } else {
     return /* tuple */[
             /* Empty */0,
-            /* false */0,
+            false,
             /* Empty */0
           ];
   }
@@ -248,9 +248,9 @@ function split(x, param) {
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -260,13 +260,13 @@ function mem(x, _param) {
     if (param) {
       var c = Caml_primitive.caml_string_compare(x, param[1]);
       if (c === 0) {
-        return /* true */1;
+        return true;
       } else {
         _param = c < 0 ? param[0] : param[2];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -334,7 +334,7 @@ function inter(s1, s2) {
     var l1 = s1[0];
     var match = split(v1, s2);
     var l2 = match[0];
-    if (match[1] !== 0) {
+    if (match[1]) {
       return join(inter(l1, l2), v1, inter(r1, match[2]));
     } else {
       return concat(inter(l1, l2), inter(r1, match[2]));
@@ -352,7 +352,7 @@ function diff(s1, s2) {
       var l1 = s1[0];
       var match = split(v1, s2);
       var l2 = match[0];
-      if (match[1] !== 0) {
+      if (match[1]) {
         return concat(diff(l1, l2), diff(r1, match[2]));
       } else {
         return join(diff(l1, l2), v1, diff(r1, match[2]));
@@ -411,7 +411,7 @@ function compare(s1, s2) {
 }
 
 function equal(s1, s2) {
-  return +(compare(s1, s2) === 0);
+  return compare(s1, s2) === 0;
 }
 
 function subset(_s1, _s2) {
@@ -432,7 +432,7 @@ function subset(_s1, _s2) {
             _s1 = r1;
             continue ;
           } else {
-            return /* false */0;
+            return false;
           }
         } else if (c < 0) {
           if (subset(/* Node */[
@@ -444,7 +444,7 @@ function subset(_s1, _s2) {
             _s1 = r1;
             continue ;
           } else {
-            return /* false */0;
+            return false;
           }
         } else if (subset(/* Node */[
                 /* Empty */0,
@@ -455,13 +455,13 @@ function subset(_s1, _s2) {
           _s1 = l1;
           continue ;
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -502,10 +502,10 @@ function for_all(p, _param) {
         _param = param[2];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -515,13 +515,13 @@ function exists(p, _param) {
     var param = _param;
     if (param) {
       if (Curry._1(p, param[1]) || exists(p, param[0])) {
-        return /* true */1;
+        return true;
       } else {
         _param = param[2];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }

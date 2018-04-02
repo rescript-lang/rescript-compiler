@@ -82,7 +82,7 @@ external test : 'a nullable -> bool = "#is_nil_undef"
 (** The same as {!test} except that it is more permissive on the types of input *)
 external testAny : 'a -> bool = "#is_nil_undef"
 
-type boolean
+type boolean = bool
 (** The value could be either  {!Js.true_} or {!Js.false_}.
      Note in BuckleScript, [boolean] has different representation from OCaml's [bool],
      see conversion functions in {!Boolean} *)
@@ -93,8 +93,11 @@ type (+'a, +'e) promise
 *)
 
 
-external true_ : boolean = "#true" 
-external false_ : boolean = "#false" 
+val true_ : boolean
+[@@ocaml.deprecated "Use true directly"]
+
+val false_ : boolean
+[@@ocaml.deprecated "Use false directly"]
 
 external null : 'a null = "#null" 
 (** The same as [empty] in {!Js.Null} will be compiled as [null]*)
@@ -103,7 +106,7 @@ external undefined : 'a undefined = "#undefined"
 (** The same as  [empty] {!Js.Undefined} will be compiled as [undefined]*)
 
 
-external to_bool : boolean -> bool = "#boolean_to_bool"
+external to_bool : boolean -> bool = "%identity"
 (** convert Js boolean to OCaml bool *)
 
 external typeof : 'a -> string = "#typeof"

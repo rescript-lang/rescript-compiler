@@ -377,7 +377,48 @@ let translate loc (prim_name : string)
           E.string_comp Ge  e0 e1
         | _ -> assert false 
       end
-    
+    | "caml_bool_notequal"
+      -> 
+      begin match args with 
+        | [e0; e1] -> E.bool_comp Cneq e0 e1
+        (** TODO: specialized in OCaml ones*)
+        | _ -> assert false 
+      end
+    | "caml_bool_lessequal"
+      -> 
+      begin 
+        match args with 
+        | [e0; e1] 
+          -> 
+          E.bool_comp Cle e0 e1
+        | _ -> assert false 
+      end
+    | "caml_bool_lessthan"
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.bool_comp Clt e0 e1
+        | _ -> assert false 
+      end
+    | "caml_bool_greaterequal"
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.bool_comp Cge  e0 e1
+        | _ -> assert false 
+      end
+        
+    | "caml_bool_equal"  
+    | "caml_bool_equal_null"
+    | "caml_bool_equal_nullable"
+    | "caml_bool_equal_undefined"
+      -> 
+        begin match args with 
+        | [e0; e1] -> E.bool_comp Ceq e0 e1 
+        | _ -> assert false 
+        end 
     | "caml_int_equal_null"
     | "caml_int_equal_nullable"
     | "caml_int_equal_undefined"
@@ -438,7 +479,7 @@ let translate loc (prim_name : string)
         | _ -> 
           call Js_runtime_modules.string 
       end
-
+    | "caml_bool_compare"  
     | "caml_int_compare"
     | "caml_int32_compare"
     | "caml_nativeint_compare"
@@ -447,6 +488,7 @@ let translate loc (prim_name : string)
     -> 
       call Js_runtime_modules.caml_primitive
 
+    | "caml_bool_min"  
     | "caml_int_min"
     | "caml_float_min"
     | "caml_string_min"
@@ -462,6 +504,7 @@ let translate loc (prim_name : string)
             call Js_runtime_modules.caml_primitive
         | _ -> assert false  
       end
+    | "caml_bool_max"
     | "caml_int_max"
     | "caml_float_max"
     | "caml_string_max"

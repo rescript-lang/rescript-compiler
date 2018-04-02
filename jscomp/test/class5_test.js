@@ -166,7 +166,7 @@ function intlist_init($$class) {
   CamlinternalOO.set_methods($$class, /* array */[
         empty,
         (function (self$4) {
-            return +(self$4[l] === /* [] */0);
+            return self$4[l] === /* [] */0;
           }),
         fold,
         (function (self$4, f, accu) {
@@ -205,7 +205,7 @@ function intlist2_init($$class) {
   CamlinternalOO.set_methods($$class, /* array */[
         empty,
         (function (self$5) {
-            return +(self$5[l] === /* [] */0);
+            return self$5[l] === /* [] */0;
           }),
         fold,
         (function (self$5, f, accu) {

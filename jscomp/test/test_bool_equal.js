@@ -3,21 +3,21 @@
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function bool_equal(x, y) {
-  if (x !== 0) {
-    if (y !== 0) {
-      return /* true */1;
+  if (x) {
+    if (y) {
+      return true;
     } else {
-      return /* false */0;
+      return false;
     }
-  } else if (y !== 0) {
-    return /* false */0;
+  } else if (y) {
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
 function assertions() {
-  if (!bool_equal(/* true */1, /* true */1)) {
+  if (!bool_equal(true, true)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -27,7 +27,7 @@ function assertions() {
           ]
         ];
   }
-  if (!bool_equal(/* false */0, /* false */0)) {
+  if (!bool_equal(false, false)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -37,7 +37,7 @@ function assertions() {
           ]
         ];
   }
-  if (bool_equal(/* true */1, /* false */0)) {
+  if (bool_equal(true, false)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -47,7 +47,7 @@ function assertions() {
           ]
         ];
   }
-  if (bool_equal(/* false */0, /* true */1)) {
+  if (bool_equal(false, true)) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -61,7 +61,7 @@ function assertions() {
 }
 
 function f0(x) {
-  if (x === /* true */1) {
+  if (x === true) {
     return 1;
   } else {
     return 2;
@@ -69,7 +69,7 @@ function f0(x) {
 }
 
 function f1(x) {
-  if (x !== /* true */1) {
+  if (x !== true) {
     return 1;
   } else {
     return 2;

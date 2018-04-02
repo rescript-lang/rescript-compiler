@@ -30,12 +30,12 @@ process.on((function (i) {
 xx(3, 3, "xxx", "a", "b");
 
 function f(x) {
-  x.xx(110, /* int array */[
+  x.xx(110, /* array */[
         1,
         2,
         3
       ]);
-  x.xx(111, 3, "xxx", /* int array */[
+  x.xx(111, 3, "xxx", /* array */[
         1,
         2,
         3

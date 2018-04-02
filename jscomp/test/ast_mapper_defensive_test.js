@@ -33,7 +33,7 @@ function aFromJs(param) {
   return param - 0 | 0;
 }
 
-var jsMapperConstantArray = /* int array */[
+var jsMapperConstantArray = /* array */[
   0,
   3,
   4

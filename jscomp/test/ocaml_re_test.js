@@ -250,13 +250,13 @@ function mem(c, _s) {
     if (s) {
       var match = s[0];
       if (c <= match[1]) {
-        return +(c >= match[0]);
+        return c >= match[0];
       } else {
         _s = s[1];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -412,14 +412,14 @@ var cany = /* :: */[
 
 function is_empty(param) {
   if (param) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
 function intersect(x, y) {
-  return +((x & y) !== 0);
+  return (x & y) !== 0;
 }
 
 function $plus$plus(x, y) {
@@ -712,9 +712,9 @@ function seq$1(ids, kind, x, y) {
 function is_eps(expr) {
   var match = expr[/* def */1];
   if (typeof match === "number") {
-    return /* true */1;
+    return true;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -778,15 +778,15 @@ function equal(_l1, _l2) {
                       _l1 = l1[1];
                       continue ;
                     } else {
-                      return /* false */0;
+                      return false;
                     }
                 case 1 : 
                 case 2 : 
-                    return /* false */0;
+                    return false;
                 
               }
             } else {
-              return /* false */0;
+              return false;
             }
         case 1 : 
             if (l2) {
@@ -798,15 +798,15 @@ function equal(_l1, _l2) {
                       _l1 = l1[1];
                       continue ;
                     } else {
-                      return /* false */0;
+                      return false;
                     }
                 case 0 : 
                 case 2 : 
-                    return /* false */0;
+                    return false;
                 
               }
             } else {
-              return /* false */0;
+              return false;
             }
         case 2 : 
             if (l2) {
@@ -814,26 +814,26 @@ function equal(_l1, _l2) {
               switch (match$3.tag | 0) {
                 case 0 : 
                 case 1 : 
-                    return /* false */0;
+                    return false;
                 case 2 : 
                     if (Caml_obj.caml_equal(match[0], match$3[0])) {
                       _l2 = l2[1];
                       _l1 = l1[1];
                       continue ;
                     } else {
-                      return /* false */0;
+                      return false;
                     }
                 
               }
             } else {
-              return /* false */0;
+              return false;
             }
         
       }
     } else if (l2) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -941,7 +941,7 @@ function equal$1(x, y) {
   if (x[/* hash */4] === y[/* hash */4] && x[/* idx */0] === y[/* idx */0] && x[/* category */1] === y[/* category */1]) {
     return equal(x[/* desc */2], y[/* desc */2]);
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -955,7 +955,7 @@ var Table = Hashtbl.Make(/* module */[
     ]);
 
 function reset_table(a) {
-  return $$Array.fill(a, 0, a.length, /* false */0);
+  return $$Array.fill(a, 0, a.length, false);
 }
 
 function mark_used_indices(tbl) {
@@ -975,7 +975,7 @@ function mark_used_indices(tbl) {
                       return List.iter((function (param) {
                                     var i = param[1];
                                     if (i >= 0) {
-                                      return Caml_array.caml_array_set(tbl, i, /* true */1);
+                                      return Caml_array.caml_array_set(tbl, i, true);
                                     } else {
                                       return 0;
                                     }
@@ -1005,7 +1005,7 @@ function free_index(tbl_ref, l) {
   var len = tbl.length;
   var idx = find_free(tbl, 0, len);
   if (idx === len) {
-    tbl_ref[0] = Caml_array.caml_make_vect((len << 1), /* false */0);
+    tbl_ref[0] = Caml_array.caml_make_vect((len << 1), false);
   }
   return idx;
 }
@@ -1014,9 +1014,9 @@ var remove_matches = List.filter((function (param) {
         switch (param.tag | 0) {
           case 0 : 
           case 1 : 
-              return /* true */1;
+              return true;
           case 2 : 
-              return /* false */0;
+              return false;
           
         }
       }));
@@ -1166,9 +1166,9 @@ function filter_marks(b, e, marks) {
           /* marks */List.filter((function (param) {
                     var i = param[0];
                     if (i < b) {
-                      return /* true */1;
+                      return true;
                     } else {
-                      return +(i > e);
+                      return i > e;
                     }
                   }))(marks[/* marks */0]),
           /* pmarks */marks[/* pmarks */1]
@@ -1455,7 +1455,7 @@ var unknown_state = /* record */[
 
 function mk_state(ncol, desc) {
   var match = status(desc);
-  var break_state = typeof match === "number" && match !== 0 ? /* false */0 : /* true */1;
+  var break_state = typeof match === "number" && match !== 0 ? false : true;
   return /* record */[
           /* idx */break_state ? -3 : desc[/* idx */0],
           /* real_idx */desc[/* idx */0],
@@ -1727,11 +1727,11 @@ function is_charset(_param) {
   while(true) {
     var param = _param;
     if (typeof param === "number") {
-      return /* false */0;
+      return false;
     } else {
       switch (param.tag | 0) {
         case 0 : 
-            return /* true */1;
+            return true;
         case 4 : 
         case 5 : 
             _param = param[1];
@@ -1750,10 +1750,10 @@ function is_charset(_param) {
               _param = param[1];
               continue ;
             } else {
-              return /* false */0;
+              return false;
             }
         default:
-          return /* false */0;
+          return false;
       }
     }
   };
@@ -1813,7 +1813,7 @@ var cword = union(/* :: */[
     ], calnum);
 
 function colorize(c, regexp) {
-  var lnl = [/* false */0];
+  var lnl = [false];
   var colorize$1 = function (_regexp) {
     while(true) {
       var regexp = _regexp;
@@ -1833,7 +1833,7 @@ function colorize(c, regexp) {
           case 4 : 
               return split(cword, c);
           case 7 : 
-              lnl[0] = /* true */1;
+              lnl[0] = true;
               return /* () */0;
           case 5 : 
           case 6 : 
@@ -1905,63 +1905,63 @@ function equal$2(_x1, _x2) {
       switch (x1) {
         case 0 : 
             if (typeof x2 === "number" && x2 === 0) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 1 : 
             if (typeof x2 === "number" && x2 === 1) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 2 : 
             if (typeof x2 === "number" && x2 === 2) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 3 : 
             if (typeof x2 === "number" && x2 === 3) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 4 : 
             if (typeof x2 === "number" && x2 === 4) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 5 : 
             if (typeof x2 === "number" && x2 === 5) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 6 : 
             if (typeof x2 === "number" && x2 === 6) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 7 : 
             if (typeof x2 === "number" && x2 === 7) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 8 : 
             if (typeof x2 === "number" && x2 === 8) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         case 9 : 
             if (typeof x2 === "number" && x2 >= 9) {
-              return /* true */1;
+              return true;
             } else {
-              return /* false */0;
+              return false;
             }
         
       }
@@ -1969,25 +1969,25 @@ function equal$2(_x1, _x2) {
       switch (x1.tag | 0) {
         case 0 : 
             if (typeof x2 === "number" || x2.tag) {
-              return /* false */0;
+              return false;
             } else {
               return Caml_obj.caml_equal(x1[0], x2[0]);
             }
         case 1 : 
             if (typeof x2 === "number" || x2.tag !== 1) {
-              return /* false */0;
+              return false;
             } else {
               return eq_list(x1[0], x2[0]);
             }
         case 2 : 
             if (typeof x2 === "number" || x2.tag !== 2) {
-              return /* false */0;
+              return false;
             } else {
               return eq_list(x1[0], x2[0]);
             }
         case 3 : 
             if (typeof x2 === "number" || !(x2.tag === 3 && x1[1] === x2[1] && Caml_obj.caml_equal(x1[2], x2[2]))) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[0];
               _x1 = x1[0];
@@ -1995,7 +1995,7 @@ function equal$2(_x1, _x2) {
             }
         case 4 : 
             if (typeof x2 === "number" || !(x2.tag === 4 && x1[0] === x2[0])) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[1];
               _x1 = x1[1];
@@ -2003,17 +2003,17 @@ function equal$2(_x1, _x2) {
             }
         case 5 : 
             if (typeof x2 === "number" || !(x2.tag === 5 && x1[0] === x2[0])) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[1];
               _x1 = x1[1];
               continue ;
             }
         case 6 : 
-            return /* false */0;
+            return false;
         case 7 : 
             if (typeof x2 === "number" || x2.tag !== 7) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[0];
               _x1 = x1[0];
@@ -2021,7 +2021,7 @@ function equal$2(_x1, _x2) {
             }
         case 8 : 
             if (typeof x2 === "number" || x2.tag !== 8) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[0];
               _x1 = x1[0];
@@ -2029,7 +2029,7 @@ function equal$2(_x1, _x2) {
             }
         case 9 : 
             if (typeof x2 === "number" || x2.tag !== 9) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[0];
               _x1 = x1[0];
@@ -2037,7 +2037,7 @@ function equal$2(_x1, _x2) {
             }
         case 10 : 
             if (typeof x2 === "number" || x2.tag !== 10) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[0];
               _x1 = x1[0];
@@ -2045,19 +2045,19 @@ function equal$2(_x1, _x2) {
             }
         case 11 : 
             if (typeof x2 === "number" || x2.tag !== 11) {
-              return /* false */0;
+              return false;
             } else {
               return eq_list(x1[0], x2[0]);
             }
         case 12 : 
             if (typeof x2 === "number" || x2.tag !== 12) {
-              return /* false */0;
+              return false;
             } else {
               return eq_list(x1[0], x2[0]);
             }
         case 13 : 
             if (typeof x2 === "number" || !(x2.tag === 13 && equal$2(x1[0], x2[0]))) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[1];
               _x1 = x1[1];
@@ -2065,7 +2065,7 @@ function equal$2(_x1, _x2) {
             }
         case 14 : 
             if (typeof x2 === "number" || !(x2.tag === 14 && x1[0] === x2[0])) {
-              return /* false */0;
+              return false;
             } else {
               _x2 = x2[1];
               _x1 = x1[1];
@@ -2087,12 +2087,12 @@ function eq_list(_l1, _l2) {
         _l1 = l1[1];
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else if (l2) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -2374,7 +2374,7 @@ function translate(ids, kind, _ign_group, ign_case, _greedy, pos, cache, c, _par
             }
         case 7 : 
             _param = param[0];
-            _ign_group = /* true */1;
+            _ign_group = true;
             continue ;
         case 8 : 
             var b = pos[0];
@@ -2539,11 +2539,11 @@ function handle_case(_ign_case, _r) {
             }
         case 9 : 
             _r = r[0];
-            _ign_case = /* false */0;
+            _ign_case = false;
             continue ;
         case 10 : 
             _r = r[0];
-            _ign_case = /* true */1;
+            _ign_case = true;
             continue ;
         case 11 : 
             var l$prime$1 = List.map((function(ign_case){
@@ -2583,9 +2583,9 @@ function anchored(_param) {
       switch (param) {
         case 5 : 
         case 8 : 
-            return /* true */1;
+            return true;
         default:
-          return /* false */0;
+          return false;
       }
     } else {
       switch (param.tag | 0) {
@@ -2598,7 +2598,7 @@ function anchored(_param) {
               _param = param[0];
               continue ;
             } else {
-              return /* false */0;
+              return false;
             }
         case 6 : 
         case 7 : 
@@ -2613,7 +2613,7 @@ function anchored(_param) {
             _param = param[1];
             continue ;
         default:
-          return /* false */0;
+          return false;
       }
     }
   };
@@ -2888,7 +2888,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
         ];
   }
   var groups$1 = groups;
-  var partial = /* false */0;
+  var partial = false;
   var re$1 = re;
   var s$1 = s;
   var pos$1 = pos;
@@ -2911,7 +2911,7 @@ function exec_internal(name, $staropt$star, $staropt$star$1, groups, re, s) {
         0
       ] : Caml_array.caml_make_vect(n, 0);
   } else {
-    tmp = /* int array */[];
+    tmp = /* array */[];
   }
   var info = /* record */[
     /* re */re$1,
@@ -3019,9 +3019,9 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   var l = s.length;
   var test = function (c) {
     if (i[0] !== l) {
-      return +(Caml_string.get(s, i[0]) === c);
+      return Caml_string.get(s, i[0]) === c;
     } else {
-      return /* false */0;
+      return false;
     }
   };
   var accept = function (c) {
@@ -3046,11 +3046,11 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
         }
       }
       i[0] = i[0] + len | 0;
-      return /* true */1;
+      return true;
     }
     catch (exn$1){
       if (exn$1 === Pervasives.Exit) {
-        return /* false */0;
+        return false;
       } else {
         throw exn$1;
       }
@@ -3063,7 +3063,7 @@ function parse(multiline, dollar_endonly, dotall, ungreedy, s) {
   };
   var greedy_mod = function (r) {
     var gr = accept(/* "?" */63);
-    var gr$1 = ungreedy ? 1 - gr : gr;
+    var gr$1 = ungreedy ? !gr : gr;
     if (gr$1) {
       return /* Sem_greedy */Block.__(5, [
                 /* Non_greedy */620821490,
@@ -3773,7 +3773,7 @@ function regexp(flags, pat) {
             /* [] */0
           ]
         ]);
-  var regexp$2 = handle_case(/* false */0, regexp$1);
+  var regexp$2 = handle_case(false, regexp$1);
   var c = Bytes.make(257, /* "\000" */0);
   var need_lnl = colorize(c, regexp$2);
   var match = flatten_cmap(c);
@@ -3783,7 +3783,7 @@ function regexp(flags, pat) {
   var ncol$1 = need_lnl ? ncol + 1 | 0 : ncol;
   var ids = [0];
   var pos = [0];
-  var match$1 = translate(ids, /* First */332064784, /* false */0, /* false */0, /* Greedy */-904640576, pos, [/* Empty */0], col, regexp$2);
+  var match$1 = translate(ids, /* First */332064784, false, false, /* Greedy */-904640576, pos, [/* Empty */0], col, regexp$2);
   var r$1 = enforce_kind(ids, /* First */332064784, match$1[1], match$1[0]);
   var init = r$1;
   var cols = col;
@@ -3798,7 +3798,7 @@ function regexp(flags, pat) {
           /* col_repr */col_repr,
           /* ncol */ncol$2,
           /* lnl */lnl$1,
-          /* tbl */[/* int array */[/* false */0]],
+          /* tbl */[/* array */[false]],
           /* states */Curry._1(Re_automata_022[/* Table */2][/* create */0], 97),
           /* group_count */group_count
         ];
@@ -3809,7 +3809,7 @@ function exec(rex, pos, s) {
   var len = /* None */0;
   var re = rex;
   var s$1 = s;
-  var match = exec_internal("Re.exec", pos$1, len, /* true */1, re, s$1);
+  var match = exec_internal("Re.exec", pos$1, len, true, re, s$1);
   if (typeof match === "number") {
     throw Caml_builtin_exceptions.not_found;
   } else {
