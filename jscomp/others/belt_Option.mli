@@ -35,8 +35,8 @@ val mapWithDefaultU : 'a option -> 'b -> ('a -> 'b [@bs]) -> 'b
 
 val mapWithDefault : 'a option -> 'b -> ('a -> 'b) -> 'b
 (** [mapWithDefault optValue default f]
-  {b Returns:} [f x] if [optValue] is [Some x], or [default] if [optValue] is [None]
 
+  {b Returns:} [f x] if [optValue] is [Some x], or [default] if [optValue] is [None]
 
   @example {[
     let square x = x * x;;
@@ -50,6 +50,7 @@ val mapU : 'a option -> ('a -> 'b [@bs]) -> 'b option
 
 val map : 'a option -> ('a -> 'b) -> 'b option
 (** [map optValue f]
+
   {b Returns:} [Some (f x)] if [optValue] is [Some x], or [None] if [optValue] is [None]
 
 
@@ -65,7 +66,9 @@ val flatMapU : 'a option -> ('a -> 'b option [@bs]) -> 'b option
 
 val flatMap : 'a option -> ('a -> 'b option) -> 'b option
 (** [flatMap optValue f]
+
   {b Returns:} [f x] if [optValue] is [Some x], or [None] if [optValue] is [None]
+  
   Function [f] {i must} return a value of ['b option]
 
   @example {[
@@ -83,6 +86,7 @@ val flatMap : 'a option -> ('a -> 'b option) -> 'b option
 
 val getWithDefault : 'a option -> 'a -> 'a
 (** [getWithDefault optValue defaultValue]
+
     {b returns} [x] when [optValue] is [Some x], or [defaultValue] when [optValue] is [None]
     
     @example {[
@@ -102,9 +106,13 @@ val eqU : 'a option -> 'b option -> ('a -> 'b -> bool [@bs]) -> bool
 
 val eq : 'a option -> 'b option -> ('a -> 'b -> bool) -> bool
 (** [eq optA optB f] compares two optional values for equality with respect to function [f]
+
   {b Returns:}
+  
     [false] if one of [optA] and [optB] is [Some x] and the other is [None]
+    
     [true] if both [optA] and [optB] are [None]
+    
     the result of [f a b] where [optA] is [Some a] and [optB] is [Some b]
     
   The following example tests if two optional integers are equivalent mod 12.
@@ -125,10 +133,15 @@ val cmpU : 'a option -> 'b option -> ('a -> 'b -> int [@bs]) -> int
 
 val cmp : 'a option -> 'b option -> ('a -> 'b -> int) -> int
 (** [eq optA optB f] compares optional value [optA] to [optB] with respect to function [f]
+
   {b Returns:}
+  
     [-1] (meaning "less than") if  [optA] is [None] and [optB] is [Some x]
+    
     [1] (meaning "greater than") if [optA] is [Some x] [optB] is [None]
+    
     [0] (meaning "equal") if both [optA] and [optB] are [None]
+    
     the result of [f a b] where [optA] is [Some a] and [optB] is [Some b]; this result will be
     [-1] for less than, [0] for equal, and [1] for greater than.
     
