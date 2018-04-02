@@ -40,7 +40,7 @@ let (//) = Filename.concat
 
 let run_npm_link cwd name  =
   Format.fprintf Format.std_formatter
-    "Symlink bs-platform in %s @."  (cwd//name);
+    "Symlink bs-platform in %s @."  (cwd // name);
   if Ext_sys.is_windows_or_cygwin then
     begin
       let npm_link = "npm link bs-platform" in
@@ -58,7 +58,7 @@ let run_npm_link cwd name  =
       Bsb_build_util.mkp node_bin;
       let p = ".." // "bs-platform" // "lib" in
       let link a =
-        Unix.symlink (p//a) (node_bin // a) in
+        Unix.symlink (p // a) (node_bin // a) in
       link "bsb" ;
       link "bsc" ;
       link "bsrefmt";
@@ -116,17 +116,21 @@ let init_sample_project ~cwd ~theme name =
     "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
   ];
   let action ?(theme=theme) () =
-    Printf.printf "using %s theme\n" theme;  (* debug *)
     process_themes env theme Filename.current_dir_name Bsb_templates.root;
-    run_npm_link cwd name
+    (* Don't symlink `bs-platform` if already installed locally. *)
+    if not (Sys.file_exists (cwd // "node_modules" // "bs-platform"))
+      then run_npm_link cwd name else ()
   in
   begin match name with
     | "." ->
       let name = Filename.basename cwd in
       if Ext_namespace.is_valid_npm_package_name name then
         begin
+          (* Ignores theme requests if a `package.json` is found and uses interop theme. *)
+          let theme_to_use = if Sys.file_exists (cwd // "package.json")
+            then "interop" else theme in
           String_hashtbl.add env "name" name;
-          action ~theme:"interop" ()
+          action ~theme:theme_to_use ()
         end
       else
         begin

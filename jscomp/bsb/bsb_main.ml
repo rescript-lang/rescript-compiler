@@ -141,7 +141,6 @@ let watch_exit () =
 
 (* see discussion #929, if we catch the exception, we don't have stacktrace... *)
 let () =
-
   let vendor_ninja = bsc_dir // "ninja.exe" in  
   try begin 
     match Sys.argv with 
