@@ -479,7 +479,15 @@ let translate loc (prim_name : string)
         | _ -> 
           call Js_runtime_modules.string 
       end
-    | "caml_bool_compare"  
+    | "caml_bool_compare" ->   
+      begin match args with 
+      | [{expression_desc = Bool a} ; {expression_desc = Bool b} ] 
+        ->  
+          let c = compare a b in 
+          E.int (if c = 0 then 0l else if c > 0 then 1l else -1l)
+      | _ -> 
+        call Js_runtime_modules.caml_primitive
+      end
     | "caml_int_compare"
     | "caml_int32_compare"
     | "caml_nativeint_compare"
@@ -718,8 +726,8 @@ let translate loc (prim_name : string)
     | "caml_notequal" ->
       begin match args with 
       | [a1;b1]  when 
-        E.for_sure_js_null_undefined_boolean a1 
-        || E.for_sure_js_null_undefined_boolean b1 
+        E.for_sure_js_null_undefined a1 
+        || E.for_sure_js_null_undefined b1 
         -> 
         E.neq_null_undefined_boolean a1 b1 
       (* FIXME address_equal *)
@@ -730,7 +738,7 @@ let translate loc (prim_name : string)
     | "caml_equal"  ->     
       begin match args with 
       | [a1;b1]  when 
-        E.for_sure_js_null_undefined_boolean a1 || E.for_sure_js_null_undefined_boolean b1 
+        E.for_sure_js_null_undefined a1 || E.for_sure_js_null_undefined b1 
         -> 
         E.eq_null_undefined_boolean a1 b1 
         (* FIXME address_equal *)

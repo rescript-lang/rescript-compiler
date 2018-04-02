@@ -664,8 +664,6 @@ and
     if l > 0 then
       P.paren_group f 1 action
     else action ()
-
-  | Caml_not e
   | Js_not e ->
     let action () =
       P.string f "!" ;
@@ -1150,7 +1148,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Typeof _
       | Bind _
       | Number _
-      | Caml_not _ (* FIXME*)
       | Js_not _
       | Bool _
       | New _

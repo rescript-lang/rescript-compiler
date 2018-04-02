@@ -26,23 +26,15 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-var expected_004 = Caml_primitive.caml_bool_compare(false, true);
-
-var expected_005 = Caml_primitive.caml_bool_compare(true, false);
-
-var expected_006 = Caml_primitive.caml_bool_compare(false, false);
-
-var expected_007 = Caml_primitive.caml_bool_compare(true, true);
-
 var expected = /* tuple */[
   false,
   false,
   true,
   true,
-  expected_004,
-  expected_005,
-  expected_006,
-  expected_007
+  -1,
+  1,
+  0,
+  0
 ];
 
 var expected2 = /* tuple */[
@@ -56,23 +48,15 @@ var expected2 = /* tuple */[
   0
 ];
 
-var u_004 = Caml_primitive.caml_bool_compare(false, true);
-
-var u_005 = Caml_primitive.caml_bool_compare(true, false);
-
-var u_006 = Caml_primitive.caml_bool_compare(false, false);
-
-var u_007 = Caml_primitive.caml_bool_compare(true, true);
-
 var u = /* tuple */[
   false,
   false,
   true,
   true,
-  u_004,
-  u_005,
-  u_006,
-  u_007
+  -1,
+  1,
+  0,
+  0
 ];
 
 eq("File \"gpr496_test.ml\", line 42, characters 12-19", expected, u);
