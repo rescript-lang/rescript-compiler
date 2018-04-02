@@ -493,16 +493,13 @@ let obj ?comment properties : t =
      this should be optmized away for [if] ,[cond] to produce 
     more readable code
 *)         
-let bool_of_boolean ?comment (e : t) : t = 
-  match e.expression_desc with 
-  | Int_of_boolean _
-  | Number _ -> e 
-  | _ -> {comment ; expression_desc = Int_of_boolean e}
+let bool_of_boolean ?comment (e : t) : t = e
 
 
-let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
+(* var (Jident.create_js "true") *)
+let caml_true : t = {comment = None; expression_desc = Bool true }
 
-let caml_false  = int ~comment:"false" 0l
+let caml_false : t = {comment = None; expression_desc = Bool false }
 
 let bool v = if  v then caml_true else caml_false
 
@@ -529,13 +526,13 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
   match e0.expression_desc, e1.expression_desc with
   | Var (Id ({name = "undefined"|"null"} as id)), 
     (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
     when Ext_ident.is_js id && no_side_effect e1 -> 
     caml_false (* TODO: rename it as [caml_false] *)
   | 
     (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
     caml_false
@@ -576,9 +573,6 @@ let bin ?comment (op : J.binop) e0 e1 : t =
 
 let rec and_ ?comment (e1 : t) (e2 : t) : t = 
   match e1.expression_desc, e2.expression_desc with 
-  |  Int_of_boolean e1 , Int_of_boolean e2 ->
-    bool_of_boolean @@ and_ ?comment e1 e2
-
   (*
      {[ a && (b && c) === (a && b ) && c ]}
      is not used: benefit is not clear 
@@ -614,9 +608,6 @@ let rec and_ ?comment (e1 : t) (e2 : t) : t =
 
 let rec or_ ?comment (e1 : t) (e2 : t) = 
   match e1.expression_desc, e2.expression_desc with 
-  | Int_of_boolean e1 , Int_of_boolean e2
-    ->
-    bool_of_boolean @@ or_ ?comment e1 e2
   | Var i, Var j when Js_op_util.same_vident  i j 
     -> 
     e1
@@ -637,7 +628,6 @@ let rec not ({expression_desc; comment} as e : t) : t =
   match expression_desc with 
   | Number (Int {i; _}) -> 
     if i <> 0l then caml_false else caml_true
-  | Int_of_boolean  x -> js_not  x  e
   | Caml_not e -> e
   | Js_not e -> e 
   (* match expression_desc with  *)
@@ -649,27 +639,11 @@ let rec not ({expression_desc; comment} as e : t) : t =
   | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}
   | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
   | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
+  | Bool b -> if b then caml_false else caml_true
   | x -> {expression_desc = Caml_not e ; comment = None}
-and js_not ({expression_desc; comment} as e : t) origin : t =
-  match expression_desc with 
-  | Bin(EqEqEq , e0,e1) 
-    -> 
-    bool_of_boolean {expression_desc = Bin(NotEqEq, e0,e1); comment}
-  | Bin(NotEqEq , e0,e1) -> 
-    bool_of_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}
-  | Bin(Lt, a, b) -> 
-    bool_of_boolean {e with expression_desc = Bin (Ge,a,b)}
-  | Bin(Ge,a,b) -> 
-    bool_of_boolean {e with expression_desc = Bin (Lt,a,b)}
-  | Bin(Le,a,b) -> 
-    bool_of_boolean {e with expression_desc = Bin (Gt,a,b)}
-  | Bin(Gt,a,b) -> 
-    bool_of_boolean {e with expression_desc = Bin (Le,a,b)}
-  | _ -> {expression_desc = Caml_not origin; comment = None}
 
 let rec ocaml_boolean_under_condition (b : t) =
   match b.expression_desc with 
-  | Int_of_boolean b -> ocaml_boolean_under_condition b 
   | Bin (And, x,y) -> 
     let x' = ocaml_boolean_under_condition x in 
     let y' = ocaml_boolean_under_condition y in 
@@ -682,9 +656,6 @@ let rec ocaml_boolean_under_condition (b : t) =
     else {b with expression_desc = Bin(Or,x',y')}
   (** TODO: settle down Not semantics *)
   | Caml_not u
-    -> 
-    let u' = ocaml_boolean_under_condition u in 
-    {b with expression_desc = Js_not u'}
   | Js_not u 
     -> 
     let u' = ocaml_boolean_under_condition u in 
@@ -769,7 +740,6 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
   | Js_not e, _, _ 
     ->
     econd ?comment e f t 
-  | Int_of_boolean  b, _, _  -> econd ?comment  b t f
   | _ -> 
     let b  = ocaml_boolean_under_condition b in 
     if Js_analyzer.eq_expression t f then
@@ -999,6 +969,37 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
   | _ ->          
     bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
+let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) = 
+  match e0.expression_desc, e1.expression_desc with 
+  | Bool l, Bool r  ->
+    bool (match cmp with 
+    | Ceq  -> l = r
+    | Cneq -> l <> r
+    | Clt  -> l < r 
+    | Cgt  -> l > r 
+    | Cle  -> l <= r 
+    | Cge  -> l >= r
+    )
+  | Bool l, _  -> 
+    begin match cmp with 
+    | Clt -> seq e1 caml_false
+    | Cge -> seq e1 caml_true
+    | Cle 
+    | Cgt 
+    | Ceq 
+    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1 
+    end 
+  | _, Bool r ->
+    begin match cmp with  
+    | Cle -> seq e0 caml_true
+    | Cgt -> seq e0 caml_false
+    | Clt
+    | Cge 
+    | Ceq 
+    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+    end
+  | _ , _ ->
+    bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 let float_comp cmp ?comment  e0 e1 = 
   bool_of_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
@@ -1285,9 +1286,9 @@ let of_block ?comment ?e block : t =
 
 let is_null ?comment x = triple_equal ?comment x nil 
 
-let js_true : t = {comment = None; expression_desc = Bool true} 
-let js_false : t = {comment = None; expression_desc = Bool false} 
-let js_bool  x : t = if x then js_true else js_false
+let js_true : t = caml_true
+let js_false : t = caml_false
+let js_bool   = bool
 
 let is_undef ?comment x = triple_equal ?comment x undefined
 
@@ -1314,12 +1315,12 @@ let eq_null_undefined_boolean ?comment (a : t) (b : t) =
   match a.expression_desc, b.expression_desc with 
   | Var (Id ({name = "null" | "undefined"} as id) ),   
     (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
     when Ext_ident.is_js id -> 
     caml_false
   | (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ ), 
       Var (Id ({name = "null" | "undefined"} as id) )
     when Ext_ident.is_js id -> 
@@ -1338,12 +1339,12 @@ let neq_null_undefined_boolean ?comment (a : t) (b : t) =
   match a.expression_desc, b.expression_desc with 
   | Var (Id ({name = "null" | "undefined"} as id) ),   
     (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
     when Ext_ident.is_js id -> 
     caml_true
   | (Char_of_int _ | Char_to_int _ 
-    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ ), 
       Var (Id ({name = "null" | "undefined"} as id) )
     when Ext_ident.is_js id -> 

@@ -374,7 +374,6 @@ class virtual fold =
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Int_of_boolean _x -> let o = o#expression _x in o
       | Anything_to_number _x -> let o = o#expression _x in o
       | Bool _x -> let o = o#bool _x in o
       | Typeof _x -> let o = o#expression _x in o

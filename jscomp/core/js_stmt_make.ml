@@ -246,12 +246,17 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       aux ?comment e ys xs (y::acc)
         
 
-    |  Number ( Int { i = 0l; _}) , _,  _
+    |  (Number ( Int { i = 0l; _}) | Bool false) , _,  _
       ->  
       begin match else_ with 
         | [] -> acc 
         | _ -> block else_ ::acc
       end
+    | Bool true, _, _ ->
+       begin match then_ with 
+       |  []  -> acc 
+       | _ -> block then_ :: acc    
+      end 
     |  (Number _ , _, _
        | (Bin (Ge, 
                ({expression_desc = Length _;
@@ -274,8 +279,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
              ({expression_desc = 
                  Length _;
                _} as e ), {expression_desc = Number (Int { i = 0l; _})}))
-
-      | Int_of_boolean e), _ , _
+      ), _ , _
       ->
       (** Add comment when simplified *)
       aux ?comment e then_ else_ acc 

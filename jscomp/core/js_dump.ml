@@ -641,7 +641,7 @@ and
     );
     cxt
   | J.Anything_to_number e
-  | Int_of_boolean e ->
+    ->
     let action () =
       P.group f 0 @@ fun _ ->
       P.string f "+" ;
@@ -665,9 +665,7 @@ and
       P.paren_group f 1 action
     else action ()
 
-  | Caml_not e ->
-    expression_desc cxt l f (Bin (Minus, E.one_int_literal, e))
-
+  | Caml_not e
   | Js_not e ->
     let action () =
       P.string f "!" ;
@@ -1157,7 +1155,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Bool _
       | New _
       | J.Anything_to_number _
-      | Int_of_boolean _ -> false
+        -> false
       (* e = function(x){...}(x);  is good
       *)
     in

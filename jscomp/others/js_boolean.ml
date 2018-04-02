@@ -24,4 +24,5 @@
 
 (** Contains functions for dealing with JavaScript booleans *)
 
-let to_js_boolean b = if b then Js.true_ else Js.false_
+external to_js_boolean : bool -> Js.boolean = "%identity"
+
