@@ -45,9 +45,9 @@ function f_bool(b) {
                 ]), b);
 }
 
-var r_set = [/* false */0];
+var r_set = [false];
 
-var r_clear = [/* true */1];
+var r_clear = [true];
 
 function f_string(s) {
   return Curry._1(record(/* Format */[
@@ -359,8 +359,8 @@ function check(r, v, msg) {
 
 function test(argv) {
   current[0] = 0;
-  r_set[0] = /* false */0;
-  r_clear[0] = /* true */1;
+  r_set[0] = false;
+  r_clear[0] = true;
   r_string[0] = "";
   r_int[0] = 0;
   r_float[0] = 0.0;
@@ -443,8 +443,8 @@ function test(argv) {
     };
     List.iter2(f, result, reference);
   }
-  check(r_set, /* true */1, "Set");
-  check(r_clear, /* false */0, "Clear");
+  check(r_set, true, "Set");
+  check(r_clear, false, "Clear");
   check(r_string, "bar", "Set_string");
   check(r_int, 42, "Set_int");
   return check(r_float, 2.72, "Set_float");

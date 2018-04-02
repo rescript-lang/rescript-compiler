@@ -17,7 +17,7 @@ function Make(funarg) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
-        return /* false */0;
+        return false;
       } else {
         throw exn;
       }
@@ -51,11 +51,11 @@ function Make(funarg) {
               ]
             ];
       }
-      Curry._3(H[/* add */4], on_the_stack, top, /* true */1);
+      Curry._3(H[/* add */4], on_the_stack, top, true);
       Curry._3(H[/* add */4], n_labels, top, counter[0]);
       counter[0] = counter[0] + 1 | 0;
       Curry._3(H[/* add */4], l_labels, top, 0);
-      Curry._3(H[/* add */4], already_processed, top, /* true */1);
+      Curry._3(H[/* add */4], already_processed, top, true);
       var _successors = Curry._2(funarg[/* succ */1], gr, top);
       var _top = top;
       var _rest_of_stack = rest_of_stack;
@@ -95,7 +95,7 @@ function Make(funarg) {
           } else if (rest_of_stack$1) {
             var match = rest_of_stack$1[0];
             var new_top = match[0];
-            Curry._3(H[/* add */4], on_the_stack, top$1, /* false */0);
+            Curry._3(H[/* add */4], on_the_stack, top$1, false);
             Curry._3(H[/* add */4], l_labels, new_top, Caml_primitive.caml_int_max(Curry._2(H[/* find */6], l_labels, top$1), Curry._2(H[/* find */6], l_labels, new_top)));
             _rest_of_stack = rest_of_stack$1[1];
             _top = new_top;

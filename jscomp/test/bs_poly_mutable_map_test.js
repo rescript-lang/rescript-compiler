@@ -62,7 +62,7 @@ Belt_MutableMap.removeMany(a0, /* array */[
       6
     ]);
 
-eq("File \"bs_poly_mutable_map_test.ml\", line 29, characters 7-14", Belt_internalAVLtree.keysToArray(a0.data), /* int array */[
+eq("File \"bs_poly_mutable_map_test.ml\", line 29, characters 7-14", Belt_internalAVLtree.keysToArray(a0.data), /* array */[
       9,
       10
     ]);

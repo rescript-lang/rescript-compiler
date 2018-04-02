@@ -62,7 +62,7 @@ var suites_001 = /* :: */[
                       ]
                     ]
                   ],
-                  $$Array.to_list(/* int array */[
+                  $$Array.to_list(/* array */[
                         1,
                         2,
                         3

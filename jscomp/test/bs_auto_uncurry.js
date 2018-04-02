@@ -2,7 +2,7 @@
 
 var Curry = require("../../lib/js/curry.js");
 
-var xbs = Array.prototype.map.call(/* int array */[
+var xbs = Array.prototype.map.call(/* array */[
       1,
       2,
       3,
@@ -12,7 +12,7 @@ var xbs = Array.prototype.map.call(/* int array */[
       }));
 
 function f(cb) {
-  return Array.prototype.map.call(/* int array */[
+  return Array.prototype.map.call(/* array */[
               1,
               2,
               3,
@@ -20,7 +20,7 @@ function f(cb) {
             ], Curry.__1(cb));
 }
 
-var xs = Array.prototype.map.call(/* int array */[
+var xs = Array.prototype.map.call(/* array */[
       1,
       1,
       2

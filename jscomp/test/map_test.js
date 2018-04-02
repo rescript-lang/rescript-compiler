@@ -180,12 +180,12 @@ function equal(cmp, m1, m2) {
         _e1 = cons_enum(e1[2], e1[3]);
         continue ;
       } else {
-        return /* false */0;
+        return false;
       }
     } else if (e2) {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
@@ -450,9 +450,9 @@ var int_map_suites_001 = /* :: */[
                 ]
               ]);
           return /* Eq */Block.__(0, [
-                    /* true */1,
+                    true,
                     equal((function (x, y) {
-                            return +(x === y);
+                            return x === y;
                           }), u, v)
                   ]);
         })

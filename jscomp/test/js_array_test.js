@@ -16,12 +16,12 @@ var suites_000 = /* tuple */[
         5
       ];
       return /* Eq */Block.__(0, [
-                /* int array */[
+                /* array */[
                   2,
                   4
                 ],
                 (Js_vector.filterInPlace((function (x) {
-                          return +(x % 2 === 0);
+                          return x % 2 === 0;
                         }), x), x)
               ]);
     })
@@ -39,10 +39,10 @@ var suites_001 = /* :: */[
           5
         ];
         return /* Eq */Block.__(0, [
-                  /* true */1,
+                  true,
                   (Js_vector.filterInPlace((function (x) {
-                            return +(x > 10);
-                          }), x), +(x.length === 0))
+                            return x > 10;
+                          }), x), x.length === 0)
                 ]);
       })
   ],
@@ -51,8 +51,8 @@ var suites_001 = /* :: */[
       "isArray_array",
       (function () {
           return /* Eq */Block.__(0, [
-                    /* true */1,
-                    +Array.isArray(/* array */[])
+                    true,
+                    Array.isArray(/* array */[])
                   ]);
         })
     ],
@@ -61,8 +61,8 @@ var suites_001 = /* :: */[
         "isArray_int",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* false */0,
-                      +Array.isArray(34)
+                      false,
+                      Array.isArray(34)
                     ]);
           })
       ],
@@ -72,7 +72,7 @@ var suites_001 = /* :: */[
           (function () {
               return /* Eq */Block.__(0, [
                         3,
-                        /* int array */[
+                        /* array */[
                           1,
                           2,
                           3
@@ -151,12 +151,12 @@ var suites_001 = /* :: */[
                   "fillInPlace",
                   (function () {
                       return /* Eq */Block.__(0, [
-                                /* int array */[
+                                /* array */[
                                   4,
                                   4,
                                   4
                                 ],
-                                /* int array */[
+                                /* array */[
                                     1,
                                     2,
                                     3
@@ -169,12 +169,12 @@ var suites_001 = /* :: */[
                     "fillFromInPlace",
                     (function () {
                         return /* Eq */Block.__(0, [
-                                  /* int array */[
+                                  /* array */[
                                     1,
                                     4,
                                     4
                                   ],
-                                  /* int array */[
+                                  /* array */[
                                       1,
                                       2,
                                       3
@@ -187,12 +187,12 @@ var suites_001 = /* :: */[
                       "fillRangeInPlace",
                       (function () {
                           return /* Eq */Block.__(0, [
-                                    /* int array */[
+                                    /* array */[
                                       1,
                                       4,
                                       3
                                     ],
-                                    /* int array */[
+                                    /* array */[
                                         1,
                                         2,
                                         3
@@ -206,7 +206,7 @@ var suites_001 = /* :: */[
                         (function () {
                             return /* Eq */Block.__(0, [
                                       /* Some */[3],
-                                      Js_primitive.undefined_to_opt(/* int array */[
+                                      Js_primitive.undefined_to_opt(/* array */[
                                               1,
                                               2,
                                               3
@@ -230,7 +230,7 @@ var suites_001 = /* :: */[
                             (function () {
                                 return /* Eq */Block.__(0, [
                                           4,
-                                          /* int array */[
+                                          /* array */[
                                               1,
                                               2,
                                               3
@@ -244,7 +244,7 @@ var suites_001 = /* :: */[
                               (function () {
                                   return /* Eq */Block.__(0, [
                                             5,
-                                            /* int array */[
+                                            /* array */[
                                                 1,
                                                 2,
                                                 3
@@ -257,12 +257,12 @@ var suites_001 = /* :: */[
                                 "reverseInPlace",
                                 (function () {
                                     return /* Eq */Block.__(0, [
-                                              /* int array */[
+                                              /* array */[
                                                 3,
                                                 2,
                                                 1
                                               ],
-                                              /* int array */[
+                                              /* array */[
                                                   1,
                                                   2,
                                                   3
@@ -276,7 +276,7 @@ var suites_001 = /* :: */[
                                   (function () {
                                       return /* Eq */Block.__(0, [
                                                 /* Some */[1],
-                                                Js_primitive.undefined_to_opt(/* int array */[
+                                                Js_primitive.undefined_to_opt(/* array */[
                                                         1,
                                                         2,
                                                         3
@@ -299,12 +299,12 @@ var suites_001 = /* :: */[
                                       "sortInPlace",
                                       (function () {
                                           return /* Eq */Block.__(0, [
-                                                    /* int array */[
+                                                    /* array */[
                                                       1,
                                                       2,
                                                       3
                                                     ],
-                                                    /* int array */[
+                                                    /* array */[
                                                         3,
                                                         1,
                                                         2
@@ -317,12 +317,12 @@ var suites_001 = /* :: */[
                                         "sortInPlaceWith",
                                         (function () {
                                             return /* Eq */Block.__(0, [
-                                                      /* int array */[
+                                                      /* array */[
                                                         3,
                                                         2,
                                                         1
                                                       ],
-                                                      /* int array */[
+                                                      /* array */[
                                                           3,
                                                           1,
                                                           2
@@ -336,7 +336,7 @@ var suites_001 = /* :: */[
                                         /* tuple */[
                                           "spliceInPlace",
                                           (function () {
-                                              var arr = /* int array */[
+                                              var arr = /* array */[
                                                 1,
                                                 2,
                                                 3,
@@ -352,7 +352,7 @@ var suites_001 = /* :: */[
                                                             3,
                                                             4
                                                           ],
-                                                          /* int array */[]
+                                                          /* array */[]
                                                         ],
                                                         /* tuple */[
                                                           arr,
@@ -365,7 +365,7 @@ var suites_001 = /* :: */[
                                           /* tuple */[
                                             "removeFromInPlace",
                                             (function () {
-                                                var arr = /* int array */[
+                                                var arr = /* array */[
                                                   1,
                                                   2,
                                                   3,
@@ -374,11 +374,11 @@ var suites_001 = /* :: */[
                                                 var removed = arr.splice(2);
                                                 return /* Eq */Block.__(0, [
                                                           /* tuple */[
-                                                            /* int array */[
+                                                            /* array */[
                                                               1,
                                                               2
                                                             ],
-                                                            /* int array */[
+                                                            /* array */[
                                                               3,
                                                               4
                                                             ]
@@ -394,7 +394,7 @@ var suites_001 = /* :: */[
                                             /* tuple */[
                                               "removeCountInPlace",
                                               (function () {
-                                                  var arr = /* int array */[
+                                                  var arr = /* array */[
                                                     1,
                                                     2,
                                                     3,
@@ -403,12 +403,12 @@ var suites_001 = /* :: */[
                                                   var removed = arr.splice(2, 1);
                                                   return /* Eq */Block.__(0, [
                                                             /* tuple */[
-                                                              /* int array */[
+                                                              /* array */[
                                                                 1,
                                                                 2,
                                                                 4
                                                               ],
-                                                              /* int array */[3]
+                                                              /* array */[3]
                                                             ],
                                                             /* tuple */[
                                                               arr,
@@ -423,7 +423,7 @@ var suites_001 = /* :: */[
                                                 (function () {
                                                     return /* Eq */Block.__(0, [
                                                               4,
-                                                              /* int array */[
+                                                              /* array */[
                                                                   1,
                                                                   2,
                                                                   3
@@ -437,7 +437,7 @@ var suites_001 = /* :: */[
                                                   (function () {
                                                       return /* Eq */Block.__(0, [
                                                                 5,
-                                                                /* int array */[
+                                                                /* array */[
                                                                     1,
                                                                     2,
                                                                     3
@@ -450,13 +450,13 @@ var suites_001 = /* :: */[
                                                     "append",
                                                     (function () {
                                                         return /* Eq */Block.__(0, [
-                                                                  /* int array */[
+                                                                  /* array */[
                                                                     1,
                                                                     2,
                                                                     3,
                                                                     4
                                                                   ],
-                                                                  /* int array */[
+                                                                  /* array */[
                                                                       1,
                                                                       2,
                                                                       3
@@ -476,11 +476,11 @@ var suites_001 = /* :: */[
                                                                       4,
                                                                       5
                                                                     ],
-                                                                    /* int array */[
+                                                                    /* array */[
                                                                         1,
                                                                         2,
                                                                         3
-                                                                      ].concat(/* int array */[
+                                                                      ].concat(/* array */[
                                                                           4,
                                                                           5
                                                                         ])
@@ -501,14 +501,14 @@ var suites_001 = /* :: */[
                                                                         6,
                                                                         7
                                                                       ],
-                                                                      /* int array */[
+                                                                      /* array */[
                                                                           1,
                                                                           2,
                                                                           3
-                                                                        ].concat(/* int array */[
+                                                                        ].concat(/* array */[
                                                                             4,
                                                                             5
-                                                                          ], /* int array */[
+                                                                          ], /* array */[
                                                                             6,
                                                                             7
                                                                           ])
@@ -520,8 +520,8 @@ var suites_001 = /* :: */[
                                                           "includes",
                                                           (function () {
                                                               return /* Eq */Block.__(0, [
-                                                                        /* true */1,
-                                                                        +/* int array */[
+                                                                        true,
+                                                                        /* array */[
                                                                             1,
                                                                             2,
                                                                             3
@@ -535,7 +535,7 @@ var suites_001 = /* :: */[
                                                             (function () {
                                                                 return /* Eq */Block.__(0, [
                                                                           1,
-                                                                          /* int array */[
+                                                                          /* array */[
                                                                               1,
                                                                               2,
                                                                               3
@@ -549,7 +549,7 @@ var suites_001 = /* :: */[
                                                               (function () {
                                                                   return /* Eq */Block.__(0, [
                                                                             3,
-                                                                            /* int array */[
+                                                                            /* array */[
                                                                                 1,
                                                                                 2,
                                                                                 3,
@@ -564,7 +564,7 @@ var suites_001 = /* :: */[
                                                                 (function () {
                                                                     return /* Eq */Block.__(0, [
                                                                               "1,2,3",
-                                                                              /* int array */[
+                                                                              /* array */[
                                                                                   1,
                                                                                   2,
                                                                                   3
@@ -578,7 +578,7 @@ var suites_001 = /* :: */[
                                                                   (function () {
                                                                       return /* Eq */Block.__(0, [
                                                                                 "1;2;3",
-                                                                                /* int array */[
+                                                                                /* array */[
                                                                                     1,
                                                                                     2,
                                                                                     3
@@ -592,7 +592,7 @@ var suites_001 = /* :: */[
                                                                     (function () {
                                                                         return /* Eq */Block.__(0, [
                                                                                   1,
-                                                                                  /* int array */[
+                                                                                  /* array */[
                                                                                       1,
                                                                                       2,
                                                                                       3
@@ -606,7 +606,7 @@ var suites_001 = /* :: */[
                                                                       (function () {
                                                                           return /* Eq */Block.__(0, [
                                                                                     1,
-                                                                                    /* int array */[
+                                                                                    /* array */[
                                                                                         1,
                                                                                         2,
                                                                                         3,
@@ -620,7 +620,7 @@ var suites_001 = /* :: */[
                                                                         "slice",
                                                                         (function () {
                                                                             return /* Eq */Block.__(0, [
-                                                                                      /* int array */[
+                                                                                      /* array */[
                                                                                         2,
                                                                                         3
                                                                                       ],
@@ -661,7 +661,7 @@ var suites_001 = /* :: */[
                                                                             "sliceFrom",
                                                                             (function () {
                                                                                 return /* Eq */Block.__(0, [
-                                                                                          /* int array */[
+                                                                                          /* array */[
                                                                                             3,
                                                                                             4,
                                                                                             5
@@ -682,7 +682,7 @@ var suites_001 = /* :: */[
                                                                               (function () {
                                                                                   return /* Eq */Block.__(0, [
                                                                                             "1,2,3",
-                                                                                            /* int array */[
+                                                                                            /* array */[
                                                                                                 1,
                                                                                                 2,
                                                                                                 3
@@ -696,7 +696,7 @@ var suites_001 = /* :: */[
                                                                                 (function () {
                                                                                     return /* Eq */Block.__(0, [
                                                                                               "1,2,3",
-                                                                                              /* int array */[
+                                                                                              /* array */[
                                                                                                   1,
                                                                                                   2,
                                                                                                   3
@@ -709,13 +709,13 @@ var suites_001 = /* :: */[
                                                                                   "every",
                                                                                   (function () {
                                                                                       return /* Eq */Block.__(0, [
-                                                                                                /* true */1,
-                                                                                                +/* int array */[
+                                                                                                true,
+                                                                                                /* array */[
                                                                                                     1,
                                                                                                     2,
                                                                                                     3
                                                                                                   ].every((function (n) {
-                                                                                                        return +(n > 0);
+                                                                                                        return n > 0;
                                                                                                       }))
                                                                                               ]);
                                                                                     })
@@ -725,13 +725,13 @@ var suites_001 = /* :: */[
                                                                                     "everyi",
                                                                                     (function () {
                                                                                         return /* Eq */Block.__(0, [
-                                                                                                  /* false */0,
-                                                                                                  +/* int array */[
+                                                                                                  false,
+                                                                                                  /* array */[
                                                                                                       1,
                                                                                                       2,
                                                                                                       3
                                                                                                     ].every((function (_, i) {
-                                                                                                          return +(i > 0);
+                                                                                                          return i > 0;
                                                                                                         }))
                                                                                                 ]);
                                                                                       })
@@ -741,17 +741,17 @@ var suites_001 = /* :: */[
                                                                                       "filter",
                                                                                       (function () {
                                                                                           return /* Eq */Block.__(0, [
-                                                                                                    /* int array */[
+                                                                                                    /* array */[
                                                                                                       2,
                                                                                                       4
                                                                                                     ],
-                                                                                                    /* int array */[
+                                                                                                    /* array */[
                                                                                                         1,
                                                                                                         2,
                                                                                                         3,
                                                                                                         4
                                                                                                       ].filter((function (n) {
-                                                                                                            return +(n % 2 === 0);
+                                                                                                            return n % 2 === 0;
                                                                                                           }))
                                                                                                   ]);
                                                                                         })
@@ -761,17 +761,17 @@ var suites_001 = /* :: */[
                                                                                         "filteri",
                                                                                         (function () {
                                                                                             return /* Eq */Block.__(0, [
-                                                                                                      /* int array */[
+                                                                                                      /* array */[
                                                                                                         1,
                                                                                                         3
                                                                                                       ],
-                                                                                                      /* int array */[
+                                                                                                      /* array */[
                                                                                                           1,
                                                                                                           2,
                                                                                                           3,
                                                                                                           4
                                                                                                         ].filter((function (_, i) {
-                                                                                                              return +(i % 2 === 0);
+                                                                                                              return i % 2 === 0;
                                                                                                             }))
                                                                                                     ]);
                                                                                           })
@@ -782,13 +782,13 @@ var suites_001 = /* :: */[
                                                                                           (function () {
                                                                                               return /* Eq */Block.__(0, [
                                                                                                         /* Some */[2],
-                                                                                                        Js_primitive.undefined_to_opt(/* int array */[
+                                                                                                        Js_primitive.undefined_to_opt(/* array */[
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3,
                                                                                                                 4
                                                                                                               ].find((function (n) {
-                                                                                                                    return +(n % 2 === 0);
+                                                                                                                    return n % 2 === 0;
                                                                                                                   })))
                                                                                                       ]);
                                                                                             })
@@ -799,13 +799,13 @@ var suites_001 = /* :: */[
                                                                                             (function () {
                                                                                                 return /* Eq */Block.__(0, [
                                                                                                           /* None */0,
-                                                                                                          Js_primitive.undefined_to_opt(/* int array */[
+                                                                                                          Js_primitive.undefined_to_opt(/* array */[
                                                                                                                   1,
                                                                                                                   2,
                                                                                                                   3,
                                                                                                                   4
                                                                                                                 ].find((function (n) {
-                                                                                                                      return +(n % 2 === 5);
+                                                                                                                      return n % 2 === 5;
                                                                                                                     })))
                                                                                                         ]);
                                                                                               })
@@ -816,13 +816,13 @@ var suites_001 = /* :: */[
                                                                                               (function () {
                                                                                                   return /* Eq */Block.__(0, [
                                                                                                             /* Some */[1],
-                                                                                                            Js_primitive.undefined_to_opt(/* int array */[
+                                                                                                            Js_primitive.undefined_to_opt(/* array */[
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
                                                                                                                     4
                                                                                                                   ].find((function (_, i) {
-                                                                                                                        return +(i % 2 === 0);
+                                                                                                                        return i % 2 === 0;
                                                                                                                       })))
                                                                                                           ]);
                                                                                                 })
@@ -833,13 +833,13 @@ var suites_001 = /* :: */[
                                                                                                 (function () {
                                                                                                     return /* Eq */Block.__(0, [
                                                                                                               /* None */0,
-                                                                                                              Js_primitive.undefined_to_opt(/* int array */[
+                                                                                                              Js_primitive.undefined_to_opt(/* array */[
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,
                                                                                                                       4
                                                                                                                     ].find((function (_, i) {
-                                                                                                                          return +(i % 2 === 5);
+                                                                                                                          return i % 2 === 5;
                                                                                                                         })))
                                                                                                             ]);
                                                                                                   })
@@ -850,13 +850,13 @@ var suites_001 = /* :: */[
                                                                                                   (function () {
                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                 1,
-                                                                                                                /* int array */[
+                                                                                                                /* array */[
                                                                                                                     1,
                                                                                                                     2,
                                                                                                                     3,
                                                                                                                     4
                                                                                                                   ].findIndex((function (n) {
-                                                                                                                        return +(n % 2 === 0);
+                                                                                                                        return n % 2 === 0;
                                                                                                                       }))
                                                                                                               ]);
                                                                                                     })
@@ -867,13 +867,13 @@ var suites_001 = /* :: */[
                                                                                                     (function () {
                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                   0,
-                                                                                                                  /* int array */[
+                                                                                                                  /* array */[
                                                                                                                       1,
                                                                                                                       2,
                                                                                                                       3,
                                                                                                                       4
                                                                                                                     ].findIndex((function (_, i) {
-                                                                                                                          return +(i % 2 === 0);
+                                                                                                                          return i % 2 === 0;
                                                                                                                         }))
                                                                                                                 ]);
                                                                                                       })
@@ -883,7 +883,7 @@ var suites_001 = /* :: */[
                                                                                                       "forEach",
                                                                                                       (function () {
                                                                                                           var sum = [0];
-                                                                                                          /* int array */[
+                                                                                                          /* array */[
                                                                                                               1,
                                                                                                               2,
                                                                                                               3
@@ -902,7 +902,7 @@ var suites_001 = /* :: */[
                                                                                                         "forEachi",
                                                                                                         (function () {
                                                                                                             var sum = [0];
-                                                                                                            /* int array */[
+                                                                                                            /* array */[
                                                                                                                 1,
                                                                                                                 2,
                                                                                                                 3
@@ -921,13 +921,13 @@ var suites_001 = /* :: */[
                                                                                                           "map",
                                                                                                           (function () {
                                                                                                               return /* Eq */Block.__(0, [
-                                                                                                                        /* int array */[
+                                                                                                                        /* array */[
                                                                                                                           2,
                                                                                                                           4,
                                                                                                                           6,
                                                                                                                           8
                                                                                                                         ],
-                                                                                                                        /* int array */[
+                                                                                                                        /* array */[
                                                                                                                             1,
                                                                                                                             2,
                                                                                                                             3,
@@ -943,13 +943,13 @@ var suites_001 = /* :: */[
                                                                                                             "map",
                                                                                                             (function () {
                                                                                                                 return /* Eq */Block.__(0, [
-                                                                                                                          /* int array */[
+                                                                                                                          /* array */[
                                                                                                                             0,
                                                                                                                             2,
                                                                                                                             4,
                                                                                                                             6
                                                                                                                           ],
-                                                                                                                          /* int array */[
+                                                                                                                          /* array */[
                                                                                                                               1,
                                                                                                                               2,
                                                                                                                               3,
@@ -966,7 +966,7 @@ var suites_001 = /* :: */[
                                                                                                               (function () {
                                                                                                                   return /* Eq */Block.__(0, [
                                                                                                                             -10,
-                                                                                                                            /* int array */[
+                                                                                                                            /* array */[
                                                                                                                                 1,
                                                                                                                                 2,
                                                                                                                                 3,
@@ -983,7 +983,7 @@ var suites_001 = /* :: */[
                                                                                                                 (function () {
                                                                                                                     return /* Eq */Block.__(0, [
                                                                                                                               -6,
-                                                                                                                              /* int array */[
+                                                                                                                              /* array */[
                                                                                                                                   1,
                                                                                                                                   2,
                                                                                                                                   3,
@@ -1000,7 +1000,7 @@ var suites_001 = /* :: */[
                                                                                                                   (function () {
                                                                                                                       return /* Eq */Block.__(0, [
                                                                                                                                 -10,
-                                                                                                                                /* int array */[
+                                                                                                                                /* array */[
                                                                                                                                     1,
                                                                                                                                     2,
                                                                                                                                     3,
@@ -1017,7 +1017,7 @@ var suites_001 = /* :: */[
                                                                                                                     (function () {
                                                                                                                         return /* Eq */Block.__(0, [
                                                                                                                                   -6,
-                                                                                                                                  /* int array */[
+                                                                                                                                  /* array */[
                                                                                                                                       1,
                                                                                                                                       2,
                                                                                                                                       3,
@@ -1033,14 +1033,14 @@ var suites_001 = /* :: */[
                                                                                                                       "some",
                                                                                                                       (function () {
                                                                                                                           return /* Eq */Block.__(0, [
-                                                                                                                                    /* false */0,
-                                                                                                                                    +/* int array */[
+                                                                                                                                    false,
+                                                                                                                                    /* array */[
                                                                                                                                         1,
                                                                                                                                         2,
                                                                                                                                         3,
                                                                                                                                         4
                                                                                                                                       ].some((function (n) {
-                                                                                                                                            return +(n <= 0);
+                                                                                                                                            return n <= 0;
                                                                                                                                           }))
                                                                                                                                   ]);
                                                                                                                         })
@@ -1050,14 +1050,14 @@ var suites_001 = /* :: */[
                                                                                                                         "somei",
                                                                                                                         (function () {
                                                                                                                             return /* Eq */Block.__(0, [
-                                                                                                                                      /* true */1,
-                                                                                                                                      +/* int array */[
+                                                                                                                                      true,
+                                                                                                                                      /* array */[
                                                                                                                                           1,
                                                                                                                                           2,
                                                                                                                                           3,
                                                                                                                                           4
                                                                                                                                         ].some((function (_, i) {
-                                                                                                                                              return +(i <= 0);
+                                                                                                                                              return i <= 0;
                                                                                                                                             }))
                                                                                                                                     ]);
                                                                                                                           })

@@ -10,7 +10,7 @@ var suites_000 = /* tuple */[
   "string_of_char_array",
   (function () {
       return /* Eq */Block.__(0, [
-                Caml_string.caml_string_of_char_array(/* int array */[
+                Caml_string.caml_string_of_char_array(/* array */[
                       /* "a" */97,
                       /* "b" */98,
                       /* "c" */99
@@ -26,7 +26,7 @@ var suites_001 = /* :: */[
     (function () {
         return /* Eq */Block.__(0, [
                   Caml_string.caml_is_printable(/* "a" */97),
-                  /* true */1
+                  true
                 ]);
       })
   ],

@@ -61,7 +61,7 @@ function f4(h, x) {
 }
 
 function f6(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 function f7(x) {
@@ -91,10 +91,10 @@ function f9(x) {
 }
 
 function f10(x) {
-  return +(x === null);
+  return x === null;
 }
 
-var f11 = /* false */0;
+var f11 = false;
 
 var Test_null = /* module */[
   /* f1 */f1,
@@ -146,7 +146,7 @@ function f4$1(h, x) {
 }
 
 function f6$1(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 function f7$1(x) {
@@ -176,10 +176,10 @@ function f9$1(x) {
 }
 
 function f10$1(x) {
-  return +(x === undefined);
+  return x === undefined;
 }
 
-var f11$1 = /* false */0;
+var f11$1 = false;
 
 var Test_def = /* module */[
   /* f1 */f1$1,
@@ -231,7 +231,7 @@ function f4$2(h, x) {
 }
 
 function f6$2(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
 function f7$2(x) {
@@ -259,10 +259,10 @@ function f9$2(x) {
 }
 
 function f10$2(x) {
-  return +(x == null);
+  return x == null;
 }
 
-var f11$2 = /* false */0;
+var f11$2 = false;
 
 var Test_null_def = /* module */[
   /* f1 */f1$2,

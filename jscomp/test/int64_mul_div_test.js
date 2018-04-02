@@ -872,15 +872,15 @@ var to_floats = /* array */[
   ]
 ];
 
-var check_complete_compare = /* int array */[
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  /* true */1
+var check_complete_compare = /* array */[
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true,
+  true
 ];
 
 var of_float_pairs = /* array */[
@@ -1763,7 +1763,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                             (function () {
                                 return /* Eq */Block.__(0, [
                                           $$Array.map((function () {
-                                                  return /* true */1;
+                                                  return true;
                                                 }), check_complete_compare),
                                           check_complete_compare
                                         ]);

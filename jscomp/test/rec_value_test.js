@@ -139,11 +139,11 @@ function fib3(n) {
 
 function even(n) {
   if (n === 0) {
-    return /* true */1;
+    return true;
   } else {
     var n$1 = n - 1 | 0;
     if (n$1 === 1) {
-      return /* true */1;
+      return true;
     } else {
       return even(n$1 - 1 | 0);
     }
@@ -154,7 +154,7 @@ function even2(_n) {
   while(true) {
     var n = _n;
     if (n === 0) {
-      return /* true */1;
+      return true;
     } else {
       _n = n - 1 | 0;
       continue ;

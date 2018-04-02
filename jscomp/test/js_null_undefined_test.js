@@ -60,8 +60,8 @@ var suites_001 = /* :: */[
             "test - null",
             (function () {
                 return /* Eq */Block.__(0, [
-                          /* true */1,
-                          /* true */1
+                          true,
+                          true
                         ]);
               })
           ],
@@ -70,8 +70,8 @@ var suites_001 = /* :: */[
               "test - undefined",
               (function () {
                   return /* Eq */Block.__(0, [
-                            /* true */1,
-                            /* true */1
+                            true,
+                            true
                           ]);
                 })
             ],
@@ -80,8 +80,8 @@ var suites_001 = /* :: */[
                 "test - empty",
                 (function () {
                     return /* Eq */Block.__(0, [
-                              /* true */1,
-                              /* true */1
+                              true,
+                              true
                             ]);
                   })
               ],
@@ -90,8 +90,8 @@ var suites_001 = /* :: */[
                   "test - 'a",
                   (function () {
                       return /* Eq */Block.__(0, [
-                                /* false */0,
-                                /* false */0
+                                false,
+                                false
                               ]);
                     })
                 ],
@@ -147,13 +147,13 @@ var suites_001 = /* :: */[
                           /* tuple */[
                             "iter - null",
                             (function () {
-                                var hit = [/* false */0];
+                                var hit = [false];
                                 Js_null_undefined.iter(null, (function () {
-                                        hit[0] = /* true */1;
+                                        hit[0] = true;
                                         return /* () */0;
                                       }));
                                 return /* Eq */Block.__(0, [
-                                          /* false */0,
+                                          false,
                                           hit[0]
                                         ]);
                               })
@@ -162,13 +162,13 @@ var suites_001 = /* :: */[
                             /* tuple */[
                               "iter - undefined",
                               (function () {
-                                  var hit = [/* false */0];
+                                  var hit = [false];
                                   Js_null_undefined.iter(undefined, (function () {
-                                          hit[0] = /* true */1;
+                                          hit[0] = true;
                                           return /* () */0;
                                         }));
                                   return /* Eq */Block.__(0, [
-                                            /* false */0,
+                                            false,
                                             hit[0]
                                           ]);
                                 })
@@ -177,13 +177,13 @@ var suites_001 = /* :: */[
                               /* tuple */[
                                 "iter - empty",
                                 (function () {
-                                    var hit = [/* false */0];
+                                    var hit = [false];
                                     Js_null_undefined.iter(undefined, (function () {
-                                            hit[0] = /* true */1;
+                                            hit[0] = true;
                                             return /* () */0;
                                           }));
                                     return /* Eq */Block.__(0, [
-                                              /* false */0,
+                                              false,
                                               hit[0]
                                             ]);
                                   })
@@ -227,28 +227,28 @@ var suites_001 = /* :: */[
                                       /* tuple */[
                                         "null <> undefined",
                                         (function () {
-                                            return /* Ok */Block.__(4, [/* true */1]);
+                                            return /* Ok */Block.__(4, [true]);
                                           })
                                       ],
                                       /* :: */[
                                         /* tuple */[
                                           "null <> empty",
                                           (function () {
-                                              return /* Ok */Block.__(4, [/* true */1]);
+                                              return /* Ok */Block.__(4, [true]);
                                             })
                                         ],
                                         /* :: */[
                                           /* tuple */[
                                             "undefined = empty",
                                             (function () {
-                                                return /* Ok */Block.__(4, [/* true */1]);
+                                                return /* Ok */Block.__(4, [true]);
                                               })
                                           ],
                                           /* :: */[
                                             /* tuple */[
                                               "File \"js_null_undefined_test.ml\", line 42, characters 2-9",
                                               (function () {
-                                                  return /* Ok */Block.__(4, [/* true */1]);
+                                                  return /* Ok */Block.__(4, [true]);
                                                 })
                                             ],
                                             /* [] */0

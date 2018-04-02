@@ -53,13 +53,13 @@ var uu = /* array */[
   hey_string("in")
 ];
 
-var vv = /* int array */[
+var vv = /* array */[
   hey_int(3),
   hey_int(0),
   hey_int(4)
 ];
 
-eq("File \"poly_variant_test.ml\", line 58, characters 5-12", vv, /* int array */[
+eq("File \"poly_variant_test.ml\", line 58, characters 5-12", vv, /* array */[
       3,
       0,
       4

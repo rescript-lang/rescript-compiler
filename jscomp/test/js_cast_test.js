@@ -29,9 +29,9 @@ function eq(loc, x, y) {
               }));
 }
 
-eq("File \"js_cast_test.ml\", line 13, characters 12-19", /* true */1, 1);
+eq("File \"js_cast_test.ml\", line 13, characters 12-19", true, 1);
 
-eq("File \"js_cast_test.ml\", line 15, characters 12-19", /* false */0, 0);
+eq("File \"js_cast_test.ml\", line 15, characters 12-19", false, 0);
 
 eq("File \"js_cast_test.ml\", line 17, characters 12-19", 0, 0.0);
 

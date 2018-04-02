@@ -17,14 +17,14 @@ try {
 }
 catch (raw_exn){
   var exn = Js_exn.internalToOCamlException(raw_exn);
-  function_equal_test = exn[0] === Caml_builtin_exceptions.invalid_argument && exn[1] === "equal: functional value" ? /* true */1 : /* false */0;
+  function_equal_test = exn[0] === Caml_builtin_exceptions.invalid_argument && exn[1] === "equal: functional value" ? true : false;
 }
 
 var suites_000 = /* tuple */[
   "option",
   (function () {
       return /* Eq */Block.__(0, [
-                /* true */1,
+                true,
                 Caml_obj.caml_lessthan(/* None */0, /* Some */[1])
               ]);
     })
@@ -35,7 +35,7 @@ var suites_001 = /* :: */[
     "option2",
     (function () {
         return /* Eq */Block.__(0, [
-                  /* true */1,
+                  true,
                   Caml_obj.caml_lessthan(/* Some */[1], /* Some */[2])
                 ]);
       })
@@ -45,7 +45,7 @@ var suites_001 = /* :: */[
       "list0",
       (function () {
           return /* Eq */Block.__(0, [
-                    /* true */1,
+                    true,
                     Caml_obj.caml_greaterthan(/* :: */[
                           1,
                           /* [] */0
@@ -58,7 +58,7 @@ var suites_001 = /* :: */[
         "listeq",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* true */1,
+                      true,
                       Caml_obj.caml_equal(/* :: */[
                             1,
                             /* :: */[
@@ -86,7 +86,7 @@ var suites_001 = /* :: */[
           "listneq",
           (function () {
               return /* Eq */Block.__(0, [
-                        /* true */1,
+                        true,
                         Caml_obj.caml_greaterthan(/* :: */[
                               1,
                               /* :: */[
@@ -114,19 +114,19 @@ var suites_001 = /* :: */[
             "custom_u",
             (function () {
                 return /* Eq */Block.__(0, [
-                          /* true */1,
+                          true,
                           Caml_obj.caml_greaterthan(/* tuple */[
                                 /* A */Block.__(0, [3]),
                                 /* B */Block.__(1, [
                                     2,
-                                    /* false */0
+                                    false
                                   ]),
                                 /* C */Block.__(2, [1])
                               ], /* tuple */[
                                 /* A */Block.__(0, [3]),
                                 /* B */Block.__(1, [
                                     2,
-                                    /* false */0
+                                    false
                                   ]),
                                 /* C */Block.__(2, [0])
                               ])
@@ -138,19 +138,19 @@ var suites_001 = /* :: */[
               "custom_u2",
               (function () {
                   return /* Eq */Block.__(0, [
-                            /* true */1,
+                            true,
                             Caml_obj.caml_equal(/* tuple */[
                                   /* A */Block.__(0, [3]),
                                   /* B */Block.__(1, [
                                       2,
-                                      /* false */0
+                                      false
                                     ]),
                                   /* C */Block.__(2, [1])
                                 ], /* tuple */[
                                   /* A */Block.__(0, [3]),
                                   /* B */Block.__(1, [
                                       2,
-                                      /* false */0
+                                      false
                                     ]),
                                   /* C */Block.__(2, [1])
                                 ])
@@ -162,7 +162,7 @@ var suites_001 = /* :: */[
                 "function",
                 (function () {
                     return /* Eq */Block.__(0, [
-                              /* true */1,
+                              true,
                               function_equal_test
                             ]);
                   })
@@ -172,7 +172,7 @@ var suites_001 = /* :: */[
                   "File \"caml_compare_test.ml\", line 17, characters 4-11",
                   (function () {
                       return /* Eq */Block.__(0, [
-                                /* true */1,
+                                true,
                                 Caml_obj.caml_lessthan(/* None */0, /* Some */[1])
                               ]);
                     })
@@ -182,8 +182,8 @@ var suites_001 = /* :: */[
                     "File \"caml_compare_test.ml\", line 28, characters 4-11",
                     (function () {
                         return /* Eq */Block.__(0, [
-                                  /* true */1,
-                                  Caml_obj.caml_lessthan(/* None */0, /* Some */[/* int array */[
+                                  true,
+                                  Caml_obj.caml_lessthan(/* None */0, /* Some */[/* array */[
                                           1,
                                           30
                                         ]])
@@ -195,8 +195,8 @@ var suites_001 = /* :: */[
                       "File \"caml_compare_test.ml\", line 31, characters 4-11",
                       (function () {
                           return /* Eq */Block.__(0, [
-                                    /* true */1,
-                                    Caml_obj.caml_greaterthan(/* Some */[/* int array */[
+                                    true,
+                                    Caml_obj.caml_greaterthan(/* Some */[/* array */[
                                             1,
                                             30
                                           ]], /* None */0)
@@ -208,7 +208,7 @@ var suites_001 = /* :: */[
                         "File \"caml_compare_test.ml\", line 34, characters 4-11",
                         (function () {
                             return /* Eq */Block.__(0, [
-                                      /* true */1,
+                                      true,
                                       Caml_obj.caml_lessthan(/* :: */[
                                             2,
                                             /* :: */[
@@ -275,7 +275,7 @@ var suites_001 = /* :: */[
                           "File \"caml_compare_test.ml\", line 37, characters 4-11",
                           (function () {
                               return /* Eq */Block.__(0, [
-                                        /* true */1,
+                                        true,
                                         Caml_obj.caml_greaterthan(/* :: */[
                                               2,
                                               /* :: */[
@@ -342,11 +342,11 @@ var suites_001 = /* :: */[
                             "File \"caml_compare_test.ml\", line 41, characters 4-11",
                             (function () {
                                 return /* Eq */Block.__(0, [
-                                          /* false */0,
-                                          +(/* None */0 === /* Some */[/* int array */[
-                                                1,
-                                                30
-                                              ]])
+                                          false,
+                                          /* None */0 === /* Some */[/* array */[
+                                              1,
+                                              30
+                                            ]]
                                         ]);
                               })
                           ],
@@ -355,11 +355,11 @@ var suites_001 = /* :: */[
                               "File \"caml_compare_test.ml\", line 44, characters 4-11",
                               (function () {
                                   return /* Eq */Block.__(0, [
-                                            /* false */0,
-                                            +(/* Some */[/* int array */[
-                                                  1,
-                                                  30
-                                                ]] === /* None */0)
+                                            false,
+                                            /* Some */[/* array */[
+                                                1,
+                                                30
+                                              ]] === /* None */0
                                           ]);
                                 })
                             ],
@@ -368,7 +368,7 @@ var suites_001 = /* :: */[
                                 "File \"caml_compare_test.ml\", line 47, characters 4-11",
                                 (function () {
                                     return /* Eq */Block.__(0, [
-                                              /* false */0,
+                                              false,
                                               Caml_obj.caml_equal(/* :: */[
                                                     2,
                                                     /* :: */[
@@ -435,7 +435,7 @@ var suites_001 = /* :: */[
                                   "File \"caml_compare_test.ml\", line 50, characters 4-11",
                                   (function () {
                                       return /* Eq */Block.__(0, [
-                                                /* false */0,
+                                                false,
                                                 Caml_obj.caml_equal(/* :: */[
                                                       2,
                                                       /* :: */[
@@ -732,7 +732,7 @@ var suites_001 = /* :: */[
                                                                                     }, {
                                                                                       x: 2
                                                                                     }),
-                                                                                /* false */0
+                                                                                false
                                                                               ]);
                                                                     })
                                                                 ],
@@ -746,7 +746,7 @@ var suites_001 = /* :: */[
                                                                                       }, {
                                                                                         x: 1
                                                                                       }),
-                                                                                  /* false */0
+                                                                                  false
                                                                                 ]);
                                                                       })
                                                                   ],
@@ -756,7 +756,7 @@ var suites_001 = /* :: */[
                                                                       (function () {
                                                                           return /* Eq */Block.__(0, [
                                                                                     Caml_obj.caml_equal(({}), ({})),
-                                                                                    /* true */1
+                                                                                    true
                                                                                   ]);
                                                                         })
                                                                     ],
@@ -766,7 +766,7 @@ var suites_001 = /* :: */[
                                                                         (function () {
                                                                             return /* Eq */Block.__(0, [
                                                                                       Caml_obj.caml_equal(({}), ({x:1})),
-                                                                                      /* false */0
+                                                                                      false
                                                                                     ]);
                                                                           })
                                                                       ],
@@ -789,7 +789,7 @@ var suites_001 = /* :: */[
                                                                             (function () {
                                                                                 return /* Eq */Block.__(0, [
                                                                                           Caml_obj.caml_equal(({x:1}), ({x:1, y:2})),
-                                                                                          /* false */0
+                                                                                          false
                                                                                         ]);
                                                                               })
                                                                           ],
@@ -799,7 +799,7 @@ var suites_001 = /* :: */[
                                                                               (function () {
                                                                                   return /* Eq */Block.__(0, [
                                                                                             Caml_obj.caml_equal(({x:1, y:2}), ({x:1})),
-                                                                                            /* false */0
+                                                                                            false
                                                                                           ]);
                                                                                 })
                                                                             ],
@@ -819,7 +819,7 @@ var suites_001 = /* :: */[
                                                                                                     },
                                                                                                     /* [] */0
                                                                                                   ]),
-                                                                                              /* false */0
+                                                                                              false
                                                                                             ]);
                                                                                   })
                                                                               ],
@@ -839,7 +839,7 @@ var suites_001 = /* :: */[
                                                                                                       },
                                                                                                       /* [] */0
                                                                                                     ]),
-                                                                                                /* true */1
+                                                                                                true
                                                                                               ]);
                                                                                     })
                                                                                 ],
@@ -859,7 +859,7 @@ var suites_001 = /* :: */[
                                                                                                           /* [] */0
                                                                                                         ]
                                                                                                       }),
-                                                                                                  /* true */1
+                                                                                                  true
                                                                                                 ]);
                                                                                       })
                                                                                   ],
@@ -879,7 +879,7 @@ var suites_001 = /* :: */[
                                                                                                             /* [] */0
                                                                                                           ]
                                                                                                         }),
-                                                                                                    /* false */0
+                                                                                                    false
                                                                                                   ]);
                                                                                         })
                                                                                     ],

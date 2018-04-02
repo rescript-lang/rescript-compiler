@@ -7,7 +7,7 @@ var A = Caml_exceptions.create("Local_exception_test.A");
 var v = [
   A,
   3,
-  /* true */1
+  true
 ];
 
 var B = Caml_exceptions.create("Local_exception_test.B");

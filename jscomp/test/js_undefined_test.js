@@ -40,8 +40,8 @@ var suites_001 = /* :: */[
         "test - empty",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* true */1,
-                      /* true */1
+                      true,
+                      true
                     ]);
           })
       ],
@@ -50,8 +50,8 @@ var suites_001 = /* :: */[
           "test - 'a",
           (function () {
               return /* Eq */Block.__(0, [
-                        /* false */0,
-                        /* false */0
+                        false,
+                        false
                       ]);
             })
         ],
@@ -83,13 +83,13 @@ var suites_001 = /* :: */[
               /* tuple */[
                 "iter - empty",
                 (function () {
-                    var hit = [/* false */0];
+                    var hit = [false];
                     Js_undefined.iter(undefined, (function () {
-                            hit[0] = /* true */1;
+                            hit[0] = true;
                             return /* () */0;
                           }));
                     return /* Eq */Block.__(0, [
-                              /* false */0,
+                              false,
                               hit[0]
                             ]);
                   })

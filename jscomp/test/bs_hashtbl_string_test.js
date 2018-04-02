@@ -28,21 +28,21 @@ var hashString = (function (str) {
                                             );
 
 var $$String = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
-        return +(x === y);
+        return x === y;
       }));
 
 var String1 = Belt_Id.hashable(hashString, (function (x, y) {
-        return +(x === y);
+        return x === y;
       }));
 
 var String2 = Belt_Id.hashable((function (x) {
         return Caml_hash.caml_hash_final_mix(Caml_hash.caml_hash_mix_string(0, x));
       }), (function (x, y) {
-        return +(x === y);
+        return x === y;
       }));
 
 var Int = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
-        return +(x === y);
+        return x === y;
       }));
 
 var empty = Belt_HashMap.make(500000, Int);

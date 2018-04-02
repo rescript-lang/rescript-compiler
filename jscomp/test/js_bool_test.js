@@ -5,9 +5,9 @@ var Block = require("../../lib/js/block.js");
 
 function f(x) {
   if (x) {
-    return /* true */1;
+    return true;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -27,7 +27,7 @@ function f4(x) {
   }
 }
 
-var f3 = /* true */1;
+var f3 = true;
 
 var u = ( 1);
 
@@ -38,7 +38,7 @@ var suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 u,
-                /* true */1
+                true
               ]);
     })
 ];
@@ -58,8 +58,8 @@ var suites_001 = /* :: */[
       "js_bool_neq_acml_bool",
       (function () {
           return /* Eq */Block.__(0, [
-                    /* false */0,
-                    +(/* true */1 === (true))
+                    true,
+                    true === (true)
                   ]);
         })
     ],
@@ -80,6 +80,27 @@ function ff(u) {
   }
 }
 
+function fi(x, y) {
+  return x === y;
+}
+
+function fb(x, y) {
+  return x === y;
+}
+
+function fadd(x, y) {
+  return x + y | 0;
+}
+
+function ffadd(x, y) {
+  return x + y;
+}
+
+var bool_array = /* array */[
+  true,
+  false
+];
+
 Mt.from_pair_suites("js_bool_test.ml", suites);
 
 exports.f = f;
@@ -90,4 +111,9 @@ exports.u = u;
 exports.v = v;
 exports.suites = suites;
 exports.ff = ff;
+exports.fi = fi;
+exports.fb = fb;
+exports.fadd = fadd;
+exports.ffadd = ffadd;
+exports.bool_array = bool_array;
 /* u Not a pure module */

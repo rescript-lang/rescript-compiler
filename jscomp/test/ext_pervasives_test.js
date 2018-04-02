@@ -133,7 +133,7 @@ function dump(r) {
             _r = r[1];
             continue ;
           } else {
-            return /* false */0;
+            return false;
           }
         }
       };

@@ -98,7 +98,7 @@ function for_6(x, u) {
   $$Array.iter((function (x) {
           return Curry._1(x, /* () */0);
         }), arr);
-  return /* int array */[
+  return /* array */[
           v[0],
           v4[0],
           v5[0],
@@ -239,7 +239,7 @@ var suites_001 = /* :: */[
         "for_loop_test_6",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* int array */[
+                      /* array */[
                         30,
                         1,
                         2,
@@ -276,7 +276,7 @@ var suites_001 = /* :: */[
                   return /* Eq */Block.__(0, [
                             /* array */[/* tuple */[
                                 10,
-                                /* int array */[
+                                /* array */[
                                   1,
                                   2,
                                   2,

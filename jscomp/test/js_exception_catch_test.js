@@ -35,13 +35,13 @@ function eq(loc, x, y) {
 
 function false_(loc) {
   return add_test(loc, (function () {
-                return /* Ok */Block.__(4, [/* false */0]);
+                return /* Ok */Block.__(4, [false]);
               }));
 }
 
 function true_(loc) {
   return add_test(loc, (function () {
-                return /* Ok */Block.__(4, [/* true */1]);
+                return /* Ok */Block.__(4, [true]);
               }));
 }
 
@@ -57,7 +57,7 @@ catch (raw_exn){
   var exn = Js_exn.internalToOCamlException(raw_exn);
   if (exn[0] === Js_exn.$$Error) {
     add_test("File \"js_exception_catch_test.ml\", line 21, characters 10-17", (function () {
-            return /* Ok */Block.__(4, [/* true */1]);
+            return /* Ok */Block.__(4, [true]);
           }));
   } else {
     throw exn;
@@ -66,7 +66,7 @@ catch (raw_exn){
 
 if (exit === 1) {
   add_test("File \"js_exception_catch_test.ml\", line 22, characters 16-23", (function () {
-          return /* Ok */Block.__(4, [/* false */0]);
+          return /* Ok */Block.__(4, [false]);
         }));
 }
 

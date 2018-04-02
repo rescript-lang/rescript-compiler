@@ -160,9 +160,9 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 48, characte
 
 var match$3 = Caml_float.caml_modf_float(Number.NaN);
 
-var param_000 = +isNaN(match$3[0]);
+var param_000 = isNaN(match$3[0]);
 
-var param_001 = +isNaN(match$3[1]);
+var param_001 = isNaN(match$3[1]);
 
 var param$2 = /* tuple */[
   param_000,
@@ -170,11 +170,11 @@ var param$2 = /* tuple */[
 ];
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characters 5-12", param$2, /* tuple */[
-      /* true */1,
-      /* true */1
+      true,
+      true
     ]);
 
-var param$3 = /* int array */[
+var param$3 = /* array */[
   -1,
   1,
   1

@@ -16,7 +16,7 @@ function split(x, tree) {
     if (c === 0) {
       return /* tuple */[
               l,
-              /* true */1,
+              true,
               r
             ];
     } else if (c < 0) {
@@ -37,7 +37,7 @@ function split(x, tree) {
   } else {
     return /* tuple */[
             /* Empty */0,
-            /* false */0,
+            false,
             /* Empty */0
           ];
   }
@@ -101,7 +101,7 @@ function inter(s1, s2) {
     var l1 = s1[0];
     var match = split(v1, s2);
     var l2 = match[0];
-    if (match[1] !== 0) {
+    if (match[1]) {
       return Set_gen.internal_join(inter(l1, l2), v1, inter(r1, match[2]));
     } else {
       return Set_gen.internal_concat(inter(l1, l2), inter(r1, match[2]));
@@ -119,7 +119,7 @@ function diff(s1, s2) {
       var l1 = s1[0];
       var match = split(v1, s2);
       var l2 = match[0];
-      if (match[1] !== 0) {
+      if (match[1]) {
         return Set_gen.internal_concat(diff(l1, l2), diff(r1, match[2]));
       } else {
         return Set_gen.internal_join(diff(l1, l2), v1, diff(r1, match[2]));
@@ -138,13 +138,13 @@ function mem(x, _tree) {
     if (tree) {
       var c = Caml_primitive.caml_string_compare(x, tree[1]);
       if (c === 0) {
-        return /* true */1;
+        return true;
       } else {
         _tree = c < 0 ? tree[0] : tree[2];
         continue ;
       }
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -172,7 +172,7 @@ function compare(s1, s2) {
 }
 
 function equal(s1, s2) {
-  return +(Set_gen.compare($$String.compare, s1, s2) === 0);
+  return Set_gen.compare($$String.compare, s1, s2) === 0;
 }
 
 function subset(_s1, _s2) {
@@ -193,7 +193,7 @@ function subset(_s1, _s2) {
             _s1 = r1;
             continue ;
           } else {
-            return /* false */0;
+            return false;
           }
         } else if (c < 0) {
           if (subset(/* Node */[
@@ -205,7 +205,7 @@ function subset(_s1, _s2) {
             _s1 = r1;
             continue ;
           } else {
-            return /* false */0;
+            return false;
           }
         } else if (subset(/* Node */[
                 /* Empty */0,
@@ -216,13 +216,13 @@ function subset(_s1, _s2) {
           _s1 = l1;
           continue ;
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        return /* false */0;
+        return false;
       }
     } else {
-      return /* true */1;
+      return true;
     }
   };
 }
