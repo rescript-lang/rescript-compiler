@@ -186,6 +186,7 @@ let typeof ?comment (e : t) : t =
     -> str ?comment L.js_type_string
   | Array _
     -> str ?comment L.js_type_object
+  | Bool _ -> str ?comment L.js_type_boolean
   | _ -> {expression_desc = Typeof e ; comment }
 
 
