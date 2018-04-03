@@ -173,14 +173,6 @@ let make_block ?comment tag tag_info es mutable_flag : t =
     comment 
   }    
 
-(* let uninitialized_object ?comment tag size : t = 
-  { expression_desc = Caml_uninitialized_obj(tag,size); comment } *)
-
-(* let uninitialized_array ?comment (e : t) : t  = 
-  match e.expression_desc with 
-  | Number (Int {i = 0l; _}) -> array ?comment NA []
-  | _ -> {comment; expression_desc = Array_of_size e} *)
-
 
 module L = Literals
 (* Invariant: this is relevant to how we encode string
@@ -1246,10 +1238,9 @@ let is_null_undefined ?comment (x: t) : t =
     when Ext_ident.is_js id 
     -> caml_true
   | Number _ | Array _ | Caml_block _ -> caml_false
-  | _ -> 
-     
+  | _ ->      
       { comment ; 
-        expression_desc = Is_null_undefined_to_boolean x 
+        expression_desc = Is_null_or_undefined x 
       }
 
 let eq_null_undefined_boolean ?comment (a : t) (b : t) = 

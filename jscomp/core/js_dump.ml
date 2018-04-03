@@ -603,7 +603,7 @@ and
       else action ()
     );
     cxt
-  | Is_null_undefined_to_boolean e ->
+  | Is_null_or_undefined e ->
     let action = (fun _ ->
         let cxt = expression 1 cxt f e in
         P.space f ;
@@ -1072,7 +1072,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Dot _
       | Cond _
       | Bin _
-      | Is_null_undefined_to_boolean _
+      | Is_null_or_undefined _
       | String_access _
       | Access _
       | Array_of_size _

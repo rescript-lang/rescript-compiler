@@ -331,7 +331,7 @@ class virtual fold =
           let o = o#expression _x in let o = o#length_object _x_i1 in o
       | Char_of_int _x -> let o = o#expression _x in o
       | Char_to_int _x -> let o = o#expression _x in o
-      | Is_null_undefined_to_boolean _x -> let o = o#expression _x in o
+      | Is_null_or_undefined _x -> let o = o#expression _x in o
       | Array_of_size _x -> let o = o#expression _x in o
       | Array_copy _x -> let o = o#expression _x in o
       | String_append (_x, _x_i1) ->
