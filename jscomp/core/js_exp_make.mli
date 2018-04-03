@@ -294,7 +294,7 @@ val is_caml_block : ?comment:string -> t -> t
 
 
 val tag : ?comment:string -> J.expression -> t
-val set_tag : ?comment:string -> J.expression -> J.expression -> t
+val block_set_tag : ?comment:string -> J.expression -> J.expression -> t
 
 (** Note that this is coupled with how we encode block, if we use the 
     `Object.defineProperty(..)` since the array already hold the length,

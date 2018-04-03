@@ -746,7 +746,7 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.obj_runtime
     | "caml_obj_set_tag" 
       -> begin match args with 
-          | [a;b]  -> E.set_tag a b 
+          | [a;b]  -> E.block_set_tag a b 
           | _ -> assert false end
     | "caml_obj_tag" -> 
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]

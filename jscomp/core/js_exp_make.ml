@@ -813,7 +813,7 @@ let public_method_call meth_name obj label cache args =
 (*       [fn  ; arr NA args ]             *)
 (* ) *)
 
-let set_tag ?comment e tag : t = 
+let block_set_tag ?comment e tag : t = 
   seq {expression_desc = Caml_block_set_tag (e,tag); comment } unit 
 
 
