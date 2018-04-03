@@ -32,5 +32,19 @@ let fb (x : bool) y = x = y
 let fadd (x : int) y = x + y
 let ffadd (x : float) y = x +. y
 
+let ss x = "xx" > x 
+
+let bb x = 
+  ( true > x, 
+    true < x,
+    true >= x ,
+    true <= x,
+    false > x ,
+    false < x ,
+    false >= x, 
+    false <= x 
+   ) 
+
+
 let bool_array = [|true; false|] 
 ;; Mt.from_pair_suites __FILE__ suites
