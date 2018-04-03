@@ -194,7 +194,8 @@ and expression_desc =
   *)      
   | Number of number
   | Object of property_map
-
+  | Undefined 
+  | Null
 and for_ident_expression = expression (* pure*)
 
 and finish_ident_expression = expression (* pure *)

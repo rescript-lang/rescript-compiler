@@ -416,6 +416,8 @@ class virtual map =
           let _x_i1 = o#expression _x_i1 in Caml_block_set_length (_x, _x_i1)
       | Number _x -> let _x = o#number _x in Number _x
       | Object _x -> let _x = o#property_map _x in Object _x
+      | Undefined -> Undefined
+      | Null -> Null
     method expression : expression -> expression =
       fun { expression_desc = _x; comment = _x_i1 } ->
         let _x = o#expression_desc _x in

@@ -374,6 +374,8 @@ class virtual fold =
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Number _x -> let o = o#number _x in o
       | Object _x -> let o = o#property_map _x in o
+      | Undefined -> o
+      | Null -> o
     method expression : expression -> 'self_type =
       fun { expression_desc = _x; comment = _x_i1 } ->
         let o = o#expression_desc _x in

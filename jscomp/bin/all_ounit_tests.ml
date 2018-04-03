@@ -6897,9 +6897,9 @@ val make_unused : unit -> Ident.t
 val convert : string -> string
 
 
-val undefined : Ident.t 
+
 val is_js_or_global : Ident.t -> bool
- val nil : Ident.t 
+
 
 
 val compare : Ident.t -> Ident.t -> int
@@ -7220,9 +7220,6 @@ let make_unused () = create "_"
 let reset () =
   String_hashtbl.clear js_module_table
 
-
-let undefined = create_js "undefined"
-let nil = create_js "null"
 
 (* Has to be total order, [x < y]
    and [x > y] should be consistent

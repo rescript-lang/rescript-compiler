@@ -75,8 +75,8 @@ let translate  loc
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
-          | Var _ -> 
-            E.econd (E.is_null e) Js_of_lam_option.none (Js_of_lam_option.some e)
+          | Var _ | Undefined | Null -> 
+            E.econd (E.is_null e) Js_of_lam_option.none (Js_of_lam_option.some e)           
           | _ ->
             E.runtime_call Js_runtime_modules.js_primitive
               "null_to_opt" args 
@@ -93,7 +93,7 @@ let translate  loc
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
-          | Var _ -> 
+          | Var _ | Undefined | Null -> 
             E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ -> 
             E.runtime_call Js_runtime_modules.js_primitive  
@@ -111,7 +111,7 @@ let translate  loc
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
-          | Var _ -> 
+          | Var _ | Undefined | Null   -> 
             E.econd (E.is_null_undefined e) 
               Js_of_lam_option.none 
               (Js_of_lam_option.some e)

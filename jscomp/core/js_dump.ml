@@ -421,6 +421,11 @@ and expression l cxt  f (exp : J.expression) : Ext_pp_scope.t =
 and
   expression_desc cxt (l:int) f x : Ext_pp_scope.t  =
   match x with
+  | Null ->
+    P.string f L.null; cxt 
+  | Undefined 
+    -> 
+    P.string f L.undefined; cxt 
   | Var v ->
     vident cxt f v
   | Bool b ->
@@ -1048,6 +1053,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Char_to_int _
       | Math _
       | Var _
+      | Undefined
+      | Null
       | Str _
       | Unicode _
       | Array _

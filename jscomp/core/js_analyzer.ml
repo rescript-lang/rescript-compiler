@@ -83,6 +83,8 @@ let free_variables_of_expression used_idents defined_idents st =
 
 let rec no_side_effect_expression_desc (x : J.expression_desc)  = 
   match x with 
+  | Undefined
+  | Null
   | Bool _ 
   | Var _ 
   | Unicode _ -> true 
@@ -175,6 +177,8 @@ let rec eq_expression
     ({expression_desc = x0}  : J.expression) 
     ({expression_desc = y0}  : J.expression) = 
   begin match x0  with 
+    | Null -> y0 = Null
+    | Undefined -> y0 = Undefined
     | Number (Int i) -> 
       begin match y0 with  
         | Number (Int j)   -> i = j 

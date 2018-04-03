@@ -10,7 +10,7 @@ var suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 /* None */0,
-                undefined === undefined ? /* None */0 : [undefined]
+                /* None */0
               ]);
     })
 ];
