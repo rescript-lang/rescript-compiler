@@ -139,8 +139,6 @@ val array_length : unary_op
 
 val string_length : unary_op
 
-val string_of_small_int_array : unary_op
-
 val bytes_length :  unary_op
 
 val function_length : unary_op

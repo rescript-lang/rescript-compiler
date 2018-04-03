@@ -489,27 +489,6 @@ and
             expression 1 cxt f el
           )
       )
-  | String_of_small_int_array ({expression_desc = desc } as e) ->
-    let action () =
-      P.group f 1 (fun _ ->
-          P.string f L.string_cap;
-          P.string f L.dot ;
-          P.string f L.fromCharcode;
-          begin match desc with
-            | Array (el, _mutable)
-              ->
-              P.paren_group f 1 (fun _ -> arguments cxt f el)
-            | _ ->
-              P.string f L.dot ;
-              P.string f L.apply;
-              P.paren_group f 1 (fun _ ->
-                  P.string f L.null;
-                  P.string f L.comma;
-                  expression 1 cxt  f e  )
-          end )
-    in
-    if l > 15 then P.paren_group f 1 action
-    else action ()
 
   | Array_copy e ->
     P.group f 1 (fun _ ->
@@ -1054,7 +1033,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Caml_block_set_tag _
       | Length _
       | Caml_block_set_length _
-      | String_of_small_int_array _
       | Call _
       | Array_copy _
       | Caml_block_tag _

@@ -160,7 +160,6 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* | Pjs_is_instance_array *)
       | Pwrap_exn
         -> true
-      | Pjs_string_of_small_array
       | Pcaml_obj_set_length        
       | Pjs_apply
       | Pjs_runtime_apply
@@ -541,7 +540,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pupdate_mod -> rhs = Pupdate_mod
   | Pbswap16 -> rhs = Pbswap16
   | Pjs_function_length -> rhs = Pjs_function_length
-  | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array
+  (* | Pjs_string_of_small_array -> rhs = Pjs_string_of_small_array *)
   (* | Pjs_is_instance_array -> rhs = Pjs_is_instance_array *)
   | Pcaml_obj_length -> rhs = Pcaml_obj_length
   | Pcaml_obj_set_length -> rhs = Pcaml_obj_set_length

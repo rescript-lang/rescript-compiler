@@ -197,9 +197,6 @@ type primitive =
   | Pis_null_undefined
   | Pjs_typeof
   | Pjs_function_length
-
-  | Pjs_string_of_small_array
-  (* | Pjs_is_instance_array *)
   | Pcaml_obj_length
   | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)
@@ -1866,12 +1863,6 @@ let convert exports lam : _ * _  =
         | "#null_to_opt" -> Pnull_to_opt
         | "#is_nil_undef" -> Pis_null_undefined
         | "#string_append" -> Pstringadd
-
-
-        | "#string_of_small_int_array" -> Pjs_string_of_small_array
-        (* {[String.fromCharCode.apply(null,x)]}
-           Note if we have better suport [@bs.splice],
-           we can get rid of it*)
         | "#obj_set_length" -> Pcaml_obj_set_length
         | "#obj_length" -> Pcaml_obj_length
         | "#function_length" -> Pjs_function_length

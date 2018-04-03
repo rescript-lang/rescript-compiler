@@ -752,11 +752,6 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")    
 
 
-let string_of_small_int_array ?comment xs : t = 
-  {expression_desc = String_of_small_int_array xs; comment}
-
-
-
 (* we are calling [Caml_primitive.primitive_name], since it's under our
    control, we should make it follow the javascript name convention, and
    call plain [dot]

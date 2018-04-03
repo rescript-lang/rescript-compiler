@@ -129,15 +129,7 @@ class virtual fold =
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
-                 (* !v *) (* String.fromCharCode.apply(null, args) *)
-                 (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-                 (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)
+                 (* !v *)
                  (* TODO: Add some primitives so that [js inliner] can do a better job *)
                  (* [int_op] will guarantee return [int32] bits 
      https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
@@ -334,7 +326,6 @@ class virtual fold =
       | Bool _x -> let o = o#bool _x in o
       | Typeof _x -> let o = o#expression _x in o
       | Js_not _x -> let o = o#expression _x in o
-      | String_of_small_int_array _x -> let o = o#expression _x in o
       | Seq (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Cond (_x, _x_i1, _x_i2) ->

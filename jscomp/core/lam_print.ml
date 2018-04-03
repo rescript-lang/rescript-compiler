@@ -108,8 +108,6 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   (* | Pcreate_exception s -> fprintf ppf "[exn-create]%S" s  *)
   | Pcreate_extension s -> fprintf ppf "[ext-create]%S" s 
   | Pwrap_exn -> fprintf ppf "#exn"
-  | Pjs_string_of_small_array -> fprintf ppf "#string_of_small_array"
-  (* | Pjs_is_instance_array -> fprintf ppf "#is_instance_array" *)
   | Pcaml_obj_length -> fprintf ppf "#obj_length"
   | Pcaml_obj_set_length -> fprintf ppf "#obj_set_length"
   | Pinit_mod -> fprintf ppf "init_mod!"

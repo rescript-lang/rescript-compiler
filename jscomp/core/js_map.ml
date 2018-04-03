@@ -142,15 +142,7 @@ class virtual map =
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
-                 (* !v *) (* String.fromCharCode.apply(null, args) *)
-                 (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-                 (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)
+                 (* !v *)
                  (* TODO: Add some primitives so that [js inliner] can do a better job *)
                  (* [int_op] will guarantee return [int32] bits 
      https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
@@ -361,8 +353,6 @@ class virtual map =
       | Bool _x -> let _x = o#bool _x in Bool _x
       | Typeof _x -> let _x = o#expression _x in Typeof _x
       | Js_not _x -> let _x = o#expression _x in Js_not _x
-      | String_of_small_int_array _x ->
-          let _x = o#expression _x in String_of_small_int_array _x
       | Seq (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Seq (_x, _x_i1)

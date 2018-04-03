@@ -113,19 +113,6 @@ and expression_desc =
   *)
   | Typeof of expression
   | Js_not of expression (* !v *)
-  | String_of_small_int_array of expression 
-    (* String.fromCharCode.apply(null, args) *)
-    (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-
-  (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)              
-
-
   (* TODO: Add some primitives so that [js inliner] can do a better job *)  
   | Seq of expression * expression
   | Cond of expression * expression * expression

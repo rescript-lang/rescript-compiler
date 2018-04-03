@@ -137,18 +137,6 @@ let translate  loc
       | [a;b] -> E.set_length a b 
       | _ -> assert false 
     end
-  | Lam.Pjs_string_of_small_array -> 
-    begin match args with 
-      | [e] -> E.string_of_small_int_array e 
-      | _ -> assert false 
-    end 
-  (* | Lam.Pjs_is_instance_array -> 
-    begin match args with 
-      | [e] -> E.is_instance_array e 
-      | _ -> assert false 
-    end  *)
-
-
   | Pis_null -> 
     begin match args with 
       | [e] -> E.is_null e 
