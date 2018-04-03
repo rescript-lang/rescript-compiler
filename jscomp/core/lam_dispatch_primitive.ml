@@ -370,6 +370,14 @@ let translate loc (prim_name : string)
           E.string_comp Ge  e0 e1
         | _ -> assert false 
       end
+    | "caml_string_greaterthan"
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.string_comp Gt  e0 e1
+        | _ -> assert false 
+      end  
     | "caml_bool_notequal"
       -> 
       begin match args with 
@@ -402,7 +410,13 @@ let translate loc (prim_name : string)
           E.bool_comp Cge  e0 e1
         | _ -> assert false 
       end
-        
+    | "caml_bool_greaterthan"    
+      ->
+       begin match args with 
+       | [e0;e1] -> 
+          E.bool_comp Cgt e0 e1
+       | _ -> assert false
+       end
     | "caml_bool_equal"  
     | "caml_bool_equal_null"
     | "caml_bool_equal_nullable"
@@ -451,14 +465,7 @@ let translate loc (prim_name : string)
       | _ -> assert false 
       end 
 
-    | "caml_string_greaterthan"
-      -> 
-      begin match args with 
-        | [e0; e1] 
-          -> 
-          E.string_comp Gt  e0 e1
-        | _ -> assert false 
-      end
+
     | "caml_create_string" -> 
       (* Bytes.create *)
       (* Note that for invalid range, JS raise an Exception RangeError, 

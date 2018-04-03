@@ -96,6 +96,23 @@ function ffadd(x, y) {
   return x + y;
 }
 
+function ss(x) {
+  return "xx" > x;
+}
+
+function bb(x) {
+  return /* tuple */[
+          true > x,
+          false,
+          true,
+          true <= x,
+          false,
+          false < x,
+          false >= x,
+          true
+        ];
+}
+
 var bool_array = /* array */[
   true,
   false
@@ -115,5 +132,7 @@ exports.fi = fi;
 exports.fb = fb;
 exports.fadd = fadd;
 exports.ffadd = ffadd;
+exports.ss = ss;
+exports.bb = bb;
 exports.bool_array = bool_array;
 /* u Not a pure module */

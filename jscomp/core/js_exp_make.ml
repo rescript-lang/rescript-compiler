@@ -265,7 +265,7 @@ let rec seq ?comment (e0 : t) (e1 : t) : t =
   | _, ( Seq(a,( {expression_desc = Number _ ;  } as v ) ))-> 
     (* Return value could not be changed*)
     seq ?comment (seq  e0 a) v
-
+  | (Number _ | Var _) , _ -> e1 
   | _ -> 
     {expression_desc = Seq(e0,e1); comment}
 
@@ -901,8 +901,8 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
     bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) = 
-  match e0.expression_desc, e1.expression_desc with 
-  | Bool l, Bool r  ->
+  match e0, e1 with 
+  | {expression_desc = Bool l}, {expression_desc = Bool r}  ->
     bool (match cmp with 
     | Ceq  -> l = r
     | Cneq -> l <> r
@@ -911,19 +911,22 @@ let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) =
     | Cle  -> l <= r 
     | Cge  -> l >= r
     )
-  | Bool l, _  -> 
+  | {expression_desc = Bool true}, rest 
+  | rest, {expression_desc = Bool false}  -> 
     begin match cmp with 
-    | Clt -> seq e1 caml_false
-    | Cge -> seq e1 caml_true
+    | Clt -> seq rest caml_false
+    | Cge -> seq rest caml_true
     | Cle 
     | Cgt 
     | Ceq 
     | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1 
     end 
-  | _, Bool r ->
+  | rest, {expression_desc = Bool true} 
+  | {expression_desc = Bool false}, rest 
+    ->
     begin match cmp with  
-    | Cle -> seq e0 caml_true
-    | Cgt -> seq e0 caml_false
+    | Cle -> seq rest caml_true
+    | Cgt -> seq rest caml_false
     | Clt
     | Cge 
     | Ceq 
