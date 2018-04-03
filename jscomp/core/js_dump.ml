@@ -518,19 +518,6 @@ and
         P.string f "()" ;
         cxt
       )
-
-  | Dump (level, el) ->
-    let obj =
-      match level with
-      | Log -> "log"
-      | Info -> "info"
-      | Warn -> "warn"
-      | Error -> "error" in
-    P.group f 1 (fun _ ->
-        P.string f L.console;
-        P.string f L.dot;
-        P.string f obj ;
-        P.paren_group f 1 (fun _ -> arguments cxt f el))
   | Json_stringify e
     ->
     P.group f 1 (fun _ ->
@@ -762,11 +749,6 @@ and
         P.space f ;
         expression 13 cxt  f delta
     end
-  | Anything_to_string e ->
-    (* Note that we should not apply any smart construtor here,
-       it's purely  a convenice for pretty-printing
-    *)
-    expression_desc cxt l f (Bin (Plus, E.empty_string_literal , e))
 
   | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e)
     (* TODO:
@@ -1090,7 +1072,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Caml_block_set_tag _
       | Length _
       | Caml_block_set_length _
-      | Anything_to_string _
       | String_of_small_int_array _
       | Call _
       | Array_copy _
@@ -1106,7 +1087,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | String_append _
       | Char_of_int _
       | Char_to_int _
-      | Dump _
       | Json_stringify _
       | Math _
       | Var _

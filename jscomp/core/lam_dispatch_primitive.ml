@@ -685,20 +685,11 @@ let translate loc (prim_name : string)
     | "caml_nativeint_of_string" 
     | "caml_int64_format"
     | "caml_int64_of_string"
+    | "caml_format_int" 
       -> 
       call Js_runtime_modules.format 
-    | "caml_format_int" -> 
-      begin match args with 
-        | [ {expression_desc = Str (_, "%d"); _}; v] 
-          ->
-          E.int_to_string v 
-        | _ -> 
-          call Js_runtime_modules.format
-      end
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
-
-
     | "caml_obj_is_block"
       -> 
       begin match args with 

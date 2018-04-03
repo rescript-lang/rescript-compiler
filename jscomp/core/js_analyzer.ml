@@ -118,8 +118,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Js_not _
   | String_of_small_int_array _ 
   | Json_stringify _ 
-  | Anything_to_string _ 
-  | Dump _ 
   | Cond _ 
 
   | FlatCall _ 
@@ -240,12 +238,6 @@ let rec eq_expression
           p0 = p1 && b0 =  b1 && eq_expression e0 e1
         |  _ -> false 
       end
-    | Dump (l0,es0) -> 
-      begin match y0 with 
-        | Dump(l1,es1) -> 
-          l0 = l1 && eq_expression_list es0 es1
-        | _ -> false     
-      end
     | Seq (a0,b0) -> 
       begin match y0 with       
         | Seq(a1,b1) -> 
@@ -268,9 +260,6 @@ let rec eq_expression
     | Js_not _ 
     | String_of_small_int_array _ 
     | Json_stringify _ 
-    | Anything_to_string _ 
-
-
     | Cond _ 
     | FlatCall  _
     | String_access _ 

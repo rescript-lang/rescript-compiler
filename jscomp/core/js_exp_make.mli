@@ -246,15 +246,6 @@ val call : ?comment:string  -> info:Js_call_info.t -> t -> t list -> t
 
 val flat_call : binary_op
 
-val dump : ?comment:string -> Js_op.level -> t list -> t
-
-
-
-(** see {!https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Unary_plus}*)
-(* val to_number : unary_op *)
-val int_to_string : unary_op
-
-
 val new_ : ?comment:string -> J.expression -> J.expression list -> t
 
 val array : 

@@ -142,35 +142,10 @@ class virtual fold =
      which makes optimizations easier
      {[ JSON.stringify(value, replacer[, space]) ]}
   *)
-                 (* for debugging utitlites, 
-     TODO:  [Dump] is not necessary with this primitive 
-     Note that the semantics is slightly different from [JSON.stringify]     
-     {[
-       JSON.stringify("x")       
-     ]}
-     {[
-       ""x""       
-     ]}     
-     {[
-       JSON.stringify(undefined)       
-     ]}     
-     {[
-       undefined       
-     ]}
-     {[ '' + undefined
-     ]}     
-     {[ 'undefined'
-     ]}     
-  *)
                  (* TODO: 
      add 
      {[ Assert of bool * expression ]}     
   *)
-                 (* to support 
-       val log1 : 'a -> unit
-       val log2 : 'a -> 'b -> unit 
-       val log3 : 'a -> 'b -> 'c -> unit 
-     *)
                  (* TODO: Add some primitives so that [js inliner] can do a better job *)
                  (* [int_op] will guarantee return [int32] bits 
      https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
@@ -370,10 +345,6 @@ class virtual fold =
       | Js_not _x -> let o = o#expression _x in o
       | String_of_small_int_array _x -> let o = o#expression _x in o
       | Json_stringify _x -> let o = o#expression _x in o
-      | Anything_to_string _x -> let o = o#expression _x in o
-      | Dump (_x, _x_i1) ->
-          let o = o#unknown _x in
-          let o = o#list (fun o -> o#expression) _x_i1 in o
       | Seq (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Cond (_x, _x_i1, _x_i2) ->

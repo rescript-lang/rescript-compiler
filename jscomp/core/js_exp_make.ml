@@ -222,8 +222,6 @@ let math ?comment v args  : t =
    Used in [string_of_int] and format "%d"
    TODO: optimize
 *)
-let int_to_string ?comment (e : t) : t = 
-  {expression_desc = Anything_to_string e ; comment}
 
 (* Attention: Shared *mutable state* is evil, 
   [Js_fun_env.empty] is a mutable state ..
@@ -452,12 +450,6 @@ let char_to_int ?comment (v : t) : t =
 let array_copy ?comment e : t = 
   { comment ; expression_desc = Array_copy e}
 
-(* Note that this return [undefined] in JS, 
-    it should be wrapped to avoid leak [undefined] into 
-    OCaml
-*)    
-let dump ?comment level el : t = 
-  {comment ; expression_desc = Dump(level,el)}
 
 (* let to_json_string ?comment e : t = 
   { comment; expression_desc = Json_stringify e } *)
@@ -472,8 +464,6 @@ let rec string_append ?comment (e : t) (el : t) : t =
     String_append ({expression_desc = Str(_,c)} ,d) ->
     string_append ?comment (string_append a (str (b ^ c))) d 
   | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
-  | _, Anything_to_string b -> string_append ?comment e b 
-  | Anything_to_string b, _ -> string_append ?comment b el
   | _, _ -> {comment ; expression_desc = String_append(e,el)}
 
 

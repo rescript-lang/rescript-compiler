@@ -129,37 +129,13 @@ and expression_desc =
      which makes optimizations easier
      {[ JSON.stringify(value, replacer[, space]) ]}
   *)
-  | Anything_to_string of expression
-  (* for debugging utitlites, 
-     TODO:  [Dump] is not necessary with this primitive 
-     Note that the semantics is slightly different from [JSON.stringify]     
-     {[
-       JSON.stringify("x")       
-     ]}
-     {[
-       ""x""       
-     ]}     
-     {[
-       JSON.stringify(undefined)       
-     ]}     
-     {[
-       undefined       
-     ]}
-     {[ '' + undefined
-     ]}     
-     {[ 'undefined'
-     ]}     
-  *)      
-  | Dump of Js_op.level * expression list
+
+
   (* TODO: 
      add 
      {[ Assert of bool * expression ]}     
   *)              
-    (* to support 
-       val log1 : 'a -> unit
-       val log2 : 'a -> 'b -> unit 
-       val log3 : 'a -> 'b -> 'c -> unit 
-     *)
+
 
   (* TODO: Add some primitives so that [js inliner] can do a better job *)  
   | Seq of expression * expression
