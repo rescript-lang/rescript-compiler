@@ -117,7 +117,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Array_copy _ 
   | Js_not _
   | String_of_small_int_array _ 
-  | Json_stringify _ 
   | Cond _ 
 
   | FlatCall _ 
@@ -259,7 +258,6 @@ let rec eq_expression
     | Typeof _ 
     | Js_not _ 
     | String_of_small_int_array _ 
-    | Json_stringify _ 
     | Cond _ 
     | FlatCall  _
     | String_access _ 

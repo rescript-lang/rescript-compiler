@@ -124,12 +124,6 @@ and expression_desc =
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
      *)
-  | Json_stringify of expression 
-  (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
-
 
   (* TODO: 
      add 

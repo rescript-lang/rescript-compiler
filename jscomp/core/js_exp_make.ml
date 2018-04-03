@@ -450,10 +450,6 @@ let char_to_int ?comment (v : t) : t =
 let array_copy ?comment e : t = 
   { comment ; expression_desc = Array_copy e}
 
-
-(* let to_json_string ?comment e : t = 
-  { comment; expression_desc = Json_stringify e } *)
-
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
   | Str(_,a), String_append ({expression_desc = Str(_,b)}, c) ->

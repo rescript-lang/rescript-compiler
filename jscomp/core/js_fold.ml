@@ -138,10 +138,6 @@ class virtual fold =
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
      *)
-                 (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
                  (* TODO: 
      add 
      {[ Assert of bool * expression ]}     
@@ -344,7 +340,6 @@ class virtual fold =
       | Typeof _x -> let o = o#expression _x in o
       | Js_not _x -> let o = o#expression _x in o
       | String_of_small_int_array _x -> let o = o#expression _x in o
-      | Json_stringify _x -> let o = o#expression _x in o
       | Seq (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Cond (_x, _x_i1, _x_i2) ->

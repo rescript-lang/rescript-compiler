@@ -151,10 +151,6 @@ class virtual map =
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
      *)
-                 (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
                  (* TODO: 
      add 
      {[ Assert of bool * expression ]}     
@@ -372,7 +368,6 @@ class virtual map =
       | Js_not _x -> let _x = o#expression _x in Js_not _x
       | String_of_small_int_array _x ->
           let _x = o#expression _x in String_of_small_int_array _x
-      | Json_stringify _x -> let _x = o#expression _x in Json_stringify _x
       | Seq (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Seq (_x, _x_i1)

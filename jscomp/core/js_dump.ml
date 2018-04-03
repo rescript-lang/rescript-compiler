@@ -518,14 +518,6 @@ and
         P.string f "()" ;
         cxt
       )
-  | Json_stringify e
-    ->
-    P.group f 1 (fun _ ->
-        P.string f L.json ;
-        P.string f L.dot;
-        P.string f L.stringify;
-        P.paren_group f 1 (fun _ -> expression 0 cxt f e )
-      )
   | Char_to_int e ->
     begin match e.expression_desc with
       | String_access (a,b) ->
@@ -1087,7 +1079,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | String_append _
       | Char_of_int _
       | Char_to_int _
-      | Json_stringify _
       | Math _
       | Var _
       | Str _
