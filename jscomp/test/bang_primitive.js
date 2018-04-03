@@ -14,7 +14,7 @@ function test(x, y) {
 
 function f(x, _) {
   return /* tuple */[
-          String.fromCharCode.apply(null,x),
+          String.fromCharCode.apply(null, x),
           0
         ];
 }

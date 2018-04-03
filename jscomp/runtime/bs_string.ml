@@ -45,8 +45,17 @@ external slice_rest : string -> int -> string = "slice"
 external index_of : string -> string -> int = "indexOf"
     [@@bs.send]
 external append : string -> string -> string = "#string_append"
-external of_small_int_array : int array -> string = "#string_of_small_int_array"
-external of_small_int32_array : int32 array -> string = "#string_of_small_int_array"
+external of_small_int_array :  
+    (_ [@bs.as {json|null|json}] ) -> 
+    int array -> string = 
+    "String.fromCharCode.apply" 
+[@@bs.val]
+
+external of_small_int32_array : 
+    int32 array -> string = 
+    "String.fromCharCode" 
+[@@bs.val] [@@bs.splice]   
+
 external lastIndexOf : string -> string -> int = "lastIndexOf"
 [@@bs.send]    
 external of_any : 'a -> string = "String"

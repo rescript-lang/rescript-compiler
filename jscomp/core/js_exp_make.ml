@@ -87,10 +87,11 @@ let var ?comment  id  : t =
 let js_global ?comment  (v : string) =
   var ?comment (Ext_ident.create_js v )
   
-let undefined  = var Ext_ident.undefined
+let undefined  : t = 
+    {expression_desc = Undefined ; comment = None}
 
-let nil = var Ext_ident.nil  
-
+let nil : t = 
+    {expression_desc = Null ; comment = None}
 let call ?comment ~info e0 args : t = 
   {expression_desc = Call(e0,args,info); comment }
 
@@ -173,14 +174,6 @@ let make_block ?comment tag tag_info es mutable_flag : t =
     comment 
   }    
 
-(* let uninitialized_object ?comment tag size : t = 
-  { expression_desc = Caml_uninitialized_obj(tag,size); comment } *)
-
-(* let uninitialized_array ?comment (e : t) : t  = 
-  match e.expression_desc with 
-  | Number (Int {i = 0l; _}) -> array ?comment NA []
-  | _ -> {comment; expression_desc = Array_of_size e} *)
-
 
 module L = Literals
 (* Invariant: this is relevant to how we encode string
@@ -194,6 +187,7 @@ let typeof ?comment (e : t) : t =
     -> str ?comment L.js_type_string
   | Array _
     -> str ?comment L.js_type_object
+  | Bool _ -> str ?comment L.js_type_boolean
   | _ -> {expression_desc = Typeof e ; comment }
 
 
@@ -222,8 +216,6 @@ let math ?comment v args  : t =
    Used in [string_of_int] and format "%d"
    TODO: optimize
 *)
-let int_to_string ?comment (e : t) : t = 
-  {expression_desc = Anything_to_string e ; comment}
 
 (* Attention: Shared *mutable state* is evil, 
   [Js_fun_env.empty] is a mutable state ..
@@ -448,21 +440,9 @@ let char_to_int ?comment (v : t) : t =
   | Char_of_int v -> v 
   | _ -> {comment; expression_desc = Char_to_int v }
 
-let array_append ?comment e el : t = 
-  { comment ; expression_desc = Array_append (e, el)}
 
 let array_copy ?comment e : t = 
   { comment ; expression_desc = Array_copy e}
-
-(* Note that this return [undefined] in JS, 
-    it should be wrapped to avoid leak [undefined] into 
-    OCaml
-*)    
-let dump ?comment level el : t = 
-  {comment ; expression_desc = Dump(level,el)}
-
-(* let to_json_string ?comment e : t = 
-  { comment; expression_desc = Json_stringify e } *)
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 
@@ -474,8 +454,6 @@ let rec string_append ?comment (e : t) (el : t) : t =
     String_append ({expression_desc = Str(_,c)} ,d) ->
     string_append ?comment (string_append a (str (b ^ c))) d 
   | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
-  | _, Anything_to_string b -> string_append ?comment e b 
-  | Anything_to_string b, _ -> string_append ?comment b el
   | _, _ -> {comment ; expression_desc = String_append(e,el)}
 
 
@@ -519,17 +497,17 @@ let float_mod ?comment e1 e2 : J.expression =
 *)
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
-  | Var (Id ({name = "undefined"|"null"} as id)), 
+  | (Null| Undefined), 
     (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
-    when Ext_ident.is_js id && no_side_effect e1 -> 
+    when  no_side_effect e1 -> 
     caml_false (* TODO: rename it as [caml_false] *)
   | 
     (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _
-    | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
-    when Ext_ident.is_js id && no_side_effect e0 -> 
+    | Fun _ | Array _ | Caml_block _ ),  (Null|Undefined)
+    when no_side_effect e0 -> 
     caml_false
   | Str (_,x), Str (_,y) ->  (* CF*)
     bool (Ext_string.equal x y)
@@ -543,6 +521,10 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     bool (i0 = i1)      
   | Char_of_int a , Char_of_int b -> 
     triple_equal ?comment a b 
+  | Null, Undefined   
+  | Undefined, Null -> caml_false
+  | Null, Null
+  | Undefined, Undefined -> caml_true
   | _ -> 
      {expression_desc = Bin(EqEqEq, e0,e1); comment}
 
@@ -551,14 +533,7 @@ let bin ?comment (op : J.binop) e0 e1 : t =
   | EqEqEq -> triple_equal ?comment e0 e1
   | _ -> {expression_desc = Bin(op,e0,e1); comment}
 
-(* | (Bin (NotEqEq, e1,  *)
-(*         {expression_desc = Var (Id ({name = "undefined"; _} as id))}) *)
-(*   | Bin (NotEqEq,  *)
-(*          {expression_desc = Var (Id ({name = "undefined"; _} as id))},  *)
-(*          e1) *)
-(*   ),  *)
-(*   _ when Ext_ident.is_js id ->  *)
-(*   and_ e1 e2 *)
+
 (* TODO: Constant folding, Google Closure will do that?,
    Even if Google Clsoure can do that, we will see how it interact with other
    optimizations
@@ -775,11 +750,6 @@ let is_type_number ?comment (e : t) : t =
   string_equal ?comment (typeof e) (str "number")    
 
 
-let string_of_small_int_array ?comment xs : t = 
-  {expression_desc = String_of_small_int_array xs; comment}
-
-
-
 (* we are calling [Caml_primitive.primitive_name], since it's under our
    control, we should make it follow the javascript name convention, and
    call plain [dot]
@@ -841,7 +811,7 @@ let public_method_call meth_name obj label cache args =
 (*       [fn  ; arr NA args ]             *)
 (* ) *)
 
-let set_tag ?comment e tag : t = 
+let block_set_tag ?comment e tag : t = 
   seq {expression_desc = Caml_block_set_tag (e,tag); comment } unit 
 
 
@@ -1245,47 +1215,47 @@ let of_block ?comment ?e block : t =
             , Js_fun_env.empty 0)
     } []
 
-let is_null ?comment x = triple_equal ?comment x nil 
+let is_null ?comment (x : t) =   
+  triple_equal ?comment x nil 
 
 
 let is_undef ?comment x = triple_equal ?comment x undefined
 
 let for_sure_js_null_undefined (x : t) = 
   match x.expression_desc with 
-  | Var (Id ({name = "undefined" | "null"} as id)) 
-    -> Ext_ident.is_js id 
+  | Null | Undefined
+    -> true
   | _ -> false
   
 let is_null_undefined ?comment (x: t) : t = 
   match x.expression_desc with 
-  | Var (Id ({name = "undefined" | "null"} as id))
-    when Ext_ident.is_js id 
+  | Null | Undefined
     -> caml_true
   | Number _ | Array _ | Caml_block _ -> caml_false
-  | _ -> 
-     
+  | _ ->      
       { comment ; 
-        expression_desc = Is_null_undefined_to_boolean x 
+        expression_desc = Is_null_or_undefined x 
       }
 
 let eq_null_undefined_boolean ?comment (a : t) (b : t) = 
   match a.expression_desc, b.expression_desc with 
-  | Var (Id ({name = "null" | "undefined"} as id) ),   
+  | (Null | Undefined),   
     (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
-    when Ext_ident.is_js id -> 
+     -> 
     caml_false
   | (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ ), 
-      Var (Id ({name = "null" | "undefined"} as id) )
-    when Ext_ident.is_js id -> 
+      (Null | Undefined)
+     -> 
     caml_false
-  | Var (Id ({name = "null" | "undefined" as n1 } as id1) ), 
-    Var (Id ({name = "null" | "undefined" as n2 } as id2) )
-    when Ext_ident.is_js id1 && Ext_ident.is_js id2 
-   ->  bool (n1 = n2)    
+  | (Null, Undefined)
+  | (Undefined, Null) -> caml_false
+  | (Null, Null)
+  | (Undefined, Undefined)
+    -> caml_true
   | _ ->       
        {expression_desc = Bin(EqEqEq, a, b); comment}
     
@@ -1293,23 +1263,24 @@ let eq_null_undefined_boolean ?comment (a : t) (b : t) =
 
 let neq_null_undefined_boolean ?comment (a : t) (b : t) = 
   match a.expression_desc, b.expression_desc with 
-  | Var (Id ({name = "null" | "undefined"} as id) ),   
+  | (Null | Undefined),   
     (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ )
-    when Ext_ident.is_js id -> 
+     -> 
     caml_true
   | (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _
     | Fun _ | Array _ | Caml_block _ ), 
-      Var (Id ({name = "null" | "undefined"} as id) )
-    when Ext_ident.is_js id -> 
+      (Null | Undefined)
+     -> 
     caml_true
-  | Var (Id ({name = "null" | "undefined" as n1 } as id1) ), 
-    Var (Id ({name = "null" | "undefined" as n2 } as id2) )
-    when Ext_ident.is_js id1 && Ext_ident.is_js id2 
-    ->   
-    if  n1 <> n2 then caml_true else caml_false
+  | (Null , Null )
+  | (Undefined, Undefined)
+   -> caml_false
+  | (Null, Undefined)
+  | (Undefined, Null)
+   -> caml_true
   | _ ->       
        {expression_desc = Bin(NotEqEq, a, b); comment}
 

@@ -3529,6 +3529,7 @@ val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
+val js_type_boolean : string
 val js_undefined : string
 val js_prop_length : string
 
@@ -3663,6 +3664,7 @@ let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
 let js_type_object = "object" 
+let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
 
@@ -6895,9 +6897,9 @@ val make_unused : unit -> Ident.t
 val convert : string -> string
 
 
-val undefined : Ident.t 
+
 val is_js_or_global : Ident.t -> bool
- val nil : Ident.t 
+
 
 
 val compare : Ident.t -> Ident.t -> int
@@ -7218,9 +7220,6 @@ let make_unused () = create "_"
 let reset () =
   String_hashtbl.clear js_module_table
 
-
-let undefined = create_js "undefined"
-let nil = create_js "null"
 
 (* Has to be total order, [x < y]
    and [x > y] should be consistent

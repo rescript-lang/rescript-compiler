@@ -312,9 +312,6 @@ let reset () =
   String_hashtbl.clear js_module_table
 
 
-let undefined = create_js "undefined"
-let nil = create_js "null"
-
 (* Has to be total order, [x < y]
    and [x > y] should be consistent
    flags are not relevant here

@@ -102,68 +102,17 @@ and expression_desc =
   | Length of expression * length_object
   | Char_of_int of expression
   | Char_to_int of expression 
-  | Is_null_undefined_to_boolean of expression 
+  | Is_null_or_undefined of expression 
     (** where we use a trick [== null ] *)
-  | Array_of_size of expression 
-    (* used in [#create_array] primitive, note having
-       uninitilized array is not as bad as in ocaml, 
-       since GC does not rely on it
-     *)
   | Array_copy of expression (* shallow copy, like [x.slice] *)
-  | Array_append of expression * expression (* For [caml_array_append]*)
-  (* | Tag_ml_obj of expression *)
-  | String_append of expression * expression 
 
-  | Anything_to_number of expression
+  | String_append of expression * expression 
   | Bool of bool (* js true/false*)
   (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
   | Typeof of expression
   | Js_not of expression (* !v *)
-  | String_of_small_int_array of expression 
-    (* String.fromCharCode.apply(null, args) *)
-    (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-  | Json_stringify of expression 
-  (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
-  | Anything_to_string of expression
-  (* for debugging utitlites, 
-     TODO:  [Dump] is not necessary with this primitive 
-     Note that the semantics is slightly different from [JSON.stringify]     
-     {[
-       JSON.stringify("x")       
-     ]}
-     {[
-       ""x""       
-     ]}     
-     {[
-       JSON.stringify(undefined)       
-     ]}     
-     {[
-       undefined       
-     ]}
-     {[ '' + undefined
-     ]}     
-     {[ 'undefined'
-     ]}     
-  *)      
-  | Dump of Js_op.level * expression list
-  (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)              
-    (* to support 
-       val log1 : 'a -> unit
-       val log2 : 'a -> 'b -> unit 
-       val log3 : 'a -> 'b -> 'c -> unit 
-     *)
-
   (* TODO: Add some primitives so that [js inliner] can do a better job *)  
   | Seq of expression * expression
   | Cond of expression * expression * expression
@@ -178,11 +127,6 @@ and expression_desc =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
-  | Bind of expression * expression
-  (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
   | Call of expression * expression list * Js_call_info.t
     (* Analysze over J expression is hard since, 
         some primitive  call is translated 
@@ -250,7 +194,8 @@ and expression_desc =
   *)      
   | Number of number
   | Object of property_map
-
+  | Undefined 
+  | Null
 and for_ident_expression = expression (* pure*)
 
 and finish_ident_expression = expression (* pure *)

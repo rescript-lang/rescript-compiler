@@ -421,6 +421,11 @@ and expression l cxt  f (exp : J.expression) : Ext_pp_scope.t =
 and
   expression_desc cxt (l:int) f x : Ext_pp_scope.t  =
   match x with
+  | Null ->
+    P.string f L.null; cxt 
+  | Undefined 
+    -> 
+    P.string f L.undefined; cxt 
   | Var v ->
     vident cxt f v
   | Bool b ->
@@ -476,16 +481,7 @@ and
     in
     if l > 15 then P.paren_group f 1 action
     else action ()
-  | Bind (a,b) ->
-    (* a.bind(b)
-       {[ fun b -> a.bind(b) ==? a.bind ]}
-    *)
-    begin
-      expression_desc cxt l f
-        (Call ({expression_desc = Dot(a,L.bind, true); comment = None }, [b],
-               {arity = Full; call_info = Call_na}))
-    end
-
+  
   | FlatCall(e,el) ->
     P.group f 1 (fun _ ->
         let cxt = expression 15 cxt f e in
@@ -498,34 +494,6 @@ and
             expression 1 cxt f el
           )
       )
-  | String_of_small_int_array ({expression_desc = desc } as e) ->
-    let action () =
-      P.group f 1 (fun _ ->
-          P.string f L.string_cap;
-          P.string f L.dot ;
-          P.string f L.fromCharcode;
-          begin match desc with
-            | Array (el, _mutable)
-              ->
-              P.paren_group f 1 (fun _ -> arguments cxt f el)
-            | _ ->
-              P.string f L.dot ;
-              P.string f L.apply;
-              P.paren_group f 1 (fun _ ->
-                  P.string f L.null;
-                  P.string f L.comma;
-                  expression 1 cxt  f e  )
-          end )
-    in
-    if l > 15 then P.paren_group f 1 action
-    else action ()
-
-
-  | Array_append (e, el) ->
-    P.group f 1 (fun _ ->
-        let cxt = expression 15 cxt f e in
-        P.string f ".concat";
-        P.paren_group f 1 (fun _ -> arguments cxt f [el]))
 
   | Array_copy e ->
     P.group f 1 (fun _ ->
@@ -533,27 +501,6 @@ and
         P.string f ".slice";
         P.string f "()" ;
         cxt
-      )
-
-  | Dump (level, el) ->
-    let obj =
-      match level with
-      | Log -> "log"
-      | Info -> "info"
-      | Warn -> "warn"
-      | Error -> "error" in
-    P.group f 1 (fun _ ->
-        P.string f L.console;
-        P.string f L.dot;
-        P.string f obj ;
-        P.paren_group f 1 (fun _ -> arguments cxt f el))
-  | Json_stringify e
-    ->
-    P.group f 1 (fun _ ->
-        P.string f L.json ;
-        P.string f L.dot;
-        P.string f L.stringify;
-        P.paren_group f 1 (fun _ -> expression 0 cxt f e )
       )
   | Char_to_int e ->
     begin match e.expression_desc with
@@ -640,20 +587,7 @@ and
       else action ()
     );
     cxt
-  | J.Anything_to_number e
-    ->
-    let action () =
-      P.group f 0 @@ fun _ ->
-      P.string f "+" ;
-      expression 13 cxt f e
-    in
-    (* need to tweak precedence carefully
-       here [++x --> +(+x)]
-    *)
-    if l > 12
-    then P.paren_group f 1 action
-    else action ()
-  | Is_null_undefined_to_boolean e ->
+  | Is_null_or_undefined e ->
     let action = (fun _ ->
         let cxt = expression 1 cxt f e in
         P.space f ;
@@ -791,11 +725,6 @@ and
         P.space f ;
         expression 13 cxt  f delta
     end
-  | Anything_to_string e ->
-    (* Note that we should not apply any smart construtor here,
-       it's purely  a convenice for pretty-printing
-    *)
-    expression_desc cxt l f (Bin (Plus, E.empty_string_literal , e))
 
   | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e)
     (* TODO:
@@ -926,16 +855,6 @@ and
       match el with
       | Some el  -> arguments cxt f el
       | None -> cxt
-    in
-    if l > 15 then P.paren_group f 1 action else action ()
-
-  | Array_of_size e ->
-    let action () =
-      P.group f 1 @@ fun _ ->
-      P.string f L.new_;
-      P.space f;
-      P.string f L.array;
-      P.paren_group f 1 @@ fun _ -> expression 0 cxt f e
     in
     if l > 15 then P.paren_group f 1 action else action ()
 
@@ -1119,39 +1038,33 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Caml_block_set_tag _
       | Length _
       | Caml_block_set_length _
-      | Anything_to_string _
-      | String_of_small_int_array _
       | Call _
-      | Array_append _
       | Array_copy _
       | Caml_block_tag _
       | Seq _
       | Dot _
       | Cond _
       | Bin _
-      | Is_null_undefined_to_boolean _
+      | Is_null_or_undefined _
       | String_access _
       | Access _
-      | Array_of_size _
       | String_append _
       | Char_of_int _
       | Char_to_int _
-      | Dump _
-      | Json_stringify _
       | Math _
       | Var _
+      | Undefined
+      | Null
       | Str _
       | Unicode _
       | Array _
       | Caml_block  _
       | FlatCall _
       | Typeof _
-      | Bind _
       | Number _
       | Js_not _
       | Bool _
       | New _
-      | J.Anything_to_number _
         -> false
       (* e = function(x){...}(x);  is good
       *)

@@ -2,7 +2,7 @@
 
 
 function test(x) {
-  x.nodeValue = (null);
+  x.nodeValue = null;
   return /* () */0;
 }
 

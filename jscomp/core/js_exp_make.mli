@@ -139,8 +139,6 @@ val array_length : unary_op
 
 val string_length : unary_op
 
-val string_of_small_int_array : unary_op
-
 val bytes_length :  unary_op
 
 val function_length : unary_op
@@ -148,9 +146,6 @@ val function_length : unary_op
 val char_of_int : unary_op
 
 val char_to_int : unary_op
-
-val array_append : binary_op
-
 val array_copy : unary_op
 val string_append : binary_op
 (**
@@ -249,15 +244,6 @@ val call : ?comment:string  -> info:Js_call_info.t -> t -> t list -> t
 
 val flat_call : binary_op
 
-val dump : ?comment:string -> Js_op.level -> t list -> t
-
-
-
-(** see {!https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Unary_plus}*)
-(* val to_number : unary_op *)
-val int_to_string : unary_op
-
-
 val new_ : ?comment:string -> J.expression -> J.expression list -> t
 
 val array : 
@@ -308,7 +294,7 @@ val is_caml_block : ?comment:string -> t -> t
 
 
 val tag : ?comment:string -> J.expression -> t
-val set_tag : ?comment:string -> J.expression -> J.expression -> t
+val block_set_tag : ?comment:string -> J.expression -> J.expression -> t
 
 (** Note that this is coupled with how we encode block, if we use the 
     `Object.defineProperty(..)` since the array already hold the length,

@@ -35,7 +35,12 @@ external append : 'a array -> 'a array -> 'a array = "#array_append"
 let f x y = append x y
 *)
 
-external of_small_int_array : int array -> string = "#string_of_small_int_array"
+external of_small_int_array :  
+    (_ [@bs.as {json|null|json}] ) -> 
+    int array -> string = 
+    "String.fromCharCode.apply" 
+[@@bs.val]
+
 (* external string_of_char : char -> string = "#string_of_char" *)
 (* string_of_char y  *)
 

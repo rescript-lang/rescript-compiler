@@ -10,7 +10,7 @@ var suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 /* None */0,
-                null === null ? /* None */0 : [null]
+                /* None */0
               ]);
     })
 ];
@@ -31,7 +31,7 @@ var suites_001 = /* :: */[
       (function () {
           return /* Eq */Block.__(0, [
                     /* None */0,
-                    null === null ? /* None */0 : [null]
+                    /* None */0
                   ]);
         })
     ],

@@ -125,54 +125,11 @@ class virtual fold =
        ]}       
      *)
                  (** where we use a trick [== null ] *)
-                 (* used in [#create_array] primitive, note having
-       uninitilized array is not as bad as in ocaml, 
-       since GC does not rely on it
-     *)
-                 (* shallow copy, like [x.slice] *)
-                 (* For [caml_array_append]*)
-                 (* | Tag_ml_obj of expression *) (* js true/false*)
+                 (* shallow copy, like [x.slice] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
-                 (* !v *) (* String.fromCharCode.apply(null, args) *)
-                 (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-                 (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
-                 (* for debugging utitlites, 
-     TODO:  [Dump] is not necessary with this primitive 
-     Note that the semantics is slightly different from [JSON.stringify]     
-     {[
-       JSON.stringify("x")       
-     ]}
-     {[
-       ""x""       
-     ]}     
-     {[
-       JSON.stringify(undefined)       
-     ]}     
-     {[
-       undefined       
-     ]}
-     {[ '' + undefined
-     ]}     
-     {[ 'undefined'
-     ]}     
-  *)
-                 (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)
-                 (* to support 
-       val log1 : 'a -> unit
-       val log2 : 'a -> 'b -> unit 
-       val log3 : 'a -> 'b -> 'c -> unit 
-     *)
+                 (* !v *)
                  (* TODO: Add some primitives so that [js inliner] can do a better job *)
                  (* [int_op] will guarantee return [int32] bits 
      https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
@@ -182,10 +139,6 @@ class virtual fold =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
-                 (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
                  (* Analysze over J expression is hard since, 
         some primitive  call is translated 
         into a plain call, it's better to keep them
@@ -366,23 +319,13 @@ class virtual fold =
           let o = o#expression _x in let o = o#length_object _x_i1 in o
       | Char_of_int _x -> let o = o#expression _x in o
       | Char_to_int _x -> let o = o#expression _x in o
-      | Is_null_undefined_to_boolean _x -> let o = o#expression _x in o
-      | Array_of_size _x -> let o = o#expression _x in o
+      | Is_null_or_undefined _x -> let o = o#expression _x in o
       | Array_copy _x -> let o = o#expression _x in o
-      | Array_append (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Anything_to_number _x -> let o = o#expression _x in o
       | Bool _x -> let o = o#bool _x in o
       | Typeof _x -> let o = o#expression _x in o
       | Js_not _x -> let o = o#expression _x in o
-      | String_of_small_int_array _x -> let o = o#expression _x in o
-      | Json_stringify _x -> let o = o#expression _x in o
-      | Anything_to_string _x -> let o = o#expression _x in o
-      | Dump (_x, _x_i1) ->
-          let o = o#unknown _x in
-          let o = o#list (fun o -> o#expression) _x_i1 in o
       | Seq (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Cond (_x, _x_i1, _x_i2) ->
@@ -392,8 +335,6 @@ class virtual fold =
           let o = o#binop _x in
           let o = o#expression _x_i1 in let o = o#expression _x_i2 in o
       | FlatCall (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Bind (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Call (_x, _x_i1, _x_i2) ->
           let o = o#expression _x in
@@ -433,6 +374,8 @@ class virtual fold =
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Number _x -> let o = o#number _x in o
       | Object _x -> let o = o#property_map _x in o
+      | Undefined -> o
+      | Null -> o
     method expression : expression -> 'self_type =
       fun { expression_desc = _x; comment = _x_i1 } ->
         let o = o#expression_desc _x in

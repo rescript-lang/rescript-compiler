@@ -31,6 +31,7 @@ val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
+val js_type_boolean : string
 val js_undefined : string
 val js_prop_length : string
 
