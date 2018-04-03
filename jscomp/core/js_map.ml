@@ -138,10 +138,6 @@ class virtual map =
        ]}       
      *)
                  (** where we use a trick [== null ] *)
-                 (* used in [#create_array] primitive, note having
-       uninitilized array is not as bad as in ocaml, 
-       since GC does not rely on it
-     *)
                  (* shallow copy, like [x.slice] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
@@ -358,7 +354,6 @@ class virtual map =
       | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
       | Is_null_or_undefined _x ->
           let _x = o#expression _x in Is_null_or_undefined _x
-      | Array_of_size _x -> let _x = o#expression _x in Array_of_size _x
       | Array_copy _x -> let _x = o#expression _x in Array_copy _x
       | String_append (_x, _x_i1) ->
           let _x = o#expression _x in

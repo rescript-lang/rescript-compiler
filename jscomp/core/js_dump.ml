@@ -874,16 +874,6 @@ and
     in
     if l > 15 then P.paren_group f 1 action else action ()
 
-  | Array_of_size e ->
-    let action () =
-      P.group f 1 @@ fun _ ->
-      P.string f L.new_;
-      P.space f;
-      P.string f L.array;
-      P.paren_group f 1 @@ fun _ -> expression 0 cxt f e
-    in
-    if l > 15 then P.paren_group f 1 action else action ()
-
   | Cond (e, e1, e2) ->
     let action () =
       (* P.group f 1 @@ fun _ ->  *)
@@ -1075,7 +1065,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Is_null_or_undefined _
       | String_access _
       | Access _
-      | Array_of_size _
       | String_append _
       | Char_of_int _
       | Char_to_int _

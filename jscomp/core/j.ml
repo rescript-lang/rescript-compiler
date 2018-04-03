@@ -104,11 +104,6 @@ and expression_desc =
   | Char_to_int of expression 
   | Is_null_or_undefined of expression 
     (** where we use a trick [== null ] *)
-  | Array_of_size of expression 
-    (* used in [#create_array] primitive, note having
-       uninitilized array is not as bad as in ocaml, 
-       since GC does not rely on it
-     *)
   | Array_copy of expression (* shallow copy, like [x.slice] *)
 
   | String_append of expression * expression 
