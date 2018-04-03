@@ -138,13 +138,6 @@ let translate loc (prim_name : string)
     | "caml_power_float"  -> 
       E.math "pow" args
 
-
-    | "caml_array_append" -> 
-      begin match args with 
-        | [e0;e1] -> E.array_append e0 e1
-        | _ ->  assert false 
-      end
-
     | "caml_array_get" -> 
       call Js_runtime_modules.array
     | "caml_array_get_addr"

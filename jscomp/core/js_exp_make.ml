@@ -448,8 +448,6 @@ let char_to_int ?comment (v : t) : t =
   | Char_of_int v -> v 
   | _ -> {comment; expression_desc = Char_to_int v }
 
-let array_append ?comment e el : t = 
-  { comment ; expression_desc = Array_append (e, el)}
 
 let array_copy ?comment e : t = 
   { comment ; expression_desc = Array_copy e}

@@ -142,8 +142,7 @@ class virtual map =
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)
-                 (* shallow copy, like [x.slice] *)
-                 (* For [caml_array_append]*) (* js true/false*)
+                 (* shallow copy, like [x.slice] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -390,9 +389,6 @@ class virtual map =
           let _x = o#expression _x in Is_null_undefined_to_boolean _x
       | Array_of_size _x -> let _x = o#expression _x in Array_of_size _x
       | Array_copy _x -> let _x = o#expression _x in Array_copy _x
-      | Array_append (_x, _x_i1) ->
-          let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Array_append (_x, _x_i1)
       | String_append (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)

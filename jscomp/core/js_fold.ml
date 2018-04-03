@@ -129,8 +129,7 @@ class virtual fold =
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)
-                 (* shallow copy, like [x.slice] *)
-                 (* For [caml_array_append]*) (* js true/false*)
+                 (* shallow copy, like [x.slice] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -364,8 +363,6 @@ class virtual fold =
       | Is_null_undefined_to_boolean _x -> let o = o#expression _x in o
       | Array_of_size _x -> let o = o#expression _x in o
       | Array_copy _x -> let o = o#expression _x in o
-      | Array_append (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Bool _x -> let o = o#bool _x in o

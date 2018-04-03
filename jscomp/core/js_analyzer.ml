@@ -102,7 +102,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
     List.for_all no_side_effect  xs 
   | Object kvs -> 
     List.for_all (fun (_property_name, y) -> no_side_effect y ) kvs 
-  | Array_append (a,b) 
   | String_append (a,b)
   | Seq (a,b) -> no_side_effect a && no_side_effect b 
   | Length (e, _)
@@ -264,7 +263,6 @@ let rec eq_expression
     | Is_null_undefined_to_boolean _ 
     | Array_of_size _
     | Array_copy _ 
-    | Array_append _ 
     | String_append _ 
     | Typeof _ 
     | Js_not _ 

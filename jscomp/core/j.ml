@@ -110,7 +110,7 @@ and expression_desc =
        since GC does not rely on it
      *)
   | Array_copy of expression (* shallow copy, like [x.slice] *)
-  | Array_append of expression * expression (* For [caml_array_append]*)
+
   | String_append of expression * expression 
   | Bool of bool (* js true/false*)
   (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 

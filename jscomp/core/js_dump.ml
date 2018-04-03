@@ -511,13 +511,6 @@ and
     if l > 15 then P.paren_group f 1 action
     else action ()
 
-
-  | Array_append (e, el) ->
-    P.group f 1 (fun _ ->
-        let cxt = expression 15 cxt f e in
-        P.string f ".concat";
-        P.paren_group f 1 (fun _ -> arguments cxt f [el]))
-
   | Array_copy e ->
     P.group f 1 (fun _ ->
         let cxt = expression 15 cxt f e in
@@ -1100,7 +1093,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Anything_to_string _
       | String_of_small_int_array _
       | Call _
-      | Array_append _
       | Array_copy _
       | Caml_block_tag _
       | Seq _

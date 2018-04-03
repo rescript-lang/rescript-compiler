@@ -148,9 +148,6 @@ val function_length : unary_op
 val char_of_int : unary_op
 
 val char_to_int : unary_op
-
-val array_append : binary_op
-
 val array_copy : unary_op
 val string_append : binary_op
 (**
