@@ -1216,7 +1216,7 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     throw Pervasives.Exit;
   }
   Caml_io.caml_ml_flush(Pervasives.stdout);
-  Caml_missing_polyfill.not_implemented("caml_terminfo_backup not implemented by bucklescript yet\n");
+  Caml_missing_polyfill.not_implemented("caml_terminfo_backup");
   var bol = false;
   Pervasives.print_string("# ");
   for(var pos = 0 ,pos_finish = (lb[/* lex_buffer_len */2] - pos0 | 0) - 1 | 0; pos <= pos_finish; ++pos){
@@ -1229,21 +1229,21 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
             return pos === loc[/* loc_start */0][/* pos_cnum */3];
           }
           }(pos)), locs)) {
-      Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
+      Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
     }
     if (List.exists((function(pos){
           return function (loc) {
             return pos === loc[/* loc_end */1][/* pos_cnum */3];
           }
           }(pos)), locs)) {
-      Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
+      Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
     }
     var c = Caml_bytes.get(lb[/* lex_buffer */1], pos + pos0 | 0);
     Pervasives.print_char(c);
     bol = c === /* "\n" */10;
   }
-  Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
-  Caml_missing_polyfill.not_implemented("caml_terminfo_resume not implemented by bucklescript yet\n");
+  Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
+  Caml_missing_polyfill.not_implemented("caml_terminfo_resume");
   return Caml_io.caml_ml_flush(Pervasives.stdout);
 }
 
@@ -1397,7 +1397,7 @@ function highlight_locations(ppf, locs) {
           return false;
         }
       } else {
-        status[0] = Caml_missing_polyfill.not_implemented("caml_terminfo_setup not implemented by bucklescript yet\n");
+        status[0] = Caml_missing_polyfill.not_implemented("caml_terminfo_setup");
         continue ;
       }
     } else {

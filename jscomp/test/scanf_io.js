@@ -54,7 +54,7 @@ function write_tscanf_data_file(fname, lines) {
   create_tscanf_data(ob, lines);
   $$Buffer.output_buffer(oc, ob);
   Caml_io.caml_ml_flush(oc);
-  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
 }
 
 function get_lines(fname) {

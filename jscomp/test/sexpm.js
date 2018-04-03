@@ -25,12 +25,12 @@ function _with_in(filename, f) {
   var ic = Pervasives.open_in_bin(filename);
   try {
     var x = Curry._1(f, ic);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     return x;
   }
   catch (raw_e){
     var e = Js_exn.internalToOCamlException(raw_e);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     return /* `Error */[
             106380200,
             Printexc.to_string(e)
@@ -318,12 +318,12 @@ function to_file_seq(filename, seq) {
   try {
     var x = Curry._1(f, oc);
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     return x;
   }
   catch (e){
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     throw e;
   }
 }

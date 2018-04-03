@@ -27,7 +27,7 @@ caml_oo.cmj : bs_obj.cmj caml_oo.cmi
 curry.cmj : caml_array.cmj
 caml_oo_curry.cmj : curry.cmj caml_oo.cmj
 caml_module.cmj :
-caml_missing_polyfill.cmj : caml_missing_polyfill.cmi
+caml_missing_polyfill.cmj : js_exn.cmj caml_missing_polyfill.cmi
 bs_string.cmj :
 js_float.cmj :
 js_exn.cmj : caml_exceptions.cmj js_exn.cmi

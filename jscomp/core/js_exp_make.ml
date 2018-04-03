@@ -1319,7 +1319,7 @@ let not_implemented ?comment (s : string) : t =
   runtime_call
     Js_runtime_modules.missing_polyfill
     "not_implemented" 
-    [str (s ^ " not implemented by bucklescript yet\n")]
+    [str s]
 
 
 
