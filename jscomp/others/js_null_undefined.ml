@@ -29,8 +29,8 @@ external toOption : 'a t -> 'a option = "#null_undefined_to_opt"
 external to_opt : 'a t -> 'a option = "#null_undefined_to_opt"
 external return : 'a -> 'a t = "%identity"
 external test : 'a t -> bool =  "#is_nil_undef"
-external null : 'a t = "null" [@@bs.val]
-external undefined : 'a t = "undefined" [@@bs.val]
+external null : 'a t = "#null" 
+external undefined : 'a t = "#undefined"
 
 let bind x f =
   match to_opt x with

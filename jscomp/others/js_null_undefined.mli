@@ -34,10 +34,10 @@ external return : 'a -> 'a t = "%identity"
 external test : 'a t -> bool =  "#is_nil_undef"
 
 (** The [null] value of type ['a Js.null_undefined]*)
-external null : 'a t = "null" [@@bs.val]
+external null : 'a t = "#null"
 
 (** The [undefined] value of type ['a Js.null_undefined] *)
-external undefined : 'a t = "undefined" [@@bs.val]
+external undefined : 'a t = "#undefined"
 
 
 
