@@ -659,8 +659,6 @@ let translate loc (prim_name : string)
             *)
             | _ -> E.array_copy a
           end
-        (* if Js_analyzer.is_constant a then a
-           else E.array_copy a *)
         | _ -> assert false 
       end
     | "caml_obj_block" -> 

@@ -100,7 +100,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
         the block is mutable does not mean this operation is non-pure
     *)
     List.for_all no_side_effect  xs 
-  | Bind(fn, obj) -> no_side_effect fn && no_side_effect obj
   | Object kvs -> 
     List.for_all (fun (_property_name, y) -> no_side_effect y ) kvs 
   | Array_append (a,b) 
@@ -117,8 +116,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Math _ 
   | Array_of_size _
   | Array_copy _ 
-  (* | Tag_ml_obj _ *)
-  | J.Anything_to_number _
   | Js_not _
   | String_of_small_int_array _ 
   | Json_stringify _ 
@@ -269,8 +266,6 @@ let rec eq_expression
     | Array_copy _ 
     | Array_append _ 
     | String_append _ 
-    | Anything_to_number _ 
-
     | Typeof _ 
     | Js_not _ 
     | String_of_small_int_array _ 
@@ -280,7 +275,6 @@ let rec eq_expression
 
     | Cond _ 
     | FlatCall  _
-    | Bind _ 
     | String_access _ 
 
     | New _ 

@@ -111,10 +111,7 @@ and expression_desc =
      *)
   | Array_copy of expression (* shallow copy, like [x.slice] *)
   | Array_append of expression * expression (* For [caml_array_append]*)
-  (* | Tag_ml_obj of expression *)
   | String_append of expression * expression 
-
-  | Anything_to_number of expression
   | Bool of bool (* js true/false*)
   (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
@@ -178,11 +175,6 @@ and expression_desc =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
-  | Bind of expression * expression
-  (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
   | Call of expression * expression list * Js_call_info.t
     (* Analysze over J expression is hard since, 
         some primitive  call is translated 

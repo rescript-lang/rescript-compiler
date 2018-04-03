@@ -220,7 +220,7 @@ let subst name export_set stats  =
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function
             *)
-            Ext_list.append block @@ self#block rest
+            Ext_list.append block (self#block rest)
           | (None | Some _) ->
             self#statement st :: self#block rest
         end
@@ -235,9 +235,8 @@ let subst name export_set stats  =
 
 
 let tailcall_inline (program : J.program) = 
-  let _stats = get_stats program in
-  let _export_set = program.export_set in
-  program
-  |> (subst program.name _export_set _stats )# program
-  (* |> pass_beta #program *)
+  let stats = get_stats program in
+  let export_set = program.export_set in
+  (subst program.name export_set stats )#program program
+
     

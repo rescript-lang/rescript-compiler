@@ -143,8 +143,7 @@ class virtual map =
        since GC does not rely on it
      *)
                  (* shallow copy, like [x.slice] *)
-                 (* For [caml_array_append]*)
-                 (* | Tag_ml_obj of expression *) (* js true/false*)
+                 (* For [caml_array_append]*) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -195,10 +194,6 @@ class virtual map =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
-                 (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
                  (* Analysze over J expression is hard since, 
         some primitive  call is translated 
         into a plain call, it's better to keep them
@@ -401,8 +396,6 @@ class virtual map =
       | String_append (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
-      | Anything_to_number _x ->
-          let _x = o#expression _x in Anything_to_number _x
       | Bool _x -> let _x = o#bool _x in Bool _x
       | Typeof _x -> let _x = o#expression _x in Typeof _x
       | Js_not _x -> let _x = o#expression _x in Js_not _x
@@ -429,9 +422,6 @@ class virtual map =
       | FlatCall (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in FlatCall (_x, _x_i1)
-      | Bind (_x, _x_i1) ->
-          let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Bind (_x, _x_i1)
       | Call (_x, _x_i1, _x_i2) ->
           let _x = o#expression _x in
           let _x_i1 = o#list (fun o -> o#expression) _x_i1 in

@@ -703,9 +703,7 @@ let translate  loc
   (*   assert false (\* already handled *\) *)
   (* assert false *)
   | Pduprecord ((Record_regular 
-                | Record_float ),0)
-  | Pduprecord ((Record_regular 
-                | Record_float ),_) -> 
+                | Record_float ),_size) -> (* _size is the length of all_lables*)
     begin match args with 
       | [e] -> Js_of_lam_record.copy e
       | _ -> assert false       

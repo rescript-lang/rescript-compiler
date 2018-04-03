@@ -476,16 +476,7 @@ and
     in
     if l > 15 then P.paren_group f 1 action
     else action ()
-  | Bind (a,b) ->
-    (* a.bind(b)
-       {[ fun b -> a.bind(b) ==? a.bind ]}
-    *)
-    begin
-      expression_desc cxt l f
-        (Call ({expression_desc = Dot(a,L.bind, true); comment = None }, [b],
-               {arity = Full; call_info = Call_na}))
-    end
-
+  
   | FlatCall(e,el) ->
     P.group f 1 (fun _ ->
         let cxt = expression 15 cxt f e in
@@ -640,19 +631,6 @@ and
       else action ()
     );
     cxt
-  | J.Anything_to_number e
-    ->
-    let action () =
-      P.group f 0 @@ fun _ ->
-      P.string f "+" ;
-      expression 13 cxt f e
-    in
-    (* need to tweak precedence carefully
-       here [++x --> +(+x)]
-    *)
-    if l > 12
-    then P.paren_group f 1 action
-    else action ()
   | Is_null_undefined_to_boolean e ->
     let action = (fun _ ->
         let cxt = expression 1 cxt f e in
@@ -1146,12 +1124,10 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Caml_block  _
       | FlatCall _
       | Typeof _
-      | Bind _
       | Number _
       | Js_not _
       | Bool _
       | New _
-      | J.Anything_to_number _
         -> false
       (* e = function(x){...}(x);  is good
       *)

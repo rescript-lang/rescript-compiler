@@ -130,8 +130,7 @@ class virtual fold =
        since GC does not rely on it
      *)
                  (* shallow copy, like [x.slice] *)
-                 (* For [caml_array_append]*)
-                 (* | Tag_ml_obj of expression *) (* js true/false*)
+                 (* For [caml_array_append]*) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -182,10 +181,6 @@ class virtual fold =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
-                 (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
                  (* Analysze over J expression is hard since, 
         some primitive  call is translated 
         into a plain call, it's better to keep them
@@ -373,7 +368,6 @@ class virtual fold =
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Anything_to_number _x -> let o = o#expression _x in o
       | Bool _x -> let o = o#bool _x in o
       | Typeof _x -> let o = o#expression _x in o
       | Js_not _x -> let o = o#expression _x in o
@@ -392,8 +386,6 @@ class virtual fold =
           let o = o#binop _x in
           let o = o#expression _x_i1 in let o = o#expression _x_i2 in o
       | FlatCall (_x, _x_i1) ->
-          let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Bind (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Call (_x, _x_i1, _x_i2) ->
           let o = o#expression _x in
