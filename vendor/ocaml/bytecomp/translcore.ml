@@ -694,7 +694,7 @@ exception Not_constant
 
 let extract_constant = function
     Lconst sc -> sc
-  | _ -> raise Not_constant
+  | _ -> raise_notrace Not_constant
 
 let extract_float = function
     Const_base(Const_float f) -> f
@@ -973,7 +973,10 @@ and transl_exp0 e =
                   [Lconst(Const_base(Const_int tag)); lam], e.exp_loc)
       end
   | Texp_record ((_, lbl1, _) :: _ as lbl_expr_list, opt_init_expr) ->
-      transl_record e.exp_loc lbl1.lbl_all lbl1.lbl_repres lbl_expr_list opt_init_expr
+      if !Clflags.bs_only then
+        transl_record_bs e.exp_loc lbl1.lbl_all lbl1.lbl_repres lbl_expr_list opt_init_expr
+      else
+        transl_record e.exp_loc lbl1.lbl_all lbl1.lbl_repres lbl_expr_list opt_init_expr
   | Texp_record ([], _) ->
       fatal_error "Translcore.transl_exp: bad Texp_record"
   | Texp_field(arg, _, lbl) ->
@@ -1328,6 +1331,68 @@ and transl_record loc all_labels repres lbl_expr_list opt_init_expr =
         match lbl.lbl_repres with
           Record_regular -> Psetfield(lbl.lbl_pos, maybe_pointer expr, Fld_record_set lbl.lbl_name)
         | Record_float -> Psetfloatfield (lbl.lbl_pos, Fld_record_set lbl.lbl_name) in
+      Lsequence(Lprim(upd, [Lvar copy_id; transl_exp expr], loc), cont) in
+    begin match opt_init_expr with
+      None -> assert false
+    | Some init_expr ->
+        Llet(Strict, copy_id,
+             Lprim(Pduprecord (repres, size), [transl_exp init_expr], loc),
+             List.fold_right update_field lbl_expr_list (Lvar copy_id))
+    end
+  end
+
+and transl_record_bs loc all_labels repres lbl_expr_list opt_init_expr =
+  let size = Array.length all_labels in
+  (* Determine if there are "enough" new fields *)
+  if opt_init_expr = None || size <= 20 || 3 + 2 * List.length lbl_expr_list >= size
+  then begin
+    (* Allocate new record with given fields (and remaining fields
+       taken from init_expr if any *)
+    let lv = Array.make size staticfail in
+    let init_id = Ident.create "init" in
+    for i = 0 to Array.length all_labels - 1 do
+      let access =
+        let lbl = all_labels.(i) in
+         Pfield (i, Fld_record lbl.lbl_name)
+      in
+      lv.(i) <- Lprim(access, [Lvar init_id], loc)
+    done;
+    List.iter
+      (fun (_, lbl, expr) -> lv.(lbl.lbl_pos) <- transl_exp expr)
+      lbl_expr_list;
+    let ll = Array.to_list lv in
+    let mut = ref Immutable in
+    let all_labels_info =
+      Lambda.Blk_record (all_labels |> Array.map (fun x -> x.Types.lbl_name)) in
+    let lam =
+      try
+        for i = 0 to Array.length all_labels - 1 do
+          if (Array.unsafe_get all_labels i).lbl_mut = Mutable then
+            begin
+              mut := Mutable;
+              raise_notrace Not_constant
+            end
+        done ;
+        let cl = List.map extract_constant ll in
+        Lconst(Const_block(0, all_labels_info, cl))        
+      with Not_constant ->
+        Lprim(Pmakeblock(0, all_labels_info, !mut), ll,loc)
+    in
+    begin match opt_init_expr with
+      None -> lam
+    | Some init_expr -> Llet(Strict, init_id, transl_exp init_expr, lam)
+    end
+  end else begin
+    (* Take a shallow copy of the init record, then mutate the fields
+       of the copy *)
+    (* If you change anything here, you will likely have to change
+       [check_recursive_recordwith] in this file. *)
+    let copy_id = Ident.create "newrecord" in
+    let update_field (_, ({lbl_pos; lbl_name} : Types.label_description), expr) cont =
+      let upd =
+        Psetfield(lbl_pos, true, Fld_record_set lbl_name)
+        (* don't care pointer or not *)
+      in
       Lsequence(Lprim(upd, [Lvar copy_id; transl_exp expr], loc), cont) in
     begin match opt_init_expr with
       None -> assert false
