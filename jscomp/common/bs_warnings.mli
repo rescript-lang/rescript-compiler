@@ -23,8 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = 
-  | Unsafe_ffi_bool_type
+type t =
   | Unsafe_poly_variant_type
 
 val prerr_bs_ffi_warning : Location.t -> t -> unit
