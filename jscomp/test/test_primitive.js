@@ -59,9 +59,9 @@ function f2(h, b, _) {
 
 Caml_array.caml_array_set(v, 1, 3.0);
 
-var unboxed_x = /* array */[
-  0,
-  0
+var unboxed_x = /* record */[
+  /* u */0,
+  /* v */0
 ];
 
 function gg(x) {

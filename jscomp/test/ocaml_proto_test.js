@@ -98,73 +98,85 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums : [] */0,
       /* extends : [] */0
     ];
-  var proto$3;
-  if (syntax) {
-    var newrecord = proto$2.slice();
-    newrecord[/* syntax */0] = syntax;
-    proto$3 = newrecord;
-  } else {
-    proto$3 = proto$2;
-  }
-  var proto$4;
-  if ($$package) {
-    var newrecord$1 = proto$3.slice();
-    newrecord$1[/* package */3] = $$package;
-    proto$4 = newrecord$1;
-  } else {
-    proto$4 = proto$3;
-  }
-  var proto$5;
-  if (message) {
-    var newrecord$2 = proto$4.slice();
-    newrecord$2[/* messages */4] = /* :: */[
-      message[0],
-      proto$2[/* messages */4]
-    ];
-    proto$5 = newrecord$2;
-  } else {
-    proto$5 = proto$4;
-  }
-  var proto$6;
-  if ($$enum) {
-    var newrecord$3 = proto$5.slice();
-    newrecord$3[/* enums */5] = /* :: */[
-      $$enum[0],
-      proto$2[/* enums */5]
-    ];
-    proto$6 = newrecord$3;
-  } else {
-    proto$6 = proto$5;
-  }
-  var proto$7;
-  if ($$import) {
-    var newrecord$4 = proto$6.slice();
-    newrecord$4[/* imports */1] = /* :: */[
-      $$import[0],
-      proto$2[/* imports */1]
-    ];
-    proto$7 = newrecord$4;
-  } else {
-    proto$7 = proto$6;
-  }
-  var proto$8;
-  if (file_option) {
-    var newrecord$5 = proto$7.slice();
-    newrecord$5[/* file_options */2] = /* :: */[
-      file_option[0],
-      proto$2[/* file_options */2]
-    ];
-    proto$8 = newrecord$5;
-  } else {
-    proto$8 = proto$7;
-  }
+  var proto$3 = syntax ? /* record */[
+      /* syntax */syntax,
+      /* imports */proto$2[/* imports */1],
+      /* file_options */proto$2[/* file_options */2],
+      /* package */proto$2[/* package */3],
+      /* messages */proto$2[/* messages */4],
+      /* enums */proto$2[/* enums */5],
+      /* extends */proto$2[/* extends */6]
+    ] : proto$2;
+  var proto$4 = $$package ? /* record */[
+      /* syntax */proto$3[/* syntax */0],
+      /* imports */proto$3[/* imports */1],
+      /* file_options */proto$3[/* file_options */2],
+      /* package */$$package,
+      /* messages */proto$3[/* messages */4],
+      /* enums */proto$3[/* enums */5],
+      /* extends */proto$3[/* extends */6]
+    ] : proto$3;
+  var proto$5 = message ? /* record */[
+      /* syntax */proto$4[/* syntax */0],
+      /* imports */proto$4[/* imports */1],
+      /* file_options */proto$4[/* file_options */2],
+      /* package */proto$4[/* package */3],
+      /* messages : :: */[
+        message[0],
+        proto$2[/* messages */4]
+      ],
+      /* enums */proto$4[/* enums */5],
+      /* extends */proto$4[/* extends */6]
+    ] : proto$4;
+  var proto$6 = $$enum ? /* record */[
+      /* syntax */proto$5[/* syntax */0],
+      /* imports */proto$5[/* imports */1],
+      /* file_options */proto$5[/* file_options */2],
+      /* package */proto$5[/* package */3],
+      /* messages */proto$5[/* messages */4],
+      /* enums : :: */[
+        $$enum[0],
+        proto$2[/* enums */5]
+      ],
+      /* extends */proto$5[/* extends */6]
+    ] : proto$5;
+  var proto$7 = $$import ? /* record */[
+      /* syntax */proto$6[/* syntax */0],
+      /* imports : :: */[
+        $$import[0],
+        proto$2[/* imports */1]
+      ],
+      /* file_options */proto$6[/* file_options */2],
+      /* package */proto$6[/* package */3],
+      /* messages */proto$6[/* messages */4],
+      /* enums */proto$6[/* enums */5],
+      /* extends */proto$6[/* extends */6]
+    ] : proto$6;
+  var proto$8 = file_option ? /* record */[
+      /* syntax */proto$7[/* syntax */0],
+      /* imports */proto$7[/* imports */1],
+      /* file_options : :: */[
+        file_option[0],
+        proto$2[/* file_options */2]
+      ],
+      /* package */proto$7[/* package */3],
+      /* messages */proto$7[/* messages */4],
+      /* enums */proto$7[/* enums */5],
+      /* extends */proto$7[/* extends */6]
+    ] : proto$7;
   if (extend) {
-    var newrecord$6 = proto$8.slice();
-    newrecord$6[/* extends */6] = /* :: */[
-      extend[0],
-      proto$2[/* extends */6]
-    ];
-    return newrecord$6;
+    return /* record */[
+            /* syntax */proto$8[/* syntax */0],
+            /* imports */proto$8[/* imports */1],
+            /* file_options */proto$8[/* file_options */2],
+            /* package */proto$8[/* package */3],
+            /* messages */proto$8[/* messages */4],
+            /* enums */proto$8[/* enums */5],
+            /* extends : :: */[
+              extend[0],
+              proto$2[/* extends */6]
+            ]
+          ];
   } else {
     return proto$8;
   }
