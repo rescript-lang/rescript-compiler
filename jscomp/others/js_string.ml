@@ -34,7 +34,7 @@ external fromCodePointMany : int array -> t = "String.fromCodePoint" [@@bs.val] 
 (* String.raw: ES2015, meant to be used with template strings, not directly *)
 
 external length : t -> int = "" [@@bs.get]
-external get : t -> int -> t = "" [@@bs.get_index]
+external get : t -> int -> t option = "" [@@bs.get_index][@@bs.return {undefined_to_opt}]
 
 external charAt : int ->  t = "" [@@bs.send.pipe: t]
 external charCodeAt : int -> float  = "" [@@bs.send.pipe: t]
