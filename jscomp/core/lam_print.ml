@@ -139,8 +139,8 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
   | Pfield (n,_) -> fprintf ppf "field %i" n
-  | Psetfield(n, ptr, _) ->
-    let instr = if ptr then "setfield_ptr " else "setfield_imm " in
+  | Psetfield(n,  _) ->
+    let instr = "setfield " in
     fprintf ppf "%s%i" instr n
   | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
   | Psetfloatfield (n,_) -> fprintf ppf "setfloatfield %i" n
@@ -418,7 +418,7 @@ let lambda use_env env ppf v  =
       fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
 
     | Lprim { 
-        primitive  = Psetfield (n,_,_); 
+        primitive  = Psetfield (n,_); 
         args = [ Lglobal_module id  ;
                  e ]
         ;  _} when use_env  ->
