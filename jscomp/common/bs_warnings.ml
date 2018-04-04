@@ -24,9 +24,7 @@
 
 
 
-type t = 
-  | Unsafe_ffi_bool_type
-
+type t =
   | Unsafe_poly_variant_type
   (* for users write code like this:
      {[ external f : [`a of int ] -> string = ""]}
@@ -37,9 +35,6 @@ type t =
 
 let to_string t =
   match t with
-  | Unsafe_ffi_bool_type
-    ->   
-    "You are passing a OCaml bool type into JS, probably you want to pass Js.boolean"
   | Unsafe_poly_variant_type 
     -> 
     "Here a OCaml polymorphic variant type passed into JS, probably you forgot annotations like `[@bs.int]` or `[@bs.string]`  "
