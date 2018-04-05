@@ -609,7 +609,7 @@ let translate  loc
       | [e] -> E.array_length e 
       | _ -> assert false
     end
-  | Psetfield (i, _, field_info) -> 
+  | Psetfield (i, field_info) -> 
     begin match args with 
       | [e0;e1] ->  (** RUNTIME *)
         decorate_side_effect cxt 

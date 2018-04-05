@@ -17,9 +17,9 @@ function ff(v, u) {
 }
 
 function fff(vv, uu) {
-  return /* array */[
-          vv,
-          uu
+  return /* record */[
+          /* vv */vv,
+          /* uu */uu
         ];
 }
 

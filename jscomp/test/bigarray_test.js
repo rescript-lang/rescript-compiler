@@ -14,9 +14,9 @@ function sum() {
 
 function init(v) {
   for(var i = 0 ,i_finish = Caml_missing_polyfill.not_implemented("caml_ba_dim_1") - 1 | 0; i <= i_finish; ++i){
-    v[i] = /* array */[
-      Caml_int32.imul(i, i),
-      Caml_int32.imul(Caml_int32.imul(i, i), i)
+    v[i] = /* record */[
+      /* re */Caml_int32.imul(i, i),
+      /* im */Caml_int32.imul(Caml_int32.imul(i, i), i)
     ];
   }
   return /* () */0;

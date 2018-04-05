@@ -4467,9 +4467,21 @@ function mem(x, _param) {
 
 function create$1(lex_env, mode) {
   var lexbuf = lex_env[/* lex_lb */1];
-  var newrecord = lexbuf.slice();
-  newrecord[/* lex_buffer */1] = lexbuf[/* lex_buffer */1];
-  var lex_env$1 = with_lexbuf(newrecord, lex_env);
+  var lexbuf$1 = /* record */[
+    /* refill_buff */lexbuf[/* refill_buff */0],
+    /* lex_buffer */lexbuf[/* lex_buffer */1],
+    /* lex_buffer_len */lexbuf[/* lex_buffer_len */2],
+    /* lex_abs_pos */lexbuf[/* lex_abs_pos */3],
+    /* lex_start_pos */lexbuf[/* lex_start_pos */4],
+    /* lex_curr_pos */lexbuf[/* lex_curr_pos */5],
+    /* lex_last_pos */lexbuf[/* lex_last_pos */6],
+    /* lex_last_action */lexbuf[/* lex_last_action */7],
+    /* lex_eof_reached */lexbuf[/* lex_eof_reached */8],
+    /* lex_mem */lexbuf[/* lex_mem */9],
+    /* lex_start_p */lexbuf[/* lex_start_p */10],
+    /* lex_curr_p */lexbuf[/* lex_curr_p */11]
+  ];
+  var lex_env$1 = with_lexbuf(lexbuf$1, lex_env);
   return /* record */[
           /* la_results : array */[],
           /* la_num_lexed */0,
@@ -4537,9 +4549,21 @@ function lex(t) {
   }
   var lex_env$1 = match$1[0];
   var lexbuf = lex_env$1[/* lex_lb */1];
-  var newrecord = lexbuf.slice();
-  newrecord[/* lex_buffer */1] = lexbuf[/* lex_buffer */1];
-  var cloned_env = with_lexbuf(newrecord, lex_env$1);
+  var lexbuf$1 = /* record */[
+    /* refill_buff */lexbuf[/* refill_buff */0],
+    /* lex_buffer */lexbuf[/* lex_buffer */1],
+    /* lex_buffer_len */lexbuf[/* lex_buffer_len */2],
+    /* lex_abs_pos */lexbuf[/* lex_abs_pos */3],
+    /* lex_start_pos */lexbuf[/* lex_start_pos */4],
+    /* lex_curr_pos */lexbuf[/* lex_curr_pos */5],
+    /* lex_last_pos */lexbuf[/* lex_last_pos */6],
+    /* lex_last_action */lexbuf[/* lex_last_action */7],
+    /* lex_eof_reached */lexbuf[/* lex_eof_reached */8],
+    /* lex_mem */lexbuf[/* lex_mem */9],
+    /* lex_start_p */lexbuf[/* lex_start_p */10],
+    /* lex_curr_p */lexbuf[/* lex_curr_p */11]
+  ];
+  var cloned_env = with_lexbuf(lexbuf$1, lex_env$1);
   t[/* la_lex_env */3] = lex_env$1;
   Caml_array.caml_array_set(t[/* la_results */0], t[/* la_num_lexed */1], /* Some */[/* tuple */[
           cloned_env,

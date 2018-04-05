@@ -1604,17 +1604,12 @@ function scan_str(info, s, initial_state, groups) {
   var pos = info[/* pos */3];
   var last = info[/* last */4];
   if (last === s.length && info[/* re */0][/* lnl */5] !== -1 && last > pos && Caml_string.get(s, last - 1 | 0) === /* "\n" */10) {
-    var info_000 = /* re */info[/* re */0];
-    var info_001 = /* i_cols */info[/* i_cols */1];
-    var info_002 = /* positions */info[/* positions */2];
-    var info_003 = /* pos */info[/* pos */3];
-    var info_004 = /* last */last - 1 | 0;
     var info$1 = /* record */[
-      info_000,
-      info_001,
-      info_002,
-      info_003,
-      info_004
+      /* re */info[/* re */0],
+      /* i_cols */info[/* i_cols */1],
+      /* positions */info[/* positions */2],
+      /* pos */info[/* pos */3],
+      /* last */last - 1 | 0
     ];
     var st = scan_str(info$1, s, initial_state, groups);
     if (st[/* idx */0] === -3) {

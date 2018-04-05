@@ -694,9 +694,9 @@ var Sprite = /* module */[
 ];
 
 function pair_to_xy(pair) {
-  return /* array */[
-          pair[0],
-          pair[1]
+  return /* record */[
+          /* x */pair[0],
+          /* y */pair[1]
         ];
 }
 
@@ -850,13 +850,13 @@ function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
   var id$1 = id ? id[0] : new_id(/* () */0);
   var obj = /* record */[
     /* params */params,
-    /* pos : array */[
-      param[0],
-      param[1]
+    /* pos : record */[
+      /* x */param[0],
+      /* y */param[1]
     ],
-    /* vel : array */[
-      0.0,
-      0.0
+    /* vel : record */[
+      /* x */0.0,
+      /* y */0.0
     ],
     /* id */id$1,
     /* jumping */false,
@@ -1221,13 +1221,13 @@ function get_aabb(obj) {
   var sy = match$1[1];
   var sx = match$1[0];
   return /* record */[
-          /* center : array */[
-            box + sx / 2,
-            boy + sy / 2
+          /* center : record */[
+            /* x */box + sx / 2,
+            /* y */boy + sy / 2
           ],
-          /* half : array */[
-            sx / 2,
-            sy / 2
+          /* half : record */[
+            /* x */sx / 2,
+            /* y */sy / 2
           ]
         ];
 }
@@ -1512,17 +1512,17 @@ var Draw = /* module */[
 
 function make$3(param, param$1) {
   return /* record */[
-          /* pos : array */[
-            0,
-            0
+          /* pos : record */[
+            /* x */0,
+            /* y */0
           ],
-          /* v_dim : array */[
-            param[0],
-            param[1]
+          /* v_dim : record */[
+            /* x */param[0],
+            /* y */param[1]
           ],
-          /* m_dim : array */[
-            param$1[0],
-            param$1[1]
+          /* m_dim : record */[
+            /* x */param$1[0],
+            /* y */param$1[1]
           ]
         ];
 }
@@ -1552,18 +1552,18 @@ function out_of_viewport_below(v, y) {
 }
 
 function coord_to_viewport(viewport, coord) {
-  return /* array */[
-          coord[/* x */0] - viewport[/* pos */0][/* x */0],
-          coord[/* y */1] - viewport[/* pos */0][/* y */1]
+  return /* record */[
+          /* x */coord[/* x */0] - viewport[/* pos */0][/* x */0],
+          /* y */coord[/* y */1] - viewport[/* pos */0][/* y */1]
         ];
 }
 
 function update(vpt, ctr) {
   var new_x = calc_viewport_point(ctr[/* x */0], vpt[/* v_dim */1][/* x */0], vpt[/* m_dim */2][/* x */0]);
   var new_y = calc_viewport_point(ctr[/* y */1], vpt[/* v_dim */1][/* y */1], vpt[/* m_dim */2][/* y */1]);
-  var pos = /* array */[
-    new_x,
-    new_y
+  var pos = /* record */[
+    /* x */new_x,
+    /* y */new_y
   ];
   return /* record */[
           /* pos */pos,
@@ -2234,18 +2234,26 @@ function update_loop(canvas, param, map_dim) {
       if (player$1[2][/* kill */8] === true) {
         return game_loss(state[/* ctx */1]);
       } else {
-        var newrecord = state.slice();
-        newrecord[/* vpt */2] = update(state[/* vpt */2], player$1[2][/* pos */1]);
+        var state$1 = /* record */[
+          /* bgd */state[/* bgd */0],
+          /* ctx */state[/* ctx */1],
+          /* vpt */update(state[/* vpt */2], player$1[2][/* pos */1]),
+          /* map */state[/* map */3],
+          /* score */state[/* score */4],
+          /* coins */state[/* coins */5],
+          /* multiplier */state[/* multiplier */6],
+          /* game_over */state[/* game_over */7]
+        ];
         List.iter((function (obj) {
-                run_update_collid(newrecord, obj, objs);
+                run_update_collid(state$1, obj, objs);
                 return /* () */0;
               }), objs);
         List.iter((function (part) {
-                var state = newrecord;
+                var state$2 = state$1;
                 var part$1 = part;
                 $$process(part$1);
-                var x = part$1[/* pos */2][/* x */0] - state[/* vpt */2][/* pos */0][/* x */0];
-                var y = part$1[/* pos */2][/* y */1] - state[/* vpt */2][/* pos */0][/* y */1];
+                var x = part$1[/* pos */2][/* x */0] - state$2[/* vpt */2][/* pos */0][/* x */0];
+                var y = part$1[/* pos */2][/* y */1] - state$2[/* vpt */2][/* pos */0][/* y */1];
                 render(part$1[/* params */0][/* sprite */0], /* tuple */[
                       x,
                       y
@@ -2261,9 +2269,9 @@ function update_loop(canvas, param, map_dim) {
                 }
               }), parts);
         fps(canvas, fps$1);
-        hud(canvas, newrecord[/* score */4], newrecord[/* coins */5]);
+        hud(canvas, state$1[/* score */4], state$1[/* coins */5]);
         requestAnimationFrame((function (t) {
-                return update_helper(t, newrecord, player$1, collid_objs[0], particles[0]);
+                return update_helper(t, state$1, player$1, collid_objs[0], particles[0]);
               }));
         return /* () */0;
       }

@@ -14,14 +14,27 @@ var v = /* record */[
   /* extends */0
 ];
 
-var newrecord = v.slice();
-
-newrecord[/* imports */1] = 0;
+var u_v = /* record */[
+  /* syntax : None */0,
+  /* imports */0,
+  /* file_options */0,
+  /* package */0,
+  /* messages */0,
+  /* enums */0,
+  /* extends */0
+];
 
 function f(g, h) {
-  var newrecord = Curry._1(g, h).slice();
-  newrecord[/* imports */1] = 0;
-  return newrecord;
+  var init = Curry._1(g, h);
+  return /* record */[
+          /* syntax */init[/* syntax */0],
+          /* imports */0,
+          /* file_options */init[/* file_options */2],
+          /* package */init[/* package */3],
+          /* messages */init[/* messages */4],
+          /* enums */init[/* enums */5],
+          /* extends */init[/* extends */6]
+        ];
 }
 
 var suites_000 = /* tuple */[
@@ -29,7 +42,7 @@ var suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 v,
-                newrecord
+                u_v
               ]);
     })
 ];
@@ -50,8 +63,6 @@ var uv = /* record */[
   /* enums */0,
   /* extends */0
 ];
-
-var u_v = newrecord;
 
 exports.v = v;
 exports.uv = uv;

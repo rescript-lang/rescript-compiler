@@ -78,7 +78,7 @@ type primitive =
   (* Operations on heap blocks *)
   | Pmakeblock of int * tag_info * mutable_flag
   | Pfield of int * field_dbg_info
-  | Psetfield of int * bool * set_field_dbg_info
+  | Psetfield of int * set_field_dbg_info
   (* could have field info at least for record *)
   | Pfloatfield of int * field_dbg_info
   | Psetfloatfield of int * set_field_dbg_info
@@ -1555,7 +1555,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 
   | Psetfield (id,b,info)
-    -> prim ~primitive:(Psetfield (id,b,info)) ~args loc
+    -> prim ~primitive:(Psetfield (id,info)) ~args loc
 
   | Pfloatfield (id,info)
     -> prim ~primitive:(Pfloatfield (id,info)) ~args loc
@@ -1857,7 +1857,7 @@ let convert exports lam : _ * _  =
         | "#makemutablelist" ->
           Pmakeblock(0,Lambda.Blk_constructor("::",1),Mutable)
         | "#setfield1" ->
-          Psetfield(1, true, Fld_set_na)
+          Psetfield(1,  Fld_set_na)
         | "#undefined_to_opt" -> Pundefined_to_opt
         | "#null_undefined_to_opt" -> Pnull_undefined_to_opt
         | "#null_to_opt" -> Pnull_to_opt
