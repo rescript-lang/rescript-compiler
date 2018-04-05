@@ -4709,79 +4709,79 @@ function lookahead($staropt$star, env) {
 }
 
 function with_strict(in_strict_mode, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* in_strict_mode */5] = in_strict_mode;
   return newrecord;
 }
 
 function with_in_function(in_function, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* in_function */9] = in_function;
   return newrecord;
 }
 
 function with_allow_yield(allow_yield, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* allow_yield */13] = allow_yield;
   return newrecord;
 }
 
 function with_no_let(no_let, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* no_let */12] = no_let;
   return newrecord;
 }
 
 function with_in_loop(in_loop, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* in_loop */7] = in_loop;
   return newrecord;
 }
 
 function with_no_in(no_in, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* no_in */10] = no_in;
   return newrecord;
 }
 
 function with_in_switch(in_switch, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* in_switch */8] = in_switch;
   return newrecord;
 }
 
 function with_in_export(in_export, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* in_export */6] = in_export;
   return newrecord;
 }
 
 function with_no_call(no_call, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* no_call */11] = no_call;
   return newrecord;
 }
 
 function with_error_callback(error_callback, env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* error_callback */15] = /* Some */[error_callback];
   return newrecord;
 }
 
 function without_error_callback(env) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* error_callback */15] = /* None */0;
   return newrecord;
 }
 
 function add_label(env, label) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* labels */2] = add(label, env[/* labels */2]);
   return newrecord;
 }
 
 function enter_function(env, async, generator) {
-  var newrecord = env.slice();
+  var newrecord = Caml_array.caml_array_dup(env);
   newrecord[/* labels */2] = /* Empty */0;
   newrecord[/* in_loop */7] = false;
   newrecord[/* in_switch */8] = false;

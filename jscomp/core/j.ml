@@ -104,8 +104,6 @@ and expression_desc =
   | Char_to_int of expression 
   | Is_null_or_undefined of expression 
     (** where we use a trick [== null ] *)
-  | Array_copy of expression (* shallow copy, like [x.slice] *)
-
   | String_append of expression * expression 
   | Bool of bool (* js true/false*)
   (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 

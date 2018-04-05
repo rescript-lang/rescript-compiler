@@ -37,13 +37,9 @@ external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
 external makeUninitializedUnsafe : int -> 'a  array = "Array" [@@bs.new]
 
 
-let copy a =
-  let l = length a in 
-  let v = makeUninitializedUnsafe l in 
-  for i = 0 to l - 1 do 
-    setUnsafe v i (getUnsafe a i)
-  done ;
-  v
+external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = 
+  "slice"  [@@bs.send]
+
 
 let swapUnsafe xs i j =    
   let tmp = getUnsafe xs i in 

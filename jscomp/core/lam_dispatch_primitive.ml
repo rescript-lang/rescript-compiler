@@ -657,7 +657,7 @@ let translate loc (prim_name : string)
                and discarded it immediately
                This could be canceled              
             *)
-            | _ -> E.array_copy a
+            | _ -> call Js_runtime_modules.array
           end
         | _ -> assert false 
       end

@@ -137,8 +137,7 @@ class virtual map =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (** where we use a trick [== null ] *)
-                 (* shallow copy, like [x.slice] *) (* js true/false*)
+                 (** where we use a trick [== null ] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -346,7 +345,6 @@ class virtual map =
       | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
       | Is_null_or_undefined _x ->
           let _x = o#expression _x in Is_null_or_undefined _x
-      | Array_copy _x -> let _x = o#expression _x in Array_copy _x
       | String_append (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)

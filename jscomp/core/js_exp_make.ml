@@ -441,8 +441,6 @@ let char_to_int ?comment (v : t) : t =
   | _ -> {comment; expression_desc = Char_to_int v }
 
 
-let array_copy ?comment e : t = 
-  { comment ; expression_desc = Array_copy e}
 
 let rec string_append ?comment (e : t) (el : t) : t = 
   match e.expression_desc , el.expression_desc  with 

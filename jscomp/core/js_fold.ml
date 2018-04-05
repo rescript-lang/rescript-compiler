@@ -124,8 +124,7 @@ class virtual fold =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (** where we use a trick [== null ] *)
-                 (* shallow copy, like [x.slice] *) (* js true/false*)
+                 (** where we use a trick [== null ] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -320,7 +319,6 @@ class virtual fold =
       | Char_of_int _x -> let o = o#expression _x in o
       | Char_to_int _x -> let o = o#expression _x in o
       | Is_null_or_undefined _x -> let o = o#expression _x in o
-      | Array_copy _x -> let o = o#expression _x in o
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Bool _x -> let o = o#bool _x in o

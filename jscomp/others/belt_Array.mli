@@ -183,7 +183,7 @@ val slice: 'a array -> offset:int -> len:int -> 'a array
 *)
 
 
-val copy: 'a array -> 'a array
+external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
 (** [copy a] 
 
     @return a copy of [a], that is, a fresh array
