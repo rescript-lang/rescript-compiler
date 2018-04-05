@@ -5,6 +5,29 @@ let function_equal_test = try ((fun x -> x + 1) = (fun x -> x + 2)) with
                          | Invalid_argument "equal: functional value" -> true
                          | _ -> false
 
+type record = {x: int; y: int}
+
+let recordToObject = [%bs.raw {|
+  function (r) {
+    var labels = r['.labels'];
+    var result = {};
+    for (var i=0; i<r.length; i++) {
+      result[labels[i]] = r[i]
+    }
+    return result
+  } |}]
+
+let objectToRecord = [%bs.raw {|
+  function (o) {
+    var labels = Object.keys(o);
+    var result = [];
+    for (var i=0; i<labels.length; i++) {
+      result[i] = o[labels[i]];
+    }
+    result[".labels"] = labels;
+    return result
+  } |}]
+
 let suites = Mt.[
     "option", (fun _ -> Eq(true, None < Some 1));
     "option2", (fun _ -> Eq(true, Some 1 < Some 2));
@@ -77,6 +100,11 @@ let suites = Mt.[
     "eq_in_list2", (fun _ -> Eq ([[%bs.obj {x=2}]] = [[%bs.obj {x=2}]], true));
     "eq_with_list", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[0]}], true));
     "eq_with_list2", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[1]}], false));
+
+    "recordToObject", (fun _ -> Eq (recordToObject {x=3; y=4} [@bs] = [%bs.obj {x=3; y=4}], true));
+    "recordToObject2", (fun _ -> Eq (recordToObject {x=3; y=4} [@bs] = [%bs.obj {x=3; y=10}], false));
+    "objectToRecord", (fun _ -> Eq (((objectToRecord [%bs.obj {x=3; y=4}] [@bs]) = {x=3; y=4}), true));
+    "objectToRecord2", (fun _ -> Eq (((objectToRecord [%bs.obj {x=3; y=4}] [@bs]) = {x=3; y=10}), false));
 ]
 ;;
 

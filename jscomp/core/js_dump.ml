@@ -497,9 +497,9 @@ and
 
   | Array_copy e ->
     P.group f 1 (fun _ ->
+        P.string f "(function (obj) { const obj2 = obj.slice(); obj2['.labels'] = obj['.labels']; return obj2 })(";
         let cxt = expression 15 cxt f e in
-        P.string f ".slice";
-        P.string f "()" ;
+        P.string f ")";
         cxt
       )
   | Char_to_int e ->
@@ -791,8 +791,15 @@ and
        with regard tag  *)
     begin match tag.expression_desc, tag_info with
 
+      | Number (Int { i = 0l ; _}), Blk_record labels
+        ->
+        let labels = List.map (fun l -> "\"" ^ l ^ "\"") (Array.to_list labels) in 
+        P.string f ("(function (x) { x['.labels'] = [" ^ String.concat "," labels ^ "]; return x })(");
+        let ctx = expression_desc cxt l f  (Array (el, mutable_flag)) in
+        P.string f ")";
+        ctx
       | Number (Int { i = 0l ; _})  ,
-        (Blk_tuple | Blk_array | Blk_variant _ | Blk_record _ | Blk_na | Blk_module _
+        (Blk_tuple | Blk_array | Blk_variant _ | Blk_na | Blk_module _
         |  Blk_constructor (_, 1) (* Sync up with {!Js_dump}*)
         )
         -> expression_desc cxt l f  (Array (el, mutable_flag))
