@@ -106,8 +106,9 @@ let print ~is_warning intro ppf loc =
           (Super_misc.print_file ~is_warning ~lines ~range)
           ()
       with
-      (* this shouldn't happen, but gracefully fall back to the default reporter just in case *)
-      | Sys_error _ -> Location.print ppf loc
+      (* this might happen if the file is e.g. "", "_none_" or any of the fake file name placeholders.
+        we've already printed the location above, so nothing more to do here. *)
+      | Sys_error _ -> ()
     end
 ;;
 
