@@ -675,27 +675,18 @@ let translate  loc
   | Pctconst ct -> 
     begin
       match ct with 
-      | Big_endian -> 
-        if Sys.big_endian then  E.caml_true
-        else E.caml_false
+      | Big_endian -> E.bool Sys.big_endian
       | Word_size -> 
         E.small_int  Sys.word_size
-      | Ostype_unix -> 
-        if Sys.unix then E.caml_true else E.caml_false
-      | Ostype_win32 -> 
-        if Sys.win32 then E.caml_true else E.caml_false
-      | Ostype_cygwin -> 
-        if Sys.cygwin then E.caml_true else E.caml_false
+      | Ostype_unix -> E.bool Sys.unix
+      | Ostype_win32 -> E.bool Sys.win32      
+      | Ostype_cygwin -> E.bool Sys.cygwin
     end
-  (* | Psetglobal _  ->  *)
-  (*   assert false (\* already handled *\) *)
-  (* assert false *)
   | Pduprecord ((Record_regular 
-                | Record_float ),_size) -> (* _size is the length of all_lables*)
-    begin match args with 
-      | [e] -> Js_of_lam_record.copy e
-      | _ -> assert false       
-    end
+                | Record_float ),_) -> 
+    (* _size is the length of all_lables*)
+    (* TODO: In debug mode, need switch to  *)
+    Lam_dispatch_primitive.translate loc "caml_array_dup" args 
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 
     (* can be refined to 

@@ -494,14 +494,6 @@ and
             expression 1 cxt f el
           )
       )
-
-  | Array_copy e ->
-    P.group f 1 (fun _ ->
-        let cxt = expression 15 cxt f e in
-        P.string f ".slice";
-        P.string f "()" ;
-        cxt
-      )
   | Char_to_int e ->
     begin match e.expression_desc with
       | String_access (a,b) ->
@@ -1039,7 +1031,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Length _
       | Caml_block_set_length _
       | Call _
-      | Array_copy _
       | Caml_block_tag _
       | Seq _
       | Dot _

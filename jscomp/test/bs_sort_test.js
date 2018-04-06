@@ -115,9 +115,9 @@ b("File \"bs_sort_test.ml\", line 70, characters 4-11", !Belt_SortArray.isSorted
 
 var u = Array_data_util.randomRange(0, 1000000);
 
-var u1 = Belt_Array.copy(u);
+var u1 = u.slice(0);
 
-var u2 = Belt_Array.copy(u);
+var u2 = u.slice(0);
 
 console.time("bs_sort_test.ml 80");
 

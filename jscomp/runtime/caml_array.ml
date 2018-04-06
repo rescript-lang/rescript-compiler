@@ -29,6 +29,9 @@ external new_uninitialized : int -> 'a array = "Array" [@@bs.new]
 external append : 'a array -> 'a array -> 'a array = "concat" [@@bs.send]
 
 
+external caml_array_dup : 'a array -> (_ [@bs.as 0]) -> 'a array = 
+  "slice"  [@@bs.send]
+
 
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
   let result = new_uninitialized len  in
@@ -99,3 +102,4 @@ let caml_array_blit a1 i1 a2 i2 len =
     for j = len - 1 downto 0 do
       a2.(j+i2) <- a1.(j+i1)
     done
+

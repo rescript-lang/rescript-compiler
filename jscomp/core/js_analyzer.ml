@@ -115,7 +115,6 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Bin (op, a, b) -> 
     op <> Eq && no_side_effect a && no_side_effect b     
   | Math _ 
-  | Array_copy _ 
   | Js_not _
   | Cond _ 
 
@@ -254,7 +253,6 @@ let rec eq_expression
     | Char_of_int _
     | Char_to_int _ 
     | Is_null_or_undefined _ 
-    | Array_copy _ 
     | String_append _ 
     | Typeof _ 
     | Js_not _ 

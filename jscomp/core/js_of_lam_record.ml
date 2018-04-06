@@ -49,10 +49,4 @@ let field field_info  e i =
   | Lambda.Fld_module s 
     -> E.index ~comment:s e i
 
-(**
-   used in [Pduprecord]
-   this is due to we encode record as an array, it is going to change
-   if we have another encoding       
-*)    
-let copy  = E.array_copy
 
