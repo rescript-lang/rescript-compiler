@@ -864,6 +864,13 @@ and
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
        with regard tag  *)
+
+    let constructor = match tag_info with
+      | Blk_constructor (c, _) -> c
+      | _ -> "" in
+    if constructor <> "" then
+      P.string f ("(function (o) { o['cstr']=\'" ^ constructor ^ "\'; return o; })(");
+    let r =
     begin match tag.expression_desc, tag_info with
 
       | Number (Int { i = 0l ; _}), Blk_record labels
@@ -889,7 +896,10 @@ and
         P.string f L.caml_block_create;
         P.paren_group f 1
           (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
-    end
+    end in
+    if constructor <> "" then P.string f ")";
+    r
+
   | Caml_block_tag e ->
     P.group f 1 (fun _ ->
         let cxt = expression 15 cxt f  e in
