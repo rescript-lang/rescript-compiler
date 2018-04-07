@@ -130,39 +130,38 @@ external codePointAt : int -> int option = "" [@@bs.send.pipe: t] [@@bs.return {
 
 (** [concat append original] returns a new string with [append] added after [original].
 
-  @example {[
-    concat "bell" "cow" = "cowbell";;
-  ]}
-
+@example {[
+  concat "bell" "cow" = "cowbell";;
+]}
 *)
 external concat : t -> t = "" [@@bs.send.pipe: t]
 
 (** [concat arr original] returns a new string consisting of each item of an array of strings added to the [original] string.
 
-  @example {[
-    concatMany [|"2nd"; "3rd"; "4th"|] "1st" = "1st2nd3rd4th";;
-  ]}
+@example {[
+  concatMany [|"2nd"; "3rd"; "4th"|] "1st" = "1st2nd3rd4th";;
+]}
 *)
 external concatMany : t array -> t = "concat" [@@bs.send.pipe: t] [@@bs.splice]
 
 (** ES2015:
     [endsWith substr str] returns [true] if the [str] ends with [substr], [false] otherwise.
     
-    @example {[
-      endsWith "Script" "BuckleScript" = true;;
-      endsWith "Script" "COBOL" = false;;
-    ]} 
+@example {[
+  endsWith "Script" "BuckleScript" = true;;
+  endsWith "Script" "BuckleShoes" = false;;
+]} 
 *)
 external endsWith : t -> bool = "" [@@bs.send.pipe: t] 
 
 (** [endsWithFrom ending len str] returns [true] if the first [len] characters of [str] end with [ending], [false] otherwise. If [n] is greater than or equal to the length of [str], then it works like [endsWith]. (Honestly, this should have been named [endsWithAt], but oh well.)
 
-  @example {[
-    endsWithFrom "cd" 4 "abcd" = true;;
-    endsWithFrom "cd" 3 "abcde" = false;;
-    endsWithFrom "cde" 99 "abcde" = true;;
-    endsWithFrom "ple" 7 "example.dat" = true;;
-  ]}
+@example {[
+  endsWithFrom "cd" 4 "abcd" = true;;
+  endsWithFrom "cd" 3 "abcde" = false;;
+  endsWithFrom "cde" 99 "abcde" = true;;
+  endsWithFrom "ple" 7 "example.dat" = true;;
+]}
 *)
 external endsWithFrom : t -> int -> bool = "endsWith" [@@bs.send.pipe: t] (** ES2015 *)
 
@@ -402,38 +401,251 @@ the offset at which the match begins, and the whole string being matched.
 *)
 external unsafeReplaceBy3 : Js_re.t -> (t -> t -> t -> t -> int -> t -> t [@bs.uncurry]) -> t = "replace" [@@bs.send.pipe: t]
 
+(** [search regexp str] returns the starting position of the first match of [regexp] in the given [str], or -1 if there is no match.
+
+@example {[
+search [%re "/\\d+/"] "testing 1 2 3" = 8;;
+search [%re "/\\d+/"] "no numbers" = -1;;
+]}
+*)
 external search : Js_re.t -> int = "" [@@bs.send.pipe: t]
 
+(** [slice from:n1 to_:n2 str] returns the substring of [str] starting at character [n1] up to but not including [n2]
+
+If either [n1] or [n2] is negative, then it is evaluated as [length str - n1] (or [length str - n2].
+
+If [n2] is greater than the length of [str], then it is treated as [length str].
+
+If [n1] is greater than [n2], [slice] returns the empty string.
+
+@example {[
+  slice ~from:2 ~to_:5 "abcdefg" == "cde";;
+  slice ~from:2 ~to_:9 "abcdefg" == "cdefg";;
+  slice ~from:(-4) ~to_:(-2) "abcdefg" == "de";; 
+  slice ~from:5 ~to_:1 "abcdefg" == "";;
+]}
+*)
 external slice : from:int -> to_:int ->  t = "" [@@bs.send.pipe: t]
+
+(** [sliceToEnd from: n str] returns the substring of [str] starting at character [n] to the end of the string
+
+If [n] is negative, then it is evaluated as [length str - n].
+
+If [n] is greater than the length of [str], then [sliceToEnd] returns the empty string.
+
+@example {[
+  sliceToEnd ~from: 4 "abcdefg" == "efg";;
+  sliceToEnd ~from: (-2) "abcdefg" == "fg";; 
+  sliceToEnd ~from: 7 "abcdefg" == "";;
+]}
+*)
 external sliceToEnd : from:int ->  t = "slice" [@@bs.send.pipe: t]
 
+(**
+  [split delimiter str] splits the given [str] at every occurrence of [delimiter] and returns an
+  array of the resulting substrings.
+  
+@example {[
+  split "-" "2018-01-02" = [|"2018"; "01"; "02"|];;
+  split "," "a,b,,c" = [|"a"; "b"; ""; "c"|];;
+  split "::" "good::bad as great::awful" = [|"good"; "bad as great"; "awful"|];;
+  split ";" "has-no-delimiter" = [|"has-no-delimiter"|];;
+]};
+*)
 external split : t -> t array  = "" [@@bs.send.pipe: t]
+
+(**
+  [splitAtMost delimiter ~limit: n str] splits the given [str] at every occurrence of [delimiter] and returns an array of the first [n] resulting substrings. If [n] is negative or greater than the number of substrings, the array will contain all the substrings.
+  
+@example {[
+  splitAtMost "/" ~limit: 3 "ant/bee/cat/dog/elk" = [|"ant"; "bee"; "cat"|];;
+  splitAtMost "/" ~limit: 0 "ant/bee/cat/dog/elk" = [| |];;
+  splitAtMost "/" ~limit: 9 "ant/bee/cat/dog/elk" = [|"ant"; "bee"; "cat"; "dog"; "elk"|];;
+]}
+*)
 external splitAtMost: t -> limit:int -> t array = "split" [@@bs.send.pipe: t]
+
+(**
+  Deprecated - Please use [splitAtMost]
+*)
 external splitLimited : t -> int -> t array = "split" [@@bs.send.pipe: t]
 [@@ocaml.deprecated "Please use splitAtMost"]
+
+(**
+  [splitByRe regex str] splits the given [str] at every occurrence of [regex] and returns an
+  array of the resulting substrings.
+  
+@example {[
+  splitByRe [%re "/\\s*[,;]\\s*/"] "art; bed , cog ;dad" = [|"art"; "bed"; "cog"; "dad"|];;
+  splitByRe [%re "/[,;]/"] "has:no:match" = [|"has:no:match"|];;
+]};
+*)
 external splitByRe : Js_re.t ->  t array = "split" [@@bs.send.pipe: t]
+
+(**
+  [splitByReAtMost regex ~limit: n str] splits the given [str] at every occurrence of [regex] and returns an
+  array of the first [n] resulting substrings. If [n] is negative or greater than the number of substrings, the array will contain all the substrings.
+  
+@example {[
+  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|"one"; "two"; "three"|];;
+  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 0 "one: two: three: four" = [| |];;
+  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|"one"; "two"; "three"; "four"|];;
+]};
+*)
 external splitByReAtMost : Js_re.t -> limit:int ->  t array = "split" [@@bs.send.pipe: t]
+
+(**
+  Deprecated - Please use [splitByReAtMost]
+*)
 external splitRegexpLimited : Js_re.t -> int ->  t array = "" [@@bs.send.pipe: t]
 [@@ocaml.deprecated "Please use splitByReAtMost"]
 
-external startsWith : t -> bool = "" [@@bs.send.pipe: t] (** ES2015 *)
-external startsWithFrom : t -> int -> bool = "startsWith" [@@bs.send.pipe: t] (** ES2015 *)
+(** ES2015:
+    [startsWith substr str] returns [true] if the [str] starts with [substr], [false] otherwise.
+    
+@example {[
+  startsWith "Buckle" "BuckleScript" = true;;
+  startsWith "" "BuckleScript" = true;;
+  startsWith "Buckle" "JavaScript" = false;;
+]} 
+*)
+external startsWith : t -> bool = "" [@@bs.send.pipe: t]
 
+(** ES2015:
+    [startsWithFrom substr n str] returns [true] if the [str] starts with [substr] starting at position [n], [false] otherwise. If [n] is negative, the search starts at the beginning of [str].
+    
+@example {[
+  startsWithFrom "kle" 3 "BuckleScript" = true;;
+  startsWithFrom "" 3 "BuckleScript" = true;;
+  startsWithFrom "Buckle" 2 "JavaScript" = false;;
+]} 
+*)
+external startsWithFrom : t -> int -> bool = "startsWith" [@@bs.send.pipe: t]
+
+(**
+  [substr ~from: n str] returns the substring of [str] from position [n] to the end of the string.
+  
+  If [n] is less than zero, the starting position is the length of [str] - [n].
+  
+  If [n] is greater than or equal to the length of [str], returns the empty string.
+  
+@example {[
+  substr ~from: 3 "abcdefghij" = "defghij"
+  substr ~from: (-3) "abcdefghij" = "hij"
+  substr ~from: 12 "abcdefghij" = ""
+]}
+*)
 external substr : from:int -> t = "" [@@bs.send.pipe: t]
+
+(**
+  [substrAtMost ~from: pos ~length: n str] returns the substring of [str] of length [n] starting at position [pos].
+  
+  If [pos] is less than zero, the starting position is the length of [str] - [pos].
+  
+  If [pos] is greater than or equal to the length of [str], returns the empty string.
+  
+  If [n] is less than or equal to zero, returns the empty string.
+  
+@example {[
+  substrAtMost ~from: 3 ~length: 4 "abcdefghij" = "defghij"
+  substrAtMost ~from: (-3) ~length: 4 "abcdefghij" = "hij"
+  substrAtMost ~from: 12 ~ length: 2 "abcdefghij" = ""
+]}
+*)
 external substrAtMost : from:int -> length:int -> t = "substr" [@@bs.send.pipe: t]
 
+(**
+  [substring ~from: start ~to_: finish str] returns characters [start] up to but not including [finish] from [str].
+  
+  If [start] is less than zero, it is treated as zero.
+  
+  If [finish] is zero or negative, the empty string is returned.
+  
+  If [start] is greater than [finish], the start and finish points are swapped.
+  
+@example {[
+  substring ~from: 3 ~to_: 6 "playground" = "ygr";;
+  substring ~from: 6 ~to_: 3 "playground" = "ygr";;
+  substring ~from: 4 ~to_: 12 "playground" = "ground";;
+]}
+*)
 external substring : from:int -> to_:int ->  t = "" [@@bs.send.pipe: t]
+
+(**
+  [substringToEnd ~from: start str] returns the substring of [str] from position [start] to the end.
+  
+  If [start] is less than or equal to zero, the entire string is returned.
+  
+  If [start] is greater than or equal to the length of [str], the empty string is returned.
+  
+@example {[
+  substringToEnd ~from: 4 "playground" = "ground";;
+  substringToEnd ~from: (-3) "playground" = "playground";;
+  substringToEnd ~from: 12 "playground" = "";
+]}
+*)
 external substringToEnd : from:int ->  t = "substring" [@@bs.send.pipe: t]
 
+(**
+  [toLowerCase str] converts [str] to lower case using the locale-insensitive case mappings in the Unicode Character Database. Notice that the conversion can give different results depending upon context, for example with the Greek letter sigma, which has two different lower case forms when it is the last character in a string or not.
+  
+@example {[
+  toLowerCase "ABC" = "abc";;
+  toLowerCase {js|ΣΠ|js} = {js|σπ|js};;
+  toLowerCase {js|ΠΣ|js} = {js|πς|js};;
+]}
+*)
 external toLowerCase : t = "" [@@bs.send.pipe: t]
+
+(**
+  [toLocaleLowerCase str] converts [str] to lower case using the current locale
+*)
 external toLocaleLowerCase : t = "" [@@bs.send.pipe: t]
+
+(**
+  [toUpperCase str] converts [str] to upper case using the locale-insensitive case mappings in the Unicode Character Database. Notice that the conversion can expand the number of letters in the result; for example the German [ß] capitalizes to two [S]es in a row.
+  
+@example {[
+  toUpperCase "abc" = "ABC";;
+  toUpperCase {js|Straße|js} = {js|STRASSE|js};;
+  toLowerCase {js|πς|js} = {js|ΠΣ|js};;
+]}
+*)
 external toUpperCase : t = "" [@@bs.send.pipe: t]
+
+(**
+  [toLocaleUpperCase str] converts [str] to upper case using the current locale
+*)
 external toLocaleUpperCase : t = "" [@@bs.send.pipe: t]
 
+(**
+  [trim str] returns a string that is [str] with whitespace stripped from both ends. Internal whitespace is not removed.
+
+@example {[
+  trim "   abc def   " = "abc def"
+  trim "\n\r\t abc def \n\n\t\r " = "abc def"
+]}
+*)
 external trim : t = "" [@@bs.send.pipe: t]
 
 (* HTML wrappers *)
+
+(**
+  [anchor anchorName anchorText] creates a string with an HTML [<a>] element with [name] attribute of [anchorName] and [anchorText] as its content.
+  
+@example {[
+  anchor "page1" "Page One" = "<a name=\"page1\">Page One</a>"
+]}
+*)
 external anchor : t -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
+
+(**
+  [link urlText linkText] creates a string withan HTML [<a>] element with [href] attribute of [urlText] and [linkText] as its content.
+  
+@example {[
+  link "page2.html" "Go to page two" = "<a href=\"page2.html\">Go to page two</a>"
+]}
+*)
 external link : t -> t = "" [@@bs.send.pipe: t] (** ES2015 *)
 
 external castToArrayLike : t -> t Js_array.array_like = "%identity" 
