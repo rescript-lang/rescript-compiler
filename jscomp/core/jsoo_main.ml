@@ -81,7 +81,7 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
   end;
 
   (* copied over from Bsb_warning.default_warning_flag *)
-  Warnings.parse_options false "-30-40+6+7+27+32..39+44+45+101";
+  Warnings.parse_options false Bsb_warning.default_warning;
 
   try
   impl (Lexing.from_string
