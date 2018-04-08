@@ -154,7 +154,7 @@ external concatMany : t array -> t = "concat" [@@bs.send.pipe: t] [@@bs.splice]
 *)
 external endsWith : t -> bool = "" [@@bs.send.pipe: t] 
 
-(** [endsWithFrom ending len str] returns [true] if the first [len] characters of [str] end with [ending], [false] otherwise. If [n] is greater than or equal to the length of [str], then it works like [endsWith]. (Honestly, this should have been named [endsWithAt], but oh well.)
+(** [endsWithFrom ending len str] returns [true] if the first [len] characters of [str] end with [ending], [false] otherwise. If [n] is greater than or equal to the length of [str], then it works like [endsWith].
 
 @example {[
   endsWithFrom "cd" 4 "abcd" = true;;
