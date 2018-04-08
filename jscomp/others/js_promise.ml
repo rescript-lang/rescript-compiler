@@ -22,48 +22,157 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Specialized bindings to Promise. Note: For simplicity,
-    this binding does not track the error type, it treat it as an opaque type
-    {[
+type (+'a, +'e) rejectable
+type never
 
-    ]}
-*)
-
-type + 'a t 
-type error (* abstract error type *)
-
-
-external make : (resolve:('a -> unit [@bs]) ->
-                 reject:(exn -> unit [@bs]) -> unit [@bs.uncurry]) -> 'a t = "Promise" [@@bs.new]
-(* [make (fun resolve reject -> .. )] *)
-external resolve : 'a -> 'a t = "resolve" [@@bs.val] [@@bs.scope "Promise"]
-external reject : exn -> 'a t = "reject" [@@bs.val] [@@bs.scope "Promise"]
-external all : 'a t array -> 'a array t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all2 : 'a0 t * 'a1 t -> ('a0 * 'a1) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all3 : 'a0 t * 'a1 t * 'a2 t -> ('a0 * 'a1 * 'a2 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all4 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t -> ('a0 * 'a1 * 'a2 * 'a3 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all5 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t * 'a4 t ->   ('a0 * 'a1 * 'a2 * 'a3 * 'a4 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-external all6 : 'a0 t * 'a1 t * 'a2 t  * 'a3 t * 'a4 t * 'a5 t ->    ('a0 * 'a1 * 'a2 * 'a3 * 'a4 * 'a5 ) t = "all" [@@bs.val] [@@bs.scope "Promise"]
-
-external race : 'a t array -> 'a t = "race" [@@bs.val] [@@bs.scope "Promise"]
-
-external then_ : ('a -> 'b t [@bs.uncurry]) -> 'b t = "then" [@@bs.send.pipe: 'a t]
+type +'a t = ('a, never) rejectable
+type +'a promise = 'a t
 
 
 
-external catch : (error -> 'a t [@bs.uncurry]) -> 'a t = "catch" [@@bs.send.pipe: 'a t]
-(* [ p|> catch handler]
-    Note in JS the returned promise type is actually runtime dependent, 
-    if promise is rejected, it will pick the [handler] otherwise the original promise, 
-    to make it strict we enforce reject handler
-    https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch
- *)
+let onUnhandledException = ref (fun exn ->
+  prerr_endline "Unhandled exception in promise callback:";
+  prerr_endline (Printexc.to_string exn);
+  exit 2)
 
 
-(*
-let errorAsExn (x :  error) (e  : (exn ->'a option))= 
-  if Caml_exceptions.isCamlExceptionOrOpenVariant (Obj.magic x ) then 
-     e (Obj.magic x) 
-  else None
-[%bs.error?  ]
-*)
+
+[%%bs.raw {|
+function WrappedRepromise(p) {
+    this.wrapped = p;
+};
+
+function unwrap(value) {
+    if (value instanceof WrappedRepromise)
+        return value.wrapped;
+    else
+        return value;
+}
+
+function wrap(value) {
+    if (value != null && typeof value.then === 'function')
+        return new WrappedRepromise(value);
+    else
+        return value;
+}
+
+function new_(executor) {
+    return new Promise(function (resolve, reject) {
+        var wrappingResolve = function(value) {
+            resolve(wrap(value));
+        };
+        executor(wrappingResolve, reject);
+    });
+};
+
+function resolve(value) {
+    return Promise.resolve(wrap(value));
+};
+
+function then(callback, promise) {
+    var safeCallback = function (value) {
+        try {
+            return callback(value);
+        }
+        catch (exception) {
+            onUnhandledException[0](exception);
+        }
+    };
+
+    return promise.then(function (value) {
+        return safeCallback(unwrap(value));
+    });
+};
+
+function catch_(callback, promise) {
+    var safeCallback = function (error) {
+        try {
+            return callback(error);
+        }
+        catch (exception) {
+            onUnhandledException[0](exception);
+        }
+    };
+
+    return promise.catch(safeCallback);
+}
+|}]
+
+
+
+module Rejectable =
+struct
+  type (+'a, +'e) t = ('a, 'e) rejectable
+
+  external relax : 'a promise -> ('a, _) rejectable = "%identity"
+
+  external jsNew :
+    (('a -> unit) -> ('e -> unit) -> unit) -> ('a, 'e) rejectable = "new_"
+    [@@bs.val]
+
+  let new_ () =
+    let resolve = ref ignore in
+    let reject = ref ignore in
+    let p =
+      jsNew (fun resolve' reject' ->
+        resolve := resolve';
+        reject := reject')
+    in
+    (p, !resolve, !reject)
+
+  external resolve : 'a -> ('a, _) rejectable = ""
+    [@@bs.val]
+
+  external then_ :
+    ('a -> ('b, 'e) rejectable) -> ('a, 'e) rejectable -> ('b, 'e) rejectable =
+      "then"
+    [@@bs.val]
+
+  let map callback promise =
+    promise |> then_(fun value -> resolve (callback value))
+
+  external reject : 'e -> (_, 'e) rejectable = ""
+    [@@bs.val]
+    [@@bs.scope "Promise"]
+
+  external catch :
+    ('e -> ('a, 'e2) rejectable) -> ('a, 'e) rejectable ->
+      ('a, 'e2) rejectable =
+      "catch_"
+    [@@bs.val]
+
+  external unwrap : 'a -> 'a = ""
+    [@@bs.val]
+
+  external jsAll :
+    ('a, 'e) rejectable array -> ('a array, 'e) rejectable = "all"
+    [@@bs.val]
+    [@@bs.scope "Promise"]
+
+  let all promises =
+    promises
+    |> jsAll
+    |> map (Array.map unwrap)
+
+  external jsRace : ('a, 'e) rejectable array -> ('a, 'e) rejectable = "race"
+    [@@bs.val]
+    [@@bs.scope "Promise"]
+
+  let race promises =
+    if promises = [||] then
+      raise (Invalid_argument "Js.Promise.race([||]) would be pending forever")
+    else
+      jsRace promises
+end
+
+
+let make executor =
+  let (p, resolve, _reject) = Rejectable.new_ () in
+  executor ~resolve;
+  p
+
+let resolve = Rejectable.resolve
+let then_ = Rejectable.then_
+let map = Rejectable.map
+let all = Rejectable.all
+let race = Rejectable.race
