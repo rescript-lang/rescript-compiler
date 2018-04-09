@@ -51,7 +51,9 @@ type t = {
   - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
   - 101 (bsb-specific) unsafe polymorphic comparison.
 *)
-let default_warning_flag =  "-w -30-40+6+7+27+32..39+44+45+101"
+let default_warning = "-30-40+6+7+27+32..39+44+45+101"
+
+let default_warning_flag = "-w " ^ default_warning
 
 let get_warning_flag x =
   default_warning_flag ^

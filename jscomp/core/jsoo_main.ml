@@ -75,6 +75,14 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
   let env = Compmisc.initial_env() in (* Question ?? *)
   let finalenv = ref Env.empty in
   let types_signature = ref [] in
+  if use_super_errors then begin
+    Misc.Color.setup Clflags.Always;
+    Super_main.setup ();
+  end;
+
+  (* copied over from Bsb_warning.default_warning_flag *)
+  Warnings.parse_options false Bsb_warning.default_warning;
+
   try
   impl (Lexing.from_string
     (if prefix then "[@@@bs.config{no_export}]\n#1 \"repl.ml\"\n"  ^ str else str ))
@@ -99,13 +107,9 @@ let implementation ~use_super_errors prefix impl str  : Js.Unsafe.obj =
       (* Format.fprintf output_ppf {| { "js_code" : %S }|} v ) *)
   with
   | e ->
-      if use_super_errors then begin
-        Misc.Color.setup Clflags.Always;
-        Super_main.setup ();
-      end;
       begin match Location.error_of_exn  e with
       | Some error ->
-          Location.report_error Format.std_formatter  error;
+          Location.report_error Format.err_formatter  error;
           let (file,line,startchar) = Location.get_pos_info error.loc.loc_start in
           let (file,endline,endchar) = Location.get_pos_info error.loc.loc_end in
           Js.Unsafe.(obj

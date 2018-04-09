@@ -346,7 +346,7 @@ let rewrite code =
   with e ->
     match Location.error_of_exn e with
     | Some error ->
-        Location.report_error Format.std_formatter error;
+        Location.report_error Format.err_formatter error;
         let (file, line, startchar) = Location.get_pos_info error.loc.loc_start in
         let (file, endline, endchar) = Location.get_pos_info error.loc.loc_end in
         Js.Unsafe.(obj
