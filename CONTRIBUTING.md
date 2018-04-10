@@ -50,8 +50,8 @@ npm run build
 And whenever you modify a file in bucklescript, run this inside `jscomp/`:
 
 ```
-make ../lib/bsc.exe && ./install-bsc.sh
-make ../lib/bsb.exe && ./install-bsb.sh
+make ../lib/bsc.exe && ./install-bsc.sh # build the compiler and make it available globally
+make ../lib/bsb.exe && ./install-bsb.sh # build the build system and make it available globally
 ```
 
 This will substitute the global `bsc.exe` & `bsb.exe` you just installed with the newly built one. Then run `npm build again` in the dummy project and see the changes! The iteration cycle for testing these should be around 2 seconds =).
@@ -61,16 +61,15 @@ This will substitute the global `bsc.exe` & `bsb.exe` you just installed with th
 Did any of the above step not work?
 
 - If you get compilation errors even from a supposedly clean compilation, you might have skipped the opam reinstall step above: `opam switch reinstall 4.02.3+buckle-master`
-
 - Make sure you did "eval `opam config env`" In your CLI/bashrc/zshrc
-
 - **If the vendored ocaml changed between when you last iterated on the repo and now**, you probably skipped the `opam switch reinstall 4.02.3+buckle-master` part. You'll have to do `git clean -xdf` and then restart with the build instructions. Careful, as `git clean` removes your uncommitted changes.
-
 - **If these fail too**, make sure you do have the correct `ocamlopt` in your environment: `which ocamlopt` should show an `opam` path, not `reason-cli` path. If you see the latter, this means it overrode the global `ocamlopt` BuckleScript needed. In this case, either temporarily uninstall reason-cli or make sure your opam PATH overrides the reason-cli PATH (and not the other way around) in your bashrc/zshrc.
 
-## Special Iteration Workflow
+Whenever there are dependencies changes: do `make depend` in the specific directory, when available. This allows the makefile to track new dependencies.
 
-This section is reserved for when you're making a change to the vendored ocaml compiler itself, in vendor/ocaml, and then testing on super-errors changes at the same time. If you're doing this for whatever reason, then the previous quick iteration workflow wouldn't work. Here's what you have to do after each change:
+## Change the Vendored OCaml Compiler
+
+This section is reserved for when you're making a change to the vendored ocaml compiler itself, in `vendor/ocaml`, and then testing on super-errors changes at the same time. If you're doing this for whatever reason, then the previous quick iteration workflow wouldn't work. Here's what you have to do after each change:
 
 ```
 # at project root
@@ -121,27 +120,16 @@ The API reference is generated from doc comments in the source code.
 Some tips and guidelines:
 
 - The first sentence or line should be a very short summary. This is used in indexes and by tools like merlin.
-
 - Ideally, every function should have **at least one** `@example`.
-
 - Cross-reference another definition with `{! identifier}`. But use them sparingly, they’re a bit verbose (currently, at least).
-
 - Wrap non-cross-referenced identifiers and other code in `[ ... ]`.
-
 - Escape `{`, `}`, `[`, `]` and `@` using `\`.
-
 - It’s possible to use `{%html ...}` to generate custom html, but use this very, very sparingly.
-
 - A number of "documentation tags" are provided that would be nice to use, but unfortunately they’re often not supported for \`external\`s. Which is of course most of the API.
-
 - `@param` usually doesn’t work. Use `{b <param>} ...` instead
-
 - `@returns` usually doesn’t work. Use `{b returns} ...` instead.
-
 - Always use `@deprecated` when applicable.
-
 - Always use `@raise` when applicable.
-
 - Always provide a `@see` tag pointing to MDN for more information when available.
 
 See [Ocamldoc documentation](http://caml.inria.fr/pub/docs/manual-ocaml/ocamldoc.html#sec333) for more details.
@@ -150,6 +138,59 @@ To generate the html, run `make docs` in `jscomp/`.
 
 Html generation uses a custom generator located in `odoc_gen/` and
 custom styles located in `docs/api_static`.
+
+## Make a Release
+
+In release mode, assuming you have NodeJS and OCaml compiler with the right version installed:
+
+```sh
+node scripts/install.js
+```
+
+The build process will generate configure file with correct `LIBDIR` path,
+build all binaries and libraries and
+install the binaries into `bin` and lib files into `lib`.
+
+First it will try to generate `bin/config_whole_compiler.ml` based on existing
+OCaml installation, if it fails, it will try to invoke `buildocaml.sh` to
+install an OCaml compiler from scratch, and retry again.
+
+### Publish Process
+
+- Run `make force-snapshotml`
+- Bump the compiler version
+
+## Code structure
+
+The highlevel architecture is illustrated as below:
+
+```
+Lambda IR (OCaml compiler libs) ---+
+  |   ^                            |
+  |   |                     Lambda Passes (lam_* files)
+  |   |             Optimization/inlining/dead code elimination
+  |   \                            |
+  |    \ --------------------------+
+  |
+  |  Self tail call elimination
+  |  Constant folding + propagation
+  V
+JS IR (J.ml)  ---------------------+
+  |   ^                            |
+  |   |                     JS Passes (js_* files)
+  |   |            Optimization/inlining/dead code elimination
+  |   \                            |
+  |    \  -------------------------+
+  |
+  |  Smart printer includes scope analysis
+  |
+  V
+Javascript Code
+```
+
+Note that there is one design goal to keep in mind, never introduce
+any meaningless symbol unless real necessary, we do optimizations,
+however, it should also compile readable output code.
 
 ## Contribution Licensing
 
