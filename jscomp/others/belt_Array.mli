@@ -28,12 +28,12 @@ val get: 'a array -> int -> 'a option
 (**
   [get arr i]
   
-  If [i <= 0 <= length arr], returns [Some value] where [value] is the item at index [i] 
+  If [i <= 0 < length arr], returns [Some value] where [value] is the item at index [i] 
   If [i] is out of range, returns [None]
 
   @example {[
     Belt.Array.get [|"a";"b";"c"|] 0 = Some "a";;
-    Belt.Array.get [|"a";"b";"c"|] 4 = None;;
+    Belt.Array.get [|"a";"b";"c"|] 3 = None;;
     Belt.Array.get [|"a";"b";"c"|] (-1) = None;;
   ]}
 *)
