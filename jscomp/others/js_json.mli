@@ -201,6 +201,28 @@ Js.log \@\@ Js.Json.stringify (Js.Json.object_ dict)
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
 *)
 
+external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string = "stringify" 
+  [@@bs.val] [@@bs.scope "JSON"]
+(** [stringify json] formats the JSON data structure as a string
+
+{b Returns} the string representation of a given JSON data structure
+
+@example {[
+(* Creates and stringifies a simple JS object with spacing *)
+
+let dict = Js.Dict.empty () in 
+Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
+Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "likes" 
+  (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
+
+Js.log \@\@ Js.Json.stringify (Js.Json.object_ dict) 2
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
+*)
+
+
 external stringifyAny : 'a -> string option = "stringify" 
   [@@bs.val] [@@bs.return undefined_to_opt] [@@bs.scope "JSON"]
 (** [stringifyAny value] formats any [value] into a JSON string
