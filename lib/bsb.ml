@@ -9648,17 +9648,20 @@ module Bsb_warning : sig
 
 
 
-type t 
+type t
 
-val get_warning_flag : t option -> string 
+val get_warning_flag : t option -> string
+
+val default_warning : string
 
 val default_warning_flag : string
+(* default_warning, including the -w prefix, for command-line arguments *)
 
 val from_map : Ext_json_types.t String_map.t -> t option
 
 (** [opt_warning_to_string not_dev warning]
 *)
-val opt_warning_to_string : bool -> t option -> string 
+val opt_warning_to_string : bool -> t option -> string
 
 
 end = struct
@@ -9688,22 +9691,41 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type warning_error = 
-  | Warn_error_false 
+type warning_error =
+  | Warn_error_false
   (* default [false] to make our changes non-intrusive *)
   | Warn_error_true
-  | Warn_error_number of string 
+  | Warn_error_number of string
 
 type t = {
   number : string option;
   error : warning_error
 }
 
-let default_warning_flag =  "-w -30-40+6+7+27+32..39+44+45+101"
+(**
+  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
 
-let get_warning_flag x = 
-  default_warning_flag ^ 
-  (match x with 
+  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
+  - 40 Constructor or label name used out of scope.
+
+  - 6 Label omitted in function application.
+  - 7 Method overridden.
+  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
+  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
+  - 29 Unescaped end-of-line in a string constant (non-portable code).
+  - 32 .. 39 Unused blabla
+  - 44 Open statement shadows an already defined identifier.
+  - 45 Open statement shadows an already defined label or constructor.
+  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
+  - 101 (bsb-specific) unsafe polymorphic comparison.
+*)
+let default_warning = "-30-40+6+7+27+32..39+44+45+101"
+
+let default_warning_flag = "-w " ^ default_warning
+
+let get_warning_flag x =
+  default_warning_flag ^
+  (match x with
    | Some {number =None}
    | None ->  Ext_string.empty
    | Some {number = Some x} -> Ext_string.trim x )
@@ -9711,55 +9733,55 @@ let get_warning_flag x =
 
 let warn_error = " -warn-error A"
 
-let warning_to_string not_dev 
-    warning : string = 
-  default_warning_flag  ^ 
-  (match warning.number with 
-   | None -> 
+let warning_to_string not_dev
+    warning : string =
+  default_warning_flag  ^
+  (match warning.number with
+   | None ->
      Ext_string.empty
-   | Some x -> 
+   | Some x ->
      Ext_string.trim x) ^
-  if not_dev then Ext_string.empty 
+  if not_dev then Ext_string.empty
   else
-    match warning.error with 
-    | Warn_error_true -> 
+    match warning.error with
+    | Warn_error_true ->
       warn_error
 
-    | Warn_error_number y -> 
+    | Warn_error_number y ->
       " -warn-error " ^ y
-    | Warn_error_false -> 
-      Ext_string.empty          
+    | Warn_error_false ->
+      Ext_string.empty
 
 
 
-let from_map (m : Ext_json_types.t String_map.t) = 
-  let number_opt = String_map.find_opt Bsb_build_schemas.number m  in 
-  let error_opt = String_map.find_opt Bsb_build_schemas.error m  in 
-  match number_opt, error_opt  with 
+let from_map (m : Ext_json_types.t String_map.t) =
+  let number_opt = String_map.find_opt Bsb_build_schemas.number m  in
+  let error_opt = String_map.find_opt Bsb_build_schemas.error m  in
+  match number_opt, error_opt  with
   | None, None -> None
-  | _, _ -> 
-    let error  = 
-      match error_opt with 
+  | _, _ ->
+    let error  =
+      match error_opt with
       | Some (True _) -> Warn_error_true
       | Some (False _) -> Warn_error_false
-      | Some (Str {str ; }) 
-        -> Warn_error_number str 
+      | Some (Str {str ; })
+        -> Warn_error_number str
       | Some x -> Bsb_exception.config_error x "expect true/false or string"
       | None -> Warn_error_false
-      (** To make it less intrusive : warning error has to be enabled*)  
+      (** To make it less intrusive : warning error has to be enabled*)
     in
-    let number = 
-      match number_opt with   
+    let number =
+      match number_opt with
       | Some (Str { str = number}) -> Some number
-      | None -> None 
-      | Some x -> Bsb_exception.config_error x "expect a string" 
-    in 
-    Some {number; error }      
+      | None -> None
+      | Some x -> Bsb_exception.config_error x "expect a string"
+    in
+    Some {number; error }
 
-let opt_warning_to_string not_dev warning =       
-  match warning with 
+let opt_warning_to_string not_dev warning =
+  match warning with
   | None -> default_warning_flag
-  | Some w -> warning_to_string not_dev w 
+  | Some w -> warning_to_string not_dev w
 
 
 end
@@ -10200,31 +10222,11 @@ end = struct
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(**
-   - 6
-   Label omitted in function application.
-   - 7
-   Method overridden.
-   - 9
-   Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)      
-   - 27
-   Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.      
-   - 29
-   Unescaped end-of-line in a string constant (non-portable code).
-   - 32 .. 39 Unused  blabla
-   - 44
-   Open statement shadows an already defined identifier.
-   - 45
-   Open statement shadows an already defined label or constructor.
-   - 48
-   Implicit elimination of optional arguments.
-   https://caml.inria.fr/mantis/view.php?id=6352
-
-*)  
-let bsc_flags = 
+(* for default warning flags, please see bsb_warning.ml *)
+let bsc_flags =
   [
     "-no-alias-deps";
-    "-color"; "always" 
+    "-color"; "always"
   ]
 
 
@@ -13758,136 +13760,136 @@ end = struct
 
 
 
-let replace s env : string = 
-  Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}" 
-    (fun (_s : string) templates -> 
-       match templates with 
-       | key::_ -> 
+let replace s env : string =
+  Bsb_regex.global_substitute "\\${bsb:\\([-a-zA-Z0-9]+\\)}"
+    (fun (_s : string) templates ->
+       match templates with
+       | key::_ ->
          String_hashtbl.find_exn  env key
-       | _ -> assert false 
+       | _ -> assert false
     ) s
 
-let (//) = Filename.concat 
+let (//) = Filename.concat
 
 
-let run_npm_link cwd name  = 
-  Format.fprintf Format.std_formatter 
-    "Symlink bs-platform in %s @."  (cwd//name);  
-  if Ext_sys.is_windows_or_cygwin then 
-    begin 
-      let npm_link = "npm link bs-platform" in 
-      let exit_code = Sys.command npm_link in 
-      if exit_code <> 0 then 
+let run_npm_link cwd name  =
+  Format.fprintf Format.std_formatter
+    "Symlink bs-platform in %s @."  (cwd//name);
+  if Ext_sys.is_windows_or_cygwin then
+    begin
+      let npm_link = "npm link bs-platform" in
+      let exit_code = Sys.command npm_link in
+      if exit_code <> 0 then
         begin
           prerr_endline ("failed to run : " ^ npm_link);
           exit exit_code
         end
-    end 
-  else 
-    begin 
-      let (//) = Filename.concat in 
+    end
+  else
+    begin
+      let (//) = Filename.concat in
       let node_bin =  "node_modules" // ".bin" in
       Bsb_build_util.mkp node_bin;
-      let p = ".." // "bs-platform" // "lib" in 
-      let link a = 
-        Unix.symlink (p//a) (node_bin // a) in 
-      link "bsb" ; 
+      let p = ".." // "bs-platform" // "lib" in
+      let link a =
+        Unix.symlink (p//a) (node_bin // a) in
+      link "bsb" ;
       link "bsc" ;
-      link "bsrefmt";          
+      link "bsrefmt";
       Unix.symlink
         (Filename.dirname (Filename.dirname Sys.executable_name))
         (Filename.concat "node_modules" "bs-platform")
     end
-let enter_dir cwd x action = 
-  Unix.chdir x ; 
-  match action () with 
-  | exception e -> Unix.chdir cwd ; raise e 
-  | v -> v 
+let enter_dir cwd x action =
+  Unix.chdir x ;
+  match action () with
+  | exception e -> Unix.chdir cwd ; raise e
+  | v -> v
 
 
-let rec process_theme_aux env cwd (x : OCamlRes.Res.node) = 
-  match x with 
-  | File (name,content)  -> 
+let rec process_theme_aux env cwd (x : OCamlRes.Res.node) =
+  match x with
+  | File (name,content)  ->
     Ext_io.write_file (cwd // name) (replace content env)
-  | Dir (current, nodes) -> 
+  | Dir (current, nodes) ->
     Unix.mkdir (cwd//current) 0o777;
     List.iter (fun x -> process_theme_aux env (cwd//current) x ) nodes
 
 let list_themes () =
   Format.fprintf Format.std_formatter "Available themes: @.";
-  Bsb_templates.root 
+  Bsb_templates.root
   |>
   List.iter (fun (x : OCamlRes.Res.node)  ->
-      match  x with 
-      | Dir (x, _) -> 
-        Format.fprintf Format.std_formatter "%s@." x 
+      match  x with
+      | Dir (x, _) ->
+        Format.fprintf Format.std_formatter "%s@." x
 
       | _ -> ()
-    ) 
+    )
 
-(* @raise [Not_found] *)  
-let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) = 
-  match List.find (fun (x : OCamlRes.Res.node) -> 
-      match  x with 
+(* @raise [Not_found] *)
+let process_themes env theme proj_dir (themes : OCamlRes.Res.node list ) =
+  match List.find (fun (x : OCamlRes.Res.node) ->
+      match  x with
       | Dir (dir, _) -> dir = theme
-      | File _ -> false 
-    ) themes  with 
-  | exception Not_found -> 
+      | File _ -> false
+    ) themes  with
+  | exception Not_found ->
     list_themes ();
     raise (Arg.Bad( "theme " ^ theme ^ " not found")  )
-  | Dir(_theme, nodes ) -> 
+  | Dir(_theme, nodes ) ->
     List.iter (fun node -> process_theme_aux env proj_dir node ) nodes
-  | _ -> assert false  
+  | _ -> assert false
 
 (** TODO: run npm link *)
-let init_sample_project ~cwd ~theme name = 
-  let env = String_hashtbl.create 0 in 
-  List.iter (fun (k,v) -> String_hashtbl.add env k v  ) [  
+let init_sample_project ~cwd ~theme name =
+  let env = String_hashtbl.create 0 in
+  List.iter (fun (k,v) -> String_hashtbl.add env k v  ) [
     "proj-version", "0.1.0";
     "bs-version", Bs_version.version;
     "bsb" , Filename.current_dir_name // "node_modules" // ".bin" // "bsb"
   ];
-  let action = fun _ -> 
-    process_themes env  theme Filename.current_dir_name Bsb_templates.root;         
+  let action = fun _ ->
+    process_themes env  theme Filename.current_dir_name Bsb_templates.root;
     run_npm_link cwd name
-  in   
-  begin match name with 
-    | "." -> 
+  in
+  begin match name with
+    | "." ->
       let name = Filename.basename cwd in
-      if Ext_namespace.is_valid_npm_package_name name then 
-        begin 
+      if Ext_namespace.is_valid_npm_package_name name then
+        begin
           String_hashtbl.add env "name" name;
           action ()
         end
-      else 
+      else
         begin
-          Format.fprintf Format.err_formatter 
+          Format.fprintf Format.err_formatter
             "@{<error>Invalid package name@} %S.@} The project name must be a valid npm name, thus can't contain upper-case letters, for example."
             name ;
-          exit 2    
+          exit 2
         end
 
-    | _ -> 
-      if Ext_namespace.is_valid_npm_package_name name 
-      then begin 
-        Format.fprintf Format.std_formatter "Making directory %s@." name;  
-        if Sys.file_exists name then 
-          begin 
-            Format.fprintf Format.err_formatter "%s already existed@." name ;
+    | _ ->
+      if Ext_namespace.is_valid_npm_package_name name
+      then begin
+        Format.fprintf Format.std_formatter "Making directory %s@." name;
+        if Sys.file_exists name then
+          begin
+            Format.fprintf Format.err_formatter "@{<error>%s already exists@}@." name ;
             exit 2
-          end 
+          end
         else
-          begin              
-            Unix.mkdir name 0o777;     
+          begin
+            Unix.mkdir name 0o777;
             String_hashtbl.add env "name" name;
             enter_dir cwd name action
           end
-      end else begin 
-        Format.fprintf Format.err_formatter 
+      end else begin
+        Format.fprintf Format.err_formatter
           "@{<error>Invalid package name@} %S.@} The project name must be a valid npm name, thus can't contain upper-case letters, for example."
           name ;
-        exit 2                        
-      end 
+        exit 2
+      end
   end
 
 
