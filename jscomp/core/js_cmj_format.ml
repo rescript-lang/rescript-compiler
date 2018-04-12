@@ -41,7 +41,7 @@ type cmj_value = {
 type effect = string option
 
 
-let single_na = Single NA
+let single_na = Single Arity_na
 (** we don't force people to use package *)
 type cmj_case = Ext_namespace.file_kind
   

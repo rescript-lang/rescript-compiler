@@ -22,14 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-      
-let merge 
-    (n : int )
-    (x : Lam_arity.t) : Lam_arity.t = 
-  match x with 
-  | NA -> Determin(false, [n], false)
-  | Determin (b,xs,tail) -> Determin (b, n :: xs, tail)
-
 
 let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
     (** for functional parameter, if it is a high order function,
@@ -42,7 +34,7 @@ let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
       | None ->
         (* Format.fprintf Format.err_formatter *)
         (*   "@[%s %a is not function/functor@]@." meta.filename Ident.print v ; *)
-        (NA : Lam_arity.t)
+        Arity_na 
 
     end
 
@@ -56,7 +48,7 @@ let rec get_arity
     (lam : Lam.t) : 
   Lam_arity.t = 
   match lam with 
-  | Lconst _ -> Determin (true,[], false)
+  | Lconst _ -> Arity_info (true,[], false)
   | Lvar v -> arity_of_var meta v 
   | Llet(_,_,_, l ) -> get_arity meta l 
 
@@ -70,7 +62,7 @@ let rec get_arity
            args =  [ Lglobal_module id  ]; _} ->
     begin match (Lam_compile_env.cached_find_ml_id_pos id n meta.env).arity with 
     | Single x -> x 
-    | Submodule _ -> NA
+    | Submodule _ -> Arity_na
     end
   | Lprim {primitive = Pfield (m,_); 
            args =  [ Lprim{primitive = Pfield(n,_); 
@@ -78,14 +70,14 @@ let rec get_arity
            ; _} ->
     begin match (Lam_compile_env.cached_find_ml_id_pos id n meta.env).arity with 
       | Submodule subs -> subs.(m)
-      | Single _ -> NA       
+      | Single _ -> Arity_na
   end
       
-  | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
-  | Lprim {primitive = Praise ;  _} -> Determin(true,[], true)
-  | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
+  | Lprim {primitive = Pfield _; _} -> Arity_na (** TODO *)
+  | Lprim {primitive = Praise ;  _} -> Arity_info (true,[], true)
+  | Lprim {primitive = Pccall _; _} -> Arity_info (false, [], false)
   | Lglobal_module _ (* TODO: fix me never going to happen assert false  *)
-  | Lprim _  -> Determin(true,[] ,false)
+  | Lprim _  -> Arity_info (true,[] ,false)
   (* shall we handle primitive in a direct way, 
       since we know all the information
       Invariant: all primitive application is fully applied, 
@@ -106,22 +98,22 @@ let rec get_arity
   | Lapply{fn = app;  args; _ } -> (* detect functor application *)
     let fn = get_arity meta app in 
     begin match fn with 
-      | NA -> NA 
-      | Determin (b, xs, tail ) -> 
+      | Arity_na -> Arity_na
+      | Arity_info (b, xs, tail ) -> 
         let rec take (xs : _ list) arg_length = 
           match xs with 
           | (x) :: xs ->
-            if arg_length = x then Lam_arity.Determin (b, xs, tail) 
+            if arg_length = x then Lam_arity.Arity_info (b, xs, tail) 
             else if arg_length > x then
               take xs (arg_length - x)
-            else Determin (b, 
+            else Arity_info (b, 
                            (x -  arg_length ) :: xs ,
                            tail)
           | [] -> 
-            if tail then Determin(b, [], tail)
+            if tail then Arity_info (b, [], tail)
             else if not b then 
-              NA
-            else NA
+              Arity_na
+            else Arity_na
             (* Actually, you can not have truly deministic arities
                for example [fun x -> x ]
             *)
@@ -132,7 +124,7 @@ let rec get_arity
         take xs (List.length args) 
     end
   | Lfunction {arity; function_kind; params; body = l} -> 
-    merge arity  (get_arity meta l)
+    Lam_arity.merge arity  (get_arity meta l)
   | Lswitch(l, {sw_failaction; 
                 sw_consts; 
                 sw_blocks;
@@ -149,18 +141,18 @@ let rec get_arity
       | None -> all_lambdas meta (Ext_list.map snd  sw )
       | Some v -> all_lambdas meta (v:: Ext_list.map snd  sw)
     end
-  | Lstaticraise _ -> NA (* since it will not be in tail position *)
+  | Lstaticraise _ -> Arity_na (* since it will not be in tail position *)
   | Lstaticcatch(_, _, handler) -> get_arity meta handler
   | Ltrywith(l1, _, l2) -> 
     all_lambdas meta [l1;l2]
   | Lifthenelse(l1, l2, l3) ->
     all_lambdas meta [l2;l3]
   | Lsequence(_, l2) -> get_arity meta l2 
-  | Lsend(u, m, o, ll, v) -> NA
-  | Lifused(v, l) -> NA 
+  | Lsend(u, m, o, ll, v) -> Arity_na
+  | Lifused(v, l) -> Arity_na 
   | Lwhile _ 
   | Lfor _  
-  | Lassign _ -> Determin(true,[], false)
+  | Lassign _ -> Arity_info (true,[], false)
 
 and all_lambdas meta (xs : Lam.t list) = 
   match xs with 
@@ -168,12 +160,12 @@ and all_lambdas meta (xs : Lam.t list) =
     let arity =  get_arity meta y in 
     List.fold_left (fun exist (v : Lam.t) -> 
         match (exist : Lam_arity.t) with 
-        | NA -> NA 
-        | Determin (b, xs, tail) -> 
+        | Arity_na -> Arity_na
+        | Arity_info (b, xs, tail) -> 
           begin 
             match get_arity meta v with 
-            | NA -> NA 
-            | Determin (u,ys,tail2) -> 
+            | Arity_na -> Arity_na 
+            | Arity_info (u,ys,tail2) -> 
               let rec aux (b,acc) xs ys = 
                 match xs,ys with
                 | [], [] -> (b, List.rev acc, tail && tail2) 
@@ -184,7 +176,7 @@ and all_lambdas meta (xs : Lam.t list) =
                 | x::xs, y::ys when x = y -> aux (b, (y :: acc)) xs ys 
                 | _, _  -> (false, List.rev acc, false) in 
               let (b,acc, tail3)  = aux ( u &&b, []) xs ys in 
-              Determin (b,acc, tail3)
+              Arity_info (b,acc, tail3)
           end
       ) arity ys 
   | _ -> assert false 

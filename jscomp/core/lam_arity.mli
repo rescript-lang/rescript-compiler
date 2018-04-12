@@ -24,7 +24,7 @@
 
 
 type t = 
-  | Determin of bool * int list  * bool
+  | Arity_info of bool * int list  * bool
     (**
       when the first argument is true, it is for sure 
       the last one means it can take any params later, 
@@ -32,7 +32,7 @@ type t =
       1. approximation sound but not complete 
       
    *)
-  | NA 
+  | Arity_na 
 
 val print : Format.formatter -> t -> unit   
 
@@ -40,3 +40,5 @@ val print_arities_tbl :
   Format.formatter -> 
   (Ident.t, t ref) Hashtbl.t -> 
   unit 
+
+val merge : int -> t -> t   

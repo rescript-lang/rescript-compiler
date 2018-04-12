@@ -24,22 +24,22 @@
 
 
 type t = 
-  | Determin of bool * int  list  * bool
-    (**
-      when the first argument is true, it is for sure 
-      the last one means it can take any params later, 
-      for an exception: it is (Determin (true,[], true))
-      1. approximation sound but not complete 
-      
-   *)
-  | NA 
+  | Arity_info of bool * int  list  * bool
+  (**
+     when the first argument is true, it is for sure 
+     the last one means it can take any params later, 
+     for an exception: it is (Determin (true,[], true))
+     1. approximation sound but not complete 
+
+  *)
+  | Arity_na
 
 let pp = Format.fprintf
 
 let print (fmt : Format.formatter) (x : t) = 
   match x with 
-  | NA -> pp fmt "?"
-  | Determin (b,ls,tail) -> 
+  | Arity_na -> pp fmt "?"
+  | Arity_info (b,ls,tail) -> 
     begin 
       pp fmt "@[";
       (if not b 
@@ -53,9 +53,20 @@ let print (fmt : Format.formatter) (x : t) =
       then pp fmt "@ *";
       pp fmt "]@]";
     end
-  
-  let print_arities_tbl 
+
+let print_arities_tbl 
     (fmt : Format.formatter) 
     (arities_tbl : (Ident.t, t ref) Hashtbl.t) = 
   Hashtbl.fold (fun (i:Ident.t) (v : t ref) _ -> 
       pp Format.err_formatter "@[%s -> %a@]@."i.name print !v ) arities_tbl ()
+
+
+
+
+
+let merge 
+    (n : int )
+    (x : t) : t = 
+  match x with 
+  | Arity_na -> Arity_info (false, [n], false)
+  | Arity_info (b,xs,tail) -> Arity_info (b, n :: xs, tail)

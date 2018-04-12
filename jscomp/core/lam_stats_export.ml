@@ -49,7 +49,7 @@ let values_of_export
          | Some (ImmutableBlock(elems,_)) ->  
            Submodule(elems |> Array.map (fun (x : Lam_id_kind.element) -> 
                match x with 
-               | NA -> Lam_arity.NA
+               | NA -> Lam_arity.Arity_na
                | SimpleForm lam -> Lam_stats_util.get_arity  meta lam)
              )
          | Some _ 

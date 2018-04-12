@@ -38,9 +38,9 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       -> (* detect functor application *)
       begin 
         match Lam_stats_util.get_arity meta l1 with 
-        | NA -> 
+        | Arity_na -> 
           Lam.apply (simpl  l1) (Ext_list.map simpl  ll) loc status
-        | Determin (b, args, tail) -> 
+        | Arity_info (b, args, tail) -> 
           let len = List.length ll in 
           let rec take args = 
             match args with 
@@ -77,7 +77,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       ; loc } -> 
       
       begin match Lam_stats_util.get_arity meta arg with       
-      | Determin (b, x::_, tail)
+      | Arity_info (b, x::_, tail)
         -> 
         let arg = simpl arg in
           Lam_eta_conversion.unsafe_adjust_to_arity loc 

@@ -181,7 +181,7 @@ and compile_external_field_apply
         match arity, len with
         | _, 0 ->
           acc (** All arguments consumed so far *)
-        | Determin (a, x :: rest, b), len   ->
+        | Arity_info (a, x :: rest, b), len   ->
           let x =
             if x = 0
             then 1
@@ -191,7 +191,7 @@ and compile_external_field_apply
             let first_part, continue =  Ext_list.split_at x args in
             aux
               (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
-              (Determin (a, rest, b))
+              (Arity_info (a, rest, b))
               continue (len - x)
           else (* GPR #1423 *)
           if List.for_all Js_analyzer.is_okay_to_duplicate args then
@@ -204,10 +204,10 @@ and compile_external_field_apply
         (* alpha conversion now? --
            Since we did an alpha conversion before so it is not here
         *)
-        | Determin (a, [], b ), _ ->
+        | Arity_info (a, [], b ), _ ->
           (* can not happen, unless it's an exception ? *)
           E.call ~info:Js_call_info.dummy acc args
-        | NA, _ ->
+        | Arity_na, _ ->
           E.call ~info:Js_call_info.dummy acc args
       in
       Js_output.output_of_block_and_expression
@@ -218,7 +218,7 @@ and compile_external_field_apply
         (
           aux
             (E.ml_var_dot id name)
-            (match arity with Single x -> x | Submodule _ -> NA)
+            (match arity with Single x -> x | Submodule _ -> Arity_na)
             args (List.length args ))
 
 

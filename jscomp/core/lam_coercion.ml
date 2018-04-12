@@ -136,10 +136,9 @@ let handle_exports (meta : Lam_stats.t)
               *)
              let newid = Ident.rename original_export_id in
              (match Lam_stats_util.get_arity meta lam with
-             | NA
-             | Determin(_,[],_) ->
-              ()
-             | Determin _ as v  ->
+             | Arity_na
+             | Arity_info(_,[],_) -> ()
+             | Arity_info _ as v  ->
               Ident_hashtbl.add meta.ident_tbl newid
                 (FunctionId{
                  arity = v; lambda = lam;
