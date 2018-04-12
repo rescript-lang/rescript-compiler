@@ -44,7 +44,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
           let len = List.length ll in 
           let rec take args = 
             match args with 
-            | (x,_) :: xs -> 
+            | x :: xs -> 
               if x = len 
               then 
                 Lam.apply (simpl l1)
@@ -77,7 +77,7 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
       ; loc } -> 
       
       begin match Lam_stats_util.get_arity meta arg with       
-      | Determin (b, (x,_)::_, tail)
+      | Determin (b, x::_, tail)
         -> 
         let arg = simpl arg in
           Lam_eta_conversion.unsafe_adjust_to_arity loc 

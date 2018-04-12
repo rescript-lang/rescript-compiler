@@ -9063,9 +9063,6 @@ val get_diagnose : unit -> bool
 val set_diagnose : bool -> unit 
 
 
-(** generate tds option *)
-val default_gen_tds : bool ref
-
 (** options for builtin ppx *)
 val no_builtin_ppx_ml : bool ref 
 val no_builtin_ppx_mli : bool ref 
@@ -9173,7 +9170,6 @@ let (//) = Filename.concat
 
 (* let get_packages_info () = !packages_info *)
 
-let default_gen_tds = ref false
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 

@@ -32,26 +32,7 @@ let pp = Format.fprintf
 
 (* let meaningless_names  = ["*opt*"; "param";] *)
 
-let rec dump_ident fmt (id : Ident.t) (arity : Lam_arity.t)  = 
-  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name ) dump_arity arity
 
-and dump_arity fmt (arity : Lam_arity.t) = 
-  match arity with 
-  | NA -> pp fmt "any"
-  | Determin (_, [], _) -> pp fmt "any"
-  | Determin (_, (n,args)::xs, _) -> 
-    let args = match args with 
-      | Some args -> args 
-      | None -> Ext_list.init n (fun _ -> Ident.create "param") in
-    pp fmt "@[(%a)@ =>@ any@]" 
-      (Format.pp_print_list  
-         ~pp_sep:(fun fmt _ -> 
-             Format.pp_print_string fmt ",";
-             Format.pp_print_space fmt ();
-           )
-         (fun fmt ident -> pp fmt "@[%s@ :@ any@]" 
-             (Ext_ident.convert  @@ Ident.name ident))
-      ) args 
 
 let single_na = Js_cmj_format.single_na
 
@@ -134,14 +115,7 @@ let get_effect (meta : Lam_stats.t) maybe_pure external_ids =
                         ) external_ids) (fun x -> Lam_module_ident.name x)
   | Some _ -> maybe_pure
 
-let rec dump meta fmt ids = 
-  (* TODO: also use {[Ext_pp]} module instead *)
-  match ids with 
-  | [] -> ()
-  | x::xs -> 
-    dump_ident fmt x (Lam_stats_util.get_arity meta (Lam.var x)) ; 
-    Format.pp_print_space fmt ();
-    dump meta fmt xs
+
 
 (* Note that 
    [lambda_exports] is 
@@ -162,12 +136,6 @@ let export_to_cmj
     cmj_case
   : Js_cmj_format.t = 
   let values =  values_of_export meta export_map in
-  let () =
-    if !Js_config.default_gen_tds && not ( Ext_string.is_empty meta.filename) then
-      Ext_pervasives.with_file_as_pp
-        (Ext_path.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
-      @@ fun fmt ->
-      pp fmt "@[<v>%a@]@." (dump meta) meta.exports in
   let effect = get_effect meta maybe_pure external_ids in
   {values; 
    effect ; 

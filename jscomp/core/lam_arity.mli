@@ -24,7 +24,7 @@
 
 
 type t = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
+  | Determin of bool * int list  * bool
     (**
       when the first argument is true, it is for sure 
       the last one means it can take any params later, 

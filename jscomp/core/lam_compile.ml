@@ -181,7 +181,7 @@ and compile_external_field_apply
         match arity, len with
         | _, 0 ->
           acc (** All arguments consumed so far *)
-        | Determin (a, (x,_) :: rest, b), len   ->
+        | Determin (a, x :: rest, b), len   ->
           let x =
             if x = 0
             then 1

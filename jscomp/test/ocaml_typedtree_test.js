@@ -25513,7 +25513,7 @@ function generalize_expansive(env, var_level, _ty) {
       } else {
         switch (match.tag | 0) {
           case 1 : 
-              Curry._2(generalize_contravariant(env), var_level, match[1]);
+              generalize_contravariant(env)(var_level, match[1]);
               _ty = match[2];
               continue ;
           case 3 : 
@@ -25534,13 +25534,18 @@ function generalize_expansive(env, var_level, _ty) {
               match[2][0] = /* Mnil */0;
               return List.iter2((function (v, t) {
                             if (Curry._2(Types_003[/* mem */8], /* May_weak */2, v)) {
-                              return Curry._2(generalize_contravariant(env), var_level, t);
+                              return generalize_contravariant(env)(var_level, t);
                             } else {
                               return generalize_expansive(env, var_level, t);
                             }
                           }), variance, tyl);
           case 11 : 
-              return List.iter(Curry._1(generalize_contravariant(env), var_level), match[2]);
+              var partial_arg = generalize_contravariant(env);
+              return List.iter((function(partial_arg){
+                        return function (param) {
+                          return partial_arg(var_level, param);
+                        }
+                        }(partial_arg)), match[2]);
           default:
             return iter_type_expr((function (param) {
                           return generalize_expansive(env, var_level, param);

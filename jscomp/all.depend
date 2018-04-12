@@ -572,11 +572,10 @@ core/lam_stats_export.cmx : ext/string_map.cmx core/lam_stats_util.cmx \
     core/lam_stats.cmx core/lam_module_ident.cmx core/lam_inline_util.cmx \
     core/lam_id_kind.cmx core/lam_compile_env.cmx core/lam_closure.cmx \
     core/lam_arity.cmx core/lam_analysis.cmx core/lam.cmx \
-    core/js_packages_state.cmx common/js_config.cmx core/js_cmj_format.cmx \
-    ext/ident_set.cmx ext/ident_map.cmx ext/ident_hashtbl.cmx \
-    ext/ext_string.cmx ext/ext_pervasives.cmx ext/ext_path.cmx \
-    ext/ext_option.cmx common/ext_log.cmx ext/ext_list.cmx ext/ext_ident.cmx \
-    ext/ext_array.cmx core/lam_stats_export.cmi
+    core/js_packages_state.cmx core/js_cmj_format.cmx ext/ident_set.cmx \
+    ext/ident_map.cmx ext/ident_hashtbl.cmx ext/ext_option.cmx \
+    common/ext_log.cmx ext/ext_list.cmx ext/ext_array.cmx \
+    core/lam_stats_export.cmi
 core/lam_pass_alpha_conversion.cmx : core/lam_stats_util.cmx \
     core/lam_stats.cmx core/lam_eta_conversion.cmx core/lam.cmx \
     ext/ext_list.cmx core/lam_pass_alpha_conversion.cmi

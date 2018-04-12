@@ -24,7 +24,7 @@
 
 
 type t = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
+  | Determin of bool * int  list  * bool
     (**
       when the first argument is true, it is for sure 
       the last one means it can take any params later, 
@@ -47,7 +47,7 @@ let print (fmt : Format.formatter) (x : t) =
          pp fmt "~");
       pp fmt "[";
       Format.pp_print_list ~pp_sep:(fun fmt () -> pp fmt ",")
-        (fun fmt  (x,_) -> Format.pp_print_int fmt x)
+        (fun fmt  x -> Format.pp_print_int fmt x)
         fmt ls ;
       if tail 
       then pp fmt "@ *";

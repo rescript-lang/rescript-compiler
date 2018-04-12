@@ -24,11 +24,11 @@
 
       
 let merge 
-    ((n : int ), params as y)
+    (n : int )
     (x : Lam_arity.t) : Lam_arity.t = 
   match x with 
-  | NA -> Determin(false, [y], false)
-  | Determin (b,xs,tail) -> Determin (b, y :: xs, tail)
+  | NA -> Determin(false, [n], false)
+  | Determin (b,xs,tail) -> Determin (b, n :: xs, tail)
 
 
 let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
@@ -110,15 +110,12 @@ let rec get_arity
       | Determin (b, xs, tail ) -> 
         let rec take (xs : _ list) arg_length = 
           match xs with 
-          | (x,y) :: xs ->
+          | (x) :: xs ->
             if arg_length = x then Lam_arity.Determin (b, xs, tail) 
             else if arg_length > x then
               take xs (arg_length - x)
             else Determin (b, 
-                           ((x -  arg_length ), 
-                            (match y with
-                            | Some y -> Some (Ext_list.drop arg_length y) 
-                            | None -> None)) :: xs ,
+                           (x -  arg_length ) :: xs ,
                            tail)
           | [] -> 
             if tail then Determin(b, [], tail)
@@ -135,7 +132,7 @@ let rec get_arity
         take xs (List.length args) 
     end
   | Lfunction {arity; function_kind; params; body = l} -> 
-    merge (arity, Some params)  (get_arity meta l)
+    merge arity  (get_arity meta l)
   | Lswitch(l, {sw_failaction; 
                 sw_consts; 
                 sw_blocks;
