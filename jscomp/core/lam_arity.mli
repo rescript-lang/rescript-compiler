@@ -51,3 +51,5 @@ val na : t
 val info : bool -> int list -> bool -> t 
 
 val first_arity_na :  t -> bool
+
+val extract_arity : t -> int list option 

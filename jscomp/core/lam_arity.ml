@@ -89,3 +89,10 @@ let first_arity_na ( x : t ) =
   | Arity_na 
   | Arity_info (_, [], _) -> true
   | _ -> false
+
+let extract_arity ( x : t) =   
+  match x with 
+  | Arity_na  -> None
+  | Arity_info(_,xs,_) -> Some xs 
+
+(* let update_arity (x : t) xs =    *)
