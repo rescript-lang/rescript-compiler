@@ -127,3 +127,5 @@ external booleanArray : Js.boolean array -> t = "%identity"
 external objectArray : t Js_dict.t array -> t = "%identity"
 external stringify: t -> string = "stringify" 
   [@@bs.val] [@@bs.scope "JSON"]
+external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string = "stringify" 
+  [@@bs.val] [@@bs.scope "JSON"]
