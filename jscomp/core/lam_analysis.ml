@@ -260,7 +260,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
  *)
 exception Too_big_to_inline
 
-let really_big () = raise Too_big_to_inline
+let really_big () = raise_notrace Too_big_to_inline
 
 let big_lambda = 1000
 
@@ -278,6 +278,8 @@ let rec size (lam : Lam.t) =
     | Lprim {primitive = Praise ; args =  [l ];  _} 
       -> size l
     | Lam.Lglobal_module _ -> 1       
+    | Lprim {primitive = Praw_js_code_exp _ | Praw_js_code_stmt _} ->
+      really_big ()
     | Lprim {args = ll; _} -> size_lams 1 ll
 
     (** complicated 
