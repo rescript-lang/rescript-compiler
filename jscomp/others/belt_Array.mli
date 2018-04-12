@@ -33,7 +33,7 @@ val get: 'a array -> int -> 'a option
 
   @example {[
     Belt.Array.get [|"a";"b";"c"|] 0 = Some "a";;
-    Belt.Array.get [|"a";"b";"c"|] 4 = None;;
+    Belt.Array.get [|"a";"b";"c"|] 3 = None;;
     Belt.Array.get [|"a";"b";"c"|] (-1) = None;;
   ]}
 *)
