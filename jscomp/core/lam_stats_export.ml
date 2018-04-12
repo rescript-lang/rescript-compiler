@@ -49,21 +49,19 @@ let values_of_export
          | Some (ImmutableBlock(elems,_)) ->  
            Submodule(elems |> Array.map (fun (x : Lam_id_kind.element) -> 
                match x with 
-               | NA -> Lam_arity.Arity_na
-               | SimpleForm lam -> Lam_stats_util.get_arity  meta lam)
+               | NA -> Lam_arity.na
+               | SimpleForm lam -> Lam_arity_analysis.get_arity  meta lam)
              )
          | Some _ 
          | None ->
           begin match Ident_map.find_opt x export_map with 
           | Some (Lprim {primitive = Pmakeblock (_,_, Immutable); args }) ->
             Submodule (args |> Ext_array.of_list_map (fun lam -> 
-            Lam_stats_util.get_arity meta lam
+            Lam_arity_analysis.get_arity meta lam
             ))
           | Some _
           | None -> single_na
           end
-         
-         (*Single (Lam_stats_util.arity_of_var meta x) *)
        in
        let closed_lambda = 
          match Ident_map.find_opt x export_map with 

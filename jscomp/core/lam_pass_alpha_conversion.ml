@@ -37,10 +37,10 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     | Lapply {fn = l1; args =  ll;  loc ; status} 
       -> (* detect functor application *)
       begin 
-        match Lam_stats_util.get_arity meta l1 with 
+        match Lam_arity_analysis.get_arity meta l1 with 
         | Arity_na -> 
           Lam.apply (simpl  l1) (Ext_list.map simpl  ll) loc status
-        | Arity_info (b, args, tail) -> 
+        | Arity_info (_, args, _) -> 
           let len = List.length ll in 
           let rec take args = 
             match args with 
@@ -76,15 +76,16 @@ let alpha_conversion (meta : Lam_stats.t) (lam : Lam.t) : Lam.t =
     | Lprim {primitive = (Lam.Pjs_fn_make len) as primitive ; args = [arg] 
       ; loc } -> 
       
-      begin match Lam_stats_util.get_arity meta arg with       
-      | Arity_info (b, x::_, tail)
+      begin match Lam_arity_analysis.get_arity meta arg with       
+      | Arity_info (_, x::_, _)
         -> 
         let arg = simpl arg in
           Lam_eta_conversion.unsafe_adjust_to_arity loc 
             ~to_:len 
             ~from:x
             arg 
-      | _  -> Lam.prim ~primitive ~args:[simpl arg] loc
+      | Arity_info(_,[],_)
+      | Arity_na   -> Lam.prim ~primitive ~args:[simpl arg] loc
       end
     | Lprim {primitive; args ; loc} -> 
       Lam.prim ~primitive ~args:(Ext_list.map simpl  args) loc

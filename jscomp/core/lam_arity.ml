@@ -70,3 +70,22 @@ let merge
   match x with 
   | Arity_na -> Arity_info (false, [n], false)
   | Arity_info (b,xs,tail) -> Arity_info (b, n :: xs, tail)
+
+
+let non_function_arity_info =   
+  Arity_info (true, [], false)
+
+let raise_arity_info =   
+  Arity_info (true,[],true)
+
+let na = Arity_na
+
+let info b0 args b1 = 
+  Arity_info (b0, args, b1)
+
+
+let first_arity_na ( x : t ) =   
+  match x with 
+  | Arity_na 
+  | Arity_info (_, [], _) -> true
+  | _ -> false

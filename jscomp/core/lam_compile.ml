@@ -181,7 +181,7 @@ and compile_external_field_apply
         match arity, len with
         | _, 0 ->
           acc (** All arguments consumed so far *)
-        | Arity_info (a, x :: rest, b), len   ->
+        | Arity_info (aaaaa, x :: rest, bbbbb), len   ->
           let x =
             if x = 0
             then 1
@@ -191,7 +191,7 @@ and compile_external_field_apply
             let first_part, continue =  Ext_list.split_at x args in
             aux
               (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
-              (Arity_info (a, rest, b))
+              (Lam_arity.info aaaaa rest bbbbb)
               continue (len - x)
           else (* GPR #1423 *)
           if List.for_all Js_analyzer.is_okay_to_duplicate args then
@@ -218,7 +218,7 @@ and compile_external_field_apply
         (
           aux
             (E.ml_var_dot id name)
-            (match arity with Single x -> x | Submodule _ -> Arity_na)
+            (match arity with Single x -> x | Submodule _ -> Lam_arity.na)
             args (List.length args ))
 
 

@@ -23,7 +23,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type t = 
+type t = private
   | Arity_info of bool * int list  * bool
     (**
       when the first argument is true, it is for sure 
@@ -42,3 +42,12 @@ val print_arities_tbl :
   unit 
 
 val merge : int -> t -> t   
+
+val non_function_arity_info : t
+
+val raise_arity_info : t 
+
+val na : t
+val info : bool -> int list -> bool -> t 
+
+val first_arity_na :  t -> bool

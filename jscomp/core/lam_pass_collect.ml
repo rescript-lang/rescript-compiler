@@ -108,13 +108,13 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
          *)
 
       List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
-      let arity = Lam_stats_util.get_arity meta lam in       
+      let arity = Lam_arity_analysis.get_arity meta lam in       
       annotate meta rec_flag ident  arity lam; 
       collect l
     | x -> 
         collect x ;
         if Ident_set.mem ident meta.export_idents then 
-          annotate meta rec_flag ident (Lam_stats_util.get_arity meta x ) lam
+          annotate meta rec_flag ident (Lam_arity_analysis.get_arity meta x ) lam
 
 
   and collect  (lam : Lam.t)  =

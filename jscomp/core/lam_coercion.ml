@@ -135,10 +135,8 @@ let handle_exports (meta : Lam_stats.t)
               of size 4 instead of 2
               *)
              let newid = Ident.rename original_export_id in
-             (match Lam_stats_util.get_arity meta lam with
-             | Arity_na
-             | Arity_info(_,[],_) -> ()
-             | Arity_info _ as v  ->
+             let v = Lam_arity_analysis.get_arity meta lam in  
+             (if not (Lam_arity.first_arity_na v) then
               Ident_hashtbl.add meta.ident_tbl newid
                 (FunctionId{
                  arity = v; lambda = lam;
