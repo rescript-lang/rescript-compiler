@@ -83,6 +83,7 @@ external test : 'a nullable -> bool = "#is_nil_undef"
 external testAny : 'a -> bool = "#is_nil_undef"
 
 type boolean = bool
+[@@ocaml.deprecated "Use type bool instead"]
 (** The value could be either  {!Js.true_} or {!Js.false_}.
      Note in BuckleScript, [boolean] has different representation from OCaml's [bool],
      see conversion functions in {!Boolean} *)

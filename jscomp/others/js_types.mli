@@ -38,7 +38,7 @@ type function_val
 type _ t =
   | Undefined :  undefined_val t
   | Null : null_val t
-  | Boolean : Js.boolean t
+  | Boolean : bool t
   | Number : float t
   | String : string t
   | Function : function_val t

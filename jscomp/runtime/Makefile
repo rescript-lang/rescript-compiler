@@ -40,7 +40,7 @@ BS_COMMON_FLAGS= -absname -no-alias-deps -bs-no-version-header -bs-diagnose -bs-
 
 BS_FLAGS=  $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS)
 
-COMPFLAGS += $(BS_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -unsafe -warn-error A -w -40-49-103 -bin-annot 
+COMPFLAGS += $(BS_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -unsafe -warn-error -3 -w -40-49-103 -bin-annot 
 
 
 $(RUNTIME): $(COMPILER)

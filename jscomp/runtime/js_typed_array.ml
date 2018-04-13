@@ -97,7 +97,7 @@ module type S =  sig
 
   (* Accessor functions
   *)
-  external includes : elt -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "" [@@bs.send.pipe: t] (** ES2016 *)
 
   external indexOf : elt  -> int = "" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -125,12 +125,12 @@ module type S =  sig
   external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
   *)
 
-  external every : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: t]
-  external everyi : (elt -> int -> Js.boolean [@bs]) -> Js.boolean = "every" [@@bs.send.pipe: t]
+  external every : (elt  -> bool [@bs]) -> bool = "" [@@bs.send.pipe: t]
+  external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
 
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
   external filter : (elt -> bool [@bs]) -> t = "" [@@bs.send.pipe: t]
-  external filteri : (elt -> int  -> Js.boolean[@bs]) -> t = "filter" [@@bs.send.pipe: t]
+  external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
 
   external find : (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send.pipe: t]
   external findi : (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send.pipe: t]
@@ -154,8 +154,8 @@ module type S =  sig
   external reduceRight :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: t]
   external reduceRighti : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send.pipe: t]
 
-  external some : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: t]
-  external somei : (elt  -> int -> Js.boolean [@bs]) -> Js.boolean = "some" [@@bs.send.pipe: t]
+  external some : (elt  -> bool [@bs]) -> bool = "" [@@bs.send.pipe: t]
+  external somei : (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send.pipe: t]
 
   (* commented out until bs has a plan for iterators
   external values : elt array_iter = "" [@@bs.send.pipe: t]
@@ -204,7 +204,7 @@ module TypedArray (Type: Type) : S with type elt = Type.t  = struct
 
   (* Accessor functions
   *)
-  external includes : elt -> Js.boolean = "" [@@bs.send.pipe: t] (** ES2016 *)
+  external includes : elt -> bool = "" [@@bs.send.pipe: t] (** ES2016 *)
 
   external indexOf : elt  -> int = "" [@@bs.send.pipe: t]
   external indexOfFrom : elt -> from:int -> int = "indexOf" [@@bs.send.pipe: t]
@@ -234,12 +234,12 @@ module TypedArray (Type: Type) : S with type elt = Type.t  = struct
   external entries : (int * elt) array_iter = "" [@@bs.send.pipe: t]
   *)
 
-  external every : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: t]
-  external everyi : (elt -> int -> Js.boolean [@bs]) -> Js.boolean = "every" [@@bs.send.pipe: t]
+  external every : (elt  -> bool [@bs]) -> bool = "" [@@bs.send.pipe: t]
+  external everyi : (elt -> int -> bool [@bs]) -> bool = "every" [@@bs.send.pipe: t]
 
   (** should we use [bool] or [boolan] seems they are intechangeable here *)
   external filter : (elt -> bool [@bs]) -> t = "" [@@bs.send.pipe: t]
-  external filteri : (elt -> int  -> Js.boolean[@bs]) -> t = "filter" [@@bs.send.pipe: t]
+  external filteri : (elt -> int  -> bool [@bs]) -> t = "filter" [@@bs.send.pipe: t]
 
   external find : (elt -> bool [@bs]) -> elt Js.undefined = "" [@@bs.send.pipe: t]
   external findi : (elt -> int -> bool [@bs]) -> elt Js.undefined  = "find" [@@bs.send.pipe: t]
@@ -263,8 +263,8 @@ module TypedArray (Type: Type) : S with type elt = Type.t  = struct
   external reduceRight :  ('b -> elt  -> 'b [@bs]) -> 'b -> 'b = "" [@@bs.send.pipe: t]
   external reduceRighti : ('b -> elt -> int -> 'b [@bs]) -> 'b -> 'b = "reduceRight" [@@bs.send.pipe: t]
 
-  external some : (elt  -> Js.boolean [@bs]) -> Js.boolean = "" [@@bs.send.pipe: t]
-  external somei : (elt  -> int -> Js.boolean [@bs]) -> Js.boolean = "some" [@@bs.send.pipe: t]
+  external some : (elt  -> bool [@bs]) -> bool = "" [@@bs.send.pipe: t]
+  external somei : (elt  -> int -> bool [@bs]) -> bool = "some" [@@bs.send.pipe: t]
 
   (* commented out until bs has a plan for iterators
   external values : elt array_iter = "" [@@bs.send.pipe: t]
