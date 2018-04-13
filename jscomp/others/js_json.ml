@@ -31,7 +31,7 @@ type _ kind =
   | Number : float kind 
   | Object : t Js_dict.t kind 
   | Array : t array kind 
-  | Boolean : Js.boolean kind
+  | Boolean : bool kind
   | Null : Js_types.null_val kind
 
 
@@ -94,7 +94,7 @@ let decodeArray json =
 
 let decodeBoolean json = 
   if Js.typeof json = "boolean"
-  then Some (Obj.magic (json:t) : Js.boolean)
+  then Some (Obj.magic (json:t) : bool)
   else None 
 
 let decodeNull json = 
@@ -115,7 +115,7 @@ external stringifyAny : 'a -> string option =
 external null : t = "" [@@bs.val]
 external string : string -> t = "%identity"
 external number : float -> t = "%identity"
-external boolean : Js.boolean -> t = "%identity" 
+external boolean : bool -> t = "%identity" 
 external object_ : t Js_dict.t -> t = "%identity"
 
 external array_ : t array -> t = "%identity"
@@ -123,7 +123,7 @@ external array_ : t array -> t = "%identity"
 external array : t array -> t = "%identity"
 external stringArray : string array -> t = "%identity"
 external numberArray : float array -> t = "%identity"
-external booleanArray : Js.boolean array -> t = "%identity"
+external booleanArray : bool array -> t = "%identity"
 external objectArray : t Js_dict.t array -> t = "%identity"
 external stringify: t -> string = "stringify" 
   [@@bs.val] [@@bs.scope "JSON"]

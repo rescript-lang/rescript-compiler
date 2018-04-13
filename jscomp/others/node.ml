@@ -45,7 +45,7 @@ type node_module = <
        
        filename : string ;       
 
-       loaded : Js.boolean;
+       loaded : bool;
        children : node_module array ;
        paths : string array;       
 > Js.t
