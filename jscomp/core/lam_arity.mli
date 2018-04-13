@@ -24,13 +24,12 @@
 
 
 type t = private
-  | Arity_info of bool * int list  * bool
+  | Arity_info of int list  * bool
     (**
       when the first argument is true, it is for sure 
       the last one means it can take any params later, 
-      for an exception: it is (Determin (true,[], true))
-      1. approximation sound but not complete 
-      
+      for an exception: it is (Arity_info([], true))
+       approximation sound but not complete       
    *)
   | Arity_na 
 
@@ -48,7 +47,7 @@ val non_function_arity_info : t
 val raise_arity_info : t 
 
 val na : t
-val info : bool -> int list -> bool -> t 
+val info : int list -> bool -> t 
 
 val first_arity_na :  t -> bool
 val get_first_arity : t -> int option 
@@ -57,7 +56,6 @@ val get_first_arity : t -> int option
 val extract_arity : t -> int list 
 
 val merge_arities : 
-  bool -> 
   int list -> 
   int list -> 
   bool -> 

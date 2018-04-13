@@ -82,18 +82,18 @@ let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t =
     let fn = get_arity meta app in 
     begin match fn with 
       | Arity_na -> Lam_arity.na
-      | Arity_info (b, xs, tail ) -> 
+      | Arity_info ( xs, tail ) -> 
         let rec take (arities : _ list) arg_length = 
           match arities with 
           | x :: yys ->
-            if arg_length = x then Lam_arity.info b yys tail
+            if arg_length = x then Lam_arity.info  yys tail
             else if arg_length > x then
               take yys (arg_length - x)
-            else Lam_arity.info b 
+            else Lam_arity.info 
                 ((x -  arg_length ) :: yys)
                 tail
           | [] -> 
-            if tail then Lam_arity.info b [] tail            
+            if tail then Lam_arity.raise_arity_info
             else Lam_arity.na
             (* Actually, you can not have truly deministic arities
                for example [fun x -> x ]
@@ -140,12 +140,12 @@ and all_lambdas meta (xs : Lam.t list) =
       match acc, xs  with 
       | Arity_na, _ -> acc 
       | _, [] -> acc 
-      | Arity_info(bbb, xxxs, tail), y::ys ->
+      | Arity_info(xxxs, tail), y::ys ->
         match get_arity meta y with 
         | Arity_na -> Lam_arity.na
-        | Arity_info (u,yyys,tail2) -> 
+        | Arity_info (yyys,tail2) -> 
           aux 
-            (Lam_arity.merge_arities ( u && bbb )  xxxs yyys tail tail2)
+            (Lam_arity.merge_arities xxxs yyys tail tail2)
             ys
     in  aux arity ys     
 

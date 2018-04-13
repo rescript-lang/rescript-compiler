@@ -24,9 +24,8 @@
 
 
 type t = 
-  | Arity_info of bool * int  list  * bool
+  | Arity_info of  int  list  * bool
   (**
-     when the first argument is true, it is for sure 
      the last one means it can take any params later, 
      for an exception: it is (Determin (true,[], true))
      1. approximation sound but not complete 
@@ -39,12 +38,9 @@ let pp = Format.fprintf
 let print (fmt : Format.formatter) (x : t) = 
   match x with 
   | Arity_na -> pp fmt "?"
-  | Arity_info (b,ls,tail) -> 
+  | Arity_info (ls,tail) -> 
     begin 
       pp fmt "@[";
-      (if not b 
-       then 
-         pp fmt "~");
       pp fmt "[";
       Format.pp_print_list ~pp_sep:(fun fmt () -> pp fmt ",")
         (fun fmt  x -> Format.pp_print_int fmt x)
@@ -68,58 +64,56 @@ let merge
     (n : int )
     (x : t) : t = 
   match x with 
-  | Arity_na -> Arity_info (false, [n], false)
-  | Arity_info (b,xs,tail) -> Arity_info (b, n :: xs, tail)
+  | Arity_na -> Arity_info ( [n], false)
+  | Arity_info (xs,tail) -> Arity_info ( n :: xs, tail)
 
 
 let non_function_arity_info =   
-  Arity_info (true, [], false)
+  Arity_info ([], false)
 
 let raise_arity_info =   
-  Arity_info (true,[],true)
+  Arity_info ([],true)
 
 let na = Arity_na
 
-let info b0 args b1 = 
-  Arity_info (b0, args, b1)
+let info args b1 = 
+  Arity_info ( args, b1)
 
 
 let first_arity_na ( x : t ) =   
   match x with 
   | Arity_na 
-  | Arity_info (_, [], _) -> true
+  | Arity_info ( [], _) -> true
   | _ -> false
 
 let get_first_arity (x : t) =   
   match x with 
   | Arity_na 
-  | Arity_info (_, [], _) -> None
-  | Arity_info (_, x::_, _) ->  Some x
+  | Arity_info ( [], _) -> None
+  | Arity_info ( x::_, _) ->  Some x
 
 let extract_arity ( x : t) =   
   match x with 
   | Arity_na  -> []
-  | Arity_info(_,xs,_) ->  xs 
+  | Arity_info(xs,_) ->  xs 
 
 (* let update_arity (x : t) xs =    *)
 
 let rec
   merge_arities_aux 
     (acc : int list) 
-    (unused_b : bool) 
     (xs : int list) (ys : int list) (tail : bool) (tail2 : bool) = 
   match xs,ys with
   | [], [] -> 
-    info unused_b (List.rev acc) (tail && tail2) 
-  (* tail && tail2 *)
+    info (List.rev acc) (tail && tail2) 
   | [], y::ys when tail  -> 
-    merge_arities_aux (y::acc) unused_b  [] ys tail tail2
+    merge_arities_aux (y::acc)   [] ys tail tail2
   | x::xs, [] when tail2 -> 
-    merge_arities_aux (x::acc) unused_b  [] xs tail tail2
+    merge_arities_aux (x::acc)   [] xs tail tail2
   | x::xs, y::ys when x = y ->
-    merge_arities_aux (y :: acc) unused_b  xs ys tail tail2
+    merge_arities_aux (y :: acc)   xs ys tail tail2
   | _, _  -> 
-  info false (List.rev acc) false
+  info (List.rev acc) false
 
-let merge_arities b xs ys t t2 = 
-  merge_arities_aux [] b xs ys t t2
+let merge_arities  xs ys t t2 = 
+  merge_arities_aux []  xs ys t t2
