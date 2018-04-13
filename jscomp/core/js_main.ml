@@ -192,10 +192,6 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    Arg.Set Js_config.cross_module_inline, 
    "enable cross module inlining(experimental), default(false)")
   :: 
-  ("-bs-gen-tds",
-   Arg.Set Js_config.default_gen_tds, 
-   " set will generate `.d.ts` file for typescript (experimental)")
-  :: 
   ("-bs-diagnose",
    Arg.Set Js_config.diagnose, 
    " More verbose output")

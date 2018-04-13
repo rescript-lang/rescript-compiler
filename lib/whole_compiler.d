@@ -211,7 +211,6 @@
 ../lib/whole_compiler.ml : ./core/lam_exit_code.mli
 ../lib/whole_compiler.ml : ./core/lam_pass_count.ml
 ../lib/whole_compiler.ml : ./core/lam_pass_exits.ml
-../lib/whole_compiler.ml : ./core/lam_stats_util.ml
 ../lib/whole_compiler.ml : ./core/ocaml_options.mli
 ../lib/whole_compiler.ml : ./depends/ast_extract.ml
 ../lib/whole_compiler.ml : ./depends/binary_ast.mli
@@ -252,7 +251,6 @@
 ../lib/whole_compiler.ml : ./core/lam_inline_util.ml
 ../lib/whole_compiler.ml : ./core/lam_pass_count.mli
 ../lib/whole_compiler.ml : ./core/lam_pass_exits.mli
-../lib/whole_compiler.ml : ./core/lam_stats_util.mli
 ../lib/whole_compiler.ml : ./depends/ast_extract.mli
 ../lib/whole_compiler.ml : ./depends/bs_exception.ml
 ../lib/whole_compiler.ml : ./ext/string_hash_set.mli
@@ -363,6 +361,7 @@
 ../lib/whole_compiler.ml : ./core/js_of_lam_variant.mli
 ../lib/whole_compiler.ml : ./core/js_packages_state.mli
 ../lib/whole_compiler.ml : ./core/js_runtime_modules.ml
+../lib/whole_compiler.ml : ./core/lam_arity_analysis.ml
 ../lib/whole_compiler.ml : ./core/lam_compile_const.mli
 ../lib/whole_compiler.ml : ./core/lam_compile_global.ml
 ../lib/whole_compiler.ml : ./core/lam_eta_conversion.ml
@@ -392,6 +391,7 @@
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/typeclass.mli
 ../lib/whole_compiler.ml : ../vendor/ocaml/typing/typedtree.mli
 ../lib/whole_compiler.ml : ./core/js_of_lam_exception.ml
+../lib/whole_compiler.ml : ./core/lam_arity_analysis.mli
 ../lib/whole_compiler.ml : ./core/lam_compile_context.ml
 ../lib/whole_compiler.ml : ./core/lam_compile_global.mli
 ../lib/whole_compiler.ml : ./core/lam_eta_conversion.mli

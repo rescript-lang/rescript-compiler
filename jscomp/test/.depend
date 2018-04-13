@@ -61,6 +61,7 @@ arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj
 arith_syntax.cmj :
 arity_deopt.cmj : mt.cmj
+arity_infer.cmj :
 array_data_util.cmj : ../others/belt.cmj
 array_safe_get.cmj : ../stdlib/array.cmj
 array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
