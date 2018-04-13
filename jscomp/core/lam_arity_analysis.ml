@@ -24,14 +24,14 @@
 
 
 let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
-    (** for functional parameter, if it is a high order function,
-        if it's not from function parameter, we should warn
-    *)
-      match Ident_hashtbl.find_opt meta.ident_tbl v with 
-      | Some (FunctionId {arity;_}) -> arity
-      | Some _
-      | None ->
-        Lam_arity.na 
+  (** for functional parameter, if it is a high order function,
+      if it's not from function parameter, we should warn
+  *)
+  match Ident_hashtbl.find_opt meta.ident_tbl v with 
+  | Some (FunctionId {arity;_}) -> arity
+  | Some _
+  | None ->
+    Lam_arity.na 
 
 
 (* we need record all aliases -- since not all aliases are eliminated, 
@@ -39,30 +39,27 @@ let arity_of_var (meta : Lam_stats.t) (v : Ident.t)  =
    We will keep iterating such environment
    If not found, we will return [NA]
 *)
-let rec get_arity 
-    (meta : Lam_stats.t) 
-    (lam : Lam.t) : 
-  Lam_arity.t = 
+let rec get_arity (meta : Lam_stats.t) (lam : Lam.t) :  Lam_arity.t = 
   match lam with 
-  | Lconst _ -> Lam_arity.non_function_arity_info
   | Lvar v -> arity_of_var meta v 
+  | Lconst _ -> Lam_arity.non_function_arity_info
   | Llet(_,_,_, l ) -> get_arity meta l 
   | Lprim {primitive = Pfield (n,_); 
            args =  [ Lglobal_module id  ]; _} ->
     begin match (Lam_compile_env.cached_find_ml_id_pos id n meta.env).arity with 
-    | Single x -> x 
-    | Submodule _ -> Lam_arity.na
+      | Single x -> x 
+      | Submodule _ -> Lam_arity.na
     end
   | Lprim {primitive = Pfield (m,_); 
            args =  [ Lprim{primitive = Pfield(n,_); 
-            args = [ Lglobal_module id]}  ]
-           ; _} ->
+                           args = [ Lglobal_module id]}  ]
+          ; _} ->
     begin match (Lam_compile_env.cached_find_ml_id_pos id n meta.env).arity with 
       | Submodule subs -> subs.(m)
       | Single _ -> Lam_arity.na
-  end
+    end
   (* TODO: all information except Pccall is complete, we could 
-    get more arity information
+     get more arity information
   *)
   | Lprim {primitive = Praise ;  _} -> Lam_arity.raise_arity_info
   | Lglobal_module _ (* TODO: fix me never going to happen assert false  *)
@@ -86,15 +83,15 @@ let rec get_arity
     begin match fn with 
       | Arity_na -> Lam_arity.na
       | Arity_info (b, xs, tail ) -> 
-        let rec take (xs : _ list) arg_length = 
-          match xs with 
+        let rec take (arities : _ list) arg_length = 
+          match arities with 
           | x :: yys ->
             if arg_length = x then Lam_arity.info b yys tail
             else if arg_length > x then
               take yys (arg_length - x)
             else Lam_arity.info b 
-                           ((x -  arg_length ) :: yys)
-                           tail
+                ((x -  arg_length ) :: yys)
+                tail
           | [] -> 
             if tail then Lam_arity.info b [] tail            
             else Lam_arity.na
@@ -115,7 +112,7 @@ let rec get_arity
     all_lambdas meta (
       let rest = 
         Ext_list.map_append snd sw_consts
-        (Ext_list.map snd sw_blocks) in
+          (Ext_list.map snd sw_blocks) in
       match sw_failaction with None -> rest | Some x -> x::rest )
   | Lstringswitch(l, sw, d) -> 
     begin match d with 
@@ -139,43 +136,20 @@ and all_lambdas meta (xs : Lam.t list) =
   match xs with 
   | y :: ys -> 
     let arity =  get_arity meta y in 
-    List.fold_left (fun exist (v : Lam.t) -> 
-        match (exist : Lam_arity.t) with 
+    let rec aux (acc : Lam_arity.t) xs = 
+      match acc, xs  with 
+      | Arity_na, _ -> acc 
+      | _, [] -> acc 
+      | Arity_info(bbb, xxxs, tail), y::ys ->
+        match get_arity meta y with 
         | Arity_na -> Lam_arity.na
-        | Arity_info (bbb, xxxs, tail) -> 
-          begin 
-            match get_arity meta v with 
-            | Arity_na -> Lam_arity.na 
-            | Arity_info (u,ys,tail2) -> 
-              let rec aux (b,acc) xs ys = 
-                match xs,ys with
-                | [], [] -> (b, List.rev acc, tail && tail2) 
-                | [], y::ys when tail  -> 
-                  aux (b,y::acc) [] ys 
-                | x::xs, [] when tail2 -> 
-                  aux (b,x::acc) [] xs
-                | x::xs, y::ys when x = y -> aux (b, (y :: acc)) xs ys 
-                | _, _  -> (false, List.rev acc, false) in 
-              let (b,acc, tail3)  = aux ( u &&bbb, []) xxxs ys in 
-              Lam_arity.info b acc tail3
-          end
-      ) arity ys 
-  | _ -> assert false 
+        | Arity_info (u,yyys,tail2) -> 
+          aux 
+            (Lam_arity.merge_arities ( u && bbb )  xxxs yyys tail tail2)
+            ys
+    in  aux arity ys     
 
-(*
-let dump_exports_arities (meta : Lam_stats.t ) = 
-  let fmt = 
-    if meta.filename <> "" then 
-      let cmj_file = Ext_path.chop_extension meta.filename ^ Literals.suffix_cmj in
-      let out = open_out cmj_file in   
-      Format.formatter_of_out_channel out
-    else 
-      Format.err_formatter in 
-  begin 
-    List.iter (fun (i : Ident.t) ->  
-      pp fmt "@[%s: %s -> %a@]@." meta.filename i.name 
-        pp_arities  (get_arity meta (Lvar i))
-              ) meta.exports
-  end
-*)
+  | [] -> Lam_arity.na
+
+
 

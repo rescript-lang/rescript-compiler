@@ -578,8 +578,9 @@ core/lam_stats_export.cmx : ext/string_map.cmx core/lam_stats.cmx \
     common/ext_log.cmx ext/ext_list.cmx ext/ext_array.cmx \
     core/lam_stats_export.cmi
 core/lam_pass_alpha_conversion.cmx : core/lam_stats.cmx \
-    core/lam_eta_conversion.cmx core/lam_arity_analysis.cmx core/lam.cmx \
-    ext/ext_list.cmx core/lam_pass_alpha_conversion.cmi
+    core/lam_eta_conversion.cmx core/lam_arity_analysis.cmx \
+    core/lam_arity.cmx core/lam.cmx ext/ext_list.cmx \
+    core/lam_pass_alpha_conversion.cmi
 core/lam_pass_collect.cmx : core/lam_util.cmx core/lam_stats.cmx \
     core/lam_arity_analysis.cmx core/lam_arity.cmx core/lam.cmx \
     ext/ident_set.cmx ext/ident_hashtbl.cmx core/lam_pass_collect.cmi

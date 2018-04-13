@@ -90,9 +90,36 @@ let first_arity_na ( x : t ) =
   | Arity_info (_, [], _) -> true
   | _ -> false
 
+let get_first_arity (x : t) =   
+  match x with 
+  | Arity_na 
+  | Arity_info (_, [], _) -> None
+  | Arity_info (_, x::_, _) ->  Some x
+
 let extract_arity ( x : t) =   
   match x with 
-  | Arity_na  -> None
-  | Arity_info(_,xs,_) -> Some xs 
+  | Arity_na  -> []
+  | Arity_info(_,xs,_) ->  xs 
 
 (* let update_arity (x : t) xs =    *)
+
+let rec
+  merge_arities_aux 
+    (acc : int list) 
+    (unused_b : bool) 
+    (xs : int list) (ys : int list) (tail : bool) (tail2 : bool) = 
+  match xs,ys with
+  | [], [] -> 
+    info unused_b (List.rev acc) (tail && tail2) 
+  (* tail && tail2 *)
+  | [], y::ys when tail  -> 
+    merge_arities_aux (y::acc) unused_b  [] ys tail tail2
+  | x::xs, [] when tail2 -> 
+    merge_arities_aux (x::acc) unused_b  [] xs tail tail2
+  | x::xs, y::ys when x = y ->
+    merge_arities_aux (y :: acc) unused_b  xs ys tail tail2
+  | _, _  -> 
+  info false (List.rev acc) false
+
+let merge_arities b xs ys t t2 = 
+  merge_arities_aux [] b xs ys t t2

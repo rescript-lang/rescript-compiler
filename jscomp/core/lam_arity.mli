@@ -51,5 +51,15 @@ val na : t
 val info : bool -> int list -> bool -> t 
 
 val first_arity_na :  t -> bool
+val get_first_arity : t -> int option 
 
-val extract_arity : t -> int list option 
+(** when [NA] return  empty list*)
+val extract_arity : t -> int list 
+
+val merge_arities : 
+  bool -> 
+  int list -> 
+  int list -> 
+  bool -> 
+  bool -> 
+  t
