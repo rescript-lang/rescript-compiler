@@ -94,10 +94,10 @@ type (+'a, +'e) promise
 *)
 
 
-val true_ : boolean
+val true_ : bool
 [@@ocaml.deprecated "Use true directly"]
 
-val false_ : boolean
+val false_ : bool
 [@@ocaml.deprecated "Use false directly"]
 
 external null : 'a null = "#null" 
@@ -107,7 +107,8 @@ external undefined : 'a undefined = "#undefined"
 (** The same as  [empty] {!Js.Undefined} will be compiled as [undefined]*)
 
 
-external to_bool : boolean -> bool = "%identity"
+external to_bool : bool -> bool = "%identity"
+[@@ocaml.deprecated "This function is not needed any more"]
 (** convert Js boolean to OCaml bool *)
 
 external typeof : 'a -> string = "#typeof"
