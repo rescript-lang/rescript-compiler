@@ -134,14 +134,13 @@ type 'a selector = 'a -> 'a -> 'a
 module O = struct
   external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
   type key = string
-  let for_in : (Obj.t -> (key -> unit) -> unit) [@bs] = [%bs.raw
-    {|function (o, foo) {
+  let for_in : (Obj.t -> (key -> unit) -> unit)  = 
+    fun%raw o foo ->  {|
         for (var x in o) { foo(x) }
-      }
-    |}]
-  external hasOwnProperty : key -> bool [@bs.meth] = "" [@@bs.val]
+      |}
+    
   let hasOwnProperty (o: Obj.t) (key: key) : bool = (Obj.magic o)##hasOwnProperty(key)
-  external get_value : Obj.t -> key -> Obj.t = "%array_unsafe_get"
+  external get_value : Obj.t -> key -> Obj.t = ""[@@bs.get_index]
 end
 
 let unsafe_js_compare x y =
@@ -250,8 +249,8 @@ and aux_obj_compare (a: Obj.t) (b: Obj.t) =
         if key < mk then min_key := Some key in
   let do_key_a = do_key (a, b, min_key_rhs) in
   let do_key_b = do_key (b, a, min_key_lhs) in
-  O.for_in a do_key_a [@bs];
-  O.for_in b do_key_b [@bs];
+  O.for_in a do_key_a;
+  O.for_in b do_key_b;
   let res = match !min_key_lhs, !min_key_rhs with
     | None, None -> 0
     | (Some _), None -> -1
@@ -322,8 +321,8 @@ and aux_obj_equal (a: Obj.t) (b: Obj.t) =
     if not (O.hasOwnProperty a key) ||
        not (caml_equal (O.get_value b key) (O.get_value a key))
     then result := false in
-  O.for_in a do_key_a [@bs];
-  if !result then O.for_in b do_key_b [@bs];
+  O.for_in a do_key_a ;
+  if !result then O.for_in b do_key_b;
   !result
 
 let caml_equal_null (x : Obj.t) (y : Obj.t Js.null) = 

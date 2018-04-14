@@ -49,7 +49,8 @@ let is_single_int (x : t ) =
   | _  -> None
 
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
-let as_string_exp ?(check_js_regex = false) (x : t ) = 
+
+let as_string_exp ~check_js_regex (x : t ) = 
   match x with  (** TODO also need detect empty phrase case *)
   | PStr [ {
       pstr_desc =  

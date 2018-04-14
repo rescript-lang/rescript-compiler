@@ -396,6 +396,10 @@ class virtual map =
       | Raw_js_code (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
+      | Raw_js_function (_x, _x_i1) ->
+          let _x = o#string _x in
+          let _x_i1 = o#list (fun o -> o#string) _x_i1
+          in Raw_js_function (_x, _x_i1)
       | Array (_x, _x_i1) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)

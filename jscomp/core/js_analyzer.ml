@@ -83,6 +83,7 @@ let free_variables_of_expression used_idents defined_idents st =
 
 let rec no_side_effect_expression_desc (x : J.expression_desc)  = 
   match x with 
+  | Raw_js_function _
   | Undefined
   | Null
   | Bool _ 
@@ -264,6 +265,7 @@ let rec eq_expression
     | Fun _ 
     | Unicode _ 
     | Raw_js_code _
+    | Raw_js_function _
     | Array _ 
     | Caml_block _ 
     (* | Caml_uninitialized_obj _  *)

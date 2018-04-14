@@ -37,7 +37,7 @@ val is_single_string : t -> (string * string option) option
 val is_single_int : t -> int option 
 
 type rtn = Not_String_Lteral | JS_Regex_Check_Failed | Correct of Parsetree.expression
-val as_string_exp : ?check_js_regex: bool -> t -> rtn
+val as_string_exp : check_js_regex: bool -> t -> rtn
 val as_core_type : Location.t -> t -> Parsetree.core_type    
 val as_empty_structure :  t -> bool 
 val as_ident : t -> Longident.t Asttypes.loc option

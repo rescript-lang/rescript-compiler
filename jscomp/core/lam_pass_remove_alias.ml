@@ -179,9 +179,9 @@ let simplify_alias
       let normal () = Lam.apply ( simpl fn) (Ext_list.map simpl args) loc status in
       begin 
         match Ident_hashtbl.find_opt meta.ident_tbl v with
-        | Some (FunctionId {lambda = Lfunction {params; body} as _m;
-                    rec_flag;                     
-                    _ })
+        | Some (FunctionId {lambda = Some(Lfunction {params; body} as _m,
+                    rec_flag)
+                     })
           -> 
         
           if Ext_list.same_length args params (* && false *)

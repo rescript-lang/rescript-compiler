@@ -317,7 +317,7 @@ val dummy_obj : ?comment:string ->  unit -> t
 val of_block : ?comment:string -> ?e:J.expression -> J.statement list -> t
 
 val raw_js_code : ?comment:string -> J.code_info ->  string -> t
-
+val raw_js_function : ?comment:string -> string -> string list -> t
 val nil : t 
 val is_null : unary_op
 
