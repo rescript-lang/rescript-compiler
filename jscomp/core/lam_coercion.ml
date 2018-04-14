@@ -135,13 +135,16 @@ let handle_exports (meta : Lam_stats.t)
               of size 4 instead of 2
               *)
              let newid = Ident.rename original_export_id in
-             let v = Lam_arity_analysis.get_arity meta lam in  
-             (if not (Lam_arity.first_arity_na v) then
-              Ident_hashtbl.add meta.ident_tbl newid
-                (FunctionId{
-                 arity = v; lambda = lam;
-                   rec_flag = Non_rec }))
-            ;
+             (
+                let arity = Lam_arity_analysis.get_arity meta lam in  
+                if not (Lam_arity.first_arity_na arity) then 
+                Ident_hashtbl.add meta.ident_tbl newid
+                (FunctionId{arity ; lambda = 
+                match lam with 
+                | Lfunction _ -> 
+                  Some (lam,  Non_rec)
+                | _ -> None })
+              );
             { acc with
               export_list = newid :: acc.export_list;
               export_map = Ident_map.add newid lam acc.export_map;

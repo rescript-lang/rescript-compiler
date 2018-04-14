@@ -141,6 +141,9 @@ let unicode ?comment s : t =
 let raw_js_code ?comment info s : t =
   {expression_desc = Raw_js_code (s,info) ; comment }
 
+let raw_js_function ?comment arg block : t = 
+  {expression_desc = Raw_js_function(arg,block); comment}
+  
 let array ?comment mt es : t  = 
   {expression_desc = Array (es,mt) ; comment}
 

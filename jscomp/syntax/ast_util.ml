@@ -294,7 +294,7 @@ let handle_debugger loc payload =
   else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
 
-let handle_raw ?(check_js_regex = false) loc payload =
+let handle_raw ~check_js_regex loc payload =
   begin match Ast_payload.as_string_exp ~check_js_regex payload with
     | Not_String_Lteral ->
       Location.raise_errorf ~loc
@@ -349,7 +349,7 @@ let handle_external loc x =
 
 
 let handle_raw_structure loc payload = 
-  begin match Ast_payload.as_string_exp payload with 
+  begin match Ast_payload.as_string_exp ~check_js_regex:false payload with 
     | Correct exp 
       -> 
       let pexp_desc = 

@@ -29,3 +29,9 @@ val handle_extension :
   Bs_ast_mapper.mapper ->
   Parsetree.extension ->
   Parsetree.expression
+
+
+type t = { args : string list ; block :  string }
+
+val fromString : string -> t 
+  

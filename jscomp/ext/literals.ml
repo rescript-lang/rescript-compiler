@@ -58,6 +58,7 @@ let setter_suffix_len = String.length setter_suffix
 let debugger = "debugger"
 let raw_expr = "raw_expr"
 let raw_stmt = "raw_stmt"
+let raw_function = "raw_function"
 let unsafe_downgrade = "unsafe_downgrade"
 let fn_run = "fn_run"
 let method_run = "method_run"

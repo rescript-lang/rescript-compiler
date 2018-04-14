@@ -184,6 +184,7 @@ type primitive =
   | Pupdate_mod
   | Praw_js_code_exp of string
   | Praw_js_code_stmt of string
+  | Praw_js_function of string * string list
   | Pjs_fn_make of int
   | Pjs_fn_run of int
   | Pjs_fn_method of int
@@ -1810,6 +1811,14 @@ let convert exports lam : _ * _  =
       begin match args with
         | [Lconst( Const_base (Const_string(s,_)))] ->
           prim ~primitive:(Praw_js_code_exp s)
+            ~args:[] loc
+        | _ -> assert false
+      end
+    | _ when s = "#raw_function" ->   
+      begin match args with
+        | [Lconst( Const_base (Const_string(s,_)))] ->
+          let v = Ast_exp_extension.fromString s in 
+          prim ~primitive:(Praw_js_function (v.block, v.args))
             ~args:[] loc
         | _ -> assert false
       end

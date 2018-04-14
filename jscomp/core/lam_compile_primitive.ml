@@ -54,6 +54,8 @@ let translate  loc
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
     E.runtime_call Js_runtime_modules.exn "internalToOCamlException" args 
+  | Lam.Praw_js_function(arg,block) -> 
+    E.raw_js_function arg block
   | Lam.Praw_js_code_exp s -> 
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 

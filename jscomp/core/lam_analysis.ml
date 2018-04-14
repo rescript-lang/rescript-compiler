@@ -159,6 +159,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pcaml_obj_length
       (* | Pjs_is_instance_array *)
       | Pwrap_exn
+      | Praw_js_function _
         -> true
       | Pcaml_obj_set_length        
       | Pjs_apply
@@ -278,8 +279,10 @@ let rec size (lam : Lam.t) =
     | Lprim {primitive = Praise ; args =  [l ];  _} 
       -> size l
     | Lam.Lglobal_module _ -> 1       
-    | Lprim {primitive = Praw_js_code_exp _ | Praw_js_code_stmt _} ->
-      really_big ()
+    | Lprim {primitive = 
+        Praw_js_code_stmt _ 
+      | Praw_js_function _ 
+      | Praw_js_code_exp _ } -> really_big ()
     | Lprim {args = ll; _} -> size_lams 1 ll
 
     (** complicated 
@@ -606,6 +609,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
 
   | Pbigarrayref  _ 
   | Pbigarrayset _ 
+  | Praw_js_function _
   | Praw_js_code_exp _ 
   | Praw_js_code_stmt _ -> false (* TOO lazy, here comparison is only approximation*)
   

@@ -42,7 +42,7 @@ let annotate (meta : Lam_stats.t)  rec_flag  (k:Ident.t) (arity : Lam_arity.t) l
   match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
   | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)
     Ident_hashtbl.add meta.ident_tbl k 
-      (FunctionId {arity; lambda; rec_flag})
+      (FunctionId {arity; lambda = Some (lambda, rec_flag) })
   |  Some (FunctionId old)  ->  
 
     old.arity <- arity  (* due to we keep refining arity analysis after each round*)      
@@ -67,6 +67,10 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
       Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Normal ls);
       List.iter collect ls     
+    | Lprim{primitive = Praw_js_function(_,raw_args); args = _ }           
+      ->
+      Ident_hashtbl.replace meta.ident_tbl ident 
+        (FunctionId {arity = Lam_arity.info [List.length raw_args] false; lambda = None} )
     | Lprim {primitive = Pnull_to_opt; 
              args = ([ Lvar _] as ls) ; _}
       ->

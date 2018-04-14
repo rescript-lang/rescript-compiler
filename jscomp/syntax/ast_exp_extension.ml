@@ -23,11 +23,57 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 open Ast_helper
 
+let rec unroll_function_aux 
+  (acc : string list)
+  (body : Parsetree.expression) : string list * string =
+  match body.pexp_desc with
+  | Pexp_constant(Const_string(block,_)) -> acc, block
+  | Pexp_fun("",None,{ppat_desc = Ppat_var s},cont) -> 
+    unroll_function_aux (s.txt::acc) cont
+  | _ -> 
+    Location.raise_errorf ~loc:body.pexp_loc  
+    "bs.raw can only be applied to a string or a special function form "
+
+type t = { args : string list ; block :  string }
+
+let toString (x : t) = 
+  Bs_version.version ^ Marshal.to_string x []
+
+(* exception handling*)
+let fromString (x : string) : t = 
+  if Ext_string.starts_with x Bs_version.version then 
+    Marshal.from_string x (String.length Bs_version.version)
+  else 
+     Ext_pervasives.failwithf
+        ~loc:__LOC__
+        "Compiler version mismatch. The project might have been built with one version of BuckleScript, and then with another. Please wipe the artifacts and do a clean build."
+
 let handle_extension record_as_js_object e (self : Bs_ast_mapper.mapper)
     (({txt ; loc} as lid , payload) : Parsetree.extension) = 
   begin match txt with
     | "bs.raw" | "raw" -> 
-      Ast_util.handle_raw loc payload
+      begin match payload with 
+      | PStr [{pstr_desc = Pstr_eval({pexp_desc = Pexp_fun("",None,pat,body)},_)}]
+         -> 
+         begin match pat.ppat_desc, body.pexp_desc with 
+         | Ppat_construct ({txt = Lident "()"}, None), Pexp_constant(Const_string(block,_))
+           -> 
+            Exp.apply ~loc 
+            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
+            [ "", 
+              Exp.constant ~loc (Const_string (toString {args = [] ; block }, None))            
+            ]
+            
+         | Ppat_var ({txt;}), _ -> 
+            let acc, block = unroll_function_aux [txt] body in 
+            (Exp.apply ~loc 
+            (Exp.ident ~loc {txt = Ldot (Ast_literal.Lid.js_unsafe, Literals.raw_function);loc})
+            [ "", Exp.constant ~loc (Const_string (toString {args = List.rev acc ; block },None))]            
+            )
+         | _ -> Location.raise_errorf ~loc "bs.raw can only be applied to a string or a special function form "
+         end 
+      | _ ->   Ast_util.handle_raw ~check_js_regex:false loc payload
+      end
     | "bs.re" | "re" ->
       Exp.constraint_ ~loc
         (Ast_util.handle_raw ~check_js_regex:true loc payload)
