@@ -1,3 +1,39 @@
+# 3.0.0
+
+Features:
+
+- #2740, #2726 Generalized safe/cleaner embedding raw function (https://bucklescript.github.io/docs/en/interop-cheatsheet.html#generaizlied-raw-js-since-300)
+
+- #2687, #2665, #2663 bs.deriving abstract type, a powerful way for idiomatic JS and FFI
+  (https://bucklescript.github.io/docs/en/generate-converters-accessors.html#abstract-type)
+  
+- #2696, #2742, #2706, #2711, compile OCaml boolean as JS boolean 
+  Breaking change to your code path relying on `Obj.magic` and `bs.raw`
+
+
+
+- #2741  add Node.Buffer.fromStringWithEncoding 
+- #2737 add Js.Json.stringifyWithSpace 
+- #2728 add console.error and console.trace 
+- #2666 add List.sort to belt
+- #2664 pipe syntax support tuple 
+            `obj |. method a b ` and `obj |. (m1 , m2)`
+
+
+Perf:
+- #2676 beter optimizations for tuple allocation
+
+Docs:
+- #2730, #2729, #2733, #2722, #2701, #2699 More docs to Belt 
+
+Fixes:
+- #2657 more intuitive polymorphic comparison with objects
+- #2686 playground unicode
+- #2720, #2719, #2718, error message enhancment
+- #2731 not inlining function contains `raw`
+- #2672 Fix ci
+- #2652 fix Buffer name mangling on Node
+- #2642 weird indentation in generated code 
 
 # 2.2.3
 
