@@ -154,7 +154,7 @@
 <td align="left" valign="top" >
 <code><span class="keyword">|</span></code></td>
 <td align="left" valign="top" >
-<code><span id="TYPEELTkind.Boolean"><span class="constructor">Boolean</span></span></td><td><span class="keyword">:</span></td><td><code class="type"><a href="Js.html#TYPEboolean">Js.boolean</a> <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
+<code><span id="TYPEELTkind.Boolean"><span class="constructor">Boolean</span></span></td><td><span class="keyword">:</span></td><td><code class="type">bool <a href="Js_json.html#TYPEkind">kind</a></code></code></td>
 
 </tr>
 <tr>
@@ -280,7 +280,7 @@
                     </div>
 
                   
-<pre><span id="VALdecodeBoolean"><span class="keyword">val</span> decodeBoolean</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> <a href="Js.html#TYPEboolean">Js.boolean</a> option</code></pre><div class="info ">
+<pre><span id="VALdecodeBoolean"><span class="keyword">val</span> decodeBoolean</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> bool option</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">decodeBoolean json</code> returns <code class="code">Some b</code> if <code class="code">json</code> is a boolean, <code class="code">None</code>
     otherwise<br>
@@ -327,9 +327,9 @@
                     </div>
 
                   
-<pre><span id="VALboolean"><span class="keyword">val</span> boolean</span> : <code class="type"><a href="Js.html#TYPEboolean">Js.boolean</a> -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALboolean"><span class="keyword">val</span> boolean</span> : <code class="type">bool -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">boolean b</code> makes a JSON boolean of the <code class="code">Js.boolean</code> <code class="code">b</code><br>
+                    <code class="code">boolean b</code> makes a JSON boolean of the <code class="code">bool</code> <code class="code">b</code><br>
  
                     </div>
                     
@@ -372,9 +372,9 @@
                     </div>
 
                   
-<pre><span id="VALbooleanArray"><span class="keyword">val</span> booleanArray</span> : <code class="type"><a href="Js.html#TYPEboolean">Js.boolean</a> array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALbooleanArray"><span class="keyword">val</span> booleanArray</span> : <code class="type">bool array -> <a href="Js_json.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">booleanArray</code> makes a JSON array of the <code class="code">Js.boolean array</code> <code class="code">a</code><br>
+                    <code class="code">booleanArray</code> makes a JSON array of the <code class="code">bool array</code> <code class="code">a</code><br>
  
                     </div>
                     
@@ -463,6 +463,30 @@ Js.Dict.set dict "likes"
   (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
 
 Js.log @@ Js.Json.stringify (Js.Json.object_ dict) 
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALstringifyWithSpace"><span class="keyword">val</span> stringifyWithSpace</span> : <code class="type"><a href="Js_json.html#TYPEt">t</a> -> int -> string</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">stringify json</code> formats the JSON data structure as a string
+<p>
+
+<b>Returns</b> the string representation of a given JSON data structure<br>
+<div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify">MDN</a><br>
+ </div> 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">(* Creates and stringifies a simple JS object with spacing *)
+
+let dict = Js.Dict.empty () in 
+Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
+Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "likes" 
+  (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
+
+Js.log @@ Js.Json.stringify (Js.Json.object_ dict) 2
 </code></pre>  </pre>
                     </div>
                     </div>

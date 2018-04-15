@@ -131,8 +131,8 @@
 
 <pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">length l</code><br>
-<div class="tag"> <b>Returns</b> the length of the list <code class="code">l</code><br>
+                    <code class="code">length xs</code><br>
+<div class="tag"> <b>Returns</b> the length of the list <code class="code">xs</code><br>
  </div> 
                     </div>
                     
@@ -150,7 +150,9 @@
                   
 <pre><span id="VALhead"><span class="keyword">val</span> head</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a option</code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">head xs</code> returns <code class="code">None</code> if <code class="code">xs</code> is the empty list, otherwise it returns <code class="code">Some value</code> where <code class="code">value</code> is the first
+  element in the list.<br>
+ 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">     head [] = None ;;
@@ -162,13 +164,13 @@
                   
 <pre><span id="VALheadExn"><span class="keyword">val</span> headExn</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">headExn h</code>
+                    <code class="code">headExn xs</code>
 <p>
 
     <b>See</b> <a href="Belt_List.html#VALhead"><code class="code">Belt_List.head</code></a>
 <p>
 
-    <b>raise</b> an exception if <code class="code">h</code> is empty<br>
+    <b>raise</b> an exception if <code class="code">xs</code> is empty<br>
  
                     </div>
                     
@@ -177,11 +179,13 @@
                   
 <pre><span id="VALtail"><span class="keyword">val</span> tail</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> option</code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">tail xs</code> returns <code class="code">None</code> if <code class="code">xs</code> is empty;
+  otherwise it returns <code class="code">Some xs2</code> where <code class="code">xs2</code> is everything except the first element of <code class="code">xs</code>;<br>
+ 
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      tail [] = None ;;
-      tail [1;2] = Some [2];;
+                    <pre class="example"> <pre class="codepre"><code class="code">      tail [] = None;;
+      tail [1;2;3;4] = Some [2;3;4];;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -189,13 +193,13 @@
                   
 <pre><span id="VALtailExn"><span class="keyword">val</span> tailExn</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">tailExn h</code>
+                    <code class="code">tailExn xs</code>
 <p>
 
     <b>See</b> <a href="Belt_List.html#VALtail"><code class="code">Belt_List.tail</code></a>
 <p>
 
-    <b>raise</b> an exception if <code class="code">h</code> is empty<br>
+    <b>raise</b> an exception if <code class="code">xs</code> is empty<br>
  
                     </div>
                     
@@ -204,7 +208,8 @@
                   
 <pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">add xs y</code> adds <code class="code">y</code> to the end of list <code class="code">xs</code><br>
+ 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">     add [1] 3 = [3;1];;
@@ -250,7 +255,7 @@
                     <code class="code">make n v</code> 
 <p>
 <ul>
-<li>return a list of length <code class="code">n</code> with each element filled with <code class="code">v</code>  </li>
+<li>return a list of length <code class="code">n</code> with each element filled with value <code class="code">v</code>  </li>
 <li>return the empty list if <code class="code">n</code> is negative</li>
 </ul>
 <br>
@@ -276,7 +281,8 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      makeBy 5 (fun i -&gt; i) = [0;1;2;3;4]
+                    <pre class="example"> <pre class="codepre"><code class="code">      makeBy 5 (fun i -&gt; i) = [0;1;2;3;4];;
+      makeBy 5 (fun i -&gt; i * i) = [0;1;4;9;16];;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -399,7 +405,7 @@
                     <code class="code">map xs f</code>
 <p>
 
-    return the list obtained by applying <code class="code">f</code> to the element of <code class="code">xs</code><br>
+    return the list obtained by applying <code class="code">f</code> to each element of <code class="code">xs</code><br>
  
                     </div>
                      <div class="examples">
@@ -417,7 +423,7 @@
  </div> 
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      zip [1;2] [1;2;3] = [(1,1); (2,2)]
+                    <pre class="example"> <pre class="codepre"><code class="code">      zip [1;2] [3;4;5] = [(1,3); (2,4)]
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -435,14 +441,19 @@
     Equivalent to <code class="code">zip xs ys |&gt; List.map (fun (x,y) -&gt; f x y)</code><br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      zipBy [1;2;3] [4;5] (fun a b -&gt; 2 * a + b) = [6;9];;
+    </code></pre>  </pre>
+                    </div>
                     </div>
 
                   
 <pre><span id="VALmapWithIndexU"><span class="keyword">val</span> mapWithIndexU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> (int -> 'a -> 'b [@bs]) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre>
 <pre><span id="VALmapWithIndex"><span class="keyword">val</span> mapWithIndex</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> (int -> 'a -> 'b) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">mapWithIndex xs f</code> applies <code class="code">f</code> to each element of <code class="code">xs</code>. Function <code class="code">f</code> takes two arguments:
+  the index starting from 0 and the element from <code class="code">xs</code>.<br>
+ 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      mapWithIndex [1;2;3] (fun i x -&gt; i + x) =
@@ -455,7 +466,8 @@
 <pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">'a array -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">'a array -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">fromArray arr</code> converts the given array to a list<br>
+ 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      fromArray [|1;2;3|]  = [1;2;3]
@@ -466,7 +478,8 @@
                   
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a array</code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">toArray xs</code> converts the given list to an array<br>
+ 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      toArray [1;2;3] = [|1;2;3|]
@@ -477,7 +490,8 @@
                   
 <pre><span id="VALreverse"><span class="keyword">val</span> reverse</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">reverse xs</code> returns a new list whose elements are those of <code class="code">xs</code> in reverse order.<br>
+ 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      reverse [1;2;3] = [3;2;1]
@@ -489,24 +503,37 @@
 <pre><span id="VALmapReverseU"><span class="keyword">val</span> mapReverseU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre>
 <pre><span id="VALmapReverse"><span class="keyword">val</span> mapReverse</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">mapReverse a f</code>
+                    <code class="code">mapReverse xs f</code>
 <p>
 
-    Equivalent to <code class="code">reverse (map a f)</code><br>
+    Equivalent to <code class="code">reverse (map xs f)</code><br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      mapReverse [3;4;5] (fun x -&gt; x * x) = [25;16;9];;
+    </code></pre>  </pre>
+                    </div>
                     </div>
 
                   
 <pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b [@bs]) -> unit</code></pre>
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">forEach xs f </code><br>
+                    <code class="code">forEach xs f </code>
+    Call <code class="code">f</code> on each element of <code class="code">xs</code> from the beginning to end. <code class="code">f</code> returns <code class="code">unit</code>, so no
+    new array is created. Use <code class="code">foreach</code> when you are primarily concerned with repetitively
+    creating side effects.<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      let us = ref 0;;
+                    <pre class="example"> <pre class="codepre"><code class="code">      forEach ["a";"b";"c"] (fun x -&gt; Js.log("Item: " ^ x));;
+      (*  prints:
+        Item: a
+        Item: b
+        Item: c
+      *)
+
+      let us = ref 0;;
       forEach [1;2;3;4] (fun x -&gt; us := !us + x);;
       !us  = 1 + 2 + 3 + 4;;
     </code></pre>  </pre>
@@ -521,9 +548,17 @@
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      let us = ref 0 ;;
-      forEachWithIndex [1;1;1;1] (fun i x -&gt; us := !us + x + i);;
-      !us  = 0 + 1 + 1 +  1 + 2 + 1 + 3 + 1;;
+                    <pre class="example"> <pre class="codepre"><code class="code">    
+      forEach ["a";"b";"c"] (fun i x -&gt; Js.log("Item " ^ (string_of_int i) ^ " is " ^ x));;
+      (*  prints:
+        Item 0 is a
+        Item 1 is b
+        Item 2 is cc
+      *)
+
+      let total = ref 0 ;;
+      forEachWithIndex [10;11;12;13] (fun i x -&gt; total := !total + x + i);;
+      !total  = 0 + 10 + 1 +  11 + 2 + 12 + 3 + 13;;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -532,7 +567,12 @@
 <pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b</code></pre>
 <pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b) -> 'b</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">reduce xs f</code><br>
+                    <code class="code">reduce xs f</code>
+<p>
+
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> from beginning to end.  Function <code class="code">f</code> has two parameters: the item
+    from the list and an “accumulator”, which starts with a value of <code class="code">init</code>. <code class="code">reduce</code>
+    returns the final value of the accumulator.<br>
  
                     </div>
                      <div class="examples">
@@ -547,7 +587,11 @@
 <pre><span id="VALreduceReverseU"><span class="keyword">val</span> reduceReverseU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b [@bs]) -> 'b</code></pre>
 <pre><span id="VALreduceReverse"><span class="keyword">val</span> reduceReverse</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('b -> 'a -> 'b) -> 'b</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">reduceReverse xs f</code><br>
+                    <code class="code">reduceReverse xs f</code>
+<p>
+
+    Works like <a href="Belt_List.html#VALreduce"><code class="code">Belt_List.reduce</code></a>, except that function <code class="code">f</code> is applied to each item of <code class="code">xs</code> from the last
+    back to the first.<br>
  
                     </div>
                      <div class="examples">
@@ -591,10 +635,16 @@
                     <code class="code">reduce2 xs ys init f </code>
 <p>
 
-    stops with the shorter list.<br>
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> and <code class="code">ys</code> from beginning to end. Stops with the shorter list.
+    Function <code class="code">f</code> has three parameters: an “accumulator” which starts with a value of <code class="code">init</code>,
+    an item from <code class="code">xs</code>, and an item from <code class="code">ys</code>. <code class="code">reduce2</code> returns the final value of the accumulator.<br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      reduce2 [1;2;3] [4;5] 0 (fun acc x y -&gt; acc + x * x + y) =  0 + (1 * 1 + 4) + (2 * 2 + 5);;
+      reduce2 [1;2;3] [4;5] [] (fun acc x y -&gt; add acc (x + y) = [2 +5;1 + 4 ];; (*add appends at end *)
+    </code></pre>  </pre>
+                    </div>
                     </div>
 
                   
@@ -604,12 +654,15 @@
                     <code class="code">reduceReverse2 xs ys init f </code>
 <p>
 
-   Stops with the shorter list<br>
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> and <code class="code">ys</code> from end to beginning. Stops with the shorter list.
+    Function <code class="code">f</code> has three parameters: an “accumulator” which starts with a value of <code class="code">init</code>,
+    an item from <code class="code">xs</code>, and an item from <code class="code">ys</code>. <code class="code">reduce2</code> returns the final value of the accumulator.<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">     reduceReverse2 [1;2;3] [1;2] 0 (fun acc x y -&gt; acc + x + y) = 6
-   </code></pre>  </pre>
+                    <pre class="example"> <pre class="codepre"><code class="code">      reduceReverse2 [1;2;3] [4;5] 0 (fun acc x y -&gt; acc + x * x + y) =  0 + (1 * 1 + 4) + (2 * 2 + 5);;
+      reduceReverse2 [1;2;3] [4;5] [] (fun acc x y -&gt; add acc (x + y) = [1 + 4;2 + 5];; (*add appends at end *)
+    </code></pre>  </pre>
                     </div>
                     </div>
 
@@ -617,12 +670,15 @@
 <pre><span id="VALeveryU"><span class="keyword">val</span> everyU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">every ls p</code><br>
- 
+                    <code class="code">every xs p</code><br>
+<div class="tag"> <b>Returns</b> true if all elements satisfy <code class="code">p</code>, where <code class="code">p</code> is a <i>predicate</i>: a function taking
+    an element and returning a <code class="code">bool</code>.<br>
+ </div> 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      every [] (fun x -&gt; x mod 2 = 0) = true;;
-      every [2;4] (fun x -&gt; x mod 2 = 0 ) true;;
+      every [2;4;6] (fun x -&gt; x mod 2 = 0 ) = true;;
+      every [1;-3;5] (fun x -&gt; x &gt; 0) = false;;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -631,12 +687,15 @@
 <pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">some ls p</code><br>
- 
+                    <code class="code">some xs p</code><br>
+<div class="tag"> <b>Returns</b> true if at least one of the elements in <code class="code">xs</code> satifies <code class="code">p</code>, where <code class="code">p</code> is a <i>predicate</i>: a function taking
+    an element and returning a <code class="code">bool</code>.<br>
+ </div> 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      some [] (fun x -&gt; x mod 2 = 0) = false ;;
-      some [1;2] (fun x -&gt; x mod 2 = 0) = true;;)
+      some [1;2;4] (fun x -&gt; x mod 2 = 0) = true;;
+      some [-1;-3;-5] (fun x -&gt; x &gt; 0) = false;;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -645,12 +704,15 @@
 <pre><span id="VALevery2U"><span class="keyword">val</span> every2U</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALevery2"><span class="keyword">val</span> every2</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">every2 xs ys p</code> stop with the shorter list<br>
+                    <code class="code">every2 xs ys p</code> returns true if predicate <code class="code">p xi yi</code> is true for all pairs of elements
+  up to the shorter length (i.e. <code class="code">min (length xs) (length ys)</code>)<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      (every2 [] [1] (fun   x y -&gt; x &gt; y)) = true;;
-      (every2 [2;3] [1] (fun   x y -&gt; x &gt; y)) = true;;    
+                    <pre class="example"> <pre class="codepre"><code class="code">      every2 [1;2;3] [0;1] (&gt;) = true;;
+      every2 [] [1] (fun  x y -&gt; x &gt; y) = true;;
+      every2 [2;3] [1] (fun  x y -&gt; x &gt; y) = true;;
+      every2 [0;1] [5;0] (fun x y -&gt; x &gt; y) = false;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -659,12 +721,14 @@
 <pre><span id="VALsome2U"><span class="keyword">val</span> some2U</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALsome2"><span class="keyword">val</span> some2</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">some2 xs ys p</code><br>
+                    <code class="code">some2 xs ys p</code> returns true if <code class="code">p xi yi</code> is true for any pair of elements
+  up to the shorter length (i.e. <code class="code">min (length xs) (length ys)</code>)<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      (some2 [] [1] (fun   x y -&gt; x &gt; y)) =  false;;
-      (some2 [2;3] [1;4] (fun   x y -&gt; x &gt; y)) = true;;
+                    <pre class="example"> <pre class="codepre"><code class="code">      some2 [0;2] [1;0;3] (&gt;) = true ;;
+      some2 [] [1] (fun  x y -&gt; x &gt; y) =  false;;
+      some2 [2;3] [1;4] (fun  x y -&gt; x &gt; y) = true;;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -675,29 +739,45 @@
                     <code class="code">cmpByLength l1 l2</code>
 <p>
 
-    Compare two lists solely by length<br>
+    Compare two lists solely by length. Returns -1 if <code class="code">length l1</code> is less than <code class="code">length l2</code>,
+    0 if <code class="code">length l1</code> equals <code class="code">length l2</code>, and 1 if <code class="code">length l1</code> is greater than <code class="code">length l2</code>.<br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    cmpByLength [1;2] [3;4;5;6] = -1;;
+    cmpByLength [1;2;3] [4;5;6] = 0;;
+    cmpByLength [1;2;3;4] [5;6] = 1;;
+    </code></pre>  </pre>
+                    </div>
                     </div>
 
                   
 <pre><span id="VALcmpU"><span class="keyword">val</span> cmpU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> int [@bs]) -> int</code></pre>
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> int) -> int</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">cmp xs ys cmpElem</code>
-    compare lists <code class="code">xs</code> and <code class="code">ys</code> using <code class="code">cmpElem</code> to compare elements<br>
+                    Compare elements one by one <code class="code">f x y</code>. <code class="code">f</code> returns<ul>
+<li>a negative number if <code class="code">x</code> is “less than” <code class="code">y</code></li>
+<li>zero if <code class="code">x</code> is “equal to” <code class="code">y</code></li>
+<li>a positive number if <code class="code">x</code> is “greater than” <code class="code">y</code>
+    The comparison returns the first non-zero result of <code class="code">f</code>, or zero if <code class="code">f</code> returns zero for all <code class="code">x</code> and <code class="code">y</code>.
+    If all items have compared equal, but <code class="code">xs</code> is exhausted first, return -1. (<code class="code">xs</code> is shorter)
+    If all items have compared equal, but <code class="code">ys</code> is exhausted first, return 1 (<code class="code">xs</code> is longer)</li>
+</ul>
+<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      cmp [1;2;3] [1;2;3] compare = 0;;
-      cmp [1;2;3] [0;1;2;3] compare = 1 ;;]
-  </code></pre>
+                    <pre class="example"> <pre class="codepre"><code class="code">      cmp [3] [3;7] (fun a b -&gt; compare a b) = -1
+      cmp [5;3] [5] (fun a b -&gt; compare a b)  = 1
+      cmp [|1; 3; 5|] [|1; 4; 2|] (fun a b -&gt; compare a b) = -1;;
+      cmp [|1; 3; 5|] [|1; 2; 3|] (fun a b -&gt; compare a b) = 1;;
+      cmp [|1; 3; 5|] [|1; 3; 5|] (fun a b -&gt; compare a b) = 0;;
+    </code></pre>
 <p>
 
    <b>Attention</b>: The total ordering of List is different from Array,
-   for Array, we compare the length first and one by one later, while
-   for lists, we just compare one by one  </pre>
+   for Array, we compare the length first and, only if the lengths are equal, elements one by one.
+   For lists, we just compare elements one by one  </pre>
                     </div>
                     </div>
 
@@ -706,12 +786,15 @@
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">eq xs ys eqElem</code>
-   check equality of <code class="code">xs</code> and <code class="code">ys</code> using <code class="code">eqElem</code> for equality on elements<br>
+   check equality of <code class="code">xs</code> and <code class="code">ys</code> using <code class="code">eqElem</code> for equality on elements, where <code class="code">eqElem</code> is a function
+   that returns true if items <code class="code">x</code> and <code class="code">y</code> meet some criterion for equality, false otherwise.
+   <code class="code">eq</code> false if length of <code class="code">xs</code> and <code class="code">ys</code> are not the same.<br>
  
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      eq [1;2;3] [1;2] (=) = false ;;
-      eq [1;2] [1;2] (=) = true
+      eq [1;2] [1;2] (=) = true;;
+      eq [1; 2; 3] [-1; -2; -3] (fun a b -&gt; abs a = abs b) = true;;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -720,11 +803,14 @@
 <pre><span id="VALhasU"><span class="keyword">val</span> hasU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">has xs eqFcn</code> returns true if the list contains at least one element for which <code class="code">eqFcn x</code> returns
+    true<br>
+ 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      has [1;2;3] 2 (=) = true;;
       has [1;2;3] 4 (=) = false;;
+      has [-1;-2;-3] 2 (fun a b -&gt; abs a = abs b) = true;;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -733,10 +819,12 @@
 <pre><span id="VALgetByU"><span class="keyword">val</span> getByU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> 'a option</code></pre>
 <pre><span id="VALgetBy"><span class="keyword">val</span> getBy</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> 'a option</code></pre><div class="info ">
                     <div class="not-examples">
-                     
+                    <code class="code">getBy xs p</code> returns <code class="code">Some value</code> for the first value in <code class="code">xs</code> that satisifies the predicate function <code class="code">p</code>; returns <code class="code">None</code> if no element satisifies the function.<br>
+ 
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      getBy [1;4;3;2] (fun x -&gt; x mod 2 = 0) = Some 4
+      getBy [15;13;11] (fun x -&gt; x mod 2 = 0) = None
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -745,7 +833,7 @@
 <pre><span id="VALkeepU"><span class="keyword">val</span> keepU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
 <pre><span id="VALkeep"><span class="keyword">val</span> keep</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">keep  xs p</code><br>
+                    <code class="code">keep  xs p</code> returns a list of all elements in <code class="code">xs</code> which satisfy the predicate function <code class="code">p</code><br>
  
                     </div>
                      <div class="examples">
@@ -759,7 +847,7 @@
 <pre><span id="VALkeepMapU"><span class="keyword">val</span> keepMapU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b option [@bs]) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre>
 <pre><span id="VALkeepMap"><span class="keyword">val</span> keepMap</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'b option) -> 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">keepMap xs f</code><br>
+                    <code class="code">keepMap xs f</code> applies <code class="code">f</code> to each element of <code class="code">xs</code>. If <code class="code">f xi</code> returns <code class="code">Some value</code>, then <code class="code">value</code> is kept in the resulting list; if <code class="code">f xi</code> returns <code class="code">None</code>, the element is not retained in the result.<br>
  
                     </div>
                      <div class="examples">
@@ -774,7 +862,7 @@
 <pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool [@bs]) -> 'a <a href="Belt_List.html#TYPEt">t</a> * 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
 <pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> bool) -> 'a <a href="Belt_List.html#TYPEt">t</a> * 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">partition xs p</code><br>
+                    <code class="code">partition xs p</code> creates a pair of lists; the first list consists of all elements of <code class="code">xs</code> that satisfy the predicate function <code class="code">p</code>; the second list consists of all elements of <code class="code">xs</code> that do not satisfy <code class="code">p</code><br>
  
                     </div>
                      <div class="examples">
@@ -787,11 +875,12 @@
                   
 <pre><span id="VALunzip"><span class="keyword">val</span> unzip</span> : <code class="type">('a * 'b) <a href="Belt_List.html#TYPEt">t</a> -> 'a <a href="Belt_List.html#TYPEt">t</a> * 'b <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">unzip xs</code><br>
+                    <code class="code">unzip xs</code> takes a list of pairs and creates a pair of lists. The first list contains all the first items of the pairs; the second list contains all the second items.<br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      unzip [(1,2) ; (3,4)] = ([1;3], [2;4])
+                    <pre class="example"> <pre class="codepre"><code class="code">      unzip [(1,2) ; (3,4)] = ([1;3], [2;4]);;
+      unzip [(1,2) ; (3,4) ; (5,6) ; (7,8)] = ([1;3;5;7], [2;4;6;8]);;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -803,12 +892,13 @@
                     <code class="code">getAssoc xs k eq</code>
 <p>
 
-    return the second element of a pair in <code class="code">xs</code> where the first element equals <code class="code">x</code>,
-    or <code class="code">None</code> if not found<br>
+    return the second element of a pair in <code class="code">xs</code> where the first element equals <code class="code">x</code> as per the predicate
+    function <code class="code">eq</code>, or <code class="code">None</code> if not found<br>
  
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      getAssoc [ 1, "a"; 2, "b"; 3, "c"] 2 (=) = Some "b"
+      getAssoc [9, "morning"; 15, "afternoon"; 22, "night"] 3 (fun a b -&gt; a mod 12 = b mod 12) = Some "afternoon"
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -817,12 +907,14 @@
 <pre><span id="VALhasAssocU"><span class="keyword">val</span> hasAssocU</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALhasAssoc"><span class="keyword">val</span> hasAssoc</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">hasAssoc xs x eq</code>
-     return true if there is a pair in <code class="code">xs</code> where the first element equals <code class="code">x</code><br>
+                    <code class="code">hasAssoc xs k eq</code>
+     return true if there is a pair in <code class="code">xs</code> where the first element equals <code class="code">k</code> as per the predicate
+     funtion <code class="code">eq</code><br>
  
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">      hasAssoc [1, "a"; 2, "b"; 3,"c"] 1 (=) = true
+                    <pre class="example"> <pre class="codepre"><code class="code">      hasAssoc [1, "a"; 2, "b"; 3,"c"] 1 (=) = true;;
+      hasAssoc [9, "morning"; 15, "afternoon"; 22, "night"] 3 (fun a b -&gt; a mod 12 = b mod 12) = true;;
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -831,13 +923,15 @@
 <pre><span id="VALremoveAssocU"><span class="keyword">val</span> removeAssocU</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -><br>       'b -> ('a -> 'b -> bool [@bs]) -> ('a * 'c) <a href="Belt_List.html#TYPEt">t</a></code></pre>
 <pre><span id="VALremoveAssoc"><span class="keyword">val</span> removeAssoc</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -> 'b -> ('a -> 'b -> bool) -> ('a * 'c) <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">removeAssoc xs x eq</code>
-    Try to remove the first pair, if not found, leave it untouched.<br>
+                    <code class="code">removeAssoc xs k eq</code>
+    Return a list after removing the first pair whose first value is <code class="code">k</code> per the equality predicate <code class="code">eq</code>; if not found, return a new list identical to <code class="code">xs</code>.<br>
  
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      removeAssoc [1,"a"; 2, "b"; 3, "c" ] 1 (=) =
-      [2, "b"; 3, "c"]
+        [2, "b"; 3, "c"]
+      removeAssoc [1,"a"; 2, "b"; 3, "c" ] 99 (=) =
+        [1, "a"; 2, "b"; 3, "c"]
     </code></pre>  </pre>
                     </div>
                     </div>
@@ -847,16 +941,38 @@
 <pre><span id="VALsetAssoc"><span class="keyword">val</span> setAssoc</span> : <code class="type">('a * 'c) <a href="Belt_List.html#TYPEt">t</a> -><br>       'a -> 'c -> ('a -> 'a -> bool) -> ('a * 'c) <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">setAssoc xs k v eq</code>
-    if <code class="code">k</code> exists in <code class="code">xs</code>, replace it with the new <code class="code">v</code>, otherwise, add
-    it to the head<br>
+    if <code class="code">k</code> exists in <code class="code">xs</code> by satisfying the <code class="code">eq</code> predicate, return a new list
+    with the key and value replaced by the new <code class="code">k</code> and <code class="code">v</code>; otherwise, return a new
+    list with the pair <code class="code">k, v</code> added to the head of <code class="code">xs</code>.<br>
  
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      setAssoc [1,"a"; 2, "b"; 3, "c"] 2 "x" (=) =
       [1,"a"; 2, "x"; 3,"c"] ;; 
 
-      setAssoc [1,"a"; 3, "c"] 2 "2" (=) = 
-      [2,"2"; 1,"a"; 3, "c"] 
+      setAssoc [1,"a"; 3, "c"] 2 "b" (=) = 
+      [2,"b"; 1,"a"; 3, "c"]
+      
+      setAssoc [9, "morning"; 3, "morning?!"; 22, "night"] 15 "afternoon"
+        (fun a b -&gt; a mod 12 = b mod 12) = [9, "morning"; 15, "afternoon"; 22, "night"]
+    </code></pre>
+<p>
+
+    Note carefully the last example! Since <code class="code">15 mod 12</code> equals <code class="code">3 mod 12</code>, <i>both</i> the key and value are
+    replaced in the list.  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsortU"><span class="keyword">val</span> sortU</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> int [@bs]) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre>
+<pre><span id="VALsort"><span class="keyword">val</span> sort</span> : <code class="type">'a <a href="Belt_List.html#TYPEt">t</a> -> ('a -> 'a -> int) -> 'a <a href="Belt_List.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">sort xs</code>
+    Returns a sorted list.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      sort [5; 4; 9; 3; 7] (fun a b -&gt; a - b) = [3; 4; 5; 7; 9]
     </code></pre>  </pre>
                     </div>
                     </div>
