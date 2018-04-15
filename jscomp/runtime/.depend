@@ -56,7 +56,7 @@ caml_backtrace.cmi :
 caml_int32.cmi :
 caml_gc.cmi :
 js_primitive.cmi : js_undefined.cmi js.cmi
-caml_basic.cmi : js_undefined.cmi js.cmi
+caml_basic.cmi : js_undefined.cmi
 caml_oo.cmi :
 caml_missing_polyfill.cmi :
 js_exn.cmi :
