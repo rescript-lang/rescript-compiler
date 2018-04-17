@@ -12566,7 +12566,7 @@ let output_ninja_and_namespace_map
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
       let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
       let static_resources =
-        List.fold_left (fun acc_resources  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
+        List.fold_left (fun (acc_resources : string list)  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
             let dir_index = (dir_index :> int) in 
             bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
