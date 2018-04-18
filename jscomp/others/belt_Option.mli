@@ -62,7 +62,7 @@ val map : 'a option -> ('a -> 'b) -> 'b option
   If [optionValue] is [Some value], returns [Some (f value)]; otherwise returns [None]
   
   @example {[
-    map (Some 3) (fun x -> x * x) = (Some 8);;
+    map (Some 3) (fun x -> x * x) = (Some 9);;
     map None (fun x -> x * x) = None;;
   ]}
 *)
