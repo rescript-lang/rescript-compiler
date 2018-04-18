@@ -36,4 +36,4 @@ external fromStringWithEncoding : string -> ([ `ascii  | `utf8  | `utf16le  | `u
 [@@bs.val] [@@bs.scope "Buffer"]
 
 external toString : t -> string = ""
-[@@bs.send] [@@bs.scope "Buffer"]
+[@@bs.send]
