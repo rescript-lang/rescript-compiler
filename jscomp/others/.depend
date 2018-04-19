@@ -49,6 +49,7 @@ belt_SetDict.cmj : belt_internalAVLset.cmj belt_Id.cmj belt_Array.cmj \
     belt_SetDict.cmi
 belt_Map.cmj : belt_MapString.cmj belt_MapInt.cmj belt_MapDict.cmj \
     belt_Id.cmj belt_Array.cmj belt_Map.cmi
+belt_String.cmj :
 belt_internalMapInt.cmj : belt_internalAVLtree.cmj belt_SortArray.cmj \
     belt_Array.cmj
 belt_internalMapString.cmj : belt_internalAVLtree.cmj belt_SortArray.cmj \

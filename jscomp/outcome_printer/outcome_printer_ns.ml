@@ -85,6 +85,7 @@ let out_ident ppf s =
       
     | "Belt_MutableQueue" -> "Belt.MutableQueue"
     | "Belt_MutableStack" -> "Belt.MutableStack"      
+    | "Belt_String" -> "Belt.String"
     | "Belt_List" -> "Belt.List"        
     | "Belt_Range" -> "Belt.Range"
       
