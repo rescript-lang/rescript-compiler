@@ -204,6 +204,15 @@ val zip: 'a array -> 'b array -> ('a * 'b) array
     ]}
  *)
 
+val unzip: ('a * 'b) array -> 'a array * 'b array
+(** [unzip a] takes an array of pairs and creates a pair of arrays. The first array contains all the first items of the pairs; the second array contains all the second items.
+
+    @example {[
+      unzip [|(1,2) ; (3,4)|] = ([|1;3|], [|2;4|]);;
+      unzip [|(1,2) ; (3,4) ; (5,6) ; (7,8)|] = ([|1;3;5;7|], [|2;4;6;8|]);;
+    ]}
+*)
+
 val concat: 'a array -> 'a array -> 'a array
 (** [concat xs ys]
 
