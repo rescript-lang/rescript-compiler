@@ -87,6 +87,15 @@ val make: id:('value, 'id) id -> ('value, 'id) t
 
 *)
 
+type intId
+
+val intId: (int, intId) Belt.Id.comparable
+
+val fromSetInt: Int.t -> (int, intId) t
+
+val toSetInt: (int, intId) t -> Int.t
+
+val toSetIntMaybe: (int, _) t -> Int.t option
 
 val ofArray: 'value array -> id:('value, 'id) id ->  ('value, 'id) t
 [@@ocaml.deprecated "Use fromArray instead"]
