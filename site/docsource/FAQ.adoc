@@ -74,5 +74,5 @@ The issue here isn't that the function is polymorphic. You can use (and probably
 
 [source]
 --------
-lat _ = map (fun v -> id v [@bs])
+let _ = map (fun v -> id v [@bs])
 --------
