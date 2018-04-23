@@ -2,7 +2,7 @@
 type key = int
 module I = Belt_internalMapInt    
 
-# 11 "map.cppo.ml"
+# 11
 module N = Belt_internalAVLtree
 module A = Belt_Array 
 
@@ -140,7 +140,7 @@ let removeMany t keys =
   | None -> N.empty
   | Some t ->  removeMany0 t keys 0 len
 
-let mergeArray h arr =   
+let mergeMany h arr =   
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 

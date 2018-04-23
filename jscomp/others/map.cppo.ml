@@ -145,7 +145,7 @@ let removeMany t keys =
   | None -> N.empty
   | Some t ->  removeMany0 t keys 0 len
 
-let mergeArray h arr =   
+let mergeMany h arr =   
   let len = A.length arr in 
   let v = ref h in  
   for i = 0 to len - 1 do 
