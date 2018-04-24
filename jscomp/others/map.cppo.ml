@@ -154,6 +154,8 @@ let mergeMany h arr =
   done ;
   !v 
 
+let mergeArray = mergeMany
+
 let has = I.has
 let cmpU = I.cmpU
 let cmp = I.cmp

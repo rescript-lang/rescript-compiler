@@ -121,6 +121,9 @@ val merge:
 
 val mergeMany: 'v t -> (key * 'v) array -> 'v t
 
+[@@ocaml.deprecated "Use mergeMany instead"]
+val mergeArray: 'v t -> (key * 'v) array -> 'v t
+
 val keepU:
     'v t ->
     (key -> 'v -> bool [@bs]) ->
