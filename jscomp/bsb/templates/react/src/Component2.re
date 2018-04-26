@@ -33,15 +33,12 @@ let make = (~greeting, _children) => {
       "You've clicked this " ++ string_of_int(self.state.count) ++ " times(s)";
     <div>
       <button onClick=(_event => self.send(Click))>
-        (ReasonReact.stringToElement(message))
+        (ReasonReact.string(message))
       </button>
       <button onClick=(_event => self.send(Toggle))>
-        (ReasonReact.stringToElement("Toggle greeting"))
+        (ReasonReact.string("Toggle greeting"))
       </button>
-      (
-        self.state.show ?
-          ReasonReact.stringToElement(greeting) : ReasonReact.nullElement
-      )
+      (self.state.show ? ReasonReact.string(greeting) : ReasonReact.null)
     </div>;
   },
 };
