@@ -65,6 +65,8 @@ let _ = Js.log target
 *)
 external assign : < .. > Js.t -> < .. > Js.t -> < .. > Js.t = "Object.assign" [@@bs.val]
 
+external assign3 : < .. > Js.t -> < .. > Js.t -> < .. > Js.t -> < .. > Js.t = "Object.assign" [@@bs.val]
+
 (* TODO:
 
 Should we map this API as directly as possible, provide some abstractions, or deliberately nerf it?
