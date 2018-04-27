@@ -5,10 +5,10 @@
                  <link rel="stylesheet" href="../api_static/style.css" type="text/css">
                  <script src="../api_static//highlight.pack.js"></script>
                  <script src="../api_static//script.js"></script>
-                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <script>hljs.initHighlightingOnLoad();</script>
                  <meta charset="utf8">
                  <link rel="previous" href="Belt_Set.String.html">
-                 <title> Belt_Set.Dict </title></head> 
+                 <title> Belt_Set.Dict </title></head>
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
@@ -99,12 +99,12 @@
 
 <pre><span class="keyword">module</span> Dict: <code class="type"><a href="Belt_SetDict.html">Belt_SetDict</a></code></pre><div class="info module top">
                     <div class="not-examples">
-                    This module seprate identity from data, it is a bit more verbsoe but slightly
+                    This module seprate identity from data, it is a bit more verboe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation<br>
- 
+
                     </div>
-                    
+
                     </div>
 
                   <hr width="100%">
@@ -127,22 +127,22 @@
 <pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">('k, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'k -> cmp:('k, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('k, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">add s x</code> If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALmergeMany"><span class="keyword">val</span> mergeMany</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value array -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">remove m x</code> If <code class="code">x</code> was not in <code class="code">m</code>, <code class="code">m</code> is returned reference unchanged.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALremoveMany"><span class="keyword">val</span> removeMany</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value array -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALunion"><span class="keyword">val</span> union</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALintersect"><span class="keyword">val</span> intersect</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
@@ -152,67 +152,67 @@
                     <div class="not-examples">
                     Total ordering between sets. Can be used as the ordering function
     for doing sets of sets.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> bool</code></pre>
 <pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> unit [@bs]) -> unit</code></pre>
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> unit) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">forEach s f</code> applies <code class="code">f</code> in turn to all elements of <code class="code">s</code>.
     In increasing order<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'a -> ('a -> 'value -> 'a [@bs]) -> 'a</code></pre>
 <pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'a -> ('a -> 'value -> 'a) -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     In increasing order.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALeveryU"><span class="keyword">val</span> everyU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">every p s</code> checks if all elements of the set
     satisfy the predicate <code class="code">p</code>. Order unspecified<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">some p s</code> checks if at least one element of
     the set satisfies the predicate <code class="code">p</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALkeepU"><span class="keyword">val</span> keepU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value -> bool [@bs]) -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALkeep"><span class="keyword">val</span> keep</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value -> bool) -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">keep m p</code> returns the set of all elements in <code class="code">s</code>
     that satisfy predicate <code class="code">p</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value -> bool [@bs]) -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> * ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value -> bool) -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> * ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
@@ -220,22 +220,22 @@
     <code class="code">s1</code> is the set of all the elements of <code class="code">s</code> that satisfy the
     predicate <code class="code">p</code>, and <code class="code">s2</code> is the set of all the elements of
     <code class="code">s</code> that do not satisfy <code class="code">p</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'value list</code></pre><div class="info ">
                     <div class="not-examples">
                     In increasing order<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'value array</code></pre>
 <pre><span id="VALminimum"><span class="keyword">val</span> minimum</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'value option</code></pre>
 <pre><span id="VALminUndefined"><span class="keyword">val</span> minUndefined</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'value <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre>
@@ -248,9 +248,9 @@
 <pre><span id="VALcheckInvariantInternal"><span class="keyword">val</span> checkInvariantInternal</span> : <code class="type">('a, 'b) <a href="Belt_SetDict.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <b>raise</b> when invariant is not held<br>
- 
+
                     </div>
-                    
+
                     </div>
 
                   </body></html>

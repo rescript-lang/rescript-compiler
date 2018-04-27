@@ -13,14 +13,14 @@
 (***********************************************************************)
 
 (** specalized when key type is [int], more efficient
-    than the gerneic type
+    than the generic type
 *)
 module Int = Belt_MapInt
 (** specalized when key type is [string], more efficient
-    than the gerneic type *)
+    than the generic type *)
 module String = Belt_MapString
 
-(** seprate function from data, a more verbsoe but slightly
+(** seprate function from data, a more verboe but slightly
     more efficient
 *)
 module Dict = Belt_MapDict

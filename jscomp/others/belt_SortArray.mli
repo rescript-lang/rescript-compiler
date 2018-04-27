@@ -1,6 +1,6 @@
 
 (* Copyright (C) 2017 Authors of BuckleScript
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,21 +27,21 @@
 
 module Int = Belt_SortArrayInt
 (** Specalized when key type is [int], more efficient
-    than the gerneic type *)
+    than the generic type *)
 
-module String = Belt_SortArrayString  
+module String = Belt_SortArrayString
 (** Specalized when key type is [string], more efficient
-    than the gerneic type *)  
+    than the generic type *)
 
 
-val strictlySortedLengthU: 
-  'a array -> 
-  ('a -> 'a -> bool [@bs]) -> 
+val strictlySortedLengthU:
+  'a array ->
+  ('a -> 'a -> bool [@bs]) ->
   int
-val strictlySortedLength: 
-  'a array -> 
-  ('a -> 'a -> bool) -> 
-  int   
+val strictlySortedLength:
+  'a array ->
+  ('a -> 'a -> bool) ->
+  int
 (**
   [strictlySortedLenght xs cmp]
   return [+n] means increasing order
@@ -52,12 +52,12 @@ val strictlySortedLength:
      strictlySortedLength [||] (fun x y -> x < y) = 0;;
      strictlySortedLength [|1|] (fun x y -> x < y) = 1;;
      strictlySortedLength [|4;3;2;1|] (fun x y -> x < y) = -4;;
-  ]} 
-*)  
+  ]}
+*)
 
 val isSortedU: 'a array -> ('a -> 'a -> int [@bs]) -> bool
-val isSorted: 'a array -> ('a -> 'a -> int) -> bool  
-(** [isSorted arr cmp]  
+val isSorted: 'a array -> ('a -> 'a -> int) -> bool
+(** [isSorted arr cmp]
     @return true if array is increasingly sorted (equal is okay )
     @example {[
      isSorted [|1;1;2;3;4|] (fun x y -> compare x y)) = true
@@ -70,10 +70,10 @@ val stableSortInPlaceBy: 'a array -> ('a -> 'a -> int ) -> unit
 
     Sort xs in place using comparator [cmp], the stable means if the elements
     are equal, their order will be preserved
-*)  
+*)
 
 val stableSortByU: 'a array -> ('a -> 'a -> int [@bs]) -> 'a array
-val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array    
+val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
 (** [stableSort xs cmp]
     @return a fresh array
 
@@ -85,15 +85,15 @@ val stableSortBy: 'a array -> ('a -> 'a -> int) -> 'a array
 val binarySearchByU:
   'a array -> 'a -> ('a -> 'a -> int [@bs]) -> int
 val binarySearchBy:
-  'a array -> 'a -> ('a -> 'a -> int ) -> int   
+  'a array -> 'a -> ('a -> 'a -> int ) -> int
 (**
 
-  If value is not found and value is less than one or more elements in array, 
-  the negative number returned is the bitwise complement of the index of the first element 
-  that is larger than value. 
-  
+  If value is not found and value is less than one or more elements in array,
+  the negative number returned is the bitwise complement of the index of the first element
+  that is larger than value.
+
   If value is not found and value is greater than all elements in array,
-  the negative number returned is the bitwise complement of 
+  the negative number returned is the bitwise complement of
   (the index of the last element plus 1)
 
   for example, if [key] is smaller than all elements return [-1] since [lnot (-1) = 0]
@@ -106,14 +106,14 @@ val binarySearchBy:
 *)
 
 (**/**)
-val unionU:   
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
+val unionU:
+  'a array -> int -> int ->
+  'a array -> int -> int ->
   'a array -> int -> ('a -> 'a -> int [@bs])
   -> int
-val union:   
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
+val union:
+  'a array -> int -> int ->
+  'a array -> int -> int ->
   'a array -> int -> ('a -> 'a -> int )
   -> int
 (**
@@ -121,30 +121,30 @@ val union:
   assume [src] and [src2] is strictly sorted.
   for equivalent elements, it is picked from [src]
   also assume that [dst] is large enough to store all elements
-*)  
+*)
 
-val intersectU:   
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
+val intersectU:
+  'a array -> int -> int ->
+  'a array -> int -> int ->
   'a array -> int -> ('a -> 'a -> int [@bs])
   -> int
-val intersect:   
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
+val intersect:
+  'a array -> int -> int ->
+  'a array -> int -> int ->
   'a array -> int -> ('a -> 'a -> int )
-  -> int  
-(** [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]   
+  -> int
+(** [union src src1ofs src1len src2 src2ofs src2len dst dstofs cmp]
   return the [offset] in the output array
 *)
 
-val diffU: 
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
+val diffU:
+  'a array -> int -> int ->
+  'a array -> int -> int ->
   'a array -> int -> ('a -> 'a -> int [@bs])
   -> int
-val diff: 
-  'a array -> int -> int -> 
-  'a array -> int -> int -> 
+val diff:
+  'a array -> int -> int ->
+  'a array -> int -> int ->
   'a array -> int -> ('a -> 'a -> int)
-  -> int  
+  -> int
 (**/**)

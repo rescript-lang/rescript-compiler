@@ -5,10 +5,10 @@
                  <link rel="stylesheet" href="../api_static/style.css" type="text/css">
                  <script src="../api_static//highlight.pack.js"></script>
                  <script src="../api_static//script.js"></script>
-                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <script>hljs.initHighlightingOnLoad();</script>
                  <meta charset="utf8">
                  <link rel="previous" href="Belt_Map.String.html">
-                 <title> Belt_Map.Dict </title></head> 
+                 <title> Belt_Map.Dict </title></head>
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
@@ -99,15 +99,15 @@
 
 <pre><span class="keyword">module</span> Dict: <code class="type"><a href="Belt_MapDict.html">Belt_MapDict</a></code></pre><div class="info module top">
                     <div class="not-examples">
-                    This module seprate identity from data, it is a bit more verbsoe but slightly
+                    This module seprate identity from data, it is a bit more verboe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation
 <p>
 
     <b>Advanced usage only</b><br>
- 
+
                     </div>
-                    
+
                     </div>
 
                   <hr width="100%">
@@ -132,12 +132,12 @@
     equal, that is, contain equal keys and associate them with
     equal data.  <code class="code">cmp</code> is the equality predicate used to compare
     the data associated with the keys.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('k -> 'a -> unit [@bs]) -> unit</code></pre>
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('k -> 'a -> unit) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
@@ -145,56 +145,56 @@
     <code class="code">f</code> receives the 'k as first argument, and the associated value
     as second argument.  The bindings are passed to <code class="code">f</code> in increasing
     order with respect to the ordering over the type of the keys.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> 'b -> ('b -> 'k -> 'a -> 'b [@bs]) -> 'b</code></pre>
 <pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> 'b -> ('b -> 'k -> 'a -> 'b) -> 'b</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">reduce m a f</code> computes <code class="code">(f kN dN ... (f k1 d1 a)...)</code>,
     where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">m</code>
     (in increasing order), and <code class="code">d1 ... dN</code> are the associated data.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALeveryU"><span class="keyword">val</span> everyU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('k -> 'a -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('k -> 'a -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">every m p</code> checks if all the bindings of the map
     satisfy the predicate <code class="code">p</code>. Order unspecified<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('k -> 'a -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('k -> 'a -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">some m p</code> checks if at least one binding of the map
     satisfy the predicate <code class="code">p</code>. Order unspecified<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('k * 'a) list</code></pre><div class="info ">
                     <div class="not-examples">
                     In increasing order<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('k * 'a) array</code></pre>
 <pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">('k * 'a) array -><br>       cmp:('k, 'id) <a href="Belt_MapDict.html#TYPEcmp">cmp</a> -> ('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">('k * 'a) array -><br>       cmp:('k, 'id) <a href="Belt_MapDict.html#TYPEcmp">cmp</a> -> ('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre>
@@ -215,12 +215,12 @@
 <pre><span id="VALcheckInvariantInternal"><span class="keyword">val</span> checkInvariantInternal</span> : <code class="type">('a, 'b, 'c) <a href="Belt_MapDict.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <b>raise</b> when invariant is not held<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type">('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       'a -> cmp:('a, 'id) <a href="Belt_MapDict.html#TYPEcmp">cmp</a> -> ('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALremoveMany"><span class="keyword">val</span> removeMany</span> : <code class="type">('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       'a array -> cmp:('a, 'id) <a href="Belt_MapDict.html#TYPEcmp">cmp</a> -> ('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       'a -> 'b -> cmp:('a, 'id) <a href="Belt_MapDict.html#TYPEcmp">cmp</a> -> ('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre>
@@ -234,12 +234,12 @@
                     <div class="not-examples">
                     <code class="code">keep m p</code> returns the map with all the bindings in <code class="code">m</code>
     that satisfy predicate <code class="code">p</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       ('k -> 'a -> bool [@bs]) -><br>       ('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> * ('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       ('k -> 'a -> bool) -><br>       ('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> * ('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
@@ -247,12 +247,12 @@
     <code class="code">m1</code> contains all the bindings of <code class="code">s</code> that satisfy the
     predicate <code class="code">p</code>, and <code class="code">m2</code> is the map with all the bindings of
     <code class="code">s</code> that do not satisfy <code class="code">p</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       'a -><br>       cmp:('a, 'id) <a href="Belt_MapDict.html#TYPEcmp">cmp</a> -><br>       (('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> * ('a, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a>) * 'b option</code></pre>
 <pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       ('a -> 'b [@bs]) -> ('k, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -> ('a -> 'b) -> ('k, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre><div class="info ">
@@ -262,11 +262,11 @@
     replaced by the result of the application of <code class="code">f</code> to <code class="code">a</code>.
     The bindings are passed to <code class="code">f</code> in increasing order
     with respect to the ordering over the type of the keys.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALmapWithKeyU"><span class="keyword">val</span> mapWithKeyU</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       ('k -> 'a -> 'b [@bs]) -> ('k, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALmapWithKey"><span class="keyword">val</span> mapWithKey</span> : <code class="type">('k, 'a, 'id) <a href="Belt_MapDict.html#TYPEt">t</a> -><br>       ('k -> 'a -> 'b) -> ('k, 'b, 'id) <a href="Belt_MapDict.html#TYPEt">t</a></code></pre></body></html>
