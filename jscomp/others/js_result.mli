@@ -22,6 +22,5 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-type (+'good, +'bad) t =
-  | Ok of 'good
-  | Error of 'bad
+type ('a, 'b) t = ('a, 'b) Belt_Result.t = Ok of 'a | Error of 'b
+[@@ocaml.deprecated "Please use `Belt.Result.t` instead"]
