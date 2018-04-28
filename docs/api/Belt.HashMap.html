@@ -5,10 +5,10 @@
                  <link rel="stylesheet" href="../api_static/style.css" type="text/css">
                  <script src="../api_static//highlight.pack.js"></script>
                  <script src="../api_static//script.js"></script>
-                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <script>hljs.initHighlightingOnLoad();</script>
                  <meta charset="utf8">
                  <link rel="previous" href="Belt.HashSet.html"><link rel="next" href="Belt.Option.html">
-                 <title> Belt.HashMap </title></head> 
+                 <title> Belt.HashMap </title></head>
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
@@ -108,25 +108,25 @@
 
     It also has two specialized inner modules
     <code class="code">Belt.HashMap.Int</code> and <code class="code">Belt.HashMap.String</code><br>
- 
+
                     </div>
-                    
+
                     </div>
 
                   <hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_HashMap.Int.html">Int</a>: <code class="type"><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Belt_HashMap.Int.html">Int</a>: <code class="type"><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></code></pre> <div class="info">
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
-    than the gerneic type<br>
- 
+    than the generic type<br>
+
                 </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Belt_HashMap.String.html">String</a>: <code class="type"><a href="Belt_HashMapString.html">Belt_HashMapString</a></code></pre> <div class="info">                     
+                </div>
+<pre><span class="keyword">module</span> <a href="Belt_HashMap.String.html">String</a>: <code class="type"><a href="Belt_HashMapString.html">Belt_HashMapString</a></code></pre> <div class="info">
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
-    than the gerneic type<br>
- 
+    than the generic type<br>
+
                 </div>
                 </div> <div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('key, 'value, 'id)</code> t</span> </pre>
@@ -134,12 +134,12 @@
 <div class="info ">
                     <div class="not-examples">
                     The type of hash tables from type <code class="code">'key</code> to type <code class="code">'value</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <div class="type-declaration">
 <pre><span id="TYPEid"><span class="keyword">type</span> <code class="type">('a, 'id)</code> id</span> = <code class="type">('a, 'id) <a href="Belt_Id.html#TYPEhashable">Belt_Id.hashable</a></code> </pre>
 </div>
@@ -149,35 +149,35 @@
 <pre><span id="VALclear"><span class="keyword">val</span> clear</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     Empty a hash table.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALisEmpty"><span class="keyword">val</span> isEmpty</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> bool</code></pre>
 <pre><span id="VALset"><span class="keyword">val</span> set</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">set tbl k v</code> if <code class="code">k</code> does not exist,
      add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
      <code class="code">v</code><br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALcopy"><span class="keyword">val</span> copy</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a></code></pre>
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> 'value option</code></pre>
 <pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">has tbl x</code> checks if <code class="code">x</code> is bound in <code class="code">tbl</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key -> unit</code></pre>
 <pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key -> 'value -> unit [@bs]) -> unit</code></pre>
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key -> 'value -> unit) -> unit</code></pre><div class="info ">
@@ -185,12 +185,12 @@
                     <code class="code">forEach tbl f</code> applies <code class="code">f</code> to all bindings in table <code class="code">tbl</code>.
     <code class="code">f</code> receives the key as first argument, and the associated value
     as second argument. Each binding is presented exactly once to <code class="code">f</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -><br>       'c -> ('c -> 'key -> 'value -> 'c [@bs]) -> 'c</code></pre>
 <pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -><br>       'c -> ('c -> 'key -> 'value -> 'c) -> 'c</code></pre><div class="info ">
                     <div class="not-examples">
@@ -205,24 +205,24 @@
     However, if the table contains several bindings for the same key,
     they are passed to <code class="code">f</code> in reverse order of introduction, that is,
     the most recent binding is passed first.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALkeepMapInPlaceU"><span class="keyword">val</span> keepMapInPlaceU</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -><br>       ('key -> 'value -> 'value option [@bs]) -> unit</code></pre>
 <pre><span id="VALkeepMapInPlace"><span class="keyword">val</span> keepMapInPlace</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -><br>       ('key -> 'value -> 'value option) -> unit</code></pre>
 <pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type">('a, 'b, 'c) <a href="Belt_HashMap.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">size tbl</code> returns the number of bindings in <code class="code">tbl</code>.
     It takes constant time.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type">('key, 'value, 'id) <a href="Belt_HashMap.html#TYPEt">t</a> -> ('key * 'value) array</code></pre>
 <pre><span id="VALkeysToArray"><span class="keyword">val</span> keysToArray</span> : <code class="type">('key, 'a, 'b) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'key array</code></pre>
 <pre><span id="VALvaluesToArray"><span class="keyword">val</span> valuesToArray</span> : <code class="type">('a, 'value, 'b) <a href="Belt_HashMap.html#TYPEt">t</a> -> 'value array</code></pre>

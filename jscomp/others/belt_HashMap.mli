@@ -30,7 +30,7 @@
 
     For example:
     {[
-      type t = int 
+      type t = int
       module I0 =
         (val Belt.Id.hashableU
             ~hash:(fun[\@bs] (a : t)  -> a & 0xff_ff)
@@ -70,18 +70,18 @@
 
 
 (** Specalized when key type is [int], more efficient
-    than the gerneic type *)
+    than the generic type *)
 module Int = Belt_HashMapInt
 
 
 (** Specalized when key type is [string], more efficient
-    than the gerneic type *)  
+    than the generic type *)
 module String = Belt_HashMapString
 
 
 
 
-type ('key,'value,'id) t 
+type ('key,'value,'id) t
 (** The type of hash tables from type ['key] to type ['value]. *)
 
 type ('a, 'id) id = ('a, 'id) Belt_Id.hashable
@@ -93,19 +93,19 @@ val make:  hintSize:int -> id:('key, 'id) id -> ('key,'value,'id) t
 val clear: ('key, 'value, 'id ) t -> unit
 (** Empty a hash table. *)
 
-val isEmpty: _ t -> bool  
+val isEmpty: _ t -> bool
 
 val set: ('key, 'value, 'id ) t -> 'key -> 'value -> unit
 (** [set tbl k v] if [k] does not exist,
      add the binding [k,v], otherwise, update the old value with the new
      [v]
 *)
-  
+
 val copy: ('key, 'value, 'id ) t -> ('key, 'value, 'id ) t
-    
+
 val get: ('key, 'value, 'id ) t -> 'key -> 'value option
 
-  
+
 val has: ('key, 'value, 'id ) t -> 'key -> bool
 (** [has tbl x] checks if [x] is bound in [tbl]. *)
 
@@ -137,7 +137,7 @@ val keepMapInPlaceU: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option 
 val keepMapInPlace: ('key, 'value, 'id ) t -> ('key -> 'value -> 'value option ) ->  unit
 
 
-val size: _ t -> int  
+val size: _ t -> int
 (** [size tbl] returns the number of bindings in [tbl].
     It takes constant time. *)
 
@@ -146,14 +146,14 @@ val size: _ t -> int
 
 
 
-val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array 
-val keysToArray: ('key, _, _) t -> 'key array    
-val valuesToArray: (_,'value,_) t -> 'value array    
-val fromArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t    
+val toArray: ('key, 'value, 'id ) t -> ('key * 'value) array
+val keysToArray: ('key, _, _) t -> 'key array
+val valuesToArray: (_,'value,_) t -> 'value array
+val fromArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t
 val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
 val getBucketHistogram: _ t -> int array
 val logStats: _ t -> unit
 
-val ofArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t    
+val ofArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t
 [@@ocaml.deprecated "Use fromArray instead"]
 

@@ -49,17 +49,17 @@
 *)
 
 (** Specalized when value type is [int], more efficient
-    than the gerneic type, its compare behavior is fixed using the built-in comparison
+    than the generic type, its compare behavior is fixed using the built-in comparison
 *)
 module Int = Belt_SetInt
 
 (** Specalized when value type is [string], more efficient
-    than the gerneic type, its compare behavior is fixed using the built-in comparison
+    than the generic type, its compare behavior is fixed using the built-in comparison
 *)
 module String = Belt_SetString
 
 
-(** This module seprate identity from data, it is a bit more verbsoe but slightly
+(** This module seprate identity from data, it is a bit more verboe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation
 *)

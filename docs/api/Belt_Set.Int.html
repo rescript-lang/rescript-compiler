@@ -5,10 +5,10 @@
                  <link rel="stylesheet" href="../api_static/style.css" type="text/css">
                  <script src="../api_static//highlight.pack.js"></script>
                  <script src="../api_static//script.js"></script>
-                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <script>hljs.initHighlightingOnLoad();</script>
                  <meta charset="utf8">
                  <link rel="next" href="Belt_Set.String.html">
-                 <title> Belt_Set.Int </title></head> 
+                 <title> Belt_Set.Int </title></head>
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
@@ -100,10 +100,10 @@
 <pre><span class="keyword">module</span> Int: <code class="type"><a href="Belt_SetInt.html">Belt_SetInt</a></code></pre><div class="info module top">
                     <div class="not-examples">
                     Specalized when value type is <code class="code">int</code>, more efficient
-    than the gerneic type, its compare behavior is fixed using the built-in comparison<br>
- 
+    than the generic type, its compare behavior is fixed using the built-in comparison<br>
+
                     </div>
-                    
+
                     </div>
 
                   <hr width="100%">
@@ -113,24 +113,24 @@
 <div class="info ">
                     <div class="not-examples">
                     The type of the set elements.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <div class="type-declaration">
 <pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
 </div>
 <div class="info ">
                     <div class="not-examples">
                     The type of sets.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a></code></pre>
 <pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type"><a href="Belt_SetInt.html#TYPEvalue">value</a> array -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre>
@@ -142,22 +142,22 @@
 <pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEvalue">value</a> -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALmergeMany"><span class="keyword">val</span> mergeMany</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEvalue">value</a> array -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre>
 <pre><span id="VALremove"><span class="keyword">val</span> remove</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEvalue">value</a> -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     If <code class="code">x</code> was not in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALremoveMany"><span class="keyword">val</span> removeMany</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEvalue">value</a> array -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre>
 <pre><span id="VALunion"><span class="keyword">val</span> union</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre>
 <pre><span id="VALintersect"><span class="keyword">val</span> intersect</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre>
@@ -166,85 +166,85 @@
                     <div class="not-examples">
                     <code class="code">subset s1 s2</code> tests whether the set <code class="code">s1</code> is a subset of
    the set <code class="code">s2</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEt">t</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     Total ordering between sets. Can be used as the ordering function
    for doing sets of sets.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">eq s1 s2</code> tests whether the sets <code class="code">s1</code> and <code class="code">s2</code> are
    equal, that is, contain equal elements.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> unit [@bs]) -> unit</code></pre>
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> unit) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     In increasing order<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> 'a -> ('a -> <a href="Belt_SetInt.html#TYPEvalue">value</a> -> 'a [@bs]) -> 'a</code></pre>
 <pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> 'a -> ('a -> <a href="Belt_SetInt.html#TYPEvalue">value</a> -> 'a) -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
                     Iterate in increasing order.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALeveryU"><span class="keyword">val</span> everyU</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">every p s</code> checks if all elements of the set
    satisfy the predicate <code class="code">p</code>. Order unspecified.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALsomeU"><span class="keyword">val</span> someU</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> bool [@bs]) -> bool</code></pre>
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">some p s</code> checks if at least one element of
    the set satisfies the predicate <code class="code">p</code>. Oder unspecified.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALkeepU"><span class="keyword">val</span> keepU</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> bool [@bs]) -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre>
 <pre><span id="VALkeep"><span class="keyword">val</span> keep</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> bool) -> <a href="Belt_SetInt.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">keep p s</code> returns the set of all elements in <code class="code">s</code>
    that satisfy predicate <code class="code">p</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -><br>       (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> bool [@bs]) -> <a href="Belt_SetInt.html#TYPEt">t</a> * <a href="Belt_SetInt.html#TYPEt">t</a></code></pre>
 <pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> (<a href="Belt_SetInt.html#TYPEvalue">value</a> -> bool) -> <a href="Belt_SetInt.html#TYPEt">t</a> * <a href="Belt_SetInt.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
@@ -252,22 +252,22 @@
    <code class="code">s1</code> is the set of all the elements of <code class="code">s</code> that satisfy the
    predicate <code class="code">p</code>, and <code class="code">s2</code> is the set of all the elements of
    <code class="code">s</code> that do not satisfy <code class="code">p</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALsize"><span class="keyword">val</span> size</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> int</code></pre>
 <pre><span id="VALtoList"><span class="keyword">val</span> toList</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEvalue">value</a> list</code></pre><div class="info ">
                     <div class="not-examples">
                     In increasing order with respect<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALtoArray"><span class="keyword">val</span> toArray</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEvalue">value</a> array</code></pre>
 <pre><span id="VALminimum"><span class="keyword">val</span> minimum</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEvalue">value</a> option</code></pre>
 <pre><span id="VALminUndefined"><span class="keyword">val</span> minUndefined</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> <a href="Belt_SetInt.html#TYPEvalue">value</a> <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre>
@@ -285,18 +285,18 @@
       strictly greater than <code class="code">x</code>;
       <code class="code">present</code> is <code class="code">false</code> if <code class="code">s</code> contains no element equal to <code class="code">x</code>,
       or <code class="code">true</code> if <code class="code">s</code> contains an element equal to <code class="code">x</code>.<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALcheckInvariantInternal"><span class="keyword">val</span> checkInvariantInternal</span> : <code class="type"><a href="Belt_SetInt.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <b>raise</b> when invariant is not held<br>
- 
+
                     </div>
-                    
+
                     </div>
 
                   </body></html>
