@@ -105,3 +105,5 @@ let syntax_only = ref false
 let binary_ast = ref false
 
 let bs_suffix = ref false 
+
+let debug = ref false

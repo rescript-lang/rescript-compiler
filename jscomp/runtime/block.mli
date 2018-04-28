@@ -29,3 +29,11 @@
 (** *)
 
 val __ : int -> Obj.t -> Obj.t
+
+val record : 'a -> Obj.t -> Obj.t
+
+val variant : 'a -> Obj.t -> Obj.t
+
+val localModule : 'a -> Obj.t -> Obj.t 
+
+val polyVar : 'a -> Obj.t -> Obj.t

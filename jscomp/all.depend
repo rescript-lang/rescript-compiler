@@ -488,8 +488,8 @@ core/lam_compile_context.cmx : core/lam_stats.cmx core/lam.cmx core/j.cmx \
 core/js_map.cmx : core/j.cmx
 core/js_fold.cmx : core/j.cmx
 core/js_fold_basic.cmx : core/lam_module_ident.cmx \
-    core/js_runtime_modules.cmx core/js_fold.cmx core/j.cmx ext/ident_set.cmx \
-    core/js_fold_basic.cmi
+    core/js_runtime_modules.cmx core/js_fold.cmx common/js_config.cmx \
+    core/j.cmx ext/ident_set.cmx core/js_fold_basic.cmi
 core/js_pass_scope.cmx : core/js_fun_env.cmx core/js_fold.cmx \
     core/js_closure.cmx ext/ident_set.cmx common/ext_log.cmx ext/ext_list.cmx \
     core/js_pass_scope.cmi
@@ -595,9 +595,10 @@ core/js_dump_import_export.cmx : core/js_dump_string.cmx \
     core/js_dump_import_export.cmi
 core/js_dump.cmx : core/js_stmt_make.cmx core/js_runtime_modules.cmx \
     core/js_op_util.cmx core/js_op.cmx core/js_number.cmx core/js_fun_env.cmx \
-    core/js_exp_make.cmx core/js_dump_string.cmx core/js_dump_property.cmx \
-    core/js_dump_lit.cmx core/js_closure.cmx core/j.cmx ext/ident_set.cmx \
-    ext/ext_pp_scope.cmx ext/ext_pp.cmx ext/ext_list.cmx ext/ext_ident.cmx \
+    core/js_fold_basic.cmx core/js_exp_make.cmx core/js_dump_string.cmx \
+    core/js_dump_property.cmx core/js_dump_lit.cmx common/js_config.cmx \
+    core/js_closure.cmx core/j.cmx ext/ident_set.cmx ext/ext_pp_scope.cmx \
+    ext/ext_pp.cmx ext/ext_list.cmx ext/ext_ident.cmx ext/ext_array.cmx \
     core/js_dump.cmi
 core/js_name_of_module_id.cmx : core/lam_compile_env.cmx \
     core/js_packages_state.cmx core/js_packages_info.cmx \

@@ -798,25 +798,66 @@ and
     ->
     (* Note that, if we ignore more than tag [0] we loose some information
        with regard tag  *)
-    begin match tag.expression_desc, tag_info with
 
-      | Number (Int { i = 0l ; _})  ,
-        (Blk_tuple | Blk_array | Blk_variant _ | Blk_record _ | Blk_na | Blk_module _
-        |  Blk_constructor (_, 1) (* Sync up with {!Js_dump}*)
-        )
-        -> expression_desc cxt l f  (Array (el, mutable_flag))
       (* TODO: for numbers like 248, 255 we can reverse engineer to make it
          [Obj.xx_flag], but we can not do this in runtime libraries
       *)
 
-      | _, _
-        ->
-        P.string f L.caml_block;
-        P.string f L.dot ;
-        P.string f L.caml_block_create;
-        P.paren_group f 1
-          (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
-    end
+      if Js_fold_basic.needBlockRuntime tag tag_info then begin 
+        match tag_info with 
+        | Blk_record labels ->
+          P.string f L.caml_block;
+          P.string f L.dot ;
+          P.string f L.block_record;
+          P.paren_group f 1 
+          (fun _ -> arguments cxt f 
+            [E.array Immutable
+             (Ext_array.to_list_f E.str labels);
+              E.array mutable_flag 
+              (List.map (fun (x : J.expression)   -> {x with comment = None}) el) ]
+          )
+        | Blk_module (Some labels) ->         
+          P.string f L.caml_block;
+          P.string f L.dot ;
+          P.string f L.block_local_module;
+          P.paren_group f 1 
+          (fun _ -> arguments cxt f 
+            [E.array Immutable
+             (Ext_list.map E.str labels);
+              E.array mutable_flag
+              (List.map (fun (x :J.expression) -> {x with comment = None}) el)
+            ]
+          )
+         | Blk_variant name ->  
+          P.string f L.caml_block;
+          P.string f L.dot ;
+          P.string f L.block_poly_var;
+          P.paren_group f 1 
+          (fun _ -> arguments cxt f 
+            [ 
+              E.str name;
+              E.array mutable_flag el]
+          )        
+         | Blk_constructor(name,_) when !Js_config.debug ->
+           P.string f L.caml_block;
+          P.string f L.dot ;
+          P.string f L.block_variant;
+          P.paren_group f 1 
+          (fun _ -> arguments cxt f 
+            [E.str name; E.array mutable_flag el]) 
+       
+        | _ ->
+        begin 
+          P.string f L.caml_block;
+          P.string f L.dot ;
+          P.string f L.caml_block_create;
+          P.paren_group f 1
+            (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
+        end 
+      end 
+      else     
+          expression_desc cxt l f  (Array (el, mutable_flag))
+
   | Caml_block_tag e ->
     P.group f 1 (fun _ ->
         let cxt = expression 15 cxt f  e in
