@@ -9101,7 +9101,7 @@ val binary_ast : bool ref
 
 
 val bs_suffix : bool ref
-
+val debug : bool ref
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -9211,6 +9211,8 @@ let syntax_only = ref false
 let binary_ast = ref false
 
 let bs_suffix = ref false 
+
+let debug = ref false
 end
 module Bs_warnings : sig 
 #1 "bs_warnings.mli"
@@ -11969,6 +11971,7 @@ val range : int -> int -> int array
 
 val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
+val to_list_f : ('a -> 'b) -> 'a array -> 'b list 
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
@@ -12103,6 +12106,13 @@ let map2i f a b =
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
+let rec tolist_f_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_f_aux a f  (i - 1)
+      (f v :: res)
+       
+let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
   if i < 0 then res else

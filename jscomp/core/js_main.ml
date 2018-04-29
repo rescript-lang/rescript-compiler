@@ -145,6 +145,11 @@ let buckle_script_flags : (string * Arg.spec * string) list =
    " (experimental) Set the string to be evaluated, note this flag will be conflicted with -bs-main"
   )
   ::
+  ("-bs-g",
+    Arg.Set Js_config.debug,
+    " debug mode"
+  )
+  ::
   (
     "-bs-sort-imports",
     Arg.Set Js_config.sort_imports,

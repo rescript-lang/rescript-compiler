@@ -191,6 +191,7 @@ val range : int -> int -> int array
 
 val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
+val to_list_f : ('a -> 'b) -> 'a array -> 'b list 
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
@@ -325,6 +326,13 @@ let map2i f a b =
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
+let rec tolist_f_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_f_aux a f  (i - 1)
+      (f v :: res)
+       
+let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
   if i < 0 then res else
@@ -12570,7 +12578,7 @@ let output_ninja_and_namespace_map
             let dir_index = (dir_index :> int) in 
             bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
-            Ext_list.map_append (fun x -> dir//x) resources  resources
+            Ext_list.map_append (fun x -> dir//x) resources  acc_resources
           ) [] bs_file_groups in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
       has_reason_files := Bsb_db.sanity_check lib || !has_reason_files;

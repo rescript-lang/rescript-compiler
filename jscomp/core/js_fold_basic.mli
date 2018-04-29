@@ -27,7 +27,10 @@
 
 
 
-
+ val needBlockRuntime : 
+    J.expression ->
+    J.tag_info ->   
+    bool
 
 (** A module to calculate hard dependency based on JS IR in module [J] *)
 

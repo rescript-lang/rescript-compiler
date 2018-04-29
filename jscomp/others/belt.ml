@@ -244,3 +244,8 @@ module HashMap = Belt_HashMap
 module Option = Belt_Option
 
 
+(** {!Belt.Debug}
+
+    Utilities for set up debugging    
+*)
+module Debug = Belt_Debug

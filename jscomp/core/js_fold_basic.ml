@@ -25,10 +25,52 @@
 
 
 
+ let needBlockRuntimeInDebugMode 
+  (tag : J.expression)
+  (tag_info : J.tag_info) = 
+  match tag_info with 
+  | Blk_variant _ 
+  | Blk_module _    
+  | Blk_record _   
+  | Blk_constructor _   -> true
+  | Blk_tuple 
+  | Blk_array   
+  | Blk_exception 
+  | Blk_extension  -> false 
+  | Blk_na  ->  
+    begin match tag.expression_desc with 
+    | Number (Int { i = 0l ; _})
+       ->
+      false
+     | _ -> true 
+    end     
 
+let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) = 
+  match  tag_info with 
+  | Blk_module _
+  | Blk_record _  
+  | Blk_constructor (_, 1)    
+  | Blk_variant _ 
+  | Blk_na   
+  | Blk_tuple 
+  | Blk_array   
+    -> 
+    begin match tag.expression_desc with 
+    | Number (Int { i = 0l ; _})
+       ->
+      false
+     | _ -> true 
+    end     
+  | Blk_constructor _   -> true
+  | Blk_exception 
+  | Blk_extension  -> false 
+    (* converted to [Pcreate_extension] in the beginning*)
+ 
 
-
-
+let needBlockRuntime tag info = 
+  if !Js_config.debug then 
+    needBlockRuntimeInDebugMode tag info
+  else needBlockRuntimeInReleaseMode tag info  
 
 class count_deps (add : Ident.t -> unit )  = 
   object(self)
@@ -76,18 +118,11 @@ class count_hard_dependencies =
         super#expression x             
       | {expression_desc = Caml_block(_,_, tag, tag_info); _}
         -> 
-        begin match tag.expression_desc, tag_info with 
-          | Number (Int { i = 0l ; _})  , 
-            (Blk_tuple | Blk_array | Blk_variant _ | Blk_record _ | Blk_na | Blk_module _
-            |  Blk_constructor (_, 1)
-            )  (*Sync up with {!Js_dump}*)
-            -> ()
-          | _, _
-            -> 
-            add_lam_module_ident hard_dependencies 
+        if needBlockRuntime tag tag_info then
+          add_lam_module_ident hard_dependencies 
               (Lam_module_ident.of_runtime               
-                (Ident.create_persistent Js_runtime_modules.block));
-        end;
+                (Ident.create_persistent Js_runtime_modules.block))
+        ;
         super#expression x 
       | _ -> super#expression x
     method get_hard_dependencies = hard_dependencies

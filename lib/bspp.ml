@@ -3463,7 +3463,7 @@ let report_error ppf = function
   | Unterminated_paren_in_conditional ->
     fprintf ppf "Unterminated parens in conditional predicate"
   | Expect_hash_then_in_conditional -> 
-      fprintf ppf "Expect `then` after conditioal predicate"
+      fprintf ppf "Expect `then` after conditional predicate"
   | Conditional_expr_expected_type (a,b) -> 
       fprintf ppf "Conditional expression type mismatch (%s,%s)" 
         (string_of_type_directive a )

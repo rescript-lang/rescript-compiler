@@ -523,6 +523,8 @@ rec_fun_test.cmj : mt.cmj
 rec_module_test.cmj : ../stdlib/set.cmj ../stdlib/pervasives.cmj mt.cmj
 rec_value_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/lazy.cmj \
     ../runtime/js.cmj
+record_debug_test.cmj : ../runtime/js.cmj ../stdlib/format.cmj \
+    ../others/belt.cmj
 record_with_test.cmj : mt.cmj
 recursive_module.cmj :
 recursive_module_test.cmj : mt.cmj

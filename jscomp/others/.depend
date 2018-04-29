@@ -96,6 +96,7 @@ belt_HashMapInt.cmj : belt_internalBucketsType.cmj belt_internalBuckets.cmj \
     belt_Array.cmj belt_HashMapInt.cmi
 belt_HashMapString.cmj : belt_internalBucketsType.cmj \
     belt_internalBuckets.cmj belt_Array.cmj belt_HashMapString.cmi
+belt_Debug.cmj :
 node_process.cmi : js_dict.cmi
 js_re.cmi :
 js_null_undefined.cmi :

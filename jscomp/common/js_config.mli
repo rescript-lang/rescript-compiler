@@ -94,3 +94,4 @@ val binary_ast : bool ref
 
 
 val bs_suffix : bool ref
+val debug : bool ref
