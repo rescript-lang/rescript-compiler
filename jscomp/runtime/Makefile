@@ -22,7 +22,7 @@ caml_format.cmj caml_io.cmj caml_oo_curry.cmj: curry.cmj
 caml_format.cmj: caml_int64.cmj caml_int32.cmj caml_utils.cmj caml_string.cmj
 caml_weak.cmj caml_module.cmj: caml_obj.cmj js_primitive.cmj
 caml_builtin_exceptions.cmj: caml_builtin_exceptions.cmi js_unsafe.cmi
-block.cmj: block.cmi
+block.cmj: block.cmi js.cmi js_unsafe.cmi
 caml_primitive.cmj: caml_primitive.cmi
 caml_int64.cmj : caml_obj.cmj
 # or we can do a post-processing to add missing cmj dependency manually
