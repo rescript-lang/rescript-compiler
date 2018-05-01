@@ -147,8 +147,12 @@ var formatter = {
   }
 
 }
-
+if (typeof window === "undefined"){
 global.devtoolsFormatters = [formatter]
+}
+else {
+window.devtoolsFormatters = [formatter]
+}
 return 0
 
 |};
