@@ -85,13 +85,13 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
             if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
               (Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
-              Val.mk pld_name 
+              Val.mk ~loc:pld_loc pld_name 
                 ~attrs:get_optional_attrs ~prim
                 (Typ.arrow ~loc "" core_type optional_type)
                 )
             else
               Typ.arrow ~loc:pld_loc label_name pld_type maker,
-              Val.mk pld_name ~attrs:get_attrs
+              Val.mk ~loc:pld_loc pld_name ~attrs:get_attrs
               ~prim:(
                 ["" ; (* Not needed actually*)
                 External_ffi_types.to_string 
@@ -112,7 +112,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
                    (Typ.arrow ""
                       pld_type (* setter *)
                       (Ast_literal.type_unit ()))) in
-              Val.mk
+              Val.mk ~loc:pld_loc
                 {loc = label_loc; txt = label_name ^ "Set"}
                 (* setter *)
                 ~attrs:set_attrs
