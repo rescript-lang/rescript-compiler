@@ -31,7 +31,7 @@ external log3 :
        | `Int of int
        ] [@bs.unwrap])
   -> ?opt:([ `String of string
-           | `Bool of Js.boolean
+           | `Bool of bool
            ] [@bs.unwrap])
   -> unit
   -> unit = "console.log" [@@bs.val]
@@ -42,7 +42,7 @@ let _ = log3 ~req:(`Int 3) ?opt:(Some (`String "hi")) ()
 let _ = log3 ~req:(`Int 4) ?opt:None ()
 
 (* static optional arg as variable *)
-let some_arg = Some (`Bool Js.true_)
+let some_arg = Some (`Bool true)
 let _ = log3 ~req:(`Int 5) ?opt:some_arg ()
 
 let none_arg = None
@@ -65,7 +65,7 @@ let _ = log3
 let dyn_log3 = log3
 
 (* call the dynamically reassigned external *)
-let _ = dyn_log3 ~req:(`Int 8) ~opt:(`Bool Js.true_) ()
+let _ = dyn_log3 ~req:(`Int 8) ~opt:(`Bool true) ()
 
 external log4 :
   ([ `String of string

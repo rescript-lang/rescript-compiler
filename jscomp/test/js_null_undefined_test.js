@@ -6,7 +6,7 @@ var Js_primitive = require("../../lib/js/js_primitive.js");
 var Js_null_undefined = require("../../lib/js/js_null_undefined.js");
 
 var suites_000 = /* tuple */[
-  "to_opt - null",
+  "toOption - null",
   (function () {
       return /* Eq */Block.__(0, [
                 /* None */0,
@@ -17,7 +17,7 @@ var suites_000 = /* tuple */[
 
 var suites_001 = /* :: */[
   /* tuple */[
-    "to_opt - undefined",
+    "toOption - undefined",
     (function () {
         return /* Eq */Block.__(0, [
                   /* None */0,
@@ -27,7 +27,7 @@ var suites_001 = /* :: */[
   ],
   /* :: */[
     /* tuple */[
-      "to_opt - empty",
+      "toOption - empty",
       (function () {
           return /* Eq */Block.__(0, [
                     /* None */0,
@@ -37,7 +37,7 @@ var suites_001 = /* :: */[
     ],
     /* :: */[
       /* tuple */[
-        "to_opt - 'a",
+        "toOption - 'a",
         (function () {
             return /* Eq */Block.__(0, [
                       /* Some */["foo"],
@@ -205,21 +205,21 @@ var suites_001 = /* :: */[
                                 ],
                                 /* :: */[
                                   /* tuple */[
-                                    "from_opt - None",
+                                    "fromOption - None",
                                     (function () {
                                         return /* Eq */Block.__(0, [
                                                   undefined,
-                                                  Js_null_undefined.from_opt(/* None */0)
+                                                  Js_null_undefined.fromOption(/* None */0)
                                                 ]);
                                       })
                                   ],
                                   /* :: */[
                                     /* tuple */[
-                                      "from_opt - Some",
+                                      "fromOption - Some",
                                       (function () {
                                           return /* Eq */Block.__(0, [
                                                     2,
-                                                    Js_null_undefined.from_opt(/* Some */[2])
+                                                    Js_null_undefined.fromOption(/* Some */[2])
                                                   ]);
                                         })
                                     ],

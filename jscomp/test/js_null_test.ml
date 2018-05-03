@@ -1,8 +1,6 @@
 open Js_null
 
 let suites = Mt.[
-  "to_opt - empty", (fun _ -> Eq(None, empty |> to_opt));
-  "to_opt - 'a", (fun _ -> Eq(Some (), return () |> to_opt));
   "toOption - empty", (fun _ -> Eq(None, empty |> toOption));
   "toOption - 'a", (fun _ -> Eq(Some (), return () |> toOption));
   "return", (fun _ -> Eq(Some "something", return "something" |> toOption));

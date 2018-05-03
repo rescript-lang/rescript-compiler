@@ -41,7 +41,7 @@ external config :
 type attrs
 external attrs:
         ?alt: string -> 
-        ?autoPlay: Js.boolean -> 
+        ?autoPlay: bool -> 
           unit -> attrs = "" [@@bs.obj]
 
 

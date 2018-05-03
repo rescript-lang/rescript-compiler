@@ -28,14 +28,14 @@ let expected2 =
     0
   )
 let u =
-  (Js.true_ = Js.false_,
-   Js.false_ = Js.true_,
-   Js.false_ = Js.false_,
-   Js.true_ = Js.true_,
-   Pervasives.compare Js.false_ Js.true_ ,
-   Pervasives.compare Js.true_ Js.false_,
-   Pervasives.compare Js.false_ Js.false_,
-   Pervasives.compare Js.true_ Js.true_
+  (true = false,
+   false = true,
+   false = false,
+   true = true,
+   Pervasives.compare false true,
+   Pervasives.compare true false,
+   Pervasives.compare false false,
+   Pervasives.compare true true
   )
 
 

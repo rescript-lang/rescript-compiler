@@ -51,10 +51,10 @@ let option_suites = Mt.[
         Eq (None , Js.Option.map (fun [@bs] a -> a + 1) None)
       );
     "option_default_Some", (fun _ -> 
-        Eq (2 , Js.Option.default 3 (Some 2))
+        Eq (2 , Js.Option.getWithDefault 3 (Some 2))
       );
     "option_default_None", (fun _ -> 
-        Eq (3 , Js.Option.default 3 None)
+        Eq (3 , Js.Option.getWithDefault 3 None)
       );
     "option_filter_Pass", (fun _ -> 
         Eq (true , 

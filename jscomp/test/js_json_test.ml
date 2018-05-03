@@ -91,12 +91,12 @@ let () =
     in 
     let ty = Js.Json.classify json in
     match ty with
-    | Js.Json.JSONTrue  -> eq __LOC__ Js.true_ v
-    | Js.Json.JSONFalse  -> eq __LOC__ Js.false_ v
+    | Js.Json.JSONTrue  -> eq __LOC__ true v
+    | Js.Json.JSONFalse  -> eq __LOC__ false v
     | _ -> false_ __LOC__
   in
-  test Js.true_; 
-  test Js.false_;
+  test true; 
+  test false;
   ()
  
 let option_get = function | None -> assert false | Some x -> x
@@ -151,10 +151,10 @@ let eq_at_i
     |  Js.Json.Boolean -> 
       (match ty with 
       | JSONTrue -> 
-        eq loc Js.true_ expected
+        eq loc true expected
 
       | JSONFalse -> 
-        eq loc Js.false_ expected
+        eq loc false expected
       | _ -> false_ loc)
     | Js.Json.Number -> 
       (match ty with 
@@ -240,15 +240,14 @@ let () =
   let a = [| true; false; true |] in
   let json = 
     a  
-    |> Array.map Js_boolean.to_js_boolean
     |> Js.Json.booleanArray
     |> Js.Json.stringify
     |> Js.Json.parseExn 
   in 
   (* Loop is unrolled to keep relevant location information *)
-  eq_at_i __LOC__ json 0 Js.Json.Boolean (Js_boolean.to_js_boolean a.(0));
-  eq_at_i __LOC__ json 1 Js.Json.Boolean (Js_boolean.to_js_boolean a.(1));
-  eq_at_i __LOC__ json 2 Js.Json.Boolean (Js_boolean.to_js_boolean a.(2));
+  eq_at_i __LOC__ json 0 Js.Json.Boolean a.(0);
+  eq_at_i __LOC__ json 1 Js.Json.Boolean a.(1);
+  eq_at_i __LOC__ json 2 Js.Json.Boolean a.(2);
   ()
 
 let () =
@@ -309,7 +308,7 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeString (Js.Json.string "test")) (Some "test");
   eq __LOC__ 
-    (Js.Json.decodeString (Js.Json.boolean Js.true_)) None;
+    (Js.Json.decodeString (Js.Json.boolean true)) None;
   eq __LOC__ 
     (Js.Json.decodeString (Js.Json.array [||])) None;
   eq __LOC__ 
@@ -323,7 +322,7 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeNumber (Js.Json.string "test")) None;
   eq __LOC__ 
-    (Js.Json.decodeNumber (Js.Json.boolean Js.true_)) None;
+    (Js.Json.decodeNumber (Js.Json.boolean true)) None;
   eq __LOC__ 
     (Js.Json.decodeNumber (Js.Json.array [||])) None;
   eq __LOC__ 
@@ -337,7 +336,7 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeObject (Js.Json.string "test")) None;
   eq __LOC__ 
-    (Js.Json.decodeObject (Js.Json.boolean Js.true_)) None;
+    (Js.Json.decodeObject (Js.Json.boolean true)) None;
   eq __LOC__ 
     (Js.Json.decodeObject (Js.Json.array [||])) None;
   eq __LOC__ 
@@ -352,7 +351,7 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeArray (Js.Json.string "test")) None;
   eq __LOC__ 
-    (Js.Json.decodeArray (Js.Json.boolean Js.true_)) None;
+    (Js.Json.decodeArray (Js.Json.boolean true)) None;
   eq __LOC__ 
     (Js.Json.decodeArray (Js.Json.array [||])) (Some [||]);
   eq __LOC__ 
@@ -366,7 +365,7 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeBoolean (Js.Json.string "test")) None;
   eq __LOC__ 
-    (Js.Json.decodeBoolean (Js.Json.boolean Js.true_)) (Some Js.true_);
+    (Js.Json.decodeBoolean (Js.Json.boolean true)) (Some true);
   eq __LOC__ 
     (Js.Json.decodeBoolean (Js.Json.array [||])) None;
   eq __LOC__ 
@@ -380,7 +379,7 @@ let () =
   eq __LOC__ 
     (Js.Json.decodeNull (Js.Json.string "test")) None;
   eq __LOC__ 
-    (Js.Json.decodeNull (Js.Json.boolean Js.true_)) None;
+    (Js.Json.decodeNull (Js.Json.boolean true)) None;
   eq __LOC__ 
     (Js.Json.decodeNull (Js.Json.array [||])) None;
   eq __LOC__ 

@@ -161,8 +161,8 @@ external window: Dom.window = "" [@@bs.val]
 external createImg: Dom.document -> (_ [@bs.as "img"]) -> imageElement = "createElement" [@@bs.send]
 external requestAnimationFrame : (float -> unit) -> unit = ""[@@bs.val ]
 external getElementById : Dom.document -> string -> Dom.element option = ""[@@bs.return null_to_opt][@@bs.send]
-external addEventListener : Dom.document -> string -> ('a Dom.event_like -> Js.boolean) -> Js.boolean -> unit = "" [@@bs.send]
-external addEventListenerImg : imageElement -> string -> ('a Dom.event_like -> Js.boolean) -> Js.boolean -> unit = "addEventListener" [@@bs.send]
+external addEventListener : Dom.document -> string -> ('a Dom.event_like -> bool) -> bool -> unit = "" [@@bs.send]
+external addEventListenerImg : imageElement -> string -> ('a Dom.event_like -> bool) -> bool -> unit = "addEventListener" [@@bs.send]
 
 (* unsafe casts *)
 external imageElementToJsObj : imageElement -> < .. > Js.t = "%identity"
@@ -1232,10 +1232,10 @@ val update_loop : Dom_html.canvasElement
                   -> unit
 
 (* Keydown event handler function *)
-val keydown : Dom.keyboardEvent -> Js.boolean
+val keydown : Dom.keyboardEvent -> bool
 
 (* Keyup event handler function *)
-val keyup : Dom.keyboardEvent -> Js.boolean
+val keyup : Dom.keyboardEvent -> bool
 
 end = struct
 #1 "director.ml"
