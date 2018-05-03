@@ -1552,6 +1552,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock (tag,info, mutable_flag)
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+  | Pfield (id, Fld_record "Some") ->
+    begin match args with [x] -> x | _ -> assert false end
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 

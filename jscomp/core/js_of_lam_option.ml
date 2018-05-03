@@ -53,13 +53,15 @@ let get_default_undefined
     (arg : J.expression)
     : J.expression =
   match arg.expression_desc with
+(*
   | Number _ -> E.undefined
   | Array ([x],_)
   | Caml_block([x],_,_,_) -> (map Static_unwrapped x) (* invariant: option encoding *)
+*)
   | _ ->
-    if Js_analyzer.is_okay_to_duplicate arg then
+    (* if Js_analyzer.is_okay_to_duplicate arg then
       E.econd arg (map Static_unwrapped (E.index arg 0l)) E.undefined
-    else
+    else *)
       map Runtime_maybe_unwrapped (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
 
 (** Another way: 
@@ -73,9 +75,10 @@ let get_default_undefined
 let none : J.expression =
   {expression_desc = Null; comment = Some "None"}
 
-let some x : J.expression = 
-  {expression_desc = Caml_block ( [x], Immutable, E.zero_int_literal , Blk_constructor ("Some",1) );
-   comment = None}
+let some x : J.expression =
+  {x with comment = Some "Some"}
+  (* {expression_desc = Caml_block ( [x], Immutable, E.zero_int_literal , Blk_constructor ("Some",1) );
+   comment = None} *)
 
 
 

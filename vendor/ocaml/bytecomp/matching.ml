@@ -1349,7 +1349,11 @@ let make_constr_matching p def ctx = function
       let cstr = pat_as_constr p in
       let newargs =
         match cstr.cstr_tag with
-          Cstr_constant _ | Cstr_block _ ->
+        | Cstr_block 0 when cstr.cstr_name = "Some" && cstr.cstr_arity = 1 ->
+            (* Format.eprintf "XXX Found Some @."; *)
+            (Lprim(Pfield (0, Fld_record "Some"), [arg], p.pat_loc), Alias) :: argl
+            (* make_field_args p.pat_loc Alias arg 0 (cstr.cstr_arity - 1) argl *)
+        | Cstr_constant _ | Cstr_block _ ->
             make_field_args p.pat_loc Alias arg 0 (cstr.cstr_arity - 1) argl
         | Cstr_extension _ ->
             make_field_args p.pat_loc Alias arg 1 cstr.cstr_arity argl in

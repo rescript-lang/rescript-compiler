@@ -172,6 +172,10 @@ let make_block ?comment tag tag_info es mutable_flag : t =
             des es
     | _ -> es 
   in
+  match tag_info, es with
+  | Blk_constructor ("Some", 1), [e] ->
+    { e with comment}
+  | _ ->
   {
     expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;
     comment 
