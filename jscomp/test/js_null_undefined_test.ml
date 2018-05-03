@@ -1,11 +1,11 @@
 open Js_null_undefined
 
 let suites = Mt.[
-  "to_opt - null", (fun _ -> Eq(None, null |> to_opt));
-  "to_opt - undefined", (fun _ -> Eq(None, undefined |> to_opt));
-  "to_opt - empty", (fun _ -> Eq(None, undefined |> to_opt));
-  "to_opt - 'a", (fun _ -> Eq(Some "foo", return "foo" |> to_opt));
-  "return", (fun _ -> Eq(Some "something", return "something" |> to_opt));
+  "toOption - null", (fun _ -> Eq(None, null |> toOption));
+  "toOption - undefined", (fun _ -> Eq(None, undefined |> toOption));
+  "toOption - empty", (fun _ -> Eq(None, undefined |> toOption));
+  "toOption - 'a", (fun _ -> Eq(Some "foo", return "foo" |> toOption));
+  "return", (fun _ -> Eq(Some "something", return "something" |> toOption));
   "test - null", (fun _ -> Eq(true, null |> test));
   "test - undefined", (fun _ -> Eq(true, undefined |> test));
   "test - empty", (fun _ -> Eq(true, undefined |> test));
@@ -34,8 +34,8 @@ let suites = Mt.[
     let _ = iter (return 2) ((fun v -> hit := v) [@bs]) in
     Eq(2, !hit)
   );
-  "from_opt - None", (fun _ -> Eq(undefined, None |> from_opt));
-  "from_opt - Some", (fun _ -> Eq(return 2, Some 2 |> from_opt));
+  "fromOption - None", (fun _ -> Eq(undefined, None |> fromOption));
+  "fromOption - Some", (fun _ -> Eq(return 2, Some 2 |> fromOption));
   "null <> undefined", (fun _ -> Ok(null <> undefined));
   "null <> empty", (fun _ -> Ok(null <> undefined));
   "undefined = empty", (fun _ -> Ok(undefined = undefined));

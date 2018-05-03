@@ -136,7 +136,7 @@ let suites = Mt.[
 
     (* es2016 *)
     "typed_array - includes", (fun _ ->
-      Eq(Js.true_, mkI8 [| 1; 2; 3 |] |> Int8Array.includes 3)
+      Eq(true, mkI8 [| 1; 2; 3 |] |> Int8Array.includes 3)
     );
 
     "typed_array - indexOf", (fun _ ->
@@ -197,14 +197,14 @@ let suites = Mt.[
     *)
 
     "typed_array - every", (fun _ ->
-      Eq(Js.true_,
+      Eq(true,
          mkI8 [| 1; 2; 3 |]
-         |> Int8Array.every ((fun n -> Js.Boolean.to_js_boolean (n > 0)) [@bs]))
+         |> Int8Array.every ((fun n -> (n > 0)) [@bs]))
     );
     "typed_array - everyi", (fun _ ->
-      Eq(Js.false_,
+      Eq(false,
          mkI8 [| 1; 2; 3 |]
-         |> Int8Array.everyi ((fun _ i -> Js.Boolean.to_js_boolean (i > 0)) [@bs]))
+         |> Int8Array.everyi ((fun _ i -> (i > 0)) [@bs]))
     );
 
     "typed_array - filter", (fun _ ->
@@ -215,7 +215,7 @@ let suites = Mt.[
     "typed_array - filteri", (fun _ ->
       Eq(mkI8 [| 1; 3 |],
          mkI8 [| 1; 2; 3; 4 |]
-         |> Int8Array.filteri ((fun _ i -> Js.Boolean.to_js_boolean (i mod 2 = 0)) [@bs]))
+         |> Int8Array.filteri ((fun _ i -> (i mod 2 = 0)) [@bs]))
     );
 
     "typed_array - find", (fun _ ->
@@ -292,14 +292,14 @@ let suites = Mt.[
     );
 
     "typed_array - some", (fun _ ->
-      Eq(Js.false_,
+      Eq(false,
          mkI8 [| 1; 2; 3; 4 |]
-         |> Int8Array.some ((fun n -> Js.Boolean.to_js_boolean (n <= 0)) [@bs]))
+         |> Int8Array.some ((fun n -> (n <= 0)) [@bs]))
     );
     "typed_array - somei", (fun _ ->
-      Eq(Js.true_,
+      Eq(true,
          mkI8 [| 1; 2; 3; 4 |]
-         |> Int8Array.somei ((fun _ i -> Js.Boolean.to_js_boolean (i <= 0)) [@bs]))
+         |> Int8Array.somei ((fun _ i -> (i <= 0)) [@bs]))
     );
 
     (* es2015, iterator

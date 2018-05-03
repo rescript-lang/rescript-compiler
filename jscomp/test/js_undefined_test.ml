@@ -1,8 +1,8 @@
 open Js_undefined
 
 let suites = Mt.[
-  "to_opt - empty", (fun _ -> Eq(None, empty |> toOption));
-  "to_opt - 'a", (fun _ -> Eq(Some (), return () |> toOption));
+  "toOption - empty", (fun _ -> Eq(None, empty |> toOption));
+  "toOption - 'a", (fun _ -> Eq(Some (), return () |> toOption));
   "return", (fun _ -> Eq(Some "something", return "something" |> toOption));
   "test - empty", (fun _ -> Eq(true, empty |> test));
   "test - 'a", (fun _ -> Eq(false, return () |> test));
@@ -18,7 +18,7 @@ let suites = Mt.[
     let _ = iter (return 2) ((fun v -> hit := v) [@bs]) in
     Eq(2, !hit)
   );
-  "from_opt - None", (fun _ -> Eq(empty, None |> from_opt));
-  "from_opt - Some", (fun _ -> Eq(return 2, Some 2 |> from_opt));
+  "fromOption - None", (fun _ -> Eq(empty, None |> fromOption));
+  "fromOption - Some", (fun _ -> Eq(return 2, Some 2 |> fromOption));
 ]
 ;; Mt.from_pair_suites __FILE__ suites

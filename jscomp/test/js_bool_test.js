@@ -27,8 +27,6 @@ function f4(x) {
   }
 }
 
-var f3 = true;
-
 var u = ( 1);
 
 var v = ( true);
@@ -119,6 +117,8 @@ var bool_array = /* array */[
 ];
 
 Mt.from_pair_suites("js_bool_test.ml", suites);
+
+var f3 = true;
 
 exports.f = f;
 exports.f2 = f2;

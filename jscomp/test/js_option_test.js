@@ -172,7 +172,7 @@ var option_suites_001 = /* :: */[
                                 (function () {
                                     return /* Eq */Block.__(0, [
                                               2,
-                                              Js_option.$$default(3, /* Some */[2])
+                                              Js_option.getWithDefault(3, /* Some */[2])
                                             ]);
                                   })
                               ],
@@ -182,7 +182,7 @@ var option_suites_001 = /* :: */[
                                   (function () {
                                       return /* Eq */Block.__(0, [
                                                 3,
-                                                Js_option.$$default(3, /* None */0)
+                                                Js_option.getWithDefault(3, /* None */0)
                                               ]);
                                     })
                                 ],

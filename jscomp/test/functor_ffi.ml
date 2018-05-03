@@ -10,7 +10,7 @@ module Make  ( S : sig type elt end ) = struct
     external get : elt t -> int -> elt Js.undefined = "" [@@bs.get_index]
 
     let opt_get f i = 
-        Js.Undefined.to_opt @@ get f i 
+        Js.Undefined.toOption @@ get f i 
 end
 
 module Int_arr = Make ( struct type elt = int end)

@@ -34,12 +34,12 @@ let f1 x =
   if not (x = true) then 1 else 2 
 
 let f2 x =   
-  if x = Js.true_ then 1 else 2  
+  if x = true then 1 else 2  
 let f3 x =   
-  if x = Js.false_ then 1 else 2 
+  if x = false then 1 else 2 
 
 let f4 x =   
-  if not (x = Js.true_) then 1 else 2 
+  if not (x = true) then 1 else 2 
 
 let f5 x = 
   match x with 

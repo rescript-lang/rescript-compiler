@@ -5,7 +5,7 @@ let () =
   | None ->   ()
   | Some u ->               
     Js.log @@ u#@resolve "./test_require.js";
-    match [%node _module], Js.Undefined.to_opt u##main with
+    match [%node _module], Js.Undefined.toOption u##main with
     | Some x, Some y when x == y ->
       Js.log "is main"
     | Some _, Some _
