@@ -77,6 +77,14 @@ let suites = Mt.[
     "eq_in_list2", (fun _ -> Eq ([[%bs.obj {x=2}]] = [[%bs.obj {x=2}]], true));
     "eq_with_list", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[0]}], true));
     "eq_with_list2", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[1]}], false));
+
+    __LOC__ , begin fun _ ->
+        Eq(compare Js.null (Js.Null.return [3]), -1)
+    end;
+    __LOC__ , begin fun _ ->
+        Eq(compare (Js.Null.return [3]) Js.null, 1)
+    end;
+
 ]
 ;;
 
