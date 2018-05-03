@@ -182,9 +182,12 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
     | false, false -> 
       if a_type = "boolean"
       || a_type = "undefined"
-      || a == (Obj.repr Js_null.empty)
       then (* TODO: refine semantics when comparing with [null] *)
         unsafe_js_compare a b
+      else if a == (Obj.repr Js_null.empty)
+      then -1
+      else if b == (Obj.repr Js_null.empty)
+      then 1
       else if a_type = "function" || b_type = "function"
       then raise (Invalid_argument "compare: functional value")
       else

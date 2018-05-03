@@ -90,8 +90,8 @@ let js_global ?comment  (v : string) =
 let undefined  : t = 
     {expression_desc = Undefined ; comment = None}
 
-let nil : t = 
-    {expression_desc = Null ; comment = None}
+let nil ?comment () : t = 
+    {expression_desc = Null ; comment}
 let call ?comment ~info e0 args : t = 
   {expression_desc = Call(e0,args,info); comment }
 
@@ -1220,7 +1220,7 @@ let of_block ?comment ?e block : t =
     } []
 
 let is_null ?comment (x : t) =   
-  triple_equal ?comment x nil 
+  triple_equal ?comment x (nil ?comment ()) 
 
 
 let is_undef ?comment x = triple_equal ?comment x undefined

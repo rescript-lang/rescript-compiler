@@ -70,8 +70,8 @@ let get_default_undefined
              (E.str "number"))
     ]}
 *)
-let none : J.expression = 
-  {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
+let none : J.expression =
+  {expression_desc = Null; comment = Some "None"}
 
 let some x : J.expression = 
   {expression_desc = Caml_block ( [x], Immutable, E.zero_int_literal , Blk_constructor ("Some",1) );
