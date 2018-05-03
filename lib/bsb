@@ -243,7 +243,7 @@ if (watch_mode) {
         if (acquireBuild()) {
             logStart()
             if (reasons_to_rebuild.length === 0) {
-                console.log("Rebuilding since just get started")
+                console.log("Rebuilding since just got started")
             } else {
                 console.log("Rebuilding since", reasons_to_rebuild)
             }
