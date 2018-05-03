@@ -221,6 +221,7 @@ syntax/external_process.cmx : common/lam_methname.cmx \
     syntax/ast_core_type.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
     syntax/external_process.cmi
 syntax/ast_derive_abstract.cmx : syntax/external_process.cmx \
+    syntax/external_ffi_types.cmx syntax/external_arg_spec.cmx \
     ext/ext_list.cmx syntax/ast_literal.cmx syntax/ast_derive_util.cmx \
     syntax/ast_core_type.cmx syntax/ast_attributes.cmx \
     syntax/ast_derive_abstract.cmi

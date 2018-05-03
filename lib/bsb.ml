@@ -13492,15 +13492,12 @@ let root = OCamlRes.Res.([
         \      \"You've clicked this \" ++ string_of_int(self.state.count) ++ \" times(s)\";\n\
         \    <div>\n\
         \      <button onClick=(_event => self.send(Click))>\n\
-        \        (ReasonReact.stringToElement(message))\n\
+        \        (ReasonReact.string(message))\n\
         \      </button>\n\
         \      <button onClick=(_event => self.send(Toggle))>\n\
-        \        (ReasonReact.stringToElement(\"Toggle greeting\"))\n\
+        \        (ReasonReact.string(\"Toggle greeting\"))\n\
         \      </button>\n\
-        \      (\n\
-        \        self.state.show ?\n\
-        \          ReasonReact.stringToElement(greeting) : ReasonReact.nullElement\n\
-        \      )\n\
+        \      (self.state.show ? ReasonReact.string(greeting) : ReasonReact.null)\n\
         \    </div>;\n\
         \  },\n\
          };\n\
@@ -13526,7 +13523,7 @@ let root = OCamlRes.Res.([
         \  ...component,\n\
         \  render: self =>\n\
         \    <div onClick=(self.handle(handleClick))>\n\
-        \      (ReasonReact.stringToElement(message))\n\
+        \      (ReasonReact.string(message))\n\
         \    </div>,\n\
          };\n\
          ")]) ;
@@ -13541,6 +13538,7 @@ let root = OCamlRes.Res.([
        # in another tab\n\
        npm run webpack\n\
        ```\n\
+       \n\
        After you see the webpack compilation succeed (the `npm run webpack` step), open up `src/index.html` (**no server needed!**). Then modify whichever `.re` file in `src` and refresh the page to see the changes.\n\
        \n\
        **For more elaborate ReasonReact examples**, please see https://github.com/reasonml-community/reason-react-example\n\
@@ -13576,7 +13574,7 @@ let root = OCamlRes.Res.([
       \  \"dependencies\": {\n\
       \    \"react\": \"^16.2.0\",\n\
       \    \"react-dom\": \"^16.2.0\",\n\
-      \    \"reason-react\": \">=0.3.4\"\n\
+      \    \"reason-react\": \">=0.4.0\"\n\
       \  },\n\
       \  \"devDependencies\": {\n\
       \    \"bs-platform\": \"^${bsb:bs-version}\",\n\
@@ -13608,10 +13606,7 @@ let root = OCamlRes.Res.([
       \  \"bs-dependencies\": [\n\
       \    \"reason-react\"\n\
       \  ],\n\
-      \  \"refmt\": 3,\n\
-      \  \"warnings\": {\n\
-      \    \"error\": \"+5\"\n\
-      \  }\n\
+      \  \"refmt\": 3\n\
        }\n\
        ") ;
     File  (".gitignore",

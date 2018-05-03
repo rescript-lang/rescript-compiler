@@ -34,31 +34,15 @@ let handle_config (config : Parsetree.expression option) =
     U.invalid_config config
   | None -> ()
 
-(* see #2337
-   TODO: relax it to allow (int -> int [@bs])
-*)
-let rec checkNotFunciton (ty : Parsetree.core_type) =
-  match ty.ptyp_desc with
-  | Ptyp_poly (_,ty) -> checkNotFunciton ty
-  | Ptyp_alias (ty,_) -> checkNotFunciton ty
-  | Ptyp_arrow _ ->
-    Location.raise_errorf
-      ~loc:ty.ptyp_loc
-      "syntactic function type is not allowed when working with abstract bs.deriving, create a named type as work around"
-  | Ptyp_any
-  | Ptyp_var _
-  | Ptyp_tuple _
-  | Ptyp_constr _
-  | Ptyp_object _
-  | Ptyp_class _
-  | Ptyp_variant _
-  | Ptyp_package _
-  | Ptyp_extension _ -> ()
 
 
 let get_optional_attrs =
   [Ast_attributes.bs_get; Ast_attributes.bs_return_undefined]
-let get_attrs = [ Ast_attributes.bs_get ]
+(** For this attributes, its type was wrapped as an option,
+   so we can still reuse existing frame work
+*)  
+
+let get_attrs = [ Ast_attributes.bs_get_arity]
 let set_attrs = [Ast_attributes.bs_set]
 let handleTdcl (tdcl : Parsetree.type_declaration) =
   let core_type = U.core_type_of_type_declaration tdcl in
@@ -88,31 +72,38 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
             pld_loc
            }:
              Parsetree.label_declaration) (acc, maker, labels) ->
-          let () = checkNotFunciton pld_type in
-          (* TODO: explain why *)
-          let prim, newLabel =
+          let prim_as_name, newLabel =
             match Ast_attributes.iter_process_bs_string_as pld_attributes with
             | None ->
-              [label_name], pld_name
+              label_name, pld_name
             | Some new_name ->
-              [new_name], {pld_name with txt = new_name}
+              new_name, {pld_name with txt = new_name}
           in
-          let is_option = Ast_attributes.has_bs_optional pld_attributes in
-          let maker, getter_type =
-            if is_option then
+          let prim = [prim_as_name] in 
+          let is_optional = Ast_attributes.has_bs_optional pld_attributes in
+          let maker, getter_declaration =
+            if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
-              Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
-              Typ.arrow ~loc "" core_type optional_type
+              (Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
+              Val.mk pld_name 
+                ~attrs:get_optional_attrs ~prim
+                (Typ.arrow ~loc "" core_type optional_type)
+                )
             else
               Typ.arrow ~loc:pld_loc label_name pld_type maker,
-               Typ.arrow ~loc "" core_type pld_type
+              Val.mk pld_name ~attrs:get_attrs
+              ~prim:(
+                ["" ; (* Not needed actually*)
+                External_ffi_types.to_string 
+                (Ffi_bs (
+                  [{arg_type = Nothing; arg_label = External_arg_spec.empty_label}],
+                  Return_identity,
+                  Js_get {js_get_name = prim_as_name; js_get_scopes = []}
+                  ))] )
+               (Typ.arrow ~loc "" core_type pld_type)
           in
           let acc =
-            Val.mk pld_name
-              ~attrs:(
-                if is_option then get_optional_attrs
-                else get_attrs)
-              ~prim getter_type :: acc in
+           getter_declaration :: acc in
           let is_current_field_mutable = pld_mutable = Mutable in
           let acc =
             if is_current_field_mutable then
@@ -130,7 +121,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
             else acc in
           acc,
           maker,
-          (is_option, newLabel)::labels
+          (is_optional, newLabel)::labels
         ) label_declarations
         ([],
          (if has_optional_field then

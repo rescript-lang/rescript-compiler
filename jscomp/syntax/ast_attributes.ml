@@ -190,7 +190,38 @@ let iter_process_derive_type attrs =
   !st
 
 
-let process_bs_string_int_unwrap_uncurry attrs =
+(* duplicated [bs.uncurry] [bs.string] not allowed,
+  it is worse in bs.uncurry since it will introduce
+  inconsistency in arity
+ *)  
+let iter_process_bs_string_int_unwrap_uncurry attrs =
+  let st = ref `Nothing in 
+  let assign v (({loc;_}, _ ) as attr : attr) = 
+    if !st = `Nothing then 
+    begin 
+      Bs_ast_invariant.mark_used_bs_attribute attr;
+      st := v ;
+    end  
+    else Bs_syntaxerr.err loc Conflict_attributes  in 
+  List.iter
+    (fun (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
+      match  txt with
+      | "bs.string"
+        -> assign `String attr
+      | "bs.int"
+        -> assign `Int attr
+      | "bs.ignore"
+        -> assign `Ignore attr
+      | "bs.unwrap"
+        -> assign `Unwrap attr
+      | "bs.uncurry"
+        ->
+        assign (`Uncurry (Ast_payload.is_single_int payload)) attr
+      | _ -> ()
+    ) attrs;
+    !st 
+
+(* let process_bs_string_int_unwrap_uncurry attrs =
   List.fold_left
     (fun (st,attrs)
       (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
@@ -216,7 +247,7 @@ let process_bs_string_int_unwrap_uncurry attrs =
         ->
         Bs_syntaxerr.err loc Conflict_attributes
       | _ , _ -> st, (attr :: attrs )
-    ) (`Nothing, []) attrs
+    ) (`Nothing, []) attrs *)
 
 
 let iter_process_bs_string_as  (attrs : t) : string option =
@@ -326,6 +357,20 @@ let bs_obj : attr
 
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
+
+let bs_get_arity : attr
+  =  {txt = "internal.arity"; loc = locg}, 
+    PStr 
+    [{pstr_desc =
+         Pstr_eval (
+           {pexp_desc =
+              Pexp_constant
+                (Const_int 1);
+            pexp_loc = locg;
+            pexp_attributes = []
+           },[])
+      ; pstr_loc = locg}]
+  
 
 let bs_set : attr
   =  {txt = "bs.set"; loc = locg}, Ast_payload.empty

@@ -28281,8 +28281,11 @@ type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
 }
-val process_bs_string_int_unwrap_uncurry :
-  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
+
+
+val iter_process_bs_string_int_unwrap_uncurry :
+  t -> 
+  [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]
 
 
 val iter_process_bs_string_as :
@@ -28317,6 +28320,7 @@ val bs_obj : attr
 
 
 val bs_get : attr
+val bs_get_arity : attr 
 val bs_set : attr
 val bs_return_undefined : attr
 
@@ -28514,7 +28518,38 @@ let iter_process_derive_type attrs =
   !st
 
 
-let process_bs_string_int_unwrap_uncurry attrs =
+(* duplicated [bs.uncurry] [bs.string] not allowed,
+  it is worse in bs.uncurry since it will introduce
+  inconsistency in arity
+ *)  
+let iter_process_bs_string_int_unwrap_uncurry attrs =
+  let st = ref `Nothing in 
+  let assign v (({loc;_}, _ ) as attr : attr) = 
+    if !st = `Nothing then 
+    begin 
+      Bs_ast_invariant.mark_used_bs_attribute attr;
+      st := v ;
+    end  
+    else Bs_syntaxerr.err loc Conflict_attributes  in 
+  List.iter
+    (fun (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
+      match  txt with
+      | "bs.string"
+        -> assign `String attr
+      | "bs.int"
+        -> assign `Int attr
+      | "bs.ignore"
+        -> assign `Ignore attr
+      | "bs.unwrap"
+        -> assign `Unwrap attr
+      | "bs.uncurry"
+        ->
+        assign (`Uncurry (Ast_payload.is_single_int payload)) attr
+      | _ -> ()
+    ) attrs;
+    !st 
+
+(* let process_bs_string_int_unwrap_uncurry attrs =
   List.fold_left
     (fun (st,attrs)
       (({txt ; loc}, (payload : _ ) ) as attr : attr)  ->
@@ -28540,7 +28575,7 @@ let process_bs_string_int_unwrap_uncurry attrs =
         ->
         Bs_syntaxerr.err loc Conflict_attributes
       | _ , _ -> st, (attr :: attrs )
-    ) (`Nothing, []) attrs
+    ) (`Nothing, []) attrs *)
 
 
 let iter_process_bs_string_as  (attrs : t) : string option =
@@ -28650,6 +28685,20 @@ let bs_obj : attr
 
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
+
+let bs_get_arity : attr
+  =  {txt = "internal.arity"; loc = locg}, 
+    PStr 
+    [{pstr_desc =
+         Pstr_eval (
+           {pexp_desc =
+              Pexp_constant
+                (Const_int 1);
+            pexp_loc = locg;
+            pexp_attributes = []
+           },[])
+      ; pstr_loc = locg}]
+  
 
 let bs_set : attr
   =  {txt = "bs.set"; loc = locg}, Ast_payload.empty
@@ -32491,10 +32540,10 @@ end = struct
 
 
 [@@@ocaml.warning "+9"]
+(* record pattern match complete checker*)
 
 
-
-let variant_can_bs_unwrap_fields row_fields =
+let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
   let validity =
     List.fold_left
       begin fun st row ->
@@ -32527,7 +32576,8 @@ let variant_can_bs_unwrap_fields row_fields =
     ]}
     The result type would be [ hi:string ]
 *)
-let get_arg_type ~nolabel optional
+let get_arg_type 
+    ~nolabel optional
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr * Ast_core_type.t  =
   let ptyp =
@@ -32538,12 +32588,8 @@ let get_arg_type ~nolabel optional
     if optional then
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin
-      let ptyp_attrs =
-        ptyp.Parsetree.ptyp_attributes
-      in
-      let result =
-        Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs
-      in
+      let ptyp_attrs = ptyp.ptyp_attributes in
+      let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
       (* when ppx start dropping attributes
         we should warn, there is a trade off whether
         we should warn dropped non bs attribute or not
@@ -32552,7 +32598,6 @@ let get_arg_type ~nolabel optional
       match result with
       |  None ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-
       | Some (`Int i) ->
         Arg_cst(External_arg_spec.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()
       | Some (`Str i)->
@@ -32564,44 +32609,34 @@ let get_arg_type ~nolabel optional
     end
   else (* ([`a|`b] [@bs.string]) *)
     let ptyp_desc = ptyp.ptyp_desc in
-    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
-    | (`String, ptyp_attributes)
-      ->
+    (match Ast_attributes.iter_process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
+    | `String ->
       begin match ptyp_desc with
         | Ptyp_variant ( row_fields, Closed, None)
-          ->
-          let attr =
-            Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in
-          attr,
-          {ptyp with
-           ptyp_attributes
-          }
+          ->          
+          Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
       end
-    | (`Ignore, ptyp_attributes)  ->
-      (Ignore, {ptyp with ptyp_attributes})
-    | (`Int , ptyp_attributes) ->
+    | `Ignore ->
+      Ignore
+    | `Int ->
       begin match ptyp_desc with
         | Ptyp_variant ( row_fields, Closed, None) ->
           let int_lists =
             Ast_polyvar.map_row_fields_into_ints ptyp.ptyp_loc row_fields in
-          Int int_lists ,
-          {ptyp with
-           ptyp_attributes
-          }
+          Int int_lists
         | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
       end
-    | (`Unwrap, ptyp_attributes) ->
-
+    | `Unwrap ->
       begin match ptyp_desc with
-        | (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
+        | Ptyp_variant (row_fields, Closed, _)
           when variant_can_bs_unwrap_fields row_fields ->
-          Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
+          Unwrap
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
       end
-    | (`Uncurry opt_arity, ptyp_attributes) ->
+    | `Uncurry opt_arity ->
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in
       (begin match opt_arity, real_arity with
          | Some arity, `Not_function ->
@@ -32614,9 +32649,8 @@ let get_arg_type ~nolabel optional
            if n <> arity then
              Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity,n))
            else Fn_uncurry_arity arity
-
-       end, {ptyp with ptyp_attributes})
-    | (`Nothing, ptyp_attributes) ->
+       end)
+    | `Nothing ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "unit"; _}, [])
           -> if nolabel then Extern_unit else  Nothing
@@ -32627,7 +32661,7 @@ let get_arg_type ~nolabel optional
           Nothing
         | _ ->
           Nothing
-      end, ptyp
+      end), ptyp
 
 
 
@@ -32856,7 +32890,7 @@ let handle_attributes
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense
   *)
-  if has_bs_uncurry type_annotation.Parsetree.ptyp_attributes then
+  if has_bs_uncurry type_annotation.ptyp_attributes then
     begin
       Location.raise_errorf
         ~loc "[@@bs.uncurry] can not be applied to the whole definition"
@@ -32866,7 +32900,8 @@ let handle_attributes
     if String.length prim_name = 0 then  `Nm_val pval_prim
     else  `Nm_external prim_name  (* need check name *)
   in
-  let result_type, arg_types_ty =
+  let result_type, arg_types_ty = 
+    (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation in
   if has_bs_uncurry result_type.ptyp_attributes then
     begin
@@ -36786,31 +36821,15 @@ let handle_config (config : Parsetree.expression option) =
     U.invalid_config config
   | None -> ()
 
-(* see #2337
-   TODO: relax it to allow (int -> int [@bs])
-*)
-let rec checkNotFunciton (ty : Parsetree.core_type) =
-  match ty.ptyp_desc with
-  | Ptyp_poly (_,ty) -> checkNotFunciton ty
-  | Ptyp_alias (ty,_) -> checkNotFunciton ty
-  | Ptyp_arrow _ ->
-    Location.raise_errorf
-      ~loc:ty.ptyp_loc
-      "syntactic function type is not allowed when working with abstract bs.deriving, create a named type as work around"
-  | Ptyp_any
-  | Ptyp_var _
-  | Ptyp_tuple _
-  | Ptyp_constr _
-  | Ptyp_object _
-  | Ptyp_class _
-  | Ptyp_variant _
-  | Ptyp_package _
-  | Ptyp_extension _ -> ()
 
 
 let get_optional_attrs =
   [Ast_attributes.bs_get; Ast_attributes.bs_return_undefined]
-let get_attrs = [ Ast_attributes.bs_get ]
+(** For this attributes, its type was wrapped as an option,
+   so we can still reuse existing frame work
+*)  
+
+let get_attrs = [ Ast_attributes.bs_get_arity]
 let set_attrs = [Ast_attributes.bs_set]
 let handleTdcl (tdcl : Parsetree.type_declaration) =
   let core_type = U.core_type_of_type_declaration tdcl in
@@ -36840,31 +36859,38 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
             pld_loc
            }:
              Parsetree.label_declaration) (acc, maker, labels) ->
-          let () = checkNotFunciton pld_type in
-          (* TODO: explain why *)
-          let prim, newLabel =
+          let prim_as_name, newLabel =
             match Ast_attributes.iter_process_bs_string_as pld_attributes with
             | None ->
-              [label_name], pld_name
+              label_name, pld_name
             | Some new_name ->
-              [new_name], {pld_name with txt = new_name}
+              new_name, {pld_name with txt = new_name}
           in
-          let is_option = Ast_attributes.has_bs_optional pld_attributes in
-          let maker, getter_type =
-            if is_option then
+          let prim = [prim_as_name] in 
+          let is_optional = Ast_attributes.has_bs_optional pld_attributes in
+          let maker, getter_declaration =
+            if is_optional then
               let optional_type = Ast_core_type.lift_option_type pld_type in
-              Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
-              Typ.arrow ~loc "" core_type optional_type
+              (Ast_core_type.opt_arrow pld_loc label_name optional_type maker,
+              Val.mk pld_name 
+                ~attrs:get_optional_attrs ~prim
+                (Typ.arrow ~loc "" core_type optional_type)
+                )
             else
               Typ.arrow ~loc:pld_loc label_name pld_type maker,
-               Typ.arrow ~loc "" core_type pld_type
+              Val.mk pld_name ~attrs:get_attrs
+              ~prim:(
+                ["" ; (* Not needed actually*)
+                External_ffi_types.to_string 
+                (Ffi_bs (
+                  [{arg_type = Nothing; arg_label = External_arg_spec.empty_label}],
+                  Return_identity,
+                  Js_get {js_get_name = prim_as_name; js_get_scopes = []}
+                  ))] )
+               (Typ.arrow ~loc "" core_type pld_type)
           in
           let acc =
-            Val.mk pld_name
-              ~attrs:(
-                if is_option then get_optional_attrs
-                else get_attrs)
-              ~prim getter_type :: acc in
+           getter_declaration :: acc in
           let is_current_field_mutable = pld_mutable = Mutable in
           let acc =
             if is_current_field_mutable then
@@ -36882,7 +36908,7 @@ let handleTdcl (tdcl : Parsetree.type_declaration) =
             else acc in
           acc,
           maker,
-          (is_option, newLabel)::labels
+          (is_optional, newLabel)::labels
         ) label_declarations
         ([],
          (if has_optional_field then

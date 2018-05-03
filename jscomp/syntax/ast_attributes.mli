@@ -46,8 +46,11 @@ type derive_attr = {
   explict_nonrec : bool;
   bs_deriving : Ast_payload.action list option
 }
-val process_bs_string_int_unwrap_uncurry :
-  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
+
+
+val iter_process_bs_string_int_unwrap_uncurry :
+  t -> 
+  [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]
 
 
 val iter_process_bs_string_as :
@@ -82,5 +85,6 @@ val bs_obj : attr
 
 
 val bs_get : attr
+val bs_get_arity : attr 
 val bs_set : attr
 val bs_return_undefined : attr
