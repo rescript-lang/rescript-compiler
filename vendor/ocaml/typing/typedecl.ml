@@ -1313,6 +1313,20 @@ let transl_exception env sext =
   let newenv = Env.add_extension ~check:true ext.ext_id ext.ext_type env in
     ext, newenv
 
+ let customize_arity arity pval_attributes = 
+  let cur_arity = ref arity in 
+  List.iter (fun (x:Parsetree.attribute) -> 
+    match x with 
+    | {txt = "internal.arity";_}, 
+      PStr [ {pstr_desc = Pstr_eval
+                  (
+                    ({pexp_desc = Pexp_constant (Const_int i)} :
+                       Parsetree.expression) ,_)}]
+      -> if i < !cur_arity then cur_arity := i
+    | _ -> ()
+  ) pval_attributes ;     
+  !cur_arity
+
 (* Translate a value declaration *)
 let transl_value_decl env loc valdecl =
   let cty = Typetexp.transl_type_scheme env valdecl.pval_type in
@@ -1323,7 +1337,7 @@ let transl_value_decl env loc valdecl =
       { val_type = ty; val_kind = Val_reg; Types.val_loc = loc;
         val_attributes = valdecl.pval_attributes }
   | decl ->
-      let arity = Ctype.arity ty in
+      let arity = customize_arity (Ctype.arity ty) valdecl.pval_attributes in
       let prim = Primitive.parse_declaration  arity decl in
       let prim_native_name = prim.prim_native_name in 
       if arity = 0 && not ( String.length prim_native_name > 3 &&
