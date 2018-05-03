@@ -374,7 +374,7 @@ let handle_attributes
       {[ int -> int -> (int -> int -> int [@bs.uncurry])]}
       It does not make sense
   *)
-  if has_bs_uncurry type_annotation.Parsetree.ptyp_attributes then
+  if has_bs_uncurry type_annotation.ptyp_attributes then
     begin
       Location.raise_errorf
         ~loc "[@@bs.uncurry] can not be applied to the whole definition"
@@ -384,7 +384,8 @@ let handle_attributes
     if String.length prim_name = 0 then  `Nm_val pval_prim
     else  `Nm_external prim_name  (* need check name *)
   in
-  let result_type, arg_types_ty =
+  let result_type, arg_types_ty = 
+    (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation in
   if has_bs_uncurry result_type.ptyp_attributes then
     begin
