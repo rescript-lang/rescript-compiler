@@ -85,5 +85,6 @@ val bs_obj : attr
 
 
 val bs_get : attr
+val bs_get_arity : attr 
 val bs_set : attr
 val bs_return_undefined : attr

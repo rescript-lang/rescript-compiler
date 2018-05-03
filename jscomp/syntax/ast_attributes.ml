@@ -358,6 +358,20 @@ let bs_obj : attr
 let bs_get : attr
   =  {txt = "bs.get"; loc = locg}, Ast_payload.empty
 
+let bs_get_arity : attr
+  =  {txt = "internal.arity"; loc = locg}, 
+    PStr 
+    [{pstr_desc =
+         Pstr_eval (
+           {pexp_desc =
+              Pexp_constant
+                (Const_int 1);
+            pexp_loc = locg;
+            pexp_attributes = []
+           },[])
+      ; pstr_loc = locg}]
+  
+
 let bs_set : attr
   =  {txt = "bs.set"; loc = locg}, Ast_payload.empty
 
