@@ -24,10 +24,10 @@
 
 
 [@@@ocaml.warning "+9"]
+(* record pattern match complete checker*)
 
 
-
-let variant_can_bs_unwrap_fields row_fields =
+let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool =
   let validity =
     List.fold_left
       begin fun st row ->
@@ -60,7 +60,8 @@ let variant_can_bs_unwrap_fields row_fields =
     ]}
     The result type would be [ hi:string ]
 *)
-let get_arg_type ~nolabel optional
+let get_arg_type 
+    ~nolabel optional
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr * Ast_core_type.t  =
   let ptyp =
@@ -71,12 +72,8 @@ let get_arg_type ~nolabel optional
     if optional then
       Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
     else begin
-      let ptyp_attrs =
-        ptyp.Parsetree.ptyp_attributes
-      in
-      let result =
-        Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs
-      in
+      let ptyp_attrs = ptyp.ptyp_attributes in
+      let result = Ast_attributes.iter_process_bs_string_or_int_as ptyp_attrs in
       (* when ppx start dropping attributes
         we should warn, there is a trade off whether
         we should warn dropped non bs attribute or not
@@ -85,7 +82,6 @@ let get_arg_type ~nolabel optional
       match result with
       |  None ->
         Bs_syntaxerr.err ptyp.ptyp_loc Invalid_underscore_type_in_external
-
       | Some (`Int i) ->
         Arg_cst(External_arg_spec.cst_int i), Ast_literal.type_int ~loc:ptyp.ptyp_loc ()
       | Some (`Str i)->
@@ -97,44 +93,34 @@ let get_arg_type ~nolabel optional
     end
   else (* ([`a|`b] [@bs.string]) *)
     let ptyp_desc = ptyp.ptyp_desc in
-    match Ast_attributes.process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
-    | (`String, ptyp_attributes)
-      ->
+    (match Ast_attributes.iter_process_bs_string_int_unwrap_uncurry ptyp.ptyp_attributes with
+    | `String ->
       begin match ptyp_desc with
         | Ptyp_variant ( row_fields, Closed, None)
-          ->
-          let attr =
-            Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields in
-          attr,
-          {ptyp with
-           ptyp_attributes
-          }
+          ->          
+          Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
       end
-    | (`Ignore, ptyp_attributes)  ->
-      (Ignore, {ptyp with ptyp_attributes})
-    | (`Int , ptyp_attributes) ->
+    | `Ignore ->
+      Ignore
+    | `Int ->
       begin match ptyp_desc with
         | Ptyp_variant ( row_fields, Closed, None) ->
           let int_lists =
             Ast_polyvar.map_row_fields_into_ints ptyp.ptyp_loc row_fields in
-          Int int_lists ,
-          {ptyp with
-           ptyp_attributes
-          }
+          Int int_lists
         | _ -> Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_int_type
       end
-    | (`Unwrap, ptyp_attributes) ->
-
+    | `Unwrap ->
       begin match ptyp_desc with
-        | (Ptyp_variant (row_fields, Closed, _) as ptyp_desc)
+        | Ptyp_variant (row_fields, Closed, _)
           when variant_can_bs_unwrap_fields row_fields ->
-          Unwrap, {ptyp with ptyp_desc; ptyp_attributes}
+          Unwrap
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_unwrap_type
       end
-    | (`Uncurry opt_arity, ptyp_attributes) ->
+    | `Uncurry opt_arity ->
       let real_arity =  Ast_core_type.get_uncurry_arity ptyp in
       (begin match opt_arity, real_arity with
          | Some arity, `Not_function ->
@@ -147,9 +133,8 @@ let get_arg_type ~nolabel optional
            if n <> arity then
              Bs_syntaxerr.err ptyp.ptyp_loc (Inconsistent_arity (arity,n))
            else Fn_uncurry_arity arity
-
-       end, {ptyp with ptyp_attributes})
-    | (`Nothing, ptyp_attributes) ->
+       end)
+    | `Nothing ->
       begin match ptyp_desc with
         | Ptyp_constr ({txt = Lident "unit"; _}, [])
           -> if nolabel then Extern_unit else  Nothing
@@ -160,7 +145,7 @@ let get_arg_type ~nolabel optional
           Nothing
         | _ ->
           Nothing
-      end, ptyp
+      end), ptyp
 
 
 
