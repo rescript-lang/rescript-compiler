@@ -2443,7 +2443,11 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
             (cstr.cstr_consts, cstr.cstr_nonconsts, consts, nonconsts)
           with
           | (1, 1, [0, act1], [0, act2]) ->
-              Lifthenelse(arg, act2, act1)
+              if cstr.cstr_name = "None" || cstr.cstr_name = "Some" then
+                let none = Lconst(Const_pointer (0, (Lambda.Pt_constructor "None"))) in
+                Lifthenelse(Lprim (Pintcomp Cneq, [arg; none], loc), act2, act1)
+              else
+                Lifthenelse(arg, act2, act1)
           | (2,0, [(i1,act1); (_,act2)],[]) ->
             if i1 = 0 then Lifthenelse(arg, act2, act1)
             else Lifthenelse (arg,act1,act2)
