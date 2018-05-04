@@ -260,6 +260,8 @@ val make_block :
   J.mutable_flag ->
   t
 
+val make_box : t -> t
+val make_unbox : t -> t
 
 val seq : binary_op
 val fuse_to_seq : t -> t list -> t 

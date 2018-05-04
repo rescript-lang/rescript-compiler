@@ -155,6 +155,16 @@ let merge_outer_comment comment (e : t )  =
                 comment 
                 = Some (comment ^ sep ^ s)} 
 
+let make_box e =
+  let fn = raw_js_code ?comment:(Some "box") Exp
+   {|function (x) {if(x==null || x[".box"]!==undefined) {return {".box":x}} else {return x}}|} in
+  call ~info:{arity=Full; call_info = Call_na} fn [e]
+
+let make_unbox e =
+  let fn = raw_js_code ?comment:(Some "unbox") Exp
+    {|function (x) {if(x!==null && x[".box"]===undefined) {return x} else {return x[".box"]}}|} in
+  call ~info:{arity=Full; call_info = Call_na} fn [e]
+
 let make_block ?comment tag tag_info es mutable_flag : t = 
   let comment = 
     match comment with 
@@ -174,7 +184,7 @@ let make_block ?comment tag tag_info es mutable_flag : t =
   in
   match tag_info, es with
   | Blk_constructor ("Some", 1), [e] ->
-    { e with comment}
+    make_box e
   | _ ->
   {
     expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;

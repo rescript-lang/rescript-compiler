@@ -155,6 +155,12 @@ let translate  loc
         E.is_null_undefined arg
       | _ -> assert false 
     end
+  | Punboxnull -> 
+    begin match args with 
+      | [arg] ->
+        E.make_unbox arg
+      | _ -> assert false 
+    end
   | Pjs_typeof -> 
     begin match args with 
       | [e] -> E.typeof e 

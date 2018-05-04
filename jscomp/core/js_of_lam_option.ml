@@ -76,7 +76,7 @@ let none : J.expression =
   {expression_desc = Null; comment = Some "None"}
 
 let some x : J.expression =
-  {x with comment = Some "Some"}
+  E.make_box x
   (* {expression_desc = Caml_block ( [x], Immutable, E.zero_int_literal , Blk_constructor ("Some",1) );
    comment = None} *)
 

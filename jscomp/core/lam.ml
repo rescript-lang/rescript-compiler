@@ -196,6 +196,7 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+  | Punboxnull
   | Pjs_typeof
   | Pjs_function_length
   | Pcaml_obj_length
@@ -1553,7 +1554,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Pmakeblock (tag,info, mutable_flag)
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
   | Pfield (id, Fld_record "Some") ->
-    begin match args with [x] -> x | _ -> assert false end
+    prim ~primitive:Punboxnull ~args loc
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 
