@@ -162,7 +162,7 @@ val set:
   ('a, 'b, 'id) t -> 'a -> 'b ->
   cmp:('a, 'id) cmp ->
   ('a, 'b, 'id) t
-(** [add m x y] returns a map containing the same bindings as
+(** [set m x y] returns a map containing the same bindings as
    [m], plus a binding of [x] to [y]. If [x] was already bound
    in [m], its previous binding disappears. *)
 

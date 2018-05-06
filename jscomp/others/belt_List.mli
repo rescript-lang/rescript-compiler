@@ -84,7 +84,7 @@ val tailExn: 'a t -> 'a t
 
 val add: 'a t -> 'a -> 'a t
 (**
-  [add xs y] adds [y] to the end of list [xs]
+  [add xs y] adds [y] to the beginning of list [xs]
   
    @example{[
      add [1] 3 = [3;1];;

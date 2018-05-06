@@ -115,7 +115,7 @@ val remove: 'a t -> key -> unit
 val removeMany: 'a t -> key array -> unit
     
 val set: 'a t -> key -> 'a -> unit  
-(** [add m x y] do the in-place modification, return
+(** [set m x y] do the in-place modification, return
     [m] for chaining. If [x] was already bound
    in [m], its previous binding disappears. *)
 
