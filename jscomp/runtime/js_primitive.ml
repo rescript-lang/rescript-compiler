@@ -54,3 +54,8 @@ let option_get_unwrap (x : 'a option) : 'b Js_undefined.t =
   | None -> Js_undefined.empty
   | Some x -> Js_undefined.return ((Obj.magic x).(1))
 
+let box_optional =
+  [%bs.raw {|function (x) {if(x==null || x[".box"]!==undefined) {return {".box":x}} else {return x}}|}]
+
+let unbox_optional =
+  [%bs.raw {|function (x) {if(x!==null && x[".box"]===undefined) {return x} else {return x[".box"]}}|}]
