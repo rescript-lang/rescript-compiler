@@ -167,8 +167,8 @@ let unsafe_js_compare x y =
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   if a == b then 0 else
   (*front and formoest, we do not compare function values*)
-  if a == (Obj.repr Js_null.empty) then -1 else
-  if b == (Obj.repr Js_null.empty) then 1 else
+  if (Obj.magic a) = None then (if (Obj.magic b) = None then 0 else -1) else
+  if (Obj.magic b) = None then 1 else
   let a_type = Js.typeof a in 
   let b_type = Js.typeof b in 
   if a_type = "string" then
@@ -183,7 +183,6 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
     | false, true -> 1 
     | false, false -> 
       if a_type = "boolean"
-      || a_type = "undefined"
       then (* TODO: refine semantics when comparing with [null] *)
         unsafe_js_compare a b
       else if a_type = "function" || b_type = "function"
@@ -268,13 +267,13 @@ type eq = Obj.t -> Obj.t -> bool
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
-  else 
+  else
+    if (Obj.magic a) = None then (Obj.magic b) = None else
+    if (Obj.magic b) = None then (Obj.magic a) = None else
     let a_type = Js.typeof a in 
     if a_type = "string"
     ||  a_type = "number"
     ||  a_type = "boolean"
-    ||  a_type = "undefined"
-    ||  a == (Obj.magic Js_null.empty)
     then false
     else 
       let b_type = Js.typeof b in 
@@ -282,7 +281,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
       then raise (Invalid_argument "equal: functional value")
       (* first, check using reference equality *)
       else (* a_type = "object" || "symbol" *)
-      if b_type = "number" || b_type = "undefined" || b == Obj.magic Js_null.empty then false 
+      if b_type = "number" then false 
       else 
         let tag_a = Bs_obj.tag a in
         let tag_b = Bs_obj.tag b in
@@ -337,8 +336,8 @@ let caml_equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =
   | Some y -> caml_equal x y 
 
 let caml_equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
-  match Js.toOption  y with 
-  | None -> x == (Obj.magic y)
+  match y with 
+  | None -> Obj.magic x = None
   | Some y -> caml_equal x y
 
 let caml_notequal a  b =  not (caml_equal a  b)

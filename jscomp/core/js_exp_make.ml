@@ -1273,7 +1273,7 @@ let eq_null_undefined_boolean ?comment (a : t) (b : t) =
      -> 
     caml_false
   | (Null, Undefined)
-  | (Undefined, Null) -> caml_false
+  | (Undefined, Null) -> caml_true
   | (Null, Null)
   | (Undefined, Undefined)
     -> caml_true
@@ -1301,7 +1301,7 @@ let neq_null_undefined_boolean ?comment (a : t) (b : t) =
    -> caml_false
   | (Null, Undefined)
   | (Undefined, Null)
-   -> caml_true
+   -> caml_false
   | _ ->       
        {expression_desc = Bin(NotEqEq, a, b); comment}
 

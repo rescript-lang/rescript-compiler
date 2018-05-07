@@ -36,8 +36,8 @@ let suites = Mt.[
   );
   "fromOption - None", (fun _ -> Eq(undefined, None |> fromOption));
   "fromOption - Some", (fun _ -> Eq(return 2, Some 2 |> fromOption));
-  "null <> undefined", (fun _ -> Ok(null <> undefined));
-  "null <> empty", (fun _ -> Ok(null <> undefined));
+  "not null <> undefined", (fun _ -> Eq(false, null <> undefined));
+  "not null <> empty", (fun _ -> Eq(false, null <> undefined));
   "undefined = empty", (fun _ -> Ok(undefined = undefined));
   __LOC__, (fun _ -> 
     Ok(

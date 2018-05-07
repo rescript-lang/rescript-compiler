@@ -77,6 +77,27 @@ let suites = Mt.[
     "eq_in_list2", (fun _ -> Eq ([[%bs.obj {x=2}]] = [[%bs.obj {x=2}]], true));
     "eq_with_list", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[0]}], true));
     "eq_with_list2", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[1]}], false));
+
+    __LOC__ , begin fun _ -> 
+        Eq(true, None = Js.Nullable.null)
+    end;
+    __LOC__ , begin fun _ -> 
+        Eq(true, None = Js.Nullable.undefined)
+    end;
+    __LOC__ , begin fun _ -> 
+        Eq(true, Js.Nullable.null = Js.Nullable.undefined)
+    end;
+    __LOC__ , begin fun _ -> 
+        Eq(false, Js.Nullable.null == Js.Nullable.undefined)
+    end;
+    __LOC__ , begin fun _ ->
+        let n : int option = (Obj.magic Js.Nullable.null) in
+        let u : int option = (Obj.magic Js.Nullable.undefined) in
+        Eq(true, n = u)
+    end;
+    __LOC__ , begin fun _ -> 
+        Eq(0, compare Js.Nullable.null Js.Nullable.undefined)
+    end;
 ]
 ;;
 

@@ -46,7 +46,7 @@ let () =
   b __LOC__ (eqNullable (f ()) v);
   b __LOC__ ( (eqNullable (shouldBeNull ()) v));
   b __LOC__ (not (eqNullable 1 (Js.Nullable.return 3)));
-  b __LOC__ ( (eqNullable None (Js.Nullable.return None)));
+  b __LOC__ (not (eqNullable None (Js.Nullable.return None)));
   b __LOC__ (not (eqNullable (Some 3) (Js.Nullable.return None)))
 
 let () = 
