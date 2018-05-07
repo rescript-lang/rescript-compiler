@@ -103,7 +103,7 @@ val remove: 'v t -> key -> 'v t
 val removeMany: 'v t -> key array -> 'v t
 
 val set: 'v t -> key -> 'v -> 'v t
-(** [add m x y] returns a map containing the same bindings as
+(** [set m x y] returns a map containing the same bindings as
    [m], plus a binding of [x] to [y]. If [x] was already bound
    in [m], its previous binding disappears. *)
 
