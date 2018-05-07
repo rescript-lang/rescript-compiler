@@ -167,8 +167,10 @@ let unsafe_js_compare x y =
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   if a == b then 0 else
   (*front and formoest, we do not compare function values*)
-  if a == (Obj.repr Js_null.empty) then -1 else
-  if b == (Obj.repr Js_null.empty) then 1 else
+  if a == (Obj.repr Js.null) then -1 else
+  if b == (Obj.repr Js.null) then 1 else
+  if a == (Obj.repr Js.undefined) then -1 else
+  if b == (Obj.repr Js.undefined) then 1 else
   let a_type = Js.typeof a in 
   let b_type = Js.typeof b in 
   if a_type = "string" then

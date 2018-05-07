@@ -84,7 +84,18 @@ let suites = Mt.[
     __LOC__ , begin fun _ ->
         Eq(compare (Js.Null.return [3]) Js.null, 1)
     end;
-
+    __LOC__ , begin fun _ ->
+        Eq(compare Js.null (Js.Null.return 0), -1)
+    end;
+    __LOC__ , begin fun _ ->
+        Eq(compare (Js.Null.return 0) Js.null, 1)
+    end;
+    __LOC__ , begin fun _ ->
+        Eq(compare Js.Nullable.undefined (Js.Nullable.return 0), -1)
+    end;
+    __LOC__ , begin fun _ ->
+        Eq(compare (Js.Nullable.return 0) Js.Nullable.undefined, 1)
+    end;
 ]
 ;;
 
