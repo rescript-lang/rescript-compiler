@@ -185,7 +185,6 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
     | false, true -> 1 
     | false, false -> 
       if a_type = "boolean"
-      || a_type = "undefined"
       then (* TODO: refine semantics when comparing with [null] *)
         unsafe_js_compare a b
       else if a_type = "function" || b_type = "function"
