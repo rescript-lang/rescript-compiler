@@ -100,7 +100,7 @@ type primitive =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  | Pintcomp of comparison
+  | Pintcomp of comparison * Lambda.int_comp_dbg
   | Poffsetint of int
   | Poffsetref of int
   (* Float operations *)
@@ -1328,7 +1328,7 @@ let prim ~primitive:(prim : primitive) ~args loc  : t =
         -> Lift.bool (comparison cmp a b)
       | Pfloatcomp  cmp,  (Const_nativeint a),  (Const_nativeint b)
         -> Lift.bool (comparison cmp a b)
-      | Pintcomp cmp ,
+      | Pintcomp (cmp, _),
         ( (Const_int a) | Const_pointer (a,_)),
         ( (Const_int b) | Const_pointer (b,_))
         -> Lift.bool (comparison cmp a b)
@@ -1611,7 +1611,7 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   | Pdivfloat -> prim ~primitive:Pdivfloat ~args loc
 
   | Pbswap16 -> prim ~primitive:Pbswap16 ~args loc
-  | Pintcomp x -> prim ~primitive:(Pintcomp x)  ~args loc
+  | Pintcomp (x, dbg) -> prim ~primitive:(Pintcomp (x, dbg))  ~args loc
   | Poffsetint x -> prim ~primitive:(Poffsetint x) ~args loc
   | Poffsetref x -> prim ~primitive:(Poffsetref x) ~args  loc
   | Pfloatcomp x -> prim ~primitive:(Pfloatcomp x) ~args loc

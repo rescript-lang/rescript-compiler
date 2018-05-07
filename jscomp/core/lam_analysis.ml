@@ -561,7 +561,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pduprecord (record_repesentation0,i1) -> (match rhs with Pduprecord(record_repesentation1,i2) ->  eq_record_representation record_repesentation0 record_repesentation1 && i1 = i2    | _ -> false)
   | Pjs_call (prim_name, arg_types, ffi) ->  ( match rhs with Pjs_call(prim_name1, arg_types1,ffi1) -> prim_name = prim_name1 && arg_types = arg_types1 && ffi = ffi1 | _ -> false)
   | Pjs_object_create obj_create -> (match rhs with Pjs_object_create obj_create1 -> obj_create = obj_create1 | _ -> false )
-  | Pintcomp comparison -> (match rhs with Pintcomp comparison1 -> eq_comparison comparison  comparison1  | _ -> false )    
+  | Pintcomp (comparison, dbg) -> (match rhs with Pintcomp (comparison1, dbg1) -> eq_comparison comparison  comparison1 && dbg = dbg1 | _ -> false )    
   | Pfloatcomp comparison -> (match rhs with Pfloatcomp comparison1 -> eq_comparison comparison  comparison1 | _ -> false)
   | Pjscomp comparison ->  (match rhs with  Pjscomp comparison1 -> eq_comparison comparison  comparison1  | _ -> false )    
   | Poffsetint i0 ->   (match rhs with  Poffsetint i1 -> i0 = i1 | _ -> false )   

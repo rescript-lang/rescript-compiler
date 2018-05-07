@@ -1522,14 +1522,14 @@ let inline_lazy_force_cond arg loc =
        Llet(Alias, tag, Lprim(Pccall prim_obj_tag, [varg], loc),
             Lifthenelse(
               (* if (tag == Obj.forward_tag) then varg.(0) else ... *)
-              Lprim(Pintcomp Ceq,
+              Lprim(Pintcomp (Ceq, Cmp_int),
                     [Lvar tag; Lconst(Const_base(Const_int Obj.forward_tag))],
                    loc),
               Lprim(Pfield (0, Fld_na (* TODO: lazy *)), [varg],
                    loc),
               Lifthenelse(
                 (* ... if (tag == Obj.lazy_tag) then Lazy.force varg else ... *)
-                Lprim(Pintcomp Ceq,
+                Lprim(Pintcomp (Ceq, Cmp_int),
                       [Lvar tag; Lconst(Const_base(Const_int Obj.lazy_tag))],
                      loc),
                 Lapply(force_fun, [varg], loc),
@@ -1760,8 +1760,8 @@ let zero_lam  = Lconst (Const_base (Const_int 0))
 
 let tree_way_test loc arg lt eq gt =
   Lifthenelse
-    (Lprim (Pintcomp Clt,[arg;zero_lam], loc),lt,
-     Lifthenelse(Lprim (Pintcomp Clt,[zero_lam;arg], loc),gt,eq))
+    (Lprim (Pintcomp (Clt, Cmp_int),[arg;zero_lam], loc),lt,
+     Lifthenelse(Lprim (Pintcomp (Clt, Cmp_int),[zero_lam;arg], loc),gt,eq))
 
 (* Dichotomic tree *)
 
@@ -1936,12 +1936,12 @@ let as_int_list cases acts =
 module SArg = struct
   type primitive = Lambda.primitive
 
-  let eqint = Pintcomp Ceq
-  let neint = Pintcomp Cneq
-  let leint = Pintcomp Cle
-  let ltint = Pintcomp Clt
-  let geint = Pintcomp Cge
-  let gtint = Pintcomp Cgt
+  let eqint = Pintcomp (Ceq, Cmp_int)
+  let neint = Pintcomp (Cneq, Cmp_int)
+  let leint = Pintcomp (Cle, Cmp_int)
+  let ltint = Pintcomp (Clt, Cmp_int)
+  let geint = Pintcomp (Cge, Cmp_int)
+  let gtint = Pintcomp (Cgt, Cmp_int)
 
   type act = Lambda.lambda
 
@@ -2405,7 +2405,7 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
             let tests =
               List.fold_right
                 (fun (path, act) rem ->
-                   Lifthenelse(Lprim(Pintcomp Ceq,
+                   Lifthenelse(Lprim(Pintcomp (Ceq, Cmp_int),
                                      [Lvar tag;
                                       transl_path ex_pat.pat_env path], loc),
                                act, rem))
@@ -2416,7 +2416,7 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
       in
         List.fold_right
           (fun (path, act) rem ->
-             Lifthenelse(Lprim(Pintcomp Ceq,
+             Lifthenelse(Lprim(Pintcomp (Ceq, Cmp_int),
                                [arg; transl_path ex_pat.pat_env path], loc),
                          act, rem))
           consts
@@ -2445,7 +2445,7 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
           | (1, 1, [0, act1], [0, act2]) ->
               if cstr.cstr_name = "None" || cstr.cstr_name = "Some" then
                 let none = Lconst(Const_pointer (0, (Lambda.Pt_constructor "None"))) in
-                Lifthenelse(Lprim (Pintcomp Cneq, [arg; none], loc), act2, act1)
+                Lifthenelse(Lprim (Pintcomp (Cneq, Cmp_opt), [arg; none], loc), act2, act1)
               else
                 Lifthenelse(arg, act2, act1)
           | (2,0, [(i1,act1); (_,act2)],[]) ->

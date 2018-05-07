@@ -32,7 +32,7 @@
 
 (** Some utilities for lambda compilation*)
 
-val jsop_of_comp : Lambda.comparison -> Js_op.binop
+val jsop_of_comp : Lambda.comparison -> Lambda.int_comp_dbg -> Js_op.binop
 
 val comment_of_tag_info : Lambda.tag_info -> string option
 

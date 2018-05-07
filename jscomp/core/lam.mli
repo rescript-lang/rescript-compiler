@@ -94,7 +94,7 @@ type primitive =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  | Pintcomp of Lambda.comparison
+  | Pintcomp of Lambda.comparison * Lambda.int_comp_dbg
   | Poffsetint of int
   | Poffsetref of int
   | Pintoffloat | Pfloatofint

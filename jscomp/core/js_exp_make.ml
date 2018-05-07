@@ -888,7 +888,7 @@ let set_length ?comment e tag : t =
 let obj_length ?comment e : t = 
   to_int32 {expression_desc = Length (e, Caml_block); comment }
 
-let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) = 
+let rec int_comp (cmp : Lambda.comparison)  ?comment  (e0 : t) (e1 : t) = 
   match cmp, e0.expression_desc, e1.expression_desc with
   | _, Call ({
       expression_desc = 
@@ -913,7 +913,10 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
             } , args, call_info)}
   | Ceq, _, _ -> int_equal e0 e1 
   | _ ->          
-    bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+    bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_int) e0 e1
+
+let int_comp_option (cmp : Lambda.comparison)  ?comment  (e0 : t) (e1 : t) =
+  bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
 
 let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) = 
   match e0, e1 with 
@@ -934,7 +937,7 @@ let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) =
     | Cle 
     | Cgt 
     | Ceq 
-    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1 
+    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1 
     end 
   | rest, {expression_desc = Bool true} 
   | {expression_desc = Bool false}, rest 
@@ -945,15 +948,15 @@ let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) =
     | Clt
     | Cge 
     | Ceq 
-    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
     end
   | _ , _ ->
-    bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+    bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
 let float_comp cmp ?comment  e0 e1 = 
-  bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+  bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
 
 let js_comp cmp ?comment  e0 e1 = 
-  bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+  bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
 
 
 let rec int32_lsr ?comment

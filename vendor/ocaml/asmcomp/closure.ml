@@ -308,7 +308,7 @@ let simplif_arith_prim_pure fpc p (args, approxs) dbg =
           make_const_int (n1 lsr n2)
       | Pasrint when 0 <= n2 && n2 < 8 * Arch.size_int ->
           make_const_int (n1 asr n2)
-      | Pintcomp c -> make_comparison c n1 n2
+      | Pintcomp (c, _) -> make_comparison c n1 n2
       | _ -> default
       end
   (* float *)
