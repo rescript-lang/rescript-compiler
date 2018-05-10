@@ -257,10 +257,10 @@ SYNTAX_SRCS= \
 	ast_util\
 	ast_tdcls\
 	ast_primitive\
+	ast_tuple_pattern_flatten\
 	ast_exp_apply\
 	ast_exp_extension\
 	ast_core_type_class_type\
-	ast_tuple_pattern_flatten\
 	ppx_entry\
 # not a good name ast_util
 SYNTAX_CMXS=$(addprefix syntax/, $(addsuffix .cmx, $(SYNTAX_SRCS)))
@@ -298,7 +298,7 @@ CORE_SRCS= js_runtime_modules \
 	lam_group \
 	lam_pass_deep_flatten\
 	js_stmt_make js_pass_flatten\
-	js_pass_tailcall_inline js_of_lam_variant js_pass_flatten_and_mark_dead js_ast_util lam_dce lam_group_pass lam_compile_env lam_stats_util\
+	js_pass_tailcall_inline js_of_lam_variant js_pass_flatten_and_mark_dead js_ast_util lam_dce lam_group_pass lam_compile_env lam_arity_analysis\
 	lam_stats_export lam_pass_alpha_conversion lam_pass_collect\
 	js_dump_lit\
 	js_dump_string\
@@ -559,7 +559,7 @@ bin/jsoo_reactjs_jsx_ppx_v2.ml:./bin/reactjs_jsx_ppx_v2.bspp.ml ../lib/bspp.exe
 	BS_COMPILER_IN_BROWSER=true ../lib/bspp.exe $^ > $@
 
 bin/js_compiler.ml:./bin/bspack.exe
-	 ./bin/bspack.exe -D BS_COMPILER_IN_BROWSER=true -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config -o $@ -bs-main Jsoo_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER) -I stubs -I ext -I syntax -I depends -I common -I core -I outcome_printer
+	 ./bin/bspack.exe -D BS_COMPILER_IN_BROWSER=true -U BS_DEBUG -bs-MD  -module-alias Config=Config_whole_compiler  -bs-exclude-I config -o $@ -bs-main Jsoo_main -I $(OCAML_SRC_UTILS) -I $(OCAML_SRC_PARSING) -I $(OCAML_SRC_TYPING) -I $(OCAML_SRC_BYTECOMP) -I $(OCAML_SRC_DRIVER) -I stubs -I ext -I syntax -I depends -I common -I core -I super_errors -I bsb -I outcome_printer
 
 bin/all_ounit_tests.ml:./bin/bspack.exe
 	$< -bs-MD    -I ounit -I ounit_tests  -I stubs -I bsb -I common -I ext -I syntax -I depends -I bspp -I core -bs-main Ounit_tests_main -o $@

@@ -65,7 +65,6 @@ let (//) = Filename.concat
 
 (* let get_packages_info () = !packages_info *)
 
-let default_gen_tds = ref false
 let no_builtin_ppx_ml = ref false
 let no_builtin_ppx_mli = ref false
 
@@ -106,3 +105,5 @@ let syntax_only = ref false
 let binary_ast = ref false
 
 let bs_suffix = ref false 
+
+let debug = ref false

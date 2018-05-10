@@ -137,56 +137,11 @@ class virtual map =
          Qualified (_, Runtime, Some "caml_int_compare")         
        ]}       
      *)
-                 (** where we use a trick [== null ] *)
-                 (* used in [#create_array] primitive, note having
-       uninitilized array is not as bad as in ocaml, 
-       since GC does not rely on it
-     *)
-                 (* shallow copy, like [x.slice] *)
-                 (* For [caml_array_append]*)
-                 (* | Tag_ml_obj of expression *) (* js true/false*)
+                 (** where we use a trick [== null ] *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
-                 (* 1 - v *) (* !v *)
-                 (* String.fromCharCode.apply(null, args) *)
-                 (* Convert JS boolean into OCaml boolean 
-       like [+true], note this ast talks using js
-       terminnology unless explicity stated                       
-     *)
-                 (* TODO: in the future, it might make sense to group primitivie by type,
-     which makes optimizations easier
-     {[ JSON.stringify(value, replacer[, space]) ]}
-  *)
-                 (* for debugging utitlites, 
-     TODO:  [Dump] is not necessary with this primitive 
-     Note that the semantics is slightly different from [JSON.stringify]     
-     {[
-       JSON.stringify("x")       
-     ]}
-     {[
-       ""x""       
-     ]}     
-     {[
-       JSON.stringify(undefined)       
-     ]}     
-     {[
-       undefined       
-     ]}
-     {[ '' + undefined
-     ]}     
-     {[ 'undefined'
-     ]}     
-  *)
-                 (* TODO: 
-     add 
-     {[ Assert of bool * expression ]}     
-  *)
-                 (* to support 
-       val log1 : 'a -> unit
-       val log2 : 'a -> 'b -> unit 
-       val log3 : 'a -> 'b -> 'c -> unit 
-     *)
+                 (* !v *)
                  (* TODO: Add some primitives so that [js inliner] can do a better job *)
                  (* [int_op] will guarantee return [int32] bits 
      https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
@@ -196,10 +151,6 @@ class virtual map =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
-                 (* {[ Bind (a,b) ]}
-     is literally
-     {[ a.bind(b) ]}
-  *)
                  (* Analysze over J expression is hard since, 
         some primitive  call is translated 
         into a plain call, it's better to keep them
@@ -392,32 +343,14 @@ class virtual map =
           let _x_i1 = o#length_object _x_i1 in Length (_x, _x_i1)
       | Char_of_int _x -> let _x = o#expression _x in Char_of_int _x
       | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
-      | Is_null_undefined_to_boolean _x ->
-          let _x = o#expression _x in Is_null_undefined_to_boolean _x
-      | Array_of_size _x -> let _x = o#expression _x in Array_of_size _x
-      | Array_copy _x -> let _x = o#expression _x in Array_copy _x
-      | Array_append (_x, _x_i1) ->
-          let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Array_append (_x, _x_i1)
+      | Is_null_or_undefined _x ->
+          let _x = o#expression _x in Is_null_or_undefined _x
       | String_append (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
-      | Int_of_boolean _x -> let _x = o#expression _x in Int_of_boolean _x
-      | Anything_to_number _x ->
-          let _x = o#expression _x in Anything_to_number _x
       | Bool _x -> let _x = o#bool _x in Bool _x
       | Typeof _x -> let _x = o#expression _x in Typeof _x
-      | Caml_not _x -> let _x = o#expression _x in Caml_not _x
       | Js_not _x -> let _x = o#expression _x in Js_not _x
-      | String_of_small_int_array _x ->
-          let _x = o#expression _x in String_of_small_int_array _x
-      | Json_stringify _x -> let _x = o#expression _x in Json_stringify _x
-      | Anything_to_string _x ->
-          let _x = o#expression _x in Anything_to_string _x
-      | Dump (_x, _x_i1) ->
-          let _x = o#unknown _x in
-          let _x_i1 = o#list (fun o -> o#expression) _x_i1
-          in Dump (_x, _x_i1)
       | Seq (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Seq (_x, _x_i1)
@@ -432,9 +365,6 @@ class virtual map =
       | FlatCall (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in FlatCall (_x, _x_i1)
-      | Bind (_x, _x_i1) ->
-          let _x = o#expression _x in
-          let _x_i1 = o#expression _x_i1 in Bind (_x, _x_i1)
       | Call (_x, _x_i1, _x_i2) ->
           let _x = o#expression _x in
           let _x_i1 = o#list (fun o -> o#expression) _x_i1 in
@@ -466,6 +396,10 @@ class virtual map =
       | Raw_js_code (_x, _x_i1) ->
           let _x = o#string _x in
           let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
+      | Raw_js_function (_x, _x_i1) ->
+          let _x = o#string _x in
+          let _x_i1 = o#list (fun o -> o#string) _x_i1
+          in Raw_js_function (_x, _x_i1)
       | Array (_x, _x_i1) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)
@@ -484,6 +418,8 @@ class virtual map =
           let _x_i1 = o#expression _x_i1 in Caml_block_set_length (_x, _x_i1)
       | Number _x -> let _x = o#number _x in Number _x
       | Object _x -> let _x = o#property_map _x in Object _x
+      | Undefined -> Undefined
+      | Null -> Null
     method expression : expression -> expression =
       fun { expression_desc = _x; comment = _x_i1 } ->
         let _x = o#expression_desc _x in

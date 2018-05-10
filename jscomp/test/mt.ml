@@ -26,7 +26,7 @@ external strict_neq : 'a -> 'a -> unit = "notStrictEqual"
 [@@bs.val]
 [@@bs.module "assert"]
 
-external ok : Js.boolean -> unit = "ok"
+external ok : bool -> unit = "ok"
 [@@bs.val]
 [@@bs.module "assert"]
 
@@ -50,7 +50,7 @@ let assert_equal = eq
 let assert_notequal = neq
 let assert_strict_equal = strict_eq
 let assert_strict_notequal = strict_neq
-let assert_ok = fun a -> ok (Js.Boolean.to_js_boolean a)
+let assert_ok = fun a -> ok a
 let assert_fail = fun msg -> fail () () (Js.Undefined.return msg) ""
 
 let is_mocha () =
@@ -155,7 +155,7 @@ let from_promise_suites name (suites : (string * _ Js.Promise.t ) list) =
 Note that [require] is a file local value,
 we need type [require]
 
-let is_top : unit -> Js.boolean = [%bs.raw{|
+let is_top : unit -> bool = [%bs.raw{|
 function (_){
 console.log('hi');
 if (typeof require === "undefined"){
@@ -168,7 +168,7 @@ if (typeof require === "undefined"){
 |}]
 
 let from_pair_suites_non_top name suites =
-    if not @@ Js.to_bool @@ is_top () then
+    if not @@ is_top () then
       from_pair_suites name suites
 *)
 

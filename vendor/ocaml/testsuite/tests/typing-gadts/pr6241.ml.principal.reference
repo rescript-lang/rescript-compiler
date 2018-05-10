@@ -11,5 +11,5 @@ module M :
     sig val f : ((module A.T), (module B.T)) t -> string end
 #   module A : sig module type T = sig  end end
 #   module N : sig val f : ((module A.T), (module A.T)) t -> string end
-#   Exception: Match_failure ("//toplevel//", 7, 52).
+#   Exception: Match_failure ("toplevel", 7, 52).
 # 

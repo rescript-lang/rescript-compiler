@@ -83,13 +83,16 @@ let free_variables_of_expression used_idents defined_idents st =
 
 let rec no_side_effect_expression_desc (x : J.expression_desc)  = 
   match x with 
+  | Raw_js_function _
+  | Undefined
+  | Null
   | Bool _ 
   | Var _ 
   | Unicode _ -> true 
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Access (a,b) -> no_side_effect a && no_side_effect b 
-  | Is_null_undefined_to_boolean b -> no_side_effect b 
+  | Is_null_or_undefined b -> no_side_effect b 
   | Str (b,_) -> b    
   | Array (xs,_mutable_flag)  
   | Caml_block (xs, _mutable_flag, _, _)
@@ -100,10 +103,8 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
         the block is mutable does not mean this operation is non-pure
     *)
     List.for_all no_side_effect  xs 
-  | Bind(fn, obj) -> no_side_effect fn && no_side_effect obj
   | Object kvs -> 
     List.for_all (fun (_property_name, y) -> no_side_effect y ) kvs 
-  | Array_append (a,b) 
   | String_append (a,b)
   | Seq (a,b) -> no_side_effect a && no_side_effect b 
   | Length (e, _)
@@ -115,17 +116,7 @@ let rec no_side_effect_expression_desc (x : J.expression_desc)  =
   | Bin (op, a, b) -> 
     op <> Eq && no_side_effect a && no_side_effect b     
   | Math _ 
-  | Array_of_size _
-  | Array_copy _ 
-  (* | Tag_ml_obj _ *)
-  | Int_of_boolean _ 
-  | J.Anything_to_number _
-  | Caml_not _ 
   | Js_not _
-  | String_of_small_int_array _ 
-  | Json_stringify _ 
-  | Anything_to_string _ 
-  | Dump _ 
   | Cond _ 
 
   | FlatCall _ 
@@ -186,6 +177,8 @@ let rec eq_expression
     ({expression_desc = x0}  : J.expression) 
     ({expression_desc = y0}  : J.expression) = 
   begin match x0  with 
+    | Null -> y0 = Null
+    | Undefined -> y0 = Undefined
     | Number (Int i) -> 
       begin match y0 with  
         | Number (Int j)   -> i = j 
@@ -246,12 +239,6 @@ let rec eq_expression
           p0 = p1 && b0 =  b1 && eq_expression e0 e1
         |  _ -> false 
       end
-    | Dump (l0,es0) -> 
-      begin match y0 with 
-        | Dump(l1,es1) -> 
-          l0 = l1 && eq_expression_list es0 es1
-        | _ -> false     
-      end
     | Seq (a0,b0) -> 
       begin match y0 with       
         | Seq(a1,b1) -> 
@@ -266,31 +253,19 @@ let rec eq_expression
     | Length _ 
     | Char_of_int _
     | Char_to_int _ 
-    | Is_null_undefined_to_boolean _ 
-    | Array_of_size _
-    | Array_copy _ 
-    | Array_append _ 
+    | Is_null_or_undefined _ 
     | String_append _ 
-    | Int_of_boolean _ 
-    | Anything_to_number _ 
-
     | Typeof _ 
-    | Caml_not _
     | Js_not _ 
-    | String_of_small_int_array _ 
-    | Json_stringify _ 
-    | Anything_to_string _ 
-
-
     | Cond _ 
     | FlatCall  _
-    | Bind _ 
     | String_access _ 
 
     | New _ 
     | Fun _ 
     | Unicode _ 
     | Raw_js_code _
+    | Raw_js_function _
     | Array _ 
     | Caml_block _ 
     (* | Caml_uninitialized_obj _  *)

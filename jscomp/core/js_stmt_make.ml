@@ -230,7 +230,6 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       exp (E.econd e b a) :: acc 
     | _, [], []                                   
       -> exp e :: acc 
-    | Caml_not e, _ , _ :: _
     | Js_not e, _ , _ :: _
       -> aux ?comment e else_ then_ acc
     | _, [], _
@@ -246,12 +245,17 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       aux ?comment e ys xs (y::acc)
         
 
-    |  Number ( Int { i = 0l; _}) , _,  _
+    |  (Number ( Int { i = 0l; _}) | Bool false) , _,  _
       ->  
       begin match else_ with 
         | [] -> acc 
         | _ -> block else_ ::acc
       end
+    | Bool true, _, _ ->
+       begin match then_ with 
+       |  []  -> acc 
+       | _ -> block then_ :: acc    
+      end 
     |  (Number _ , _, _
        | (Bin (Ge, 
                ({expression_desc = Length _;
@@ -264,18 +268,13 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
     | Bin (Bor , {expression_desc = Number (Int { i = 0l ; _})}, a), _, _ 
       -> 
       aux ?comment a  then_ else_ acc
-    (* | Bin (NotEqEq, e1,  *)
-    (*        {expression_desc = Var (Id ({name = "undefined"; _} as id))}), *)
-    (*   _, _ *)
-    (*   when Ext_ident.is_js id ->  *)
-    (*   aux ?comment e1 then_ else_ acc  *)
+
 
     | ((Bin (Gt, 
              ({expression_desc = 
                  Length _;
                _} as e ), {expression_desc = Number (Int { i = 0l; _})}))
-
-      | Int_of_boolean e), _ , _
+      ), _ , _
       ->
       (** Add comment when simplified *)
       aux ?comment e then_ else_ acc 
@@ -309,7 +308,6 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       aux ?comment (E.or_ e (E.not pred)) cont then_ acc       
 
     | _ -> 
-      let e = E.ocaml_boolean_under_condition e in 
       { statement_desc =
           If (e, 
               then_,
@@ -355,7 +353,6 @@ let rec while_  ?comment  ?label ?env (e : E.t) (st : J.block) : t =
   (* | {expression_desc = Int_of_boolean e; _} ->  *)
   (*   while_ ?comment  ?label  e st *)
   | _ -> 
-    let e = E.ocaml_boolean_under_condition e in
     let env = 
       match env with 
       | None -> Js_closure.empty ()

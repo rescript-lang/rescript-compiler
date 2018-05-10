@@ -22,6 +22,7 @@ bin/js_compiler.ml : ./core/js_long.ml
 bin/js_compiler.ml : ./core/lam_dce.ml
 bin/js_compiler.ml : ./ext/ext_char.ml
 bin/js_compiler.ml : ./ext/ext_int.mli
+bin/js_compiler.ml : ./ext/ext_json.ml
 bin/js_compiler.ml : ./ext/ext_list.ml
 bin/js_compiler.ml : ./ext/ext_path.ml
 bin/js_compiler.ml : ./ext/ext_ref.mli
@@ -43,6 +44,7 @@ bin/js_compiler.ml : ./ext/ext_array.ml
 bin/js_compiler.ml : ./ext/ext_bytes.ml
 bin/js_compiler.ml : ./ext/ext_char.mli
 bin/js_compiler.ml : ./ext/ext_ident.ml
+bin/js_compiler.ml : ./ext/ext_json.mli
 bin/js_compiler.ml : ./ext/ext_list.mli
 bin/js_compiler.ml : ./ext/ext_path.mli
 bin/js_compiler.ml : ./ext/ext_utf8.mli
@@ -73,6 +75,7 @@ bin/js_compiler.ml : ./ext/ident_set.mli
 bin/js_compiler.ml : ./ext/string_map.ml
 bin/js_compiler.ml : ./syntax/ast_exp.ml
 bin/js_compiler.ml : ./syntax/ast_pat.ml
+bin/js_compiler.ml : ./bsb/bsb_warning.ml
 bin/js_compiler.ml : ./common/ext_log.mli
 bin/js_compiler.ml : ./core/js_closure.ml
 bin/js_compiler.ml : ./core/js_fun_env.ml
@@ -96,6 +99,7 @@ bin/js_compiler.ml : ./syntax/ast_exp.mli
 bin/js_compiler.ml : ./syntax/ast_pat.mli
 bin/js_compiler.ml : ./syntax/ast_util.ml
 bin/js_compiler.ml : ../vendor/ocaml/utils/tbl.ml
+bin/js_compiler.ml : ./bsb/bsb_warning.mli
 bin/js_compiler.ml : ./common/js_config.ml
 bin/js_compiler.ml : ./core/config_util.ml
 bin/js_compiler.ml : ./core/js_analyzer.ml
@@ -121,11 +125,13 @@ bin/js_compiler.ml : ./ext/int_vec_util.ml
 bin/js_compiler.ml : ./ext/int_vec_vec.mli
 bin/js_compiler.ml : ./ext/resize_array.ml
 bin/js_compiler.ml : ./syntax/ast_comb.mli
+bin/js_compiler.ml : ./syntax/ast_tdcls.ml
 bin/js_compiler.ml : ./syntax/ast_util.mli
 bin/js_compiler.ml : ./syntax/ppx_entry.ml
 bin/js_compiler.ml : ../vendor/ocaml/typing/env.ml
 bin/js_compiler.ml : ../vendor/ocaml/utils/misc.ml
 bin/js_compiler.ml : ../vendor/ocaml/utils/tbl.mli
+bin/js_compiler.ml : ./bsb/bsb_exception.ml
 bin/js_compiler.ml : ./common/bs_version.ml
 bin/js_compiler.ml : ./common/js_config.mli
 bin/js_compiler.ml : ./core/config_util.mli
@@ -152,10 +158,13 @@ bin/js_compiler.ml : ./ext/ident_hashtbl.ml
 bin/js_compiler.ml : ./ext/int_vec_util.mli
 bin/js_compiler.ml : ./ext/resize_array.mli
 bin/js_compiler.ml : ./syntax/ast_derive.ml
+bin/js_compiler.ml : ./syntax/ast_tdcls.mli
 bin/js_compiler.ml : ./syntax/ppx_entry.mli
 bin/js_compiler.ml : ../vendor/ocaml/typing/env.mli
 bin/js_compiler.ml : ../vendor/ocaml/typing/path.ml
+bin/js_compiler.ml : ../vendor/ocaml/utils/ccomp.ml
 bin/js_compiler.ml : ../vendor/ocaml/utils/misc.mli
+bin/js_compiler.ml : ./bsb/bsb_exception.mli
 bin/js_compiler.ml : ./common/bs_version.mli
 bin/js_compiler.ml : ./common/bs_warnings.ml
 bin/js_compiler.ml : ./core/js_call_info.mli
@@ -187,6 +196,7 @@ bin/js_compiler.ml : ../vendor/ocaml/typing/mtype.ml
 bin/js_compiler.ml : ../vendor/ocaml/typing/path.mli
 bin/js_compiler.ml : ../vendor/ocaml/typing/subst.ml
 bin/js_compiler.ml : ../vendor/ocaml/typing/types.ml
+bin/js_compiler.ml : ../vendor/ocaml/utils/ccomp.mli
 bin/js_compiler.ml : ./common/bs_warnings.mli
 bin/js_compiler.ml : ./common/lam_methname.ml
 bin/js_compiler.ml : ./core/js_cmj_format.mli
@@ -197,7 +207,6 @@ bin/js_compiler.ml : ./core/js_pass_scope.mli
 bin/js_compiler.ml : ./core/lam_exit_code.mli
 bin/js_compiler.ml : ./core/lam_pass_count.ml
 bin/js_compiler.ml : ./core/lam_pass_exits.ml
-bin/js_compiler.ml : ./core/lam_stats_util.ml
 bin/js_compiler.ml : ./ext/ext_json_parse.mli
 bin/js_compiler.ml : ./ext/ext_modulename.mli
 bin/js_compiler.ml : ./ext/ext_pervasives.mli
@@ -209,6 +218,7 @@ bin/js_compiler.ml : ./syntax/ast_literal.mli
 bin/js_compiler.ml : ./syntax/ast_payload.mli
 bin/js_compiler.ml : ./syntax/ast_polyvar.mli
 bin/js_compiler.ml : ./syntax/bs_syntaxerr.ml
+bin/js_compiler.ml : ../vendor/ocaml/driver/pparse.ml
 bin/js_compiler.ml : ../vendor/ocaml/parsing/lexer.ml
 bin/js_compiler.ml : ../vendor/ocaml/parsing/parse.ml
 bin/js_compiler.ml : ../vendor/ocaml/typing/annot.mli
@@ -235,16 +245,17 @@ bin/js_compiler.ml : ./core/lam_compile_env.ml
 bin/js_compiler.ml : ./core/lam_inline_util.ml
 bin/js_compiler.ml : ./core/lam_pass_count.mli
 bin/js_compiler.ml : ./core/lam_pass_exits.mli
-bin/js_compiler.ml : ./core/lam_stats_util.mli
 bin/js_compiler.ml : ./depends/bs_exception.ml
 bin/js_compiler.ml : ./ext/string_hash_set.mli
 bin/js_compiler.ml : ./syntax/ast_core_type.ml
 bin/js_compiler.ml : ./syntax/ast_exp_apply.ml
+bin/js_compiler.ml : ./syntax/ast_primitive.ml
 bin/js_compiler.ml : ./syntax/ast_signature.ml
 bin/js_compiler.ml : ./syntax/ast_structure.ml
 bin/js_compiler.ml : ./syntax/bs_ast_mapper.ml
 bin/js_compiler.ml : ./syntax/bs_syntaxerr.mli
 bin/js_compiler.ml : ../vendor/ocaml/driver/compenv.ml
+bin/js_compiler.ml : ../vendor/ocaml/driver/pparse.mli
 bin/js_compiler.ml : ../vendor/ocaml/parsing/lexer.mli
 bin/js_compiler.ml : ../vendor/ocaml/parsing/parse.mli
 bin/js_compiler.ml : ../vendor/ocaml/parsing/parser.ml
@@ -255,6 +266,7 @@ bin/js_compiler.ml : ../vendor/ocaml/typing/typemod.ml
 bin/js_compiler.ml : ../vendor/ocaml/utils/clflags.mli
 bin/js_compiler.ml : ../vendor/ocaml/utils/terminfo.ml
 bin/js_compiler.ml : ../vendor/ocaml/utils/warnings.ml
+bin/js_compiler.ml : ./bsb/bsb_build_schemas.ml
 bin/js_compiler.ml : ./core/js_cmj_datasets.mli
 bin/js_compiler.ml : ./core/js_dump_program.mli
 bin/js_compiler.ml : ./core/js_dump_property.ml
@@ -280,6 +292,7 @@ bin/js_compiler.ml : ./depends/bs_exception.mli
 bin/js_compiler.ml : ./syntax/ast_attributes.ml
 bin/js_compiler.ml : ./syntax/ast_core_type.mli
 bin/js_compiler.ml : ./syntax/ast_exp_apply.mli
+bin/js_compiler.ml : ./syntax/ast_primitive.mli
 bin/js_compiler.ml : ./syntax/ast_signature.mli
 bin/js_compiler.ml : ./syntax/ast_structure.mli
 bin/js_compiler.ml : ./syntax/bs_ast_mapper.mli
@@ -314,6 +327,7 @@ bin/js_compiler.ml : ./core/lam_module_ident.mli
 bin/js_compiler.ml : ./core/lam_pass_collect.mli
 bin/js_compiler.ml : ./core/lam_pass_lets_dce.ml
 bin/js_compiler.ml : ./core/lam_stats_export.mli
+bin/js_compiler.ml : ./super_errors/super_env.ml
 bin/js_compiler.ml : ./syntax/ast_attributes.mli
 bin/js_compiler.ml : ./syntax/ast_derive_util.ml
 bin/js_compiler.ml : ./syntax/ast_external_mk.ml
@@ -337,11 +351,14 @@ bin/js_compiler.ml : ../vendor/ocaml/utils/consistbl.mli
 bin/js_compiler.ml : ./core/js_of_lam_variant.mli
 bin/js_compiler.ml : ./core/js_packages_state.mli
 bin/js_compiler.ml : ./core/js_runtime_modules.ml
+bin/js_compiler.ml : ./core/lam_arity_analysis.ml
 bin/js_compiler.ml : ./core/lam_compile_const.mli
 bin/js_compiler.ml : ./core/lam_compile_global.ml
 bin/js_compiler.ml : ./core/lam_eta_conversion.ml
 bin/js_compiler.ml : ./core/lam_pass_lets_dce.mli
 bin/js_compiler.ml : ./ext/hash_set_ident_mask.ml
+bin/js_compiler.ml : ./super_errors/super_main.ml
+bin/js_compiler.ml : ./super_errors/super_misc.ml
 bin/js_compiler.ml : ./syntax/ast_derive_util.mli
 bin/js_compiler.ml : ./syntax/ast_external_mk.mli
 bin/js_compiler.ml : ./syntax/ast_utf8_string.mli
@@ -361,11 +378,13 @@ bin/js_compiler.ml : ../vendor/ocaml/typing/primitive.mli
 bin/js_compiler.ml : ../vendor/ocaml/typing/typeclass.mli
 bin/js_compiler.ml : ../vendor/ocaml/typing/typedtree.mli
 bin/js_compiler.ml : ./core/js_of_lam_exception.ml
+bin/js_compiler.ml : ./core/lam_arity_analysis.mli
 bin/js_compiler.ml : ./core/lam_compile_context.ml
 bin/js_compiler.ml : ./core/lam_compile_global.mli
 bin/js_compiler.ml : ./core/lam_eta_conversion.mli
 bin/js_compiler.ml : ./ext/hash_set_ident_mask.mli
 bin/js_compiler.ml : ./ext/ordered_hash_map_gen.ml
+bin/js_compiler.ml : ./super_errors/super_misc.mli
 bin/js_compiler.ml : ./syntax/ast_exp_extension.ml
 bin/js_compiler.ml : ./syntax/bs_ast_invariant.mli
 bin/js_compiler.ml : ./syntax/external_arg_spec.ml
@@ -387,6 +406,7 @@ bin/js_compiler.ml : ./core/js_name_of_module_id.ml
 bin/js_compiler.ml : ./core/js_of_lam_exception.mli
 bin/js_compiler.ml : ./core/lam_beta_reduce_util.ml
 bin/js_compiler.ml : ./core/lam_compile_context.mli
+bin/js_compiler.ml : ./super_errors/super_pparse.ml
 bin/js_compiler.ml : ./syntax/ast_exp_extension.mli
 bin/js_compiler.ml : ./syntax/external_arg_spec.mli
 bin/js_compiler.ml : ./syntax/external_ffi_types.ml
@@ -407,6 +427,7 @@ bin/js_compiler.ml : ./core/lam_beta_reduce_util.mli
 bin/js_compiler.ml : ./core/lam_compile_primitive.ml
 bin/js_compiler.ml : ./core/lam_pass_deep_flatten.ml
 bin/js_compiler.ml : ./core/lam_pass_remove_alias.ml
+bin/js_compiler.ml : ./super_errors/super_typemod.ml
 bin/js_compiler.ml : ./syntax/ast_derive_abstract.ml
 bin/js_compiler.ml : ./syntax/external_ffi_types.mli
 bin/js_compiler.ml : ../vendor/ocaml/bytecomp/printlambda.ml
@@ -423,6 +444,10 @@ bin/js_compiler.ml : ./core/lam_dispatch_primitive.ml
 bin/js_compiler.ml : ./core/lam_pass_deep_flatten.mli
 bin/js_compiler.ml : ./core/lam_pass_eliminate_ref.ml
 bin/js_compiler.ml : ./core/lam_pass_remove_alias.mli
+bin/js_compiler.ml : ./super_errors/super_location.ml
+bin/js_compiler.ml : ./super_errors/super_typecore.ml
+bin/js_compiler.ml : ./super_errors/super_typetexp.ml
+bin/js_compiler.ml : ./super_errors/super_warnings.ml
 bin/js_compiler.ml : ./syntax/ast_derive_abstract.mli
 bin/js_compiler.ml : ./syntax/ast_derive_js_mapper.ml
 bin/js_compiler.ml : ./syntax/ast_derive_projector.ml
@@ -444,8 +469,10 @@ bin/js_compiler.ml : ./core/lam_pass_alpha_conversion.ml
 bin/js_compiler.ml : ./syntax/ast_utf8_string_interp.mli
 bin/js_compiler.ml : ./core/lam_compile_external_call.mli
 bin/js_compiler.ml : ./core/lam_pass_alpha_conversion.mli
+bin/js_compiler.ml : ./super_errors/super_reason_react.ml
 bin/js_compiler.ml : ./syntax/ast_core_type_class_type.ml
 bin/js_compiler.ml : ./ext/ordered_hash_map_local_ident.ml
+bin/js_compiler.ml : ./super_errors/super_reason_react.mli
 bin/js_compiler.ml : ./syntax/ast_core_type_class_type.mli
 bin/js_compiler.ml : ./syntax/ast_tuple_pattern_flatten.ml
 bin/js_compiler.ml : ./ext/ordered_hash_map_local_ident.mli

@@ -16,7 +16,7 @@ var yytransl_const = /* array */[
   0
 ];
 
-var yytransl_block = /* int array */[
+var yytransl_block = /* array */[
   257,
   258,
   0

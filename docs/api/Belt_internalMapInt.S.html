@@ -5,10 +5,10 @@
                  <link rel="stylesheet" href="../api_static/style.css" type="text/css">
                  <script src="../api_static//highlight.pack.js"></script>
                  <script src="../api_static//script.js"></script>
-                 <script>hljs.initHighlightingOnLoad();</script> 
+                 <script>hljs.initHighlightingOnLoad();</script>
                  <meta charset="utf8">
                  <link rel="previous" href="Belt_internalMapInt.A.html">
-                 <title> Belt_internalMapInt.S </title></head> 
+                 <title> Belt_internalMapInt.S </title></head>
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
@@ -99,27 +99,27 @@
 
 <pre><span class="keyword">module</span> S: <code class="type"><a href="Belt_SortArray.html">Belt_SortArray</a></code></pre><hr width="100%">
 
-<pre><span class="keyword">module</span> <a href="Belt_SortArray.Int.html">Int</a>: <code class="type"><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></code></pre> <div class="info">                     
+<pre><span class="keyword">module</span> <a href="Belt_SortArray.Int.html">Int</a>: <code class="type"><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a></code></pre> <div class="info">
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
-    than the gerneic type<br>
- 
+    than the generic type<br>
+
                 </div>
-                </div> 
-<pre><span class="keyword">module</span> <a href="Belt_SortArray.String.html">String</a>: <code class="type"><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></code></pre> <div class="info">                     
+                </div>
+<pre><span class="keyword">module</span> <a href="Belt_SortArray.String.html">String</a>: <code class="type"><a href="Belt_SortArrayString.html">Belt_SortArrayString</a></code></pre> <div class="info">
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
-    than the gerneic type<br>
- 
+    than the generic type<br>
+
                 </div>
-                </div> 
+                </div>
 <pre><span id="VALstrictlySortedLengthU"><span class="keyword">val</span> strictlySortedLengthU</span> : <code class="type">'a array -> ('a -> 'a -> bool [@bs]) -> int</code></pre>
 <pre><span id="VALstrictlySortedLength"><span class="keyword">val</span> strictlySortedLength</span> : <code class="type">'a array -> ('a -> 'a -> bool) -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">strictlySortedLenght xs cmp</code>
   return <code class="code">+n</code> means increasing order
   <code class="code">-n</code> means negative order<br>
- 
+
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">     strictlySortedLength [|1;2;3;4;3|] (fun x y -&gt; x &lt; y) = 4;;
@@ -130,13 +130,13 @@
                     </div>
                     </div>
 
-                  
+
 <pre><span id="VALisSortedU"><span class="keyword">val</span> isSortedU</span> : <code class="type">'a array -> ('a -> 'a -> int [@bs]) -> bool</code></pre>
 <pre><span id="VALisSorted"><span class="keyword">val</span> isSorted</span> : <code class="type">'a array -> ('a -> 'a -> int) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">isSorted arr cmp</code><br>
 <div class="tag"> <b>Returns</b> true if array is increasingly sorted (equal is okay )<br>
- </div> 
+ </div>
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">     isSorted [|1;1;2;3;4|] (fun x y -&gt; compare x y)) = true
@@ -144,7 +144,7 @@
                     </div>
                     </div>
 
-                  
+
 <pre><span id="VALstableSortInPlaceByU"><span class="keyword">val</span> stableSortInPlaceByU</span> : <code class="type">'a array -> ('a -> 'a -> int [@bs]) -> unit</code></pre>
 <pre><span id="VALstableSortInPlaceBy"><span class="keyword">val</span> stableSortInPlaceBy</span> : <code class="type">'a array -> ('a -> 'a -> int) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
@@ -153,12 +153,12 @@
 
     Sort xs in place using comparator <code class="code">cmp</code>, the stable means if the elements
     are equal, their order will be preserved<br>
- 
-                    </div>
-                    
+
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALstableSortByU"><span class="keyword">val</span> stableSortByU</span> : <code class="type">'a array -> ('a -> 'a -> int [@bs]) -> 'a array</code></pre>
 <pre><span id="VALstableSortBy"><span class="keyword">val</span> stableSortBy</span> : <code class="type">'a array -> ('a -> 'a -> int) -> 'a array</code></pre><div class="info ">
                     <div class="not-examples">
@@ -167,28 +167,28 @@
 <p>
 
     The same as <a href="Belt_SortArray.html#VALstableSortInPlaceBy"><code class="code">Belt_SortArray.stableSortInPlaceBy</code></a> except that <code class="code">xs</code> is  not modified<br>
- </div> 
-                    </div>
-                    
+ </div>
                     </div>
 
-                  
+                    </div>
+
+
 <pre><span id="VALbinarySearchByU"><span class="keyword">val</span> binarySearchByU</span> : <code class="type">'a array -> 'a -> ('a -> 'a -> int [@bs]) -> int</code></pre>
 <pre><span id="VALbinarySearchBy"><span class="keyword">val</span> binarySearchBy</span> : <code class="type">'a array -> 'a -> ('a -> 'a -> int) -> int</code></pre><div class="info ">
                     <div class="not-examples">
-                    If value is not found and value is less than one or more elements in array, 
-  the negative number returned is the bitwise complement of the index of the first element 
-  that is larger than value. 
+                    If value is not found and value is less than one or more elements in array,
+  the negative number returned is the bitwise complement of the index of the first element
+  that is larger than value.
 <p>
 
   If value is not found and value is greater than all elements in array,
-  the negative number returned is the bitwise complement of 
+  the negative number returned is the bitwise complement of
   (the index of the last element plus 1)
 <p>
 
   for example, if <code class="code">key</code> is smaller than all elements return <code class="code">-1</code> since <code class="code">lnot (-1) = 0</code>
   if <code class="code">key</code> is larger than all elements return <code class="code">- (len + 1)</code> since <code class="code">lnot (-(len+1)) = len</code><br>
- 
+
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">     binarySearchBy [|1;2;3;4;33;35;36|] 33 = 4;;

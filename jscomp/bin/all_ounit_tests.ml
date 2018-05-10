@@ -1292,6 +1292,7 @@ val range : int -> int -> int array
 
 val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
+val to_list_f : ('a -> 'b) -> 'a array -> 'b list 
 val to_list_map : ('a -> 'b option) -> 'a array -> 'b list 
 
 val to_list_map_acc : 
@@ -1426,6 +1427,13 @@ let map2i f a b =
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
 
+let rec tolist_f_aux a f  i res =
+  if i < 0 then res else
+    let v = Array.unsafe_get a i in
+    tolist_f_aux a f  (i - 1)
+      (f v :: res)
+       
+let to_list_f f a = tolist_f_aux a f (Array.length a  - 1) []
 
 let rec tolist_aux a f  i res =
   if i < 0 then res else
@@ -3529,6 +3537,7 @@ val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
+val js_type_boolean : string
 val js_undefined : string
 val js_prop_length : string
 
@@ -3555,6 +3564,7 @@ val setter_suffix_len : int
 val debugger : string
 val raw_expr : string
 val raw_stmt : string
+val raw_function : string
 val unsafe_downgrade : string
 val fn_run : string
 val method_run : string
@@ -3663,6 +3673,7 @@ let js_array_ctor = "Array"
 let js_type_number = "number"
 let js_type_string = "string"
 let js_type_object = "object" 
+let js_type_boolean = "boolean"
 let js_undefined = "undefined"
 let js_prop_length = "length"
 
@@ -3688,6 +3699,7 @@ let setter_suffix_len = String.length setter_suffix
 let debugger = "debugger"
 let raw_expr = "raw_expr"
 let raw_stmt = "raw_stmt"
+let raw_function = "raw_function"
 let unsafe_downgrade = "unsafe_downgrade"
 let fn_run = "fn_run"
 let method_run = "method_run"
@@ -4143,13 +4155,13 @@ external ff :
     OUnit.assert_bool __LOC__
     (Ext_string.contain_substring should_err.stderr "contravariant")
   end;
-  __LOC__ >:: begin fun _ ->
+  (* __LOC__ >:: begin fun _ ->
     let should_err = bsc_check_eval {|
     type 'a t = {k : int -> 'a } [@@bs.deriving abstract]
     |} in
     OUnit.assert_bool __LOC__
     (Ext_string.contain_substring should_err.stderr "not allowed")
-  end
+  end *)
     (* __LOC__ >:: begin fun _ ->  *)
     (*   let should_infer = perform_bsc [| "-i"; "-bs-eval"|] {| *)
     (*      let  f = fun [@bs] x -> let (a,b) = x in a + b  *)
@@ -6895,9 +6907,9 @@ val make_unused : unit -> Ident.t
 val convert : string -> string
 
 
-val undefined : Ident.t 
+
 val is_js_or_global : Ident.t -> bool
- val nil : Ident.t 
+
 
 
 val compare : Ident.t -> Ident.t -> int
@@ -7218,9 +7230,6 @@ let make_unused () = create "_"
 let reset () =
   String_hashtbl.clear js_module_table
 
-
-let undefined = create_js "undefined"
-let nil = create_js "null"
 
 (* Has to be total order, [x < y]
    and [x > y] should be consistent

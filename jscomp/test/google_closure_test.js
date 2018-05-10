@@ -17,7 +17,7 @@ Mt.from_pair_suites("Closure", /* :: */[
                       /* tuple */[
                         "3",
                         101,
-                        /* int array */[
+                        /* array */[
                           1,
                           2
                         ]

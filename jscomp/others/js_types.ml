@@ -37,7 +37,7 @@ type function_val
 type _ t = 
   | Undefined :  undefined_val t
   | Null : null_val t
-  | Boolean : Js.boolean t
+  | Boolean : bool t
   | Number : float t
   | String : string t
   | Function : function_val t
@@ -85,7 +85,7 @@ let classify (x : 'a) : tagged_t =
   if ty = "string" then 
     JSString (Obj.magic x) else 
   if ty = "boolean" then 
-    if (Obj.magic x) ==  Js.true_ then JSTrue 
+    if (Obj.magic x) =  true then JSTrue 
     else JSFalse else 
   if ty = "function" then 
     JSFunction (Obj.magic x) else 

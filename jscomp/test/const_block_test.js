@@ -4,13 +4,13 @@ var Mt = require("./mt.js");
 var Block = require("../../lib/js/block.js");
 var Caml_array = require("../../lib/js/caml_array.js");
 
-var a = /* float array */[
+var a = /* array */[
   0,
   1,
   2
 ];
 
-var b = /* int array */[
+var b = /* array */[
   0,
   1,
   2

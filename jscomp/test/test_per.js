@@ -4,6 +4,7 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_io = require("../../lib/js/caml_io.js");
 var Caml_obj = require("../../lib/js/caml_obj.js");
 var Caml_sys = require("../../lib/js/caml_sys.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Caml_format = require("../../lib/js/caml_format.js");
 var Caml_string = require("../../lib/js/caml_string.js");
 var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
@@ -57,6 +58,36 @@ function lnot(x) {
 
 var min_int = -2147483648;
 
+var infinity = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */2146435072,
+      /* lo */0
+    ]);
+
+var neg_infinity = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */-1048576,
+      /* lo */0
+    ]);
+
+var nan = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */2146435072,
+      /* lo */1
+    ]);
+
+var max_float = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */2146435071,
+      /* lo */4294967295
+    ]);
+
+var min_float = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */1048576,
+      /* lo */0
+    ]);
+
+var epsilon_float = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */1018167296,
+      /* lo */0
+    ]);
+
 function $caret(s1, s2) {
   var l1 = s1.length;
   var l2 = s2.length;
@@ -88,9 +119,9 @@ function string_of_bool(b) {
 function bool_of_string(param) {
   switch (param) {
     case "false" : 
-        return /* false */0;
+        return false;
     case "true" : 
-        return /* true */1;
+        return true;
     default:
       throw [
             Caml_builtin_exceptions.invalid_argument,
@@ -100,7 +131,7 @@ function bool_of_string(param) {
 }
 
 function string_of_int(n) {
-  return "" + n;
+  return Caml_format.caml_format_int("%d", n);
 }
 
 function valid_float_lexem(s) {
@@ -151,7 +182,7 @@ var stdout = Caml_io.caml_ml_open_descriptor_out(1);
 var stderr = Caml_io.caml_ml_open_descriptor_out(2);
 
 function open_out_gen(_, _$1, _$2) {
-  return Caml_io.caml_ml_open_descriptor_out(Caml_missing_polyfill.not_implemented("caml_sys_open not implemented by bucklescript yet\n"));
+  return Caml_io.caml_ml_open_descriptor_out(Caml_missing_polyfill.not_implemented("caml_sys_open"));
 }
 
 function open_out(name) {
@@ -236,12 +267,12 @@ function output_substring(oc, s, ofs, len) {
 }
 
 function output_value(_, _$1) {
-  return Caml_missing_polyfill.not_implemented("caml_output_value not implemented by bucklescript yet\n");
+  return Caml_missing_polyfill.not_implemented("caml_output_value");
 }
 
 function close_out(oc) {
   Caml_io.caml_ml_flush(oc);
-  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
 }
 
 function close_out_noerr(oc) {
@@ -252,7 +283,7 @@ function close_out_noerr(oc) {
     
   }
   try {
-    return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
   }
   catch (exn$1){
     return /* () */0;
@@ -260,7 +291,7 @@ function close_out_noerr(oc) {
 }
 
 function open_in_gen(_, _$1, _$2) {
-  return Caml_io.caml_ml_open_descriptor_in(Caml_missing_polyfill.not_implemented("caml_sys_open not implemented by bucklescript yet\n"));
+  return Caml_io.caml_ml_open_descriptor_in(Caml_missing_polyfill.not_implemented("caml_sys_open"));
 }
 
 function open_in(name) {
@@ -290,7 +321,7 @@ function input(_, s, ofs, len) {
           "input"
         ];
   } else {
-    return Caml_missing_polyfill.not_implemented("caml_ml_input not implemented by bucklescript yet\n");
+    return Caml_missing_polyfill.not_implemented("caml_ml_input");
   }
 }
 
@@ -301,7 +332,7 @@ function unsafe_really_input(_, _$1, _ofs, _len) {
     if (len <= 0) {
       return /* () */0;
     } else {
-      var r = Caml_missing_polyfill.not_implemented("caml_ml_input not implemented by bucklescript yet\n");
+      var r = Caml_missing_polyfill.not_implemented("caml_ml_input");
       if (r === 0) {
         throw Caml_builtin_exceptions.end_of_file;
       } else {
@@ -352,7 +383,7 @@ function input_line(chan) {
   while(true) {
     var len = _len;
     var accu = _accu;
-    var n = Caml_missing_polyfill.not_implemented("caml_ml_input_scan_line not implemented by bucklescript yet\n");
+    var n = Caml_missing_polyfill.not_implemented("caml_ml_input_scan_line");
     if (n === 0) {
       if (accu) {
         return build_result(Caml_string.caml_create_string(len), len, accu);
@@ -361,7 +392,7 @@ function input_line(chan) {
       }
     } else if (n > 0) {
       var res = Caml_string.caml_create_string(n - 1 | 0);
-      Caml_missing_polyfill.not_implemented("caml_ml_input not implemented by bucklescript yet\n");
+      Caml_missing_polyfill.not_implemented("caml_ml_input");
       Caml_io.caml_ml_input_char(chan);
       if (accu) {
         var len$1 = (len + n | 0) - 1 | 0;
@@ -374,7 +405,7 @@ function input_line(chan) {
       }
     } else {
       var beg = Caml_string.caml_create_string(-n | 0);
-      Caml_missing_polyfill.not_implemented("caml_ml_input not implemented by bucklescript yet\n");
+      Caml_missing_polyfill.not_implemented("caml_ml_input");
       _len = len - n | 0;
       _accu = /* :: */[
         beg,
@@ -387,7 +418,7 @@ function input_line(chan) {
 
 function close_in_noerr() {
   try {
-    return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
   }
   catch (exn){
     return /* () */0;
@@ -407,7 +438,7 @@ function print_bytes(s) {
 }
 
 function print_int(i) {
-  return output_string(stdout, "" + i);
+  return output_string(stdout, Caml_format.caml_format_int("%d", i));
 }
 
 function print_float(f) {
@@ -438,7 +469,7 @@ function prerr_bytes(s) {
 }
 
 function prerr_int(i) {
-  return output_string(stderr, "" + i);
+  return output_string(stderr, Caml_format.caml_format_int("%d", i));
 }
 
 function prerr_float(f) {
@@ -503,18 +534,6 @@ function exit(retcode) {
 }
 
 var max_int = 2147483647;
-
-var infinity = Infinity;
-
-var neg_infinity = -Infinity;
-
-var nan = NaN;
-
-var max_float = 1.79769313486231571e+308;
-
-var min_float = 2.22507385850720138e-308;
-
-var epsilon_float = 2.22044604925031308e-16;
 
 exports.failwith = failwith;
 exports.invalid_arg = invalid_arg;

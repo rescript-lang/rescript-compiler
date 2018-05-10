@@ -56,6 +56,7 @@ type pointer_info =
   | Pt_constructor of string
   | Pt_variant of string 
   | Pt_module_alias
+  | Pt_builtin_boolean
   | Pt_na 
 
 val default_pointer_info : pointer_info

@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,10 +27,10 @@
 
 
 
-type t = 
+type t =
   | Single of Lam.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
-  | Nop of Lam.t 
+  | Nop of Lam.t
 
 
 
@@ -39,3 +39,14 @@ type t =
 (** Tricky to be complete *)
 
 val pp_group : Env.t -> Format.formatter -> t -> unit
+
+val single :
+  Lam.let_kind ->
+  Ident.t ->
+  Lam.t ->
+  t
+
+val nop_cons :
+  Lam.t ->
+  t list ->
+  t list

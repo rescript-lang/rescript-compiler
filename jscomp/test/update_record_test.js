@@ -31,9 +31,14 @@ function eq(loc, x, y) {
 
 function f(x) {
   var y = Caml_obj.caml_obj_dup(x);
-  var newrecord = y.slice();
-  newrecord[/* a0 */0] = 1;
-  return newrecord;
+  return /* record */[
+          /* a0 */1,
+          /* a1 */y[/* a1 */1],
+          /* a2 */y[/* a2 */2],
+          /* a3 */y[/* a3 */3],
+          /* a4 */y[/* a4 */4],
+          /* a5 */y[/* a5 */5]
+        ];
 }
 
 eq("File \"update_record_test.ml\", line 30, characters 5-12", 1, f(/* record */[

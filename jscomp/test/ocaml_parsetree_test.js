@@ -36,18 +36,18 @@ var CamlinternalLazy = require("../../lib/js/camlinternalLazy.js");
 var Caml_missing_polyfill = require("../../lib/js/caml_missing_polyfill.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var fast = [/* false */0];
+var fast = [false];
 
-var applicative_functors = [/* true */1];
+var applicative_functors = [true];
 
 var bs_vscode;
 
 try {
   Caml_sys.caml_sys_getenv("BS_VSCODE");
-  bs_vscode = /* true */1;
+  bs_vscode = true;
 }
 catch (exn){
-  bs_vscode = /* false */0;
+  bs_vscode = false;
 }
 
 var color = [/* Auto */0];
@@ -156,7 +156,7 @@ function style_of_tag(s) {
   }
 }
 
-var color_enabled = [/* true */1];
+var color_enabled = [true];
 
 function set_color_tag_handling(ppf) {
   var functions = Format.pp_get_formatter_tag_functions(ppf, /* () */0);
@@ -211,11 +211,11 @@ function set_color_tag_handling(ppf) {
     functions$prime_002,
     functions$prime_003
   ];
-  ppf[/* pp_mark_tags */21] = /* true */1;
+  ppf[/* pp_mark_tags */21] = true;
   return Format.pp_set_formatter_tag_functions(ppf, functions$prime);
 }
 
-var first = [/* true */1];
+var first = [true];
 
 var formatter_l_001 = /* :: */[
   Format.err_formatter,
@@ -232,17 +232,17 @@ var formatter_l = /* :: */[
 
 function setup(o) {
   if (first[0]) {
-    first[0] = /* false */0;
-    Format.set_mark_tags(/* true */1);
+    first[0] = false;
+    Format.set_mark_tags(true);
     List.iter(set_color_tag_handling, formatter_l);
     var tmp;
     switch (o) {
       case 1 : 
-          tmp = /* true */1;
+          tmp = true;
           break;
       case 0 : 
       case 2 : 
-          tmp = /* false */0;
+          tmp = false;
           break;
       
     }
@@ -552,8 +552,8 @@ function letter(param) {
 }
 
 var current = [/* record */[
-    /* active */Caml_array.caml_make_vect(51, /* true */1),
-    /* error */Caml_array.caml_make_vect(51, /* false */0)
+    /* active */Caml_array.caml_make_vect(51, true),
+    /* error */Caml_array.caml_make_vect(51, false)
   ]];
 
 function is_active(x) {
@@ -562,14 +562,14 @@ function is_active(x) {
 
 function parse_opt(error, active, flags, s) {
   var set = function (i) {
-    return Caml_array.caml_array_set(flags, i, /* true */1);
+    return Caml_array.caml_array_set(flags, i, true);
   };
   var clear = function (i) {
-    return Caml_array.caml_array_set(flags, i, /* false */0);
+    return Caml_array.caml_array_set(flags, i, false);
   };
   var set_all = function (i) {
-    Caml_array.caml_array_set(active, i, /* true */1);
-    return Caml_array.caml_array_set(error, i, /* true */1);
+    Caml_array.caml_array_set(active, i, true);
+    return Caml_array.caml_array_set(error, i, true);
   };
   var get_num = function (_n, _i) {
     while(true) {
@@ -737,9 +737,9 @@ function parse_options(errflag, s) {
   return /* () */0;
 }
 
-parse_options(/* false */0, "+a-4-6-7-9-27-29-32..39-41..42-44-45-48-50");
+parse_options(false, "+a-4-6-7-9-27-29-32..39-41..42-44-45-48-50");
 
-parse_options(/* true */1, "-a");
+parse_options(true, "-a");
 
 function message(param) {
   if (typeof param === "number") {
@@ -938,18 +938,18 @@ function message(param) {
           return "unused ancestor variable " + (param[0] + ".");
       case 21 : 
           var s$2 = param[0];
-          if (param[1] !== 0) {
+          if (param[1]) {
             return "constructor " + (s$2 + " is never used to build values.\n(However, this constructor appears in patterns.)");
-          } else if (param[2] !== 0) {
+          } else if (param[2]) {
             return "constructor " + (s$2 + " is never used to build values.\nIts type is exported as a private type.");
           } else {
             return "unused constructor " + (s$2 + ".");
           }
       case 22 : 
           var s$3 = param[0];
-          if (param[1] !== 0) {
+          if (param[1]) {
             return "extension constructor " + (s$3 + " is never used to build values.\n(However, this constructor appears in patterns.)");
-          } else if (param[2] !== 0) {
+          } else if (param[2]) {
             return "extension constructor " + (s$3 + " is never used to build values.\nIt is exported or rebound as a private extension.");
           } else {
             return "unused extension constructor " + (s$3 + ".");
@@ -958,13 +958,13 @@ function message(param) {
           var slist$2 = param[1];
           var ty = param[0];
           var exit = 0;
-          if (slist$2 && !(slist$2[1] || param[2] !== 0)) {
+          if (slist$2 && !(slist$2[1] || param[2])) {
             return slist$2[0] + (" was selected from type " + (ty + ".\nIt is not visible in the current scope, and will not \nbe selected if the type becomes unknown."));
           } else {
             exit = 1;
           }
           if (exit === 1) {
-            if (param[2] !== 0) {
+            if (param[2]) {
               return "this record of type " + (ty + (" contains fields that are \nnot visible in the current scope: " + ($$String.concat(" ", slist$2) + ".\nThey will not be selected if the type becomes unknown.")));
             } else {
               throw [
@@ -981,13 +981,13 @@ function message(param) {
       case 24 : 
           var slist$3 = param[0];
           var exit$1 = 0;
-          if (slist$3 && !(slist$3[1] || param[2] !== 0)) {
+          if (slist$3 && !(slist$3[1] || param[2])) {
             return slist$3[0] + (" belongs to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong."));
           } else {
             exit$1 = 1;
           }
           if (exit$1 === 1) {
-            if (param[2] !== 0) {
+            if (param[2]) {
               return "these field labels belong to several types: " + ($$String.concat(" ", param[1]) + "\nThe first one was selected. Please disambiguate if this is wrong.");
             } else {
               throw [
@@ -1141,7 +1141,7 @@ function print(ppf, w) {
 
 var Errors = Caml_exceptions.create("Ocaml_parsetree_test.Warnings.Errors");
 
-var absname = [/* false */0];
+var absname = [false];
 
 function in_file(name) {
   var loc = /* record */[
@@ -1153,7 +1153,7 @@ function in_file(name) {
   return /* record */[
           /* loc_start */loc,
           /* loc_end */loc,
-          /* loc_ghost : true */1
+          /* loc_ghost */true
         ];
 }
 
@@ -1163,7 +1163,7 @@ function curr(lexbuf) {
   return /* record */[
           /* loc_start */lexbuf[/* lex_start_p */10],
           /* loc_end */lexbuf[/* lex_curr_p */11],
-          /* loc_ghost : false */0
+          /* loc_ghost */false
         ];
 }
 
@@ -1171,7 +1171,7 @@ function symbol_rloc() {
   return /* record */[
           /* loc_start */Parsing.symbol_start_pos(/* () */0),
           /* loc_end */Parsing.symbol_end_pos(/* () */0),
-          /* loc_ghost : false */0
+          /* loc_ghost */false
         ];
 }
 
@@ -1179,7 +1179,7 @@ function symbol_gloc() {
   return /* record */[
           /* loc_start */Parsing.symbol_start_pos(/* () */0),
           /* loc_end */Parsing.symbol_end_pos(/* () */0),
-          /* loc_ghost : true */1
+          /* loc_ghost */true
         ];
 }
 
@@ -1187,7 +1187,7 @@ function rhs_loc(n) {
   return /* record */[
           /* loc_start */Parsing.rhs_start_pos(n),
           /* loc_end */Parsing.rhs_end_pos(n),
-          /* loc_ghost : false */0
+          /* loc_ghost */false
         ];
 }
 
@@ -1216,34 +1216,34 @@ function highlight_terminfo(ppf, num_lines, lb, locs) {
     throw Pervasives.Exit;
   }
   Caml_io.caml_ml_flush(Pervasives.stdout);
-  Caml_missing_polyfill.not_implemented("caml_terminfo_backup not implemented by bucklescript yet\n");
-  var bol = /* false */0;
+  Caml_missing_polyfill.not_implemented("caml_terminfo_backup");
+  var bol = false;
   Pervasives.print_string("# ");
   for(var pos = 0 ,pos_finish = (lb[/* lex_buffer_len */2] - pos0 | 0) - 1 | 0; pos <= pos_finish; ++pos){
     if (bol) {
       Pervasives.print_string("  ");
-      bol = /* false */0;
+      bol = false;
     }
     if (List.exists((function(pos){
           return function (loc) {
-            return +(pos === loc[/* loc_start */0][/* pos_cnum */3]);
+            return pos === loc[/* loc_start */0][/* pos_cnum */3];
           }
           }(pos)), locs)) {
-      Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
+      Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
     }
     if (List.exists((function(pos){
           return function (loc) {
-            return +(pos === loc[/* loc_end */1][/* pos_cnum */3]);
+            return pos === loc[/* loc_end */1][/* pos_cnum */3];
           }
           }(pos)), locs)) {
-      Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
+      Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
     }
     var c = Caml_bytes.get(lb[/* lex_buffer */1], pos + pos0 | 0);
     Pervasives.print_char(c);
-    bol = +(c === /* "\n" */10);
+    bol = c === /* "\n" */10;
   }
-  Caml_missing_polyfill.not_implemented("caml_terminfo_standout not implemented by bucklescript yet\n");
-  Caml_missing_polyfill.not_implemented("caml_terminfo_resume not implemented by bucklescript yet\n");
+  Caml_missing_polyfill.not_implemented("caml_terminfo_standout");
+  Caml_missing_polyfill.not_implemented("caml_terminfo_resume");
   return Caml_io.caml_ml_flush(Pervasives.stdout);
 }
 
@@ -1368,36 +1368,36 @@ function highlight_locations(ppf, locs) {
         if (match$1) {
           var norepeat;
           try {
-            norepeat = +(Caml_sys.caml_sys_getenv("TERM") === "norepeat");
+            norepeat = Caml_sys.caml_sys_getenv("TERM") === "norepeat";
           }
           catch (exn){
             if (exn === Caml_builtin_exceptions.not_found) {
-              norepeat = /* false */0;
+              norepeat = false;
             } else {
               throw exn;
             }
           }
           if (norepeat) {
-            return /* false */0;
+            return false;
           } else {
             var loc1 = List.hd(locs);
             try {
               highlight_dumb(ppf, match$1[0], loc1);
-              return /* true */1;
+              return true;
             }
             catch (exn$1){
               if (exn$1 === Pervasives.Exit) {
-                return /* false */0;
+                return false;
               } else {
                 throw exn$1;
               }
             }
           }
         } else {
-          return /* false */0;
+          return false;
         }
       } else {
-        status[0] = Caml_missing_polyfill.not_implemented("caml_terminfo_setup not implemented by bucklescript yet\n");
+        status[0] = Caml_missing_polyfill.not_implemented("caml_terminfo_setup");
         continue ;
       }
     } else {
@@ -1405,17 +1405,17 @@ function highlight_locations(ppf, locs) {
       if (match$2) {
         try {
           highlight_terminfo(ppf, match[0], match$2[0], locs);
-          return /* true */1;
+          return true;
         }
         catch (exn$2){
           if (exn$2 === Pervasives.Exit) {
-            return /* false */0;
+            return false;
           } else {
             throw exn$2;
           }
         }
       } else {
-        return /* false */0;
+        return false;
       }
     }
   };
@@ -1820,21 +1820,21 @@ function is_mocha() {
     if (match$1) {
       var exec = Path.basename(match$1[0]);
       if (exec === "mocha") {
-        return /* true */1;
+        return true;
       } else {
-        return +(exec === "_mocha");
+        return exec === "_mocha";
       }
     } else {
-      return /* false */0;
+      return false;
     }
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
 function close_enough($staropt$star, a, b) {
   var threshold = $staropt$star ? $staropt$star[0] : 0.0000001;
-  return +(Math.abs(a - b) < threshold);
+  return Math.abs(a - b) < threshold;
 }
 
 function from_pair_suites(name, suites) {
@@ -1860,25 +1860,24 @@ function from_pair_suites(name, suites) {
                                           Assert.notStrictEqual(match[0], match[1]);
                                           return /* () */0;
                                       case 4 : 
-                                          var b = match[0];
-                                          Assert.ok(b ? true : false);
+                                          Assert.ok(match[0]);
                                           return /* () */0;
                                       case 5 : 
-                                          var b$1 = match[1];
+                                          var b = match[1];
                                           var a = match[0];
-                                          if (close_enough(/* None */0, a, b$1)) {
+                                          if (close_enough(/* None */0, a, b)) {
                                             return 0;
                                           } else {
-                                            Assert.deepEqual(a, b$1);
+                                            Assert.deepEqual(a, b);
                                             return /* () */0;
                                           }
                                       case 6 : 
-                                          var b$2 = match[2];
+                                          var b$1 = match[2];
                                           var a$1 = match[1];
-                                          if (close_enough(/* Some */[match[0]], a$1, b$2)) {
+                                          if (close_enough(/* Some */[match[0]], a$1, b$1)) {
                                             return 0;
                                           } else {
-                                            Assert.deepEqual(a$1, b$2);
+                                            Assert.deepEqual(a$1, b$1);
                                             return /* () */0;
                                           }
                                       case 7 : 
@@ -1984,18 +1983,18 @@ function from_pair_suites(name, suites) {
 var docstrings = [/* [] */0];
 
 function warn_bad_docstrings() {
-  if (is_active(/* Bad_docstring */Block.__(33, [/* true */1]))) {
+  if (is_active(/* Bad_docstring */Block.__(33, [true]))) {
     return List.iter((function (ds) {
                   var match = ds[/* ds_attached */2];
                   switch (match) {
                     case 0 : 
-                        return prerr_warning(ds[/* ds_loc */1], /* Bad_docstring */Block.__(33, [/* true */1]));
+                        return prerr_warning(ds[/* ds_loc */1], /* Bad_docstring */Block.__(33, [true]));
                     case 1 : 
                         return /* () */0;
                     case 2 : 
                         var match$1 = ds[/* ds_associated */3];
                         if (match$1 >= 2) {
-                          return prerr_warning(ds[/* ds_loc */1], /* Bad_docstring */Block.__(33, [/* false */0]));
+                          return prerr_warning(ds[/* ds_loc */1], /* Bad_docstring */Block.__(33, [false]));
                         } else {
                           return /* () */0;
                         }
@@ -2200,7 +2199,7 @@ function get_pre_docs(pos) {
   try {
     var dsl = Hashtbl.find(pre_table, pos);
     associate_docstrings(dsl);
-    return get_docstring(/* false */0, dsl);
+    return get_docstring(false, dsl);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
@@ -2238,7 +2237,7 @@ function get_post_docs(pos) {
   try {
     var dsl = Hashtbl.find(post_table, pos);
     associate_docstrings(dsl);
-    return get_docstring(/* false */0, dsl);
+    return get_docstring(false, dsl);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
@@ -2265,7 +2264,7 @@ function mark_post_docs(pos) {
 function get_info(pos) {
   try {
     var dsl = Hashtbl.find(post_table, pos);
-    return get_docstring(/* true */1, dsl);
+    return get_docstring(true, dsl);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
@@ -3410,7 +3409,7 @@ function mkoption(d) {
   var loc = /* record */[
     loc_000,
     loc_001,
-    /* loc_ghost : true */1
+    /* loc_ghost */true
   ];
   return mk(/* Some */[loc], /* None */0, /* Ptyp_constr */Block.__(3, [
                 /* record */[
@@ -3530,7 +3529,7 @@ function mktailexp(nilloc, param) {
     var loc = /* record */[
       loc_000,
       loc_001,
-      /* loc_ghost : true */1
+      /* loc_ghost */true
     ];
     var arg = Curry._3(Ast_helper_004[/* mk */0], /* Some */[loc], /* None */0, /* Pexp_tuple */Block.__(8, [/* :: */[
               e1,
@@ -3542,7 +3541,7 @@ function mktailexp(nilloc, param) {
     return mkexp_cons(/* record */[
                 loc_000,
                 loc_001,
-                /* loc_ghost : true */1
+                /* loc_ghost */true
               ], arg, loc);
   } else {
     var loc_000$1 = /* loc_start */nilloc[/* loc_start */0];
@@ -3550,7 +3549,7 @@ function mktailexp(nilloc, param) {
     var loc$1 = /* record */[
       loc_000$1,
       loc_001$1,
-      /* loc_ghost : true */1
+      /* loc_ghost */true
     ];
     var nil_000 = /* txt : Lident */Block.__(0, ["[]"]);
     var nil = /* record */[
@@ -3573,7 +3572,7 @@ function mktailpat(nilloc, param) {
     var loc = /* record */[
       loc_000,
       loc_001,
-      /* loc_ghost : true */1
+      /* loc_ghost */true
     ];
     var arg = mk$1(/* Some */[loc], /* None */0, /* Ppat_tuple */Block.__(4, [/* :: */[
               p1,
@@ -3585,7 +3584,7 @@ function mktailpat(nilloc, param) {
     return mkpat_cons(/* record */[
                 loc_000,
                 loc_001,
-                /* loc_ghost : true */1
+                /* loc_ghost */true
               ], arg, loc);
   } else {
     var loc_000$1 = /* loc_start */nilloc[/* loc_start */0];
@@ -3593,7 +3592,7 @@ function mktailpat(nilloc, param) {
     var loc$1 = /* record */[
       loc_000$1,
       loc_001$1,
-      /* loc_ghost : true */1
+      /* loc_ghost */true
     ];
     var nil_000 = /* txt : Lident */Block.__(0, ["[]"]);
     var nil = /* record */[
@@ -3963,7 +3962,7 @@ function extra_csig(pos, items) {
 }
 
 function add_nonrec(rf, attrs, pos) {
-  if (rf !== 0) {
+  if (rf) {
     return attrs;
   } else {
     var name_001 = /* loc */rhs_loc(pos);
@@ -8316,15 +8315,15 @@ var yyact = /* array */[
       return /* Rtag */Block.__(0, [
                 _1,
                 _2,
-                /* true */1,
+                true,
                 /* [] */0
               ]);
     }),
   (function () {
-      return /* true */1;
+      return true;
     }),
   (function () {
-      return /* false */0;
+      return false;
     }),
   (function (__caml_parser_env) {
       var _1 = Parsing.peek_val(__caml_parser_env, 0);
@@ -8815,14 +8814,14 @@ var yyact = /* array */[
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       return /* Ptop_dir */Block.__(1, [
                 _2,
-                /* Pdir_bool */Block.__(3, [/* false */0])
+                /* Pdir_bool */Block.__(3, [false])
               ]);
     }),
   (function (__caml_parser_env) {
       var _2 = Parsing.peek_val(__caml_parser_env, 1);
       return /* Ptop_dir */Block.__(1, [
                 _2,
-                /* Pdir_bool */Block.__(3, [/* true */1])
+                /* Pdir_bool */Block.__(3, [true])
               ]);
     }),
   (function (__caml_parser_env) {
@@ -9413,17 +9412,17 @@ function defined(str) {
   catch (exn){
     try {
       Caml_sys.caml_sys_getenv(str);
-      return /* true */1;
+      return true;
     }
     catch (exn$1){
-      return /* false */0;
+      return false;
     }
   }
   if (exit === 1) {
     if (typeof val === "number") {
-      return /* false */0;
+      return false;
     } else {
-      return /* true */1;
+      return true;
     }
   }
   
@@ -9446,7 +9445,7 @@ function query(_, str) {
       }
       catch (exn$1){
         if (exn$1 === Caml_builtin_exceptions.not_found) {
-          return /* Dir_bool */Block.__(0, [/* false */0]);
+          return /* Dir_bool */Block.__(0, [false]);
         } else {
           throw exn$1;
         }
@@ -9476,7 +9475,7 @@ function query(_, str) {
   }
   if (exit === 1) {
     if (typeof v === "number") {
-      return /* Dir_bool */Block.__(0, [/* false */0]);
+      return /* Dir_bool */Block.__(0, [false]);
     } else {
       return v;
     }
@@ -9488,9 +9487,9 @@ function value_of_token(loc, t) {
   if (typeof t === "number") {
     switch (t) {
       case 29 : 
-          return /* Dir_bool */Block.__(0, [/* false */0]);
+          return /* Dir_bool */Block.__(0, [false]);
       case 91 : 
-          return /* Dir_bool */Block.__(0, [/* true */1]);
+          return /* Dir_bool */Block.__(0, [true]);
       default:
         throw [
               $$Error$2,
@@ -9686,7 +9685,7 @@ function directive_parse(token_with_comments, lexbuf) {
                     if (pred >= 17049) {
                       if (pred >= 172069535) {
                         if (pred >= 785637236) {
-                          return +(major === l_major);
+                          return major === l_major;
                         } else {
                           return Caml_obj.caml_equal(lversion, version);
                         }
@@ -9699,9 +9698,9 @@ function directive_parse(token_with_comments, lexbuf) {
                       if (pred >= 15949) {
                         return Caml_obj.caml_greaterthan(lversion, version);
                       } else if (major === l_major) {
-                        return +(version[1] === lversion[1]);
+                        return version[1] === lversion[1];
                       } else {
-                        return /* false */0;
+                        return false;
                       }
                     } else {
                       return Caml_obj.caml_greaterequal(lversion, version);
@@ -9732,7 +9731,7 @@ function directive_parse(token_with_comments, lexbuf) {
               }
               
             } else {
-              return /* true */1;
+              return true;
             }
             break;
         case "<=" : 
@@ -9792,7 +9791,7 @@ function directive_parse(token_with_comments, lexbuf) {
       if (calc) {
         return Curry._2(f, lhs, assert_same_type(lexbuf, lhs, rhs$1));
       } else {
-        return /* true */1;
+        return true;
       }
     }
     
@@ -9804,10 +9803,10 @@ function directive_parse(token_with_comments, lexbuf) {
         push(e);
         return v;
       } else {
-        var calc$1 = calc && 1 - v;
+        var calc$1 = calc && !v;
         var b = parse_or_aux(calc$1, parse_and_aux(calc$1, parse_relation(calc$1)));
         if (v) {
-          return /* true */1;
+          return true;
         } else {
           return b;
         }
@@ -9829,7 +9828,7 @@ function directive_parse(token_with_comments, lexbuf) {
         if (v) {
           return b;
         } else {
-          return /* false */0;
+          return false;
         }
       }
     } else {
@@ -9843,7 +9842,7 @@ function directive_parse(token_with_comments, lexbuf) {
     if (typeof curr_token === "number") {
       switch (curr_token) {
         case 29 : 
-            return /* false */0;
+            return false;
         case 54 : 
             var v = parse_or_aux(calc, parse_and_aux(calc, parse_relation(calc)));
             var match = token(/* () */0);
@@ -9865,7 +9864,7 @@ function directive_parse(token_with_comments, lexbuf) {
                   ];
             }
         case 91 : 
-            return /* true */1;
+            return true;
         default:
           throw [
                 $$Error$2,
@@ -9925,12 +9924,12 @@ function directive_parse(token_with_comments, lexbuf) {
                 var s = t[0];
                 if (calc) {
                   if (Caml_string.get(r, 0) === /* "u" */117) {
-                    return 1 - defined(s);
+                    return !defined(s);
                   } else {
                     return defined(s);
                   }
                 } else {
-                  return /* true */1;
+                  return true;
                 }
               } else {
                 throw [
@@ -9984,7 +9983,7 @@ function directive_parse(token_with_comments, lexbuf) {
       }
     }
   };
-  var v = parse_or_aux(/* true */1, parse_and_aux(/* true */1, parse_relation(/* true */1)));
+  var v = parse_or_aux(true, parse_and_aux(true, parse_relation(true)));
   var match = token(/* () */0);
   if (typeof match === "number") {
     if (match !== 88) {
@@ -10007,9 +10006,9 @@ function directive_parse(token_with_comments, lexbuf) {
 
 function is_elif(i) {
   if (typeof i === "number" || !(i.tag === 11 && i[0] === "elif")) {
-    return /* false */0;
+    return false;
   } else {
-    return /* true */1;
+    return true;
   }
 }
 
@@ -10391,9 +10390,9 @@ var string_start_loc = [none];
 
 var comment_start_loc = [/* [] */0];
 
-var is_in_string = [/* false */0];
+var is_in_string = [false];
 
-var print_warnings = [/* true */1];
+var print_warnings = [true];
 
 var if_then_else = [/* Dir_out */2];
 
@@ -10551,7 +10550,7 @@ function update_loc(lexbuf, file, line, absolute, chars) {
 
 var preprocessor = [/* None */0];
 
-var escaped_newlines = [/* false */0];
+var escaped_newlines = [false];
 
 function warn_latin1(lexbuf) {
   return prerr_warning(curr(lexbuf), /* Deprecated */Block.__(0, ["ISO-Latin1 characters in identifiers"]));
@@ -10791,10 +10790,10 @@ function token(lexbuf) {
                     curr(lexbuf$1)
                   ];
             }
-            update_loc(lexbuf$1, /* None */0, 1, /* false */0, 0);
+            update_loc(lexbuf$1, /* None */0, 1, false, 0);
             return token(lexbuf$1);
         case 1 : 
-            update_loc(lexbuf$1, /* None */0, 1, /* false */0, 0);
+            update_loc(lexbuf$1, /* None */0, 1, false, 0);
             return /* EOL */100;
         case 2 : 
             return token(lexbuf$1);
@@ -10902,11 +10901,11 @@ function token(lexbuf) {
             }
         case 19 : 
             reset_string_buffer(/* () */0);
-            is_in_string[0] = /* true */1;
+            is_in_string[0] = true;
             var string_start = lexbuf$1[/* lex_start_p */10];
             string_start_loc[0] = curr(lexbuf$1);
             string(lexbuf$1);
-            is_in_string[0] = /* false */0;
+            is_in_string[0] = false;
             lexbuf$1[/* lex_start_p */10] = string_start;
             return /* STRING */Block.__(16, [/* tuple */[
                         get_stored_string(/* () */0),
@@ -10916,18 +10915,18 @@ function token(lexbuf) {
             reset_string_buffer(/* () */0);
             var delim = Lexing.lexeme(lexbuf$1);
             var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
-            is_in_string[0] = /* true */1;
+            is_in_string[0] = true;
             var string_start$1 = lexbuf$1[/* lex_start_p */10];
             string_start_loc[0] = curr(lexbuf$1);
             __ocaml_lex_quoted_string_rec(delim$1, lexbuf$1, 183);
-            is_in_string[0] = /* false */0;
+            is_in_string[0] = false;
             lexbuf$1[/* lex_start_p */10] = string_start$1;
             return /* STRING */Block.__(16, [/* tuple */[
                         get_stored_string(/* () */0),
                         /* Some */[delim$1]
                       ]]);
         case 21 : 
-            update_loc(lexbuf$1, /* None */0, 1, /* false */0, 1);
+            update_loc(lexbuf$1, /* None */0, 1, false, 1);
             return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
         case 22 : 
             return /* CHAR */Block.__(0, [Lexing.lexeme_char(lexbuf$1, 1)]);
@@ -10996,7 +10995,7 @@ function token(lexbuf) {
         case 33 : 
             var num = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 1));
             var name = Lexing.sub_lexeme_opt(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 3), Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 2));
-            update_loc(lexbuf$1, name, Caml_format.caml_int_of_string(num), /* true */1, 0);
+            update_loc(lexbuf$1, name, Caml_format.caml_int_of_string(num), true, 0);
             return token(lexbuf$1);
         case 34 : 
             return /* SHARP */84;
@@ -11150,12 +11149,12 @@ function __ocaml_lex_quoted_string_rec(delim, lexbuf, ___ocaml_lex_state) {
     } else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
-            update_loc(lexbuf, /* None */0, 1, /* false */0, 0);
+            update_loc(lexbuf, /* None */0, 1, false, 0);
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 183;
             continue ;
         case 1 : 
-            is_in_string[0] = /* false */0;
+            is_in_string[0] = false;
             throw [
                   $$Error$2,
                   /* Unterminated_string */0,
@@ -11202,7 +11201,7 @@ function string(lexbuf) {
             return /* () */0;
         case 1 : 
             var space = Lexing.sub_lexeme(lexbuf$1, Caml_array.caml_array_get(lexbuf$1[/* lex_mem */9], 0), lexbuf$1[/* lex_curr_pos */5]);
-            update_loc(lexbuf$1, /* None */0, 1, /* false */0, space.length);
+            update_loc(lexbuf$1, /* None */0, 1, false, space.length);
             return string(lexbuf$1);
         case 2 : 
             store_string_char(char_for_backslash(Lexing.lexeme_char(lexbuf$1, 1)));
@@ -11227,11 +11226,11 @@ function string(lexbuf) {
             if (comment_start_loc[0] === /* [] */0) {
               prerr_warning(curr(lexbuf$1), /* Eol_in_string */14);
             }
-            update_loc(lexbuf$1, /* None */0, 1, /* false */0, 0);
+            update_loc(lexbuf$1, /* None */0, 1, false, 0);
             store_string(Lexing.lexeme(lexbuf$1));
             return string(lexbuf$1);
         case 7 : 
-            is_in_string[0] = /* false */0;
+            is_in_string[0] = false;
             throw [
                   $$Error$2,
                   /* Unterminated_string */0,
@@ -11290,7 +11289,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
         case 2 : 
             string_start_loc[0] = curr(lexbuf);
             store_string_char(/* "\"" */34);
-            is_in_string[0] = /* true */1;
+            is_in_string[0] = true;
             try {
               string(lexbuf);
             }
@@ -11332,7 +11331,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 throw exn;
               }
             }
-            is_in_string[0] = /* false */0;
+            is_in_string[0] = false;
             store_string_char(/* "\"" */34);
             ___ocaml_lex_state = 132;
             continue ;
@@ -11341,7 +11340,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
             var delim$1 = $$String.sub(delim, 1, delim.length - 2 | 0);
             string_start_loc[0] = curr(lexbuf);
             store_string(Lexing.lexeme(lexbuf));
-            is_in_string[0] = /* true */1;
+            is_in_string[0] = true;
             try {
               __ocaml_lex_quoted_string_rec(delim$1, lexbuf, 183);
             }
@@ -11383,14 +11382,14 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                 throw exn$1;
               }
             }
-            is_in_string[0] = /* false */0;
+            is_in_string[0] = false;
             store_string_char(/* "|" */124);
             store_string(delim$1);
             store_string_char(/* "}" */125);
             ___ocaml_lex_state = 132;
             continue ;
         case 5 : 
-            update_loc(lexbuf, /* None */0, 1, /* false */0, 1);
+            update_loc(lexbuf, /* None */0, 1, false, 1);
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 132;
             continue ;
@@ -11415,7 +11414,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
                   ];
             }
         case 11 : 
-            update_loc(lexbuf, /* None */0, 1, /* false */0, 0);
+            update_loc(lexbuf, /* None */0, 1, false, 0);
             store_string(Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 132;
             continue ;
@@ -11436,7 +11435,7 @@ function __ocaml_lex_comment_rec(lexbuf, ___ocaml_lex_state) {
 
 function at_bol(lexbuf) {
   var pos = lexbuf[/* lex_start_p */10];
-  return +(pos[/* pos_cnum */3] === pos[/* pos_bol */2]);
+  return pos[/* pos_cnum */3] === pos[/* pos_bol */2];
 }
 
 function token_with_comments(lexbuf) {
@@ -11610,7 +11609,7 @@ function token$1(lexbuf) {
                   if (if_then_else$1 !== 0) {
                     return Curry._1(look_ahead, match);
                   } else {
-                    var _else_seen = +(match === /* ELSE */23);
+                    var _else_seen = match === /* ELSE */23;
                     while(true) {
                       var else_seen = _else_seen;
                       var token$2 = token_with_comments(lexbuf$1);
@@ -11636,7 +11635,7 @@ function token$1(lexbuf) {
                                     curr(lexbuf$1)
                                   ];
                             } else {
-                              _else_seen = /* true */1;
+                              _else_seen = true;
                               continue ;
                             }
                           } else if (switcher$1 !== 14) {
@@ -11767,7 +11766,7 @@ function token$1(lexbuf) {
 function init$1() {
   sharp_look_ahead[0] = /* None */0;
   if_then_else[0] = /* Dir_out */2;
-  is_in_string[0] = /* false */0;
+  is_in_string[0] = false;
   comment_start_loc[0] = /* [] */0;
   comment_list[0] = /* [] */0;
   var match = preprocessor[0];
@@ -11902,14 +11901,14 @@ var match = wrap(implementation, Lexing.from_string("let v str = \n  str  \n  |>
 
 if (match) {
   var match$1 = match[0][/* pstr_desc */0];
-  if (match$1.tag === 1 && match$1[0] === 0) {
+  if (match$1.tag === 1 && !match$1[0]) {
     var match$2 = match$1[1];
     if (match$2) {
       var match$3 = match$2[0];
       var match$4 = match$3[/* pvb_pat */0];
       var match$5 = match$4[/* ppat_desc */0];
       if (typeof match$5 === "number" || match$5.tag) {
-        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
       } else {
         var match$6 = match$5[0];
         if (match$6[/* txt */0] === "v") {
@@ -11917,19 +11916,19 @@ if (match) {
           var match$8 = match$7[/* loc_start */0];
           if (match$8[/* pos_fname */0] === "" && !(match$8[/* pos_lnum */1] !== 1 || match$8[/* pos_bol */2] !== 0 || match$8[/* pos_cnum */3] !== 4)) {
             var match$9 = match$7[/* loc_end */1];
-            if (match$9[/* pos_fname */0] === "" && !(match$9[/* pos_lnum */1] !== 1 || match$9[/* pos_bol */2] !== 0 || match$9[/* pos_cnum */3] !== 5 || match$7[/* loc_ghost */2] !== 0)) {
+            if (match$9[/* pos_fname */0] === "" && !(match$9[/* pos_lnum */1] !== 1 || match$9[/* pos_bol */2] !== 0 || match$9[/* pos_cnum */3] !== 5 || match$7[/* loc_ghost */2])) {
               var match$10 = match$4[/* ppat_loc */1];
               var match$11 = match$10[/* loc_start */0];
               if (match$11[/* pos_fname */0] === "" && !(match$11[/* pos_lnum */1] !== 1 || match$11[/* pos_bol */2] !== 0 || match$11[/* pos_cnum */3] !== 4)) {
                 var match$12 = match$10[/* loc_end */1];
-                if (match$12[/* pos_fname */0] === "" && !(match$12[/* pos_lnum */1] !== 1 || match$12[/* pos_bol */2] !== 0 || match$12[/* pos_cnum */3] !== 5 || match$10[/* loc_ghost */2] !== 0 || match$4[/* ppat_attributes */2])) {
+                if (match$12[/* pos_fname */0] === "" && !(match$12[/* pos_lnum */1] !== 1 || match$12[/* pos_bol */2] !== 0 || match$12[/* pos_cnum */3] !== 5 || match$10[/* loc_ghost */2] || match$4[/* ppat_attributes */2])) {
                   var match$13 = match$3[/* pvb_expr */1];
                   var match$14 = match$13[/* pexp_desc */0];
                   if (match$14.tag === 4 && match$14[0] === "" && !match$14[1]) {
                     var match$15 = match$14[2];
                     var match$16 = match$15[/* ppat_desc */0];
                     if (typeof match$16 === "number" || match$16.tag) {
-                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                     } else {
                       var match$17 = match$16[0];
                       if (match$17[/* txt */0] === "str") {
@@ -11937,19 +11936,19 @@ if (match) {
                         var match$19 = match$18[/* loc_start */0];
                         if (match$19[/* pos_fname */0] === "" && !(match$19[/* pos_lnum */1] !== 1 || match$19[/* pos_bol */2] !== 0 || match$19[/* pos_cnum */3] !== 6)) {
                           var match$20 = match$18[/* loc_end */1];
-                          if (match$20[/* pos_fname */0] === "" && !(match$20[/* pos_lnum */1] !== 1 || match$20[/* pos_bol */2] !== 0 || match$20[/* pos_cnum */3] !== 9 || match$18[/* loc_ghost */2] !== 0)) {
+                          if (match$20[/* pos_fname */0] === "" && !(match$20[/* pos_lnum */1] !== 1 || match$20[/* pos_bol */2] !== 0 || match$20[/* pos_cnum */3] !== 9 || match$18[/* loc_ghost */2])) {
                             var match$21 = match$15[/* ppat_loc */1];
                             var match$22 = match$21[/* loc_start */0];
                             if (match$22[/* pos_fname */0] === "" && !(match$22[/* pos_lnum */1] !== 1 || match$22[/* pos_bol */2] !== 0 || match$22[/* pos_cnum */3] !== 6)) {
                               var match$23 = match$21[/* loc_end */1];
-                              if (match$23[/* pos_fname */0] === "" && !(match$23[/* pos_lnum */1] !== 1 || match$23[/* pos_bol */2] !== 0 || match$23[/* pos_cnum */3] !== 9 || match$21[/* loc_ghost */2] !== 0 || match$15[/* ppat_attributes */2])) {
+                              if (match$23[/* pos_fname */0] === "" && !(match$23[/* pos_lnum */1] !== 1 || match$23[/* pos_bol */2] !== 0 || match$23[/* pos_cnum */3] !== 9 || match$21[/* loc_ghost */2] || match$15[/* ppat_attributes */2])) {
                                 var match$24 = match$14[3];
                                 var match$25 = match$24[/* pexp_desc */0];
                                 if (match$25.tag === 5) {
                                   var match$26 = match$25[0];
                                   var match$27 = match$26[/* pexp_desc */0];
                                   if (match$27.tag) {
-                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                   } else {
                                     var match$28 = match$27[0];
                                     var match$29 = match$28[/* txt */0];
@@ -11960,12 +11959,12 @@ if (match) {
                                             var match$31 = match$30[/* loc_start */0];
                                             if (match$31[/* pos_fname */0] === "" && !(match$31[/* pos_lnum */1] !== 4 || match$31[/* pos_bol */2] !== 46 || match$31[/* pos_cnum */3] !== 48)) {
                                               var match$32 = match$30[/* loc_end */1];
-                                              if (match$32[/* pos_fname */0] === "" && !(match$32[/* pos_lnum */1] !== 4 || match$32[/* pos_bol */2] !== 46 || match$32[/* pos_cnum */3] !== 50 || match$30[/* loc_ghost */2] !== 0)) {
+                                              if (match$32[/* pos_fname */0] === "" && !(match$32[/* pos_lnum */1] !== 4 || match$32[/* pos_bol */2] !== 46 || match$32[/* pos_cnum */3] !== 50 || match$30[/* loc_ghost */2])) {
                                                 var match$33 = match$26[/* pexp_loc */1];
                                                 var match$34 = match$33[/* loc_start */0];
                                                 if (match$34[/* pos_fname */0] === "" && !(match$34[/* pos_lnum */1] !== 4 || match$34[/* pos_bol */2] !== 46 || match$34[/* pos_cnum */3] !== 48)) {
                                                   var match$35 = match$33[/* loc_end */1];
-                                                  if (match$35[/* pos_fname */0] === "" && !(match$35[/* pos_lnum */1] !== 4 || match$35[/* pos_bol */2] !== 46 || match$35[/* pos_cnum */3] !== 50 || match$33[/* loc_ghost */2] !== 0 || match$26[/* pexp_attributes */2])) {
+                                                  if (match$35[/* pos_fname */0] === "" && !(match$35[/* pos_lnum */1] !== 4 || match$35[/* pos_bol */2] !== 46 || match$35[/* pos_cnum */3] !== 50 || match$33[/* loc_ghost */2] || match$26[/* pexp_attributes */2])) {
                                                     var match$36 = match$25[1];
                                                     if (match$36) {
                                                       var match$37 = match$36[0];
@@ -11976,7 +11975,7 @@ if (match) {
                                                           var match$40 = match$39[0];
                                                           var match$41 = match$40[/* pexp_desc */0];
                                                           if (match$41.tag) {
-                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                           } else {
                                                             var match$42 = match$41[0];
                                                             var match$43 = match$42[/* txt */0];
@@ -11987,12 +11986,12 @@ if (match) {
                                                                     var match$45 = match$44[/* loc_start */0];
                                                                     if (match$45[/* pos_fname */0] === "" && !(match$45[/* pos_lnum */1] !== 3 || match$45[/* pos_bol */2] !== 21 || match$45[/* pos_cnum */3] !== 23)) {
                                                                       var match$46 = match$44[/* loc_end */1];
-                                                                      if (match$46[/* pos_fname */0] === "" && !(match$46[/* pos_lnum */1] !== 3 || match$46[/* pos_bol */2] !== 21 || match$46[/* pos_cnum */3] !== 25 || match$44[/* loc_ghost */2] !== 0)) {
+                                                                      if (match$46[/* pos_fname */0] === "" && !(match$46[/* pos_lnum */1] !== 3 || match$46[/* pos_bol */2] !== 21 || match$46[/* pos_cnum */3] !== 25 || match$44[/* loc_ghost */2])) {
                                                                         var match$47 = match$40[/* pexp_loc */1];
                                                                         var match$48 = match$47[/* loc_start */0];
                                                                         if (match$48[/* pos_fname */0] === "" && !(match$48[/* pos_lnum */1] !== 3 || match$48[/* pos_bol */2] !== 21 || match$48[/* pos_cnum */3] !== 23)) {
                                                                           var match$49 = match$47[/* loc_end */1];
-                                                                          if (match$49[/* pos_fname */0] === "" && !(match$49[/* pos_lnum */1] !== 3 || match$49[/* pos_bol */2] !== 21 || match$49[/* pos_cnum */3] !== 25 || match$47[/* loc_ghost */2] !== 0 || match$40[/* pexp_attributes */2])) {
+                                                                          if (match$49[/* pos_fname */0] === "" && !(match$49[/* pos_lnum */1] !== 3 || match$49[/* pos_bol */2] !== 21 || match$49[/* pos_cnum */3] !== 25 || match$47[/* loc_ghost */2] || match$40[/* pexp_attributes */2])) {
                                                                             var match$50 = match$39[1];
                                                                             if (match$50) {
                                                                               var match$51 = match$50[0];
@@ -12000,7 +11999,7 @@ if (match) {
                                                                                 var match$52 = match$51[1];
                                                                                 var match$53 = match$52[/* pexp_desc */0];
                                                                                 if (match$53.tag) {
-                                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                 } else {
                                                                                   var match$54 = match$53[0];
                                                                                   var match$55 = match$54[/* txt */0];
@@ -12011,12 +12010,12 @@ if (match) {
                                                                                           var match$57 = match$56[/* loc_start */0];
                                                                                           if (match$57[/* pos_fname */0] === "" && !(match$57[/* pos_lnum */1] !== 2 || match$57[/* pos_bol */2] !== 13 || match$57[/* pos_cnum */3] !== 15)) {
                                                                                             var match$58 = match$56[/* loc_end */1];
-                                                                                            if (match$58[/* pos_fname */0] === "" && !(match$58[/* pos_lnum */1] !== 2 || match$58[/* pos_bol */2] !== 13 || match$58[/* pos_cnum */3] !== 18 || match$56[/* loc_ghost */2] !== 0)) {
+                                                                                            if (match$58[/* pos_fname */0] === "" && !(match$58[/* pos_lnum */1] !== 2 || match$58[/* pos_bol */2] !== 13 || match$58[/* pos_cnum */3] !== 18 || match$56[/* loc_ghost */2])) {
                                                                                               var match$59 = match$52[/* pexp_loc */1];
                                                                                               var match$60 = match$59[/* loc_start */0];
                                                                                               if (match$60[/* pos_fname */0] === "" && !(match$60[/* pos_lnum */1] !== 2 || match$60[/* pos_bol */2] !== 13 || match$60[/* pos_cnum */3] !== 15)) {
                                                                                                 var match$61 = match$59[/* loc_end */1];
-                                                                                                if (match$61[/* pos_fname */0] === "" && !(match$61[/* pos_lnum */1] !== 2 || match$61[/* pos_bol */2] !== 13 || match$61[/* pos_cnum */3] !== 18 || match$59[/* loc_ghost */2] !== 0 || match$52[/* pexp_attributes */2])) {
+                                                                                                if (match$61[/* pos_fname */0] === "" && !(match$61[/* pos_lnum */1] !== 2 || match$61[/* pos_bol */2] !== 13 || match$61[/* pos_cnum */3] !== 18 || match$59[/* loc_ghost */2] || match$52[/* pexp_attributes */2])) {
                                                                                                   var match$62 = match$50[1];
                                                                                                   if (match$62) {
                                                                                                     var match$63 = match$62[0];
@@ -12024,7 +12023,7 @@ if (match) {
                                                                                                       var match$64 = match$63[1];
                                                                                                       var match$65 = match$64[/* pexp_desc */0];
                                                                                                       if (match$65.tag) {
-                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                       } else {
                                                                                                         var match$66 = match$65[0];
                                                                                                         var match$67 = match$66[/* txt */0];
@@ -12038,17 +12037,17 @@ if (match) {
                                                                                                                       var match$70 = match$69[/* loc_start */0];
                                                                                                                       if (match$70[/* pos_fname */0] === "" && !(match$70[/* pos_lnum */1] !== 3 || match$70[/* pos_bol */2] !== 21 || match$70[/* pos_cnum */3] !== 26)) {
                                                                                                                         var match$71 = match$69[/* loc_end */1];
-                                                                                                                        if (match$71[/* pos_fname */0] === "" && !(match$71[/* pos_lnum */1] !== 3 || match$71[/* pos_bol */2] !== 21 || match$71[/* pos_cnum */3] !== 44 || match$69[/* loc_ghost */2] !== 0)) {
+                                                                                                                        if (match$71[/* pos_fname */0] === "" && !(match$71[/* pos_lnum */1] !== 3 || match$71[/* pos_bol */2] !== 21 || match$71[/* pos_cnum */3] !== 44 || match$69[/* loc_ghost */2])) {
                                                                                                                           var match$72 = match$64[/* pexp_loc */1];
                                                                                                                           var match$73 = match$72[/* loc_start */0];
                                                                                                                           if (match$73[/* pos_fname */0] === "" && !(match$73[/* pos_lnum */1] !== 3 || match$73[/* pos_bol */2] !== 21 || match$73[/* pos_cnum */3] !== 26)) {
                                                                                                                             var match$74 = match$72[/* loc_end */1];
-                                                                                                                            if (match$74[/* pos_fname */0] === "" && !(match$74[/* pos_lnum */1] !== 3 || match$74[/* pos_bol */2] !== 21 || match$74[/* pos_cnum */3] !== 44 || match$72[/* loc_ghost */2] !== 0 || match$64[/* pexp_attributes */2] || match$62[1])) {
+                                                                                                                            if (match$74[/* pos_fname */0] === "" && !(match$74[/* pos_lnum */1] !== 3 || match$74[/* pos_bol */2] !== 21 || match$74[/* pos_cnum */3] !== 44 || match$72[/* loc_ghost */2] || match$64[/* pexp_attributes */2] || match$62[1])) {
                                                                                                                               var match$75 = match$38[/* pexp_loc */1];
                                                                                                                               var match$76 = match$75[/* loc_start */0];
                                                                                                                               if (match$76[/* pos_fname */0] === "" && !(match$76[/* pos_lnum */1] !== 2 || match$76[/* pos_bol */2] !== 13 || match$76[/* pos_cnum */3] !== 15)) {
                                                                                                                                 var match$77 = match$75[/* loc_end */1];
-                                                                                                                                if (match$77[/* pos_fname */0] === "" && !(match$77[/* pos_lnum */1] !== 3 || match$77[/* pos_bol */2] !== 21 || match$77[/* pos_cnum */3] !== 44 || match$75[/* loc_ghost */2] !== 0 || match$38[/* pexp_attributes */2])) {
+                                                                                                                                if (match$77[/* pos_fname */0] === "" && !(match$77[/* pos_lnum */1] !== 3 || match$77[/* pos_bol */2] !== 21 || match$77[/* pos_cnum */3] !== 44 || match$75[/* loc_ghost */2] || match$38[/* pexp_attributes */2])) {
                                                                                                                                   var match$78 = match$36[1];
                                                                                                                                   if (match$78) {
                                                                                                                                     var match$79 = match$78[0];
@@ -12056,7 +12055,7 @@ if (match) {
                                                                                                                                       var match$80 = match$79[1];
                                                                                                                                       var match$81 = match$80[/* pexp_desc */0];
                                                                                                                                       if (match$81.tag) {
-                                                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                       } else {
                                                                                                                                         var match$82 = match$81[0];
                                                                                                                                         var match$83 = match$82[/* txt */0];
@@ -12070,254 +12069,254 @@ if (match) {
                                                                                                                                                       var match$86 = match$85[/* loc_start */0];
                                                                                                                                                       if (match$86[/* pos_fname */0] === "" && !(match$86[/* pos_lnum */1] !== 4 || match$86[/* pos_bol */2] !== 46 || match$86[/* pos_cnum */3] !== 51)) {
                                                                                                                                                         var match$87 = match$85[/* loc_end */1];
-                                                                                                                                                        if (match$87[/* pos_fname */0] === "" && !(match$87[/* pos_lnum */1] !== 4 || match$87[/* pos_bol */2] !== 46 || match$87[/* pos_cnum */3] !== 71 || match$85[/* loc_ghost */2] !== 0)) {
+                                                                                                                                                        if (match$87[/* pos_fname */0] === "" && !(match$87[/* pos_lnum */1] !== 4 || match$87[/* pos_bol */2] !== 46 || match$87[/* pos_cnum */3] !== 71 || match$85[/* loc_ghost */2])) {
                                                                                                                                                           var match$88 = match$80[/* pexp_loc */1];
                                                                                                                                                           var match$89 = match$88[/* loc_start */0];
                                                                                                                                                           if (match$89[/* pos_fname */0] === "" && !(match$89[/* pos_lnum */1] !== 4 || match$89[/* pos_bol */2] !== 46 || match$89[/* pos_cnum */3] !== 51)) {
                                                                                                                                                             var match$90 = match$88[/* loc_end */1];
-                                                                                                                                                            if (match$90[/* pos_fname */0] === "" && !(match$90[/* pos_lnum */1] !== 4 || match$90[/* pos_bol */2] !== 46 || match$90[/* pos_cnum */3] !== 71 || match$88[/* loc_ghost */2] !== 0 || match$80[/* pexp_attributes */2] || match$78[1])) {
+                                                                                                                                                            if (match$90[/* pos_fname */0] === "" && !(match$90[/* pos_lnum */1] !== 4 || match$90[/* pos_bol */2] !== 46 || match$90[/* pos_cnum */3] !== 71 || match$88[/* loc_ghost */2] || match$80[/* pexp_attributes */2] || match$78[1])) {
                                                                                                                                                               var match$91 = match$24[/* pexp_loc */1];
                                                                                                                                                               var match$92 = match$91[/* loc_start */0];
                                                                                                                                                               if (match$92[/* pos_fname */0] === "" && !(match$92[/* pos_lnum */1] !== 2 || match$92[/* pos_bol */2] !== 13 || match$92[/* pos_cnum */3] !== 15)) {
                                                                                                                                                                 var match$93 = match$91[/* loc_end */1];
-                                                                                                                                                                if (match$93[/* pos_fname */0] === "" && !(match$93[/* pos_lnum */1] !== 4 || match$93[/* pos_bol */2] !== 46 || match$93[/* pos_cnum */3] !== 71 || match$91[/* loc_ghost */2] !== 0 || match$24[/* pexp_attributes */2])) {
+                                                                                                                                                                if (match$93[/* pos_fname */0] === "" && !(match$93[/* pos_lnum */1] !== 4 || match$93[/* pos_bol */2] !== 46 || match$93[/* pos_cnum */3] !== 71 || match$91[/* loc_ghost */2] || match$24[/* pexp_attributes */2])) {
                                                                                                                                                                   var match$94 = match$13[/* pexp_loc */1];
                                                                                                                                                                   var match$95 = match$94[/* loc_start */0];
                                                                                                                                                                   if (match$95[/* pos_fname */0] === "" && !(match$95[/* pos_lnum */1] !== 1 || match$95[/* pos_bol */2] !== 0 || match$95[/* pos_cnum */3] !== 6)) {
                                                                                                                                                                     var match$96 = match$94[/* loc_end */1];
-                                                                                                                                                                    if (match$96[/* pos_fname */0] === "" && !(match$96[/* pos_lnum */1] !== 4 || match$96[/* pos_bol */2] !== 46 || match$96[/* pos_cnum */3] !== 71 || !(match$94[/* loc_ghost */2] !== 0 && !(match$13[/* pexp_attributes */2] || match$3[/* pvb_attributes */2])))) {
+                                                                                                                                                                    if (match$96[/* pos_fname */0] === "" && !(match$96[/* pos_lnum */1] !== 4 || match$96[/* pos_bol */2] !== 46 || match$96[/* pos_cnum */3] !== 71 || !(match$94[/* loc_ghost */2] && !(match$13[/* pexp_attributes */2] || match$3[/* pvb_attributes */2])))) {
                                                                                                                                                                       var match$97 = match$3[/* pvb_loc */3];
                                                                                                                                                                       var match$98 = match$97[/* loc_start */0];
                                                                                                                                                                       if (match$98[/* pos_fname */0] === "" && !(match$98[/* pos_lnum */1] !== 1 || match$98[/* pos_bol */2] !== 0 || match$98[/* pos_cnum */3] !== 0)) {
                                                                                                                                                                         var match$99 = match$97[/* loc_end */1];
-                                                                                                                                                                        if (match$99[/* pos_fname */0] === "" && !(match$99[/* pos_lnum */1] !== 4 || match$99[/* pos_bol */2] !== 46 || match$99[/* pos_cnum */3] !== 71 || match$97[/* loc_ghost */2] !== 0 || match$2[1])) {
-                                                                                                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 215, characters 10-17", /* true */1, /* true */1);
+                                                                                                                                                                        if (match$99[/* pos_fname */0] === "" && !(match$99[/* pos_lnum */1] !== 4 || match$99[/* pos_bol */2] !== 46 || match$99[/* pos_cnum */3] !== 71 || match$97[/* loc_ghost */2] || match$2[1])) {
+                                                                                                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 215, characters 10-17", true, true);
                                                                                                                                                                         } else {
-                                                                                                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                                         }
                                                                                                                                                                       } else {
-                                                                                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                                       }
                                                                                                                                                                     } else {
-                                                                                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                                     }
                                                                                                                                                                   } else {
-                                                                                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                                   }
                                                                                                                                                                 } else {
-                                                                                                                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                                 }
                                                                                                                                                               } else {
-                                                                                                                                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                               }
                                                                                                                                                             } else {
-                                                                                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                             }
                                                                                                                                                           } else {
-                                                                                                                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                           }
                                                                                                                                                         } else {
-                                                                                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                         }
                                                                                                                                                       } else {
-                                                                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                       }
                                                                                                                                                     } else {
-                                                                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                     }
                                                                                                                                                     break;
                                                                                                                                                 case 1 : 
                                                                                                                                                 case 2 : 
-                                                                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                                     break;
                                                                                                                                                 
                                                                                                                                               }
                                                                                                                                               break;
                                                                                                                                           case 0 : 
                                                                                                                                           case 2 : 
-                                                                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                               break;
                                                                                                                                           
                                                                                                                                         }
                                                                                                                                       }
                                                                                                                                     } else {
-                                                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                     }
                                                                                                                                   } else {
-                                                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                   }
                                                                                                                                 } else {
-                                                                                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                                 }
                                                                                                                               } else {
-                                                                                                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                               }
                                                                                                                             } else {
-                                                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                             }
                                                                                                                           } else {
-                                                                                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                           }
                                                                                                                         } else {
-                                                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                         }
                                                                                                                       } else {
-                                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                       }
                                                                                                                     } else {
-                                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                     }
                                                                                                                     break;
                                                                                                                 case 1 : 
                                                                                                                 case 2 : 
-                                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                                     break;
                                                                                                                 
                                                                                                               }
                                                                                                               break;
                                                                                                           case 0 : 
                                                                                                           case 2 : 
-                                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                               break;
                                                                                                           
                                                                                                         }
                                                                                                       }
                                                                                                     } else {
-                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                     }
                                                                                                   } else {
-                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                   }
                                                                                                 } else {
-                                                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                                 }
                                                                                               } else {
-                                                                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                               }
                                                                                             } else {
-                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                             }
                                                                                           } else {
-                                                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                           }
                                                                                         } else {
-                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                         }
                                                                                         break;
                                                                                     case 1 : 
                                                                                     case 2 : 
-                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                                         break;
                                                                                     
                                                                                   }
                                                                                 }
                                                                               } else {
-                                                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                               }
                                                                             } else {
-                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                             }
                                                                           } else {
-                                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                           }
                                                                         } else {
-                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                         }
                                                                       } else {
-                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                       }
                                                                     } else {
-                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                     }
                                                                   } else {
-                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                   }
                                                                   break;
                                                               case 1 : 
                                                               case 2 : 
-                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                                   break;
                                                               
                                                             }
                                                           }
                                                         } else {
-                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                         }
                                                       } else {
-                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                       }
                                                     } else {
-                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                     }
                                                   } else {
-                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                   }
                                                 } else {
-                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                                 }
                                               } else {
-                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                               }
                                             } else {
-                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                             }
                                           } else {
-                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                           }
                                           break;
                                       case 1 : 
                                       case 2 : 
-                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                           break;
                                       
                                     }
                                   }
                                 } else {
-                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                                 }
                               } else {
-                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                               }
                             } else {
-                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                             }
                           } else {
-                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                           }
                         } else {
-                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                         }
                       } else {
-                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                        eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                       }
                     }
                   } else {
-                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                   }
                 } else {
-                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
                 }
               } else {
-                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+                eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
               }
             } else {
-              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+              eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
             }
           } else {
-            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+            eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
           }
         } else {
-          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+          eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
         }
       }
     } else {
-      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+      eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
     }
   } else {
-    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+    eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
   }
 } else {
-  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", /* true */1, /* false */0);
+  eq("File \"ocaml_parsetree_main.ml\", line 216, characters 12-19", true, false);
 }
 
 from_pair_suites("ocaml_parsetree_main.ml", suites[0]);

@@ -14,12 +14,12 @@ function is_sorted(x) {
   while(true) {
     var i = _i;
     if (i >= (len - 1 | 0)) {
-      return /* true */1;
+      return true;
     } else if (Caml_obj.caml_lessthan(Caml_array.caml_array_get(x, i), Caml_array.caml_array_get(x, i + 1 | 0))) {
       _i = i + 1 | 0;
       continue ;
     } else {
-      return /* false */0;
+      return false;
     }
   };
 }
@@ -59,7 +59,7 @@ var array_suites_001 = /* :: */[
         };
         var match = List.split(aux(/* :: */[
                   /* tuple */[
-                    /* int array */[],
+                    /* array */[],
                     /* [] */0
                   ],
                   /* [] */0
@@ -84,20 +84,20 @@ var array_suites_001 = /* :: */[
                       5
                     ],
                     Caml_array.caml_array_concat(/* :: */[
-                          /* int array */[
+                          /* array */[
                             0,
                             1,
                             2
                           ],
                           /* :: */[
-                            /* int array */[
+                            /* array */[
                               3,
                               4
                             ],
                             /* :: */[
-                              /* int array */[],
+                              /* array */[],
                               /* :: */[
-                                /* int array */[5],
+                                /* array */[5],
                                 /* [] */0
                               ]
                             ]
@@ -130,7 +130,7 @@ var array_suites_001 = /* :: */[
                               3,
                               4
                             ], 2, 2),
-                        /* int array */[
+                        /* array */[
                           2,
                           3
                         ]
@@ -141,7 +141,7 @@ var array_suites_001 = /* :: */[
           /* tuple */[
             "blit",
             (function () {
-                var u = /* int array */[
+                var u = /* array */[
                   100,
                   0,
                   0
@@ -152,12 +152,12 @@ var array_suites_001 = /* :: */[
                 $$Array.blit(v, 1, u, 1, 2);
                 return /* Eq */Block.__(0, [
                           /* tuple */[
-                            /* int array */[
+                            /* array */[
                               0,
                               2,
                               4
                             ],
-                            /* int array */[
+                            /* array */[
                               100,
                               2,
                               4
@@ -176,7 +176,7 @@ var array_suites_001 = /* :: */[
               (function () {
                   return /* Eq */Block.__(0, [
                             Caml_array.caml_make_vect(2, 1),
-                            /* int array */[
+                            /* array */[
                               1,
                               1
                             ]
@@ -187,19 +187,19 @@ var array_suites_001 = /* :: */[
               /* tuple */[
                 "sort",
                 (function () {
-                    var u = /* int array */[
+                    var u = /* array */[
                       3,
                       0,
                       1
                     ];
                     $$Array.sort(Caml_primitive.caml_int_compare, u);
                     return /* Eq */Block.__(0, [
-                              Caml_obj.caml_equal(/* int array */[
+                              Caml_obj.caml_equal(/* array */[
                                     0,
                                     1,
                                     3
                                   ], u),
-                              /* true */1
+                              true
                             ]);
                   })
               ],
@@ -212,7 +212,7 @@ var array_suites_001 = /* :: */[
                             }));
                       $$Array.sort(Caml_primitive.caml_int_compare, v);
                       return /* Eq */Block.__(0, [
-                                /* true */1,
+                                true,
                                 is_sorted(v)
                               ]);
                     })

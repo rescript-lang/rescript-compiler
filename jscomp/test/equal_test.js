@@ -2,16 +2,16 @@
 
 
 function str_equal(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
-var str_b = /* true */1;
+var str_b = true;
 
 function int_equal(x, y) {
-  return +(x === y);
+  return x === y;
 }
 
-var v = /* false */0;
+var v = false;
 
 exports.str_equal = str_equal;
 exports.str_b = str_b;

@@ -112,54 +112,344 @@
 </div>
 
 
-<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">'a -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfromCharCode"><span class="keyword">val</span> fromCharCode</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfromCharCodeMany"><span class="keyword">val</span> fromCharCodeMany</span> : <code class="type">int array -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfromCodePoint"><span class="keyword">val</span> fromCodePoint</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a></code></pre>
+<pre><span id="VALmake"><span class="keyword">val</span> make</span> : <code class="type">'a -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">make value</code> converts the given value to a string<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  make 3.5 = "3.5";;
+  make [|1;2;3|]) = "1,2,3";;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALfromCharCode"><span class="keyword">val</span> fromCharCode</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">fromCharCode n</code>
+  creates a string containing the character corresponding to that number; <i>n</i> ranges from 0 to 65535. If out of range, the lower 16 bits of the value are used. Thus, <code class="code">fromCharCode 0x1F63A</code> gives the same result as <code class="code">fromCharCode 0xF63A</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  fromCharCode 65 = "A";;
+  fromCharCode 0x3c8 = {js|ψ|js};;
+  fromCharCode 0xd55c = {js|한|js};;
+  fromCharCode -64568 = {js|ψ|js};;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALfromCharCodeMany"><span class="keyword">val</span> fromCharCodeMany</span> : <code class="type">int array -> <a href="Js_string.html#TYPEt">t</a></code></pre><br>
+<code class="code">fromCharCodeMany [|n1;n2;n3|]</code> creates a string from the characters corresponding to the given numbers, using the same rules as <code class="code">fromCharCode</code>.<br>
+
+<pre><span id="VALfromCodePoint"><span class="keyword">val</span> fromCodePoint</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">fromCodePoint n</code>
+  creates a string containing the character corresponding to that numeric code point. If the number is not a valid code point, <b>raises</b> <code class="code">RangeError</code>. Thus, <code class="code">fromCodePoint 0x1F63A</code> will produce a correct value, unlike <code class="code">fromCharCode 0x1F63A</code>, and <code class="code">fromCodePoint -5</code> will raise a <code class="code">RangeError</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  fromCodePoint 65 = "A";;
+  fromCodePoint 0x3c8 = {js|ψ|js};;
+  fromCodePoint 0xd55c = {js|한|js};;
+  fromCodePoint 0x1f63a = {js|😺|js};;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  <br>
+ES2015<br>
+
 <pre><span id="VALfromCodePointMany"><span class="keyword">val</span> fromCodePointMany</span> : <code class="type">int array -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    ES2015<br>
+                    <code class="code">fromCharCodeMany [|n1;n2;n3|]</code> creates a string from the characters corresponding to the given code point numbers, using the same rules as <code class="code">fromCodePoint</code>.<br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  fromCodePointMany([|0xd55c; 0xae00; 0x1f63a|]) = {js|한글😺|js}
+</code></pre>  </pre>
+                    </div>
                     </div>
 
                   <br>
 ES2015<br>
 
-<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALcharAt"><span class="keyword">val</span> charAt</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALcharCodeAt"><span class="keyword">val</span> charCodeAt</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> float</code></pre>
+<pre><span id="VALlength"><span class="keyword">val</span> length</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">length s</code> returns the length of the given string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  length "abcd" = 4;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">get s n</code> returns as a string the character at the given index number. If <code class="code">n</code> is out of range, this function returns <code class="code">undefined</code>, so at some point this function may be modified to return <code class="code">t option</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  get "Reason" 0 = "R";;
+  get "Reason" 4 = "o";;
+  get {js|Rẽasöń|js} 5 = {js|ń|js};;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALcharAt"><span class="keyword">val</span> charAt</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">charAt n s</code> gets the character at index <code class="code">n</code> within string <code class="code">s</code>. If <code class="code">n</code> is negative or greater than the length of <code class="code">s</code>, returns the empty string. If the string contains characters outside the range <code class="code">\u0000-\uffff</code>, it will return the first 16-bit value at that position in the string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  charAt 0, "Reason" = "R"
+  charAt( 12, "Reason") = "";
+  charAt( 5, {js|Rẽasöń|js} = {js|ń|js}
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALcharCodeAt"><span class="keyword">val</span> charCodeAt</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">charCodeAt n s</code> returns the character code at position <code class="code">n</code> in string <code class="code">s</code>; the result is in the range 0-65535, unlke <code class="code">codePointAt</code>, so it will not work correctly for characters with code points greater than or equal to <code class="code">0x10000</code>.
+The return type is <code class="code">float</code> because this function returns <code class="code">NaN</code> if <code class="code">n</code> is less than zero or greater than the length of the string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  charCodeAt 0 {js|😺|js} returns 0xd83d
+  codePointAt 0 {js|😺|js} returns Some 0x1f63a
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALcodePointAt"><span class="keyword">val</span> codePointAt</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> int option</code></pre><div class="info ">
                     <div class="not-examples">
-                    type it as <code class="code">float</code> due to that it may return NAN  
-    different from <code class="code">charCodeAt</code>
-    <pre class="codepre"><code class="code">        "\u{01003f}".charCodeAt(0) - 55296
-        "\u{01003f}".codePointAt(0) - 65599
-    </code></pre><br>
+                    <code class="code">codePointAt n s</code> returns the code point at position <code class="code">n</code> within string <code class="code">s</code> as a <code class="code">Some</code> value. The return value handles code points greater than or equal to <code class="code">0x10000</code>. If there is no code point at the given position, the function returns <code class="code">None</code>.<br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  codePointAt 1 {js|¿😺?|js} = Some 0x1f63a
+  codePointAt 5 "abc" = None
+</code></pre>  </pre>
+                    </div>
                     </div>
 
                   <br>
 ES2015<br>
 
-<pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALconcatMany"><span class="keyword">val</span> concatMany</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> array -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALendsWith"><span class="keyword">val</span> endsWith</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><br>
-ES2015:
-    Sample usage: <pre class="codepre"><code class="code"> x |&gt; Js.String.endsWith ".ml"</code></pre><br>
+<pre><span id="VALconcat"><span class="keyword">val</span> concat</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">concat append original</code> returns a new string with <code class="code">append</code> added after <code class="code">original</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  concat "bell" "cow" = "cowbell";;
+</code></pre>  </pre>
+                    </div>
+                    </div>
 
-<pre><span id="VALendsWithFrom"><span class="keyword">val</span> endsWithFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><br>
+                  
+<pre><span id="VALconcatMany"><span class="keyword">val</span> concatMany</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> array -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">concat arr original</code> returns a new string consisting of each item of an array of strings added to the <code class="code">original</code> string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  concatMany [|"2nd"; "3rd"; "4th"|] "1st" = "1st2nd3rd4th";;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALendsWith"><span class="keyword">val</span> endsWith</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    ES2015:
+    <code class="code">endsWith substr str</code> returns <code class="code">true</code> if the <code class="code">str</code> ends with <code class="code">substr</code>, <code class="code">false</code> otherwise.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  endsWith "Script" "BuckleScript" = true;;
+  endsWith "Script" "BuckleShoes" = false;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALendsWithFrom"><span class="keyword">val</span> endsWithFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">endsWithFrom ending len str</code> returns <code class="code">true</code> if the first <code class="code">len</code> characters of <code class="code">str</code> end with <code class="code">ending</code>, <code class="code">false</code> otherwise. If <code class="code">n</code> is greater than or equal to the length of <code class="code">str</code>, then it works like <code class="code">endsWith</code>. (Honestly, this should have been named <code class="code">endsWithAt</code>, but oh well.)<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  endsWithFrom "cd" 4 "abcd" = true;;
+  endsWithFrom "cd" 3 "abcde" = false;;
+  endsWithFrom "cde" 99 "abcde" = true;;
+  endsWithFrom "ple" 7 "example.dat" = true;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  <br>
 ES2015<br>
 
-<pre><span id="VALincludes"><span class="keyword">val</span> includes</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre>
+<pre><span id="VALincludes"><span class="keyword">val</span> includes</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">includes searchValue s</code> returns <code class="code">true</code> if <code class="code">searchValue</code> is found anywhere within <code class="code">s</code>, <code class="code">false</code> otherwise.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  includes "gram" "programmer" = true;;
+  includes "er" "programmer" = true;;
+  includes "pro" "programmer" = true;;
+  includes "xyz" "programmer" = false;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  <br>
+ES2015<br>
+
 <pre><span id="VALincludesFrom"><span class="keyword">val</span> includesFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
                     <div class="not-examples">
-                    ES2015<br>
+                    <code class="code">includes searchValue start s</code> returns <code class="code">true</code> if <code class="code">searchValue</code> is found anywhere within <code class="code">s</code> starting at character number <code class="code">start</code> (where 0 is the first character), <code class="code">false</code> otherwise.<br>
  
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  includesFrom "gram" 1 "programmer" = true;;
+  includesFrom "gram" 4 "programmer" = false;;
+  includesFrom {js|한|js} 1 {js|대한민국|js} = true;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  <br>
+ES2015<br>
+
+<pre><span id="VALindexOf"><span class="keyword">val</span> indexOf</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">indexOf searchValue s</code> returns the position at which <code class="code">searchValue</code> was first found within <code class="code">s</code>, or <code class="code">-1</code> if <code class="code">searchValue</code> is not in <code class="code">s</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  indexOf "ok" "bookseller" = 2;;
+  indexOf "sell" "bookseller" = 4;;
+  indexOf "ee" "beekeeper" = 1;;
+  indexOf "xyz" "bookseller" = -1;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALindexOfFrom"><span class="keyword">val</span> indexOfFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">indexOfFrom searchValue start s</code> returns the position at which <code class="code">searchValue</code> was found within <code class="code">s</code> starting at character position <code class="code">start</code>, or <code class="code">-1</code> if <code class="code">searchValue</code> is not found in that portion of <code class="code">s</code>. The return value is relative to the beginning of the string, no matter where the search started from.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  indexOfFrom "ok" 1 "bookseller" = 2;;
+  indexOfFrom "sell" 2 "bookseller" = 4;;
+  indexOfFrom "sell" 5 "bookseller" = -1;;
+  indexOf "xyz" "bookseller" = -1;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALlastIndexOf"><span class="keyword">val</span> lastIndexOf</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">lastIndexOf searchValue s</code> returns the position of the <i>last</i> occurrence of <code class="code">searchValue</code> within <code class="code">s</code>, searching backwards from the end of the string. Returns <code class="code">-1</code> if <code class="code">searchValue</code> is not in <code class="code">s</code>. The return value is always relative to the beginning of the string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  lastIndexOf "ok" "bookseller" = 2;;
+  lastIndexOf "ee" "beekeeper" = 4;;
+  lastIndexOf "xyz" "abcdefg" = -1;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALlastIndexOfFrom"><span class="keyword">val</span> lastIndexOfFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">lastIndexOfFrom searchValue start s</code> returns the position of the <i>last</i> occurrence of <code class="code">searchValue</code> within <code class="code">s</code>, searching backwards from the given <code class="code">start</code> position. Returns <code class="code">-1</code> if <code class="code">searchValue</code> is not in <code class="code">s</code>. The return value is always relative to the beginning of the string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  lastIndexOfFrom "ok" 6 "bookseller" = 2;;
+  lastIndexOfFrom "ee" 8 "beekeeper" = 4;;
+  lastIndexOfFrom "ee" 3 "beekeeper" = 1;;
+  lastIndexOfFrom "xyz" 4 "abcdefg" = -1;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALlocaleCompare"><span class="keyword">val</span> localeCompare</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> float</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">localeCompare comparison reference</code> returns
+<p>
+
+<ul>
+<li>a negative value if <code class="code">reference</code> comes before <code class="code">comparison</code> in sort order</li>
+<li>zero if <code class="code">reference</code> and <code class="code">comparison</code> have the same sort order</li>
+<li>a positive value if <code class="code">reference</code> comes after <code class="code">comparison</code> in sort order</li>
+</ul>
+<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  (localeCompare "ant" "zebra") &gt; 0.0;;
+  (localeCompare "zebra" "ant") &lt; 0.0;;
+  (localeCompare "cat" "cat") = 0.0;;
+  (localeCompare "cat" "CAT") &gt; 0.0;; 
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmatch_"><span class="keyword">val</span> match_</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">match regexp str</code> matches a string against the given <code class="code">regexp</code>. If there is no match, it returns <code class="code">None</code>.
+  For regular expressions without the <code class="code">g</code> modifier, if there is a match, the return value is <code class="code">Some array</code> where the array contains:
+<p>
+
+  <ul>
+<li>The entire matched string</li>
+<li>Any capture groups if the <code class="code">regexp</code> had parentheses</li>
+</ul>
+
+<p>
+
+  For regular expressions with the <code class="code">g</code> modifier, a matched expression returns <code class="code">Some array</code> with all the matched substrings and no capture groups.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  match [%re "/b[aeiou]t/"] "The better bats" = Some [|"bet"|]
+  match [%re "/b[aeiou]t/g"] "The better bats" = Some [|"bet";"bat"|]
+  match [%re "/(\\d+)-(\\d+)-(\\d+)/"] "Today is 2018-04-05." =
+    Some [|"2018-04-05"; "2018"; "04"; "05"|]
+  match [%re "/b[aeiou]g/"] "The large container." = None
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALnormalize"><span class="keyword">val</span> normalize</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">normalize str</code> returns the normalized Unicode string using Normalization Form Canonical (NFC) Composition.
+<p>
+
+Consider the character <code class="code">ã</code>, which can be represented as the single codepoint <code class="code">\u00e3</code> or the combination of a lower case letter A <code class="code">\u0061</code> and a combining tilde <code class="code">\u0303</code>. Normalization ensures that both can be stored in an equivalent binary representation.<br>
+<div class="tag"> <b>See also</b> <a href="https://www.unicode.org/reports/tr15/tr15-45.html">Unicode technical report for details</a><br>
+ </div> 
                     </div>
                     
                     </div>
@@ -167,42 +457,91 @@ ES2015<br>
                   <br>
 ES2015<br>
 
-<pre><span id="VALindexOf"><span class="keyword">val</span> indexOf</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALindexOfFrom"><span class="keyword">val</span> indexOfFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALlastIndexOf"><span class="keyword">val</span> lastIndexOf</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALlastIndexOfFrom"><span class="keyword">val</span> lastIndexOfFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALlocaleCompare"><span class="keyword">val</span> localeCompare</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> float</code></pre>
-<pre><span id="VALmatch_"><span class="keyword">val</span> match_</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array option</code></pre>
-<pre><span id="VALnormalize"><span class="keyword">val</span> normalize</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALnormalizeByForm"><span class="keyword">val</span> normalizeByForm</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    ES2015<br>
- 
+                    <code class="code">normalize str form</code> (ES2015) returns the normalized Unicode string using the specified form of normalization, which may be one of:
+<p>
+
+  <ul>
+<li>"NFC" — Normalization Form Canonical Composition.</li>
+<li>"NFD" — Normalization Form Canonical Decomposition.</li>
+<li>"NFKC" — Normalization Form Compatibility Composition.</li>
+<li>"NFKD" — Normalization Form Compatibility Decomposition.</li>
+</ul>
+<br>
+<div class="tag"> <b>See also</b> <a href="https://www.unicode.org/reports/tr15/tr15-45.html">Unicode technical report for details</a><br>
+ </div> 
                     </div>
                     
+                    </div>
+
+                  
+<pre><span id="VALrepeat"><span class="keyword">val</span> repeat</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">repeat n s</code> returns a string that consists of <code class="code">n</code> repetitions of <code class="code">s</code>. Raises <code class="code">RangeError</code> if <code class="code">n</code> is negative.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  repeat 3 "ha" = "hahaha"
+  repeat 0 "empty" = ""
+</code></pre>  </pre>
+                    </div>
                     </div>
 
                   <br>
 ES2015<br>
 
-<pre><span id="VALrepeat"><span class="keyword">val</span> repeat</span> : <code class="type">int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><br>
-ES2015<br>
+<pre><span id="VALreplace"><span class="keyword">val</span> replace</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">replace substr newSubstr string</code> returns a new string which is
+identical to <code class="code">string</code> except with the first matching instance of <code class="code">substr</code>
+replaced by <code class="code">newSubstr</code>.
+<p>
 
-<pre><span id="VALreplace"><span class="keyword">val</span> replace</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALreplaceByRe"><span class="keyword">val</span> replaceByRe</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
+<code class="code">substr</code> is treated as a verbatim string to match, not a regular
+expression.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  replace "old" "new" "old string" = "new string"
+  replace "the" "this" "the cat and the dog" = "this cat and the dog"
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALreplaceByRe"><span class="keyword">val</span> replaceByRe</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">replaceByRe regex replacement string</code> returns a new string where occurrences matching <code class="code">regex</code>
+have been replaced by <code class="code">replacement</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  replaceByRe [%re "/[aeiou]/g"] "x" "vowels be gone" = "vxwxls bx gxnx"
+  replaceByRe [%re "/(\\w+) (\\w+)/"] "$2, $1" "Juan Fulano" = "Fulano, Juan"
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
 <pre><span id="VALunsafeReplaceBy0"><span class="keyword">val</span> unsafeReplaceBy0</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    returns a new string with some or all matches of a pattern replaced by the
-value returned from the given function<br>
+                    returns a new string with some or all matches of a pattern with no capturing
+parentheses replaced by the value returned from the given function.
+The function receives as its parameters the matched string, the offset at which the
+match begins, and the whole string being matched<br>
 <div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
  </div> 
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">let str = "hello world!"
-let re = [%re "/hello/g"]
-let replaced = Js.String.unsafeReplaceBy0 re (fun match offset whole -&gt; "hi")
+                    <pre class="example"> <pre class="codepre"><code class="code">let str = "beautiful vowels"
+let re = [%re "/[aeiou]/g"]
+let matchFn matchPart offset wholeString =
+  Js.String.toUpperCase matchPart
+  
+let replaced = Js.String.unsafeReplaceBy0 re matchFn str
 
-let () = Js.log replaced (* prints "hi world!" *)
+let () = Js.log replaced (* prints "bEAUtifUl vOwEls" *)
 </code></pre>  </pre>
                     </div>
                     </div>
@@ -210,17 +549,22 @@ let () = Js.log replaced (* prints "hi world!" *)
                   
 <pre><span id="VALunsafeReplaceBy1"><span class="keyword">val</span> unsafeReplaceBy1</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    returns a new string with some or all matches of a pattern replaced by the
-value returned from the given function<br>
+                    returns a new string with some or all matches of a pattern with one set of capturing
+parentheses replaced by the value returned from the given function.
+The function receives as its parameters the matched string, the captured string,
+the offset at which the match begins, and the whole string being matched.<br>
 <div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
  </div> 
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">let str = "hello world!"
-let re = [%re "/hello/g"]
-let replaced = Js.String.unsafeReplaceBy1 re (fun match p1 offset whole -&gt; "hi")
+                    <pre class="example"> <pre class="codepre"><code class="code">let str = "increment 23"
+let re = [%re "/increment (\\d+)/g"]
+let matchFn matchPart p1 offset wholeString =
+  wholeString ^ " is " ^ (string_of_int ((int_of_string p1) + 1))
+  
+let replaced = Js.String.unsafeReplaceBy1 re matchFn str
 
-let () = Js.log replaced (* prints "hi world!" *)
+let () = Js.log replaced (* prints "increment 23 is 24" *)
 </code></pre>  </pre>
                     </div>
                     </div>
@@ -228,17 +572,22 @@ let () = Js.log replaced (* prints "hi world!" *)
                   
 <pre><span id="VALunsafeReplaceBy2"><span class="keyword">val</span> unsafeReplaceBy2</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    returns a new string with some or all matches of a pattern replaced by the
-value returned from the given function<br>
+                    returns a new string with some or all matches of a pattern with two sets of capturing
+parentheses replaced by the value returned from the given function.
+The function receives as its parameters the matched string, the captured strings,
+the offset at which the match begins, and the whole string being matched.<br>
 <div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
  </div> 
                     </div>
                      <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">let str = "hello world!"
-let re = [%re "/hello/g"]
-let replaced = Js.String.unsafeReplaceBy2 re (fun match p1 p2 offset whole -&gt; "hi")
+                    <pre class="example"> <pre class="codepre"><code class="code">let str = "7 times 6"
+let re = [%re "/(\\d+) times (\\d+)/"]
+let matchFn matchPart p1 p2 offset wholeString =
+  string_of_int ((int_of_string p1) * (int_of_string p2))
+  
+let replaced = Js.String.unsafeReplaceBy2 re matchFn str
 
-let () = Js.log replaced (* prints "hi world!" *)
+let () = Js.log replaced (* prints "42" *)
 </code></pre>  </pre>
                     </div>
                     </div>
@@ -246,59 +595,349 @@ let () = Js.log replaced (* prints "hi world!" *)
                   
 <pre><span id="VALunsafeReplaceBy3"><span class="keyword">val</span> unsafeReplaceBy3</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -><br>       (<a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -><br>        <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a>) -><br>       <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    returns a new string with some or all matches of a pattern replaced by the
-value returned from the given function<br>
+                    returns a new string with some or all matches of a pattern with three sets of capturing
+parentheses replaced by the value returned from the given function.
+The function receives as its parameters the matched string, the captured strings,
+the offset at which the match begins, and the whole string being matched.<br>
 <div class="tag"> <b>See also</b> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter">MDN</a><br>
  </div> 
                     </div>
-                     <div class="examples">
-                    <pre class="example"> <pre class="codepre"><code class="code">let str = "hello world!"
-let re = [%re "/hello/g"]
-let replaced = Js.String.unsafeReplaceBy3 re (fun match p1 p2 p3 offset whole -&gt; "hi")
+                    
+                    </div>
 
-let () = Js.log replaced (* prints "hi world!" *)
+                  
+<pre><span id="VALsearch"><span class="keyword">val</span> search</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">search regexp str</code> returns the starting position of the first match of <code class="code">regexp</code> in the given <code class="code">str</code>, or -1 if there is no match.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">search [%re "/\\d+/"] "testing 1 2 3" = 8;;
+search [%re "/\\d+/"] "no numbers" = -1;;
 </code></pre>  </pre>
                     </div>
                     </div>
 
                   
-<pre><span id="VALsearch"><span class="keyword">val</span> search</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> int</code></pre>
-<pre><span id="VALslice"><span class="keyword">val</span> slice</span> : <code class="type">from:int -> to_:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALsliceToEnd"><span class="keyword">val</span> sliceToEnd</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre>
-<pre><span id="VALsplitAtMost"><span class="keyword">val</span> splitAtMost</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> limit:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre>
-<pre><span id="VALsplitLimited"><span class="keyword">val</span> splitLimited</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre>
-<pre><span id="VALsplitByRe"><span class="keyword">val</span> splitByRe</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre>
-<pre><span id="VALsplitByReAtMost"><span class="keyword">val</span> splitByReAtMost</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> limit:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre>
-<pre><span id="VALsplitRegexpLimited"><span class="keyword">val</span> splitRegexpLimited</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre>
-<pre><span id="VALstartsWith"><span class="keyword">val</span> startsWith</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALstartsWithFrom"><span class="keyword">val</span> startsWithFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+<pre><span id="VALslice"><span class="keyword">val</span> slice</span> : <code class="type">from:int -> to_:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    ES2015<br>
+                    <code class="code">slice from:n1 to_:n2 str</code> returns the substring of <code class="code">str</code> starting at character <code class="code">n1</code> up to but not including <code class="code">n2</code>
+<p>
+
+If either <code class="code">n1</code> or <code class="code">n2</code> is negative, then it is evaluated as <code class="code">length str - n1</code> (or <code class="code">length str - n2</code>.
+<p>
+
+If <code class="code">n2</code> is greater than the length of <code class="code">str</code>, then it is treated as <code class="code">length str</code>.
+<p>
+
+If <code class="code">n1</code> is greater than <code class="code">n2</code>, <code class="code">slice</code> returns the empty string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  slice ~from:2 ~to_:5 "abcdefg" == "cde";;
+  slice ~from:2 ~to_:9 "abcdefg" == "cdefg";;
+  slice ~from:(-4) ~to_:(-2) "abcdefg" == "de";; 
+  slice ~from:5 ~to_:1 "abcdefg" == "";;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsliceToEnd"><span class="keyword">val</span> sliceToEnd</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">sliceToEnd from: n str</code> returns the substring of <code class="code">str</code> starting at character <code class="code">n</code> to the end of the string
+<p>
+
+If <code class="code">n</code> is negative, then it is evaluated as <code class="code">length str - n</code>.
+<p>
+
+If <code class="code">n</code> is greater than the length of <code class="code">str</code>, then <code class="code">sliceToEnd</code> returns the empty string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  sliceToEnd ~from: 4 "abcdefg" == "efg";;
+  sliceToEnd ~from: (-2) "abcdefg" == "fg";; 
+  sliceToEnd ~from: 7 "abcdefg" == "";;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">split delimiter str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">delimiter</code> and returns an
+  array of the resulting substrings.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  split "-" "2018-01-02" = [|"2018"; "01"; "02"|];;
+  split "," "a,b,,c" = [|"a"; "b"; ""; "c"|];;
+  split "::" "good::bad as great::awful" = [|"good"; "bad as great"; "awful"|];;
+  split ";" "has-no-delimiter" = [|"has-no-delimiter"|];;
+</code></pre>;  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsplitAtMost"><span class="keyword">val</span> splitAtMost</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> limit:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">splitAtMost delimiter ~limit: n str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">delimiter</code> and returns an array of the first <code class="code">n</code> resulting substrings. If <code class="code">n</code> is negative or greater than the number of substrings, the array will contain all the substrings.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  splitAtMost "/" ~limit: 3 "ant/bee/cat/dog/elk" = [|"ant"; "bee"; "cat"|];;
+  splitAtMost "/" ~limit: 0 "ant/bee/cat/dog/elk" = [| |];;
+  splitAtMost "/" ~limit: 9 "ant/bee/cat/dog/elk" = [|"ant"; "bee"; "cat"; "dog"; "elk"|];;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsplitLimited"><span class="keyword">val</span> splitLimited</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Deprecated - Please use <code class="code">splitAtMost</code><br>
  
                     </div>
                     
+                    </div>
+
+                  
+<pre><span id="VALsplitByRe"><span class="keyword">val</span> splitByRe</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">splitByRe regex str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">regex</code> and returns an
+  array of the resulting substrings.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  splitByRe [%re "/\\s*[,;]\\s*/"] "art; bed , cog ;dad" = [|"art"; "bed"; "cog"; "dad"|];;
+  splitByRe [%re "/[,;]/"] "has:no:match" = [|"has:no:match"|];;
+</code></pre>;  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsplitByReAtMost"><span class="keyword">val</span> splitByReAtMost</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> limit:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">splitByReAtMost regex ~limit: n str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">regex</code> and returns an
+  array of the first <code class="code">n</code> resulting substrings. If <code class="code">n</code> is negative or greater than the number of substrings, the array will contain all the substrings.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 3 "one: two: three: four" = [|"one"; "two"; "three"|];;
+  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 0 "one: two: three: four" = [| |];;
+  splitByReAtMost [%re "/\\s*:\\s*/"] ~limit: 8 "one: two: three: four" = [|"one"; "two"; "three"; "four"|];;
+</code></pre>;  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsplitRegexpLimited"><span class="keyword">val</span> splitRegexpLimited</span> : <code class="type"><a href="Js_re.html#TYPEt">Js_re.t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Deprecated - Please use <code class="code">splitByReAtMost</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALstartsWith"><span class="keyword">val</span> startsWith</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    ES2015:
+    <code class="code">startsWith substr str</code> returns <code class="code">true</code> if the <code class="code">str</code> starts with <code class="code">substr</code>, <code class="code">false</code> otherwise.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  startsWith "Buckle" "BuckleScript" = true;;
+  startsWith "" "BuckleScript" = true;;
+  startsWith "Buckle" "JavaScript" = false;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALstartsWithFrom"><span class="keyword">val</span> startsWithFrom</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> int -> <a href="Js_string.html#TYPEt">t</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    ES2015:
+    <code class="code">startsWithFrom substr n str</code> returns <code class="code">true</code> if the <code class="code">str</code> starts with <code class="code">substr</code> starting at position <code class="code">n</code>, <code class="code">false</code> otherwise. If <code class="code">n</code> is negative, the search starts at the beginning of <code class="code">str</code>.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  startsWithFrom "kle" 3 "BuckleScript" = true;;
+  startsWithFrom "" 3 "BuckleScript" = true;;
+  startsWithFrom "Buckle" 2 "JavaScript" = false;;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsubstr"><span class="keyword">val</span> substr</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">substr ~from: n str</code> returns the substring of <code class="code">str</code> from position <code class="code">n</code> to the end of the string.
+<p>
+
+  If <code class="code">n</code> is less than zero, the starting position is the length of <code class="code">str</code> - <code class="code">n</code>.
+<p>
+
+  If <code class="code">n</code> is greater than or equal to the length of <code class="code">str</code>, returns the empty string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  substr ~from: 3 "abcdefghij" = "defghij"
+  substr ~from: (-3) "abcdefghij" = "hij"
+  substr ~from: 12 "abcdefghij" = ""
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsubstrAtMost"><span class="keyword">val</span> substrAtMost</span> : <code class="type">from:int -> length:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">substrAtMost ~from: pos ~length: n str</code> returns the substring of <code class="code">str</code> of length <code class="code">n</code> starting at position <code class="code">pos</code>.
+<p>
+
+  If <code class="code">pos</code> is less than zero, the starting position is the length of <code class="code">str</code> - <code class="code">pos</code>.
+<p>
+
+  If <code class="code">pos</code> is greater than or equal to the length of <code class="code">str</code>, returns the empty string.
+<p>
+
+  If <code class="code">n</code> is less than or equal to zero, returns the empty string.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  substrAtMost ~from: 3 ~length: 4 "abcdefghij" = "defghij"
+  substrAtMost ~from: (-3) ~length: 4 "abcdefghij" = "hij"
+  substrAtMost ~from: 12 ~ length: 2 "abcdefghij" = ""
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsubstring"><span class="keyword">val</span> substring</span> : <code class="type">from:int -> to_:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">substring ~from: start ~to_: finish str</code> returns characters <code class="code">start</code> up to but not including <code class="code">finish</code> from <code class="code">str</code>.
+<p>
+
+  If <code class="code">start</code> is less than zero, it is treated as zero.
+<p>
+
+  If <code class="code">finish</code> is zero or negative, the empty string is returned.
+<p>
+
+  If <code class="code">start</code> is greater than <code class="code">finish</code>, the start and finish points are swapped.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  substring ~from: 3 ~to_: 6 "playground" = "ygr";;
+  substring ~from: 6 ~to_: 3 "playground" = "ygr";;
+  substring ~from: 4 ~to_: 12 "playground" = "ground";;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALsubstringToEnd"><span class="keyword">val</span> substringToEnd</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">substringToEnd ~from: start str</code> returns the substring of <code class="code">str</code> from position <code class="code">start</code> to the end.
+<p>
+
+  If <code class="code">start</code> is less than or equal to zero, the entire string is returned.
+<p>
+
+  If <code class="code">start</code> is greater than or equal to the length of <code class="code">str</code>, the empty string is returned.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  substringToEnd ~from: 4 "playground" = "ground";;
+  substringToEnd ~from: (-3) "playground" = "playground";;
+  substringToEnd ~from: 12 "playground" = "";
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALtoLowerCase"><span class="keyword">val</span> toLowerCase</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">toLowerCase str</code> converts <code class="code">str</code> to lower case using the locale-insensitive case mappings in the Unicode Character Database. Notice that the conversion can give different results depending upon context, for example with the Greek letter sigma, which has two different lower case forms when it is the last character in a string or not.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  toLowerCase "ABC" = "abc";;
+  toLowerCase {js|ΣΠ|js} = {js|σπ|js};;
+  toLowerCase {js|ΠΣ|js} = {js|πς|js};;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALtoLocaleLowerCase"><span class="keyword">val</span> toLocaleLowerCase</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">toLocaleLowerCase str</code> converts <code class="code">str</code> to lower case using the current locale<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALtoUpperCase"><span class="keyword">val</span> toUpperCase</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">toUpperCase str</code> converts <code class="code">str</code> to upper case using the locale-insensitive case mappings in the Unicode Character Database. Notice that the conversion can expand the number of letters in the result; for example the German <code class="code">ß</code> capitalizes to two <code class="code">S</code>es in a row.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  toUpperCase "abc" = "ABC";;
+  toUpperCase {js|Straße|js} = {js|STRASSE|js};;
+  toLowerCase {js|πς|js} = {js|ΠΣ|js};;
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALtoLocaleUpperCase"><span class="keyword">val</span> toLocaleUpperCase</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">toLocaleUpperCase str</code> converts <code class="code">str</code> to upper case using the current locale<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALtrim"><span class="keyword">val</span> trim</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">trim str</code> returns a string that is <code class="code">str</code> with whitespace stripped from both ends. Internal whitespace is not removed.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  trim "   abc def   " = "abc def"
+  trim "\n\r\t abc def \n\n\t\r " = "abc def"
+</code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALanchor"><span class="keyword">val</span> anchor</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">anchor anchorName anchorText</code> creates a string with an HTML <code class="code">&lt;a&gt;</code> element with <code class="code">name</code> attribute of <code class="code">anchorName</code> and <code class="code">anchorText</code> as its content.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  anchor "page1" "Page One" = "&lt;a name=\"page1\"&gt;Page One&lt;/a&gt;"
+</code></pre>  </pre>
+                    </div>
                     </div>
 
                   <br>
 ES2015<br>
 
-<pre><span id="VALsubstr"><span class="keyword">val</span> substr</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALsubstrAtMost"><span class="keyword">val</span> substrAtMost</span> : <code class="type">from:int -> length:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALsubstring"><span class="keyword">val</span> substring</span> : <code class="type">from:int -> to_:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALsubstringToEnd"><span class="keyword">val</span> substringToEnd</span> : <code class="type">from:int -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALtoLowerCase"><span class="keyword">val</span> toLowerCase</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALtoLocaleLowerCase"><span class="keyword">val</span> toLocaleLowerCase</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALtoUpperCase"><span class="keyword">val</span> toUpperCase</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALtoLocaleUpperCase"><span class="keyword">val</span> toLocaleUpperCase</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALtrim"><span class="keyword">val</span> trim</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
-<pre><span id="VALanchor"><span class="keyword">val</span> anchor</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre>
 <pre><span id="VALlink"><span class="keyword">val</span> link</span> : <code class="type"><a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a> -> <a href="Js_string.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    ES2015<br>
+                    <code class="code">link urlText linkText</code> creates a string withan HTML <code class="code">&lt;a&gt;</code> element with <code class="code">href</code> attribute of <code class="code">urlText</code> and <code class="code">linkText</code> as its content.<br>
  
                     </div>
-                    
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">  link "page2.html" "Go to page two" = "&lt;a href=\"page2.html\"&gt;Go to page two&lt;/a&gt;"
+</code></pre>  </pre>
+                    </div>
                     </div>
 
                   <br>

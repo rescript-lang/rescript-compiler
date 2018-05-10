@@ -35,11 +35,11 @@ type rec_flag =
 type function_id = {
 
   mutable arity : Lam_arity.t;
-  lambda  : Lam.t ;
   (* TODO: This may contain some closure environment,
      check how it will interact with dead code elimination
   *)
-  rec_flag : rec_flag
+  lambda  : (Lam.t * rec_flag) option ;
+  
 }
 
 type element = 

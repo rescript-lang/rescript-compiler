@@ -474,7 +474,7 @@ var suites_001 = /* :: */[
                                                                                           "random",
                                                                                           (function () {
                                                                                               var a = Math.random();
-                                                                                              return /* Ok */Block.__(4, [+(a >= 0 && a < 1)]);
+                                                                                              return /* Ok */Block.__(4, [a >= 0 && a < 1]);
                                                                                             })
                                                                                         ],
                                                                                         /* :: */[
@@ -482,7 +482,7 @@ var suites_001 = /* :: */[
                                                                                             "random_int",
                                                                                             (function () {
                                                                                                 var a = Js_math.random_int(1, 3);
-                                                                                                return /* Ok */Block.__(4, [+(a >= 1 && a < 3)]);
+                                                                                                return /* Ok */Block.__(4, [a >= 1 && a < 3]);
                                                                                               })
                                                                                           ],
                                                                                           /* :: */[

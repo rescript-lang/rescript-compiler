@@ -43,13 +43,13 @@ function tFromJs(param) {
 
 var v0 = {
   x: /* x */3,
-  y: /* y : false */0,
-  z: /* z : false */0
+  y: /* y */false,
+  z: /* z */false
 };
 
 var v1 = {
   x: /* x */3,
-  y: /* y : false */0,
+  y: /* y */false,
   z: /* z */""
 };
 
@@ -90,7 +90,7 @@ idx(/* b */98);
 
 idx(/* c */99);
 
-var jsMapperConstantArray$1 = /* int array */[
+var jsMapperConstantArray$1 = /* array */[
   0,
   3,
   4

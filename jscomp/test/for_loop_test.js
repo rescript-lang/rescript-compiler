@@ -98,7 +98,7 @@ function for_6(x, u) {
   $$Array.iter((function (x) {
           return Curry._1(x, /* () */0);
         }), arr);
-  return /* int array */[
+  return /* array */[
           v[0],
           v4[0],
           v5[0],
@@ -156,17 +156,13 @@ function for_8() {
 
 function for_9() {
   var v = [/* [] */0];
-  var match_000 = function (x) {
+  var collect = function (x) {
     v[0] = /* :: */[
       x,
       v[0]
     ];
     return /* () */0;
   };
-  var match_001 = function () {
-    return $$Array.of_list(List.rev(v[0]));
-  };
-  var collect = match_000;
   var vv = [0];
   var vv2 = [0];
   var arr = Caml_array.caml_make_vect(4, (function () {
@@ -181,7 +177,7 @@ function for_9() {
     (function(v$1){
     for(var j = 0; j <= 1; ++j){
       v$1[0] = v$1[0] + 1 | 0;
-      Curry._1(collect, v$1[0]);
+      collect(v$1[0]);
       Caml_array.caml_array_set(arr, (i << 1) + j | 0, (function () {
               vv[0] = vv[0] + v$1[0] | 0;
               return /* () */0;
@@ -203,7 +199,7 @@ function for_9() {
         }), arr2);
   return /* array */[/* tuple */[
             vv[0],
-            Curry._1(match_001, /* () */0),
+            $$Array.of_list(List.rev(v[0])),
             vv2[0]
           ]];
 }
@@ -243,7 +239,7 @@ var suites_001 = /* :: */[
         "for_loop_test_6",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* int array */[
+                      /* array */[
                         30,
                         1,
                         2,
@@ -280,7 +276,7 @@ var suites_001 = /* :: */[
                   return /* Eq */Block.__(0, [
                             /* array */[/* tuple */[
                                 10,
-                                /* int array */[
+                                /* array */[
                                   1,
                                   2,
                                   2,

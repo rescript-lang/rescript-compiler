@@ -3,7 +3,7 @@
 var Caml_array = require("../../lib/js/caml_array.js");
 
 function g(x) {
-  return /* float array */[
+  return /* array */[
           3,
           x
         ];
@@ -17,9 +17,9 @@ function ff(v, u) {
 }
 
 function fff(vv, uu) {
-  return /* float array */[
-          vv,
-          uu
+  return /* record */[
+          /* vv */vv,
+          /* uu */uu
         ];
 }
 

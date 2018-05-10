@@ -321,14 +321,8 @@ let translate_ffi
        2. support [@@bs.scope "window"]
        we need know whether we should call [add_js_module] or not 
     *)
-    begin match name, handle_external_opt external_module_name , scopes with 
-      | "true", None, []  -> E.js_bool true
-      | "false", None, [] -> E.js_bool false
-      | "null", None, [] -> E.nil 
-      | "undefined", None, [] -> E.undefined
-      | _, _, _ -> 
-        translate_scoped_module_val external_module_name name scopes
-    end
+      translate_scoped_module_val external_module_name name scopes
+
   | Js_send {splice  = js_splice ; name ; pipe = false; js_send_scopes = scopes } -> 
     begin match args  with
       | self :: args -> 

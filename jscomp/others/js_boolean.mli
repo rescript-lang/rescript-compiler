@@ -24,4 +24,5 @@
 
 (** Contains functions for dealing with JavaScript booleans *)
 
-val to_js_boolean : bool -> Js.boolean
+external to_js_boolean : bool -> bool = "%identity"
+[@@ocaml.deprecated "This function is not needed any more"]

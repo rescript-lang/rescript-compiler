@@ -7,7 +7,7 @@ import * as Child_process from "child_process";
 function getWatchFiles(file) {
   if (Fs.existsSync(file)) {
     return Fs.readFileSync(file, "utf8").split("\n").filter((function (x) {
-                  return +(x.trim().length !== 0);
+                  return x.trim().length !== 0;
                 }));
   } else {
     return /* array */[];
@@ -48,7 +48,7 @@ function makeEventObj() {
             }),
           needRebuild: (function () {
               var self = this ;
-              return +(self.events.length !== 0);
+              return self.events.length !== 0;
             }),
           currentEvents: (function () {
               var self = this ;
@@ -59,19 +59,19 @@ function makeEventObj() {
 
 function makeLock() {
   return {
-          isBuilding: /* false */0,
+          isBuilding: false,
           acquire: (function () {
               var self = this ;
               if (self.isBuilding) {
-                return /* false */0;
+                return false;
               } else {
-                self.isBuilding = /* true */1;
-                return /* true */1;
+                self.isBuilding = true;
+                return true;
               }
             }),
           release: (function () {
               var self = this ;
-              self.isBuilding = /* false */0;
+              self.isBuilding = false;
               return /* () */0;
             })
         };

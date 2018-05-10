@@ -17,7 +17,7 @@ let suites = Mt.[
       Js.Re.fromString ("<" ^ tag ^ ">(.*?)<\\/" ^ tag ^">")
         |> Js.Re.exec xmlString
         |> function
-          | Some result -> Js.Nullable.to_opt (Js.Re.captures result).(1)
+          | Some result -> Js.Nullable.toOption (Js.Re.captures result).(1)
           | None -> None in
     Eq (contentOf "div" "<div>Hi</div>", Some "Hi")
   );

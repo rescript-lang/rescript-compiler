@@ -211,7 +211,7 @@ function node_relative_path(node_modules_shorten, file1, dep_file) {
 function find_root_filename(_cwd, filename) {
   while(true) {
     var cwd = _cwd;
-    if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists not implemented by bucklescript yet\n")) {
+    if (Caml_missing_polyfill.not_implemented("caml_sys_file_exists")) {
       return cwd;
     } else {
       var cwd$prime = Curry._1(Filename.dirname, cwd);

@@ -61,6 +61,7 @@ arith_parser.cmj : ../stdlib/parsing.cmj ../stdlib/obj.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj
 arith_syntax.cmj :
 arity_deopt.cmj : mt.cmj
+arity_infer.cmj :
 array_data_util.cmj : ../others/belt.cmj
 array_safe_get.cmj : ../stdlib/array.cmj
 array_subtle_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
@@ -124,7 +125,7 @@ bs_sort_test.cmj : mt.cmj ../others/belt.cmj array_data_util.cmj
 bs_splice_partial.cmj : ../runtime/js.cmj
 bs_stack_test.cmj : ../runtime/js.cmj ../others/belt.cmj
 bs_string_test.cmj : mt.cmj ../runtime/js.cmj
-bs_unwrap_test.cmj : ../runtime/js.cmj
+bs_unwrap_test.cmj :
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
 bytes_split_gpr_743_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/bytes.cmj
@@ -260,7 +261,7 @@ global_exception_regression_test.cmj : mt.cmj
 global_mangles.cmj :
 global_module_alias_test.cmj : mt.cmj ../stdlib/list.cmj
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
-gpr496_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../runtime/js.cmj
+gpr496_test.cmj : ../stdlib/pervasives.cmj mt.cmj
 gpr_1063_test.cmj :
 gpr_1072.cmj : ../runtime/js.cmj
 gpr_1072_reg.cmj :
@@ -311,6 +312,9 @@ gpr_2614_test.cmj :
 gpr_2633_test.cmj :
 gpr_2642_test.cmj :
 gpr_2652_test.cmj : ../others/node.cmj ../stdlib/buffer.cmj
+gpr_2682_test.cmj : ../runtime/js.cmj
+gpr_2700_test.cmj :
+gpr_2731_test.cmj :
 gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 gpr_441.cmj :
 gpr_459_test.cmj : mt.cmj
@@ -363,7 +367,7 @@ int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../runtime/js.cmj \
     ../stdlib/int32.cmj ../stdlib/char.cmj
 io_test.cmj : ../runtime/js.cmj
 js_array_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/array.cmj
-js_bool_test.cmj : mt.cmj ../runtime/js.cmj
+js_bool_test.cmj : mt.cmj
 js_cast_test.cmj : mt.cmj ../others/js_cast.cmj
 js_date_test.cmj : mt.cmj ../runtime/js_float.cmj ../runtime/js.cmj
 js_dict_test.cmj : ../stdlib/obj.cmj mt.cmj ../others/js_dict.cmj
@@ -372,7 +376,7 @@ js_float_test.cmj : mt.cmj ../runtime/js_float.cmj
 js_global_test.cmj : mt.cmj ../others/js_global.cmj
 js_int_test.cmj : mt.cmj ../runtime/js_int.cmj
 js_json_test.cmj : mt.cmj ../others/js_json.cmj ../others/js_dict.cmj \
-    ../others/js_boolean.cmj ../runtime/js.cmj ../stdlib/array.cmj
+    ../runtime/js.cmj ../stdlib/array.cmj
 js_list_test.cmj : mt.cmj ../runtime/js.cmj
 js_math_test.cmj : mt.cmj ../runtime/js.cmj
 js_null_test.cmj : mt.cmj ../runtime/js_null.cmj
@@ -519,6 +523,8 @@ rec_fun_test.cmj : mt.cmj
 rec_module_test.cmj : ../stdlib/set.cmj ../stdlib/pervasives.cmj mt.cmj
 rec_value_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/lazy.cmj \
     ../runtime/js.cmj
+record_debug_test.cmj : ../runtime/js.cmj ../stdlib/format.cmj \
+    ../others/belt.cmj
 record_with_test.cmj : mt.cmj
 recursive_module.cmj :
 recursive_module_test.cmj : mt.cmj
@@ -580,7 +586,7 @@ test_ari.cmj : ../stdlib/list.cmj
 test_array.cmj : ../stdlib/array.cmj
 test_array_append.cmj : ../stdlib/array.cmj
 test_array_primitive.cmj : ../stdlib/array.cmj
-test_bool_equal.cmj : ../runtime/js.cmj ../others/belt.cmj
+test_bool_equal.cmj : ../others/belt.cmj
 test_bs_this.cmj : ../runtime/js.cmj
 test_bug.cmj : ../stdlib/bytes.cmj
 test_bytes.cmj : ../stdlib/bytes.cmj

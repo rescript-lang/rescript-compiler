@@ -30,7 +30,7 @@
 
     For example:
     {[
-      type t = int 
+      type t = int
       module I0 =
         (val Belt.Id.hashableU
             ~hash:(fun[\@bs] (a : t)  -> a & 0xff_ff)
@@ -70,11 +70,11 @@
 
 
 (** Specalized when key type is [int], more efficient
-    than the gerneic type *)
+    than the generic type *)
 module Int = Belt_HashSetInt
 
 (** Specalized when key type is [string], more efficient
-    than the gerneic type *)  
+    than the generic type *)
 module String = Belt_HashSetString
 
 (* TODO: add a poly module
@@ -83,8 +83,8 @@ module String = Belt_HashSetString
    - generic equal handles JS data structure
    - eq/hash consistent
 *)
-  
-type ('a, 'id) t 
+
+type ('a, 'id) t
 
 (** The type of hash tables from type ['a] to type ['b]. *)
 
@@ -110,16 +110,16 @@ val reduceU: ('a, 'id) t -> 'c -> ('c -> 'a  ->  'c [@bs]) -> 'c
 val reduce: ('a, 'id) t -> 'c -> ('c -> 'a  ->  'c) -> 'c
 (** Order unspecified. *)
 
-val size: ('a, 'id) t -> int  
+val size: ('a, 'id) t -> int
 
 val logStats: _ t -> unit
 
-val toArray: ('a,'id) t -> 'a array 
+val toArray: ('a,'id) t -> 'a array
 
-val ofArray: 'a array -> id:('a,'id) id -> ('a,'id) t 
+val ofArray: 'a array -> id:('a,'id) id -> ('a,'id) t
 [@@ocaml.deprecated "Use fromArray instead"]
 
-val fromArray: 'a array -> id:('a,'id) id -> ('a,'id) t 
+val fromArray: 'a array -> id:('a,'id) id -> ('a,'id) t
 
 val mergeMany: ('a,'id) t -> 'a array -> unit
 

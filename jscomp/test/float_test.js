@@ -7,6 +7,7 @@ var Curry = require("../../lib/js/curry.js");
 var Printf = require("../../lib/js/printf.js");
 var Mt_global = require("./mt_global.js");
 var Caml_float = require("../../lib/js/caml_float.js");
+var Caml_int64 = require("../../lib/js/caml_int64.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 
@@ -25,6 +26,11 @@ function approx(loc) {
       return Mt_global.collect_approx(test_id, suites, loc, param, param$1);
     });
 }
+
+var epsilon_float = Caml_int64.float_of_bits(/* int64 */[
+      /* hi */1018167296,
+      /* lo */0
+    ]);
 
 var match = Caml_float.caml_frexp_float(12.0);
 
@@ -154,9 +160,9 @@ Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 48, characte
 
 var match$3 = Caml_float.caml_modf_float(Number.NaN);
 
-var param_000 = +isNaN(match$3[0]);
+var param_000 = isNaN(match$3[0]);
 
-var param_001 = +isNaN(match$3[1]);
+var param_001 = isNaN(match$3[1]);
 
 var param$2 = /* tuple */[
   param_000,
@@ -164,11 +170,11 @@ var param$2 = /* tuple */[
 ];
 
 Mt_global.collect_eq(test_id, suites, "File \"float_test.ml\", line 49, characters 5-12", param$2, /* tuple */[
-      /* true */1,
-      /* true */1
+      true,
+      true
     ]);
 
-var param$3 = /* int array */[
+var param$3 = /* array */[
   -1,
   1,
   1
@@ -276,8 +282,6 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
             ]
           ]
         ], Pervasives.$at(from_pairs(results), suites[0])));
-
-var epsilon_float = 2.22044604925031308e-16;
 
 exports.test_id = test_id;
 exports.suites = suites;

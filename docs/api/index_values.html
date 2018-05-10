@@ -327,7 +327,8 @@
 <tr><td><a href="Belt_List.html#VALadd">add</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">add xs y</code> adds <code class="code">y</code> to the end of list <code class="code">xs</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableQueue.html#VALadd">add</a> [<a href="Belt_MutableQueue.html">Belt_MutableQueue</a>]</td>
@@ -424,7 +425,8 @@
 <tr><td><a href="Js_string.html#VALanchor">anchor</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">anchor anchorName anchorText</code> creates a string with an HTML <code class="code">&lt;a&gt;</code> element with <code class="code">name</code> attribute of <code class="code">anchorName</code> and <code class="code">anchorText</code> as its content.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_option.html#VALandThen">andThen</a> [<a href="Js_option.html">Js_option</a>]</td>
@@ -651,17 +653,21 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <p>
 
     copies <code class="code">len</code> elements
-   from array <code class="code">v1</code>, starting at element number <code class="code">o1</code>, to array <code class="code">v2</code>,
+   from array <code class="code">v1</code>;starting at element number <code class="code">o1</code>;to array <code class="code">v2</code>,
    starting at element number <code class="code">o2</code>. 
 <p>
 
     It works correctly even if
-    <code class="code">v1</code> and <code class="code">v2</code> are the same array, and the source and
+    <code class="code">v1</code> and <code class="code">v2</code> are the same array;and the source and
     destination chunks overlap.
 <p>
 
-    <code class="code">offset</code> can be negative, <code class="code">-1</code> means <code class="code">len - 1</code>, if <code class="code">len + offset</code>  is still 
-    negative, it will be set as 0<br>
+    <code class="code">offset</code> can be negative;<code class="code">-1</code> means <code class="code">len - 1</code>;if <code class="code">len + offset</code>  is still 
+    negative;it will be set as 0
+<p>
+
+    For each of the examples;presume that <code class="code">v1 = [|10;11;12;13;14;15;16;17|]</code> and
+    <code class="code">v2 = [|20;21;22;23;24;25;26;27|]</code>. The result shown is the content of the destination array.<br>
  
                 </div>
                 </div> </td></tr>
@@ -675,14 +681,14 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Js_json.html#VALboolean">boolean</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">boolean b</code> makes a JSON boolean of the <code class="code">Js.boolean</code> <code class="code">b</code><br>
+                    <code class="code">boolean b</code> makes a JSON boolean of the <code class="code">bool</code> <code class="code">b</code><br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_json.html#VALbooleanArray">booleanArray</a> [<a href="Js_json.html">Js_json</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">booleanArray</code> makes a JSON array of the <code class="code">Js.boolean array</code> <code class="code">a</code><br>
+                    <code class="code">booleanArray</code> makes a JSON array of the <code class="code">bool array</code> <code class="code">a</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -778,13 +784,16 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Js_string.html#VALcharAt">charAt</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">charAt n s</code> gets the character at index <code class="code">n</code> within string <code class="code">s</code>. If <code class="code">n</code> is negative or greater than the length of <code class="code">s</code>, returns the empty string. If the string contains characters outside the range <code class="code">\u0000-\uffff</code>, it will return the first 16-bit value at that position in the string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALcharCodeAt">charCodeAt</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">charCodeAt n s</code> returns the character code at position <code class="code">n</code> in string <code class="code">s</code>; the result is in the range 0-65535, unlke <code class="code">codePointAt</code>, so it will not work correctly for characters with code points greater than or equal to <code class="code">0x10000</code>.
+The return type is <code class="code">float</code> because this function returns <code class="code">NaN</code> if <code class="code">n</code> is less than zero or greater than the length of the string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalAVLtree.html#VALcheckInvariantInternal">checkInvariantInternal</a> [<a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a>]</td>
@@ -1166,19 +1175,30 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Belt_List.html#VALcmp">cmp</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">cmp xs ys cmpElem</code>
-    compare lists <code class="code">xs</code> and <code class="code">ys</code> using <code class="code">cmpElem</code> to compare elements<br>
+                    Compare elements one by one <code class="code">f x y</code>. <code class="code">f</code> returns<ul>
+<li>a negative number if <code class="code">x</code> is “less than” <code class="code">y</code></li>
+<li>zero if <code class="code">x</code> is “equal to” <code class="code">y</code></li>
+<li>a positive number if <code class="code">x</code> is “greater than” <code class="code">y</code>
+    The comparison returns the first non-zero result of <code class="code">f</code>, or zero if <code class="code">f</code> returns zero for all <code class="code">x</code> and <code class="code">y</code>.
+    If all items have compared equal, but <code class="code">xs</code> is exhausted first, return -1. (<code class="code">xs</code> is shorter)
+    If all items have compared equal, but <code class="code">ys</code> is exhausted first, return 1 (<code class="code">xs</code> is longer)</li>
+</ul>
+<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALcmp">cmp</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">cmp a b</code>
+                    <code class="code">cmp xs ys f</code>
 <p>
 <ul>
-<li>Compared by length if <code class="code">length a &lt;&gt; length b</code> </li>
-<li>Otherwise compare one by one <code class="code">f ai bi</code></li>
+<li>Compared by length if <code class="code">length xs &lt;&gt; length ys</code>;returning -1 if<code class="code">length xs &lt; length ys</code> or 1 if <code class="code">length xs &gt; length ys</code></li>
+<li>Otherwise compare one by one <code class="code">f x y</code>. <code class="code">f</code> returns</li>
+<li>a negative number if <code class="code">x</code> is “less than” <code class="code">y</code></li>
+<li>zero if <code class="code">x</code> is “equal to” <code class="code">y</code></li>
+<li>a positive number if <code class="code">x</code> is “greater than” <code class="code">y</code></li>
+<li>The comparison returns the first non-zero result of <code class="code">f</code>;or zero if <code class="code">f</code> returns zero for all <code class="code">x</code> and <code class="code">y</code>.</li>
 </ul>
 <br>
  
@@ -1196,7 +1216,8 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
                     <code class="code">cmpByLength l1 l2</code>
 <p>
 
-    Compare two lists solely by length<br>
+    Compare two lists solely by length. Returns -1 if <code class="code">length l1</code> is less than <code class="code">length l2</code>,
+    0 if <code class="code">length l1</code> equals <code class="code">length l2</code>, and 1 if <code class="code">length l1</code> is greater than <code class="code">length l2</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -1281,11 +1302,7 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Js_string.html#VALcodePointAt">codePointAt</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    type it as <code class="code">float</code> due to that it may return NAN  
-    different from <code class="code">charCodeAt</code>
-    <pre class="codepre"><code class="code">        "\u{01003f}".charCodeAt(0) - 55296
-        "\u{01003f}".codePointAt(0) - 65599
-    </code></pre><br>
+                    <code class="code">codePointAt n s</code> returns the code point at position <code class="code">n</code> within string <code class="code">s</code> as a <code class="code">Some</code> value. The return value handles code points greater than or equal to <code class="code">0x10000</code>. If there is no code point at the given position, the function returns <code class="code">None</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -1328,7 +1345,8 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Js_string.html#VALconcat">concat</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">concat append original</code> returns a new string with <code class="code">append</code> added after <code class="code">original</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALconcat">concat</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -1360,7 +1378,8 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Js_string.html#VALconcatMany">concatMany</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">concat arr original</code> returns a new string consisting of each item of an array of strings added to the <code class="code">original</code> string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALconcatMany">concatMany</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -1913,13 +1932,16 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Js_string.html#VALendsWith">endsWith</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    ES2015:
+    <code class="code">endsWith substr str</code> returns <code class="code">true</code> if the <code class="code">str</code> ends with <code class="code">substr</code>, <code class="code">false</code> otherwise.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALendsWithFrom">endsWithFrom</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">endsWithFrom ending len str</code> returns <code class="code">true</code> if the first <code class="code">len</code> characters of <code class="code">str</code> end with <code class="code">ending</code>, <code class="code">false</code> otherwise. If <code class="code">n</code> is greater than or equal to the length of <code class="code">str</code>, then it works like <code class="code">endsWith</code>. (Honestly, this should have been named <code class="code">endsWithAt</code>, but oh well.)<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_dict.html#VALentries">entries</a> [<a href="Js_dict.html">Js_dict</a>]</td>
@@ -2086,18 +2108,20 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">eq xs ys eqElem</code>
-   check equality of <code class="code">xs</code> and <code class="code">ys</code> using <code class="code">eqElem</code> for equality on elements<br>
+   check equality of <code class="code">xs</code> and <code class="code">ys</code> using <code class="code">eqElem</code> for equality on elements, where <code class="code">eqElem</code> is a function
+   that returns true if items <code class="code">x</code> and <code class="code">y</code> meet some criterion for equality, false otherwise.
+   <code class="code">eq</code> false if length of <code class="code">xs</code> and <code class="code">ys</code> are not the same.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALeq">eq</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">eq a b</code>
+                    <code class="code">eq xs ys</code>
 <p>
 <ul>
 <li>return false if length is not the same</li>
-<li>equal one by one using <code class="code">f ai bi</code></li>
+<li>otherwise compare items one by one using <code class="code">f xi yi</code>;and return true if all results are true;false otherwise</li>
 </ul>
 <br>
  
@@ -2230,6 +2254,12 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_int.html#VALequal">equal</a> [<a href="Js_int.html">Js_int</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALerror">error</a> [<a href="Js_console.html">Js_console</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -2386,7 +2416,7 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Belt_List.html#VALevery">every</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">every ls p</code><br>
+                    <code class="code">every xs p</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -2400,14 +2430,16 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Belt_List.html#VALevery2">every2</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">every2 xs ys p</code> stop with the shorter list<br>
+                    <code class="code">every2 xs ys p</code> returns true if predicate <code class="code">p xi yi</code> is true for all pairs of elements
+  up to the shorter length (i.e. <code class="code">min (length xs) (length ys)</code>)<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALevery2">every2</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">every2 xs ys p</code> only tests the length of shorter<br>
+                    <code class="code">every2 xs ys p</code> returns true if <code class="code">p xi yi</code> is true for all pairs of elements
+  up to the shorter length (i.e. <code class="code">min (length xs) (length ys)</code>)<br>
  
                 </div>
                 </div> </td></tr>
@@ -2639,11 +2671,11 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
     storing <code class="code">x</code> in elements number <code class="code">offset</code> to <code class="code">offset + len - 1</code>.
 <p>
 
-    <code class="code">offset</code> can be negative
+    <code class="code">offset</code> can be negative;and is evaluated as <code class="code">length arr - offset</code>
 <p>
 
     <code class="code">fill arr offset:(-1) len:1 </code> means fill the last element,
-    if the array does not have enough data, <code class="code">fill</code> will ignore it<br>
+    if the array does not have enough data;<code class="code">fill</code> will ignore it<br>
  
                 </div>
                 </div> </td></tr>
@@ -3292,7 +3324,10 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Belt_List.html#VALforEach">forEach</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">forEach xs f </code><br>
+                    <code class="code">forEach xs f </code>
+    Call <code class="code">f</code> on each element of <code class="code">xs</code> from the beginning to end. <code class="code">f</code> returns <code class="code">unit</code>, so no
+    new array is created. Use <code class="code">foreach</code> when you are primarily concerned with repetitively
+    creating side effects.<br>
  
                 </div>
                 </div> </td></tr>
@@ -3317,7 +3352,9 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
                     <code class="code">forEach xs f</code>
 <p>
 
-    Call f on each element of <code class="code">xs</code> from the beginning to end<br>
+    Call <code class="code">f</code> on each element of <code class="code">xs</code> from the beginning to end. <code class="code">f</code> returns <code class="code">unit</code>;so no
+    new array is created. Use <code class="code">foreach</code> when you are primarily concerned with repetitively
+    creating side effects.<br>
  
                 </div>
                 </div> </td></tr>
@@ -3521,8 +3558,8 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
                     <code class="code">forEachWithIndex xs f</code>
 <p>
 
-    The same with <a href="Belt_Array.html#VALforEach"><code class="code">Belt_Array.forEach</code></a>, except that <code class="code">f</code> is supplied with one
-    more argument: the index starting from 0<br>
+    The same as <a href="Belt_Array.html#VALforEach"><code class="code">Belt_Array.forEach</code></a>;except that <code class="code">f</code> is supplied two arguments:
+    the index starting from 0 and the element from <code class="code">xs</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -3785,7 +3822,8 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Belt_List.html#VALfromArray">fromArray</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">fromArray arr</code> converts the given array to a list<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableQueue.html#VALfromArray">fromArray</a> [<a href="Belt_MutableQueue.html">Belt_MutableQueue</a>]</td>
@@ -3995,7 +4033,9 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Js_string.html#VALfromCharCode">fromCharCode</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">fromCharCode n</code>
+  creates a string containing the character corresponding to that number; <i>n</i> ranges from 0 to 65535. If out of range, the lower 16 bits of the value are used. Thus, <code class="code">fromCharCode 0x1F63A</code> gives the same result as <code class="code">fromCharCode 0xF63A</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALfromCharCodeMany">fromCharCodeMany</a> [<a href="Js_string.html">Js_string</a>]</td>
@@ -4007,13 +4047,15 @@ the given function <code class="code">a' -&gt; 'b</code>, then wrapped back up a
 <tr><td><a href="Js_string.html#VALfromCodePoint">fromCodePoint</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">fromCodePoint n</code>
+  creates a string containing the character corresponding to that numeric code point. If the number is not a valid code point, <b>raises</b> <code class="code">RangeError</code>. Thus, <code class="code">fromCodePoint 0x1F63A</code> will produce a correct value, unlike <code class="code">fromCharCode 0x1F63A</code>, and <code class="code">fromCodePoint -5</code> will raise a <code class="code">RangeError</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALfromCodePointMany">fromCodePointMany</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    ES2015<br>
+                    <code class="code">fromCharCodeMany [|n1;n2;n3|]</code> creates a string from the characters corresponding to the given code point numbers, using the same rules as <code class="code">fromCodePoint</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -4275,6 +4317,12 @@ Regex literals (<code class="code">[%re "/.../"]</code>) should generally be pre
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Node_buffer.html#VALfromStringWithEncoding">fromStringWithEncoding</a> [<a href="Node_buffer.html">Node_buffer</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_re.html#VALfromStringWithFlags">fromStringWithFlags</a> [<a href="Js_re.html">Js_re</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -4353,7 +4401,8 @@ Valid flags:
 <tr><td><a href="Js_string.html#VALget">get</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">get s n</code> returns as a string the character at the given index number. If <code class="code">n</code> is out of range, this function returns <code class="code">undefined</code>, so at some point this function may be modified to return <code class="code">t option</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalSetString.html#VALget">get</a> [<a href="Belt_internalSetString.html">Belt_internalSetString</a>]</td>
@@ -4510,7 +4559,12 @@ Valid flags:
 <tr><td><a href="Belt_Array.html#VALget">get</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">get arr i</code>
+<p>
+
+  If <code class="code">i &lt;= 0 &lt;= length arr</code>;returns <code class="code">Some value</code> where <code class="code">value</code> is the item at index <code class="code">i</code> 
+  If <code class="code">i</code> is out of range;returns <code class="code">None</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html#VALgetAssoc">getAssoc</a> [<a href="Belt_List.html">Belt_List</a>]</td>
@@ -4519,8 +4573,8 @@ Valid flags:
                     <code class="code">getAssoc xs k eq</code>
 <p>
 
-    return the second element of a pair in <code class="code">xs</code> where the first element equals <code class="code">x</code>,
-    or <code class="code">None</code> if not found<br>
+    return the second element of a pair in <code class="code">xs</code> where the first element equals <code class="code">x</code> as per the predicate
+    function <code class="code">eq</code>, or <code class="code">None</code> if not found<br>
  
                 </div>
                 </div> </td></tr>
@@ -4581,7 +4635,8 @@ Valid flags:
 <tr><td><a href="Belt_List.html#VALgetBy">getBy</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">getBy xs p</code> returns <code class="code">Some value</code> for the first value in <code class="code">xs</code> that satisifies the predicate function <code class="code">p</code>; returns <code class="code">None</code> if no element satisifies the function.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html#VALgetByU">getByU</a> [<a href="Belt_List.html">Belt_List</a>]</td>
@@ -4797,7 +4852,7 @@ Valid flags:
                     <code class="code">getExn arr i</code>
 <p>
 
-    <b>raise</b> an exception if <code class="code">i</code> is out of range<br>
+    <b>raise</b> an exception if <code class="code">i</code> is out of range;otherwise return the value at index <code class="code">i</code> in <code class="code">arr</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -5141,7 +5196,7 @@ Valid flags:
                     <code class="code">getUndefined arr i</code>
 <p>
 
-    It does the samething in the runtime as <a href="Belt_Array.html#VALgetUnsafe"><code class="code">Belt_Array.getUnsafe</code></a>, 
+    It does the samething in the runtime as <a href="Belt_Array.html#VALgetUnsafe"><code class="code">Belt_Array.getUnsafe</code></a>;
     it is <i>type safe</i> since the return type still track whether it is 
     in range or not<br>
  
@@ -5168,7 +5223,7 @@ Valid flags:
     <b>Unsafe</b>
 <p>
 
-    no  bounds checking, this would cause type error
+    no  bounds checking;this would cause type error
     if <code class="code">i</code> does not stay within range<br>
  
                 </div>
@@ -5424,14 +5479,17 @@ Valid flags:
 <tr><td><a href="Belt_List.html#VALhas">has</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">has xs eqFcn</code> returns true if the list contains at least one element for which <code class="code">eqFcn x</code> returns
+    true<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html#VALhasAssoc">hasAssoc</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">hasAssoc xs x eq</code>
-     return true if there is a pair in <code class="code">xs</code> where the first element equals <code class="code">x</code><br>
+                    <code class="code">hasAssoc xs k eq</code>
+     return true if there is a pair in <code class="code">xs</code> where the first element equals <code class="code">k</code> as per the predicate
+     funtion <code class="code">eq</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -5474,19 +5532,21 @@ Valid flags:
 <tr><td><a href="Belt_List.html#VALhead">head</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">head xs</code> returns <code class="code">None</code> if <code class="code">xs</code> is the empty list, otherwise it returns <code class="code">Some value</code> where <code class="code">value</code> is the first
+  element in the list.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html#VALheadExn">headExn</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">headExn h</code>
+                    <code class="code">headExn xs</code>
 <p>
 
     <b>See</b> <a href="Belt_List.html#VALhead"><code class="code">Belt_List.head</code></a>
 <p>
 
-    <b>raise</b> an exception if <code class="code">h</code> is empty<br>
+    <b>raise</b> an exception if <code class="code">xs</code> is empty<br>
  
                 </div>
                 </div> </td></tr>
@@ -5529,7 +5589,8 @@ Valid flags:
 <tr><td><a href="Js_string.html#VALincludes">includes</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">includes searchValue s</code> returns <code class="code">true</code> if <code class="code">searchValue</code> is found anywhere within <code class="code">s</code>, <code class="code">false</code> otherwise.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALincludes">includes</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -5541,7 +5602,7 @@ Valid flags:
 <tr><td><a href="Js_string.html#VALincludesFrom">includesFrom</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    ES2015<br>
+                    <code class="code">includes searchValue start s</code> returns <code class="code">true</code> if <code class="code">searchValue</code> is found anywhere within <code class="code">s</code> starting at character number <code class="code">start</code> (where 0 is the first character), <code class="code">false</code> otherwise.<br>
  
                 </div>
                 </div> </td></tr>
@@ -5561,7 +5622,8 @@ Valid flags:
 <tr><td><a href="Js_string.html#VALindexOf">indexOf</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">indexOf searchValue s</code> returns the position at which <code class="code">searchValue</code> was first found within <code class="code">s</code>, or <code class="code">-1</code> if <code class="code">searchValue</code> is not in <code class="code">s</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALindexOf">indexOf</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -5579,7 +5641,8 @@ Valid flags:
 <tr><td><a href="Js_string.html#VALindexOfFrom">indexOfFrom</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">indexOfFrom searchValue start s</code> returns the position at which <code class="code">searchValue</code> was found within <code class="code">s</code> starting at character position <code class="code">start</code>, or <code class="code">-1</code> if <code class="code">searchValue</code> is not found in that portion of <code class="code">s</code>. The return value is relative to the beginning of the string, no matter where the search started from.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALindexOfFrom">indexOfFrom</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -6126,7 +6189,7 @@ the given function.<br>
 <tr><td><a href="Belt_List.html#VALkeep">keep</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">keep  xs p</code><br>
+                    <code class="code">keep  xs p</code> returns a list of all elements in <code class="code">xs</code> which satisfy the predicate function <code class="code">p</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -6158,7 +6221,7 @@ the given function.<br>
 <tr><td><a href="Belt_List.html#VALkeepMap">keepMap</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">keepMap xs f</code><br>
+                    <code class="code">keepMap xs f</code> applies <code class="code">f</code> to each element of <code class="code">xs</code>. If <code class="code">f xi</code> returns <code class="code">Some value</code>, then <code class="code">value</code> is kept in the resulting list; if <code class="code">f xi</code> returns <code class="code">None</code>, the element is not retained in the result.<br>
  
                 </div>
                 </div> </td></tr>
@@ -6451,7 +6514,8 @@ flag is set.<br>
 <tr><td><a href="Js_string.html#VALlastIndexOf">lastIndexOf</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">lastIndexOf searchValue s</code> returns the position of the <i>last</i> occurrence of <code class="code">searchValue</code> within <code class="code">s</code>, searching backwards from the end of the string. Returns <code class="code">-1</code> if <code class="code">searchValue</code> is not in <code class="code">s</code>. The return value is always relative to the beginning of the string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALlastIndexOf">lastIndexOf</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -6469,7 +6533,8 @@ flag is set.<br>
 <tr><td><a href="Js_string.html#VALlastIndexOfFrom">lastIndexOfFrom</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">lastIndexOfFrom searchValue start s</code> returns the position of the <i>last</i> occurrence of <code class="code">searchValue</code> within <code class="code">s</code>, searching backwards from the given <code class="code">start</code> position. Returns <code class="code">-1</code> if <code class="code">searchValue</code> is not in <code class="code">s</code>. The return value is always relative to the beginning of the string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALlastIndexOfFrom">lastIndexOfFrom</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -6506,7 +6571,8 @@ flag is set.<br>
 <tr><td><a href="Js_string.html#VALlength">length</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">length s</code> returns the length of the given string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALlength">length</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -6524,7 +6590,7 @@ flag is set.<br>
 <tr><td><a href="Belt_List.html#VALlength">length</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">length l</code><br>
+                    <code class="code">length xs</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -6550,7 +6616,7 @@ flag is set.<br>
 <tr><td><a href="Js_string.html#VALlink">link</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    ES2015<br>
+                    <code class="code">link urlText linkText</code> creates a string withan HTML <code class="code">&lt;a&gt;</code> element with <code class="code">href</code> attribute of <code class="code">urlText</code> and <code class="code">linkText</code> as its content.<br>
  
                 </div>
                 </div> </td></tr>
@@ -6563,7 +6629,16 @@ flag is set.<br>
 <tr><td><a href="Js_string.html#VALlocaleCompare">localeCompare</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">localeCompare comparison reference</code> returns
+<p>
+
+<ul>
+<li>a negative value if <code class="code">reference</code> comes before <code class="code">comparison</code> in sort order</li>
+<li>zero if <code class="code">reference</code> and <code class="code">comparison</code> have the same sort order</li>
+<li>a positive value if <code class="code">reference</code> comes after <code class="code">comparison</code> in sort order</li>
+</ul>
+<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_console.html#VALlog">log</a> [<a href="Js_console.html">Js_console</a>]</td>
@@ -6781,7 +6856,8 @@ flag is set.<br>
 <tr><td><a href="Js_string.html#VALmake">make</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">make value</code> converts the given value to a string<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalBucketsType.html#VALmake">make</a> [<a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a>]</td>
@@ -6882,7 +6958,7 @@ flag is set.<br>
                     <code class="code">make n v</code> 
 <p>
 <ul>
-<li>return a list of length <code class="code">n</code> with each element filled with <code class="code">v</code>  </li>
+<li>return a list of length <code class="code">n</code> with each element filled with value <code class="code">v</code>  </li>
 <li>return the empty list if <code class="code">n</code> is negative</li>
 </ul>
 <br>
@@ -6964,7 +7040,9 @@ flag is set.<br>
 <tr><td><a href="Belt_Array.html#VALmakeUninitialized">makeUninitialized</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">makeUninitialized n</code> creates an array of length <code class="code">n</code> filled with the undefined value.
+  You must specify the type of data that will eventually fill the array.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALmakeUninitializedUnsafe">makeUninitializedUnsafe</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
@@ -7140,7 +7218,7 @@ using <code class="code">f</code> to map each value<br>
                     <code class="code">map xs f</code>
 <p>
 
-    return the list obtained by applying <code class="code">f</code> to the element of <code class="code">xs</code><br>
+    return the list obtained by applying <code class="code">f</code> to each element of <code class="code">xs</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -7166,10 +7244,10 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALmapReverse">mapReverse</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">mapReverse a f</code>
+                    <code class="code">mapReverse xs f</code>
 <p>
 
-    Equivalent to <code class="code">reverse (map a f)</code><br>
+    Equivalent to <code class="code">reverse (map xs f)</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -7282,7 +7360,9 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALmapWithIndex">mapWithIndex</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">mapWithIndex xs f</code> applies <code class="code">f</code> to each element of <code class="code">xs</code>. Function <code class="code">f</code> takes two arguments:
+  the index starting from 0 and the element from <code class="code">xs</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALmapWithIndex">mapWithIndex</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
@@ -7291,8 +7371,8 @@ using <code class="code">f</code> to map each value<br>
                     <code class="code">mapWithIndex xs f </code>
 <p>
 
-    The same with <a href="Belt_Array.html#VALmap"><code class="code">Belt_Array.map</code></a> except that <code class="code">f</code> is supplied with one
-    more argument: the index starting from 0<br>
+    <code class="code">mapWithIndex xs f</code> applies <code class="code">f</code> to each element of <code class="code">xs</code>. Function <code class="code">f</code> takes two arguments:
+  the index starting from 0 and the element from <code class="code">xs</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -7429,7 +7509,19 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALmatch_">match_</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">match regexp str</code> matches a string against the given <code class="code">regexp</code>. If there is no match, it returns <code class="code">None</code>.
+  For regular expressions without the <code class="code">g</code> modifier, if there is a match, the return value is <code class="code">Some array</code> where the array contains:
+<p>
+
+  <ul>
+<li>The entire matched string</li>
+<li>Any capture groups if the <code class="code">regexp</code> had parentheses</li>
+</ul>
+
+<p>
+
+  For regular expressions with the <code class="code">g</code> modifier, a matched expression returns <code class="code">Some array</code> with all the matched substrings and no capture groups.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_re.html#VALmatches">matches</a> [<a href="Js_re.html">Js_re</a>]</td>
@@ -8403,13 +8495,26 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALnormalize">normalize</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">normalize str</code> returns the normalized Unicode string using Normalization Form Canonical (NFC) Composition.
+<p>
+
+Consider the character <code class="code">ã</code>, which can be represented as the single codepoint <code class="code">\u00e3</code> or the combination of a lower case letter A <code class="code">\u0061</code> and a combining tilde <code class="code">\u0303</code>. Normalization ensures that both can be stored in an equivalent binary representation.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALnormalizeByForm">normalizeByForm</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    ES2015<br>
+                    <code class="code">normalize str form</code> (ES2015) returns the normalized Unicode string using the specified form of normalization, which may be one of:
+<p>
+
+  <ul>
+<li>"NFC" — Normalization Form Canonical Composition.</li>
+<li>"NFD" — Normalization Form Canonical Decomposition.</li>
+<li>"NFKC" — Normalization Form Compatibility Composition.</li>
+<li>"NFKD" — Normalization Form Compatibility Decomposition.</li>
+</ul>
+<br>
  
                 </div>
                 </div> </td></tr>
@@ -8877,7 +8982,7 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALpartition">partition</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">partition xs p</code><br>
+                    <code class="code">partition xs p</code> creates a pair of lists; the first list consists of all elements of <code class="code">xs</code> that satisfy the predicate function <code class="code">p</code>; the second list consists of all elements of <code class="code">xs</code> that do not satisfy <code class="code">p</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -9192,6 +9297,12 @@ using <code class="code">f</code> to map each value<br>
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Js_unsafe.html#VALraw_function">raw_function</a> [<a href="Js_unsafe.html">Js_unsafe</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_unsafe.html#VALraw_stmt">raw_stmt</a> [<a href="Js_unsafe.html">Js_unsafe</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -9430,7 +9541,12 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALreduce">reduce</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">reduce xs f</code><br>
+                    <code class="code">reduce xs f</code>
+<p>
+
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> from beginning to end.  Function <code class="code">f</code> has two parameters: the item
+    from the list and an “accumulator”, which starts with a value of <code class="code">init</code>. <code class="code">reduce</code>
+    returns the final value of the accumulator.<br>
  
                 </div>
                 </div> </td></tr>
@@ -9446,7 +9562,12 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_Array.html#VALreduce">reduce</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">reduce xs init f</code><br>
+                    <code class="code">reduce xs init f</code>
+<p>
+
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> from beginning to end.  Function <code class="code">f</code> has two parameters: the item
+    from the list and an “accumulator”;which starts with a value of <code class="code">init</code>. <code class="code">reduce</code>
+    returns the final value of the accumulator.<br>
  
                 </div>
                 </div> </td></tr>
@@ -9456,7 +9577,9 @@ using <code class="code">f</code> to map each value<br>
                     <code class="code">reduce2 xs ys init f </code>
 <p>
 
-    stops with the shorter list.<br>
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> and <code class="code">ys</code> from beginning to end. Stops with the shorter list.
+    Function <code class="code">f</code> has three parameters: an “accumulator” which starts with a value of <code class="code">init</code>,
+    an item from <code class="code">xs</code>, and an item from <code class="code">ys</code>. <code class="code">reduce2</code> returns the final value of the accumulator.<br>
  
                 </div>
                 </div> </td></tr>
@@ -9469,14 +9592,22 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALreduceReverse">reduceReverse</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">reduceReverse xs f</code><br>
+                    <code class="code">reduceReverse xs f</code>
+<p>
+
+    Works like <a href="Belt_List.html#VALreduce"><code class="code">Belt_List.reduce</code></a>, except that function <code class="code">f</code> is applied to each item of <code class="code">xs</code> from the last
+    back to the first.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALreduceReverse">reduceReverse</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">reduceReverse xs init f</code><br>
+                    <code class="code">reduceReverse xs init f</code>
+<p>
+
+    Works like <a href="Belt_Array.html#VALreduce"><code class="code">Belt_Array.reduce</code></a>;except that function <code class="code">f</code> is applied to each item of <code class="code">xs</code> from the last
+    back to the first.<br>
  
                 </div>
                 </div> </td></tr>
@@ -9486,14 +9617,19 @@ using <code class="code">f</code> to map each value<br>
                     <code class="code">reduceReverse2 xs ys init f </code>
 <p>
 
-   Stops with the shorter list<br>
+    Applies <code class="code">f</code> to each element of <code class="code">xs</code> and <code class="code">ys</code> from end to beginning. Stops with the shorter list.
+    Function <code class="code">f</code> has three parameters: an “accumulator” which starts with a value of <code class="code">init</code>,
+    an item from <code class="code">xs</code>, and an item from <code class="code">ys</code>. <code class="code">reduce2</code> returns the final value of the accumulator.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALreduceReverse2">reduceReverse2</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">reduceReverse2 xs ys init f</code>
+   Reduces two arrays <code class="code">xs</code> and <code class="code">ys</code>;taking items starting at <code class="code">min (length xs) (length ys)</code>
+   down to and including zero.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html#VALreduceReverse2U">reduceReverse2U</a> [<a href="Belt_List.html">Belt_List</a>]</td>
@@ -9885,8 +10021,8 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALremoveAssoc">removeAssoc</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">removeAssoc xs x eq</code>
-    Try to remove the first pair, if not found, leave it untouched.<br>
+                    <code class="code">removeAssoc xs k eq</code>
+    Return a list after removing the first pair whose first value is <code class="code">k</code> per the equality predicate <code class="code">eq</code>; if not found, return a new list identical to <code class="code">xs</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -10061,19 +10197,29 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALrepeat">repeat</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">repeat n s</code> returns a string that consists of <code class="code">n</code> repetitions of <code class="code">s</code>. Raises <code class="code">RangeError</code> if <code class="code">n</code> is negative.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALreplace">replace</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">replace substr newSubstr string</code> returns a new string which is
+identical to <code class="code">string</code> except with the first matching instance of <code class="code">substr</code>
+replaced by <code class="code">newSubstr</code>.
+<p>
+
+<code class="code">substr</code> is treated as a verbatim string to match, not a regular
+expression.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALreplaceByRe">replaceByRe</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">replaceByRe regex replacement string</code> returns a new string where occurrences matching <code class="code">regex</code>
+have been replaced by <code class="code">replacement</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_path.html#VALresolve">resolve</a> [<a href="Node_path.html">Node_path</a>]</td>
@@ -10156,13 +10302,14 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALreverse">reverse</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">reverse xs</code> returns a new list whose elements are those of <code class="code">xs</code> in reverse order.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALreverse">reverse</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">reverse x</code><br>
+                    <code class="code">reverse arr</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -10188,7 +10335,8 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_Array.html#VALreverseInPlace">reverseInPlace</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">reverseInPlace arr</code> reverses items in <code class="code">arr</code> in place<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_fs.html#VALrmdirSync">rmdirSync</a> [<a href="Node_fs.html">Node_fs</a>]</td>
@@ -10208,7 +10356,8 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALsearch">search</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">search regexp str</code> returns the starting position of the first match of <code class="code">regexp</code> in the given <code class="code">str</code>, or -1 if there is no match.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_path.html#VALsep">sep</a> [<a href="Node_path.html">Node_path</a>]</td>
@@ -10331,7 +10480,7 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_Array.html#VALset">set</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">set arr n x</code> modifies <code class="code">arr</code> in place, 
+                    <code class="code">set arr n x</code> modifies <code class="code">arr</code> in place;
     it replaces the nth element of <code class="code">arr</code> with <code class="code">x</code><br>
  
                 </div>
@@ -10352,8 +10501,9 @@ using <code class="code">f</code> to map each value<br>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">setAssoc xs k v eq</code>
-    if <code class="code">k</code> exists in <code class="code">xs</code>, replace it with the new <code class="code">v</code>, otherwise, add
-    it to the head<br>
+    if <code class="code">k</code> exists in <code class="code">xs</code> by satisfying the <code class="code">eq</code> predicate, return a new list
+    with the key and value replaced by the new <code class="code">k</code> and <code class="code">v</code>; otherwise, return a new
+    list with the pair <code class="code">k, v</code> added to the head of <code class="code">xs</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -10727,7 +10877,8 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_Array.html#VALshuffleInPlace">shuffleInPlace</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">shuffleInPlace arr</code> randomly re-orders the items in <code class="code">arr</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_math.html#VALsign_float">sign_float</a> [<a href="Js_math.html">Js_math</a>]</td>
@@ -10947,7 +11098,17 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALslice">slice</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">slice from:n1 to_:n2 str</code> returns the substring of <code class="code">str</code> starting at character <code class="code">n1</code> up to but not including <code class="code">n2</code>
+<p>
+
+If either <code class="code">n1</code> or <code class="code">n2</code> is negative, then it is evaluated as <code class="code">length str - n1</code> (or <code class="code">length str - n2</code>.
+<p>
+
+If <code class="code">n2</code> is greater than the length of <code class="code">str</code>, then it is treated as <code class="code">length str</code>.
+<p>
+
+If <code class="code">n1</code> is greater than <code class="code">n2</code>, <code class="code">slice</code> returns the empty string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALslice">slice</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -10959,18 +11120,21 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_Array.html#VALslice">slice</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">slice arr offset len</code>
+                    <code class="code">slice xs offset len</code> creates a new array with the <code class="code">len</code> elements of <code class="code">xs</code> starting at <code class="code">offset</code> for
 <p>
 
-    <code class="code">offset</code> can be negative,
-    <code class="code">slice arr -1 1</code> means get the last element as a singleton array
+    <code class="code">offset</code> can be negative;and is evaluated as <code class="code">length xs - offset</code>
+    <code class="code">slice xs -1 1</code> means get the last element as a singleton array
 <p>
 
-    <code class="code">slice arr -(very_large_index) len</code> will do a copy of the array
+    <code class="code">slice xs (-len) len</code> will return a copy of the array
 <p>
 
-    if the array does not have enough data, <code class="code">slice</code> extracts through
-    the end of sequence<br>
+    if the array does not have enough data;<code class="code">slice</code> extracts through
+    the end of sequence.
+<p>
+
+    if <code class="code">len</code> is negative;returns the empty array.<br>
  
                 </div>
                 </div> </td></tr>
@@ -10995,7 +11159,14 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALsliceToEnd">sliceToEnd</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">sliceToEnd from: n str</code> returns the substring of <code class="code">str</code> starting at character <code class="code">n</code> to the end of the string
+<p>
+
+If <code class="code">n</code> is negative, then it is evaluated as <code class="code">length str - n</code>.
+<p>
+
+If <code class="code">n</code> is greater than the length of <code class="code">str</code>, then <code class="code">sliceToEnd</code> returns the empty string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALslice_copy">slice_copy</a> [<a href="Js_array.html">Js_array</a>]</td>
@@ -11167,7 +11338,7 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALsome">some</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">some ls p</code><br>
+                    <code class="code">some xs p</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -11181,14 +11352,16 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALsome2">some2</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">some2 xs ys p</code><br>
+                    <code class="code">some2 xs ys p</code> returns true if <code class="code">p xi yi</code> is true for any pair of elements
+  up to the shorter length (i.e. <code class="code">min (length xs) (length ys)</code>)<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html#VALsome2">some2</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">some2 xs ys p</code> only tests the length of shorter<br>
+                    <code class="code">some2 xs ys p</code> returns true if <code class="code">p xi yi</code> is true for any pair of elements
+  up to the shorter length (i.e. <code class="code">min (length xs) (length ys)</code>)<br>
  
                 </div>
                 </div> </td></tr>
@@ -11349,6 +11522,14 @@ using <code class="code">f</code> to map each value<br>
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_List.html#VALsort">sort</a> [<a href="Belt_List.html">Belt_List</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">sort xs</code>
+    Returns a sorted list.<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_typed_array.S.html#VALsortInPlace">sortInPlace</a> [<a href="Js_typed_array.S.html">Js_typed_array.S</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -11368,6 +11549,12 @@ using <code class="code">f</code> to map each value<br>
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html#VALsortInPlaceWith">sortInPlaceWith</a> [<a href="Js_array.html">Js_array</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_List.html#VALsortU">sortU</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -11395,7 +11582,9 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALsplit">split</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">split delimiter str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">delimiter</code> and returns an
+  array of the resulting substrings.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapString.html#VALsplit">split</a> [<a href="Belt_internalMapString.html">Belt_internalMapString</a>]</td>
@@ -11534,7 +11723,8 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALsplitAtMost">splitAtMost</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">splitAtMost delimiter ~limit: n str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">delimiter</code> and returns an array of the first <code class="code">n</code> resulting substrings. If <code class="code">n</code> is negative or greater than the number of substrings, the array will contain all the substrings.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapString.html#VALsplitAux">splitAux</a> [<a href="Belt_internalMapString.html">Belt_internalMapString</a>]</td>
@@ -11552,25 +11742,31 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALsplitByRe">splitByRe</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">splitByRe regex str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">regex</code> and returns an
+  array of the resulting substrings.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALsplitByReAtMost">splitByReAtMost</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">splitByReAtMost regex ~limit: n str</code> splits the given <code class="code">str</code> at every occurrence of <code class="code">regex</code> and returns an
+  array of the first <code class="code">n</code> resulting substrings. If <code class="code">n</code> is negative or greater than the number of substrings, the array will contain all the substrings.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALsplitLimited">splitLimited</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    Deprecated - Please use <code class="code">splitAtMost</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALsplitRegexpLimited">splitRegexpLimited</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    Deprecated - Please use <code class="code">splitByReAtMost</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_math.html#VALsqrt">sqrt</a> [<a href="Js_math.html">Js_math</a>]</td>
@@ -11659,13 +11855,16 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALstartsWith">startsWith</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    ES2015:
+    <code class="code">startsWith substr str</code> returns <code class="code">true</code> if the <code class="code">str</code> starts with <code class="code">substr</code>, <code class="code">false</code> otherwise.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALstartsWithFrom">startsWithFrom</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    ES2015<br>
+                    ES2015:
+    <code class="code">startsWithFrom substr n str</code> returns <code class="code">true</code> if the <code class="code">str</code> starts with <code class="code">substr</code> starting at position <code class="code">n</code>, <code class="code">false</code> otherwise. If <code class="code">n</code> is negative, the search starts at the beginning of <code class="code">str</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -11733,6 +11932,16 @@ using <code class="code">f</code> to map each value<br>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">stringifyAny value</code> formats any <code class="code">value</code> into a JSON string<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_json.html#VALstringifyWithSpace">stringifyWithSpace</a> [<a href="Js_json.html">Js_json</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">stringify json</code> formats the JSON data structure as a string
+<p>
+
+<b>Returns</b> the string representation of a given JSON data structure<br>
  
                 </div>
                 </div> </td></tr>
@@ -11816,44 +12025,80 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Js_string.html#VALsubstr">substr</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">substr ~from: n str</code> returns the substring of <code class="code">str</code> from position <code class="code">n</code> to the end of the string.
+<p>
+
+  If <code class="code">n</code> is less than zero, the starting position is the length of <code class="code">str</code> - <code class="code">n</code>.
+<p>
+
+  If <code class="code">n</code> is greater than or equal to the length of <code class="code">str</code>, returns the empty string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALsubstrAtMost">substrAtMost</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">substrAtMost ~from: pos ~length: n str</code> returns the substring of <code class="code">str</code> of length <code class="code">n</code> starting at position <code class="code">pos</code>.
+<p>
+
+  If <code class="code">pos</code> is less than zero, the starting position is the length of <code class="code">str</code> - <code class="code">pos</code>.
+<p>
+
+  If <code class="code">pos</code> is greater than or equal to the length of <code class="code">str</code>, returns the empty string.
+<p>
+
+  If <code class="code">n</code> is less than or equal to zero, returns the empty string.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALsubstring">substring</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">substring ~from: start ~to_: finish str</code> returns characters <code class="code">start</code> up to but not including <code class="code">finish</code> from <code class="code">str</code>.
+<p>
+
+  If <code class="code">start</code> is less than zero, it is treated as zero.
+<p>
+
+  If <code class="code">finish</code> is zero or negative, the empty string is returned.
+<p>
+
+  If <code class="code">start</code> is greater than <code class="code">finish</code>, the start and finish points are swapped.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALsubstringToEnd">substringToEnd</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">substringToEnd ~from: start str</code> returns the substring of <code class="code">str</code> from position <code class="code">start</code> to the end.
+<p>
+
+  If <code class="code">start</code> is less than or equal to zero, the entire string is returned.
+<p>
+
+  If <code class="code">start</code> is greater than or equal to the length of <code class="code">str</code>, the empty string is returned.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>T</td></tr>
 <tr><td><a href="Belt_List.html#VALtail">tail</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">tail xs</code> returns <code class="code">None</code> if <code class="code">xs</code> is empty;
+  otherwise it returns <code class="code">Some xs2</code> where <code class="code">xs2</code> is everything except the first element of <code class="code">xs</code>;<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html#VALtailExn">tailExn</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">tailExn h</code>
+                    <code class="code">tailExn xs</code>
 <p>
 
     <b>See</b> <a href="Belt_List.html#VALtail"><code class="code">Belt_List.tail</code></a>
 <p>
 
-    <b>raise</b> an exception if <code class="code">h</code> is empty<br>
+    <b>raise</b> an exception if <code class="code">xs</code> is empty<br>
  
                 </div>
                 </div> </td></tr>
@@ -12125,7 +12370,8 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_List.html#VALtoArray">toArray</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">toArray xs</code> converts the given list to an array<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableQueue.html#VALtoArray">toArray</a> [<a href="Belt_MutableQueue.html">Belt_MutableQueue</a>]</td>
@@ -12379,7 +12625,8 @@ The output will be rounded or padded with zeroes if necessary.<br>
 <tr><td><a href="Js_string.html#VALtoLocaleLowerCase">toLocaleLowerCase</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">toLocaleLowerCase str</code> converts <code class="code">str</code> to lower case using the current locale<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.S.html#VALtoLocaleString">toLocaleString</a> [<a href="Js_typed_array.S.html">Js_typed_array.S</a>]</td>
@@ -12409,13 +12656,15 @@ The output will be rounded or padded with zeroes if necessary.<br>
 <tr><td><a href="Js_string.html#VALtoLocaleUpperCase">toLocaleUpperCase</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">toLocaleUpperCase str</code> converts <code class="code">str</code> to upper case using the current locale<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALtoLowerCase">toLowerCase</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">toLowerCase str</code> converts <code class="code">str</code> to lower case using the locale-insensitive case mappings in the Unicode Character Database. Notice that the conversion can give different results depending upon context, for example with the Greek letter sigma, which has two different lower case forms when it is the last character in a string or not.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalBucketsType.html#VALtoOpt">toOpt</a> [<a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a>]</td>
@@ -12565,6 +12814,12 @@ before the decimal point.<br>
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Node_buffer.html#VALtoString">toString</a> [<a href="Node_buffer.html">Node_buffer</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_int.html#VALtoString">toString</a> [<a href="Js_int.html">Js_int</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -12646,7 +12901,8 @@ value must be in the range [2, 36] (inclusive).
 <tr><td><a href="Js_string.html#VALtoUpperCase">toUpperCase</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">toUpperCase str</code> converts <code class="code">str</code> to upper case using the locale-insensitive case mappings in the Unicode Character Database. Notice that the conversion can expand the number of letters in the result; for example the German <code class="code">ß</code> capitalizes to two <code class="code">S</code>es in a row.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_list.html#VALtoVector">toVector</a> [<a href="Js_list.html">Js_list</a>]</td>
@@ -12710,6 +12966,12 @@ value must be in the range [2, 36] (inclusive).
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Js_console.html#VALtrace">trace</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt_MutableQueue.html#VALtransfer">transfer</a> [<a href="Belt_MutableQueue.html">Belt_MutableQueue</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -12723,7 +12985,8 @@ value must be in the range [2, 36] (inclusive).
 <tr><td><a href="Js_string.html#VALtrim">trim</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">trim str</code> returns a string that is <code class="code">str</code> with whitespace stripped from both ends. Internal whitespace is not removed.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.html#VALtrue_">true_</a> [<a href="Js.html">Js</a>]</td>
@@ -12748,7 +13011,14 @@ value must be in the range [2, 36] (inclusive).
 <tr><td><a href="Belt_Array.html#VALtruncateToLengthUnsafe">truncateToLengthUnsafe</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <b>Unsafe</b><br>
+                    <b>Unsafe</b>
+  <code class="code">truncateToLengthUnsafe xs n</code> sets length of array <code class="code">xs</code> to <code class="code">n</code>.
+<p>
+
+  If <code class="code">n</code> is greater than the length of <code class="code">xs</code>;the extra elements are set to <code class="code">Js.Null_undefined.null</code>
+<p>
+
+  If <code class="code">n</code> is less than zero;raises a <code class="code">RangeError</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -12863,32 +13133,40 @@ value must be in the range [2, 36] (inclusive).
 <tr><td><a href="Js_string.html#VALunsafeReplaceBy0">unsafeReplaceBy0</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    returns a new string with some or all matches of a pattern replaced by the
-value returned from the given function<br>
+                    returns a new string with some or all matches of a pattern with no capturing
+parentheses replaced by the value returned from the given function.
+The function receives as its parameters the matched string, the offset at which the
+match begins, and the whole string being matched<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALunsafeReplaceBy1">unsafeReplaceBy1</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    returns a new string with some or all matches of a pattern replaced by the
-value returned from the given function<br>
+                    returns a new string with some or all matches of a pattern with one set of capturing
+parentheses replaced by the value returned from the given function.
+The function receives as its parameters the matched string, the captured string,
+the offset at which the match begins, and the whole string being matched.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALunsafeReplaceBy2">unsafeReplaceBy2</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    returns a new string with some or all matches of a pattern replaced by the
-value returned from the given function<br>
+                    returns a new string with some or all matches of a pattern with two sets of capturing
+parentheses replaced by the value returned from the given function.
+The function receives as its parameters the matched string, the captured strings,
+the offset at which the match begins, and the whole string being matched.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html#VALunsafeReplaceBy3">unsafeReplaceBy3</a> [<a href="Js_string.html">Js_string</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    returns a new string with some or all matches of a pattern replaced by the
-value returned from the given function<br>
+                    returns a new string with some or all matches of a pattern with three sets of capturing
+parentheses replaced by the value returned from the given function.
+The function receives as its parameters the matched string, the captured strings,
+the offset at which the match begins, and the whole string being matched.<br>
  
                 </div>
                 </div> </td></tr>
@@ -13010,7 +13288,7 @@ value returned from the given function<br>
 <tr><td><a href="Belt_List.html#VALunzip">unzip</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">unzip xs</code><br>
+                    <code class="code">unzip xs</code> takes a list of pairs and creates a pair of lists. The first list contains all the first items of the pairs; the second list contains all the second items.<br>
  
                 </div>
                 </div> </td></tr>
@@ -13281,6 +13559,7 @@ value returned from the given function<br>
                     <code class="code">zip a b</code> 
 <p>
 
+    Create an array of pairs from corresponding elements of <code class="code">a</code> and <code class="code">b</code>.
     Stop with the shorter array<br>
  
                 </div>
@@ -13304,6 +13583,7 @@ value returned from the given function<br>
                     <code class="code">zipBy xs ys f</code>
 <p>
 
+    Create an array by applying <code class="code">f</code> to corresponding elements of <code class="code">xs</code> and <code class="code">ys</code>
     Stops with shorter array
 <p>
 

@@ -177,11 +177,11 @@ and compile_external_field_apply
            params body args_lambda)
     | _ ->
       let rec aux (acc : J.expression)
-          (arity : Lam_arity.t) args (len : int)  =
-        match arity, len with
-        | _, 0 ->
+          arity args (len : int)  : E.t =
+          if len = 0 then         
           acc (** All arguments consumed so far *)
-        | Determin (a, (x,_) :: rest, b), len   ->
+          else match arity with 
+          |  x :: rest   ->
           let x =
             if x = 0
             then 1
@@ -191,7 +191,7 @@ and compile_external_field_apply
             let first_part, continue =  Ext_list.split_at x args in
             aux
               (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
-              (Determin (a, rest, b))
+              rest
               continue (len - x)
           else (* GPR #1423 *)
           if List.for_all Js_analyzer.is_okay_to_duplicate args then
@@ -204,22 +204,23 @@ and compile_external_field_apply
         (* alpha conversion now? --
            Since we did an alpha conversion before so it is not here
         *)
-        | Determin (a, [], b ), _ ->
+        | [] ->
           (* can not happen, unless it's an exception ? *)
           E.call ~info:Js_call_info.dummy acc args
-        | NA, _ ->
-          E.call ~info:Js_call_info.dummy acc args
       in
+      let fn = E.ml_var_dot id name in 
+      let initial_args_len = List.length args in 
+      let expression = 
+        match arity with 
+        | Submodule _ -> E.call ~info:Js_call_info.dummy fn args 
+        | Single x -> 
+          aux fn (Lam_arity.extract_arity x) args initial_args_len
+      in   
       Js_output.output_of_block_and_expression
         cxt.st
         cxt.should_return
         lam
-        args_code
-        (
-          aux
-            (E.ml_var_dot id name)
-            (match arity with Single x -> x | Submodule _ -> NA)
-            args (List.length args ))
+        args_code expression
 
 
 and  compile_let

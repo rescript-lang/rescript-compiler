@@ -25,12 +25,12 @@ function _with_in(filename, f) {
   var ic = Pervasives.open_in_bin(filename);
   try {
     var x = Curry._1(f, ic);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     return x;
   }
   catch (raw_e){
     var e = Js_exn.internalToOCamlException(raw_e);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     return /* `Error */[
             106380200,
             Printexc.to_string(e)
@@ -87,11 +87,11 @@ function _must_escape(s) {
       }
       
     }
-    return /* false */0;
+    return false;
   }
   catch (exn){
     if (exn === Pervasives.Exit) {
-      return /* true */1;
+      return true;
     } else {
       throw exn;
     }
@@ -318,12 +318,12 @@ function to_file_seq(filename, seq) {
   try {
     var x = Curry._1(f, oc);
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     return x;
   }
   catch (e){
     Caml_io.caml_ml_flush(oc);
-    Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+    Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
     throw e;
   }
 }
@@ -363,9 +363,9 @@ function make($staropt$star, refill) {
 
 function _is_digit(c) {
   if (/* "0" */48 <= c) {
-    return +(c <= /* "9" */57);
+    return c <= /* "9" */57;
   } else {
-    return /* false */0;
+    return false;
   }
 }
 
@@ -889,12 +889,12 @@ function next(t) {
 
 function parse_string(s) {
   var n = s.length;
-  var stop = [/* false */0];
+  var stop = [false];
   var refill = function (bytes, i, _) {
     if (stop[0]) {
       return 0;
     } else {
-      stop[0] = /* true */1;
+      stop[0] = true;
       Bytes.blit_string(s, 0, bytes, i, n);
       return n;
     }
@@ -994,9 +994,9 @@ function MakeDecode(funarg) {
   };
   var _is_digit = function (c) {
     if (/* "0" */48 <= c) {
-      return +(c <= /* "9" */57);
+      return c <= /* "9" */57;
     } else {
-      return /* false */0;
+      return false;
     }
   };
   var _refill = function (t, k_succ, k_fail) {

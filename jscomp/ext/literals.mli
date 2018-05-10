@@ -31,6 +31,7 @@ val js_array_ctor : string
 val js_type_number : string
 val js_type_string : string
 val js_type_object : string
+val js_type_boolean : string
 val js_undefined : string
 val js_prop_length : string
 
@@ -57,6 +58,7 @@ val setter_suffix_len : int
 val debugger : string
 val raw_expr : string
 val raw_stmt : string
+val raw_function : string
 val unsafe_downgrade : string
 val fn_run : string
 val method_run : string

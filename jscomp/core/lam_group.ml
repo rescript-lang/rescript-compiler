@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,7 +17,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
@@ -27,28 +27,40 @@
 
 
 (** This is not a recursive type definition *)
-type t = 
+type t =
   | Single of Lam.let_kind  * Ident.t * Lam.t
   | Recursive of (Ident.t * Lam.t) list
-  | Nop of Lam.t 
+  | Nop of Lam.t
 
+let single (kind : Lam.let_kind) id (body : Lam.t) =
+  match kind, body with
+  | (Lam.Strict | StrictOpt),
+    (Lvar _ | Lconst _) ->
+    Single(Alias, id,body)
+  | _ -> Single(kind,id,body)
 
-let pp = Format.fprintf 
+let nop_cons (x : Lam.t) acc =
+  match x with
+  | Lvar _ | Lconst _ | Lfunction _
+    ->  acc
+  | _ -> Nop x :: acc
 
-let str_of_kind (kind : Lam.let_kind) = 
-  match kind with 
+let pp = Format.fprintf
+
+let str_of_kind (kind : Lam.let_kind) =
+  match kind with
   | Alias -> "a"
   | Strict -> ""
   | StrictOpt -> "o"
-  | Variable -> "v" 
+  | Variable -> "v"
 
 let pp_group env fmt ( x : t) =
   match x with
   | Single (kind, id, lam) ->
-    Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind) 
+    Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind)
       (Lam_print.env_lambda env) lam
-  | Recursive lst -> 
-    List.iter (fun (id,lam) -> 
+  | Recursive lst ->
+    List.iter (fun (id,lam) ->
         Format.fprintf fmt
           "@[let %a@ =r@ %a@ @]" Ident.print id (Lam_print.env_lambda env) lam
       ) lst

@@ -1,4 +1,5 @@
 language: c
 script: bash -ex .travis-ci.sh
+sudo: enabled
 env:
    - XARCH=i386

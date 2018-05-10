@@ -20,8 +20,5 @@
   "bs-dependencies": [
     "reason-react"
   ],
-  "refmt": 3,
-  "warnings": {
-    "error": "+5"
-  }
+  "refmt": 3
 }

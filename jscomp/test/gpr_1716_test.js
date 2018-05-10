@@ -34,10 +34,10 @@ Caml_obj.caml_update_dummy(a, /* record */[/* b */b]);
 Caml_obj.caml_update_dummy(b, /* record */[/* a */a]);
 
 function is_inifite(x) {
-  return +(x[/* b */0][/* a */0] === x);
+  return x[/* b */0][/* a */0] === x;
 }
 
-eq("File \"gpr_1716_test.ml\", line 26, characters 6-13", /* true */1, is_inifite(a));
+eq("File \"gpr_1716_test.ml\", line 26, characters 6-13", true, is_inifite(a));
 
 Mt.from_pair_suites("gpr_1716_test.ml", suites[0]);
 

@@ -10,11 +10,11 @@ var Caml_obj = require("../../lib/js/caml_obj.js");
 var Pervasives = require("../../lib/js/pervasives.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
-var all_tests_ok = [/* true */1];
+var all_tests_ok = [true];
 
 function finish() {
   var match = all_tests_ok[0];
-  if (match !== 0) {
+  if (match) {
     console.log("\nAll tests succeeded.");
     return /* () */0;
   } else {
@@ -34,7 +34,7 @@ function print_test_number() {
 }
 
 function print_failure_test_fail() {
-  all_tests_ok[0] = /* false */0;
+  all_tests_ok[0] = false;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
                           "\n********* Failure Test number ",
@@ -53,7 +53,7 @@ function print_failure_test_fail() {
 }
 
 function print_failure_test_succeed() {
-  all_tests_ok[0] = /* false */0;
+  all_tests_ok[0] = false;
   return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */Block.__(11, [
                           "\n********* Failure Test number ",
@@ -77,7 +77,7 @@ function test(b) {
   if (b) {
     return 0;
   } else {
-    all_tests_ok[0] = /* false */0;
+    all_tests_ok[0] = false;
     return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */Block.__(11, [
                             "\n********* Test number ",
@@ -102,15 +102,15 @@ function test_raises_exc_p(pred, f, x) {
   try {
     Curry._1(f, x);
     print_failure_test_succeed(/* () */0);
-    return /* false */0;
+    return false;
   }
   catch (raw_x){
     var x$1 = Js_exn.internalToOCamlException(raw_x);
     if (Curry._1(pred, x$1)) {
-      return /* true */1;
+      return true;
     } else {
       print_failure_test_fail(/* () */0);
-      return /* false */0;
+      return false;
     }
   }
 }
@@ -118,7 +118,7 @@ function test_raises_exc_p(pred, f, x) {
 function test_raises_some_exc(f) {
   return (function (param) {
       return test_raises_exc_p((function () {
-                    return /* true */1;
+                    return true;
                   }), f, param);
     });
 }
@@ -146,9 +146,9 @@ function failure_test(f, x, s) {
 function scan_failure_test(f, x) {
   return test_raises_exc_p((function (param) {
                 if (param[0] === Scanf.Scan_failure) {
-                  return /* true */1;
+                  return true;
                 } else {
-                  return /* false */0;
+                  return false;
                 }
               }), f, x);
 }

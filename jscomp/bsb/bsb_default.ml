@@ -23,31 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(**
-   - 6
-   Label omitted in function application.
-   - 7
-   Method overridden.
-   - 9
-   Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)      
-   - 27
-   Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.      
-   - 29
-   Unescaped end-of-line in a string constant (non-portable code).
-   - 32 .. 39 Unused  blabla
-   - 44
-   Open statement shadows an already defined identifier.
-   - 45
-   Open statement shadows an already defined label or constructor.
-   - 48
-   Implicit elimination of optional arguments.
-   https://caml.inria.fr/mantis/view.php?id=6352
-
-*)  
-let bsc_flags = 
+(* for default warning flags, please see bsb_warning.ml *)
+let bsc_flags =
   [
     "-no-alias-deps";
-    "-color"; "always" 
+    "-color"; "always"
   ]
 
 

@@ -250,3 +250,9 @@ module Option = Belt_Option
 *)
 
 module Result = Belt_Result
+
+(** {!Belt.Debug}
+
+    Utilities for set up debugging    
+*)
+module Debug = Belt_Debug

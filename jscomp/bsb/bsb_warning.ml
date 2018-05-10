@@ -23,22 +23,41 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type warning_error = 
-  | Warn_error_false 
+type warning_error =
+  | Warn_error_false
   (* default [false] to make our changes non-intrusive *)
   | Warn_error_true
-  | Warn_error_number of string 
+  | Warn_error_number of string
 
 type t = {
   number : string option;
   error : warning_error
 }
 
-let default_warning_flag =  "-w -30-40+6+7+27+32..39+44+45+101"
+(**
+  See the meanings of the warning codes here: https://caml.inria.fr/pub/docs/manual-ocaml/comp.html#sec281
 
-let get_warning_flag x = 
-  default_warning_flag ^ 
-  (match x with 
+  - 30 Two labels or constructors of the same name are defined in two mutually recursive types.
+  - 40 Constructor or label name used out of scope.
+
+  - 6 Label omitted in function application.
+  - 7 Method overridden.
+  - 9 Missing fields in a record pattern. (*Not always desired, in some cases need [@@@warning "+9"] *)
+  - 27 Innocuous unused variable: unused variable that is not bound with let nor as, and doesn’t start with an underscore (_) character.
+  - 29 Unescaped end-of-line in a string constant (non-portable code).
+  - 32 .. 39 Unused blabla
+  - 44 Open statement shadows an already defined identifier.
+  - 45 Open statement shadows an already defined label or constructor.
+  - 48 Implicit elimination of optional arguments. https://caml.inria.fr/mantis/view.php?id=6352
+  - 101 (bsb-specific) unsafe polymorphic comparison.
+*)
+let default_warning = "-30-40+6+7+27+32..39+44+45+101"
+
+let default_warning_flag = "-w " ^ default_warning
+
+let get_warning_flag x =
+  default_warning_flag ^
+  (match x with
    | Some {number =None}
    | None ->  Ext_string.empty
    | Some {number = Some x} -> Ext_string.trim x )
@@ -46,53 +65,53 @@ let get_warning_flag x =
 
 let warn_error = " -warn-error A"
 
-let warning_to_string not_dev 
-    warning : string = 
-  default_warning_flag  ^ 
-  (match warning.number with 
-   | None -> 
+let warning_to_string not_dev
+    warning : string =
+  default_warning_flag  ^
+  (match warning.number with
+   | None ->
      Ext_string.empty
-   | Some x -> 
+   | Some x ->
      Ext_string.trim x) ^
-  if not_dev then Ext_string.empty 
+  if not_dev then Ext_string.empty
   else
-    match warning.error with 
-    | Warn_error_true -> 
+    match warning.error with
+    | Warn_error_true ->
       warn_error
 
-    | Warn_error_number y -> 
+    | Warn_error_number y ->
       " -warn-error " ^ y
-    | Warn_error_false -> 
-      Ext_string.empty          
+    | Warn_error_false ->
+      Ext_string.empty
 
 
 
-let from_map (m : Ext_json_types.t String_map.t) = 
-  let number_opt = String_map.find_opt Bsb_build_schemas.number m  in 
-  let error_opt = String_map.find_opt Bsb_build_schemas.error m  in 
-  match number_opt, error_opt  with 
+let from_map (m : Ext_json_types.t String_map.t) =
+  let number_opt = String_map.find_opt Bsb_build_schemas.number m  in
+  let error_opt = String_map.find_opt Bsb_build_schemas.error m  in
+  match number_opt, error_opt  with
   | None, None -> None
-  | _, _ -> 
-    let error  = 
-      match error_opt with 
+  | _, _ ->
+    let error  =
+      match error_opt with
       | Some (True _) -> Warn_error_true
       | Some (False _) -> Warn_error_false
-      | Some (Str {str ; }) 
-        -> Warn_error_number str 
+      | Some (Str {str ; })
+        -> Warn_error_number str
       | Some x -> Bsb_exception.config_error x "expect true/false or string"
       | None -> Warn_error_false
-      (** To make it less intrusive : warning error has to be enabled*)  
+      (** To make it less intrusive : warning error has to be enabled*)
     in
-    let number = 
-      match number_opt with   
+    let number =
+      match number_opt with
       | Some (Str { str = number}) -> Some number
-      | None -> None 
-      | Some x -> Bsb_exception.config_error x "expect a string" 
-    in 
-    Some {number; error }      
+      | None -> None
+      | Some x -> Bsb_exception.config_error x "expect a string"
+    in
+    Some {number; error }
 
-let opt_warning_to_string not_dev warning =       
-  match warning with 
+let opt_warning_to_string not_dev warning =
+  match warning with
   | None -> default_warning_flag
-  | Some w -> warning_to_string not_dev w 
+  | Some w -> warning_to_string not_dev w
 

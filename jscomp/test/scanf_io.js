@@ -54,7 +54,7 @@ function write_tscanf_data_file(fname, lines) {
   create_tscanf_data(ob, lines);
   $$Buffer.output_buffer(oc, ob);
   Caml_io.caml_ml_flush(oc);
-  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel not implemented by bucklescript yet\n");
+  return Caml_missing_polyfill.not_implemented("caml_ml_close_channel");
 }
 
 function get_lines(fname) {
@@ -195,7 +195,7 @@ function test55() {
   var ib = Scanf.Scanning[/* from_string */6](s);
   add_digest_ib(ob, ib);
   var tscanf_data_file_lines_digest = $$Buffer.contents(ob);
-  return +(digest_file(tscanf_data_file) === tscanf_data_file_lines_digest);
+  return digest_file(tscanf_data_file) === tscanf_data_file_lines_digest;
 }
 
 exports.tscanf_data_file = tscanf_data_file;

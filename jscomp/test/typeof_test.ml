@@ -17,7 +17,7 @@ let suites = Mt.[
     "string_type", (fun _ -> Eq(Js.typeof "x", "string"));
 
     "number_gadt_test", (fun _ -> Eq(Js.Types.test 3 Number, true ))  ;  
-    "boolean_gadt_test", (fun _ -> Eq (Js.Types.test Js.true_ Boolean, true ))    ;
+    "boolean_gadt_test", (fun _ -> Eq (Js.Types.test true Boolean, true ))    ;
 
     (* assert.notDeepEqual(undefined,null) raises ..*)
     "undefined_gadt_test", (fun _ -> Eq (Js.Types.test Js.undefined Undefined, true ))    ;

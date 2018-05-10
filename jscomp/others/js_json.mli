@@ -38,7 +38,7 @@ type _ kind =
   | Number : float kind 
   | Object : t Js_dict.t kind 
   | Array : t array kind 
-  | Boolean : Js.boolean kind
+  | Boolean : bool kind
   | Null : Js_types.null_val kind
 
 type tagged_t = 
@@ -75,7 +75,7 @@ val decodeArray : t -> t array option
 (** [decodeArray json] returns [Some a] if [json] is an array, [None]
     otherwise *)
 
-val decodeBoolean : t -> Js.boolean option
+val decodeBoolean : t -> bool option
 (** [decodeBoolean json] returns [Some b] if [json] is a boolean, [None]
     otherwise *)
 
@@ -98,8 +98,8 @@ external string : string -> t = "%identity"
 external number : float -> t = "%identity"
 (** [number n] makes a JSON number of the [float] [n] *)
 
-external boolean : Js.boolean -> t = "%identity" 
-(** [boolean b] makes a JSON boolean of the [Js.boolean] [b] *)
+external boolean : bool -> t = "%identity" 
+(** [boolean b] makes a JSON boolean of the [bool] [b] *)
 
 external object_ : t Js_dict.t -> t = "%identity"
 (** [object_ dict] makes a JSON objet of the [Js.Dict.t] [dict] *)
@@ -118,8 +118,8 @@ external stringArray : string array -> t = "%identity"
 external numberArray : float array -> t = "%identity"
 (** [numberArray a] makes a JSON array of the [float array] [a] *)
 
-external booleanArray : Js.boolean array -> t = "%identity"
-(** [booleanArray] makes a JSON array of the [Js.boolean array] [a] *)
+external booleanArray : bool array -> t = "%identity"
+(** [booleanArray] makes a JSON array of the [bool array] [a] *)
 
 external objectArray : t Js_dict.t array -> t = "%identity"
 (** [objectArray a] makes a JSON array of the [JsDict.t array] [a] *)
@@ -200,6 +200,28 @@ Js.log \@\@ Js.Json.stringify (Js.Json.object_ dict)
 
 @see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
 *)
+
+external stringifyWithSpace: t -> (_ [@bs.as {json|null|json}]) -> int -> string = "stringify" 
+  [@@bs.val] [@@bs.scope "JSON"]
+(** [stringify json] formats the JSON data structure as a string
+
+{b Returns} the string representation of a given JSON data structure
+
+@example {[
+(* Creates and stringifies a simple JS object with spacing *)
+
+let dict = Js.Dict.empty () in 
+Js.Dict.set dict "name" (Js.Json.string "John Doe"); 
+Js.Dict.set dict "age" (Js.Json.numberOfInt 30); 
+Js.Dict.set dict "likes" 
+  (Js.Json.stringArray [|"bucklescript";"ocaml";"js"|]);
+
+Js.log \@\@ Js.Json.stringify (Js.Json.object_ dict) 2
+]}
+
+@see <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify> MDN
+*)
+
 
 external stringifyAny : 'a -> string option = "stringify" 
   [@@bs.val] [@@bs.return undefined_to_opt] [@@bs.scope "JSON"]

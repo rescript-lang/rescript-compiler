@@ -196,8 +196,8 @@ let subst_map name = object (self)
         List.fold_left 
           (fun  (i,e,  acc) (x : J.expression) -> 
              match x.expression_desc with 
-             | J.Var _ | Number _ | Str _ 
-               -> 
+             | J.Var _ | Number _ | Str _ | J.Bool _
+               ->  (* TODO: check the optimization *)
                (i + 1, x :: e, acc)
              | _ ->                
                (* tradeoff, 

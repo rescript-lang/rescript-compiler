@@ -55,7 +55,7 @@ function searchForSureExists(xs, k) {
   };
 }
 
-var jsMapperConstantArray = /* int array */[
+var jsMapperConstantArray = /* array */[
   0,
   3,
   4,

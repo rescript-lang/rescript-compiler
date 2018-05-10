@@ -6,18 +6,18 @@ var Js_primitive = require("../../lib/js/js_primitive.js");
 var Js_undefined = require("../../lib/js/js_undefined.js");
 
 var suites_000 = /* tuple */[
-  "to_opt - empty",
+  "toOption - empty",
   (function () {
       return /* Eq */Block.__(0, [
                 /* None */0,
-                undefined === undefined ? /* None */0 : [undefined]
+                /* None */0
               ]);
     })
 ];
 
 var suites_001 = /* :: */[
   /* tuple */[
-    "to_opt - 'a",
+    "toOption - 'a",
     (function () {
         return /* Eq */Block.__(0, [
                   /* Some */[/* () */0],
@@ -40,8 +40,8 @@ var suites_001 = /* :: */[
         "test - empty",
         (function () {
             return /* Eq */Block.__(0, [
-                      /* true */1,
-                      /* true */1
+                      true,
+                      true
                     ]);
           })
       ],
@@ -50,8 +50,8 @@ var suites_001 = /* :: */[
           "test - 'a",
           (function () {
               return /* Eq */Block.__(0, [
-                        /* false */0,
-                        /* false */0
+                        false,
+                        false
                       ]);
             })
         ],
@@ -83,13 +83,13 @@ var suites_001 = /* :: */[
               /* tuple */[
                 "iter - empty",
                 (function () {
-                    var hit = [/* false */0];
+                    var hit = [false];
                     Js_undefined.iter(undefined, (function () {
-                            hit[0] = /* true */1;
+                            hit[0] = true;
                             return /* () */0;
                           }));
                     return /* Eq */Block.__(0, [
-                              /* false */0,
+                              false,
                               hit[0]
                             ]);
                   })
@@ -111,21 +111,21 @@ var suites_001 = /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    "from_opt - None",
+                    "fromOption - None",
                     (function () {
                         return /* Eq */Block.__(0, [
                                   undefined,
-                                  Js_undefined.from_opt(/* None */0)
+                                  Js_undefined.fromOption(/* None */0)
                                 ]);
                       })
                   ],
                   /* :: */[
                     /* tuple */[
-                      "from_opt - Some",
+                      "fromOption - Some",
                       (function () {
                           return /* Eq */Block.__(0, [
                                     2,
-                                    Js_undefined.from_opt(/* Some */[2])
+                                    Js_undefined.fromOption(/* Some */[2])
                                   ]);
                         })
                     ],

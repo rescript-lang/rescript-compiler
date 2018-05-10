@@ -164,11 +164,11 @@ var suites_000 = /* tuple */[
   "single_obj",
   (function () {
       return /* Eq */Block.__(0, [
-                /* int array */[
+                /* array */[
                   3,
                   32
                 ],
-                /* int array */[
+                /* array */[
                   Caml_oo_curry.js1(120, 1, v),
                   Caml_oo_curry.js1(121, 2, v)
                 ]
@@ -181,11 +181,11 @@ var suites_001 = /* :: */[
     "single_obj_cache",
     (function () {
         return /* Eq */Block.__(0, [
-                  /* int array */[
+                  /* array */[
                     3,
                     32
                   ],
-                  /* int array */[
+                  /* array */[
                     Caml_oo_curry.js1(120, 3, v),
                     Caml_oo_curry.js1(121, 4, v)
                   ]

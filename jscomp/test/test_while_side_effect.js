@@ -3,7 +3,7 @@
 
 var v = [0];
 
-while(console.log(String(v[0])), v[0] = v[0] + 1 | 0, +(v[0] < 10)) {
+while(console.log(String(v[0])), v[0] = v[0] + 1 | 0, v[0] < 10) {
   
 };
 
@@ -22,7 +22,7 @@ while((function () {
         console.log(String(x[0]));
         y = y + 1 | 0;
         x[0] = x[0] + 1 | 0;
-        return +((fib(x[0]) + fib(x[0]) | 0) < 20);
+        return (fib(x[0]) + fib(x[0]) | 0) < 20;
       })()) {
   console.log(String(3));
 };

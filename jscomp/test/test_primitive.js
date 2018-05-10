@@ -35,7 +35,7 @@ var test_float = 3;
 
 var test_abs = Math.abs(3.0);
 
-var v = /* float array */[
+var v = /* array */[
   1.0,
   2.0
 ];
@@ -59,9 +59,9 @@ function f2(h, b, _) {
 
 Caml_array.caml_array_set(v, 1, 3.0);
 
-var unboxed_x = /* float array */[
-  0,
-  0
+var unboxed_x = /* record */[
+  /* u */0,
+  /* v */0
 ];
 
 function gg(x) {

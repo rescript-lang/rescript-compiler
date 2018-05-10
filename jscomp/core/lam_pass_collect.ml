@@ -29,36 +29,30 @@
 
 
 
-
-let annotate (meta : Lam_stats.t)
-    rec_flag    
-    (k:Ident.t) (v : Lam_arity.t) lambda = 
-  (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
+(** Check, it is shared across ident_tbl, 
+    Only [Lassign] will break such invariant,
+    how about guarantee that [Lassign] only check the local ref 
+    and we track which ids are [Lassign]ed
+*)
+(**
+   might not be the same due to refinement
+   assert (old.arity = v) 
+*)
+let annotate (meta : Lam_stats.t)  rec_flag  (k:Ident.t) (arity : Lam_arity.t) lambda = 
   match Ident_hashtbl.find_opt  meta.ident_tbl k  with 
   | None -> (** FIXME: need do a sanity check of arity is NA or Determin(_,[],_) *)
-      Ident_hashtbl.add meta.ident_tbl k 
-        (FunctionId {
-            arity = v; lambda; rec_flag})
+    Ident_hashtbl.add meta.ident_tbl k 
+      (FunctionId {arity; lambda = Some (lambda, rec_flag) })
   |  Some (FunctionId old)  ->  
-      (** Check, it is shared across ident_tbl, 
-          Only [Lassign] will break such invariant,
-          how about guarantee that [Lassign] only check the local ref 
-          and we track which ids are [Lassign]ed
-       *)
-      (**
-         might not be the same due to refinement
-         assert (old.arity = v) 
-       *)
-        old.arity <- v  (* due to we keep refining arity analysis after each round*)
-      
 
+    old.arity <- arity  (* due to we keep refining arity analysis after each round*)      
   | _ -> assert false (* TODO -- avoid exception *)
 
 
 (** it only make senses recording arities for 
     function definition,
     alias propgation - and toplevel identifiers, this needs to be exported
- *)
+*)
 let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
       (kind : Lam.let_kind) 
@@ -73,6 +67,10 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
       Ident_hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Normal ls);
       List.iter collect ls     
+    | Lprim{primitive = Praw_js_function(_,raw_args); args = _ }           
+      ->
+      Ident_hashtbl.replace meta.ident_tbl ident 
+        (FunctionId {arity = Lam_arity.info [List.length raw_args] false; lambda = None} )
     | Lprim {primitive = Pnull_to_opt; 
              args = ([ Lvar _] as ls) ; _}
       ->
@@ -90,73 +88,73 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
         (Lam_util.kind_of_lambda_block Null_undefined ls )
     | Lglobal_module v  
       -> 
-        Lam_util.alias_ident_or_global meta  ident v (Module  v) kind; 
+      Lam_util.alias_ident_or_global meta  ident v (Module  v) kind; 
     | Lvar v 
       -> 
-        (
-         (* if Ident.global v then  *)
-         Lam_util.alias_ident_or_global meta  ident v NA kind
-           (* enven for not subsitution, it still propogate some properties *)
-           (* else () *)
-        )
-    | Lfunction{ params; body = l}
-        (** TODO record parameters ident ?, but it will be broken after inlining *)  
+      (
+        (* if Ident.global v then  *)
+        Lam_util.alias_ident_or_global meta  ident v NA kind
+        (* enven for not subsitution, it still propogate some properties *)
+        (* else () *)
+      )
+    | Lfunction{ params; body}
+      (** TODO record parameters ident ?, but it will be broken after inlining *)  
       -> 
-        (** TODO could be optimized in one pass? 
-            -- since collect would iter everywhere,
-            so -- it would still iterate internally
-         *)
+      (** TODO could be optimized in one pass? 
+          -- since collect would iter everywhere,
+          so -- it would still iterate internally
+      *)
 
       List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
-      let arity = Lam_stats_util.get_arity meta lam in       
+      let arity = Lam_arity_analysis.get_arity meta lam in       
       annotate meta rec_flag ident  arity lam; 
-      collect l
+      collect body
     | x -> 
-        collect x ;
-        if Ident_set.mem ident meta.export_idents then 
-          annotate meta rec_flag ident (Lam_stats_util.get_arity meta x ) lam
+      collect x ;
+      if Ident_set.mem ident meta.export_idents then 
+        annotate meta rec_flag ident (Lam_arity_analysis.get_arity meta x ) lam
 
 
   and collect  (lam : Lam.t)  =
     match lam with 
 
-        (** TODO: 
-            how about module aliases..
-            record dependency
-            --- tricky -- if we inlining, 
-            is it safe to remove it? probably not...
-         *)
+    (** TODO: 
+        how about module aliases..
+        record dependency
+        --- tricky -- if we inlining, 
+        is it safe to remove it? probably not...
+    *)
     | Lconst _ -> ()
     | Lvar _ -> ()
     | Lapply{fn = l1; args =  ll; _} ->
-        collect  l1; List.iter collect  ll
+      collect  l1; List.iter collect  ll
     | Lfunction { params; body =  l} -> (* functor ? *)
-        List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
-        collect  l
+      List.iter (fun p -> Ident_hashtbl.add meta.ident_tbl p Parameter ) params;
+      collect  l
     | Llet (kind,ident,arg,body) -> 
-        collect_bind Non_rec kind ident arg ; collect body
+      collect_bind Non_rec kind ident arg ; collect body
     | Lletrec (bindings, body) -> 
-        List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
-        collect body
+      List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
+      collect body
     | Lglobal_module _ -> ()
     | Lprim {args; _} -> List.iter collect  args
     | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}) ->
-        collect  l;
-        List.iter (fun (_, l) -> collect  l) sw_consts;
-        List.iter (fun (_, l) -> collect  l) sw_blocks;
-        begin match sw_failaction with 
+      collect  l;
+      List.iter (fun (_, l) -> collect  l) sw_consts;
+      List.iter (fun (_, l) -> collect  l) sw_blocks;
+      begin match sw_failaction with 
         | None -> ()
         | Some x -> collect x
-        end
+      end
     | Lstringswitch(l, sw, d) ->
-        collect  l ;
-        List.iter (fun (_, l) -> collect  l) sw ;
-        begin match d with
+      collect  l ;
+      List.iter (fun (_, l) -> collect  l) sw ;
+      begin match d with
         | Some d -> collect d 
         | None -> ()
-        end
+      end
     | Lstaticraise (code,ls) -> 
-          List.iter collect  ls
+      List.iter collect  ls
     | Lstaticcatch(l1, (_,_), l2) -> collect  l1; collect  l2
     | Ltrywith(l1, _, l2) -> collect  l1; collect  l2
     | Lifthenelse(l1, l2, l3) -> collect  l1; collect  l2; collect  l3
@@ -164,9 +162,9 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
     | Lwhile(l1, l2) -> collect  l1; collect l2
     | Lfor(_, l1, l2, dir, l3) -> collect  l1; collect  l2; collect  l3
     | Lassign(v, l) ->
-        (* Lalias-bound variables are never assigned, so don't increase
-           v's refcollect *)
-        collect  l
+      (* Lalias-bound variables are never assigned, so don't increase
+         v's refcollect *)
+      collect  l
     | Lsend(_, m, o, ll, _) -> List.iter collect  (m::o::ll)
     | Lifused(_, l) -> collect  l in collect lam 
 
@@ -181,11 +179,11 @@ let count_alias_globals
   let meta : Lam_stats.t = 
     {alias_tbl = Ident_hashtbl.create 31 ; 
      ident_tbl = Ident_hashtbl.create 31;
-     
+
      exports =  export_idents;
      filename;
      env;
      export_idents = export_sets;
-   } in 
+    } in 
   collect_helper  meta lam ; 
   meta

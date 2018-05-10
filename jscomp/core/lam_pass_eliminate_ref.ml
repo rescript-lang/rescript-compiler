@@ -49,7 +49,7 @@ let rec eliminate_ref id (lam : Lam.t) =
      TODO: we can refine analysis in later
   *)
   (* Lfunction(kind, params, eliminate_ref id body) *)
-  | Lprim {primitive = Psetfield(0, _,_); 
+  | Lprim {primitive = Psetfield(0,_); 
            args =  [Lvar v; e]} when Ident.same v id ->
     Lam.assign id (eliminate_ref id e)
   | Lprim {primitive = Poffsetref delta ; 

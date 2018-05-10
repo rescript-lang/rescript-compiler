@@ -54,6 +54,8 @@ let translate  loc
     Js_of_lam_exception.make (E.str s)
   | Pwrap_exn -> 
     E.runtime_call Js_runtime_modules.exn "internalToOCamlException" args 
+  | Lam.Praw_js_function(arg,block) -> 
+    E.raw_js_function arg block
   | Lam.Praw_js_code_exp s -> 
     E.raw_js_code Exp s  
   | Lam.Praw_js_code_stmt s -> 
@@ -75,8 +77,8 @@ let translate  loc
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
-          | Var _ -> 
-            E.econd (E.is_null e) Js_of_lam_option.none (Js_of_lam_option.some e)
+          | Var _ | Undefined | Null -> 
+            E.econd (E.is_null e) Js_of_lam_option.none (Js_of_lam_option.some e)           
           | _ ->
             E.runtime_call Js_runtime_modules.js_primitive
               "null_to_opt" args 
@@ -93,7 +95,7 @@ let translate  loc
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
-          | Var _ -> 
+          | Var _ | Undefined | Null -> 
             E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
           | _ -> 
             E.runtime_call Js_runtime_modules.js_primitive  
@@ -111,7 +113,7 @@ let translate  loc
     begin match args with 
       | [e] -> 
         begin match e.expression_desc with 
-          | Var _ -> 
+          | Var _ | Undefined | Null   -> 
             E.econd (E.is_null_undefined e) 
               Js_of_lam_option.none 
               (Js_of_lam_option.some e)
@@ -137,18 +139,6 @@ let translate  loc
       | [a;b] -> E.set_length a b 
       | _ -> assert false 
     end
-  | Lam.Pjs_string_of_small_array -> 
-    begin match args with 
-      | [e] -> E.string_of_small_int_array e 
-      | _ -> assert false 
-    end 
-  (* | Lam.Pjs_is_instance_array -> 
-    begin match args with 
-      | [e] -> E.is_instance_array e 
-      | _ -> assert false 
-    end  *)
-
-
   | Pis_null -> 
     begin match args with 
       | [e] -> E.is_null e 
@@ -163,12 +153,6 @@ let translate  loc
     begin match args with 
       | [ arg] -> 
         E.is_null_undefined arg
-      | _ -> assert false 
-    end
-  
-  | Pjs_boolean_to_bool -> 
-    begin match args with 
-      | [e] -> E.bool_of_boolean e 
       | _ -> assert false 
     end
   | Pjs_typeof -> 
@@ -627,7 +611,7 @@ let translate  loc
       | [e] -> E.array_length e 
       | _ -> assert false
     end
-  | Psetfield (i, _, field_info) -> 
+  | Psetfield (i, field_info) -> 
     begin match args with 
       | [e0;e1] ->  (** RUNTIME *)
         decorate_side_effect cxt 
@@ -693,29 +677,18 @@ let translate  loc
   | Pctconst ct -> 
     begin
       match ct with 
-      | Big_endian -> 
-        if Sys.big_endian then  E.caml_true
-        else E.caml_false
+      | Big_endian -> E.bool Sys.big_endian
       | Word_size -> 
         E.small_int  Sys.word_size
-      | Ostype_unix -> 
-        if Sys.unix then E.caml_true else E.caml_false
-      | Ostype_win32 -> 
-        if Sys.win32 then E.caml_true else E.caml_false
-      | Ostype_cygwin -> 
-        if Sys.cygwin then E.caml_true else E.caml_false
+      | Ostype_unix -> E.bool Sys.unix
+      | Ostype_win32 -> E.bool Sys.win32      
+      | Ostype_cygwin -> E.bool Sys.cygwin
     end
-  (* | Psetglobal _  ->  *)
-  (*   assert false (\* already handled *\) *)
-  (* assert false *)
-  | Pduprecord ((Record_regular 
-                | Record_float ),0)
   | Pduprecord ((Record_regular 
                 | Record_float ),_) -> 
-    begin match args with 
-      | [e] -> Js_of_lam_record.copy e
-      | _ -> assert false       
-    end
+    (* _size is the length of all_lables*)
+    (* TODO: In debug mode, need switch to  *)
+    Lam_dispatch_primitive.translate loc "caml_array_dup" args 
   | Pbigarrayref (unsafe, dimension, kind, layout)
     -> 
     (* can be refined to 

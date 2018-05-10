@@ -58,5 +58,6 @@ let comment_of_pointer_info (x :  Lambda.pointer_info)=
   match x with 
   | Pt_constructor x -> Some x 
   | Pt_variant x -> Some x 
+  | Pt_builtin_boolean -> Some "boolean"
   | Lambda.Pt_module_alias -> None (* FIXME *)
   | Pt_na -> None

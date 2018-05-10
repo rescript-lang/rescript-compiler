@@ -30,12 +30,12 @@
 
 
 (** Specalized when key type is [int], more efficient
-    than the gerneic type
+    than the generic type
 *)
 module Int = Belt_MutableSetInt
 
 (** Specalized when key type is [string], more efficient
-    than the gerneic type *)
+    than the generic type *)
 module String = Belt_MutableSetString
 
 type ('k,'id) t

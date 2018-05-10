@@ -23,7 +23,7 @@ function add_dyn(kind,x,y){
 ;
 
 function string_of_kind(kind) {
-  if (kind !== 0) {
+  if (kind) {
     return "string";
   } else {
     return "float";
@@ -31,7 +31,7 @@ function string_of_kind(kind) {
 }
 
 function add2(k, x, y) {
-  return add_dyn(string_of_kind(k), x, y);
+  return add_dyn(k ? "string" : "float", x, y);
 }
 
 console.log(add2(/* Float */0, 3.0, 2.0));

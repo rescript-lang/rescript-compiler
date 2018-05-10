@@ -229,7 +229,7 @@ let set  m e v =
   if newRoot != oldRoot then 
     S.dataSet m newRoot
 
-let mergeArrayAux t  xs ~cmp =     
+let mergeManyAux t  xs ~cmp =     
   let v = ref t in 
   for i = 0 to A.length xs - 1 do 
     let key,value = A.getUnsafe xs i in 
@@ -239,7 +239,7 @@ let mergeArrayAux t  xs ~cmp =
 
 let mergeMany d xs =   
   let oldRoot = S.data d in 
-  let newRoot = mergeArrayAux oldRoot xs ~cmp:(S.cmp d) in 
+  let newRoot = mergeManyAux oldRoot xs ~cmp:(S.cmp d) in 
   if newRoot != oldRoot then 
     S.dataSet d newRoot
 

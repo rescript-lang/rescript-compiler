@@ -30,10 +30,8 @@ let none = None
 
 let some x = Some x 
 
-let is_none x : Js.boolean = 
-  match x with 
-  | None -> Js.true_ 
-  | _ -> Js.false_ 
+let is_none x : bool =
+  x = None
 
 let to_def x : _ Js_undefined.t = 
   match  x with 
@@ -44,10 +42,8 @@ let to_def x : _ Js_undefined.t =
    [List.cons]
 *)
 let cons x y = x :: y 
+let is_list_empty x : bool =
+  x = []
 
-let is_list_empty x : Js.boolean =  
-  match x with 
-  | [] -> Js.true_
-  | _ -> Js.false_ 
 
 

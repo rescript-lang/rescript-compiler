@@ -189,11 +189,11 @@ let output_ninja_and_namespace_map
       let bs_groups = Array.init  (number_of_dev_groups + 1 ) (fun i -> String_map.empty) in
       let source_dirs = Array.init (number_of_dev_groups + 1 ) (fun i -> []) in
       let static_resources =
-        List.fold_left (fun acc_resources  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
+        List.fold_left (fun (acc_resources : string list)  ({Bsb_parse_sources.sources; dir; resources; dir_index})  ->
             let dir_index = (dir_index :> int) in 
             bs_groups.(dir_index) <- merge_module_info_map bs_groups.(dir_index) sources ;
             source_dirs.(dir_index) <- dir :: source_dirs.(dir_index);
-            Ext_list.map_append (fun x -> dir//x) resources  resources
+            Ext_list.map_append (fun x -> dir//x) resources  acc_resources
           ) [] bs_file_groups in
       let lib = bs_groups.((Bsb_dir_index.lib_dir_index :> int)) in               
       has_reason_files := Bsb_db.sanity_check lib || !has_reason_files;

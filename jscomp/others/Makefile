@@ -56,6 +56,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	dom dom_storage\
 	belt_HashMapInt\
 	belt_HashMapString\
+	belt_Debug\
 
 # belt_Bag\
 # belt_BagM\

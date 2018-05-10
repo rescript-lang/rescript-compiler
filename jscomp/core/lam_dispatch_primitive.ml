@@ -138,13 +138,6 @@ let translate loc (prim_name : string)
     | "caml_power_float"  -> 
       E.math "pow" args
 
-
-    | "caml_array_append" -> 
-      begin match args with 
-        | [e0;e1] -> E.array_append e0 e1
-        | _ ->  assert false 
-      end
-
     | "caml_array_get" -> 
       call Js_runtime_modules.array
     | "caml_array_get_addr"
@@ -377,7 +370,62 @@ let translate loc (prim_name : string)
           E.string_comp Ge  e0 e1
         | _ -> assert false 
       end
-    
+    | "caml_string_greaterthan"
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.string_comp Gt  e0 e1
+        | _ -> assert false 
+      end  
+    | "caml_bool_notequal"
+      -> 
+      begin match args with 
+        | [e0; e1] -> E.bool_comp Cneq e0 e1
+        (** TODO: specialized in OCaml ones*)
+        | _ -> assert false 
+      end
+    | "caml_bool_lessequal"
+      -> 
+      begin 
+        match args with 
+        | [e0; e1] 
+          -> 
+          E.bool_comp Cle e0 e1
+        | _ -> assert false 
+      end
+    | "caml_bool_lessthan"
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.bool_comp Clt e0 e1
+        | _ -> assert false 
+      end
+    | "caml_bool_greaterequal"
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.bool_comp Cge  e0 e1
+        | _ -> assert false 
+      end
+    | "caml_bool_greaterthan"    
+      ->
+       begin match args with 
+       | [e0;e1] -> 
+          E.bool_comp Cgt e0 e1
+       | _ -> assert false
+       end
+    | "caml_bool_equal"  
+    | "caml_bool_equal_null"
+    | "caml_bool_equal_nullable"
+    | "caml_bool_equal_undefined"
+      -> 
+        begin match args with 
+        | [e0; e1] -> E.bool_comp Ceq e0 e1 
+        | _ -> assert false 
+        end 
     | "caml_int_equal_null"
     | "caml_int_equal_nullable"
     | "caml_int_equal_undefined"
@@ -417,14 +465,7 @@ let translate loc (prim_name : string)
       | _ -> assert false 
       end 
 
-    | "caml_string_greaterthan"
-      -> 
-      begin match args with 
-        | [e0; e1] 
-          -> 
-          E.string_comp Gt  e0 e1
-        | _ -> assert false 
-      end
+
     | "caml_create_string" -> 
       (* Bytes.create *)
       (* Note that for invalid range, JS raise an Exception RangeError, 
@@ -438,7 +479,15 @@ let translate loc (prim_name : string)
         | _ -> 
           call Js_runtime_modules.string 
       end
-
+    | "caml_bool_compare" ->   
+      begin match args with 
+      | [{expression_desc = Bool a} ; {expression_desc = Bool b} ] 
+        ->  
+          let c = compare a b in 
+          E.int (if c = 0 then 0l else if c > 0 then 1l else -1l)
+      | _ -> 
+        call Js_runtime_modules.caml_primitive
+      end
     | "caml_int_compare"
     | "caml_int32_compare"
     | "caml_nativeint_compare"
@@ -447,6 +496,7 @@ let translate loc (prim_name : string)
     -> 
       call Js_runtime_modules.caml_primitive
 
+    | "caml_bool_min"  
     | "caml_int_min"
     | "caml_float_min"
     | "caml_string_min"
@@ -462,6 +512,7 @@ let translate loc (prim_name : string)
             call Js_runtime_modules.caml_primitive
         | _ -> assert false  
       end
+    | "caml_bool_max"
     | "caml_int_max"
     | "caml_float_max"
     | "caml_string_max"
@@ -606,10 +657,8 @@ let translate loc (prim_name : string)
                and discarded it immediately
                This could be canceled              
             *)
-            | _ -> E.array_copy a
+            | _ -> call Js_runtime_modules.array
           end
-        (* if Js_analyzer.is_constant a then a
-           else E.array_copy a *)
         | _ -> assert false 
       end
     | "caml_obj_block" -> 
@@ -643,20 +692,11 @@ let translate loc (prim_name : string)
     | "caml_nativeint_of_string" 
     | "caml_int64_format"
     | "caml_int64_of_string"
+    | "caml_format_int" 
       -> 
       call Js_runtime_modules.format 
-    | "caml_format_int" -> 
-      begin match args with 
-        | [ {expression_desc = Str (_, "%d"); _}; v] 
-          ->
-          E.int_to_string v 
-        | _ -> 
-          call Js_runtime_modules.format
-      end
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
-
-
     | "caml_obj_is_block"
       -> 
       begin match args with 
@@ -675,8 +715,8 @@ let translate loc (prim_name : string)
     | "caml_notequal" ->
       begin match args with 
       | [a1;b1]  when 
-        E.for_sure_js_null_undefined_boolean a1 
-        || E.for_sure_js_null_undefined_boolean b1 
+        E.for_sure_js_null_undefined a1 
+        || E.for_sure_js_null_undefined b1 
         -> 
         E.neq_null_undefined_boolean a1 b1 
       (* FIXME address_equal *)
@@ -687,7 +727,7 @@ let translate loc (prim_name : string)
     | "caml_equal"  ->     
       begin match args with 
       | [a1;b1]  when 
-        E.for_sure_js_null_undefined_boolean a1 || E.for_sure_js_null_undefined_boolean b1 
+        E.for_sure_js_null_undefined a1 || E.for_sure_js_null_undefined b1 
         -> 
         E.eq_null_undefined_boolean a1 b1 
         (* FIXME address_equal *)
@@ -713,7 +753,7 @@ let translate loc (prim_name : string)
       call Js_runtime_modules.obj_runtime
     | "caml_obj_set_tag" 
       -> begin match args with 
-          | [a;b]  -> E.set_tag a b 
+          | [a;b]  -> E.block_set_tag a b 
           | _ -> assert false end
     | "caml_obj_tag" -> 
       (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252]

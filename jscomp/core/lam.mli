@@ -75,7 +75,7 @@ type primitive =
   | Pglobal_exception of ident 
   | Pmakeblock of int * Lambda.tag_info * Asttypes.mutable_flag
   | Pfield of int * Lambda.field_dbg_info
-  | Psetfield of int * bool * Lambda.set_field_dbg_info
+  | Psetfield of int  * Lambda.set_field_dbg_info
   | Pfloatfield of int * Lambda.field_dbg_info
   | Psetfloatfield of int * Lambda.set_field_dbg_info
   | Pduprecord of Types.record_representation * int
@@ -177,7 +177,7 @@ type primitive =
 
   | Praw_js_code_exp of string 
   | Praw_js_code_stmt of string 
-  
+  | Praw_js_function of string * string list
   | Pjs_fn_make of int 
   | Pjs_fn_run of int 
   | Pjs_fn_method of int 
@@ -190,12 +190,8 @@ type primitive =
   | Pis_undefined
   | Pis_null_undefined
 
-  | Pjs_boolean_to_bool
   | Pjs_typeof
   | Pjs_function_length 
-
-  | Pjs_string_of_small_array
-  (* | Pjs_is_instance_array *)
   | Pcaml_obj_length
   | Pcaml_obj_set_length
   | Pwrap_exn (* convert either JS exception or OCaml exception into OCaml format *)  

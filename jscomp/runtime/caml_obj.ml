@@ -131,6 +131,17 @@ let caml_update_dummy x y =
 
 type 'a selector = 'a -> 'a -> 'a 
 
+module O = struct
+  external isArray : 'a -> bool = "Array.isArray" [@@bs.val]
+  type key = string
+  let for_in : (Obj.t -> (key -> unit) -> unit)  = 
+    fun%raw o foo ->  {|
+        for (var x in o) { foo(x) }
+      |}
+    
+  let hasOwnProperty (o: Obj.t) (key: key) : bool = (Obj.magic o)##hasOwnProperty(key)
+  external get_value : Obj.t -> key -> Obj.t = ""[@@bs.get_index]
+end
 
 let unsafe_js_compare x y =
   if x == y then 0 else
@@ -156,6 +167,10 @@ let unsafe_js_compare x y =
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   if a == b then 0 else
   (*front and formoest, we do not compare function values*)
+  if a == (Obj.repr Js.null) then -1 else
+  if b == (Obj.repr Js.null) then 1 else
+  if a == (Obj.repr Js.undefined) then -1 else
+  if b == (Obj.repr Js.undefined) then 1 else
   let a_type = Js.typeof a in 
   let b_type = Js.typeof b in 
   if a_type = "string" then
@@ -170,8 +185,6 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
     | false, true -> 1 
     | false, false -> 
       if a_type = "boolean"
-      || a_type = "undefined"
-      || a == (Obj.repr Js_null.empty)
       then (* TODO: refine semantics when comparing with [null] *)
         unsafe_js_compare a b
       else if a_type = "function" || b_type = "function"
@@ -199,7 +212,9 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
           let len_a = Bs_obj.length a in
           let len_b = Bs_obj.length b in
           if len_a = len_b then
-            aux_same_length a b 0 len_a
+            if O.isArray(a)
+            then aux_same_length a b 0 len_a
+            else aux_obj_compare a b
           else if len_a < len_b then
             aux_length_a_short a b 0 len_a
           else
@@ -223,6 +238,27 @@ and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
     let res = caml_compare (Obj.field a i) (Obj.field b i) in
     if res <> 0 then res
     else aux_length_b_short a b (i+1) short_length
+and aux_obj_compare (a: Obj.t) (b: Obj.t) =
+  let min_key_lhs = ref None in
+  let min_key_rhs = ref None in
+  let do_key (a, b, min_key) key =
+    if not (O.hasOwnProperty b key) ||
+       caml_compare (O.get_value a key) (O.get_value b key) > 0
+    then
+      match !min_key with
+      | None -> min_key := Some key
+      | Some mk ->
+        if key < mk then min_key := Some key in
+  let do_key_a = do_key (a, b, min_key_rhs) in
+  let do_key_b = do_key (b, a, min_key_lhs) in
+  O.for_in a do_key_a;
+  O.for_in b do_key_b;
+  let res = match !min_key_lhs, !min_key_rhs with
+    | None, None -> 0
+    | (Some _), None -> -1
+    | None, (Some _) -> 1
+    | (Some x), (Some y) -> compare x y in
+  res
 
 type eq = Obj.t -> Obj.t -> bool
 
@@ -268,7 +304,9 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
           let len_a = Bs_obj.length a in
           let len_b = Bs_obj.length b in
           if len_a = len_b then
-            aux_equal_length a b 0 len_a
+            if O.isArray(a)
+            then aux_equal_length a b 0 len_a
+            else aux_obj_equal a b
           else false
 and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
   if i = same_length then
@@ -276,7 +314,18 @@ and aux_equal_length  (a : Obj.t) (b : Obj.t) i same_length =
   else
     caml_equal (Obj.field a i) (Obj.field b i)
     && aux_equal_length  a b (i + 1) same_length
-
+and aux_obj_equal (a: Obj.t) (b: Obj.t) =
+  let result = ref true in
+  let do_key_a key =
+    if not (O.hasOwnProperty b key)
+    then result := false in
+  let do_key_b key =
+    if not (O.hasOwnProperty a key) ||
+       not (caml_equal (O.get_value b key) (O.get_value a key))
+    then result := false in
+  O.for_in a do_key_a ;
+  if !result then O.for_in b do_key_b;
+  !result
 
 let caml_equal_null (x : Obj.t) (y : Obj.t Js.null) = 
   match Js.nullToOption y with    

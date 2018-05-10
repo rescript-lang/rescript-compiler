@@ -1,5 +1,5 @@
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,67 +17,74 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 type attr =  Parsetree.attribute
-type t =  attr list 
+type t =  attr list
 
-type ('a,'b) st = 
-  { get : 'a option ; 
+type ('a,'b) st =
+  { get : 'a option ;
     set : 'b option }
 
-val process_method_attributes_rev : 
+val process_method_attributes_rev :
   t ->
-  (bool * bool , [`Get | `No_get ]) st * t 
+  (bool * bool , [`Get | `No_get ]) st * t
 
-val process_attributes_rev : 
-  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t 
+val process_attributes_rev :
+  t -> [ `Meth_callback | `Nothing | `Uncurry | `Method ] * t
 
 val process_pexp_fun_attributes_rev :
-  t -> [ `Nothing | `Exn ] * t 
-val process_bs : 
-  t -> [ `Nothing | `Has] * t 
+  t -> [ `Nothing | `Exn ] * t
+val process_bs :
+  t -> [ `Nothing | `Has] * t
 
-val process_external : t -> bool 
+val process_external : t -> bool
 
 type derive_attr = {
   explict_nonrec : bool;
-  bs_deriving : Ast_payload.action list option 
+  bs_deriving : Ast_payload.action list option
 }
-val process_bs_string_int_unwrap_uncurry :
-  t -> [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]  * t
+
+
+val iter_process_bs_string_int_unwrap_uncurry :
+  t -> 
+  [`Nothing | `String | `Int | `Ignore | `Unwrap | `Uncurry of int option ]
 
 
 val iter_process_bs_string_as :
-  t -> string option 
+  t -> string option
 
-val iter_process_bs_int_as : 
-  t -> int option 
+val has_bs_optional :
+  t -> bool 
+
+val iter_process_bs_int_as :
+  t -> int option
 
 
-val iter_process_bs_string_or_int_as : 
+val iter_process_bs_string_or_int_as :
     t ->
-    [ `Int of int 
+    [ `Int of int
     | `Str of string
-    | `Json_str of string  ] option 
-    
-
-val process_derive_type : 
-  t -> derive_attr * t 
-
-val iter_process_derive_type : 
-  t -> derive_attr  
+    | `Json_str of string  ] option
 
 
-val bs : attr 
+val process_derive_type :
+  t -> derive_attr * t
+
+val iter_process_derive_type :
+  t -> derive_attr
+
+
+val bs : attr
 val is_bs : attr -> bool
 val bs_this : attr
 val bs_method : attr
-val bs_obj : attr 
+val bs_obj : attr
 
 
-val bs_get : attr 
+val bs_get : attr
+val bs_get_arity : attr 
 val bs_set : attr
-val bs_return_undefined : attr  
+val bs_return_undefined : attr

@@ -24,14 +24,14 @@ function eq(loc, x, y) {
   return /* () */0;
 }
 
-eq("File \"ffi_array_test.ml\", line 12, characters 5-12", /* int array */[
+eq("File \"ffi_array_test.ml\", line 12, characters 5-12", /* array */[
         1,
         2,
         3,
         4
       ].map((function (x) {
             return x + 1 | 0;
-          })), /* int array */[
+          })), /* array */[
       2,
       3,
       4,

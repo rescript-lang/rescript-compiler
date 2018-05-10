@@ -12,9 +12,9 @@
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;t<br>
 &nbsp;&nbsp;<span class="keyword">type</span>&nbsp;config<br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;config&nbsp;:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;?persistent:<span class="constructor">Js</span>.boolean&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;?recursive:<span class="constructor">Js</span>.boolean&nbsp;<span class="keywordsign">-&gt;</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;?encoding:<span class="constructor">Js_string</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Node_fs</span>.<span class="constructor">Watch</span>.config&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?persistent:bool&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?recursive:bool&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;?encoding:<span class="constructor">Js_string</span>.t&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Node_fs</span>.<span class="constructor">Watch</span>.config<br>
+&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;<span class="string">""</span>&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
 &nbsp;&nbsp;<span class="keyword">external</span>&nbsp;watch&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;?config:<span class="constructor">Node_fs</span>.<span class="constructor">Watch</span>.config&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Node_fs</span>.<span class="constructor">Watch</span>.t&nbsp;=&nbsp;<span class="string">""</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"BS-EXTERNAL"</span><br>
