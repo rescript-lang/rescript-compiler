@@ -16,8 +16,11 @@
 type 'a t;;
 
 external create: int -> 'a t = "caml_weak_create";;
-
+#if BS then
+external length : 'a t -> int = "%array_length"
+#else
 let length x = Obj.size(Obj.repr x) - 1;;
+#end
 
 external set : 'a t -> int -> 'a option -> unit = "caml_weak_set";;
 external get: 'a t -> int -> 'a option = "caml_weak_get";;
