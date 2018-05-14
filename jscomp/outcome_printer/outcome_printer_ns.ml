@@ -113,7 +113,7 @@ let out_ident ppf s =
     | "Belt_HashMap" -> "Belt.HashMap"
     | "Belt_HashMapString" -> "Belt.HashMap.String"
     | "Belt_HashMapInt" -> "Belt.HashMap.Int"
-    
+    | "Belt_Debug" -> "Belt.Debug"
     | s -> 
       (match Ext_namespace.try_split_module_name s with 
        | None -> s 

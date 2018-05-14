@@ -211,6 +211,15 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
           ->
           Ast_util.handle_raw_structure loc payload
+        | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
+          ->          
+          if !Js_config.debug then 
+            let open Ast_helper in 
+            Str.eval ~loc (Exp.apply ~loc 
+            (Exp.ident ~loc {txt = Ldot(Ldot (Lident"Belt","Debug"), "setupChromeDebugger");loc} )
+            ["", Ast_literal.val_unit ~loc ()]
+             )
+          else Ast_structure.dummy_item loc
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
         | Pstr_primitive prim
