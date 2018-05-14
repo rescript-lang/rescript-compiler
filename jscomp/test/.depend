@@ -129,7 +129,7 @@ bs_unwrap_test.cmj :
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
 bytes_split_gpr_743_test.cmj : mt.cmj ../runtime/js.cmj ../stdlib/bytes.cmj
-caml_compare_test.cmj : mt.cmj
+caml_compare_test.cmj : mt.cmj ../runtime/js.cmj
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
 caml_sys_poly_fill_test.cmj : ../stdlib/sys.cmj ../others/node_process.cmj \

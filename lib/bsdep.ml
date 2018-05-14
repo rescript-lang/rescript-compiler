@@ -34830,6 +34830,7 @@ val fuseAll: ?loc:Ast_helper.loc ->  t -> item
 
 val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
 
+val dummy_item : Location.t -> item 
 end = struct
 #1 "ast_structure.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -34886,6 +34887,8 @@ let constraint_ ?(loc=Location.none) (stru : t) (sign : Ast_signature.t) =
     (Incl.mk ~loc 
        (Mod.constraint_ ~loc (Mod.structure ~loc stru) (Mty.signature ~loc sign)))
 
+let dummy_item  loc : item =        
+  Str.eval ~loc (Ast_literal.val_unit ~loc ())
 end
 module Ast_derive : sig 
 #1 "ast_derive.mli"
@@ -38305,6 +38308,15 @@ let rec unsafe_mapper : Bs_ast_mapper.mapper =
         | Pstr_extension ( ({txt = ("bs.raw"| "raw") ; loc}, payload), _attrs)
           ->
           Ast_util.handle_raw_structure loc payload
+        | Pstr_extension (({txt = ("bs.debugger.chrome" | "debugger.chrome") ;loc}, payload),_)
+          ->          
+          if !Js_config.debug then 
+            let open Ast_helper in 
+            Str.eval ~loc (Exp.apply ~loc 
+            (Exp.ident ~loc {txt = Ldot(Ldot (Lident"Belt","Debug"), "setupChromeDebugger");loc} )
+            ["", Ast_literal.val_unit ~loc ()]
+             )
+          else Ast_structure.dummy_item loc
         | Pstr_type (_ :: _ as tdcls ) (* [ {ptype_attributes} as tdcl ] *)->
           Ast_tdcls.handleTdclsInStru self str tdcls
         | Pstr_primitive prim

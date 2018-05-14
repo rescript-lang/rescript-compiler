@@ -190,7 +190,8 @@ syntax/external_arg_spec.cmx : ext/ext_position.cmx ext/ext_json_parse.cmx \
 syntax/ast_payload.cmx : ext/string_map.cmx ext/ext_list.cmx \
     ext/ext_js_regex.cmx syntax/ast_payload.cmi
 syntax/ast_signature.cmx : syntax/ast_signature.cmi
-syntax/ast_structure.cmx : syntax/ast_signature.cmx syntax/ast_structure.cmi
+syntax/ast_structure.cmx : syntax/ast_signature.cmx syntax/ast_literal.cmx \
+    syntax/ast_structure.cmi
 syntax/bs_ast_iterator.cmx : syntax/bs_ast_iterator.cmi
 syntax/bs_ast_mapper.cmx : syntax/bs_ast_mapper.cmi
 syntax/ast_derive.cmx : ext/string_map.cmx ext/literals.cmx \
@@ -264,14 +265,15 @@ syntax/ast_core_type_class_type.cmx : ext/literals.cmx ext/ext_ref.cmx \
     syntax/ast_literal.cmx syntax/ast_comb.cmx syntax/ast_attributes.cmx \
     syntax/ast_core_type_class_type.cmi
 syntax/ppx_entry.cmx : ext/string_map.cmx ext/literals.cmx \
-    ext/ext_string.cmx syntax/bs_ast_mapper.cmx syntax/bs_ast_invariant.cmx \
-    syntax/ast_util.cmx syntax/ast_utf8_string_interp.cmx \
-    syntax/ast_utf8_string.cmx syntax/ast_tuple_pattern_flatten.cmx \
-    syntax/ast_tdcls.cmx syntax/ast_primitive.cmx syntax/ast_payload.cmx \
-    syntax/ast_exp_extension.cmx syntax/ast_exp_apply.cmx \
-    syntax/ast_derive_projector.cmx syntax/ast_derive_js_mapper.cmx \
-    syntax/ast_core_type_class_type.cmx syntax/ast_attributes.cmx \
-    syntax/ppx_entry.cmi
+    common/js_config.cmx ext/ext_string.cmx syntax/bs_ast_mapper.cmx \
+    syntax/bs_ast_invariant.cmx syntax/ast_util.cmx \
+    syntax/ast_utf8_string_interp.cmx syntax/ast_utf8_string.cmx \
+    syntax/ast_tuple_pattern_flatten.cmx syntax/ast_tdcls.cmx \
+    syntax/ast_structure.cmx syntax/ast_primitive.cmx syntax/ast_payload.cmx \
+    syntax/ast_literal.cmx syntax/ast_exp_extension.cmx \
+    syntax/ast_exp_apply.cmx syntax/ast_derive_projector.cmx \
+    syntax/ast_derive_js_mapper.cmx syntax/ast_core_type_class_type.cmx \
+    syntax/ast_attributes.cmx syntax/ppx_entry.cmi
 syntax/bs_syntaxerr.cmi :
 syntax/ast_utf8_string.cmi :
 syntax/ast_utf8_string_interp.cmi :

@@ -146,7 +146,10 @@ let buckle_script_flags : (string * Arg.spec * string) list =
   )
   ::
   ("-bs-g",
-    Arg.Set Js_config.debug,
+    Arg.Unit 
+    (fun _ -> Js_config.debug := true;
+      Lexer.replace_directive_bool "DEBUG" true
+    ),
     " debug mode"
   )
   ::
