@@ -31,10 +31,14 @@ type error =
   | Unterminated_variable
   | Unmatched_paren
   | Invalid_syntax_of_var of string 
+
 type kind =
   | String
-  | Var
-
+  | Var of int * int 
+(* [Var (loffset, roffset)] 
+  For parens it used to be (2,-1)
+  for non-parens it used to be (1,0)
+*)
 
 (** Note the position is about code point *)
 type pos = { 
@@ -153,7 +157,7 @@ let pos_error cxt ~loc error =
            (cxt.segment_start,
             { lnum = cxt.pos_lnum ; offset = loc - cxt.pos_bol ; byte_bol = cxt.byte_bol}, error))
 
-let add_var_segment cxt loc  = 
+let add_var_segment cxt loc loffset roffset = 
   let content =  Buffer.contents cxt.buf in
   Buffer.clear cxt.buf ;
   let next_loc = {
@@ -164,7 +168,7 @@ let add_var_segment cxt loc  =
       cxt.segments <- 
         { start = cxt.segment_start; 
           finish =  next_loc ;
-          kind = Var; 
+          kind = Var (loffset, roffset); 
           content} :: cxt.segments ;
       cxt.segment_start <- next_loc
     end
@@ -257,7 +261,7 @@ and expect_simple_var  loc  s offset ({buf; s_len} as cxt) =
       done;
       let added_length = !v - offset in
       let loc = added_length + loc in 
-      add_var_segment cxt loc  ; 
+      add_var_segment cxt loc 1 0 ; 
       check_and_transform loc  s (added_length + offset) cxt
     end
 and expect_var_paren  loc  s offset ({buf; s_len} as cxt) =
@@ -272,7 +276,7 @@ and expect_var_paren  loc  s offset ({buf; s_len} as cxt) =
   let loc = added_length +  1 + loc  in
   if !v < s_len && s.[!v] = ')' then
     begin 
-      add_var_segment cxt loc ; 
+      add_var_segment cxt loc 2 (-1) ; 
       check_and_transform loc  s (added_length + 1 + offset) cxt 
     end
   else
@@ -371,7 +375,7 @@ open Ast_helper
 
 (** Longident.parse "Pervasives.^" *)
 let concat_ident  : Longident.t = 
-  Ldot (Lident "Pervasives", "^")
+  Ldot (Lident "Pervasives", "^") (* FIXME: remove deps on `Pervasives` *)
    (* JS string concatMany *)
     (* Ldot (Ldot (Lident "Js", "String"), "concat") *)
 
@@ -397,14 +401,19 @@ let border = String.length "{j|"
 let aux loc (segment : segment) =  
   match segment with 
   | {start ; finish; kind ; content} 
-    -> 
-    let loc = update border start finish  loc in 
+    ->     
     begin match kind with 
-      | String -> 
+      | String ->         
+        let loc = update border start finish  loc  in 
         Exp.constant 
           ~loc
           (Const_string (content, escaped)) 
-      | Var -> 
+      | Var (soffset, foffset) ->
+        let loc = {
+          loc with 
+          loc_start = update_position  (soffset + border) start loc.loc_start ;
+          loc_end = update_position (foffset + border) finish loc.loc_start
+        } in 
         Exp.apply ~loc 
           (Exp.ident ~loc {loc ; txt = to_string_ident })
           [
