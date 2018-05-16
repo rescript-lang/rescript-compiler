@@ -244,7 +244,10 @@ let blit ~src:a1 ~srcOffset:ofs1 ~dst:a2 ~dstOffset:ofs2 ~len =
 let forEachU a f =
   for i = 0 to length a - 1 do f(getUnsafe a i) [@bs] done
 
-let forEach a f = forEachU a (fun[@bs] a -> f a)
+(* external forEachU: 'a array -> ('a -> unit [@bs]) -> unit = "#array.forEachU" *)
+
+external forEach: 'a array -> ('a -> unit) -> unit = "#array.forEach"
+(* let forEach a f = forEachU a (fun[@bs] a -> f a) *)
   
 let mapU a f =
   let l = length a in
@@ -259,7 +262,15 @@ let map a f = mapU a (fun[@bs] a -> f a)
 let keepU a f =
   let l = length a in
   let r = makeUninitializedUnsafe l in
-  let j = ref 0 in 
+  let j = ref 0  in 
+  a |. forEach (fun v -> if f v [@bs] then
+      begin 
+        setUnsafe r !j v;
+        incr j 
+      end);
+  truncateToLengthUnsafe r !j;
+  r
+  (* (* let j = ref 0 in 
   for i = 0 to l - 1 do
     let v = (getUnsafe a i) in 
     if f v [@bs] then
@@ -267,9 +278,9 @@ let keepU a f =
         setUnsafe r !j v;
         incr j 
       end
-  done;
+  done; *)
   truncateToLengthUnsafe r !j;
-  r 
+  r  *)
 
 let keep a f = keepU a (fun [@bs] a -> f a)
     
@@ -309,9 +320,10 @@ let mapWithIndex a f = mapWithIndexU a (fun[@bs] a b -> f a b)
   
 let reduceU a x f =
   let r = ref x in
-  for i = 0 to length a - 1 do
+  a |. forEach (fun k -> r := f !r k [@bs]);
+  (* for i = 0 to length a - 1 do
     r := f !r (getUnsafe a i) [@bs]
-  done;
+  done; *)
   !r
 
 let reduce a x f = reduceU a x (fun[@bs] a b -> f a b)

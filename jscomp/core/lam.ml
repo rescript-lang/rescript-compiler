@@ -1822,6 +1822,34 @@ let convert exports lam : _ * _  =
             ~args:[] loc
         | _ -> assert false
       end
+      (* forEachU inlining is complicated, inline 
+        `(fun [@bs] x -> f x)` would break our heuristics
+        TODO: `option.map`
+      *)
+    | _ when s = "#array.forEach" -> 
+      begin match args with 
+      | [arr ; Lfunction(_,[idparam],body)] -> 
+        let cont idx = 
+          let id = Ext_ident.create "i" in 
+        Lfor (id, const (Const_int 0), 
+          Lprim({primitive = Parraylength Pgenarray; args = [Lvar idx]; loc = Location.none }),
+          Upto,
+          Llet (StrictOpt, idparam, 
+          (Lprim {primitive = Parrayrefu Pgenarray ;
+                 args = [Lvar idx; Lvar id]; loc = Location.none}), 
+          convert_aux body
+          )) in 
+          begin match arr with 
+          | Lvar idx -> cont  idx 
+          | _ -> 
+            let idx = Ext_ident.create_tmp ()  in
+            Llet(Strict, idx, convert_aux arr, cont idx ) 
+        end
+      | xs ->
+         Format.fprintf Format.err_formatter 
+          "@[%a@]@." Ext_pervasives.pp_any xs ;
+         assert false
+      end 
     | _ when s = "#raw_stmt" ->
       begin match args with
         | [Lconst( Const_base (Const_string(s,_)))] ->

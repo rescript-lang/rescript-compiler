@@ -1078,12 +1078,12 @@ eq("File \"bs_array_test.ml\", line 238, characters 5-12", Belt_Array.unzip(/* a
     ]);
 
 function sumUsingForEach(xs) {
-  var v = [0];
-  Belt_Array.forEach(xs, (function (x) {
-          v[0] = v[0] + x | 0;
-          return /* () */0;
-        }));
-  return v[0];
+  var v = 0;
+  for(var i = 0 ,i_finish = xs.length; i <= i_finish; ++i){
+    var x = xs[i];
+    v = v + x | 0;
+  }
+  return v;
 }
 
 eq("File \"bs_array_test.ml\", line 248, characters 5-12", sumUsingForEach(/* array */[

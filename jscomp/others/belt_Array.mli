@@ -319,8 +319,9 @@ val blitUnsafe:
    {b Unsafe} blit without bounds checking
 *)
 
+
 val forEachU: 'a array ->  ('a -> unit [@bs]) -> unit
-val forEach: 'a array ->  ('a -> unit ) -> unit
+external forEach: 'a array -> ('a -> unit ) -> unit = "#array.forEach"
 (** [forEach xs f]
 
     Call [f] on each element of [xs] from the beginning to end. [f] returns [unit];so no
