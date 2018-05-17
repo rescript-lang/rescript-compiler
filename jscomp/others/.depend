@@ -58,6 +58,7 @@ belt_MapString.cmj : belt_internalMapString.cmj belt_internalAVLtree.cmj \
 belt_MapInt.cmj : belt_internalMapInt.cmj belt_internalAVLtree.cmj \
     belt_Array.cmj belt_MapInt.cmi
 belt_Option.cmj : belt_Option.cmi
+belt_Result.cmj : belt_Result.cmi
 belt_Set.cmj : belt_SetString.cmj belt_SetInt.cmj belt_SetDict.cmj \
     belt_Id.cmj belt_Array.cmj belt_Set.cmi
 belt_MutableSet.cmj : belt_internalAVLset.cmj belt_SortArray.cmj \
@@ -130,6 +131,7 @@ belt_Map.cmi : belt_MapString.cmi belt_MapInt.cmi belt_MapDict.cmi \
 belt_MapString.cmi :
 belt_MapInt.cmi :
 belt_Option.cmi :
+belt_Result.cmi :
 belt_Set.cmi : belt_SetString.cmi belt_SetInt.cmi belt_SetDict.cmi \
     belt_Id.cmi
 belt_MutableSet.cmi : belt_MutableSetString.cmi belt_MutableSetInt.cmi \

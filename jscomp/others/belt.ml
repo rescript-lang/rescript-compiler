@@ -239,10 +239,17 @@ module HashMap = Belt_HashMap
   
 (** {!Belt.Option}
 
-    Utilities for option data type
+    Utilities for option data type.
 *)
 module Option = Belt_Option
 
+
+(** {!Belt.Result}
+    
+    Utilities for result data type.
+*)
+
+module Result = Belt_Result
 
 (** {!Belt.Debug}
 
