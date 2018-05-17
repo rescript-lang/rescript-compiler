@@ -222,7 +222,7 @@ let () =
 
 let () =   
   let id loc x = 
-    let u = (N.ofSortedArrayUnsafe x) in
+    let u = (N.fromSortedArrayUnsafe x) in
     (N.checkInvariantInternal u );
     b loc (A.every2 (N.toArray u) x (=) )
   in 

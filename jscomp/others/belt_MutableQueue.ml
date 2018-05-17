@@ -220,4 +220,3 @@ let fromArray arr =
   done ;
   q
 
-let ofArray = fromArray

@@ -68,7 +68,7 @@ let () =
   done ;
   Js.log !data
 
-let f = M.ofArray ~id:(module Icmp)
+let f = M.fromArray ~id:(module Icmp)
 let (=~) a b = M.eq a b
 
 let () =
@@ -82,7 +82,7 @@ let () =
   b __LOC__
   (L.every2
     (M.toList u0)
-    (L.ofArray (A.map (I.range 0 39) (fun  x -> (x,x))))
+    (L.fromArray (A.map (I.range 0 39) (fun  x -> (x,x))))
     (fun (x0,x1) (y0,y1) -> x0 = y0 && x1 = y1));
   eq __LOC__ (M.get u0 39) (Some 39);
   eq __LOC__ (M.get u1 39) (Some 120)

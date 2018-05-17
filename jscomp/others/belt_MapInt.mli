@@ -1,6 +1,6 @@
 # 4 "map.cppo.mli"
 type key = int
-# 8
+# 8 "map.cppo.mli"
 type 'value t
 (** The type of maps from type [key] to type ['value]. *)
 
@@ -49,8 +49,6 @@ val toList: 'v t -> (key * 'v) list
 
 val toArray: 'v t -> (key * 'v) array
 
-val ofArray: (key * 'v) array -> 'v t
-[@@ocaml.deprecated "Use fromArray instead"]
 
 val fromArray: (key * 'v) array -> 'v t
 
@@ -121,8 +119,6 @@ val merge:
 
 val mergeMany: 'v t -> (key * 'v) array -> 'v t
 
-[@@ocaml.deprecated "Use mergeMany instead"]
-val mergeArray: 'v t -> (key * 'v) array -> 'v t
 
 val keepU:
     'v t ->

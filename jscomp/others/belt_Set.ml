@@ -46,8 +46,6 @@ let fromArray (type value) (type identity) data ~(id : (value,identity) id)  =
   let cmp = M.cmp in 
   S.t ~cmp ~data:(Dict.fromArray ~cmp data)
 
-let ofArray = fromArray
-
 let remove m e =      
   let cmp, data  = S.cmp m, S.data m  in
   let newData = Dict.remove ~cmp data e in 
@@ -150,9 +148,6 @@ let has m e =
 let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity) id ) =
   let module M = (val id) in 
   S.t ~cmp:M.cmp ~data:(Dict.fromSortedArrayUnsafe xs)
-
-let ofSortedArrayUnsafe = fromSortedArrayUnsafe
-  
 
 let getData = S.data
 

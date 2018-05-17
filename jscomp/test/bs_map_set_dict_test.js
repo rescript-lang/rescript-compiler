@@ -87,7 +87,7 @@ for(var i$1 = 0; i$1 <= 100000; ++i$1){
 console.log(data$2);
 
 function f(param) {
-  return Belt_Map.ofArray(param, Icmp);
+  return Belt_Map.fromArray(param, Icmp);
 }
 
 function $eq$tilde(a, b) {
@@ -118,7 +118,7 @@ b("File \"bs_map_set_dict_test.ml\", line 77, characters 4-11", Belt_Array.every
             }
           })));
 
-b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.ofArray(Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
+b("File \"bs_map_set_dict_test.ml\", line 82, characters 4-11", Belt_List.every2(Belt_MapDict.toList(u0.data), Belt_List.fromArray(Belt_Array.map(Array_data_util.range(0, 39), (function (x) {
                     return /* tuple */[
                             x,
                             x

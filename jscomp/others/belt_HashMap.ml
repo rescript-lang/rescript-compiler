@@ -213,8 +213,6 @@ let fromArray (type a) (type identity) arr ~id:(id:(a,identity) id) =
   done ;
   v
 
-let ofArray = fromArray
-      
 let mergeMany h arr = 
   let hash, eq = Belt_Id.getHashInternal ( C.hash h) , Belt_Id.getEqInternal (C.eq h) in 
   let len = A.length arr in 

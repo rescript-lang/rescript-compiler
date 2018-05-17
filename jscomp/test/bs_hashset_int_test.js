@@ -35,11 +35,11 @@ function sum2(h) {
 
 var u = Belt_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.randomRange(40, 120));
 
-var v = Belt_HashSetInt.ofArray(u);
+var v = Belt_HashSetInt.fromArray(u);
 
 eq("File \"bs_hashset_int_test.ml\", line 19, characters 5-12", v.size, 91);
 
-var xs = Belt_SetInt.toArray(Belt_SetInt.ofArray(Belt_HashSetInt.toArray(v)));
+var xs = Belt_SetInt.toArray(Belt_SetInt.fromArray(Belt_HashSetInt.toArray(v)));
 
 eq("File \"bs_hashset_int_test.ml\", line 21, characters 5-12", xs, Array_data_util.range(30, 120));
 
@@ -67,7 +67,7 @@ for(var i$1 = 0; i$1 <= 2000; ++i$1){
 
 eq("File \"bs_hashset_int_test.ml\", line 38, characters 5-12", v$1.size, 98000);
 
-var u0 = Belt_HashSetInt.ofArray(Array_data_util.randomRange(0, 100000));
+var u0 = Belt_HashSetInt.fromArray(Array_data_util.randomRange(0, 100000));
 
 var u1 = Belt_HashSetInt.copy(u0);
 
@@ -91,7 +91,7 @@ Belt_SortArrayInt.stableSortInPlace(v1);
 
 eq("File \"bs_hashset_int_test.ml\", line 57, characters 5-12", v0, v1);
 
-var h = Belt_HashSetInt.ofArray(Array_data_util.randomRange(0, 1000000));
+var h = Belt_HashSetInt.fromArray(Array_data_util.randomRange(0, 1000000));
 
 var histo = Belt_HashSetInt.getBucketHistogram(h);
 

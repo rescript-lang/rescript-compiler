@@ -264,8 +264,7 @@ val mapWithIndex: 'a t -> (int -> 'a -> 'b) -> 'b t
     ]}
 *)
 
-val ofArray: 'a array -> 'a t 
-[@@ocaml.deprecated "Use fromArray instead"]
+
 
 val fromArray: 'a array -> 'a t 
 (** [fromArray arr] converts the given array to a list

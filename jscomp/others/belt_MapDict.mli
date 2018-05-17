@@ -95,8 +95,6 @@ val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
 
-val ofArray: ('k * 'a) array -> cmp:('k,'id) cmp -> ('k,'a,'id) t
-[@@ocaml.deprecated "Use fromArray instead"]
 
 val fromArray: ('k * 'a) array -> cmp:('k,'id) cmp -> ('k,'a,'id) t
 

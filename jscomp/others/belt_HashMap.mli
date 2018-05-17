@@ -154,6 +154,4 @@ val mergeMany: ('key, 'value, 'id ) t -> ('key * 'value) array -> unit
 val getBucketHistogram: _ t -> int array
 val logStats: _ t -> unit
 
-val ofArray: ('key * 'value) array -> id:('key,'id) id -> ('key, 'value, 'id ) t
-[@@ocaml.deprecated "Use fromArray instead"]
 

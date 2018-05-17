@@ -163,8 +163,6 @@ let removeMany (type key) (type id) (d : _ t) xs =
 let fromArray xs = 
   t  ~data:(I.fromArray xs)
 
-let ofArray = fromArray
-
 let cmpU d0 d1 f = 
   I.cmpU (data d0) (data d1) f
 let cmp d0 d1 f = cmpU d0 d1 (fun[@bs] a b -> f a b)          

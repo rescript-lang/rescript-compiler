@@ -88,8 +88,6 @@ val make: id:('value, 'id) id -> ('value, 'id) t
 *)
 
 
-val ofArray: 'value array -> id:('value, 'id) id ->  ('value, 'id) t
-[@@ocaml.deprecated "Use fromArray instead"]
 
 val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 (** [fromArray xs ~id]
@@ -100,8 +98,6 @@ val fromArray:  'value array -> id:('value, 'id) id ->  ('value, 'id) t
 *)
 
 
-val ofSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
-[@@ocaml.deprecated "Use fromSortedArrayUnsafe instead"]
 
 val fromSortedArrayUnsafe: 'value array -> id:('value, 'id) id -> ('value,'id) t
 (** [fromSortedArrayUnsafe xs ~id]

@@ -224,8 +224,6 @@ let toArray d =
 let fromSortedArrayUnsafe xs =
   t ~data:(N.fromSortedArrayUnsafe xs)    
 
-let ofSortedArrayUnsafe = fromSortedArrayUnsafe
-
 let checkInvariantInternal d = 
   N.checkInvariantInternal (data d)
 
@@ -233,8 +231,6 @@ let checkInvariantInternal d =
 
 let fromArray xs = 
   t  ~data:(I.fromArray xs)
-
-let ofArray = fromArray
 
 let cmp d0 d1 = 
   I.cmp (data d0) (data d1)

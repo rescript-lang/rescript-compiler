@@ -149,10 +149,10 @@ let () =
 let () = Js.log "OK"
 
 let () = 
-  let q = Q.ofArray [|1;2;3;4|] in 
+  let q = Q.fromArray [|1;2;3;4|] in 
   let q1 = Q.map q (fun x -> x - 1 ) in 
   eq __LOC__ (Q.toArray q1 ) [|0;1;2;3|];
-  b __LOC__ (Q.isEmpty (Q.ofArray [||]));
-  b __LOC__ ( Q.isEmpty (Q.map ( (Q.ofArray [||])) (fun x -> x + 1)))
+  b __LOC__ (Q.isEmpty (Q.fromArray [||]));
+  b __LOC__ ( Q.isEmpty (Q.map ( (Q.fromArray [||])) (fun x -> x + 1)))
 
 ;; Mt.from_pair_suites __FILE__ !suites

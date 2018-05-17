@@ -224,8 +224,6 @@ let fromSortedArrayUnsafe (type value) (type identity) xs ~(id : (value,identity
   let module M = (val id) in 
   S.t ~data:(N.fromSortedArrayUnsafe xs) ~cmp:M.cmp
 
-let ofSortedArrayUnsafe = fromSortedArrayUnsafe
-    
 let checkInvariantInternal d = 
   N.checkInvariantInternal (S.data d)
     
@@ -235,8 +233,7 @@ let fromArray (type value) (type identity)  data ~(id : (value,identity) id) =
   let cmp = M.cmp in 
   S.t ~cmp ~data:(N.fromArray ~cmp data)
 
-let ofArray = fromArray
-  
+
 let cmp d0 d1 = 
   N.cmp ~cmp:(S.cmp d0) (S.data d0) (S.data d1)
 

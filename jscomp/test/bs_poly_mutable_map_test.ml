@@ -13,8 +13,8 @@ module N = Belt.Set
 
 module A = Belt.Array
 module I = Array_data_util
-let f x = M.ofArray ~id:(module Icmp) x
-let ff x = N.ofArray ~id:(module Icmp) x
+let f x = M.fromArray ~id:(module Icmp) x
+let ff x = N.fromArray ~id:(module Icmp) x
 
 
 let randomRange i j =

@@ -169,4 +169,3 @@ let split = I.split
 let mergeU = I.mergeU 
 let merge = I.merge 
 let fromArray = I.fromArray
-let ofArray = I.fromArray

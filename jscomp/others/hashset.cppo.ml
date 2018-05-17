@@ -156,8 +156,6 @@ let fromArray arr =
   done ;
   v
 
-let ofArray = fromArray
-
 (* TOOD: optimize heuristics for resizing *)  
 let mergeMany h arr =   
   let len = A.length arr in 

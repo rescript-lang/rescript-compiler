@@ -44,11 +44,6 @@ type t
 
 val empty: t
 
-val ofArray: value array -> t
-[@@ocaml.deprecated "Use fromArray instead"]
-
-val ofSortedArrayUnsafe: value array -> t
-[@@ocaml.deprecated "Use fromSortedArrayUnsafe instead"]
 
 val fromArray: value array -> t
 

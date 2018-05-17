@@ -31,7 +31,6 @@ type ('key, 'id) cmp = ('key, 'id)  Belt_Id.cmp
 
 let empty = N.empty
 let fromArray = N.fromArray
-let ofArray = N.fromArray
 let isEmpty = N.isEmpty
 let cmp = N.cmp
 let cmpU = N.cmpU             

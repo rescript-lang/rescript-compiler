@@ -14,8 +14,8 @@ module A = Belt.Array
 module I = Array_data_util
 
 
-let mapOfArray x = M.ofArray ~id:(module Icmp) x
-let setOfArray x = N.ofArray ~id:(module Icmp) x
+let mapOfArray x = M.fromArray ~id:(module Icmp) x
+let setOfArray x = N.fromArray ~id:(module Icmp) x
 let emptyMap () = M.make (module Icmp)
 
 let mergeInter s1 s2 =
