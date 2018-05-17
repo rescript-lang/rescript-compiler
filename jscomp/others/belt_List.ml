@@ -401,8 +401,6 @@ let rec fromArrayAux a i res =
 let fromArray a =
   fromArrayAux a (A.length a - 1) []    
 
-let ofArray = fromArray
-
 let toArray ( x : _ t) =
   let len = length x in
   let arr = A.makeUninitializedUnsafe len in

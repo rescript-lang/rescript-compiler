@@ -1,7 +1,7 @@
 # 5 "mapm.cppo.ml"
 module I = Belt_internalMapString
 type key = string
-# 10
+# 10 "mapm.cppo.ml"
 module N = Belt_internalAVLtree
 module A = Belt_Array 
 
@@ -157,8 +157,6 @@ let removeMany (type key) (type id) (d : _ t) xs =
 
 let fromArray xs = 
   t  ~data:(I.fromArray xs)
-
-let ofArray = fromArray
 
 let cmpU d0 d1 f = 
   I.cmpU (data d0) (data d1) f

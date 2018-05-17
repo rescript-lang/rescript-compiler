@@ -113,8 +113,6 @@ val checkInvariantInternal: _ t -> unit
    {b raise} when invariant is not held
 *)
 
-val ofArray: ('k * 'a) array -> id:('k,'id) id ->  ('k,'a,'id) t
-[@@ocaml.deprecated "Use fromArray instead"]
 
 (****************************************************************************)
 

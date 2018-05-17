@@ -15,9 +15,9 @@ let sum2 h =
   !v 
 let () = 
   let u = I.randomRange 30 100  ++ I.randomRange 40 120 in 
-  let v = N.ofArray u in 
+  let v = N.fromArray u in 
   eq __LOC__ (N.size v) 91 ;  
-  let xs = S.toArray (S.ofArray (N.toArray v)) in 
+  let xs = S.toArray (S.fromArray (N.toArray v)) in 
   eq __LOC__ xs (I.range 30 120);
   let x =  ((30 + 120)/2  * 91) in 
   eq __LOC__ (N.reduce v 0 add) x ;
@@ -41,7 +41,7 @@ module A = Belt.Array
 module SI = Belt.SortArray.Int
 
 let () =   
-  let u0 = N.ofArray (I.randomRange 0 100_000) in 
+  let u0 = N.fromArray (I.randomRange 0 100_000) in 
   let u1 = N.copy u0 in 
   eq __LOC__ (N.toArray u0) (N.toArray u1);
   for i = 0 to 2000 do 
@@ -57,7 +57,7 @@ let () =
   eq __LOC__  v0 v1 
   
 let () =
-  let h = N.ofArray (I.randomRange  0 1_000_000) in 
+  let h = N.fromArray (I.randomRange  0 1_000_000) in 
   let histo = N.getBucketHistogram h in 
   b __LOC__ (A.length histo <= 10)
 let () = Mt.from_pair_suites __FILE__ !suites

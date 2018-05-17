@@ -24,8 +24,8 @@ function b(loc, x) {
 
 var IntCmp = Belt_Id.comparable(Caml_primitive.caml_int_compare);
 
-function ofArray(param) {
-  return Belt_MutableSet.ofArray(param, IntCmp);
+function fromArray(param) {
+  return Belt_MutableSet.fromArray(param, IntCmp);
 }
 
 function empty() {
@@ -35,7 +35,7 @@ function empty() {
         };
 }
 
-var u = ofArray(Array_data_util.range(0, 30));
+var u = fromArray(Array_data_util.range(0, 30));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 18, characters 4-11", Belt_MutableSet.removeCheck(u, 0));
 
@@ -111,7 +111,7 @@ Belt_MutableSet.removeMany(u, Array_data_util.randomRange(10000, 30000));
 
 b("File \"bs_poly_mutable_set_test.ml\", line 56, characters 4-11", Belt_internalAVLset.isEmpty(u.data));
 
-var v = ofArray(Array_data_util.randomRange(1000, 2000));
+var v = fromArray(Array_data_util.randomRange(1000, 2000));
 
 var bs = Belt_Array.map(Array_data_util.randomRange(500, 1499), (function (x) {
         return Belt_MutableSet.removeCheck(v, x);
@@ -226,60 +226,60 @@ var d$2 = Belt_MutableSet.intersect(aa$1, bb$1);
 
 b("File \"bs_poly_mutable_set_test.ml\", line 95, characters 4-11", Belt_internalAVLset.isEmpty(d$2.data));
 
-var aa$2 = ofArray(Array_data_util.randomRange(0, 100));
+var aa$2 = fromArray(Array_data_util.randomRange(0, 100));
 
-var bb$2 = ofArray(Array_data_util.randomRange(40, 120));
+var bb$2 = fromArray(Array_data_util.randomRange(40, 120));
 
 var cc = Belt_MutableSet.union(aa$2, bb$2);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 104, characters 4-11", Belt_MutableSet.eq(cc, ofArray(Array_data_util.randomRange(0, 120))));
+b("File \"bs_poly_mutable_set_test.ml\", line 104, characters 4-11", Belt_MutableSet.eq(cc, fromArray(Array_data_util.randomRange(0, 120))));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 106, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.union(ofArray(Array_data_util.randomRange(0, 20)), ofArray(Array_data_util.randomRange(21, 40))), ofArray(Array_data_util.randomRange(0, 40))));
+b("File \"bs_poly_mutable_set_test.ml\", line 106, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.union(fromArray(Array_data_util.randomRange(0, 20)), fromArray(Array_data_util.randomRange(21, 40))), fromArray(Array_data_util.randomRange(0, 40))));
 
 var dd = Belt_MutableSet.intersect(aa$2, bb$2);
 
-b("File \"bs_poly_mutable_set_test.ml\", line 111, characters 4-11", Belt_MutableSet.eq(dd, ofArray(Array_data_util.randomRange(40, 100))));
+b("File \"bs_poly_mutable_set_test.ml\", line 111, characters 4-11", Belt_MutableSet.eq(dd, fromArray(Array_data_util.randomRange(40, 100))));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 112, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(ofArray(Array_data_util.randomRange(0, 20)), ofArray(Array_data_util.randomRange(21, 40))), {
+b("File \"bs_poly_mutable_set_test.ml\", line 112, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray(Array_data_util.randomRange(0, 20)), fromArray(Array_data_util.randomRange(21, 40))), {
           cmp: IntCmp[/* cmp */0],
           data: Belt_internalAVLset.empty
         }));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 118, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(ofArray(Array_data_util.randomRange(21, 40)), ofArray(Array_data_util.randomRange(0, 20))), {
+b("File \"bs_poly_mutable_set_test.ml\", line 118, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray(Array_data_util.randomRange(21, 40)), fromArray(Array_data_util.randomRange(0, 20))), {
           cmp: IntCmp[/* cmp */0],
           data: Belt_internalAVLset.empty
         }));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 124, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(ofArray(/* array */[
+b("File \"bs_poly_mutable_set_test.ml\", line 124, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.intersect(fromArray(/* array */[
                   1,
                   3,
                   4,
                   5,
                   7,
                   9
-                ]), ofArray(/* array */[
+                ]), fromArray(/* array */[
                   2,
                   4,
                   5,
                   6,
                   8,
                   10
-                ])), ofArray(/* array */[
+                ])), fromArray(/* array */[
               4,
               5
             ])));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 130, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(aa$2, bb$2), ofArray(Array_data_util.randomRange(0, 39))));
+b("File \"bs_poly_mutable_set_test.ml\", line 130, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(aa$2, bb$2), fromArray(Array_data_util.randomRange(0, 39))));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 132, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(bb$2, aa$2), ofArray(Array_data_util.randomRange(101, 120))));
+b("File \"bs_poly_mutable_set_test.ml\", line 132, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(bb$2, aa$2), fromArray(Array_data_util.randomRange(101, 120))));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 134, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(ofArray(Array_data_util.randomRange(21, 40)), ofArray(Array_data_util.randomRange(0, 20))), ofArray(Array_data_util.randomRange(21, 40))));
+b("File \"bs_poly_mutable_set_test.ml\", line 134, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(fromArray(Array_data_util.randomRange(21, 40)), fromArray(Array_data_util.randomRange(0, 20))), fromArray(Array_data_util.randomRange(21, 40))));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 140, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(ofArray(Array_data_util.randomRange(0, 20)), ofArray(Array_data_util.randomRange(21, 40))), ofArray(Array_data_util.randomRange(0, 20))));
+b("File \"bs_poly_mutable_set_test.ml\", line 140, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(fromArray(Array_data_util.randomRange(0, 20)), fromArray(Array_data_util.randomRange(21, 40))), fromArray(Array_data_util.randomRange(0, 20))));
 
-b("File \"bs_poly_mutable_set_test.ml\", line 147, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(ofArray(Array_data_util.randomRange(0, 20)), ofArray(Array_data_util.randomRange(0, 40))), ofArray(Array_data_util.randomRange(0, -1))));
+b("File \"bs_poly_mutable_set_test.ml\", line 147, characters 4-11", Belt_MutableSet.eq(Belt_MutableSet.diff(fromArray(Array_data_util.randomRange(0, 20)), fromArray(Array_data_util.randomRange(0, 40))), fromArray(Array_data_util.randomRange(0, -1))));
 
-var a0 = ofArray(Array_data_util.randomRange(0, 1000));
+var a0 = fromArray(Array_data_util.randomRange(0, 1000));
 
 var a1 = Belt_MutableSet.keep(a0, (function (x) {
         return x % 2 === 0;
@@ -332,7 +332,7 @@ var L = 0;
 
 var $plus$plus = Belt_MutableSet.union;
 
-var f = ofArray;
+var f = fromArray;
 
 var $eq$tilde = Belt_MutableSet.eq;
 
@@ -345,7 +345,7 @@ exports.I = I;
 exports.A = A;
 exports.IntCmp = IntCmp;
 exports.L = L;
-exports.ofArray = ofArray;
+exports.fromArray = fromArray;
 exports.empty = empty;
 exports.$plus$plus = $plus$plus;
 exports.f = f;

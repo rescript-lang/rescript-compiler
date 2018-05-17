@@ -220,9 +220,7 @@ let fromArray (type k) (type identity) data ~(id : (k,identity) id)=
   let module M = (val id ) in
   let cmp = M.cmp in 
   S.t ~cmp  ~data:(N.fromArray ~cmp data)
-
-let ofArray = fromArray
-    
+  
 let set  m e v = 
   let oldRoot = S.data m in 
   let newRoot = N.updateMutate ~cmp:(S.cmp m) oldRoot e v in 

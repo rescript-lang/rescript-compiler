@@ -23,9 +23,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-# 26
+# 26 "mapm.cppo.mli"
 type key = string
-# 32
+# 32 "mapm.cppo.mli"
 type 'a t
 
 
@@ -81,8 +81,6 @@ val toList: 'a t -> (key * 'a) list
 (** In increasing order *)
 val toArray: 'a t -> (key * 'a) array   
 
-val ofArray: (key * 'a) array -> 'a t 
-[@@ocaml.deprecated "Use fromArray instead"]
 
 val fromArray: (key * 'a) array -> 'a t 
 val keysToArray: 'a t -> key array 

@@ -24,11 +24,11 @@ function b(loc, v) {
 var Icmp = Belt_Id.comparable(Caml_primitive.caml_int_compare);
 
 function f(x) {
-  return Belt_MutableMap.ofArray(x, Icmp);
+  return Belt_MutableMap.fromArray(x, Icmp);
 }
 
 function ff(x) {
-  return Belt_Set.ofArray(x, Icmp);
+  return Belt_Set.fromArray(x, Icmp);
 }
 
 function randomRange(i, j) {
@@ -42,7 +42,7 @@ function randomRange(i, j) {
 
 var x = randomRange(0, 10);
 
-var a0 = Belt_MutableMap.ofArray(x, Icmp);
+var a0 = Belt_MutableMap.fromArray(x, Icmp);
 
 Belt_MutableMap.set(a0, 3, 33);
 

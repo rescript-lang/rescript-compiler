@@ -200,7 +200,6 @@ let rec diff s1 s2 ~cmp  =
 
 let empty = N.empty     
 let fromArray = N.fromArray
-let ofArray = N.fromArray
 let isEmpty = N.isEmpty
 
 
@@ -229,7 +228,6 @@ let getUndefined = N.getUndefined
                 
 
 let fromSortedArrayUnsafe = N.fromSortedArrayUnsafe
-let ofSortedArrayUnsafe = N.fromSortedArrayUnsafe
 let subset = N.subset
 let keep = N.keepShared
 let keepU = N.keepSharedU             

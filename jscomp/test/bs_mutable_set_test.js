@@ -496,7 +496,9 @@ for(var i$5 = 0 ,i_finish$3 = vv$1.length - 1 | 0; i$5 <= i_finish$3; ++i$5){
 eq("File \"bs_mutable_set_test.ml\", line 221, characters 5-12", Belt_internalAVLset.size(v$4.data), 0);
 
 function id(loc, x) {
-  var u = Belt_MutableSetInt.ofSortedArrayUnsafe(x);
+  var u = {
+    data: Belt_internalAVLset.fromSortedArrayUnsafe(x)
+  };
   Belt_internalAVLset.checkInvariantInternal(u.data);
   return b(loc, Belt_Array.every2(Belt_internalAVLset.toArray(u.data), x, Caml_obj.caml_equal));
 }

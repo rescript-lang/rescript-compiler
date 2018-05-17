@@ -30,9 +30,6 @@ val clear: 'a t -> unit
 val isEmpty: 'a t -> bool
 (** @return [true] if the given queue is empty, [false] otherwise. *)
 
-val ofArray: 'a array -> 'a t
-[@@ocaml.deprecated "Use fromArray instead"]
-
 val fromArray: 'a array -> 'a t
 (** [fromArray a] is equivalent to [Array.forEach a (add q a)] *)    
 

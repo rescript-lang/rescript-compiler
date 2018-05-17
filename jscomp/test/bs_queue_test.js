@@ -1102,7 +1102,7 @@ if (Belt_MutableQueue.reduce(q2$4, 0, (function (x, y) {
 
 console.log("OK");
 
-var q$6 = Belt_MutableQueue.ofArray(/* array */[
+var q$6 = Belt_MutableQueue.fromArray(/* array */[
       1,
       2,
       3,
@@ -1120,11 +1120,11 @@ eq("File \"bs_queue_test.ml\", line 154, characters 5-12", Belt_MutableQueue.toA
       3
     ]);
 
-var q$7 = Belt_MutableQueue.ofArray(/* array */[]);
+var q$7 = Belt_MutableQueue.fromArray(/* array */[]);
 
 b("File \"bs_queue_test.ml\", line 155, characters 4-11", q$7.length === 0);
 
-var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.ofArray(/* array */[]), (function (x) {
+var q$8 = Belt_MutableQueue.map(Belt_MutableQueue.fromArray(/* array */[]), (function (x) {
         return x + 1 | 0;
       }));
 

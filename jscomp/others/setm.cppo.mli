@@ -49,11 +49,6 @@ val make: unit -> t
 val fromArray: value array -> t
 val fromSortedArrayUnsafe: value array -> t
 
-val ofArray: value array -> t
-[@@ocaml.deprecated "Use fromArray instead"]
-val ofSortedArrayUnsafe: value array -> t
-[@@ocaml.deprecated "Use fromSortedArrayUnsafe instead"]
-
 val copy: t -> t 
 val isEmpty: t -> bool
 val has: t -> value -> bool
