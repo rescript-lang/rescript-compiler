@@ -15,7 +15,9 @@ caml_format.cmj : js_nativeint.cmj js_int64.cmj js_float.cmj caml_utils.cmj \
     bs_string.cmj caml_format.cmi
 caml_md5.cmj : bs_string.cmj caml_md5.cmi
 caml_queue.cmj : caml_queue.cmi
-caml_hash.cmj : js.cmj caml_queue.cmj bs_string.cmj bs_obj.cmj caml_hash.cmi
+caml_hash_primitive.cmj : bs_string.cmj caml_hash_primitive.cmi
+caml_hash.cmj : js.cmj caml_queue.cmj caml_hash_primitive.cmj bs_obj.cmj \
+    caml_hash.cmi
 caml_weak.cmj : js_undefined.cmj js.cmj caml_array.cmj caml_weak.cmi
 caml_backtrace.cmj : caml_backtrace.cmi
 caml_int32.cmj : caml_int32.cmi
@@ -50,6 +52,7 @@ caml_parser.cmi :
 caml_format.cmi :
 caml_md5.cmi :
 caml_queue.cmi :
+caml_hash_primitive.cmi :
 caml_hash.cmi :
 caml_weak.cmi :
 caml_backtrace.cmi :
