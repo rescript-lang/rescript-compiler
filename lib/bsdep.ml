@@ -36215,6 +36215,8 @@ let handle_exp_apply
               { pexp_desc = Pexp_apply(fn, ("", new_obj_arg) :: args);
                 pexp_attributes = [];
                 pexp_loc = pexp_loc}
+            | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes} -> 
+              {fn with pexp_desc = Pexp_construct(ctor, Some new_obj_arg)}
             | _ ->
               let try_dispatch_by_tuple =
                 Ast_tuple_pattern_flatten.map_open_tuple fn (fun xs tuple_attrs ->
@@ -36232,6 +36234,9 @@ let handle_exp_apply
                                 { Parsetree.pexp_desc = Pexp_apply(fn, ("", bounded_obj_arg) :: args);
                                   pexp_attributes = [];
                                   pexp_loc = pexp_loc}
+                              | {pexp_desc = Pexp_construct(ctor,None); pexp_loc; pexp_attributes}    
+                                -> 
+                                {fn with pexp_desc = Pexp_construct(ctor, Some bounded_obj_arg)}
                               | _ ->
                                 Exp.apply ~loc:fn.pexp_loc
                                   (self.expr self fn )
