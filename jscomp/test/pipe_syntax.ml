@@ -48,3 +48,6 @@ let f5 a b c d =
   |. (b c c, b c c, b d d) in
   v0 + v1 + v2 
 
+let f6 a = a |. Some
+
+let f7 a  = a |. (Some, Some, Some)
