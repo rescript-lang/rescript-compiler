@@ -145,11 +145,7 @@ function failure_test(f, x, s) {
 
 function scan_failure_test(f, x) {
   return test_raises_exc_p((function (param) {
-                if (param[0] === Scanf.Scan_failure) {
-                  return true;
-                } else {
-                  return false;
-                }
+                return param[0] === Scanf.Scan_failure;
               }), f, x);
 }
 

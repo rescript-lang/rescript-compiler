@@ -1953,8 +1953,8 @@ function equal$2(_x1, _x2) {
               return false;
             }
         case 9 : 
-            if (typeof x2 === "number" && x2 >= 9) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 >= 9;
             } else {
               return false;
             }

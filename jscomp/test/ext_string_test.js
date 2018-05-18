@@ -537,8 +537,8 @@ function is_valid_npm_package_name(s) {
                       } else {
                         return true;
                       }
-                    } else if (x !== 45 && x < 48) {
-                      return false;
+                    } else if (x !== 45) {
+                      return x >= 48;
                     } else {
                       return true;
                     }

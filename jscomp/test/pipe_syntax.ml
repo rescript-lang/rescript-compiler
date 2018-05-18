@@ -51,3 +51,5 @@ let f5 a b c d =
 let f6 a = a |. Some
 
 let f7 a  = a |. (Some, Some, Some)
+
+let f8 a = a |. Some |. Some 

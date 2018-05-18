@@ -53,6 +53,12 @@ type meth_kind = Lambda.meth_kind
 | Public of string option
 | Cached
 
+type pointer_info = 
+  | Pt_constructor of string 
+  | Pt_variant of string 
+  | Pt_module_alias
+  | Pt_na 
+
 type constant =
   | Const_js_null
   | Const_js_undefined
@@ -66,7 +72,7 @@ type constant =
   | Const_int32 of int32
   | Const_int64 of int64
   | Const_nativeint of nativeint
-  | Const_pointer of int * Lambda.pointer_info
+  | Const_pointer of int * pointer_info
   | Const_block of int * Lambda.tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string
@@ -1141,7 +1147,14 @@ let if_ (a : t) (b : t) c =
       | Const_float_array _
       | Const_immstring _ -> b
     end
-  | _ ->  Lifthenelse (a,b,c)
+  | _ -> 
+    begin match a, b, c with 
+    | Lprim {primitive = Pintcomp _;}, Lconst(Const_js_true), Lconst(Const_js_false)
+      ->  a
+    | _ -> 
+      
+     Lifthenelse (a,b,c)
+  end 
 
 
 let abs_int x = if x < 0 then - x else x
@@ -1195,10 +1208,10 @@ let stringswitch (lam : t) cases default : t =
 
 
 let true_ : t =
-  Lconst (Const_pointer ( 1, Pt_builtin_boolean))
+  Lconst (Const_js_true)
 
 let false_ : t =
-  Lconst (Const_pointer( 0, Pt_builtin_boolean))
+  Lconst (Const_js_false)
 
 let unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "()"))
@@ -1909,7 +1922,14 @@ let convert exports lam : _ * _  =
     | Const_base (Const_int32 i) -> (Const_int32 i)
     | Const_base (Const_int64 i) -> (Const_int64 i)
     | Const_base (Const_nativeint i) -> (Const_nativeint i)
-    | Const_pointer(i,p) -> Const_pointer (i,p)
+    | Const_pointer(i,p) ->
+      begin match p with 
+      | Pt_constructor p -> Const_pointer(i, Pt_constructor p)
+      | Pt_variant p -> Const_pointer(i,Pt_variant p)
+      | Pt_module_alias -> Const_pointer(i, Pt_module_alias)
+      | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
+      | Pt_na ->  Const_pointer(i, Pt_na)      
+       end 
     | Const_float_array (s) -> Const_float_array(s)
     | Const_immstring s -> Const_immstring s
     | Const_block (i,t,xs) ->

@@ -51,6 +51,12 @@ type function_kind
    = Curried
    (* | Tupled *)
 
+type pointer_info = 
+  | Pt_constructor of string 
+  | Pt_variant of string 
+  | Pt_module_alias
+  | Pt_na    
+  
 type constant = 
   | Const_js_null 
   | Const_js_undefined 
@@ -64,7 +70,7 @@ type constant =
   | Const_int32 of int32
   | Const_int64 of int64
   | Const_nativeint of nativeint
-  | Const_pointer of int * Lambda.pointer_info
+  | Const_pointer of int * pointer_info
   | Const_block of int * Lambda.tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string

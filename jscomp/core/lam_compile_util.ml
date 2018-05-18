@@ -54,10 +54,9 @@ let comment_of_tag_info  (x : Lambda.tag_info) =
   | Blk_exception -> Some "exception"
   | Blk_extension -> Some "extension"
   | Blk_na -> None 
-let comment_of_pointer_info (x :  Lambda.pointer_info)= 
+let comment_of_pointer_info (x :  Lam.pointer_info)= 
   match x with 
   | Pt_constructor x -> Some x 
   | Pt_variant x -> Some x 
-  | Pt_builtin_boolean -> Some "boolean"
-  | Lambda.Pt_module_alias -> None (* FIXME *)
+  | Pt_module_alias -> None (* FIXME *)
   | Pt_na -> None

@@ -74,6 +74,10 @@ function f7(a) {
         ];
 }
 
+function f8(a) {
+  return /* Some */[/* Some */[a]];
+}
+
 exports.t0 = t0;
 exports.t1 = t1;
 exports.t2 = t2;
@@ -86,4 +90,5 @@ exports.f4 = f4;
 exports.f5 = f5;
 exports.f6 = f6;
 exports.f7 = f7;
+exports.f8 = f8;
 /* No side effect */

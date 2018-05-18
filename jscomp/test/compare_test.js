@@ -28,11 +28,7 @@ function compare2(x, y) {
           return true;
         }
     case 2 : 
-        if (y >= 2) {
-          return true;
-        } else {
-          return false;
-        }
+        return y >= 2;
     
   }
 }
