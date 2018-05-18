@@ -1121,40 +1121,6 @@ let let_ kind id e body :  t
 let letrec bindings body : t =
   Lletrec(bindings,body)
 
-let if_ (a : t) (b : t) c =
-  match a with
-  | Lconst v ->
-    begin match v with
-      | Const_pointer (x, _)  | (Const_int x)
-        ->
-        if x <> 0 then b else c
-      | (Const_char x) ->
-        if Char.code x <> 0 then b else c
-      | (Const_int32 x) ->
-        if x <> 0l then b else c
-      |  (Const_int64 x) ->
-        if x <> 0L then b else c
-      | (Const_nativeint x) ->
-        if x <> 0n then b else c
-      | Const_js_false
-      | Const_js_null
-      | Const_js_undefined -> c
-      | Const_js_true
-      | Const_string _
-      | Const_float _
-      | Const_unicode _
-      | Const_block _
-      | Const_float_array _
-      | Const_immstring _ -> b
-    end
-  | _ -> 
-    begin match a, b, c with 
-    | Lprim {primitive = Pintcomp _;}, Lconst(Const_js_true), Lconst(Const_js_false)
-      ->  a
-    | _ -> 
-      
-     Lifthenelse (a,b,c)
-  end 
 
 
 let abs_int x = if x < 0 then - x else x
@@ -1219,11 +1185,6 @@ let unit : t =
 (* let assert_false_unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "impossible branch")) *)
 
-(** [l || r ] *)
-let sequor l r = if_ l true_ r
-
-(** [l && r ] *)
-let sequand l r = if_ l r false_
 
 let seq a b : t =
   (* match a, b with
@@ -1457,7 +1418,50 @@ let not_ loc x  : t =
   prim ~primitive:Pnot ~args:[x] loc
 
 
+let if_ (a : t) (b : t) c =
+  match a with
+  | Lconst v ->
+    begin match v with
+      | Const_pointer (x, _)  | (Const_int x)
+        ->
+        if x <> 0 then b else c
+      | (Const_char x) ->
+        if Char.code x <> 0 then b else c
+      | (Const_int32 x) ->
+        if x <> 0l then b else c
+      |  (Const_int64 x) ->
+        if x <> 0L then b else c
+      | (Const_nativeint x) ->
+        if x <> 0n then b else c
+      | Const_js_false
+      | Const_js_null
+      | Const_js_undefined -> c
+      | Const_js_true
+      | Const_string _
+      | Const_float _
+      | Const_unicode _
+      | Const_block _
+      | Const_float_array _
+      | Const_immstring _ -> b
+    end
+  | _ -> 
+    begin match a, b, c with 
+    | Lprim {primitive = Pintcomp _;}, Lconst(Const_js_true), Lconst(Const_js_false)
+      ->  a
+    | Lprim {primitive = Pintcomp _;loc}, Lconst(Const_js_false), Lconst(Const_js_true)
+      ->  not_ loc a       
+    | _ -> 
+      
+     Lifthenelse (a,b,c)
+  end 
 
+
+
+(** [l || r ] *)
+let sequor l r = if_ l true_ r
+
+(** [l && r ] *)
+let sequand l r = if_ l r false_  
 
 (******************************************************************)
 (** only [handle_bs_non_obj_ffi] will be used outside *)

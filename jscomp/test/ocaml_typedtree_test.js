@@ -35145,20 +35145,14 @@ function parenthesized_ident(name) {
     var match = Caml_string.get(name, 0);
     if (match >= 97) {
       if (match >= 223) {
-        if (match !== 247) {
-          return false;
-        } else {
-          return true;
-        }
+        return match === 247;
       } else {
         return match >= 123;
       }
     } else if (match >= 91) {
       return match !== 95;
-    } else if (match >= 65) {
-      return false;
     } else {
-      return true;
+      return match < 65;
     }
   }
 }

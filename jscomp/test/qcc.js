@@ -135,10 +135,8 @@ function isid(param) {
     } else {
       return true;
     }
-  } else if (switcher !== 4) {
-    return false;
   } else {
-    return true;
+    return switcher === 4;
   }
 }
 

@@ -264,7 +264,7 @@ var match$1 = match[0];
 
 var match$2 = Belt_Map.get(v3, 10);
 
-b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 && match$2[0] === 11 ? true : false);
+b("File \"bs_poly_map_test.ml\", line 126, characters 4-11", match$2 ? match$2[0] === 11 : false);
 
 var match$3 = Belt_Map.get(v3, -10);
 
@@ -272,7 +272,7 @@ b("File \"bs_poly_map_test.ml\", line 127, characters 4-11", match$3 ? false : t
 
 var match$4 = Belt_Map.get(v4, -10);
 
-b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 && match$4[0] === 0 ? true : false);
+b("File \"bs_poly_map_test.ml\", line 128, characters 4-11", match$4 ? match$4[0] === 0 : false);
 
 var map = Belt_Map.remove({
       cmp: Icmp[/* cmp */0],
@@ -288,7 +288,7 @@ var map$1 = Belt_Map.removeMany({
 
 b("File \"bs_poly_map_test.ml\", line 130, characters 4-11", Belt_MapDict.isEmpty(map$1.data));
 
-b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres && pres[0] === 5000 ? true : false);
+b("File \"bs_poly_map_test.ml\", line 131, characters 4-11", pres ? pres[0] === 5000 : false);
 
 b("File \"bs_poly_map_test.ml\", line 132, characters 4-11", Belt_Array.eq(Belt_MapDict.keysToArray(match$1[0].data), Belt_Array.makeBy(5000, (function (i) {
                 return i;
