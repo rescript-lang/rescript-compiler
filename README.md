@@ -156,7 +156,7 @@ test();
 
 See [COPYING](./COPYING) and [COPYING.LESSER](./COPYING.LESSER)
 
-The [`ocaml`](ocaml) directory contains the official [OCaml](https://ocaml.org) compiler (version 4.02.3).
+The [`ocaml`](vendor/ocaml) directory contains the official [OCaml](https://ocaml.org) compiler (version 4.02.3).
 Refer to its copyright and license notices for information about its licensing.
 
 The [`ninja-build`](ninja-build) directory contains the official [ninja-build](https://github.com/ninja-build/ninja) (version 1.7.2).
@@ -172,23 +172,23 @@ BuckleScript builds on parts of OCaml:
 * [`jscomp/core/lam_pass_exits.ml`](jscomp/core/lam_pass_exits.ml)
 * [`jscomp/core/lam_pass_lets_dce.ml`](jscomp/core/lam_pass_lets_dce.ml)
 
-These modules were adapted from [`ocaml/bytecomp/simplif.ml`](ocaml/bytecomp/simplif.ml) for
+These modules were adapted from [`ocaml/bytecomp/simplif.ml`](vendor/ocaml/bytecomp/simplif.ml) for
 JavaScript specific optimization purposes.
 
 * [`jscomp/core/js_main.ml`](jscomp/core/js_main.ml)
 
-`jscomp/core/js_main.ml` is adapted from [`ocaml/driver/main.ml`](ocaml/driver/main.ml). It is not
+`jscomp/core/js_main.ml` is adapted from [`ocaml/driver/main.ml`](vendor/ocaml/driver/main.ml). It is not
 actively used but demonstrates that it is easy to assemble a whole compiler using the OCaml compiler
 libraries. It also shows how to add more compilation flags to a JS backend.
 
 * [`jscomp/stdlib`](jscomp/stdlib)
 
-`jscomp/stdlib` is copied from [`ocaml/stdlib`](ocaml/stdlib). It is compiled to JavaScript and
+`jscomp/stdlib` is copied from [`ocaml/stdlib`](vendor/ocaml/stdlib). It is compiled to JavaScript and
 included with BuckleScript.
 
 * [`jscomp/test`](jscomp/test)
 
-`jscomp/test` is based on [`ocaml/testsuite`](ocaml/testsuite).
+`jscomp/test` is based on [`ocaml/testsuite`](vendor/ocaml/testsuite).
 
 BuckleScript unittest builds on parts of [OUnit](http://ounit.forge.ocamlcore.org/)
 
