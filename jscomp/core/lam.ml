@@ -1259,6 +1259,18 @@ module Lift = struct
     Lconst ((Const_char b))
 end
 
+let has_boolean_type (x : t) = 
+  match x with 
+  | Lprim {primitive =
+    Pnot | Psequand |
+    Psequor | Pisout | Pintcomp _ | Pfloatcomp _; loc}
+  | Lprim {primitive = 
+    Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"};
+    loc
+    }
+   -> Some loc
+  | _ -> None
+
 let prim ~primitive:(prim : primitive) ~args loc  : t =
   let default () : t = Lprim { primitive = prim ;args; loc} in
   match args with
@@ -1285,6 +1297,8 @@ let prim ~primitive:(prim : primitive) ~args loc  : t =
       | Pnegbint Pint64, Const_int64 a
         ->
         Lift.int64 (Int64.neg a)
+      | Pnot, Const_js_true -> false_
+      | Pnot, Const_js_false -> true_
       | Pnot , Const_pointer (a,_)
         -> Lift.bool (a = 0 )
       | _ -> default ()
@@ -1393,12 +1407,18 @@ let prim ~primitive:(prim : primitive) ~args loc  : t =
         -> Lift.int64 (Int64.shift_right_logical  aa b )
       | Pasrbint Pint64,  (Const_int64 aa),  (Const_int b)
         -> Lift.int64 (Int64.shift_right  aa b )
-      | Psequand, Const_pointer (a, _), Const_pointer( b, _)
-        ->
-        Lift.bool (a = 1 && b = 1)
-      | Psequor, Const_pointer (a, _), Const_pointer( b, _)
-        ->
-        Lift.bool (a = 1 || b = 1)
+
+      | Psequand, Const_js_false, 
+        (Const_js_true | Const_js_false) ->
+        false_
+      | Psequand, Const_js_true, Const_js_true ->
+        true_
+      | Psequand, Const_js_true, Const_js_false ->
+        false_
+      | Psequor, Const_js_true, (Const_js_true | Const_js_false) ->
+        true_
+      | Psequor, Const_js_false, Const_js_true -> true_
+      | Psequor, Const_js_false, Const_js_false -> false_        
       | Pstringadd, (Const_string (a)),
         (Const_string (b))
         ->
@@ -1418,14 +1438,7 @@ let not_ loc x  : t =
   prim ~primitive:Pnot ~args:[x] loc
 
 
-let has_boolean_type (x : t) = 
-  match x with 
-  | Lprim {primitive =
-    Pnot | Psequand |
-    Psequor | Pisout | Pintcomp _ | Pfloatcomp _;}
-  | Lprim {primitive = Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"}}
-   -> true 
-  | _ -> false
+
 
 let if_ (a : t) (b : t) c =
   match a with
@@ -1458,21 +1471,20 @@ let if_ (a : t) (b : t) c =
     begin match  b, c with 
     | Lconst(Const_js_true), Lconst(Const_js_false)
       -> 
-       if has_boolean_type a then a 
+       if has_boolean_type a != None then a 
        else Lifthenelse (a,b,c)
     | Lconst(Const_js_false), Lconst(Const_js_true)
       ->  
-      if has_boolean_type a then 
-        not_ Location.none a 
-      else 
-        Lifthenelse (a,b,c)     
+      (match  has_boolean_type a with
+      | Some loc ->  not_ loc a 
+      | None -> Lifthenelse (a,b,c))     
     | _ -> 
       Lifthenelse (a,b,c)
      
   end 
 
 
-
+(** TODO: the smart constructor is not exploited yet*)
 (** [l || r ] *)
 let sequor l r = if_ l true_ r
 

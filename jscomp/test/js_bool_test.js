@@ -111,6 +111,17 @@ function bb(x) {
         ];
 }
 
+var consts = /* tuple */[
+  false,
+  false,
+  true,
+  false,
+  true,
+  false,
+  true,
+  true
+];
+
 var bool_array = /* array */[
   true,
   false
@@ -134,5 +145,6 @@ exports.fadd = fadd;
 exports.ffadd = ffadd;
 exports.ss = ss;
 exports.bb = bb;
+exports.consts = consts;
 exports.bool_array = bool_array;
 /* u Not a pure module */
