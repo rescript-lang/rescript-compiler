@@ -6,7 +6,7 @@ external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash_string  s =
   final_mix (caml_hash_mix_string 0 s)
 
-let hashString : string -> int  = [%raw{|function (str) {
+let hashString : string -> int  = fun%raw (str) -> {| {
                                               var hash = 5381,
                                               i    = str.length | 0;
 
@@ -15,7 +15,7 @@ let hashString : string -> int  = [%raw{|function (str) {
                                               }
                                               return hash
                                               }
-                                            |}]
+                                            |}
 
 module String =
   (val Belt.Id.hashable

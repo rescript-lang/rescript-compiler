@@ -1418,6 +1418,15 @@ let not_ loc x  : t =
   prim ~primitive:Pnot ~args:[x] loc
 
 
+let has_boolean_type (x : t) = 
+  match x with 
+  | Lprim {primitive =
+    Pnot | Psequand |
+    Psequor | Pisout | Pintcomp _ | Pfloatcomp _;}
+  | Lprim {primitive = Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"}}
+   -> true 
+  | _ -> false
+
 let if_ (a : t) (b : t) c =
   match a with
   | Lconst v ->
@@ -1445,14 +1454,21 @@ let if_ (a : t) (b : t) c =
       | Const_immstring _ -> b
     end
   | _ -> 
-    begin match a, b, c with 
-    | Lprim {primitive = Pintcomp _;}, Lconst(Const_js_true), Lconst(Const_js_false)
-      ->  a
-    | Lprim {primitive = Pintcomp _;loc}, Lconst(Const_js_false), Lconst(Const_js_true)
-      ->  not_ loc a       
+    
+    begin match  b, c with 
+    | Lconst(Const_js_true), Lconst(Const_js_false)
+      -> 
+       if has_boolean_type a then a 
+       else Lifthenelse (a,b,c)
+    | Lconst(Const_js_false), Lconst(Const_js_true)
+      ->  
+      if has_boolean_type a then 
+        not_ Location.none a 
+      else 
+        Lifthenelse (a,b,c)     
     | _ -> 
-      
-     Lifthenelse (a,b,c)
+      Lifthenelse (a,b,c)
+     
   end 
 
 

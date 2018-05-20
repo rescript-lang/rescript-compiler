@@ -11065,10 +11065,8 @@ function case_list(env, _param) {
           var switcher = param - 2 | 0;
           if (switcher > 29 || switcher < 0) {
             return switcher === 32;
-          } else if (switcher > 28 || switcher < 1) {
-            return true;
           } else {
-            return false;
+            return switcher > 28 || switcher < 1;
           }
         } else {
           return false;

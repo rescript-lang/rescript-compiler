@@ -69,7 +69,7 @@ eq("File \"bs_poly_mutable_map_test.ml\", line 29, characters 7-14", Belt_intern
 
 Belt_MutableMap.removeMany(a0, Array_data_util.randomRange(0, 100));
 
-b("File \"bs_poly_mutable_map_test.ml\", line 31, characters 6-13", Belt_internalAVLtree.isEmpty(a0.data));
+b("File \"bs_poly_mutable_map_test.ml\", line 31, characters 6-13", Belt_MutableMap.isEmpty(a0));
 
 Mt.from_pair_suites("bs_poly_mutable_map_test.ml", suites[0]);
 
