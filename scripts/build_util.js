@@ -32,7 +32,9 @@ function copyFile(file, target) {
 function renameAsync(from, to) {
 	console.log(from, '----->', to)
 	// @ts-ignore
-	fs.rename(from, to)
+	fs.rename(from, to, (err) => {
+            if (err) throw err;
+        })
 	// fs.renameSync(from,to)
 
 }
