@@ -53,6 +53,12 @@ type meth_kind = Lambda.meth_kind
 | Public of string option
 | Cached
 
+type pointer_info = 
+  | Pt_constructor of string 
+  | Pt_variant of string 
+  | Pt_module_alias
+  | Pt_na 
+
 type constant =
   | Const_js_null
   | Const_js_undefined
@@ -66,7 +72,7 @@ type constant =
   | Const_int32 of int32
   | Const_int64 of int64
   | Const_nativeint of nativeint
-  | Const_pointer of int * Lambda.pointer_info
+  | Const_pointer of int * pointer_info
   | Const_block of int * Lambda.tag_info * constant list
   | Const_float_array of string list
   | Const_immstring of string
@@ -1115,33 +1121,6 @@ let let_ kind id e body :  t
 let letrec bindings body : t =
   Lletrec(bindings,body)
 
-let if_ (a : t) (b : t) c =
-  match a with
-  | Lconst v ->
-    begin match v with
-      | Const_pointer (x, _)  | (Const_int x)
-        ->
-        if x <> 0 then b else c
-      | (Const_char x) ->
-        if Char.code x <> 0 then b else c
-      | (Const_int32 x) ->
-        if x <> 0l then b else c
-      |  (Const_int64 x) ->
-        if x <> 0L then b else c
-      | (Const_nativeint x) ->
-        if x <> 0n then b else c
-      | Const_js_false
-      | Const_js_null
-      | Const_js_undefined -> c
-      | Const_js_true
-      | Const_string _
-      | Const_float _
-      | Const_unicode _
-      | Const_block _
-      | Const_float_array _
-      | Const_immstring _ -> b
-    end
-  | _ ->  Lifthenelse (a,b,c)
 
 
 let abs_int x = if x < 0 then - x else x
@@ -1195,10 +1174,10 @@ let stringswitch (lam : t) cases default : t =
 
 
 let true_ : t =
-  Lconst (Const_pointer ( 1, Pt_builtin_boolean))
+  Lconst (Const_js_true)
 
 let false_ : t =
-  Lconst (Const_pointer( 0, Pt_builtin_boolean))
+  Lconst (Const_js_false)
 
 let unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "()"))
@@ -1206,11 +1185,6 @@ let unit : t =
 (* let assert_false_unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "impossible branch")) *)
 
-(** [l || r ] *)
-let sequor l r = if_ l true_ r
-
-(** [l && r ] *)
-let sequand l r = if_ l r false_
 
 let seq a b : t =
   (* match a, b with
@@ -1285,6 +1259,18 @@ module Lift = struct
     Lconst ((Const_char b))
 end
 
+let has_boolean_type (x : t) = 
+  match x with 
+  | Lprim {primitive =
+    Pnot | Psequand |
+    Psequor | Pisout | Pintcomp _ | Pfloatcomp _; loc}
+  | Lprim {primitive = 
+    Pccall {prim_name = "caml_string_equal" | "caml_string_notequal"};
+    loc
+    }
+   -> Some loc
+  | _ -> None
+
 let prim ~primitive:(prim : primitive) ~args loc  : t =
   let default () : t = Lprim { primitive = prim ;args; loc} in
   match args with
@@ -1311,6 +1297,8 @@ let prim ~primitive:(prim : primitive) ~args loc  : t =
       | Pnegbint Pint64, Const_int64 a
         ->
         Lift.int64 (Int64.neg a)
+      | Pnot, Const_js_true -> false_
+      | Pnot, Const_js_false -> true_
       | Pnot , Const_pointer (a,_)
         -> Lift.bool (a = 0 )
       | _ -> default ()
@@ -1419,12 +1407,18 @@ let prim ~primitive:(prim : primitive) ~args loc  : t =
         -> Lift.int64 (Int64.shift_right_logical  aa b )
       | Pasrbint Pint64,  (Const_int64 aa),  (Const_int b)
         -> Lift.int64 (Int64.shift_right  aa b )
-      | Psequand, Const_pointer (a, _), Const_pointer( b, _)
-        ->
-        Lift.bool (a = 1 && b = 1)
-      | Psequor, Const_pointer (a, _), Const_pointer( b, _)
-        ->
-        Lift.bool (a = 1 || b = 1)
+
+      | Psequand, Const_js_false, 
+        (Const_js_true | Const_js_false) ->
+        false_
+      | Psequand, Const_js_true, Const_js_true ->
+        true_
+      | Psequand, Const_js_true, Const_js_false ->
+        false_
+      | Psequor, Const_js_true, (Const_js_true | Const_js_false) ->
+        true_
+      | Psequor, Const_js_false, Const_js_true -> true_
+      | Psequor, Const_js_false, Const_js_false -> false_        
       | Pstringadd, (Const_string (a)),
         (Const_string (b))
         ->
@@ -1445,6 +1439,57 @@ let not_ loc x  : t =
 
 
 
+
+let if_ (a : t) (b : t) c =
+  match a with
+  | Lconst v ->
+    begin match v with
+      | Const_pointer (x, _)  | (Const_int x)
+        ->
+        if x <> 0 then b else c
+      | (Const_char x) ->
+        if Char.code x <> 0 then b else c
+      | (Const_int32 x) ->
+        if x <> 0l then b else c
+      |  (Const_int64 x) ->
+        if x <> 0L then b else c
+      | (Const_nativeint x) ->
+        if x <> 0n then b else c
+      | Const_js_false
+      | Const_js_null
+      | Const_js_undefined -> c
+      | Const_js_true
+      | Const_string _
+      | Const_float _
+      | Const_unicode _
+      | Const_block _
+      | Const_float_array _
+      | Const_immstring _ -> b
+    end
+  | _ -> 
+    
+    begin match  b, c with 
+    | Lconst(Const_js_true), Lconst(Const_js_false)
+      -> 
+       if has_boolean_type a != None then a 
+       else Lifthenelse (a,b,c)
+    | Lconst(Const_js_false), Lconst(Const_js_true)
+      ->  
+      (match  has_boolean_type a with
+      | Some loc ->  not_ loc a 
+      | None -> Lifthenelse (a,b,c))     
+    | _ -> 
+      Lifthenelse (a,b,c)
+     
+  end 
+
+
+(** TODO: the smart constructor is not exploited yet*)
+(** [l || r ] *)
+let sequor l r = if_ l true_ r
+
+(** [l && r ] *)
+let sequand l r = if_ l r false_  
 
 (******************************************************************)
 (** only [handle_bs_non_obj_ffi] will be used outside *)
@@ -1909,7 +1954,14 @@ let convert exports lam : _ * _  =
     | Const_base (Const_int32 i) -> (Const_int32 i)
     | Const_base (Const_int64 i) -> (Const_int64 i)
     | Const_base (Const_nativeint i) -> (Const_nativeint i)
-    | Const_pointer(i,p) -> Const_pointer (i,p)
+    | Const_pointer(i,p) ->
+      begin match p with 
+      | Pt_constructor p -> Const_pointer(i, Pt_constructor p)
+      | Pt_variant p -> Const_pointer(i,Pt_variant p)
+      | Pt_module_alias -> Const_pointer(i, Pt_module_alias)
+      | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
+      | Pt_na ->  Const_pointer(i, Pt_na)      
+       end 
     | Const_float_array (s) -> Const_float_array(s)
     | Const_immstring s -> Const_immstring s
     | Const_block (i,t,xs) ->

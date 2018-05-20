@@ -1238,7 +1238,7 @@ function col_bypass(c1, c2) {
   var ctypes;
   switch (c1.tag | 0) {
     case 0 : 
-        ctypes = c2.tag === 1 && c1[2][/* invuln */7] > 0 ? true : false;
+        ctypes = c2.tag === 1 ? c1[2][/* invuln */7] > 0 : false;
         break;
     case 1 : 
         ctypes = c2.tag === 2 ? true : false;

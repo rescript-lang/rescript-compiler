@@ -349,7 +349,7 @@ core/js_closure.cmi : ext/ident_set.cmi
 core/js_number.cmi :
 core/js_cmj_datasets.cmi : ext/string_map.cmi core/js_cmj_format.cmi
 core/lam_exit_code.cmi : core/lam.cmi
-core/lam_compile_util.cmi : core/js_op.cmx
+core/lam_compile_util.cmi : core/lam.cmi core/js_op.cmx
 core/lam_id_kind.cmi : core/lam_arity.cmi core/lam.cmi
 core/lam_stats.cmi : core/lam_id_kind.cmi ext/ident_set.cmi \
     ext/ident_hashtbl.cmi
@@ -481,7 +481,8 @@ core/js_cmj_datasets.cmx : ext/string_map.cmx core/js_cmj_format.cmx \
 core/lam_exit_code.cmx : core/lam.cmx core/lam_exit_code.cmi
 core/j.cmx : core/js_op.cmx core/js_fun_env.cmx core/js_closure.cmx \
     core/js_call_info.cmx ext/ident_set.cmx
-core/lam_compile_util.cmx : core/js_op.cmx core/lam_compile_util.cmi
+core/lam_compile_util.cmx : core/lam.cmx core/js_op.cmx \
+    core/lam_compile_util.cmi
 core/lam_id_kind.cmx : core/lam_arity.cmx core/lam.cmx core/lam_id_kind.cmi
 core/lam_stats.cmx : core/lam_id_kind.cmx ext/ident_set.cmx \
     ext/ident_hashtbl.cmx core/lam_stats.cmi

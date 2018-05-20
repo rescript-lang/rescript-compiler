@@ -1455,7 +1455,7 @@ var unknown_state = /* record */[
 
 function mk_state(ncol, desc) {
   var match = status(desc);
-  var break_state = typeof match === "number" && match !== 0 ? false : true;
+  var break_state = typeof match === "number" ? match === 0 : true;
   return /* record */[
           /* idx */break_state ? -3 : desc[/* idx */0],
           /* real_idx */desc[/* idx */0],
@@ -1899,62 +1899,62 @@ function equal$2(_x1, _x2) {
     if (typeof x1 === "number") {
       switch (x1) {
         case 0 : 
-            if (typeof x2 === "number" && x2 === 0) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 0;
             } else {
               return false;
             }
         case 1 : 
-            if (typeof x2 === "number" && x2 === 1) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 1;
             } else {
               return false;
             }
         case 2 : 
-            if (typeof x2 === "number" && x2 === 2) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 2;
             } else {
               return false;
             }
         case 3 : 
-            if (typeof x2 === "number" && x2 === 3) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 3;
             } else {
               return false;
             }
         case 4 : 
-            if (typeof x2 === "number" && x2 === 4) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 4;
             } else {
               return false;
             }
         case 5 : 
-            if (typeof x2 === "number" && x2 === 5) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 5;
             } else {
               return false;
             }
         case 6 : 
-            if (typeof x2 === "number" && x2 === 6) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 6;
             } else {
               return false;
             }
         case 7 : 
-            if (typeof x2 === "number" && x2 === 7) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 7;
             } else {
               return false;
             }
         case 8 : 
-            if (typeof x2 === "number" && x2 === 8) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 === 8;
             } else {
               return false;
             }
         case 9 : 
-            if (typeof x2 === "number" && x2 >= 9) {
-              return true;
+            if (typeof x2 === "number") {
+              return x2 >= 9;
             } else {
               return false;
             }

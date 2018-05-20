@@ -16,7 +16,7 @@ function hash_string(s) {
   return Caml_hash_primitive.caml_hash_final_mix(Caml_hash_primitive.caml_hash_mix_string(0, s));
 }
 
-var hashString = (function (str) {
+var hashString = function (str){ {
                                               var hash = 5381,
                                               i    = str.length | 0;
 
@@ -25,7 +25,7 @@ var hashString = (function (str) {
                                               }
                                               return hash
                                               }
-                                            );
+                                            };
 
 var $$String = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
         return x === y;
@@ -342,4 +342,4 @@ exports.HI = HI;
 exports.bench6 = bench6;
 exports.S = S;
 exports.bench7 = bench7;
-/* hashString Not a pure module */
+/* String Not a pure module */

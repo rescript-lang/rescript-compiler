@@ -8,11 +8,7 @@ function $$eval(_bdd, vars) {
   while(true) {
     var bdd = _bdd;
     if (typeof bdd === "number") {
-      if (bdd !== 0) {
-        return false;
-      } else {
-        return true;
-      }
+      return bdd === 0;
     } else if (Caml_array.caml_array_get(vars, bdd[1])) {
       _bdd = bdd[3];
       continue ;

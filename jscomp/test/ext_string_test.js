@@ -478,26 +478,14 @@ function is_valid_module_file(s) {
                     if (x >= 65) {
                       var switcher = x - 91 | 0;
                       if (switcher > 5 || switcher < 0) {
-                        if (switcher >= 32) {
-                          return false;
-                        } else {
-                          return true;
-                        }
-                      } else if (switcher !== 4) {
-                        return false;
+                        return switcher < 32;
                       } else {
-                        return true;
+                        return switcher === 4;
                       }
                     } else if (x >= 48) {
-                      if (x >= 58) {
-                        return false;
-                      } else {
-                        return true;
-                      }
-                    } else if (x !== 39) {
-                      return false;
+                      return x < 58;
                     } else {
-                      return true;
+                      return x === 39;
                     }
                   }));
     }
@@ -527,18 +515,12 @@ function is_valid_npm_package_name(s) {
       return unsafe_for_all_range(s, 1, len - 1 | 0, (function (x) {
                     if (x >= 58) {
                       if (x >= 97) {
-                        if (x >= 123) {
-                          return false;
-                        } else {
-                          return true;
-                        }
-                      } else if (x !== 95) {
-                        return false;
+                        return x < 123;
                       } else {
-                        return true;
+                        return x === 95;
                       }
-                    } else if (x !== 45 && x < 48) {
-                      return false;
+                    } else if (x !== 45) {
+                      return x >= 48;
                     } else {
                       return true;
                     }
