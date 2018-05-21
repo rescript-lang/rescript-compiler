@@ -36,7 +36,7 @@ var tmpdir = 'tmp'
 
 fs.mkdirSync(path.join(root, tmpdir))
 
-p.execSync(`tar -xzf ${json.name}-${json.version}.tgz -C ${tmpdir} `, root_config)
+p.execSync(`tar -xzf ${json.name}-v${json.version}.tgz -C ${tmpdir} `, root_config)
 
 process.env.BS_ALWAYS_BUILD_YOUR_COMPILER = 'true'
 var tmpdir_config = {
