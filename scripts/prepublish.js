@@ -29,7 +29,7 @@ verifyIsCleanWorkTree()
 
 clean()
 console.log(`start packing`)
-p.execSync(`npm pack`, root_config)
+p.execSync(`yarn pack`, root_config)
 console.log(`finish packing`)
 
 var tmpdir = 'tmp'
