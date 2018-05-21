@@ -7,11 +7,12 @@
                  <script src="../api_static//script.js"></script>
                  <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-                 <link rel="previous" href="Belt.HashMap.html">
+                 <link rel="previous" href="Belt.HashMap.html"><link rel="next" href="Belt.Result.html">
                  <title> Belt.Option </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
 <li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
@@ -34,6 +35,7 @@
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
 <li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
 <li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
@@ -94,7 +96,8 @@
 <li><a href="Node_process.html">Node_process</a></li></ul></nav>
 <div class="navbar"><a class="pre" href="Belt.HashMap.html" title="Belt.HashMap">Previous</a>
 &nbsp;<a class="up" href="Belt.html" title="Belt">Up</a>
-&nbsp;</div>
+&nbsp;<a class="post" href="Belt.Result.html" title="Belt.Result">Next</a>
+</div>
 <h1>Module <a href="type_Belt.Option.html">Belt.Option</a></h1>
 
 <pre><span class="keyword">module</span> Option: <code class="type"><a href="Belt_Option.html">Belt_Option</a></code></pre><div class="info module top">
@@ -102,7 +105,7 @@
                     <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
 <p>
 
-    Utilities for option data type<br>
+    Utilities for option data type.<br>
  
                     </div>
                     
@@ -110,17 +113,214 @@
 
                   <hr width="100%">
 
-<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">'a option -> 'a</code></pre>
-<pre><span id="VALmapWithDefaultU"><span class="keyword">val</span> mapWithDefaultU</span> : <code class="type">'a option -> 'b -> ('a -> 'b [@bs]) -> 'b</code></pre>
-<pre><span id="VALmapWithDefault"><span class="keyword">val</span> mapWithDefault</span> : <code class="type">'a option -> 'b -> ('a -> 'b) -> 'b</code></pre>
-<pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">'a option -> ('a -> 'b [@bs]) -> 'b option</code></pre>
-<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">'a option -> ('a -> 'b) -> 'b option</code></pre>
-<pre><span id="VALflatMapU"><span class="keyword">val</span> flatMapU</span> : <code class="type">'a option -> ('a -> 'b option [@bs]) -> 'b option</code></pre>
-<pre><span id="VALflatMap"><span class="keyword">val</span> flatMap</span> : <code class="type">'a option -> ('a -> 'b option) -> 'b option</code></pre>
-<pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">'a option -> 'a -> 'a</code></pre>
-<pre><span id="VALisSome"><span class="keyword">val</span> isSome</span> : <code class="type">'a option -> bool</code></pre>
-<pre><span id="VALisNone"><span class="keyword">val</span> isNone</span> : <code class="type">'a option -> bool</code></pre>
-<pre><span id="VALeqU"><span class="keyword">val</span> eqU</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> bool [@bs]) -> bool</code></pre>
-<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> bool) -> bool</code></pre>
-<pre><span id="VALcmpU"><span class="keyword">val</span> cmpU</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> int [@bs]) -> int</code></pre>
-<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> int) -> int</code></pre></body></html>
+<pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">'a option -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getExn optionalValue</code>
+  Returns <code class="code">value</code> if <code class="code">optionalValue</code> is <code class="code">Some value</code>, otherwise raises <code class="code">getExn</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    getExn (Some 3) = 3;;
+    getExn None (* Raises getExn error *)
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmapWithDefaultU"><span class="keyword">val</span> mapWithDefaultU</span> : <code class="type">'a option -> 'b -> ('a -> 'b [@bs]) -> 'b</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Uncurried version of <code class="code">mapWithDefault</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmapWithDefault"><span class="keyword">val</span> mapWithDefault</span> : <code class="type">'a option -> 'b -> ('a -> 'b) -> 'b</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">mapWithDefault optionValue default f</code>
+<p>
+
+  If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">f value</code>; otherwise returns <code class="code">default</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    mapWithDefault (Some 3) 0 (fun x -&gt; x + 5) = 8;;
+    mapWithDefault None 0 (fun x -&gt; x + 5) = 0;;
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALmapU"><span class="keyword">val</span> mapU</span> : <code class="type">'a option -> ('a -> 'b [@bs]) -> 'b option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Uncurried version of <code class="code">map</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALmap"><span class="keyword">val</span> map</span> : <code class="type">'a option -> ('a -> 'b) -> 'b option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">map optionValue f</code>
+<p>
+
+  If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">Some (f value)</code>; otherwise returns <code class="code">None</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    map (Some 3) (fun x -&gt; x * x) = (Some 9);;
+    map None (fun x -&gt; x * x) = None;;
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALflatMapU"><span class="keyword">val</span> flatMapU</span> : <code class="type">'a option -> ('a -> 'b option [@bs]) -> 'b option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Uncurried version of <code class="code">flatMap</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALflatMap"><span class="keyword">val</span> flatMap</span> : <code class="type">'a option -> ('a -> 'b option) -> 'b option</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">flatMap optionValue f</code>
+<p>
+
+  If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">f value</code>; otherwise returns <code class="code">None</code>
+  The function <code class="code">f</code> must have a return type of <code class="code">'a option</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    let f (x : float =
+        if x &gt;= 0.0 then
+          Some (sqrt x)
+        else
+          None;;
+  
+    flatMap (Some 4.0) f = Some 2.0;;
+    flatMap (Some (-4.0)) f = None;;
+    flatMap None f = None;;
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALgetWithDefault"><span class="keyword">val</span> getWithDefault</span> : <code class="type">'a option -> 'a -> 'a</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">getWithDefault optionalValue default</code>
+<p>
+
+  If <code class="code">optionalValue</code> is <code class="code">Some value</code>, returns <code class="code">value</code>, otherwise <code class="code">default</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    getWithDefault (Some 1812) 1066 = 1812;;
+    getWithDefault None 1066 = 1066;;
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALisSome"><span class="keyword">val</span> isSome</span> : <code class="type">'a option -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Returns <code class="code">true</code> if the argument is <code class="code">Some value</code>, <code class="code">false</code> otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALisNone"><span class="keyword">val</span> isNone</span> : <code class="type">'a option -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Returns <code class="code">true</code> if the argument is <code class="code">None</code>, <code class="code">false</code> otherwise<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALeqU"><span class="keyword">val</span> eqU</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> bool [@bs]) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Uncurried version of <code class="code">eq</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> bool) -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">eq optValue1 optvalue2 predicate</code>
+<p>
+
+  Evaluates two optional values for equality with respect to a predicate function.
+<p>
+
+  If both <code class="code">optValue1</code> and <code class="code">optValue2</code> are <code class="code">None</code>, returns <code class="code">true</code>.
+<p>
+
+  If one of the arguments is <code class="code">Some value</code> and the other is <code class="code">None</code>, returns <code class="code">false</code>
+<p>
+
+  If arguments are <code class="code">Some value1</code> and <code class="code">Some value2</code>, returns the result of <code class="code">predicate value1 value2</code>;
+  the <code class="code">predicate</code> function must return a <code class="code">bool</code><br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    let clockEqual = (fun a b -&gt; a mod 12 = b mod 12);;
+    eq (Some 3) (Some 15) clockEqual = true;;
+    eq (Some 3) None clockEqual = false;;
+    eq None (Some 3) clockEqual = false;;
+    eq None None clockEqual = true;;
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALcmpU"><span class="keyword">val</span> cmpU</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> int [@bs]) -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    Uncurried version of <code class="code">cmp</code><br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
+<pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">'a option -> 'b option -> ('a -> 'b -> int) -> int</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">cmp optValue1 optvalue2 comparisonFcn</code>
+<p>
+
+  Compares two optional values with respect to a comparison function
+<p>
+
+  If both <code class="code">optValue1</code> and <code class="code">optValue2</code> are <code class="code">None</code>, returns 0.
+<p>
+
+  If the first argument is <code class="code">Some value1</code> and the second is <code class="code">None</code>, returns 1 (something is greater than nothing)
+<p>
+
+  If the first argument is <code class="code">None</code> and the second is <code class="code">Some value2</code>, returns -1 (nothing is less than something)
+<p>
+
+  If the arguments are <code class="code">Some value1</code> and <code class="code">Some value2</code>, returns the result of <code class="code">comparisonFcn value1 value2</code>; <code class="code">comparisonFcn</code> takes two arguments and returns -1 if the first argument is less than the second, 0 if the arguments are equal, and 1 if the first argument is greater than the second.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">    let clockCompare = fun a b -&gt; compare (a mod 12) (b mod 12);;
+    cmp (Some 3) (Some 15) clockCompare = 0;;
+    cmp (Some 3) (Some 14) clockCompare = 1;;
+    cmp (Some 2) (Some 15) clockCompare = -1;;
+    cmp None (Some 15) clockCompare = -1;;
+    cmp (Some 14) None clockCompare = 1;;
+    cmp None None clockCompare = 0;;
+  </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  </body></html>

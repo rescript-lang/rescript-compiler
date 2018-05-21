@@ -12,6 +12,7 @@
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
 <li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
@@ -34,6 +35,7 @@
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
 <li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
 <li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
@@ -99,9 +101,26 @@
 
 <pre><span class="keyword">module</span> Console: <code class="type"><a href="Js_console.html">Js_console</a></code></pre><hr width="100%">
 
-<pre><span id="VALerror"><span class="keyword">val</span> error</span> : <code class="type">'a -> unit</code></pre>
 <pre><span id="VALlog"><span class="keyword">val</span> log</span> : <code class="type">'a -> unit</code></pre>
-<pre><span id="VALtrace"><span class="keyword">val</span> trace</span> : <code class="type">unit -> unit</code></pre>
+<pre><span id="VALlog2"><span class="keyword">val</span> log2</span> : <code class="type">'a -> 'b -> unit</code></pre>
+<pre><span id="VALlog3"><span class="keyword">val</span> log3</span> : <code class="type">'a -> 'b -> 'c -> unit</code></pre>
+<pre><span id="VALlog4"><span class="keyword">val</span> log4</span> : <code class="type">'a -> 'b -> 'c -> 'd -> unit</code></pre>
+<pre><span id="VALlogMany"><span class="keyword">val</span> logMany</span> : <code class="type">'a array -> unit</code></pre>
+<pre><span id="VALinfo"><span class="keyword">val</span> info</span> : <code class="type">'a -> unit</code></pre>
+<pre><span id="VALinfo2"><span class="keyword">val</span> info2</span> : <code class="type">'a -> 'b -> unit</code></pre>
+<pre><span id="VALinfo3"><span class="keyword">val</span> info3</span> : <code class="type">'a -> 'b -> 'c -> unit</code></pre>
+<pre><span id="VALinfo4"><span class="keyword">val</span> info4</span> : <code class="type">'a -> 'b -> 'c -> 'd -> unit</code></pre>
+<pre><span id="VALinfoMany"><span class="keyword">val</span> infoMany</span> : <code class="type">'a array -> unit</code></pre>
 <pre><span id="VALwarn"><span class="keyword">val</span> warn</span> : <code class="type">'a -> unit</code></pre>
+<pre><span id="VALwarn2"><span class="keyword">val</span> warn2</span> : <code class="type">'a -> 'b -> unit</code></pre>
+<pre><span id="VALwarn3"><span class="keyword">val</span> warn3</span> : <code class="type">'a -> 'b -> 'c -> unit</code></pre>
+<pre><span id="VALwarn4"><span class="keyword">val</span> warn4</span> : <code class="type">'a -> 'b -> 'c -> 'd -> unit</code></pre>
+<pre><span id="VALwarnMany"><span class="keyword">val</span> warnMany</span> : <code class="type">'a array -> unit</code></pre>
+<pre><span id="VALerror"><span class="keyword">val</span> error</span> : <code class="type">'a -> unit</code></pre>
+<pre><span id="VALerror2"><span class="keyword">val</span> error2</span> : <code class="type">'a -> 'b -> unit</code></pre>
+<pre><span id="VALerror3"><span class="keyword">val</span> error3</span> : <code class="type">'a -> 'b -> 'c -> unit</code></pre>
+<pre><span id="VALerror4"><span class="keyword">val</span> error4</span> : <code class="type">'a -> 'b -> 'c -> 'd -> unit</code></pre>
+<pre><span id="VALerrorMany"><span class="keyword">val</span> errorMany</span> : <code class="type">'a array -> unit</code></pre>
+<pre><span id="VALtrace"><span class="keyword">val</span> trace</span> : <code class="type">unit -> unit</code></pre>
 <pre><span id="VALtimeStart"><span class="keyword">val</span> timeStart</span> : <code class="type">string -> unit</code></pre>
 <pre><span id="VALtimeEnd"><span class="keyword">val</span> timeEnd</span> : <code class="type">string -> unit</code></pre></body></html>

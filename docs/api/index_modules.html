@@ -4,13 +4,14 @@
                  <link rel="stylesheet" href="../api_static/style.css" type="text/css">
                  <script src="../api_static//highlight.pack.js"></script>
                  <script src="../api_static//script.js"></script>
-                 <script>hljs.initHighlightingOnLoad();</script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
-
-                 <title> Index of modules </title></head>
+                 
+                 <title> Index of modules </title></head> 
                <body class="index elements-index">
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
 <li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
@@ -33,6 +34,7 @@
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
 <li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
 <li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
@@ -97,55 +99,55 @@
 <table>
 <tr><td align="left"><br>A</td></tr>
 <tr><td><a href="Belt_internalSetString.A.html">A</a> [<a href="Belt_internalSetString.html">Belt_internalSetString</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalSetInt.A.html">A</a> [<a href="Belt_internalSetInt.html">Belt_internalSetInt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapString.A.html">A</a> [<a href="Belt_internalMapString.html">Belt_internalMapString</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapInt.A.html">A</a> [<a href="Belt_internalMapInt.html">Belt_internalMapInt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Array.html">Array</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings to Js array<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.Array.html">Array</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Array.html"><code class="code">Belt.Array</code></a>
 <p>
 
     <b>mutable array</b>: Utilities functions<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.ArrayBuffer.html">ArrayBuffer</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>B</td></tr>
 <tr><td><a href="Belt.html">Belt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A stdlib shipped with BuckleScript
 <p>
@@ -257,19 +259,25 @@
     technical reasons,
     we <b>strongly recommend</b> users stick to qualified import, <i>Belt.Sort</i>, we may hide
     the internal, <i>i.e</i>, <i>Belt_Set</i> in the future<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Array.html">Belt_Array</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-                    <a href="Belt.Array.html"><code class="code">Belt.Array</code></a>
+                    <a href="Belt.Array.html"><code class="code">Belt.Array</code></a>    
     Utililites for Array functions<br>
-
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Debug.html">Belt_Debug</a> </td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashMap.html">Belt_HashMap</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A <b>mutable</b> Hash map which allows customized <code class="code">hash</code> behavior.
 <p>
@@ -319,29 +327,29 @@
 <p>
 
     Since this is an mutable data strucure, <code class="code">s1</code> will contain two pairs.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashMapInt.html">Belt_HashMapInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">setDone tbl k v</code> if <code class="code">k</code> does not exist,
     add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
     <code class="code">v</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashMapString.html">Belt_HashMapString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">setDone tbl k v</code> if <code class="code">k</code> does not exist,
     add the binding <code class="code">k,v</code>, otherwise, update the old value with the new
     <code class="code">v</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashSet.html">Belt_HashSet</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A <b>mutable</b> Hash set which allows customized <code class="code">hash</code> behavior.
 <p>
@@ -391,11 +399,11 @@
 <p>
 
     Since this is an mutable data strucure, <code class="code">s1</code> will contain two pairs.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashSetInt.html">Belt_HashSetInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a> specialized with key type to be a primitive type.
 <p>
@@ -405,11 +413,11 @@
 <p>
 
     <b>See</b> <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashSetString.html">Belt_HashSetString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a> specialized with key type to be a primitive type.
 <p>
@@ -419,11 +427,11 @@
 <p>
 
     <b>See</b> <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Id.html">Belt_Id</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Id.html"><code class="code">Belt.Id</code></a>
 <p>
@@ -434,11 +442,11 @@
 
     It create a unique identifer per module of functions so that different data structures with slightly different
     comparison functions won't mix.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html">Belt_List</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.List.html"><code class="code">Belt.List</code></a>
 <p>
@@ -450,11 +458,11 @@
     In general, all functions comes with the original stdlib also
     applies to this collection, however, this module provides  faster
     and stack safer utilities<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Map.html">Belt_Map</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A <i>immutable</i> sorted map module which allows customize <i>compare</i> behavior.
 <p>
@@ -468,83 +476,83 @@
 <p>
 
   Example usage:<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapDict.html">Belt_MapDict</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">eq m1 m2 cmp</code> tests whether the maps <code class="code">m1</code> and <code class="code">m2</code> are
     equal, that is, contain equal keys and associate them with
     equal data.  <code class="code">cmp</code> is the equality predicate used to compare
     the data associated with the keys.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapInt.html">Belt_MapInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     The type of maps from type <code class="code">key</code> to type <code class="code">'value</code>.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapString.html">Belt_MapString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     The type of maps from type <code class="code">key</code> to type <code class="code">'value</code>.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMap.html">Belt_MutableMap</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A <b>mutable</b> sorted map module which allows customize <i>compare</i> behavior.
 <p>
 
    Same as Belt.Map, but mutable.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">cmp m1 m2 cmp</code>
     First compare by size, if size is the same,
     compare by key, value pair<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html">Belt_MutableMapString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">cmp m1 m2 cmp</code>
     First compare by size, if size is the same,
     compare by key, value pair<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableQueue.html">Belt_MutableQueue</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     First-in first-out queues.
 <p>
 
     This module implements queues (FIFOs), with in-place modification.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableSet.html">Belt_MutableSet</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A <i>mutable</i> sorted set module which allows customize <i>compare</i> behavior.
 <p>
 
    Same as Belt.Set, but mutable.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a> specialized with key type to be a primitive type.
 <p>
@@ -554,11 +562,11 @@
 <p>
 
     <b>See</b> <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableSetString.html">Belt_MutableSetString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a> specialized with key type to be a primitive type.
 <p>
@@ -568,39 +576,49 @@
 <p>
 
     <b>See</b> <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableStack.html">Belt_MutableStack</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     First in last out stack.
 <p>
 
     This module implements stacks, with in-place modification.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Option.html">Belt_Option</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
 <p>
 
     Utilities for option data type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Range.html">Belt_Range</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A small module to provide a inclusive range operations <code class="code">[start, finsish]</code>,
     it use a for-loop internally instead of creating an array<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Result.html">Belt_Result</a> </td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Belt.Result.html"><code class="code">Belt.Result</code></a>
+<p>
 
+    Utilities for result data type.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Set.html">Belt_Set</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A <i>immutable</i> sorted set module which allows customize <i>compare</i> behavior.
 <p>
@@ -614,18 +632,18 @@
 <p>
 
   Example usage:<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetDict.html">Belt_SetDict</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">add s x</code> If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetInt.html">Belt_SetInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.Set.html"><code class="code">Belt.Set</code></a> specialized with value type to be a primitive type.
     It is more efficient in general, the  API is the same with <a href="Belt_Set.html"><code class="code">Belt_Set</code></a> except its value type is fixed,
@@ -633,11 +651,11 @@
 <p>
 
     <b>See</b> <a href="Belt.Set.html"><code class="code">Belt.Set</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetString.html">Belt_SetString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This module is <a href="Belt.Set.html"><code class="code">Belt.Set</code></a> specialized with value type to be a primitive type.
     It is more efficient in general, the  API is the same with <a href="Belt_Set.html"><code class="code">Belt_Set</code></a> except its value type is fixed,
@@ -645,156 +663,166 @@
 <p>
 
     <b>See</b> <a href="Belt.Set.html"><code class="code">Belt.Set</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SortArray.html">Belt_SortArray</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     A module for Array sort relevant utiliites<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SortArrayInt.html">Belt_SortArrayInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This is a specialized module for <a href="Belt_SortArray.html"><code class="code">Belt_SortArray</code></a>, the docs in that module also
     applies here, except the comparator is fixed and inlined<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SortArrayString.html">Belt_SortArrayString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This is a specialized module for <a href="Belt_SortArray.html"><code class="code">Belt_SortArray</code></a>, the docs in that module also
     applies here, except the comparator is fixed and inlined<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalAVLset.html">Belt_internalAVLset</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <b>raise</b> when invariant is not held<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalAVLtree.html">Belt_internalAVLtree</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <b>raise</b> when invariant is not held<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalBuckets.html">Belt_internalBuckets</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Adapted by Authors of BuckleScript 2017<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalBucketsType.html">Belt_internalBucketsType</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapInt.html">Belt_internalMapInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapString.html">Belt_internalMapString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMutableAVLMap.html">Belt_internalMutableAVLMap</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalSetInt.html">Belt_internalSetInt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalSetString.html">Belt_internalSetString</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Boolean.html">Boolean</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for <a href="Js.html#TYPEboolean"><code class="code">Js.boolean</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node.Buffer.html">Buffer</a> [<a href="Node.html">Node</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>C</td></tr>
 <tr><td><a href="Belt_internalSetBuckets.C.html">C</a> [<a href="Belt_internalSetBuckets.html">Belt_internalSetBuckets</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalBuckets.C.html">C</a> [<a href="Belt_internalBuckets.html">Belt_internalBuckets</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node.Child_process.html">Child_process</a> [<a href="Node.html">Node</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Console.html">Console</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>D</td></tr>
 <tr><td><a href="Js_typed_array.DataView.html">DataView</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Date.html">Date</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings for JS Date<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt.Debug.html">Debug</a> [<a href="Belt.html">Belt</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <a href="Belt.Debug.html"><code class="code">Belt.Debug</code></a>
+<p>
 
+    Utilities for set up debugging<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Dict.html">Dict</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for JS dictionary object<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Map.Dict.html">Dict</a> [<a href="Belt_Map.html">Belt_Map</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This module seprate identity from data, it is a bit more verboe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
@@ -802,87 +830,87 @@
 <p>
 
     <b>Advanced usage only</b><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Set.Dict.html">Dict</a> [<a href="Belt_Set.html">Belt_Set</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     This module seprate identity from data, it is a bit more verboe but slightly
     more efficient due to the fact that there is no need to pack identity and data back
     after each operation<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Dom.html">Dom</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Dom_storage.html">Dom_storage</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>E</td></tr>
 <tr><td><a href="Js.Exn.html">Exn</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for dealing with Js exceptions<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>F</td></tr>
 <tr><td><a href="Js.Float.html">Float</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for JS float<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Float32Array.html">Float32Array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Float32_array.html">Float32_array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Float64Array.html">Float64Array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Float64_array.html">Float64_array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node.Fs.html">Fs</a> [<a href="Node.html">Node</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>G</td></tr>
 <tr><td><a href="Js.Global.html">Global</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings to JS global functions in global namespace<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>H</td></tr>
 <tr><td><a href="Belt.HashMap.html">HashMap</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.HashMap.html"><code class="code">Belt.HashMap</code></a>
 <p>
@@ -892,11 +920,11 @@
 
     It also has two specialized inner modules
     <code class="code">Belt.HashMap.Int</code> and <code class="code">Belt.HashMap.String</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.HashSet.html">HashSet</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.HashSet.html"><code class="code">Belt.HashSet</code></a>
 <p>
@@ -906,12 +934,12 @@
 
     It also has two specialized inner modules
     <code class="code">Belt.HashSet.Int</code> and <code class="code">Belt.HashSet.String</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>I</td></tr>
 <tr><td><a href="Belt.Id.html">Id</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Id.html"><code class="code">Belt.Id</code></a>
 <p>
@@ -923,284 +951,284 @@
     It create a unique identifier per module of
     functions so that different data structures with slightly different
     comparison functions won't mix<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Int.html">Int</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for int<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashMap.Int.html">Int</a> [<a href="Belt_HashMap.html">Belt_HashMap</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashSet.Int.html">Int</a> [<a href="Belt_HashSet.html">Belt_HashSet</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMap.Int.html">Int</a> [<a href="Belt_MutableMap.html">Belt_MutableMap</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableSet.Int.html">Int</a> [<a href="Belt_MutableSet.html">Belt_MutableSet</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Map.Int.html">Int</a> [<a href="Belt_Map.html">Belt_Map</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Set.Int.html">Int</a> [<a href="Belt_Set.html">Belt_Set</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when value type is <code class="code">int</code>, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SortArray.Int.html">Int</a> [<a href="Belt_SortArray.html">Belt_SortArray</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Int16Array.html">Int16Array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Int32Array.html">Int32Array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Int32_array.html">Int32_array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Int8Array.html">Int8Array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>J</td></tr>
 <tr><td><a href="Js.html">Js</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-                    This library provides bindings and necessary support for JS FFI.
+                    This library provides bindings and necessary support for JS FFI. 
     It contains all bindings into <code class="code">Js</code> namespace.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_array.html">Js_array</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     JavaScript Array API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_boolean.html">Js_boolean</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Contains functions for dealing with JavaScript booleans<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_cast.html">Js_cast</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-                    Safe cast between OCaml values which share the same
+                    Safe cast between OCaml values which share the same 
     runtime representation
 <p>
 
-    Different OCaml types might share the same represention in the
+    Different OCaml types might share the same represention in the 
     BuckleScript runtime; while this is a compiler internal knowledge,
-    applications might benefit from having a safe and zero cost
-    conversion between those types.
+    applications might benefit from having a safe and zero cost 
+    conversion between those types. 
 <p>
 
-    This modules acts as the <b>single place</b> for such conversion.
+    This modules acts as the <b>single place</b> for such conversion. 
 <p>
 
-    If for any reason, the runtime representation changes, those function
+    If for any reason, the runtime representation changes, those function 
     will be modified accordingly.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_console.html">Js_console</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_date.html">Js_date</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     JavaScript Date API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_dict.html">Js_dict</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-                    Dictionary type (ie an '{ }' JS object). However it is restricted
-    to hold a single type; therefore values must have the same type.
+                    Dictionary type (ie an '{ }' JS object). However it is restricted 
+    to hold a single type; therefore values must have the same type. 
 <p>
 
     This Dictionary type is mostly used with the <code class="code">Js_json.t</code> type.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_exn.html">Js_exn</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Used by the compiler internally<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_float.html">Js_float</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provides functions for inspecting and manipulating <code class="code">float</code>s<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_global.html">Js_global</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Contains functions available in the global scope
     (<code class="code">window</code> in a browser context)<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_int.html">Js_int</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provides functions for inspecting and manipulating <code class="code">int</code>s<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_int64.html">Js_int64</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_internal.html">Js_internal</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Internal types which are used to support uncurry and method,         they are not supposed to be exposed to external users<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_json.html">Js_json</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Efficient JSON encoding using JavaScript API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_list.html">Js_list</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Application order is left to right, tail recurisve<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_mapperRt.html">Js_mapperRt</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">serach polyvar assocArray</code>
    Search hashvariant of <code class="code">polyvar</code> to get the returned string,
    assume that  <code class="code">polvar</code> exists in the array<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_math.html">Js_math</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     JavaScript Math API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_nativeint.html">Js_nativeint</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_null.html">Js_null</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provides functionality for dealing with the <code class="code">'a Js.null</code> type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_null_undefined.html">Js_null_undefined</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Contains functionality for dealing with values that can be both <code class="code">null</code> and <code class="code">undefined</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_obj.html">Js_obj</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provides functions for inspecting and maniplating native JavaScript objects<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_option.html">Js_option</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_primitive.html">Js_primitive</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_promise.html">Js_promise</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specialized bindings to Promise. Note: For simplicity,
     this binding does not track the error type, it treat it as an opaque type
     <pre class="codepre"><code class="code">    </code></pre><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_re.html">Js_re</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provides bindings for JavaScript Regular Expressions
 <p>
@@ -1213,107 +1241,107 @@ will evaluate to a <a href="Js_re.html#TYPEt"><code class="code">Js_re.t</code><
 <b>Note:</b> This is not an immutable API. A RegExp object with the <code class="code">global</code> ("g")
 flag set will modify the <a href="Js_re.html#VALlastIndex"><code class="code">Js_re.lastIndex</code></a> property when the RegExp object is used,
 and subsequent uses will ocntinue the search from the previous <a href="Js_re.html#VALlastIndex"><code class="code">Js_re.lastIndex</code></a>.<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_result.html">Js_result</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_string.html">Js_string</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     JavaScript String API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.html">Js_typed_array</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     JavaScript Typed Array API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_types.html">Js_types</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_undefined.html">Js_undefined</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provides functionality for dealing with the <code class="code">'a Js.undefined</code> type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_unsafe.html">Js_unsafe</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_vector.html">Js_vector</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     shallow copy<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Json.html">Json</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for json<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>L</td></tr>
 <tr><td><a href="Js.List.html">List</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for list<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.List.html">List</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.List.html"><code class="code">Belt.List</code></a>
 <p>
 
     Utilities for List data type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>M</td></tr>
 <tr><td><a href="Belt_Id.MakeComparable.html">MakeComparable</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Id.MakeComparableU.html">MakeComparableU</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Id.MakeHashable.html">MakeHashable</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Id.MakeHashableU.html">MakeHashableU</a> [<a href="Belt_Id.html">Belt_Id</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.Map.html">Map</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Map.html"><code class="code">Belt.Map</code></a>,
 <p>
@@ -1327,24 +1355,24 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 
     <code class="code">Belt.Map.Dict</code>: This module separates data from function
     which  is more verbose but slightly more efficient<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Math.html">Math</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings for JS <code class="code">Math</code> object<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node.Module.html">Module</a> [<a href="Node.html">Node</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.MutableMap.html">MutableMap</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableMap.html"><code class="code">Belt.MutableMap</code></a>
 <p>
@@ -1354,21 +1382,21 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 
     It also has two specialized inner modules
     <code class="code">Belt.MutableMap.Int</code> and <code class="code">Belt.MutableMap.String</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.MutableQueue.html">MutableQueue</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableQueue.html"><code class="code">Belt.MutableQueue</code></a>
 <p>
 
     An FIFO(first in first out) queue data structure<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.MutableSet.html">MutableSet</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableSet.html"><code class="code">Belt.MutableSet</code></a>
 <p>
@@ -1378,211 +1406,217 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 
     It also has two specialized inner modules
     <code class="code">Belt.MutableSet.Int</code> and <code class="code">Belt.MutableSet.String</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.MutableStack.html">MutableStack</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.MutableStack.html"><code class="code">Belt.MutableStack</code></a>
 <p>
 
     An FILO(first in last out) stack data structure<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>N</td></tr>
 <tr><td><a href="Belt_internalSetString.N.html">N</a> [<a href="Belt_internalSetString.html">Belt_internalSetString</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalSetInt.N.html">N</a> [<a href="Belt_internalSetInt.html">Belt_internalSetInt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapString.N.html">N</a> [<a href="Belt_internalMapString.html">Belt_internalMapString</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapInt.N.html">N</a> [<a href="Belt_internalMapInt.html">Belt_internalMapInt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node.html">Node</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Placeholder for Node bindings<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_buffer.html">Node_buffer</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Node Buffer API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_child_process.html">Node_child_process</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Node Child Process API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_fs.html">Node_fs</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Node FS API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_module.html">Node_module</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Node Module API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_path.html">Node_path</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Node Path API<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node_process.html">Node_process</a> </td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-                    The process.uptime() method returns the number of seconds
+                    The process.uptime() method returns the number of seconds 
    the current Node.js process has been running.)<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Null.html">Null</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities around <code class="code">'a null</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Null_undefined.html">Null_undefined</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Nullable.html">Nullable</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities around <a href="Js.html#TYPEnull_undefined"><code class="code">Js.null_undefined</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>O</td></tr>
 <tr><td><a href="Js.Obj.html">Obj</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for <a href="Js.html#TYPEt"><code class="code">Js.t</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Option.html">Option</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for option<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.Option.html">Option</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Option.html"><code class="code">Belt.Option</code></a>
 <p>
 
-    Utilities for option data type<br>
-
+    Utilities for option data type.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>P</td></tr>
 <tr><td><a href="Node.Path.html">Path</a> [<a href="Node.html">Node</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Node.Process.html">Process</a> [<a href="Node.html">Node</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Promise.html">Promise</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings to JS promise<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>R</td></tr>
 <tr><td><a href="Belt.Range.html">Range</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Range.html"><code class="code">Belt.Range</code></a>
 <p>
 
     Utilities for a closed range <code class="code">(from, start)</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Re.html">Re</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings to Js regex expression<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Result.html">Result</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Define the interface for result<br>
-
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt.Result.html">Result</a> [<a href="Belt.html">Belt</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>S</td></tr>
 <tr><td><a href="Belt_internalSetString.S.html">S</a> [<a href="Belt_internalSetString.html">Belt_internalSetString</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalSetInt.S.html">S</a> [<a href="Belt_internalSetInt.html">Belt_internalSetInt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapString.S.html">S</a> [<a href="Belt_internalMapString.html">Belt_internalMapString</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_internalMapInt.S.html">S</a> [<a href="Belt_internalMapInt.html">Belt_internalMapInt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.Set.html">Set</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.Set.html"><code class="code">Belt.Set</code></a>
 <p>
@@ -1596,11 +1630,11 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 
     <code class="code">Belt.Set.Dict</code>: This module separates data from function
     which is more verbose but slightly more efficient<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt.SortArray.html">SortArray</a> [<a href="Belt.html">Belt</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     <a href="Belt.SortArray.html"><code class="code">Belt.SortArray</code></a>
 <p>
@@ -1610,135 +1644,135 @@ and subsequent uses will ocntinue the search from the previous <a href="Js_re.ht
 
     It also has two specialized inner modules
     <code class="code">Belt.SortArray.Int</code> and <code class="code">Belt.SortArray.String</code><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Dom.Storage.html">Storage</a> [<a href="Dom.html">Dom</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.String.html">String</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings to JS string<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashMap.String.html">String</a> [<a href="Belt_HashMap.html">Belt_HashMap</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashSet.String.html">String</a> [<a href="Belt_HashSet.html">Belt_HashSet</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMap.String.html">String</a> [<a href="Belt_MutableMap.html">Belt_MutableMap</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableSet.String.html">String</a> [<a href="Belt_MutableSet.html">Belt_MutableSet</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Map.String.html">String</a> [<a href="Belt_Map.html">Belt_Map</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     specalized when key type is <code class="code">string</code>, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_Set.String.html">String</a> [<a href="Belt_Set.html">Belt_Set</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when value type is <code class="code">string</code>, more efficient
     than the generic type, its compare behavior is fixed using the built-in comparison<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SortArray.String.html">String</a> [<a href="Belt_SortArray.html">Belt_SortArray</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Specalized when key type is <code class="code">string</code>, more efficient
     than the generic type<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>T</td></tr>
 <tr><td><a href="Js.Typed_array.html">Typed_array</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide bindings for JS typed array<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Types.html">Types</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities for manipulating JS types<br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>U</td></tr>
 <tr><td><a href="Js_typed_array.Uint16Array.html">Uint16Array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Uint32Array.html">Uint32Array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Uint8Array.html">Uint8Array</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_typed_array.Uint8ClampedArray.html">Uint8ClampedArray</a> [<a href="Js_typed_array.html">Js_typed_array</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.Undefined.html">Undefined</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
                     Provide utilities around <a href="Js.html#VALundefined"><code class="code">Js.undefined</code></a><br>
-
+ 
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>V</td></tr>
 <tr><td><a href="Js.Vector.html">Vector</a> [<a href="Js.html">Js</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 <tr><td align="left"><br>W</td></tr>
 <tr><td><a href="Node_fs.Watch.html">Watch</a> [<a href="Node_fs.html">Node_fs</a>]</td>
-<td> <div class="info">
+<td> <div class="info">                     
                 <div class="not-examples">
-
+                     
                 </div>
                 </div> </td></tr>
 </table>

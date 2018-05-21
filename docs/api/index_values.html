@@ -11,6 +11,7 @@
                <body class="index elements-index">
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
 <li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
@@ -33,6 +34,7 @@
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
 <li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
 <li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
@@ -306,14 +308,14 @@
 <tr><td><a href="Belt_SetString.html#VALadd">add</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
+                    <code class="code">add s x</code> If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetInt.html#VALadd">add</a> [<a href="Belt_SetInt.html">Belt_SetInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
+                    <code class="code">add s x</code> If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
  
                 </div>
                 </div> </td></tr>
@@ -327,7 +329,7 @@
 <tr><td><a href="Belt_List.html#VALadd">add</a> [<a href="Belt_List.html">Belt_List</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">add xs y</code> adds <code class="code">y</code> to the end of list <code class="code">xs</code><br>
+                    <code class="code">add xs y</code> adds <code class="code">y</code> to the beginning of list <code class="code">xs</code><br>
  
                 </div>
                 </div> </td></tr>
@@ -592,13 +594,13 @@ have the same key.
 <tr><td><a href="Belt_SortArray.html#VALbinarySearchBy">binarySearchBy</a> [<a href="Belt_SortArray.html">Belt_SortArray</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    If value is not found and value is less than one or more elements in array, 
-  the negative number returned is the bitwise complement of the index of the first element 
-  that is larger than value. 
+                    If value is not found and value is less than one or more elements in array,
+  the negative number returned is the bitwise complement of the index of the first element
+  that is larger than value.
 <p>
 
   If value is not found and value is greater than all elements in array,
-  the negative number returned is the bitwise complement of 
+  the negative number returned is the bitwise complement of
   (the index of the last element plus 1)
 <p>
 
@@ -1056,10 +1058,32 @@ The return type is <code class="code">float</code> because this function returns
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Option.html#VALcmp">cmp</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<tr><td><a href="Belt_Result.html#VALcmp">cmp</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Option.html#VALcmp">cmp</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">cmp optValue1 optvalue2 comparisonFcn</code>
+<p>
+
+  Compares two optional values with respect to a comparison function
+<p>
+
+  If both <code class="code">optValue1</code> and <code class="code">optValue2</code> are <code class="code">None</code>, returns 0.
+<p>
+
+  If the first argument is <code class="code">Some value1</code> and the second is <code class="code">None</code>, returns 1 (something is greater than nothing)
+<p>
+
+  If the first argument is <code class="code">None</code> and the second is <code class="code">Some value2</code>, returns -1 (nothing is less than something)
+<p>
+
+  If the arguments are <code class="code">Some value1</code> and <code class="code">Some value2</code>, returns the result of <code class="code">comparisonFcn value1 value2</code>; <code class="code">comparisonFcn</code> takes two arguments and returns -1 if the first argument is less than the second, 0 if the arguments are equal, and 1 if the first argument is greater than the second.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALcmp">cmp</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
@@ -1150,7 +1174,7 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     Total ordering between sets. Can be used as the ordering function
-   for doing sets of sets.<br>
+    for doing sets of sets.<br>
  
                 </div>
                 </div> </td></tr>
@@ -1158,7 +1182,7 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     Total ordering between sets. Can be used as the ordering function
-   for doing sets of sets.<br>
+    for doing sets of sets.<br>
  
                 </div>
                 </div> </td></tr>
@@ -1239,10 +1263,17 @@ The return type is <code class="code">float</code> because this function returns
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Option.html#VALcmpU">cmpU</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<tr><td><a href="Belt_Result.html#VALcmpU">cmpU</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Option.html#VALcmpU">cmpU</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    Uncurried version of <code class="code">cmp</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALcmpU">cmpU</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
@@ -1987,10 +2018,30 @@ The return type is <code class="code">float</code> because this function returns
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Option.html#VALeq">eq</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<tr><td><a href="Belt_Result.html#VALeq">eq</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Option.html#VALeq">eq</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">eq optValue1 optvalue2 predicate</code>
+<p>
+
+  Evaluates two optional values for equality with respect to a predicate function.
+<p>
+
+  If both <code class="code">optValue1</code> and <code class="code">optValue2</code> are <code class="code">None</code>, returns <code class="code">true</code>.
+<p>
+
+  If one of the arguments is <code class="code">Some value</code> and the other is <code class="code">None</code>, returns <code class="code">false</code>
+<p>
+
+  If arguments are <code class="code">Some value1</code> and <code class="code">Some value2</code>, returns the result of <code class="code">predicate value1 value2</code>;
+  the <code class="code">predicate</code> function must return a <code class="code">bool</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALeq">eq</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
@@ -2048,20 +2099,18 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_MapString.html#VALeq">eq</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">equal m1 m2 cmp</code> tests whether the maps <code class="code">m1</code> and <code class="code">m2</code> are
+                    <code class="code">eq m1 m2</code> tests whether the maps <code class="code">m1</code> and <code class="code">m2</code> are
    equal, that is, contain equal keys and associate them with
-   equal data.  <code class="code">cmp</code> is the equality predicate used to compare
-   the data associated with the keys.<br>
+   equal data.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapInt.html#VALeq">eq</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">equal m1 m2 cmp</code> tests whether the maps <code class="code">m1</code> and <code class="code">m2</code> are
+                    <code class="code">eq m1 m2</code> tests whether the maps <code class="code">m1</code> and <code class="code">m2</code> are
    equal, that is, contain equal keys and associate them with
-   equal data.  <code class="code">cmp</code> is the equality predicate used to compare
-   the data associated with the keys.<br>
+   equal data.<br>
  
                 </div>
                 </div> </td></tr>
@@ -2078,7 +2127,9 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_SetDict.html#VALeq">eq</a> [<a href="Belt_SetDict.html">Belt_SetDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">eq s1 s2</code> tests whether the sets <code class="code">s1</code> and <code class="code">s2</code> are
+   equal, that is, contain equal elements.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetString.html#VALeq">eq</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
@@ -2175,10 +2226,17 @@ The return type is <code class="code">float</code> because this function returns
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Option.html#VALeqU">eqU</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<tr><td><a href="Belt_Result.html#VALeqU">eqU</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Option.html#VALeqU">eqU</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    Uncurried version of <code class="code">eq</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALeqU">eqU</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
@@ -2260,6 +2318,30 @@ The return type is <code class="code">float</code> because this function returns
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_console.html#VALerror">error</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALerror2">error2</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALerror3">error3</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALerror4">error4</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALerrorMany">errorMany</a> [<a href="Js_console.html">Js_console</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -2351,7 +2433,7 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">every m p</code> checks if all the bindings of the map
-    satisfy the predicate <code class="code">p</code>.<br>
+    satisfy the predicate <code class="code">p</code>. Order unspecified<br>
  
                 </div>
                 </div> </td></tr>
@@ -2359,7 +2441,7 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">every m p</code> checks if all the bindings of the map
-    satisfy the predicate <code class="code">p</code>.<br>
+    satisfy the predicate <code class="code">p</code>. Order unspecified<br>
  
                 </div>
                 </div> </td></tr>
@@ -2375,7 +2457,7 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">every p s</code> checks if all elements of the set
-    satisfy the predicate <code class="code">p</code>. Order unspecified<br>
+    satisfy the predicate <code class="code">p</code>. Order unspecified.<br>
  
                 </div>
                 </div> </td></tr>
@@ -2383,7 +2465,7 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">every p s</code> checks if all elements of the set
-   satisfy the predicate <code class="code">p</code>. Order unspecified.<br>
+    satisfy the predicate <code class="code">p</code>. Order unspecified.<br>
  
                 </div>
                 </div> </td></tr>
@@ -2391,7 +2473,7 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">every p s</code> checks if all elements of the set
-   satisfy the predicate <code class="code">p</code>. Order unspecified.<br>
+    satisfy the predicate <code class="code">p</code>. Order unspecified.<br>
  
                 </div>
                 </div> </td></tr>
@@ -2854,7 +2936,24 @@ The return type is <code class="code">float</code> because this function returns
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_Result.html#VALflatMap">flatMap</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALflatMap">flatMap</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">flatMap optionValue f</code>
+<p>
+
+  If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">f value</code>; otherwise returns <code class="code">None</code>
+  The function <code class="code">f</code> must have a return type of <code class="code">'a option</code><br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Result.html#VALflatMapU">flatMapU</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -2863,7 +2962,8 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_Option.html#VALflatMapU">flatMapU</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    Uncurried version of <code class="code">flatMap</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_list.html#VALflatten">flatten</a> [<a href="Js_list.html">Js_list</a>]</td>
@@ -3245,8 +3345,8 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">forEach m f</code> applies <code class="code">f</code> to all bindings in map <code class="code">m</code>.
-    <code class="code">f</code> receives the 'k as first argument, and the associated value
-    as second argument.  The bindings are passed to <code class="code">f</code> in increasing
+    <code class="code">f</code> receives the key as first argument, and the associated value
+    as second argument. The bindings are passed to <code class="code">f</code> in increasing
     order with respect to the ordering over the type of the keys.<br>
  
                 </div>
@@ -3255,9 +3355,9 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">forEach m f</code> applies <code class="code">f</code> to all bindings in map <code class="code">m</code>.
-   <code class="code">f</code> receives the key as first argument, and the associated value
-   as second argument.  The bindings are passed to <code class="code">f</code> in increasing
-   order with respect to the ordering over the type of the keys.<br>
+    <code class="code">f</code> receives the key as first argument, and the associated value
+    as second argument. The bindings are passed to <code class="code">f</code> in increasing
+    order with respect to the ordering over the type of the keys.<br>
  
                 </div>
                 </div> </td></tr>
@@ -3265,9 +3365,9 @@ The return type is <code class="code">float</code> because this function returns
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">forEach m f</code> applies <code class="code">f</code> to all bindings in map <code class="code">m</code>.
-   <code class="code">f</code> receives the key as first argument, and the associated value
-   as second argument.  The bindings are passed to <code class="code">f</code> in increasing
-   order with respect to the ordering over the type of the keys.<br>
+    <code class="code">f</code> receives the key as first argument, and the associated value
+    as second argument. The bindings are passed to <code class="code">f</code> in increasing
+    order with respect to the ordering over the type of the keys.<br>
  
                 </div>
                 </div> </td></tr>
@@ -3292,14 +3392,16 @@ The return type is <code class="code">float</code> because this function returns
 <tr><td><a href="Belt_SetString.html#VALforEach">forEach</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    In increasing order<br>
+                    <code class="code">forEach s f</code> applies <code class="code">f</code> in turn to all elements of <code class="code">s</code>.
+    In increasing order<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetInt.html#VALforEach">forEach</a> [<a href="Belt_SetInt.html">Belt_SetInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    In increasing order<br>
+                    <code class="code">forEach s f</code> applies <code class="code">f</code> in turn to all elements of <code class="code">s</code>.
+    In increasing order<br>
  
                 </div>
                 </div> </td></tr>
@@ -4732,10 +4834,18 @@ Valid flags:
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Option.html#VALgetExn">getExn</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<tr><td><a href="Belt_Result.html#VALgetExn">getExn</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Option.html#VALgetExn">getExn</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">getExn optionalValue</code>
+  Returns <code class="code">value</code> if <code class="code">optionalValue</code> is <code class="code">Some value</code>, otherwise raises <code class="code">getExn</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALgetExn">getExn</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
@@ -5252,10 +5362,20 @@ Valid flags:
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Option.html#VALgetWithDefault">getWithDefault</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<tr><td><a href="Belt_Result.html#VALgetWithDefault">getWithDefault</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Option.html#VALgetWithDefault">getWithDefault</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">getWithDefault optionalValue default</code>
+<p>
+
+  If <code class="code">optionalValue</code> is <code class="code">Some value</code>, returns <code class="code">value</code>, otherwise <code class="code">default</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALgetWithDefault">getWithDefault</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
@@ -5651,6 +5771,36 @@ Valid flags:
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Js_console.html#VALinfo">info</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALinfo2">info2</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALinfo3">info3</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALinfo4">info4</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALinfoMany">infoMany</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_vector.html#VALinit">init</a> [<a href="Js_vector.html">Js_vector</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -5904,6 +6054,12 @@ Valid flags:
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_Result.html#VALisError">isError</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_float.html#VALisFinite">isFinite</a> [<a href="Js_float.html">Js_float</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -5937,6 +6093,13 @@ therefore necessary to test for <code class="code">_NaN</code>.
 <tr><td><a href="Belt_Option.html#VALisNone">isNone</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
+                    Returns <code class="code">true</code> if the argument is <code class="code">None</code>, <code class="code">false</code> otherwise<br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Result.html#VALisOk">isOk</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
                      
                 </div>
                 </div> </td></tr>
@@ -5949,7 +6112,8 @@ therefore necessary to test for <code class="code">_NaN</code>.
 <tr><td><a href="Belt_Option.html#VALisSome">isSome</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    Returns <code class="code">true</code> if the argument is <code class="code">Some value</code>, <code class="code">false</code> otherwise<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_option.html#VALisSomeValue">isSomeValue</a> [<a href="Js_option.html">Js_option</a>]</td>
@@ -6157,8 +6321,8 @@ the given function.<br>
 <tr><td><a href="Belt_SetDict.html#VALkeep">keep</a> [<a href="Belt_SetDict.html">Belt_SetDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">keep m p</code> returns the set of all elements in <code class="code">s</code>
-    that satisfy predicate <code class="code">p</code>.<br>
+                    <code class="code">keep p s</code> returns the set of all elements in <code class="code">s</code>
+   that satisfy predicate <code class="code">p</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -6675,6 +6839,12 @@ flag is set.<br>
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Js_console.html#VALlog2">log2</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js_math.html#VALlog2">log2</a> [<a href="Js_math.html">Js_math</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -6688,7 +6858,19 @@ flag is set.<br>
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Js_console.html#VALlog3">log3</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Js.html#VALlog3">log3</a> [<a href="Js.html">Js</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALlog4">log4</a> [<a href="Js_console.html">Js_console</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -6699,6 +6881,12 @@ flag is set.<br>
                 <div class="not-examples">
                     A convenience function to log everything<br>
  
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALlogMany">logMany</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js.html#VALlogMany">logMany</a> [<a href="Js.html">Js</a>]</td>
@@ -7129,10 +7317,20 @@ using <code class="code">f</code> to map each value<br>
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Option.html#VALmap">map</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<tr><td><a href="Belt_Result.html#VALmap">map</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Option.html#VALmap">map</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">map optionValue f</code>
+<p>
+
+  If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">Some (f value)</code>; otherwise returns <code class="code">None</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALmap">map</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
@@ -7183,10 +7381,10 @@ using <code class="code">f</code> to map each value<br>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">map m f</code> returns a map with same domain as <code class="code">m</code>, where the
-   associated value <code class="code">a</code> of all bindings of <code class="code">m</code> has been
-   replaced by the result of the application of <code class="code">f</code> to <code class="code">a</code>.
-   The bindings are passed to <code class="code">f</code> in increasing order
-   with respect to the ordering over the type of the keys.<br>
+    associated value <code class="code">a</code> of all bindings of <code class="code">m</code> has been
+    replaced by the result of the application of <code class="code">f</code> to <code class="code">a</code>.
+    The bindings are passed to <code class="code">f</code> in increasing order
+    with respect to the ordering over the type of the keys.<br>
  
                 </div>
                 </div> </td></tr>
@@ -7194,10 +7392,10 @@ using <code class="code">f</code> to map each value<br>
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">map m f</code> returns a map with same domain as <code class="code">m</code>, where the
-   associated value <code class="code">a</code> of all bindings of <code class="code">m</code> has been
-   replaced by the result of the application of <code class="code">f</code> to <code class="code">a</code>.
-   The bindings are passed to <code class="code">f</code> in increasing order
-   with respect to the ordering over the type of the keys.<br>
+    associated value <code class="code">a</code> of all bindings of <code class="code">m</code> has been
+    replaced by the result of the application of <code class="code">f</code> to <code class="code">a</code>.
+    The bindings are passed to <code class="code">f</code> in increasing order
+    with respect to the ordering over the type of the keys.<br>
  
                 </div>
                 </div> </td></tr>
@@ -7279,10 +7477,17 @@ using <code class="code">f</code> to map each value<br>
                      
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_Option.html#VALmapU">mapU</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<tr><td><a href="Belt_Result.html#VALmapU">mapU</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Option.html#VALmapU">mapU</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    Uncurried version of <code class="code">map</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALmapU">mapU</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
@@ -7345,7 +7550,23 @@ using <code class="code">f</code> to map each value<br>
                      
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_Result.html#VALmapWithDefault">mapWithDefault</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt_Option.html#VALmapWithDefault">mapWithDefault</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">mapWithDefault optionValue default f</code>
+<p>
+
+  If <code class="code">optionValue</code> is <code class="code">Some value</code>, returns <code class="code">f value</code>; otherwise returns <code class="code">default</code><br>
+ 
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Result.html#VALmapWithDefaultU">mapWithDefaultU</a> [<a href="Belt_Result.html">Belt_Result</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -7354,7 +7575,8 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_Option.html#VALmapWithDefaultU">mapWithDefaultU</a> [<a href="Belt_Option.html">Belt_Option</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    Uncurried version of <code class="code">mapWithDefault</code><br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_List.html#VALmapWithIndex">mapWithIndex</a> [<a href="Belt_List.html">Belt_List</a>]</td>
@@ -7886,7 +8108,10 @@ using <code class="code">f</code> to map each value<br>
 <tr><td><a href="Belt_MapDict.html#VALmerge">merge</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">merge m1 m2 f</code> computes a map whose keys is a subset of keys of <code class="code">m1</code>
+    and of <code class="code">m2</code>. The presence of each such binding, and the corresponding
+    value, is determined with the function <code class="code">f</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapString.html#VALmerge">merge</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
@@ -7914,18 +8139,6 @@ using <code class="code">f</code> to map each value<br>
     and of <code class="code">m2</code>. The presence of each such binding, and the corresponding
     value, is determined with the function <code class="code">f</code>.<br>
  
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MapString.html#VALmergeArray">mergeArray</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MapInt.html#VALmergeArray">mergeArray</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_HashMapString.html#VALmergeMany">mergeMany</a> [<a href="Belt_HashMapString.html">Belt_HashMapString</a>]</td>
@@ -7989,6 +8202,18 @@ using <code class="code">f</code> to map each value<br>
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapDict.html#VALmergeMany">mergeMany</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MapString.html#VALmergeMany">mergeMany</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_MapInt.html#VALmergeMany">mergeMany</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -8598,180 +8823,6 @@ Consider the character <code class="code">ã</code>, which can be represented as
  
                 </div>
                 </div> </td></tr>
-<tr><td><a href="Belt_HashMapString.html#VALofArray">ofArray</a> [<a href="Belt_HashMapString.html">Belt_HashMapString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_HashMapInt.html#VALofArray">ofArray</a> [<a href="Belt_HashMapInt.html">Belt_HashMapInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_HashMap.html#VALofArray">ofArray</a> [<a href="Belt_HashMap.html">Belt_HashMap</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_HashSetString.html#VALofArray">ofArray</a> [<a href="Belt_HashSetString.html">Belt_HashSetString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_HashSetInt.html#VALofArray">ofArray</a> [<a href="Belt_HashSetInt.html">Belt_HashSetInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_HashSet.html#VALofArray">ofArray</a> [<a href="Belt_HashSet.html">Belt_HashSet</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableMapString.html#VALofArray">ofArray</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableMapInt.html#VALofArray">ofArray</a> [<a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableMap.html#VALofArray">ofArray</a> [<a href="Belt_MutableMap.html">Belt_MutableMap</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableSetString.html#VALofArray">ofArray</a> [<a href="Belt_MutableSetString.html">Belt_MutableSetString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableSetInt.html#VALofArray">ofArray</a> [<a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableSet.html#VALofArray">ofArray</a> [<a href="Belt_MutableSet.html">Belt_MutableSet</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MapDict.html#VALofArray">ofArray</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MapString.html#VALofArray">ofArray</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MapInt.html#VALofArray">ofArray</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_Map.html#VALofArray">ofArray</a> [<a href="Belt_Map.html">Belt_Map</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_SetDict.html#VALofArray">ofArray</a> [<a href="Belt_SetDict.html">Belt_SetDict</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_SetString.html#VALofArray">ofArray</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_SetInt.html#VALofArray">ofArray</a> [<a href="Belt_SetInt.html">Belt_SetInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_Set.html#VALofArray">ofArray</a> [<a href="Belt_Set.html">Belt_Set</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_List.html#VALofArray">ofArray</a> [<a href="Belt_List.html">Belt_List</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableQueue.html#VALofArray">ofArray</a> [<a href="Belt_MutableQueue.html">Belt_MutableQueue</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableSetString.html#VALofSortedArrayUnsafe">ofSortedArrayUnsafe</a> [<a href="Belt_MutableSetString.html">Belt_MutableSetString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableSetInt.html#VALofSortedArrayUnsafe">ofSortedArrayUnsafe</a> [<a href="Belt_MutableSetInt.html">Belt_MutableSetInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_MutableSet.html#VALofSortedArrayUnsafe">ofSortedArrayUnsafe</a> [<a href="Belt_MutableSet.html">Belt_MutableSet</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_SetDict.html#VALofSortedArrayUnsafe">ofSortedArrayUnsafe</a> [<a href="Belt_SetDict.html">Belt_SetDict</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_SetString.html#VALofSortedArrayUnsafe">ofSortedArrayUnsafe</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_SetInt.html#VALofSortedArrayUnsafe">ofSortedArrayUnsafe</a> [<a href="Belt_SetInt.html">Belt_SetInt</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Belt_Set.html#VALofSortedArrayUnsafe">ofSortedArrayUnsafe</a> [<a href="Belt_Set.html">Belt_Set</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
 <tr><td><a href="Js_typed_array.Float64Array.html#VALof_buffer">of_buffer</a> [<a href="Js_typed_array.Float64Array.html">Js_typed_array.Float64Array</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -8942,10 +8993,10 @@ Consider the character <code class="code">ã</code>, which can be represented as
 <tr><td><a href="Belt_SetDict.html#VALpartition">partition</a> [<a href="Belt_SetDict.html">Belt_SetDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">partition m p</code> returns a pair of sets <code class="code">(s1, s2)</code>, where
-    <code class="code">s1</code> is the set of all the elements of <code class="code">s</code> that satisfy the
-    predicate <code class="code">p</code>, and <code class="code">s2</code> is the set of all the elements of
-    <code class="code">s</code> that do not satisfy <code class="code">p</code>.<br>
+                    <code class="code">partition p s</code> returns a pair of sets <code class="code">(s1, s2)</code>, where
+   <code class="code">s1</code> is the set of all the elements of <code class="code">s</code> that satisfy the
+   predicate <code class="code">p</code>, and <code class="code">s2</code> is the set of all the elements of
+   <code class="code">s</code> that do not satisfy <code class="code">p</code>.<br>
  
                 </div>
                 </div> </td></tr>
@@ -9487,8 +9538,8 @@ Consider the character <code class="code">ã</code>, which can be represented as
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">reduce m a f</code> computes <code class="code">(f kN dN ... (f k1 d1 a)...)</code>,
-   where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">m</code>
-   (in increasing order), and <code class="code">d1 ... dN</code> are the associated data.<br>
+    where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">m</code>
+    (in increasing order), and <code class="code">d1 ... dN</code> are the associated data.<br>
  
                 </div>
                 </div> </td></tr>
@@ -9496,8 +9547,8 @@ Consider the character <code class="code">ã</code>, which can be represented as
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">reduce m a f</code> computes <code class="code">(f kN dN ... (f k1 d1 a)...)</code>,
-   where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">m</code>
-   (in increasing order), and <code class="code">d1 ... dN</code> are the associated data.<br>
+    where <code class="code">k1 ... kN</code> are the keys of all bindings in <code class="code">m</code>
+    (in increasing order), and <code class="code">d1 ... dN</code> are the associated data.<br>
  
                 </div>
                 </div> </td></tr>
@@ -9513,7 +9564,7 @@ Consider the character <code class="code">ã</code>, which can be represented as
 <tr><td><a href="Belt_SetDict.html#VALreduce">reduce</a> [<a href="Belt_SetDict.html">Belt_SetDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    In increasing order.<br>
+                    Iterate in increasing order.<br>
  
                 </div>
                 </div> </td></tr>
@@ -9964,7 +10015,9 @@ Consider the character <code class="code">ã</code>, which can be represented as
 <tr><td><a href="Belt_MapDict.html#VALremove">remove</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">remove m x</code> returns a map containing the same bindings as
+   <code class="code">m</code>, except for <code class="code">x</code> which is unbound in the returned map.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapString.html#VALremove">remove</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
@@ -10000,14 +10053,14 @@ Consider the character <code class="code">ã</code>, which can be represented as
 <tr><td><a href="Belt_SetString.html#VALremove">remove</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    If <code class="code">x</code> was not in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
+                    <code class="code">remove m x</code> If <code class="code">x</code> was not in <code class="code">m</code>, <code class="code">m</code> is returned reference unchanged.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetInt.html#VALremove">remove</a> [<a href="Belt_SetInt.html">Belt_SetInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    If <code class="code">x</code> was not in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
+                    <code class="code">remove m x</code> If <code class="code">x</code> was not in <code class="code">m</code>, <code class="code">m</code> is returned reference unchanged.<br>
  
                 </div>
                 </div> </td></tr>
@@ -10422,7 +10475,7 @@ have been replaced by <code class="code">replacement</code>.<br>
 <tr><td><a href="Belt_MutableMapString.html#VALset">set</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">add m x y</code> do the in-place modification, return
+                    <code class="code">set m x y</code> do the in-place modification, return
     <code class="code">m</code> for chaining. If <code class="code">x</code> was already bound
    in <code class="code">m</code>, its previous binding disappears.<br>
  
@@ -10431,7 +10484,7 @@ have been replaced by <code class="code">replacement</code>.<br>
 <tr><td><a href="Belt_MutableMapInt.html#VALset">set</a> [<a href="Belt_MutableMapInt.html">Belt_MutableMapInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">add m x y</code> do the in-place modification, return
+                    <code class="code">set m x y</code> do the in-place modification, return
     <code class="code">m</code> for chaining. If <code class="code">x</code> was already bound
    in <code class="code">m</code>, its previous binding disappears.<br>
  
@@ -10447,13 +10500,16 @@ have been replaced by <code class="code">replacement</code>.<br>
 <tr><td><a href="Belt_MapDict.html#VALset">set</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">set m x y</code> returns a map containing the same bindings as
+   <code class="code">m</code>, plus a binding of <code class="code">x</code> to <code class="code">y</code>. If <code class="code">x</code> was already bound
+   in <code class="code">m</code>, its previous binding disappears.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapString.html#VALset">set</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">add m x y</code> returns a map containing the same bindings as
+                    <code class="code">set m x y</code> returns a map containing the same bindings as
    <code class="code">m</code>, plus a binding of <code class="code">x</code> to <code class="code">y</code>. If <code class="code">x</code> was already bound
    in <code class="code">m</code>, its previous binding disappears.<br>
  
@@ -10462,7 +10518,7 @@ have been replaced by <code class="code">replacement</code>.<br>
 <tr><td><a href="Belt_MapInt.html#VALset">set</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    <code class="code">add m x y</code> returns a map containing the same bindings as
+                    <code class="code">set m x y</code> returns a map containing the same bindings as
    <code class="code">m</code>, plus a binding of <code class="code">x</code> to <code class="code">y</code>. If <code class="code">x</code> was already bound
    in <code class="code">m</code>, its previous binding disappears.<br>
  
@@ -10849,6 +10905,12 @@ have been replaced by <code class="code">replacement</code>.<br>
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_date.html#VALsetYear">setYear</a> [<a href="Js_date.html">Js_date</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Belt_Debug.html#VALsetupChromeDebugger">setupChromeDebugger</a> [<a href="Belt_Debug.html">Belt_Debug</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -11273,7 +11335,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">some m p</code> checks if at least one binding of the map
-    satisfy the predicate <code class="code">p</code>.<br>
+    satisfy the predicate <code class="code">p</code>. Order unspecified<br>
  
                 </div>
                 </div> </td></tr>
@@ -11281,7 +11343,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">some m p</code> checks if at least one binding of the map
-    satisfy the predicate <code class="code">p</code>.<br>
+    satisfy the predicate <code class="code">p</code>. Order unspecified<br>
  
                 </div>
                 </div> </td></tr>
@@ -11297,7 +11359,7 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <td> <div class="info">                     
                 <div class="not-examples">
                     <code class="code">some p s</code> checks if at least one element of
-    the set satisfies the predicate <code class="code">p</code>.<br>
+   the set satisfies the predicate <code class="code">p</code>. Oder unspecified.<br>
  
                 </div>
                 </div> </td></tr>
@@ -11630,7 +11692,14 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <tr><td><a href="Belt_MapDict.html#VALsplit">split</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">split x m</code> returns a triple <code class="code">(l, data, r)</code>, where
+      <code class="code">l</code> is the map with all the bindings of <code class="code">m</code> whose key
+    is strictly less than <code class="code">x</code>;
+      <code class="code">r</code> is the map with all the bindings of <code class="code">m</code> whose key
+    is strictly greater than <code class="code">x</code>;
+      <code class="code">data</code> is <code class="code">None</code> if <code class="code">m</code> contains no binding for <code class="code">x</code>,
+      or <code class="code">Some v</code> if <code class="code">m</code> binds <code class="code">v</code> to <code class="code">x</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapString.html#VALsplit">split</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
@@ -11675,7 +11744,14 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <tr><td><a href="Belt_SetDict.html#VALsplit">split</a> [<a href="Belt_SetDict.html">Belt_SetDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">split x s</code> returns a triple <code class="code">(l, present, r)</code>, where
+      <code class="code">l</code> is the set of elements of <code class="code">s</code> that are
+      strictly less than <code class="code">x</code>;
+      <code class="code">r</code> is the set of elements of <code class="code">s</code> that are
+      strictly greater than <code class="code">x</code>;
+      <code class="code">present</code> is <code class="code">false</code> if <code class="code">s</code> contains no element equal to <code class="code">x</code>,
+      or <code class="code">true</code> if <code class="code">s</code> contains an element equal to <code class="code">x</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetString.html#VALsplit">split</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
@@ -11996,7 +12072,9 @@ If <code class="code">n</code> is greater than the length of <code class="code">
 <tr><td><a href="Belt_SetDict.html#VALsubset">subset</a> [<a href="Belt_SetDict.html">Belt_SetDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                     
+                    <code class="code">subset s1 s2</code> tests whether the set <code class="code">s1</code> is a subset of
+   the set <code class="code">s2</code>.<br>
+ 
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetString.html#VALsubset">subset</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
@@ -12557,21 +12635,21 @@ The output will be rounded or padded with zeroes if necessary.<br>
 <tr><td><a href="Belt_MapDict.html#VALtoList">toList</a> [<a href="Belt_MapDict.html">Belt_MapDict</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    In increasing order<br>
+                    In increasing order.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapString.html#VALtoList">toList</a> [<a href="Belt_MapString.html">Belt_MapString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    In increasing order with respect<br>
+                    In increasing order.<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_MapInt.html#VALtoList">toList</a> [<a href="Belt_MapInt.html">Belt_MapInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    In increasing order with respect<br>
+                    In increasing order.<br>
  
                 </div>
                 </div> </td></tr>
@@ -12595,14 +12673,14 @@ The output will be rounded or padded with zeroes if necessary.<br>
 <tr><td><a href="Belt_SetString.html#VALtoList">toList</a> [<a href="Belt_SetString.html">Belt_SetString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    In increasing order with respect<br>
+                    In increasing order<br>
  
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Belt_SetInt.html#VALtoList">toList</a> [<a href="Belt_SetInt.html">Belt_SetInt</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
-                    In increasing order with respect<br>
+                    In increasing order<br>
  
                 </div>
                 </div> </td></tr>
@@ -12919,12 +12997,6 @@ value must be in the range [2, 36] (inclusive).
                 </div>
                 </div> </td></tr>
 <tr><td><a href="Js_int64.html#VALto_hex">to_hex</a> [<a href="Js_int64.html">Js_int64</a>]</td>
-<td> <div class="info">                     
-                <div class="not-examples">
-                     
-                </div>
-                </div> </td></tr>
-<tr><td><a href="Js_boolean.html#VALto_js_boolean">to_js_boolean</a> [<a href="Js_boolean.html">Js_boolean</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
@@ -13292,6 +13364,13 @@ the offset at which the match begins, and the whole string being matched.<br>
  
                 </div>
                 </div> </td></tr>
+<tr><td><a href="Belt_Array.html#VALunzip">unzip</a> [<a href="Belt_Array.html">Belt_Array</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                    <code class="code">unzip a</code> takes an array of pairs and creates a pair of arrays. The first array contains all the first items of the pairs; the second array contains all the second items.<br>
+ 
+                </div>
+                </div> </td></tr>
 <tr><td><a href="Belt_MutableMapString.html#VALupdate">update</a> [<a href="Belt_MutableMapString.html">Belt_MutableMapString</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
@@ -13522,6 +13601,30 @@ the offset at which the match begins, and the whole string being matched.<br>
                 </div> </td></tr>
 <tr><td align="left"><br>W</td></tr>
 <tr><td><a href="Js_console.html#VALwarn">warn</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALwarn2">warn2</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALwarn3">warn3</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALwarn4">warn4</a> [<a href="Js_console.html">Js_console</a>]</td>
+<td> <div class="info">                     
+                <div class="not-examples">
+                     
+                </div>
+                </div> </td></tr>
+<tr><td><a href="Js_console.html#VALwarnMany">warnMany</a> [<a href="Js_console.html">Js_console</a>]</td>
 <td> <div class="info">                     
                 <div class="not-examples">
                      
