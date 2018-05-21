@@ -51,7 +51,7 @@ SOURCE_LIST= node_path node_fs node_process dict node_module js_array js_string 
 	belt_MutableStack\
 	belt_MutableQueue\
 	node_child_process \
-	js_boolean js_math\
+	js_math\
 	js_dict js_date js_global js_cast js_promise\
 	dom dom_storage\
 	belt_HashMapInt\

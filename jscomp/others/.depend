@@ -86,7 +86,6 @@ belt_SetString.cmj : belt_internalSetString.cmj belt_internalAVLset.cmj \
 belt_MutableStack.cmj : belt_MutableStack.cmi
 belt_MutableQueue.cmj : belt_Array.cmj belt_MutableQueue.cmi
 node_child_process.cmj : node.cmj
-js_boolean.cmj : js_boolean.cmi
 js_math.cmj :
 js_dict.cmj : js_array.cmj js_dict.cmi
 js_date.cmj :
@@ -146,7 +145,6 @@ belt_SetInt.cmi :
 belt_SetString.cmi :
 belt_MutableStack.cmi :
 belt_MutableQueue.cmi :
-js_boolean.cmi :
 js_dict.cmi :
 js_cast.cmi :
 dom.cmi : dom_storage.cmi

@@ -532,7 +532,7 @@ module Encoder = struct
 
   let float (v : float) = Json.of_type Json.Number v
 
-  let bool (v : bool) = Json.of_type Json.Boolean (if v then Js.true_ else Js.false_)
+  let bool (v : bool) = Json.of_type Json.Boolean v
 
   let null = Json.of_type Json.Null Json.null
 

@@ -67,8 +67,6 @@ external nullToOption : 'a null -> 'a option = "#null_to_opt"
 external test : 'a nullable -> bool = "#is_nil_undef"
 external testAny : 'a -> bool = "#is_nil_undef"
 
-type boolean = bool
-(** The JS boolean type, can be [Js.true_] or [Js.false_] *)
 
 (* I'd like to move this and the other types into a Js_core module that can be
    included back here, but the dependency hackery confuses me *)
@@ -79,8 +77,7 @@ type (+'a, +'e) promise
 
 
 (* tag::predefined_js_values[]*)
-let true_ : boolean = true
-let false_ : boolean = false
+
 external null : 'a null = "#null"
 (* The same as {!Js.Null.empty} will be compiled as [null]*)
 external undefined : 'a undefined = "#undefined"
@@ -88,7 +85,7 @@ external undefined : 'a undefined = "#undefined"
 (* end::predefined_js_values[]*)
 
 (* tag::utility_functions[]*)
-external to_bool : boolean -> bool = "%identity"
+
 external typeof : 'a -> string = "#typeof"
 (** [typeof x] will be compiled as [typeof x] in JS *)
 external log : 'a -> unit = "log" 
@@ -134,7 +131,6 @@ module Exn = Js_exn
   {! Js_dict}, {! Js_array}, {! Js_string} and {! Js_re} for more details *)
 
 module Array = Js_array
-module Boolean = Js_boolean
 module Date = Js_date
 module Dict = Js_dict
 module Global = Js_global

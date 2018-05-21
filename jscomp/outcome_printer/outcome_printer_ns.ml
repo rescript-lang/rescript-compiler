@@ -41,8 +41,6 @@ let out_ident ppf s =
       -> "Js.Array"
     | "Js_string"
       -> "Js.String"
-    | "Js_boolean" 
-      -> "Js.Boolean"
     | "Js_re" 
       -> "Js.Re"
     | "Js_promise"
