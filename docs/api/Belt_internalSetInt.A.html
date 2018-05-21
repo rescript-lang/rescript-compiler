@@ -12,6 +12,7 @@
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
 <li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
@@ -34,6 +35,7 @@
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
 <li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
 <li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
@@ -384,6 +386,19 @@
                     </div>
                      <div class="examples">
                     <pre class="example"> <pre class="codepre"><code class="code">      zipBy [|1;2;3|] [|4;5|] (fun a b -&gt; 2 * a + b) = [|6;9|];;
+    </code></pre>  </pre>
+                    </div>
+                    </div>
+
+                  
+<pre><span id="VALunzip"><span class="keyword">val</span> unzip</span> : <code class="type">('a * 'b) array -> 'a array * 'b array</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">unzip a</code> takes an array of pairs and creates a pair of arrays. The first array contains all the first items of the pairs; the second array contains all the second items.<br>
+ 
+                    </div>
+                     <div class="examples">
+                    <pre class="example"> <pre class="codepre"><code class="code">      unzip [|(1,2) ; (3,4)|] = ([|1;3|], [|2;4|]);;
+      unzip [|(1,2) ; (3,4) ; (5,6) ; (7,8)|] = ([|1;3;5;7|], [|2;4;6;8|]);;
     </code></pre>  </pre>
                     </div>
                     </div>

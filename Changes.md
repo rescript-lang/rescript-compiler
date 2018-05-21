@@ -1,3 +1,28 @@
+# 3.1.0
+
+Features:
+
+- #2809, #2806 Sync up with latest reason 
+- #2805, allow `x |. Some `
+- #2797, #2771 `-bs-g`
+- #2793 more bindings to Js.Console
+- #2621 add Belt.Result module
+- #2760 add Belt.Array.unzip
+
+Perf:
+
+- #2808 better code gen for if then else
+- #2804 make HashSet.String size smaller
+
+Fixes:
+
+- #2812, compatibility with Node 10
+- #2789, fix Weak.length
+- #2790, fix Belt.Set performance issue
+- #2786, fix polymorphic compare on nullables
+- #2781, improve location info on bs.deriving abstract
+- #2776, lift the function limitation on bs.deriving abstract
+- #2752, fix binding Buffer.toString
 # 3.0.0
 
 Features:
