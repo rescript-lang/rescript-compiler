@@ -81,7 +81,7 @@ var cmi_files =
         // `lazy`,
         `js`, `js_unsafe`, `js_re`, `js_array`, `js_null`, `js_undefined`, `js_internal`,
         `js_types`, `js_null_undefined`, `js_dict`, `js_exn`, `js_string`, `js_vector`,
-        `js_boolean`, `js_date`, `js_global`, `js_math`, `js_obj`, `js_int`,
+        `js_date`, `js_global`, `js_math`, `js_obj`, `js_int`,
         `js_result`, `js_list`, `js_typed_array`,
         `js_promise`, `js_option`, `js_float`, `js_json`,
         `arrayLabels`, `bytesLabels`, `complex`, `gc`, `genlex`, `listLabels`,
