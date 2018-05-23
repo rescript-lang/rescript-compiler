@@ -96,7 +96,7 @@ func commandString(name string) command {
 }
 func checkError(err error, theme ...string) {
 	if err != nil {
-		log.Fatalf("Error:%v\n====\n%s\n====\n", theme, err.Error())
+		log.Fatalf("Error in theme:%v\n====\n%s\n====\n", theme, err.Error())
 	}
 }
 
