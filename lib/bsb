@@ -16,6 +16,7 @@ var bsb_exe = __filename + ".exe"
 
 var watch_mode = false
 var verbose = false
+var postBuild = undefined
 /**
  * @type {string[]}
  */
@@ -23,11 +24,18 @@ var delegate_args = []
 var process_argv = process.argv
 for (var i = 2; i < process_argv.length; ++i) {
     var current = process_argv[i]
-    delegate_args.push(current)
-    if (current === '-w') {
-        watch_mode = true
-    } else if (current === "-verbose"){
-        verbose = true
+    if (current === '-build-success') {
+        // TODO boundary safety check
+        // Not really needed
+        postBuild = process_argv[++i]
+    } else {
+        delegate_args.push(current)
+        if (current === '-w') {
+            watch_mode = true
+        } else if (current === "-verbose") {
+            verbose = true
+
+        } 
     }
 }
 
@@ -96,7 +104,7 @@ if (watch_mode) {
             process.on('SIGTERM', onExit)
             process.on('SIGHUP', onExit)
             process.on('uncaughtException', onExit)
-            process.stdin.on('close',onExit)
+            process.stdin.on('close', onExit)
             // close when stdin stops
             if (os.platform() !== "win32") {
                 process.stdin.on('end', onExit)
@@ -184,12 +192,20 @@ if (watch_mode) {
     function logFinish(code) {
         if (std_is_tty) {
             if (code === 0) {
+                if (postBuild) {
+                    console.log("running postbuild command", postBuild)
+                    child_process.exec(postBuild, { shell: true })
+                }
                 console.log("\x1b[36m>>>> Finish compiling\x1b[0m")
             } else {
                 console.log("\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m")
             }
         } else {
             if (code === 0) {
+                if (postBuild) {
+                    console.log("running postbuild command", postBuild)
+                    child_process.exec(postBuild, { shell: true })
+                }
                 console.log(">>>> Finish compiling")
             } else {
                 console.log(">>>> Finish compiling(exit: " + code + ")")
