@@ -425,8 +425,8 @@ let partitionU a f =
       incr j
     )
   done;
-  let a1 = slice a1 ~offset:0 ~len:!i in
-  let a2 = slice a2 ~offset:0 ~len:!j in
+  truncateToLengthUnsafe a1 !i;
+  truncateToLengthUnsafe a2 !j;
   (a1, a2)
 
 let partition a f = partitionU a (fun [@bs] x -> f x)
