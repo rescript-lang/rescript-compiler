@@ -568,9 +568,9 @@ var a$2 = /* array */[
   5
 ];
 
-var match = Belt_Array.partition((function (x) {
+var match = Belt_Array.partition(a$2, (function (x) {
         return x % 2 === 0;
-      }), a$2);
+      }));
 
 eq("File \"bs_array_test.ml\", line 153, characters 5-12", match[0], /* array */[
       2,
@@ -583,9 +583,9 @@ eq("File \"bs_array_test.ml\", line 154, characters 5-12", match[1], /* array */
       5
     ]);
 
-var match$1 = Belt_Array.partition((function (x) {
+var match$1 = Belt_Array.partition(a$2, (function (x) {
         return x === 2;
-      }), a$2);
+      }));
 
 eq("File \"bs_array_test.ml\", line 156, characters 5-12", match$1[0], /* array */[2]);
 
@@ -596,9 +596,9 @@ eq("File \"bs_array_test.ml\", line 157, characters 5-12", match$1[1], /* array 
       5
     ]);
 
-var match$2 = Belt_Array.partition((function () {
+var match$2 = Belt_Array.partition(/* array */[], (function () {
         return false;
-      }), /* array */[]);
+      }));
 
 eq("File \"bs_array_test.ml\", line 159, characters 5-12", match$2[0], /* array */[]);
 

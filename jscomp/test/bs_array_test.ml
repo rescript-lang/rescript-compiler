@@ -149,13 +149,13 @@ let () =
 
 let () =
   let a = [|1;2;3;4;5|] in
-  let (v0, v1) = A.partition (fun x -> x mod 2 = 0) a in
+  let (v0, v1) = A.partition a (fun x -> x mod 2 = 0) in
   eq __LOC__ v0 [|2;4|];
   eq __LOC__ v1 [|1;3;5|];
-  let (v0, v1) = A.partition (fun x -> x = 2) a in
+  let (v0, v1) = A.partition a (fun x -> x = 2) in
   eq __LOC__ v0 [|2|];
   eq __LOC__ v1 [|1;3;4;5|];
-  let (v0, v1) = A.partition (fun x -> false) [||] in
+  let (v0, v1) = A.partition [||] (fun x -> false)  in
   eq __LOC__ v0 [||];
   eq __LOC__ v1 [||]
 
