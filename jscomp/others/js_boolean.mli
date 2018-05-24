@@ -24,4 +24,4 @@
 
 (** Contains functions for dealing with JavaScript booleans *)
 
-
+external to_js_boolean : bool -> bool = "%identity"
