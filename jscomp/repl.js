@@ -41,15 +41,14 @@ function prepare() {
       console.log(err)
     }
 
-    e(`make -j2 bin/jscmj.exe bin/jsgen.exe bin/js_compiler.ml`)
-    e(`./bin/jsgen.exe --`)
+    e(`make -j2 bin/jscmj.exe bin/js_compiler.ml`)
+    // bin/jsgen.exe 
+    // e(`./bin/jsgen.exe --`)
     e(`./bin/jscmj.exe`)
 
     e(`ocamlc.opt -w -30-40 -no-check-prims -I bin bin/js_compiler.mli bin/js_compiler.ml -o jsc.byte`)
 
-    e(`rm -rf  ${playground}/pre_load.js`)
-    e(`cp ./pre_load.js ${playground}`)
-    e(`cp ../lib/amdjs/*.js ${playground}/stdlib`)
+    e(`cp ../lib/js/*.js ${playground}/stdlib`)
 
     // Build JSX v2 PPX with jsoo
     try {
@@ -81,7 +80,9 @@ var cmi_files =
         // `lazy`,
         `js`, `js_unsafe`, `js_re`, `js_array`, `js_null`, `js_undefined`, `js_internal`,
         `js_types`, `js_null_undefined`, `js_dict`, `js_exn`, `js_string`, `js_vector`,
-        `js_date`, `js_global`, `js_math`, `js_obj`, `js_int`,
+        `js_date`,
+        `js_console`,
+        `js_global`, `js_math`, `js_obj`, `js_int`,
         `js_result`, `js_list`, `js_typed_array`,
         `js_promise`, `js_option`, `js_float`, `js_json`,
         `arrayLabels`, `bytesLabels`, `complex`, `gc`, `genlex`, `listLabels`,

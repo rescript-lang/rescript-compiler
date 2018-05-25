@@ -46,7 +46,7 @@ let get_files dir =
 
 
 
-let () = 
+(* let () = 
   Ext_pervasives.with_file_as_chan "./pre_load.js" 
     (fun chan -> 
        output_string chan 
@@ -54,4 +54,4 @@ let () =
             (String.concat "," 
                (Ext_list.map (Printf.sprintf "%S" )
                   (get_files "../lib/amdjs")
-               ))))  
+               ))))   *)
