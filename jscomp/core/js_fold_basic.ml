@@ -23,7 +23,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
+let tag_is_zero (tag : J.expression) = 
+  match tag.expression_desc with 
+  | Number (Int {i = 0l; _}) -> true 
+  | _ -> false;;
 
  let needBlockRuntimeInDebugMode 
   (tag : J.expression)
@@ -37,30 +40,17 @@
   | Blk_array   
   | Blk_exception 
   | Blk_extension  -> false 
-  | Blk_na  ->  
-    begin match tag.expression_desc with 
-    | Number (Int { i = 0l ; _})
-       ->
-      false
-     | _ -> true 
-    end     
+  | Blk_na  ->  not (tag_is_zero tag )
 
 let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) = 
   match  tag_info with 
+  | Blk_variant _ 
   | Blk_module _
   | Blk_record _  
-  | Blk_constructor (_, 1)    
-  | Blk_variant _ 
-  | Blk_na   
   | Blk_tuple 
-  | Blk_array   
-    -> 
-    begin match tag.expression_desc with 
-    | Number (Int { i = 0l ; _})
-       ->
-      false
-     | _ -> true 
-    end     
+  | Blk_array -> false   
+  | Blk_constructor (_, 1)      
+  | Blk_na -> not (tag_is_zero tag)
   | Blk_constructor _   -> true
   | Blk_exception 
   | Blk_extension  -> false 
