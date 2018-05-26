@@ -72,3 +72,12 @@ let cmpU a b f = match (a, b) with
   | (None, None) -> 0
 
 let cmp a b f = cmpU a b (fun[@bs] x y -> f x y)
+
+include (Belt_Monad.Make (struct
+  type 'a t = 'a option
+  let return x = Some x
+  let bind o f =
+    match o with
+    | None -> None
+    | Some x -> f x
+end) : Belt_Monad.S with type 'a t := 'a option)

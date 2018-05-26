@@ -75,3 +75,12 @@ let cmpU a b f = match (a, b) with
   | (Error _, Error _) -> 0
 
 let cmp a b f = cmpU a b (fun[@bs] x y -> f x y)
+
+include (Belt_Monad.Make2
+(struct
+  type ('a 'b) t = ('a 'b) Belt_Result.t
+  let return x = Ok x
+  let bind r f = match r with
+    | Error _ as x -> x
+    | Ok x -> f x
+end) : Belt_Monad.S2 with type ('a 'b) t := ('a 'b) t)
