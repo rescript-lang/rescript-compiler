@@ -125,10 +125,10 @@ var suites_001 = /* :: */[
                       ],
                       /* :: */[
                         /* tuple */[
-                          "toExponentialWithPrecision - digits:21",
+                          "File \"js_float_test.ml\", line 31, characters 3-10",
                           (function () {
                               return /* ThrowAny */Block.__(7, [(function () {
-                                            (0).toExponential(21);
+                                            (0).toExponential(101);
                                             return /* () */0;
                                           })]);
                             })
@@ -195,10 +195,10 @@ var suites_001 = /* :: */[
                                     ],
                                     /* :: */[
                                       /* tuple */[
-                                        "toFixedWithPrecision - digits:21",
+                                        "toFixedWithPrecision - digits:101",
                                         (function () {
                                             return /* ThrowAny */Block.__(7, [(function () {
-                                                          (0).toFixed(21);
+                                                          (0).toFixed(101);
                                                           return /* () */0;
                                                         })]);
                                           })
@@ -265,10 +265,10 @@ var suites_001 = /* :: */[
                                                   ],
                                                   /* :: */[
                                                     /* tuple */[
-                                                      "toPrecisionWithPrecision - digits:22",
+                                                      "File \"js_float_test.ml\", line 61, characters 3-10",
                                                       (function () {
                                                           return /* ThrowAny */Block.__(7, [(function () {
-                                                                        (0).toPrecision(22);
+                                                                        (0).toPrecision(101);
                                                                         return /* () */0;
                                                                       })]);
                                                         })
