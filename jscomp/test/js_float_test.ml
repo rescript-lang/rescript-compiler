@@ -28,8 +28,8 @@ let suites = Mt.[
     Eq("1.2346e+2", toExponentialWithPrecision 123.456 ~digits:4)));
   ("toExponentialWithPrecision - digits:20", (fun _ ->
     Eq("0.00000000000000000000e+0", toExponentialWithPrecision 0. ~digits:20)));
-  ("toExponentialWithPrecision - digits:21", (fun _ ->
-    ThrowAny(fun () -> ignore @@ toExponentialWithPrecision 0. ~digits:21)));
+  (__LOC__, (fun _ ->
+    ThrowAny(fun () -> ignore @@ toExponentialWithPrecision 0. ~digits:101)));
   ("toExponentialWithPrecision - digits:-1", (fun _ ->
     ThrowAny(fun () -> ignore @@ toExponentialWithPrecision 0. ~digits:(-1))));
 
@@ -43,8 +43,8 @@ let suites = Mt.[
     Eq("123.4560", toFixedWithPrecision 123.456 ~digits:4)));
   ("toFixedWithPrecision - digits:20", (fun _ ->
     Eq("0.00000000000000000000", toFixedWithPrecision 0. ~digits:20)));
-  ("toFixedWithPrecision - digits:21", (fun _ ->
-    ThrowAny(fun () -> ignore @@ toFixedWithPrecision 0. ~digits:21)));
+  ("toFixedWithPrecision - digits:101", (fun _ ->
+    ThrowAny(fun () -> ignore @@ toFixedWithPrecision 0. ~digits:101)));
   ("toFixedWithPrecision - digits:-1", (fun _ ->
     ThrowAny(fun () -> ignore @@ toFixedWithPrecision 0. ~digits:(-1))));
 
@@ -58,8 +58,8 @@ let suites = Mt.[
     Eq("123.5", toPrecisionWithPrecision 123.456 ~digits:4)));
   ("toPrecisionWithPrecision - digits:20", (fun _ ->
     Eq("0.0000000000000000000", toPrecisionWithPrecision 0. ~digits:20)));
-  ("toPrecisionWithPrecision - digits:22", (fun _ ->
-    ThrowAny(fun () -> ignore @@ toPrecisionWithPrecision 0. ~digits:22)));
+  (__LOC__, (fun _ ->
+    ThrowAny(fun () -> ignore @@ toPrecisionWithPrecision 0. ~digits:101)));
   ("toPrecisionWithPrecision - digits:-1", (fun _ ->
     ThrowAny(fun () -> ignore @@ toPrecisionWithPrecision 0. ~digits:(-1))));
 
