@@ -1023,7 +1023,6 @@ bsb/bsb_world.cmi : bsb/bsb_config_types.cmx
 jscmj_main.cmx : ext/literals.cmx core/js_cmj_format.cmx ext/ext_string.cmx \
     ext/ext_pp.cmx ext/ext_pervasives.cmx ext/ext_list.cmx ext/ext_array.cmx \
     jscmj_main.cmi
-jsgen_main.cmx : ext/ext_pervasives.cmx ext/ext_path.cmx ext/ext_list.cmx \
-    ext/ext_array.cmx
+jsgen_main.cmx : ext/ext_path.cmx ext/ext_array.cmx
 rollup_test.cmx :
 jscmj_main.cmi :

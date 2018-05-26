@@ -844,7 +844,7 @@ and
           P.string f L.block_variant;
           P.paren_group f 1 
           (fun _ -> arguments cxt f 
-            [E.str name; E.array mutable_flag el]) 
+            [E.str name; tag; E.array mutable_flag el]) 
        
         | _ ->
         begin 
