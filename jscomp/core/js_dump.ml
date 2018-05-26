@@ -838,15 +838,42 @@ and
               E.str name;
               E.array mutable_flag el]
           )        
-         | Blk_constructor(name,_) when !Js_config.debug ->
-           P.string f L.caml_block;
-          P.string f L.dot ;
-          P.string f L.block_variant;
-          P.paren_group f 1 
-          (fun _ -> arguments cxt f 
-            [E.str name; tag; E.array mutable_flag el]) 
-       
-        | _ ->
+         | Blk_constructor(name,number) ->
+          let no_tag_attached = 
+              number = 1 && Js_fold_basic.tag_is_zero tag in 
+          if !Js_config.debug then 
+          (
+            P.string f L.caml_block;
+            P.string f L.dot ;
+            if no_tag_attached then 
+            begin 
+              P.string f L.block_simple_variant;
+              P.paren_group f 1 
+                (fun _ -> arguments cxt f 
+                [E.str name; E.array mutable_flag el]) 
+            end
+            else 
+            begin 
+              P.string f L.block_variant;
+              P.paren_group f 1 
+              (fun _ -> arguments cxt f 
+                [ E.str name; tag ; E.array mutable_flag el]
+              )
+            end
+          )
+          else 
+            (if no_tag_attached then 
+              expression_desc cxt l f (Array (el, mutable_flag))
+             else  
+             begin 
+                P.string f L.caml_block;
+                P.string f L.dot ;
+                P.string f L.caml_block_create;
+                P.paren_group f 1
+                (fun _ -> arguments cxt f [tag; E.array mutable_flag el])
+             end
+            )
+        |  _  ->
         begin 
           P.string f L.caml_block;
           P.string f L.dot ;
