@@ -415,7 +415,7 @@ val mapWithIndex: 'a array ->  (int -> 'a -> 'b ) -> 'b array
 
 val partitionU : 'a array -> ('a -> bool [@bs]) -> 'a array * 'a array
 val partition : 'a array ->  ('a -> bool) -> 'a array * 'a array
-(** [partition f a] split array into tuple of two arrays based on predicate f; first of tuple where predicate vause true, second where predicate cause false
+(** [partition f a] split array into tuple of two arrays based on predicate f; first of tuple where predicate cause true, second where predicate cause false
 
     @example {[
       predicate [|1;2;3;4;5|] (fun x -> if x mod 2 = 0)  = ([|2;4|], [|1;2;3|]);;
