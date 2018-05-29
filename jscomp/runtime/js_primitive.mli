@@ -37,6 +37,10 @@ val option_get : 'a option -> 'a Js_undefined.t
 
 val option_get_unwrap : 'a option -> 'b Js_undefined.t
 
+val nullHeader : unit array
+
+val undefinedHeader : unit array
+
 val box_optional : 'a -> 'a Js.nullable
 
 val unbox_optional : 'a Js.nullable -> 'a
