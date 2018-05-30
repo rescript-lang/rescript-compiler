@@ -53,7 +53,7 @@ let lets_helper (count_var : Ident.t -> Lam_pass_count.used_info) lam =
                  ((
                      Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
                      | Const_nativeint _ )
-                 | Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
+                 | Const_pointer _ |Const_js_true | Const_js_false) (* could be poly-variant [`A] -> [65a]*)
               | Lprim {primitive = Pfield (_);
                        args = [ 
                          Lglobal_module _

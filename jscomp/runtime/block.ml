@@ -47,9 +47,13 @@ external addProp : 'a -> symbol -> <value: 'b> Js.t -> 'a =
 let record  meta xs =
   xs |.addProp (cacheSymbol "BsRecord") [%obj {value = meta}]
 
-let variant meta xs =   
-  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }]
+let variant meta tag xs =     
+  xs |. Obj.set_tag tag;
+  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
 
+let simpleVariant meta xs =       
+  xs |. addProp (cacheSymbol "BsVariant") [%obj {value = meta }] 
+  
 let localModule meta xs =   
   xs |. addProp (cacheSymbol "BsLocalModule") [%obj {value = meta}]
 

@@ -9,12 +9,12 @@ module A = Belt.Array
 module IntCmp =
   (val Belt.Id.comparable ~cmp:(fun (x:int) y -> compare x y))
 module L = Belt.List
-let ofArray = N.ofArray ~id:(module IntCmp)
+let fromArray = N.fromArray ~id:(module IntCmp)
 let empty () = N.make ~id:(module IntCmp)
 
 
 let () =
-  let u =  ofArray (I.range 0 30) in
+  let u =  fromArray (I.range 0 30) in
   b __LOC__ (N.removeCheck u 0);
   b __LOC__ (not (N.removeCheck u 0));
   b __LOC__ (N.removeCheck u 30);
@@ -57,7 +57,7 @@ let () =
 
 
 let () =
-  let v = ofArray (I.randomRange 1_000 2_000) in
+  let v = fromArray (I.randomRange 1_000 2_000) in
   let bs = A.map (I.randomRange 500 1499) (fun  x -> N.removeCheck v x ) in
   let indeedRemoved = A.reduce bs 0 (fun  acc x -> if x then acc + 1 else acc) in
   eq __LOC__ indeedRemoved 500;
@@ -95,7 +95,7 @@ let () =
   b __LOC__ (N.isEmpty (N.intersect aa bb))
 
 let (++) = N.union
-let f = ofArray
+let f = fromArray
 let (=~) = N.eq
 let () =
   let aa =  f (I.randomRange 0 100) in
@@ -152,7 +152,7 @@ let () =
     )
 
 let () =
-  let a0 = ofArray  (I.randomRange 0 1000) in
+  let a0 = fromArray  (I.randomRange 0 1000) in
   let a1,a2 =
     (
       N.keep a0 (fun x -> x mod 2  = 0),

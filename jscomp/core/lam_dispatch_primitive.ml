@@ -796,7 +796,7 @@ let translate loc (prim_name : string)
     | "caml_hash_mix_string"
     | "caml_hash_mix_int"
     | "caml_hash_final_mix"
-    
+      -> call Js_runtime_modules.hash_primitive
     | "caml_hash"
       -> call Js_runtime_modules.hash 
     | "caml_weak_set"

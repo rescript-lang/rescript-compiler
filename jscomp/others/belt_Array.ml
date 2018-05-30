@@ -408,13 +408,36 @@ let cmpU a b p =
 
 let cmp a b p = cmpU a b (fun[@bs] a b -> p a b)
 
+let partitionU a f =
+  let l = length a in
+  let i = ref 0 in
+  let j = ref 0 in
+  let a1 = makeUninitializedUnsafe l in
+  let a2 = makeUninitializedUnsafe l in
+  for ii = 0 to l - 1 do
+    let v = getUnsafe a ii in
+    if f v [@bs] then (
+      setUnsafe a1 !i v;
+      incr i
+    )
+    else (
+      setUnsafe a2 !j v;
+      incr j
+    )
+  done;
+  truncateToLengthUnsafe a1 !i;
+  truncateToLengthUnsafe a2 !j;
+  (a1, a2)
+
+let partition a f = partitionU a (fun [@bs] x -> f x)
+
 let unzip a =
   let l = length a in
-  let a1 = makeUninitializedUnsafe l in 
-  let a2 = makeUninitializedUnsafe l in 
+  let a1 = makeUninitializedUnsafe l in
+  let a2 = makeUninitializedUnsafe l in
   for i = 0 to l - 1 do
     let (v1, v2) = getUnsafe a i in
     setUnsafe a1 i v1;
-    setUnsafe a2 i v2    
+    setUnsafe a2 i v2
   done;
   (a1, a2)

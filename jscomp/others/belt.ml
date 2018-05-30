@@ -115,7 +115,7 @@
 
     Currently, both {i Belt_Set} and {i Belt.Set} are accessible to users for some
     technical reasons,
-    we {b strongly recommend} users stick to qualified import, {i Belt.Sort}, we may hide
+    we {b strongly recommend} users stick to qualified import, {i Belt.Set}, we may hide
     the internal, {i i.e}, {i Belt_Set} in the future
 
 *)
@@ -236,16 +236,23 @@ module HashSet = Belt_HashSet
 *)
 module HashMap = Belt_HashMap
 
-  
+
 (** {!Belt.Option}
 
-    Utilities for option data type
+    Utilities for option data type.
 *)
 module Option = Belt_Option
 
 
+(** {!Belt.Result}
+
+    Utilities for result data type.
+*)
+
+module Result = Belt_Result
+
 (** {!Belt.Debug}
 
-    Utilities for set up debugging    
+    Utilities for set up debugging
 *)
 module Debug = Belt_Debug

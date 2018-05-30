@@ -45,6 +45,17 @@ let bb x =
     false <= x 
    ) 
 
+let consts =     
+  ( true && false ,
+    false && false,
+    true && true,
+    false && true,
+
+    true || false ,
+    false || false,
+    true || true,
+    false || true
+  )
 
 let bool_array = [|true; false|] 
 ;; Mt.from_pair_suites __FILE__ suites

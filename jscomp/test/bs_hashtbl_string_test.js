@@ -2,21 +2,21 @@
 
 var Belt_Id = require("../../lib/js/belt_Id.js");
 var Hashtbl = require("../../lib/js/hashtbl.js");
-var Caml_hash = require("../../lib/js/caml_hash.js");
 var Belt_HashMap = require("../../lib/js/belt_HashMap.js");
 var Belt_MapDict = require("../../lib/js/belt_MapDict.js");
 var Caml_primitive = require("../../lib/js/caml_primitive.js");
 var Belt_HashMapInt = require("../../lib/js/belt_HashMapInt.js");
 var Belt_HashSetInt = require("../../lib/js/belt_HashSetInt.js");
 var Belt_HashMapString = require("../../lib/js/belt_HashMapString.js");
+var Caml_hash_primitive = require("../../lib/js/caml_hash_primitive.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 var Belt_internalBucketsType = require("../../lib/js/belt_internalBucketsType.js");
 
 function hash_string(s) {
-  return Caml_hash.caml_hash_final_mix(Caml_hash.caml_hash_mix_string(0, s));
+  return Caml_hash_primitive.caml_hash_final_mix(Caml_hash_primitive.caml_hash_mix_string(0, s));
 }
 
-var hashString = (function (str) {
+var hashString = function (str){ {
                                               var hash = 5381,
                                               i    = str.length | 0;
 
@@ -25,7 +25,7 @@ var hashString = (function (str) {
                                               }
                                               return hash
                                               }
-                                            );
+                                            };
 
 var $$String = Belt_Id.hashable(Hashtbl.hash, (function (x, y) {
         return x === y;
@@ -36,7 +36,7 @@ var String1 = Belt_Id.hashable(hashString, (function (x, y) {
       }));
 
 var String2 = Belt_Id.hashable((function (x) {
-        return Caml_hash.caml_hash_final_mix(Caml_hash.caml_hash_mix_string(0, x));
+        return Caml_hash_primitive.caml_hash_final_mix(Caml_hash_primitive.caml_hash_mix_string(0, x));
       }), (function (x, y) {
         return x === y;
       }));
@@ -342,4 +342,4 @@ exports.HI = HI;
 exports.bench6 = bench6;
 exports.S = S;
 exports.bench7 = bench7;
-/* hashString Not a pure module */
+/* String Not a pure module */

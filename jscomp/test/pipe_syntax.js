@@ -62,6 +62,22 @@ function f5(a, b, c, d) {
   return (v0 + v1 | 0) + v2 | 0;
 }
 
+function f6(a) {
+  return /* Some */[a];
+}
+
+function f7(a) {
+  return /* tuple */[
+          /* Some */[a],
+          /* Some */[a],
+          /* Some */[a]
+        ];
+}
+
+function f8(a) {
+  return /* Some */[/* Some */[a]];
+}
+
 exports.t0 = t0;
 exports.t1 = t1;
 exports.t2 = t2;
@@ -72,4 +88,7 @@ exports.f2 = f2;
 exports.f3 = f3;
 exports.f4 = f4;
 exports.f5 = f5;
+exports.f6 = f6;
+exports.f7 = f7;
+exports.f8 = f8;
 /* No side effect */

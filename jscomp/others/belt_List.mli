@@ -84,7 +84,7 @@ val tailExn: 'a t -> 'a t
 
 val add: 'a t -> 'a -> 'a t
 (**
-  [add xs y] adds [y] to the end of list [xs]
+  [add xs y] adds [y] to the beginning of list [xs]
   
    @example{[
      add [1] 3 = [3;1];;
@@ -264,8 +264,7 @@ val mapWithIndex: 'a t -> (int -> 'a -> 'b) -> 'b t
     ]}
 *)
 
-val ofArray: 'a array -> 'a t 
-[@@ocaml.deprecated "Use fromArray instead"]
+
 
 val fromArray: 'a array -> 'a t 
 (** [fromArray arr] converts the given array to a list

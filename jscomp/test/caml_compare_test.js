@@ -883,7 +883,79 @@ var suites_001 = /* :: */[
                                                                                                   ]);
                                                                                         })
                                                                                     ],
-                                                                                    /* [] */0
+                                                                                    /* :: */[
+                                                                                      /* tuple */[
+                                                                                        "File \"caml_compare_test.ml\", line 81, characters 4-11",
+                                                                                        (function () {
+                                                                                            return /* Eq */Block.__(0, [
+                                                                                                      Caml_obj.caml_compare(null, /* :: */[
+                                                                                                            3,
+                                                                                                            /* [] */0
+                                                                                                          ]),
+                                                                                                      -1
+                                                                                                    ]);
+                                                                                          })
+                                                                                      ],
+                                                                                      /* :: */[
+                                                                                        /* tuple */[
+                                                                                          "File \"caml_compare_test.ml\", line 84, characters 4-11",
+                                                                                          (function () {
+                                                                                              return /* Eq */Block.__(0, [
+                                                                                                        Caml_obj.caml_compare(/* :: */[
+                                                                                                              3,
+                                                                                                              /* [] */0
+                                                                                                            ], null),
+                                                                                                        1
+                                                                                                      ]);
+                                                                                            })
+                                                                                        ],
+                                                                                        /* :: */[
+                                                                                          /* tuple */[
+                                                                                            "File \"caml_compare_test.ml\", line 87, characters 4-11",
+                                                                                            (function () {
+                                                                                                return /* Eq */Block.__(0, [
+                                                                                                          Caml_obj.caml_compare(null, 0),
+                                                                                                          -1
+                                                                                                        ]);
+                                                                                              })
+                                                                                          ],
+                                                                                          /* :: */[
+                                                                                            /* tuple */[
+                                                                                              "File \"caml_compare_test.ml\", line 90, characters 4-11",
+                                                                                              (function () {
+                                                                                                  return /* Eq */Block.__(0, [
+                                                                                                            Caml_obj.caml_compare(0, null),
+                                                                                                            1
+                                                                                                          ]);
+                                                                                                })
+                                                                                            ],
+                                                                                            /* :: */[
+                                                                                              /* tuple */[
+                                                                                                "File \"caml_compare_test.ml\", line 93, characters 4-11",
+                                                                                                (function () {
+                                                                                                    return /* Eq */Block.__(0, [
+                                                                                                              Caml_obj.caml_compare(undefined, 0),
+                                                                                                              -1
+                                                                                                            ]);
+                                                                                                  })
+                                                                                              ],
+                                                                                              /* :: */[
+                                                                                                /* tuple */[
+                                                                                                  "File \"caml_compare_test.ml\", line 96, characters 4-11",
+                                                                                                  (function () {
+                                                                                                      return /* Eq */Block.__(0, [
+                                                                                                                Caml_obj.caml_compare(0, undefined),
+                                                                                                                1
+                                                                                                              ]);
+                                                                                                    })
+                                                                                                ],
+                                                                                                /* [] */0
+                                                                                              ]
+                                                                                            ]
+                                                                                          ]
+                                                                                        ]
+                                                                                      ]
+                                                                                    ]
                                                                                   ]
                                                                                 ]
                                                                               ]

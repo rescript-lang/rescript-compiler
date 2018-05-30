@@ -13,7 +13,7 @@ module IntCmp =
 module L = Belt.List
 
 let () =
-  let u0 = N.ofArray ~id:(module IntCmp) (I.range 0 30) in
+  let u0 = N.fromArray ~id:(module IntCmp) (I.range 0 30) in
   let u1 = N.remove u0 0 in
   let u2 = N.remove u1 0 in
   let u3 = N.remove u2 30 in
@@ -56,10 +56,10 @@ let () =
   b __LOC__ (N.has u15 20000);
   b __LOC__ (not @@ N.has u15 2000);
   b __LOC__ (N.isEmpty u16);
-  let u17  = N.ofArray ~id:(module IntCmp) (I.randomRange 0 100) in
-  let u18 = N.ofArray ~id:(module IntCmp) (I.randomRange 59 200) in
+  let u17  = N.fromArray ~id:(module IntCmp) (I.randomRange 0 100) in
+  let u18 = N.fromArray ~id:(module IntCmp) (I.randomRange 59 200) in
   let u19 = N.union u17 u18 in
-  let u20 = N.ofArray ~id:(module IntCmp) (I.randomRange 0 200) in
+  let u20 = N.fromArray ~id:(module IntCmp) (I.randomRange 0 200) in
   let u21 =  N.intersect u17 u18 in
   let u22 = N.diff u17 u18 in
   let u23 = N.diff u18 u17 in
@@ -67,7 +67,7 @@ let () =
   let u25 = N.add u22 59 in
   let u26 = N.add (N.make ~id:(module IntCmp)) 3 in
   let ss = (A.makeByAndShuffle 100 (fun i -> i * 2 )) in
-  let u27 = N.ofArray ~id:(module IntCmp)  ss in
+  let u27 = N.fromArray ~id:(module IntCmp)  ss in
   let u28, u29 = N.union u27 u26, N.union u26 u27 in
   b __LOC__ (N.eq u28 u29);
   b __LOC__ (N.toArray u29 = (S.stableSortBy (A.concat ss [|3|]) compare ));
@@ -103,7 +103,7 @@ let testIterToList2  xs =
   L.reverse !v
 
 let () =
-  let u0 = N.ofArray ~id:(module IntCmp) (I.randomRange 0 20) in
+  let u0 = N.fromArray ~id:(module IntCmp) (I.randomRange 0 20) in
   let u1 = N.remove u0 17 in
   let u2 = N.add u1 33 in
   b __LOC__ (L.every2 (testIterToList u0) (L.makeBy 21 (fun i -> i)) (fun x y -> x = y));
@@ -114,12 +114,12 @@ let () =
   b __LOC__ (N.every u0 (fun x -> x < 24));
   b __LOC__ (D.every (N.getData u0) (fun x -> x < 24));
   b __LOC__ (not (N.every u2 (fun  x -> x < 24)));
-  b __LOC__ ( not @@ N.every (N.ofArray ~id:(module IntCmp) [|1;2;3|]) (fun x -> x = 2));
+  b __LOC__ ( not @@ N.every (N.fromArray ~id:(module IntCmp) [|1;2;3|]) (fun x -> x = 2));
   b __LOC__ (N.cmp u1 u0 < 0);
   b __LOC__ (N.cmp u0 u1 > 0)
 
 let () =
-  let a0 = N.ofArray ~id:(module IntCmp) (I.randomRange 0 1000) in
+  let a0 = N.fromArray ~id:(module IntCmp) (I.randomRange 0 1000) in
   let a1,a2 =
     (
       N.keep a0 (fun x -> x mod 2  = 0),
@@ -149,7 +149,7 @@ let () =
 
 
 let () =
-  let a = N.ofArray ~id:(module IntCmp) [||] in
+  let a = N.fromArray ~id:(module IntCmp) [||] in
   b __LOC__ (N.isEmpty (N.keep a (fun x -> x mod 2 = 0)))
 
 let () =

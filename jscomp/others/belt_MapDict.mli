@@ -95,8 +95,6 @@ val toList: ('k, 'a, 'id) t -> ('k * 'a) list
 
 val toArray: ('k, 'a, 'id) t -> ('k * 'a) array
 
-val ofArray: ('k * 'a) array -> cmp:('k,'id) cmp -> ('k,'a,'id) t
-[@@ocaml.deprecated "Use fromArray instead"]
 
 val fromArray: ('k * 'a) array -> cmp:('k,'id) cmp -> ('k,'a,'id) t
 
@@ -162,7 +160,7 @@ val set:
   ('a, 'b, 'id) t -> 'a -> 'b ->
   cmp:('a, 'id) cmp ->
   ('a, 'b, 'id) t
-(** [add m x y] returns a map containing the same bindings as
+(** [set m x y] returns a map containing the same bindings as
    [m], plus a binding of [x] to [y]. If [x] was already bound
    in [m], its previous binding disappears. *)
 

@@ -16,23 +16,11 @@ function compare(x, y) {
 function compare2(x, y) {
   switch (x) {
     case 0 : 
-        if (y !== 0) {
-          return false;
-        } else {
-          return true;
-        }
+        return y === 0;
     case 1 : 
-        if (y !== 1) {
-          return false;
-        } else {
-          return true;
-        }
+        return y === 1;
     case 2 : 
-        if (y >= 2) {
-          return true;
-        } else {
-          return false;
-        }
+        return y >= 2;
     
   }
 }

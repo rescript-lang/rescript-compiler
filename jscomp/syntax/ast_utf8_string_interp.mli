@@ -23,9 +23,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-type kind =
+
+ type kind =
   | String
-  | Var
+  | Var of int * int (* int records its border length *)
+
 type error = private
   | Invalid_code_point
   | Unterminated_backslash

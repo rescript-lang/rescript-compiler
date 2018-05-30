@@ -1,4 +1,4 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+(* Copyright (C) 2017 Authors of BuckleScript
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,7 +22,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Contains functions for dealing with JavaScript booleans *)
+(** {!Belt.Result}
+    
+    Utilities for result data type.
+*)
 
-external to_js_boolean : bool -> bool = "%identity"
+type ('a, 'b) t =
+  | Ok of 'a
+  | Error of 'b
 
+val getExn : ('a, 'b) t -> 'a
+val mapWithDefaultU : ('a, 'c) t -> 'b -> ('a -> 'b [@bs]) -> 'b
+val mapWithDefault : ('a, 'c) t -> 'b -> ('a -> 'b) -> 'b
+val mapU : ('a, 'c) t -> ('a -> 'b [@bs]) -> ('b, 'c) t
+val map : ('a, 'c) t -> ('a -> 'b) -> ('b, 'c) t
+val flatMapU : ('a, 'c) t -> ('a -> ('b, 'c) t [@bs]) -> ('b, 'c) t
+val flatMap : ('a, 'c) t -> ('a -> ('b, 'c) t) -> ('b, 'c) t
+val getWithDefault : ('a, 'b) t -> 'a -> 'a
+val isOk : ('a, 'b) t -> bool
+val isError : ('a, 'b) t -> bool
+val eqU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool [@bs]) -> bool
+val eq : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> bool) -> bool
+val cmpU : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int [@bs]) -> int
+val cmp : ('a, 'c) t -> ('b, 'd) t -> ('a -> 'b -> int) -> int

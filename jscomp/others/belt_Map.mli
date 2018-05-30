@@ -208,8 +208,6 @@ val toList: ('k, 'v, 'id) t -> ('k * 'v) list
     {b See} {!toArray}
 *)
 
-val ofArray:  ('k * 'v) array -> id:('k,'id) id -> ('k,'v,'id) t
-[@@ocaml.deprecated "Use fromArray instead"]
 
 val fromArray:  ('k * 'v) array -> id:('k,'id) id -> ('k,'v,'id) t
 (** [fromArray kvs ~id]

@@ -49,7 +49,7 @@ mode. In package mode, you have to provide `package.json` on top and set the opt
 The project name of your project. The user is suggested to make it
 consistent with the `name` field in `package.json`
 
-### -bs-packge-output
+### -bs-package-output
 The format is `module_system:oupt/path/relative/to/package.json`
 Currently supported module systesms are: `commonjs`, `amdjs` and
 `es6`.

@@ -14,8 +14,8 @@ module A = Belt.Array
 module I = Array_data_util
 
 
-let mapOfArray x = M.ofArray ~id:(module Icmp) x
-let setOfArray x = N.ofArray ~id:(module Icmp) x
+let mapOfArray x = M.fromArray ~id:(module Icmp) x
+let setOfArray x = N.fromArray ~id:(module Icmp) x
 let emptyMap () = M.make (module Icmp)
 
 let mergeInter s1 s2 =
@@ -72,10 +72,10 @@ let () =
   b __LOC__ (not (M.has a5 3));
   b __LOC__ (Js.eqUndefined 3 (M.getUndefined a0 3));
   b __LOC__ (Js.eqUndefined 33 (M.getUndefined a1 3));
-  b __LOC__ (Js.Undefined.test (M.getUndefined a2 3));
+  b __LOC__ ((M.getUndefined a2 3) = Js.undefined);
 
   b __LOC__ (Js.eqUndefined 11 (M.getUndefined a3 3));
-  b __LOC__ (Js.Undefined.test (M.getUndefined a4 3));
+  b __LOC__ ((M.getUndefined a4 3) = Js.undefined);
 
   let a7 = M.removeMany a0 [|7;8;0;1;3;2;4;922;4;5;6;|] in
   eq __LOC__ (M.keysToArray a7) [|9;10|];

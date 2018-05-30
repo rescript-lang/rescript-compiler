@@ -6,7 +6,7 @@ var Belt_MapInt = require("../../lib/js/belt_MapInt.js");
 
 var empty = new Immutable.OrderedMap();
 
-function ofArray(kvs) {
+function fromArray(kvs) {
   var v = empty;
   for(var i = 0 ,i_finish = kvs.length - 1 | 0; i <= i_finish; ++i){
     var match = kvs[i];
@@ -31,7 +31,7 @@ var shuffledDataAdd = Belt_Array.makeByAndShuffle(1000001, (function (i) {
       }));
 
 function test() {
-  var v = ofArray(shuffledDataAdd);
+  var v = fromArray(shuffledDataAdd);
   for(var j = 0; j <= 1000000; ++j){
     should(v.has(j));
   }
@@ -39,7 +39,7 @@ function test() {
 }
 
 function test2() {
-  var v = Belt_MapInt.ofArray(shuffledDataAdd);
+  var v = Belt_MapInt.fromArray(shuffledDataAdd);
   for(var j = 0; j <= 1000000; ++j){
     should(Belt_MapInt.has(v, j));
   }
@@ -66,7 +66,7 @@ var M = 0;
 
 exports.A = A;
 exports.empty = empty;
-exports.ofArray = ofArray;
+exports.fromArray = fromArray;
 exports.should = should;
 exports.count = count;
 exports.shuffledDataAdd = shuffledDataAdd;

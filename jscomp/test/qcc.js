@@ -130,15 +130,9 @@ function getq() {
 function isid(param) {
   var switcher = param - 91 | 0;
   if (switcher > 5 || switcher < 0) {
-    if ((switcher + 26 >>> 0) > 57) {
-      return false;
-    } else {
-      return true;
-    }
-  } else if (switcher !== 4) {
-    return false;
+    return (switcher + 26 >>> 0) <= 57;
   } else {
-    return true;
+    return switcher === 4;
   }
 }
 

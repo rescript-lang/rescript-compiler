@@ -37,7 +37,7 @@ module So = Belt.SortArray
 let () = 
   let u = I.randomRange 30 100 ++ I.randomRange 40 120 in 
   let v = A.zip u u in 
-  let xx = N.ofArray ~id:(module Y) v  in 
+  let xx = N.fromArray ~id:(module Y) v  in 
   eqx __LOC__ (N.size xx) 91;
   eqx __LOC__ (So.stableSortBy (N.keysToArray xx) cmp) (I.range 30 120)
 

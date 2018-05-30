@@ -45,8 +45,6 @@ let fromArray (type k) (type idx) data ~(id : (k,idx) id)  =
   let cmp = M.cmp in
   S.t ~cmp ~data:(Dict.fromArray ~cmp data)
 
-let ofArray = fromArray
-
 let remove m x  =
   let cmp, odata = m |. S.(cmp, data) in
   let newData = Dict.remove odata x ~cmp  in

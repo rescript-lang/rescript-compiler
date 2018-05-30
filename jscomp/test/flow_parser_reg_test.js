@@ -4913,15 +4913,9 @@ function is_identifier($staropt$star, env) {
   } else if (typeof match === "number") {
     var switcher = match - 1 | 0;
     if (switcher > 56 || switcher < 0) {
-      if (switcher >= 62) {
-        return false;
-      } else {
-        return true;
-      }
-    } else if (switcher !== 25) {
-      return false;
+      return switcher < 62;
     } else {
-      return true;
+      return switcher === 25;
     }
   } else {
     return false;
@@ -4942,8 +4936,12 @@ function is_function($staropt$star, env) {
 function is_class($staropt$star, env) {
   var i = $staropt$star ? $staropt$star[0] : 0;
   var match = token$2(/* Some */[i], env);
-  if (typeof match === "number" && !(match !== 12 && match !== 38)) {
-    return true;
+  if (typeof match === "number") {
+    if (match !== 12) {
+      return match === 38;
+    } else {
+      return true;
+    }
   } else {
     return false;
   }
@@ -11066,15 +11064,9 @@ function case_list(env, _param) {
         if (typeof param === "number") {
           var switcher = param - 2 | 0;
           if (switcher > 29 || switcher < 0) {
-            if (switcher !== 32) {
-              return false;
-            } else {
-              return true;
-            }
-          } else if (switcher > 28 || switcher < 1) {
-            return true;
+            return switcher === 32;
           } else {
-            return false;
+            return switcher > 28 || switcher < 1;
           }
         } else {
           return false;

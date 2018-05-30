@@ -148,8 +148,4 @@ val checkInvariantInternal: _ t -> unit
   2. It is not really significantly more *)
 
 
-val ofArray: 'k array -> id:('k, 'id) id ->   ('k, 'id) t
-[@@ocaml.deprecated "Use fromArray instead"]
 
-val ofSortedArrayUnsafe: 'value array -> id:('value, 'id) id ->  ('value,'id) t
-[@@ocaml.deprecated "Use fromSortedArrayUnsafe instead"]

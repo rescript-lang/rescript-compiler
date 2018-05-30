@@ -26,6 +26,7 @@
 
 
 
+val tag_is_zero : J.expression -> bool
 
  val needBlockRuntime : 
     J.expression ->

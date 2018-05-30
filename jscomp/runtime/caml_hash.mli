@@ -26,7 +26,4 @@
 
 
 (** *)
-val caml_hash_mix_int : nativeint -> nativeint -> nativeint
-val caml_hash_mix_string : nativeint -> string -> nativeint
-val caml_hash_final_mix : nativeint -> nativeint
 val caml_hash : int -> 'a -> nativeint -> Obj.t -> nativeint

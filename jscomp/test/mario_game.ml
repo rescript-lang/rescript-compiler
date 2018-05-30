@@ -1661,7 +1661,7 @@ let keydown evt =
   | 40 | 83 -> pressed_keys.down <- true
   | 66 -> pressed_keys.bbox <- (pressed_keys.bbox + 1) mod 2
   | _ -> ()
-  in Js.true_
+  in true
 
 (* Keyup event handler translates a key release *)
 let keyup evt =
@@ -1672,7 +1672,7 @@ let keyup evt =
   | 37 | 65 -> pressed_keys.left <- false
   | 40 | 83 -> pressed_keys.down <- false
   | _ -> ()
-  in Js.true_
+  in true
 
 end
 module Procedural_generator : sig 
@@ -2012,8 +2012,8 @@ let load _ =
     | Some el -> Dom_html.elementToCanvasElement el
   in
   let context = (Dom_html.canvasElementToJsObj canvas)##getContext "2d" in
-  let _ = Dom_html.addEventListener Dom_html.document "keydown" (Director.keydown) Js.true_ in
-  let _ = Dom_html.addEventListener Dom_html.document "keyup" (Director.keyup) Js.true_ in
+  let _ = Dom_html.addEventListener Dom_html.document "keydown" (Director.keydown) true in
+  let _ = Dom_html.addEventListener Dom_html.document "keyup" (Director.keyup) true in
   let () = Pg.init () in
   let _ = Director.update_loop canvas (Pg.generate level_width level_height context) (level_width,level_height) in
   print_endline "asd";
@@ -2032,9 +2032,9 @@ let preload _ =
     let img = (Html.createImg Dom_html.document) in
     (Dom_html.imageElementToJsObj img)##src #= (img_src) ;
     ignore(Dom_html.addEventListenerImg  img "load"
-    ( (fun ev ->  inc_counter(); Js.true_)) Js.true_)) imgs
+    ( (fun ev ->  inc_counter(); true)) true)) imgs
 
 
-let _ = (Dom_html.windowToJsObj Dom_html.window)##onload #= (fun _ -> ignore (preload()); Js.true_)
+let _ = (Dom_html.windowToJsObj Dom_html.window)##onload #= (fun _ -> ignore (preload()); true)
 
 end

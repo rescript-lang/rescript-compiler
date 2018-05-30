@@ -24264,8 +24264,8 @@ function in_pervasives(p) {
 
 function is_datatype(decl) {
   var match = decl[/* type_kind */2];
-  if (typeof match === "number" && match === 0) {
-    return false;
+  if (typeof match === "number") {
+    return match !== 0;
   } else {
     return true;
   }
@@ -35145,26 +35145,14 @@ function parenthesized_ident(name) {
     var match = Caml_string.get(name, 0);
     if (match >= 97) {
       if (match >= 223) {
-        if (match !== 247) {
-          return false;
-        } else {
-          return true;
-        }
-      } else if (match >= 123) {
-        return true;
+        return match === 247;
       } else {
-        return false;
+        return match >= 123;
       }
     } else if (match >= 91) {
-      if (match !== 95) {
-        return true;
-      } else {
-        return false;
-      }
-    } else if (match >= 65) {
-      return false;
+      return match !== 95;
     } else {
-      return true;
+      return match < 65;
     }
   }
 }
@@ -41505,10 +41493,10 @@ function same_path(t, t$prime) {
       var exit = 0;
       if (typeof s1 === "number" || s1.tag) {
         exit = 1;
-      } else if (typeof s2 === "number" || !(!s2.tag && s1[0] === s2[0])) {
+      } else if (typeof s2 === "number" || s2.tag) {
         return false;
       } else {
-        return true;
+        return s1[0] === s2[0];
       }
       if (exit === 1) {
         var exit$1 = 0;
@@ -58357,11 +58345,7 @@ function is_nonexpansive(_exp) {
           _exp = match[1];
           continue ;
       case 19 : 
-          if (class_type_arity(match[2][/* cty_type */1]) > 0) {
-            return true;
-          } else {
-            return false;
-          }
+          return class_type_arity(match[2][/* cty_type */1]) > 0;
       case 23 : 
           if (is_nonexpansive_mod(match[2])) {
             _exp = match[3];

@@ -23,9 +23,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-# 28
+# 28 "mapm.cppo.mli"
 type key = int
-# 32
+# 32 "mapm.cppo.mli"
 type 'a t
 
 
@@ -81,8 +81,6 @@ val toList: 'a t -> (key * 'a) list
 (** In increasing order *)
 val toArray: 'a t -> (key * 'a) array   
 
-val ofArray: (key * 'a) array -> 'a t 
-[@@ocaml.deprecated "Use fromArray instead"]
 
 val fromArray: (key * 'a) array -> 'a t 
 val keysToArray: 'a t -> key array 
@@ -115,7 +113,7 @@ val remove: 'a t -> key -> unit
 val removeMany: 'a t -> key array -> unit
     
 val set: 'a t -> key -> 'a -> unit  
-(** [add m x y] do the in-place modification, return
+(** [set m x y] do the in-place modification, return
     [m] for chaining. If [x] was already bound
    in [m], its previous binding disappears. *)
 

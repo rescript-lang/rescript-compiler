@@ -64,7 +64,7 @@ var u = Belt_Array.concat(Array_data_util.randomRange(30, 100), Array_data_util.
 
 var v = Belt_Array.zip(u, u);
 
-var xx = Belt_HashMap.ofArray(v, Y);
+var xx = Belt_HashMap.fromArray(v, Y);
 
 eqx("File \"bs_hashmap_test.ml\", line 41, characters 6-13", xx.size, 91);
 

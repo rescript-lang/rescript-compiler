@@ -186,8 +186,6 @@ let fromArray (type a) (type identity) arr ~(id:(a,identity) id)  =
   done ;
   v
 
-let ofArray = fromArray
-
 let mergeMany h arr = 
   let eq, hash = C.eq h, C.hash h in 
   let len = A.length arr in 

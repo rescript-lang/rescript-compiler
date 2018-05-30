@@ -84,8 +84,6 @@ val toList: 'a t -> (key * 'a) list
 (** In increasing order *)
 val toArray: 'a t -> (key * 'a) array   
 
-val ofArray: (key * 'a) array -> 'a t 
-[@@ocaml.deprecated "Use fromArray instead"]
 
 val fromArray: (key * 'a) array -> 'a t 
 val keysToArray: 'a t -> key array 
@@ -118,7 +116,7 @@ val remove: 'a t -> key -> unit
 val removeMany: 'a t -> key array -> unit
     
 val set: 'a t -> key -> 'a -> unit  
-(** [add m x y] do the in-place modification, return
+(** [set m x y] do the in-place modification, return
     [m] for chaining. If [x] was already bound
    in [m], its previous binding disappears. *)
 

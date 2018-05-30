@@ -45,10 +45,10 @@ var suites_001 = /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          "toExponentialWithPrecision - digits:21",
+          "File \"js_int_test.ml\", line 12, characters 3-10",
           (function () {
               return /* ThrowAny */Block.__(7, [(function () {
-                            (0).toExponential(21);
+                            (0).toExponential(101);
                             return /* () */0;
                           })]);
             })
@@ -105,10 +105,10 @@ var suites_001 = /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      "toPrecisionWithPrecision - digits:22",
+                      "File \"js_int_test.ml\", line 25, characters 3-10",
                       (function () {
                           return /* ThrowAny */Block.__(7, [(function () {
-                                        (0).toPrecision(22);
+                                        (0).toPrecision(101);
                                         return /* () */0;
                                       })]);
                         })

@@ -1,5 +1,5 @@
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
+(* Copyright (C) 2018 Authors of BuckleScript
+ * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,12 +17,11 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(** Contains functions for dealing with JavaScript booleans *)
-
-external to_js_boolean : bool -> bool = "%identity"
-[@@ocaml.deprecated "This function is not needed any more"]
+val caml_hash_mix_int : nativeint -> nativeint -> nativeint
+val caml_hash_mix_string : nativeint -> string -> nativeint
+val caml_hash_final_mix : nativeint -> nativeint

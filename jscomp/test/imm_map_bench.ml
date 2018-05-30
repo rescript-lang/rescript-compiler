@@ -8,7 +8,7 @@ external mem : map -> int -> bool = "has" [@@bs.send]
 
 module A = Belt.Array
 let empty = empty ()
-let ofArray kvs = 
+let fromArray kvs = 
   let v = ref empty in 
   for i = 0 to A.length kvs - 1 do
     let key, value = (A.getUnsafe kvs i)  in 
@@ -26,7 +26,7 @@ let shuffledDataAdd = (A.makeByAndShuffle (count +  1) (fun i -> (i,i)))
 
 
 let test () = 
-  let v = ofArray shuffledDataAdd  in 
+  let v = fromArray shuffledDataAdd  in 
   for j = 0 to count do 
     should (mem v j)
   done
@@ -35,7 +35,7 @@ module M =  Belt.Map.Int
 
 
 let test2 () = 
-  let v = M.ofArray shuffledDataAdd in 
+  let v = M.fromArray shuffledDataAdd in 
   for j = 0 to count do 
     should (M.has v j)
   done ;

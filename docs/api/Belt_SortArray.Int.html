@@ -5,13 +5,14 @@
                  <link rel="stylesheet" href="../api_static/style.css" type="text/css">
                  <script src="../api_static//highlight.pack.js"></script>
                  <script src="../api_static//script.js"></script>
-                 <script>hljs.initHighlightingOnLoad();</script>
+                 <script>hljs.initHighlightingOnLoad();</script> 
                  <meta charset="utf8">
                  <link rel="next" href="Belt_SortArray.String.html">
-                 <title> Belt_SortArray.Int </title></head>
+                 <title> Belt_SortArray.Int </title></head> 
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
 <li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
@@ -34,6 +35,7 @@
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
 <li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
 <li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
@@ -101,9 +103,9 @@
                     <div class="not-examples">
                     Specalized when key type is <code class="code">int</code>, more efficient
     than the generic type<br>
-
+ 
                     </div>
-
+                    
                     </div>
 
                   <hr width="100%">
@@ -116,56 +118,56 @@
                     <div class="not-examples">
                     The same as <a href="Belt_SortArray.html#VALstrictlySortedLength"><code class="code">Belt_SortArray.strictlySortedLength</code></a> except the comparator is fixed<br>
 <div class="tag"> <b>Returns</b> <code class="code">+n</code> means increasing order  <code class="code">-n</code> means negative order<br>
- </div>
+ </div> 
+                    </div>
+                    
                     </div>
 
-                    </div>
-
-
+                  
 <pre><span id="VALisSorted"><span class="keyword">val</span> isSorted</span> : <code class="type"><a href="Belt_SortArrayInt.html#TYPEelement">element</a> array -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">sorted xs</code> return true if <code class="code">xs</code> is in non strict increasing order<br>
-
+ 
+                    </div>
+                    
                     </div>
 
-                    </div>
-
-
+                  
 <pre><span id="VALstableSortInPlace"><span class="keyword">val</span> stableSortInPlace</span> : <code class="type"><a href="Belt_SortArrayInt.html#TYPEelement">element</a> array -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     The same as <a href="Belt_SortArray.html#VALstableSortInPlaceBy"><code class="code">Belt_SortArray.stableSortInPlaceBy</code></a> except the comparator is fixed<br>
-
+ 
+                    </div>
+                    
                     </div>
 
-                    </div>
-
-
+                  
 <pre><span id="VALstableSort"><span class="keyword">val</span> stableSort</span> : <code class="type"><a href="Belt_SortArrayInt.html#TYPEelement">element</a> array -> <a href="Belt_SortArrayInt.html#TYPEelement">element</a> array</code></pre><div class="info ">
                     <div class="not-examples">
                     The same as <a href="Belt_SortArray.html#VALstableSortBy"><code class="code">Belt_SortArray.stableSortBy</code></a> except the comparator is fixed<br>
-
+ 
+                    </div>
+                    
                     </div>
 
-                    </div>
-
-
+                  
 <pre><span id="VALbinarySearch"><span class="keyword">val</span> binarySearch</span> : <code class="type"><a href="Belt_SortArrayInt.html#TYPEelement">element</a> array -> <a href="Belt_SortArrayInt.html#TYPEelement">element</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
-                    If value is not found and value is less than one or more elements in array,
-  the negative number returned is the bitwise complement of the index of the first element
-  that is larger than value.
+                    If value is not found and value is less than one or more elements in array, 
+  the negative number returned is the bitwise complement of the index of the first element 
+  that is larger than value. 
 <p>
 
   If value is not found and value is greater than all elements in array,
-  the negative number returned is the bitwise complement of
+  the negative number returned is the bitwise complement of 
   (the index of the last element plus 1)
 <p>
 
   for example, if <code class="code">key</code> is smaller than all elements return <code class="code">-1</code> since <code class="code">lnot (-1) = 0</code>
   if <code class="code">key</code> is larger than all elements return <code class="code">- (len + 1)</code> since <code class="code">lnot (-(len+1)) = len</code><br>
-
+ 
                     </div>
-
+                    
                     </div>
 
                   </body></html>

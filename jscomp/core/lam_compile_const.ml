@@ -70,8 +70,6 @@ let rec translate (x : Lam.constant ) : J.expression =
 
   | Const_pointer (c,pointer_info) -> 
     begin match pointer_info with
-    | Pt_builtin_boolean ->
-      E.bool (c <> 0)
     | Pt_constructor "None" ->
       E.nil ?comment:(Some "None") ()
     | _ ->

@@ -32,7 +32,6 @@ let size = N.size
 let toList = N.toList
 let toArray = N.toArray
 let fromSortedArrayUnsafe = N.fromSortedArrayUnsafe
-let ofSortedArrayUnsafe = N.fromSortedArrayUnsafe
 let checkInvariantInternal = N.checkInvariantInternal
 
 let rec add  (t : t) (x : value) : t =
@@ -49,7 +48,7 @@ let rec add  (t : t) (x : value) : t =
       else 
         let rr = add r x in 
         if rr == r then t
-        else N.bal l v (add  r x)
+        else N.bal l v rr
 
 let mergeMany h arr =   
   let len = A.length arr in 
@@ -94,7 +93,6 @@ let removeMany h arr =
   !v 
           
 let fromArray = I.fromArray
-let ofArray = I.fromArray
 let cmp = I.cmp 
 let eq = I.eq 
 let get = I.get

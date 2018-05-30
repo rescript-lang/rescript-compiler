@@ -38,3 +38,5 @@ val fuseAll: ?loc:Ast_helper.loc ->  t -> item
   item *)
 
 val constraint_ : ?loc:Ast_helper.loc -> t -> Ast_signature.t -> item
+
+val dummy_item : Location.t -> item 

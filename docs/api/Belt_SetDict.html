@@ -12,6 +12,7 @@
                <body>
 <nav class="module-index"><ul><li><a href="Belt.html">Belt</a></li>
 <li><a href="Belt_Array.html">Belt_Array</a></li>
+<li><a href="Belt_Debug.html">Belt_Debug</a></li>
 <li><a href="Belt_HashMap.html">Belt_HashMap</a></li>
 <li><a href="Belt_HashMapInt.html">Belt_HashMapInt</a></li>
 <li><a href="Belt_HashMapString.html">Belt_HashMapString</a></li>
@@ -34,6 +35,7 @@
 <li><a href="Belt_MutableStack.html">Belt_MutableStack</a></li>
 <li><a href="Belt_Option.html">Belt_Option</a></li>
 <li><a href="Belt_Range.html">Belt_Range</a></li>
+<li><a href="Belt_Result.html">Belt_Result</a></li>
 <li><a href="Belt_Set.html">Belt_Set</a></li>
 <li><a href="Belt_SetDict.html">Belt_SetDict</a></li>
 <li><a href="Belt_SetInt.html">Belt_SetInt</a></li>
@@ -108,22 +110,20 @@
 
                   <hr width="100%">
 <div class="type-declaration">
-<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('key, 'id)</code> t</span> </pre>
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type">('value, 'identity)</code> t</span> </pre>
 </div>
 
 <div class="type-declaration">
-<pre><span id="TYPEcmp"><span class="keyword">type</span> <code class="type">('key, 'id)</code> cmp</span> = <code class="type">('key, 'id) <a href="Belt_Id.html#TYPEcmp">Belt_Id.cmp</a></code> </pre>
+<pre><span id="TYPEcmp"><span class="keyword">type</span> <code class="type">('value, 'id)</code> cmp</span> = <code class="type">('value, 'id) <a href="Belt_Id.html#TYPEcmp">Belt_Id.cmp</a></code> </pre>
 </div>
 
 
 <pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
-<pre><span id="VALofArray"><span class="keyword">val</span> ofArray</span> : <code class="type">'k array -> cmp:('k, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('k, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
-<pre><span id="VALofSortedArrayUnsafe"><span class="keyword">val</span> ofSortedArrayUnsafe</span> : <code class="type">'value array -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
-<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">'k array -> cmp:('k, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('k, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
+<pre><span id="VALfromArray"><span class="keyword">val</span> fromArray</span> : <code class="type">'value array -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALfromSortedArrayUnsafe"><span class="keyword">val</span> fromSortedArrayUnsafe</span> : <code class="type">'value array -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALisEmpty"><span class="keyword">val</span> isEmpty</span> : <code class="type">('a, 'b) <a href="Belt_SetDict.html#TYPEt">t</a> -> bool</code></pre>
-<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">('k, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'k -> cmp:('k, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> bool</code></pre>
-<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">('k, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'k -> cmp:('k, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('k, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre><div class="info ">
+<pre><span id="VALhas"><span class="keyword">val</span> has</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> bool</code></pre>
+<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">add s x</code> If <code class="code">x</code> was already in <code class="code">s</code>, <code class="code">s</code> is returned unchanged.<br>
  
@@ -146,7 +146,16 @@
 <pre><span id="VALunion"><span class="keyword">val</span> union</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALintersect"><span class="keyword">val</span> intersect</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALdiff"><span class="keyword">val</span> diff</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
-<pre><span id="VALsubset"><span class="keyword">val</span> subset</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> bool</code></pre>
+<pre><span id="VALsubset"><span class="keyword">val</span> subset</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">subset s1 s2</code> tests whether the set <code class="code">s1</code> is a subset of
+   the set <code class="code">s2</code>.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALcmp"><span class="keyword">val</span> cmp</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> int</code></pre><div class="info ">
                     <div class="not-examples">
                     Total ordering between sets. Can be used as the ordering function
@@ -157,7 +166,16 @@
                     </div>
 
                   
-<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> bool</code></pre>
+<pre><span id="VALeq"><span class="keyword">val</span> eq</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">eq s1 s2</code> tests whether the sets <code class="code">s1</code> and <code class="code">s2</code> are
+   equal, that is, contain equal elements.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALforEachU"><span class="keyword">val</span> forEachU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> unit [@bs]) -> unit</code></pre>
 <pre><span id="VALforEach"><span class="keyword">val</span> forEach</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> unit) -> unit</code></pre><div class="info ">
                     <div class="not-examples">
@@ -172,7 +190,7 @@
 <pre><span id="VALreduceU"><span class="keyword">val</span> reduceU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'a -> ('a -> 'value -> 'a [@bs]) -> 'a</code></pre>
 <pre><span id="VALreduce"><span class="keyword">val</span> reduce</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> 'a -> ('a -> 'value -> 'a) -> 'a</code></pre><div class="info ">
                     <div class="not-examples">
-                    In increasing order.<br>
+                    Iterate in increasing order.<br>
  
                     </div>
                     
@@ -183,7 +201,7 @@
 <pre><span id="VALevery"><span class="keyword">val</span> every</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">every p s</code> checks if all elements of the set
-    satisfy the predicate <code class="code">p</code>. Order unspecified<br>
+    satisfy the predicate <code class="code">p</code>. Order unspecified.<br>
  
                     </div>
                     
@@ -194,7 +212,7 @@
 <pre><span id="VALsome"><span class="keyword">val</span> some</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -> ('value -> bool) -> bool</code></pre><div class="info ">
                     <div class="not-examples">
                     <code class="code">some p s</code> checks if at least one element of
-    the set satisfies the predicate <code class="code">p</code>.<br>
+   the set satisfies the predicate <code class="code">p</code>. Oder unspecified.<br>
  
                     </div>
                     
@@ -204,8 +222,8 @@
 <pre><span id="VALkeepU"><span class="keyword">val</span> keepU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value -> bool [@bs]) -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALkeep"><span class="keyword">val</span> keep</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value -> bool) -> ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">keep m p</code> returns the set of all elements in <code class="code">s</code>
-    that satisfy predicate <code class="code">p</code>.<br>
+                    <code class="code">keep p s</code> returns the set of all elements in <code class="code">s</code>
+   that satisfy predicate <code class="code">p</code>.<br>
  
                     </div>
                     
@@ -215,10 +233,10 @@
 <pre><span id="VALpartitionU"><span class="keyword">val</span> partitionU</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value -> bool [@bs]) -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> * ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre>
 <pre><span id="VALpartition"><span class="keyword">val</span> partition</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       ('value -> bool) -><br>       ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> * ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a></code></pre><div class="info ">
                     <div class="not-examples">
-                    <code class="code">partition m p</code> returns a pair of sets <code class="code">(s1, s2)</code>, where
-    <code class="code">s1</code> is the set of all the elements of <code class="code">s</code> that satisfy the
-    predicate <code class="code">p</code>, and <code class="code">s2</code> is the set of all the elements of
-    <code class="code">s</code> that do not satisfy <code class="code">p</code>.<br>
+                    <code class="code">partition p s</code> returns a pair of sets <code class="code">(s1, s2)</code>, where
+   <code class="code">s1</code> is the set of all the elements of <code class="code">s</code> that satisfy the
+   predicate <code class="code">p</code>, and <code class="code">s2</code> is the set of all the elements of
+   <code class="code">s</code> that do not satisfy <code class="code">p</code>.<br>
  
                     </div>
                     
@@ -243,7 +261,21 @@
 <pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> 'value option</code></pre>
 <pre><span id="VALgetUndefined"><span class="keyword">val</span> getUndefined</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> 'value <a href="Js.html#TYPEundefined">Js.undefined</a></code></pre>
 <pre><span id="VALgetExn"><span class="keyword">val</span> getExn</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value -> cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -> 'value</code></pre>
-<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -><br>       (('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> * ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a>) * bool</code></pre>
+<pre><span id="VALsplit"><span class="keyword">val</span> split</span> : <code class="type">('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> -><br>       'value -><br>       cmp:('value, 'id) <a href="Belt_SetDict.html#TYPEcmp">cmp</a> -><br>       (('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a> * ('value, 'id) <a href="Belt_SetDict.html#TYPEt">t</a>) * bool</code></pre><div class="info ">
+                    <div class="not-examples">
+                    <code class="code">split x s</code> returns a triple <code class="code">(l, present, r)</code>, where
+      <code class="code">l</code> is the set of elements of <code class="code">s</code> that are
+      strictly less than <code class="code">x</code>;
+      <code class="code">r</code> is the set of elements of <code class="code">s</code> that are
+      strictly greater than <code class="code">x</code>;
+      <code class="code">present</code> is <code class="code">false</code> if <code class="code">s</code> contains no element equal to <code class="code">x</code>,
+      or <code class="code">true</code> if <code class="code">s</code> contains an element equal to <code class="code">x</code>.<br>
+ 
+                    </div>
+                    
+                    </div>
+
+                  
 <pre><span id="VALcheckInvariantInternal"><span class="keyword">val</span> checkInvariantInternal</span> : <code class="type">('a, 'b) <a href="Belt_SetDict.html#TYPEt">t</a> -> unit</code></pre><div class="info ">
                     <div class="not-examples">
                     <b>raise</b> when invariant is not held<br>
