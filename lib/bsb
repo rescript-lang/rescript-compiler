@@ -13,10 +13,58 @@ var os = require('os');
 var bsconfig = 'bsconfig.json'
 var bsb_exe = __filename + ".exe"
 
+var LAST_SUCCESS_BUILD_STAMP = 0
 
+// All clients of type MiniWebSocket
+var wsClients = []
 var watch_mode = false
 var verbose = false
 var postBuild = undefined
+var useWebSocket = false
+var webSocketPort = 9999
+
+function dlog(str){
+    if(verbose){
+        console.log(str)
+    }
+}
+function notifyClients() {
+    wsClients = wsClients.filter(x => !x.closed && !x.socket.destroyed )
+    var wsClientsLen = wsClients.length
+    dlog(`Alive sockets number: ${wsClientsLen}`)    
+    for (var i = 0; i < wsClientsLen; ++ i ) {
+        var client = wsClients[i]
+        if (!client.closed) {
+            client.sendText(
+                JSON.stringify(
+                    {
+                        LAST_SUCCESS_BUILD_STAMP: LAST_SUCCESS_BUILD_STAMP
+                    }
+                )
+
+            )
+        }
+    }
+}
+
+function setUpWebSocket() {
+    var WebSocket = require('./minisocket.js').MiniWebSocket
+    var id = setInterval(notifyClients, 3000)
+    require('http').createServer()
+        .on('upgrade', function (req, socket, upgradeHead) {
+            dlog("connection opened");
+            var ws = new WebSocket(req, socket, upgradeHead);
+            wsClients.push(ws)
+        })
+        .on('error', function (err) {
+            console.error(err)
+            process.exit(2)
+        })
+        .listen(webSocketPort, "localhost");
+}
+
+
+
 /**
  * @type {string[]}
  */
@@ -28,6 +76,14 @@ for (var i = 2; i < process_argv.length; ++i) {
         // TODO boundary safety check
         // Not really needed
         postBuild = process_argv[++i]
+    } else if (current === "-ws") {
+        var portNumber = parseInt(process_argv[++i])
+        dlog(`WebSocket port number: ${portNumber}`)
+        if (!isNaN (portNumber )){
+            webSocketPort = portNumber
+        }
+        useWebSocket = true
+
     } else {
         delegate_args.push(current)
         if (current === '-w') {
@@ -35,9 +91,11 @@ for (var i = 2; i < process_argv.length; ++i) {
         } else if (current === "-verbose") {
             verbose = true
 
-        } 
+        }
     }
 }
+
+
 
 try {
     child_process.execFileSync(bsb_exe, delegate_args, { stdio: 'inherit' })
@@ -55,7 +113,9 @@ try {
 if (watch_mode) {
     var fs = require('fs')
     var path = require('path')
-
+    if (useWebSocket) {
+        setUpWebSocket()
+    }
     // for column one based error message
     process.env.BS_VSCODE = '1'
     var cwd = process.cwd()
@@ -192,20 +252,12 @@ if (watch_mode) {
     function logFinish(code) {
         if (std_is_tty) {
             if (code === 0) {
-                if (postBuild) {
-                    console.log("running postbuild command", postBuild)
-                    child_process.exec(postBuild, { shell: true })
-                }
                 console.log("\x1b[36m>>>> Finish compiling\x1b[0m")
             } else {
                 console.log("\x1b[1;31m>>>> Finish compiling(exit: " + code + ")\x1b[0m")
             }
         } else {
             if (code === 0) {
-                if (postBuild) {
-                    console.log("running postbuild command", postBuild)
-                    child_process.exec(postBuild, { shell: true })
-                }
                 console.log(">>>> Finish compiling")
             } else {
                 console.log(">>>> Finish compiling(exit: " + code + ")")
@@ -227,6 +279,14 @@ if (watch_mode) {
      * @param signal {string}
      */
     function build_finished_callback(code, signal) {
+        if(code === 0){
+            LAST_SUCCESS_BUILD_STAMP = + new Date() ;
+            notifyClients()
+            if(postBuild){
+                dlog(`running postbuild command: ${postBuild}`)
+                child_process.exec(postBuild, { shell: true })
+            }
+        }
         logFinish(code)
         releaseBuild()
         if (needRebuild()) {
