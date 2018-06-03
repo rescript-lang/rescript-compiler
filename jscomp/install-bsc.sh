@@ -2,4 +2,5 @@
 
 # dev small utils
 # hot replace global bsb.exe for quick testing
-cp ../lib/bsc.exe /usr/local/lib/node_modules/bs-platform/lib/
+npm_prefix=`npm prefix -g`
+cp ../lib/bsc.exe $npm_prefix/lib/node_modules/bs-platform/lib/
