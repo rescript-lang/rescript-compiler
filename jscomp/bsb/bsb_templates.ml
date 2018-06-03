@@ -740,7 +740,7 @@ let root = OCamlRes.Res.([
          \n\
         \  render: self => {\n\
         \    let message =\n\
-        \      \"You'ved this \" ++ string_of_int(self.state.count) ++ \" times(s)\";\n\
+        \      \"You've clicked this \" ++ string_of_int(self.state.count) ++ \" times(s)\";\n\
         \    <div>\n\
         \      <button onClick=(_event => self.send(Click))>\n\
         \        (ReasonReact.string(message))\n\

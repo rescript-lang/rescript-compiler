@@ -30,7 +30,7 @@ let make = (~greeting, _children) => {
 
   render: self => {
     let message =
-      "You'ved this " ++ string_of_int(self.state.count) ++ " times(s)";
+      "You've clicked this " ++ string_of_int(self.state.count) ++ " times(s)";
     <div>
       <button onClick=(_event => self.send(Click))>
         (ReasonReact.string(message))
