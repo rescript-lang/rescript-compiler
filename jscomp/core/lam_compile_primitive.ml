@@ -431,15 +431,9 @@ let translate  loc
       | [l;r] -> E.js_comp cmp l r 
       | _ -> assert false 
     end
-  | Pintcomp (cmp, Cmp_opt) ->
-    begin 
-      match args with 
-      | [e1;e2] -> E.int_comp_option cmp e1 e2
-      | _ -> assert false 
-    end
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
-  | Pintcomp (cmp, Cmp_int)
+  | Pintcomp cmp
   | Pbintcomp (Pint32 ,cmp)
     ->
     begin 

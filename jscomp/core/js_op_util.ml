@@ -39,7 +39,7 @@ let op_prec (op : Js_op.binop ) =
   | Eq -> 1, 13, 1
   | Or -> 3, 3, 3
   | And -> 4, 4, 4
-  | EqEqEq | NotEqEq | EqEq | NotEq -> 8, 8, 9
+  | EqEqEq | NotEqEq -> 8, 8, 9
   | Gt | Ge | Lt | Le | InstanceOf -> 9, 9, 10
   | Bor -> 5, 5, 5
   | Bxor -> 6, 6, 6
@@ -77,8 +77,6 @@ let op_str (op : Js_op.binop) =
   | And     -> "&&"
   | EqEqEq  -> "==="
   | NotEqEq -> "!=="
-  | EqEq  -> "=="
-  | NotEq -> "!="
   | Lt      -> "<"
   | Le      -> "<="
   | Gt      -> ">"

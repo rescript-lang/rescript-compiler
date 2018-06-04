@@ -299,7 +299,7 @@ let comp_primitive p args =
   match p with
     Pgetglobal id -> Kgetglobal id
   | Psetglobal id -> Ksetglobal id
-  | Pintcomp (cmp, _) -> Kintcomp cmp
+  | Pintcomp cmp -> Kintcomp cmp
   | Pmakeblock(tag, _, mut) -> Kmakeblock(List.length args, tag)
   | Pfield (n, _) -> Kgetfield n
   | Psetfield(n, ptr, _) -> Ksetfield n
@@ -626,8 +626,8 @@ let rec comp_expr env exp sz cont =
                   Kccall("caml_make_array", 1) :: cont)
       end
 (* Integer first for enabling futher optimization (cf. emitcode.ml)  *)
-  | Lprim (Pintcomp (c, dbg), [arg ; (Lconst _ as k)], _) ->
-      let p = Pintcomp (commute_comparison c, dbg)
+  | Lprim (Pintcomp c, [arg ; (Lconst _ as k)], _) ->
+      let p = Pintcomp (commute_comparison c)
       and args = [k ; arg] in
       comp_args env args sz (comp_primitive p args :: cont)
   | Lprim(p, args, _) ->

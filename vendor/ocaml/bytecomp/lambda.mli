@@ -59,10 +59,6 @@ type pointer_info =
   | Pt_builtin_boolean
   | Pt_na 
 
-type int_comp_dbg =
-  | Cmp_int
-  | Cmp_opt (* comparison for optionals *)
-
 val default_pointer_info : pointer_info
 
 type primitive =
@@ -96,7 +92,7 @@ type primitive =
   | Pnegint | Paddint | Psubint | Pmulint | Pdivint | Pmodint
   | Pandint | Porint | Pxorint
   | Plslint | Plsrint | Pasrint
-  | Pintcomp of comparison * int_comp_dbg
+  | Pintcomp of comparison
   | Poffsetint of int
   | Poffsetref of int
   (* Float operations *)

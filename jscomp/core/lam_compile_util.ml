@@ -31,10 +31,10 @@
 
 
 
-let jsop_of_comp (cmp : Lambda.comparison) cmp_dbg_info : Js_op.binop = 
+let jsop_of_comp (cmp : Lambda.comparison) : Js_op.binop = 
   match cmp with 
-  | Ceq -> if cmp_dbg_info = Lambda.Cmp_opt then EqEq else EqEqEq (* comparison*)
-  | Cneq -> if cmp_dbg_info = Lambda.Cmp_opt then NotEq else NotEqEq
+  | Ceq -> EqEqEq (* comparison*)
+  | Cneq -> NotEqEq
   | Clt -> Lt 
   | Cgt  -> Gt 
   | Cle -> Le 

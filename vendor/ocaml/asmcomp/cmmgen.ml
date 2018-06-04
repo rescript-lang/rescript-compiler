@@ -1710,7 +1710,7 @@ and transl_prim_2 p arg1 arg2 dbg =
   | Pasrint ->
       Cop(Cor, [asr_int (transl arg1) (untag_int(transl arg2));
                 Cconst_int 1])
-  | Pintcomp (cmp, _) ->
+  | Pintcomp cmp ->
       tag_int(Cop(Ccmpi(transl_comparison cmp), [transl arg1; transl arg2]))
   | Pisout ->
       transl_isout (transl arg1) (transl arg2)

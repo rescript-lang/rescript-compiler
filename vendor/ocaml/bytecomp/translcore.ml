@@ -185,8 +185,8 @@ let comparisons_table = Lazy.from_fun @@ fun _ ->
   "%equal",
       { gencomp = Pccall{prim_name = "caml_equal"; prim_arity = 2; prim_alloc = true;
               prim_native_name = ""; prim_native_float = false};
-        intcomp = Pintcomp (Ceq, Cmp_int);
-        boolcomp = if not !Clflags.bs_only then Pintcomp (Ceq, Cmp_int)
+        intcomp = Pintcomp Ceq;
+        boolcomp = if not !Clflags.bs_only then Pintcomp Ceq
           else Pccall{prim_name = "caml_bool_equal"; prim_arity = 2;
                       prim_alloc = false;
                       prim_native_name = ""; prim_native_float = false}; 
@@ -201,8 +201,8 @@ let comparisons_table = Lazy.from_fun @@ fun _ ->
   "%notequal",
       { gencomp = Pccall{prim_name = "caml_notequal"; prim_arity = 2; prim_alloc = true;
               prim_native_name = ""; prim_native_float = false};
-        intcomp = Pintcomp (Cneq, Cmp_int);
-        boolcomp = if not !Clflags.bs_only then Pintcomp (Cneq, Cmp_int)
+        intcomp = Pintcomp Cneq;
+        boolcomp = if not !Clflags.bs_only then Pintcomp Cneq
             else Pccall{prim_name = "caml_bool_notequal"; prim_arity = 2;
               prim_alloc = false; prim_native_name = "";
               prim_native_float = false} ; 
@@ -217,8 +217,8 @@ let comparisons_table = Lazy.from_fun @@ fun _ ->
   "%lessthan",
       { gencomp = Pccall{prim_name = "caml_lessthan"; prim_arity = 2; prim_alloc = true;
               prim_native_name = ""; prim_native_float = false};
-        intcomp = Pintcomp (Clt, Cmp_int);
-        boolcomp = if not !Clflags.bs_only then Pintcomp (Clt, Cmp_int)
+        intcomp = Pintcomp Clt;
+        boolcomp = if not !Clflags.bs_only then Pintcomp Clt
           else Pccall{prim_name = "caml_bool_lessthan"; prim_arity = 2;
                       prim_alloc = false; prim_native_name = "";
                       prim_native_float = false};
@@ -233,8 +233,8 @@ let comparisons_table = Lazy.from_fun @@ fun _ ->
   "%greaterthan",
       { gencomp = Pccall{prim_name = "caml_greaterthan"; prim_arity = 2; prim_alloc = true;
               prim_native_name = ""; prim_native_float = false};
-        intcomp = Pintcomp (Cgt, Cmp_int);
-        boolcomp = if not !Clflags.bs_only then Pintcomp (Cgt, Cmp_int)
+        intcomp = Pintcomp Cgt;
+        boolcomp = if not !Clflags.bs_only then Pintcomp Cgt
           else Pccall{prim_name = "caml_bool_greaterthan"; prim_arity = 2;
               prim_alloc = false; prim_native_name = "";
               prim_native_float = false};
@@ -249,8 +249,8 @@ let comparisons_table = Lazy.from_fun @@ fun _ ->
   "%lessequal",
       { gencomp = Pccall{prim_name = "caml_lessequal"; prim_arity = 2; prim_alloc = true;
               prim_native_name = ""; prim_native_float = false};
-        intcomp = Pintcomp (Cle, Cmp_int);
-        boolcomp = if not !Clflags.bs_only then Pintcomp (Cle, Cmp_int)
+        intcomp = Pintcomp Cle;
+        boolcomp = if not !Clflags.bs_only then Pintcomp Cle
           else Pccall{prim_name = "caml_bool_lessequal"; prim_arity = 2;
                       prim_alloc = false; prim_native_name = "";
                       prim_native_float = false};
@@ -266,8 +266,8 @@ let comparisons_table = Lazy.from_fun @@ fun _ ->
       {gencomp = Pccall{prim_name = "caml_greaterequal"; prim_arity = 2;
               prim_alloc = true;
               prim_native_name = ""; prim_native_float = false};
-       intcomp = Pintcomp (Cge, Cmp_int);
-       boolcomp = if not !Clflags.bs_only then Pintcomp (Cge, Cmp_int)
+       intcomp = Pintcomp Cge;
+       boolcomp = if not !Clflags.bs_only then Pintcomp Cge
          else Pccall{prim_name = "caml_bool_greaterequal"; prim_arity = 2;
                      prim_alloc = false; prim_native_name = "";
                      prim_native_float = false};
@@ -348,12 +348,12 @@ let primitives_table = create_hashtable 57 [
   "%lslint", Plslint;
   "%lsrint", Plsrint;
   "%asrint", Pasrint;
-  "%eq", Pintcomp (Ceq, Cmp_int);
-  "%noteq", Pintcomp (Cneq, Cmp_int);
-  "%ltint", Pintcomp (Clt, Cmp_int);
-  "%leint", Pintcomp (Cle, Cmp_int);
-  "%gtint", Pintcomp (Cgt, Cmp_int);
-  "%geint", Pintcomp (Cge, Cmp_int);
+  "%eq", Pintcomp Ceq;
+  "%noteq", Pintcomp Cneq;
+  "%ltint", Pintcomp Clt;
+  "%leint", Pintcomp Cle;
+  "%gtint", Pintcomp Cgt;
+  "%geint", Pintcomp Cge;
   "%incr", Poffsetref(1);
   "%decr", Poffsetref(-1);
   "%intoffloat", Pintoffloat;
@@ -532,18 +532,10 @@ let transl_prim loc prim args =
       -> boolcomp
     | [arg1; {exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}]
       when simplify_constant_constructor ->
-      begin
-        match intcomp with
-        | Pintcomp (c, _) -> Pintcomp (c, Cmp_opt) (* TODO: specialize to optionals *)
-        | _ -> intcomp
-      end
+        intcomp
     | [{exp_desc = Texp_construct(_, {cstr_tag = Cstr_constant _}, _)}; arg2]
       when simplify_constant_constructor ->
-      begin
-        match intcomp with
-        | Pintcomp (c, _) -> Pintcomp (c, Cmp_opt) (* TODO: specialize to optionals *)
-        | _ -> intcomp
-      end
+        intcomp
     | [arg1; {exp_desc = Texp_variant(_, None)}]
       when simplify_constant_constructor ->
         intcomp

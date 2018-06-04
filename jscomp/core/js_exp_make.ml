@@ -909,10 +909,7 @@ let rec int_comp (cmp : Lambda.comparison)  ?comment  (e0 : t) (e1 : t) =
             } , args, call_info)}
   | Ceq, _, _ -> int_equal e0 e1 
   | _ ->          
-    bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_int) e0 e1
-
-let int_comp_option (cmp : Lambda.comparison)  ?comment  (e0 : t) (e1 : t) =
-  bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
+    bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) = 
   match e0, e1 with 
@@ -933,7 +930,7 @@ let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) =
     | Cle 
     | Cgt 
     | Ceq 
-    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1 
+    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1 
     end 
   | rest, {expression_desc = Bool true} 
   | {expression_desc = Bool false}, rest 
@@ -944,15 +941,15 @@ let bool_comp (cmp : Lambda.comparison) ?comment (e0 : t) (e1 : t) =
     | Clt
     | Cge 
     | Ceq 
-    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
+    | Cneq -> bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
     end
   | _ , _ ->
-    bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
+    bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 let float_comp cmp ?comment  e0 e1 = 
-  bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
+  bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 let js_comp cmp ?comment  e0 e1 = 
-  bin ?comment (Lam_compile_util.jsop_of_comp cmp Cmp_opt) e0 e1
+  bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
 
 let rec int32_lsr ?comment
@@ -1269,7 +1266,7 @@ let eq_null_undefined_boolean ?comment (a : t) (b : t) =
      -> 
     caml_false
   | (Null, Undefined)
-  | (Undefined, Null) -> caml_true
+  | (Undefined, Null) -> caml_false
   | (Null, Null)
   | (Undefined, Undefined)
     -> caml_true
@@ -1297,7 +1294,7 @@ let neq_null_undefined_boolean ?comment (a : t) (b : t) =
    -> caml_false
   | (Null, Undefined)
   | (Undefined, Null)
-   -> caml_false
+   -> caml_true
   | _ ->       
        {expression_desc = Bin(NotEqEq, a, b); comment}
 

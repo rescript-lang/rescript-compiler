@@ -78,25 +78,23 @@ let suites = Mt.[
     "eq_with_list", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[0]}], true));
     "eq_with_list2", (fun _ -> Eq ([%bs.obj {x=[0]}] = [%bs.obj {x=[1]}], false));
 
-    __LOC__ , begin fun _ -> 
-        Eq(true, None = Js.Nullable.null)
-    end;
-    __LOC__ , begin fun _ -> 
-        Eq(true, None = Js.Nullable.undefined)
-    end;
-    __LOC__ , begin fun _ -> 
-        Eq(true, Js.Nullable.null = Js.Nullable.undefined)
-    end;
-    __LOC__ , begin fun _ -> 
-        Eq(false, Js.Nullable.null == Js.Nullable.undefined)
+    __LOC__ , begin fun _ ->
+        Eq(compare Js.null (Js.Null.return [3]), -1)
     end;
     __LOC__ , begin fun _ ->
-        let n : int option = (Obj.magic Js.Nullable.null) in
-        let u : int option = (Obj.magic Js.Nullable.undefined) in
-        Eq(true, n = u)
+        Eq(compare (Js.Null.return [3]) Js.null, 1)
     end;
-    __LOC__ , begin fun _ -> 
-        Eq(0, compare Js.Nullable.null Js.Nullable.undefined)
+    __LOC__ , begin fun _ ->
+        Eq(compare Js.null (Js.Null.return 0), -1)
+    end;
+    __LOC__ , begin fun _ ->
+        Eq(compare (Js.Null.return 0) Js.null, 1)
+    end;
+    __LOC__ , begin fun _ ->
+        Eq(compare Js.Nullable.undefined (Js.Nullable.return 0), -1)
+    end;
+    __LOC__ , begin fun _ ->
+        Eq(compare (Js.Nullable.return 0) Js.Nullable.undefined, 1)
     end;
 ]
 ;;

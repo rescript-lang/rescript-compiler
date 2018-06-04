@@ -28,7 +28,7 @@
 type + 'a t = 'a Js.null_undefined
 
 (** Constructs a value of ['a Js.null_undefined] containing a value of ['a] *)
-val return : 'a -> 'a t
+external return : 'a -> 'a t = "%identity"
 
 (** Returns [true] if the given value is [null] or [undefined], [false] otherwise *)
 external test : 'a t -> bool =  "#is_nil_undef"
@@ -89,7 +89,7 @@ val from_opt: 'a option -> 'a t
 </table>
 %}
 *)
-external toOption : 'a t -> 'a option = "%identity"
+external toOption : 'a t -> 'a option = "#null_undefined_to_opt"
 
-external to_opt : 'a t -> 'a option = "%identity"
+external to_opt : 'a t -> 'a option = "#null_undefined_to_opt"
 [@@ocaml.deprecated "Use toOption instead"]

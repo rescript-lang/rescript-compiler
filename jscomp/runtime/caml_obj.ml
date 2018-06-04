@@ -167,9 +167,11 @@ let unsafe_js_compare x y =
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
   if a == b then 0 else
   (*front and formoest, we do not compare function values*)
-  if (Obj.magic a) = None then (if (Obj.magic b) = None then 0 else -1) else
-  if (Obj.magic b) = None then 1 else
-  let a_type = Js.typeof a in 
+   if a == (Obj.repr Js.null) then -1 else
+   if b == (Obj.repr Js.null) then 1 else
+   if a == (Obj.repr Js.undefined) then -1 else
+   if b == (Obj.repr Js.undefined) then 1 else
+   let a_type = Js.typeof a in 
   let b_type = Js.typeof b in 
   if a_type = "string" then
     Pervasives.compare (Obj.magic a : string) (Obj.magic b )
@@ -268,8 +270,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
   else
-    if (Obj.magic a) = None then (Obj.magic b) = None else
-    if (Obj.magic b) = None then (Obj.magic a) = None else
+    if (Obj.magic a) = Js.null then a == b else
     let a_type = Js.typeof a in 
     if a_type = "string"
     ||  a_type = "number"
@@ -336,7 +337,7 @@ let caml_equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =
   | Some y -> caml_equal x y 
 
 let caml_equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
-  match y with 
+  match Js.toOption y with 
   | None -> Obj.magic x = None
   | Some y -> caml_equal x y
 
