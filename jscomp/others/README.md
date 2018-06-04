@@ -23,3 +23,9 @@ switch(Belt.Map.get(d, 11)) {
     | _ => print_endline("I will never print!")
 }
 ```
+
+
+## Contributing
+You'll need to build `bspp.exe` that is inside `../lib` by simply running `make -C ../lib bspp.exe`.
+
+Then you can recompile all of belt to JS by running `make all`.
