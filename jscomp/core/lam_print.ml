@@ -137,7 +137,7 @@ let primitive ppf (prim : Lam.primitive) = match prim with
   | Pis_undefined -> fprintf ppf "[?undefined]"
   | Pis_null_undefined -> fprintf ppf "[?null?undefined]"
   (* | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id *)
-  | Punboxnull -> fprintf ppf "[unboxnull]"
+  | Punboxopt -> fprintf ppf "[unboxopt]"
   | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
   | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
   | Pfield (n,_) -> fprintf ppf "field %i" n

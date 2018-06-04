@@ -155,10 +155,10 @@ let merge_outer_comment comment (e : t )  =
                 comment 
                 = Some (comment ^ sep ^ s)} 
 
-let make_box e =
+let make_box_opt e =
   runtime_call Js_runtime_modules.js_primitive "box_optional" [e] 
 
-let make_unbox e =
+let make_unbox_opt e =
   runtime_call Js_runtime_modules.js_primitive "unbox_optional" [e] 
 
 let make_block ?comment tag tag_info es mutable_flag : t = 
@@ -180,7 +180,7 @@ let make_block ?comment tag tag_info es mutable_flag : t =
   in
   match tag_info, es with
   | Blk_constructor ("Some", 1), [e] ->
-    make_box e
+    make_box_opt e
   | _ ->
   {
     expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;

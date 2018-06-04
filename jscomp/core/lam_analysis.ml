@@ -90,7 +90,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pis_null
       | Pis_undefined
       | Pis_null_undefined
-      | Punboxnull
+      | Punboxopt
       | Pnull_to_opt       
       | Pundefined_to_opt         
       | Pnull_undefined_to_opt 
@@ -537,7 +537,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pis_null -> rhs = Pis_null
   | Pis_undefined -> rhs = Pis_undefined
   | Pis_null_undefined -> rhs = Pis_null_undefined
-  | Punboxnull -> rhs = Punboxnull
+  | Punboxopt -> rhs = Punboxopt
   | Pjs_typeof -> rhs = Pjs_typeof
   | Pisint -> rhs = Pisint
   | Pisout -> rhs = Pisout
