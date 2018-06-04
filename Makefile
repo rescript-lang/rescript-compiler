@@ -16,17 +16,12 @@ libs:
 	$(MAKE) -C jscomp/runtime -j8 all
 	$(MAKE) -C jscomp/others -j8 all
 	$(MAKE) -C jscomp/stdlib -j8 all
-	$(MAKE) -C jscomp/belt_byte -j8 all
-	$(MAKE) -C jscomp/belt_native -j8 all
 
 
 DEST=lib/ocaml
 RUNTIME=jscomp/runtime
 STDLIB=jscomp/stdlib
 OTHERS=jscomp/others
-BELT_BYTE=jscomp/belt_byte
-BELT_NATIVE=jscomp/belt_native
-OCAML=vendor/ocaml
 # TODO: sync up with
 # scripts/build_uitil.js
 # function install
@@ -46,9 +41,5 @@ install:
 	$(RUNTIME)/js_typed_array.ml $(RUNTIME)/js_typed_array.cmi  \
 	$(STDLIB)/*.cm* $(STDLIB)/*.ml $(STDLIB)/*.mli \
 	$(OTHERS)/*.ml $(OTHERS)/*.mli  $(OTHERS)/*.cm* $(DEST)
-	mkdir -p $(DEST)/bytecode $(DEST)/native
-	cp $(BELT_BYTE)/*.ml $(BELT_BYTE)/*mli $(BELT_BYTE)/*.o $(BELT_BYTE)/*.cm* $(DEST)/bytecode
-	cp $(BELT_NATIVE)/*.ml $(BELT_NATIVE)/*mli $(BELT_NATIVE)/*.o $(BELT_NATIVE)/*.cm* $(BELT_NATIVE)/*.a $(DEST)/native
-	cp -r $(OCAML)/lib/ocaml/caml $(DEST)
-	
+
 .PHONY: libs world
