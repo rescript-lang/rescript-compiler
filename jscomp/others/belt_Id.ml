@@ -28,10 +28,19 @@ type ('a, 'id) hash = ('a -> int [@bs])
 type ('a, 'id) eq = ('a -> 'a -> bool [@bs])
 type ('a, 'id) cmp = ('a -> 'a -> int [@bs])
 
+#if COMPILE_TO_NATIVE then
+
+let getHashInternal : ('a,'id) hash -> ('a -> int [@bs]) = Obj.magic
+let getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs]) = Obj.magic
+let getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs]) = Obj.magic
+
+#else
+
 external getHashInternal : ('a,'id) hash -> ('a -> int [@bs]) = "%identity"
 external getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs]) = "%identity"
 external getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs]) = "%identity"
 
+#end
 
 module type Comparable = sig
   type identity

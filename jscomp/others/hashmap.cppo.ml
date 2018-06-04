@@ -15,20 +15,54 @@
 #ifdef TYPE_STRING
 type key = string
 type seed = int
+
+#ifdef COMPILE_TO_NATIVE
+
+(* @BenHack 
+    MMmmmmg what am I suppose to do here? 
+    Seems like hashing assumes 32bit ints
+    
+ *)
+let caml_hash_mix_string = Caml_hash.caml_hash_mix_string
+let final_mix = Caml_hash.caml_hash_final_mix
+let hash (s : key) =   
+  Nativeint.to_int (final_mix  (caml_hash_mix_string Nativeint.zero s ))
+
+#else
+ 
 external caml_hash_mix_string : seed -> string -> seed  = "caml_hash_mix_string"
 external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash (s : key) =   
   final_mix  (caml_hash_mix_string 0 s )
+ 
+#endif
+
 #elif defined TYPE_INT
 type key = int
 type seed = int
+
+#ifdef COMPILE_TO_NATIVE
+
+let caml_hash_mix_int = Caml_hash.caml_hash_mix_int
+(* external caml_hash_mix_int : seed -> int -> seed  = "caml_hash_mix_int" *)
+let final_mix = Caml_hash.caml_hash_final_mix
+(* external final_mix : seed -> seed = "caml_hash_final_mix" *)
+let hash (s : key) = 
+  Nativeint.to_int (final_mix (caml_hash_mix_int Nativeint.zero (Nativeint.of_int s)))
+
+#else
+
 external caml_hash_mix_int : seed -> int -> seed  = "caml_hash_mix_int"
 external final_mix : seed -> seed = "caml_hash_final_mix"
 let hash (s : key) = 
   final_mix (caml_hash_mix_int 0 s)
+
+#endif
+
 #else 
   [%error "unknown type"]
 #endif
+
 
 module N = Belt_internalBuckets
 module C = Belt_internalBucketsType

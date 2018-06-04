@@ -269,7 +269,7 @@ let stableSortInPlaceByU  a cmp =
   else begin
     let l1 = l / 2 in
     let l2 = l - l1 in
-    let t = Belt_Array.makeUninitializedUnsafe l2 in 
+    let t = Belt_Array.makeUninitializedUnsafe l2 (Belt_Array.getUnsafe a 0) in 
     sortTo a l1 t 0 l2 cmp;
     sortTo a 0 a l2 l1 cmp;
     merge a l2 l1 t 0 l2 a 0 cmp;

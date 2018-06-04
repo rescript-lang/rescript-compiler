@@ -36,10 +36,21 @@ and 'value t =  'value node Js.null
 module A = Belt_Array
 module S = Belt_SortArray
 
+#if COMPILE_TO_NATIVE then
+
+let toOpt = Js.toOpt
+let return : 'a -> 'a Js.null = Js.Null.return
+let empty = Js.empty
+let unsafeCoerce : 'a Js.null -> 'a = Js.Null.getUnsafe
+
+#else
+
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 external unsafeCoerce : 'a Js.null -> 'a = "%identity"
+
+#end
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
 
@@ -367,7 +378,7 @@ let toArray n =
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
-    let v = A.makeUninitializedUnsafe size in
+    let v = A.makeUninitializedUnsafe size (n |. value) in
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v
 
@@ -450,7 +461,7 @@ let keepCopyU n p : _ t =
   | None -> empty
   | Some n ->
     let size = lengthNode n in
-    let  v = A.makeUninitializedUnsafe size in
+    let  v = A.makeUninitializedUnsafe size (n |. value) in
     let last =
       fillArrayWithFilter n 0 v p in
     fromSortedArrayAux v 0 last
@@ -462,7 +473,7 @@ let partitionCopyU n p  =
   | None -> empty, empty
   | Some n ->
     let size = lengthNode n in
-    let v = A.makeUninitializedUnsafe size in
+    let v = A.makeUninitializedUnsafe size (n |. value) in
     let backward = size - 1 in
     let cursor = cursor ~forward:0 ~backward in
     fillArrayWithPartition n cursor v p ;

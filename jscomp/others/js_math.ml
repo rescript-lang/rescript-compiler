@@ -22,6 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+#if COMPILE_TO_NATIVE then
+
+let random_int min max = (Random.int (max - min)) + min
+
+#else
+
 (** JavaScript Math API *)
 
 (** Euler's number *)
@@ -202,3 +208,5 @@ external tanh : float -> float = "tanh" [@@bs.val][@@bs.scope "Math"]
 external unsafe_trunc : float -> int = "trunc" [@@bs.val][@@bs.scope "Math"]
 (** truncate, ie. remove fractional digits, returns a value not representable as [int] if NaN, ES2015 *)
 external trunc : float -> float = "trunc" [@@bs.val][@@bs.scope "Math"]
+
+#end

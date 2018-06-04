@@ -52,7 +52,13 @@ external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
     no  bounds checking;this would cause type error
     if [i] does not stay within range
 *)
-  
+
+#if COMPILE_TO_NATIVE then
+
+val getUndefined: 'a array -> int -> 'a Js.undefined
+
+#else
+
 external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
 (** [getUndefined arr i]
 
@@ -60,6 +66,9 @@ external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
     it is {i type safe} since the return type still track whether it is 
     in range or not
 *)
+
+#end
+  
 
 val set: 'a array -> int -> 'a -> bool
 (** [set arr n x] modifies [arr] in place;
@@ -100,6 +109,13 @@ val reverse: 'a array -> 'a array
     ]}
 *)
 
+#if COMPILE_TO_NATIVE then
+
+val makeUninitialized: int -> 'a Js.undefined array
+val makeUninitializedUnsafe: int -> 'a -> 'a array
+val copy : 'a array -> 'a array
+
+#else
 external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
 (**
   [makeUninitialized n] creates an array of length [n] filled with the undefined value.
@@ -111,7 +127,7 @@ external makeUninitialized: int -> 'a Js.undefined array = "Array" [@@bs.new]
   ]}
 *)
 
-external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
+external makeUninitializedUnsafe: int -> ('a [@bs.ignore]) -> 'a array = "Array" [@@bs.new]
 (** [makeUninitializedUnsafe n]
 
     {b Unsafe}
@@ -123,6 +139,15 @@ external makeUninitializedUnsafe: int -> 'a array = "Array" [@@bs.new]
     let () = Js.log(Belt.Array.getExn arr 0 = "example");;
     ]}
 *)
+
+external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
+(** [copy a] 
+
+    @return a copy of [a];that is;a fresh array
+   containing the same elements as [a]. 
+*)
+
+#end
 
 
 val make: int -> 'a  -> 'a array
@@ -255,14 +280,6 @@ val slice: 'a array -> offset:int -> len:int -> 'a array
       slice [|10;11;12;13;14;15;16|] ~offset: (-4) ~len: 3 = [|13;14;15|];;
       slice [|10;11;12;13;14;15;16|] ~offset:4  ~len:9 = [|14;15;16|];;
     ]}
-*)
-
-
-external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
-(** [copy a] 
-
-    @return a copy of [a];that is;a fresh array
-   containing the same elements as [a]. 
 *)
 
 val fill: 'a array -> offset:int -> len:int -> 'a -> unit
@@ -544,7 +561,6 @@ val eq:  'a array -> 'a array -> ('a -> 'a -> bool ) -> bool
     ]}
 *)
 
-external truncateToLengthUnsafe: 'a array -> int ->  unit = "length" [@@bs.set]
 (** {b Unsafe}
   [truncateToLengthUnsafe xs n] sets length of array [xs] to [n].
   

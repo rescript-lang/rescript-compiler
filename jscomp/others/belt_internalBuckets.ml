@@ -44,7 +44,7 @@ let rec copy ( x : _ t) : _ t=
     ~buckets:(copyBuckets (C.buckets x))
 and copyBuckets ( buckets : _ bucket C.opt array) =  
   let len = A.length buckets in 
-  let newBuckets = A.makeUninitializedUnsafe len in 
+  let newBuckets = if len > 0 then A.makeUninitializedUnsafe len (A.getUnsafe buckets 0) else [||] in 
   for i = 0 to len - 1 do 
     A.setUnsafe newBuckets i 
     (copyBucket (A.getUnsafe buckets i))
@@ -128,9 +128,17 @@ let getBucketHistogram h =
 
 let logStats h =
   let histogram = getBucketHistogram h in 
+#if COMPILE_TO_NATIVE then
+  Printf.printf 
+    "{\n\tbindings: %d,\n\tbuckets: %d\n\thistogram: %s\n}" 
+    (C.size h) 
+    (A.length (C.buckets h))
+    (A.reduceU histogram "" (fun[@bs] acc x -> acc ^ (string_of_int x)))
+#else
   Js.log [%obj{ bindings = C.size h;
                 buckets = A.length (C.buckets h);
                 histogram}]
+#end
 
 
 (** iterate the Buckets, in place remove the elements *)                
@@ -180,15 +188,24 @@ let rec fillArray i arr cell =
 let toArray h = 
   let d = C.buckets h in 
   let current = ref 0 in 
-  let arr = A.makeUninitializedUnsafe (C.size h) in 
+  let arr = ref None in
   for i = 0 to A.length d - 1 do  
     let cell = A.getUnsafe d i in 
     match C.toOpt cell with 
     | None -> ()
     | Some cell -> 
+      let arr = begin match !arr with 
+        | None -> 
+          let a = A.makeUninitializedUnsafe (C.size h) (key cell, value cell) in
+          arr := Some a;
+          a
+        | Some arr -> arr
+      end in
       current := fillArray !current arr cell
   done;
-  arr 
+  match !arr with 
+  | None -> [||]
+  | Some arr -> arr
 
 let rec fillArrayMap i arr cell f =  
   A.setUnsafe arr i (f cell [@bs]);
@@ -199,15 +216,24 @@ let rec fillArrayMap i arr cell f =
 let linear h f = 
   let d = C.buckets h in 
   let current = ref 0 in 
-  let arr = A.makeUninitializedUnsafe (C.size h) in 
+  let arr = ref None in
   for i = 0 to A.length d - 1 do  
     let cell = A.getUnsafe d i in 
     match C.toOpt cell with 
     | None -> ()
     | Some cell -> 
+      let arr = begin match !arr with 
+        | None -> 
+          let a = A.makeUninitializedUnsafe (C.size h) (f cell [@bs]) in
+          arr := Some a;        
+          a
+        | Some arr -> arr 
+      end in 
       current := fillArrayMap !current arr cell f
   done;
-  arr 
+  match !arr with
+  | None -> [||]
+  | Some arr -> arr
 
 let keysToArray h = linear h (fun [@bs] x -> key x)  
 let valuesToArray h = linear h (fun [@bs] x -> value x)  

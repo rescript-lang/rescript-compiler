@@ -26,10 +26,10 @@
 
 (** {!Belt.Id}
 
-    Provide utiliites to create identified comparators or hashes for
+    Provide utilities to create identified comparators or hashes for
     data structures used below.
 
-    It create a unique identifer per module of functions so that different data structures with slightly different
+    It create a unique identifier per module of functions so that different data structures with slightly different
     comparison functions won't mix.
 *)
 
@@ -147,9 +147,18 @@ val hashable :
 [@@ocaml.deprecated "Use the MakeHashable functor API instead"]
 
 
+#if COMPILE_TO_NATIVE then
+
+val getHashInternal : ('a,'id) hash -> ('a -> int [@bs])
+val getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs])
+val getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs])
+
+#else
 
 (**/**)
 external getHashInternal : ('a,'id) hash -> ('a -> int [@bs]) = "%identity"
 external getEqInternal : ('a, 'id) eq -> ('a -> 'a -> bool [@bs]) = "%identity"
 external getCmpInternal : ('a,'id) cmp -> ('a -> 'a -> int [@bs]) = "%identity"
 (**/**)
+
+#end

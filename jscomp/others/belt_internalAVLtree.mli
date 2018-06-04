@@ -34,10 +34,19 @@ and ('k,  'v) node  = private {
   mutable right : ('k,'v) t
 } [@@bs.deriving abstract]
 
+#if COMPILE_TO_NATIVE then
+
+val toOpt : 'a Js.null -> 'a option
+val return : 'a -> 'a Js.null
+val empty : 'a Js.null
+
+#else
 
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
+
+#end
 
 type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
     

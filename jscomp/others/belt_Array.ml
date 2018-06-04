@@ -14,11 +14,27 @@
 (* Array operations *)
 
 external length: 'a array -> int = "%array_length"
-external size: 'a array -> int = "%array_length"  
+external size: 'a array -> int = "%array_length"
+
 external getUnsafe: 'a array -> int -> 'a = "%array_unsafe_get"
 external setUnsafe: 'a array -> int -> 'a -> unit = "%array_unsafe_set"
+
+#if COMPILE_TO_NATIVE then
+
+let getUndefined arr i = 
+  try
+    Js.fromOpt (Some (Array.get arr i))
+  with
+  | Invalid_argument _ -> Js.fromOpt None
+
+#else
+
 external getUndefined: 'a array -> int -> 'a Js.undefined = "%array_unsafe_get"
+
+#end
+
 external get: 'a array -> int -> 'a = "%array_safe_get"
+
 let get arr i =
   if i >= 0 && i < length arr then Some (getUnsafe arr i) else None
 let getExn arr i =
@@ -32,13 +48,38 @@ let setExn arr i v =
   setUnsafe arr i v 
 
 
+#if COMPILE_TO_NATIVE then
+
+let makeUninitialized len =
+  Array.make len Js.undefined
+
+let makeUninitializedUnsafe len defaultVal =
+  Array.make len defaultVal
+
+(* This is safe but has the same name as the JS one for convenience. *)
+let truncateToLengthUnsafe arr len =
+  Array.sub arr 0 len
+
+let copy a =
+  let l = length a in 
+  let v = if l > 0 then Array.make l (getUnsafe a 0) else [||] in 
+  for i = 0 to l - 1 do 
+    setUnsafe v i (getUnsafe a i)
+  done ;
+  v
+
+#else
+
 external truncateToLengthUnsafe : 'a array -> int ->  unit = "length" [@@bs.set]  
 external makeUninitialized : int -> 'a Js.undefined array = "Array" [@@bs.new]
-external makeUninitializedUnsafe : int -> 'a  array = "Array" [@@bs.new]
-
-
+external makeUninitializedUnsafe : int -> ('a [@bs.ignore]) -> 'a  array = "Array" [@@bs.new]
+external makeUninitializedUnsafe_internal : int -> 'a  array = "Array" [@@bs.new]
 external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = 
   "slice"  [@@bs.send]
+
+#end
+  
+
 
 
 let swapUnsafe xs i j =    
@@ -65,31 +106,41 @@ let reverseAux xs ofs len =
 let reverseInPlace xs =
   let len = length xs in
   reverseAux xs 0 len
-
-let reverse xs =
-  let len = length xs in
-  let result = makeUninitializedUnsafe len in 
-  for i = 0 to len - 1 do
-    setUnsafe result i (getUnsafe xs (len - 1 - i))
-  done;
-  result
   
 let make l f =
   if l <= 0 then [||]
   else 
-    let res = makeUninitializedUnsafe l in 
+#if COMPILE_TO_NATIVE then
+    let res = Array.make l f in 
+    res
+#else
+    let res = makeUninitializedUnsafe_internal l in 
     for i = 0 to  l - 1 do
       setUnsafe res i f
     done;
     res
+#end
+
+let reverse xs =
+  let len = length xs in
+  let result = if len > 0 then makeUninitializedUnsafe len (getUnsafe xs 0) else [||] in 
+  for i = 0 to len - 1 do
+    setUnsafe result i (getUnsafe xs (len - 1 - i))
+  done;
+  result
 
 
 (* See #6575. We could also check for maximum array size, but this depends
      on whether we create a float array or a regular one... *)
+(* @Hack this calls `f` to initialize the array which could be not correct if `f` has side-effects.
+  We should only call it once per element and nothing more.
+  
+              Ben - June 3rd 2018 
+*)
 let makeByU l f =
   if l <= 0 then [||]
   else 
-    let res = makeUninitializedUnsafe l in 
+    let res = if l > 0 then makeUninitializedUnsafe l (f 0 [@bs]) else [||] in
     for i = 0 to  l - 1 do
       setUnsafe res i (f i [@bs])
     done;
@@ -108,7 +159,7 @@ let range start finish =
   let cut = finish - start in 
   if cut < 0  then [||]
   else
-    let arr = makeUninitializedUnsafe (cut + 1 ) in
+    let arr = makeUninitializedUnsafe (cut + 1 ) 0 in
     for i = 0 to cut do
       setUnsafe arr i (start + i)
     done;
@@ -120,7 +171,7 @@ let rangeBy start finish ~step =
     [||]
   else
     let nb = cut/step + 1 in
-    let arr = makeUninitializedUnsafe  nb in
+    let arr = makeUninitializedUnsafe  nb 0 in
     let cur = ref start in 
     for i = 0 to nb - 1 do
       setUnsafe arr i !cur;
@@ -131,16 +182,21 @@ let rangeBy start finish ~step =
 let zip xs ys = 
   let lenx, leny = length xs, length ys in 
   let len = Pervasives.min lenx leny  in 
-  let s = makeUninitializedUnsafe len in 
+  let s = if len > 0 then makeUninitializedUnsafe len (getUnsafe xs 0, getUnsafe ys 0) else [||] in
   for i = 0 to len - 1 do 
     setUnsafe s i (getUnsafe xs i, getUnsafe ys i)
   done ; 
   s 
 
+(* @Hack this calls `f` to initialize the array which could be not correct if `f` has side-effects.
+  We should only call it once per element and nothing more.
+  
+              Ben - June 3rd 2018 
+*)
 let zipByU xs ys f = 
   let lenx, leny = length xs, length ys in 
   let len = Pervasives.min lenx leny  in 
-  let s = makeUninitializedUnsafe len in 
+  let s = if len > 0 then  makeUninitializedUnsafe len (f (getUnsafe xs 0) (getUnsafe ys 0) [@bs]) else [||] in
   for i = 0 to len - 1 do 
     setUnsafe s i (f (getUnsafe xs i) (getUnsafe ys i) [@bs])
   done ; 
@@ -151,7 +207,7 @@ let zipBy xs ys f = zipByU xs ys (fun [@bs] a b -> f a b)
 let concat a1 a2 =
   let l1 = length a1 in
   let l2 = length a2 in 
-  let a1a2 = makeUninitializedUnsafe (l1 + l2) in
+  let a1a2 = if l1 > 0 then makeUninitializedUnsafe (l1 + l2) (getUnsafe a1 0) else [||] in
   for i = 0 to l1 - 1 do
     setUnsafe a1a2 i (getUnsafe a1 i)
   done ;
@@ -163,10 +219,19 @@ let concat a1 a2 =
 let concatMany arrs =
   let lenArrs = length arrs in
   let totalLen = ref 0 in 
+  let firstArrWithLengthMoreThanZero = ref None in
   for i = 0 to lenArrs - 1 do
-    totalLen := !totalLen + length (getUnsafe arrs i)
+    let len = length (getUnsafe arrs i) in
+    totalLen := !totalLen + len;
+    
+    if len > 0 && !firstArrWithLengthMoreThanZero = None then 
+      firstArrWithLengthMoreThanZero := Some (getUnsafe arrs i);
+    
   done;
-  let result = makeUninitializedUnsafe !totalLen in
+  match !firstArrWithLengthMoreThanZero with
+  | None -> [||]
+  | Some firstArr -> 
+  let result = makeUninitializedUnsafe !totalLen (getUnsafe firstArr 0) in
   totalLen := 0 ; 
   for j = 0 to lenArrs - 1 do
     let cur = getUnsafe arrs j in 
@@ -189,7 +254,7 @@ let slice a ~offset ~len =
     let copyLength = min hasLen len in
     if copyLength <= 0 then [||]
     else
-      let result = makeUninitializedUnsafe copyLength  in
+      let result = if lena > 0 then makeUninitializedUnsafe copyLength (getUnsafe a 0) else [||] in
       for i = 0 to copyLength - 1 do
         setUnsafe result i (getUnsafe a (ofs + i))
       done ;
@@ -245,10 +310,15 @@ let forEachU a f =
   for i = 0 to length a - 1 do f(getUnsafe a i) [@bs] done
 
 let forEach a f = forEachU a (fun[@bs] a -> f a)
+
+(* @Hack this calls `f` to initialize the array which could be not correct if `f` has side-effects.
+  We should only call it once per element and nothing more.
   
+              Ben - June 3rd 2018 
+*)
 let mapU a f =
   let l = length a in
-  let r = makeUninitializedUnsafe l in 
+  let r = if l > 0 then makeUninitializedUnsafe l (f(getUnsafe a 0) [@bs]) else [||] in
   for i = 0 to l - 1 do
     setUnsafe r i (f(getUnsafe a i) [@bs])
   done;
@@ -258,7 +328,7 @@ let map a f = mapU a (fun[@bs] a -> f a)
   
 let keepU a f =
   let l = length a in
-  let r = makeUninitializedUnsafe l in
+  let r = if l > 0 then makeUninitializedUnsafe l (getUnsafe a 0) else [||] in
   let j = ref 0 in 
   for i = 0 to l - 1 do
     let v = (getUnsafe a i) in 
@@ -268,14 +338,22 @@ let keepU a f =
         incr j 
       end
   done;
+#if COMPILE_TO_NATIVE then
+  truncateToLengthUnsafe r !j
+#else
   truncateToLengthUnsafe r !j;
-  r 
+  r
+#end
 
 let keep a f = keepU a (fun [@bs] a -> f a)
     
 let keepMapU a f =
   let l = length a in
-  let r = makeUninitializedUnsafe l in
+#if COMPILE_TO_NATIVE then
+  let r = ref None in
+#else
+  let r = makeUninitializedUnsafe_internal l in
+#end
   let j = ref 0 in 
   for i = 0 to l - 1 do
     let v = getUnsafe a i in 
@@ -283,12 +361,28 @@ let keepMapU a f =
     | None -> ()
     | Some v -> 
       begin 
+#if COMPILE_TO_NATIVE then
+        let r = match !r with
+        | None -> 
+          let newr = makeUninitializedUnsafe l v in
+          r := Some newr;
+          newr
+        | Some r -> r in
+#end
         setUnsafe r !j v;
         incr j 
       end
   done;
+#if COMPILE_TO_NATIVE then
+  match !r with
+  | None -> [||]
+  | Some r -> 
+    truncateToLengthUnsafe r !j
+#else
   truncateToLengthUnsafe r !j;
   r 
+#end
+  
 
 let keepMap a f = keepMapU a (fun[@bs] a -> f a)
     
@@ -296,10 +390,15 @@ let forEachWithIndexU a f=
   for i = 0 to length a - 1 do f i (getUnsafe a i) [@bs] done
 
 let forEachWithIndex a f = forEachWithIndexU a (fun[@bs] a b -> f a b)
-    
+
+(* @Hack this calls `f` to initialize the array which could be not correct if `f` has side-effects.
+  We should only call it once per element and nothing more.
+  
+              Ben - June 3rd 2018 
+*)
 let mapWithIndexU  a f =
   let l = length a in
-  let r = makeUninitializedUnsafe l in 
+  let r = if l > 0 then makeUninitializedUnsafe l (f 0 (getUnsafe a 0) [@bs]) else [||] in
   for i = 0 to l - 1 do
     setUnsafe r i (f i (getUnsafe a i) [@bs])
   done;
@@ -412,8 +511,8 @@ let partitionU a f =
   let l = length a in
   let i = ref 0 in
   let j = ref 0 in
-  let a1 = makeUninitializedUnsafe l in
-  let a2 = makeUninitializedUnsafe l in
+  let a1 = if (l > 0) then makeUninitializedUnsafe l (getUnsafe a 0) else [||] in
+  let a2 = if (l > 0) then makeUninitializedUnsafe l (getUnsafe a 0) else [||] in
   for ii = 0 to l - 1 do
     let v = getUnsafe a ii in
     if f v [@bs] then (
@@ -425,19 +524,27 @@ let partitionU a f =
       incr j
     )
   done;
+#if COMPILE_TO_NATIVE then
+  (truncateToLengthUnsafe a1 !i, truncateToLengthUnsafe a2 !j)
+#else
   truncateToLengthUnsafe a1 !i;
   truncateToLengthUnsafe a2 !j;
   (a1, a2)
+#end
 
 let partition a f = partitionU a (fun [@bs] x -> f x)
 
+
 let unzip a =
   let l = length a in
-  let a1 = makeUninitializedUnsafe l in
-  let a2 = makeUninitializedUnsafe l in
+  let (a1, a2) = if l > 0 then 
+    let (v1, v2) = getUnsafe a 0 in
+    (makeUninitializedUnsafe l v1, makeUninitializedUnsafe l v2)
+  else ([||], [||])
+  in
   for i = 0 to l - 1 do
     let (v1, v2) = getUnsafe a i in
     setUnsafe a1 i v1;
-    setUnsafe a2 i v2
+    setUnsafe a2 i v2    
   done;
   (a1, a2)

@@ -282,7 +282,7 @@ let intersect dataa datab  =
     let sizea, sizeb = 
         N.lengthNode dataa0, N.lengthNode datab0 in          
     let totalSize = sizea + sizeb in 
-    let tmp = A.makeUninitializedUnsafe totalSize in 
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.value) in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     if ((A.getUnsafe tmp (sizea - 1) < 
@@ -294,7 +294,7 @@ let intersect dataa datab  =
       )
        then make ()
     else 
-    let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
+    let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) (dataa0 |. N.value) in 
     let k = S.intersect tmp 0 sizea tmp sizea sizeb tmp2 0  in 
     t ~data:(N.fromSortedArrayAux tmp2 0 k)
   
@@ -306,7 +306,7 @@ let diff dataa datab : t =
   | Some dataa0, Some datab0 -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
     let totalSize = sizea + sizeb in 
-    let tmp = A.makeUninitializedUnsafe totalSize in 
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.value) in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     if ( (A.getUnsafe tmp (sizea - 1)) < 
@@ -316,7 +316,7 @@ let diff dataa datab : t =
       < A.getUnsafe tmp 0) 
        then t ~data:(N.copy dataa) 
     else 
-    let tmp2 = A.makeUninitializedUnsafe sizea in 
+    let tmp2 = A.makeUninitializedUnsafe sizea (dataa0 |. N.value) in 
     let k = S.diff tmp 0 sizea tmp sizea sizeb tmp2 0  in 
     t ~data:(N.fromSortedArrayAux tmp2 0 k)
 
@@ -329,7 +329,7 @@ let union (dataa : t)  (datab : t) : t =
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in 
     let totalSize = sizea + sizeb in 
-    let tmp = A.makeUninitializedUnsafe totalSize in 
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.value) in 
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
     if 
@@ -337,7 +337,7 @@ let union (dataa : t)  (datab : t) : t =
       A.getUnsafe tmp sizea)  then 
       t  ~data:(N.fromSortedArrayAux tmp 0 totalSize) 
     else   
-      let tmp2 = A.makeUninitializedUnsafe totalSize in 
+      let tmp2 = A.makeUninitializedUnsafe totalSize (dataa0 |. N.value) in 
       let k = S.union tmp 0 sizea tmp sizea sizeb tmp2 0  in 
       t ~data:(N.fromSortedArrayAux tmp2 0 k) 
   

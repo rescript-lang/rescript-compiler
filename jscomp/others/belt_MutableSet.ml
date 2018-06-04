@@ -298,7 +298,7 @@ let intersect a b  : _ t =
     let sizea, sizeb = 
       N.lengthNode dataa0, N.lengthNode datab0 in          
     let totalSize = sizea + sizeb in 
-    let tmp = A.makeUninitializedUnsafe totalSize in 
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.value) in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     let p = Belt_Id.getCmpInternal cmp in 
@@ -311,7 +311,7 @@ let intersect a b  : _ t =
        )
     then S.t ~cmp ~data:N.empty
     else 
-      let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) in 
+      let tmp2 = A.makeUninitializedUnsafe (min sizea sizeb) (dataa0 |. N.value) in 
       let k = Sort.intersectU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k)
         ~cmp
@@ -327,7 +327,7 @@ let diff a b : _ t =
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in  
     let totalSize = sizea + sizeb in 
-    let tmp = A.makeUninitializedUnsafe totalSize in 
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.value) in 
     ignore @@ N.fillArray dataa0 0 tmp ; 
     ignore @@ N.fillArray datab0 sizea tmp;
     let p = Belt_Id.getCmpInternal cmp in 
@@ -340,7 +340,7 @@ let diff a b : _ t =
        )
     then S.t ~data:(N.copy dataa) ~cmp
     else 
-      let tmp2 = A.makeUninitializedUnsafe sizea in 
+      let tmp2 = A.makeUninitializedUnsafe sizea (dataa0 |. N.value) in 
       let k = Sort.diffU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k) ~cmp
 
@@ -354,7 +354,7 @@ let union a b =
     -> 
     let sizea, sizeb = N.lengthNode dataa0, N.lengthNode datab0 in 
     let totalSize = sizea + sizeb in 
-    let tmp = A.makeUninitializedUnsafe totalSize in 
+    let tmp = A.makeUninitializedUnsafe totalSize (dataa0 |. N.value) in 
     ignore @@ N.fillArray dataa0 0 tmp ;
     ignore @@ N.fillArray datab0 sizea tmp ;
     let p = (Belt_Id.getCmpInternal cmp)  in 
@@ -363,7 +363,7 @@ let union a b =
         (A.getUnsafe tmp sizea) [@bs] < 0 then 
       S.t ~data:(N.fromSortedArrayAux tmp 0 totalSize) ~cmp
     else   
-      let tmp2 = A.makeUninitializedUnsafe totalSize in 
+      let tmp2 = A.makeUninitializedUnsafe totalSize (dataa0 |. N.value) in 
       let k = Sort.unionU tmp 0 sizea tmp sizea sizeb tmp2 0 p in 
       S.t ~data:(N.fromSortedArrayAux tmp2 0 k) ~cmp
       

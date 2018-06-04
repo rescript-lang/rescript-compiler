@@ -31,8 +31,17 @@ type ('hash, 'eq, 'c) container =
     eq: 'eq;
   } [@@bs.deriving abstract]
 
+#if COMPILE_TO_NATIVE then
+
+val toOpt : 'a opt -> 'a option 
+val return : 'a -> 'a opt
+
+#else
+
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a opt = "%identity"
+
+#end
 
 val emptyOpt : 'a Js.undefined
 val make :

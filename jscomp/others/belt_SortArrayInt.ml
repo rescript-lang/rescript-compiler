@@ -1,7 +1,7 @@
 # 2 "sort.cppo.ml"
 type element = int 
 
-# 9
+# 9 "sort.cppo.ml"
 module A = Belt_Array 
 
 let rec sortedLengthAuxMore (xs : element array) prec acc len = 
@@ -224,7 +224,7 @@ let stableSortInPlace  (a : element array)  =
   else begin
     let l1 = l / 2 in
     let l2 = l - l1 in
-    let t = Belt_Array.makeUninitializedUnsafe l2 in 
+    let t = Belt_Array.makeUninitializedUnsafe l2 (Belt_Array.getUnsafe a 0) in 
     sortTo a l1 t 0 l2 ;
     sortTo a 0 a l2 l1 ;
     merge a l2 l1 t 0 l2 a 0 ;

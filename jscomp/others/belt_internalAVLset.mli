@@ -39,11 +39,20 @@ and 'value node  = private {
 
 type ('a, 'b) cmp = ('a, 'b) Belt_Id.cmp
 (* TODO: node is used in [subset] *)
+
+#if COMPILE_TO_NATIVE then
+
+val toOpt : 'a Js.null -> 'a option
+val return : 'a -> 'a Js.null
+val empty : 'a Js.null
+
+#else
+
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 
-
+#end
 
 val copy : 'a t -> 'a t
 val create : 'a t -> 'a -> 'a t -> 'a t

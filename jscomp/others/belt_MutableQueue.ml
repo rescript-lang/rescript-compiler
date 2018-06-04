@@ -207,8 +207,10 @@ let rec fillAux i arr cell =
     A.setUnsafe arr i (content x);
     fillAux (i + 1) arr (next x) 
 
-let toArray x =         
-  let v = A.makeUninitializedUnsafe (length x) in 
+let toArray x =
+  let v = match Js.Null.toOption (first x) with
+  | None -> [||] 
+  | Some y -> A.makeUninitializedUnsafe (length x) (content y) in 
   fillAux 0 v (first x);
   v
 

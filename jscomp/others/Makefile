@@ -1,6 +1,7 @@
 include ../Makefile.shared
 
 COMPILER=../../lib/bsc.exe
+BSPP=../../lib/bspp.exe
 
 MAP_FILES= node belt
 
@@ -71,7 +72,7 @@ BS_COMMON_FLAGS= -no-alias-deps -bs-no-version-header -absname -bs-diagnose -bs-
 
 BS_FLAGS=  $(BS_COMMON_FLAGS) $(BS_PKG_FLAGS)
 
-COMPFLAGS += $(BS_FLAGS)  -I ../runtime -I ../stdlib -w +3-40-49 -warn-error A -bin-annot
+COMPFLAGS += $(BS_FLAGS)  -bs-D COMPILE_TO_NATIVE=false -I ../runtime -I ../stdlib -w +3-40-49 -warn-error A -bin-annot
 
 
 node.cmi : $(COMPILER)
@@ -185,4 +186,4 @@ ML_SOURCES=$(addsuffix .ml, $(SOURCE_LIST))
 MLI_SOURCES=$(addsuffix .mli, $(SOURCE_LIST))
 
 depend:
-	$(CAMLDEP) -native $(INCLUDES) $(ML_SOURCES) $(MLI_SOURCES) | sed -e 's/\.cmx/.cmj/g' >.depend
+	COMPILE_TO_NATIVE=false $(CAMLDEP) -pp $(BSPP) -native $(INCLUDES) $(ML_SOURCES) $(MLI_SOURCES) | sed -e 's/\.cmx/.cmj/g' >.depend

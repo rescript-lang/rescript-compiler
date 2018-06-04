@@ -32,8 +32,18 @@ type ('hash, 'eq, 'c) container =
 [@@bs.deriving abstract]
 
 module A = Belt_Array
+
+#if COMPILE_TO_NATIVE then
+
+let toOpt = Js.undefinedToOption
+let return = Js.Undefined.return
+
+#else
+
 external toOpt : 'a opt -> 'a option = "#undefined_to_opt"
 external return : 'a -> 'a opt = "%identity" 
+
+#end
 
 let emptyOpt = Js.undefined   
 let rec power_2_above x n =

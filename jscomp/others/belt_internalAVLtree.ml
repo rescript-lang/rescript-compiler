@@ -27,12 +27,24 @@ type ('k, 'id) cmp = ('k, 'id) Belt_Id.cmp
 
 module A = Belt_Array
 module S = Belt_SortArray
+
+#if COMPILE_TO_NATIVE then
+
+let toOpt : 'a Js.null -> 'a option = Js.toOpt
+let return a =
+  Js.Null.return a
+  
+let empty : 'a Js.null = Js.empty
+let unsafeCoerce a = Js.Null.getUnsafe a
+
+#else
+
 external toOpt : 'a Js.null -> 'a option = "#null_to_opt"
 external return : 'a -> 'a Js.null = "%identity"
 external empty : 'a Js.null = "#null"
 external unsafeCoerce : 'a Js.null -> 'a = "%identity"
 
-
+#end
 
 let treeHeight (n : _ t) =
   match toOpt n with
@@ -461,7 +473,7 @@ let toArray n =
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
-    let v = A.makeUninitializedUnsafe size in
+    let v = A.makeUninitializedUnsafe size (n |. key, n |. value) in
     ignore (fillArray n 0 v : int);  (* may add assertion *)
     v
 
@@ -470,7 +482,7 @@ let keysToArray n =
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
-    let v = A.makeUninitializedUnsafe size in
+    let v = A.makeUninitializedUnsafe size (n |. key) in
     ignore (fillArrayKey n 0 v : int);  (* may add assertion *)
     v
 
@@ -479,7 +491,7 @@ let valuesToArray n =
   | None -> [||]
   | Some n ->
     let size = lengthNode n in
-    let v = A.makeUninitializedUnsafe size in
+    let v = A.makeUninitializedUnsafe size (n |. value) in
     ignore (fillArrayValue n 0 v : int);  (* may add assertion *)
     v
 
