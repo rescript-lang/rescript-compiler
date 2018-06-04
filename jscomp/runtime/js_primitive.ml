@@ -54,19 +54,15 @@ let option_get_unwrap (x : 'a option) : 'b Js_undefined.t =
   | None -> Js_undefined.empty
   | Some x -> Js_undefined.return ((Obj.magic x).(1))
 
-let nullHeader = [||]
 let undefinedHeader = [||]
   
 let box_optional =
   [%bs.raw {|
 function box(x) {
-  if (x === null) {
-    return [nullHeader, 0]
-  } else if (x === undefined) {
+  if (x === null) { return null }
+  else if (x === undefined) {
     return [undefinedHeader,0]
-  } else if (x [0] === nullHeader) {
-    return [nullHeader, x[1] + 1]
-  } else if (x [0] === undefinedHeader) {
+  } else if (x[0] === undefinedHeader) {
     return [undefinedHeader, x[1] + 1]
   } else return x
 }
@@ -75,12 +71,8 @@ function box(x) {
 let unbox_optional =
   [%bs.raw {|
 function unbox(x){
-  if( x [0] === nullHeader) {
-    if (x[1] === 0) {
-      return null
-    }
-    else return [nullHeader,  x[1] - 1]
-  } else if (x[0] === undefinedHeader){
+  if (x === null) { return x}
+  else if (x[0] === undefinedHeader){
     if(x[1] === 0) {
       return undefined
     } else return [undefinedHeader, x[1] - 1]

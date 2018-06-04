@@ -33,7 +33,7 @@ let f x y =
 let null = null2 in 
 eq __LOC__ (Js.test null) false;
 
-eq __LOC__ (Some (Js.Nullable.null) = Some (Js.Nullable.undefined)) true;
+eq __LOC__ (Some (Js.Nullable.null) = Some (Js.Nullable.undefined)) false;
 
 eq __LOC__ (Some None <> Some (Some None)) true;
 
