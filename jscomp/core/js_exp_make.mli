@@ -291,7 +291,7 @@ val math :
 
 
 
-val undefined : t
+val undefined : ?comment:string -> unit -> t
 val is_caml_block : ?comment:string -> t -> t
 
 

@@ -270,7 +270,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
   else
-    if (Obj.magic a) = Js.null then a == b else
+    if (Obj.magic a) == Js.null || (Obj.magic a) == Js.undefined then a == b else
     let a_type = Js.typeof a in 
     if a_type = "string"
     ||  a_type = "number"
@@ -338,7 +338,7 @@ let caml_equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =
 
 let caml_equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
   match Js.toOption y with 
-  | None -> Obj.magic x = None
+  | None -> Obj.magic x = Obj.magic y
   | Some y -> caml_equal x y
 
 let caml_notequal a  b =  not (caml_equal a  b)

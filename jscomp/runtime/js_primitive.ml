@@ -81,7 +81,7 @@ function unbox(x){
     }
     else return [nullHeader,  x[1] - 1]
   } else if (x[0] === undefinedHeader){
-    if(x[1] === 1) {
+    if(x[1] === 0) {
       return undefined
     } else return [undefinedHeader, x[1] - 1]
   } else return x

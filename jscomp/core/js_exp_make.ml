@@ -87,8 +87,8 @@ let var ?comment  id  : t =
 let js_global ?comment  (v : string) =
   var ?comment (Ext_ident.create_js v )
   
-let undefined  : t = 
-    {expression_desc = Undefined ; comment = None}
+let undefined ?comment () : t = 
+    {expression_desc = Undefined ; comment}
 
 let nil ?comment () : t = 
     {expression_desc = Null ; comment}
@@ -395,7 +395,7 @@ let dot ?comment (e0 : t)  (e1 : string) : t =
 
 (** coupled with the runtime *)
 let is_caml_block ?comment (e : t) : t = 
-  {expression_desc = Bin ( NotEqEq, dot e L.js_prop_length , undefined); 
+  {expression_desc = Bin ( NotEqEq, dot e L.js_prop_length , undefined()); 
    comment}
 
 (* This is a property access not external module *)
@@ -1233,7 +1233,7 @@ let is_null ?comment (x : t) =
   triple_equal ?comment x (nil ?comment ()) 
 
 
-let is_undef ?comment x = triple_equal ?comment x undefined
+let is_undef ?comment x = triple_equal ?comment x (undefined ?comment ())
 
 let for_sure_js_null_undefined (x : t) = 
   match x.expression_desc with 

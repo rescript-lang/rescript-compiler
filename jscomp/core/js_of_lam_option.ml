@@ -73,7 +73,7 @@ let get_default_undefined
     ]}
 *)
 let none : J.expression =
-  {expression_desc = Null; comment = Some "None"}
+  {expression_desc = Undefined; comment = Some "None"}
 
 let some x : J.expression =
   E.make_box x
