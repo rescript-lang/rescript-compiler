@@ -6,9 +6,6 @@ OCAMLOPT_FLAGS= -g -w -40-30 ../jscomp/stubs/ext_basic_hash_stubs.c
 # test case of our optimizations
 bsppx.exe: bsppx.mli bsppx.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
-	
-belt_bsppx.exe: belt_bsppx.ml
-	$(NATIVE) $(OCAMLOPT_FLAGS)  $^ -o $@
 
 bspp.exe:   bspp.mli bspp.ml
 	$(NATIVE) $(OCAMLOPT_FLAGS) $^ -o $@
