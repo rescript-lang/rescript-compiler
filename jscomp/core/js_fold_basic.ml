@@ -49,7 +49,7 @@ let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) =
   | Blk_record _  
   | Blk_tuple 
   | Blk_array -> false   
-  | Blk_constructor (_, 1)      
+  | Blk_constructor (_, 1, _)      
   | Blk_na -> not (tag_is_zero tag)
   | Blk_constructor _   -> true
   | Blk_exception 

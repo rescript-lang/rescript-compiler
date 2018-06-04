@@ -1912,7 +1912,7 @@ let convert exports lam : _ * _  =
         | "#apply7"
         | "#apply8" -> Pjs_apply
         | "#makemutablelist" ->
-          Pmakeblock(0,Lambda.Blk_constructor("::",1),Mutable)
+          Pmakeblock(0,Lambda.Blk_constructor("::",1,1),Mutable)
         | "#setfield1" ->
           Psetfield(1,  Fld_set_na)
         | "#undefined_to_opt" -> Pundefined_to_opt

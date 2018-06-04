@@ -31,7 +31,7 @@ type loc_kind =
 
 
 type tag_info = 
-  | Blk_constructor of string * int (* Number of non-const constructors*)
+  | Blk_constructor of string * int * int (* Number of non-const and const  constructors *)
   | Blk_tuple
   | Blk_array
   | Blk_variant of string 
