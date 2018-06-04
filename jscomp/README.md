@@ -4,6 +4,8 @@ Extra info:
 
 ## Rebuilding the browser-based playground
 
+For best results, you probably want to complete the full [Setup](../CONTRIBUTING.md#setup) before following the below guidelines.
+
 ### Get `js_of_ocaml` from the normal switch
 
 ```
@@ -15,11 +17,13 @@ which js_of_ocaml # symlink this into your $PATH, maybe /usr/local/bin or someth
 
 ### Do everything else from the bucklescript switch
 
+You need to have [bucklescript-playground](https://github.com/BuckleScript/bucklescript-playground) cloned next to the Bucklescript directory for the following to work.
+
 ```
 opam switch 4.02.3+buckle-master
 eval `opam config env`
 opam install camlp4 ocp-ocamlres
-(cd vendor/ocaml && make world)
+(cd vendor/ocaml && ./configure -prefix `pwd` && make world)
 (cd jscomp && BS_RELEASE_BUILD=true BS_PLAYGROUND=../../bucklescript-playground node repl.js)
 ```
 
