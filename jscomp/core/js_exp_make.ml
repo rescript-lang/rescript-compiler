@@ -180,7 +180,7 @@ let make_block ?comment tag tag_info es mutable_flag : t =
     | _ -> es 
   in
   match tag_info, es with
-  | Blk_constructor ("Some", 1, 1), [e] ->
+  | Blk_some, [e] ->
     make_some e
   | _ ->
   {
