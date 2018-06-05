@@ -56,9 +56,9 @@ let option_get_unwrap (x : 'a option) : 'b Js_undefined.t =
 
 let undefinedHeader = [||]
   
-let box_optional =
+let some =
   [%bs.raw {|
-function box(x) {
+function some(x) {
   if (x === null) { return null }
   else if (x === undefined) {
     return [undefinedHeader,0]
@@ -68,9 +68,9 @@ function box(x) {
 }
   |}]
 
-let unbox_optional =
+let valFromOption =
   [%bs.raw {|
-function unbox(x){
+function valFromOption(x){
   if (x === null) { return x}
   else if (x[0] === undefinedHeader){
     if(x[1] === 0) {

@@ -158,7 +158,7 @@ let translate  loc
   | Punboxopt -> 
     begin match args with 
       | [arg] ->
-        E.make_unbox_opt arg
+        E.make_valFromOption arg
       | _ -> assert false 
     end
   | Pjs_typeof -> 
