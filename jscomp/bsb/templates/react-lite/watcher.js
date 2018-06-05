@@ -21,6 +21,7 @@ function setUpWebScoket() {
             console.error("web socket failed connect")
         }
     }
-}
+};
 
-setInterval(setUpWebScoket, 4000)
+setUpWebScoket();
+setInterval(setUpWebScoket, 2000);

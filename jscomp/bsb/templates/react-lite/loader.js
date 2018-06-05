@@ -73,6 +73,7 @@ function addSuffixJsIfNot(x) {
 
 
 var falsePromise = Promise.resolve(false)
+var fetchConfig = {'cache' : 'no-cache'}
 // package.json semantics
 // a string to module object 
 // from url -> module object 
@@ -88,7 +89,7 @@ function cachedFetch(link) {
     if (linkResult) {
         return linkResult
     } else {
-        var p = fetch(link)
+        var p = fetch(link, fetchConfig)
             .then(resp => {
                 if (resp.ok) {
                     return resp.text()

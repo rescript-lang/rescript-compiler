@@ -33,7 +33,8 @@ function notifyClients() {
     var wsClientsLen = wsClients.length
     dlog(`Alive sockets number: ${wsClientsLen}`)    
     for (var i = 0; i < wsClientsLen; ++ i ) {
-        var client = wsClients[i]
+        // in reverse order, the last pushed get notified earlier
+        var client = wsClients[wsClientsLen - i - 1] 
         if (!client.closed) {
             client.sendText(
                 JSON.stringify(
