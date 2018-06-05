@@ -35,7 +35,7 @@ let rec translate (x : Lam.constant ) : J.expression =
   match x with 
   | Const_js_true -> E.bool true 
   | Const_js_false -> E.bool false
-  | Const_js_null -> E.nil ()
+  | Const_js_null -> E.nil
   | Const_js_undefined -> E.undefined ()
   | Const_int i -> E.int (Int32.of_int i)
   | Const_char i ->
@@ -107,7 +107,7 @@ let translate_arg_cst (cst : External_arg_spec.cst) =
      E.int (Int32.of_int i)
    | Arg_string_lit i -> 
      E.str i
-   | Arg_js_null  -> E.nil ()
+   | Arg_js_null  -> E.nil
    | Arg_js_json s 
      -> E.raw_js_code Exp s
 
