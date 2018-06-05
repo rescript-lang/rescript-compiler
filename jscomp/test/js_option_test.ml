@@ -97,6 +97,14 @@ let option_suites = Mt.[
     __LOC__ , begin fun _ ->
       Eq(Js.Option.isSome (Js.Option.getExn (Js.Option.getExn (Some (Some None)))), false)
     end;
+
+    __LOC__ , begin fun _ ->
+      Eq(Some None, Some None)
+    end;
+
+    __LOC__ , begin fun _ ->
+      Neq(Some None, Some (Obj.magic Js.null))
+    end;
   ]
 
 let () = 
