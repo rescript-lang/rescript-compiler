@@ -202,7 +202,7 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
-  | Punboxopt
+  | Pval_from_option
   | Pjs_typeof
   | Pjs_function_length
   | Pcaml_obj_length
@@ -1598,8 +1598,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock (tag,info, mutable_flag)
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
-  | Pfield (id, Fld_record "Some") ->
-    prim ~primitive:Punboxopt ~args loc
+  | Pfield (id, Fld_val_from_option) ->
+    prim ~primitive:Pval_from_option ~args loc
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 

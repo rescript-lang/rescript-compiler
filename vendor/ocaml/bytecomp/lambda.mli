@@ -47,6 +47,7 @@ val default_tag_info : tag_info
 type field_dbg_info = 
   | Fld_na
   | Fld_record of string
+  | Fld_val_from_option
   | Fld_module of string 
 
 type set_field_dbg_info = 
