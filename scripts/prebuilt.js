@@ -89,5 +89,6 @@ function buildCompiler() {
 	})
 }
 
+require('./runtimeDeps.js').create()
 buildCompiler()
 
