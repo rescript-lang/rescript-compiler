@@ -5,17 +5,26 @@
 # since in relese build, user may not have the sources available
 # -B is not necessary in CI, however, when dir is not clean..
 
+NPROCS := 1
+KERNEL := $(shell uname -s)
+
+ifeq ($(KERNEL),Linux)
+  NPROCS := $(shell grep -c '^processor' /proc/cpuinfo)
+else ifeq ($(KERNEL),Darwin
+  NPROCS := $(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
+endif
+
 world:
 	@echo "Making compiler"
-	$(MAKE) -B -C lib -j 6 all
+	$(MAKE) -B -C lib -j $(NPROCS) all
 	$(MAKE) libs
 
 libs:
 	@echo "Making compiler finished"
-	$(MAKE) -C jscomp/stdlib -j8 allcmis
-	$(MAKE) -C jscomp/runtime -j8 all
-	$(MAKE) -C jscomp/others -j8 all
-	$(MAKE) -C jscomp/stdlib -j8 all
+	$(MAKE) -C jscomp/stdlib -j $(NPROCS) allcmis
+	$(MAKE) -C jscomp/runtime -j $(NPROCS) all
+	$(MAKE) -C jscomp/others -j $(NPROCS) all
+	$(MAKE) -C jscomp/stdlib -j $(NPROCS) all
 
 
 DEST=lib/ocaml
