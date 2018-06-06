@@ -62,7 +62,7 @@ clean::
 	$(COMPILER) $(INCLUDES) $(COMPFLAGS)  -c $<
 .ml.cmj:
 	$(COMPILER) $(INCLUDES) $(COMPFLAGS)  -c $<
-
+-include .extradepend
 -include .depend
 
 ML_SOURCES=$(addsuffix .ml, $(OTHERS))
