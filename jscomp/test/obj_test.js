@@ -8,17 +8,17 @@ var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
   "hi",
-  "add"
+  "hello"
 ];
 
 var shared$1 = [
   "hi",
-  "hello"
+  "add"
 ];
 
-var $$class = CamlinternalOO.create_table(shared$1);
+var $$class = CamlinternalOO.create_table(shared);
 
-var ids = CamlinternalOO.get_method_labels($$class, shared$1);
+var ids = CamlinternalOO.get_method_labels($$class, shared);
 
 var hi = ids[0];
 
@@ -137,9 +137,9 @@ CamlinternalOO.init_class($$class$4);
 
 var uuu = CamlinternalOO.create_object_opt(0, $$class$4);
 
-var $$class$5 = CamlinternalOO.create_table(shared);
+var $$class$5 = CamlinternalOO.create_table(shared$1);
 
-var ids$3 = CamlinternalOO.get_method_labels($$class$5, shared);
+var ids$3 = CamlinternalOO.get_method_labels($$class$5, shared$1);
 
 var hi$2 = ids$3[0];
 

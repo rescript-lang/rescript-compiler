@@ -838,7 +838,10 @@ and
               E.str name;
               E.array mutable_flag el]
           )        
-         | Blk_constructor(name,number) ->
+         | Blk_constructor _ | Blk_some ->
+          let (name, number) = match tag_info with
+            | Blk_constructor (name, number) -> (name, number)
+            | _ -> ("Some", 1) in
           let no_tag_attached = 
               number = 1 && Js_fold_basic.tag_is_zero tag in 
           if !Js_config.debug then 

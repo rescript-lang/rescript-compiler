@@ -6,7 +6,8 @@ function f(obj) {
     return /* () */0;
   } else {
     var size = obj.length;
-    if (size !== undefined) {
+    var match = size === undefined ? /* None */0 : [size];
+    if (match !== /* None */0) {
       console.log(size);
       return /* () */0;
     } else {

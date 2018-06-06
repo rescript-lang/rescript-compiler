@@ -36,6 +36,8 @@ let get_double_feild field_info e i =
   | Lambda.Fld_record s 
   | Lambda.Fld_module s 
     -> E.index ~comment:s e i
+  | Lambda.Fld_val_from_option
+    -> E.index ~comment:"None" e i
 
 
 let set_double_field field_info e  i e0 = 

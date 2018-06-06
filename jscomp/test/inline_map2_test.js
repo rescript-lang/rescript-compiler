@@ -378,8 +378,8 @@ function Make(Ord) {
     }
   };
   var concat_or_join = function (t1, v, d, t2) {
-    if (d) {
-      return join(t1, v, d[0], t2);
+    if (d !== /* None */0) {
+      return join(t1, v, d[/* None */0], t2);
     } else {
       return concat(t1, t2);
     }
@@ -1043,8 +1043,8 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  if (d) {
-    return join(t1, v, d[0], t2);
+  if (d !== /* None */0) {
+    return join(t1, v, d[/* None */0], t2);
   } else {
     return concat(t1, t2);
   }
@@ -1746,8 +1746,8 @@ function concat$1(t1, t2) {
 }
 
 function concat_or_join$1(t1, v, d, t2) {
-  if (d) {
-    return join$1(t1, v, d[0], t2);
+  if (d !== /* None */0) {
+    return join$1(t1, v, d[/* None */0], t2);
   } else {
     return concat$1(t1, t2);
   }

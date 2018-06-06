@@ -26,7 +26,8 @@ function eq(loc, x, y) {
 }
 
 function f1(x) {
-  if (x !== null) {
+  var match = x === null ? /* None */0 : [x];
+  if (match !== /* None */0) {
     return x + 1 | 0;
   } else {
     return 3;
@@ -34,7 +35,8 @@ function f1(x) {
 }
 
 function f2(x) {
-  if (x !== null) {
+  var u = x === null ? /* None */0 : [x];
+  if (u !== /* None */0) {
     return x + 1 | 0;
   } else {
     return 3;
@@ -43,7 +45,9 @@ function f2(x) {
 
 function f5(h, _) {
   var u = Curry._1(h, 32);
-  if (u !== null) {
+  if ((
+      u === null ? /* None */0 : [u]
+    ) !== /* None */0) {
     return u + 1 | 0;
   } else {
     return 3;
@@ -53,7 +57,9 @@ function f5(h, _) {
 function f4(h, x) {
   var u = Curry._1(h, 32);
   var v = 32 + x | 0;
-  if (u !== null) {
+  if ((
+      u === null ? /* None */0 : [u]
+    ) !== /* None */0) {
     return u + 1 | 0;
   } else {
     return 1 + v | 0;
@@ -65,12 +71,19 @@ function f6(x, y) {
 }
 
 function f7(x) {
-  return x;
+  var match = /* Some */[x];
+  if (match !== /* None */0) {
+    return x;
+  } else {
+    return /* None */0;
+  }
 }
 
 function f8(x) {
-  if (x !== null) {
-    if (x !== null) {
+  var match = x === null ? /* None */0 : [x];
+  if (match !== /* None */0) {
+    var match$1 = x === null ? /* None */0 : [x];
+    if (match$1 !== /* None */0) {
       return 0;
     } else {
       return 1;
@@ -111,7 +124,8 @@ var Test_null = /* module */[
 ];
 
 function f1$1(x) {
-  if (x !== undefined) {
+  var match = x === undefined ? /* None */0 : [x];
+  if (match !== /* None */0) {
     return x + 1 | 0;
   } else {
     return 3;
@@ -119,7 +133,8 @@ function f1$1(x) {
 }
 
 function f2$1(x) {
-  if (x !== undefined) {
+  var u = x === undefined ? /* None */0 : [x];
+  if (u !== /* None */0) {
     return x + 1 | 0;
   } else {
     return 3;
@@ -128,7 +143,9 @@ function f2$1(x) {
 
 function f5$1(h, _) {
   var u = Curry._1(h, 32);
-  if (u !== undefined) {
+  if ((
+      u === undefined ? /* None */0 : [u]
+    ) !== /* None */0) {
     return u + 1 | 0;
   } else {
     return 3;
@@ -138,7 +155,9 @@ function f5$1(h, _) {
 function f4$1(h, x) {
   var u = Curry._1(h, 32);
   var v = 32 + x | 0;
-  if (u !== undefined) {
+  if ((
+      u === undefined ? /* None */0 : [u]
+    ) !== /* None */0) {
     return u + 1 | 0;
   } else {
     return 1 + v | 0;
@@ -150,12 +169,19 @@ function f6$1(x, y) {
 }
 
 function f7$1(x) {
-  return x;
+  var match = /* Some */[x];
+  if (match !== /* None */0) {
+    return x;
+  } else {
+    return /* None */0;
+  }
 }
 
 function f8$1(x) {
-  if (x !== undefined) {
-    if (x !== undefined) {
+  var match = x === undefined ? /* None */0 : [x];
+  if (match !== /* None */0) {
+    var match$1 = x === undefined ? /* None */0 : [x];
+    if (match$1 !== /* None */0) {
       return 0;
     } else {
       return 1;
@@ -196,37 +222,43 @@ var Test_def = /* module */[
 ];
 
 function f1$2(x) {
-  if (x == null) {
-    return 3;
-  } else {
+  var match = (x == null) ? /* None */0 : [x];
+  if (match !== /* None */0) {
     return x + 1 | 0;
+  } else {
+    return 3;
   }
 }
 
 function f2$2(x) {
-  if (x == null) {
-    return 3;
-  } else {
+  var u = (x == null) ? /* None */0 : [x];
+  if (u !== /* None */0) {
     return x + 1 | 0;
+  } else {
+    return 3;
   }
 }
 
 function f5$2(h, _) {
   var u = Curry._1(h, 32);
-  if (u == null) {
-    return 3;
-  } else {
+  if ((
+      (u == null) ? /* None */0 : [u]
+    ) !== /* None */0) {
     return u + 1 | 0;
+  } else {
+    return 3;
   }
 }
 
 function f4$2(h, x) {
   var u = Curry._1(h, 32);
   var v = 32 + x | 0;
-  if (u == null) {
-    return 1 + v | 0;
-  } else {
+  if ((
+      (u == null) ? /* None */0 : [u]
+    ) !== /* None */0) {
     return u + 1 | 0;
+  } else {
+    return 1 + v | 0;
   }
 }
 
@@ -235,16 +267,25 @@ function f6$2(x, y) {
 }
 
 function f7$2(x) {
-  return x;
+  var match = /* Some */[x];
+  if (match !== /* None */0) {
+    return x;
+  } else {
+    return /* None */0;
+  }
 }
 
 function f8$2(x) {
-  if (x == null) {
-    return 2;
-  } else if (x == null) {
-    return 1;
+  var match = (x == null) ? /* None */0 : [x];
+  if (match !== /* None */0) {
+    var match$1 = (x == null) ? /* None */0 : [x];
+    if (match$1 !== /* None */0) {
+      return 0;
+    } else {
+      return 1;
+    }
   } else {
-    return 0;
+    return 2;
   }
 }
 

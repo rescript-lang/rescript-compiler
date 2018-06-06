@@ -27,9 +27,9 @@ function bufferize(f) {
   return /* tuple */[
           (function () {
               var match = buf[0];
-              if (match) {
+              if (match !== /* None */0) {
                 buf[0] = /* None */0;
-                return match[0];
+                return match[/* None */0];
               } else {
                 return Curry._1(f, /* () */0);
               }
@@ -190,8 +190,8 @@ function next() {
       throw exn;
     }
   }
-  if (match) {
-    var c = match[0];
+  if (match !== /* None */0) {
+    var c = match[/* None */0];
     var exit = 0;
     if (c !== 34) {
       if (c >= 48) {

@@ -41,11 +41,15 @@ function ok(loc, x) {
 
 var match = typeof (___undefined_value) === "undefined" ? undefined : (___undefined_value);
 
-var a = match !== undefined ? 2 : 1;
+var a = (
+  match === undefined ? /* None */0 : [match]
+) !== /* None */0 ? 2 : 1;
 
 function test() {
   var match = typeof (__DEV__) === "undefined" ? undefined : (__DEV__);
-  if (match !== undefined) {
+  if ((
+      match === undefined ? /* None */0 : [match]
+    ) !== /* None */0) {
     console.log("dev mode");
     return /* () */0;
   } else {
@@ -56,7 +60,9 @@ function test() {
 
 function test2() {
   var match = typeof (__filename) === "undefined" ? undefined : (__filename);
-  if (match !== undefined) {
+  if ((
+      match === undefined ? /* None */0 : [match]
+    ) !== /* None */0) {
     console.log(match);
     return /* () */0;
   } else {

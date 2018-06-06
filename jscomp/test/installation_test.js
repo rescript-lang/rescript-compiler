@@ -31,7 +31,9 @@ function eq(loc, x, y) {
 
 var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
 
-if (match !== undefined) {
+if ((
+    match === undefined ? /* None */0 : [match]
+  ) !== /* None */0) {
   var root = App_root_finder.find_package_json(match);
   var bsc_exe = Path.join(root, "lib", "bsc.exe");
   var exit = 0;

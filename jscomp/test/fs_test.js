@@ -30,11 +30,15 @@ function eq(loc, param) {
 
 var match = typeof (__filename) === "undefined" ? undefined : (__filename);
 
-var current_file = match !== undefined ? match : "<Not Node JS>";
+var current_file = (
+  match === undefined ? /* None */0 : [match]
+) !== /* None */0 ? match : "<Not Node JS>";
 
 var match$1 = typeof (__dirname) === "undefined" ? undefined : (__dirname);
 
-var current_dir_name = match$1 !== undefined ? match$1 : "<Not Node Js>";
+var current_dir_name = (
+  match$1 === undefined ? /* None */0 : [match$1]
+) !== /* None */0 ? match$1 : "<Not Node Js>";
 
 Fs.readFileSync(current_file, "utf8");
 
@@ -44,7 +48,9 @@ var pathobj = Path.parse(current_dir_name);
 
 var match$2 = typeof (module) === "undefined" ? undefined : (module);
 
-if (match$2 !== undefined) {
+if ((
+    match$2 === undefined ? /* None */0 : [match$2]
+  ) !== /* None */0) {
   console.log(/* tuple */[
         match$2.id,
         match$2.paths

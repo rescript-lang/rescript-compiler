@@ -40,7 +40,7 @@ function f(param) {
     
   }
   var match$1 = param[2][/* contents */0];
-  if (match$1) {
+  if (match$1 !== /* None */0) {
     var match$2 = param[1];
     var tag$1 = match$2.tag | 0;
     if (tag$1 !== 250) {
@@ -50,7 +50,7 @@ function f(param) {
       
     }
     var match$3 = param[2][/* contents */0];
-    if (match$3) {
+    if (match$3 !== /* None */0) {
       return 1;
     } else {
       throw [

@@ -20,7 +20,9 @@ function g() {
 
 function a0(f) {
   var u = Curry._1(f, /* () */0);
-  if (u !== null) {
+  if ((
+      u === null ? /* None */0 : [u]
+    ) !== /* None */0) {
     console.log(u);
     console.log(u);
     return 1;

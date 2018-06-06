@@ -21,7 +21,7 @@ var Caml_exceptions = require("../../lib/js/caml_exceptions.js");
 var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js");
 
 function field($staropt$star, label, number, type_, name) {
-  var options = $staropt$star ? $staropt$star[0] : /* [] */0;
+  var options = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : /* [] */0;
   return /* record */[
           /* field_name */name,
           /* field_number */number,
@@ -32,7 +32,7 @@ function field($staropt$star, label, number, type_, name) {
 }
 
 function map($staropt$star, number, key_type, value_type, name) {
-  var map_options = $staropt$star ? $staropt$star[0] : /* [] */0;
+  var map_options = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : /* [] */0;
   return /* record */[
           /* map_name */name,
           /* map_number */number,
@@ -43,7 +43,7 @@ function map($staropt$star, number, key_type, value_type, name) {
 }
 
 function oneof_field($staropt$star, number, type_, name) {
-  var options = $staropt$star ? $staropt$star[0] : /* [] */0;
+  var options = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : /* [] */0;
   return /* record */[
           /* field_name */name,
           /* field_number */number,
@@ -75,7 +75,7 @@ function message(content, message_name) {
 function $$import($$public, file_name) {
   return /* record */[
           /* file_name */file_name,
-          /* public */$$public ? true : false
+          /* public */$$public !== /* None */0
         ];
 }
 
@@ -89,7 +89,7 @@ function extend(extend_name, extend_body) {
 }
 
 function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$1, extend, _) {
-  var proto$2 = proto$1 ? proto$1[0] : /* record */[
+  var proto$2 = proto$1 !== /* None */0 ? proto$1[/* None */0] : /* record */[
       /* syntax */syntax,
       /* imports : [] */0,
       /* file_options : [] */0,
@@ -98,7 +98,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums : [] */0,
       /* extends : [] */0
     ];
-  var proto$3 = syntax ? /* record */[
+  var proto$3 = syntax !== /* None */0 ? /* record */[
       /* syntax */syntax,
       /* imports */proto$2[/* imports */1],
       /* file_options */proto$2[/* file_options */2],
@@ -107,7 +107,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums */proto$2[/* enums */5],
       /* extends */proto$2[/* extends */6]
     ] : proto$2;
-  var proto$4 = $$package ? /* record */[
+  var proto$4 = $$package !== /* None */0 ? /* record */[
       /* syntax */proto$3[/* syntax */0],
       /* imports */proto$3[/* imports */1],
       /* file_options */proto$3[/* file_options */2],
@@ -116,34 +116,34 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums */proto$3[/* enums */5],
       /* extends */proto$3[/* extends */6]
     ] : proto$3;
-  var proto$5 = message ? /* record */[
+  var proto$5 = message !== /* None */0 ? /* record */[
       /* syntax */proto$4[/* syntax */0],
       /* imports */proto$4[/* imports */1],
       /* file_options */proto$4[/* file_options */2],
       /* package */proto$4[/* package */3],
       /* messages : :: */[
-        message[0],
+        message[/* None */0],
         proto$2[/* messages */4]
       ],
       /* enums */proto$4[/* enums */5],
       /* extends */proto$4[/* extends */6]
     ] : proto$4;
-  var proto$6 = $$enum ? /* record */[
+  var proto$6 = $$enum !== /* None */0 ? /* record */[
       /* syntax */proto$5[/* syntax */0],
       /* imports */proto$5[/* imports */1],
       /* file_options */proto$5[/* file_options */2],
       /* package */proto$5[/* package */3],
       /* messages */proto$5[/* messages */4],
       /* enums : :: */[
-        $$enum[0],
+        $$enum[/* None */0],
         proto$2[/* enums */5]
       ],
       /* extends */proto$5[/* extends */6]
     ] : proto$5;
-  var proto$7 = $$import ? /* record */[
+  var proto$7 = $$import !== /* None */0 ? /* record */[
       /* syntax */proto$6[/* syntax */0],
       /* imports : :: */[
-        $$import[0],
+        $$import[/* None */0],
         proto$2[/* imports */1]
       ],
       /* file_options */proto$6[/* file_options */2],
@@ -152,11 +152,11 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums */proto$6[/* enums */5],
       /* extends */proto$6[/* extends */6]
     ] : proto$6;
-  var proto$8 = file_option ? /* record */[
+  var proto$8 = file_option !== /* None */0 ? /* record */[
       /* syntax */proto$7[/* syntax */0],
       /* imports */proto$7[/* imports */1],
       /* file_options : :: */[
-        file_option[0],
+        file_option[/* None */0],
         proto$2[/* file_options */2]
       ],
       /* package */proto$7[/* package */3],
@@ -164,7 +164,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
       /* enums */proto$7[/* enums */5],
       /* extends */proto$7[/* extends */6]
     ] : proto$7;
-  if (extend) {
+  if (extend !== /* None */0) {
     return /* record */[
             /* syntax */proto$8[/* syntax */0],
             /* imports */proto$8[/* imports */1],
@@ -173,7 +173,7 @@ function proto(syntax, file_option, $$package, $$import, message, $$enum, proto$
             /* messages */proto$8[/* messages */4],
             /* enums */proto$8[/* enums */5],
             /* extends : :: */[
-              extend[0],
+              extend[/* None */0],
               proto$2[/* extends */6]
             ]
           ];
@@ -250,7 +250,7 @@ function apply_until(f, _param) {
     var param = _param;
     if (param) {
       var x = Curry._1(f, param[0]);
-      if (x) {
+      if (x !== /* None */0) {
         return x;
       } else {
         _param = param[1];
@@ -296,8 +296,8 @@ function string_fold_lefti(f, e0, s) {
 }
 
 function option_default(x, param) {
-  if (param) {
-    return param[0];
+  if (param !== /* None */0) {
+    return param[/* None */0];
   } else {
     return x;
   }
@@ -1276,7 +1276,7 @@ var yyact = /* array */[
       Parsing.peek_val(__caml_parser_env, 0);
       var $staropt$star = /* Some */[_4];
       var enum_name = _2[1];
-      var enum_values = $staropt$star ? $staropt$star[0] : /* [] */0;
+      var enum_values = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : /* [] */0;
       message_counter[0] = message_counter[0] + 1 | 0;
       return /* record */[
               /* enum_id */message_counter[0],
@@ -1704,7 +1704,7 @@ function lexer(lexbuf) {
 }
 
 function let_decl_of_and(param) {
-  if (param) {
+  if (param !== /* None */0) {
     return "and";
   } else {
     return "let rec";
@@ -1737,8 +1737,8 @@ function string_of_field_type(param) {
   } else if (param.tag) {
     var param$1 = param[0];
     var match = param$1[/* udt_module */0];
-    if (match) {
-      return match[0] + ("." + param$1[/* udt_type_name */1]);
+    if (match !== /* None */0) {
+      return match[/* None */0] + ("." + param$1[/* udt_type_name */1]);
     } else {
       return param$1[/* udt_type_name */1];
     }
@@ -1815,7 +1815,7 @@ function string_of_record_field_type(param) {
 
 function function_name_of_user_defined(prefix, param) {
   var match = param[/* udt_module */0];
-  if (match) {
+  if (match !== /* None */0) {
     return Curry._3(Printf.sprintf(/* Format */[
                     /* String */Block.__(2, [
                         /* No_padding */0,
@@ -1834,7 +1834,7 @@ function function_name_of_user_defined(prefix, param) {
                           ])
                       ]),
                     "%s.%s_%s"
-                  ]), match[0], prefix, param[/* udt_type_name */1]);
+                  ]), match[/* None */0], prefix, param[/* udt_type_name */1]);
   } else {
     return Curry._2(Printf.sprintf(/* Format */[
                     /* String */Block.__(2, [
@@ -1870,7 +1870,7 @@ function string_of_payload_kind(capitalize, payload_kind, packed) {
   } else {
     s = packed ? "bytes" : "varint";
   }
-  if (capitalize) {
+  if (capitalize !== /* None */0) {
     return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
   } else {
     return s;
@@ -2955,8 +2955,8 @@ var __log__ = [/* None */0];
 
 function log(x) {
   var match = __log__[0];
-  if (match) {
-    return Printf.fprintf(match[0], x);
+  if (match !== /* None */0) {
+    return Printf.fprintf(match[/* None */0], x);
   } else {
     return Printf.ifprintf(Pervasives.stdout, x);
   }
@@ -3622,10 +3622,10 @@ function fold(f, _m, _accu) {
 
 function min_value(param) {
   var match = param[0];
-  if (match) {
+  if (match !== /* None */0) {
     var match$1 = param[1];
-    if (match$1) {
-      return /* Some */[Caml_obj.caml_min(match[0], match$1[0])];
+    if (match$1 !== /* None */0) {
+      return /* Some */[Caml_obj.caml_min(match[/* None */0], match$1[/* None */0])];
     } else {
       throw [
             Caml_builtin_exceptions.failure,
@@ -3642,10 +3642,10 @@ function min_value(param) {
 
 function eq_value(param) {
   var match = param[0];
-  if (match) {
+  if (match !== /* None */0) {
     var match$1 = param[1];
-    if (match$1) {
-      return Caml_obj.caml_equal(match[0], match$1[0]);
+    if (match$1 !== /* None */0) {
+      return Caml_obj.caml_equal(match[/* None */0], match$1[/* None */0]);
     } else {
       throw [
             Caml_builtin_exceptions.failure,
@@ -3661,7 +3661,7 @@ function eq_value(param) {
 }
 
 function string_of_option(f, param) {
-  if (param) {
+  if (param !== /* None */0) {
     return Curry._1(Printf.sprintf(/* Format */[
                     /* String_literal */Block.__(11, [
                         "Some(",
@@ -3674,7 +3674,7 @@ function string_of_option(f, param) {
                           ])
                       ]),
                     "Some(%s)"
-                  ]), Curry._1(f, param[0]));
+                  ]), Curry._1(f, param[/* None */0]));
   } else {
     return "None";
   }
@@ -3751,7 +3751,7 @@ function strong_connect(g, sccs, stack, index, v) {
                       return String(prim);
                     }), w[/* index */1]));
           var match = w[/* index */1];
-          if (match) {
+          if (match !== /* None */0) {
             if (w[/* on_stack */3]) {
               v[/* lowlink */2] = min_value(/* tuple */[
                     v[/* lowlink */2],
@@ -3897,7 +3897,7 @@ function tarjan(g) {
                   var stack = param[1];
                   var sccs = param[0];
                   var match = n[/* index */1];
-                  if (match) {
+                  if (match !== /* None */0) {
                     return /* tuple */[
                             sccs,
                             stack,
@@ -3997,9 +3997,9 @@ function string_of_unresolved(param) {
 }
 
 function scope_of_package(param) {
-  if (param) {
+  if (param !== /* None */0) {
     return /* record */[
-            /* packages */List.rev(rev_split_by_char(/* "." */46, param[0])),
+            /* packages */List.rev(rev_split_by_char(/* "." */46, param[/* None */0])),
             /* message_names : [] */0
           ];
   } else {
@@ -4067,8 +4067,8 @@ function compile_default_p2(all_types, field) {
   var field_name$1 = field_name(field);
   var field_type$1 = field_type(field);
   var field_default$1 = field_default(field);
-  if (field_default$1) {
-    var constant = field_default$1[0];
+  if (field_default$1 !== /* None */0) {
+    var constant = field_default$1[/* None */0];
     var exit = 0;
     if (typeof field_type$1 === "number") {
       switch (field_type$1) {
@@ -4121,7 +4121,7 @@ function compile_default_p2(all_types, field) {
                   return /* None */0;
                 }
               }), spec[0][/* enum_values */1]);
-        if (default_enum_value$1) {
+        if (default_enum_value$1 !== /* None */0) {
           return /* Some */[constant];
         } else {
           return invalid_default_value(/* Some */[field_name$1], "Invalid default enum value", /* () */0);
@@ -4560,8 +4560,8 @@ function compile_message_p2(types, param, message) {
                 }
               }
             }), search_scopes$1);
-      if (id) {
-        return /* Field_type_type */[id[0]];
+      if (id !== /* None */0) {
+        return /* Field_type_type */[id[/* None */0]];
       } else {
         var field_name$1 = field_name;
         var type_ = type_name;
@@ -4731,7 +4731,7 @@ function group(proto) {
 }
 
 function type_decl_of_and(param) {
-  if (param) {
+  if (param !== /* None */0) {
     return "and";
   } else {
     return "type";
@@ -4741,7 +4741,7 @@ function type_decl_of_and(param) {
 function gen_type_record(mutable_, and_, param, sc) {
   var r_fields = param[/* r_fields */1];
   var r_name = param[/* r_name */0];
-  var mutable_$1 = mutable_ ? true : false;
+  var mutable_$1 = mutable_ !== /* None */0;
   var is_imperative_type = function (param) {
     switch (param.tag | 0) {
       case 2 : 
@@ -4980,7 +4980,7 @@ function encode_basic_type(bt, pk) {
 
 function gen_encode_field_type(with_key, sc, var_name, encoding_number, pk, is_packed, field_type) {
   var encode_key = function (sc) {
-    if (with_key) {
+    if (with_key !== /* None */0) {
       return gen_encode_field_key(sc, encoding_number, pk, is_packed);
     } else {
       return /* () */0;
@@ -5617,8 +5617,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
     var field_default$1 = field_default;
     switch (basic_type) {
       case 0 : 
-          if (field_default$1) {
-            var match = field_default$1[0];
+          if (field_default$1 !== /* None */0) {
+            var match = field_default$1[/* None */0];
             if (match.tag) {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             } else {
@@ -5640,8 +5640,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             return "\"\"";
           }
       case 1 : 
-          if (field_default$1) {
-            var match$1 = field_default$1[0];
+          if (field_default$1 !== /* None */0) {
+            var match$1 = field_default$1[/* None */0];
             if (match$1.tag === 3) {
               return Pervasives.string_of_float(match$1[0]);
             } else {
@@ -5651,8 +5651,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             return "0.";
           }
       case 2 : 
-          if (field_default$1) {
-            var match$2 = field_default$1[0];
+          if (field_default$1 !== /* None */0) {
+            var match$2 = field_default$1[/* None */0];
             if (match$2.tag === 2) {
               return String(match$2[0]);
             } else {
@@ -5662,8 +5662,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             return "0";
           }
       case 3 : 
-          if (field_default$1) {
-            var match$3 = field_default$1[0];
+          if (field_default$1 !== /* None */0) {
+            var match$3 = field_default$1[/* None */0];
             if (match$3.tag === 2) {
               return Curry._1(Printf.sprintf(/* Format */[
                               /* Int */Block.__(4, [
@@ -5684,8 +5684,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             return "0l";
           }
       case 4 : 
-          if (field_default$1) {
-            var match$4 = field_default$1[0];
+          if (field_default$1 !== /* None */0) {
+            var match$4 = field_default$1[/* None */0];
             if (match$4.tag === 2) {
               return Curry._1(Printf.sprintf(/* Format */[
                               /* Int */Block.__(4, [
@@ -5706,8 +5706,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             return "0L";
           }
       case 5 : 
-          if (field_default$1) {
-            var match$5 = field_default$1[0];
+          if (field_default$1 !== /* None */0) {
+            var match$5 = field_default$1[/* None */0];
             if (match$5.tag) {
               return invalid_default_value(field_name$1, "invalid default type", /* () */0);
             } else {
@@ -5729,8 +5729,8 @@ function default_value_of_field_type(field_name, field_type, field_default) {
             return "Bytes.create 64";
           }
       case 6 : 
-          if (field_default$1) {
-            var match$6 = field_default$1[0];
+          if (field_default$1 !== /* None */0) {
+            var match$6 = field_default$1[/* None */0];
             if (match$6.tag === 1) {
               var b = match$6[0];
               if (b) {
@@ -5765,7 +5765,7 @@ function record_field_default_info(record_field) {
     case 1 : 
         var match$1 = rf_field_type[0];
         var default_value$1 = match$1[3];
-        default_value = default_value$1 ? Curry._1(Printf.sprintf(/* Format */[
+        default_value = default_value$1 !== /* None */0 ? Curry._1(Printf.sprintf(/* Format */[
                     /* String_literal */Block.__(11, [
                         "Some (",
                         /* String */Block.__(2, [
@@ -5843,7 +5843,7 @@ function record_field_default_info(record_field) {
 function gen_default_record(mutable_, and_, param, sc) {
   var r_name = param[/* r_name */0];
   var fields_default_info = List.map(record_field_default_info, param[/* r_fields */1]);
-  if (mutable_) {
+  if (mutable_ !== /* None */0) {
     var rn = r_name + "_mutable";
     line$1(sc, Curry._3(Printf.sprintf(/* Format */[
                   /* String */Block.__(2, [
@@ -6465,8 +6465,8 @@ function encoding_info_of_field_type(all_types, field_type) {
 function encoding_of_field(all_types, field) {
   var match = field_option(field, "packed");
   var packed;
-  if (match) {
-    var match$1 = match[0];
+  if (match !== /* None */0) {
+    var match$1 = match[/* None */0];
     if (match$1.tag === 1) {
       packed = match$1[0];
     } else {
@@ -6491,16 +6491,16 @@ function encoding_of_field(all_types, field) {
 function compile_field_type(field_name, all_types, file_options, field_options, file_name, field_type) {
   var match = find_field_option(field_options, "ocaml_type");
   var ocaml_type;
-  if (match) {
-    var match$1 = match[0];
+  if (match !== /* None */0) {
+    var match$1 = match[/* None */0];
     ocaml_type = match$1.tag === 4 && match$1[0] === "int_t" ? /* Int_t */-783406652 : /* None */870530776;
   } else {
     ocaml_type = /* None */870530776;
   }
   var match$2 = file_option(file_options, "int32_type");
   var int32_type;
-  if (match$2) {
-    var match$3 = match$2[0];
+  if (match$2 !== /* None */0) {
+    var match$3 = match$2[/* None */0];
     int32_type = match$3.tag === 4 ? (
         match$3[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3])
       ) : /* Ft_basic_type */Block.__(0, [/* Bt_int32 */3]);
@@ -6509,8 +6509,8 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
   }
   var match$4 = file_option(file_options, "int64_type");
   var int64_type;
-  if (match$4) {
-    var match$5 = match$4[0];
+  if (match$4 !== /* None */0) {
+    var match$5 = match$4[/* None */0];
     int64_type = match$5.tag === 4 ? (
         match$5[0] === "int_t" ? /* Ft_basic_type */Block.__(0, [/* Bt_int */2]) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4])
       ) : /* Ft_basic_type */Block.__(0, [/* Bt_int64 */4]);
@@ -6603,8 +6603,8 @@ function compile_field_type(field_name, all_types, file_options, field_options, 
 
 function is_mutable(field_name, field_options) {
   var match = find_field_option(field_options, "ocaml_mutable");
-  if (match) {
-    var match$1 = match[0];
+  if (match !== /* None */0) {
+    var match$1 = match[/* None */0];
     if (match$1.tag === 1) {
       return match$1[0];
     } else {
@@ -6620,8 +6620,8 @@ function is_mutable(field_name, field_options) {
 
 function ocaml_container(field_options) {
   var match = find_field_option(field_options, "ocaml_container");
-  if (match) {
-    var match$1 = match[0];
+  if (match !== /* None */0) {
+    var match$1 = match[/* None */0];
     if (match$1.tag === 4) {
       return /* Some */[match$1[0]];
     } else {
@@ -6645,7 +6645,7 @@ function variant_of_oneof(include_oneof_name, outer_message_names, all_types, fi
                   /* vc_payload_kind */match[0]
                 ];
         }), oneof_field[/* oneof_fields */1]);
-  var v_name = include_oneof_name ? type_name(outer_message_names, oneof_field[/* oneof_name */0]) : type_name(outer_message_names, "");
+  var v_name = include_oneof_name !== /* None */0 ? type_name(outer_message_names, oneof_field[/* oneof_name */0]) : type_name(outer_message_names, "");
   return /* record */[
           /* v_name */v_name,
           /* v_constructors */v_constructors
@@ -6802,8 +6802,8 @@ function compile(proto_definition) {
                                             } else {
                                               var match$2 = ocaml_container(field_options$1);
                                               var repeated_type;
-                                              if (match$2) {
-                                                if (match$2[0] === "repeated_field") {
+                                              if (match$2 !== /* None */0) {
+                                                if (match$2[/* None */0] === "repeated_field") {
                                                   repeated_type = /* Rt_repeated_field */1;
                                                 } else {
                                                   throw [
@@ -6917,8 +6917,8 @@ function compile(proto_definition) {
                                           var value_pk = encoding_info_of_field_type(all_types$1, map_value_type);
                                           var match$3 = ocaml_container(map_options);
                                           var associative_type;
-                                          if (match$3) {
-                                            if (match$3[0] === "hashtbl") {
+                                          if (match$3 !== /* None */0) {
+                                            if (match$3[/* None */0] === "hashtbl") {
                                               associative_type = /* At_hashtable */1;
                                             } else {
                                               throw [
@@ -6993,7 +6993,7 @@ function compile(proto_definition) {
     return List.iter((function (param) {
                   var ocamldoc_title = param[1];
                   var f = param[0];
-                  if (ocamldoc_title) {
+                  if (ocamldoc_title !== /* None */0) {
                     line$1(sc, "");
                     line$1(sc, Curry._1(Printf.sprintf(/* Format */[
                                   /* String_literal */Block.__(11, [
@@ -7007,7 +7007,7 @@ function compile(proto_definition) {
                                         ])
                                     ]),
                                   "(** {2 %s} *)"
-                                ]), ocamldoc_title[0]));
+                                ]), ocamldoc_title[/* None */0]));
                     line$1(sc, "");
                   }
                   return List.iter((function (types) {

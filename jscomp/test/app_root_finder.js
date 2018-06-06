@@ -25,7 +25,9 @@ function find_package_json(_dir) {
 
 var match = typeof (__dirname) === "undefined" ? undefined : (__dirname);
 
-if (match !== undefined) {
+if ((
+    match === undefined ? /* None */0 : [match]
+  ) !== /* None */0) {
   console.log(find_package_json(match));
 }
 

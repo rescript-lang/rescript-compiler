@@ -4,7 +4,9 @@ var Curry = require("../../lib/js/curry.js");
 
 function test_hi(x) {
   var match = x.hi(1, 2, 3);
-  if (match !== null) {
+  if ((
+      match === null ? /* None */0 : [match]
+    ) !== /* None */0) {
     console.log(match);
     return 2;
   } else {
@@ -14,10 +16,12 @@ function test_hi(x) {
 
 function test_hi__2(x) {
   var match = x.hi__2();
-  if (match == null) {
-    return 1;
-  } else {
+  if ((
+      (match == null) ? /* None */0 : [match]
+    ) !== /* None */0) {
     return 2;
+  } else {
+    return 1;
   }
 }
 

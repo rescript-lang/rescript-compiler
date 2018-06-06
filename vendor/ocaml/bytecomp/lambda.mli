@@ -31,7 +31,8 @@ type loc_kind =
 
 
 type tag_info = 
-  | Blk_constructor of string * int (* Number of non-const constructors*)
+  | Blk_constructor of string * int (* Number of non-const constructors *)
+  | Blk_some
   | Blk_tuple
   | Blk_array
   | Blk_variant of string 
@@ -46,6 +47,7 @@ val default_tag_info : tag_info
 type field_dbg_info = 
   | Fld_na
   | Fld_record of string
+  | Fld_val_from_option
   | Fld_module of string 
 
 type set_field_dbg_info = 
