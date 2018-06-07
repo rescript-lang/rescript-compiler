@@ -9,6 +9,7 @@ Prerequisites:
 - [OPAM](https://opam.ocaml.org/), the OCaml package manager
 - [NodeJS](https://nodejs.org/)
 - Make
+- [Go](https://golang.org) to run tests
 - OS: Mac/Linux (BuckleScript works on Windows, but developing the repo in Windows isn't tested. Contribution welcome!)
 
 ```
