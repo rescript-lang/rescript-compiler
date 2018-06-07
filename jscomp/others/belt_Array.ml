@@ -195,6 +195,15 @@ let slice a ~offset ~len =
       done ;
       result
 
+let sliceToEnd a offset =
+  let lena = length a in
+  let ofs = if offset < 0 then max (lena + offset) 0 else offset in
+  let len = lena - ofs in
+  let result = makeUninitializedUnsafe len in
+  for i = 0 to len - 1 do
+    setUnsafe result i (getUnsafe a (ofs + i))
+  done;
+  result
 
 let fill a ~offset ~len v =
   if len > 0 then 

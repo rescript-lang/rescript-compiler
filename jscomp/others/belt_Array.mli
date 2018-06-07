@@ -257,6 +257,20 @@ val slice: 'a array -> offset:int -> len:int -> 'a array
     ]}
 *)
 
+val sliceToEnd: 'a array -> int -> 'a array
+(** [sliceToEnd xs offset] creates a new array with the elements of [xs] starting at [offset]
+    
+    [offset] can be negative;and is evaluated as [length xs - offset]
+    [sliceToEnd xs -1] means get the last element as a singleton array
+
+    [sliceToEnd xs 0] will return a copy of the array
+    
+    @example {[
+      sliceToEnd [|10;11;12;13;14;15;16|] 2 = [|12;13;14;15;16|];;
+      sliceToEnd [|10;11;12;13;14;15;16|] (-4) = [|13;14;15;16|];;
+    ]}
+*)
+
 
 external copy : 'a array -> (_ [@bs.as 0]) -> 'a array = "slice" [@@bs.send]
 (** [copy a] 
