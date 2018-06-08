@@ -6,15 +6,15 @@ var Curry = require("../../lib/js/curry.js");
 var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
-var shared = [
+var shared = ["x"];
+
+var shared$1 = [
   "move",
   "get_x"
 ];
 
-var shared$1 = ["x"];
-
 function point_init($$class) {
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$1);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$1, shared);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
@@ -36,7 +36,7 @@ function point_init($$class) {
     });
 }
 
-var point = CamlinternalOO.make_class(shared, point_init);
+var point = CamlinternalOO.make_class(shared$1, point_init);
 
 var p = Curry._1(point[0], 0);
 
@@ -49,7 +49,7 @@ var three = Caml_oo_curry.js1(291546447, 3, p);
 var x0 = [0];
 
 function point2_init($$class) {
-  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$1);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared$1, shared);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
@@ -72,7 +72,7 @@ function point2_init($$class) {
     });
 }
 
-var point2 = CamlinternalOO.make_class(shared, point2_init);
+var point2 = CamlinternalOO.make_class(shared$1, point2_init);
 
 var tmp = Curry._1(point2[0], 0);
 
