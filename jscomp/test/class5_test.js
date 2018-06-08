@@ -9,15 +9,15 @@ var Caml_oo_curry = require("../../lib/js/caml_oo_curry.js");
 var CamlinternalOO = require("../../lib/js/camlinternalOO.js");
 
 var shared = [
-  "fold",
-  "empty"
+  "move",
+  "get_x"
 ];
 
 var shared$1 = ["x"];
 
 var shared$2 = [
-  "move",
-  "get_x"
+  "fold",
+  "empty"
 ];
 
 var suites = [/* [] */0];
@@ -160,7 +160,7 @@ eq("File \"class5_test.ml\", line 43, characters 12-19", v, 2);
 
 function intlist_init($$class) {
   var l = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.get_method_labels($$class, shared);
+  var ids = CamlinternalOO.get_method_labels($$class, shared$2);
   var fold = ids[0];
   var empty = ids[1];
   CamlinternalOO.set_methods($$class, /* array */[
@@ -180,7 +180,7 @@ function intlist_init($$class) {
     });
 }
 
-var intlist = CamlinternalOO.make_class(shared, intlist_init);
+var intlist = CamlinternalOO.make_class(shared$2, intlist_init);
 
 var l = Curry._2(intlist[0], 0, /* :: */[
       1,
@@ -199,7 +199,7 @@ eq("File \"class5_test.ml\", line 54, characters 5-12", 6, Caml_oo_curry.js3(-10
 
 function intlist2_init($$class) {
   var l = CamlinternalOO.new_variable($$class, "");
-  var ids = CamlinternalOO.get_method_labels($$class, shared);
+  var ids = CamlinternalOO.get_method_labels($$class, shared$2);
   var fold = ids[0];
   var empty = ids[1];
   CamlinternalOO.set_methods($$class, /* array */[
@@ -219,7 +219,7 @@ function intlist2_init($$class) {
     });
 }
 
-var intlist2 = CamlinternalOO.make_class(shared, intlist2_init);
+var intlist2 = CamlinternalOO.make_class(shared$2, intlist2_init);
 
 var l$1 = Curry._2(intlist2[0], 0, /* :: */[
       1,
@@ -245,7 +245,7 @@ eq("File \"class5_test.ml\", line 67, characters 5-12", /* tuple */[
     ]);
 
 function point_init($$class) {
-  var ids = CamlinternalOO.new_methods_variables($$class, shared$2, shared$1);
+  var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$1);
   var move = ids[0];
   var get_x = ids[1];
   var x = ids[2];
@@ -267,7 +267,7 @@ function point_init($$class) {
     });
 }
 
-var point = CamlinternalOO.make_class(shared$2, point_init);
+var point = CamlinternalOO.make_class(shared, point_init);
 
 function distance_point_init($$class) {
   var distance = CamlinternalOO.get_method_label($$class, "distance");

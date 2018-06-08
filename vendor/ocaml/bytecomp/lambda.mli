@@ -32,7 +32,6 @@ type loc_kind =
 
 type tag_info = 
   | Blk_constructor of string * int (* Number of non-const constructors *)
-  | Blk_some
   | Blk_tuple
   | Blk_array
   | Blk_variant of string 
@@ -41,6 +40,7 @@ type tag_info =
   | Blk_exception
   | Blk_extension
   | Blk_na
+  | Blk_some
 
 val default_tag_info : tag_info
 
