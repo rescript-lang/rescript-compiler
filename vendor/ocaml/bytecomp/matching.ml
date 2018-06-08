@@ -1347,7 +1347,7 @@ let cstr_is_option cstr =
   cstr.cstr_nonconsts = 1 &&
   cstr.cstr_consts = 1 &&
   ((cstr.cstr_name = "Some" && cstr.cstr_arity = 1) ||
-   cstr.cstr_name = "None")
+   cstr.cstr_name = "None" && cstr.cstr_arity = 0)
 
 let make_constr_matching p def ctx = function
     [] -> fatal_error "Matching.make_constr_matching"
