@@ -41,3 +41,5 @@ val expand_stringswitch:
     Location.t -> lambda -> (string * lambda) list -> lambda option -> lambda
 
 val inline_lazy_force : lambda -> Location.t -> lambda
+
+val cstr_is_option : Types.constructor_description -> bool

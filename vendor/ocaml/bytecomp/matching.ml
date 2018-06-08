@@ -1343,13 +1343,19 @@ let matcher_constr cstr = match cstr.cstr_arity with
     | Tpat_any -> Parmatch.omegas cstr.cstr_arity @ rem
     | _        -> raise NoMatch
 
+let cstr_is_option cstr =
+  cstr.cstr_nonconsts = 1 &&
+  cstr.cstr_consts = 1 &&
+  ((cstr.cstr_name = "Some" && cstr.cstr_arity = 1) ||
+   cstr.cstr_name = "None")
+
 let make_constr_matching p def ctx = function
     [] -> fatal_error "Matching.make_constr_matching"
   | ((arg, mut) :: argl) ->
       let cstr = pat_as_constr p in
       let newargs =
         match cstr.cstr_tag with
-        | Cstr_block 0 when cstr.cstr_name = "Some" && cstr.cstr_arity = 1 ->
+        | Cstr_block 0 when cstr_is_option cstr ->
             (Lprim(Pfield (0, Fld_val_from_option), [arg], p.pat_loc), Alias) :: argl
         | Cstr_constant _ | Cstr_block _ ->
             make_field_args p.pat_loc Alias arg 0 (cstr.cstr_arity - 1) argl
@@ -2441,7 +2447,7 @@ let combine_constructor loc arg ex_pat cstr partial ctx def
             (cstr.cstr_consts, cstr.cstr_nonconsts, consts, nonconsts)
           with
           | (1, 1, [0, act1], [0, act2]) ->
-              if cstr.cstr_name = "None" || cstr.cstr_name = "Some" then
+              if cstr_is_option cstr then
                 let none = Lconst(Const_pointer (0, (Lambda.Pt_constructor "None"))) in
                 Lifthenelse(Lprim (Pintcomp Cneq, [arg; none], loc), act2, act1)
               else

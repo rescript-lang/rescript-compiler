@@ -946,7 +946,7 @@ and transl_exp0 e =
             ))
       | Cstr_block n ->
           let tag_info =
-           if cstr.cstr_name = "Some" && cstr.cstr_nonconsts = 1 && cstr.cstr_consts = 1
+           if Matching.cstr_is_option cstr
            then
              Lambda.Blk_some
            else
