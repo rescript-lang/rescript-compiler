@@ -235,6 +235,7 @@ type required_modules = module_id list
 
 type tag_info = Lambda.tag_info = 
   | Blk_constructor of string * int
+  | Blk_some
   | Blk_tuple
   | Blk_array
   | Blk_variant of string 
