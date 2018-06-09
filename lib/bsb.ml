@@ -4192,39 +4192,34 @@ let (//) = Filename.concat
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
     a failure 
 *)
-let  resolve_bs_package  
-    ~cwd
-    pkg = 
+let  resolve_bs_package_aux  ~cwd pkg = 
   let marker = Literals.bsconfig_json in 
   let sub_path = pkg // marker  in
   let rec aux  cwd  = 
     let abs_marker =  cwd // Literals.node_modules // sub_path in 
-    if Sys.file_exists abs_marker then (* Some *) (Filename.dirname abs_marker)
+    if Sys.file_exists abs_marker then Filename.dirname abs_marker
     else 
-      let cwd' = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
-      if String.length cwd' < String.length cwd then  
-        aux    cwd' 
-      else 
-        try 
-          let abs_marker = 
-            Sys.getenv "npm_config_prefix" 
-            // "lib" // Literals.node_modules // sub_path in
-          if Sys.file_exists abs_marker
-          then 
-            Filename.dirname abs_marker
-          else
-            begin 
-              Bsb_log.error
-                "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
-              Bsb_exception.package_not_found ~pkg ~json:None
-            end
-        with 
-          Not_found -> 
+      let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
+      if String.length another_cwd < String.length cwd then  
+        aux    another_cwd 
+      else (* To the end try other possiblilities *)
+        begin match Sys.getenv "npm_config_prefix" 
+                    // "lib" // Literals.node_modules // sub_path with 
+        | abs_marker when Sys.file_exists abs_marker -> 
+          Filename.dirname abs_marker              
+        | _ -> 
           begin 
             Bsb_log.error
               "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
             Bsb_exception.package_not_found ~pkg ~json:None
           end
+        | exception Not_found -> 
+          begin 
+            Bsb_log.error
+              "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
+            Bsb_exception.package_not_found ~pkg ~json:None
+          end
+        end
   in
   aux cwd 
 
@@ -4235,13 +4230,13 @@ let cache = String_hashtbl.create 0
 let resolve_bs_package ~cwd package = 
   match String_hashtbl.find_opt cache package with 
   | None -> 
-    let result = resolve_bs_package ~cwd package in 
+    let result = resolve_bs_package_aux ~cwd package in 
     Bsb_log.info "@{<info>Package@} %s -> %s@." package result ; 
     String_hashtbl.add cache package result ;
     result 
   | Some x 
     -> 
-    let result = resolve_bs_package ~cwd package in 
+    let result = resolve_bs_package_aux ~cwd package in 
     if result <> x then 
       begin 
         Bsb_log.warn
@@ -4251,14 +4246,15 @@ let resolve_bs_package ~cwd package =
 
 
 
+
 (** The package does not need to be a bspackage 
-  example:
-  {[
-    resolve_npm_package_file ~cwd "reason/refmt";;
-    resolve_npm_package_file ~cwd "reason/refmt/xx/yy"
-  ]}
-  It also returns the path name
-  Note the input [sub_path] is already converted to physical meaning path according to OS
+    example:
+    {[
+      resolve_npm_package_file ~cwd "reason/refmt";;
+      resolve_npm_package_file ~cwd "reason/refmt/xx/yy"
+    ]}
+    It also returns the path name
+    Note the input [sub_path] is already converted to physical meaning path according to OS
 *)
 (* let resolve_npm_package_file ~cwd sub_path = *)
 (*   let rec aux  cwd  =  *)
@@ -10765,7 +10761,36 @@ let interpret_json
        ()
      | None 
      | Some _ ->
-       built_in_package := Some (resolve_package cwd Bs_version.package_name);
+        begin
+          let stdlib_path = 
+              Bsb_pkg.resolve_bs_package ~cwd Bs_version.package_name in 
+          let json_spec = 
+              Ext_json_parse.parse_json_from_file 
+              (Filename.concat stdlib_path Literals.package_json) in 
+          match json_spec with 
+          | Obj {map}  -> 
+            (match String_map.find_exn Bsb_build_schemas.version map with 
+            | Str {str } -> 
+              if str <> Bs_version.version then 
+              (
+                Format.fprintf Format.err_formatter
+                "@{<error> bs-platform version mismatch@} Running bsb (%s)@{<info>%s@} vs vendored (%s)@{<info>%s@}@."
+                    (Filename.dirname (Filename.dirname Sys.executable_name))
+                    str 
+                    stdlib_path 
+                    Bs_version.version
+                ;
+              exit 2)
+                
+            | _ -> assert false);
+            built_in_package := Some {
+              Bsb_config_types.package_name = Bs_version.package_name;
+              package_install_path = stdlib_path // Bsb_config.lib_ocaml;
+            }
+             
+          | _ -> assert false 
+          
+        end
     ) ;
     let package_specs =     
       match String_map.find_opt Bsb_build_schemas.package_specs map with 
@@ -14435,7 +14460,7 @@ let run_npm_link cwd name  =
       let (//) = Filename.concat in
       let node_bin =  "node_modules" // ".bin" in
       Bsb_build_util.mkp node_bin;
-      let p = ".." // "bs-platform" // "lib" in
+      let p = ".." // Bs_version.package_name // "lib" in
       let link a =
         Unix.symlink (p//a) (node_bin // a) in
       link "bsb" ;
@@ -14443,7 +14468,7 @@ let run_npm_link cwd name  =
       link "bsrefmt";
       Unix.symlink
         (Filename.dirname (Filename.dirname Sys.executable_name))
-        (Filename.concat "node_modules" "bs-platform")
+        (Filename.concat "node_modules" Bs_version.package_name)
     end
 let enter_dir cwd x action =
   Unix.chdir x ;
