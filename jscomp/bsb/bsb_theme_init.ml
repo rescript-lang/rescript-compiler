@@ -56,7 +56,7 @@ let run_npm_link cwd name  =
       let (//) = Filename.concat in
       let node_bin =  "node_modules" // ".bin" in
       Bsb_build_util.mkp node_bin;
-      let p = ".." // "bs-platform" // "lib" in
+      let p = ".." // Bs_version.package_name // "lib" in
       let link a =
         Unix.symlink (p//a) (node_bin // a) in
       link "bsb" ;
@@ -64,7 +64,7 @@ let run_npm_link cwd name  =
       link "bsrefmt";
       Unix.symlink
         (Filename.dirname (Filename.dirname Sys.executable_name))
-        (Filename.concat "node_modules" "bs-platform")
+        (Filename.concat "node_modules" Bs_version.package_name)
     end
 let enter_dir cwd x action =
   Unix.chdir x ;

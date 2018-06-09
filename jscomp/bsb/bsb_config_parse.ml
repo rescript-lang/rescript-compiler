@@ -184,7 +184,36 @@ let interpret_json
        ()
      | None 
      | Some _ ->
-       built_in_package := Some (resolve_package cwd Bs_version.package_name);
+        begin
+          let stdlib_path = 
+              Bsb_pkg.resolve_bs_package ~cwd Bs_version.package_name in 
+          let json_spec = 
+              Ext_json_parse.parse_json_from_file 
+              (Filename.concat stdlib_path Literals.package_json) in 
+          match json_spec with 
+          | Obj {map}  -> 
+            (match String_map.find_exn Bsb_build_schemas.version map with 
+            | Str {str } -> 
+              if str <> Bs_version.version then 
+              (
+                Format.fprintf Format.err_formatter
+                "@{<error> bs-platform version mismatch@} Running bsb (%s)@{<info>%s@} vs vendored (%s)@{<info>%s@}@."
+                    (Filename.dirname (Filename.dirname Sys.executable_name))
+                    str 
+                    stdlib_path 
+                    Bs_version.version
+                ;
+              exit 2)
+                
+            | _ -> assert false);
+            built_in_package := Some {
+              Bsb_config_types.package_name = Bs_version.package_name;
+              package_install_path = stdlib_path // Bsb_config.lib_ocaml;
+            }
+             
+          | _ -> assert false 
+          
+        end
     ) ;
     let package_specs =     
       match String_map.find_opt Bsb_build_schemas.package_specs map with 

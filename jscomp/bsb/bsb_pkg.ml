@@ -31,39 +31,34 @@ let (//) = Filename.concat
 (** It makes sense to have this function raise, when [bsb] could not resolve a package, it used to mean
     a failure 
 *)
-let  resolve_bs_package  
-    ~cwd
-    pkg = 
+let  resolve_bs_package_aux  ~cwd pkg = 
   let marker = Literals.bsconfig_json in 
   let sub_path = pkg // marker  in
   let rec aux  cwd  = 
     let abs_marker =  cwd // Literals.node_modules // sub_path in 
-    if Sys.file_exists abs_marker then (* Some *) (Filename.dirname abs_marker)
+    if Sys.file_exists abs_marker then Filename.dirname abs_marker
     else 
-      let cwd' = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
-      if String.length cwd' < String.length cwd then  
-        aux    cwd' 
-      else 
-        try 
-          let abs_marker = 
-            Sys.getenv "npm_config_prefix" 
-            // "lib" // Literals.node_modules // sub_path in
-          if Sys.file_exists abs_marker
-          then 
-            Filename.dirname abs_marker
-          else
-            begin 
-              Bsb_log.error
-                "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
-              Bsb_exception.package_not_found ~pkg ~json:None
-            end
-        with 
-          Not_found -> 
+      let another_cwd = Filename.dirname cwd in (* TODO: may non-terminating when see symlinks *)
+      if String.length another_cwd < String.length cwd then  
+        aux    another_cwd 
+      else (* To the end try other possiblilities *)
+        begin match Sys.getenv "npm_config_prefix" 
+                    // "lib" // Literals.node_modules // sub_path with 
+        | abs_marker when Sys.file_exists abs_marker -> 
+          Filename.dirname abs_marker              
+        | _ -> 
           begin 
             Bsb_log.error
               "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
             Bsb_exception.package_not_found ~pkg ~json:None
           end
+        | exception Not_found -> 
+          begin 
+            Bsb_log.error
+              "@{<error>Package not found: resolving package %s in %s  @}@." pkg cwd ;             
+            Bsb_exception.package_not_found ~pkg ~json:None
+          end
+        end
   in
   aux cwd 
 
@@ -74,13 +69,13 @@ let cache = String_hashtbl.create 0
 let resolve_bs_package ~cwd package = 
   match String_hashtbl.find_opt cache package with 
   | None -> 
-    let result = resolve_bs_package ~cwd package in 
+    let result = resolve_bs_package_aux ~cwd package in 
     Bsb_log.info "@{<info>Package@} %s -> %s@." package result ; 
     String_hashtbl.add cache package result ;
     result 
   | Some x 
     -> 
-    let result = resolve_bs_package ~cwd package in 
+    let result = resolve_bs_package_aux ~cwd package in 
     if result <> x then 
       begin 
         Bsb_log.warn
@@ -90,14 +85,15 @@ let resolve_bs_package ~cwd package =
 
 
 
+
 (** The package does not need to be a bspackage 
-  example:
-  {[
-    resolve_npm_package_file ~cwd "reason/refmt";;
-    resolve_npm_package_file ~cwd "reason/refmt/xx/yy"
-  ]}
-  It also returns the path name
-  Note the input [sub_path] is already converted to physical meaning path according to OS
+    example:
+    {[
+      resolve_npm_package_file ~cwd "reason/refmt";;
+      resolve_npm_package_file ~cwd "reason/refmt/xx/yy"
+    ]}
+    It also returns the path name
+    Note the input [sub_path] is already converted to physical meaning path according to OS
 *)
 (* let resolve_npm_package_file ~cwd sub_path = *)
 (*   let rec aux  cwd  =  *)

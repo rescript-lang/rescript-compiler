@@ -5,13 +5,11 @@
 # since in relese build, user may not have the sources available
 # -B is not necessary in CI, however, when dir is not clean..
 
-NPROCS := 1
+NPROCS := 8
 KERNEL := $(shell uname -s)
 
 ifeq ($(KERNEL),Linux)
   NPROCS := $(shell grep -c '^processor' /proc/cpuinfo)
-else ifeq ($(KERNEL),Darwin
-  NPROCS := $(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
 endif
 
 world:
