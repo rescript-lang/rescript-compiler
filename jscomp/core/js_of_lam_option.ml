@@ -74,7 +74,7 @@ let none : J.expression =
   {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
 
 let some x : J.expression = 
-  {expression_desc = Caml_block ( [x], Immutable, E.zero_int_literal , Blk_constructor ("Some",1) );
+  {expression_desc = Caml_block ( [x], Immutable, E.zero_int_literal , Blk_some );
    comment = None}
 
 

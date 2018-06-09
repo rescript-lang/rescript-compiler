@@ -13,7 +13,7 @@ var option_suites_000 = /* tuple */[
   (function () {
       return /* Eq */Block.__(0, [
                 true,
-                true
+                /* Some */[1] !== /* None */0
               ]);
     })
 ];
@@ -34,7 +34,7 @@ var option_suites_001 = /* :: */[
       (function () {
           return /* Eq */Block.__(0, [
                     false,
-                    false
+                    /* Some */[1] === /* None */0
                   ]);
         })
     ],

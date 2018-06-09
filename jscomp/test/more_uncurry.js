@@ -2,8 +2,8 @@
 
 
 function f(x, y, param) {
-  if (param) {
-    return (x + y | 0) + param[0] | 0;
+  if (param !== /* None */0) {
+    return (x + y | 0) + param[/* None */0] | 0;
   } else {
     return x + y | 0;
   }

@@ -396,8 +396,8 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  if (d) {
-    return join(t1, v, d[0], t2);
+  if (d !== /* None */0) {
+    return join(t1, v, d[/* None */0], t2);
   } else {
     return concat(t1, t2);
   }

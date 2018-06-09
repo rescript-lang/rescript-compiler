@@ -1215,9 +1215,9 @@ function tFromJs(param) {
 }
 
 function eq(x, y) {
-  if (x) {
-    if (y) {
-      return x[0] === y[0];
+  if (x !== /* None */0) {
+    if (y !== /* None */0) {
+      return x[/* None */0] === y[/* None */0];
     } else {
       return false;
     }

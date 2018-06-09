@@ -7,7 +7,12 @@ function f(x) {
 }
 
 function ff(x) {
-  return x;
+  var match = /* Some */[x];
+  if (match !== /* None */0) {
+    return x;
+  } else {
+    return 0;
+  }
 }
 
 function fff(x) {

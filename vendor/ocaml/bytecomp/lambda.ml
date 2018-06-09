@@ -29,7 +29,7 @@ type loc_kind =
   | Loc_POS
 
 type tag_info = 
-  | Blk_constructor of string * int (* Number of non-const constructors*)
+  | Blk_constructor of string * int (* Number of non-const constructors *)
   | Blk_tuple
   | Blk_array
   | Blk_variant of string 
@@ -38,12 +38,14 @@ type tag_info =
   | Blk_exception
   | Blk_extension
   | Blk_na
+  | Blk_some
 
 let default_tag_info : tag_info = Blk_na
 
 type field_dbg_info = 
   | Fld_na
   | Fld_record of string
+  | Fld_val_from_option
   | Fld_module of string 
 
 type set_field_dbg_info = 

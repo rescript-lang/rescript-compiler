@@ -16,12 +16,12 @@ var Actors = /* module */[];
 var Dom_html = /* module */[];
 
 function setup_sprite($staropt$star, $staropt$star$1, $staropt$star$2, img_src, max_frames, max_ticks, frame_size, src_offset) {
-  var loop = $staropt$star ? $staropt$star[0] : true;
-  var bbox_offset = $staropt$star$1 ? $staropt$star$1[0] : /* tuple */[
+  var loop = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : true;
+  var bbox_offset = $staropt$star$1 !== /* None */0 ? $staropt$star$1[/* None */0] : /* tuple */[
       0,
       0
     ];
-  var bbox_size = $staropt$star$2 ? $staropt$star$2[0] : /* tuple */[
+  var bbox_size = $staropt$star$2 !== /* None */0 ? $staropt$star$2[/* None */0] : /* tuple */[
       0,
       0
     ];
@@ -717,11 +717,11 @@ function make_type$1(typ, ctx) {
 }
 
 function make$1($staropt$star, $staropt$star$1, part_type, pos, ctx) {
-  var vel = $staropt$star ? $staropt$star[0] : /* tuple */[
+  var vel = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : /* tuple */[
       0,
       0
     ];
-  var acc = $staropt$star$1 ? $staropt$star$1[0] : /* tuple */[
+  var acc = $staropt$star$1 !== /* None */0 ? $staropt$star$1[/* None */0] : /* tuple */[
       0,
       0
     ];
@@ -793,8 +793,8 @@ var Particle = /* module */[
 var id_counter = [Pervasives.min_int];
 
 function setup_obj($staropt$star, $staropt$star$1, _) {
-  var has_gravity = $staropt$star ? $staropt$star[0] : true;
-  var speed = $staropt$star$1 ? $staropt$star$1[0] : 1;
+  var has_gravity = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : true;
+  var speed = $staropt$star$1 !== /* None */0 ? $staropt$star$1[/* None */0] : 1;
   return /* record */[
           /* has_gravity */has_gravity,
           /* speed */speed
@@ -843,11 +843,11 @@ function new_id() {
 }
 
 function make$2($staropt$star, $staropt$star$1, spawnable, context, param) {
-  var id = $staropt$star ? $staropt$star[0] : /* None */0;
-  var dir = $staropt$star$1 ? $staropt$star$1[0] : /* Left */0;
+  var id = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : /* None */0;
+  var dir = $staropt$star$1 !== /* None */0 ? $staropt$star$1[/* None */0] : /* Left */0;
   var spr = make(spawnable, dir, context);
   var params = make_type$2(spawnable);
-  var id$1 = id ? id[0] : new_id(/* () */0);
+  var id$1 = id !== /* None */0 ? id[/* None */0] : new_id(/* () */0);
   var obj = /* record */[
     /* params */params,
     /* pos : record */[
@@ -1089,7 +1089,7 @@ function normalize_origin(pos, spr) {
 }
 
 function collide_block($staropt$star, dir, obj) {
-  var check_x = $staropt$star ? $staropt$star[0] : true;
+  var check_x = $staropt$star !== /* None */0 ? $staropt$star[/* None */0] : true;
   if (dir !== 1) {
     if (dir !== 0) {
       if (check_x) {
@@ -2050,8 +2050,8 @@ function check_collisions(collid, all_collids, state) {
           ];
         } else {
           var match = check_collision(c$1, h);
-          new_objs = match ? (
-              h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(match[0], c$1, h, state$2) : /* tuple */[
+          new_objs = match !== /* None */0 ? (
+              h[2][/* id */3] !== c_obj[/* id */3] ? process_collision(match[/* None */0], c$1, h, state$2) : /* tuple */[
                   /* None */0,
                   /* None */0
                 ]
@@ -2062,13 +2062,13 @@ function check_collisions(collid, all_collids, state) {
         }
         var match$1 = new_objs[0];
         var acc$1;
-        if (match$1) {
+        if (match$1 !== /* None */0) {
           var match$2 = new_objs[1];
-          var o = match$1[0];
-          acc$1 = match$2 ? /* :: */[
+          var o = match$1[/* None */0];
+          acc$1 = match$2 !== /* None */0 ? /* :: */[
               o,
               /* :: */[
-                match$2[0],
+                match$2[/* None */0],
                 acc
               ]
             ] : /* :: */[
@@ -2077,8 +2077,8 @@ function check_collisions(collid, all_collids, state) {
             ];
         } else {
           var match$3 = new_objs[1];
-          acc$1 = match$3 ? /* :: */[
-              match$3[0],
+          acc$1 = match$3 !== /* None */0 ? /* :: */[
+              match$3[/* None */0],
               acc
             ] : acc;
         }
@@ -2180,8 +2180,8 @@ function run_update_collid(state, collid, all_collids) {
     o[/* crouch */10] = false;
     var match = update_player(o, keys, state[/* ctx */1]);
     var player;
-    if (match) {
-      var match$1 = match[0];
+    if (match !== /* None */0) {
+      var match$1 = match[/* None */0];
       var new_spr = match$1[1];
       normalize_pos(o[/* pos */1], collid[1][/* params */0], new_spr[/* params */0]);
       player = /* Player */Block.__(0, [
@@ -3264,7 +3264,9 @@ function load() {
   var canvas_id = "canvas";
   var match = document.getElementById(canvas_id);
   var canvas;
-  if (match !== null) {
+  if ((
+      match === null ? /* None */0 : [match]
+    ) !== /* None */0) {
     canvas = match;
   } else {
     Curry._1(Printf.printf(/* Format */[

@@ -54,7 +54,9 @@ add_test("File \"js_json_test.ml\", line 23, characters 11-18", (function () {
           return /* Ok */Block.__(4, [false]);
         } else if (ty.tag === 2) {
           var match = ty[0]["x"];
-          if (match !== undefined) {
+          if ((
+              match === undefined ? /* None */0 : [match]
+            ) !== /* None */0) {
             var ty2 = Js_json.classify(match);
             if (typeof ty2 === "number") {
               return /* Ok */Block.__(4, [false]);
@@ -198,8 +200,8 @@ test(true);
 test(false);
 
 function option_get(param) {
-  if (param) {
-    return param[0];
+  if (param !== /* None */0) {
+    return param[/* None */0];
   } else {
     throw [
           Caml_builtin_exceptions.assert_failure,

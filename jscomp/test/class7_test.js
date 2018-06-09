@@ -135,8 +135,8 @@ function backup_init($$class) {
         restore,
         (function (self$3) {
             var match = self$3[copy];
-            if (match) {
-              return match[0];
+            if (match !== /* None */0) {
+              return match[/* None */0];
             } else {
               return self$3;
             }
@@ -231,8 +231,8 @@ function backup2_init($$class) {
         restore,
         (function (self$5) {
             var match = self$5[copy];
-            if (match) {
-              return match[0];
+            if (match !== /* None */0) {
+              return match[/* None */0];
             } else {
               return self$5;
             }

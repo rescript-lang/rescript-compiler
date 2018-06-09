@@ -10,7 +10,9 @@ var suites_000 = /* tuple */[
   (function () {
       var re = (/(\d+)-(?:(\d+))?/g);
       var match = re.exec("3-");
-      if (match !== null) {
+      if ((
+          match === null ? /* None */0 : [match]
+        ) !== /* None */0) {
         var defined = Caml_array.caml_array_get(match, 1);
         var $$undefined = Caml_array.caml_array_get(match, 2);
         return /* Eq */Block.__(0, [
@@ -35,7 +37,9 @@ var suites_001 = /* :: */[
     (function () {
         var contentOf = function (tag, xmlString) {
           var param = new RegExp("<" + (tag + (">(.*?)<\\/" + (tag + ">")))).exec(xmlString);
-          if (param !== null) {
+          if ((
+              param === null ? /* None */0 : [param]
+            ) !== /* None */0) {
             return Js_primitive.null_undefined_to_opt(Caml_array.caml_array_get(param, 1));
           } else {
             return /* None */0;
@@ -52,7 +56,9 @@ var suites_001 = /* :: */[
       "exec_literal",
       (function () {
           var match = (/[^.]+/).exec("http://xxx.domain.com");
-          if (match !== null) {
+          if ((
+              match === null ? /* None */0 : [match]
+            ) !== /* None */0) {
             return /* Eq */Block.__(0, [
                       "http://xxx",
                       Caml_array.caml_array_get(match, 0)
@@ -67,7 +73,9 @@ var suites_001 = /* :: */[
         "exec_no_match",
         (function () {
             var match = (/https:\/\/(.*)/).exec("http://xxx.domain.com");
-            if (match !== null) {
+            if ((
+                match === null ? /* None */0 : [match]
+              ) !== /* None */0) {
               return /* FailWith */Block.__(9, ["regex should not match"]);
             } else {
               return /* Ok */Block.__(4, [true]);
@@ -101,7 +109,9 @@ var suites_001 = /* :: */[
               "result_index",
               (function () {
                   var match = new RegExp("zbar").exec("foobarbazbar");
-                  if (match !== null) {
+                  if ((
+                      match === null ? /* None */0 : [match]
+                    ) !== /* None */0) {
                     return /* Eq */Block.__(0, [
                               8,
                               match.index
@@ -117,7 +127,9 @@ var suites_001 = /* :: */[
                 (function () {
                     var input = "foobar";
                     var match = (/foo/g).exec(input);
-                    if (match !== null) {
+                    if ((
+                        match === null ? /* None */0 : [match]
+                      ) !== /* None */0) {
                       return /* Eq */Block.__(0, [
                                 input,
                                 match.input

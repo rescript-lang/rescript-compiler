@@ -5,7 +5,9 @@ var Caml_builtin_exceptions = require("../../lib/js/caml_builtin_exceptions.js")
 
 function test(dom) {
   var elem = dom.getElementById("haha");
-  if (elem !== null) {
+  if ((
+      elem === null ? /* None */0 : [elem]
+    ) !== /* None */0) {
     console.log(elem);
     return 2;
   } else {
@@ -15,7 +17,9 @@ function test(dom) {
 
 function f_undefined(xs, i) {
   var match = xs[i];
-  if (match !== undefined) {
+  if ((
+      match === undefined ? /* None */0 : [match]
+    ) !== /* None */0) {
     return match;
   } else {
     throw [
@@ -32,7 +36,9 @@ function f_undefined(xs, i) {
 function f_escaped_not(xs, i) {
   var x = xs[i];
   console.log("hei");
-  if (x !== undefined) {
+  if ((
+      x === undefined ? /* None */0 : [x]
+    ) !== /* None */0) {
     return x;
   } else {
     return 1;
@@ -41,8 +47,9 @@ function f_escaped_not(xs, i) {
 
 function f_escaped_1(xs, i) {
   var x = xs[i];
+  var x$1 = x === undefined ? /* None */0 : [x];
   return (function () {
-      if (x !== undefined) {
+      if (x$1 !== /* None */0) {
         return x;
       } else {
         return 1;
@@ -57,7 +64,9 @@ function f_escaped_2(xs, i) {
 
 function f_null(xs, i) {
   var match = xs[i];
-  if (match !== null) {
+  if ((
+      match === null ? /* None */0 : [match]
+    ) !== /* None */0) {
     return match;
   } else {
     throw [
@@ -73,7 +82,11 @@ function f_null(xs, i) {
 
 function f_null_undefined(xs, i) {
   var match = xs[i];
-  if (match == null) {
+  if ((
+      (match == null) ? /* None */0 : [match]
+    ) !== /* None */0) {
+    return match;
+  } else {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -82,8 +95,6 @@ function f_null_undefined(xs, i) {
             14
           ]
         ];
-  } else {
-    return match;
   }
 }
 

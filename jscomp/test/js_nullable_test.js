@@ -26,11 +26,13 @@ function eq(loc, x, y) {
 
 function test(dom) {
   var elem = dom.getElementById("haha");
-  if (elem == null) {
-    return 1;
-  } else {
+  if ((
+      (elem == null) ? /* None */0 : [elem]
+    ) !== /* None */0) {
     console.log(elem);
     return 2;
+  } else {
+    return 1;
   }
 }
 

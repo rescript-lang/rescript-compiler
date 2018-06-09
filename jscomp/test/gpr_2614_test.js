@@ -48,7 +48,9 @@ function hh(x) {
 
 function hh2(x) {
   var match = x["lo-x"];
-  if (match !== undefined) {
+  if ((
+      match === undefined ? /* None */0 : [match]
+    ) !== /* None */0) {
     return 1;
   } else {
     return 0;
@@ -61,7 +63,9 @@ var u = {
 
 var match = u["xx-yy"];
 
-var v$1 = match !== undefined ? match : 0;
+var v$1 = (
+  match === undefined ? /* None */0 : [match]
+) !== /* None */0 ? match : 0;
 
 exports.b = b;
 exports.c = c;

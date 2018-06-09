@@ -38,7 +38,9 @@ function uff2(f) {
 
 function uff3(f) {
   var match = f.yyyy2;
-  if (match !== undefined) {
+  if ((
+      match === undefined ? /* None */0 : [match]
+    ) !== /* None */0) {
     return Curry._1(match, 0);
   } else {
     return 0;

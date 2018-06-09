@@ -147,16 +147,16 @@ function $$return(x) {
 }
 
 function $great$pipe$eq(e, f) {
-  if (e) {
-    return /* Some */[Curry._1(f, e[0])];
+  if (e !== /* None */0) {
+    return /* Some */[Curry._1(f, e[/* None */0])];
   } else {
     return /* None */0;
   }
 }
 
 function $great$great$eq(e, f) {
-  if (e) {
-    return Curry._1(f, e[0]);
+  if (e !== /* None */0) {
+    return Curry._1(f, e[/* None */0]);
   } else {
     return /* None */0;
   }
@@ -170,10 +170,10 @@ function map_opt(f, l) {
     var acc = _acc;
     if (l$1) {
       var match = Curry._1(f, l$1[0]);
-      if (match) {
+      if (match !== /* None */0) {
         _l = l$1[1];
         _acc = /* :: */[
-          match[0],
+          match[/* None */0],
           acc
         ];
         continue ;
@@ -194,7 +194,7 @@ function list_any(f, e) {
       var l = _l;
       if (l) {
         var res = Curry._1(f$1, l[0]);
-        if (res) {
+        if (res !== /* None */0) {
           return res;
         } else {
           _l = l[1];
@@ -221,9 +221,9 @@ function list_all(f, e) {
         var tl = l[1];
         var match = Curry._1(f$1, l[0]);
         _l = tl;
-        if (match) {
+        if (match !== /* None */0) {
           _acc = /* :: */[
-            match[0],
+            match[/* None */0],
             acc
           ];
           continue ;
@@ -507,8 +507,8 @@ function get_variant(l, e) {
 }
 
 function get_exn(e) {
-  if (e) {
-    return e[0];
+  if (e !== /* None */0) {
+    return e[/* None */0];
   } else {
     throw [
           Caml_builtin_exceptions.failure,
