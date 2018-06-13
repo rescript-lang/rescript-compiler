@@ -898,6 +898,10 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
               Var(Qualified (ident,Runtime, Some "caml_equal")) 
             } , args, call_info)}
   | Ceq, _, _ -> int_equal e0 e1 
+  (* FIXME: it should not be called [int_comp] *)
+  | Cneq, Caml_block _ ,  Number _ 
+  | Cneq, Number _, Caml_block _  
+    -> caml_true
   | _ ->          
     bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
