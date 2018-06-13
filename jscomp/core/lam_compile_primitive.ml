@@ -78,16 +78,10 @@ let translate  loc
       | [e] -> 
         begin match e.expression_desc with 
           | Var _ | Undefined | Null -> 
-            E.econd (E.is_null e) Js_of_lam_option.none (Js_of_lam_option.some e)           
+            Js_of_lam_option.null_to_opt e 
           | _ ->
             E.runtime_call Js_runtime_modules.js_primitive
               "null_to_opt" args 
-              (* GPR #974
-                 let id = Ext_ident.create "v" in
-                 let tmp = E.var id in
-                 E.(seq (assign tmp e ) 
-                    (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-              *)
         end
       | _ -> assert false 
     end
@@ -96,16 +90,10 @@ let translate  loc
       | [e] -> 
         begin match e.expression_desc with 
           | Var _ | Undefined | Null -> 
-            E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
+            Js_of_lam_option.undef_to_opt e 
           | _ -> 
             E.runtime_call Js_runtime_modules.js_primitive  
               "undefined_to_opt" args 
-              (* # GPR 974
-                 let id = Ext_ident.create "v" in
-                 let tmp = E.var id in
-                 E.(seq (assign tmp e ) 
-                     (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
-              *)
         end
       | _ -> assert false 
     end    
@@ -114,9 +102,7 @@ let translate  loc
       | [e] -> 
         begin match e.expression_desc with 
           | Var _ | Undefined | Null   -> 
-            E.econd (E.is_null_undefined e) 
-              Js_of_lam_option.none 
-              (Js_of_lam_option.some e)
+            Js_of_lam_option.null_undef_to_opt e             
           | _ ->
             E.runtime_call 
               Js_runtime_modules.js_primitive        
