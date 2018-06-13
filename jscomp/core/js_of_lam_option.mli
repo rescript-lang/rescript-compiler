@@ -33,6 +33,17 @@ type option_unwrap_time =
 
 val get_default_undefined : ?map:(option_unwrap_time -> J.expression -> J.expression) -> J.expression -> J.expression
 
-val none : J.expression
 
 val some : J.expression -> J.expression
+
+val null_to_opt : 
+  J.expression -> 
+  J.expression
+
+val undef_to_opt : 
+  J.expression -> 
+  J.expression   
+
+val null_undef_to_opt : 
+  J.expression -> 
+  J.expression  
