@@ -1286,7 +1286,7 @@ let root = OCamlRes.Res.([
        ") ;
     File  ("bsconfig.json",
       "{\n\
-      \  \"name\": \"react-template\",\n\
+      \  \"name\": \"react-lite\",\n\
       \  \"reason\": {\n\
       \    \"react-jsx\": 2\n\
       \  },\n\
