@@ -269,13 +269,12 @@ type eq = Obj.t -> Obj.t -> bool
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
   (*front and formoest, we do not compare function values*)
   if a == b then true
-  else 
+  else
+    if (Obj.magic a) == Js.null || (Obj.magic a) == Js.undefined then a == b else
     let a_type = Js.typeof a in 
     if a_type = "string"
     ||  a_type = "number"
     ||  a_type = "boolean"
-    ||  a_type = "undefined"
-    ||  a == (Obj.magic Js_null.empty)
     then false
     else 
       let b_type = Js.typeof b in 
@@ -283,7 +282,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
       then raise (Invalid_argument "equal: functional value")
       (* first, check using reference equality *)
       else (* a_type = "object" || "symbol" *)
-      if b_type = "number" || b_type = "undefined" || b == Obj.magic Js_null.empty then false 
+      if b_type = "number" then false 
       else 
         let tag_a = Bs_obj.tag a in
         let tag_b = Bs_obj.tag b in
@@ -338,8 +337,8 @@ let caml_equal_undefined (x : Obj.t) (y : Obj.t Js.undefined) =
   | Some y -> caml_equal x y 
 
 let caml_equal_nullable ( x: Obj.t) (y : Obj.t Js.nullable) =    
-  match Js.toOption  y with 
-  | None -> x == (Obj.magic y)
+  match Js.toOption y with 
+  | None -> Obj.magic x = Obj.magic y
   | Some y -> caml_equal x y
 
 let caml_notequal a  b =  not (caml_equal a  b)

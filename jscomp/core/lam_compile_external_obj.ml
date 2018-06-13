@@ -118,7 +118,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
             Lam_compile_external_call.ocaml_to_js_eff 
             {xlabel with arg_label =
              External_arg_spec.empty_label}
-              (E.index arg 0l ) in 
+              (E.make_valFromOption arg) in 
           begin match acc with 
           | Splice1 v  ->                         
             [S.if_ arg [S.exp (E.assign (E.dot var_v label) 
@@ -136,7 +136,7 @@ let assemble_args_obj (labels : External_arg_spec.t list)  (args : J.expression 
             Lam_compile_external_call.ocaml_to_js_eff 
             {xlabel with arg_label =
              External_arg_spec.empty_label}
-              (E.index arg 0l ) in 
+              (E.make_valFromOption arg) in 
           begin match acc with 
           | Splice1 v  ->        
             st ::  

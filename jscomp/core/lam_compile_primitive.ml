@@ -141,6 +141,12 @@ let translate  loc
         E.is_null_undefined arg
       | _ -> assert false 
     end
+  | Pval_from_option -> 
+    begin match args with 
+      | [arg] ->
+        E.make_valFromOption arg
+      | _ -> assert false 
+    end
   | Pjs_typeof -> 
     begin match args with 
       | [e] -> E.typeof e 

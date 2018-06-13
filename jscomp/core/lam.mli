@@ -195,6 +195,7 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+  | Pval_from_option
 
   | Pjs_typeof
   | Pjs_function_length 

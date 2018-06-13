@@ -202,6 +202,7 @@ type primitive =
   | Pis_null
   | Pis_undefined
   | Pis_null_undefined
+  | Pval_from_option
   | Pjs_typeof
   | Pjs_function_length
   | Pcaml_obj_length
@@ -1315,7 +1316,7 @@ let prim ~primitive:(prim : primitive) ~args loc  : t =
         -> Lift.bool (comparison cmp a b)
       | Pfloatcomp  cmp,  (Const_nativeint a),  (Const_nativeint b)
         -> Lift.bool (comparison cmp a b)
-      | Pintcomp cmp ,
+      | Pintcomp cmp,
         ( (Const_int a) | Const_pointer (a,_)),
         ( (Const_int b) | Const_pointer (b,_))
         -> Lift.bool (comparison cmp a b)
@@ -1597,6 +1598,8 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
   (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock (tag,info, mutable_flag)
     -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+  | Pfield (id, Fld_val_from_option) ->
+    prim ~primitive:Pval_from_option ~args loc
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 

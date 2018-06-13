@@ -945,7 +945,12 @@ and transl_exp0 e =
             | _ -> (Lambda.Pt_constructor cstr.cstr_name)
             ))
       | Cstr_block n ->
-          let tag_info = (Lambda.Blk_constructor (cstr.cstr_name, cstr.cstr_nonconsts)) in
+          let tag_info =
+           if cstr.cstr_name = "Some" && cstr.cstr_nonconsts = 1 && cstr.cstr_consts = 1
+           then
+             Lambda.Blk_some
+           else
+             (Lambda.Blk_constructor (cstr.cstr_name, cstr.cstr_nonconsts)) in
           begin try
             Lconst(Const_block(n,tag_info, List.map extract_constant ll))
           with Not_constant ->

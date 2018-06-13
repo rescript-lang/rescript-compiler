@@ -54,3 +54,28 @@ let option_get_unwrap (x : 'a option) : 'b Js_undefined.t =
   | None -> Js_undefined.empty
   | Some x -> Js_undefined.return ((Obj.magic x).(1))
 
+let undefinedHeader = [||]
+  
+let some =
+  [%bs.raw {|
+function some(x) {
+  if (x === null) { return null }
+  else if (x === undefined) {
+    return [undefinedHeader,0]
+  } else if (x[0] === undefinedHeader) {
+    return [undefinedHeader, x[1] + 1]
+  } else return x
+}
+  |}]
+
+let valFromOption =
+  [%bs.raw {|
+function valFromOption(x){
+  if (x === null) { return x}
+  else if (x[0] === undefinedHeader){
+    if(x[1] === 0) {
+      return undefined
+    } else return [undefinedHeader, x[1] - 1]
+  } else return x
+}
+  |}]

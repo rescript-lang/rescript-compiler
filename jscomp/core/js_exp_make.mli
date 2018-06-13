@@ -260,6 +260,8 @@ val make_block :
   J.mutable_flag ->
   t
 
+val make_some : t -> t
+val make_valFromOption : t -> t
 
 val seq : binary_op
 val fuse_to_seq : t -> t list -> t 
@@ -289,7 +291,7 @@ val math :
 
 
 
-val undefined : t
+val undefined : ?comment:string -> unit -> t
 val is_caml_block : ?comment:string -> t -> t
 
 

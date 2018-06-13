@@ -617,7 +617,7 @@ core/js_pass_debug.cmx : core/js_dump_program.cmx common/js_config.cmx \
     core/j.cmx ext/ext_pervasives.cmx ext/ext_path.cmx common/ext_log.cmx \
     core/js_pass_debug.cmi
 core/js_of_lam_option.cmx : core/js_runtime_modules.cmx core/js_exp_make.cmx \
-    core/js_analyzer.cmx core/j.cmx core/js_of_lam_option.cmi
+    core/j.cmx core/js_of_lam_option.cmi
 core/js_output.cmx : core/lam_compile_context.cmx core/lam_analysis.cmx \
     core/lam.cmx core/js_stmt_make.cmx core/js_exp_make.cmx core/js_dump.cmx \
     core/js_analyzer.cmx core/j.cmx ext/ext_list.cmx core/js_output.cmi

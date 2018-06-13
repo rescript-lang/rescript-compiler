@@ -56,7 +56,7 @@ type + 'a undefined
 (** value of this type can be either [undefined] or ['a]
     this type is the same as {!Js.Undefined.t}  *)
 
-type + 'a nullable    
+type + 'a nullable
 type + 'a null_undefined = 'a nullable
 (** value of this type can be [undefined], [null] or ['a]
     this type is the same as {!Js.Null_undefined.t}*)

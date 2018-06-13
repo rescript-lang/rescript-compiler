@@ -714,7 +714,7 @@ and
         | {block = b; value =  Some v} ->
           Js_output.make
           (Ext_list.append b  [S.throw_stmt v])
-            ~value:E.undefined ~output_finished:True
+            ~value:(E.undefined ()) ~output_finished:True
         (* FIXME -- breaks invariant when NeedValue, reason is that js [throw] is statement
            while ocaml it's an expression, we should remove such things in lambda optimizations
         *)
@@ -1327,7 +1327,7 @@ and
            )
            largs args
            (Js_output.make [S.assign exit_id (E.small_int  order_id)]
-              ~value:E.undefined)
+              ~value:(E.undefined ()))
         | exception Not_found ->
           assert false
           (* staticraise is always enclosed by catch  *)

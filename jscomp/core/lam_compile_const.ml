@@ -36,7 +36,7 @@ let rec translate (x : Lam.constant ) : J.expression =
   | Const_js_true -> E.bool true 
   | Const_js_false -> E.bool false
   | Const_js_null -> E.nil
-  | Const_js_undefined -> E.undefined
+  | Const_js_undefined -> E.undefined ()
   | Const_int i -> E.int (Int32.of_int i)
   | Const_char i ->
     Js_of_lam_string.const_char i
@@ -68,10 +68,14 @@ let rec translate (x : Lam.constant ) : J.expression =
     E.unicode i 
     (* E.str i ~delimiter:Literals.escaped_j_delimiter *)   
 
-  | Const_pointer (c,pointer_info) ->     
+  | Const_pointer (c,pointer_info) -> 
+    begin match pointer_info with
+    | Pt_constructor "None" ->
+      E.undefined ?comment:(Some "None") ()
+    | _ ->
     E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
       (Int32.of_int c )
-    
+    end
   | Const_block(tag, tag_info, xs ) -> 
     Js_of_lam_block.make_block NA tag_info 
       (E.small_int  tag) (Ext_list.map translate xs)

@@ -32,7 +32,7 @@ type arg_expression =
 
 (* we need destruct [undefined] when input is optional *)
 let eval (arg : J.expression) (dispatches : (int * string) list ) : E.t =
-  if arg == E.undefined then E.undefined else
+  if arg.expression_desc == Undefined then E.undefined () else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
     E.str (Ext_list.assoc_by_int None (Int32.to_int i) dispatches)
@@ -78,7 +78,7 @@ let eval_as_event (arg : J.expression) (dispatches : (int * string) list ) =
 
 (* we need destruct [undefined] when input is optional *)
 let eval_as_int (arg : J.expression) (dispatches : (int * int) list ) : E.t  =
-  if arg == E.undefined then E.undefined else
+  if arg.expression_desc == Undefined then E.undefined () else
   match arg.expression_desc with
   | Number (Int {i} | Uint i) ->
     E.int (Int32.of_int (Ext_list.assoc_by_int None (Int32.to_int i) dispatches))

@@ -45,6 +45,8 @@ let field field_info  e i =
   match field_info with 
   | Lambda.Fld_na -> 
     E.index e i 
+  | Lambda.Fld_val_from_option -> 
+    E.index e i 
   | Lambda.Fld_record s 
   | Lambda.Fld_module s 
     -> E.index ~comment:s e i

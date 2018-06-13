@@ -87,11 +87,12 @@ let var ?comment  id  : t =
 let js_global ?comment  (v : string) =
   var ?comment (Ext_ident.create_js v )
   
-let undefined  : t = 
-    {expression_desc = Undefined ; comment = None}
+let undefined ?comment () : t = 
+    {expression_desc = Undefined ; comment}
 
 let nil : t = 
     {expression_desc = Null ; comment = None}
+
 let call ?comment ~info e0 args : t = 
   {expression_desc = Call(e0,args,info); comment }
 
@@ -155,6 +156,12 @@ let merge_outer_comment comment (e : t )  =
                 comment 
                 = Some (comment ^ sep ^ s)} 
 
+let make_some e =
+  runtime_call Js_runtime_modules.js_primitive "some" [e] 
+
+let make_valFromOption e =
+  runtime_call Js_runtime_modules.js_primitive "valFromOption" [e] 
+
 let make_block ?comment tag tag_info es mutable_flag : t = 
   let comment = 
     match comment with 
@@ -172,6 +179,10 @@ let make_block ?comment tag tag_info es mutable_flag : t =
             des es
     | _ -> es 
   in
+  match tag_info, es with
+  | Blk_some, [e] ->
+    make_some e
+  | _ ->
   {
     expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;
     comment 
@@ -385,7 +396,7 @@ let dot ?comment (e0 : t)  (e1 : string) : t =
 
 (** coupled with the runtime *)
 let is_caml_block ?comment (e : t) : t = 
-  {expression_desc = Bin ( NotEqEq, dot e L.js_prop_length , undefined); 
+  {expression_desc = Bin ( NotEqEq, dot e L.js_prop_length , undefined()); 
    comment}
 
 (* This is a property access not external module *)
@@ -874,7 +885,7 @@ let set_length ?comment e tag : t =
 let obj_length ?comment e : t = 
   to_int32 {expression_desc = Length (e, Caml_block); comment }
 
-let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) = 
+let rec int_comp (cmp : Lambda.comparison)  ?comment  (e0 : t) (e1 : t) = 
   match cmp, e0.expression_desc, e1.expression_desc with
   | _, Call ({
       expression_desc = 
@@ -1227,7 +1238,7 @@ let is_null ?comment (x : t) =
   triple_equal ?comment x nil 
 
 
-let is_undef ?comment x = triple_equal ?comment x undefined
+let is_undef ?comment x = triple_equal ?comment x (undefined ?comment ())
 
 let for_sure_js_null_undefined (x : t) = 
   match x.expression_desc with 

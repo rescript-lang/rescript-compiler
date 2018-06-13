@@ -77,7 +77,34 @@ let option_suites = Mt.[
     "option_firstSome_None", (fun _ -> 
         Eq (None , Js.Option.firstSome None None)
       );
-    
+
+    __LOC__ , begin fun _ ->
+      Eq(Js.Option.isSome (Some None), true)
+    end;
+
+    __LOC__ , begin fun _ ->
+      Eq(Js.Option.isSome (Js.Option.getExn (Some None)), false)
+    end;
+
+    __LOC__ , begin fun _ ->
+      Eq(Js.Option.isSome (Some (Some None)), true)
+    end;
+
+    __LOC__ , begin fun _ ->
+      Eq(Js.Option.isSome (Js.Option.getExn (Some (Some None))), true)
+    end;
+
+    __LOC__ , begin fun _ ->
+      Eq(Js.Option.isSome (Js.Option.getExn (Js.Option.getExn (Some (Some None)))), false)
+    end;
+
+    __LOC__ , begin fun _ ->
+      Eq(Some None, Some None)
+    end;
+
+    __LOC__ , begin fun _ ->
+      Neq(Some None, Some (Obj.magic Js.null))
+    end;
   ]
 
 let () = 
