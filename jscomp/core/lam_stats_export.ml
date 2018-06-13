@@ -46,7 +46,7 @@ let values_of_export
        let arity : Js_cmj_format.arity =
          match Ident_hashtbl.find_opt meta.ident_tbl x with 
          | Some (FunctionId {arity ; _}) -> Single arity 
-         | Some (ImmutableBlock(elems,_)) ->  
+         | Some (ImmutableBlock(elems)) ->  
            Submodule(elems |> Array.map (fun (x : Lam_id_kind.element) -> 
                match x with 
                | NA -> Lam_arity.na

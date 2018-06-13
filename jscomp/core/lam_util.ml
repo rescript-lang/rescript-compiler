@@ -187,9 +187,15 @@ let element_of_lambda (lam : Lam.t) : Lam_id_kind.element =
   (* | Lfunction _  *)
   | _ -> NA 
 
-let kind_of_lambda_block kind (xs : Lam.t list) : Lam_id_kind.t = 
-  ImmutableBlock( Ext_array.of_list_map (fun x -> 
-  element_of_lambda x ) xs , kind)
+let kind_of_lambda_block (tag_info : Lambda.tag_info) (xs : Lam.t list) : Lam_id_kind.t = 
+  if tag_info = Blk_some then  
+    begin match xs with 
+    | [x] -> OptionalBlock(x,Normal)
+    | _ -> assert false
+    end 
+  else   
+    ImmutableBlock( Ext_array.of_list_map (fun x -> 
+    element_of_lambda x ) xs )
 
 let field_flatten_get
    lam v i (tbl : Lam_id_kind.t Ident_hashtbl.t) : Lam.t =
@@ -197,7 +203,7 @@ let field_flatten_get
   | Some (Module g) -> 
     Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
       ~args:[ Lam.global_module g ] Location.none
-  | Some (ImmutableBlock (arr, _)) -> 
+  | Some (ImmutableBlock (arr)) -> 
     begin match arr.(i) with 
       | NA -> lam ()
       | SimpleForm l -> l

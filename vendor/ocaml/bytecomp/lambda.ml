@@ -38,6 +38,7 @@ type tag_info =
   | Blk_exception
   | Blk_extension
   | Blk_na
+  | Blk_some
 
 let default_tag_info : tag_info = Blk_na
 
@@ -191,6 +192,7 @@ type pointer_info =
   | Pt_variant of string 
   | Pt_module_alias
   | Pt_builtin_boolean
+  | Pt_shape_none
   | Pt_na
 
 let default_pointer_info = Pt_na

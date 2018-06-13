@@ -30,7 +30,18 @@ type bigarray_kind = Lambda.bigarray_kind
 type bigarray_layout = Lambda.bigarray_layout
 type compile_time_constant = Lambda.compile_time_constant
 
-type tag_info = Lambda.tag_info
+type tag_info = Lambda.tag_info = 
+  | Blk_constructor of string * int
+  | Blk_tuple
+  | Blk_array
+  | Blk_variant of string 
+  | Blk_record of string array
+  | Blk_module of string list option
+  | Blk_exception
+  | Blk_extension
+  | Blk_na
+  | Blk_some
+
 type mutable_flag = Asttypes.mutable_flag
 type field_dbg_info = Lambda.field_dbg_info
 type set_field_dbg_info = Lambda.set_field_dbg_info
@@ -210,6 +221,8 @@ type primitive =
 
   (* | Pcreate_exception of string  *)
   | Pcreate_extension of string
+  | Pis_none_general (* no info about its type *)
+  | Pval_from_option_general
 
 type apply_status =
   | App_na
@@ -1182,6 +1195,10 @@ let false_ : t =
 let unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "()"))
 
+
+let none : constant = 
+   (Const_pointer(0, Pt_constructor "None"))
+
 (* let assert_false_unit : t =
   Lconst (Const_pointer( 0, Pt_constructor "impossible branch")) *)
 
@@ -1852,6 +1869,11 @@ let convert exports lam : _ * _  =
   and convert_js_primitive (p: Primitive.description) (args : Lambda.lambda list) loc =
     let s = p.prim_name in
     match () with
+    | _ when s = "#is_none" -> 
+      prim ~primitive:Pis_none_general ~args:(Ext_list.map convert_aux args) loc 
+    | _ when s = "#val_from_option" -> 
+      prim ~primitive:Pval_from_option_general
+        ~args:(Ext_list.map convert_aux args) loc
     | _ when s = "#raw_expr" ->
       begin match args with
         | [Lconst( Const_base (Const_string(s,_)))] ->
@@ -1960,6 +1982,8 @@ let convert exports lam : _ * _  =
       | Pt_variant p -> Const_pointer(i,Pt_variant p)
       | Pt_module_alias -> Const_pointer(i, Pt_module_alias)
       | Pt_builtin_boolean -> if i = 0 then Const_js_false else Const_js_true
+      | Pt_shape_none ->
+         none
       | Pt_na ->  Const_pointer(i, Pt_na)      
        end 
     | Const_float_array (s) -> Const_float_array(s)

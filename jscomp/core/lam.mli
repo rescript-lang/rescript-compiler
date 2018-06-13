@@ -204,7 +204,9 @@ type primitive =
 
   (* | Pcreate_exception of string  *)
   | Pcreate_extension of string 
-
+  | Pis_none_general
+  | Pval_from_option_general
+  
 type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;

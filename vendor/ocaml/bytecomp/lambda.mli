@@ -40,7 +40,8 @@ type tag_info =
   | Blk_exception
   | Blk_extension
   | Blk_na
-
+  | Blk_some
+    
 val default_tag_info : tag_info
 
 type field_dbg_info = 
@@ -57,6 +58,7 @@ type pointer_info =
   | Pt_variant of string 
   | Pt_module_alias
   | Pt_builtin_boolean
+  | Pt_shape_none    
   | Pt_na 
 
 val default_pointer_info : pointer_info

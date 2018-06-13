@@ -49,6 +49,11 @@ let translate  loc
   (* | Pcreate_exception s  *)
   (*   ->  *)
   (*   Js_of_lam_exception.make_exception (E.str s) *)
+  | Pis_none_general -> 
+    begin match args with 
+    | [arg] -> arg 
+    | _ -> assert false
+    end 
   | Pcreate_extension s 
     -> 
     Js_of_lam_exception.make (E.str s)
@@ -170,6 +175,12 @@ let translate  loc
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
       tag_info (E.small_int tag) args 
+  | Pval_from_option_general -> 
+    begin match args with 
+    | [ e ] -> 
+      E.index e 0l
+    | _ -> assert false
+    end
   | Pfield (i, fld_info) -> 
     begin match args with 
       | [ e ]  -> 
