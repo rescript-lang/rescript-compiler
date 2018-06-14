@@ -88,6 +88,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       (* | Pcreate_exception _ *)
       | Pjs_typeof
       | Pis_null
+      | Pis_none_general
       | Pis_undefined
       | Pis_null_undefined
       | Pnull_to_opt       
@@ -101,6 +102,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
       | Pglobal_exception _
       | Pmakeblock _  (* whether it's mutable or not *)
       | Pfield _
+      | Pval_from_option_general
       | Pfloatfield _ 
       | Pduprecord _ 
       (* Boolean operations *)
@@ -276,7 +278,7 @@ let rec size (lam : Lam.t) =
             args =  [ Lglobal_module _]
            ;  _}
       -> 1
-    | Lprim {primitive = Praise ; args =  [l ];  _} 
+    | Lprim {primitive = Praise | Pis_none_general ; args =  [l ];  _} 
       -> size l
     | Lam.Lglobal_module _ -> 1       
     | Lprim {primitive = 
@@ -362,7 +364,7 @@ let destruct_pattern (body : Lam.t) params args =
       | Some _ | None -> false
     end        
   | Lifthenelse(Lvar v, then_, else_)
-    ->
+    -> (* FIXME *)
     begin match aux v params args with
       | Some (Lconst _ as lam) ->
         size (Lam.if_ lam then_ else_) < small_inline_size
@@ -510,6 +512,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Plslint -> rhs = Plslint
   | Plsrint -> rhs = Plsrint
   | Pasrint -> rhs = Pasrint      
+  | Pval_from_option_general -> rhs = Pval_from_option_general
   | Plazyforce -> rhs = Plazyforce
   | Pintoffloat -> rhs = Pintoffloat
   | Pfloatofint -> rhs = Pfloatofint
@@ -534,6 +537,7 @@ and eq_primitive ( lhs : Lam.primitive) (rhs : Lam.primitive) =
   | Pnull_to_opt -> rhs = Pnull_to_opt
   | Pnull_undefined_to_opt -> rhs = Pnull_undefined_to_opt  
   | Pis_null -> rhs = Pis_null
+  | Pis_none_general -> rhs = Pis_none_general 
   | Pis_undefined -> rhs = Pis_undefined
   | Pis_null_undefined -> rhs = Pis_null_undefined
   | Pjs_typeof -> rhs = Pjs_typeof

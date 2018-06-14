@@ -47,7 +47,8 @@ type boxed_nullable
   | Normal 
 
 type t = 
-  | ImmutableBlock of element array * boxed_nullable
+  | OptionalBlock of Lam.t * boxed_nullable
+  | ImmutableBlock of element array
   | MutableBlock of element array
   | Constant of Lam.constant
   | Module of Ident.t

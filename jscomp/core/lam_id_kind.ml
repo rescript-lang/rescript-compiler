@@ -54,7 +54,8 @@ type boxed_nullable
   | Normal 
 
 type t = 
-  | ImmutableBlock of element array * boxed_nullable
+  | OptionalBlock of Lam.t * boxed_nullable
+  | ImmutableBlock of element array 
   | MutableBlock of element array
   | Constant of Lam.constant
   | Module of Ident.t
@@ -73,8 +74,16 @@ let pp = Format.fprintf
 
 let print fmt (kind : t) = 
   match kind with 
-  | ImmutableBlock (arr,_) -> 
+  | ImmutableBlock (arr) -> 
     pp fmt "Imm(%d)" (Array.length arr)
+  | OptionalBlock (_, Normal) 
+    -> pp fmt "Some"
+  | OptionalBlock(_, Null) 
+    -> pp fmt "?Null"
+  | OptionalBlock(_, Undefined)
+    -> pp fmt "?Undefined"
+  | OptionalBlock(_,Null_undefined)
+    -> pp fmt "?Nullable"
   | MutableBlock (arr) ->     
     pp fmt "Mutable(%d)" (Array.length arr)
   | Constant _  ->

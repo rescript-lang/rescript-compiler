@@ -16,6 +16,9 @@
 open Asttypes
 open Types
 
+val constructor_has_optional_shape:
+  Types.constructor_description -> bool
+  
 val constructor_descrs:
   type_expr -> constructor_declaration list ->
   private_flag -> (Ident.t * constructor_description) list

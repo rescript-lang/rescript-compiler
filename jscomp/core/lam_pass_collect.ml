@@ -62,30 +62,30 @@ let collect_helper  (meta : Lam_stats.t) (lam : Lam.t)  =
     | Lconst v 
       -> 
       Ident_hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
-    | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args=  ls}
+    | Lprim {primitive = Pmakeblock (_, tag_info, Immutable ) ; args=  ls}
       -> 
       Ident_hashtbl.replace meta.ident_tbl ident 
-        (Lam_util.kind_of_lambda_block Normal ls);
+        (Lam_util.kind_of_lambda_block tag_info ls);
       List.iter collect ls     
     | Lprim{primitive = Praw_js_function(_,raw_args); args = _ }           
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 
         (FunctionId {arity = Lam_arity.info [List.length raw_args] false; lambda = None} )
     | Lprim {primitive = Pnull_to_opt; 
-             args = ([ Lvar _] as ls) ; _}
+             args = ([ Lvar _ as l ]  ) ; _}
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 
-        (Lam_util.kind_of_lambda_block Null ls )    
+        (OptionalBlock(l, Null ))    
     | Lprim {primitive = Pundefined_to_opt; 
-             args = ([ Lvar _] as ls); _}
+             args = ([ Lvar _ as l] ); _}
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 
-        (Lam_util.kind_of_lambda_block Undefined ls )
+        (OptionalBlock(l, Undefined) )
     | Lprim {primitive = Pnull_undefined_to_opt;
-             args = ([ Lvar _] as ls);}
+             args = ([ Lvar _ as l] );}
       ->
       Ident_hashtbl.replace meta.ident_tbl ident 
-        (Lam_util.kind_of_lambda_block Null_undefined ls )
+        (OptionalBlock(l, Null_undefined))
     | Lglobal_module v  
       -> 
       Lam_util.alias_ident_or_global meta  ident v (Module  v) kind; 

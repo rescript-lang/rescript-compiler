@@ -39,6 +39,15 @@ let free_vars ty =
   unmark_type ty;
   !ret
 
+let internal_optional = "internal.optional"
+  
+let optional_shape : Parsetree.attribute =
+  {txt = internal_optional ; loc = Location.none}, PStr []
+
+let constructor_has_optional_shape ({cstr_attributes = attrs} : constructor_description) =
+  List.exists (fun (x,_) -> x.txt = internal_optional) attrs
+
+
 let constructor_descrs ty_res cstrs priv =
   let num_consts = ref 0 and num_nonconsts = ref 0  and num_normal = ref 0 in
   List.iter
@@ -84,7 +93,27 @@ let constructor_descrs ty_res cstrs priv =
             cstr_attributes = cd_attributes;
           } in
         (cd_id, cstr) :: descr_rem in
-  describe_constructors 0 0 cstrs
+  let result = describe_constructors 0 0 cstrs in 
+  match result with
+  | (
+    [ ({name = "None"} as a_id, ({cstr_args = []} as a_descr) )  ;
+      ({ name = "Some"} as b_id, ({ cstr_args = [_]} as b_descr))
+    ] |
+    [ ({name = "Some"} as a_id, ({cstr_args = []} as a_descr) )  ;
+      ({ name = "None"} as b_id, ({ cstr_args = [_]} as b_descr))
+    ]
+   )
+    ->
+      [
+        (a_id, {a_descr with
+                   cstr_attributes =
+                     optional_shape :: a_descr.cstr_attributes});
+        (b_id, {b_descr with
+                   cstr_attributes =
+                     optional_shape :: b_descr.cstr_attributes
+                  })
+      ]
+  | _ -> result
 
 let extension_descr path_ext ext =
   let ty_res =

@@ -35,6 +35,7 @@ let tag_is_zero (tag : J.expression) =
   | Blk_variant _ 
   | Blk_module _    
   | Blk_record _   
+  | Blk_some  (* FIXME *)
   | Blk_constructor _   -> true
   | Blk_tuple 
   | Blk_array   
@@ -52,6 +53,7 @@ let needBlockRuntimeInReleaseMode (tag : J.expression) (tag_info : J.tag_info) =
   | Blk_constructor (_, 1)      
   | Blk_na -> not (tag_is_zero tag)
   | Blk_constructor _   -> true
+  | Blk_some (* FIXME *)
   | Blk_exception 
   | Blk_extension  -> false 
     (* converted to [Pcreate_extension] in the beginning*)

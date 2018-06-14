@@ -545,7 +545,7 @@ let transl_prim loc prim args =
     | [arg1; arg2] when has_base_type arg1 Predef.path_int
                      || has_base_type arg1 Predef.path_char
                      || not (Typeopt.maybe_pointer arg1)->
-        intcomp
+        intcomp (* option does not belong to this type, it can be pointer due to [Some] *)
     | [arg1; arg2] when has_base_type arg1 Predef.path_float ->
         floatcomp
     | [arg1; arg2] when has_base_type arg1 Predef.path_string ->
@@ -942,10 +942,15 @@ and transl_exp0 e =
           Lconst(Const_pointer (n,
             match lid.txt with
             | Lident ("false"|"true") -> Pt_builtin_boolean
+            | Lident "None" when Datarepr.constructor_has_optional_shape cstr
+              -> Pt_shape_none
             | _ -> (Lambda.Pt_constructor cstr.cstr_name)
             ))
       | Cstr_block n ->
-          let tag_info = (Lambda.Blk_constructor (cstr.cstr_name, cstr.cstr_nonconsts)) in
+          let tag_info =
+            if Datarepr.constructor_has_optional_shape cstr then
+              Lambda.Blk_some
+            else (Lambda.Blk_constructor (cstr.cstr_name, cstr.cstr_nonconsts)) in
           begin try
             Lconst(Const_block(n,tag_info, List.map extract_constant ll))
           with Not_constant ->

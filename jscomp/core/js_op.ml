@@ -243,6 +243,7 @@ type tag_info = Lambda.tag_info =
   | Blk_exception
   | Blk_extension
   | Blk_na
+  | Blk_some
 
 type length_object = 
   | Array 

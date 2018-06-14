@@ -26,8 +26,17 @@
 
 
 
+let id_is_for_sure_true_in_boolean (tbl : Lam_stats.ident_tbl) id = 
+  match Ident_hashtbl.find_opt tbl id with 
+  | Some (ImmutableBlock(_))
+  | Some (OptionalBlock (_, Normal) )
+  | Some (MutableBlock _) -> true
+  | Some 
+    (Constant _  | Module _ | FunctionId _ | Exception | Parameter | NA
+    | OptionalBlock(_, (Undefined | Null | Null_undefined))
+    )
 
-
+  | None -> false
 
 let simplify_alias 
     (meta : Lam_stats.t)
@@ -88,40 +97,49 @@ let simplify_alias
       | _ ->  
         Lam.prim ~primitive ~args:[simpl arg] loc 
       end
+    | Lprim {primitive = Pval_from_option_general; args = [Lvar v]} as x -> 
+      begin match Ident_hashtbl.find_opt meta.ident_tbl v with 
+      | Some (OptionalBlock (l,_)) -> l
+      | _ -> x 
+      end 
     | Lglobal_module _ -> lam 
     | Lprim {primitive; args; loc } 
       -> Lam.prim ~primitive ~args:(Ext_list.map simpl  args) loc
-      
-    | Lifthenelse(Lvar id as l1, l2, l3) 
+    
+    | Lifthenelse(Lprim {primitive = Pis_none_general; args =  [Lvar id ]} as l1, l2, l3) 
       -> 
       begin match Ident_hashtbl.find_opt meta.ident_tbl id with 
-      | Some (ImmutableBlock ( _, Normal))
-      | Some (MutableBlock _  )
+      | Some (ImmutableBlock ( _) | (MutableBlock _  ) 
+      | OptionalBlock (_,Normal) )      
         -> simpl l2 
-      | Some (ImmutableBlock ( [| SimpleForm l |]  , x) )
-        -> 
-        let l1 = 
-          match x with 
-          | Null 
-            -> Lam.not_ (Location.none) ( Lam.prim ~primitive:Pis_null
-
-            ~args:[l] Location.none) 
-          | Undefined 
-            -> 
-            Lam.not_  Location.none (Lam.prim ~primitive:Pis_undefined ~args:[l] Location.none)
-          | Null_undefined
-            -> 
-            Lam.not_ Location.none
-              ( Lam.prim ~primitive:Pis_null_undefined  ~args:[l] Location.none) 
-          | Normal ->  l1 
-        in 
-        Lam.if_ l1 (simpl l2) (simpl l3)
+      | Some (OptionalBlock(l, Null)) -> 
+        Lam.if_ 
+        (Lam.not_ (Location.none) ( Lam.prim ~primitive:Pis_null ~args:[l] Location.none)) 
+        (simpl l2) (simpl l3)
+      | Some (OptionalBlock(l, Undefined)) -> 
+        Lam.if_
+        (Lam.not_  Location.none (Lam.prim ~primitive:Pis_undefined ~args:[l] Location.none))
+        (simpl l2)   (simpl l3)
+      | Some (OptionalBlock(l, Null_undefined)) -> 
+        Lam.if_
+        (Lam.not_ Location.none
+              ( Lam.prim ~primitive:Pis_null_undefined  ~args:[l] Location.none) )  
+        (simpl l2) (simpl l3)
       | Some _
       | None -> Lam.if_ l1 (simpl l2) (simpl l3)
       end
+      (* could be the code path
+        {[ match x with 
+          | h::hs -> 
+        ]}
+      *)             
     | Lifthenelse (l1, l2, l3) -> 
+      begin match l1 with 
+      | Lvar id when id_is_for_sure_true_in_boolean meta.ident_tbl id-> 
+        simpl l2 
+      | _ -> 
         Lam.if_ (simpl  l1) (simpl  l2) (simpl  l3)
-
+      end   
     | Lconst _ -> lam
     | Llet(str, v, l1, l2) ->
       Lam.let_ str v (simpl l1) (simpl l2 )

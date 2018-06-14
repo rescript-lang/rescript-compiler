@@ -29,7 +29,7 @@
 
 
 
-val kind_of_lambda_block : Lam_id_kind.boxed_nullable -> Lam.t list -> Lam_id_kind.t
+val kind_of_lambda_block : Lambda.tag_info -> Lam.t list -> Lam_id_kind.t
 
 
 (** [field_flattern_get cb v i tbl]
