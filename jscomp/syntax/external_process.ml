@@ -60,7 +60,7 @@ let variant_can_bs_unwrap_fields (row_fields : Parsetree.row_field list) : bool 
     ]}
     The result type would be [ hi:string ]
 *)
-let get_arg_type 
+let get_arg_type
     ~nolabel optional
     (ptyp : Ast_core_type.t) :
   External_arg_spec.attr * Ast_core_type.t  =
@@ -97,7 +97,7 @@ let get_arg_type
     | `String ->
       begin match ptyp_desc with
         | Ptyp_variant ( row_fields, Closed, None)
-          ->          
+          ->
           Ast_polyvar.map_row_fields_into_strings ptyp.ptyp_loc row_fields
         | _ ->
           Bs_syntaxerr.err ptyp.ptyp_loc Invalid_bs_string_type
@@ -384,7 +384,7 @@ let handle_attributes
     if String.length prim_name = 0 then  `Nm_val pval_prim
     else  `Nm_external prim_name  (* need check name *)
   in
-  let result_type, arg_types_ty = 
+  let result_type, arg_types_ty =
     (* Note this assumes external type is syntatic (no abstraction)*)
     Ast_core_type.list_of_arrow type_annotation in
   if has_bs_uncurry result_type.ptyp_attributes then
@@ -798,17 +798,17 @@ let handle_attributes
         begin match arg_type_specs with
           | [] ->
             Location.raise_errorf
-              ~loc "Ill defined attribute [@@bs.send] (at least one argument)"
+              ~loc "Ill defined attribute [@@bs.send] (the external needs to be a regular function call with at least one argument)"
           |  {arg_type = Arg_cst _ ; arg_label = _} :: _
             ->
             Location.raise_errorf
-              ~loc "Ill defined attribute [@@bs.send] (first argument can not be const)"
+              ~loc "Ill defined attribute [@@bs.send] (first argument can't be const)"
           | _ :: _  ->
             Js_send {splice ; name; js_send_scopes = scopes ;  pipe = false}
         end
 
       | {val_send = #bundle_source; _ }
-        -> Location.raise_errorf ~loc "You used an FFI attribute that can't be used with [@@bs.send]"
+        -> Location.raise_errorf ~loc "You used a FFI attribute that can't be used with [@@bs.send]"
 
       | {val_send_pipe = Some typ;
          (* splice = (false as splice); *)
