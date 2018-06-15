@@ -183,7 +183,7 @@ let translate  loc
   | Pval_from_option_general -> 
     begin match args with 
     | [ e ] -> 
-      E.index e 0l
+      Js_of_lam_option.val_from_option e 
     | _ -> assert false
     end
   | Pfield (i, fld_info) -> 

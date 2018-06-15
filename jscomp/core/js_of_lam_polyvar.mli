@@ -23,16 +23,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-(** *)
 
-val is_nil_undef : 'a Js.null_undefined -> bool
 
-val null_undefined_to_opt : 'a Js.null_undefined -> 'a option
+val get_tag : 
+  J.expression -> 
+  J.expression 
 
-val undefined_to_opt : 'a Js.undefined -> 'a option 
-
-val null_to_opt : 'a Js.null -> 'a option
-
-val option_get : 'a option -> 'a Js_undefined.t 
-
-val option_get_unwrap : 'a option -> Obj.t Js_undefined.t
+val get_field :   
+  J.expression -> 
+  J.expression 

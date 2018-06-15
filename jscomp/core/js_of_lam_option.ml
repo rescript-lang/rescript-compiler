@@ -33,6 +33,9 @@ type option_unwrap_time =
   | Static_unwrapped
   | Runtime_maybe_unwrapped
 
+
+let val_from_option (arg : J.expression) =   
+  E.index arg 0l 
 (**
   Invrariant: 
   - optional encoding
@@ -48,19 +51,34 @@ type option_unwrap_time =
   {!Js_ast_util.named_expression} does not help 
    since we need an expression here, it might be a statement
 *)
-let get_default_undefined
-    ?(map=((fun _ x -> x) : option_unwrap_time -> J.expression -> J.expression))
+
+let get_default_undefined_from_optional
     (arg : J.expression)
     : J.expression =
   match arg.expression_desc with
   | Number _ -> E.undefined
   | Array ([x],_)
-  | Caml_block([x],_,_,_) -> (map Static_unwrapped x) (* invariant: option encoding *)
+  | Caml_block([x],_,_,_) -> x (* invariant: option encoding *)
   | _ ->
     if Js_analyzer.is_okay_to_duplicate arg then
-      E.econd arg (map Static_unwrapped (E.index arg 0l)) E.undefined
+      E.econd arg 
+        (val_from_option arg) E.undefined
     else
-      map Runtime_maybe_unwrapped (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
+      (E.runtime_call Js_runtime_modules.js_primitive "option_get" [arg])
+
+let get_default_undefined (arg : J.expression) : J.expression =
+  match arg.expression_desc with
+  | Number _ -> E.undefined
+  | Array ([x],_)
+  | Caml_block([x],_,_,_) -> 
+    Js_of_lam_polyvar.get_field x 
+    (* invariant: option encoding *)
+  | _ ->
+    if Js_analyzer.is_okay_to_duplicate arg then
+      E.econd arg 
+        (Js_of_lam_polyvar.get_field (val_from_option arg)) E.undefined
+    else
+      E.runtime_call Js_runtime_modules.js_primitive "option_get_unwrap" [arg]
 
 (** Another way: 
     {[
