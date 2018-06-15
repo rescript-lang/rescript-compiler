@@ -223,6 +223,7 @@ type primitive =
   | Pcreate_extension of string
   | Pis_none_general (* no info about its type *)
   | Pval_from_option_general
+  | Psome_general
 
 type apply_status =
   | App_na
@@ -1613,7 +1614,13 @@ let lam_prim ~primitive:( p : Lambda.primitive) ~args loc : t =
     end
   (* prim ~primitive:(Psetglobal id) ~args loc *)
   | Pmakeblock (tag,info, mutable_flag)
-    -> prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    -> 
+    begin match info with 
+    | Blk_some ->
+      prim ~primitive:Psome_general ~args loc 
+    | _ ->  
+      prim ~primitive:(Pmakeblock (tag,info,mutable_flag)) ~args loc
+    end  
   | Pfield (id,info)
     -> prim ~primitive:(Pfield (id,info)) ~args loc
 

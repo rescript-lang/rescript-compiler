@@ -88,10 +88,14 @@ let propogate_beta_reduce
            *)
            Lam_compile_global.expand_global_module_as_lam ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
-         | Lprim {primitive = Pmakeblock (_, tag_info, Immutable) ;args ; _} -> 
+         | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
 
            Ident_hashtbl.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block tag_info args ); (** *)
+             (Lam_util.kind_of_lambda_block args ); (** *)
+           arg           
+         | Lprim {primitive = Psome_general; args = [v]; _} -> 
+           Ident_hashtbl.replace meta.ident_tbl param 
+            (OptionalBlock(v,Normal));
            arg
          | _ -> arg in
        Lam_util.refine_let ~kind:Strict param arg l) 
@@ -148,10 +152,14 @@ let propogate_beta_reduce_with_map
            (* It's not completeness, its to make it sound.. *)
            Lam_compile_global.expand_global_module_as_lam ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
-         | Lprim {primitive = Pmakeblock (_, tag_info, Immutable ) ; args} -> 
+         | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
            Ident_hashtbl.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block tag_info args ); (** *)
+             (Lam_util.kind_of_lambda_block args ); (** *)
            arg
+         | Lprim {primitive = Psome_general; args = [v]} -> 
+           Ident_hashtbl.replace meta.ident_tbl param 
+            (OptionalBlock(v,Normal));
+           arg 
          | _ -> arg in
        Lam_util.refine_let ~kind:Strict param arg l) 
      rest_bindings new_body

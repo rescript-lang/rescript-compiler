@@ -4825,8 +4825,7 @@ var yyact = /* array */[
       return /* None */0;
     }),
   (function (__caml_parser_env) {
-      var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Some */[_2];
+      return /* Some */[Parsing.peek_val(__caml_parser_env, 0)];
     }),
   (function (__caml_parser_env) {
       var _3 = Parsing.peek_val(__caml_parser_env, 2);
@@ -5097,8 +5096,7 @@ var yyact = /* array */[
       return mkcf(/* None */0, /* None */0, /* Pcf_attribute */Block.__(5, [_1]));
     }),
   (function (__caml_parser_env) {
-      var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Some */[_2];
+      return /* Some */[Parsing.peek_val(__caml_parser_env, 0)];
     }),
   (function () {
       return /* None */0;
@@ -5600,8 +5598,7 @@ var yyact = /* array */[
       return /* None */0;
     }),
   (function (__caml_parser_env) {
-      var _2 = Parsing.peek_val(__caml_parser_env, 0);
-      return /* Some */[_2];
+      return /* Some */[Parsing.peek_val(__caml_parser_env, 0)];
     }),
   (function (__caml_parser_env) {
       return Parsing.peek_val(__caml_parser_env, 0);
